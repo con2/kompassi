@@ -30,6 +30,7 @@ class Setup:
         self.setup_access()
         self.setup_directory()
         # self.setup_kaatoilmo()
+        self.setup_forms()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -77,9 +78,12 @@ class Setup:
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
-            labour_admin_group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
+
+        assert self.event.start_time
+        assert self.event.end_time
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
@@ -216,6 +220,8 @@ class Setup:
                 ),
             )
 
+        assert self.event.start_time
+
         Survey.objects.get_or_create(
             event=self.event,
             slug="tyovuorotoiveet",
@@ -290,8 +296,8 @@ class Setup:
         if self.test:
             t = now()
             defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),
-                ticket_sales_ends=t + timedelta(days=60),
+                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
+                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -420,7 +426,7 @@ class Setup:
             product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
-                product.limit_groups.set(limit_groups)
+                product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
 
         if not meta.receipt_footer:
@@ -499,6 +505,9 @@ class Setup:
                         title=title,
                     ),
                 )
+
+        assert self.event.start_time
+        assert self.event.end_time
 
         saturday = self.event.start_time + timedelta(days=1)
 
@@ -710,12 +719,7 @@ class Setup:
         )
 
     def setup_access(self):
-        from access.models import (
-            EmailAliasType,
-            GroupEmailAliasGrant,
-            GroupPrivilege,
-            Privilege,
-        )
+        from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
 
         # Grant accepted workers access to Tracon Slack
         privilege = Privilege.objects.get(slug="tracon-slack")
@@ -789,6 +793,7 @@ class Setup:
 
         labour_admin_group = self.event.labour_event_meta.get_group("admins")
 
+        assert self.event.end_time
         DirectoryAccessGroup.objects.get_or_create(
             organization=self.event.organization,
             group=labour_admin_group,
@@ -802,6 +807,7 @@ class Setup:
 
         from ...models import Poison
 
+        assert self.event.start_time
         saturday = self.event.start_time + timedelta(days=1)
 
         coaches = []
@@ -877,6 +883,35 @@ class Setup:
             "Alkoholittomat juomat",
         ]:
             Poison.objects.get_or_create(name=poison_name)
+
+    def setup_forms(self):
+        from forms.models import Form, Survey
+
+        with resource_stream("events.tracon2024", "forms/hackathon-feedback.yml") as f:
+            data = yaml.safe_load(f)
+
+        form_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="hackathon-feedback",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO temporary for development
+        if not created:
+            for key, value in data.items():
+                setattr(form_fi, key, value)
+            form_fi.save()
+
+        survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="hackathon-feedback",
+            defaults=dict(
+                active_from=now(),
+            ),
+        )
+
+        survey.languages.set([form_fi])
 
 
 class Command(BaseCommand):
