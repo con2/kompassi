@@ -58,6 +58,7 @@ jobs:
       - uses: docker/setup-buildx-action@v3
       - id: build
         run: |
+          python3 -m pip install -U pip setuptools wheel
           python3 -m pip install emskaffolden
           emskaffolden -E staging -- build --file-output build.json
         working-directory: backend
@@ -95,6 +96,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
       - run: |
+          python3 -m pip install -U pip setuptools wheel
           python3 -m pip install emskaffolden
           emskaffolden -E staging -- deploy -n kompassi-staging -a ../build.json
         working-directory: backend
@@ -127,6 +129,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
       - run: |
+          python3 -m pip install -U pip setuptools wheel
           python3 -m pip install emskaffolden
           emskaffolden -E production -- deploy -n kompassi-production -a ../build.json
         working-directory: backend
