@@ -12,6 +12,14 @@ from ..utils.merge_form_fields import merge_fields
 from .form import Form
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
+ANONYMITY_CHOICES = [
+    # not linked to user account, IP address not recorded
+    ("hard", _("Hard anonymous")),
+    # linked to user account but not shown to owner, IP address recorded
+    ("soft", _("Soft anonymous (linked to user account but not shown to survey owner)")),
+    # linked to user account and shown to owner, IP address recorded
+    ("name_and_email", _("Name and email shown to survey owner if responded logged-in")),
+]
 
 
 class Survey(models.Model):
@@ -21,9 +29,27 @@ class Survey(models.Model):
     login_required = models.BooleanField(
         default=False,
         verbose_name=_("Login required"),
+    )
+
+    max_responses_per_user = models.PositiveIntegerField(
+        default=0,
+        verbose_name=_("max responses per user"),
         help_text=_(
-            "This switch only takes effect in a stand-alone context. In non-stand-alone "
-            "contexts the use case will direct whether or not login is required."
+            "Maximum number of responses per user. 0 = unlimited. "
+            "Note that if login_required is not set, this only takes effect for logged in users."
+            "Has no effect if the survey is hard anonymous."
+        ),
+    )
+
+    anonymity = models.CharField(
+        max_length=max(len(key) for key, _ in ANONYMITY_CHOICES),
+        choices=ANONYMITY_CHOICES,
+        default="soft",
+        verbose_name=_("anonymity"),
+        help_text=_(
+            "Hard anonymous: responses are not linked to user accounts and IP addresses are not recorded. "
+            "Soft anonymous: responses are linked to user accounts but not shown to survey owners. "
+            "Name and email: responses are linked to user accounts and shown to survey owners."
         ),
     )
 

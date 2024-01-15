@@ -14,9 +14,13 @@ class ResponseAdmin(admin.ModelAdmin):
     model = Response
     list_display = ("created_at", "form", "created_by")
     list_filter = ("form__event", "form")
-    readonly_fields = ("form", "form_data", "created_by", "created_at", "updated_at")
+    readonly_fields = ("form", "form_data", "created_by", "ip_address", "created_at", "updated_at")
+    fields = readonly_fields
 
     def has_add_permission(self, *args, **kwargs):
+        return False
+
+    def has_change_permission(self, *args, **kwargs):
         return False
 
 
@@ -29,7 +33,15 @@ class SurveyAdmin(admin.ModelAdmin):
     model = Survey
     list_display = ("event", "slug", "admin_is_active")
     list_filter = ("event",)
-    fields = ("event", "slug", "active_from", "active_until")
+    fields = (
+        "event",
+        "slug",
+        "login_required",
+        "anonymity",
+        "max_responses_per_user",
+        "active_from",
+        "active_until",
+    )
     inlines = (SurveyFormInline,)
 
 

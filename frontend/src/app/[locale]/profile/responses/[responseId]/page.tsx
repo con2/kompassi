@@ -4,11 +4,7 @@ import { notFound } from "next/navigation";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import {
-  defaultLayout,
-  Field,
-  validateFields,
-} from "@/components/SchemaForm/models";
+import { Field, validateFields } from "@/components/SchemaForm/models";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
 import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
@@ -34,6 +30,9 @@ const query = gql(`
             event {
               slug
               name
+            }
+            survey {
+              anonymity
             }
           }
         }
@@ -88,6 +87,10 @@ export default async function SurveyResponsePage({ params }: Props) {
   const { fields, layout } = form;
   const values: Record<string, any> = response.values ?? {};
 
+  const anonymity = form.survey?.anonymity;
+  const anonymityMessages =
+    translations.Survey.attributes.anonymity.secondPerson;
+
   validateFields(fields);
 
   // TODO using synthetic form fields for presentation is a hack
@@ -117,6 +120,15 @@ export default async function SurveyResponsePage({ params }: Props) {
         {t.singleTitle}
         <ViewHeading.Sub>{form.title}</ViewHeading.Sub>
       </ViewHeading>
+
+      {anonymity && (
+        <p>
+          <small>
+            <strong>{anonymityMessages.title}: </strong>
+            {anonymityMessages.choices[anonymity]}
+          </small>
+        </p>
+      )}
 
       <SchemaFormField field={createdAtField} layout={layout}>
         <SchemaFormInput

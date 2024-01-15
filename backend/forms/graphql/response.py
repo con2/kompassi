@@ -1,6 +1,9 @@
 import graphene
+from django.contrib.auth.models import User
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
+
+from core.graphql.user import LimitedUserType
 
 from ..models.response import Response
 from .form import FormType
@@ -40,6 +43,23 @@ class LimitedResponseType(DjangoObjectType):
     language = graphene.Field(
         graphene.NonNull(graphene.String),
         description="Language code of the form used to submit this response.",
+    )
+
+    @staticmethod
+    def resolve_created_by(response: Response, info) -> User | None:
+        """
+        Returns the user who submitted the response. If response is to an anonymous survey,
+        this information will not be available.
+        """
+        if survey := response.form.survey:
+            if survey.anonymity in ("hard", "soft"):
+                return None
+
+        return response.created_by
+
+    created_by = graphene.Field(
+        LimitedUserType,
+        description=resolve_created_by.__doc__,
     )
 
     class Meta:

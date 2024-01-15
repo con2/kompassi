@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from copy import deepcopy
 from functools import cached_property
@@ -14,6 +16,7 @@ from .field import Field
 
 if TYPE_CHECKING:
     from .response import Response
+    from .survey import Survey
 
 
 logger = logging.getLogger("kompassi")
@@ -89,5 +92,13 @@ class Form(models.Model):
         return [Field.model_validate(field_dict) for field_dict in self.enriched_fields]
 
     @property
-    def survey(self):
-        return self.event.surveys.filter(languages=self).get()
+    def survey(self) -> Survey | None:
+        from .survey import Survey
+
+        # there can only be one
+        try:
+            return self.event.surveys.filter(languages=self).get()
+        except Survey.DoesNotExist:
+            return None
+        except Survey.MultipleObjectsReturned:
+            raise

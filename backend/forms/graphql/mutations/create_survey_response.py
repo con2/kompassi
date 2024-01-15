@@ -5,7 +5,7 @@ from core.utils import get_ip
 
 from ...models.response import Response
 from ...models.survey import Survey
-from ..form_response import FullResponseType
+from ..response import FullResponseType
 
 
 class CreateSurveyResponse(graphene.Mutation):
@@ -35,6 +35,17 @@ class CreateSurveyResponse(graphene.Mutation):
 
         ip_address = get_ip(info.context)
         created_by = user if (user := info.context.user) and user.is_authenticated else None
+
+        if survey.login_required and not created_by:
+            raise Exception("Login required")
+
+        if survey.max_responses_per_user:
+            if survey.responses.filter(created_by=created_by).count() >= survey.max_responses_per_user:
+                raise Exception("Maximum number of responses reached")
+
+        if survey.anonymity == "hard":
+            created_by = None
+            ip_address = ""
 
         response = Response.objects.create(
             form=form,
