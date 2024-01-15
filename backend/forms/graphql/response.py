@@ -1,4 +1,5 @@
 import graphene
+from django.contrib.auth.models import User
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
