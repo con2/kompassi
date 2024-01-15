@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import logging
 from copy import deepcopy
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.db import models
@@ -90,7 +92,7 @@ class Form(models.Model):
         return [Field.model_validate(field_dict) for field_dict in self.enriched_fields]
 
     @property
-    def survey(self) -> Optional["Survey"]:
+    def survey(self) -> Survey | None:
         from .survey import Survey
 
         # there can only be one
