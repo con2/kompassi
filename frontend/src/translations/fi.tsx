@@ -245,6 +245,7 @@ const translations: Translations = {
         openingAt: (time: Date) => `Avautuu ${time.toLocaleString()}`,
         closed: "Suljettu",
       },
+      countResponses: "Vastauksia",
       languages: "Kielet",
       actions: "Toiminnot",
       anonymity: {

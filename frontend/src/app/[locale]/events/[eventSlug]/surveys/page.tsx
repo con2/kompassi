@@ -21,6 +21,7 @@ gql(`
     isActive
     activeFrom
     activeUntil
+    countResponses
 
     languages {
       language
@@ -135,6 +136,10 @@ export default async function SurveysPage({ params }: Props) {
 
         return `${activityEmoji} ${message}`;
       },
+    },
+    {
+      slug: "countResponses",
+      title: t.attributes.countResponses,
     },
     {
       slug: "languages",

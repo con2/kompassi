@@ -109,6 +109,20 @@ class SurveyType(LimitedSurveyType):
         description=normalize_whitespace(resolve_count_responses_by_current_user.__doc__ or ""),
     )
 
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_count_responses(survey: Survey, info):
+        """
+        Returns the number of responses to this survey regardless of language version used.
+        Authorization required.
+        """
+        return survey.responses.count()
+
+    count_responses = graphene.Field(
+        graphene.NonNull(graphene.Int),
+        description=normalize_whitespace(resolve_count_responses.__doc__ or ""),
+    )
+
     class Meta:
         model = Survey
         fields = (

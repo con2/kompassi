@@ -244,6 +244,7 @@ const translations = {
         openingAt: (time: Date) => `Opening at ${time.toLocaleString()}`,
         closed: "Closed",
       },
+      countResponses: "Responses",
       languages: "Languages",
       actions: "Actions",
       anonymity: {
