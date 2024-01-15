@@ -11,7 +11,7 @@ class LimitedSurveyType(DjangoObjectType):
     title = graphene.Field(graphene.String, lang=graphene.String())
 
     @staticmethod
-    def resolve_title(parent: Survey, info, lang: str = DEFAULT_LANGUAGE):
+    def resolve_title(parent: Survey, info, lang: str = DEFAULT_LANGUAGE) -> str | None:
         return form.title if (form := parent.get_form(lang)) else None
 
     is_active = graphene.Field(graphene.NonNull(graphene.Boolean))
