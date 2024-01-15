@@ -86,7 +86,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
   } = survey;
   const { title, description, layout, fields } = form!;
   const anonymityMessages =
-    translations.Survey.attributes.anonymity.secondPerson;
+    t.attributes.anonymity.secondPerson;
 
   if (loginRequired) {
     const session = await auth();
