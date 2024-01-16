@@ -19,6 +19,4 @@ class ScheduleItem(models.Model):
 
     @property
     def end_time(self):
-        if self.start_time and self.length:
-            return self.start_time + self.length
-        return None
+        return self.start_time + self.length
