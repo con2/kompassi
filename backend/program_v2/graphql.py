@@ -2,6 +2,7 @@ import graphene
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
+from access.cbac import graphql_check_access
 from core.utils import get_objects_within_period
 from forms.graphql.form import FormType
 from forms.models import Form
@@ -43,20 +44,33 @@ class ProgramDimensionValueType(DjangoObjectType):
 
 
 class ScheduleItemType(DjangoObjectType):
-    length_minutes = graphene.Int()
-    end_time = graphene.DateTime()
-
     class Meta:
         model = ScheduleItem
         fields = ("subtitle", "start_time")
 
     @staticmethod
-    def resolve_length_minutes(parent, info, **kwargs):
-        return parent.length.total_seconds() // 60  # type: ignore
+    def resolve_length_minutes(parent: ScheduleItem, info):
+        return parent.length.total_seconds() // 60
+
+    length_minutes = graphene.NonNull(graphene.Int)
 
     @staticmethod
-    def resolve_end_time(parent, info, **kwargs):
-        return parent.end_time  # type: ignore
+    def resolve_end_time(parent: ScheduleItem, info):
+        return parent.end_time
+
+    end_time = graphene.NonNull(graphene.DateTime)
+
+    @staticmethod
+    def resolve_start_time_unix_seconds(parent: ScheduleItem, info):
+        return int(parent.start_time.timestamp())
+
+    start_time_unix_seconds = graphene.NonNull(graphene.Int)
+
+    @staticmethod
+    def resolve_end_time_unix_seconds(parent: ScheduleItem, info):
+        return int(parent.end_time.timestamp())
+
+    end_time_unix_seconds = graphene.NonNull(graphene.Int)
 
 
 class ProgramType(DjangoObjectType):
@@ -135,7 +149,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
     @staticmethod
     def resolve_offer_forms(meta: ProgramV2EventMeta, info, include_inactive: bool = False):
         if include_inactive:
-            # TODO must be admin
+            graphql_check_access(meta, info, "offer_forms")
             qs = OfferForm.objects.filter(event=meta.event)
         else:
             qs = get_objects_within_period(OfferForm, event=meta.event)
