@@ -123,6 +123,22 @@ class SurveyType(LimitedSurveyType):
         description=normalize_whitespace(resolve_count_responses.__doc__ or ""),
     )
 
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_summary(survey: Survey, info, lang: str = DEFAULT_LANGUAGE):
+        """
+        Returns a summary of responses to this survey.  If a language is specified,
+        that language is used as the base for the combined fields. Order of fields
+        not present in the base language is not guaranteed. Authorization required.
+        """
+        return {slug: summary.model_dump(by_alias=True) for slug, summary in survey.get_summary(lang).items()}
+
+    summary = graphene.Field(
+        GenericScalar,
+        lang=graphene.String(),
+        description=normalize_whitespace(resolve_summary.__doc__ or ""),
+    )
+
     class Meta:
         model = Survey
         fields = (

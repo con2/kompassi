@@ -114,7 +114,7 @@ class Survey(models.Model):
 
         # if a specific language is requested, put it first
         languages = sorted(
-            self.languages.all(),
+            self.languages.all().only("language", "fields"),
             key=lambda form: form.language != base_language,
         )
 
@@ -143,6 +143,14 @@ class Survey(models.Model):
         from .response import Response
 
         return Response.objects.filter(form__in=self.languages.all()).order_by("created_at")
+
+    def get_summary(self, base_language: str = DEFAULT_LANGUAGE):
+        from ..utils.summarize_responses import summarize_responses
+
+        fields = self.get_combined_fields(base_language)
+        valuesies = [response.get_processed_form_data(fields)[0] for response in self.responses.all().only("form_data")]
+
+        return summarize_responses(fields, valuesies)
 
     class Meta:
         unique_together = [("event", "slug")]

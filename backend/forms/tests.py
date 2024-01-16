@@ -4,6 +4,12 @@ from .excel_export import get_header_cells, get_response_cells
 from .models.field import Choice, Field, FieldType
 from .utils.merge_form_fields import _merge_choices, _merge_fields
 from .utils.process_form_data import FieldWarning, process_form_data
+from .utils.summarize_responses import (
+    MatrixFieldSummary,
+    SelectFieldSummary,
+    TextFieldSummary,
+    summarize_responses,
+)
 
 
 def test_process_form_data():
@@ -351,3 +357,111 @@ def test_merge_fields():
     ]
 
     assert _merge_fields(lhs_fields, rhs_fields) == expected_merged_fields
+
+
+def test_summarize_responses():
+    choices = [
+        Choice(slug="choice1", title="Choice 1"),
+        Choice(slug="choice2", title="Choice 2"),
+        Choice(slug="choice3", title="Choice 3"),
+    ]
+
+    fields = [
+        Field(
+            type=FieldType.SINGLE_LINE_TEXT,
+            slug="singleLineText",
+        ),
+        Field(
+            type=FieldType.DIVIDER,
+            slug="dividerShouldNotBePresentInSummary",
+        ),
+        Field(
+            type=FieldType.SINGLE_SELECT,
+            slug="singleSelect",
+            choices=choices,
+        ),
+        Field(
+            type=FieldType.MULTI_SELECT,
+            slug="multiSelect",
+            choices=choices,
+        ),
+        Field(
+            type=FieldType.RADIO_MATRIX,
+            slug="radioMatrix",
+            questions=[
+                Choice(
+                    slug="foo",
+                    title="Foo",
+                ),
+                Choice(
+                    slug="bar",
+                    title="Bar",
+                ),
+            ],
+            choices=choices,
+        ),
+    ]
+
+    responses = [
+        {
+            "singleLineText": "Hello world",
+            "singleSelect": "choice1",
+            "multiSelect": ["choice1", "choice3"],
+            "radioMatrix": {
+                "foo": "choice1",
+                "bar": "choice2",
+            },
+        },
+        {
+            "singleLineText": "Hello world",
+            "singleSelect": "choice2",
+            "multiSelect": [],
+            "radioMatrix": {
+                "foo": "choice2",
+                "bar": "choice2",
+            },
+        },
+        # surprise choice that is not included in choices!
+        # an admin may have removed it from the form after the response was submitted
+        {
+            "singleSelect": "choice666",
+            "multiSelect": ["choice666"],
+            "radioMatrix": {
+                "foo": "choice666",
+                # did not answer this question
+                # "bar": "choice666",
+            },
+        },
+    ]
+
+    expected_summary = {
+        "singleLineText": TextFieldSummary(
+            countResponses=2,
+            countMissingResponses=1,
+            type=FieldType.SINGLE_LINE_TEXT,
+            summary=["Hello world", "Hello world"],
+        ),
+        "singleSelect": SelectFieldSummary(
+            countResponses=3,
+            countMissingResponses=0,
+            type=FieldType.SINGLE_SELECT,
+            summary={"choice1": 1, "choice2": 1, "choice3": 0, "choice666": 1},
+        ),
+        "multiSelect": SelectFieldSummary(
+            countResponses=2,
+            countMissingResponses=1,
+            type=FieldType.MULTI_SELECT,
+            summary={"choice1": 1, "choice2": 0, "choice3": 1, "choice666": 1},
+        ),
+        "radioMatrix": MatrixFieldSummary(
+            countResponses=3,
+            countMissingResponses=0,
+            type=FieldType.RADIO_MATRIX,
+            summary={
+                "foo": {"choice1": 1, "choice2": 1, "choice3": 0, "choice666": 1},
+                "bar": {"choice1": 0, "choice2": 2, "choice3": 0},
+            },
+        ),
+    }
+
+    assert summarize_responses(fields, responses) == expected_summary

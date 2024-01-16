@@ -279,6 +279,7 @@ const translations = {
         success: "A link to the survey has been copied to clipboard.",
       },
       viewResponses: "View responses",
+      summary: "Summary",
       submit: "Submit",
     },
     thankYou: {
@@ -301,6 +302,7 @@ const translations = {
   SurveyResponse: {
     listTitle: "Responses",
     singleTitle: "Response",
+    summaryTitle: "Response summary",
     ownResponses: "My responses",
     tableFooter: (count: number) => (
       <>
@@ -313,11 +315,25 @@ const translations = {
       event: "Event",
       formTitle: "Survey title",
       language: "Language",
+      choice: "Choice",
+      question: "Question",
+      countResponses: "Responses",
+      countMissingResponses: "No response",
+      percentageOfResponses: "Share of responses",
     },
     actions: {
       downloadAsExcel: "Download as Excel",
       returnToResponseList: "Return to the list of responses",
       returnToSurveyList: "Return to the list of surveys",
+      summary: "View summary",
+    },
+    warnings: {
+      choiceNotFound:
+        "Choice not found. It may have been removed after this response was submitted.",
+    },
+    checkbox: {
+      checked: "Checked",
+      unchecked: "Not checked",
     },
   },
 
@@ -336,6 +352,7 @@ const translations = {
         Kompassi<sup>v2 BETA</sup>
       </>
     ),
+    plainAppName: "Kompassi",
   },
 
   // Do not translate

@@ -180,6 +180,12 @@ export default async function SurveysPage({ params }: Props) {
               className="btn btn-sm btn-outline-primary"
             >
               {t.actions.viewResponses}…
+            </Link>{" "}
+            <Link
+              href={`${url}/summary?from=surveys`}
+              className="btn btn-sm btn-outline-primary"
+            >
+              {t.actions.summary}…
             </Link>
           </>
         );

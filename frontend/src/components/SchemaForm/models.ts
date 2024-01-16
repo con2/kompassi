@@ -175,3 +175,40 @@ export const emptyField: Field = {
 export function validateFields(fields: unknown): asserts fields is Field[] {
   // TODO
 }
+
+// NOTE: Keep in sync with backend/forms/utils/summarize_responses.py
+export interface BaseFieldSummary {
+  countResponses: number;
+  countMissingResponses: number;
+}
+
+export interface TextFieldSummary extends BaseFieldSummary {
+  type: "SingleLineText" | "MultiLineText";
+  summary: string[];
+}
+
+export interface SingleCheckboxSummary extends BaseFieldSummary {
+  type: "SingleCheckbox";
+}
+
+export interface SelectFieldSummary extends BaseFieldSummary {
+  type: "SingleSelect" | "MultiSelect";
+  summary: Record<string, number>;
+}
+
+export interface MatrixFieldSummary extends BaseFieldSummary {
+  type: "RadioMatrix";
+  summary: Record<string, Record<string, number>>;
+}
+
+export type FieldSummary =
+  | TextFieldSummary
+  | SingleCheckboxSummary
+  | SelectFieldSummary
+  | MatrixFieldSummary;
+
+export type Summary = Record<string, FieldSummary>;
+
+export function validateSummary(summary: unknown): asserts summary is Summary {
+  // TODO
+}
