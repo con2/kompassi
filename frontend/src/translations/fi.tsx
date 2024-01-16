@@ -293,7 +293,13 @@ const translations: Translations = {
         maxResponsesPerUser: number,
         countResponsesByCurrentUser: number,
       ) =>
-        `Olet jo vastannut tähän kyselyyn${countResponsesByCurrentUser === 1 ? "" : " " + countResponsesByCurrentUser + " kertaa"}. Voit vastata tähän kyselyyn enintään ${maxResponsesPerUser} ${maxResponsesPerUser === 1 ? "kerran" : "kertaa"}.`,
+        `Olet jo vastannut tähän kyselyyn${
+          countResponsesByCurrentUser === 1
+            ? ""
+            : " " + countResponsesByCurrentUser + " kertaa"
+        }. Voit vastata tähän kyselyyn enintään ${maxResponsesPerUser} ${
+          maxResponsesPerUser === 1 ? "kerran" : "kertaa"
+        }.`,
     },
   },
 

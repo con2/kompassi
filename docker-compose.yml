@@ -1,4 +1,4 @@
-version: '2.2'
+version: "2.2"
 services:
   backend:
     build: backend
@@ -17,7 +17,7 @@ services:
       DEBUG: 1
       BROKER_URL: redis://redis/1
       CACHE_URL: rediscache://redis/1
-      ALLOWED_HOSTS: '*'
+      ALLOWED_HOSTS: "*"
       MINIO_BUCKET_NAME: kompassi
       MINIO_ACCESS_KEY_ID: kompassi
       MINIO_SECRET_ACCESS_KEY: kompassi
