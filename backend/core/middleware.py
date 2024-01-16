@@ -59,8 +59,28 @@ class EventOrganizationMiddleware:
 
         if resolver_match := request.resolver_match:
             if event_slug := resolver_match.kwargs.get("event_slug"):
-                if event := Event.objects.filter(slug=event_slug).select_related("organization").first():
+                if (
+                    event := Event.objects.filter(slug=event_slug)
+                    .only(
+                        "name",
+                        "name_genitive",
+                        "slug",
+                        "homepage_url",
+                        "organization__name",
+                        "organization__slug",
+                        "organization__homepage_url",
+                    )
+                    .first()
+                ):
                     request.event = event
                     request.organization = event.organization
             elif organization_slug := resolver_match.kwargs.get("organization_slug"):
-                request.organization = Organization.objects.filter(slug=organization_slug).first()
+                request.organization = (
+                    Organization.objects.filter(slug=organization_slug)
+                    .only(
+                        "name",
+                        "slug",
+                        "homepage_url",
+                    )
+                    .first()
+                )

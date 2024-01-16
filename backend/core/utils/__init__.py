@@ -50,6 +50,7 @@ from .time_utils import (
     format_interval,
     full_hours_between,
     get_objects_within_period,
+    get_objects_within_period_qs,
     is_within_period,
 )
 from .view_utils import get_next, login_redirect, url

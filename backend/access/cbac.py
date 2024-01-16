@@ -1,18 +1,15 @@
 import logging
 from functools import wraps
-from typing import TYPE_CHECKING, Callable, Literal, Protocol
+from typing import Callable, Literal, Protocol
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
 
+from core.models.event import Event
 from event_log.utils import emit
 
 from .exceptions import CBACPermissionDenied
-from .models.cbac_entry import CBACEntry, Claims
-
-if TYPE_CHECKING:
-    from core.models.event import Event
-
+from .models.cbac_entry import CBACEntry
 
 logger = logging.getLogger("kompassi")
 
@@ -58,27 +55,6 @@ def default_cbac_required(view_func):
     return wrapped_view
 
 
-def make_graphql_claims(
-    *,
-    event: "Event",
-    operation: Literal["query"] | Literal["mutation"],
-    app: str,
-    object_type: str,
-    field: str,
-    **extra: str,
-) -> Claims:
-    return dict(
-        event=event.slug,
-        organization=event.organization.slug,
-        operation=operation,
-        app=app,
-        object_type=object_type,
-        field=field,
-        view="graphql",
-        **extra,
-    )
-
-
 def is_graphql_allowed(
     user,
     *,
@@ -89,16 +65,22 @@ def is_graphql_allowed(
     field: str,
     **extra: str,
 ):
-    claims = make_graphql_claims(
-        event=event,
+    claims = dict(
+        event=event.slug,
+        organization=event.organization.slug,
         operation=operation,
         app=app,
         object_type=object_type,
         field=field,
+        view="graphql",
         **extra,
     )
 
     return CBACEntry.is_allowed(user, claims), claims
+
+
+class HasEventId(Protocol):
+    event_id: str
 
 
 class HasEventProperty(Protocol):
@@ -117,7 +99,11 @@ def is_graphql_allowed_for_model(
     field: str,
     **extra: str,
 ):
-    event = instance.event
+    event = (
+        (event_id := getattr(instance, "event_id", None))
+        and Event.objects.filter(id=event_id).only("slug", "organization__slug").get()
+        or instance.event
+    )
     object_type = instance.__class__.__name__
     app = instance.__class__._meta.app_label  # type: ignore
 

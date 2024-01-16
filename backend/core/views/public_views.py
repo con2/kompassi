@@ -42,7 +42,18 @@ def core_organization_view(request, organization):
 
 
 def core_event_view(request, event_slug):
-    event = get_object_or_404(Event, slug=event_slug)
+    event = get_object_or_404(
+        Event.objects.all()
+        .select_related("venue")
+        .select_related("organization")
+        .select_related("enrollmenteventmeta")
+        .select_related("laboureventmeta")
+        .select_related("programmeeventmeta")
+        .select_related("ticketseventmeta")
+        .select_related("badgeseventmeta")
+        .select_related("intraeventmeta"),
+        slug=event_slug,
+    )
 
     vars: dict[str, Any] = dict(
         event=event,

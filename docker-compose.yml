@@ -50,6 +50,8 @@ services:
   postgres:
     # image: postgres
     build: backend/kompassi/sql/
+    entrypoint: ["docker-entrypoint.sh"]
+    command: ["postgres", "-c", "log_statement=all"]
     init: true
     ports:
       - 5432:5432

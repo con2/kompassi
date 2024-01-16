@@ -39,7 +39,8 @@ class LanguageType(graphene.ObjectType):
 class Query(graphene.ObjectType):
     @staticmethod
     def resolve_event(root, info, slug: str):
-        return Event.objects.filter(slug=slug).first()
+        # NOTE: keep in sync with core/graphql/event.py
+        return Event.objects.filter(slug=slug).only("name", "slug").first()
 
     event = graphene.Field(FullEventType, slug=graphene.String(required=True))
 

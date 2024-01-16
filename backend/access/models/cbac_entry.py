@@ -8,7 +8,7 @@ from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.utils.timezone import now
 
-from core.utils import get_objects_within_period, log_get_or_create
+from core.utils import get_objects_within_period_qs, log_get_or_create
 from event_log.utils import emit
 from intra.constants import SUPPORTED_APPS
 
@@ -71,16 +71,16 @@ class CBACEntry(models.Model):
         t: Optional[datetime] = None,
         **extra_criteria,
     ):
+        # TODO make this cache all entries for the user and then filter in Python
         if not user.is_authenticated:
             return cls.objects.none()
 
-        queryset = get_objects_within_period(
-            cls,
+        queryset = get_objects_within_period_qs(
+            user.cbac_entries.all(),  # type: ignore
             t=t,
             start_field_name="valid_from",
             end_field_name="valid_until",
             end_field_nullable=False,
-            user=user,
             **extra_criteria,
         )
 

@@ -55,8 +55,8 @@ def is_within_period(
     return bool(period_start and period_start <= t and not (period_end and period_end <= t))
 
 
-def get_objects_within_period(
-    Model,
+def get_objects_within_period_qs(
+    qs,
     t=None,
     start_field_name="active_from",
     end_field_name="active_until",
@@ -85,7 +85,15 @@ def get_objects_within_period(
 
     q &= Q(**extra_criteria)
 
-    return Model.objects.filter(q)
+    return qs.filter(q)
+
+
+def get_objects_within_period(Model, *args, **kwargs):
+    return get_objects_within_period_qs(
+        Model.objects.all(),
+        *args,
+        **kwargs,
+    )
 
 
 def format_date_range(

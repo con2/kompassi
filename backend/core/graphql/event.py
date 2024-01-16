@@ -10,6 +10,8 @@ from program_v2.graphql import ProgramV2EventMetaType
 class FullEventType(DjangoObjectType):
     class Meta:
         model = Event
+
+        # NOTE: NOTE: keep in sync with graphql_api/schema.py
         fields = ("slug", "name")
 
     program = graphene.Field(ProgramV2EventMetaType)

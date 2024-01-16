@@ -12,10 +12,12 @@ def get_year(event):
 
 
 def events(*args, **kwargs):
+    # TODO limit fields
     return (
         Event.objects.filter(*args, **kwargs)
         .order_by("-start_time")
         .select_related("venue")
+        .select_related("organization")
         .select_related("enrollmenteventmeta")
         .select_related("ticketseventmeta")
         .select_related("laboureventmeta")
