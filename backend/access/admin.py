@@ -96,7 +96,7 @@ class SMTPPasswordAdmin(admin.ModelAdmin):
 
 class CBACEntryAdmin(admin.ModelAdmin):
     search_fields = ("user__first_name", "user__last_name", "user__username", "user__email")
-    list_display = ("user", "claims", "mode", "valid_from", "valid_until")
+    list_display = ("user", "claims", "valid_from", "valid_until")
     raw_id_fields = ("user",)
     readonly_fields = ("created_by", "created_at")
 

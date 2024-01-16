@@ -24,12 +24,6 @@ class CBACEntry(models.Model):
     valid_from = models.DateTimeField()
     valid_until = models.DateTimeField()
 
-    mode = models.CharField(
-        max_length=1,
-        choices=[("+", "Allow"), ("-", "Deny"), ("0", "Inactive")],
-        default="+",
-    )
-
     claims = HStoreField(blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -40,12 +34,10 @@ class CBACEntry(models.Model):
     )
 
     def __str__(self):
-        return ", ".join(
-            f"{key}={value}" for (key, value) in dict(user=self.user.username, mode=self.mode, **self.claims).items()
-        )
+        return ", ".join(f"{key}={value}" for (key, value) in dict(user=self.user.username, **self.claims).items())
 
     class Meta:
-        index_together = [("user", "mode", "valid_until")]
+        index_together = [("user", "valid_until")]
 
     def save(self, *args, **kwargs):
         if not self.valid_from:
@@ -58,7 +50,6 @@ class CBACEntry(models.Model):
             user=self.user.username,
             valid_from=self.valid_from.isoformat(),
             valid_until=self.valid_until.isoformat(),
-            mode=self.mode,
             claims=self.claims,
             granted_by_group=self.granted_by_group.name if self.granted_by_group else "",
         )
@@ -91,8 +82,7 @@ class CBACEntry(models.Model):
 
     @classmethod
     def is_allowed(cls, user: AbstractUser, claims: Claims, t: Optional[datetime] = None):
-        entries = cls.get_entries(user, claims, t=t)
-        return bool(entries.filter(mode="+").exists()) and not entries.filter(mode="-").exists()
+        return cls.get_entries(user, claims, t=t).exists()
 
     @classmethod
     def ensure_admin_group_privileges(cls, t: Optional[datetime] = None):
