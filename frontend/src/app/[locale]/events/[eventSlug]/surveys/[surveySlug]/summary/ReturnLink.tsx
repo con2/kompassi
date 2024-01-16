@@ -1,4 +1,3 @@
-// needs to be a client component due to useSearchParams
 "use client";
 
 import Link from "next/link";

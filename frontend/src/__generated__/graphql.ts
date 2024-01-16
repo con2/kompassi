@@ -338,11 +338,9 @@ export type QueryEventArgs = {
 
 export type ScheduleItemType = {
   __typename?: 'ScheduleItemType';
-  endTime: Scalars['DateTime']['output'];
-  endTimeUnixSeconds: Scalars['Int']['output'];
-  lengthMinutes: Scalars['Int']['output'];
+  endTime?: Maybe<Scalars['DateTime']['output']>;
+  lengthMinutes?: Maybe<Scalars['Int']['output']>;
   startTime: Scalars['DateTime']['output'];
-  startTimeUnixSeconds: Scalars['Int']['output'];
   subtitle: Scalars['String']['output'];
 };
 

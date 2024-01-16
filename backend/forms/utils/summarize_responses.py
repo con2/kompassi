@@ -3,6 +3,8 @@ Builds a summary of responses to a survey.
 See ../tests.py:test_summarize_responses for examples.
 """
 
+from collections import Counter
+from enum import Enum
 from typing import Any, Literal
 
 import pydantic
@@ -12,6 +14,13 @@ from ..models.field import Field, FieldType
 # NOTE: Keep in sync with frontend/src/components/SchemaForm/models.ts
 
 
+class SummaryType(str, Enum):
+    TEXT = "Text"
+    SINGLE_CHECKBOX = "SingleCheckbox"
+    SELECT = "Select"
+    MATRIX = "Matrix"
+
+
 class BaseFieldSummary(pydantic.BaseModel):
     # XXX(pyright): pyright does not understand populate_by_name=True, hence javaScriptCase here
     countResponses: int
@@ -19,7 +28,7 @@ class BaseFieldSummary(pydantic.BaseModel):
 
 
 class TextFieldSummary(BaseFieldSummary):
-    type: Literal[FieldType.SINGLE_LINE_TEXT] | Literal[FieldType.MULTI_LINE_TEXT]
+    type: Literal[SummaryType.TEXT] = SummaryType.TEXT
     summary: list[str]
 
 
@@ -30,16 +39,16 @@ class SingleCheckboxSummary(BaseFieldSummary):
     provided in the countResponses field.
     """
 
-    type: Literal[FieldType.SINGLE_CHECKBOX]
+    type: Literal[SummaryType.SINGLE_CHECKBOX] = SummaryType.SINGLE_CHECKBOX
 
 
 class SelectFieldSummary(BaseFieldSummary):
-    type: Literal[FieldType.SINGLE_SELECT] | Literal[FieldType.MULTI_SELECT]
+    type: Literal[SummaryType.SELECT] = SummaryType.SELECT
     summary: dict[str, int]
 
 
 class MatrixFieldSummary(BaseFieldSummary):
-    type: Literal[FieldType.RADIO_MATRIX]
+    type: Literal[SummaryType.MATRIX] = SummaryType.MATRIX
     summary: dict[str, dict[str, int]]
 
 
@@ -57,7 +66,29 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
             case FieldType.STATIC_TEXT | FieldType.SPACER | FieldType.DIVIDER:
                 pass
 
-            # TODO: handle htmlType="number"
+            # TODO: handle htmlType="number" for high cardinality fields
+            case FieldType.SINGLE_LINE_TEXT if field.html_type == "number":
+                field_summary = Counter()
+
+                for value in valuesies:
+                    value = value.get(field.slug)
+                    if value is None:
+                        continue
+
+                    # javascript object keys are always strings
+                    value = str(value)
+
+                    field_summary[value] += 1
+
+                count_responses = sum(field_summary.values())
+                count_missing_responses = total_responses - count_responses
+
+                summary[field.slug] = SelectFieldSummary(
+                    countResponses=count_responses,
+                    countMissingResponses=count_missing_responses,
+                    summary=dict(field_summary),
+                )
+
             case FieldType.SINGLE_LINE_TEXT | FieldType.MULTI_LINE_TEXT:
                 field_summary = []
 
@@ -78,7 +109,6 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 summary[field.slug] = TextFieldSummary(
                     countResponses=count_responses,
                     countMissingResponses=count_missing_responses,
-                    type=field.type,
                     summary=field_summary,
                 )
 
@@ -87,7 +117,6 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 count_missing_responses = total_responses - count_responses
 
                 summary[field.slug] = SingleCheckboxSummary(
-                    type=field.type,
                     countResponses=count_responses,
                     countMissingResponses=count_missing_responses,
                 )
@@ -111,7 +140,6 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 count_missing_responses = total_responses - count_responses
 
                 summary[field.slug] = SelectFieldSummary(
-                    type=field.type,
                     summary=dict(field_summary),
                     countResponses=count_responses,
                     countMissingResponses=count_missing_responses,
@@ -139,7 +167,6 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 summary[field.slug] = SelectFieldSummary(
                     countResponses=count_responses,
                     countMissingResponses=count_missing_responses,
-                    type=field.type,
                     summary=dict(field_summary),
                 )
 
@@ -170,7 +197,6 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 summary[field.slug] = MatrixFieldSummary(
                     countResponses=count_responses,
                     countMissingResponses=count_missing_responses,
-                    type=field.type,
                     summary=field_summary,
                 )
 

@@ -372,6 +372,11 @@ def test_summarize_responses():
             slug="singleLineText",
         ),
         Field(
+            type=FieldType.SINGLE_LINE_TEXT,
+            htmlType="number",
+            slug="numberField",
+        ),
+        Field(
             type=FieldType.DIVIDER,
             slug="dividerShouldNotBePresentInSummary",
         ),
@@ -405,6 +410,7 @@ def test_summarize_responses():
     responses = [
         {
             "singleLineText": "Hello world",
+            "numberField": 5,
             "singleSelect": "choice1",
             "multiSelect": ["choice1", "choice3"],
             "radioMatrix": {
@@ -414,6 +420,7 @@ def test_summarize_responses():
         },
         {
             "singleLineText": "Hello world",
+            "numberField": 6,
             "singleSelect": "choice2",
             "multiSelect": [],
             "radioMatrix": {
@@ -438,25 +445,26 @@ def test_summarize_responses():
         "singleLineText": TextFieldSummary(
             countResponses=2,
             countMissingResponses=1,
-            type=FieldType.SINGLE_LINE_TEXT,
             summary=["Hello world", "Hello world"],
+        ),
+        "numberField": SelectFieldSummary(
+            countResponses=2,
+            countMissingResponses=1,
+            summary={"5": 1, "6": 1},
         ),
         "singleSelect": SelectFieldSummary(
             countResponses=3,
             countMissingResponses=0,
-            type=FieldType.SINGLE_SELECT,
             summary={"choice1": 1, "choice2": 1, "choice3": 0, "choice666": 1},
         ),
         "multiSelect": SelectFieldSummary(
             countResponses=2,
             countMissingResponses=1,
-            type=FieldType.MULTI_SELECT,
             summary={"choice1": 1, "choice2": 0, "choice3": 1, "choice666": 1},
         ),
         "radioMatrix": MatrixFieldSummary(
             countResponses=3,
             countMissingResponses=0,
-            type=FieldType.RADIO_MATRIX,
             summary={
                 "foo": {"choice1": 1, "choice2": 1, "choice3": 0, "choice666": 1},
                 "bar": {"choice1": 0, "choice2": 2, "choice3": 0},

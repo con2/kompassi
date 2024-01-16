@@ -164,13 +164,6 @@ function FieldSummaryComponent({
   field,
   fieldSummary,
 }: FieldSummaryComponentProps) {
-  if (field.type !== fieldSummary.type) {
-    // This shouldn't happen
-    throw new Error(
-      `Field type mismatch: ${field.type} !== ${fieldSummary.type}`,
-    );
-  }
-
   const t = translations.SurveyResponse;
 
   let choices: Choice[] = [];
@@ -179,6 +172,15 @@ function FieldSummaryComponent({
   const { countResponses, countMissingResponses } = fieldSummary;
 
   switch (field.type) {
+    case "SingleLineText":
+      if (field.htmlType === "number" && fieldSummary.type == "Select") {
+        choices = Object.keys(fieldSummary.summary).map((key) => ({
+          slug: key,
+          title: key,
+        }));
+      }
+      break;
+
     case "SingleCheckbox":
       choices = [
         {
@@ -205,8 +207,7 @@ function FieldSummaryComponent({
 
   switch (fieldSummary.type) {
     // TODO handle htmlType="number"
-    case "SingleLineText":
-    case "MultiLineText":
+    case "Text":
       // TODO fix padding
       return (
         <TextFieldSummaryComponent
@@ -218,7 +219,7 @@ function FieldSummaryComponent({
     case "SingleCheckbox":
       const singleCheckboxFieldSummary: SelectFieldSummary = {
         ...fieldSummary,
-        type: "SingleSelect",
+        type: "Select",
         summary: {
           checked: fieldSummary.countResponses,
           unchecked: fieldSummary.countMissingResponses,
@@ -234,15 +235,7 @@ function FieldSummaryComponent({
         />
       );
 
-    case "SingleSelect":
-      return (
-        <SelectFieldSummaryComponent
-          translations={translations}
-          choices={choices}
-          fieldSummary={fieldSummary}
-        />
-      );
-    case "MultiSelect":
+    case "Select":
       return (
         <SelectFieldSummaryComponent
           translations={translations}
@@ -251,7 +244,7 @@ function FieldSummaryComponent({
         />
       );
 
-    case "RadioMatrix":
+    case "Matrix":
       const countTotalResponses = countResponses + countMissingResponses;
       return questions.map((question) => {
         const questionSummary = fieldSummary.summary[question.slug];
@@ -265,7 +258,7 @@ function FieldSummaryComponent({
         const matrixFieldSummary: SelectFieldSummary = {
           countResponses: countQuestionResponses,
           countMissingResponses: countQuestionMissingResponses,
-          type: "SingleSelect",
+          type: "Select",
           summary: fieldSummary.summary[question.slug],
         };
 
