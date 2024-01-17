@@ -1,10 +1,9 @@
 import logging
 
+from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from localized_fields.fields import LocalizedCharField
-from localized_fields.models import LocalizedModel
 
 from core.models import ContactEmailMixin, EventMetaBase, contact_email_validator
 
@@ -13,7 +12,7 @@ from .consts import TICKETS_VIEW_VERSION_CHOICES
 logger = logging.getLogger("kompassi")
 
 
-class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
+class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
     due_days = models.IntegerField(
         verbose_name=_("Payment due (days)"),
         default=14,
@@ -134,13 +133,7 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
         related_name="as_accommodation_access_group_for",
     )
 
-    terms_and_conditions_url = LocalizedCharField(
-        blank=True,
-        default=dict,
-        max_length=1023,
-        verbose_name=_("Terms and conditions URL"),
-        help_text=_("If set, customers will be required to indicate acceptance to finish order."),
-    )
+    terms_and_conditions_url = HStoreField(blank=True, default=dict)
 
     max_count_per_product = models.SmallIntegerField(blank=True, default=99)
 

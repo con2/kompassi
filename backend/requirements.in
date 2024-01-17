@@ -13,9 +13,7 @@ django-crispy-forms
 django-environ
 django-ipware
 django-localflavor
-django-localized-fields
 django-oauth-toolkit
-django-postgres-extra
 django-redis
 django-storages
 Django>5
@@ -36,7 +34,6 @@ pydantic
 pypugjs
 pytest-django
 python-dateutil
-python-memcached
 PyYAML
 regex
 reportlab

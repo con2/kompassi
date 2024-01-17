@@ -44,7 +44,7 @@ DATABASES = {
         "OPTIONS": {
             "sslmode": env("POSTGRES_SSLMODE", default="allow"),
         },
-        "ENGINE": "psqlextra.backend",
+        "ENGINE": "django.db.backends.postgresql",
     },
 }
 
@@ -162,8 +162,6 @@ INSTALLED_APPS = (
     "django.contrib.postgres",
     "django.contrib.humanize",
     # 3rd party apps
-    "psqlextra",
-    "localized_fields",
     "pypugjs.ext.django",
     "crispy_forms",
     "crispy_bootstrap3",

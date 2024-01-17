@@ -10,6 +10,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
+from core.utils.locale_utils import get_message_in_language
 from program_v2.models.dimension import Dimension
 
 from .field import Field
@@ -76,7 +77,7 @@ class Form(models.Model):
                 field["choices"] = [
                     dict(
                         slug=value.slug,
-                        title=value.title.translate(self.language),
+                        title=get_message_in_language(value.title, self.language),
                     )
                     for value in dimension.values.all()
                 ]

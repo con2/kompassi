@@ -76,7 +76,7 @@ To deploy in a K8s cluster:
     kubectl create namespace kompassi
     emrichen kubernetes/template.in.yaml | kubectl apply -n kompassi -f -
 
-For production, you may want to use an external PostgreSQL (and maybe memcached and RabbitMQ).
+For production, you may want to use an external PostgreSQL and Redis.
 
 ## Conventions
 

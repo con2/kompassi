@@ -1,17 +1,12 @@
 import logging
 import typing
 
+from django.contrib.postgres.fields import HStoreField
 from django.db import models
-from localized_fields.fields import LocalizedCharField
-from localized_fields.models import LocalizedModel
 
 from core.utils import log_delete, log_get_or_create, validate_slug
 
-from ..consts import (
-    CATEGORY_DIMENSION_TITLE_LOCALIZED,
-    ROOM_DIMENSION_TITLE_LOCALIZED,
-    TAG_DIMENSION_TITLE_LOCALIZED,
-)
+from ..consts import CATEGORY_DIMENSION_TITLE_LOCALIZED, ROOM_DIMENSION_TITLE_LOCALIZED, TAG_DIMENSION_TITLE_LOCALIZED
 
 if typing.TYPE_CHECKING:
     from core.models import Event
@@ -20,10 +15,10 @@ if typing.TYPE_CHECKING:
 logger = logging.getLogger("kompassi")
 
 
-class Dimension(LocalizedModel):
+class Dimension(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="dimensions")
     slug = models.CharField(max_length=255, validators=[validate_slug])
-    title = LocalizedCharField(max_length=1023)
+    title = HStoreField(blank=True, default=dict)
     color = models.CharField(max_length=63, blank=True, default="")
     icon = models.FileField(upload_to="program_v2/dimension_icons", blank=True)
 
@@ -79,10 +74,10 @@ class Dimension(LocalizedModel):
         return category_dimension, room_dimension, tag_dimension
 
 
-class DimensionValue(LocalizedModel):
+class DimensionValue(models.Model):
     dimension = models.ForeignKey(Dimension, on_delete=models.CASCADE, related_name="values")
     slug = models.CharField(max_length=255, validators=[validate_slug])
-    title = LocalizedCharField(max_length=1023)
+    title = HStoreField(blank=True, default=dict)
     override_color = models.CharField(max_length=63, blank=True, default="")
     override_icon = models.FileField(upload_to="program_v2/dimension_icons", blank=True)
 

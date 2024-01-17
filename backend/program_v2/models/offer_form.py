@@ -1,23 +1,17 @@
 from django.conf import settings
+from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from localized_fields.fields import LocalizedTextField
-from localized_fields.models import LocalizedModel
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
 from forms.models.form import Form
 
 
-class OfferForm(LocalizedModel):
+class OfferForm(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="program_offer_forms")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
-    short_description = LocalizedTextField(
-        blank=True,
-        default=dict,
-        verbose_name=_("short description"),
-        help_text=_("Visible on the page that offers different kinds of forms."),
-    )
+    short_description = HStoreField(blank=True, default=dict)
 
     languages = models.ManyToManyField(
         "forms.Form",

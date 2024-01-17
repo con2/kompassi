@@ -5,14 +5,9 @@ from django.core import validators
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import horizontal_form_helper, indented_without_label, initialize_form
+from core.utils.locale_utils import get_message_in_language
 
-from .models import (
-    AccommodationInformation,
-    Customer,
-    Order,
-    OrderProduct,
-    Product,
-)
+from .models import AccommodationInformation, Customer, Order, OrderProduct, Product
 
 
 class NullForm(forms.Form):
@@ -139,7 +134,7 @@ class CustomerForm(forms.ModelForm):
             "email",
         ]
 
-        terms_and_conditions_url = meta.terms_and_conditions_url.translate()
+        terms_and_conditions_url = get_message_in_language(meta.terms_and_conditions_url)
         if terms_and_conditions_url:
             layout_fields.append(
                 "accept_terms_and_conditions",

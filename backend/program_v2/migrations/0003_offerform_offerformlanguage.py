@@ -2,9 +2,7 @@
 
 import django.core.validators
 import django.db.models.deletion
-import localized_fields.fields.text_field
-import localized_fields.mixins
-import psqlextra.manager.manager
+from django.contrib.postgres.fields import HStoreField
 from django.db import migrations, models
 
 
@@ -36,13 +34,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "short_description",
-                    localized_fields.fields.text_field.LocalizedTextField(
-                        blank=True,
-                        default=dict,
-                        help_text="Visible on the page that offers different kinds of forms.",
-                        required=[],
-                        verbose_name="short description",
-                    ),
+                    HStoreField(blank=True),
                 ),
                 (
                     "event",
@@ -54,10 +46,6 @@ class Migration(migrations.Migration):
             options={
                 "unique_together": {("event", "slug")},
             },
-            bases=(localized_fields.mixins.AtomicSlugRetryMixin, models.Model),
-            managers=[
-                ("objects", psqlextra.manager.manager.PostgresManager()),
-            ],
         ),
         migrations.CreateModel(
             name="OfferFormLanguage",

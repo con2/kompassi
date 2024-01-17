@@ -2,9 +2,7 @@
 
 import django.core.validators
 import django.db.models.deletion
-import localized_fields.fields.char_field
-import localized_fields.mixins
-import psqlextra.manager.manager
+from django.contrib.postgres.fields import HStoreField
 from django.db import migrations, models
 
 import core.models.group_management_mixin
@@ -35,7 +33,7 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ("title", localized_fields.fields.char_field.LocalizedCharField(max_length=1023, required=["fi"])),
+                ("title", HStoreField(blank=True)),
                 ("color", models.CharField(blank=True, default="", max_length=63)),
                 ("icon", models.FileField(blank=True, upload_to="program_v2/dimension_icons")),
                 (
@@ -48,10 +46,6 @@ class Migration(migrations.Migration):
             options={
                 "unique_together": {("event", "slug")},
             },
-            bases=(localized_fields.mixins.AtomicSlugRetryMixin, models.Model),
-            managers=[
-                ("objects", psqlextra.manager.manager.PostgresManager()),
-            ],
         ),
         migrations.CreateModel(
             name="DimensionValue",
@@ -69,7 +63,7 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ("title", localized_fields.fields.char_field.LocalizedCharField(max_length=1023, required=["fi"])),
+                ("title", HStoreField(blank=True)),
                 ("override_color", models.CharField(blank=True, default="", max_length=63)),
                 ("override_icon", models.FileField(blank=True, upload_to="program_v2/dimension_icons")),
                 (
@@ -84,10 +78,6 @@ class Migration(migrations.Migration):
             options={
                 "unique_together": {("dimension", "slug")},
             },
-            bases=(localized_fields.mixins.AtomicSlugRetryMixin, models.Model),
-            managers=[
-                ("objects", psqlextra.manager.manager.PostgresManager()),
-            ],
         ),
         migrations.CreateModel(
             name="Program",

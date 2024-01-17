@@ -10,8 +10,6 @@ aniso8601==9.0.1
     # via graphene
 annotated-types==0.6.0
     # via pydantic
-ansimarkup==2.0.0
-    # via django-postgres-extra
 asgiref==3.7.2
     # via
     #   django
@@ -65,8 +63,6 @@ click-plugins==1.1.1
     # via celery
 click-repl==0.3.0
     # via celery
-colorama==0.4.6
-    # via ansimarkup
 crispy-bootstrap3==2024.1
     # via -r requirements.in
 cryptography==41.0.7
@@ -79,8 +75,6 @@ decorator==5.1.1
     #   ipython
 deprecated==1.2.14
     # via jwcrypto
-deprecation==2.0.7
-    # via django-localized-fields
 django==5.0.1
     # via
     #   -r requirements.in
@@ -90,9 +84,7 @@ django==5.0.1
     #   django-crispy-forms
     #   django-csp
     #   django-localflavor
-    #   django-localized-fields
     #   django-oauth-toolkit
-    #   django-postgres-extra
     #   django-redis
     #   django-storages
     #   graphene-django
@@ -114,14 +106,8 @@ django-ipware==6.0.3
     # via -r requirements.in
 django-localflavor==4.0
     # via -r requirements.in
-django-localized-fields==6.7
-    # via -r requirements.in
 django-oauth-toolkit==2.3.0
     # via -r requirements.in
-django-postgres-extra==2.0.4
-    # via
-    #   -r requirements.in
-    #   django-localized-fields
 django-redis==5.4.0
     # via -r requirements.in
 django-storages==1.14.2
@@ -188,7 +174,6 @@ oauthlib==3.2.2
 packaging==23.2
     # via
     #   black
-    #   deprecation
     #   gunicorn
     #   pytest
 paikkala @ git+https://github.com/kcsry/paikkala@v0.2.0
@@ -252,12 +237,9 @@ python-dateutil==2.8.2
     #   -r requirements.in
     #   botocore
     #   celery
-    #   django-postgres-extra
     #   vobject
 python-ipware==2.0.1
     # via django-ipware
-python-memcached==1.62
-    # via -r requirements.in
 python-stdnum==1.19
     # via django-localflavor
 pyyaml==6.0.1
