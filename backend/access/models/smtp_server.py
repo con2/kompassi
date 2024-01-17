@@ -50,17 +50,10 @@ class SMTPServer(models.Model):
         return self.hostname
 
     def get_smtppasswd_file_contents(self):
-        lines = []
-
-        for smtp_password in self.smtp_passwords.all():
-            lines.append(
-                "{username}:{password_hash}:{full_name}".format(
-                    username=smtp_password.person.user.username,
-                    password_hash=smtp_password.password_hash,
-                    full_name=smtp_password.person.full_name,
-                )
-            )
-
+        lines = [
+            f"{smtp_password.person.user.username}:{smtp_password.password_hash}:{smtp_password.person.full_name}"
+            for smtp_password in self.smtp_passwords.all()
+        ]
         return "\n".join(lines)
 
     def push_smtppasswd_file(self):

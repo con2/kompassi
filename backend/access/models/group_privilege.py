@@ -10,10 +10,7 @@ class GroupPrivilege(models.Model):
     )
 
     def __str__(self):
-        return "{group_name} - {privilege_title}".format(
-            group_name=self.group.name if self.group else None,
-            privilege_title=self.privilege.title if self.privilege else None,
-        )
+        return f"{self.group.name if self.group else None} - {self.privilege.title if self.privilege else None}"
 
     class Meta:
         verbose_name = _("group privilege")

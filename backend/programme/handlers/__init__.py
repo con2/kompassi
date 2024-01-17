@@ -1,1 +1,1 @@
-from . import room, view_room, view, role  # noqa
+from . import role, room, view, view_room

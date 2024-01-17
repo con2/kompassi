@@ -39,7 +39,7 @@ class CreateSurveyResponse(graphene.Mutation):
         if survey.login_required and not created_by:
             raise Exception("Login required")
 
-        if survey.max_responses_per_user:
+        if survey.max_responses_per_user:  # noqa: SIM102
             if survey.responses.filter(created_by=created_by).count() >= survey.max_responses_per_user:
                 raise Exception("Maximum number of responses reached")
 

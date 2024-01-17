@@ -56,9 +56,7 @@ def core_registration_view(request):
             response = do_login(request, user=user, password=None, next=next)
             messages.success(
                 request,
-                "Käyttäjätunnuksesi on luotu. Tervetuloa {kompassiin}!".format(
-                    kompassiin=settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE
-                ),
+                f"Käyttäjätunnuksesi on luotu. Tervetuloa {settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE}!",
             )
             return response
         else:

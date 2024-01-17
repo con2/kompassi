@@ -167,15 +167,14 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase, LocalizedModel):
             return False
 
         # Starting date must be in the past for the ticket sales to be considered open
-        elif self.ticket_sales_starts > t:
+        if self.ticket_sales_starts > t:
             return False
 
         # If there is an ending date, it must not have been passed yet
-        elif self.ticket_sales_ends:
+        if self.ticket_sales_ends:
             return t <= self.ticket_sales_ends
 
-        else:
-            return True
+        return True
 
     @classmethod
     def get_or_create_dummy(cls):

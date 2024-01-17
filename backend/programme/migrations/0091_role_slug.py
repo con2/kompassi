@@ -5,9 +5,7 @@ from core.utils import slugify
 
 
 def populate_slug(apps, schema_editor):
-    role = apps.get_model("programme", "Role")
-
-    for role in role.objects.all():
+    for role in apps.get_model("programme", "Role").objects.all():
         role.slug = slugify(role.title)
         role.save()
 

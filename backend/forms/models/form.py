@@ -49,7 +49,7 @@ class Form(models.Model):
 
     fields = models.JSONField()
 
-    responses: models.QuerySet["Response"]
+    responses: models.QuerySet[Response]
 
     class Meta:
         unique_together = [("event", "slug")]

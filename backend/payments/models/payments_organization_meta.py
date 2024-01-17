@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
 
 from django.db import models
@@ -31,7 +31,7 @@ class PaymentsOrganizationMeta(models.Model):
 
     def get_checkout_params(self, method="POST", t=None):
         if t is None:
-            t = datetime.now(timezone.utc)
+            t = datetime.now(UTC)
 
         return {
             "checkout-account": self.checkout_merchant,

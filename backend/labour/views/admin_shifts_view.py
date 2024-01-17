@@ -13,7 +13,8 @@ HTML_TEMPLATES = dict(
     html="labour_admin_shifts_print.pug",
 )
 
-EXPORT_FORMATS = EXPORT_FORMATS + [
+EXPORT_FORMATS = [
+    *EXPORT_FORMATS,
     ExportFormat("Tulostettava versio", "html", "html"),
 ]
 

@@ -1,6 +1,7 @@
 import logging
+from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Callable, Literal, Protocol
+from typing import TYPE_CHECKING, Literal, Protocol
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -21,9 +22,9 @@ def get_default_claims(request, **overrides: str):
     claims = {}
 
     # from core.middleware.EventOrganizationMiddleware
-    if event := getattr(request, "event"):
+    if event := request.event:
         claims["event"] = event.slug
-    if organization := getattr(request, "organization"):
+    if organization := request.organization:
         claims["organization"] = organization.slug
 
     # from Django router

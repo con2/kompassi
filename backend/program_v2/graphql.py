@@ -125,8 +125,10 @@ class ProgramV2EventMetaType(DjangoObjectType):
     def resolve_programs(
         meta: ProgramV2EventMeta,
         info,
-        filters: list[DimensionFilterInput] = [],
+        filters: list[DimensionFilterInput] | None = None,
     ):
+        if filters is None:
+            filters = []
         queryset = Program.objects.filter(event=meta.event)
 
         if filters:

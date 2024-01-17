@@ -121,7 +121,7 @@ class CallbackView(View):
         # Update desuprofile username on record
         # This field was added later, and Desuprofile usernames might change by admin action.
         if connection.desuprofile_username != desuprofile.username:
-            logger.warn(
+            logger.warning(
                 "Desuprofile %d changed username from %s to %s",
                 desuprofile.id,
                 connection.desuprofile_username,

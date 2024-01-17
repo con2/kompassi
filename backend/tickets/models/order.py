@@ -369,7 +369,7 @@ class Order(models.Model):
 
         for op in self.order_product_set.filter(count__gt=0):
             if op.product.notify_email:
-                bcc.append(op.product.notify_email)
+                bcc.append(op.product.notify_email)  # noqa: PERF401
 
         attachments: list[tuple[str, bytes, str]] = []  # filename, content, mimetype
         language = self.language if self.language in ["fi", "en"] else "fi"
@@ -465,8 +465,5 @@ class Order(models.Model):
 
         with connection.cursor() as cursor:
             cursor.execute(ArrivalsRow.QUERY, [event_slug])
-            results = [ArrivalsRow(*row) for row in cursor.fetchall()]
-
-        # TODO backfill missing hours
-
-        return results
+            # TODO backfill missing hours
+            return [ArrivalsRow(*row) for row in cursor.fetchall()]

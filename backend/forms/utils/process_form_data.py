@@ -143,7 +143,7 @@ class RadioMatrixFieldProcessor(FieldProcessor):
         if not all(value in valid_choices for value in values.values()):
             warnings.append(FieldWarning.INVALID_CHOICE)
 
-        if not all(key in questions for key in values.keys()):
+        if not all(key in questions for key in values):
             warnings.append(FieldWarning.INVALID_CHOICE)
 
         return warnings

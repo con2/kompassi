@@ -39,7 +39,8 @@ def intra_admin_menu_items(request, event):
             may_be_active=not any(item.is_active for item in other_menu_items),
             notifications=len(meta.unassigned_organizers),
         ),
-    ] + other_menu_items
+        *other_menu_items,
+    ]
 
 
 def intra_organizer_menu_items(request, event, is_intra_admin=False):

@@ -27,7 +27,7 @@ def payments_checkout_success_view(request, payment):
             ),
         )
     else:
-        logger.warn(
+        logger.warning(
             "Success callback called with non-successful status %s. This should not happen idk?", payment.status
         )
         messages.error(request, _("The payment was not completed. Please try again."))

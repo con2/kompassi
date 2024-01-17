@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
@@ -14,7 +12,7 @@ from ..models import Form
 @default_cbac_required
 def forms_excel_export_view(
     request: HttpRequest,
-    event_slug: Optional[str],
+    event_slug: str | None,
     form_slug: str,
 ):
     timestamp = now().strftime("%Y%m%d%H%M%S")

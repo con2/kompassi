@@ -128,11 +128,7 @@ class Membership(models.Model, CsvExportMixin):
         return []
 
     def to_html_print(self):
-        return "{surname}, {official_first_names}, {muncipality}".format(
-            surname=self.person.surname,
-            official_first_names=self.person.official_first_names,
-            muncipality=self.person.muncipality,
-        )
+        return f"{self.person.surname}, {self.person.official_first_names}, {self.person.muncipality}"
 
     def __str__(self):
         return "{organization}/{person}".format(
@@ -170,7 +166,7 @@ class Membership(models.Model, CsvExportMixin):
         previous_membership = None
         current_membership = None
 
-        for next_signup in memberships + [None]:
+        for next_signup in (*memberships, None):
             if current_membership and current_membership.pk == self.pk:
                 return previous_membership, next_signup
 
@@ -295,10 +291,7 @@ class Term(models.Model):
         elif self.membership_fee_cents == 0:
             return f"Ei jäsenmaksua kaudella {self.title}."
         else:
-            return "{money} (voimassa {end_date} asti).".format(
-                money=format_price(self.membership_fee_cents),
-                end_date=format_date(self.end_date),
-            )
+            return f"{format_price(self.membership_fee_cents)} (voimassa {format_date(self.end_date)} asti)."
 
     def save(self, *args, **kwargs):
         if self.start_date and not self.title:
@@ -430,8 +423,7 @@ class MembershipFeePayment(models.Model):
     admin_get_formatted_amount.admin_order_field = "amount_cents"
 
     def save(self, *args, **kwargs):
-        if self.term and self.member:
-            if not self.reference_number:
-                self.reference_number = self.term.get_reference_number_for_member(self.member)
+        if self.term and self.member and not self.reference_number:
+            self.reference_number = self.term.get_reference_number_for_member(self.member)
 
         return super().save(*args, **kwargs)

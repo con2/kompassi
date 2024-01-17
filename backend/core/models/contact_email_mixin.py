@@ -12,13 +12,13 @@ contact_email_validator = RegexValidator(CONTACT_EMAIL_RE)
 class ContactEmailMixin:
     def match_contact_email(self):
         if not self.contact_email:
-            logger.warn("%s for %s has no contact_email", self.__class__.__name__, self.event)
+            logger.warning("%s for %s has no contact_email", self.__class__.__name__, self.event)
             return None
 
         match = CONTACT_EMAIL_RE.match(self.contact_email)
 
         if not match:
-            logger.warn(
+            logger.warning(
                 "Invalid contact_email in %s for %s: %s",
                 self.__class__.__name__,
                 self.event,

@@ -23,7 +23,7 @@ def slugify(ustr):
     ustr = "".join(SLUGIFY_CHAR_MAP.get(c, c) for c in ustr)
     ustr = SLUGIFY_FORBANNAD_RE.sub("", ustr)
     ustr = SLUGIFY_MULTIDASH_RE.sub("-", ustr)
-    return ustr
+    return ustr  # noqa: RET504
 
 
 def populate_slug(apps, schema_editor):

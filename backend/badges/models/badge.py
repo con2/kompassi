@@ -1,7 +1,6 @@
 import logging
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from django.conf import settings
 from django.db import connection, models, transaction
@@ -29,7 +28,7 @@ class ArrivalsRow:
 
 
 class Badge(models.Model, CsvExportMixin):
-    person_id: Optional[int]
+    person_id: int | None
     person = models.ForeignKey(
         "core.Person",
         on_delete=models.CASCADE,
@@ -360,19 +359,15 @@ class Badge(models.Model, CsvExportMixin):
 
     def admin_get_full_name(self):
         if self.nick:
-            return '{self.first_name} "{self.nick}" {self.surname}'.format(self=self)
+            return f'{self.first_name} "{self.nick}" {self.surname}'
         else:
-            return "{self.first_name} {self.surname}".format(self=self)
+            return f"{self.first_name} {self.surname}"
 
     admin_get_full_name.short_description = _("Name")
     admin_get_full_name.admin_order_field = ("surname", "first_name", "nick")
 
     def __str__(self):
-        return "{person_name} ({personnel_class_name}, {event_name})".format(
-            person_name=self.admin_get_full_name(),
-            personnel_class_name=self.personnel_class_name,
-            event_name=self.event_name,
-        )
+        return f"{self.admin_get_full_name()} ({self.personnel_class_name}, {self.event_name})"
 
     @staticmethod
     def get_arrivals_by_hour(event: Event | str):
@@ -380,8 +375,5 @@ class Badge(models.Model, CsvExportMixin):
 
         with connection.cursor() as cursor:
             cursor.execute(ArrivalsRow.QUERY, [event_slug])
-            results = [ArrivalsRow(*row) for row in cursor.fetchall()]
-
-        # TODO backfill missing hours
-
-        return results
+            # TODO backfill missing hours
+            return [ArrivalsRow(*row) for row in cursor.fetchall()]

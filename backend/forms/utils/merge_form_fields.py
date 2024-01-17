@@ -8,7 +8,7 @@ in any particular order.
 
 from collections.abc import Iterable, Sequence
 from functools import reduce
-from typing import Optional, Protocol, TypeVar
+from typing import Protocol, TypeVar
 
 from ..models.field import Field
 from ..models.form import Form
@@ -22,9 +22,9 @@ T = TypeVar("T", bound=HasSlug)
 
 
 def _merge_choices(
-    choices: Optional[Sequence[T]],
-    other_choices: Optional[Sequence[T]],
-) -> Optional[list[T]]:
+    choices: Sequence[T] | None,
+    other_choices: Sequence[T] | None,
+) -> list[T] | None:
     if not choices:
         return list(other_choices) if other_choices else None
     if not other_choices:

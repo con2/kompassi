@@ -37,49 +37,48 @@ def admin_mail_editor_view(request, vars, event, message_id=None):
 
             return redirect("programme:admin_mail_view", event.slug)
 
-        else:
-            if form.is_valid():
-                message = form.save(commit=False)
+        if form.is_valid():
+            message = form.save(commit=False)
 
-                if action == "save-send":
-                    message.save()
-                    message.send()
-                    messages.success(
-                        request,
-                        "Viesti lähetettiin. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.",
-                    )
+            if action == "save-send":
+                message.save()
+                message.send()
+                messages.success(
+                    request,
+                    "Viesti lähetettiin. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.",
+                )
 
-                elif action == "save-expire":
-                    message.save()
-                    message.expire()
-                    messages.success(
-                        request, "Viesti merkittiin vanhentuneeksi. Sitä ei lähetetä enää uusille vastaanottajille."
-                    )
+            elif action == "save-expire":
+                message.save()
+                message.expire()
+                messages.success(
+                    request, "Viesti merkittiin vanhentuneeksi. Sitä ei lähetetä enää uusille vastaanottajille."
+                )
 
-                elif action == "save-unexpire":
-                    message.save()
-                    message.unexpire()
-                    messages.success(
-                        request,
-                        "Viesti otettiin uudelleen käyttöön. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.",
-                    )
+            elif action == "save-unexpire":
+                message.save()
+                message.unexpire()
+                messages.success(
+                    request,
+                    "Viesti otettiin uudelleen käyttöön. Se lähetetään automaattisesti myös kaikille uusille vastaanottajille.",
+                )
 
-                elif action == "save-return":
-                    message.save()
-                    messages.success(request, "Muutokset viestiin tallennettiin.")
-                    return redirect("programme:admin_mail_view", event.slug)
+            elif action == "save-return":
+                message.save()
+                messages.success(request, "Muutokset viestiin tallennettiin.")
+                return redirect("programme:admin_mail_view", event.slug)
 
-                elif action == "save-edit":
-                    message.save()
-                    messages.success(request, "Muutokset viestiin tallennettiin.")
-
-                else:
-                    messages.error(request, "Tuntematon toiminto.")
-
-                return redirect("programme:admin_mail_editor_view", event.slug, message.pk)
+            elif action == "save-edit":
+                message.save()
+                messages.success(request, "Muutokset viestiin tallennettiin.")
 
             else:
-                messages.error(request, "Ole hyvä ja tarkasta lomake.")
+                messages.error(request, "Tuntematon toiminto.")
+
+            return redirect("programme:admin_mail_editor_view", event.slug, message.pk)
+
+        else:
+            messages.error(request, "Ole hyvä ja tarkasta lomake.")
 
     vars.update(
         message=message,

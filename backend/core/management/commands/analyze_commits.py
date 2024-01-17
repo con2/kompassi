@@ -1,3 +1,4 @@
+# ruff: noqa: B020
 import os
 import re
 import subprocess

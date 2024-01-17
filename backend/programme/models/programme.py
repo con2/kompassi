@@ -1594,9 +1594,7 @@ class Programme(models.Model, CsvExportMixin):
                 ropecon2023_celebratory_year=self.ropecon2023_celebratory_year,
                 styles=self.ropecon_styles,
                 revolving_door=self.is_revolving_door if self.category.slug == "rpg" else None,
-                short_blurb=self.three_word_description
-                if self.category.slug == "rpg" or self.category.slug == "larp"
-                else None,
+                short_blurb=self.three_word_description if self.category.slug in ("rpg", "larp") else None,
                 ropecon2023_accessibility_cant_use_mic=self.ropecon2023_accessibility_cant_use_mic,
                 ropecon2021_accessibility_loud_sounds=self.ropecon2021_accessibility_loud_sounds,
                 ropecon2021_accessibility_flashing_lights=self.ropecon2021_accessibility_flashing_lights,
@@ -1669,7 +1667,7 @@ class Programme(models.Model, CsvExportMixin):
         ]:
             for genre in possible_genres:
                 if getattr(self, f"{prefix}_genre_{genre}"):
-                    found_genres.append(genre)
+                    found_genres.append(genre)  # noqa: PERF401
 
         return found_genres
 
@@ -1687,7 +1685,7 @@ class Programme(models.Model, CsvExportMixin):
             "combat_driven",
         ]:
             if getattr(self, "ropecon2018_style_" + style):
-                styles.append(style)
+                styles.append(style)  # noqa: PERF401
 
         return styles
 
@@ -1713,7 +1711,9 @@ class Programme(models.Model, CsvExportMixin):
 
         return super().save(*args, **kwargs)
 
-    def apply_state(self, deleted_programme_roles=[]):
+    def apply_state(self, deleted_programme_roles=None):
+        if deleted_programme_roles is None:
+            deleted_programme_roles = []
         self.apply_state_sync(deleted_programme_roles)
         self.apply_state_async()
 
@@ -1815,7 +1815,9 @@ class Programme(models.Model, CsvExportMixin):
         for person in self.organizers.all():
             Message.send_messages(self.event, "programme", person)
 
-    def apply_state_create_badges(self, deleted_programme_roles=[]):
+    def apply_state_create_badges(self, deleted_programme_roles=None):
+        if deleted_programme_roles is None:
+            deleted_programme_roles = []
         if "badges" not in settings.INSTALLED_APPS:
             return
 

@@ -28,12 +28,7 @@ class GroupManagementMixin:
 
         ctype = ContentType.objects.get_for_model(cls)
 
-        return "{installation_slug}-{host_slug}-{app_label}-{suffix}".format(
-            installation_slug=settings.KOMPASSI_INSTALLATION_SLUG,
-            host_slug=host.slug,
-            app_label=ctype.app_label,
-            suffix=suffix,
-        )
+        return f"{settings.KOMPASSI_INSTALLATION_SLUG}-{host.slug}-{ctype.app_label}-{suffix}"
 
     @classmethod
     def get_or_create_groups(cls, host, suffixes):

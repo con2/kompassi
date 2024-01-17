@@ -60,7 +60,7 @@ def qualifications_related():
             "labour:person_qualify_view",
             "labour:person_disqualify_view",
         ]:
-            result.append(url(view_name, qual.slug))
+            result.append(url(view_name, qual.slug))  # noqa: PERF401
 
     return result
 
@@ -282,7 +282,7 @@ def profile_signups_view(request):
 def confirm_view(request, event):
     signup = get_object_or_404(Signup, event=event, person=request.user.person)
 
-    if not signup.state == "confirmation":
+    if signup.state != "confirmation":
         messages.error(request, _("Your application does not currently need to be confirmed."))
         return redirect("profile_signups_view")
 

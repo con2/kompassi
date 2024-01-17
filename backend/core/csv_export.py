@@ -34,15 +34,10 @@ CSV_EXPORT_FORMATS = dict(
 class CsvExportMixin:
     @classmethod
     def get_csv_fields(cls, event):
-        fields = []
-
-        for field in cls._meta.fields:
-            fields.append((cls, field))
-
-        for field in cls._meta.many_to_many:
-            fields.append((cls, field))
-
-        return fields
+        return [
+            *((cls, field) for field in cls._meta.fields),
+            *((cls, field) for field in cls._meta.many_to_many),
+        ]
 
     def get_csv_related(self):
         return dict()
@@ -54,7 +49,7 @@ class CsvExportMixin:
 
         header_row = []
 
-        for model, field in fields:
+        for _model, field in fields:
             if isinstance(field, str):
                 field_name = field
                 field_type = None
@@ -161,7 +156,7 @@ def export_csv(event, model, model_instances, output_file, m2m_mode="separate_co
     writer.writerow(model.get_csv_header(event, fields, m2m_mode))
 
     for model_instance in model_instances:
-        if isinstance(model_instance, (str, int)):
+        if isinstance(model_instance, str | int):
             model_instance = model.objects.get(pk=int(model_instances))
 
         write_row(event, writer, fields, model_instance, m2m_mode)

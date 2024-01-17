@@ -31,10 +31,7 @@ class GrantedPrivilege(models.Model):
         return self.state == "granted" and self.privilege.url
 
     def __str__(self):
-        return "{person_name} - {privilege_title}".format(
-            person_name=self.person.full_name if self.person else None,
-            privilege_title=self.privilege.title if self.privilege else None,
-        )
+        return f"{self.person.full_name if self.person else None} - {self.privilege.title if self.privilege else None}"
 
     class Meta:
         verbose_name = _("granted privilege")

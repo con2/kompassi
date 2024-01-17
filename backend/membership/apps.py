@@ -6,4 +6,4 @@ class MembershipAppConfig(AppConfig):
     verbose_name = "Jäsenrekisteri"
 
     def ready(self):
-        from . import event_log_entry_types  # noqa
+        from . import event_log_entry_types  # noqa: F401

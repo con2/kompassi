@@ -11,7 +11,8 @@ from labour.models.constants import JOB_TITLE_LENGTH
 
 NAME_DISPLAY_STYLE_CHOICES = [
     ("", _("As set by the user themself")),
-] + NAME_DISPLAY_STYLE_CHOICES
+    *NAME_DISPLAY_STYLE_CHOICES,
+]
 
 
 logger = logging.getLogger("kompassi")

@@ -54,7 +54,7 @@ class Participant:
 
     @classmethod
     def from_google_sheets(cls, header_row: list[str], data_row: list[str]):
-        player_data = dict(zip(header_row, data_row))
+        player_data = dict(zip(header_row, data_row, strict=True))
         return cls(
             first_name=player_data["First name"],
             surname=player_data["Last name"],

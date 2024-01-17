@@ -1,3 +1,5 @@
+# TODO: not sure if the current version of Pydantic would allow new-style annotations
+# ruff: noqa: UP007
 from enum import Enum
 from typing import Optional
 

@@ -154,7 +154,7 @@ class Shift(models.Model, CsvExportMixin):
     @property
     def work_hours(self):
         cur_time = self.start_time
-        for i in range(self.hours):
+        for _i in range(self.hours):
             yield cur_time
             cur_time += ONE_HOUR
 

@@ -201,9 +201,7 @@ class Setup:
                 event=self.event,
                 title=link_title,
                 defaults=dict(
-                    url="https://atlasso.tracon.fi/crowd?next=https://confluence.tracon.fi/display/{wiki_space}".format(
-                        wiki_space=wiki_space
-                    ),
+                    url=f"https://atlasso.tracon.fi/crowd?next=https://confluence.tracon.fi/display/{wiki_space}",
                     group=labour_event_meta.get_group(link_group),
                 ),
             )

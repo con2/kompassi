@@ -35,7 +35,7 @@ def admin_shirts_view(request, vars, event):
             continue
 
         num_shirts_by_shirt_type = []
-        for shirt_type_slug, shirt_type_name in shirt_types:
+        for shirt_type_slug, _shirt_type_name in shirt_types:
             signup_extras = SignupExtra.objects.filter(**base_criteria).filter(shirt_size=shirt_size_slug)
 
             if shirt_type_field:

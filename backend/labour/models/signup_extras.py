@@ -81,13 +81,11 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
         from programme.models.programme import PROGRAMME_STATES_ACTIVE
         from programme.models.programme_role import ProgrammeRole
 
-        result = ProgrammeRole.objects.filter(
+        return ProgrammeRole.objects.filter(
             programme__category__event=self.event,
             programme__state__in=PROGRAMME_STATES_ACTIVE,
             person=self.person,
         ).exists()
-
-        return result
 
     @cached_property
     def discord_roles(self):

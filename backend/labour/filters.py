@@ -8,7 +8,7 @@ class SignupStateFilter(Filter):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        for state_slug in SIGNUP_STATE_NAMES.keys():
+        for state_slug in SIGNUP_STATE_NAMES:
             if state_slug != "archived":
                 self._add_state(state_slug)
 

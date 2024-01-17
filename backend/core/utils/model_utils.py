@@ -61,7 +61,7 @@ def get_slugifier(sep: str = "-"):
         ustr = "".join(char_map.get(c, c) for c in ustr)
         ustr = forbannad_re.sub("", ustr)
         ustr = multisep_re.sub(sep, ustr)
-        return ustr
+        return ustr  # noqa: RET504
 
     return _slugify
 
@@ -80,7 +80,7 @@ def get_previous_and_next(queryset, current):
     previous_item = None
     candidate = None
 
-    for next_item in signups + [None]:
+    for next_item in (*signups, None):
         if candidate and candidate.pk == current.pk:
             return previous_item, next_item
 
@@ -98,8 +98,8 @@ def phone_number_validator(value, region=settings.KOMPASSI_PHONENUMBERS_DEFAULT_
 
     try:
         phone_number = phonenumbers.parse(value, region)
-    except phonenumbers.NumberParseException:
-        raise ValidationError(exc)
+    except phonenumbers.NumberParseException as npe:
+        raise ValidationError(exc) from npe
     else:
         if not phonenumbers.is_valid_number(phone_number):
             raise ValidationError(exc)

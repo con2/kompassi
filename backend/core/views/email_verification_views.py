@@ -63,9 +63,11 @@ def remind_email_verification_if_needed(request, next=None):
 
     if person.is_email_verified:
         return
-    elif next and next.startswith("/profile/email/verify"):  # XXX hardcoded url fragment
+
+    if next and next.startswith("/profile/email/verify"):  # XXX hardcoded url fragment
         return
-    elif person.pending_email_verification:
+
+    if person.pending_email_verification:
         messages.warning(
             request,
             "Muistathan vahvistaa sähköpostiosoitteesi! Sinulle on lähetetty vahvistusviesti "

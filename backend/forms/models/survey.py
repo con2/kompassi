@@ -1,5 +1,3 @@
-from typing import Optional
-
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -116,13 +114,13 @@ class Survey(models.Model):
 
         # if a specific language is requested, put it first
         languages = sorted(
-            list(self.languages.all()),
+            self.languages.all(),
             key=lambda form: form.language != base_language,
         )
 
         return merge_fields(languages)
 
-    def get_form(self, requested_language: str) -> Optional[Form]:
+    def get_form(self, requested_language: str) -> Form | None:
         try:
             return self.languages.get(language=requested_language)
         except Form.DoesNotExist:

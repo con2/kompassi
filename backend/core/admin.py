@@ -29,7 +29,7 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 
 def merge_selected_people(modeladmin, request, queryset):
-    if queryset.count() < 2:
+    if queryset.count() < 2:  # noqa: PLR2004
         return
 
     from core.merge_people import find_best_candidate, merge_people
@@ -91,13 +91,13 @@ class EventAdmin(admin.ModelAdmin):
         ),
     )
 
-    def get_readonly_fields(self, request, obj=None):
+    def get_readonly_fields(self, request, obj=None) -> tuple[str]:
         # slug may be edited when creating but not when modifying existing event
         # (breaks urls and kills puppies)
         if obj:
-            return self.readonly_fields + ("slug",)
+            return (*self.readonly_fields, "slug")
 
-        return self.readonly_fields
+        return tuple(self.readonly_fields)
 
 
 # http://stackoverflow.com/a/19932127

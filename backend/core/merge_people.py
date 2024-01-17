@@ -45,7 +45,7 @@ def get_reference_fields(related_model=Person):
 
         for field in meta.get_fields():
             if field.concrete and not field.auto_created and field.related_model is related_model:
-                reference_fields.append((ModelClass, field))
+                reference_fields.append((ModelClass, field))  # noqa: PERF401
 
     return reference_fields
 
@@ -60,7 +60,7 @@ def possible_merges(people):
 
     result = []
 
-    for unused, people_to_merge in key_map.items():
+    for people_to_merge in key_map.values():
         if len(people_to_merge) > 1:
             person_to_spare, people_to_merge = find_best_candidate(people_to_merge)
             result.append((person_to_spare, people_to_merge))
@@ -75,7 +75,7 @@ def find_best_candidate(people_to_merge):
     return person_to_spare, people_to_merge
 
 
-def compare_persons(left, right):
+def compare_persons(left, right) -> int:
     # If only one has .user, it's better
     if left.user is not None and right.user is None:
         return 1
@@ -99,6 +99,7 @@ def compare_persons(left, right):
         return -1
     if right.pk > left.pk:
         return 1
+    return 0
 
 
 @atomic

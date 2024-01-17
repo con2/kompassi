@@ -37,8 +37,8 @@ def birth_date_validator(value):
             raise ValidationError(exc)
         # Following actually also checks that year is >= 1900. Even then, ensure the date can be formatted.
         value.strftime("%Y-%m-%d")
-    except ValueError:
-        raise ValidationError(exc)
+    except ValueError as ve:
+        raise ValidationError(exc) from ve
 
 
 class Person(models.Model):
@@ -181,16 +181,15 @@ class Person(models.Model):
 
     @property
     def name_and_email(self):
-        return "{self.first_name} {self.surname} <{self.email}>".format(self=self)
+        return f"{self.first_name} {self.surname} <{self.email}>"
 
     def get_name_display_style(self, preferred_name_display_style):
         if preferred_name_display_style:
             return preferred_name_display_style
+        elif self.nick:
+            return "firstname_nick_surname"
         else:
-            if self.nick:
-                return "firstname_nick_surname"
-            else:
-                return "firstname_surname"
+            return "firstname_surname"
 
     @property
     def name_display_style(self):
@@ -369,20 +368,20 @@ class Person(models.Model):
         if isinstance(code, str):
             try:
                 code = EmailVerificationToken.objects.get(code=code)
-            except EmailVerificationToken.DoesNotExist:
-                raise EmailVerificationError("invalid_code")
+            except EmailVerificationToken.DoesNotExist as dne:
+                raise EmailVerificationError("invalid_code") from dne
 
         if code:
             # Verify with a single code. The code needs to be checked.
 
             if code.person != self:
                 raise EmailVerificationError("wrong_person")
-            elif code.state != "valid":
+            if code.state != "valid":
                 raise EmailVerificationError("code_not_valid")
-            elif code.email != self.email:
+            if code.email != self.email:
                 raise EmailVerificationError("email_changed")
-            else:
-                code.mark_used()
+
+            code.mark_used()
         else:
             # Forcibly verify, regardless of codes.
             EmailVerificationToken.objects.filter(person=self, state="valid").update(state="revoked")

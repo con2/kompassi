@@ -7,4 +7,4 @@ class TicketsAppConfig(AppConfig):
     verbose_name = _("Ticket sales")
 
     def ready(self):
-        from . import event_log_entry_types  # noqa
+        from . import event_log_entry_types  # noqa: F401

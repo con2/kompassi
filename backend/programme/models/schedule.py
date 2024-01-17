@@ -31,8 +31,8 @@ class OrderingMixin:
                 unused, swappee = get_previous_and_next(queryset, self)
             else:
                 raise AssertionError(f"Invalid direction: {direction}")
-        except self.__class__.DoesNotExist:
-            raise IndexError(f"Cannot go {direction} from here")
+        except self.__class__.DoesNotExist as dne:
+            raise IndexError(f"Cannot go {direction} from here") from dne
 
         if self.order == swappee.order:
             raise ValueError(f"Unable to swap because {self} and {swappee} have same order: {self.order}")
@@ -94,7 +94,7 @@ class ViewMethodsMixin:
                         cur_row.append((None, None))
                 else:
                     if num_programmes > 1:
-                        logger.warn("Room %s has multiple programs starting at %s", room, start_time)
+                        logger.warning("Room %s has multiple programs starting at %s", room, start_time)
 
                         if request is not None and self.event.programme_event_meta.is_user_admin(request.user):
                             messages.warning(

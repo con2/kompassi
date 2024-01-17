@@ -176,18 +176,15 @@ def access_admin_aliases_api(request, domain_name):
     # Personal aliases
     for person in Person.objects.filter(email_aliases__domain=domain).distinct():
         lines.append(f"# {person.full_name}")
-
-        for alias in person.email_aliases.filter(domain=domain):
-            lines.append(f"{alias.account_name}: {person.email}")
-
+        lines.extend(f"{alias.account_name}: {alias.email}" for alias in person.email_aliases.filter(domain=domain))
         lines.append("")
 
     # Technical aliases
     for alias in InternalEmailAlias.objects.filter(domain=domain):
         if alias.normalized_target_emails:
-            lines.append("{alias.account_name}: {alias.normalized_target_emails}".format(alias=alias))
+            lines.append(f"{alias.account_name}: {alias.normalized_target_emails}")
         else:
-            logger.warn("Internal alias %s does not have target emails", alias)
+            logger.warning("Internal alias %s does not have target emails", alias)
 
     return HttpResponse("\n".join(lines), content_type="text/plain; charset=UTF-8")
 

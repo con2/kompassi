@@ -72,7 +72,7 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
         domains = EmailAliasDomain.objects.filter(has_internal_aliases=True)
 
         if not domains.exists():
-            logger.warn("No EmailAliasDomain with has_internal_aliases=True. Not creating internal aliases.")
+            logger.warning("No EmailAliasDomain with has_internal_aliases=True. Not creating internal aliases.")
             return
 
         domain = domains.get()

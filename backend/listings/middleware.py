@@ -8,5 +8,3 @@ class ListingsMiddleware(MiddlewareMixin):
 
         if hostname in settings.KOMPASSI_LISTING_URLCONFS:
             request.urlconf = settings.KOMPASSI_LISTING_URLCONFS[hostname]
-
-        return None

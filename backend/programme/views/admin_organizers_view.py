@@ -13,7 +13,8 @@ from labour.models import PersonnelClass
 from ..helpers import programme_admin_required
 from ..models import AlternativeProgrammeForm, ProgrammeRole, Role
 
-EXPORT_FORMATS = EXPORT_FORMATS + [
+EXPORT_FORMATS = [
+    *EXPORT_FORMATS,
     ExportFormat("Sähköpostiosoitteet", "txt", "txt"),
 ]
 

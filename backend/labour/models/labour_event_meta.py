@@ -140,7 +140,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
 
         groups = super().get_or_create_groups(event, suffixes)
 
-        for jc_or_suffix, group in zip(job_categories_or_suffixes, groups):
+        for jc_or_suffix, group in zip(job_categories_or_suffixes, groups, strict=True):
             if isinstance(jc_or_suffix, JobCategory):
                 verbose_name = jc_or_suffix.name
                 job_category = jc_or_suffix

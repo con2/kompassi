@@ -27,18 +27,20 @@ class PageWizardMiddleware:
     def __call__(self, request):
         return self.get_response(request)
 
-    def process_view(self, request, view_func, view_args, view_kwargs):
+    def _should_clear_page_wizard(self, request) -> bool:
         related = request.session.get("core.utils.page_wizard.related", None)
-
         if related is None:
-            pass
-        elif request.method != "GET":
-            pass
-        elif request.path in related:
-            pass
-        elif any(request.path.startswith(prefix) for prefix in NEVER_BLOW_PAGE_WIZARD_PREFIXES):
-            pass
-        else:
+            return False
+        if request.method != "GET":
+            return False
+        if request.path in related:
+            return False
+        if any(request.path.startswith(prefix) for prefix in NEVER_BLOW_PAGE_WIZARD_PREFIXES):
+            return False
+        return True
+
+    def process_view(self, request, view_func, view_args, view_kwargs):
+        if self._should_clear_page_wizard(request):
             page_wizard_clear(request)
 
 

@@ -1,1 +1,1 @@
-from .feedback_message import FeedbackMessage  # noqa
+from .feedback_message import FeedbackMessage

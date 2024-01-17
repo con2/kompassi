@@ -111,7 +111,7 @@ class Phase:
             # The "Previous" button should work regardless of form validity.
             if action == "prev":
                 # Clear any nastygrams left behind by validate
-                for message in messages.get_messages(request):
+                for _message in messages.get_messages(request):
                     pass
 
                 return self.prev(request, event)
@@ -133,12 +133,14 @@ class Phase:
     def get(self, request, event, form, errors):
         order = get_order(request, event)
 
-        phases = []
-
-        for phase in ALL_PHASES:
-            phases.append(
-                dict(url=url(phase.name, event.slug), friendly_name=phase.friendly_name, current=phase is self)
+        phases = [
+            dict(
+                url=url(phase.name, event.slug),
+                friendly_name=phase.friendly_name,
+                current=phase is self,
             )
+            for phase in ALL_PHASES
+        ]
 
         phase = dict(
             url=url(self.name, event.slug),
@@ -274,7 +276,7 @@ class AccommodationPhase(Phase):
         # If the above step failed, not all forms have cleaned_data.
         if errors:
             messages.error(request, _("Please check the form."))
-            return errors
+        return errors
 
     def make_form(self, request, event):
         order = get_order(request, event)

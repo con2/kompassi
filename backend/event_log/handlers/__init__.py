@@ -1,1 +1,1 @@
-from . import entry  # noqa
+from . import entry

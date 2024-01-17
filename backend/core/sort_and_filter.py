@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from dataclasses import dataclass
-from typing import Optional
 
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -13,7 +12,7 @@ class Definition:
     slug: str
     name: str
     definition: str
-    owner: Optional[str] = None
+    owner: str | None = None
 
     @property
     def qs_add(self):

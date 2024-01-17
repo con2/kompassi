@@ -7,5 +7,7 @@ class FeedbackAppConfig(AppConfig):
     verbose_name = _("feedback")
 
     def ready(self):
-        from . import event_log_entry_types  # noqa
-        from . import handlers  # noqa
+        from . import (
+            event_log_entry_types,  # noqa: F401
+            handlers,  # noqa: F401
+        )

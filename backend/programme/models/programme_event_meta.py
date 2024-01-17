@@ -109,13 +109,14 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         from .alternative_programme_form import AlternativeProgrammeForm
         from .category import Category
 
-        subjects: list[str | Category | AlternativeProgrammeForm] = ["new", "hosts", "live", "rejected"]
-
-        for category in Category.objects.filter(event=self.event):
-            subjects.append(category)
-
-        for form in AlternativeProgrammeForm.objects.filter(event=self.event):
-            subjects.append(form)
+        subjects: list[str | Category | AlternativeProgrammeForm] = [
+            "new",
+            "hosts",
+            "live",
+            "rejected",
+            *(Category.objects.filter(event=self.event)),
+            *(AlternativeProgrammeForm.objects.filter(event=self.event)),
+        ]
 
         return self.get_or_create_groups(self.event, subjects)
 
@@ -130,7 +131,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
 
         groups = super().get_or_create_groups(event, suffixes)
 
-        for subject, group in zip(subjects, groups):
+        for subject, group in zip(subjects, groups, strict=True):
             if isinstance(subject, Category):
                 verbose_name = subject.title
                 category = subject
