@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     "localized_fields",
     "pypugjs.ext.django",
     "crispy_forms",
+    "crispy_bootstrap3",
     "oauth2_provider",
     "bootstrap3",
     "graphene_django",

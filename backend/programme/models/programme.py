@@ -11,12 +11,7 @@ from django.utils.timezone import get_default_timezone, now
 from django.utils.translation import gettext_lazy as _
 
 from core.csv_export import CsvExportMixin
-from core.utils import (
-    NONUNIQUE_SLUG_FIELD_PARAMS,
-    format_datetime,
-    slugify,
-    url,
-)
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, format_datetime, slugify, url
 from core.utils.time_utils import format_interval
 
 logger = logging.getLogger("kompassi")
@@ -1980,5 +1975,5 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name = _("programme")
         verbose_name_plural = _("programmes")
         ordering = ["start_time", "room"]
-        index_together = [("category", "state")]
+        indexes = [models.Index(fields=["category", "state"])]
         # unique_together = [('category', 'slug')]

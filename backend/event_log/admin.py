@@ -17,6 +17,7 @@ ENTRY_READ_ONLY_FIELDS = (
 )
 
 
+@admin.register(Entry)
 class EntryAdmin(admin.ModelAdmin):
     list_display = ("created_at", "entry_type", "message")
     list_filter = (
@@ -34,10 +35,7 @@ class EntryAdmin(admin.ModelAdmin):
         return False
 
 
+@admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ("entry_type", "user", "active")
     raw_id_fields = ("user", "job_category_filter")
-
-
-admin.site.register(Entry, EntryAdmin)
-admin.site.register(Subscription, SubscriptionAdmin)

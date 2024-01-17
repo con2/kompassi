@@ -8,6 +8,7 @@ class DimensionValueInline(admin.TabularInline):
     extra = 0
 
 
+@admin.register(Dimension)
 class DimensionAdmin(admin.ModelAdmin):
     model = Dimension
     inlines = [DimensionValueInline]
@@ -15,11 +16,8 @@ class DimensionAdmin(admin.ModelAdmin):
     list_filter = ("event",)
 
 
+@admin.register(OfferForm)
 class OfferFormAdmin(admin.ModelAdmin):
     model = OfferForm
     list_display = ("event", "slug", "short_description")
     list_filter = ("event",)
-
-
-admin.site.register(Dimension, DimensionAdmin)
-admin.site.register(OfferForm, OfferFormAdmin)

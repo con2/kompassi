@@ -14,8 +14,9 @@ services:
       - .:/usr/src/app
       - test-cache:/usr/src/app/.pytest_cache
     environment:
-      DEBUG: 1
+      DEBUG: "1"
       ALLOWED_HOSTS: '*'
+      PYTHONDEVMODE: "1"
   postgres:
     # image: postgres
     build: ./kompassi/sql/

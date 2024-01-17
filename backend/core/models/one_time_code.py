@@ -103,8 +103,8 @@ class OneTimeCode(models.Model, OneTimeCodeMixin):
 
     class Meta:
         abstract = True
-        index_together = [
-            ("person", "state"),
+        indexes = [
+            models.Index(fields=["person", "state"]),
         ]
 
 
@@ -139,6 +139,6 @@ class OneTimeCodeLite(models.Model, OneTimeCodeMixin):
 
     class Meta:
         abstract = True
-        index_together = [
-            ("email", "state"),
+        indexes = [
+            models.Index(fields=["email", "state"]),
         ]

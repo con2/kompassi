@@ -7,6 +7,7 @@ class InlinePaymentsOrganizationMetaAdmin(admin.StackedInline):
     model = PaymentsOrganizationMeta
 
 
+@admin.register(CheckoutPayment)
 class CheckoutPaymentAdmin(admin.ModelAdmin):
     def has_delete_permission(self, *args, **kwargs):
         return False
@@ -89,6 +90,3 @@ class CheckoutPaymentAdmin(admin.ModelAdmin):
     )
     list_filter = ("event", "status")
     search_fields = ("stamp", "reference", "checkout_reference", "checkout_transaction_id")
-
-
-admin.site.register(CheckoutPayment, CheckoutPaymentAdmin)

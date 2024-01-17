@@ -4,12 +4,6 @@ from django.db.models import JSONField, Q
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 
-TARGET_FKEY_ATTRS = dict(
-    null=True,
-    blank=True,
-    on_delete=models.SET_NULL,
-)
-
 
 class Entry(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
@@ -36,12 +30,42 @@ class Entry(models.Model):
     )
 
     # various target fkeys, sparse
-    event = models.ForeignKey("core.Event", **TARGET_FKEY_ATTRS)
-    person = models.ForeignKey("core.Person", **TARGET_FKEY_ATTRS)
-    organization = models.ForeignKey("core.Organization", **TARGET_FKEY_ATTRS)
-    feedback_message = models.ForeignKey("feedback.FeedbackMessage", **TARGET_FKEY_ATTRS)
-    accommodation_information = models.ForeignKey("tickets.AccommodationInformation", **TARGET_FKEY_ATTRS)
-    limit_group = models.ForeignKey("tickets.LimitGroup", **TARGET_FKEY_ATTRS)
+    event = models.ForeignKey(
+        "core.Event",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    person = models.ForeignKey(
+        "core.Person",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    organization = models.ForeignKey(
+        "core.Organization",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    feedback_message = models.ForeignKey(
+        "feedback.FeedbackMessage",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    accommodation_information = models.ForeignKey(
+        "tickets.AccommodationInformation",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
+    limit_group = models.ForeignKey(
+        "tickets.LimitGroup",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+    )
     search_term = models.CharField(max_length=255, blank=True, default="")
 
     # we should probably have shoved them in a jsonfield in the first place

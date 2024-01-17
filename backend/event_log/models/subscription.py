@@ -108,6 +108,6 @@ class Subscription(models.Model):
     class Meta:
         verbose_name = _("subscription")
         verbose_name_plural = _("subscriptions")
-        index_together = [
-            ("entry_type", "active"),
+        indexes = [
+            models.Index(fields=["entry_type", "active"]),
         ]

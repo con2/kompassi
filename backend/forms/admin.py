@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import Form, Response, Survey
 
 
+@admin.register(Form)
 class FormAdmin(admin.ModelAdmin):
     model = Form
     list_display = ("event", "slug", "title")
@@ -10,6 +11,7 @@ class FormAdmin(admin.ModelAdmin):
     search_fields = ("slug", "title")
 
 
+@admin.register(Response)
 class ResponseAdmin(admin.ModelAdmin):
     model = Response
     list_display = ("created_at", "form", "created_by")
@@ -29,6 +31,7 @@ class SurveyFormInline(admin.TabularInline):
     extra = 1
 
 
+@admin.register(Survey)
 class SurveyAdmin(admin.ModelAdmin):
     model = Survey
     list_display = ("event", "slug", "admin_is_active")
@@ -43,8 +46,3 @@ class SurveyAdmin(admin.ModelAdmin):
         "active_until",
     )
     inlines = (SurveyFormInline,)
-
-
-admin.site.register(Form, FormAdmin)
-admin.site.register(Response, ResponseAdmin)
-admin.site.register(Survey, SurveyAdmin)

@@ -13,7 +13,7 @@ class PersonnelClass(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
     app_label = models.CharField(max_length=63, blank=True, default="labour")
     name = models.CharField(max_length=63)
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
     priority = models.IntegerField(default=0)
     icon_css_class = models.CharField(max_length=63, default="fa-user", blank=True)
     perks_markdown = models.TextField(
@@ -26,15 +26,8 @@ class PersonnelClass(models.Model):
     class Meta:
         verbose_name = _("personnel class")
         verbose_name_plural = _("personnel classes")
-
-        unique_together = [
-            ("event", "slug"),
-        ]
-
-        index_together = [
-            ("event", "app_label"),
-        ]
-
+        unique_together = [("event", "slug")]
+        indexes = [models.Index(fields=["event", "app_label"])]
         ordering = ("event", "priority")
 
     @classmethod

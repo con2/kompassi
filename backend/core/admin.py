@@ -17,6 +17,7 @@ from tickets.admin import InlineTicketsEventMetaAdmin
 from .models import CarouselSlide, Event, Organization, Person, Venue
 
 
+@admin.register(Organization)
 class OrganizationAdmin(admin.ModelAdmin):
     list_display = ("name", "slug", "homepage_url")
     ordering = ("name",)
@@ -28,6 +29,7 @@ class OrganizationAdmin(admin.ModelAdmin):
     )
 
 
+@admin.action(description="Yhdistä valitut henkilöt")
 def merge_selected_people(modeladmin, request, queryset):
     if queryset.count() < 2:  # noqa: PLR2004
         return
@@ -38,9 +40,7 @@ def merge_selected_people(modeladmin, request, queryset):
     merge_people(people_to_merge, into=person_to_spare)
 
 
-merge_selected_people.short_description = "Yhdistä valitut henkilöt"
-
-
+@admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
     fieldsets = [
         ("Basic information", {"fields": [("first_name", "surname"), "nick"]}),
@@ -56,6 +56,7 @@ class PersonAdmin(admin.ModelAdmin):
     actions = [merge_selected_people]
 
 
+@admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
     list_display = ("name", "organization", "venue", "public", "cancelled")
     list_filter = ("organization", "venue", "public", "cancelled")
@@ -134,9 +135,6 @@ class MyGroupAdmin(GroupAdmin):
         return GroupForm
 
 
-admin.site.register(Organization, OrganizationAdmin)
-admin.site.register(Event, EventAdmin)
-admin.site.register(Person, PersonAdmin)
 admin.site.register(Venue)
 admin.site.register(CarouselSlide)
 

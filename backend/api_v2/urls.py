@@ -1,7 +1,6 @@
 from csp.decorators import csp_exempt
 from django.conf import settings
-from django.conf.urls import include
-from django.urls import path, re_path
+from django.urls import include, path, re_path
 from oauth2_provider.views.base import RevokeTokenView, TokenView
 
 from .views import CustomAuthorizationView, EventResource, MyselfResource
@@ -11,8 +10,8 @@ assert "oauth2_provider" in settings.INSTALLED_APPS, "api_v2 requires oauth2_pro
 
 urlpatterns = [
     # overridden to implement email verification check
-    re_path(
-        r"^oidc/authorize/$",
+    path(
+        "oidc/authorize/",
         csp_exempt(CustomAuthorizationView.as_view()),
         name="authorize-kompassi-override",
     ),

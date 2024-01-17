@@ -7,10 +7,8 @@ class InlineEnrollmentEventMetaAdmin(admin.StackedInline):
     model = EnrollmentEventMeta
 
 
+@admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
     model = Enrollment
     list_display = ("event", "person")
     list_filter = ("event",)
-
-
-admin.site.register(Enrollment, EnrollmentAdmin)
