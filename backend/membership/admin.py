@@ -12,6 +12,7 @@ class InlineMembershipOrganizationMetaAdmin(admin.StackedInline):
     model = MembershipOrganizationMeta
 
 
+@admin.register(Membership)
 class MembershipAdmin(admin.ModelAdmin):
     list_display = ("organization", "person")
     list_filter = ("organization",)
@@ -26,12 +27,14 @@ class MembershipAdmin(admin.ModelAdmin):
     ordering = ("organization", "person__surname", "person__official_first_names")
 
 
+@admin.register(Term)
 class TermAdmin(admin.ModelAdmin):
     list_display = ("organization", "title", "start_date", "end_date")
     list_filter = ("organization",)
     ordering = ("organization", "start_date")
 
 
+@admin.register(MembershipFeePayment)
 class MembershipFeePaymentAdmin(admin.ModelAdmin):
     list_display = (
         "admin_get_organization",
@@ -43,8 +46,3 @@ class MembershipFeePaymentAdmin(admin.ModelAdmin):
     )
     list_filter = ("term__organization",)
     ordering = ("term__organization", "member__person__surname", "member__person__official_first_names")
-
-
-admin.site.register(Membership, MembershipAdmin)
-admin.site.register(Term, TermAdmin)
-admin.site.register(MembershipFeePayment, MembershipFeePaymentAdmin)

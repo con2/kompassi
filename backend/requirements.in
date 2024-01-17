@@ -1,17 +1,16 @@
-lippukala @ https://github.com/kcsry/lippukala/archive/fd6f55f499b12062887f6c78ff2c6749df8ba5cc.zip
-paikkala @ https://github.com/kcsry/paikkala/archive/205a72f3f6a1b49c7886f1062b600f42a8ebb127.zip
+git+https://github.com/kcsry/lippukala@v2.0.0
+git+https://github.com/kcsry/paikkala@v0.2.0
 Babel
 black
 bleach
 boto3
 celery
-Django
+crispy-bootstrap3
 django_csp
 django-bootstrap3
 django-cors-headers
-django-crispy-forms<2
+django-crispy-forms
 django-environ
-django-filter
 django-ipware
 django-localflavor
 django-localized-fields
@@ -19,7 +18,7 @@ django-oauth-toolkit
 django-postgres-extra
 django-redis
 django-storages
-drf-nested-routers
+Django>5
 flake8
 graphene-django
 gunicorn

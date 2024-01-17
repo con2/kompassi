@@ -15,6 +15,7 @@ class InlineTicketsEventMetaAdmin(admin.StackedInline):
     model = TicketsEventMeta
 
 
+@admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     model = Product
     list_display = (
@@ -30,6 +31,7 @@ class ProductAdmin(admin.ModelAdmin):
     list_filter = ("event",)
 
 
+@admin.register(LimitGroup)
 class LimitGroupAdmin(admin.ModelAdmin):
     model = Product
     list_display = (
@@ -50,6 +52,7 @@ class OrderProductInline(admin.TabularInline):
     model = OrderProduct
 
 
+@admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     model = Order
     inlines = [
@@ -58,6 +61,7 @@ class OrderAdmin(admin.ModelAdmin):
     ]
 
 
+@admin.register(AccommodationInformation)
 class AccommodationInformationAdmin(admin.ModelAdmin):
     model = AccommodationInformation
     list_display = (
@@ -76,8 +80,4 @@ class AccommodationInformationAdmin(admin.ModelAdmin):
     fields = ("last_name", "first_name", "phone_number", "email")
 
 
-admin.site.register(Order, OrderAdmin)
-admin.site.register(Product, ProductAdmin)
-admin.site.register(LimitGroup, LimitGroupAdmin)
-admin.site.register(AccommodationInformation, AccommodationInformationAdmin)
 admin.site.register(Customer)

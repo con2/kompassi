@@ -22,18 +22,14 @@ from .proxies.freeform_organizer.admin import FreeformOrganizerAdminProxy
 from .proxies.invitation.admin import InvitationAdminProxy
 
 
+@admin.action(description=_("Deactivate selected items"))
 def deactivate_selected_items(modeladmin, request, queryset):
     queryset.update(active=False)
 
 
-deactivate_selected_items.short_description = _("Deactivate selected items")
-
-
+@admin.action(description=_("Activate selected items"))
 def activate_selected_items(modeladmin, request, queryset):
     queryset.update(active=False)
-
-
-activate_selected_items.short_description = _("Activate selected items")
 
 
 class InlineProgrammeEventMetaAdmin(admin.StackedInline):
@@ -46,6 +42,7 @@ class ProgrammeRoleInline(admin.TabularInline):
     verbose_name_plural = "organizers"
 
 
+@admin.register(Programme)
 class ProgrammeAdmin(admin.ModelAdmin):
     fields = (
         "title",
@@ -71,48 +68,57 @@ class ProgrammeAdmin(admin.ModelAdmin):
     search_fields = ("title",)
 
 
+@admin.register(View)
 class ViewAdmin(admin.ModelAdmin):
     list_display = ("event", "name", "public")
     list_filter = ("event",)
 
 
+@admin.register(Room)
 class RoomAdmin(admin.ModelAdmin):
     list_display = ("event", "name")
     list_filter = ("event",)
     actions = (activate_selected_items, deactivate_selected_items)
 
 
+@admin.register(ViewRoom)
 class ViewRoomAdmin(admin.ModelAdmin):
     list_display = ("admin_get_event", "view", "room", "order")
     list_filter = ("view__event",)
 
 
+@admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
     list_display = ("admin_get_event", "title", "personnel_class")
     list_filter = ("personnel_class__event",)
     raw_id_fields = ("personnel_class",)
 
 
+@admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("event", "title", "public")
     list_filter = ("event",)
 
 
+@admin.register(SpecialStartTime)
 class SpecialStartTimeAdmin(admin.ModelAdmin):
     list_display = ("event", "start_time")
     list_filter = ("event",)
 
 
+@admin.register(TimeBlock)
 class TimeBlockAdmin(admin.ModelAdmin):
     list_display = ("event", "start_time", "end_time")
     list_filter = ("event",)
 
 
+@admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = ("event", "title")
     list_filter = ("event",)
 
 
+@admin.register(InvitationAdminProxy)
 class InvitationAdmin(admin.ModelAdmin):
     list_display = ("admin_get_event", "admin_get_title", "email", "state", "created_by")
     list_filter = ("programme__category__event", "state")
@@ -120,25 +126,22 @@ class InvitationAdmin(admin.ModelAdmin):
     raw_id_fields = ("programme",)
 
 
+@admin.register(FreeformOrganizerAdminProxy)
 class FreeformOrganizerAdmin(admin.ModelAdmin):
     list_display = ("admin_get_event", "admin_get_title", "text")
     list_filter = ("programme__category__event",)
     raw_id_fields = ("programme",)
 
 
+@admin.action(description=_("Hide selected feedback"))
 def hide_selected_feedback(modeladmin, request, queryset):
     t = now()
     queryset.update(hidden_at=t, hidden_by=request.user)
 
 
-hide_selected_feedback.short_description = _("Hide selected feedback")
-
-
+@admin.action(description=_("Restore selected feedback"))
 def restore_selected_feedback(modeladmin, request, queryset):
     queryset.update(hidden_at=None, hidden_by=None)
-
-
-restore_selected_feedback.short_description = _("Restore selected feedback")
 
 
 class ProgrammeFeedbackAdminForm(forms.ModelForm):
@@ -158,6 +161,7 @@ class ProgrammeFeedbackAdminForm(forms.ModelForm):
         fields = ()
 
 
+@admin.register(ProgrammeFeedback)
 class ProgrammeFeedbackAdmin(admin.ModelAdmin):
     model = ProgrammeFeedback
     form = ProgrammeFeedbackAdminForm
@@ -227,30 +231,16 @@ class ProgrammeFeedbackAdmin(admin.ModelAdmin):
             feedback.save()
 
 
+@admin.register(AlternativeProgrammeForm)
 class AlternativeProgrammeFormAdmin(admin.ModelAdmin):
     model = AlternativeProgrammeForm
     list_display = ("event", "title", "is_active")
     list_filter = ("event",)
 
 
+@admin.register(SpecialReservation)
 class SpecialReservationAdmin(admin.ModelAdmin):
     model = SpecialReservation
     list_display = ("admin_get_event", "program", "description")
     list_filter = ("program__kompassi_programme__category__event",)
     raw_id_fields = ("program", "zone")
-
-
-admin.site.register(AlternativeProgrammeForm, AlternativeProgrammeFormAdmin)
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(FreeformOrganizerAdminProxy, FreeformOrganizerAdmin)
-admin.site.register(InvitationAdminProxy, InvitationAdmin)
-admin.site.register(Programme, ProgrammeAdmin)
-admin.site.register(ProgrammeFeedback, ProgrammeFeedbackAdmin)
-admin.site.register(Role, RoleAdmin)
-admin.site.register(Room, RoomAdmin)
-admin.site.register(SpecialStartTime, SpecialStartTimeAdmin)
-admin.site.register(Tag, TagAdmin)
-admin.site.register(TimeBlock, TimeBlockAdmin)
-admin.site.register(View, ViewAdmin)
-admin.site.register(ViewRoom, ViewRoomAdmin)
-admin.site.register(SpecialReservation, SpecialReservationAdmin)

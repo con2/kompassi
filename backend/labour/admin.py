@@ -16,6 +16,7 @@ from .models import (
 )
 
 
+@admin.register(Signup)
 class SignupAdmin(admin.ModelAdmin):
     model = Signup
     list_display = ("event", "full_name", "formatted_state")
@@ -33,6 +34,7 @@ class InlinePersonQualificationAdmin(admin.TabularInline):
     extra = 0
 
 
+@admin.register(Qualification)
 class QualificationAdmin(admin.ModelAdmin):
     model = Qualification
     inlines = (InlinePersonQualificationAdmin,)
@@ -41,20 +43,17 @@ class QualificationAdmin(admin.ModelAdmin):
     readonly_fields = ("slug",)
 
 
+@admin.action(description="Laita valitut tehtävät julkiseen hakuun")
 def make_selected_job_categories_public(modeladmin, request, queryset):
     queryset.update(public=True)
 
 
-make_selected_job_categories_public.short_description = "Laita valitut tehtävät julkiseen hakuun"
-
-
+@admin.action(description="Ota valitut tehtävät pois julkisesta hausta")
 def make_selected_job_categories_nonpublic(modeladmin, request, queryset):
     queryset.update(public=False)
 
 
-make_selected_job_categories_nonpublic.short_description = "Ota valitut tehtävät pois julkisesta hausta"
-
-
+@admin.register(JobCategory)
 class JobCategoryAdmin(admin.ModelAdmin):
     list_display = ("event", "name", "public")
     list_filter = ("event", "public")
@@ -62,47 +61,44 @@ class JobCategoryAdmin(admin.ModelAdmin):
     actions = [make_selected_job_categories_public, make_selected_job_categories_nonpublic]
 
 
+@admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
     list_display = ("admin_get_event", "job_category", "title")
     list_filter = ("job_category__event",)
     ordering = ("job_category__event", "title")
 
 
+@admin.register(PersonnelClass)
 class PersonnelClassAdmin(admin.ModelAdmin):
     list_display = ("event", "name")
     list_filter = ("event",)
     ordering = ("event", "name")
 
 
+@admin.register(AlternativeSignupForm)
 class AlternativeSignupFormAdmin(admin.ModelAdmin):
     list_display = ("event", "slug", "title")
     list_filter = ("event",)
     ordering = ("event", "slug")
 
 
+@admin.register(InfoLink)
 class InfoLinkAdmin(admin.ModelAdmin):
     list_display = ("event", "title", "url")
     list_filter = ("event",)
 
 
+@admin.register(Shift)
 class ShiftAdmin(admin.ModelAdmin):
     list_display = ("admin_get_event", "admin_get_job_category", "job", "start_time", "hours", "admin_get_person")
     list_filter = ("job__job_category__event",)
     raw_id_fields = ("job", "signup")
 
 
+@admin.register(Survey)
 class SurveyAdmin(admin.ModelAdmin):
     list_display = ("event", "title", "admin_is_active")
     list_filter = ("event",)
 
 
-admin.site.register(AlternativeSignupForm, AlternativeSignupFormAdmin)
-admin.site.register(InfoLink, InfoLinkAdmin)
-admin.site.register(Job, JobAdmin)
-admin.site.register(JobCategory, JobCategoryAdmin)
-admin.site.register(PersonnelClass, PersonnelClassAdmin)
-admin.site.register(Qualification, QualificationAdmin)
-admin.site.register(Shift, ShiftAdmin)
-admin.site.register(Signup, SignupAdmin)
-admin.site.register(Survey, SurveyAdmin)
 admin.site.register(WorkPeriod)

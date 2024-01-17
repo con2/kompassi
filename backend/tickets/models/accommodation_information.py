@@ -47,7 +47,7 @@ class AccommodationInformation(models.Model, CsvExportMixin):
         max_length=1,
         default=State.NOT_ARRIVED,
         verbose_name=_("State"),
-        choices=State.choices,
+        choices=State,
     )
     room_name = models.CharField(
         max_length=63,
