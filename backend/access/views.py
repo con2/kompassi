@@ -20,15 +20,7 @@ from event_log.utils import emit
 from .constants import CBAC_SUDO_CLAIMS, CBAC_SUDO_VALID_MINUTES
 from .exceptions import CBACPermissionDenied
 from .helpers import access_admin_required
-from .models import (
-    CBACEntry,
-    EmailAlias,
-    EmailAliasDomain,
-    InternalEmailAlias,
-    Privilege,
-    SMTPPassword,
-    SMTPServer,
-)
+from .models import CBACEntry, EmailAlias, EmailAliasDomain, InternalEmailAlias, Privilege, SMTPPassword, SMTPServer
 
 logger = logging.getLogger("kompassi")
 
@@ -176,7 +168,7 @@ def access_admin_aliases_api(request, domain_name):
     # Personal aliases
     for person in Person.objects.filter(email_aliases__domain=domain).distinct():
         lines.append(f"# {person.full_name}")
-        lines.extend(f"{alias.account_name}: {alias.email}" for alias in person.email_aliases.filter(domain=domain))
+        lines.extend(f"{alias.account_name}: {person.email}" for alias in person.email_aliases.filter(domain=domain))
         lines.append("")
 
     # Technical aliases
