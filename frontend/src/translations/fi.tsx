@@ -280,6 +280,7 @@ const translations: Translations = {
         success: "Linkki kyselyyn on kopioitu leikepöydälle.",
       },
       viewResponses: "Vastaukset",
+      summary: "Yhteenveto",
       submit: "Lähetä",
     },
     thankYou: {
@@ -306,6 +307,7 @@ const translations: Translations = {
   SurveyResponse: {
     listTitle: "Kyselyvastaukset",
     singleTitle: "Kyselyvastaus",
+    summaryTitle: "Vastausten yhteenveto",
     ownResponses: "Omat kyselyvastaukset",
     tableFooter: (count: number) => (
       <>
@@ -318,11 +320,25 @@ const translations: Translations = {
       event: "Tapahtuma",
       formTitle: "Kyselyn otsikko",
       language: "Kieli",
+      choice: "Vaihtoehto",
+      question: "Kysymys",
+      countResponses: "Vastauksia",
+      countMissingResponses: "Ei vastausta",
+      percentageOfResponses: "Osuus vastauksista",
     },
     actions: {
       downloadAsExcel: "Lataa Excel-tiedostona",
       returnToResponseList: "Palaa vastauslistaukseen",
       returnToSurveyList: "Palaa kyselylistaukseen",
+      summary: "Näytä yhteenveto",
+    },
+    warnings: {
+      choiceNotFound:
+        "Vaihtoehtoa ei löydy. Se on voitu poistaa tämän vastauksen lähettämisen jälkeen.",
+    },
+    checkbox: {
+      checked: "Valittu",
+      unchecked: "Ei valittu",
     },
   },
 
@@ -341,6 +357,7 @@ const translations: Translations = {
         Kompassi<sup>v2 BETA</sup>
       </>
     ),
+    plainAppName: "Kompassi",
   },
 
   // Do not translate

@@ -150,6 +150,7 @@ export default async function FormResponsesPage({ params }: Props) {
   });
 
   const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
+  const summaryUrl = `/events/${eventSlug}/surveys/${surveySlug}/summary?from=responses`;
   const responses = data.event.forms.survey.responses || [];
 
   return (
@@ -166,7 +167,10 @@ export default async function FormResponsesPage({ params }: Props) {
         <div className="ms-auto">
           <a className="btn btn-outline-primary" href={excelUrl}>
             {t.actions.downloadAsExcel}…
-          </a>
+          </a>{" "}
+          <Link className="btn btn-outline-primary" href={summaryUrl}>
+            {t.actions.summary}…
+          </Link>{" "}
         </div>
       </div>
 

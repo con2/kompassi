@@ -24,7 +24,7 @@ function Label({ field, layout }: { field: Field; layout: Layout }) {
 interface SchemaFormFieldProps {
   layout: Layout;
   field: Field;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 /**
