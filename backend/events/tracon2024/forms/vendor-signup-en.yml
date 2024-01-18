@@ -1,0 +1,34 @@
+title: Vendor Registration
+layout: vertical
+description: |
+  With this form, you can apply for a sales spot at the Tracon event in 2024.
+fields:
+  - slug: category
+    type: SingleSelect
+    title: Type of sales spot applied for
+    required: true
+    choicesFrom:
+      dimension: category
+
+  - slug: name
+    type: SingleLineText
+    title: Trade name
+    required: true
+    helpText: Under what name do you want to introduce yourself in the vendor listing?
+
+  - slug: official_name
+    type: SingleLineText
+    title: Official name of the company
+    required: true
+    helpText: What is the official name of your company? This information will not appear in the vendor listing.
+
+  - slug: company_identification_number
+    type: SingleLineText
+    title: Company's business ID
+    helpText: |
+      What is your company's business ID? This information will not appear in the vendor listing.
+      If you are applying as an artisan as a private individual without a business ID, leave this field blank.
+
+  - slug: and_so_forth
+    type: StaticText
+    helpText: And so on…

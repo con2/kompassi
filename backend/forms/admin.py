@@ -1,6 +1,9 @@
 from django.contrib import admin
 
-from .models import Form, Response, Survey
+from .models.dimension import Dimension, DimensionValue, ResponseDimensionValue
+from .models.form import Form
+from .models.response import Response
+from .models.survey import Survey
 
 
 @admin.register(Form)
@@ -11,6 +14,11 @@ class FormAdmin(admin.ModelAdmin):
     search_fields = ("slug", "title")
 
 
+class ResponseDimensionValueInline(admin.TabularInline):
+    model = ResponseDimensionValue
+    extra = 1
+
+
 @admin.register(Response)
 class ResponseAdmin(admin.ModelAdmin):
     model = Response
@@ -18,6 +26,7 @@ class ResponseAdmin(admin.ModelAdmin):
     list_filter = ("form__event", "form")
     readonly_fields = ("form", "form_data", "created_by", "ip_address", "created_at", "updated_at")
     fields = readonly_fields
+    inlines = (ResponseDimensionValueInline,)
 
     def has_add_permission(self, *args, **kwargs):
         return False
@@ -46,3 +55,22 @@ class SurveyAdmin(admin.ModelAdmin):
         "active_until",
     )
     inlines = (SurveyFormInline,)
+
+
+class DimensionValueInline(admin.TabularInline):
+    model = DimensionValue
+    extra = 1
+
+
+@admin.register(Dimension)
+class DimensionAdmin(admin.ModelAdmin):
+    model = Dimension
+    list_display = ("admin_get_event", "survey", "slug")
+    list_filter = (
+        "survey__event",
+        "survey",
+    )
+    search_fields = ("slug", "title")
+    fields = ("survey", "slug", "title", "order", "is_key_dimension")
+    readonly_fields = ("survey",)
+    inlines = (DimensionValueInline,)

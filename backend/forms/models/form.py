@@ -11,11 +11,12 @@ from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 from core.utils.locale_utils import get_message_in_language
-from program_v2.models.dimension import Dimension
 
 from .field import Field
 
 if TYPE_CHECKING:
+    from program_v2.models.offer_form import OfferForm
+
     from .response import Response
     from .survey import Survey
 
@@ -67,14 +68,29 @@ class Form(models.Model):
         Some field types may contain server side directives that need to be resolved before
         turning the form specification over to the frontend.
         """
+        from forms.models.dimension import Dimension as SurveyDimension
+        from program_v2.models.dimension import Dimension as ProgramDimension
+
         field = deepcopy(field)
+
+        survey = self.survey
+        offer_form = self.offer_form
 
         if choices_from := field.get("choicesFrom"):
             if len(choices_from) != 1:
-                raise AssertionError("choicesFrom must have exactly one key: value pair")
+                raise ValueError("choicesFrom must have exactly one key: value pair")
+
             ((source_type, source),) = choices_from.items()
             if source_type == "dimension":
-                dimension = Dimension.objects.get(event=self.event, slug=source)
+                if survey:
+                    # form used as survey form
+                    dimension = SurveyDimension.objects.get(survey=survey, slug=source)
+                elif offer_form:
+                    # form used as program signup form
+                    dimension = ProgramDimension.objects.get(event=self.event, slug=source)
+                else:
+                    raise ValueError("A form that is not used as a survey or program offer form cannot use valuesFrom")
+
                 field["choices"] = [
                     dict(
                         slug=value.slug,
@@ -103,4 +119,16 @@ class Form(models.Model):
         except Survey.DoesNotExist:
             return None
         except Survey.MultipleObjectsReturned:
+            raise
+
+    @property
+    def offer_form(self) -> OfferForm | None:
+        from program_v2.models.offer_form import OfferForm
+
+        # there can only be one
+        try:
+            return OfferForm.objects.filter(event=self.event, languages=self).get()
+        except OfferForm.DoesNotExist:
+            return None
+        except OfferForm.MultipleObjectsReturned:
             raise

@@ -11,7 +11,9 @@ from django.utils.translation import gettext_lazy as _
 
 if TYPE_CHECKING:
     from ..utils.process_form_data import FieldWarning
+    from .dimension import ResponseDimensionValue
     from .field import Field
+    from .survey import Survey
 
 
 class Response(models.Model):
@@ -29,6 +31,89 @@ class Response(models.Model):
         default="",
         verbose_name=_("IP address"),
     )
+
+    # denormalized fields
+    cached_dimensions = models.JSONField(
+        default=dict,
+        help_text="dimension slug -> list of value slugs",
+    )
+
+    # related fields
+    dimensions: models.QuerySet[ResponseDimensionValue]
+
+    @property
+    def survey(self) -> Survey | None:
+        return self.form.survey
+
+    def build_cached_dimensions(self) -> dict[str, list[str]]:
+        """
+        Used by ..handlers/dimension.py to populate cached_dimensions
+        """
+        # TODO should all survey dimensions always be present, or only those with values?
+        # TODO when dimensions are changed for an survey, refresh all cached_dimensions
+        survey = self.survey
+        if survey is None:
+            return {}
+
+        dimensions = {dimension.slug: [] for dimension in survey.dimensions.all()}
+        for sdv in self.dimensions.all():
+            dimensions[sdv.dimension.slug].append(sdv.value.slug)
+        return dimensions
+
+    @classmethod
+    def refresh_cached_dimensions(cls, responses: models.QuerySet[Response]):
+        for program in (
+            responses.select_for_update(of=("self",))
+            .only("id", "cached_dimensions")
+            .prefetch_related(
+                "dimensions__dimension__slug",
+                "dimensions__value__slug",
+            )
+        ):
+            program.cached_dimensions = program.build_cached_dimensions()
+            program.save(update_fields=["cached_dimensions"])
+
+    def lift_dimension_values(self):
+        """
+        Lifts the values of dimensions from form data into proper dimension values.
+        This makes sense only for responses that are related to a survey.
+        """
+        survey = self.survey
+        assert survey is not None, "Cannot lift dimension values for a response that is not related to a survey"
+
+        for dimension in survey.dimensions.all():
+            # set initial values
+            for initial_value in dimension.values.filter(is_initial=True):
+                self.dimensions.create(dimension=dimension, value=initial_value)
+
+            # TODO cache a dict of slug -> field?
+            # TODO use pydantic versions of fields? Must not be enriched (it removes choicesFrom)
+            dimension_field = next(
+                (
+                    field
+                    for field in self.form.fields
+                    # TODO is it reasonable to require field["slug"] == dimension.slug?
+                    if field["slug"] == dimension.slug and field.get("choicesFrom") == {"dimension": dimension.slug}
+                ),
+                None,
+            )
+            if not dimension_field:
+                # this dimension is not present as a field on the form
+                continue
+
+            value_slug = self.values.get(dimension.slug)
+            if not value_slug:
+                # this dimension is not present in the response
+                continue
+
+            value = dimension.values.filter(slug=value_slug).first()
+            if value is None:
+                # invalid value for dimension
+                continue
+
+            # get_or_create to avoid collision with initial values
+            # (probably shouldn't put a dimension that has an initial value on a form as a field?)
+            self.dimensions.get_or_create(dimension=dimension, value=value)
 
     def get_processed_form_data(self, fields: list[Field]):
         """

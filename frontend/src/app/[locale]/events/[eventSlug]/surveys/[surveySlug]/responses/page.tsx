@@ -23,6 +23,7 @@ gql(`
     }
     language
     values(keyFieldsOnly: true)
+    cachedDimensions(keyDimensionsOnly: true)
   }
 `);
 
@@ -37,6 +38,15 @@ const query = gql(`
           anonymity
 
           fields(lang: $locale, keyFieldsOnly: true)
+          dimensions(keyDimensionsOnly: true) {
+            slug
+            title(lang: $locale)
+
+            values {
+              slug
+              title(lang: $locale)
+            }
+          }
 
           responses {
             ...SurveyResponse
@@ -107,6 +117,7 @@ export default async function FormResponsesPage({ params }: Props) {
   const anonymityMessages =
     translations.Survey.attributes.anonymity.thirdPerson;
 
+  const keyDimensions = data.event.forms.survey.dimensions ?? [];
   const keyFields = data.event.forms.survey.fields;
   validateFields(keyFields);
 
@@ -145,6 +156,25 @@ export default async function FormResponsesPage({ params }: Props) {
         // TODO as any
         const values: Record<string, any> = row.values as any;
         return values[keyField.slug];
+      },
+    });
+  });
+
+  keyDimensions.forEach((keyDimension) => {
+    columns.push({
+      slug: `keyDimensions.${keyDimension.slug}`,
+      title: keyDimension.title ?? "",
+      getCell(row) {
+        // TODO as any
+        const cachedDimensions = row.cachedDimensions as Record<
+          string,
+          string[]
+        >;
+        const valueSlugs = cachedDimensions[keyDimension.slug] ?? [];
+        const dimensionValues = keyDimension.values.filter((value) =>
+          valueSlugs.includes(value.slug),
+        );
+        return dimensionValues.map((value) => value.title).join(", ");
       },
     });
   });

@@ -885,12 +885,16 @@ class Setup:
             Poison.objects.get_or_create(name=poison_name)
 
     def setup_forms(self):
-        from forms.models import Form, Survey
+        from forms.models.dimension import DimensionDTO
+        from forms.models.form import Form
+        from forms.models.survey import Survey
+
+        # Hackathon feedback survey
 
         with resource_stream("events.tracon2024", "forms/hackathon-feedback.yml") as f:
             data = yaml.safe_load(f)
 
-        form_fi, created = Form.objects.get_or_create(
+        hackathon_feedback_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="hackathon-feedback",
             language="fi",
@@ -900,10 +904,10 @@ class Setup:
         # TODO temporary for development
         if not created:
             for key, value in data.items():
-                setattr(form_fi, key, value)
-            form_fi.save()
+                setattr(hackathon_feedback_fi, key, value)
+            hackathon_feedback_fi.save()
 
-        survey, _ = Survey.objects.get_or_create(
+        hackathon_feedback_survey, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="hackathon-feedback",
             defaults=dict(
@@ -911,7 +915,58 @@ class Setup:
             ),
         )
 
-        survey.languages.set([form_fi])
+        hackathon_feedback_survey.languages.set([hackathon_feedback_fi])
+
+        # Vendor signup form
+
+        with resource_stream("events.tracon2024", "forms/vendor-signup-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        vendor_signup_en, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="vendor-signup-en",
+            language="en",
+            defaults=data,
+        )
+
+        # TODO temporary for development
+        if not created:
+            for key, value in data.items():
+                setattr(vendor_signup_en, key, value)
+            vendor_signup_en.save()
+
+        with resource_stream("events.tracon2024", "forms/vendor-signup-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        vendor_signup_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="vendor-signup-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO temporary for development
+        if not created:
+            for key, value in data.items():
+                setattr(vendor_signup_fi, key, value)
+            vendor_signup_fi.save()
+
+        vendor_signup_survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="vendor-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name"],
+            ),
+        )
+
+        vendor_signup_survey.languages.set([vendor_signup_fi, vendor_signup_en])
+
+        with resource_stream("events.tracon2024", "forms/vendor-signup-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(vendor_signup_survey)
 
 
 class Command(BaseCommand):

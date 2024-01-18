@@ -7,6 +7,7 @@ from core.utils import normalize_whitespace
 
 from ..models.form import Form
 from ..models.survey import Survey
+from .dimension import SurveyDimensionType
 from .form import FormType
 from .limited_survey import LimitedSurveyType
 from .response import FullResponseType, LimitedResponseType
@@ -137,6 +138,20 @@ class SurveyType(LimitedSurveyType):
         GenericScalar,
         lang=graphene.String(),
         description=normalize_whitespace(resolve_summary.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_dimensions(survey: Survey, info, key_dimensions_only: bool = False):
+        qs = survey.dimensions.all()
+
+        if key_dimensions_only:
+            qs = qs.filter(is_key_dimension=True)
+
+        return qs
+
+    dimensions = graphene.List(
+        graphene.NonNull(SurveyDimensionType),
+        key_dimensions_only=graphene.Boolean(),
     )
 
     class Meta:

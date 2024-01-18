@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -8,6 +12,9 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
 
 from ..utils.merge_form_fields import merge_fields
 from .form import Form
+
+if TYPE_CHECKING:
+    from .dimension import Dimension
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 ANONYMITY_CHOICES = [
@@ -88,6 +95,9 @@ class Survey(models.Model):
         verbose_name=_("key fields"),
         help_text=_("Key fields will be shown in the response list."),
     )
+
+    # related fields
+    dimensions: models.QuerySet[Dimension]
 
     @property
     def is_active(self):

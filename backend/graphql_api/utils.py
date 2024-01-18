@@ -16,6 +16,6 @@ def resolve_localized_field(field_name: str):
 
     def _resolve(parent, info, lang: str = DEFAULT_LANGUAGE):
         messages = getattr(parent, field_name)
-        get_message_in_language(messages, lang)
+        return get_message_in_language(messages, lang)
 
     return _resolve

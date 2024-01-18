@@ -32,7 +32,13 @@ class CreateSurveyResponse(graphene.Mutation):
             raise Exception("Survey is not active")
 
         form = survey.get_form(locale)
+        if not form:
+            raise Exception("Form not found")
 
+        if not form.fields:
+            raise Exception("Form has no fields")
+
+        # TODO(https://github.com/con2/kompassi/issues/365): shows the ip of v2 backend, not the client
         ip_address = get_ip(info.context)
         created_by = user if (user := info.context.user) and user.is_authenticated else None
 
@@ -53,5 +59,7 @@ class CreateSurveyResponse(graphene.Mutation):
             created_by=created_by,
             ip_address=ip_address,
         )
+
+        response.lift_dimension_values()
 
         return CreateSurveyResponse(response=response)  # type: ignore
