@@ -3,6 +3,7 @@ from django.conf import settings
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_query_cbac_required
+from core.graphql.common import DimensionFilterInput
 from core.utils import normalize_whitespace
 
 from ..models.form import Form
@@ -69,15 +70,32 @@ class SurveyType(LimitedSurveyType):
 
     @graphql_query_cbac_required
     @staticmethod
-    def resolve_responses(survey: Survey, info):
+    def resolve_responses(
+        survey: Survey,
+        info,
+        filters: list[DimensionFilterInput] | None = None,
+    ):
         """
         Returns the responses to this survey regardless of language version used.
         Authorization required.
         """
-        return survey.responses.all()
+        if filters is None:
+            filters = []
+
+        queryset = survey.responses.all()
+
+        if filters:
+            for filter in filters:
+                queryset = queryset.filter(
+                    dimensions__dimension__slug=filter.dimension,
+                    dimensions__value__slug__in=filter.values,
+                )
+
+        return queryset
 
     responses = graphene.List(
         graphene.NonNull(LimitedResponseType),
+        filters=graphene.List(DimensionFilterInput),
         description=normalize_whitespace(resolve_responses.__doc__ or ""),
     )
 

@@ -77,7 +77,7 @@ export default async function OwnResponsesPage({ params }: Props) {
     {
       slug: "createdAt",
       title: t.attributes.createdAt,
-      getCell: (row) => (
+      getCellContents: (row) => (
         <Link href={`/profile/responses/${row.id}`}>
           {new Date(row.createdAt).toLocaleString()}
         </Link>
@@ -86,12 +86,12 @@ export default async function OwnResponsesPage({ params }: Props) {
     {
       slug: "event",
       title: t.attributes.event,
-      getCell: (row) => row.form.event.name,
+      getCellContents: (row) => row.form.event.name,
     },
     {
       slug: "formTitle",
       title: t.attributes.formTitle,
-      getCell: (row) => row.form.title,
+      getCellContents: (row) => row.form.title,
     },
   ];
 

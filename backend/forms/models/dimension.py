@@ -6,8 +6,10 @@ import pydantic
 from django.db import models
 
 from core.models import Event
-from core.utils import validate_slug
+from core.utils.locale_utils import get_message_in_language
+from core.utils.model_utils import validate_slug
 
+from .field import Choice
 from .response import Response
 from .survey import Survey
 
@@ -35,6 +37,15 @@ class Dimension(models.Model):
     @property
     def event(self) -> Event:
         return self.survey.event
+
+    def get_choices(self, language: str | None = None) -> list[Choice]:
+        return [
+            Choice(
+                slug=value.slug,
+                title=get_message_in_language(value.title, language),  # type: ignore  # TODO why does this get typed as str and not dict?
+            )
+            for value in self.values.all()
+        ]
 
     def admin_get_event(self) -> Event:
         return self.event

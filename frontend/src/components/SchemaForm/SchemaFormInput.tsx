@@ -1,8 +1,8 @@
-import { Field } from "./models";
+import type { Field } from "./models";
 
 interface SchemaFormInputProps {
   field: Field;
-  value: any;
+  value?: any;
   readOnly?: boolean;
 }
 
@@ -55,11 +55,11 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
         />
       );
     case "SingleSelect":
-      const choices = field.choices ?? [];
+      let choices = field.choices ?? [];
 
       switch (field.presentation) {
         case "dropdown":
-          choices.unshift({ slug: "", title: "" });
+          choices = [{ slug: "", title: "" }].concat(field.choices);
 
           return (
             <select

@@ -49,9 +49,13 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
     }
   }
 
+  // TODO: Remove hard-coded data-bs-theme when dark mode support is implemented
+  // There's a catch: The navbar is dark also in light mode, but the menus should
+  // follow the theme. So we may need to implement some kind of useTheme hook.
+
   return (
     <div className="navbar-nav ms-auto">
-      <div className="nav-item dropdown">
+      <div className="nav-item dropdown" data-bs-theme="light">
         <button
           className="nav-link btn btn-link dropdown-toggle"
           id="user-menu"
@@ -81,7 +85,7 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
         </ul>
       </div>
       {session?.user ? (
-        <div className="nav-item dropdown">
+        <div className="nav-item dropdown" data-bs-theme="light">
           <button
             className="nav-link btn btn-link dropdown-toggle"
             id="user-menu"

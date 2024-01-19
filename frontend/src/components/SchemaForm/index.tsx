@@ -5,9 +5,10 @@ import SchemaFormInput from "./SchemaFormInput";
 interface SchemaFormProps {
   fields: Field[];
   layout?: Layout;
+  values?: Record<string, any>;
 }
 
-export function SchemaForm({ fields, layout }: SchemaFormProps) {
+export function SchemaForm({ fields, layout, values }: SchemaFormProps) {
   return (
     <>
       {fields.map((field, index) => {
@@ -23,7 +24,7 @@ export function SchemaForm({ fields, layout }: SchemaFormProps) {
             field={field}
             layout={layout ?? Layout.Vertical}
           >
-            <SchemaFormInput field={field} value="" />
+            <SchemaFormInput field={field} value={values?.[field.slug]} />
           </SchemaFormField>
         );
       })}

@@ -6,6 +6,12 @@ import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import ColoredDimensionTableCell from "@/components/dimensions/ColoredDimensionTableCell";
+import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
+import {
+  buildDimensionFilters,
+  getDimensionValueTitle,
+} from "@/components/dimensions/helpers";
 import { validateFields } from "@/components/SchemaForm/models";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
@@ -28,7 +34,12 @@ gql(`
 `);
 
 const query = gql(`
-  query FormResponses($eventSlug:String!, $surveySlug:String!, $locale:String) {
+  query FormResponses(
+    $eventSlug: String!,
+    $surveySlug: String!,
+    $locale: String,
+    $filters: [DimensionFilterInput!]
+  ) {
     event(slug: $eventSlug) {
       name
 
@@ -38,17 +49,19 @@ const query = gql(`
           anonymity
 
           fields(lang: $locale, keyFieldsOnly: true)
-          dimensions(keyDimensionsOnly: true) {
+          dimensions {
             slug
             title(lang: $locale)
+            isKeyDimension
 
             values {
               slug
               title(lang: $locale)
+              color
             }
           }
 
-          responses {
+          responses(filters: $filters) {
             ...SurveyResponse
           }
         }
@@ -63,9 +76,10 @@ interface Props {
     eventSlug: string;
     surveySlug: string;
   };
+  searchParams: Record<string, string>;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params, searchParams }: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
 
@@ -77,9 +91,13 @@ export async function generateMetadata({ params }: Props) {
 
   const t = translations.SurveyResponse;
 
+  // while dimension filters are not needed to form the title,
+  // we would like to do only one query per request
+  // so do the exact same query here so that it can be cached
+  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, surveySlug, locale },
+    variables: { eventSlug, surveySlug, locale, filters },
   });
 
   if (!data.event?.forms?.survey) {
@@ -93,7 +111,10 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function FormResponsesPage({ params }: Props) {
+export default async function FormResponsesPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
   const t = translations.SurveyResponse;
@@ -104,9 +125,10 @@ export default async function FormResponsesPage({ params }: Props) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
+  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, surveySlug, locale },
+    variables: { eventSlug, surveySlug, locale, filters },
   });
 
   if (!data.event?.forms?.survey) {
@@ -117,7 +139,7 @@ export default async function FormResponsesPage({ params }: Props) {
   const anonymityMessages =
     translations.Survey.attributes.anonymity.thirdPerson;
 
-  const keyDimensions = data.event.forms.survey.dimensions ?? [];
+  const dimensions = data.event.forms.survey.dimensions ?? [];
   const keyFields = data.event.forms.survey.fields;
   validateFields(keyFields);
 
@@ -125,7 +147,7 @@ export default async function FormResponsesPage({ params }: Props) {
     {
       slug: "createdAt",
       title: t.attributes.createdAt,
-      getCell: (row) => (
+      getCellContents: (row) => (
         <Link
           href={`/events/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}
         >
@@ -139,7 +161,7 @@ export default async function FormResponsesPage({ params }: Props) {
     columns.push({
       slug: "createdBy",
       title: t.attributes.createdBy,
-      getCell: (row) => row.createdBy?.displayName || "",
+      getCellContents: (row) => row.createdBy?.displayName || "",
     });
   }
 
@@ -152,32 +174,33 @@ export default async function FormResponsesPage({ params }: Props) {
     columns.push({
       slug: `keyFields.${keyField.slug}`,
       title: keyField.summaryTitle ?? keyField.title ?? "",
-      getCell(row) {
-        // TODO as any
-        const values: Record<string, any> = row.values as any;
+      getCellContents(row) {
+        // TODO move typing to codegen.ts (backend must specify scalar type)
+        // TODO value types that need special processing? encap
+        const values = row.values as Record<string, any>;
         return values[keyField.slug];
       },
     });
   });
 
-  keyDimensions.forEach((keyDimension) => {
-    columns.push({
-      slug: `keyDimensions.${keyDimension.slug}`,
-      title: keyDimension.title ?? "",
-      getCell(row) {
-        // TODO as any
-        const cachedDimensions = row.cachedDimensions as Record<
-          string,
-          string[]
-        >;
-        const valueSlugs = cachedDimensions[keyDimension.slug] ?? [];
-        const dimensionValues = keyDimension.values.filter((value) =>
-          valueSlugs.includes(value.slug),
-        );
-        return dimensionValues.map((value) => value.title).join(", ");
-      },
+  dimensions
+    .filter((dimension) => dimension.isKeyDimension)
+    .forEach((keyDimension) => {
+      columns.push({
+        slug: `keyDimensions.${keyDimension.slug}`,
+        title: keyDimension.title ?? "",
+        getCellElement: (row, children) => (
+          <ColoredDimensionTableCell
+            cachedDimensions={row.cachedDimensions}
+            dimension={keyDimension}
+          >
+            {children}
+          </ColoredDimensionTableCell>
+        ),
+        getCellContents: (row) =>
+          getDimensionValueTitle(keyDimension, row.cachedDimensions),
+      });
     });
-  });
 
   const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
   const summaryUrl = `/events/${eventSlug}/surveys/${surveySlug}/summary?from=responses`;
@@ -211,6 +234,7 @@ export default async function FormResponsesPage({ params }: Props) {
         </small>
       </p>
 
+      <DimensionFilters dimensions={dimensions} />
       <DataTable rows={responses} columns={columns} />
       <p>{t.tableFooter(responses.length)}</p>
     </ViewContainer>

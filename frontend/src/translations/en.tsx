@@ -251,19 +251,19 @@ const translations = {
         secondPerson: {
           title: "Connecting your response to you",
           choices: {
-            HARD: "Responses are anonymous. You cannot return to view or edit your responses. Your IP address is not recorded.",
-            SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your identity will not be shared with the survey owner. Your IP address is recorded but not shared with the query owner.",
+            HARD: "Responses are anonymous. You cannot return to view or edit your responses.",
+            SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your identity will not be shared with the survey owner.",
             NAME_AND_EMAIL:
-              "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses. Your IP address is recorded but not shared with the query owner.",
+              "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         thirdPerson: {
           title: "Connecting responses to users",
           choices: {
-            HARD: "Responses are anonymous. Users cannot return to view or edit their responses. IP addresses are not recorded.",
-            SOFT: "If the user answer thiss survey while logged in, their response will be connected to their user account, so that they can return to view or edit their responses, but their identities will not be shared with you. IP addresses are recorded but not shared with you.",
+            HARD: "Responses are anonymous. Users cannot return to view or edit their responses.",
+            SOFT: "If the user answer thiss survey while logged in, their response will be connected to their user account, so that they can return to view or edit their responses, but their identities will not be shared with you.",
             NAME_AND_EMAIL:
-              "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses. IP addresses are recorded but not shared with the you.",
+              "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses.",
           },
         },
       },
@@ -320,12 +320,15 @@ const translations = {
       countResponses: "Responses",
       countMissingResponses: "No response",
       percentageOfResponses: "Share of responses",
+      technicalDetails: "Technical details",
+      dimensions: "Dimensions",
     },
     actions: {
       downloadAsExcel: "Download as Excel",
       returnToResponseList: "Return to the list of responses",
       returnToSurveyList: "Return to the list of surveys",
       summary: "View summary",
+      saveDimensions: "Save dimensions",
     },
     warnings: {
       choiceNotFound:

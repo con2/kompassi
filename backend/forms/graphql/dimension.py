@@ -13,7 +13,7 @@ class SurveyDimensionType(DjangoObjectType):
 
     class Meta:
         model = Dimension
-        fields = ("slug", "values")
+        fields = ("slug", "values", "is_key_dimension")
 
 
 class SurveyDimensionValueType(DjangoObjectType):
@@ -22,7 +22,7 @@ class SurveyDimensionValueType(DjangoObjectType):
 
     class Meta:
         model = DimensionValue
-        fields = ("slug",)
+        fields = ("slug", "color")
 
 
 class ResponseDimensionValueType(DjangoObjectType):

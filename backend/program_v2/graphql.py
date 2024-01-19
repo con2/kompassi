@@ -3,6 +3,7 @@ from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
 from access.cbac import graphql_check_access
+from core.graphql.common import DimensionFilterInput
 from core.utils import get_objects_within_period
 from forms.graphql.form import FormType
 from forms.models import Form
@@ -81,11 +82,6 @@ class ProgramType(DjangoObjectType):
         fields = ("title", "slug", "dimensions", "cached_dimensions", "schedule_items")
 
 
-class DimensionFilterInput(graphene.InputObjectType):
-    dimension = graphene.String()
-    values = graphene.List(graphene.String)
-
-
 class OfferFormType(DjangoObjectType):
     form = graphene.Field(FormType, lang=graphene.String())
 
@@ -129,6 +125,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
     ):
         if filters is None:
             filters = []
+
         queryset = Program.objects.filter(event=meta.event)
 
         if filters:

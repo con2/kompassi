@@ -85,19 +85,22 @@ class Form(models.Model):
                 if survey:
                     # form used as survey form
                     dimension = SurveyDimension.objects.get(survey=survey, slug=source)
+                    field["choices"] = [
+                        choice.model_dump(by_alias=True) for choice in dimension.get_choices(self.language)
+                    ]
                 elif offer_form:
                     # form used as program signup form
                     dimension = ProgramDimension.objects.get(event=self.event, slug=source)
+                    field["choices"] = [
+                        dict(
+                            slug=value.slug,
+                            title=get_message_in_language(value.title, self.language),
+                        )
+                        for value in dimension.values.all()
+                    ]
                 else:
                     raise ValueError("A form that is not used as a survey or program offer form cannot use valuesFrom")
 
-                field["choices"] = [
-                    dict(
-                        slug=value.slug,
-                        title=get_message_in_language(value.title, self.language),
-                    )
-                    for value in dimension.values.all()
-                ]
             else:
                 raise NotImplementedError(f"choicesFrom: {choices_from}")
 

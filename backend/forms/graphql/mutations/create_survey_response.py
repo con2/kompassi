@@ -1,3 +1,5 @@
+from typing import Any
+
 import graphene
 from graphene.types.generic import GenericScalar
 
@@ -23,7 +25,7 @@ class CreateSurveyResponse(graphene.Mutation):
         info,
         event_slug: str,
         survey_slug: str,
-        form_data: str,
+        form_data: dict[str, Any],
         locale: str = "",
     ):
         survey = Survey.objects.get(event__slug=event_slug, slug=survey_slug)

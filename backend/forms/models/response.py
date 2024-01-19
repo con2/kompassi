@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import uuid
+from collections.abc import Collection, Mapping
 from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
@@ -114,6 +115,19 @@ class Response(models.Model):
             # get_or_create to avoid collision with initial values
             # (probably shouldn't put a dimension that has an initial value on a form as a field?)
             self.dimensions.get_or_create(dimension=dimension, value=value)
+
+    def set_dimension_values(self, dimension_values: Mapping[str, Collection[str]]):
+        assert self.survey
+
+        for dimension_slug, value_slugs in dimension_values.items():
+            dimension = self.survey.dimensions.get(slug=dimension_slug)
+
+            # remove values that should no longer be present
+            self.dimensions.filter(dimension=dimension).exclude(value__slug__in=value_slugs).delete()
+
+            for value_slug in value_slugs:
+                value = dimension.values.get(slug=value_slug)
+                self.dimensions.get_or_create(dimension=dimension, value=value)
 
     def get_processed_form_data(self, fields: list[Field]):
         """

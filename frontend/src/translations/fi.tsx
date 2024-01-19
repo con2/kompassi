@@ -252,19 +252,19 @@ const translations: Translations = {
         secondPerson: {
           title: "Vastausten yhdistäminen sinuun",
           choices: {
-            HARD: "Vastaukset ovat anonyymejä. Et voi palata katsomaan tai muokkaamaan vastauksiasi. IP-osoitettasi ei tallenneta.",
-            SOFT: "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi, jotta voit palata katsomaan tai muokkaamaan vastauksiasi, mutta henkilöllisyyttäsi ei jaeta kyselyn omistajan kanssa. IP-osoitteesi tallennetaan, mutta sitä ei jaeta kyselyn omistajan kanssa.",
+            HARD: "Vastaukset ovat anonyymejä. Et voi palata katsomaan tai muokkaamaan vastauksiasi.",
+            SOFT: "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi, jotta voit palata katsomaan tai muokkaamaan vastauksiasi, mutta henkilöllisyyttäsi ei jaeta kyselyn omistajan kanssa.",
             NAME_AND_EMAIL:
-              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Nimesi ja sähköpostiosoitteesi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi. IP-osoitteesi tallennetaan, mutta sitä ei jaeta kyselyn omistajan kanssa.",
+              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Nimesi ja sähköpostiosoitteesi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
           },
         },
         thirdPerson: {
           title: "Vastausten yhdistäminen käyttäjään",
           choices: {
-            HARD: "Vastaukset ovat anonyymejä. Käyttäjät eivät voi palata katsomaan tai muokkaamaan vastauksiaan. IP-osoitteita ei tallenneta.",
-            SOFT: "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä, jotta hän voi palata katsomaan tai muokkaamaan vastauksiaan, mutta hänen henkilöllisyyttään ei jaeta sinulle. IP-osoitteet tallennetaan, mutta niitä ei jaeta sinulle.",
+            HARD: "Vastaukset ovat anonyymejä. Käyttäjät eivät voi palata katsomaan tai muokkaamaan vastauksiaan.",
+            SOFT: "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä, jotta hän voi palata katsomaan tai muokkaamaan vastauksiaan, mutta hänen henkilöllisyyttään ei jaeta sinulle.",
             NAME_AND_EMAIL:
-              "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Hänen nimensä ja sähköpostiosoitteensa jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan. IP-osoitteet tallennetaan, mutta niitä ei jaeta sinulle.",
+              "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Hänen nimensä ja sähköpostiosoitteensa jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan.",
           },
         },
       },
@@ -325,12 +325,15 @@ const translations: Translations = {
       countResponses: "Vastauksia",
       countMissingResponses: "Ei vastausta",
       percentageOfResponses: "Osuus vastauksista",
+      technicalDetails: "Tekniset tiedot",
+      dimensions: "Dimensiot",
     },
     actions: {
       downloadAsExcel: "Lataa Excel-tiedostona",
       returnToResponseList: "Palaa vastauslistaukseen",
       returnToSurveyList: "Palaa kyselylistaukseen",
       summary: "Näytä yhteenveto",
+      saveDimensions: "Tallenna dimensiot",
     },
     warnings: {
       choiceNotFound:

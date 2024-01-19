@@ -23,6 +23,7 @@ export default function RootLayout({
 }: RootLayoutProps) {
   const supportedLanguage = toSupportedLanguage(locale);
 
+  // TODO implement bootstrap dark mode toggle (<html data-bs-theme="dark">)
   return (
     <html lang={supportedLanguage}>
       <body>
