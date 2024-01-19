@@ -108,7 +108,8 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
         return result
 
     def as_dict(self, format: Literal["discord"]):
-        assert format == "discord", "not implemented"
+        if format != "discord":
+            raise AssertionError("not implemented")
         return dict(
             handle=self.person.discord_handle,
             roles=self.discord_roles,

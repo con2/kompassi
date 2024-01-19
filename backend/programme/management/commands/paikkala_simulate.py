@@ -88,8 +88,10 @@ class Command(BaseCommand):
                 print()
                 print(tabulate(results, headers=("Zone", "Reserved", "Remaining", "Capacity")))
 
-                assert total_reserved == total_capacity, "All seats must be reserved"
-                assert total_remaining == 0, "No seats must be remaining"
+                if total_reserved != total_capacity:
+                    raise AssertionError("All seats must be reserved")
+                if total_remaining != 0:
+                    raise AssertionError("No seats must be remaining")
 
                 raise NotReally("It was only a dream :)")
         except NotReally:

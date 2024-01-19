@@ -6,7 +6,8 @@ from oauth2_provider.views.base import RevokeTokenView, TokenView
 
 from .views import CustomAuthorizationView, EventResource, MyselfResource
 
-assert "oauth2_provider" in settings.INSTALLED_APPS, "api_v2 requires oauth2_provider"
+if "oauth2_provider" not in settings.INSTALLED_APPS:
+    raise AssertionError("api_v2 requires oauth2_provider")
 
 
 urlpatterns = [

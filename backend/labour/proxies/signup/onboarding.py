@@ -24,7 +24,8 @@ class SignupOnboardingProxy(Signup):
         proxy = True
 
     def mark_arrived(self, is_arrived):
-        assert self.is_active, "Will not mark an inactive Signup as arrived"
+        if not self.is_active:
+            raise AssertionError("Will not mark an inactive Signup as arrived")
 
         if is_arrived:
             self.state = STATE_ARRIVED

@@ -170,14 +170,17 @@ class Message(models.Model):
                 person_message.actually_send()
 
     def expire(self):
-        assert self.expired_at is None, "re-expiring an expired message does not make sense"
-        assert self.sent_at is not None, "expiring an unsent message does not make sense"
+        if self.expired_at is not None:
+            raise AssertionError("re-expiring an expired message does not make sense")
+        if self.sent_at is None:
+            raise AssertionError("expiring an unsent message does not make sense")
 
         self.expired_at = datetime.now()
         self.save()
 
     def unexpire(self):
-        assert self.expired_at is not None, "cannot un-expire a non-expired message"
+        if not self.expired_at is not None:
+            raise AssertionError("cannot un-expire a non-expired message")
 
         self.expired_at = None
         self.save()

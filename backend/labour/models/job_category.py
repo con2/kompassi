@@ -181,9 +181,8 @@ class JobCategory(models.Model):
         return super().save(*args, **kwargs)
 
     def as_dict(self, include_jobs=False, include_requirements=False, include_people=False, include_shifts=False):
-        assert not (
-            include_shifts and not include_jobs
-        ), "If include_shifts is specified, must specify also include_jobs"
+        if include_shifts and not include_jobs:
+            raise AssertionError("If include_shifts is specified, must specify also include_jobs")
 
         doc = pick_attrs(
             self,

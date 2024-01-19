@@ -69,7 +69,8 @@ class Form(models.Model):
         field = deepcopy(field)
 
         if choices_from := field.get("choicesFrom"):
-            assert len(choices_from) == 1, "choicesFrom must have exactly one key: value pair"
+            if len(choices_from) != 1:
+                raise AssertionError("choicesFrom must have exactly one key: value pair")
             ((source_type, source),) = choices_from.items()
             if source_type == "dimension":
                 dimension = Dimension.objects.get(event=self.event, slug=source)

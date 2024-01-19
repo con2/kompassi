@@ -101,7 +101,8 @@ def get_hibp_page(hash_prefix):
     """
     # TODO Use a cache decorator
 
-    assert len(hash_prefix) == HIBP_PREFIX_LENGTH, "Hash prefix length mismatch"
+    if len(hash_prefix) != HIBP_PREFIX_LENGTH:
+        raise AssertionError("Hash prefix length mismatch")
 
     try:
         int(hash_prefix, 16)
