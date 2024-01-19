@@ -4,7 +4,8 @@ from .utils import get_next, url
 
 
 def page_wizard_init(request, pages):
-    assert all(len(page) in [2, 3] for page in pages)
+    if not all(len(page) in (2, 3) for page in pages):
+        raise AssertionError("Some pages have wrong lengths")
 
     steps = []
     all_related = set()

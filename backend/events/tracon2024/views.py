@@ -13,7 +13,7 @@ from .proxies import SignupExtraAfterpartyProxy
 
 @default_cbac_required
 def tracon2024_afterparty_participants_view(request, event_slug):
-    assert event_slug == "tracon2024"
+    assert event_slug == "tracon2024"  # noqa: S101
     event = Event.objects.get(slug=event_slug)
 
     participants = SignupExtraAfterpartyProxy.objects.filter(afterparty_participation=True)
@@ -37,7 +37,7 @@ def tracon2024_afterparty_participants_view(request, event_slug):
 
 @default_cbac_required
 def tracon2024_afterparty_summary_view(request, event_slug):
-    assert event_slug == "tracon2024"
+    assert event_slug == "tracon2024"  # noqa: S101
     event = Event.objects.get(slug=event_slug)
 
     poisons = Poison.objects.all().annotate(

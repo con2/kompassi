@@ -72,8 +72,10 @@ class Command(BaseCommand):
                 print(pzones)
 
                 # I am paranoid about runaway cascades
-                assert ps.distinct().count() == num_ps
-                assert rooms.distinct().count() == num_rooms
+                if ps.distinct().count() != num_ps:
+                    raise AssertionError("ps.distinct().count() == num_ps")
+                if rooms.distinct().count() != num_rooms:
+                    raise AssertionError("rooms.distinct().count() == num_rooms")
 
                 if not opts["really"]:
                     raise NotReally("It was all a bad dream :)")

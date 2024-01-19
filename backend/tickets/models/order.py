@@ -150,8 +150,10 @@ class Order(models.Model):
         self.order_product_set.filter(count__lte=0).delete()
 
     def confirm_order(self):
-        assert self.customer is not None
-        assert not self.is_confirmed
+        if not self.customer:
+            raise ValueError("Customer not set")
+        if self.is_confirmed:
+            raise ValueError("Already confirmed")
 
         self.clean_up_order_products()
 
@@ -160,7 +162,10 @@ class Order(models.Model):
         self.save()
 
     def confirm_payment(self, payment_date=None, send_email=True):
-        assert self.is_confirmed and not self.is_paid
+        if not self.is_confirmed:
+            raise ValueError("Must be confirmed to pay")
+        if self.is_paid:
+            raise ValueError("Already paid")
 
         if payment_date is None:
             payment_date = date.today()
@@ -176,7 +181,8 @@ class Order(models.Model):
             self.send_confirmation_message("payment_confirmation")
 
     def cancel(self, send_email=True):
-        assert self.is_confirmed
+        if not self.is_confirmed:
+            raise ValueError("Must be confirmed to cancel")
 
         if "lippukala" in settings.INSTALLED_APPS:
             self.lippukala_revoke_codes()
@@ -188,7 +194,8 @@ class Order(models.Model):
             self.send_confirmation_message("cancellation_notice")
 
     def uncancel(self, send_email=True):
-        assert self.is_cancelled
+        if not self.is_cancelled:
+            raise ValueError("Must be cancelled to uncancel")
 
         if "lippukala" in settings.INSTALLED_APPS:
             self.lippukala_reinstate_codes()
@@ -275,7 +282,8 @@ class Order(models.Model):
         from lippukala.models import Code
         from lippukala.models import Order as LippukalaOrder
 
-        assert self.customer
+        if not self.customer:
+            raise ValueError("Customer must be set")
 
         lippukala_order, created = LippukalaOrder.objects.get_or_create(
             reference_number=self.reference_number,
@@ -358,7 +366,8 @@ class Order(models.Model):
             self._send_confirmation_message(msgtype)
 
     def _send_confirmation_message(self, msgtype: str):
-        assert self.customer
+        if not self.customer:
+            raise ValueError("Customer must be set")
 
         # don't fail silently, warn admins instead
         bcc: list[str] = []

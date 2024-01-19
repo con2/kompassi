@@ -127,7 +127,8 @@ class Enrollment(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("updated at"))
 
     def cancel(self):
-        assert self.state in ["NEW", "ACCEPTED"]
+        if self.state not in ("NEW", "ACCEPTED"):
+            raise AssertionError(f"Can't cancel enrollment in state {self.state}")
         self.state = "CANCELLED"
         self.save()
 

@@ -2,7 +2,9 @@ from core.utils import initialize_form
 
 
 def initialize_signup_forms(request, event, signup, admin=False, SignupFormClass=None, SignupExtraFormClass=None):
-    assert all([SignupFormClass, SignupExtraFormClass]) or not any([SignupFormClass, SignupExtraFormClass])
+    assert (  # noqa: S101
+        all([SignupFormClass, SignupExtraFormClass]) or not any([SignupFormClass, SignupExtraFormClass])
+    )
 
     signup_extra = signup.signup_extra
 

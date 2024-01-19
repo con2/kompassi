@@ -9,7 +9,8 @@ class Command(BaseCommand):
         parser.add_argument("async_cmd_args", nargs="+", type=str)
 
     def handle(self, *args, **options):
-        assert "background_tasks" in settings.INSTALLED_APPS
+        if "background_tasks" not in settings.INSTALLED_APPS:
+            raise AssertionError('"background_tasks" not installed')
 
         from core.tasks import run_admin_command
 

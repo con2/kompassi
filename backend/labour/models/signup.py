@@ -416,7 +416,8 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     @classmethod
     def get_state_query_params(cls, state):
         flag_values = STATE_FLAGS_BY_NAME[state]
-        assert len(STATE_TIME_FIELDS) == len(flag_values)
+        if len(STATE_TIME_FIELDS) != len(flag_values):
+            raise ValueError("STATE_TIME_FIELDS and STATE_FLAGS_BY_NAME are out of sync")
 
         query_params = []
 
@@ -707,7 +708,8 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         return self.state == "confirmation"
 
     def confirm(self):
-        assert self.state == "confirmation"
+        if self.state != "confirmation":
+            raise ValueError(f"Must be in state 'confirmation' to confirm, not {self.state}")
 
         self.state = "accepted"
         self.save()

@@ -22,7 +22,10 @@ class GroupManagementMixin:
     def make_group_name(cls, host, suffix):
         # to avoid cases where someone calls .get_or_create_groups(foo, 'admins')
         # and would otherwise get groups a, d, m, i, n, s...
-        assert isinstance(suffix, str) and len(suffix) > 1
+        if not isinstance(suffix, str):
+            raise TypeError("suffix must be a string")
+        if len(suffix) <= 1:
+            raise ValueError(f"suffix {suffix!r} should be longer than a single character")
 
         from django.contrib.contenttypes.models import ContentType
 

@@ -3,7 +3,8 @@ from django.core.mail import EmailMessage
 
 
 def send_update_for_entry(subscription, entry):
-    assert subscription.channel == "email"
+    if subscription.channel != "email":
+        raise AssertionError("subscription.channel must be email")
 
     subject = entry.email_subject
     body = entry.email_body

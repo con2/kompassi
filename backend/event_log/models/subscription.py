@@ -60,7 +60,8 @@ class Subscription(models.Model):
     callback = code_property("callback_code")
 
     def send_update_for_entry(self, entry):
-        assert self.active
+        if not self.active:
+            raise ValueError("Subscription must be active")
 
         if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import subscription_send_update_for_entry
