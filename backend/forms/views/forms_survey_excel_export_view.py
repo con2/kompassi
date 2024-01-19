@@ -29,6 +29,7 @@ def forms_survey_excel_export_view(
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
     write_responses_as_excel(
+        survey.dimensions.order_by("order"),
         survey.combined_fields,
         survey.responses.order_by("created_at").only("form_data"),
         response,
