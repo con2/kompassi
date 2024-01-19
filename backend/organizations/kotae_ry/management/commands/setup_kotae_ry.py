@@ -42,10 +42,8 @@ Kotae ry:n Y-tunnus on 3364741-7.
         self.organization.save()
 
     def setup_membership(self):
-        (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(
-            self.organization, ["admins"])
-        (members_group,) = MembershipOrganizationMeta.get_or_create_groups(
-            self.organization, ["members"])
+        (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
+        (members_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["members"])
 
         self.meta, created = MembershipOrganizationMeta.objects.get_or_create(
             organization=self.organization,
@@ -76,8 +74,7 @@ Yhdistyksen varsinaiseksi jäseneksi voi päästä luonnollinen henkilö tai oik
             )
 
     def setup_access(self):
-        (admin_group,) = AccessOrganizationMeta.get_or_create_groups(
-            self.organization, ["admins"])
+        (admin_group,) = AccessOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
 
         meta, created = AccessOrganizationMeta.objects.get_or_create(
             organization=self.organization,
@@ -137,8 +134,7 @@ Yhdistyksen varsinaiseksi jäseneksi voi päästä luonnollinen henkilö tai oik
     def setup_directory(self):
         from directory.models import DirectoryOrganizationMeta
 
-        DirectoryOrganizationMeta.objects.get_or_create(
-            organization=self.organization)
+        DirectoryOrganizationMeta.objects.get_or_create(organization=self.organization)
 
 
 class Command(BaseCommand):
