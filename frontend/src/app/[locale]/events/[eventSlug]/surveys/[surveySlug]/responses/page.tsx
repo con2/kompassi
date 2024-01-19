@@ -89,7 +89,7 @@ export async function generateMetadata({ params, searchParams }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   // while dimension filters are not needed to form the title,
   // we would like to do only one query per request
@@ -105,7 +105,7 @@ export async function generateMetadata({ params, searchParams }: Props) {
   }
 
   return {
-    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.listTitle}) – Kompassi`,
+    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.responseListTitle}) – Kompassi`,
   };
 }
 
@@ -117,7 +117,7 @@ export default async function FormResponsesPage({
 }: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
   const session = await auth();
 
   // TODO encap
@@ -214,7 +214,7 @@ export default async function FormResponsesPage({
 
       <div className="d-flex align-items-middle">
         <ViewHeading>
-          {t.listTitle}
+          {t.responseListTitle}
           <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
         </ViewHeading>
         <div className="ms-auto">
@@ -236,7 +236,7 @@ export default async function FormResponsesPage({
 
       <DimensionFilters dimensions={dimensions} />
       <DataTable rows={responses} columns={columns} />
-      <p>{t.tableFooter(responses.length)}</p>
+      <p>{t.responseTableFooter(responses.length)}</p>
     </ViewContainer>
   );
 }

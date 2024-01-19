@@ -229,9 +229,24 @@ const translations = {
     listTitle: "Surveys",
     singleTitle: "Survey",
     forEvent: (eventName: string) => <>for {eventName}</>,
-    tableFooter: (count: number) => (
+    surveyTableFooter: (count: number) => (
       <>
         {count} survey{count === 1 ? "" : "s"}.
+      </>
+    ),
+    responseListTitle: "Responses",
+    responseDetailTitle: "Response",
+    summaryTitle: "Response summary",
+    ownResponsesTitle: "My responses",
+    responseTableFooter: (count: number) => (
+      <>
+        {count} response{count === 1 ? "" : "s"}.
+      </>
+    ),
+    dimensionTableFooter: (countDimensions: number, countValues: number) => (
+      <>
+        Total {countDimensions} dimension{countDimensions === 1 ? "" : "s"},{" "}
+        {countValues} value{countValues === 1 ? "" : "s"}.
       </>
     ),
     attributes: {
@@ -267,6 +282,20 @@ const translations = {
           },
         },
       },
+      dimensions: "Dimensions",
+      dimension: "Dimension",
+      values: "Values",
+      value: "Arvo",
+      createdAt: "Created at",
+      createdBy: "Created by",
+      event: "Event",
+      formTitle: "Survey title",
+      language: "Language",
+      choice: "Choice",
+      question: "Question",
+      countMissingResponses: "No response",
+      percentageOfResponses: "Share of responses",
+      technicalDetails: "Technical details",
     },
     actions: {
       fillIn: {
@@ -281,6 +310,10 @@ const translations = {
       viewResponses: "View responses",
       summary: "Summary",
       submit: "Submit",
+      downloadAsExcel: "Download as Excel",
+      returnToResponseList: "Return to the list of responses",
+      returnToSurveyList: "Return to the list of surveys",
+      saveDimensions: "Save dimensions",
     },
     thankYou: {
       title: "Thank you for your answers!",
@@ -296,39 +329,6 @@ const translations = {
         `You have already submitted ${countResponsesByCurrentUser} response${
           countResponsesByCurrentUser === 1 ? "" : "s"
         } to this survey. The maximum number of responses per user is ${maxResponsesPerUser}.`,
-    },
-  },
-
-  SurveyResponse: {
-    listTitle: "Responses",
-    singleTitle: "Response",
-    summaryTitle: "Response summary",
-    ownResponses: "My responses",
-    tableFooter: (count: number) => (
-      <>
-        {count} response{count === 1 ? "" : "s"}.
-      </>
-    ),
-    attributes: {
-      createdAt: "Created at",
-      createdBy: "Created by",
-      event: "Event",
-      formTitle: "Survey title",
-      language: "Language",
-      choice: "Choice",
-      question: "Question",
-      countResponses: "Responses",
-      countMissingResponses: "No response",
-      percentageOfResponses: "Share of responses",
-      technicalDetails: "Technical details",
-      dimensions: "Dimensions",
-    },
-    actions: {
-      downloadAsExcel: "Download as Excel",
-      returnToResponseList: "Return to the list of responses",
-      returnToSurveyList: "Return to the list of surveys",
-      summary: "View summary",
-      saveDimensions: "Save dimensions",
     },
     warnings: {
       choiceNotFound:

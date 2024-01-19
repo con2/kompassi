@@ -81,7 +81,7 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   const { data } = await getClient().query({
     query,
@@ -93,7 +93,7 @@ export async function generateMetadata({ params }: Props) {
   }
 
   return {
-    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.singleTitle}) – Kompassi`,
+    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.responseDetailTitle}) – Kompassi`,
   };
 }
 
@@ -118,7 +118,7 @@ export default async function SurveyResponsePage({ params }: Props) {
     notFound();
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   const { anonymity } = data.event.forms.survey;
   const { createdAt, language, form } = data.event.forms.survey.response;
@@ -175,7 +175,7 @@ export default async function SurveyResponsePage({ params }: Props) {
       </Link>
 
       <ViewHeading>
-        {t.singleTitle}
+        {t.responseDetailTitle}
         <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
       </ViewHeading>
 

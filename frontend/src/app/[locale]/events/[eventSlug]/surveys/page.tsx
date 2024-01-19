@@ -176,6 +176,12 @@ export default async function SurveysPage({ params }: Props) {
               messages={t.actions.share}
             />{" "}
             <Link
+              href={`${url}/dimensions`}
+              className="btn btn-sm btn-outline-primary"
+            >
+              {t.attributes.dimensions}…
+            </Link>{" "}
+            <Link
               href={`${url}/responses`}
               className="btn btn-sm btn-outline-primary"
             >
@@ -202,7 +208,7 @@ export default async function SurveysPage({ params }: Props) {
         <ViewHeading.Sub>{t.forEvent(data.event.name)}</ViewHeading.Sub>
       </ViewHeading>
       <DataTable rows={surveys} columns={columns} />
-      <p>{t.tableFooter(surveys.length)}</p>
+      <p>{t.surveyTableFooter(surveys.length)}</p>
     </ViewContainer>
   );
 }

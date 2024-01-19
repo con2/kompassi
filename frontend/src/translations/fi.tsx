@@ -230,9 +230,24 @@ const translations: Translations = {
     listTitle: "Kyselyt",
     singleTitle: "Kysely",
     forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
-    tableFooter: (count: number) => (
+    surveyTableFooter: (count: number) => (
       <>
         {count} kysely{count === 1 ? "" : "ä"}.
+      </>
+    ),
+    responseListTitle: "Kyselyvastaukset",
+    responseDetailTitle: "Kyselyvastaus",
+    summaryTitle: "Vastausten yhteenveto",
+    ownResponsesTitle: "Omat kyselyvastaukset",
+    responseTableFooter: (count: number) => (
+      <>
+        {count} kyselyvastaus{count === 1 ? "" : "ta"}.
+      </>
+    ),
+    dimensionTableFooter: (countDimensions: number, countValues: number) => (
+      <>
+        Yhteensä {countDimensions} dimensio{countDimensions === 1 ? "" : "ta"},{" "}
+        {countValues} arvo{countValues === 1 ? "" : "a"}.
       </>
     ),
     attributes: {
@@ -268,6 +283,20 @@ const translations: Translations = {
           },
         },
       },
+      dimensions: "Dimensiot",
+      dimension: "Dimensio",
+      values: "Arvot",
+      value: "Arvo",
+      createdAt: "Lähetysaika",
+      createdBy: "Lähettäjä",
+      event: "Tapahtuma",
+      formTitle: "Kyselyn otsikko",
+      language: "Kieli",
+      choice: "Vaihtoehto",
+      question: "Kysymys",
+      countMissingResponses: "Ei vastausta",
+      percentageOfResponses: "Osuus vastauksista",
+      technicalDetails: "Tekniset tiedot",
     },
     actions: {
       fillIn: {
@@ -282,6 +311,10 @@ const translations: Translations = {
       viewResponses: "Vastaukset",
       summary: "Yhteenveto",
       submit: "Lähetä",
+      downloadAsExcel: "Lataa Excel-tiedostona",
+      returnToResponseList: "Palaa vastauslistaukseen",
+      returnToSurveyList: "Palaa kyselylistaukseen",
+      saveDimensions: "Tallenna dimensiot",
     },
     thankYou: {
       title: "Kiitos vastauksistasi!",
@@ -301,39 +334,6 @@ const translations: Translations = {
         }. Voit vastata tähän kyselyyn enintään ${maxResponsesPerUser} ${
           maxResponsesPerUser === 1 ? "kerran" : "kertaa"
         }.`,
-    },
-  },
-
-  SurveyResponse: {
-    listTitle: "Kyselyvastaukset",
-    singleTitle: "Kyselyvastaus",
-    summaryTitle: "Vastausten yhteenveto",
-    ownResponses: "Omat kyselyvastaukset",
-    tableFooter: (count: number) => (
-      <>
-        {count} kyselyvastaus{count === 1 ? "" : "ta"}.
-      </>
-    ),
-    attributes: {
-      createdAt: "Lähetysaika",
-      createdBy: "Lähettäjä",
-      event: "Tapahtuma",
-      formTitle: "Kyselyn otsikko",
-      language: "Kieli",
-      choice: "Vaihtoehto",
-      question: "Kysymys",
-      countResponses: "Vastauksia",
-      countMissingResponses: "Ei vastausta",
-      percentageOfResponses: "Osuus vastauksista",
-      technicalDetails: "Tekniset tiedot",
-      dimensions: "Dimensiot",
-    },
-    actions: {
-      downloadAsExcel: "Lataa Excel-tiedostona",
-      returnToResponseList: "Palaa vastauslistaukseen",
-      returnToSurveyList: "Palaa kyselylistaukseen",
-      summary: "Näytä yhteenveto",
-      saveDimensions: "Tallenna dimensiot",
     },
     warnings: {
       choiceNotFound:

@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { makeColorTranslucent } from "./helpers";
 import type { Dimension } from "./models";
 import { validateCachedDimensions } from "./models";
 
@@ -21,9 +22,7 @@ export default function ColoredDimensionTableCell(props: Props) {
     const valueColor = dimension.values.find(
       (value) => value.slug === firstValueSlug,
     )?.color;
-    backgroundColor = valueColor
-      ? `color-mix(in srgb, ${valueColor}, transparent 85%)`
-      : undefined;
+    backgroundColor = valueColor ? makeColorTranslucent(valueColor) : undefined;
   }
 
   return (

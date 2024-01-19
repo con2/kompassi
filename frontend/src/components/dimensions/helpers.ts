@@ -101,3 +101,7 @@ export function buildDimensionForm(
 
   return { fields, values };
 }
+
+export function makeColorTranslucent(color: string) {
+  return `color-mix(in srgb, ${color}, transparent 85%)`;
+}

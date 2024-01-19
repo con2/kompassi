@@ -47,10 +47,10 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   return {
-    title: `${t.ownResponses} – Kompassi`,
+    title: `${t.ownResponsesTitle} – Kompassi`,
   };
 }
 
@@ -72,7 +72,7 @@ export default async function OwnResponsesPage({ params }: Props) {
     notFound();
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
   const columns: Column<OwnResponseFragment>[] = [
     {
       slug: "createdAt",
@@ -99,9 +99,9 @@ export default async function OwnResponsesPage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <ViewHeading>{t.ownResponses}</ViewHeading>
+      <ViewHeading>{t.ownResponsesTitle}</ViewHeading>
       <DataTable rows={responses} columns={columns} />
-      <p>{t.tableFooter(responses.length)}</p>
+      <p>{t.responseTableFooter(responses.length)}</p>
     </ViewContainer>
   );
 }

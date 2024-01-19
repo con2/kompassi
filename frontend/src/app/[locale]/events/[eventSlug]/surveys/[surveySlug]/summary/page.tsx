@@ -48,7 +48,7 @@ function TextFieldSummaryComponent({
   fieldSummary,
   translations,
 }: TextFieldSummaryComponentProps) {
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
   const { summary, countResponses, countMissingResponses } = fieldSummary;
   return (
     <>
@@ -82,7 +82,7 @@ function SelectFieldSummaryComponent({
 }: SelectFieldSummaryComponentProps) {
   const { countResponses, countMissingResponses, summary } = fieldSummary;
   showMissingResponses ??= true;
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   return (
     <table className="table table-striped table-bordered">
@@ -160,7 +160,7 @@ function FieldSummaryComponent({
   field,
   fieldSummary,
 }: FieldSummaryComponentProps) {
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   let choices: Choice[] = [];
   let questions: Choice[] = [];
@@ -294,7 +294,7 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   const { data } = await getClient().query({
     query,
@@ -318,7 +318,7 @@ export async function generateMetadata({ params }: Props) {
 export default async function SummaryPage({ params }: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
   const session = await auth();
 
   // TODO encap
