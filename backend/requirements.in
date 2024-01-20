@@ -1,7 +1,6 @@
 git+https://github.com/kcsry/lippukala@v2.0.0
 git+https://github.com/kcsry/paikkala@v0.2.0
 Babel
-black
 bleach
 boto3
 celery
@@ -39,6 +38,7 @@ regex
 reportlab
 requests
 requests-oauthlib
+ruff
 tabulate
 unicodecsv
 vobject
