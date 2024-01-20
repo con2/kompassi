@@ -81,10 +81,12 @@ class LimitedResponseType(DjangoObjectType):
             if survey is None:
                 return {}
 
+            dimensions_by_slug = {dimension.slug: dimension for dimension in survey.dimensions.all()}
+
             return {
                 k: v
                 for k, v in cached_dimensions.items()
-                if (dimension := survey.dimensions.filter(slug=k).first()) and dimension.is_key_dimension
+                if (dimension := dimensions_by_slug.get(k)) and dimension.is_key_dimension
             }
 
         return cached_dimensions
