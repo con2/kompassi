@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
 
-import type { Dimension, DimensionValue } from "../models";
+import type { Dimension, DimensionValue } from "./models";
 
 interface Props {
   dimensions: Dimension[];
