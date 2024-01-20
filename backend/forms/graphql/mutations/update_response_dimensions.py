@@ -37,18 +37,13 @@ class UpdateResponseDimensions(graphene.Mutation):
 
         survey = Survey.objects.get(event__slug=event_slug, slug=survey_slug)
         response = survey.responses.get(id=response_id)
+        dimensions = list(survey.dimensions.all())
 
         # TODO bastardization of graphql_check_access, rethink
         graphql_check_access(survey, info, "response", "mutation")
 
-        fields_single = [
-            Field(slug=dimension.slug, type=FieldType.SINGLE_SELECT, choices=dimension.get_choices())
-            for dimension in survey.dimensions.all()
-        ]
-        fields_multi = [
-            Field(slug=dimension.slug, type=FieldType.MULTI_SELECT, choices=dimension.get_choices())
-            for dimension in survey.dimensions.all()
-        ]
+        fields_single = [Field.from_dimension(dimension, FieldType.SINGLE_SELECT) for dimension in dimensions]
+        fields_multi = [Field.from_dimension(dimension, FieldType.MULTI_SELECT) for dimension in dimensions]
 
         values_single, warnings_single = process_form_data(fields_single, form_data)
         if warnings_single:
