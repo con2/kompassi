@@ -356,7 +356,7 @@ class Programme(models.Model, CsvExportMixin):
         max_length=max(len(key) for (key, label) in PHOTOGRAPHY_CHOICES),
         choices=PHOTOGRAPHY_CHOICES,
         blank=True,
-        verbose_name=_("Photography of your prorgamme"),
+        verbose_name=_("Photography of your programme"),
         help_text=_(
             "Our official photographers will try to cover all programmes whose hosts request their programmes "
             "to be photographed."

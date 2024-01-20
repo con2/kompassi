@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ],
                 help_text="Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed.",
                 max_length=6,
-                verbose_name="Photography of your prorgamme",
+                verbose_name="Photography of your programme",
             ),
         ),
         migrations.AlterField(

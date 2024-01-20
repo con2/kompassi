@@ -575,7 +575,7 @@ msgid "Phone number"
 msgstr "Puhelinnumero"
 
 #: models/programme.py
-msgid "Photography of your prorgamme"
+msgid "Photography of your programme"
 msgstr "Ohjelman valokuvaus"
 
 #: templates/programme_admin_publish_view.pug
