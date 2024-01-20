@@ -41,10 +41,10 @@ class Dimension(models.Model):
     def get_choices(self, language: str | None = None) -> list[Choice]:
         return [
             Choice(
-                slug=value.slug,
-                title=get_message_in_language(value.title, language),  # type: ignore  # TODO why does this get typed as str and not dict?
+                slug=slug,
+                title=get_message_in_language(title, language),  # type: ignore  # TODO why does this get typed as str and not dict?
             )
-            for value in self.values.all()
+            for slug, title in self.values.all().values_list("slug", "title")
         ]
 
     def admin_get_event(self) -> Event:

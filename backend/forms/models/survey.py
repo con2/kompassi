@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Collection, Mapping
 from typing import TYPE_CHECKING
 
 from django.conf import settings
@@ -14,7 +15,7 @@ from ..utils.merge_form_fields import merge_fields
 from .form import Form
 
 if TYPE_CHECKING:
-    from .dimension import Dimension
+    from .dimension import Dimension, DimensionValue
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 ANONYMITY_CHOICES = [
@@ -161,6 +162,19 @@ class Survey(models.Model):
         valuesies = [response.get_processed_form_data(fields)[0] for response in self.responses.all().only("form_data")]
 
         return summarize_responses(fields, valuesies)
+
+    def preload_dimensions(self, dimension_values: Mapping[str, Collection[str]] | None = None):
+        dimensions = self.dimensions.all().prefetch_related("values")
+        if dimension_values is not None:
+            dimensions = dimensions.filter(slug__in=dimension_values.keys())
+
+        dimensions_by_slug = {dimension.slug: dimension for dimension in dimensions}
+
+        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] = {}
+        for dimension in dimensions_by_slug.values():
+            values_by_dimension_by_slug[dimension.slug] = {value.slug: value for value in dimension.values.all()}
+
+        return dimensions_by_slug, values_by_dimension_by_slug
 
     class Meta:
         unique_together = [("event", "slug")]
