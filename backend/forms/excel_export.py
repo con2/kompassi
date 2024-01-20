@@ -72,10 +72,7 @@ def write_responses_as_excel(
             localtime(response.created_at).replace(tzinfo=None),
             response.form.language,
         ]
-        response_row.extend(
-            ", ".join(rdv.value.slug for rdv in response.dimensions.filter(dimension=dimension))
-            for dimension in dimensions
-        )
+        response_row.extend(", ".join(response.cached_dimensions.get(dimension.slug, [])) for dimension in dimensions)
         response_row.extend(cell for field in fields for cell in get_response_cells(field, response.values))
         output.writerow(response_row)
 
