@@ -59,7 +59,7 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
 
       switch (field.presentation) {
         case "dropdown":
-          choices = [{ slug: "", title: "" }].concat(field.choices);
+          choices = [{ slug: "", title: "" }, ...field.choices];
 
           return (
             <select
