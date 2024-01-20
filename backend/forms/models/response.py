@@ -80,7 +80,8 @@ class Response(models.Model):
         This makes sense only for responses that are related to a survey.
         """
         survey = self.survey
-        assert survey is not None, "Cannot lift dimension values for a response that is not related to a survey"
+        if survey is None:
+            raise ValueError("Cannot lift dimension values for a response that is not related to a survey")
 
         for dimension in survey.dimensions.all():
             # set initial values
@@ -117,7 +118,8 @@ class Response(models.Model):
             self.dimensions.get_or_create(dimension=dimension, value=value)
 
     def set_dimension_values(self, dimension_values: Mapping[str, Collection[str]]):
-        assert self.survey
+        if self.survey is None:
+            raise ValueError("Cannot set dimension values for a response that is not related to a survey")
 
         for dimension_slug, value_slugs in dimension_values.items():
             dimension = self.survey.dimensions.get(slug=dimension_slug)
