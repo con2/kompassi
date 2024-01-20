@@ -239,15 +239,21 @@ const translations: Translations = {
     responseDetailTitle: "Kyselyvastaus",
     summaryTitle: "Vastausten yhteenveto",
     ownResponsesTitle: "Omat kyselyvastaukset",
-    responseTableFooter: (count: number) => (
+    responseTableFooter: (filteredCount: number, totalCount: number) => (
       <>
-        {count} kyselyvastaus{count === 1 ? "" : "ta"}.
+        Näytetään {filteredCount} kyselyvastaus{filteredCount === 1 ? "" : "ta"}{" "}
+        (yhteensä {totalCount}).
       </>
     ),
     dimensionTableFooter: (countDimensions: number, countValues: number) => (
       <>
         Yhteensä {countDimensions} dimensio{countDimensions === 1 ? "" : "ta"},{" "}
         {countValues} arvo{countValues === 1 ? "" : "a"}.
+      </>
+    ),
+    summaryOf: (filteredCount: number, totalCount: number) => (
+      <>
+        Yhteenveto {filteredCount} vastauksesta (yhteensä {totalCount}).
       </>
     ),
     attributes: {

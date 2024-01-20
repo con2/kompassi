@@ -238,15 +238,22 @@ const translations = {
     responseDetailTitle: "Response",
     summaryTitle: "Response summary",
     ownResponsesTitle: "My responses",
-    responseTableFooter: (count: number) => (
+    responseTableFooter: (filteredCount: number, totalCount: number) => (
       <>
-        {count} response{count === 1 ? "" : "s"}.
+        Displaying {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
+        (total {totalCount}).
       </>
     ),
     dimensionTableFooter: (countDimensions: number, countValues: number) => (
       <>
         Total {countDimensions} dimension{countDimensions === 1 ? "" : "s"},{" "}
         {countValues} value{countValues === 1 ? "" : "s"}.
+      </>
+    ),
+    summaryOf: (filteredCount: number, totalCount: number) => (
+      <>
+        Summary of {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
+        (total {totalCount}).
       </>
     ),
     attributes: {

@@ -155,14 +155,6 @@ class Survey(models.Model):
 
         return Response.objects.filter(form__in=self.languages.all()).order_by("created_at")
 
-    def get_summary(self, base_language: str = DEFAULT_LANGUAGE):
-        from ..utils.summarize_responses import summarize_responses
-
-        fields = self.get_combined_fields(base_language)
-        valuesies = [response.get_processed_form_data(fields)[0] for response in self.responses.all().only("form_data")]
-
-        return summarize_responses(fields, valuesies)
-
     def preload_dimensions(self, dimension_values: Mapping[str, Collection[str]] | None = None):
         dimensions = self.dimensions.all().prefetch_related("values")
         if dimension_values is not None:

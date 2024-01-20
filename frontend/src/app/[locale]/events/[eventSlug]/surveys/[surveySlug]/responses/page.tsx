@@ -61,6 +61,8 @@ const query = gql(`
             }
           }
 
+          countResponses
+
           responses(filters: $filters) {
             ...SurveyResponse
           }
@@ -135,12 +137,14 @@ export default async function FormResponsesPage({
     notFound();
   }
 
-  const { anonymity } = data.event.forms.survey;
+  const survey = data.event.forms.survey;
+
+  const { anonymity } = survey;
   const anonymityMessages =
     translations.Survey.attributes.anonymity.thirdPerson;
 
-  const dimensions = data.event.forms.survey.dimensions ?? [];
-  const keyFields = data.event.forms.survey.fields;
+  const dimensions = survey.dimensions ?? [];
+  const keyFields = survey.fields;
   validateFields(keyFields);
 
   const columns: Column<SurveyResponseFragment>[] = [
@@ -204,7 +208,7 @@ export default async function FormResponsesPage({
 
   const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
   const summaryUrl = `/events/${eventSlug}/surveys/${surveySlug}/summary?from=responses`;
-  const responses = data.event.forms.survey.responses || [];
+  const responses = survey.responses || [];
 
   return (
     <ViewContainer>
@@ -215,7 +219,7 @@ export default async function FormResponsesPage({
       <div className="d-flex align-items-middle">
         <ViewHeading>
           {t.responseListTitle}
-          <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
+          <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
         </ViewHeading>
         <div className="ms-auto">
           <a className="btn btn-outline-primary" href={excelUrl}>
@@ -236,7 +240,7 @@ export default async function FormResponsesPage({
 
       <DimensionFilters dimensions={dimensions} />
       <DataTable rows={responses} columns={columns} />
-      <p>{t.responseTableFooter(responses.length)}</p>
+      <p>{t.responseTableFooter(responses.length, survey.countResponses)}</p>
     </ViewContainer>
   );
 }

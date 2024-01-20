@@ -8,6 +8,7 @@ from core.utils import normalize_whitespace
 
 from ..models.form import Form
 from ..models.survey import Survey
+from ..utils.summarize_responses import summarize_responses
 from .dimension import SurveyDimensionType
 from .form import FormType
 from .limited_survey import LimitedSurveyType
@@ -79,18 +80,7 @@ class SurveyType(LimitedSurveyType):
         Returns the responses to this survey regardless of language version used.
         Authorization required.
         """
-        if filters is None:
-            filters = []
-
-        queryset = survey.responses.all()
-
-        for filter in filters:
-            queryset = queryset.filter(
-                dimensions__dimension__slug=filter.dimension,
-                dimensions__value__slug__in=filter.values,
-            )
-
-        return queryset
+        return DimensionFilterInput.filter(survey.responses.all(), filters)
 
     responses = graphene.List(
         graphene.NonNull(LimitedResponseType),
@@ -129,31 +119,47 @@ class SurveyType(LimitedSurveyType):
 
     @graphql_query_cbac_required
     @staticmethod
-    def resolve_count_responses(survey: Survey, info):
+    def resolve_count_responses(
+        survey: Survey,
+        info,
+        filters: list[DimensionFilterInput] | None = None,
+    ):
         """
         Returns the number of responses to this survey regardless of language version used.
         Authorization required.
         """
-        return survey.responses.count()
+        return DimensionFilterInput.filter(survey.responses.all(), filters).count()
 
     count_responses = graphene.Field(
         graphene.NonNull(graphene.Int),
+        filters=graphene.List(DimensionFilterInput),
         description=normalize_whitespace(resolve_count_responses.__doc__ or ""),
     )
 
     @graphql_query_cbac_required
     @staticmethod
-    def resolve_summary(survey: Survey, info, lang: str = DEFAULT_LANGUAGE):
+    def resolve_summary(
+        survey: Survey,
+        info,
+        lang: str = DEFAULT_LANGUAGE,
+        filters: list[DimensionFilterInput] | None = None,
+    ):
         """
         Returns a summary of responses to this survey.  If a language is specified,
         that language is used as the base for the combined fields. Order of fields
         not present in the base language is not guaranteed. Authorization required.
         """
-        return {slug: summary.model_dump(by_alias=True) for slug, summary in survey.get_summary(lang).items()}
+        responses = DimensionFilterInput.filter(survey.responses.all(), filters)
+        fields = survey.get_combined_fields(lang)
+        valuesies = [response.get_processed_form_data(fields)[0] for response in responses.only("form_data")]
+        summary = summarize_responses(fields, valuesies)
+
+        return {slug: summary.model_dump(by_alias=True) for slug, summary in summary.items()}
 
     summary = graphene.Field(
         GenericScalar,
         lang=graphene.String(),
+        filters=graphene.List(DimensionFilterInput),
         description=normalize_whitespace(resolve_summary.__doc__ or ""),
     )
 
