@@ -84,12 +84,11 @@ class SurveyType(LimitedSurveyType):
 
         queryset = survey.responses.all()
 
-        if filters:
-            for filter in filters:
-                queryset = queryset.filter(
-                    dimensions__dimension__slug=filter.dimension,
-                    dimensions__value__slug__in=filter.values,
-                )
+        for filter in filters:
+            queryset = queryset.filter(
+                dimensions__dimension__slug=filter.dimension,
+                dimensions__value__slug__in=filter.values,
+            )
 
         return queryset
 
