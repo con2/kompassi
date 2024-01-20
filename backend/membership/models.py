@@ -303,7 +303,8 @@ class Term(models.Model):
         return super().save(*args, **kwargs)
 
     def get_reference_number_for_member(self, member):
-        assert self.reference_number_template
+        if not self.reference_number_template:
+            raise ValueError("Reference number template missing")
         return append_reference_number_checksum(self.reference_number_template.format(member.id))
 
     @property
@@ -382,7 +383,8 @@ class MembershipFeePayment(models.Model):
         )
 
     def confirm_payment(self, payment_date=None, payment_method="checkout"):
-        assert not self.is_paid
+        if self.is_paid:
+            raise ValueError("Already paid!")
 
         if payment_date is None:
             payment_date = date.today()

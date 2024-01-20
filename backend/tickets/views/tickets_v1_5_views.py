@@ -108,7 +108,8 @@ def tickets_confirmed_view(request, event, order):
     If that order is not paid, this view will present the user a message saying so, and
     a button to complete the payment.
     """
-    assert order.is_confirmed
+    if not order.is_confirmed:
+        raise ValueError("order must be confirmed")
 
     vars = dict(
         event=event,

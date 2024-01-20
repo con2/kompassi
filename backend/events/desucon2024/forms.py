@@ -51,7 +51,8 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         kwargs.pop("event")
         admin = kwargs.pop("admin")
 
-        assert not admin
+        if admin:
+            raise AssertionError("must not be admin")
 
         super().__init__(*args, **kwargs)
 
@@ -145,7 +146,8 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
 class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
     def get_job_categories_query(self, event, admin=False):
-        assert not admin
+        if admin:
+            raise AssertionError("must not be admin")
 
         return Q(event__slug="desucon2024", public=False) & ~Q(slug="vastaava")
 

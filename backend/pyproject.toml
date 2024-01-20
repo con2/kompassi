@@ -19,6 +19,7 @@ extend-select = [
     "RUF100",  # unused noqa
     "SIM",
     "UP",
+    "S101",  # asserts
 ]
 extend-ignore = [
     "C408",  # unnecessary dict call (these are likely stylistic)
@@ -47,4 +48,14 @@ extend-ignore = [
 ]
 "**/test*.py" = [
     "PLR2004",  # magic values are ok in tests
+    "S101",  # asserts are ok in tests
+]
+"events/*201*/*.py" = [
+    "S101",  # asserts are ok in legacy events
+]
+"events/*202[0123]/*.py" = [
+    "S101",  # asserts are ok in legacy events
+]
+"**/management/**.py" = [
+    "S101",  # asserts are ok in one-off management commands
 ]

@@ -37,7 +37,8 @@ def get_slugifier(sep: str = "-"):
     'foo_bar'
     """
 
-    assert len(sep) == 1, "Separator must be a single character"
+    if len(sep) != 1:
+        raise AssertionError("Separator must be a single character")
 
     char_map = {
         " ": sep,

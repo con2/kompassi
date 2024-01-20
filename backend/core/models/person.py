@@ -484,7 +484,8 @@ class Person(models.Model):
         )
 
     def ensure_basic_groups(self):
-        assert self.user
+        if not self.user:
+            raise AssertionError("self.user")
         for group_name in settings.KOMPASSI_NEW_USER_GROUPS:
             self.user.groups.add(Group.objects.get(name=group_name))
 

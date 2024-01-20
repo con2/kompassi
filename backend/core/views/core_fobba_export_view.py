@@ -69,7 +69,8 @@ def core_fobba_export_view(request, event_slug, format="xlsx"):
         cancellation_time__isnull=True,
     ):
         customer = order.customer
-        assert customer
+        if not customer:
+            raise AssertionError("customer missing")
 
         id_fields = (
             customer.last_name,

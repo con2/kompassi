@@ -61,7 +61,8 @@ class Privilege(models.Model):
 
     @classmethod
     def get_potential_privileges(cls, person, **extra_criteria):
-        assert person.user is not None
+        if not person.user:
+            raise ValueError("person.user must be set")
         return (
             cls.objects.filter(group_privileges__group__in=person.user.groups.all(), **extra_criteria)
             .exclude(granted_privileges__person=person)

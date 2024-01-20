@@ -1742,7 +1742,8 @@ class Programme(models.Model, CsvExportMixin):
         from .programme_role import ProgrammeRole
 
         for person in self.organizers.all():
-            assert person.user
+            if not person.user:
+                raise ValueError(f"{person=} has no associated user")
 
             groups_to_add = []
             groups_to_remove = []
@@ -1880,7 +1881,7 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def host_cannot_edit_explanation(self):
-        assert not self.host_can_edit
+        assert not self.host_can_edit  # noqa: S101
 
         if self.state == "cancelled":
             return _("You have cancelled this programme.")
@@ -1921,7 +1922,8 @@ class Programme(models.Model, CsvExportMixin):
         if self.paikkala_program:
             return self.paikkala_program
 
-        assert self.can_paikkalize
+        if not self.can_paikkalize:
+            raise AssertionError("self.can_paikkalize")
 
         from django.template.defaultfilters import truncatechars
         from paikkala.models import Program as PaikkalaProgram

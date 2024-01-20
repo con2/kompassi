@@ -136,7 +136,8 @@ class PrivilegesForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
-        assert "initial" not in kwargs
+        if "initial" in kwargs:
+            raise AssertionError('"initial" must not be passed to PrivilegesForm')
 
         self.event = kwargs.pop("event")
         self.user = kwargs.pop("user")

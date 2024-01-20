@@ -202,7 +202,8 @@ class Badge(models.Model, CsvExportMixin):
 
         from badges.utils import default_badge_factory
 
-        assert person is not None
+        if not person:
+            raise AssertionError("person is not set")
 
         with transaction.atomic():
             try:
@@ -339,7 +340,8 @@ class Badge(models.Model, CsvExportMixin):
         because a batch that is already created but not yet printed may have been downloaded as Excel
         already. A Batch should never change after being created.
         """
-        assert not self.is_revoked
+        if self.is_revoked:
+            raise AssertionError("Already revoked")
 
         if self.is_printed_separately or self.batch:
             self.is_revoked = True
@@ -351,7 +353,8 @@ class Badge(models.Model, CsvExportMixin):
             return None
 
     def unrevoke(self):
-        assert self.is_revoked
+        if not self.is_revoked:
+            raise AssertionError("Not revoked")
         self.is_revoked = False
         self.revoked_by = None
         self.save()

@@ -85,7 +85,8 @@ class ExternalEvent(models.Model):
         return " ".join(headline_parts)
 
     def as_dict(self, format="listing"):
-        assert format == "listing"
+        if format != "listing":
+            raise ValueError("Only format=listing is supported")
 
         return pick_attrs(
             self,

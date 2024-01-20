@@ -116,7 +116,8 @@ def merge(mergee, into):
     Updates all references to `mergee` to point to `into` and deletes `mergee`.
     """
     ModelClass = mergee._meta.model
-    assert into._meta.model is ModelClass, "thou shalt not merge instances of different models"
+    if into._meta.model is not ModelClass:
+        raise AssertionError("thou shalt not merge instances of different models")
 
     for RelatedModel, field in get_reference_fields(ModelClass):
         if field.many_to_many:

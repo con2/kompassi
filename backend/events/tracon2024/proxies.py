@@ -62,7 +62,7 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
 
     @classmethod
     def get_csv_fields(cls, event):
-        assert event.slug == "tracon2024"
+        assert event.slug == "tracon2024"  # noqa: S101
         from core.models import Person
 
         return [

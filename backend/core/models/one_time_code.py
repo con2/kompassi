@@ -32,7 +32,8 @@ class OneTimeCodeMixin:
         return self.code
 
     def revoke(self):
-        assert self.state == "valid"
+        if self.state != "valid":
+            raise ValueError("Must be valid to revoke")
         self.state = "revoked"
         self.used_at = timezone.now()
         self.save()
@@ -69,7 +70,8 @@ class OneTimeCodeMixin:
             EmailMessage(**opts).send(fail_silently=True)
 
     def mark_used(self):
-        assert self.state == "valid"
+        if self.state != "valid":
+            raise ValueError("Must be valid to mark used")
 
         self.used_at = timezone.now()
         self.state = "used"

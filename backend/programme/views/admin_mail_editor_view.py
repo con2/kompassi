@@ -28,7 +28,8 @@ def admin_mail_editor_view(request, vars, event, message_id=None):
         action = request.POST.get("action")
 
         if action == "delete":
-            assert message
+            if not message:
+                raise AssertionError("message must be set")
             if message.is_sent:
                 messages.error(request, "Lähetettyä viestiä ei voi poistaa.")
             else:

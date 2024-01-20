@@ -48,7 +48,8 @@ class Batch(models.Model):
         from .badge import Badge
 
         if personnel_class is not None:
-            assert personnel_class.event == event
+            if personnel_class.event != event:
+                raise AssertionError("personnel_class in wrong event")
             badges = Badge.objects.filter(personnel_class=personnel_class)
         else:
             badges = Badge.objects.filter(personnel_class__event=event)

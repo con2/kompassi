@@ -2,6 +2,7 @@ from functools import wraps
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404, redirect
 
 from .models import Event, Organization, Person
@@ -84,12 +85,14 @@ def unperson_page_wizard(*pages):
 
     Directs any User without Person through a series of pages before letting them perform this view.
     """
-    assert len(pages) >= 1
+    if len(pages) < 1:
+        raise ValueError("Must have at least one page")
 
     def outer(view_func):
         @wraps(view_func)
         def inner(request, *args, **kwargs):
-            assert request.user.is_authenticated
+            if not request.user.is_authenticated:
+                raise PermissionDenied("User not authenticated")
 
             try:
                 _person = request.user.person

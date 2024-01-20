@@ -1,5 +1,6 @@
 import graphene
 from django.conf import settings
+from django.core.exceptions import SuspiciousOperation
 
 from access.cbac import graphql_check_access
 from core.utils import get_objects_within_period, normalize_whitespace
@@ -44,7 +45,8 @@ class FormsProfileMetaType(graphene.ObjectType):
         """
         Returns all responses submitted by the current user.
         """
-        assert info.context.user == meta.person.user
+        if info.context.user != meta.person.user:
+            raise SuspiciousOperation("User mismatch")
         return Response.objects.filter(created_by=meta.person.user).order_by("-created_at")
 
     responses = graphene.NonNull(
@@ -59,7 +61,8 @@ class FormsProfileMetaType(graphene.ObjectType):
         """
         Returns a single response submitted by the current user.
         """
-        assert info.context.user == meta.person.user
+        if info.context.user != meta.person.user:
+            raise SuspiciousOperation("User mismatch")
         return Response.objects.get(created_by=meta.person.user, id=id)
 
     response = graphene.Field(
