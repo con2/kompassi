@@ -33,7 +33,7 @@ class LimitedResponseType(DjangoObjectType):
             description=(
                 "If the response is related to a survey, only return values of fields "
                 "marked key fields in the survey. Note that setting keyFieldsOnly for a "
-                "response not related to a survey will result in an empty list."
+                "response not related to a survey will result in an empty dict."
             ),
         ),
     )
