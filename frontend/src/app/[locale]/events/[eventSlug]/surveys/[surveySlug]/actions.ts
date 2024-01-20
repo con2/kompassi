@@ -6,12 +6,21 @@ import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const mutation = graphql(`
+const createSurveyResponseMutation = graphql(`
   mutation CreateSurveyResponse($input: CreateSurveyResponseInput!) {
     createSurveyResponse(input: $input) {
       response {
         id
       }
+    }
+  }
+`);
+
+const initFileUploadMutation = graphql(`
+  mutation InitFileUploadMutation($input: InitFileUploadInput!) {
+    initFileUpload(input: $input) {
+      uploadUrl
+      fileUrl
     }
   }
 `);
@@ -22,14 +31,35 @@ export async function submit(
   surveySlug: string,
   formData: FormData,
 ) {
+  const client = getClient();
+
+  for (const [key, value] of formData.entries()) {
+    if (!(value instanceof File)) continue;
+
+    const input = { filename: value.name, fileType: value.type };
+    const init = await client.mutate({
+      mutation: initFileUploadMutation,
+      variables: { input },
+    });
+    const { uploadUrl, fileUrl } = init.data?.initFileUpload ?? {};
+    if (!uploadUrl || !fileUrl)
+      throw new Error("Failed to initialize file upload");
+
+    await fetch(uploadUrl, {
+      method: "PUT",
+      body: value,
+    });
+    formData.set(key, fileUrl);
+  }
+
   const input = {
     locale,
     eventSlug,
     surveySlug,
     formData: Object.fromEntries(formData),
   };
-  await getClient().mutate({
-    mutation,
+  await client.mutate({
+    mutation: createSurveyResponseMutation,
     variables: { input },
   });
   revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}/responses`);
