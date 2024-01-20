@@ -51,10 +51,12 @@ class UpdateResponseDimensions(graphene.Mutation):
         ]
 
         values_single, warnings_single = process_form_data(fields_single, form_data)
-        assert not warnings_single, warnings_single
+        if warnings_single:
+            raise ValueError(warnings_single)
 
         values_multi, warnings_multi = process_form_data(fields_multi, form_data)
-        assert not warnings_multi, warnings_multi
+        if warnings_multi:
+            raise ValueError(warnings_multi)
 
         values = {k: {v} for k, v in values_single.items() if v}
         for k, v in values_multi.items():
