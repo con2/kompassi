@@ -86,6 +86,10 @@ class Response(models.Model):
         """
         Lifts the values of dimensions from form data into proper dimension values.
         This makes sense only for responses that are related to a survey.
+
+        NOTE: Expected to be called only right after creation.
+        If you call this later, be sure to yeet the existing dimension values first,
+        or rework this method to use set_dimension_values that accounts for existing ones.
         """
         from .dimension import ResponseDimensionValue
 
@@ -100,17 +104,16 @@ class Response(models.Model):
         for dimension in dimensions_by_slug.values():
             values_by_slug = values_by_dimension_by_slug[dimension.slug]
             # set initial values
-            for value in values_by_slug.values():
-                if value.is_initial:
-                    rdvs_to_create.append(
-                        ResponseDimensionValue(
-                            response=self,
-                            dimension=dimension,
-                            value=value,
-                        )
-                    )
+            rdvs_to_create.extend(
+                ResponseDimensionValue(
+                    response=self,
+                    dimension=dimension,
+                    value=value,
+                )
+                for value in values_by_slug.values()
+                if value.is_initial
+            )
 
-            # TODO cache a dict of slug -> field?
             # TODO use pydantic versions of fields? Must not be enriched (it removes choicesFrom)
             dimension_field = fields_by_slug.get(dimension.slug)
             if not dimension_field:
