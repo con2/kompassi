@@ -59,10 +59,13 @@ class PersonQualification(models.Model):
         if not QualificationExtra:
             return None
 
-        try:
-            return QualificationExtra.objects.get(personqualification=self)
-        except QualificationExtra.DoesNotExist:
-            return QualificationExtra(personqualification=self)
+        if self.pk:
+            try:
+                return QualificationExtra.objects.get(personqualification=self)
+            except QualificationExtra.DoesNotExist:
+                pass
+
+        return QualificationExtra(personqualification=self)
 
 
 class QualificationExtraBase(models.Model):
