@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from unittest import mock
 
 import pytest
 import yaml
@@ -6,10 +7,7 @@ import yaml
 from core.models import Event
 
 from .excel_export import get_header_cells, get_response_cells
-from .graphql.mutations.update_response_dimensions import (
-    SENTINEL_BYPASS_PERMISSION_CHECK_FOR_TESTING,
-    UpdateResponseDimensions,
-)
+from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from .models.dimension import Dimension, DimensionValue
 from .models.field import Choice, Field, FieldType
 from .models.response import Response
@@ -483,7 +481,8 @@ def test_summarize_responses():
 
 
 @pytest.mark.django_db
-def test_lift_and_set_dimensions():
+@mock.patch("forms.graphql.mutations.update_response_dimensions.graphql_check_access", autospec=True)
+def test_lift_and_set_dimensions(_patched_graphql_check_access):
     event, _created = Event.get_or_create_dummy()
 
     survey = Survey.objects.create(
@@ -563,7 +562,7 @@ def test_lift_and_set_dimensions():
     # as a value type to fail, so we have to use SimpleNamespace instead
     UpdateResponseDimensions.mutate(
         None,
-        SENTINEL_BYPASS_PERMISSION_CHECK_FOR_TESTING,
+        SimpleNamespace(context=SimpleNamespace(user=None)),
         SimpleNamespace(
             event_slug=event.slug,
             survey_slug=survey.slug,
