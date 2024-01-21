@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import ResponseTabs from "./ResponseTabs";
 import { gql } from "@/__generated__";
 import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -207,7 +208,7 @@ export default async function FormResponsesPage({
     });
 
   const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
-  const summaryUrl = `/events/${eventSlug}/surveys/${surveySlug}/summary?from=responses`;
+  const summaryUrl = `/events/${eventSlug}/surveys/${surveySlug}/responses/summary`;
   const responses = survey.responses || [];
 
   return (
@@ -224,12 +225,23 @@ export default async function FormResponsesPage({
         <div className="ms-auto">
           <a className="btn btn-outline-primary" href={excelUrl}>
             {t.actions.downloadAsExcel}…
-          </a>{" "}
-          <Link className="btn btn-outline-primary" href={summaryUrl}>
-            {t.actions.summary}…
-          </Link>{" "}
+          </a>
         </div>
       </div>
+
+      <DimensionFilters dimensions={dimensions} />
+      <ResponseTabs
+        eventSlug={eventSlug}
+        surveySlug={surveySlug}
+        searchParams={searchParams}
+        active="responses"
+        translations={translations}
+      />
+
+      <p className="mt-3">
+        {t.showingResponses(responses.length, survey.countResponses)}
+      </p>
+      <DataTable rows={responses} columns={columns} />
 
       <p>
         <small>
@@ -237,10 +249,6 @@ export default async function FormResponsesPage({
           {anonymityMessages.choices[anonymity]}
         </small>
       </p>
-
-      <DimensionFilters dimensions={dimensions} />
-      <DataTable rows={responses} columns={columns} />
-      <p>{t.responseTableFooter(responses.length, survey.countResponses)}</p>
     </ViewContainer>
   );
 }

@@ -187,12 +187,6 @@ export default async function SurveysPage({ params }: Props) {
             >
               {t.actions.viewResponses}…
             </Link>{" "}
-            <Link
-              href={`${url}/summary?from=surveys`}
-              className="btn btn-sm btn-outline-primary"
-            >
-              {t.actions.summary}…
-            </Link>
           </>
         );
       },

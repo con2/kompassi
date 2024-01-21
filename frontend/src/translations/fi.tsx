@@ -237,11 +237,10 @@ const translations: Translations = {
     ),
     responseListTitle: "Kyselyvastaukset",
     responseDetailTitle: "Kyselyvastaus",
-    summaryTitle: "Vastausten yhteenveto",
     ownResponsesTitle: "Omat kyselyvastaukset",
-    responseTableFooter: (filteredCount: number, totalCount: number) => (
+    showingResponses: (filteredCount: number, totalCount: number) => (
       <>
-        Näytetään {filteredCount} kyselyvastaus{filteredCount === 1 ? "" : "ta"}{" "}
+        Näytetään {filteredCount} vastaus{filteredCount === 1 ? "" : "ta"}{" "}
         (yhteensä {totalCount}).
       </>
     ),
@@ -315,12 +314,15 @@ const translations: Translations = {
         success: "Linkki kyselyyn on kopioitu leikepöydälle.",
       },
       viewResponses: "Vastaukset",
-      summary: "Yhteenveto",
       submit: "Lähetä",
       downloadAsExcel: "Lataa Excel-tiedostona",
       returnToResponseList: "Palaa vastauslistaukseen",
       returnToSurveyList: "Palaa kyselylistaukseen",
       saveDimensions: "Tallenna dimensiot",
+    },
+    tabs: {
+      summary: "Yhteenveto",
+      responses: "Vastaukset",
     },
     thankYou: {
       title: "Kiitos vastauksistasi!",

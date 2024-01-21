@@ -236,9 +236,8 @@ const translations = {
     ),
     responseListTitle: "Responses",
     responseDetailTitle: "Response",
-    summaryTitle: "Response summary",
     ownResponsesTitle: "My responses",
-    responseTableFooter: (filteredCount: number, totalCount: number) => (
+    showingResponses: (filteredCount: number, totalCount: number) => (
       <>
         Displaying {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
         (total {totalCount}).
@@ -315,12 +314,15 @@ const translations = {
         success: "A link to the survey has been copied to clipboard.",
       },
       viewResponses: "View responses",
-      summary: "Summary",
       submit: "Submit",
       downloadAsExcel: "Download as Excel",
       returnToResponseList: "Return to the list of responses",
       returnToSurveyList: "Return to the list of surveys",
       saveDimensions: "Save dimensions",
+    },
+    tabs: {
+      summary: "Summary",
+      responses: "Responses",
     },
     thankYou: {
       title: "Thank you for your answers!",

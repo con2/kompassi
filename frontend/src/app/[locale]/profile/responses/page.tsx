@@ -101,7 +101,7 @@ export default async function OwnResponsesPage({ params }: Props) {
     <ViewContainer>
       <ViewHeading>{t.ownResponsesTitle}</ViewHeading>
       <DataTable rows={responses} columns={columns} />
-      <p>{t.responseTableFooter(responses.length, responses.length)}</p>
+      <p>{t.showingResponses(responses.length, responses.length)}</p>
     </ViewContainer>
   );
 }

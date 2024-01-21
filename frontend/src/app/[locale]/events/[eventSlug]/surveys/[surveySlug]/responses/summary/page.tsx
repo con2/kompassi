@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import ResponseTabs from "../ResponseTabs";
 import FieldSummaryComponent from "./FieldSummaryComponent";
-import { ReturnLink } from "./ReturnLink";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -87,7 +88,7 @@ export async function generateMetadata({ params, searchParams }: Props) {
     translations,
     event: data.event,
     subject: data.event.forms.survey.title,
-    viewTitle: t.summaryTitle,
+    viewTitle: t.responseListTitle,
   });
 
   return { title };
@@ -126,13 +127,24 @@ export default async function SummaryPage({ params, searchParams }: Props) {
 
   return (
     <ViewContainer>
-      <ReturnLink messages={t.actions} />
+      <Link className="link-subtle" href={`/events/${eventSlug}/surveys`}>
+        &lt; {t.actions.returnToSurveyList}
+      </Link>
       <ViewHeading>
-        {t.summaryTitle}
+        {t.responseListTitle}
         <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
       </ViewHeading>
       <DimensionFilters dimensions={dimensions} />
-      <p>{t.summaryOf(survey.countFilteredResponses, survey.countResponses)}</p>
+      <ResponseTabs
+        eventSlug={eventSlug}
+        surveySlug={surveySlug}
+        searchParams={searchParams}
+        active="summary"
+        translations={translations}
+      />
+      <p className="mt-3">
+        {t.summaryOf(survey.countFilteredResponses, survey.countResponses)}
+      </p>
       {fields.map((field) => (
         <SchemaFormField
           key={field.slug}
