@@ -47,10 +47,10 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   return {
-    title: `${t.ownResponses} – Kompassi`,
+    title: `${t.ownResponsesTitle} – Kompassi`,
   };
 }
 
@@ -72,12 +72,12 @@ export default async function OwnResponsesPage({ params }: Props) {
     notFound();
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
   const columns: Column<OwnResponseFragment>[] = [
     {
       slug: "createdAt",
       title: t.attributes.createdAt,
-      getCell: (row) => (
+      getCellContents: (row) => (
         <Link href={`/profile/responses/${row.id}`}>
           {new Date(row.createdAt).toLocaleString()}
         </Link>
@@ -86,12 +86,12 @@ export default async function OwnResponsesPage({ params }: Props) {
     {
       slug: "event",
       title: t.attributes.event,
-      getCell: (row) => row.form.event.name,
+      getCellContents: (row) => row.form.event.name,
     },
     {
       slug: "formTitle",
       title: t.attributes.formTitle,
-      getCell: (row) => row.form.title,
+      getCellContents: (row) => row.form.title,
     },
   ];
 
@@ -99,9 +99,9 @@ export default async function OwnResponsesPage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <ViewHeading>{t.ownResponses}</ViewHeading>
+      <ViewHeading>{t.ownResponsesTitle}</ViewHeading>
       <DataTable rows={responses} columns={columns} />
-      <p>{t.tableFooter(responses.length)}</p>
+      <p>{t.showingResponses(responses.length, responses.length)}</p>
     </ViewContainer>
   );
 }

@@ -230,9 +230,29 @@ const translations: Translations = {
     listTitle: "Kyselyt",
     singleTitle: "Kysely",
     forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
-    tableFooter: (count: number) => (
+    surveyTableFooter: (count: number) => (
       <>
         {count} kysely{count === 1 ? "" : "ä"}.
+      </>
+    ),
+    responseListTitle: "Kyselyvastaukset",
+    responseDetailTitle: "Kyselyvastaus",
+    ownResponsesTitle: "Omat kyselyvastaukset",
+    showingResponses: (filteredCount: number, totalCount: number) => (
+      <>
+        Näytetään {filteredCount} vastaus{filteredCount === 1 ? "" : "ta"}{" "}
+        (yhteensä {totalCount}).
+      </>
+    ),
+    dimensionTableFooter: (countDimensions: number, countValues: number) => (
+      <>
+        Yhteensä {countDimensions} dimensio{countDimensions === 1 ? "" : "ta"},{" "}
+        {countValues} arvo{countValues === 1 ? "" : "a"}.
+      </>
+    ),
+    summaryOf: (filteredCount: number, totalCount: number) => (
+      <>
+        Yhteenveto {filteredCount} vastauksesta (yhteensä {totalCount}).
       </>
     ),
     attributes: {
@@ -252,22 +272,36 @@ const translations: Translations = {
         secondPerson: {
           title: "Vastausten yhdistäminen sinuun",
           choices: {
-            HARD: "Vastaukset ovat anonyymejä. Et voi palata katsomaan tai muokkaamaan vastauksiasi. IP-osoitettasi ei tallenneta.",
-            SOFT: "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi, jotta voit palata katsomaan tai muokkaamaan vastauksiasi, mutta henkilöllisyyttäsi ei jaeta kyselyn omistajan kanssa. IP-osoitteesi tallennetaan, mutta sitä ei jaeta kyselyn omistajan kanssa.",
+            HARD: "Vastaukset ovat anonyymejä. Et voi palata katsomaan tai muokkaamaan vastauksiasi.",
+            SOFT: "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi, jotta voit palata katsomaan tai muokkaamaan vastauksiasi, mutta henkilöllisyyttäsi ei jaeta kyselyn omistajan kanssa.",
             NAME_AND_EMAIL:
-              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Nimesi ja sähköpostiosoitteesi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi. IP-osoitteesi tallennetaan, mutta sitä ei jaeta kyselyn omistajan kanssa.",
+              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Nimesi ja sähköpostiosoitteesi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
           },
         },
         thirdPerson: {
           title: "Vastausten yhdistäminen käyttäjään",
           choices: {
-            HARD: "Vastaukset ovat anonyymejä. Käyttäjät eivät voi palata katsomaan tai muokkaamaan vastauksiaan. IP-osoitteita ei tallenneta.",
-            SOFT: "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä, jotta hän voi palata katsomaan tai muokkaamaan vastauksiaan, mutta hänen henkilöllisyyttään ei jaeta sinulle. IP-osoitteet tallennetaan, mutta niitä ei jaeta sinulle.",
+            HARD: "Vastaukset ovat anonyymejä. Käyttäjät eivät voi palata katsomaan tai muokkaamaan vastauksiaan.",
+            SOFT: "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä, jotta hän voi palata katsomaan tai muokkaamaan vastauksiaan, mutta hänen henkilöllisyyttään ei jaeta sinulle.",
             NAME_AND_EMAIL:
-              "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Hänen nimensä ja sähköpostiosoitteensa jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan. IP-osoitteet tallennetaan, mutta niitä ei jaeta sinulle.",
+              "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Hänen nimensä ja sähköpostiosoitteensa jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan.",
           },
         },
       },
+      dimensions: "Dimensiot",
+      dimension: "Dimensio",
+      values: "Arvot",
+      value: "Arvo",
+      createdAt: "Lähetysaika",
+      createdBy: "Lähettäjä",
+      event: "Tapahtuma",
+      formTitle: "Kyselyn otsikko",
+      language: "Kieli",
+      choice: "Vaihtoehto",
+      question: "Kysymys",
+      countMissingResponses: "Ei vastausta",
+      percentageOfResponses: "Osuus vastauksista",
+      technicalDetails: "Tekniset tiedot",
     },
     actions: {
       fillIn: {
@@ -280,8 +314,15 @@ const translations: Translations = {
         success: "Linkki kyselyyn on kopioitu leikepöydälle.",
       },
       viewResponses: "Vastaukset",
-      summary: "Yhteenveto",
       submit: "Lähetä",
+      downloadAsExcel: "Lataa Excel-tiedostona",
+      returnToResponseList: "Palaa vastauslistaukseen",
+      returnToSurveyList: "Palaa kyselylistaukseen",
+      saveDimensions: "Tallenna dimensiot",
+    },
+    tabs: {
+      summary: "Yhteenveto",
+      responses: "Vastaukset",
     },
     thankYou: {
       title: "Kiitos vastauksistasi!",
@@ -301,36 +342,6 @@ const translations: Translations = {
         }. Voit vastata tähän kyselyyn enintään ${maxResponsesPerUser} ${
           maxResponsesPerUser === 1 ? "kerran" : "kertaa"
         }.`,
-    },
-  },
-
-  SurveyResponse: {
-    listTitle: "Kyselyvastaukset",
-    singleTitle: "Kyselyvastaus",
-    summaryTitle: "Vastausten yhteenveto",
-    ownResponses: "Omat kyselyvastaukset",
-    tableFooter: (count: number) => (
-      <>
-        {count} kyselyvastaus{count === 1 ? "" : "ta"}.
-      </>
-    ),
-    attributes: {
-      createdAt: "Lähetysaika",
-      createdBy: "Lähettäjä",
-      event: "Tapahtuma",
-      formTitle: "Kyselyn otsikko",
-      language: "Kieli",
-      choice: "Vaihtoehto",
-      question: "Kysymys",
-      countResponses: "Vastauksia",
-      countMissingResponses: "Ei vastausta",
-      percentageOfResponses: "Osuus vastauksista",
-    },
-    actions: {
-      downloadAsExcel: "Lataa Excel-tiedostona",
-      returnToResponseList: "Palaa vastauslistaukseen",
-      returnToSurveyList: "Palaa kyselylistaukseen",
-      summary: "Näytä yhteenveto",
     },
     warnings: {
       choiceNotFound:

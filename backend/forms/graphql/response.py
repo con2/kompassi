@@ -4,8 +4,10 @@ from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
 from core.graphql.user import LimitedUserType
+from core.utils.text_utils import normalize_whitespace
 
 from ..models.response import Response
+from .dimension import ResponseDimensionValueType
 from .form import FormType
 
 
@@ -31,7 +33,7 @@ class LimitedResponseType(DjangoObjectType):
             description=(
                 "If the response is related to a survey, only return values of fields "
                 "marked key fields in the survey. Note that setting keyFieldsOnly for a "
-                "response not related to a survey will result in an empty list."
+                "response not related to a survey will result in an empty dict."
             ),
         ),
     )
@@ -61,18 +63,65 @@ class LimitedResponseType(DjangoObjectType):
         description=resolve_created_by.__doc__,
     )
 
+    @staticmethod
+    def resolve_cached_dimensions(response: Response, info, key_dimensions_only: bool = False):
+        """
+        Returns the dimensions of the response as
+        a dict of dimension slug -> list of dimension value slugs. If the response
+        is not related to a survey, there will be no dimensions and an empty dict
+        will always be returned.
+
+        Using this field is more efficient than querying the dimensions field
+        on the response, as the dimensions are cached on the response object.
+        """
+        cached_dimensions = response.cached_dimensions
+
+        if key_dimensions_only:
+            key_dimension_slugs = response.dimensions.filter(
+                dimension__slug__in=cached_dimensions.keys(),
+                dimension__is_key_dimension=True,
+            ).values_list("dimension__slug", flat=True)
+
+            return {k: v for k, v in cached_dimensions.items() if k in key_dimension_slugs}
+
+        return cached_dimensions
+
+    cached_dimensions = graphene.Field(
+        GenericScalar,
+        description=normalize_whitespace(resolve_cached_dimensions.__doc__ or ""),
+        key_dimensions_only=graphene.Boolean(),
+    )
+
     class Meta:
         model = Response
         fields = ("id", "form_data", "created_at")
 
 
 class FullResponseType(LimitedResponseType):
-    form = graphene.Field(graphene.NonNull(FormType))
-
     @staticmethod
     def resolve_form(parent: Response, info):
         return parent.form
 
+    form = graphene.Field(graphene.NonNull(FormType))
+
+    @staticmethod
+    def resolve_dimensions(parent: Response, info, key_dimensions_only: bool = False):
+        qs = parent.dimensions.all()
+
+        if key_dimensions_only:
+            qs = qs.filter(dimension__is_key_dimension=True)
+
+        return qs
+
+    dimensions = graphene.List(
+        graphene.NonNull(ResponseDimensionValueType),
+        key_dimensions_only=graphene.Boolean(),
+    )
+
     class Meta:
         model = Response
-        fields = ("id", "form_data", "created_at")
+        fields = (
+            "id",
+            "form_data",
+            "created_at",
+        )

@@ -1,33 +1,46 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { updateResponseDimensions } from "./actions";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import {
-  defaultLayout,
-  Field,
-  validateFields,
-} from "@/components/SchemaForm/models";
+import AutoSubmitForm from "@/components/AutoSubmitForm";
+import { buildDimensionForm } from "@/components/dimensions/helpers";
+import { SchemaForm } from "@/components/SchemaForm";
+import { Field, validateFields } from "@/components/SchemaForm/models";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
 import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
+import SubmitButton from "@/components/SchemaForm/SubmitButton";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 const query = gql(`
-  query SurveyResponseDetail($eventSlug:String!, $surveySlug:String!, $responseId:String!, $locale:String) {
+  query SurveyResponseDetail(
+    $eventSlug: String!,
+    $surveySlug: String!,
+    $responseId: String!,
+    $locale: String
+  ) {
     event(slug: $eventSlug) {
       name
-
       forms {
         survey(slug: $surveySlug) {
           title(lang: $locale)
           slug
           anonymity
-
+          dimensions {
+            title(lang: $locale)
+            slug
+            values {
+              title(lang: $locale)
+              slug
+              color
+            }
+          }
           response(id: $responseId) {
             id
             createdAt
@@ -37,11 +50,11 @@ const query = gql(`
             }
             language
             values
-
             form {
               fields
               layout
             }
+            cachedDimensions
           }
         }
       }
@@ -68,7 +81,7 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   const { data } = await getClient().query({
     query,
@@ -80,7 +93,7 @@ export async function generateMetadata({ params }: Props) {
   }
 
   return {
-    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.singleTitle}) – Kompassi`,
+    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.responseDetailTitle}) – Kompassi`,
   };
 }
 
@@ -105,13 +118,14 @@ export default async function SurveyResponsePage({ params }: Props) {
     notFound();
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   const { anonymity } = data.event.forms.survey;
   const { createdAt, language, form } = data.event.forms.survey.response;
   const { fields, layout } = form;
-  const values: Record<string, any> =
-    data.event.forms.survey.response.values ?? {};
+
+  const response = data.event.forms.survey.response;
+  const values: Record<string, any> = response.values ?? {};
 
   validateFields(fields);
 
@@ -141,10 +155,15 @@ export default async function SurveyResponsePage({ params }: Props) {
         }
       : undefined;
 
-  const createdBy = data.event.forms.survey.response.createdBy;
+  const createdBy = response.createdBy;
   const formattedCreatedBy = createdBy
     ? `${createdBy.displayName} <${createdBy.email}>`
     : "-";
+
+  const dimensions = data.event.forms.survey.dimensions ?? [];
+
+  const { fields: dimensionFields, values: dimensionValues } =
+    buildDimensionForm(dimensions, response.cachedDimensions);
 
   return (
     <ViewContainer>
@@ -156,31 +175,72 @@ export default async function SurveyResponsePage({ params }: Props) {
       </Link>
 
       <ViewHeading>
-        {t.singleTitle}
+        {t.responseDetailTitle}
         <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
       </ViewHeading>
 
-      {createdByField && (
-        <SchemaFormField field={createdByField} layout={layout}>
-          <SchemaFormInput
-            field={createdByField}
-            value={formattedCreatedBy}
-            readOnly
-          />
-        </SchemaFormField>
-      )}
+      <div className="row mb-5">
+        {dimensions?.length && (
+          <div className="col-md-8">
+            <div className="card mb-3 h-100">
+              <div className="card-body">
+                <h5 className="card-title mb-3">{t.attributes.dimensions}</h5>
+                {/* TODO improve feedback of successful save */}
+                <AutoSubmitForm
+                  action={updateResponseDimensions.bind(
+                    null,
+                    eventSlug,
+                    surveySlug,
+                    responseId,
+                  )}
+                >
+                  <SchemaForm
+                    fields={dimensionFields}
+                    values={dimensionValues}
+                  />
+                  <noscript>
+                    <SubmitButton>{t.actions.saveDimensions}</SubmitButton>
+                  </noscript>
+                </AutoSubmitForm>
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="col-md-4">
+          <div className="card mb-3 h-100">
+            <div className="card-body">
+              <h5 className="card-title mb-3">
+                {t.attributes.technicalDetails}
+              </h5>
+              {createdByField && (
+                <SchemaFormField field={createdByField} layout={layout}>
+                  <SchemaFormInput
+                    field={createdByField}
+                    value={formattedCreatedBy}
+                    readOnly
+                  />
+                </SchemaFormField>
+              )}
 
-      <SchemaFormField field={createdAtField} layout={layout}>
-        <SchemaFormInput
-          field={createdAtField}
-          value={formattedCreatedAt}
-          readOnly
-        />
-      </SchemaFormField>
+              <SchemaFormField field={createdAtField} layout={layout}>
+                <SchemaFormInput
+                  field={createdAtField}
+                  value={formattedCreatedAt}
+                  readOnly
+                />
+              </SchemaFormField>
 
-      <SchemaFormField field={languageField} layout={layout}>
-        <SchemaFormInput field={languageField} value={language} readOnly />
-      </SchemaFormField>
+              <SchemaFormField field={languageField} layout={layout}>
+                <SchemaFormInput
+                  field={languageField}
+                  value={language}
+                  readOnly
+                />
+              </SchemaFormField>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <SchemaFormResponse fields={fields} values={values} layout={layout} />
     </ViewContainer>

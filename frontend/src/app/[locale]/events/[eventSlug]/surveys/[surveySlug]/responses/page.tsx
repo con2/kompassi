@@ -1,11 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import ResponseTabs from "./ResponseTabs";
 import { gql } from "@/__generated__";
 import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import ColoredDimensionTableCell from "@/components/dimensions/ColoredDimensionTableCell";
+import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
+import {
+  buildDimensionFilters,
+  getDimensionValueTitle,
+} from "@/components/dimensions/helpers";
 import { validateFields } from "@/components/SchemaForm/models";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
@@ -23,11 +30,17 @@ gql(`
     }
     language
     values(keyFieldsOnly: true)
+    cachedDimensions(keyDimensionsOnly: true)
   }
 `);
 
 const query = gql(`
-  query FormResponses($eventSlug:String!, $surveySlug:String!, $locale:String) {
+  query FormResponses(
+    $eventSlug: String!,
+    $surveySlug: String!,
+    $locale: String,
+    $filters: [DimensionFilterInput!]
+  ) {
     event(slug: $eventSlug) {
       name
 
@@ -37,8 +50,21 @@ const query = gql(`
           anonymity
 
           fields(lang: $locale, keyFieldsOnly: true)
+          dimensions {
+            slug
+            title(lang: $locale)
+            isKeyDimension
 
-          responses {
+            values {
+              slug
+              title(lang: $locale)
+              color
+            }
+          }
+
+          countResponses
+
+          responses(filters: $filters) {
             ...SurveyResponse
           }
         }
@@ -53,9 +79,10 @@ interface Props {
     eventSlug: string;
     surveySlug: string;
   };
+  searchParams: Record<string, string>;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params, searchParams }: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
 
@@ -65,11 +92,15 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
+  // while dimension filters are not needed to form the title,
+  // we would like to do only one query per request
+  // so do the exact same query here so that it can be cached
+  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, surveySlug, locale },
+    variables: { eventSlug, surveySlug, locale, filters },
   });
 
   if (!data.event?.forms?.survey) {
@@ -77,16 +108,19 @@ export async function generateMetadata({ params }: Props) {
   }
 
   return {
-    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.listTitle}) – Kompassi`,
+    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.responseListTitle}) – Kompassi`,
   };
 }
 
 export const revalidate = 0;
 
-export default async function FormResponsesPage({ params }: Props) {
+export default async function FormResponsesPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
   const session = await auth();
 
   // TODO encap
@@ -94,27 +128,31 @@ export default async function FormResponsesPage({ params }: Props) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
+  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, surveySlug, locale },
+    variables: { eventSlug, surveySlug, locale, filters },
   });
 
   if (!data.event?.forms?.survey) {
     notFound();
   }
 
-  const { anonymity } = data.event.forms.survey;
+  const survey = data.event.forms.survey;
+
+  const { anonymity } = survey;
   const anonymityMessages =
     translations.Survey.attributes.anonymity.thirdPerson;
 
-  const keyFields = data.event.forms.survey.fields;
+  const dimensions = survey.dimensions ?? [];
+  const keyFields = survey.fields;
   validateFields(keyFields);
 
   const columns: Column<SurveyResponseFragment>[] = [
     {
       slug: "createdAt",
       title: t.attributes.createdAt,
-      getCell: (row) => (
+      getCellContents: (row) => (
         <Link
           href={`/events/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}
         >
@@ -128,7 +166,7 @@ export default async function FormResponsesPage({ params }: Props) {
     columns.push({
       slug: "createdBy",
       title: t.attributes.createdBy,
-      getCell: (row) => row.createdBy?.displayName || "",
+      getCellContents: (row) => row.createdBy?.displayName || "",
     });
   }
 
@@ -141,17 +179,36 @@ export default async function FormResponsesPage({ params }: Props) {
     columns.push({
       slug: `keyFields.${keyField.slug}`,
       title: keyField.summaryTitle ?? keyField.title ?? "",
-      getCell(row) {
-        // TODO as any
-        const values: Record<string, any> = row.values as any;
+      getCellContents(row) {
+        // TODO move typing to codegen.ts (backend must specify scalar type)
+        // TODO value types that need special processing? encap
+        const values = row.values as Record<string, any>;
         return values[keyField.slug];
       },
     });
   });
 
+  dimensions
+    .filter((dimension) => dimension.isKeyDimension)
+    .forEach((keyDimension) => {
+      columns.push({
+        slug: `keyDimensions.${keyDimension.slug}`,
+        title: keyDimension.title ?? "",
+        getCellElement: (row, children) => (
+          <ColoredDimensionTableCell
+            cachedDimensions={row.cachedDimensions}
+            dimension={keyDimension}
+          >
+            {children}
+          </ColoredDimensionTableCell>
+        ),
+        getCellContents: (row) =>
+          getDimensionValueTitle(keyDimension, row.cachedDimensions),
+      });
+    });
+
   const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
-  const summaryUrl = `/events/${eventSlug}/surveys/${surveySlug}/summary?from=responses`;
-  const responses = data.event.forms.survey.responses || [];
+  const responses = survey.responses || [];
 
   return (
     <ViewContainer>
@@ -161,18 +218,29 @@ export default async function FormResponsesPage({ params }: Props) {
 
       <div className="d-flex align-items-middle">
         <ViewHeading>
-          {t.listTitle}
-          <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
+          {t.responseListTitle}
+          <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
         </ViewHeading>
         <div className="ms-auto">
           <a className="btn btn-outline-primary" href={excelUrl}>
             {t.actions.downloadAsExcel}…
-          </a>{" "}
-          <Link className="btn btn-outline-primary" href={summaryUrl}>
-            {t.actions.summary}…
-          </Link>{" "}
+          </a>
         </div>
       </div>
+
+      <DimensionFilters dimensions={dimensions} />
+      <ResponseTabs
+        eventSlug={eventSlug}
+        surveySlug={surveySlug}
+        searchParams={searchParams}
+        active="responses"
+        translations={translations}
+      />
+
+      <p className="mt-3">
+        {t.showingResponses(responses.length, survey.countResponses)}
+      </p>
+      <DataTable rows={responses} columns={columns} />
 
       <p>
         <small>
@@ -180,9 +248,6 @@ export default async function FormResponsesPage({ params }: Props) {
           {anonymityMessages.choices[anonymity]}
         </small>
       </p>
-
-      <DataTable rows={responses} columns={columns} />
-      <p>{t.tableFooter(responses.length)}</p>
     </ViewContainer>
   );
 }

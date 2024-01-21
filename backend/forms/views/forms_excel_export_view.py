@@ -6,7 +6,8 @@ from access.cbac import default_cbac_required
 from core.models import Event
 
 from ..excel_export import write_responses_as_excel
-from ..models import Form
+from ..models.dimension import Dimension
+from ..models.form import Form
 
 
 @default_cbac_required
@@ -28,6 +29,11 @@ def forms_excel_export_view(
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-    write_responses_as_excel(form.validated_fields, form.responses.all().only("form_data"), response)
+    write_responses_as_excel(
+        Dimension.objects.none(),
+        form.validated_fields,
+        form.responses.all().only("form_data"),
+        response,
+    )
 
     return response

@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger("kompassi")
+Operation = Literal["query"] | Literal["mutation"]
 
 
 def get_default_claims(request, **overrides: str):
@@ -62,7 +63,7 @@ def default_cbac_required(view_func):
 def make_graphql_claims(
     *,
     event: "Event",
-    operation: Literal["query"] | Literal["mutation"],
+    operation: Operation,
     app: str,
     object_type: str,
     field: str,
@@ -84,7 +85,7 @@ def is_graphql_allowed(
     user,
     *,
     event: "Event",
-    operation: Literal["query"] | Literal["mutation"],
+    operation: Operation,
     app: str,
     object_type: str,
     field: str,
@@ -133,9 +134,8 @@ def is_graphql_allowed_for_model(
     )
 
 
-def graphql_check_access(instance, info, field: str):
+def graphql_check_access(instance, info, field: str, operation: Operation = "query"):
     user = info.context.user
-    operation = "query"
     extra = dict(slug=instance.slug) if hasattr(instance, "slug") else {}
 
     allowed, claims = is_graphql_allowed_for_model(

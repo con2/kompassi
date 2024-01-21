@@ -1,9 +1,12 @@
 # TODO: not sure if the current version of Pydantic would allow new-style annotations
 # ruff: noqa: UP007
 from enum import Enum
-from typing import Optional
+from typing import TYPE_CHECKING, Literal, Optional
 
 import pydantic
+
+if TYPE_CHECKING:
+    from .dimension import Dimension
 
 
 class FieldType(str, Enum):
@@ -41,6 +44,18 @@ class Field(pydantic.BaseModel):
     html_type: Optional[str] = pydantic.Field(default=None, alias="htmlType", repr=False)
     choices: Optional[list[Choice]] = pydantic.Field(default=None, alias="choices", repr=False)
     questions: Optional[list[Choice]] = pydantic.Field(default=None, alias="questions", repr=False)
+
+    @classmethod
+    def from_dimension(
+        cls,
+        dimension: "Dimension",
+        type: Literal[FieldType.SINGLE_SELECT] | Literal[FieldType.MULTI_SELECT],
+    ) -> "Field":
+        return cls(
+            slug=dimension.slug,
+            type=type,
+            choices=dimension.get_choices(),
+        )
 
     class Config:
         populate_by_field_name = True

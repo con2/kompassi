@@ -378,7 +378,7 @@ class Order(models.Model):
 
         for op in self.order_product_set.filter(count__gt=0):
             if op.product.notify_email:
-                bcc.append(op.product.notify_email)  # noqa: PERF401
+                bcc.append(op.product.notify_email)
 
         attachments: list[tuple[str, bytes, str]] = []  # filename, content, mimetype
         language = self.language if self.language in ["fi", "en"] else "fi"

@@ -87,13 +87,15 @@ export type SingleSelectPresentation = "dropdown" | "radio";
 export interface SingleSelect extends BaseField {
   type: "SingleSelect";
   choices: Choice[];
-  presentation: SingleSelectPresentation;
+  presentation?: SingleSelectPresentation;
 }
 
 export interface MultiSelect extends BaseField {
   type: "MultiSelect";
   choices: Choice[];
 }
+
+export type SelectField = SingleSelect | MultiSelect;
 
 /**
  * choices are columns, questions are rows

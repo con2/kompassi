@@ -1,3 +1,8 @@
+from __future__ import annotations
+
+from collections.abc import Collection, Mapping
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
@@ -8,6 +13,9 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
 
 from ..utils.merge_form_fields import merge_fields
 from .form import Form
+
+if TYPE_CHECKING:
+    from .dimension import Dimension, DimensionValue
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 ANONYMITY_CHOICES = [
@@ -89,6 +97,9 @@ class Survey(models.Model):
         help_text=_("Key fields will be shown in the response list."),
     )
 
+    # related fields
+    dimensions: models.QuerySet[Dimension]
+
     @property
     def is_active(self):
         return is_within_period(self.active_from, self.active_until)
@@ -144,13 +155,18 @@ class Survey(models.Model):
 
         return Response.objects.filter(form__in=self.languages.all()).order_by("created_at")
 
-    def get_summary(self, base_language: str = DEFAULT_LANGUAGE):
-        from ..utils.summarize_responses import summarize_responses
+    def preload_dimensions(self, dimension_values: Mapping[str, Collection[str]] | None = None):
+        dimensions = self.dimensions.all().prefetch_related("values")
+        if dimension_values is not None:
+            dimensions = dimensions.filter(slug__in=dimension_values.keys())
 
-        fields = self.get_combined_fields(base_language)
-        valuesies = [response.get_processed_form_data(fields)[0] for response in self.responses.all().only("form_data")]
+        dimensions_by_slug = {dimension.slug: dimension for dimension in dimensions}
 
-        return summarize_responses(fields, valuesies)
+        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] = {}
+        for dimension in dimensions_by_slug.values():
+            values_by_dimension_by_slug[dimension.slug] = {value.slug: value for value in dimension.values.all()}
+
+        return dimensions_by_slug, values_by_dimension_by_slug
 
     class Meta:
         unique_together = [("event", "slug")]

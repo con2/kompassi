@@ -34,6 +34,7 @@ extend-ignore = [
     "RET505",  # Unnecessary `else` after `return` statement
     "SIM105",  # contextlib.suppress has a performance cost
     "SIM108",  # ternary operators can be less readable
+    "PERF401", # manual-list-comprehension
 ]
 
 [tool.ruff.extend-per-file-ignores]

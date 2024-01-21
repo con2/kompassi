@@ -51,10 +51,10 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   return {
-    title: `${t.ownResponses} – Kompassi`,
+    title: `${t.ownResponsesTitle} – Kompassi`,
   };
 }
 
@@ -79,7 +79,7 @@ export default async function SurveyResponsePage({ params }: Props) {
     notFound();
   }
 
-  const t = translations.SurveyResponse;
+  const t = translations.Survey;
 
   const response = data.profile.forms.response;
   const { createdAt, form } = response;
@@ -117,7 +117,7 @@ export default async function SurveyResponsePage({ params }: Props) {
       </Link>
 
       <ViewHeading>
-        {t.singleTitle}
+        {t.responseDetailTitle}
         <ViewHeading.Sub>{form.title}</ViewHeading.Sub>
       </ViewHeading>
 

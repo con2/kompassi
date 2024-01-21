@@ -31,7 +31,7 @@ def setup_should_run(run_id=settings.KOMPASSI_SETUP_RUN_ID, expire_seconds=setti
 
     try:
         # Redis SETNX: True iff the key wasn't already set and we were able to set it
-        return cache.set(cache_key, nonce, expire_seconds, nx=True)
+        return cache.set(cache_key, nonce, expire_seconds, nx=True)  # type: ignore
     except Exception:
         logger.exception("manage.py setup: setup_should_run failed to determine, running anyway")
         # Something went wrong. Perhaps the cache is not Redis or the cache is unable to perform.
@@ -79,6 +79,7 @@ class Command(BaseCommand):
                 (("access_create_internal_aliases",), dict()),
                 (("access_create_missing_cbac_entries",), dict()),
                 (("access_prune_expired_cbac_entries",), dict()),
+                (("refresh_forms",), dict()),
             )
         )
 

@@ -229,9 +229,30 @@ const translations = {
     listTitle: "Surveys",
     singleTitle: "Survey",
     forEvent: (eventName: string) => <>for {eventName}</>,
-    tableFooter: (count: number) => (
+    surveyTableFooter: (count: number) => (
       <>
         {count} survey{count === 1 ? "" : "s"}.
+      </>
+    ),
+    responseListTitle: "Responses",
+    responseDetailTitle: "Response",
+    ownResponsesTitle: "My responses",
+    showingResponses: (filteredCount: number, totalCount: number) => (
+      <>
+        Displaying {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
+        (total {totalCount}).
+      </>
+    ),
+    dimensionTableFooter: (countDimensions: number, countValues: number) => (
+      <>
+        Total {countDimensions} dimension{countDimensions === 1 ? "" : "s"},{" "}
+        {countValues} value{countValues === 1 ? "" : "s"}.
+      </>
+    ),
+    summaryOf: (filteredCount: number, totalCount: number) => (
+      <>
+        Summary of {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
+        (total {totalCount}).
       </>
     ),
     attributes: {
@@ -251,22 +272,36 @@ const translations = {
         secondPerson: {
           title: "Connecting your response to you",
           choices: {
-            HARD: "Responses are anonymous. You cannot return to view or edit your responses. Your IP address is not recorded.",
-            SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your identity will not be shared with the survey owner. Your IP address is recorded but not shared with the query owner.",
+            HARD: "Responses are anonymous. You cannot return to view or edit your responses.",
+            SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your identity will not be shared with the survey owner.",
             NAME_AND_EMAIL:
-              "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses. Your IP address is recorded but not shared with the query owner.",
+              "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         thirdPerson: {
           title: "Connecting responses to users",
           choices: {
-            HARD: "Responses are anonymous. Users cannot return to view or edit their responses. IP addresses are not recorded.",
-            SOFT: "If the user answer thiss survey while logged in, their response will be connected to their user account, so that they can return to view or edit their responses, but their identities will not be shared with you. IP addresses are recorded but not shared with you.",
+            HARD: "Responses are anonymous. Users cannot return to view or edit their responses.",
+            SOFT: "If the user answer thiss survey while logged in, their response will be connected to their user account, so that they can return to view or edit their responses, but their identities will not be shared with you.",
             NAME_AND_EMAIL:
-              "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses. IP addresses are recorded but not shared with the you.",
+              "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses.",
           },
         },
       },
+      dimensions: "Dimensions",
+      dimension: "Dimension",
+      values: "Values",
+      value: "Arvo",
+      createdAt: "Created at",
+      createdBy: "Created by",
+      event: "Event",
+      formTitle: "Survey title",
+      language: "Language",
+      choice: "Choice",
+      question: "Question",
+      countMissingResponses: "No response",
+      percentageOfResponses: "Share of responses",
+      technicalDetails: "Technical details",
     },
     actions: {
       fillIn: {
@@ -279,8 +314,15 @@ const translations = {
         success: "A link to the survey has been copied to clipboard.",
       },
       viewResponses: "View responses",
-      summary: "Summary",
       submit: "Submit",
+      downloadAsExcel: "Download as Excel",
+      returnToResponseList: "Return to the list of responses",
+      returnToSurveyList: "Return to the list of surveys",
+      saveDimensions: "Save dimensions",
+    },
+    tabs: {
+      summary: "Summary",
+      responses: "Responses",
     },
     thankYou: {
       title: "Thank you for your answers!",
@@ -296,36 +338,6 @@ const translations = {
         `You have already submitted ${countResponsesByCurrentUser} response${
           countResponsesByCurrentUser === 1 ? "" : "s"
         } to this survey. The maximum number of responses per user is ${maxResponsesPerUser}.`,
-    },
-  },
-
-  SurveyResponse: {
-    listTitle: "Responses",
-    singleTitle: "Response",
-    summaryTitle: "Response summary",
-    ownResponses: "My responses",
-    tableFooter: (count: number) => (
-      <>
-        {count} response{count === 1 ? "" : "s"}.
-      </>
-    ),
-    attributes: {
-      createdAt: "Created at",
-      createdBy: "Created by",
-      event: "Event",
-      formTitle: "Survey title",
-      language: "Language",
-      choice: "Choice",
-      question: "Question",
-      countResponses: "Responses",
-      countMissingResponses: "No response",
-      percentageOfResponses: "Share of responses",
-    },
-    actions: {
-      downloadAsExcel: "Download as Excel",
-      returnToResponseList: "Return to the list of responses",
-      returnToSurveyList: "Return to the list of surveys",
-      summary: "View summary",
     },
     warnings: {
       choiceNotFound:

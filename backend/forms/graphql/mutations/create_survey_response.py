@@ -8,12 +8,16 @@ from ...models.survey import Survey
 from ..response import FullResponseType
 
 
+class CreateSurveyResponseInput(graphene.InputObjectType):
+    event_slug = graphene.String(required=True)
+    survey_slug = graphene.String(required=True)
+    form_data = GenericScalar(required=True)
+    locale = graphene.String()
+
+
 class CreateSurveyResponse(graphene.Mutation):
     class Arguments:
-        event_slug = graphene.String(required=True)
-        survey_slug = graphene.String(required=True)
-        form_data = GenericScalar(required=True)
-        locale = graphene.String()
+        input = CreateSurveyResponseInput(required=True)
 
     response = graphene.Field(FullResponseType)
 
@@ -21,18 +25,21 @@ class CreateSurveyResponse(graphene.Mutation):
     def mutate(
         root,
         info,
-        event_slug: str,
-        survey_slug: str,
-        form_data: str,
-        locale: str = "",
+        input: CreateSurveyResponseInput,
     ):
-        survey = Survey.objects.get(event__slug=event_slug, slug=survey_slug)
+        survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
 
         if not survey.is_active:
             raise Exception("Survey is not active")
 
-        form = survey.get_form(locale)
+        form = survey.get_form(input.locale)  # type: ignore
+        if not form:
+            raise Exception("Form not found")
 
+        if not form.fields:
+            raise Exception("Form has no fields")
+
+        # TODO(https://github.com/con2/kompassi/issues/365): shows the ip of v2 backend, not the client
         ip_address = get_ip(info.context)
         created_by = user if (user := info.context.user) and user.is_authenticated else None
 
@@ -49,9 +56,11 @@ class CreateSurveyResponse(graphene.Mutation):
 
         response = Response.objects.create(
             form=form,
-            form_data=form_data,
+            form_data=input.form_data,
             created_by=created_by,
             ip_address=ip_address,
         )
+
+        response.lift_dimension_values()
 
         return CreateSurveyResponse(response=response)  # type: ignore

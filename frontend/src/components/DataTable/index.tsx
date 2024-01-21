@@ -1,9 +1,11 @@
-import { ReactNode } from "react";
+import { ReactNode, Fragment } from "react";
 
 export interface Column<Row> {
   slug: string;
   title: string;
-  getCell?: (row: Row) => ReactNode;
+  getCellElement?: (row: Row, children?: ReactNode) => ReactNode;
+  getCellContents?: (row: Row) => ReactNode;
+  scope?: string;
 }
 
 interface DataTableProps<Row> {
@@ -15,24 +17,38 @@ interface DataTableProps<Row> {
   rowScopeColumnIndex?: number;
 }
 
-function defaultCellGetter<Row>(this: Column<Row>, row: Row) {
+function defaultCellElement<Row>(
+  this: Column<Row>,
+  _row: Row,
+  children?: ReactNode,
+) {
+  return (
+    <td scope={this.scope} className="align-middle">
+      {children}
+    </td>
+  );
+}
+
+function defaultCellContents<Row>(this: Column<Row>, row: Row) {
   const value = (row as any)[this.slug];
 
   if (typeof value === "undefined" || value === null) {
     return "";
   }
 
-  return "" + value;
+  return <>{"" + value}</>;
 }
 
 export function DataTable<Row>(props: DataTableProps<Row>) {
-  const columns = props.columns.map((column) => ({
-    getCell: column.getCell || defaultCellGetter,
+  const { rowScopeColumnIndex } = props;
+  const columns = props.columns.map((column, index) => ({
+    getCellElement: column.getCellElement ?? defaultCellElement,
+    getCellContents: column.getCellContents ?? defaultCellContents,
+    scope: rowScopeColumnIndex === index ? "row" : undefined,
     ...column,
   }));
 
   const totalMessage = props.getTotalMessage?.(props.rows.length);
-  const rowScopeColumnIndex = props.rowScopeColumnIndex ?? 0;
 
   return (
     <>
@@ -50,13 +66,9 @@ export function DataTable<Row>(props: DataTableProps<Row>) {
           {props.rows.map((row, idx) => (
             <tr key={idx}>
               {columns.map((column) => (
-                <td
-                  key={column.slug}
-                  scope={idx === rowScopeColumnIndex ? "row" : undefined}
-                  className="align-middle"
-                >
-                  {column.getCell(row)}
-                </td>
+                <Fragment key={column.slug}>
+                  {column.getCellElement(row, column.getCellContents(row))}
+                </Fragment>
               ))}
             </tr>
           ))}

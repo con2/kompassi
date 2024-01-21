@@ -5,3 +5,6 @@ from django.utils.translation import gettext_lazy as _
 class FormsAppConfig(AppConfig):
     name = "forms"
     verbose_name = _("Forms")
+
+    def ready(self) -> None:
+        from . import handlers  # noqa: F401

@@ -102,7 +102,7 @@ export default async function SurveysPage({ params }: Props) {
     {
       slug: "slug",
       title: t.attributes.slug,
-      getCell: (survey) => <em>{survey.slug}</em>,
+      getCellContents: (survey) => <em>{survey.slug}</em>,
     },
     {
       slug: "title",
@@ -111,7 +111,7 @@ export default async function SurveysPage({ params }: Props) {
     {
       slug: "isActive",
       title: t.attributes.isActive.title,
-      getCell: (survey) => {
+      getCellContents: (survey) => {
         let activityEmoji = survey.isActive ? "✅" : "❌";
         let message = "";
 
@@ -144,7 +144,7 @@ export default async function SurveysPage({ params }: Props) {
     {
       slug: "languages",
       title: t.attributes.languages,
-      getCell: (survey) =>
+      getCellContents: (survey) =>
         survey.languages
           .map((language) => language.language.toLowerCase())
           .join(", "),
@@ -152,7 +152,7 @@ export default async function SurveysPage({ params }: Props) {
     {
       slug: "actions",
       title: t.attributes.actions,
-      getCell: (survey) => {
+      getCellContents: (survey) => {
         const url = `/events/${eventSlug}/surveys/${survey.slug}`;
         const absoluteUrl = `${publicUrl}${url}`;
         return (
@@ -176,17 +176,17 @@ export default async function SurveysPage({ params }: Props) {
               messages={t.actions.share}
             />{" "}
             <Link
+              href={`${url}/dimensions`}
+              className="btn btn-sm btn-outline-primary"
+            >
+              {t.attributes.dimensions}…
+            </Link>{" "}
+            <Link
               href={`${url}/responses`}
               className="btn btn-sm btn-outline-primary"
             >
               {t.actions.viewResponses}…
             </Link>{" "}
-            <Link
-              href={`${url}/summary?from=surveys`}
-              className="btn btn-sm btn-outline-primary"
-            >
-              {t.actions.summary}…
-            </Link>
           </>
         );
       },
@@ -202,7 +202,7 @@ export default async function SurveysPage({ params }: Props) {
         <ViewHeading.Sub>{t.forEvent(data.event.name)}</ViewHeading.Sub>
       </ViewHeading>
       <DataTable rows={surveys} columns={columns} />
-      <p>{t.tableFooter(surveys.length)}</p>
+      <p>{t.surveyTableFooter(surveys.length)}</p>
     </ViewContainer>
   );
 }

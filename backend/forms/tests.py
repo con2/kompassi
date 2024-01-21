@@ -1,15 +1,20 @@
+from types import SimpleNamespace
+from unittest import mock
+
+import pytest
 import yaml
 
+from core.models import Event
+
 from .excel_export import get_header_cells, get_response_cells
+from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
+from .models.dimension import Dimension, DimensionValue
 from .models.field import Choice, Field, FieldType
+from .models.response import Response
+from .models.survey import Survey
 from .utils.merge_form_fields import _merge_choices, _merge_fields
 from .utils.process_form_data import FieldWarning, process_form_data
-from .utils.summarize_responses import (
-    MatrixFieldSummary,
-    SelectFieldSummary,
-    TextFieldSummary,
-    summarize_responses,
-)
+from .utils.summarize_responses import MatrixFieldSummary, SelectFieldSummary, TextFieldSummary, summarize_responses
 
 
 def test_process_form_data():
@@ -473,3 +478,108 @@ def test_summarize_responses():
     }
 
     assert summarize_responses(fields, responses) == expected_summary
+
+
+@pytest.mark.django_db
+@mock.patch("forms.graphql.mutations.update_response_dimensions.graphql_check_access", autospec=True)
+def test_lift_and_set_dimensions(_patched_graphql_check_access):
+    event, _created = Event.get_or_create_dummy()
+
+    survey = Survey.objects.create(
+        event=event,
+        slug="test-survey",
+    )
+
+    dimension = Dimension.objects.create(
+        survey=survey,
+        slug="test-dimension",
+        title="Test dimension",
+    )
+
+    DimensionValue.objects.bulk_create(
+        [
+            DimensionValue(
+                dimension=dimension,
+                slug="test-dimension-value-1",
+                title=dict(en="Test dimension value 1"),
+            ),
+            DimensionValue(
+                dimension=dimension,
+                slug="test-dimension-value-2",
+                title=dict(en="Test dimension value 2"),
+            ),
+        ]
+    )
+
+    dimension2 = Dimension.objects.create(
+        survey=survey,
+        slug="test-dimension2",
+        title="Test dimension 2",
+    )
+
+    DimensionValue.objects.bulk_create(
+        [
+            DimensionValue(
+                dimension=dimension2,
+                slug="test-dimension2-value-1",
+                title=dict(en="Test dimension 2 value 1"),
+            ),
+            DimensionValue(
+                dimension=dimension2,
+                slug="test-dimension2-value-2",
+                title=dict(en="Test dimension 2 value 2"),
+            ),
+        ]
+    )
+
+    form = survey.languages.create(
+        event=event,
+        slug="test-survey-en",
+        language="en",
+        fields=[
+            dict(
+                slug="test-dimension",
+                type="SingleSelect",
+                choicesFrom=dict(dimension="test-dimension"),
+            )
+        ],
+    )
+
+    response = Response.objects.create(
+        form=form,
+        form_data={"test-dimension": "test-dimension-value-1"},
+    )
+
+    response.lift_dimension_values()
+    response.refresh_from_db()
+
+    assert response.cached_dimensions == {
+        "test-dimension": ["test-dimension-value-1"],
+    }
+
+    # also tests set_dimension_values
+    # XXX: Graphene does some deep magic that causes using UpdateResponseDimensionsInput
+    # as a value type to fail, so we have to use SimpleNamespace instead
+    UpdateResponseDimensions.mutate(
+        None,
+        SimpleNamespace(context=SimpleNamespace(user=None)),
+        SimpleNamespace(
+            event_slug=event.slug,
+            survey_slug=survey.slug,
+            response_id=response.id,
+            form_data={
+                # SingleSelect used as dimension field
+                "test-dimension": "test-dimension-value-2",
+                # MultiSelect used as dimension field
+                "test-dimension2.test-dimension2-value-1": "checked",
+                "test-dimension2.test-dimension2-value-2": "checked",
+            },
+        ),  # type: ignore
+    )
+
+    response.refresh_from_db()
+
+    assert response.cached_dimensions == {
+        "test-dimension": ["test-dimension-value-2"],
+        "test-dimension2": ["test-dimension2-value-1", "test-dimension2-value-2"],
+    }

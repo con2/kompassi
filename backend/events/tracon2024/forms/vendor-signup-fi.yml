@@ -1,0 +1,34 @@
+title: Myyjien ilmoittautuminen
+layout: vertical
+description: |
+  Tällä lomakkeella voit hakea myyntipaikkaa vuoden 2024 Tracon-tapahtumaan.
+fields:
+  - slug: category
+    type: SingleSelect
+    title: Haettavan myyntipaikan tyyppi
+    required: true
+    choicesFrom:
+      dimension: category
+
+  - slug: name
+    type: SingleLineText
+    title: Kauppanimi
+    required: true
+    helpText: Millä nimellä haluat esittäytyä myyjälistauksessa?
+
+  - slug: official_name
+    type: SingleLineText
+    title: Yrityksen virallinen nimi
+    required: true
+    helpText: Mikä on yrityksesi virallinen nimi? Tämä tieto ei näy myyjälistauksessa.
+
+  - slug: company_identification_number
+    type: SingleLineText
+    title: Yrityksen Y-tunnus
+    helpText: |
+      Mikä on yrityksesi Y-tunnus? Tämä tieto ei näy myyjälistauksessa.
+      Jos haet artesaaniksi yksityishenkilönä ilman Y-tunnusta, jätä tämä kenttä tyhjäksi.
+
+  - slug: and_so_forth
+    type: StaticText
+    helpText: Ja niin edelleen…
