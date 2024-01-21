@@ -138,13 +138,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
                   <tr key={`${dimension.slug}.${value.slug}`}>
                     {valueIndex === 0 && (
                       <>
-                        <td rowSpan={dimension.values.length}>
+                        <td rowSpan={dimension.values.length} scope="rowgroup">
                           <code>{dimension.slug}</code>
                         </td>
-                        <td rowSpan={dimension.values.length}>
+                        <td rowSpan={dimension.values.length} scope="rowgroup">
                           {dimension.titleFi}
                         </td>
-                        <td rowSpan={dimension.values.length}>
+                        <td rowSpan={dimension.values.length} scope="rowgroup">
                           {dimension.titleEn}
                         </td>
                       </>
