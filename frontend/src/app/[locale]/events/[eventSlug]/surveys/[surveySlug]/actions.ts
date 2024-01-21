@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { gql } from "@/__generated__";
@@ -31,5 +32,6 @@ export async function submit(
     mutation,
     variables: { input },
   });
+  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}/responses`);
   return void redirect(`/events/${eventSlug}/surveys/${surveySlug}/thanks`);
 }
