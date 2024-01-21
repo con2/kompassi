@@ -16,6 +16,9 @@ class UpdateResponseDimensionsInput(graphene.InputObjectType):
     form_data = GenericScalar(required=True)
 
 
+SENTINEL_BYPASS_PERMISSION_CHECK_FOR_TESTING = object()
+
+
 class UpdateResponseDimensions(graphene.Mutation):
     class Arguments:
         input = UpdateResponseDimensionsInput(required=True)
@@ -42,7 +45,8 @@ class UpdateResponseDimensions(graphene.Mutation):
         dimensions = list(survey.dimensions.all())
 
         # TODO bastardization of graphql_check_access, rethink
-        graphql_check_access(survey, info, "response", "mutation")
+        if info is not SENTINEL_BYPASS_PERMISSION_CHECK_FOR_TESTING:
+            graphql_check_access(survey, info, "response", "mutation")
 
         fields_single = [Field.from_dimension(dimension, FieldType.SINGLE_SELECT) for dimension in dimensions]
         fields_multi = [Field.from_dimension(dimension, FieldType.MULTI_SELECT) for dimension in dimensions]

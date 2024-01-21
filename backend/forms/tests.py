@@ -1,9 +1,15 @@
+from types import SimpleNamespace
+
 import pytest
 import yaml
 
 from core.models import Event
 
 from .excel_export import get_header_cells, get_response_cells
+from .graphql.mutations.update_response_dimensions import (
+    SENTINEL_BYPASS_PERMISSION_CHECK_FOR_TESTING,
+    UpdateResponseDimensions,
+)
 from .models.dimension import Dimension, DimensionValue
 from .models.field import Choice, Field, FieldType
 from .models.response import Response
@@ -552,15 +558,29 @@ def test_lift_and_set_dimensions():
         "test-dimension": ["test-dimension-value-1"],
     }
 
-    response.set_dimension_values(
-        {
-            "test-dimension": ["test-dimension-value-2"],
-            "test-dimension2": ["test-dimension2-value-1"],
-        }
+    # also tests set_dimension_values
+    # XXX: Graphene does some deep magic that causes using UpdateResponseDimensionsInput
+    # as a value type to fail, so we have to use SimpleNamespace instead
+    UpdateResponseDimensions.mutate(
+        None,
+        SENTINEL_BYPASS_PERMISSION_CHECK_FOR_TESTING,
+        SimpleNamespace(
+            event_slug=event.slug,
+            survey_slug=survey.slug,
+            response_id=response.id,
+            form_data={
+                # SingleSelect used as dimension field
+                "test-dimension": "test-dimension-value-2",
+                # MultiSelect used as dimension field
+                "test-dimension2.test-dimension2-value-1": "checked",
+                "test-dimension2.test-dimension2-value-2": "checked",
+            },
+        ),  # type: ignore
     )
+
     response.refresh_from_db()
 
     assert response.cached_dimensions == {
         "test-dimension": ["test-dimension-value-2"],
-        "test-dimension2": ["test-dimension2-value-1"],
+        "test-dimension2": ["test-dimension2-value-1", "test-dimension2-value-2"],
     }
