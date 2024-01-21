@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Fragment } from "react";
 import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -129,7 +130,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
         </thead>
         <tbody>
           {dimensions.map((dimension, dimensionIndex) => (
-            <>
+            <Fragment key={dimension.slug}>
               {dimension.values.map((value, valueIndex) => {
                 const backgroundColor =
                   value.color && makeColorTranslucent(value.color);
@@ -158,7 +159,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
                   </tr>
                 );
               })}
-            </>
+            </Fragment>
           ))}
         </tbody>
       </table>
