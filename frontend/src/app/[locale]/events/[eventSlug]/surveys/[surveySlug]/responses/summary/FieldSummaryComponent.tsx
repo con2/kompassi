@@ -8,24 +8,17 @@ import {
 } from "@/components/SchemaForm/models";
 import { Translations } from "@/translations/en";
 
-interface FieldSummaryComponentProps {
-  translations: Translations;
-  field: Field;
-  fieldSummary: FieldSummary;
-}
-
-// NOTE: if you rename this to FieldSummary, it'll clash with models and graphql-typegen will silently fail
-export default function FieldSummaryComponent({
-  translations,
-  field,
-  fieldSummary,
-}: FieldSummaryComponentProps) {
+/// For actual choice fields, return their choices.
+/// For other fields that are represented as choice fields,
+/// construct synthetic choices for their summary.
+function getSummaryChoices(
+  fieldSummary: FieldSummary,
+  field: Field,
+  translations: Translations,
+) {
   const t = translations.Survey;
-
   let choices: Choice[] = [];
   let questions: Choice[] = [];
-
-  const { countResponses, countMissingResponses } = fieldSummary;
 
   switch (field.type) {
     case "SingleLineText":
@@ -60,6 +53,31 @@ export default function FieldSummaryComponent({
       questions = field.questions;
       break;
   }
+
+  return { choices, questions };
+}
+
+interface Props {
+  translations: Translations;
+  field: Field;
+  fieldSummary: FieldSummary;
+}
+
+// NOTE: if you rename this to FieldSummary,
+// it'll clash with models and graphql-typegen will silently fail
+export default function FieldSummaryComponent({
+  translations,
+  field,
+  fieldSummary,
+}: Props) {
+  const t = translations.Survey;
+
+  const { countResponses, countMissingResponses } = fieldSummary;
+  const { choices, questions } = getSummaryChoices(
+    fieldSummary,
+    field,
+    translations,
+  );
 
   switch (fieldSummary.type) {
     // TODO handle htmlType="number"
