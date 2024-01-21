@@ -120,12 +120,12 @@ export default async function SurveyDimensionsPage({ params }: Props) {
       <table className="table table-striped table-bordered">
         <thead>
           <tr>
-            <th>{t.attributes.dimension}</th>
-            <th>{t.attributes.dimension} (fi)</th>
-            <th>{t.attributes.dimension} (en)</th>
-            <th>{t.attributes.value}</th>
-            <th>{t.attributes.value} (fi)</th>
-            <th>{t.attributes.value} (en)</th>
+            <th scope="col">{t.attributes.dimension}</th>
+            <th scope="col">{t.attributes.dimension} (fi)</th>
+            <th scope="col">{t.attributes.dimension} (en)</th>
+            <th scope="col">{t.attributes.value}</th>
+            <th scope="col">{t.attributes.value} (fi)</th>
+            <th scope="col">{t.attributes.value} (en)</th>
           </tr>
         </thead>
         <tbody>
