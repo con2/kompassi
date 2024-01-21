@@ -18,7 +18,8 @@ def form_post_save(sender, instance: Form, *, created: bool, update_fields: list
     We can't call build_enriched_fields on an unsaved form.
     This will cause a second save, but forms are changed seldom so this should
     not cause a performance issue.
-    Explicit update_fields=["enriched_fields"] is used to signal that the
+
+    Explicit update_fields=["cached_enriched_fields"] is used to signal that the
     has just been rebuilt and need not be rebuilt again.
     """
     if created:
