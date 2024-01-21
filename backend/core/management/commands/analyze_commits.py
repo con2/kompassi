@@ -16,10 +16,10 @@ def get_kind_and_scope(line: str) -> tuple[str, str]:
         return "merge", ""
     if match := re.match(r"^(?P<kind>\w+)\((?P<scope>.+)\):", line):
         # kind(scope): rest of the message ignored
-        return match["kind"], match["scope"]
+        return match["kind"].lower(), match["scope"].lower()
     elif match := re.match(r"^(?P<kind>\w+):", line):
         # kind: rest of the message ignored
-        return match["kind"], ""
+        return match["kind"].lower(), ""
     else:
         return "", ""
 
