@@ -180,7 +180,7 @@ export default async function SurveyResponsePage({ params }: Props) {
       </ViewHeading>
 
       <div className="row mb-5">
-        {dimensions?.length && (
+        {!!dimensions?.length && (
           <div className="col-md-8">
             <div className="card mb-3 h-100">
               <div className="card-body">
@@ -206,7 +206,7 @@ export default async function SurveyResponsePage({ params }: Props) {
             </div>
           </div>
         )}
-        <div className="col-md-4">
+        <div className="col">
           <div className="card mb-3 h-100">
             <div className="card-body">
               <h5 className="card-title mb-3">
