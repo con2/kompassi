@@ -718,6 +718,9 @@ class Setup:
             clear=False,
         )
 
+        # leftover unattached forms that will come to haunt us at refresh_forms
+        Form.objects.filter(event=self.event, slug__startswith="programme-").delete()
+
     def setup_access(self):
         from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
 
