@@ -126,10 +126,10 @@ class Form(models.Model):
                     dimension = ProgramDimension.objects.get(event=self.event, slug=source)
                     field["choices"] = [
                         dict(
-                            slug=value.slug,
-                            title=get_message_in_language(value.title, self.language),
+                            slug=value_slug,
+                            title=get_message_in_language(value_title, self.language),
                         )
-                        for value in dimension.values.all()
+                        for value_slug, value_title in dimension.values.all().values_list("slug", "title")
                     ]
                 else:
                     raise ValueError("A form that is not used as a survey or program offer form cannot use valuesFrom")
