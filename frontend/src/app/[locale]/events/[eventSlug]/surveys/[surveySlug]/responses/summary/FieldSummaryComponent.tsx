@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import SelectFieldSummaryComponent from "./SelectFieldSummaryComponent";
 import TextFieldSummaryComponent from "./TextFieldSummaryComponent";
 import {
@@ -137,7 +138,7 @@ export default function FieldSummaryComponent({
         };
 
         return (
-          <>
+          <Fragment key={question.slug}>
             <div className="mb-1">{question.title}</div>
             <SelectFieldSummaryComponent
               key={question.slug}
@@ -145,7 +146,7 @@ export default function FieldSummaryComponent({
               choices={choices}
               fieldSummary={matrixFieldSummary}
             />
-          </>
+          </Fragment>
         );
       });
 
