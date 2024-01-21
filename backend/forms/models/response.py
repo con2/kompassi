@@ -49,10 +49,6 @@ class Response(models.Model):
         """
         Used by ..handlers/dimension.py to populate cached_dimensions
         """
-        survey = self.survey
-        if survey is None:
-            return {}
-
         new_cached_dimensions = {}
         for sdv in self.dimensions.all():
             new_cached_dimensions.setdefault(sdv.dimension.slug, []).append(sdv.value.slug)
