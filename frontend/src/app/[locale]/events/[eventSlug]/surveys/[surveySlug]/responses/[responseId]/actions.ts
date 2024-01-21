@@ -6,18 +6,8 @@ import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
 const mutation = gql(`
-  mutation UpdateResponseDimensions(
-      $eventSlug: String!,
-      $surveySlug: String!,
-      $responseId: String!,
-      $formData: GenericScalar!,
-  ) {
-    updateResponseDimensions(
-      eventSlug: $eventSlug
-      surveySlug: $surveySlug
-      responseId: $responseId
-      formData: $formData
-    ) {
+  mutation UpdateResponseDimensions($input: UpdateResponseDimensionsInput!) {
+    updateResponseDimensions(input: $input) {
       response {
         id
       }
@@ -31,14 +21,15 @@ export async function updateResponseDimensions(
   responseId: string,
   formData: FormData,
 ) {
+  const input = {
+    eventSlug,
+    surveySlug,
+    responseId,
+    formData: Object.fromEntries(formData),
+  };
   await getClient().mutate({
     mutation,
-    variables: {
-      eventSlug,
-      surveySlug,
-      responseId,
-      formData: Object.fromEntries(formData),
-    },
+    variables: { input },
   });
   revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}/responses`);
 }

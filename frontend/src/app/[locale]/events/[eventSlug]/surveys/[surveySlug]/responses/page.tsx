@@ -208,7 +208,6 @@ export default async function FormResponsesPage({
     });
 
   const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
-  const summaryUrl = `/events/${eventSlug}/surveys/${surveySlug}/responses/summary`;
   const responses = survey.responses || [];
 
   return (

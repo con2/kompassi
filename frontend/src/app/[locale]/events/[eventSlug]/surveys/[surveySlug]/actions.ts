@@ -6,18 +6,8 @@ import { gql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
 const mutation = gql(`
-  mutation CreateSurveyResponse(
-      $eventSlug: String!,
-      $surveySlug: String!,
-      $formData: GenericScalar!,
-      $locale: String
-  ) {
-    createSurveyResponse(
-      eventSlug: $eventSlug
-      surveySlug: $surveySlug
-      formData: $formData
-      locale: $locale
-    ) {
+  mutation CreateSurveyResponse($input: CreateSurveyResponseInput!) {
+    createSurveyResponse(input: $input) {
       response {
         id
       }
@@ -31,14 +21,15 @@ export async function submit(
   surveySlug: string,
   formData: FormData,
 ) {
+  const input = {
+    locale,
+    eventSlug,
+    surveySlug,
+    formData: Object.fromEntries(formData),
+  };
   await getClient().mutate({
     mutation,
-    variables: {
-      locale,
-      eventSlug,
-      surveySlug,
-      formData: Object.fromEntries(formData),
-    },
+    variables: { input },
   });
   return void redirect(`/events/${eventSlug}/surveys/${surveySlug}/thanks`);
 }

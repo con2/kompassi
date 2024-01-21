@@ -1,5 +1,3 @@
-from typing import Any
-
 import graphene
 from graphene.types.generic import GenericScalar
 
@@ -10,12 +8,16 @@ from ...models.survey import Survey
 from ..response import FullResponseType
 
 
+class CreateSurveyResponseInput(graphene.InputObjectType):
+    event_slug = graphene.String(required=True)
+    survey_slug = graphene.String(required=True)
+    form_data = GenericScalar(required=True)
+    locale = graphene.String()
+
+
 class CreateSurveyResponse(graphene.Mutation):
     class Arguments:
-        event_slug = graphene.String(required=True)
-        survey_slug = graphene.String(required=True)
-        form_data = GenericScalar(required=True)
-        locale = graphene.String()
+        input = CreateSurveyResponseInput(required=True)
 
     response = graphene.Field(FullResponseType)
 
@@ -23,17 +25,14 @@ class CreateSurveyResponse(graphene.Mutation):
     def mutate(
         root,
         info,
-        event_slug: str,
-        survey_slug: str,
-        form_data: dict[str, Any],
-        locale: str = "",
+        input: CreateSurveyResponseInput,
     ):
-        survey = Survey.objects.get(event__slug=event_slug, slug=survey_slug)
+        survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
 
         if not survey.is_active:
             raise Exception("Survey is not active")
 
-        form = survey.get_form(locale)
+        form = survey.get_form(input.locale)  # type: ignore
         if not form:
             raise Exception("Form not found")
 
@@ -57,7 +56,7 @@ class CreateSurveyResponse(graphene.Mutation):
 
         response = Response.objects.create(
             form=form,
-            form_data=form_data,
+            form_data=input.form_data,
             created_by=created_by,
             ip_address=ip_address,
         )

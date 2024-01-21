@@ -9,12 +9,16 @@ from ...utils.process_form_data import process_form_data
 from ..response import FullResponseType
 
 
+class UpdateResponseDimensionsInput(graphene.InputObjectType):
+    event_slug = graphene.String(required=True)
+    survey_slug = graphene.String(required=True)
+    response_id = graphene.String(required=True)
+    form_data = GenericScalar(required=True)
+
+
 class UpdateResponseDimensions(graphene.Mutation):
     class Arguments:
-        event_slug = graphene.String(required=True)
-        survey_slug = graphene.String(required=True)
-        response_id = graphene.String(required=True)
-        form_data = GenericScalar(required=True)
+        input = UpdateResponseDimensionsInput(required=True)
 
     response = graphene.Field(FullResponseType)
 
@@ -22,10 +26,7 @@ class UpdateResponseDimensions(graphene.Mutation):
     def mutate(
         _root,
         info,
-        event_slug: str,
-        survey_slug: str,
-        response_id: str,
-        form_data: dict[str, str | list[str]],
+        input: UpdateResponseDimensionsInput,
     ):
         """
         Called by the dimensions box submit button in
@@ -34,9 +35,10 @@ class UpdateResponseDimensions(graphene.Mutation):
         Each dimension can be either a SingleSelect or a MultiSelect, depending on whether multiple
         values are allowed (or already associated).
         """
+        form_data: dict[str, str] = input.form_data  # type: ignore
 
-        survey = Survey.objects.get(event__slug=event_slug, slug=survey_slug)
-        response = survey.responses.get(id=response_id)
+        survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
+        response = survey.responses.get(id=input.response_id)
         dimensions = list(survey.dimensions.all())
 
         # TODO bastardization of graphql_check_access, rethink
