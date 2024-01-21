@@ -153,9 +153,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
                       <code>{value.slug}</code>
                     </td>
                     <td style={{ backgroundColor }}>{value.titleFi}</td>
-                    <td style={{ backgroundColor, position: "relative" }}>
-                      {value.titleEn}
-                    </td>
+                    <td style={{ backgroundColor }}>{value.titleEn}</td>
                   </tr>
                 );
               })}
