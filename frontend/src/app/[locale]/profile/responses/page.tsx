@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { OwnResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -11,7 +11,7 @@ import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
-gql(`
+graphql(`
   fragment OwnResponse on FullResponseType {
     id
     createdAt
@@ -26,7 +26,7 @@ gql(`
   }
 `);
 
-const query = gql(`
+const query = graphql(`
   query OwnFormResponses {
     profile {
       forms {

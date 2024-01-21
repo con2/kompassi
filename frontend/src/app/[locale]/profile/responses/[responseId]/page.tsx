@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Field, validateFields } from "@/components/SchemaForm/models";
@@ -13,7 +13,7 @@ import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
-const query = gql(`
+const query = graphql(`
   query OwnResponseDetail($responseId: String!) {
     profile {
       forms {

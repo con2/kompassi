@@ -1,13 +1,17 @@
 import { notFound } from "next/navigation";
 
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
-const query = gql(`
-  query SurveyThankYouPageQuery($eventSlug:String!, $surveySlug:String!, $locale:String) {
+const query = graphql(`
+  query SurveyThankYouPageQuery(
+    $eventSlug: String!
+    $surveySlug: String!
+    $locale: String
+  ) {
     event(slug: $eventSlug) {
       name
 

@@ -3,10 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const mutation = gql(`
+const mutation = graphql(`
   mutation CreateSurveyResponse($input: CreateSurveyResponseInput!) {
     createSurveyResponse(input: $input) {
       response {

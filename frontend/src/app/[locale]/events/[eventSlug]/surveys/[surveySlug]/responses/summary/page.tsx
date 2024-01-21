@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import ResponseTabs from "../ResponseTabs";
 import FieldSummaryComponent from "./FieldSummaryComponent";
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
@@ -19,12 +19,12 @@ import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
-const query = gql(`
+const query = graphql(`
   query SurveySummary(
-    $eventSlug: String!,
-    $surveySlug: String!,
-    $locale: String,
-    $filters: [DimensionFilterInput!],
+    $eventSlug: String!
+    $surveySlug: String!
+    $locale: String
+    $filters: [DimensionFilterInput!]
   ) {
     event(slug: $eventSlug) {
       name

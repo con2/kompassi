@@ -2,10 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const mutation = gql(`
+const mutation = graphql(`
   mutation UpdateResponseDimensions($input: UpdateResponseDimensionsInput!) {
     updateResponseDimensions(input: $input) {
       response {
