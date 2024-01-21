@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { makeColorTranslucent } from "@/components/dimensions/helpers";
@@ -11,11 +11,11 @@ import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
-const query = gql(`
+const query = graphql(`
   query DimensionsList(
-    $eventSlug: String!,
-    $surveySlug: String!,
-    $locale: String!,
+    $eventSlug: String!
+    $surveySlug: String!
+    $locale: String!
   ) {
     event(slug: $eventSlug) {
       name

@@ -2,15 +2,19 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { submit } from "./actions";
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { SchemaForm } from "@/components/SchemaForm";
 import { validateFields } from "@/components/SchemaForm/models";
 import SubmitButton from "@/components/SchemaForm/SubmitButton";
 import { getTranslations } from "@/translations";
 
-const query = gql(`
-  query NewProgramQuery($eventSlug:String!, $formSlug:String!, $locale:String) {
+const query = graphql(`
+  query NewProgramQuery(
+    $eventSlug: String!
+    $formSlug: String!
+    $locale: String
+  ) {
     event(slug: $eventSlug) {
       name
       program {

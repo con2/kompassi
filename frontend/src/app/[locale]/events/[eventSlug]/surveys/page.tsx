@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { SurveyFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -14,7 +14,7 @@ import { publicUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
 // this fragment is just to give a name to the type so that we can import it from generated
-gql(`
+graphql(`
   fragment Survey on SurveyType {
     slug
     title(lang: $locale)
@@ -29,8 +29,8 @@ gql(`
   }
 `);
 
-const query = gql(`
-  query Surveys($eventSlug:String!, $locale:String) {
+const query = graphql(`
+  query Surveys($eventSlug: String!, $locale: String) {
     event(slug: $eventSlug) {
       name
 

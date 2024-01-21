@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { getTranslations } from "@/translations";
 
-const query = gql(`
-  query NewProgramFormSelectionQuery($eventSlug:String!, $locale:String) {
+const query = graphql(`
+  query NewProgramFormSelectionQuery($eventSlug: String!, $locale: String) {
     event(slug: $eventSlug) {
       name
       slug

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import ResponseTabs from "./ResponseTabs";
-import { gql } from "@/__generated__";
+import { graphql } from "@/__generated__";
 import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -21,7 +21,7 @@ import { kompassiBaseUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
 // this fragment is just to give a name to the type so that we can import it from generated
-gql(`
+graphql(`
   fragment SurveyResponse on LimitedResponseType {
     id
     createdAt
@@ -34,11 +34,11 @@ gql(`
   }
 `);
 
-const query = gql(`
+const query = graphql(`
   query FormResponses(
-    $eventSlug: String!,
-    $surveySlug: String!,
-    $locale: String,
+    $eventSlug: String!
+    $surveySlug: String!
+    $locale: String
     $filters: [DimensionFilterInput!]
   ) {
     event(slug: $eventSlug) {
