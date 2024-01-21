@@ -3,10 +3,10 @@ from __future__ import annotations
 import logging
 from copy import deepcopy
 from functools import cached_property
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Self
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
@@ -49,8 +49,12 @@ class Form(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    fields = models.JSONField()
+    fields = models.JSONField(default=list)
 
+    # cached fields
+    cached_enriched_fields = models.JSONField(default=list)
+
+    # related fields
     responses: models.QuerySet[Response]
 
     class Meta:
@@ -59,8 +63,39 @@ class Form(models.Model):
     def __str__(self):
         return self.title
 
-    @cached_property
-    def enriched_fields(self):
+    @property
+    def enriched_fields(self) -> list[dict[str, Any]]:
+        """
+        There is a chicken and egg problem with the enriched_fields property, mostly when
+        Forms, Surveys and Dimensions are created programmatically (eg. in tests and setup scripts).
+        If a `valueFrom` directive is used in a Field, the Form needs to belong to a Survey.
+        """
+        if not self.cached_enriched_fields:
+            self.refresh_enriched_fields()
+
+        return self.cached_enriched_fields
+
+    @classmethod
+    @transaction.atomic
+    def refresh_enriched_fields_qs(cls, qs: models.QuerySet[Self]):
+        """
+        Refresh cached_enriched_fields for all forms in the queryset.
+        """
+        forms_to_update = []
+        for form in qs.select_for_update(of=("self",)):
+            form.cached_enriched_fields = form._build_enriched_fields()
+            forms_to_update.append(form)
+        cls.objects.bulk_update(forms_to_update, ["cached_enriched_fields"])
+
+    def refresh_enriched_fields(self):
+        """
+        Refresh cached_enriched_fields for this form.
+        NOTE: Use refresh_enriched_fields_qs for bulk updates.
+        """
+        self.cached_enriched_fields = self._build_enriched_fields()
+        self.save(update_fields=["cached_enriched_fields"])
+
+    def _build_enriched_fields(self) -> list[dict[str, Any]]:
         return [self._enrich_field(field) for field in self.fields]
 
     def _enrich_field(self, field: dict[str, Any]) -> dict[str, Any]:
@@ -73,22 +108,20 @@ class Form(models.Model):
 
         field = deepcopy(field)
 
-        survey = self.survey
-        offer_form = self.offer_form
-
         if choices_from := field.get("choicesFrom"):
             if len(choices_from) != 1:
                 raise ValueError("choicesFrom must have exactly one key: value pair")
 
             ((source_type, source),) = choices_from.items()
             if source_type == "dimension":
-                if survey:
+                # TODO store use_case or similar on Form to avoid trying all use cases in a loop
+                if survey := self.survey:
                     # form used as survey form
                     dimension = SurveyDimension.objects.get(survey=survey, slug=source)
                     field["choices"] = [
                         choice.model_dump(by_alias=True) for choice in dimension.get_choices(self.language)
                     ]
-                elif offer_form:
+                elif self.offer_form:
                     # form used as program signup form
                     dimension = ProgramDimension.objects.get(event=self.event, slug=source)
                     field["choices"] = [
@@ -118,7 +151,7 @@ class Form(models.Model):
 
         # there can only be one
         try:
-            return self.event.surveys.filter(languages=self).get()
+            return self.event.surveys.get(languages=self)
         except Survey.DoesNotExist:
             return None
         except Survey.MultipleObjectsReturned:
@@ -130,7 +163,7 @@ class Form(models.Model):
 
         # there can only be one
         try:
-            return OfferForm.objects.filter(event=self.event, languages=self).get()
+            return OfferForm.objects.get(event=self.event, languages=self)
         except OfferForm.DoesNotExist:
             return None
         except OfferForm.MultipleObjectsReturned:

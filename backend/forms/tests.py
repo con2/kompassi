@@ -6,7 +6,6 @@ from core.models import Event
 from .excel_export import get_header_cells, get_response_cells
 from .models.dimension import Dimension, DimensionValue
 from .models.field import Choice, Field, FieldType
-from .models.form import Form
 from .models.response import Response
 from .models.survey import Survey
 from .utils.merge_form_fields import _merge_choices, _merge_fields
@@ -528,7 +527,7 @@ def test_lift_and_set_dimensions():
         ]
     )
 
-    form = Form.objects.create(
+    form = survey.languages.create(
         event=event,
         slug="test-survey-en",
         language="en",
@@ -540,8 +539,6 @@ def test_lift_and_set_dimensions():
             )
         ],
     )
-
-    survey.languages.set([form])
 
     response = Response.objects.create(
         form=form,

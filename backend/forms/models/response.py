@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import Collection, Mapping
 from functools import cached_property
 from typing import TYPE_CHECKING, Any
 
@@ -12,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 if TYPE_CHECKING:
     from ..utils.process_form_data import FieldWarning
-    from .dimension import ResponseDimensionValue
+    from .dimension import Dimension, DimensionValue, ResponseDimensionValue
     from .field import Field
     from .survey import Survey
 
@@ -46,7 +45,7 @@ class Response(models.Model):
     def survey(self) -> Survey | None:
         return self.form.survey
 
-    def build_cached_dimensions(self) -> dict[str, list[str]]:
+    def _build_cached_dimensions(self) -> dict[str, list[str]]:
         """
         Used by ..handlers/dimension.py to populate cached_dimensions
         """
@@ -63,7 +62,8 @@ class Response(models.Model):
     @classmethod
     @transaction.atomic
     def refresh_cached_dimensions_qs(cls, responses: models.QuerySet[Response]):
-        for survey in (
+        bulk_update = []
+        for response in (
             responses.select_for_update(of=("self",))
             .prefetch_related(
                 "dimensions__dimension",
@@ -75,10 +75,12 @@ class Response(models.Model):
                 "dimensions__value__slug",
             )
         ):
-            survey.refresh_cached_dimensions()
+            response.cached_dimensions = response._build_cached_dimensions()
+            bulk_update.append(response)
+        cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
 
     def refresh_cached_dimensions(self):
-        self.cached_dimensions = self.build_cached_dimensions()
+        self.cached_dimensions = self._build_cached_dimensions()
         self.save(update_fields=["cached_dimensions"])
 
     @transaction.atomic
@@ -98,26 +100,37 @@ class Response(models.Model):
             raise ValueError("Cannot lift dimension values for a response that is not related to a survey")
 
         dimensions_by_slug, values_by_dimension_by_slug = survey.preload_dimensions()
-        rdvs_to_create: list[ResponseDimensionValue] = []
+        bulk_create: list[ResponseDimensionValue] = []
         fields_by_slug = {field["slug"]: field for field in self.form.fields}
 
-        for dimension in dimensions_by_slug.values():
-            values_by_slug = values_by_dimension_by_slug[dimension.slug]
-            # set initial values
-            rdvs_to_create.extend(
+        # we have all the dimensions and values preloaded, so it makes sense to build cached_dimensions here
+        cached_dimensions = {}
+
+        def set_dimension_value(dimension: Dimension, value: DimensionValue):
+            bulk_create.append(
                 ResponseDimensionValue(
                     response=self,
                     dimension=dimension,
                     value=value,
                 )
-                for value in values_by_slug.values()
-                if value.is_initial
             )
+            cached_dimensions.setdefault(dimension.slug, []).append(value.slug)
+
+        for dimension in dimensions_by_slug.values():
+            values_by_slug = values_by_dimension_by_slug[dimension.slug]
+            # set initial values
+            for value in values_by_slug.values():
+                if value.is_initial:
+                    set_dimension_value(dimension, value)
 
             # TODO use pydantic versions of fields? Must not be enriched (it removes choicesFrom)
             dimension_field = fields_by_slug.get(dimension.slug)
             if not dimension_field:
                 # this dimension is not present as a field on the form
+                continue
+
+            if dimension_field.get("choicesFrom") != {"dimension": dimension.slug}:
+                # the field, despite its name, doesn't get its choices from this dimension
                 continue
 
             value_slug = self.values.get(dimension.slug)
@@ -130,42 +143,35 @@ class Response(models.Model):
                 # invalid value for dimension
                 continue
 
-            # get_or_create to avoid collision with initial values
-            # (probably shouldn't put a dimension that has an initial value on a form as a field?)
-            rdvs_to_create.append(
-                ResponseDimensionValue(
-                    response=self,
-                    dimension=dimension,
-                    value=value,
-                )
-            )
+            set_dimension_value(dimension, value)
 
         # NOTE: if we allow dimensions having initial values to be presented as fields on the form,
         # need to add ignore_conflicts=True here or rethink this somehow
-        ResponseDimensionValue.objects.bulk_create(rdvs_to_create)
+        ResponseDimensionValue.objects.bulk_create(bulk_create)
 
         # mass delete and bulk create don't trigger signals (which is good)
-        self.refresh_cached_dimensions()
+        self.cached_dimensions = cached_dimensions
+        self.save(update_fields=["cached_dimensions"])
 
     @transaction.atomic
-    def set_dimension_values(
-        self,
-        dimension_values: Mapping[str, Collection[str]],
-    ):
+    def set_dimension_values(self, values_to_set: dict[str, list[str]]):
+        """
+        Changes only those dimension values that are present in dimension_values.
+        """
         from .dimension import ResponseDimensionValue
 
         survey = self.survey
         if survey is None:
             raise ValueError("Cannot set dimension values for a response that is not related to a survey")
 
-        dimensions_by_slug, values_by_dimension_by_slug = survey.preload_dimensions(dimension_values)
+        dimensions_by_slug, values_by_dimension_by_slug = survey.preload_dimensions(values_to_set)
 
         cached_dimensions = self.cached_dimensions
-        qs_to_delete = self.dimensions.filter(dimension__slug__in=dimensions_by_slug.keys())
-        rdvs_to_create: list[ResponseDimensionValue] = []
+        bulk_delete = self.dimensions.filter(dimension__slug__in=dimensions_by_slug.keys())
+        bulk_create: list[ResponseDimensionValue] = []
 
-        for dimension_slug, value_slugs in dimension_values.items():
-            qs_to_delete = qs_to_delete.exclude(dimension__slug=dimension_slug, value__slug__in=value_slugs)
+        for dimension_slug, value_slugs in values_to_set.items():
+            bulk_delete = bulk_delete.exclude(dimension__slug=dimension_slug, value__slug__in=value_slugs)
 
             dimension = dimensions_by_slug[dimension_slug]
             values_by_slug = values_by_dimension_by_slug[dimension_slug]
@@ -173,18 +179,20 @@ class Response(models.Model):
             for value_slug in value_slugs:
                 if value_slug not in cached_dimensions.get(dimension_slug, []):
                     value = values_by_slug[value_slug]
-                    rdvs_to_create.append(
+                    bulk_create.append(
                         ResponseDimensionValue(
                             response=self,
                             dimension=dimension,
                             value=value,
                         )
                     )
-        qs_to_delete.delete()
-        ResponseDimensionValue.objects.bulk_create(rdvs_to_create)
+
+        bulk_delete.delete()
+        ResponseDimensionValue.objects.bulk_create(bulk_create)
 
         # mass delete and bulk create don't trigger signals (which is good)
-        self.refresh_cached_dimensions()
+        self.cached_dimensions = dict(self.cached_dimensions, **values_to_set)
+        self.save(update_fields=["cached_dimensions"])
 
     def get_processed_form_data(self, fields: list[Field]):
         """

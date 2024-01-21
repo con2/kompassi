@@ -55,9 +55,9 @@ class UpdateResponseDimensions(graphene.Mutation):
         if warnings_multi:
             raise ValueError(warnings_multi)
 
-        values = {k: {v} for k, v in values_single.items() if v}
+        values = {k: [v] for k, v in values_single.items() if v}
         for k, v in values_multi.items():
-            values.setdefault(k, set()).update(v)
+            values.setdefault(k, []).append(v)
 
         response.set_dimension_values(values)
 

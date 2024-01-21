@@ -7,6 +7,7 @@ from core.utils.locale_utils import get_message_in_language
 from core.utils.model_utils import slugify
 
 from ..models.dimension import Dimension, DimensionValue, ResponseDimensionValue
+from ..models.form import Form
 from ..models.response import Response
 
 
@@ -22,6 +23,7 @@ def program_dimension_value_pre_save(sender, instance: ResponseDimensionValue, *
 @receiver([post_save, post_delete], sender=DimensionValue)
 def dimension_post_save(sender, instance: Dimension | DimensionValue, **kwargs):
     Response.refresh_cached_dimensions_qs(instance.survey.responses.all())
+    Form.refresh_enriched_fields_qs(instance.survey.languages.all())
 
 
 @receiver([post_save, post_delete], sender=ResponseDimensionValue)
