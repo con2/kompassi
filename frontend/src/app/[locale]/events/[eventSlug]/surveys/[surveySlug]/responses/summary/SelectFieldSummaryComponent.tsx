@@ -12,10 +12,9 @@ export default function SelectFieldSummaryComponent({
   translations,
   choices,
   fieldSummary,
-  showMissingResponses,
+  showMissingResponses = true,
 }: SelectFieldSummaryComponentProps) {
   const { countResponses, countMissingResponses, summary } = fieldSummary;
-  showMissingResponses ??= true;
   const t = translations.Survey;
 
   return (
@@ -28,7 +27,7 @@ export default function SelectFieldSummaryComponent({
         </tr>
       </thead>
       <tbody>
-        {Object.entries(summary).map(([choiceSlug, countThisChoice], idx) => {
+        {Object.entries(summary).map(([choiceSlug, countThisChoice]) => {
           const choice = choices.find((c) => c.slug === choiceSlug);
           const choiceTitle = choice?.title || (
             <>
@@ -67,16 +66,20 @@ export default function SelectFieldSummaryComponent({
             </tr>
           );
         })}
-        <tr>
-          <td>
-            ❓{" "}
-            <em className="text-muted">{t.attributes.countMissingResponses}</em>
-          </td>
-          <td></td>
-          <td>
-            <span className="text-muted">{countMissingResponses}</span>
-          </td>
-        </tr>
+        {showMissingResponses && (
+          <tr>
+            <td>
+              ❓{" "}
+              <em className="text-muted">
+                {t.attributes.countMissingResponses}
+              </em>
+            </td>
+            <td></td>
+            <td>
+              <span className="text-muted">{countMissingResponses}</span>
+            </td>
+          </tr>
+        )}
       </tbody>
     </table>
   );
