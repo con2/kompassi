@@ -11,7 +11,7 @@ services:
       - postgres
     volumes:
       - ./backend:/usr/src/app
-      - web-media:/usr/src/app/media
+      - ./dev-secrets:/usr/src/app/dev-secrets:rw
     environment: &environment
       PYTHONUNBUFFERED: 1
       DEBUG: 1
@@ -22,7 +22,7 @@ services:
       MINIO_ACCESS_KEY_ID: kompassi
       MINIO_SECRET_ACCESS_KEY: kompassi
       MINIO_ENDPOINT_URL: http://localhost:9000
-      OIDC_RSA_PRIVATE_KEY: "${OIDC_RSA_PRIVATE_KEY:-}"
+      KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH: dev-secrets/id_rsa.key
   # sidecar for the backend container to proxy localhost:9000 to minio:9000
   backend-proxy:
     image: nginx
@@ -38,6 +38,7 @@ services:
       - postgres
     volumes:
       - ./backend:/usr/src/app:ro
+      - ./dev-secrets:/usr/src/app/dev-secrets:rw
     environment:
       <<: *environment
   frontend:
@@ -94,4 +95,3 @@ volumes:
   postgres-data: {}
   redis-data: {}
   minio-data: {}
-  web-media: {}
