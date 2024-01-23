@@ -21,6 +21,7 @@ export CACHE_URL="${CACHE_URL:-rediscache://$REDIS_HOSTNAME/$REDIS_CACHE_DATABAS
 # Wait for postgres to be up before continuing
 "$DIR/wait-for-it.sh" -s -t 120 "$POSTGRES_HOSTNAME:$POSTGRES_PORT"
 
+# For development only, generate OIDC RSA key if it doesn't exist
 if [ -n "${KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH:-}" ]; then
   if [ ! -f "$KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH" ]; then
     echo "Generating new RSA key for OIDC"
