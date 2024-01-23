@@ -1,4 +1,4 @@
-version: "2.2"
+version: "3.8"
 services:
   backend:
     build: backend
@@ -21,8 +21,14 @@ services:
       MINIO_BUCKET_NAME: kompassi
       MINIO_ACCESS_KEY_ID: kompassi
       MINIO_SECRET_ACCESS_KEY: kompassi
-      MINIO_ENDPOINT_URL: http://minio:9000
+      MINIO_ENDPOINT_URL: http://localhost:9000
       OIDC_RSA_PRIVATE_KEY: "${OIDC_RSA_PRIVATE_KEY:-}"
+  # sidecar for the backend container to proxy localhost:9000 to minio:9000
+  backend-proxy:
+    image: nginx
+    network_mode: service:backend
+    volumes:
+      - ./conf/backend-proxy.conf:/etc/nginx/conf.d/default.conf:ro
   celery:
     build: backend
     init: true
@@ -35,8 +41,6 @@ services:
     environment:
       <<: *environment
   frontend:
-    profiles:
-      - frontend
     build:
       context: frontend
       dockerfile: Dockerfile.dev
@@ -46,7 +50,16 @@ services:
     volumes:
       - ./frontend/src:/usr/src/app/src
     environment:
-      NEXT_PUBLIC_KOMPASSI_BASE_URL: http://backend:8000
+      NEXT_PUBLIC_KOMPASSI_BASE_URL: http://localhost:8000
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+  # sidecar for the frontend container to
+  # proxy localhost:9000 to minio:9000 and localhost:8000 to backend:8000
+  frontend-proxy:
+    image: nginx
+    network_mode: service:frontend
+    volumes:
+      - ./conf/frontend-proxy.conf:/etc/nginx/conf.d/default.conf:ro
   postgres:
     # image: postgres
     build: backend/kompassi/sql/
