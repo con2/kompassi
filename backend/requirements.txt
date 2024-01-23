@@ -28,9 +28,9 @@ billiard==4.2.0
     # via celery
 bleach==6.1.0
     # via -r requirements.in
-boto3==1.34.20
+boto3==1.34.25
     # via -r requirements.in
-botocore==1.34.20
+botocore==1.34.25
     # via
     #   boto3
     #   s3transfer
@@ -62,7 +62,7 @@ click-repl==0.3.0
     # via celery
 crispy-bootstrap3==2024.1
     # via -r requirements.in
-cryptography==41.0.7
+cryptography==42.0.0
     # via
     #   jwcrypto
     #   paramiko
@@ -146,7 +146,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsonschema==4.21.0
+jsonschema==4.21.1
     # via -r requirements.in
 jsonschema-specifications==2023.12.1
     # via jsonschema
