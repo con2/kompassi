@@ -21,42 +21,43 @@ fields:
     required: true
     choicesFrom:
       dimension: dance-category
+    helpText: Voit valita useita vaihtoehtoja.
 
-  - slug: application
+  - slug: tuntemus
     type: MultiLineText
     title: K-popin ja j-popin tuntemus
     required: false
     helpText: Kuinka tuttuja k-pop ja j-pop ovat sinulle genreinä?
 
-  - slug: application
+  - slug: osallistumiset
     type: MultiLineText
     title: Aiemmat osallistumiset
     required: false
     helpText: Listaa k-pop- ja j-pop-kilpailut, -esiintymiset ja -näytökset, joihin olet osallistunut.
 
-  - slug: application
+  - slug: tanssikokemus
     type: MultiLineText
     title: Muu tanssikokemus
     required: false
     helpText: Onko sinulla kokemusta muista tanssilajeista? Kerro myös kilpailuistasi ja esityksistäsi.
 
-  - slug: application
+  - slug: miksi
     type: MultiLineText
     title: Miksi haluaisit tuomaroida kilpailun?
     required: false
 
-  - slug: application
+  - slug: miksi-sinut
     type: MultiLineText
     title: Miksi juuri sinut pitäisi valita tuomariksi?
     required: false
 
-  - slug: application
+  - slug: edistaminen
     type: MultiLineText
     title: Tanssijoiden osaamisen edistäminen
     required: false
     helpText: Jos sinut valitaan tuomariksi, miten aiot edistää tanssijoiden osaamista?
 
-  - slug: application
+  - slug: muuta
     type: MultiLineText
     title: Muuta
     required: false

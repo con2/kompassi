@@ -15,29 +15,29 @@ fields:
     required: true
     helpText: Lähetämme tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sinulle sähköpostilla
 
-  - slug: application
+  - slug: tausta
     type: MultiLineText
     title: Cmv-tausta
     required: false
     helpText: Kerro omasta cosplay- tai cmv-harrastuksestasi ja kilpailukokemuksistasi. Kerro myös, jos sinulla on esimerkiksi koulutusta tai ammatillista osaamista.
 
-  - slug: application
+  - slug: miksi
     type: MultiLineText
     title: Miksi haluaisit tuomaroida kilpailun?
     required: false
 
-  - slug: application
+  - slug: miksi-sinut
     type: MultiLineText
     title: Miksi juuri sinut pitäisi valita tuomariksi?
     required: false
 
-  - slug: application
+  - slug: erityisalueet
     type: MultiLineText
     title: Erityisalueet
     required: false
     helpText: Jos sinut valitaan tuomariksi, mihin keskittyisit tuomaroinnissa erityisesti?
 
-  - slug: application
+  - slug: muuta
     type: MultiLineText
     title: Muuta
     required: false
