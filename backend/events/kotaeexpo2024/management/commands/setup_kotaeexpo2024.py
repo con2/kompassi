@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 
+import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
+from pkg_resources import resource_stream
 
 
 class Setup:
@@ -24,6 +26,7 @@ class Setup:
         self.setup_intra()
         self.setup_access()
         self.setup_directory()
+        self.setup_forms()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -35,7 +38,8 @@ class Setup:
                 homepage_url="https://www.kotae.fi",
             ),
         )
-        self.venue, unused = Venue.objects.get_or_create(name="Tampereen Messu- ja Urheilukeskus")
+        self.venue, unused = Venue.objects.get_or_create(
+            name="Tampereen Messu- ja Urheilukeskus")
         self.event, unused = Event.objects.get_or_create(
             slug="kotaeexpo2024",
             defaults=dict(
@@ -64,14 +68,17 @@ class Setup:
 
         from ...models import Accommodation, KnownLanguage, SignupExtra
 
-        (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
+        (labour_admin_group,) = LabourEventMeta.get_or_create_groups(
+            self.event, ["admins"])
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-            work_begins=self.event.start_time.replace(hour=8, minute=0, tzinfo=self.tz),
-            work_ends=self.event.end_time.replace(hour=22, minute=0, tzinfo=self.tz),
+            work_begins=self.event.start_time.replace(
+                hour=8, minute=0, tzinfo=self.tz),
+            work_ends=self.event.end_time.replace(
+                hour=22, minute=0, tzinfo=self.tz),
             admin_group=labour_admin_group,
             contact_email="Kotae Expon vapaaehtoistiimi <vapaaehtoiset@kotae.fi>",
         )
@@ -104,11 +111,14 @@ class Setup:
                 ),
             )
 
-        vapaaehtoinen = PersonnelClass.objects.get(event=self.event, slug="vapaaehtoinen")
-        vastaava = PersonnelClass.objects.get(event=self.event, slug="vastaava")
+        vapaaehtoinen = PersonnelClass.objects.get(
+            event=self.event, slug="vapaaehtoinen")
+        vastaava = PersonnelClass.objects.get(
+            event=self.event, slug="vastaava")
 
         for jc_data in [
-            ("vastaava", "Vastaava", "Tapahtuman järjestelytoimikunnan jäsen", [vastaava]),
+            ("vastaava", "Vastaava",
+             "Tapahtuman järjestelytoimikunnan jäsen", [vastaava]),
             (
                 "yleinen",
                 "Yleisvänkäri",
@@ -133,7 +143,8 @@ class Setup:
         labour_event_meta.create_groups()
 
         for name in ["Vastaava"]:
-            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+            JobCategory.objects.filter(
+                event=self.event, name=name).update(public=False)
 
         # for jc_name, qualification_name in [
         #     ("Järjestyksenvalvoja", "JV-kortti"),
@@ -207,7 +218,8 @@ class Setup:
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
-        (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
+        (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(
+            self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
@@ -228,7 +240,8 @@ class Setup:
             "etunimi.sukunimi",
             "nick",
         ]:
-            alias_type = EmailAliasType.objects.get(domain__domain_name="kotae.fi", metavar=metavar)
+            alias_type = EmailAliasType.objects.get(
+                domain__domain_name="kotae.fi", metavar=metavar)
             GroupEmailAliasGrant.objects.get_or_create(
                 group=cc_group,
                 type=alias_type,
@@ -240,7 +253,8 @@ class Setup:
     def setup_intra(self):
         from intra.models import IntraEventMeta, Team
 
-        (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
+        (admin_group,) = IntraEventMeta.get_or_create_groups(
+            self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("vastaava")
         meta, unused = IntraEventMeta.objects.get_or_create(
             event=self.event,
@@ -262,7 +276,8 @@ class Setup:
             ("taltiointi", "Taltiointi"),
             ("ohjelma", "Ohjelma"),
         ]:
-            (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            (team_group,) = IntraEventMeta.get_or_create_groups(
+                self.event, [team_slug])
             email = f"{team_slug}@kotae.fi"
 
             team, created = Team.objects.get_or_create(
@@ -291,6 +306,122 @@ class Setup:
             active_from=now(),
             active_until=self.event.end_time + timedelta(days=30),
         )
+
+    def setup_forms(self):
+        from forms.models.dimension import DimensionDTO
+        from forms.models.form import Form
+        from forms.models.survey import Survey
+
+        # Dance judge signup form
+
+        with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        dance_judge_signup_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="dance-judge-signup-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO temporary for development
+        if not created:
+            for key, value in data.items():
+                setattr(dance_judge_signup_fi, key, value)
+            dance_judge_signup_fi.save()
+
+        dance_judge_signup_survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="dance-judge-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name"],
+            ),
+        )
+
+        dance_judge_signup_survey.languages.set(
+            [dance_judge_signup_fi])
+
+        with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(
+                dance_judge_signup_survey)
+
+        # Cosplay judge signup form
+
+        with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        cosplay_judge_signup_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="cosplay-judge-signup-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO temporary for development
+        if not created:
+            for key, value in data.items():
+                setattr(cosplay_judge_signup_fi, key, value)
+            cosplay_judge_signup_fi.save()
+
+        cosplay_judge_signup_survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="cosplay-judge-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name"],
+            ),
+        )
+
+        cosplay_judge_signup_survey.languages.set(
+            [cosplay_judge_signup_fi])
+
+        with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(
+                cosplay_judge_signup_survey)
+
+        # CMV judge signup form
+
+        with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        cmv_judge_signup_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="cmv-judge-signup-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO temporary for development
+        if not created:
+            for key, value in data.items():
+                setattr(cmv_judge_signup_fi, key, value)
+            cmv_judge_signup_fi.save()
+
+        cmv_judge_signup_survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="cmv-judge-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name"],
+            ),
+        )
+
+        cmv_judge_signup_survey.languages.set(
+            [cmv_judge_signup_fi])
+
+        with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(
+                cmv_judge_signup_survey)
 
 
 class Command(BaseCommand):

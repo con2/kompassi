@@ -1,0 +1,43 @@
+- slug: status
+  title:
+    fi: Hakemuksen tila
+  is_key_dimension: true
+  choices:
+    - slug: new
+      color: blue
+      is_initial: true
+      title:
+        fi: Uusi
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+    - slug: rejected
+      color: red
+      title:
+        fi: Hylätty
+    - slug: cancelled
+      color: red
+      title:
+        fi: Peruutettu
+
+- slug: cosplay-category
+  title:
+    fi: Cosplaykilpailun sarjat
+  is_key_dimension: true
+  choices:
+    - slug: esityskilpailu
+      title:
+        fi: Esityskilpailu
+    - slug: yksilo-kokeneet
+      title:
+        fi: Yksilöpukukilpailu - kokeneet
+    - slug: yksilo-harrastajat
+      title:
+        fi: Yksilöpukukilpailu - harrastajat
+    - slug: yksilo-aloittelijat
+      title:
+        fi: Yksilöpukukilpailu - aloittelijat
+    - slug: teema
+      title:
+        fi: Teema

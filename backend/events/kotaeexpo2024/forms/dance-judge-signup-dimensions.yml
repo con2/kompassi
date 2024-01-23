@@ -1,0 +1,37 @@
+- slug: status
+  title:
+    fi: Hakemuksen tila
+  is_key_dimension: true
+  choices:
+    - slug: new
+      color: blue
+      is_initial: true
+      title:
+        fi: Uusi
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+    - slug: rejected
+      color: red
+      title:
+        fi: Hylätty
+    - slug: cancelled
+      color: red
+      title:
+        fi: Peruutettu
+
+- slug: dance-category
+  title:
+    fi: Kotae-Pop-sarjat
+  is_key_dimension: true
+  choices:
+    - slug: soolo
+      title:
+        fi: K-pop - soolo
+    - slug: ryhma
+      title:
+        fi: K-pop - ryhmä
+    - slug: jokeri
+      title:
+        fi: Jokeri

@@ -1,0 +1,44 @@
+title: Cosplay music video -kilpailun tuomarihaku
+layout: vertical
+description: |
+  Hae tuomariksi Kotae Expon 2024 cmv-kilpailuun.
+fields:
+  - slug: name
+    type: SingleLineText
+    title: Nimi
+    required: true
+    helpText: Millä nimellä haluat esiintyä tuomarilistoilla?
+
+  - slug: email
+    type: SingleLineText
+    title: Sähköpostiosoite
+    required: true
+    helpText: Lähetämme tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sinulle sähköpostilla
+
+  - slug: application
+    type: MultiLineText
+    title: Cmv-tausta
+    required: false
+    helpText: Kerro omasta cosplay- tai cmv-harrastuksestasi ja kilpailukokemuksistasi. Kerro myös, jos sinulla on esimerkiksi koulutusta tai ammatillista osaamista.
+
+  - slug: application
+    type: MultiLineText
+    title: Miksi haluaisit tuomaroida kilpailun?
+    required: false
+
+  - slug: application
+    type: MultiLineText
+    title: Miksi juuri sinut pitäisi valita tuomariksi?
+    required: false
+
+  - slug: application
+    type: MultiLineText
+    title: Erityisalueet
+    required: false
+    helpText: Jos sinut valitaan tuomariksi, mihin keskittyisit tuomaroinnissa erityisesti?
+
+  - slug: application
+    type: MultiLineText
+    title: Muuta
+    required: false
+    helpText: Haluatko kertoa vielä jotain muuta?
