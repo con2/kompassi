@@ -1,3 +1,7 @@
+from base64 import urlsafe_b64encode
+from os import urandom
+from os.path import splitext
+
 import boto3
 import graphene
 from django.conf import settings
@@ -10,6 +14,11 @@ s3_client = boto3.client(
     aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
     endpoint_url=s3_endpoint_url,
 )
+
+
+def generate_unique_id():
+    buffer = urandom(8)
+    return urlsafe_b64encode(buffer).decode("utf-8").rstrip("=")
 
 
 class InitFileUploadInput(graphene.InputObjectType):
@@ -29,7 +38,12 @@ class InitFileUpload(graphene.Mutation):
     Output = InitFileUploadResponse
 
     @staticmethod
-    def mutate(root, info, filename, file_type):
+    def mutate(root, info, input):
+        file_type = input.file_type
+
+        name, extension = splitext(input.filename)
+        filename = f"{name}.{generate_unique_id()}{extension}"
+
         presigned_url = s3_client.generate_presigned_url(
             ClientMethod="put_object",
             Params={

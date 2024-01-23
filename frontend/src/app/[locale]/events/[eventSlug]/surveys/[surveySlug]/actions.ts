@@ -36,7 +36,8 @@ export async function submit(
   for (const [key, value] of formData.entries()) {
     if (!(value instanceof File)) continue;
 
-    const input = { filename: value.name, fileType: value.type };
+    const filename = `survey-response-files/${eventSlug}/${surveySlug}/${value.name}`;
+    const input = { filename, fileType: value.type };
     const init = await client.mutate({
       mutation: initFileUploadMutation,
       variables: { input },
