@@ -496,7 +496,7 @@ class Setup:
             defaults=data,
         )
 
-        # TODO temporary for development
+        # TODO(#386) remove when there is a form editor
         if not created:
             for key, value in data.items():
                 setattr(form_fi, key, value)
@@ -512,7 +512,7 @@ class Setup:
             defaults=data,
         )
 
-        # TODO temporary for development
+        # TODO(#386) remove when there is a form editor
         if not created:
             for key, value in data.items():
                 setattr(form_en, key, value)

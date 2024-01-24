@@ -57,13 +57,7 @@ class Setup:
     def setup_labour(self):
         from django.contrib.contenttypes.models import ContentType
 
-        from labour.models import (
-            AlternativeSignupForm,
-            JobCategory,
-            LabourEventMeta,
-            PersonnelClass,
-            Survey,
-        )
+        from labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Survey
 
         from ...models import Accommodation, KnownLanguage, SignupExtra
 
@@ -220,10 +214,7 @@ class Setup:
         )
 
     def setup_access(self):
-        from access.models import (
-            EmailAliasType,
-            GroupEmailAliasGrant,
-        )
+        from access.models import EmailAliasType, GroupEmailAliasGrant
 
         cc_group = self.event.labour_event_meta.get_group("vastaava")
 
@@ -327,7 +318,7 @@ class Setup:
             defaults=data,
         )
 
-        # TODO temporary for development
+        # TODO(#386) remove when there is a form editor
         if not created:
             for key, value in data.items():
                 setattr(dance_judge_signup_fi, key, value)
@@ -362,7 +353,7 @@ class Setup:
             defaults=data,
         )
 
-        # TODO temporary for development
+        # TODO(#386) remove when there is a form editor
         if not created:
             for key, value in data.items():
                 setattr(cosplay_judge_signup_fi, key, value)
@@ -397,7 +388,7 @@ class Setup:
             defaults=data,
         )
 
-        # TODO temporary for development
+        # TODO(#386) remove when there is a form editor
         if not created:
             for key, value in data.items():
                 setattr(cmv_judge_signup_fi, key, value)
