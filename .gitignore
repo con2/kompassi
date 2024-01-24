@@ -9,3 +9,5 @@
 
 # set !*.sql in folders where you want to include sql files
 *.sql
+
+dev-secrets/

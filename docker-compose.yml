@@ -1,17 +1,24 @@
-version: "2.2"
 services:
   backend:
     build: backend
     init: true
     command: python manage.py docker_start
+    # note: frontend and backend have network_mode: service:backend
+    # because they to reach backend and minio at same address as browser
+    # cannot publish ports from container that has this network_mode
+    # so publish their ports from backend instead
+    # see #357 #375
     ports:
+      - 3000:3000
       - 8000:8000
+      - 9000:9000
+      - 9001:9001
     links:
       - redis
       - postgres
     volumes:
       - ./backend:/usr/src/app
-      - web-media:/usr/src/app/media
+      - ./dev-secrets:/usr/src/app/dev-secrets:rw
     environment: &environment
       PYTHONUNBUFFERED: 1
       DEBUG: 1
@@ -21,8 +28,8 @@ services:
       MINIO_BUCKET_NAME: kompassi
       MINIO_ACCESS_KEY_ID: kompassi
       MINIO_SECRET_ACCESS_KEY: kompassi
-      MINIO_ENDPOINT_URL: http://minio:9000
-      OIDC_RSA_PRIVATE_KEY: "${OIDC_RSA_PRIVATE_KEY:-}"
+      MINIO_ENDPOINT_URL: http://localhost:9000
+      KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH: dev-secrets/id_rsa.key
   celery:
     build: backend
     init: true
@@ -32,21 +39,21 @@ services:
       - postgres
     volumes:
       - ./backend:/usr/src/app:ro
+      - ./dev-secrets:/usr/src/app/dev-secrets:rw
     environment:
       <<: *environment
   frontend:
-    profiles:
-      - frontend
     build:
       context: frontend
       dockerfile: Dockerfile.dev
     init: true
-    ports:
-      - 3000:3000
+    network_mode: service:backend
     volumes:
       - ./frontend/src:/usr/src/app/src
     environment:
-      NEXT_PUBLIC_KOMPASSI_BASE_URL: http://backend:8000
+      NEXT_PUBLIC_KOMPASSI_BASE_URL: http://localhost:8000
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
   postgres:
     # image: postgres
     build: backend/kompassi/sql/
@@ -68,9 +75,7 @@ services:
     image: minio/minio
     entrypoint: /usr/bin/env
     command: sh -c 'mkdir -p /data/kompassi && minio server /data --console-address ":9001"'
-    ports:
-      - 9000:9000
-      - 9001:9001
+    network_mode: service:backend
     volumes:
       - minio-data:/data
     environment:
@@ -81,4 +86,3 @@ volumes:
   postgres-data: {}
   redis-data: {}
   minio-data: {}
-  web-media: {}
