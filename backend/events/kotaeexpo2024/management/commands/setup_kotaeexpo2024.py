@@ -302,6 +302,21 @@ class Setup:
 
         # Dance judge signup form
 
+        dance_judge_signup_survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="dance-judge-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name"],
+            ),
+        )
+
+        with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(dance_judge_signup_survey)
+
         with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
@@ -318,24 +333,24 @@ class Setup:
                 setattr(dance_judge_signup_fi, key, value)
             dance_judge_signup_fi.save()
 
-        dance_judge_signup_survey, _ = Survey.objects.get_or_create(
+        dance_judge_signup_survey.languages.set([dance_judge_signup_fi])
+
+        # Cosplay judge signup form
+
+        cosplay_judge_signup_survey, _ = Survey.objects.get_or_create(
             event=self.event,
-            slug="dance-judge-signup",
+            slug="cosplay-judge-signup",
             defaults=dict(
                 active_from=now(),
                 key_fields=["name"],
             ),
         )
 
-        dance_judge_signup_survey.languages.set([dance_judge_signup_fi])
-
-        with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-dimensions.yml") as f:
+        with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-dimensions.yml") as f:
             data = yaml.safe_load(f)
 
         for dimension in data:
-            DimensionDTO.model_validate(dimension).save(dance_judge_signup_survey)
-
-        # Cosplay judge signup form
+            DimensionDTO.model_validate(dimension).save(cosplay_judge_signup_survey)
 
         with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
@@ -353,24 +368,24 @@ class Setup:
                 setattr(cosplay_judge_signup_fi, key, value)
             cosplay_judge_signup_fi.save()
 
-        cosplay_judge_signup_survey, _ = Survey.objects.get_or_create(
+        cosplay_judge_signup_survey.languages.set([cosplay_judge_signup_fi])
+
+        # CMV judge signup form
+
+        cmv_judge_signup_survey, _ = Survey.objects.get_or_create(
             event=self.event,
-            slug="cosplay-judge-signup",
+            slug="cmv-judge-signup",
             defaults=dict(
                 active_from=now(),
                 key_fields=["name"],
             ),
         )
 
-        cosplay_judge_signup_survey.languages.set([cosplay_judge_signup_fi])
-
-        with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-dimensions.yml") as f:
+        with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-dimensions.yml") as f:
             data = yaml.safe_load(f)
 
         for dimension in data:
-            DimensionDTO.model_validate(dimension).save(cosplay_judge_signup_survey)
-
-        # CMV judge signup form
+            DimensionDTO.model_validate(dimension).save(cmv_judge_signup_survey)
 
         with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
@@ -388,22 +403,7 @@ class Setup:
                 setattr(cmv_judge_signup_fi, key, value)
             cmv_judge_signup_fi.save()
 
-        cmv_judge_signup_survey, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="cmv-judge-signup",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["name"],
-            ),
-        )
-
         cmv_judge_signup_survey.languages.set([cmv_judge_signup_fi])
-
-        with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-dimensions.yml") as f:
-            data = yaml.safe_load(f)
-
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(cmv_judge_signup_survey)
 
 
 class Command(BaseCommand):
