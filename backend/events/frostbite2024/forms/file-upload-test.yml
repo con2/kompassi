@@ -16,3 +16,5 @@ fields:
     slug: file_upload_mul
     title: File upload multiple
     multiple: true
+    helpText: |
+      You can select multiple files.

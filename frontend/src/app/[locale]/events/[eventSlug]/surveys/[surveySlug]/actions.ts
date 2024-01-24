@@ -25,6 +25,22 @@ const initFileUploadMutation = graphql(`
   }
 `);
 
+const formDataToObject = (formData: FormData) => {
+  const map = new Map<string, any>();
+  for (const [key, value] of formData.entries()) {
+    if (map.has(key)) {
+      const existing = map.get(key);
+      if (!Array.isArray(existing)) {
+        map.set(key, [existing]);
+      }
+      map.get(key).push(value);
+    } else {
+      map.set(key, value);
+    }
+  }
+  return Object.fromEntries(map.entries());
+};
+
 export async function submit(
   locale: string,
   eventSlug: string,
@@ -33,7 +49,14 @@ export async function submit(
 ) {
   const client = getClient();
 
-  for (const [key, value] of formData.entries()) {
+  const entries = Array.from(formData.entries());
+  // Remove files from form data
+  for (const key of formData.keys()) {
+    const value = formData.get(key);
+    if (value instanceof File) formData.delete(key);
+  }
+  // Replace files with file URLs
+  for (const [key, value] of entries) {
     if (!(value instanceof File)) continue;
     if (value.size === 0) continue;
 
@@ -51,14 +74,14 @@ export async function submit(
       method: "PUT",
       body: value,
     });
-    formData.set(key, fileUrl);
+    formData.append(key, fileUrl);
   }
 
   const input = {
     locale,
     eventSlug,
     surveySlug,
-    formData: Object.fromEntries(formData),
+    formData: formDataToObject(formData),
   };
   await client.mutate({
     mutation: createSurveyResponseMutation,
