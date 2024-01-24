@@ -109,6 +109,8 @@ class Form(models.Model):
         field = deepcopy(field)
 
         if choices_from := field.get("choicesFrom"):
+            field["choices"] = []
+
             if len(choices_from) != 1:
                 raise ValueError("choicesFrom must have exactly one key: value pair")
 
@@ -117,20 +119,27 @@ class Form(models.Model):
                 # TODO store use_case or similar on Form to avoid trying all use cases in a loop
                 if survey := self.survey:
                     # form used as survey form
-                    dimension = SurveyDimension.objects.get(survey=survey, slug=source)
-                    field["choices"] = [
-                        choice.model_dump(by_alias=True) for choice in dimension.get_choices(self.language)
-                    ]
+                    try:
+                        dimension = SurveyDimension.objects.get(survey=survey, slug=source)
+                        field["choices"] = [
+                            choice.model_dump(by_alias=True) for choice in dimension.get_choices(self.language)
+                        ]
+                    except SurveyDimension.DoesNotExist:
+                        logger.warning(f"Survey dimension {source} does not exist on survey {survey}")
                 elif self.offer_form:
                     # form used as program signup form
-                    dimension = ProgramDimension.objects.get(event=self.event, slug=source)
-                    field["choices"] = [
-                        dict(
-                            slug=value_slug,
-                            title=get_message_in_language(value_title, self.language),
-                        )
-                        for value_slug, value_title in dimension.values.all().values_list("slug", "title")
-                    ]
+                    try:
+                        dimension = ProgramDimension.objects.get(event=self.event, slug=source)
+                        field["choices"] = [
+                            dict(
+                                slug=value_slug,
+                                title=get_message_in_language(value_title, self.language),
+                            )
+                            for value_slug, value_title in dimension.values.all().values_list("slug", "title")
+                        ]
+                    except ProgramDimension.DoesNotExist:
+                        logger.warning(f"Program dimension {source} does not exist on event {self.event}")
+
                 else:
                     raise ValueError("A form that is not used as a survey or program offer form cannot use valuesFrom")
 

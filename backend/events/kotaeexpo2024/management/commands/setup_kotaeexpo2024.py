@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 
+import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
+from pkg_resources import resource_stream
 
 
 class Setup:
@@ -24,6 +26,7 @@ class Setup:
         self.setup_intra()
         self.setup_access()
         self.setup_directory()
+        self.setup_forms()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -54,13 +57,7 @@ class Setup:
     def setup_labour(self):
         from django.contrib.contenttypes.models import ContentType
 
-        from labour.models import (
-            AlternativeSignupForm,
-            JobCategory,
-            LabourEventMeta,
-            PersonnelClass,
-            Survey,
-        )
+        from labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Survey
 
         from ...models import Accommodation, KnownLanguage, SignupExtra
 
@@ -217,10 +214,7 @@ class Setup:
         )
 
     def setup_access(self):
-        from access.models import (
-            EmailAliasType,
-            GroupEmailAliasGrant,
-        )
+        from access.models import EmailAliasType, GroupEmailAliasGrant
 
         cc_group = self.event.labour_event_meta.get_group("vastaava")
 
@@ -291,6 +285,116 @@ class Setup:
             active_from=now(),
             active_until=self.event.end_time + timedelta(days=30),
         )
+
+    def setup_forms(self):
+        from forms.models.dimension import DimensionDTO
+        from forms.models.form import Form
+        from forms.models.survey import Survey
+
+        # Dance judge signup form
+
+        dance_judge_signup_survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="dance-judge-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name"],
+            ),
+        )
+
+        with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(dance_judge_signup_survey)
+
+        with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        dance_judge_signup_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="dance-judge-signup-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO(#386) remove when there is a form editor
+        if not created:
+            for key, value in data.items():
+                setattr(dance_judge_signup_fi, key, value)
+            dance_judge_signup_fi.save()
+
+        dance_judge_signup_survey.languages.set([dance_judge_signup_fi])
+
+        # Cosplay judge signup form
+
+        cosplay_judge_signup_survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="cosplay-judge-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name"],
+            ),
+        )
+
+        with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(cosplay_judge_signup_survey)
+
+        with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        cosplay_judge_signup_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="cosplay-judge-signup-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO(#386) remove when there is a form editor
+        if not created:
+            for key, value in data.items():
+                setattr(cosplay_judge_signup_fi, key, value)
+            cosplay_judge_signup_fi.save()
+
+        cosplay_judge_signup_survey.languages.set([cosplay_judge_signup_fi])
+
+        # CMV judge signup form
+
+        cmv_judge_signup_survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="cmv-judge-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name"],
+            ),
+        )
+
+        with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(cmv_judge_signup_survey)
+
+        with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        cmv_judge_signup_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="cmv-judge-signup-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO(#386) remove when there is a form editor
+        if not created:
+            for key, value in data.items():
+                setattr(cmv_judge_signup_fi, key, value)
+            cmv_judge_signup_fi.save()
+
+        cmv_judge_signup_survey.languages.set([cmv_judge_signup_fi])
 
 
 class Command(BaseCommand):

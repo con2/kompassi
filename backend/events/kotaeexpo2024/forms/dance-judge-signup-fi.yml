@@ -1,0 +1,65 @@
+title: Kotae-Pop-tanssikilpailun tuomarihaku
+layout: vertical
+description: |
+  Hae tuomariksi Kotae Expon 2024 Kotae-Pop-kilpailuun.
+fields:
+  - slug: name
+    type: SingleLineText
+    title: Nimi
+    required: true
+    helpText: Millä nimellä haluat esiintyä tuomarilistoilla?
+
+  - slug: email
+    type: SingleLineText
+    htmlType: email
+    title: Sähköpostiosoite
+    required: true
+    helpText: Lähetämme tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sinulle sähköpostilla
+
+  - slug: category
+    type: MultiSelect
+    title: Mitä kilpailusarjoja haluaisit tuomaroida?
+    required: true
+    choicesFrom:
+      dimension: category
+    helpText: Voit valita useita vaihtoehtoja.
+
+  - slug: tuntemus
+    type: MultiLineText
+    title: K-popin ja j-popin tuntemus
+    required: false
+    helpText: Kuinka tuttuja k-pop ja j-pop ovat sinulle genreinä?
+
+  - slug: osallistumiset
+    type: MultiLineText
+    title: Aiemmat osallistumiset
+    required: false
+    helpText: Listaa k-pop- ja j-pop-kilpailut, -esiintymiset ja -näytökset, joihin olet osallistunut.
+
+  - slug: tanssikokemus
+    type: MultiLineText
+    title: Muu tanssikokemus
+    required: false
+    helpText: Onko sinulla kokemusta muista tanssilajeista? Kerro myös kilpailuistasi ja esityksistäsi.
+
+  - slug: miksi
+    type: MultiLineText
+    title: Miksi haluaisit tuomaroida kilpailun?
+    required: false
+
+  - slug: miksi-sinut
+    type: MultiLineText
+    title: Miksi juuri sinut pitäisi valita tuomariksi?
+    required: false
+
+  - slug: edistaminen
+    type: MultiLineText
+    title: Tanssijoiden osaamisen edistäminen
+    required: false
+    helpText: Jos sinut valitaan tuomariksi, miten aiot edistää tanssijoiden osaamista?
+
+  - slug: muuta
+    type: MultiLineText
+    title: Muuta
+    required: false
+    helpText: Haluatko kertoa vielä jotain muuta?

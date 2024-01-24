@@ -52,12 +52,12 @@ export function getDimensionValueTitle(
 export function buildDimensionField(
   dimension: Dimension,
   cachedDimensions: unknown,
-  type: "SingleSelect" | "MultiSelect" = "SingleSelect",
 ) {
   validateCachedDimensions(cachedDimensions);
 
   const valueList = cachedDimensions[dimension.slug] ?? [];
-  if (valueList.length > 1) {
+  let type = dimension.isMultiValue ? "MultiSelect" : "SingleSelect";
+  if (type === "SingleSelect" && valueList.length > 1) {
     console.warn(
       "SingleSelect was requested but multiple values were already set.",
       { dimension, cachedDimensions },
