@@ -11,6 +11,7 @@ fields:
 
   - slug: email
     type: SingleLineText
+    htmlType: email
     title: Sähköpostiosoite
     required: true
     helpText: Lähetämme tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sinulle sähköpostilla
