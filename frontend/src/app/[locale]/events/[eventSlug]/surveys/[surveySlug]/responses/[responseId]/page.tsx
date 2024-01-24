@@ -35,6 +35,7 @@ const query = graphql(`
           dimensions {
             title(lang: $locale)
             slug
+            isMultiValue
             values {
               title(lang: $locale)
               slug

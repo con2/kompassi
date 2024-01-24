@@ -31,6 +31,13 @@ class Dimension(models.Model):
         default=False,
         help_text="Key dimensions are shown in the survey responses list.",
     )
+    is_multi_value = models.BooleanField(
+        default=False,
+        help_text=(
+            "Multi-value dimensions allow multiple values to be selected. "
+            "NOTE: In the database, all dimensions are multi-value, so this is just a UI hint."
+        ),
+    )
 
     values: models.QuerySet[DimensionValue]
 
@@ -120,6 +127,7 @@ class DimensionDTO(pydantic.BaseModel):
     choices: list[DimensionValueDTO]
     order: int = 0
     is_key_dimension: bool = False
+    is_multi_value: bool = False
 
     def save(self, survey: Survey):
         # TODO change to get_or_create when form editor is implemented
@@ -131,6 +139,7 @@ class DimensionDTO(pydantic.BaseModel):
                 title=self.title,
                 order=self.order,
                 is_key_dimension=self.is_key_dimension,
+                is_multi_value=self.is_multi_value,
             ),
         )
 

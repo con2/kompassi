@@ -25,6 +25,7 @@
   title:
     fi: Cosplaykilpailun sarjat
   is_key_dimension: true
+  is_multi_value: true
   choices:
     - slug: esityskilpailu
       title:

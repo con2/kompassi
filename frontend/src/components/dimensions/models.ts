@@ -8,6 +8,7 @@ export interface DimensionValue {
 export interface Dimension {
   slug: string;
   title?: string | null;
+  isMultiValue?: boolean;
   values: DimensionValue[];
 }
 
