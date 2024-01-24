@@ -1,15 +1,18 @@
 title: Testing FileUpload field
 fields:
   - type: StaticText
-    title: Background information
-    slug: background
+    title: The great file upload test form
+    slug: static_text
   - type: FileUpload
     slug: file_upload
     title: File upload
     helpText: |
       This is a file upload field. It is used to upload files.
-      It is not used to upload files.
-      It is used to upload files.
-      It is not used to upload files.
-      It is used to upload files.
-      It is not used to upload files
+  - type: FileUpload
+    slug: file_upload_req
+    title: File upload required
+    required: true
+  - type: FileUpload
+    slug: file_upload_mul
+    title: File upload multiple
+    multiple: true

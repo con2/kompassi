@@ -109,6 +109,7 @@ interface RadioMatrix extends BaseField {
 
 interface FileUpload extends BaseField {
   type: "FileUpload";
+  multiple?: boolean;
 }
 
 export type Layout = FormsFormLayoutChoices;
