@@ -1,4 +1,4 @@
-- slug: dance-status
+- slug: status
   title:
     fi: Hakemuksen tila
   is_key_dimension: true
@@ -21,7 +21,7 @@
       title:
         fi: Peruutettu
 
-- slug: dance-category
+- slug: category
   title:
     fi: Kotae-Pop-sarjat
   is_key_dimension: true

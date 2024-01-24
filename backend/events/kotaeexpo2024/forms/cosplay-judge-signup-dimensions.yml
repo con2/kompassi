@@ -1,4 +1,4 @@
-- slug: cosplay-status
+- slug: status
   title:
     fi: Hakemuksen tila
   is_key_dimension: true
@@ -21,7 +21,7 @@
       title:
         fi: Peruutettu
 
-- slug: cosplay-category
+- slug: category
   title:
     fi: Cosplaykilpailun sarjat
   is_key_dimension: true

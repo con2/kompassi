@@ -20,7 +20,7 @@ fields:
     title: Mitä kilpailusarjoja haluaisit tuomaroida?
     required: true
     choicesFrom:
-      dimension: cosplay-category
+      dimension: category
     helpText: Voit valita useita vaihtoehtoja.
 
   - slug: tausta
