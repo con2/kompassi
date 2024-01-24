@@ -35,6 +35,7 @@ export async function submit(
 
   for (const [key, value] of formData.entries()) {
     if (!(value instanceof File)) continue;
+    if (value.size === 0) continue;
 
     const filename = `${eventSlug}/survey-response-files/${surveySlug}/${value.name}`;
     const input = { filename, fileType: value.type };
