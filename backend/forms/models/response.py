@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import uuid
 from functools import cached_property
 from typing import TYPE_CHECKING, Any
@@ -14,6 +15,9 @@ if TYPE_CHECKING:
     from .dimension import Dimension, DimensionValue, ResponseDimensionValue
     from .field import Field
     from .survey import Survey
+
+
+logger = logging.getLogger("kompassi")
 
 
 class Response(models.Model):
@@ -114,6 +118,7 @@ class Response(models.Model):
 
         for dimension in dimensions_by_slug.values():
             values_by_slug = values_by_dimension_by_slug[dimension.slug]
+
             # set initial values
             for value in values_by_slug.values():
                 if value.is_initial:
@@ -129,17 +134,31 @@ class Response(models.Model):
                 # the field, despite its name, doesn't get its choices from this dimension
                 continue
 
-            value_slug = self.values.get(dimension.slug)
-            if not value_slug:
-                # this dimension is not present in the response
+            value_slugs: list[str]
+            match dimension_field.get("type", "SingleSelect"):
+                case "MultiSelect":
+                    value_slugs = self.values.get(dimension.slug, [])
+                case "SingleSelect":
+                    value_slugs = [value_slug] if (value_slug := self.values.get(dimension.slug)) else []
+                case _:
+                    logger.warning(
+                        f"Response {self.id}: Unexpected field type {dimension_field['type']} "
+                        f"for dimension {dimension.slug}"
+                    )
+                    continue
+
+            # TODO support single checkbox as dimension field?
+            if not isinstance(value_slugs, list):
+                logger.warning(f"Response {self.id}: Expected list of slugs for dimension field {dimension.slug}")
                 continue
 
-            value = values_by_slug.get(value_slug)
-            if value is None:
-                # invalid value for dimension
-                continue
+            for value_slug in value_slugs:
+                value = values_by_slug.get(value_slug)
+                if value is None:
+                    logger.warning(f"Response {self.id}: Invalid value {value_slug} for dimension {dimension.slug}")
+                    continue
 
-            set_dimension_value(dimension, value)
+                set_dimension_value(dimension, value)
 
         # NOTE: if we allow dimensions having initial values to be presented as fields on the form,
         # need to add ignore_conflicts=True here or rethink this somehow
