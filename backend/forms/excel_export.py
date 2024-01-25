@@ -60,6 +60,9 @@ def write_responses_as_excel(
 ):
     from core.excel_export import XlsxWriter
 
+    # No meaningful way to include FileUpload fields for now.
+    fields = [field for field in fields if field.type != FieldType.FILE_UPLOAD]
+
     output = XlsxWriter(output_stream)
 
     header_row = ["created_at", "language"]
