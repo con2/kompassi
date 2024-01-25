@@ -12,6 +12,7 @@ from enum import Enum
 from typing import Any
 
 from ..models.field import Field, FieldType
+from .s3_presign import is_valid_s3_url, presign_get
 
 
 class FieldWarning(Enum):
@@ -149,6 +150,37 @@ class RadioMatrixFieldProcessor(FieldProcessor):
         return warnings
 
 
+class FileUploadFieldProcessor(FieldProcessor):
+    # TODO rethink. here extract_value de facto both extracts and validates
+    # should "extract" always be values.get, then validate and then possibly process?
+    def extract_value(self, field: Field, form_data: dict[str, Any]):
+        s3_urls = form_data.get(field.slug, VALUE_MISSING)
+        if s3_urls is VALUE_MISSING:
+            return VALUE_MISSING
+
+        # presign s3 urls in value
+        if not (
+            isinstance(s3_urls, list)
+            and all(isinstance(item, str) for item in s3_urls)
+            and all(is_valid_s3_url(url) for url in s3_urls)
+        ):
+            return INVALID_VALUE
+
+        return [presign_get(url) for url in s3_urls]
+
+    def validate_value(self, field: Field, value: Any) -> list[FieldWarning]:
+        warnings = []
+
+        # TODO should not have to both return INVALID_VALUE and make it an explicit warning
+        if value is INVALID_VALUE:
+            warnings.append(FieldWarning.INVALID_VALUE)
+
+        if field.required and (value is VALUE_MISSING or not value):
+            warnings.append(FieldWarning.REQUIRED_MISSING)
+
+        return warnings
+
+
 FIELD_PROCESSORS: dict[FieldType, FieldProcessor] = {
     FieldType.SINGLE_LINE_TEXT: FieldProcessor(),
     FieldType.MULTI_LINE_TEXT: FieldProcessor(),
@@ -159,6 +191,7 @@ FIELD_PROCESSORS: dict[FieldType, FieldProcessor] = {
     FieldType.SINGLE_SELECT: SingleSelectFieldProcessor(),
     FieldType.MULTI_SELECT: MultiSelectFieldProcessor(),
     FieldType.RADIO_MATRIX: RadioMatrixFieldProcessor(),
+    FieldType.FILE_UPLOAD: FileUploadFieldProcessor(),
 }
 
 # TODO should NumberField instead of SingleLineText[htmlType="number"]?
