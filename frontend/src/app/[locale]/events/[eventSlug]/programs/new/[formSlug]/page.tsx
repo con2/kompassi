@@ -57,7 +57,8 @@ export async function generateMetadata({ params }: NewProgramProps) {
 
 export default async function NewProgramPage({ params }: NewProgramProps) {
   const { locale, eventSlug, formSlug } = params;
-  const t = getTranslations(locale).NewProgrammeView;
+  const translations = getTranslations(locale);
+  const t = translations.NewProgrammeView;
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, formSlug, locale },
@@ -94,7 +95,11 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
       </h1>
       <p>{description}</p>
       <form action={submit.bind(null, locale, eventSlug, formSlug)}>
-        <SchemaForm fields={fields} layout={layout} />
+        <SchemaForm
+          fields={fields}
+          layout={layout}
+          messages={translations.SchemaForm}
+        />
         <SubmitButton layout={layout}>{t.submit}</SubmitButton>
       </form>
     </main>

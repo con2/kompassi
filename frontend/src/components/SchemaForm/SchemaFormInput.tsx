@@ -1,15 +1,25 @@
 import type { Field } from "./models";
+import UploadedFileCards, {
+  extractBasenameFromPresignedUrl,
+} from "./UploadedFileCards";
+import type { Translations } from "@/translations/en";
 
 interface SchemaFormInputProps {
   field: Field;
   value?: any;
   readOnly?: boolean;
+  messages: Translations["SchemaForm"];
 }
 
 const defaultRows = 8;
 
 /** SchemaFormInput is responsible for rendering the actual input component. */
-const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
+function SchemaFormInput({
+  field,
+  value,
+  readOnly,
+  messages,
+}: SchemaFormInputProps) {
   const { slug, type, required, htmlType } = field;
   // TODO: make id unique in a deterministic fashion
   switch (type) {
@@ -162,17 +172,22 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
         </table>
       );
     case "FileUpload":
-      return (
-        <input
-          className="form-control"
-          type="file"
-          id={slug}
-          name={slug}
-          required={required}
-          multiple={field.multiple}
-        />
-      );
+      if (readOnly) {
+        return <UploadedFileCards urls={value} messages={messages} />;
+      } else {
+        // TODO what if readOnly or value but not both?
+        return (
+          <input
+            className="form-control"
+            type="file"
+            id={slug}
+            name={slug}
+            required={required}
+            multiple={field.multiple}
+          />
+        );
+      }
   }
-};
+}
 
 export default SchemaFormInput;

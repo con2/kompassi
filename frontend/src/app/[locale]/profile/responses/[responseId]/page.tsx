@@ -134,15 +134,26 @@ export default async function SurveyResponsePage({ params }: Props) {
         <SchemaFormInput
           field={createdAtField}
           value={formattedCreatedAt}
+          messages={translations.SchemaForm}
           readOnly
         />
       </SchemaFormField>
 
       <SchemaFormField field={languageField} layout={layout}>
-        <SchemaFormInput field={languageField} value={language} readOnly />
+        <SchemaFormInput
+          field={languageField}
+          value={language}
+          messages={translations.SchemaForm}
+          readOnly
+        />
       </SchemaFormField>
 
-      <SchemaFormResponse fields={fields} values={values} layout={layout} />
+      <SchemaFormResponse
+        fields={fields}
+        values={values}
+        layout={layout}
+        messages={translations.SchemaForm}
+      />
     </ViewContainer>
   );
 }

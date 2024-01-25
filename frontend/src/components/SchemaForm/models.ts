@@ -185,7 +185,12 @@ export function validateFields(fields: unknown): asserts fields is Field[] {
   // TODO
 }
 
-export type FieldSummaryType = "Text" | "SingleCheckbox" | "Select" | "Matrix";
+export type FieldSummaryType =
+  | "Text"
+  | "SingleCheckbox"
+  | "Select"
+  | "Matrix"
+  | "FileUpload";
 
 // NOTE: Keep in sync with backend/forms/utils/summarize_responses.py
 export interface BaseFieldSummary {
@@ -212,11 +217,17 @@ export interface MatrixFieldSummary extends BaseFieldSummary {
   summary: Record<string, Record<string, number>>;
 }
 
+export interface FileUploadFieldSummary extends BaseFieldSummary {
+  type: "FileUpload";
+  summary: string[];
+}
+
 export type FieldSummary =
   | TextFieldSummary
   | SingleCheckboxSummary
   | SelectFieldSummary
-  | MatrixFieldSummary;
+  | MatrixFieldSummary
+  | FileUploadFieldSummary;
 
 export type Summary = Record<string, FieldSummary>;
 

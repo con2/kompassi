@@ -488,6 +488,7 @@ class Setup:
             slug="file-upload-test",
             defaults=dict(
                 active_from=now(),
+                key_fields=["file_upload_req"],
             ),
         )
 

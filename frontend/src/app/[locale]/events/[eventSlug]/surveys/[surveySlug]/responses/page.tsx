@@ -14,6 +14,7 @@ import {
   getDimensionValueTitle,
 } from "@/components/dimensions/helpers";
 import { validateFields } from "@/components/SchemaForm/models";
+import { extractBasenameFromPresignedUrl } from "@/components/SchemaForm/UploadedFileCards";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -183,7 +184,23 @@ export default async function FormResponsesPage({
         // TODO move typing to codegen.ts (backend must specify scalar type)
         // TODO value types that need special processing? encap
         const values = row.values as Record<string, any>;
-        return values[keyField.slug];
+        const value = values[keyField.slug];
+
+        if (keyField.type === "FileUpload") {
+          // value is a list of presigned S3 URLs
+          return value?.map((url: string, idx: number) => {
+            const basename = extractBasenameFromPresignedUrl(url);
+            return (
+              <div key={idx} className="mb-2">
+                <a href={url} target="_blank" rel="noreferrer">
+                  {basename}
+                </a>
+              </div>
+            );
+          });
+        }
+
+        return value;
       },
     });
   });

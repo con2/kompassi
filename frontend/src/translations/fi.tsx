@@ -55,6 +55,9 @@ const translations: Translations = {
   },
   SchemaForm: {
     submit: "Lähetä",
+    warnings: {
+      noFileUploaded: "Ei tiedostoja.",
+    },
   },
   Forms: {
     heading: "Lomakkeet",

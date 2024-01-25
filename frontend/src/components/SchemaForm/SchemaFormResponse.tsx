@@ -1,18 +1,20 @@
-import { Field, Layout, nonValueFieldTypes } from "./models";
+import { Field, Layout } from "./models";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
+import type { Translations } from "@/translations/en";
 
 interface SchemaFormResponseProps {
   fields: Field[];
   layout: Layout;
   values: Record<string, unknown>;
+  messages: Translations["SchemaForm"];
 }
 
 /**
  * Provides a read-only view of a form response.
  */
 export function SchemaFormResponse(props: SchemaFormResponseProps) {
-  const { fields, layout, values } = props;
+  const { fields, layout, values, messages } = props;
 
   return (
     <>
@@ -27,7 +29,12 @@ export function SchemaFormResponse(props: SchemaFormResponseProps) {
 
         return (
           <SchemaFormField key={slug} field={field} layout={layout}>
-            <SchemaFormInput field={field} value={value} readOnly />
+            <SchemaFormInput
+              field={field}
+              value={value}
+              messages={messages}
+              readOnly
+            />
           </SchemaFormField>
         );
       })}

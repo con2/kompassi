@@ -87,7 +87,6 @@ export async function submit(
     surveySlug,
     formData: fromEntriesWithMultiValues(withFileUrls),
   };
-  console.log(input);
   await client.mutate({
     mutation: createSurveyResponseMutation,
     variables: { input },

@@ -19,6 +19,7 @@ class SummaryType(str, Enum):
     SINGLE_CHECKBOX = "SingleCheckbox"
     SELECT = "Select"
     MATRIX = "Matrix"
+    FILE_UPLOAD = "FileUpload"
 
 
 class BaseFieldSummary(pydantic.BaseModel):
@@ -29,6 +30,11 @@ class BaseFieldSummary(pydantic.BaseModel):
 
 class TextFieldSummary(BaseFieldSummary):
     type: Literal[SummaryType.TEXT] = SummaryType.TEXT
+    summary: list[str]
+
+
+class FileUploadSummary(BaseFieldSummary):
+    type: Literal[SummaryType.FILE_UPLOAD] = SummaryType.FILE_UPLOAD
     summary: list[str]
 
 
@@ -52,7 +58,7 @@ class MatrixFieldSummary(BaseFieldSummary):
     summary: dict[str, dict[str, int]]
 
 
-FieldSummary = TextFieldSummary | SingleCheckboxSummary | SelectFieldSummary | MatrixFieldSummary
+FieldSummary = TextFieldSummary | SingleCheckboxSummary | SelectFieldSummary | MatrixFieldSummary | FileUploadSummary
 Summary = dict[str, FieldSummary]
 
 
@@ -107,6 +113,28 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 count_missing_responses = total_responses - count_responses
 
                 summary[field.slug] = TextFieldSummary(
+                    countResponses=count_responses,
+                    countMissingResponses=count_missing_responses,
+                    summary=field_summary,
+                )
+
+            case FieldType.FILE_UPLOAD:
+                field_summary = []
+                count_responses = 0
+
+                for values in valuesies:
+                    value = values.get(field.slug, [])
+
+                    if not value:
+                        continue
+
+                    count_responses += 1
+
+                    field_summary.extend(value)
+
+                count_missing_responses = total_responses - count_responses
+
+                summary[field.slug] = FileUploadSummary(
                     countResponses=count_responses,
                     countMissingResponses=count_missing_responses,
                     summary=field_summary,
