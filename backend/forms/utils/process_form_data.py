@@ -8,6 +8,7 @@ NOTE: The exact semantics of `process_form_data` are defined by and documented i
 `forms/tests.py:test_process_form_data`.
 """
 
+from collections.abc import Sequence
 from enum import Enum
 from typing import Any
 
@@ -201,7 +202,7 @@ SINGLE_LINE_TEXT_PROCESSORS: dict[str, FieldProcessor] = {
 }
 
 
-def process_form_data(fields: list[Field], form_data: dict[str, Any]):
+def process_form_data(fields: Sequence[Field], form_data: dict[str, Any]):
     values: dict[str, Any] = {}
     warnings: dict[str, list[FieldWarning]] = {}
 
