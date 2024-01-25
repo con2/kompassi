@@ -19,6 +19,7 @@ class FieldType(str, Enum):
     SINGLE_SELECT = "SingleSelect"
     MULTI_SELECT = "MultiSelect"
     RADIO_MATRIX = "RadioMatrix"
+    FILE_UPLOAD = "FileUpload"
 
 
 class Choice(pydantic.BaseModel):

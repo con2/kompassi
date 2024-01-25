@@ -9,7 +9,8 @@ export type FieldType =
   | "SingleCheckbox"
   | "SingleSelect"
   | "MultiSelect"
-  | "RadioMatrix";
+  | "RadioMatrix"
+  | "FileUpload";
 
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
@@ -106,6 +107,11 @@ interface RadioMatrix extends BaseField {
   choices: Choice[];
 }
 
+interface FileUpload extends BaseField {
+  type: "FileUpload";
+  multiple?: boolean;
+}
+
 export type Layout = FormsFormLayoutChoices;
 export const Layout = FormsFormLayoutChoices;
 
@@ -120,7 +126,8 @@ export type Field =
   | SingleCheckbox
   | SingleSelect
   | MultiSelect
-  | RadioMatrix;
+  | RadioMatrix
+  | FileUpload;
 
 export interface FormSchema {
   title: string;

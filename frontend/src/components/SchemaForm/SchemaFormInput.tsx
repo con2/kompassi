@@ -161,6 +161,17 @@ const SchemaFormInput = ({ field, value, readOnly }: SchemaFormInputProps) => {
           </tbody>
         </table>
       );
+    case "FileUpload":
+      return (
+        <input
+          className="form-control"
+          type="file"
+          id={slug}
+          name={slug}
+          required={required}
+          multiple={field.multiple}
+        />
+      );
   }
 };
 

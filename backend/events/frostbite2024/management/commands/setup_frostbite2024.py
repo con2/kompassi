@@ -1,9 +1,11 @@
 from datetime import datetime, timedelta
 
+import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
+from pkg_resources import resource_stream
 
 from core.utils import full_hours_between
 
@@ -26,6 +28,7 @@ class Setup:
         self.setup_badges()
         self.setup_intra()
         self.setup_directory()
+        self.setup_forms()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -460,6 +463,35 @@ class Setup:
             active_from=self.event.created_at,
             active_until=self.event.end_time + timedelta(days=30),
         )
+
+    def setup_forms(self):
+        from forms.models import Form, Survey
+
+        with resource_stream("events.frostbite2024", "forms/file-upload-test.yml") as f:
+            data = yaml.safe_load(f)
+
+        form_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="file-upload-test",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO temporary for development
+        if not created:
+            for key, value in data.items():
+                setattr(form_fi, key, value)
+            form_fi.save()
+
+        survey, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="file-upload-test",
+            defaults=dict(
+                active_from=now(),
+            ),
+        )
+
+        survey.languages.set([form_fi])
 
 
 class Command(BaseCommand):

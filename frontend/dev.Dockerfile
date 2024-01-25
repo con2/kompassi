@@ -1,9 +1,9 @@
-FROM node:18 as deps
+FROM node:21 as deps
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-FROM node:18 as dev
+FROM node:21 as dev
 WORKDIR /usr/src/app
 ENV NEXT_TELEMETRY_DISABLED 1
 COPY --from=deps /usr/src/app/node_modules ./node_modules
