@@ -25,9 +25,9 @@ const initFileUploadMutation = graphql(`
   }
 `);
 
-const formDataToObject = (formData: FormData) => {
+const fromEntriesWithMultiValues = (entries: [string, any][]) => {
   const map = new Map<string, any>();
-  for (const [key, value] of formData.entries()) {
+  for (const [key, value] of entries) {
     if (map.has(key)) {
       const existing = map.get(key);
       if (!Array.isArray(existing)) {
@@ -38,7 +38,7 @@ const formDataToObject = (formData: FormData) => {
       map.set(key, value);
     }
   }
-  return Object.fromEntries(map.entries());
+  return Object.fromEntries(map);
 };
 
 export async function submit(
@@ -48,20 +48,9 @@ export async function submit(
   formData: FormData,
 ) {
   const client = getClient();
-
-  const entries = Array.from(formData.entries());
-  // Remove files from form data
-  for (const key of formData.keys()) {
-    const value = formData.get(key);
-    if (value instanceof File) formData.delete(key);
-  }
-  // Replace files with file URLs
-  for (const [key, value] of entries) {
-    if (!(value instanceof File)) continue;
-    if (value.size === 0) continue;
-
-    const filename = `${eventSlug}/survey-response-files/${surveySlug}/${value.name}`;
-    const input = { filename, fileType: value.type };
+  const uploadFile = async (file: File): Promise<string> => {
+    const filename = `${eventSlug}/survey-response-files/${surveySlug}/${file.name}`;
+    const input = { filename, fileType: file.type };
     const init = await client.mutate({
       mutation: initFileUploadMutation,
       variables: { input },
@@ -70,18 +59,28 @@ export async function submit(
     if (!uploadUrl || !fileUrl)
       throw new Error("Failed to initialize file upload");
 
-    await fetch(uploadUrl, {
-      method: "PUT",
-      body: value,
-    });
-    formData.append(key, fileUrl);
-  }
+    await fetch(uploadUrl, { method: "PUT", body: file });
+    return fileUrl;
+  };
+
+  const formEntries = Array.from(formData.entries());
+  const fileUploadPromises = formEntries.map(
+    async ([key, value]): Promise<[string, any]> => {
+      if (!(value instanceof File)) return [key, value];
+      // undefined removes the entry from the object
+      if (value.size === 0) return [key, undefined];
+
+      const fileUrl = await uploadFile(value);
+      return [key, fileUrl];
+    },
+  );
+  const withFileUrls = await Promise.all(fileUploadPromises);
 
   const input = {
     locale,
     eventSlug,
     surveySlug,
-    formData: formDataToObject(formData),
+    formData: fromEntriesWithMultiValues(withFileUrls),
   };
   await client.mutate({
     mutation: createSurveyResponseMutation,
