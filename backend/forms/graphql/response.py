@@ -25,6 +25,7 @@ class LimitedResponseType(DjangoObjectType):
             key_fields = survey.key_fields if survey else []
             fields = [field for field in fields if field.slug in key_fields]
 
+        # TODO discards warnings :(
         return response.get_processed_form_data(fields)[0]
 
     values = graphene.Field(
