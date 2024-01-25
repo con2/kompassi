@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Fragment } from "react";
 import ResponseTabs from "./ResponseTabs";
 import { graphql } from "@/__generated__";
 import { SurveyResponseFragment } from "@/__generated__/graphql";
@@ -188,14 +189,16 @@ export default async function FormResponsesPage({
 
         if (keyField.type === "FileUpload") {
           // value is a list of presigned S3 URLs
-          return value?.map((url: string, idx: number) => {
+          const urls: string[] = value ?? [];
+          return urls.map((url, idx) => {
             const basename = extractBasenameFromPresignedUrl(url);
             return (
-              <div key={idx} className="mb-2">
+              <Fragment key={idx}>
                 <a href={url} target="_blank" rel="noreferrer">
                   {basename}
                 </a>
-              </div>
+                {idx !== urls.length - 1 && ", "}
+              </Fragment>
             );
           });
         }
