@@ -125,11 +125,10 @@ class DimensionDTO(pydantic.BaseModel):
     slug: str
     title: dict[str, str]
     choices: list[DimensionValueDTO]
-    order: int = 0
     is_key_dimension: bool = False
     is_multi_value: bool = False
 
-    def save(self, survey: Survey):
+    def save(self, survey: Survey, order: int = 0):
         # TODO change to get_or_create when form editor is implemented
         # so that these can be loaded once but user changes are not overwritten
         dimension, _created = Dimension.objects.update_or_create(
@@ -137,9 +136,9 @@ class DimensionDTO(pydantic.BaseModel):
             slug=self.slug,
             defaults=dict(
                 title=self.title,
-                order=self.order,
                 is_key_dimension=self.is_key_dimension,
                 is_multi_value=self.is_multi_value,
+                order=order,
             ),
         )
 
@@ -151,6 +150,13 @@ class DimensionDTO(pydantic.BaseModel):
 
         for choice in self.choices:
             choice.save(dimension)
+
+    @classmethod
+    def save_many(cls, survey: Survey, dimensions: list[DimensionDTO]):
+        order = 0
+        for dimension in dimensions:
+            order += 10
+            dimension.save(survey, order)
 
 
 class ResponseDimensionValue(models.Model):

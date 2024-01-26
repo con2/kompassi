@@ -165,7 +165,7 @@ class SurveyType(LimitedSurveyType):
 
     @staticmethod
     def resolve_dimensions(survey: Survey, info, key_dimensions_only: bool = False):
-        qs = survey.dimensions.all()
+        qs = survey.dimensions.all().order_by("order", "slug")
 
         if key_dimensions_only:
             qs = qs.filter(is_key_dimension=True)
