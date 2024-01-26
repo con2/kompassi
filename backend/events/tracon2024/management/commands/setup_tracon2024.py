@@ -971,6 +971,43 @@ class Setup:
         for dimension in data:
             DimensionDTO.model_validate(dimension).save(vendor_signup_survey)
 
+        # Expense claim form
+
+        expense_claim_survey, _ = Survey.objects.update_or_create(
+            event=self.event,
+            slug="expense-claim",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["title"],
+                login_required=True,
+                anonymity="NAME_AND_EMAIL",
+            ),
+        )
+
+        with resource_stream("events.tracon2024", "forms/expense-claim-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
+        DimensionDTO.save_many(expense_claim_survey, dimensions)
+
+        with resource_stream("events.tracon2024", "forms/expense-claim-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        expense_claim_fi, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="expense-claim-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO(#386) remove when there is a form editor
+        if not created:
+            for key, value in data.items():
+                setattr(expense_claim_fi, key, value)
+            expense_claim_fi.save()
+
+        expense_claim_survey.languages.set([expense_claim_fi])
+
 
 class Command(BaseCommand):
     args = ""
