@@ -1,7 +1,5 @@
 import type { Field } from "./models";
-import UploadedFileCards, {
-  extractBasenameFromPresignedUrl,
-} from "./UploadedFileCards";
+import UploadedFileCards from "./UploadedFileCards";
 import type { Translations } from "@/translations/en";
 
 interface SchemaFormInputProps {
