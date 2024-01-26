@@ -15,7 +15,7 @@ import {
   getDimensionValueTitle,
 } from "@/components/dimensions/helpers";
 import { validateFields } from "@/components/SchemaForm/models";
-import { extractBasenameFromPresignedUrl } from "@/components/SchemaForm/UploadedFileCards";
+import UploadedFileLink from "@/components/SchemaForm/UploadedFileLink";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -191,12 +191,9 @@ export default async function FormResponsesPage({
           // value is a list of presigned S3 URLs
           const urls: string[] = value ?? [];
           return urls.map((url, idx) => {
-            const basename = extractBasenameFromPresignedUrl(url);
             return (
               <Fragment key={idx}>
-                <a href={url} target="_blank" rel="noreferrer">
-                  {basename}
-                </a>
+                <UploadedFileLink url={url} />
                 {idx !== urls.length - 1 && ", "}
               </Fragment>
             );
