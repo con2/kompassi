@@ -1,0 +1,53 @@
+- slug: type
+  title:
+    fi: Maksun tyyppi
+    en: Payment type
+  is_key_dimension: true
+  choices:
+    - slug: bank-transfer
+      # TODO(#391): implement form-visible default values
+      # is_default: true
+      title:
+        fi: Tilisiirto
+        en: Bank transfer
+    - slug: invoice
+      title:
+        fi: Lasku
+        en: Invoice
+    - slug: card-payment
+      title:
+        fi: Korttimaksu
+        en: Card payment
+
+- slug: status
+  title:
+    fi: Maksun tila
+    en: Payment status
+  is_key_dimension: true
+  choices:
+    - slug: new
+      color: blue
+      is_initial: true
+      title:
+        fi: Uusi
+        en: New
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+        en: Accepted
+    - slug: paid
+      color: teal
+      title:
+        fi: Maksettu
+        en: Paid
+    - slug: info-requested
+      color: yellow
+      title:
+        fi: Lisätietoja pyydetty
+        en: Further details requested
+    - slug: rejected
+      color: red
+      title:
+        fi: Hylätty
+        en: Rejected
