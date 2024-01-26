@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import FileUploadFieldSummaryComponent from "./FileUploadFieldSummaryComponent";
 import SelectFieldSummaryComponent from "./SelectFieldSummaryComponent";
 import TextFieldSummaryComponent from "./TextFieldSummaryComponent";
 import {
@@ -149,6 +150,14 @@ export default function FieldSummaryComponent({
           </Fragment>
         );
       });
+
+    case "FileUpload":
+      return (
+        <FileUploadFieldSummaryComponent
+          fieldSummary={fieldSummary}
+          translations={translations}
+        />
+      );
 
     default:
       return undefined;

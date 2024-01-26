@@ -60,6 +60,9 @@ def write_responses_as_excel(
 ):
     from core.excel_export import XlsxWriter
 
+    # No meaningful way to include FileUpload fields for now.
+    fields = [field for field in fields if field.type != FieldType.FILE_UPLOAD]
+
     output = XlsxWriter(output_stream)
 
     header_row = ["created_at", "language"]
@@ -68,12 +71,14 @@ def write_responses_as_excel(
     output.writerow(header_row)
 
     for response in responses:
+        values, _warnings = response.get_processed_form_data(fields)
+
         response_row = [
             localtime(response.created_at).replace(tzinfo=None),
             response.form.language,
         ]
         response_row.extend(", ".join(response.cached_dimensions.get(dimension.slug, [])) for dimension in dimensions)
-        response_row.extend(cell for field in fields for cell in get_response_cells(field, response.values))
+        response_row.extend(cell for field in fields for cell in get_response_cells(field, values))
         output.writerow(response_row)
 
     output.close()

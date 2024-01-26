@@ -42,9 +42,14 @@ class Field(pydantic.BaseModel):
     help_text: Optional[str] = pydantic.Field(default=None, alias="helpText", repr=False)
     required: Optional[bool] = pydantic.Field(default=None, alias="required", repr=False)
     read_only: Optional[bool] = pydantic.Field(default=None, alias="readOnly", repr=False)
+    # TODO silly union of all field types. refactor this into proper (GraphQL?) types
+    # htmlType only makes sense for SingleLineText
+    # choices only makes sense for SingleSelect, Multiselect, RadioMatrix
+    # multiple only makes sense for FileUpload
     html_type: Optional[str] = pydantic.Field(default=None, alias="htmlType", repr=False)
     choices: Optional[list[Choice]] = pydantic.Field(default=None, alias="choices", repr=False)
     questions: Optional[list[Choice]] = pydantic.Field(default=None, alias="questions", repr=False)
+    multiple: Optional[bool] = pydantic.Field(default=None, alias="multiple", repr=False)
 
     @classmethod
     def from_dimension(

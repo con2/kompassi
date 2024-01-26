@@ -1,14 +1,17 @@
 import { Field, Layout } from "./models";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
+import type { Translations } from "@/translations/en";
 
 interface SchemaFormProps {
   fields: Field[];
   layout?: Layout;
   values?: Record<string, any>;
+  messages: Translations["SchemaForm"];
 }
 
-export function SchemaForm({ fields, layout, values }: SchemaFormProps) {
+export function SchemaForm(props: SchemaFormProps) {
+  const { fields, layout, values, messages } = props;
   return (
     <>
       {fields.map((field, index) => {
@@ -24,7 +27,11 @@ export function SchemaForm({ fields, layout, values }: SchemaFormProps) {
             field={field}
             layout={layout ?? Layout.Vertical}
           >
-            <SchemaFormInput field={field} value={values?.[field.slug]} />
+            <SchemaFormInput
+              field={field}
+              value={values?.[field.slug]}
+              messages={messages}
+            />
           </SchemaFormField>
         );
       })}

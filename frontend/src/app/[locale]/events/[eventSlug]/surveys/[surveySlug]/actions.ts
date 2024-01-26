@@ -25,15 +25,17 @@ const initFileUploadMutation = graphql(`
   }
 `);
 
-const fromEntriesWithMultiValues = (entries: [string, any][]) => {
-  const map = new Map<string, any>();
+const fromEntriesWithMultiValues = (entries: [string, string | string[]][]) => {
+  const map = new Map<string, string | string[]>();
   for (const [key, value] of entries) {
-    if (map.has(key)) {
-      const existing = map.get(key);
-      if (!Array.isArray(existing)) {
-        map.set(key, [existing]);
+    const existing = map.get(key);
+    if (existing) {
+      if (Array.isArray(existing) && Array.isArray(value)) {
+        // FileUpload with multiple files
+        map.set(key, [...existing, ...value]);
+      } else {
+        throw new Error(`Duplicate key that is not a FileUpload: ${key}`);
       }
-      map.get(key).push(value);
     } else {
       map.set(key, value);
     }
@@ -71,7 +73,10 @@ export async function submit(
       if (value.size === 0) return [key, undefined];
 
       const fileUrl = await uploadFile(value);
-      return [key, fileUrl];
+
+      // FileUploads are string[] of URLs
+      // All other fields are string
+      return [key, [fileUrl]];
     },
   );
   const withFileUrls = await Promise.all(fileUploadPromises);

@@ -53,6 +53,9 @@ const translations = {
   },
   SchemaForm: {
     submit: "Submit",
+    warnings: {
+      noFileUploaded: "No file uploaded.",
+    },
   },
   Forms: {
     heading: "Forms",

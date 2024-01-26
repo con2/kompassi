@@ -198,6 +198,7 @@ export default async function SurveyResponsePage({ params }: Props) {
                   <SchemaForm
                     fields={dimensionFields}
                     values={dimensionValues}
+                    messages={translations.SchemaForm}
                   />
                   <noscript>
                     <SubmitButton>{t.actions.saveDimensions}</SubmitButton>
@@ -218,6 +219,7 @@ export default async function SurveyResponsePage({ params }: Props) {
                   <SchemaFormInput
                     field={createdByField}
                     value={formattedCreatedBy}
+                    messages={translations.SchemaForm}
                     readOnly
                   />
                 </SchemaFormField>
@@ -227,6 +229,7 @@ export default async function SurveyResponsePage({ params }: Props) {
                 <SchemaFormInput
                   field={createdAtField}
                   value={formattedCreatedAt}
+                  messages={translations.SchemaForm}
                   readOnly
                 />
               </SchemaFormField>
@@ -235,6 +238,7 @@ export default async function SurveyResponsePage({ params }: Props) {
                 <SchemaFormInput
                   field={languageField}
                   value={language}
+                  messages={translations.SchemaForm}
                   readOnly
                 />
               </SchemaFormField>
@@ -243,7 +247,12 @@ export default async function SurveyResponsePage({ params }: Props) {
         </div>
       </div>
 
-      <SchemaFormResponse fields={fields} values={values} layout={layout} />
+      <SchemaFormResponse
+        fields={fields}
+        values={values}
+        layout={layout}
+        messages={translations.SchemaForm}
+      />
     </ViewContainer>
   );
 }

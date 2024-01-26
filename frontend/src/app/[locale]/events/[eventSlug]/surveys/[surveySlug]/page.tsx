@@ -129,7 +129,11 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
         </small>
       </p>
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
-        <SchemaForm fields={fields} layout={layout} />
+        <SchemaForm
+          fields={fields}
+          layout={layout}
+          messages={translations.SchemaForm}
+        />
         <SubmitButton layout={layout}>{t.actions.submit}</SubmitButton>
       </form>
     </ViewContainer>

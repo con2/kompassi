@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import logging
 import uuid
-from functools import cached_property
+from collections.abc import Sequence
 from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.db import models, transaction
 from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
+
+from .form import Form
 
 if TYPE_CHECKING:
     from ..utils.process_form_data import FieldWarning
@@ -22,7 +24,7 @@ logger = logging.getLogger("kompassi")
 
 class Response(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    form = models.ForeignKey("forms.Form", on_delete=models.CASCADE, related_name="responses")
+    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="responses")
     form_data = JSONField()
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
@@ -101,7 +103,22 @@ class Response(models.Model):
 
         dimensions_by_slug, values_by_dimension_by_slug = survey.preload_dimensions()
         bulk_create: list[ResponseDimensionValue] = []
-        fields_by_slug = {field["slug"]: field for field in self.form.fields}
+
+        # only these fields have the potential of being dimension fields
+        # TODO support single checkbox as dimension field?
+        # TODO use pydantic versions of fields? Must not be enriched (it removes choicesFrom)
+        fields = [
+            field
+            for field in self.form.fields
+            if field["slug"] in dimensions_by_slug
+            and field["type"] in ("SingleSelect", "MultiSelect")
+            and field["choicesFrom"] == {"dimension": field["slug"]}
+        ]
+        fields_by_slug = {field["slug"]: field for field in fields}
+
+        # get_processed_form_data expects enriched, validated form of fields
+        enriched_fields = [field for field in self.form.validated_fields if field.slug in fields_by_slug]
+        values, warnings = self.get_processed_form_data(enriched_fields)
 
         # we have all the dimensions and values preloaded, so it makes sense to build cached_dimensions here
         cached_dimensions = {}
@@ -124,22 +141,25 @@ class Response(models.Model):
                 if value.is_initial:
                     set_dimension_value(dimension, value)
 
-            # TODO use pydantic versions of fields? Must not be enriched (it removes choicesFrom)
             dimension_field = fields_by_slug.get(dimension.slug)
             if not dimension_field:
                 # this dimension is not present as a field on the form
                 continue
 
-            if dimension_field.get("choicesFrom") != {"dimension": dimension.slug}:
-                # the field, despite its name, doesn't get its choices from this dimension
+            if field_warnings := warnings.get(dimension.slug):
+                # this dimension has validation warnings
+                logger.warning(
+                    f"Response {self.id}: Refusing to lift {dimension.slug} "
+                    f"that has validation warnings: {field_warnings}"
+                )
                 continue
 
             value_slugs: list[str]
             match dimension_field.get("type", "SingleSelect"):
                 case "MultiSelect":
-                    value_slugs = self.values.get(dimension.slug, [])
+                    value_slugs = values.get(dimension.slug, [])
                 case "SingleSelect":
-                    value_slugs = [value_slug] if (value_slug := self.values.get(dimension.slug)) else []
+                    value_slugs = [value_slug] if (value_slug := values.get(dimension.slug)) else []
                 case _:
                     logger.warning(
                         f"Response {self.id}: Unexpected field type {dimension_field['type']} "
@@ -147,7 +167,6 @@ class Response(models.Model):
                     )
                     continue
 
-            # TODO support single checkbox as dimension field?
             if not isinstance(value_slugs, list):
                 logger.warning(f"Response {self.id}: Expected list of slugs for dimension field {dimension.slug}")
                 continue
@@ -209,26 +228,17 @@ class Response(models.Model):
         self.cached_dimensions = dict(self.cached_dimensions, **values_to_set)
         self.save(update_fields=["cached_dimensions"])
 
-    def get_processed_form_data(self, fields: list[Field]):
+    def get_processed_form_data(
+        self,
+        fields: Sequence[Field] | None = None,
+    ) -> tuple[dict[str, Any], dict[str, list[FieldWarning]]]:
         """
-        While one would normally use `values`, that needs access to the form.
-        If processing multiple responses, it is more efficient to use this method
-        as it avoids a round-trip to the database for each response.
+        If you only need a subset of fields, pass them in as fields.
+        Returns a tuple of (values, warnings).
         """
         from ..utils.process_form_data import process_form_data
+
+        if fields is None:
+            fields = self.form.validated_fields
 
         return process_form_data(fields, self.form_data)
-
-    @cached_property
-    def processed_form_data(self):
-        from ..utils.process_form_data import process_form_data
-
-        return process_form_data(self.form.validated_fields, self.form_data)
-
-    @property
-    def values(self) -> dict[str, Any]:
-        return self.processed_form_data[0]
-
-    @property
-    def warnings(self) -> dict[str, list[FieldWarning]]:
-        return self.processed_form_data[1]

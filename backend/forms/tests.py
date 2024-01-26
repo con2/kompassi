@@ -14,6 +14,7 @@ from .models.response import Response
 from .models.survey import Survey
 from .utils.merge_form_fields import _merge_choices, _merge_fields
 from .utils.process_form_data import FieldWarning, process_form_data
+from .utils.s3_presign import BUCKET_NAME, S3_ENDPOINT_URL
 from .utils.summarize_responses import MatrixFieldSummary, SelectFieldSummary, TextFieldSummary, summarize_responses
 
 
@@ -299,6 +300,47 @@ def test_process_form_data():
 
     response_row = [cell for field in fields for cell in get_response_cells(field, values)]
     assert response_row == expected_response_row
+
+
+def test_process_form_data_file_upload():
+    """
+    Presigning S3 URLs is an offline operation, so we can test it without mocking
+    """
+    fields = [
+        Field(slug="fileUpload", type=FieldType.FILE_UPLOAD),
+        Field(slug="multiFileUpload", type=FieldType.FILE_UPLOAD, multiple=True),
+        Field(slug="fileUploadRequiredMissing", type=FieldType.FILE_UPLOAD, required=True),
+        Field(slug="fileUploadInvalidUrl", type=FieldType.FILE_UPLOAD),
+        Field(slug="fileUploadBogusValue", type=FieldType.FILE_UPLOAD),
+    ]
+
+    # for file upload, the form data item is a list of S3 URLs
+    form_data = {
+        "fileUpload": [f"{S3_ENDPOINT_URL}/{BUCKET_NAME}/file1.txt"],
+        "multiFileUpload": [
+            f"{S3_ENDPOINT_URL}/{BUCKET_NAME}/file2.txt",
+            f"{S3_ENDPOINT_URL}/{BUCKET_NAME}/file3.txt",
+        ],
+        "fileUploadInvalidUrl": ["https://example.com/file.txt"],
+        "fileUploadBogusValue": "not a list",
+    }
+
+    expected_warnings = dict(
+        fileUploadRequiredMissing=[FieldWarning.REQUIRED_MISSING],
+        fileUploadInvalidUrl=[FieldWarning.INVALID_VALUE],
+        fileUploadBogusValue=[FieldWarning.INVALID_VALUE],
+    )
+
+    values, warnings = process_form_data(fields, form_data)
+    assert warnings == expected_warnings
+
+    def is_valid_presigned_url(url: str):
+        return url.startswith(f"{S3_ENDPOINT_URL}/{BUCKET_NAME}/") and "?" in url
+
+    assert all(is_valid_presigned_url(url) for url in values["fileUpload"])
+    assert all(is_valid_presigned_url(url) for url in values["multiFileUpload"])
+    assert "fileUploadRequiredMissing" not in values
+    assert "fileUploadInvalidUrl" not in values
 
 
 def test_merge_choices():
