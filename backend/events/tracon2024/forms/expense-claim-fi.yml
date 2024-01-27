@@ -38,7 +38,9 @@ fields:
       Jos otsikko ei kerro kaikkea olennaista, voit antaa tässä lisätietoja.
 
   - slug: amount
-    type: SingleLineText
+    type: DecimalField
+    minValue: 0
+    decimalPlaces: 2
     title: Summa
     required: true
     helpText: |

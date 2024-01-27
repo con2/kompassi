@@ -7,7 +7,7 @@ implementation.
 NOTE: The exact semantics of `process_form_data` are defined by and documented in
 `forms/tests.py:test_process_form_data`.
 """
-
+import decimal
 from collections.abc import Sequence
 from enum import Enum
 from typing import Any
@@ -62,6 +62,8 @@ class NumberFieldProcessor(FieldProcessor):
             return VALUE_MISSING
 
         try:
+            if field.decimal_places is not None and field.decimal_places > 0:
+                return float(value)
             return int(value)
         except ValueError:
             return INVALID_VALUE
@@ -74,6 +76,38 @@ class NumberFieldProcessor(FieldProcessor):
 
         if value is INVALID_VALUE:
             warnings.append(FieldWarning.INVALID_VALUE)
+
+        return warnings
+
+
+class DecimalFieldProcessor(FieldProcessor):
+    def extract_value(self, field: Field, form_data: dict[str, Any]) -> Any:
+        value = form_data.get(field.slug, "")
+
+        if not value:
+            return VALUE_MISSING
+
+        try:
+            # It would be nice to keep this as decimal until it is serialized as JSON
+            dec = decimal.Decimal(value)
+            if field.decimal_places is not None and field.decimal_places > 0:
+                dec = dec.quantize(decimal.Decimal(f"0.{'0' * field.decimal_places}"))
+            return str(dec)
+        except decimal.InvalidOperation:
+            return INVALID_VALUE
+
+    def validate_value(self, field: Field, value: Any) -> list[FieldWarning]:
+        warnings = []
+
+        if field.required and value is VALUE_MISSING:
+            warnings.append(FieldWarning.REQUIRED_MISSING)
+        elif value is INVALID_VALUE:
+            warnings.append(FieldWarning.INVALID_VALUE)
+        else:
+            try:
+                decimal.Decimal(value)
+            except (decimal.InvalidOperation, TypeError):
+                warnings.append(FieldWarning.INVALID_VALUE)
 
         return warnings
 
@@ -193,9 +227,11 @@ FIELD_PROCESSORS: dict[FieldType, FieldProcessor] = {
     FieldType.MULTI_SELECT: MultiSelectFieldProcessor(),
     FieldType.RADIO_MATRIX: RadioMatrixFieldProcessor(),
     FieldType.FILE_UPLOAD: FileUploadFieldProcessor(),
+    FieldType.NUMBER_FIELD: NumberFieldProcessor(),
+    FieldType.DECIMAL_FIELD: DecimalFieldProcessor(),
 }
 
-# TODO should NumberField instead of SingleLineText[htmlType="number"]?
+# This is deprecated in favour of NumberField but kept for backwards compatibility
 # What about htmlType="email", "password" etc?
 SINGLE_LINE_TEXT_PROCESSORS: dict[str, FieldProcessor] = {
     "number": NumberFieldProcessor(),

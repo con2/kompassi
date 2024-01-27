@@ -49,6 +49,23 @@ function SchemaFormInput({
           name={slug}
         />
       );
+    case "NumberField":
+    case "DecimalField":
+      return (
+        <input
+          className="form-control"
+          type="number"
+          defaultValue={value}
+          required={required}
+          readOnly={readOnly}
+          id={slug}
+          name={slug}
+          step={field.decimalPlaces ? 1 / 10 ** field.decimalPlaces : 1}
+          inputMode={field.decimalPlaces ? "decimal" : "numeric"}
+          min={field.minValue}
+          max={field.maxValue}
+        />
+      );
     case "SingleCheckbox":
       // FIXME: Required checkboxes fail in a funny way.
       return (
