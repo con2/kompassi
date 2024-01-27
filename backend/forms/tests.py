@@ -7,6 +7,7 @@ import yaml
 from core.models import Event
 
 from .excel_export import get_header_cells, get_response_cells
+from .graphql.mutations.create_survey_dimension import CreateSurveyDimension
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from .models.dimension import Dimension, DimensionValue
 from .models.field import Choice, Field, FieldType
@@ -16,6 +17,10 @@ from .utils.merge_form_fields import _merge_choices, _merge_fields
 from .utils.process_form_data import FieldWarning, process_form_data
 from .utils.s3_presign import BUCKET_NAME, S3_ENDPOINT_URL
 from .utils.summarize_responses import MatrixFieldSummary, SelectFieldSummary, TextFieldSummary, summarize_responses
+
+# pass this as the info param to mutations to appease the graphql_check_access decorator
+# (remember to also mock.patch graphql_check_access)
+MOCK_INFO = SimpleNamespace(context=SimpleNamespace(user=None))
 
 
 def test_process_form_data():
@@ -668,7 +673,7 @@ def test_lift_and_set_dimensions(_patched_graphql_check_access):
     # as a value type to fail, so we have to use SimpleNamespace instead
     UpdateResponseDimensions.mutate(
         None,
-        SimpleNamespace(context=SimpleNamespace(user=None)),
+        MOCK_INFO,
         SimpleNamespace(
             event_slug=event.slug,
             survey_slug=survey.slug,
@@ -689,3 +694,38 @@ def test_lift_and_set_dimensions(_patched_graphql_check_access):
         "test-dimension": ["test-dimension-value-2"],
         "test-dimension2": ["test-dimension2-value-1", "test-dimension2-value-2"],
     }
+
+
+@pytest.mark.django_db
+@mock.patch("forms.graphql.mutations.create_survey_dimension.graphql_check_access", autospec=True)
+def test_create_survey_dimension(_patched_graphql_check_access):
+    form_data = {
+        "slug": "test-dimension",
+        "title.en": "Test dimension",
+        "title.sv": "Testdimension",
+        "isKeyDimension": "on",
+    }
+
+    event, _created = Event.get_or_create_dummy()
+
+    survey = Survey.objects.create(
+        event=event,
+        slug="test-survey",
+    )
+
+    CreateSurveyDimension.mutate(
+        None,
+        MOCK_INFO,
+        SimpleNamespace(
+            event_slug=event.slug,
+            survey_slug=survey.slug,
+            form_data=form_data,
+        ),  # type: ignore
+    )
+
+    dimension = Dimension.objects.get(survey=survey, slug="test-dimension")
+
+    assert dimension.slug == "test-dimension"
+    assert dimension.title == {"en": "Test dimension", "sv": "Testdimension"}
+    assert dimension.is_key_dimension is True
+    assert dimension.is_multi_value is False

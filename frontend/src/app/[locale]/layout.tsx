@@ -10,17 +10,14 @@ export const metadata: Metadata = {
   description: "Event Management System",
 };
 
-interface RootLayoutProps {
+interface Props {
   children: React.ReactNode;
   params: {
     locale: string;
   };
 }
 
-export default function RootLayout({
-  children,
-  params: { locale },
-}: RootLayoutProps) {
+export default function RootLayout({ children, params: { locale } }: Props) {
   const supportedLanguage = toSupportedLanguage(locale);
 
   // TODO implement bootstrap dark mode toggle (<html data-bs-theme="dark">)

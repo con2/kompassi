@@ -31,6 +31,11 @@ const translations = {
       },
     },
   },
+  // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
+  Modal: {
+    submit: "Submit",
+    cancel: "Cancel",
+  },
   DataTable: {
     create: "Create",
   },
@@ -321,7 +326,10 @@ const translations = {
       downloadAsExcel: "Download as Excel",
       returnToResponseList: "Return to the list of responses",
       returnToSurveyList: "Return to the list of surveys",
+      returnToDimensionList: "Return to the list of dimensions",
       saveDimensions: "Save dimensions",
+      addDimension: "Add dimension",
+      addValue: "Add value",
     },
     tabs: {
       summary: "Summary",
@@ -349,6 +357,37 @@ const translations = {
     checkbox: {
       checked: "Checked",
       unchecked: "Not checked",
+    },
+    editDimensionModal: {
+      editTitle: "Edit dimension",
+      addTitle: "Add dimension",
+      actions: {
+        submit: "Save dimension",
+        cancel: "Cancel",
+      },
+      attributes: {
+        slug: {
+          title: "Technical name",
+          // TODO add pattern for slug and document it in helpText
+          helpText:
+            "Machine-readable dimension name. Cannot be changed after creation.",
+        },
+        localizedTitleHeader: {
+          title: "Localized titles",
+          helpText:
+            "The title of the dimension in different languages. The title need not be provided in all supported languages: if the title is missing in the selected language, it will fall back first to the default language and then to the technical name.",
+        },
+        title: {
+          fi: "Title in Finnish",
+          en: "Title in English",
+          sv: "Title in Swedish",
+        },
+        isKeyDimension: {
+          title: "This dimension is a key dimension",
+          helpText:
+            "Values of key dimensions are displayed in the response list.",
+        },
+      },
     },
   },
 

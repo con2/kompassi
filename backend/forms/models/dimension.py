@@ -122,11 +122,13 @@ class DimensionDTO(pydantic.BaseModel):
     Helper to load dimensions from YAML.
     """
 
+    model_config = pydantic.ConfigDict(populate_by_name=True)
+
     slug: str
     title: dict[str, str]
-    choices: list[DimensionValueDTO]
-    is_key_dimension: bool = False
-    is_multi_value: bool = False
+    choices: list[DimensionValueDTO] = pydantic.Field(default_factory=list)
+    is_key_dimension: bool = pydantic.Field(default=False, alias="isKeyDimension")
+    is_multi_value: bool = pydantic.Field(default=False, alias="isMultiValue")
 
     def save(self, survey: Survey, order: int = 0):
         # TODO change to get_or_create when form editor is implemented
@@ -151,12 +153,28 @@ class DimensionDTO(pydantic.BaseModel):
         for choice in self.choices:
             choice.save(dimension)
 
+        return dimension
+
     @classmethod
     def save_many(cls, survey: Survey, dimensions: list[DimensionDTO]):
         order = 0
         for dimension in dimensions:
             order += 10
             dimension.save(survey, order)
+
+    @classmethod
+    def from_form_data(cls, form_data: dict[str, str]) -> DimensionDTO:
+        """
+        Used by dimension editor to create and edit dimensions.
+        The localized title field is presented as field per language.
+        """
+        title = {key.removeprefix("title."): value for key, value in form_data.items() if key.startswith("title.")}
+        data: dict[str, str | dict[str, str]] = {
+            key: value for key, value in form_data.items() if not key.startswith("title.")
+        }
+        data["title"] = title
+
+        return cls.model_validate(data)
 
 
 class ResponseDimensionValue(models.Model):

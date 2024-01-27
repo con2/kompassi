@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 
+import { Heading, HeadingLevel } from "../helpers/Heading";
 import { Field, Layout } from "./models";
 
 function Label({ field, layout }: { field: Field; layout: Layout }) {
@@ -25,6 +26,9 @@ interface SchemaFormFieldProps {
   layout: Layout;
   field: Field;
   children?: ReactNode;
+
+  /// used for StaticText.title
+  headingLevel?: HeadingLevel;
 }
 
 /**
@@ -35,6 +39,7 @@ export default function SchemaFormField({
   layout,
   field,
   children,
+  headingLevel,
 }: SchemaFormFieldProps) {
   const { type, helpText } = field;
   const title = field.required ? `${field.title}*` : field.title;
@@ -42,7 +47,7 @@ export default function SchemaFormField({
   if (type === "StaticText") {
     return (
       <>
-        {title && <h2>{title}</h2>}
+        {title && <Heading level={headingLevel}>{title}</Heading>}
         {helpText && <p>{helpText}</p>}
         {children}
       </>

@@ -33,6 +33,10 @@ const translations: Translations = {
       },
     },
   },
+  Modal: {
+    submit: "Submit",
+    cancel: "Cancel",
+  },
   DataTable: {
     create: "Luo uusi",
   },
@@ -321,7 +325,10 @@ const translations: Translations = {
       downloadAsExcel: "Lataa Excel-tiedostona",
       returnToResponseList: "Palaa vastauslistaukseen",
       returnToSurveyList: "Palaa kyselylistaukseen",
+      returnToDimensionList: "Palaa dimensiolistaukseen",
       saveDimensions: "Tallenna dimensiot",
+      addDimension: "Lisää dimensio",
+      addValue: "Lisää arvo",
     },
     tabs: {
       summary: "Yhteenveto",
@@ -353,6 +360,36 @@ const translations: Translations = {
     checkbox: {
       checked: "Valittu",
       unchecked: "Ei valittu",
+    },
+    editDimensionModal: {
+      editTitle: "Muokkaa dimensiota",
+      addTitle: "Lisää dimensio",
+      actions: {
+        submit: "Tallenna dimensio",
+        cancel: "Peruuta",
+      },
+      attributes: {
+        slug: {
+          title: "Tekninen nimi",
+          // TODO add pattern for slug and document it in helpText
+          helpText:
+            "Koneluettava, lyhyt nimi dimensiolle. Teknistä nimeä ei voi muuttaa dimension luomisen jälkeen.",
+        },
+        localizedTitleHeader: {
+          title: "Otsikko lokalisoituna",
+          helpText:
+            "Dimensiolle voi antaa otsikon eri kielillä. Otsikkoa ei tarvitse antaa kaikilla tuetuilla kielillä: jos otsikkoa ei ole annettu valitulla kielellä, käytetään tilalla oletuskieltä, ja jos sitäkään ei ole asetettu, teknistä nimeä.",
+        },
+        title: {
+          fi: "Otsikko suomeksi",
+          en: "Otsikko englanniksi",
+          sv: "Otsikko ruotsiksi",
+        },
+        isKeyDimension: {
+          title: "Tämä dimensio on avaindimensio",
+          helpText: "Avaindimensioiden arvot näytetään vastauslistassa.",
+        },
+      },
     },
   },
 

@@ -2,6 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
 import { graphql } from "@/__generated__";
+import {
+  DimensionRowGroupFragment,
+  ValueFieldsFragment,
+} from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { makeColorTranslucent } from "@/components/dimensions/helpers";
@@ -10,6 +14,26 @@ import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+
+graphql(`
+  fragment ValueFields on SurveyDimensionValueType {
+    slug
+    color
+    titleFi: title(lang: "fi")
+    titleEn: title(lang: "en")
+  }
+`);
+
+graphql(`
+  fragment DimensionRowGroup on SurveyDimensionType {
+    slug
+    titleFi: title(lang: "fi")
+    titleEn: title(lang: "en")
+    values {
+      ...ValueFields
+    }
+  }
+`);
 
 const query = graphql(`
   query DimensionsList(
@@ -23,21 +47,48 @@ const query = graphql(`
         survey(slug: $surveySlug) {
           title(lang: $locale)
           dimensions {
-            slug
-            titleFi: title(lang: "fi")
-            titleEn: title(lang: "en")
-            values {
-              slug
-              color
-              titleFi: title(lang: "fi")
-              titleEn: title(lang: "en")
-            }
+            ...DimensionRowGroup
           }
         }
       }
     }
   }
 `);
+
+function DimensionCells({
+  dimension,
+}: {
+  dimension: DimensionRowGroupFragment;
+}) {
+  const rowspan = dimension.values.length + 1;
+  return (
+    <>
+      <td rowSpan={rowspan} scope="rowgroup">
+        <code>{dimension.slug}</code>
+      </td>
+      <td rowSpan={rowspan} scope="rowgroup">
+        {dimension.titleFi}
+      </td>
+      <td rowSpan={rowspan} scope="rowgroup">
+        {dimension.titleEn}
+      </td>
+    </>
+  );
+}
+
+function ValueCells({ value }: { value: ValueFieldsFragment }) {
+  const backgroundColor = value.color && makeColorTranslucent(value.color);
+
+  return (
+    <>
+      <td style={{ backgroundColor }}>
+        <code>{value.slug}</code>
+      </td>
+      <td style={{ backgroundColor }}>{value.titleFi}</td>
+      <td style={{ backgroundColor }}>{value.titleEn}</td>
+    </>
+  );
+}
 
 interface Props {
   params: {
@@ -107,6 +158,56 @@ export default async function SurveyDimensionsPage({ params }: Props) {
     0,
   );
 
+  const countColumns = 6;
+
+  function AddValueCell({
+    dimension,
+  }: {
+    dimension: DimensionRowGroupFragment;
+  }) {
+    return (
+      <td colSpan={3}>
+        <Link
+          className="link-subtle"
+          href={`/events/${eventSlug}/surveys/${surveySlug}/dimensions/${dimension.slug}/values/new`}
+        >
+          {t.actions.addValue}…
+        </Link>
+      </td>
+    );
+  }
+
+  function DimensionRowGroup({
+    dimension,
+  }: {
+    dimension: DimensionRowGroupFragment;
+  }) {
+    if (dimension.values.length === 0) {
+      return (
+        <tr>
+          <DimensionCells dimension={dimension} />
+          <AddValueCell dimension={dimension} />
+        </tr>
+      );
+    }
+
+    return (
+      <>
+        {dimension.values.map((value, valueIndex) => {
+          return (
+            <tr key={`${dimension.slug}.${value.slug}`}>
+              {valueIndex === 0 && <DimensionCells dimension={dimension} />}
+              <ValueCells value={value} />
+            </tr>
+          );
+        })}
+        <tr>
+          <AddValueCell dimension={dimension} />
+        </tr>
+      </>
+    );
+  }
+
   return (
     <ViewContainer>
       <Link className="link-subtle" href={`/events/${eventSlug}/surveys`}>
@@ -117,7 +218,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
         <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
       </ViewHeading>
 
-      <table className="table table-striped table-bordered">
+      <table className="table table-bordered">
         <thead>
           <tr>
             <th scope="col">{t.attributes.dimension}</th>
@@ -129,36 +230,19 @@ export default async function SurveyDimensionsPage({ params }: Props) {
           </tr>
         </thead>
         <tbody>
-          {dimensions.map((dimension, dimensionIndex) => (
-            <Fragment key={dimension.slug}>
-              {dimension.values.map((value, valueIndex) => {
-                const backgroundColor =
-                  value.color && makeColorTranslucent(value.color);
-                return (
-                  <tr key={`${dimension.slug}.${value.slug}`}>
-                    {valueIndex === 0 && (
-                      <>
-                        <td rowSpan={dimension.values.length} scope="rowgroup">
-                          <code>{dimension.slug}</code>
-                        </td>
-                        <td rowSpan={dimension.values.length} scope="rowgroup">
-                          {dimension.titleFi}
-                        </td>
-                        <td rowSpan={dimension.values.length} scope="rowgroup">
-                          {dimension.titleEn}
-                        </td>
-                      </>
-                    )}
-                    <td style={{ backgroundColor }}>
-                      <code>{value.slug}</code>
-                    </td>
-                    <td style={{ backgroundColor }}>{value.titleFi}</td>
-                    <td style={{ backgroundColor }}>{value.titleEn}</td>
-                  </tr>
-                );
-              })}
-            </Fragment>
+          {dimensions.map((dimension) => (
+            <DimensionRowGroup key={dimension.slug} dimension={dimension} />
           ))}
+          <tr>
+            <td colSpan={countColumns}>
+              <Link
+                className="link-subtle"
+                href={`/events/${eventSlug}/surveys/${surveySlug}/dimensions/new`}
+              >
+                {t.actions.addDimension}…
+              </Link>
+            </td>
+          </tr>
         </tbody>
       </table>
       <p>{t.dimensionTableFooter(dimensions.length, countValues)}</p>
