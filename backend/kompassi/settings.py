@@ -327,6 +327,8 @@ AWS_ACCESS_KEY_ID = env("MINIO_ACCESS_KEY_ID", default="kompassi")
 AWS_SECRET_ACCESS_KEY = env("MINIO_SECRET_ACCESS_KEY", default="kompassi")
 AWS_S3_ENDPOINT_URL = env("MINIO_ENDPOINT_URL", default="http://localhost:9000")
 
+KOMPASSI_V2_BASE_URL = env("KOMPASSI_V2_BASE_URL", default="http://localhost:3000")
+
 # TODO script-src unsafe-inline needed at least by feedback.js. unsafe-eval needed by Knockout (roster.js).
 # XXX style-src unsafe-inline is just basic plebbery and should be eradicated.
 CSP_DEFAULT_SRC = "'none'"
@@ -335,7 +337,7 @@ CSP_CONNECT_SRC = "'self'"
 CSP_IMG_SRC = f"'self' {AWS_S3_ENDPOINT_URL}"
 CSP_STYLE_SRC = "'self' 'unsafe-inline'"
 CSP_FONT_SRC = "'self'"
-CSP_FORM_ACTION = "'self'"
+CSP_FORM_ACTION = f"'self' {KOMPASSI_V2_BASE_URL}"
 CSP_FRAME_ANCESTORS = "'none'"
 X_FRAME_OPTIONS = "DENY"
 
@@ -353,7 +355,6 @@ KOMPASSI_INSTALLATION_NAME_PARTITIVE = "Kompassin kehitys\u00ADinstanssia" if DE
 KOMPASSI_INSTALLATION_SLUG = env("KOMPASSI_INSTALLATION_SLUG", default="turskadev")
 KOMPASSI_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi"
 FEEDBACK_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute"
-KOMPASSI_V2_BASE_URL = env("KOMPASSI_V2_BASE_URL", default="http://localhost:3000")
 
 # Confluence & co. require a group of users
 KOMPASSI_NEW_USER_GROUPS = ["users"]
