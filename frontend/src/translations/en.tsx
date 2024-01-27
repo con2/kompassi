@@ -329,7 +329,11 @@ const translations = {
       returnToDimensionList: "Return to the list of dimensions",
       saveDimensions: "Save dimensions",
       addDimension: "Add dimension",
-      addValue: "Add value",
+      addDimensionValue: "Add value",
+      deleteDimension: "Delete dimension",
+      deleteDimensionValue: "Delete value",
+      editDimension: "Edit dimension",
+      editDimensionValue: "Edit value",
     },
     tabs: {
       summary: "Summary",

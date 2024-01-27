@@ -328,7 +328,11 @@ const translations: Translations = {
       returnToDimensionList: "Palaa dimensiolistaukseen",
       saveDimensions: "Tallenna dimensiot",
       addDimension: "Lisää dimensio",
-      addValue: "Lisää arvo",
+      addDimensionValue: "Lisää arvo",
+      deleteDimension: "Poista dimensio",
+      deleteDimensionValue: "Poista arvo",
+      editDimension: "Muokkaa dimensiota",
+      editDimensionValue: "Muokkaa arvoa",
     },
     tabs: {
       summary: "Yhteenveto",

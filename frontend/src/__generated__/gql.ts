@@ -18,7 +18,6 @@ const documents = {
     "\n  mutation CreateSurveyResponse($input: CreateSurveyResponseInput!) {\n    createSurveyResponse(input: $input) {\n      response {\n        id\n      }\n    }\n  }\n": types.CreateSurveyResponseDocument,
     "\n  mutation InitFileUploadMutation($input: InitFileUploadInput!) {\n    initFileUpload(input: $input) {\n      uploadUrl\n      fileUrl\n    }\n  }\n": types.InitFileUploadMutationDocument,
     "\n  mutation CreateSurveyDimension($input: CreateSurveyDimensionInput!) {\n    createSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n": types.CreateSurveyDimensionDocument,
-    "\n  query NewDimensionPage(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n        }\n      }\n    }\n  }\n": types.NewDimensionPageDocument,
     "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n": types.ValueFieldsFragmentDoc,
     "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n": types.DimensionRowGroupFragmentDoc,
     "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n": types.DimensionsListDocument,
@@ -71,10 +70,6 @@ export function graphql(source: "\n  mutation InitFileUploadMutation($input: Ini
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreateSurveyDimension($input: CreateSurveyDimensionInput!) {\n    createSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateSurveyDimension($input: CreateSurveyDimensionInput!) {\n    createSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query NewDimensionPage(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query NewDimensionPage(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

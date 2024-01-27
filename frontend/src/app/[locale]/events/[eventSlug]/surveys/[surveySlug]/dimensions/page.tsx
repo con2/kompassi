@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Fragment } from "react";
+import {
+  createDimension,
+  createDimensionValue,
+  deleteDimension,
+  deleteDimensionValue,
+  updateDimension,
+  updateDimensionValue,
+} from "./actions";
+import EditDimensionForm from "./EditDimensionForm";
+import ModalButton from "./ModalButton";
 import { graphql } from "@/__generated__";
 import {
   DimensionRowGroupFragment,
@@ -8,10 +17,7 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import {
-  makeColorTranslucent,
-  makeBadgeBackgroundColor,
-} from "@/components/dimensions/helpers";
+import { makeColorTranslucent } from "@/components/dimensions/helpers";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -57,41 +63,6 @@ const query = graphql(`
     }
   }
 `);
-
-function DimensionCells({
-  dimension,
-}: {
-  dimension: DimensionRowGroupFragment;
-}) {
-  const rowspan = dimension.values.length + 1;
-  return (
-    <>
-      <td rowSpan={rowspan} scope="rowgroup">
-        <code>{dimension.slug}</code>
-      </td>
-      <td rowSpan={rowspan} scope="rowgroup">
-        {dimension.titleFi}
-      </td>
-      <td rowSpan={rowspan} scope="rowgroup">
-        {dimension.titleEn}
-      </td>
-    </>
-  );
-}
-
-function ValueCells({ value }: { value: ValueFieldsFragment }) {
-  const backgroundColor = value.color && makeColorTranslucent(value.color);
-
-  return (
-    <>
-      <td style={{ backgroundColor }}>
-        <code>{value.slug}</code>
-      </td>
-      <td style={{ backgroundColor }}>{value.titleFi}</td>
-      <td style={{ backgroundColor }}>{value.titleEn}</td>
-    </>
-  );
-}
 
 interface Props {
   params: {
@@ -163,6 +134,62 @@ export default async function SurveyDimensionsPage({ params }: Props) {
 
   const countColumns = 6;
 
+  function DimensionCells({
+    dimension,
+  }: {
+    dimension: DimensionRowGroupFragment;
+  }) {
+    const rowspan = dimension.values.length + 1;
+    return (
+      <>
+        <td rowSpan={rowspan} scope="rowgroup">
+          <form
+            className="d-inline me-2"
+            action={deleteDimension.bind(
+              null,
+              eventSlug,
+              surveySlug,
+              dimension.slug,
+            )}
+          >
+            <button
+              type="submit"
+              className="btn btn-link btn-sm p-0 link-xsubtle"
+              title={t.actions.deleteDimension}
+            >
+              ❌
+            </button>
+          </form>
+          <ModalButton
+            className="btn btn-link btn-sm p-0 link-xsubtle me-1"
+            title={t.actions.editDimension}
+            label={
+              <>
+                <span className="me-2">✏️</span>
+                <code>{dimension.slug}</code>
+              </>
+            }
+            messages={t.editDimensionModal.actions}
+            action={updateDimension.bind(
+              null,
+              eventSlug,
+              surveySlug,
+              dimension.slug,
+            )}
+          >
+            <p>TODO</p>
+          </ModalButton>
+        </td>
+        <td rowSpan={rowspan} scope="rowgroup">
+          {dimension.titleFi}
+        </td>
+        <td rowSpan={rowspan} scope="rowgroup">
+          {dimension.titleEn}
+        </td>
+      </>
+    );
+  }
+
   function AddValueCell({
     dimension,
   }: {
@@ -170,13 +197,83 @@ export default async function SurveyDimensionsPage({ params }: Props) {
   }) {
     return (
       <td colSpan={3}>
-        <Link
-          className="link-subtle"
-          href={`/events/${eventSlug}/surveys/${surveySlug}/dimensions/${dimension.slug}/values/new`}
+        <ModalButton
+          className="btn btn-link btn-sm p-0 link-xsubtle"
+          title={t.actions.addDimensionValue}
+          label={
+            <>
+              <span className="me-2">➕</span>
+              {t.actions.addDimensionValue}
+            </>
+          }
+          messages={t.editDimensionModal.actions}
+          action={createDimensionValue.bind(
+            null,
+            eventSlug,
+            surveySlug,
+            dimension.slug,
+          )}
         >
-          {t.actions.addValue}…
-        </Link>
+          <p>TODO</p>
+        </ModalButton>
       </td>
+    );
+  }
+
+  function ValueCells({
+    value,
+    dimension,
+  }: {
+    value: ValueFieldsFragment;
+    dimension: DimensionRowGroupFragment;
+  }) {
+    const backgroundColor = value.color && makeColorTranslucent(value.color);
+
+    return (
+      <>
+        <td style={{ backgroundColor }}>
+          <form
+            className="d-inline me-2"
+            action={deleteDimensionValue.bind(
+              null,
+              eventSlug,
+              surveySlug,
+              dimension.slug,
+              value.slug,
+            )}
+          >
+            <button
+              type="submit"
+              className="btn btn-link btn-sm p-0 link-xsubtle"
+              title={t.actions.deleteDimensionValue}
+            >
+              ❌
+            </button>
+          </form>
+          <ModalButton
+            className="btn btn-link btn-sm p-0 link-xsubtle"
+            title={t.actions.editDimensionValue}
+            label={
+              <>
+                <span className="me-2">✏️</span>
+                <code>{value.slug}</code>
+              </>
+            }
+            messages={t.editDimensionModal.actions}
+            action={updateDimensionValue.bind(
+              null,
+              eventSlug,
+              surveySlug,
+              dimension.slug,
+              value.slug,
+            )}
+          >
+            <p>TODO</p>
+          </ModalButton>
+        </td>
+        <td style={{ backgroundColor }}>{value.titleFi}</td>
+        <td style={{ backgroundColor }}>{value.titleEn}</td>
+      </>
     );
   }
 
@@ -187,7 +284,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
   }) {
     if (dimension.values.length === 0) {
       return (
-        <tr>
+        <tr style={{ borderWidth: "3px 0 3px 0" }}>
           <DimensionCells dimension={dimension} />
           <AddValueCell dimension={dimension} />
         </tr>
@@ -200,7 +297,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
           return (
             <tr key={`${dimension.slug}.${value.slug}`}>
               {valueIndex === 0 && <DimensionCells dimension={dimension} />}
-              <ValueCells value={value} />
+              <ValueCells dimension={dimension} value={value} />
             </tr>
           );
         })}
@@ -223,7 +320,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
 
       <table className="table table-bordered">
         <thead>
-          <tr>
+          <tr style={{ borderWidth: "1px 0 3px 0" }}>
             <th scope="col">{t.attributes.dimension}</th>
             <th scope="col">{t.attributes.dimension} (fi)</th>
             <th scope="col">{t.attributes.dimension} (en)</th>
@@ -238,12 +335,26 @@ export default async function SurveyDimensionsPage({ params }: Props) {
           ))}
           <tr>
             <td colSpan={countColumns}>
-              <Link
-                className="link-subtle"
-                href={`/events/${eventSlug}/surveys/${surveySlug}/dimensions/new`}
+              <ModalButton
+                className="btn btn-link btn-sm p-0 link-xsubtle"
+                title={t.actions.addDimension}
+                label={
+                  <>
+                    <span className="me-2">➕</span>
+                    {t.actions.addDimension}
+                  </>
+                }
+                messages={t.editDimensionModal.actions}
+                action={createDimension.bind(null, eventSlug, surveySlug)}
               >
-                {t.actions.addDimension}…
-              </Link>
+                <EditDimensionForm
+                  headingLevel="h5"
+                  messages={{
+                    SchemaForm: translations.SchemaForm,
+                    Survey: translations.Survey,
+                  }}
+                />
+              </ModalButton>
             </td>
           </tr>
         </tbody>
