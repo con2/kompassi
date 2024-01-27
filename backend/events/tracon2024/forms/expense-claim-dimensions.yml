@@ -24,6 +24,7 @@
     fi: Maksun tila
     en: Payment status
   is_key_dimension: true
+  is_shown_to_respondent: true
   choices:
     - slug: new
       color: blue

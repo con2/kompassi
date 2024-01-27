@@ -2,19 +2,32 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
-import { OwnResponseFragment } from "@/__generated__/graphql";
+import { ProfileResponsesTableRowFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import { makeBadgeBackgroundColor } from "@/components/dimensions/helpers";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment OwnResponse on FullResponseType {
+  fragment ProfileResponsesTableRow on ProfileResponseType {
     id
     createdAt
+    dimensions(keyDimensionsOnly: true) {
+      dimension {
+        slug
+        title(lang: $locale)
+      }
+
+      value {
+        slug
+        title(lang: $locale)
+        color
+      }
+    }
     form {
       slug
       title
@@ -27,11 +40,11 @@ graphql(`
 `);
 
 const query = graphql(`
-  query OwnFormResponses {
+  query OwnFormResponses($locale: String!) {
     profile {
       forms {
         responses {
-          ...OwnResponse
+          ...ProfileResponsesTableRow
         }
       }
     }
@@ -66,14 +79,19 @@ export default async function OwnResponsesPage({ params }: Props) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
-  const { data } = await getClient().query({ query });
+  const { data } = await getClient().query({
+    query,
+    variables: {
+      locale,
+    },
+  });
 
   if (!data.profile?.forms.responses) {
     notFound();
   }
 
   const t = translations.Survey;
-  const columns: Column<OwnResponseFragment>[] = [
+  const columns: Column<ProfileResponsesTableRowFragment>[] = [
     {
       slug: "createdAt",
       title: t.attributes.createdAt,
@@ -91,7 +109,24 @@ export default async function OwnResponsesPage({ params }: Props) {
     {
       slug: "formTitle",
       title: t.attributes.formTitle,
-      getCellContents: (row) => row.form.title,
+      getCellContents: (row) => (
+        <div>
+          {row.form.title}
+          {row.dimensions?.map((dimension) => (
+            <span
+              key={dimension.dimension.slug}
+              className="badge ms-1"
+              style={{
+                backgroundColor:
+                  dimension.value.color &&
+                  makeBadgeBackgroundColor(dimension.value.color),
+              }}
+            >
+              {dimension.value.title}
+            </span>
+          ))}
+        </div>
+      ),
     },
   ];
 

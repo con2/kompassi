@@ -126,3 +126,71 @@ class FullResponseType(LimitedResponseType):
             "form_data",
             "created_at",
         )
+
+
+class ProfileResponseType(LimitedResponseType):
+    @staticmethod
+    def resolve_form(parent: Response, info):
+        return parent.form
+
+    form = graphene.Field(graphene.NonNull(FormType))
+
+    @staticmethod
+    def resolve_dimensions(parent: Response, info, key_dimensions_only: bool = False):
+        """
+        The respondent will only see values of dimensions that are designated as
+        being shown to the respondent.
+        """
+        qs = parent.dimensions.filter(dimension__is_shown_to_respondent=True)
+
+        if key_dimensions_only:
+            qs = qs.filter(dimension__is_key_dimension=True)
+
+        return qs
+
+    dimensions = graphene.List(
+        graphene.NonNull(ResponseDimensionValueType),
+        key_dimensions_only=graphene.Boolean(),
+    )
+
+    @staticmethod
+    def resolve_cached_dimensions(response: Response, info, key_dimensions_only: bool = False):
+        """
+        Returns the dimensions of the response as
+        a dict of dimension slug -> list of dimension value slugs. If the response
+        is not related to a survey, there will be no dimensions and an empty dict
+        will always be returned.
+
+        Using this field is more efficient than querying the dimensions field
+        on the response, as the dimensions are cached on the response object.
+
+        The respondent will only see values of dimensions that are designated as
+        being shown to the respondent.
+        """
+        cached_dimensions = response.cached_dimensions
+
+        included_dimensions = response.dimensions.filter(
+            dimension__slug__in=cached_dimensions.keys(),
+            dimension__is_shown_to_respondent=True,
+        )
+
+        if key_dimensions_only:
+            included_dimensions = included_dimensions.filter(dimension__is_key_dimension=True)
+
+        included_dimension_slugs = response.dimensions.values_list("dimension__slug", flat=True)
+
+        return {k: v for k, v in cached_dimensions.items() if k in included_dimension_slugs}
+
+    cached_dimensions = graphene.Field(
+        GenericScalar,
+        description=normalize_whitespace(resolve_cached_dimensions.__doc__ or ""),
+        key_dimensions_only=graphene.Boolean(),
+    )
+
+    class Meta:
+        model = Response
+        fields = (
+            "id",
+            "form_data",
+            "created_at",
+        )

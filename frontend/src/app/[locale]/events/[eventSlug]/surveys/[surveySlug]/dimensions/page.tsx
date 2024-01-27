@@ -8,7 +8,10 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { makeColorTranslucent } from "@/components/dimensions/helpers";
+import {
+  makeColorTranslucent,
+  makeBadgeBackgroundColor,
+} from "@/components/dimensions/helpers";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";

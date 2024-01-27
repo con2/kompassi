@@ -5,7 +5,7 @@ from core.utils import get_ip
 
 from ...models.response import Response
 from ...models.survey import Survey
-from ..response import FullResponseType
+from ..response import ProfileResponseType
 
 
 class CreateSurveyResponseInput(graphene.InputObjectType):
@@ -19,7 +19,7 @@ class CreateSurveyResponse(graphene.Mutation):
     class Arguments:
         input = CreateSurveyResponseInput(required=True)
 
-    response = graphene.Field(FullResponseType)
+    response = graphene.Field(ProfileResponseType)
 
     @staticmethod
     def mutate(

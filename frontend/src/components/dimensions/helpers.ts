@@ -105,3 +105,7 @@ export function buildDimensionForm(
 export function makeColorTranslucent(color: string) {
   return `color-mix(in srgb, ${color}, transparent 85%)`;
 }
+
+export function makeBadgeBackgroundColor(color: string) {
+  return `color-mix(in srgb, ${color}, var(--bs-secondary) 50%)`;
+}

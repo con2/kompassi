@@ -8,7 +8,7 @@ from core.utils import get_objects_within_period, normalize_whitespace
 from ..models.meta import FormsEventMeta, FormsProfileMeta
 from ..models.response import Response
 from ..models.survey import Survey
-from .response import FullResponseType
+from .response import ProfileResponseType
 from .survey import SurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
@@ -51,7 +51,7 @@ class FormsProfileMetaType(graphene.ObjectType):
 
     responses = graphene.NonNull(
         graphene.List(
-            graphene.NonNull(FullResponseType),
+            graphene.NonNull(ProfileResponseType),
         ),
         description=normalize_whitespace(resolve_responses.__doc__ or ""),
     )
@@ -66,7 +66,7 @@ class FormsProfileMetaType(graphene.ObjectType):
         return Response.objects.get(created_by=meta.person.user, id=id)
 
     response = graphene.Field(
-        FullResponseType,
+        ProfileResponseType,
         id=graphene.String(required=True),
         description=normalize_whitespace(resolve_response.__doc__ or ""),
     )

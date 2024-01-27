@@ -38,6 +38,10 @@ class Dimension(models.Model):
             "NOTE: In the database, all dimensions are multi-value, so this is just a UI hint."
         ),
     )
+    is_shown_to_respondent = models.BooleanField(
+        default=False,
+        help_text="If set, the respondent will see the value of the dimension in the profile survey responses list.",
+    )
 
     values: models.QuerySet[DimensionValue]
 
@@ -104,7 +108,7 @@ class DimensionValueDTO(pydantic.BaseModel):
     is_initial: bool = False
 
     def save(self, dimension: Dimension):
-        # TODO change to get_or_create when form editor is implemented
+        # TODO(#386) change to get_or_create when form editor is implemented
         # so that these can be loaded once but user changes are not overwritten
         DimensionValue.objects.update_or_create(
             dimension=dimension,
@@ -119,7 +123,7 @@ class DimensionValueDTO(pydantic.BaseModel):
 
 class DimensionDTO(pydantic.BaseModel):
     """
-    Helper to load dimensions from YAML.
+    Helper to load dimensions from YAML, form data or similar external sources.
     """
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
@@ -129,9 +133,10 @@ class DimensionDTO(pydantic.BaseModel):
     choices: list[DimensionValueDTO] = pydantic.Field(default_factory=list)
     is_key_dimension: bool = pydantic.Field(default=False, alias="isKeyDimension")
     is_multi_value: bool = pydantic.Field(default=False, alias="isMultiValue")
+    is_shown_to_respondent: bool = pydantic.Field(default=False, alias="isShownToRespondent")
 
     def save(self, survey: Survey, order: int = 0):
-        # TODO change to get_or_create when form editor is implemented
+        # TODO(#386) change to get_or_create when form editor is implemented
         # so that these can be loaded once but user changes are not overwritten
         dimension, _created = Dimension.objects.update_or_create(
             survey=survey,
@@ -140,6 +145,7 @@ class DimensionDTO(pydantic.BaseModel):
                 title=self.title,
                 is_key_dimension=self.is_key_dimension,
                 is_multi_value=self.is_multi_value,
+                is_shown_to_respondent=self.is_shown_to_respondent,
                 order=order,
             ),
         )
