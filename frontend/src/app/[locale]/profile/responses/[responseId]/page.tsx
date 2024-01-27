@@ -4,10 +4,7 @@ import { notFound } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import {
-  makeBadgeBackgroundColor,
-  makeColorTranslucent,
-} from "@/components/dimensions/helpers";
+import DimensionBadge from "@/components/dimensions/DimensionBadge";
 import { Field, validateFields } from "@/components/SchemaForm/models";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
@@ -27,16 +24,7 @@ const query = graphql(`
           values
 
           dimensions {
-            dimension {
-              slug
-              title(lang: $locale)
-            }
-
-            value {
-              slug
-              title(lang: $locale)
-              color
-            }
+            ...DimensionBadge
           }
 
           form {
@@ -155,17 +143,10 @@ export default async function ProfileSurveyResponsePage({ params }: Props) {
         {!!dimensions?.length && (
           <h3 className="ms-auto">
             {dimensions.map((dimension) => (
-              <span
+              <DimensionBadge
                 key={dimension.dimension.slug}
-                className="badge badge-xl ms-1"
-                style={{
-                  backgroundColor:
-                    dimension.value.color &&
-                    makeBadgeBackgroundColor(dimension.value.color),
-                }}
-              >
-                {dimension.value.title}
-              </span>
+                dimension={dimension}
+              />
             ))}
           </h3>
         )}

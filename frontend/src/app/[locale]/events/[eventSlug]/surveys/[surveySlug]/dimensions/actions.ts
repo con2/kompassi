@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
@@ -29,6 +30,7 @@ export async function createDimension(
       },
     },
   });
+  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
   redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
