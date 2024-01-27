@@ -383,9 +383,19 @@ const translations = {
           sv: "Title in Swedish",
         },
         isKeyDimension: {
-          title: "This dimension is a key dimension",
+          title: "Key dimension",
           helpText:
-            "Values of key dimensions are displayed in the response list.",
+            "Values of key dimensions are displayed to in the response list.",
+        },
+        isMultiValue: {
+          title: "Multi-value",
+          helpText:
+            "If checked, multiple values can be selected for this dimension.",
+        },
+        isShownToRespondent: {
+          title: "Shown to respondent",
+          helpText:
+            "If checked, the values of this dimension are shown to the respondent in the single response view under their profile. Additionally, if this dimension is also a key dimension, it is shown in the responses list under their profile.",
         },
       },
     },

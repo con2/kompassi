@@ -386,8 +386,18 @@ const translations: Translations = {
           sv: "Otsikko ruotsiksi",
         },
         isKeyDimension: {
-          title: "Tämä dimensio on avaindimensio",
+          title: "Avaindimensio",
           helpText: "Avaindimensioiden arvot näytetään vastauslistassa.",
+        },
+        isMultiValue: {
+          title: "Moniarvoinen",
+          helpText:
+            "Jos tämä on valittuna, tähän dimensioon voidaan valita useita arvoja.",
+        },
+        isShownToRespondent: {
+          title: "Näytetään vastaajalle",
+          helpText:
+            "Jos tämä on valittuna, tämän dimension arvot näytetään vastaajalle yksittäisen vastauksen näkymässä hänen profiilissaan. Lisäksi, jos tämä dimensio on myös avaindimensio, se näytetään profiilin vastauslistassa.",
         },
       },
     },

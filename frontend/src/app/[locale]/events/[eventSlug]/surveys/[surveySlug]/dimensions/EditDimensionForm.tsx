@@ -28,6 +28,18 @@ export default function EditDimensionForm({ messages, headingLevel }: Props) {
       helpText: t.attributes.isKeyDimension.helpText,
     },
     {
+      type: "SingleCheckbox",
+      slug: "isMultiValue",
+      title: t.attributes.isMultiValue.title,
+      helpText: t.attributes.isMultiValue.helpText,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isShownToRespondent",
+      title: t.attributes.isShownToRespondent.title,
+      helpText: t.attributes.isShownToRespondent.helpText,
+    },
+    {
       type: "StaticText",
       slug: "localizedTitleHeader",
       ...t.attributes.localizedTitleHeader,
