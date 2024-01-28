@@ -1000,13 +1000,23 @@ class Setup:
             defaults=data,
         )
 
+        with resource_stream("events.tracon2024", "forms/expense-claim-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        expense_claim_en, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="expense-claim-en",
+            language="en",
+            defaults=data,
+        )
+
         # TODO(#386) remove when there is a form editor
         if not created:
             for key, value in data.items():
                 setattr(expense_claim_fi, key, value)
             expense_claim_fi.save()
 
-        expense_claim_survey.languages.set([expense_claim_fi])
+        expense_claim_survey.languages.set([expense_claim_fi, expense_claim_en])
 
 
 class Command(BaseCommand):
