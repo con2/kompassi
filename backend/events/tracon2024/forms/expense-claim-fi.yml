@@ -52,8 +52,6 @@ fields:
     required: true
     helpText: |
       Mille tilille korvaus maksetaan? Kirjoita IBAN-tilinumero muodossa FI12 3456 7890 1234 56.
-      <strong>HUOM:</strong> Jos maksoit kulun Tracon ry:n pankkikortilla, kirjoita tähän tilinumerosi
-      sijaan ainoastaan sana "kortti".
 
   - slug: attachments
     type: FileUpload
