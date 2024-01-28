@@ -1,3 +1,4 @@
+import type { HeadingLevel } from "../helpers/Heading";
 import { Field, Layout } from "./models";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
@@ -8,10 +9,11 @@ interface SchemaFormProps {
   layout?: Layout;
   values?: Record<string, any>;
   messages: Translations["SchemaForm"];
+  headingLevel?: HeadingLevel;
 }
 
 export function SchemaForm(props: SchemaFormProps) {
-  const { fields, layout, values, messages } = props;
+  const { fields, layout, values, messages, headingLevel } = props;
   return (
     <>
       {fields.map((field, index) => {
@@ -26,6 +28,7 @@ export function SchemaForm(props: SchemaFormProps) {
             key={slug}
             field={field}
             layout={layout ?? Layout.Vertical}
+            headingLevel={headingLevel}
           >
             <SchemaFormInput
               field={field}

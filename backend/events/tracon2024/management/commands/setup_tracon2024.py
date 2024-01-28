@@ -978,7 +978,7 @@ class Setup:
             slug="expense-claim",
             defaults=dict(
                 active_from=now(),
-                key_fields=["title"],
+                key_fields=["title", "amount"],
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),

@@ -31,6 +31,11 @@ const translations = {
       },
     },
   },
+  // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
+  Modal: {
+    submit: "Submit",
+    cancel: "Cancel",
+  },
   DataTable: {
     create: "Create",
   },
@@ -321,7 +326,14 @@ const translations = {
       downloadAsExcel: "Download as Excel",
       returnToResponseList: "Return to the list of responses",
       returnToSurveyList: "Return to the list of surveys",
+      returnToDimensionList: "Return to the list of dimensions",
       saveDimensions: "Save dimensions",
+      addDimension: "Add dimension",
+      addDimensionValue: "Add value",
+      deleteDimension: "Delete dimension",
+      deleteDimensionValue: "Delete value",
+      editDimension: "Edit dimension",
+      editDimensionValue: "Edit value",
     },
     tabs: {
       summary: "Summary",
@@ -349,6 +361,47 @@ const translations = {
     checkbox: {
       checked: "Checked",
       unchecked: "Not checked",
+    },
+    editDimensionModal: {
+      editTitle: "Edit dimension",
+      addTitle: "Add dimension",
+      actions: {
+        submit: "Save dimension",
+        cancel: "Cancel",
+      },
+      attributes: {
+        slug: {
+          title: "Technical name",
+          // TODO add pattern for slug and document it in helpText
+          helpText:
+            "Machine-readable dimension name. Cannot be changed after creation.",
+        },
+        localizedTitleHeader: {
+          title: "Localized titles",
+          helpText:
+            "The title of the dimension in different languages. The title need not be provided in all supported languages: if the title is missing in the selected language, it will fall back first to the default language and then to the technical name.",
+        },
+        title: {
+          fi: "Title in Finnish",
+          en: "Title in English",
+          sv: "Title in Swedish",
+        },
+        isKeyDimension: {
+          title: "Key dimension",
+          helpText:
+            "Values of key dimensions are displayed to in the response list.",
+        },
+        isMultiValue: {
+          title: "Multi-value",
+          helpText:
+            "If checked, multiple values can be selected for this dimension.",
+        },
+        isShownToRespondent: {
+          title: "Shown to respondent",
+          helpText:
+            "If checked, the values of this dimension are shown to the respondent in the single response view under their profile. Additionally, if this dimension is also a key dimension, it is shown in the responses list under their profile.",
+        },
+      },
     },
   },
 

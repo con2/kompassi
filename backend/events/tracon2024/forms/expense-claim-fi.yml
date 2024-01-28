@@ -1,30 +1,13 @@
 title: Hae kulukorvausta
 layout: vertical
 description: |
-  Tällä lomakkeella voit hakea kulukorvausta <strong>vuoden 2024 Traconiin liittyvistä kuluista</strong>,
+  Tällä lomakkeella voit hakea kulukorvausta Tracon ry:ltä tapahtumaan tai yhdistystoimintaan liittyvästä kulusta,
   lähettää Tracon ry:lle laskun tai toimittaa Tracon ry:n pankkikortilla maksetun kulun kuitin.
   Täytä lomake huolellisesti ja liitä mukaan kaikki pyydetyt liitteet.
-
-  Jos haet kulukorvausta <strong>vuoden 2024 Tracon Hitpoint -tapahtumaan</strong> liittyvistä kuluista,
-  käytä <a href="/events/hitpoint2024/surveys/expense-claim">Hitpointin kulukorvauslomaketta</a>.
-
-  Jos haet kulukorvausta <strong>kulusta, joka ei liity suoraan kumpaankaan tapahtumaan</strong>,
-  käytä <a href="/events/tracon2024/surveys/expense-claim-traconry-temp">yleistä kulukorvauslomaketta</a>.
 
   Jos sinulla on kysyttävää kulukorvauksista, ota yhteyttä Tracon ry:n rahastonhoitajaan sähköpostitse
   osoitteella <em>rahat ät tracon piste fi</em> tai Slackissa <em>@Aketzu</em>.
 fields:
-  - slug: type
-    type: SingleSelect
-    title: Kulukorvauksen tyyppi
-    helpText: |
-      <strong>Tilisiirto:</strong> Olet maksanut kulun itse ja haet korvausta tilisiirtona.<br/>
-      <strong>Lasku:</strong> Laskuttaja on lähettänyt Tracon ry:lle laskun, joka maksetaan suoraan laskuttajalle.<br/>
-      <strong>Korttimaksu:</strong> Olet maksanut kulun Tracon ry:n pankkikortilla. Kirjoita saajan tilinumero -kenttään "-" (viiva).
-    required: true
-    choicesFrom:
-      dimension: type
-
   - slug: title
     type: SingleLineText
     title: Otsikko
@@ -49,9 +32,9 @@ fields:
   - slug: recipient
     type: SingleLineText
     title: Saaja
+    required: true
     helpText: |
       Kenen tilille korvaus maksetaan? Kirjoita tähän etu- ja sukunimi tai yrityksen nimi.
-      Jos korvaus maksetaan omalle tilillesi, voit jättää tämän kentän tyhjäksi.
 
   - slug: recipient_iban
     type: SingleLineText
@@ -59,20 +42,6 @@ fields:
     required: true
     helpText: |
       Mille tilille korvaus maksetaan? Kirjoita IBAN-tilinumero muodossa FI12 3456 7890 1234 56.
-
-  - slug: recipient_bic
-    type: SingleLineText
-    title: Saajan pankin SWIFT/BIC-koodi
-    helpText: |
-      Minkä pankin tilille korvaus maksetaan? Kirjoita pankin SWIFT/BIC-koodi (esim. HOLVFIHH tai NDEAFIHH).
-      Jos saajan tili on suomalaisessa pankissa eli tilinumero alkaa FI, voit jättää tämän kentän tyhjäksi.
-
-  - slug: reference_number
-    type: SingleLineText
-    title: Viitenumero
-    helpText: |
-      Jos kulukorvaukseen liittyy lasku jolla on viitenumero, kirjoita se tähän.
-      Muutoin voit jättää tämän kentän tyhjäksi.
 
   - slug: attachments
     type: FileUpload

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
+import DimensionBadge from "@/components/dimensions/DimensionBadge";
 import { Field, validateFields } from "@/components/SchemaForm/models";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
@@ -14,13 +15,18 @@ import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
-  query OwnResponseDetail($responseId: String!) {
+  query ProfileSurveyResponsePage($locale: String!, $responseId: String!) {
     profile {
       forms {
         response(id: $responseId) {
           id
           createdAt
           values
+
+          dimensions {
+            ...DimensionBadge
+          }
+
           form {
             slug
             title
@@ -60,7 +66,7 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function SurveyResponsePage({ params }: Props) {
+export default async function ProfileSurveyResponsePage({ params }: Props) {
   const { locale, responseId } = params;
   const translations = getTranslations(locale);
   const session = await auth();
@@ -72,7 +78,10 @@ export default async function SurveyResponsePage({ params }: Props) {
 
   const { data } = await getClient().query({
     query,
-    variables: { responseId },
+    variables: {
+      responseId,
+      locale,
+    },
   });
 
   if (!data.profile?.forms?.response) {
@@ -110,16 +119,38 @@ export default async function SurveyResponsePage({ params }: Props) {
     title: t.attributes.language,
   };
 
+  const dimensions = response.dimensions ?? [];
+
+  function buildDimensionField(dimension: (typeof dimensions)[0]): Field {
+    return {
+      slug: dimension.dimension.slug,
+      type: "SingleLineText",
+      title: dimension.dimension.title ?? dimension.dimension.slug,
+    };
+  }
+
   return (
     <ViewContainer>
       <Link className="link-subtle" href={`/profile/responses`}>
         &lt; {t.actions.returnToResponseList}
       </Link>
 
-      <ViewHeading>
-        {t.responseDetailTitle}
-        <ViewHeading.Sub>{form.title}</ViewHeading.Sub>
-      </ViewHeading>
+      <div className="d-flex">
+        <ViewHeading>
+          {t.responseDetailTitle}
+          <ViewHeading.Sub>{form.title}</ViewHeading.Sub>
+        </ViewHeading>
+        {!!dimensions?.length && (
+          <h3 className="ms-auto">
+            {dimensions.map((dimension) => (
+              <DimensionBadge
+                key={dimension.dimension.slug}
+                dimension={dimension}
+              />
+            ))}
+          </h3>
+        )}
+      </div>
 
       {anonymity && (
         <p>
@@ -130,23 +161,29 @@ export default async function SurveyResponsePage({ params }: Props) {
         </p>
       )}
 
-      <SchemaFormField field={createdAtField} layout={layout}>
-        <SchemaFormInput
-          field={createdAtField}
-          value={formattedCreatedAt}
-          messages={translations.SchemaForm}
-          readOnly
-        />
-      </SchemaFormField>
+      <div className="card mb-3">
+        <div className="card-body">
+          <h5 className="card-title mb-3">{t.attributes.technicalDetails}</h5>
 
-      <SchemaFormField field={languageField} layout={layout}>
-        <SchemaFormInput
-          field={languageField}
-          value={language}
-          messages={translations.SchemaForm}
-          readOnly
-        />
-      </SchemaFormField>
+          <SchemaFormField field={createdAtField} layout={layout}>
+            <SchemaFormInput
+              field={createdAtField}
+              value={formattedCreatedAt}
+              messages={translations.SchemaForm}
+              readOnly
+            />
+          </SchemaFormField>
+
+          <SchemaFormField field={languageField} layout={layout}>
+            <SchemaFormInput
+              field={languageField}
+              value={language}
+              messages={translations.SchemaForm}
+              readOnly
+            />
+          </SchemaFormField>
+        </div>
+      </div>
 
       <SchemaFormResponse
         fields={fields}

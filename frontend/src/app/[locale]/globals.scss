@@ -2,10 +2,18 @@ $primary: rgb(11, 95, 138);
 $table-striped-bg-factor: 0.03;
 @import "~bootstrap/scss/bootstrap";
 
-a.link-subtle {
+.link-subtle {
   color: $primary;
   text-decoration: none;
   &:hover {
     text-decoration: underline;
+  }
+}
+
+.link-xsubtle {
+  color: $primary;
+  text-decoration: none;
+  &:hover {
+    text-decoration: none;
   }
 }

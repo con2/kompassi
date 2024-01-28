@@ -33,6 +33,10 @@ const translations: Translations = {
       },
     },
   },
+  Modal: {
+    submit: "Submit",
+    cancel: "Cancel",
+  },
   DataTable: {
     create: "Luo uusi",
   },
@@ -321,7 +325,14 @@ const translations: Translations = {
       downloadAsExcel: "Lataa Excel-tiedostona",
       returnToResponseList: "Palaa vastauslistaukseen",
       returnToSurveyList: "Palaa kyselylistaukseen",
+      returnToDimensionList: "Palaa dimensiolistaukseen",
       saveDimensions: "Tallenna dimensiot",
+      addDimension: "Lisää dimensio",
+      addDimensionValue: "Lisää arvo",
+      deleteDimension: "Poista dimensio",
+      deleteDimensionValue: "Poista arvo",
+      editDimension: "Muokkaa dimensiota",
+      editDimensionValue: "Muokkaa arvoa",
     },
     tabs: {
       summary: "Yhteenveto",
@@ -353,6 +364,46 @@ const translations: Translations = {
     checkbox: {
       checked: "Valittu",
       unchecked: "Ei valittu",
+    },
+    editDimensionModal: {
+      editTitle: "Muokkaa dimensiota",
+      addTitle: "Lisää dimensio",
+      actions: {
+        submit: "Tallenna dimensio",
+        cancel: "Peruuta",
+      },
+      attributes: {
+        slug: {
+          title: "Tekninen nimi",
+          // TODO add pattern for slug and document it in helpText
+          helpText:
+            "Koneluettava, lyhyt nimi dimensiolle. Teknistä nimeä ei voi muuttaa dimension luomisen jälkeen.",
+        },
+        localizedTitleHeader: {
+          title: "Otsikko lokalisoituna",
+          helpText:
+            "Dimensiolle voi antaa otsikon eri kielillä. Otsikkoa ei tarvitse antaa kaikilla tuetuilla kielillä: jos otsikkoa ei ole annettu valitulla kielellä, käytetään tilalla oletuskieltä, ja jos sitäkään ei ole asetettu, teknistä nimeä.",
+        },
+        title: {
+          fi: "Otsikko suomeksi",
+          en: "Otsikko englanniksi",
+          sv: "Otsikko ruotsiksi",
+        },
+        isKeyDimension: {
+          title: "Avaindimensio",
+          helpText: "Avaindimensioiden arvot näytetään vastauslistassa.",
+        },
+        isMultiValue: {
+          title: "Moniarvoinen",
+          helpText:
+            "Jos tämä on valittuna, tähän dimensioon voidaan valita useita arvoja.",
+        },
+        isShownToRespondent: {
+          title: "Näytetään vastaajalle",
+          helpText:
+            "Jos tämä on valittuna, tämän dimension arvot näytetään vastaajalle yksittäisen vastauksen näkymässä hänen profiilissaan. Lisäksi, jos tämä dimensio on myös avaindimensio, se näytetään profiilin vastauslistassa.",
+        },
+      },
     },
   },
 
