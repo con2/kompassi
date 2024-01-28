@@ -20,6 +20,8 @@ class FieldType(str, Enum):
     MULTI_SELECT = "MultiSelect"
     RADIO_MATRIX = "RadioMatrix"
     FILE_UPLOAD = "FileUpload"
+    NUMBER_FIELD = "NumberField"
+    DECIMAL_FIELD = "DecimalField"
 
 
 class Choice(pydantic.BaseModel):
@@ -46,10 +48,12 @@ class Field(pydantic.BaseModel):
     # htmlType only makes sense for SingleLineText
     # choices only makes sense for SingleSelect, Multiselect, RadioMatrix
     # multiple only makes sense for FileUpload
+    # decimal_places only makes sense for NumberField, DecimalField
     html_type: Optional[str] = pydantic.Field(default=None, alias="htmlType", repr=False)
     choices: Optional[list[Choice]] = pydantic.Field(default=None, alias="choices", repr=False)
     questions: Optional[list[Choice]] = pydantic.Field(default=None, alias="questions", repr=False)
     multiple: Optional[bool] = pydantic.Field(default=None, alias="multiple", repr=False)
+    decimal_places: Optional[int] = pydantic.Field(default=None, alias="decimalPlaces", repr=False)
 
     @classmethod
     def from_dimension(

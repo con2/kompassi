@@ -1,0 +1,38 @@
+title: Testing number fields
+fields:
+  - type: StaticText
+    title: Testing different number fields
+    slug: static_text
+  - type: NumberField
+    slug: number_field
+    title: Number field
+    helpText: |
+      This is a number field. It is used to input numbers.
+  - type: NumberField
+    slug: number_field_req
+    title: Number field required
+    required: true
+  - type: NumberField
+    slug: number_field_limit
+    title: Number field min
+    minValue: 0
+    maxValue: 10000
+    helpText: |
+      This field has a minimum value of 0 and maximum of 10000.
+  - type: NumberField
+    slug: number_field_dec
+    title: Number field decimal
+    decimalPlaces: 2
+    helpText: |
+      This field has 2 decimal places.
+  - type: DecimalField
+    slug: decimal_field
+    title: Decimal field
+    helpText: |
+      This is a decimal field. It is used to input decimal numbers.
+  - type: DecimalField
+    slug: decimal_field_dec
+    title: Decimal field decimal
+    decimalPlaces: 2
+    helpText: |
+      This field has 2 decimal places.

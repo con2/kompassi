@@ -467,12 +467,12 @@ class Setup:
     def setup_forms(self):
         from forms.models import Form, Survey
 
-        with resource_stream("events.frostbite2024", "forms/file-upload-test.yml") as f:
+        with resource_stream("events.frostbite2024", "forms/number-field-test.yml") as f:
             data = yaml.safe_load(f)
 
         form_fi, created = Form.objects.get_or_create(
             event=self.event,
-            slug="file-upload-test",
+            slug="number-field-test",
             language="fi",
             defaults=data,
         )
@@ -485,10 +485,10 @@ class Setup:
 
         survey, _ = Survey.objects.get_or_create(
             event=self.event,
-            slug="file-upload-test",
+            slug="number-field-test",
             defaults=dict(
                 active_from=now(),
-                key_fields=["file_upload_mul"],
+                key_fields=["number_field_req"],
             ),
         )
 

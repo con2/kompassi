@@ -343,6 +343,70 @@ def test_process_form_data_file_upload():
     assert "fileUploadInvalidUrl" not in values
 
 
+def test_process_form_data_number_field():
+    fields = [
+        Field(slug="numberField", type=FieldType.NUMBER_FIELD),
+        Field(slug="numberFieldRequiredMissing", type=FieldType.NUMBER_FIELD, required=True),
+        Field(slug="numberFieldInvalidValue", type=FieldType.NUMBER_FIELD),
+        Field(slug="numberFieldWithDecimalPlaces", type=FieldType.NUMBER_FIELD, decimalPlaces=2),
+    ]
+
+    form_data = {
+        "numberField": "123",
+        "numberFieldInvalidValue": "not a number",
+        "numberFieldWithDecimalPlaces": "1.23",
+    }
+
+    expected_values = dict(
+        numberField=123,
+        numberFieldWithDecimalPlaces=1.23,
+    )
+
+    expected_warnings = dict(
+        numberFieldRequiredMissing=[FieldWarning.REQUIRED_MISSING],
+        numberFieldInvalidValue=[FieldWarning.INVALID_VALUE],
+    )
+
+    values, warnings = process_form_data(fields, form_data)
+    assert values == expected_values
+    assert warnings == expected_warnings
+
+
+def test_process_form_data_decimal_field():
+    fields = [
+        Field(slug="decimalField", type=FieldType.DECIMAL_FIELD),
+        Field(slug="decimalFieldWithDecimalPlaces", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),
+        Field(slug="decimalFieldRequiredMissing", type=FieldType.DECIMAL_FIELD, required=True),
+        Field(slug="decimalFieldInvalidValue", type=FieldType.DECIMAL_FIELD),
+        Field(slug="decimalWithDifferingDecimalPlaces1", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),
+        Field(slug="decimalWithDifferingDecimalPlaces2", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),
+    ]
+
+    form_data = {
+        "decimalField": "123",
+        "decimalFieldWithDecimalPlaces": "1.23",
+        "decimalFieldInvalidValue": "not a number",
+        "decimalWithDifferingDecimalPlaces1": "4",
+        "decimalWithDifferingDecimalPlaces2": "3.4324",
+    }
+
+    expected_values = dict(
+        decimalField="123",
+        decimalFieldWithDecimalPlaces="1.23",
+        decimalWithDifferingDecimalPlaces1="4.00",
+        decimalWithDifferingDecimalPlaces2="3.43",
+    )
+
+    expected_warnings = dict(
+        decimalFieldRequiredMissing=[FieldWarning.REQUIRED_MISSING],
+        decimalFieldInvalidValue=[FieldWarning.INVALID_VALUE],
+    )
+
+    values, warnings = process_form_data(fields, form_data)
+    assert values == expected_values
+    assert warnings == expected_warnings
+
+
 def test_merge_choices():
     lhs_choices = [
         Choice(slug="foo", title="Foo"),

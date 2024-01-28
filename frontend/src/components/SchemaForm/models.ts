@@ -10,7 +10,9 @@ export type FieldType =
   | "SingleSelect"
   | "MultiSelect"
   | "RadioMatrix"
-  | "FileUpload";
+  | "FileUpload"
+  | "NumberField"
+  | "DecimalField";
 
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
@@ -22,6 +24,9 @@ export const fieldTypes: FieldType[] = [
   "SingleSelect",
   "MultiSelect",
   "RadioMatrix",
+  "FileUpload",
+  "NumberField",
+  "DecimalField",
 ];
 
 /** These field types represent static elements on the form and don't have values. */
@@ -33,10 +38,10 @@ export const nonValueFieldTypes: FieldType[] = [
 
 export type HtmlType =
   | "text"
-  | "number"
   | "email"
   | "password"
-  | "datetime-local";
+  | "datetime-local"
+  | "number";
 
 interface BaseField {
   type: FieldType;
@@ -72,6 +77,20 @@ export interface MultiLineText extends BaseField {
 
 export interface SingleLineText extends BaseField {
   type: "SingleLineText";
+}
+
+export interface NumberField extends BaseField {
+  type: "NumberField";
+  decimalPlaces?: number;
+  minValue?: number;
+  maxValue?: number;
+}
+
+export interface DecimalField extends BaseField {
+  type: "DecimalField";
+  decimalPlaces?: number;
+  minValue?: number;
+  maxValue?: number;
 }
 
 export interface SingleCheckbox extends BaseField {
@@ -127,7 +146,9 @@ export type Field =
   | SingleSelect
   | MultiSelect
   | RadioMatrix
-  | FileUpload;
+  | FileUpload
+  | NumberField
+  | DecimalField;
 
 export interface FormSchema {
   title: string;
