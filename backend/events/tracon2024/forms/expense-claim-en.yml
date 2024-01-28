@@ -52,6 +52,7 @@ fields:
     required: true
     helpText: |
       Which account will the reimbursement be paid to? Write the IBAN account number in the format FI12 3456 7890 1234 56.
+      <strong>NOTE:</strong> If you paid the expense with Tracon ry's debit card, write the word "card" here instead of your account number.
 
   - slug: attachments
     type: FileUpload
