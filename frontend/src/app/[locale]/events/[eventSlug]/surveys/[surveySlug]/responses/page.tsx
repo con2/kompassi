@@ -172,11 +172,6 @@ export default async function FormResponsesPage({
     });
   }
 
-  columns.push({
-    slug: "language",
-    title: t.attributes.language,
-  });
-
   keyFields.forEach((keyField) => {
     columns.push({
       slug: `keyFields.${keyField.slug}`,

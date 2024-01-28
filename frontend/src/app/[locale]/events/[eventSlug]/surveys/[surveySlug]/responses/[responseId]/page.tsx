@@ -233,15 +233,6 @@ export default async function SurveyResponsePage({ params }: Props) {
                   readOnly
                 />
               </SchemaFormField>
-
-              <SchemaFormField field={languageField} layout={layout}>
-                <SchemaFormInput
-                  field={languageField}
-                  value={language}
-                  messages={translations.SchemaForm}
-                  readOnly
-                />
-              </SchemaFormField>
             </div>
           </div>
         </div>

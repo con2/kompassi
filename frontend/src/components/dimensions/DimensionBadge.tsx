@@ -25,11 +25,12 @@ export default function DimensionBadge({ dimension }: Props) {
   return (
     <span
       key={dimension.dimension.slug}
-      className="badge ms-1"
+      className="badge ms-2"
+      title={dimension.dimension.title || dimension.dimension.slug}
       style={{
-        backgroundColor:
-          dimension.value.color &&
-          makeBadgeBackgroundColor(dimension.value.color),
+        backgroundColor: dimension.value.color
+          ? makeBadgeBackgroundColor(dimension.value.color)
+          : "var(--bs-secondary)",
       }}
     >
       {dimension.value.title}

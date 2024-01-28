@@ -6,7 +6,7 @@ import { ProfileResponsesTableRowFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
-import { makeBadgeBackgroundColor } from "@/components/dimensions/helpers";
+import DimensionBadge from "@/components/dimensions/DimensionBadge";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -110,22 +110,17 @@ export default async function OwnResponsesPage({ params }: Props) {
       slug: "formTitle",
       title: t.attributes.formTitle,
       getCellContents: (row) => (
-        <div>
+        <>
           {row.form.title}
-          {row.dimensions?.map((dimension) => (
-            <span
-              key={dimension.dimension.slug}
-              className="badge ms-1"
-              style={{
-                backgroundColor:
-                  dimension.value.color &&
-                  makeBadgeBackgroundColor(dimension.value.color),
-              }}
-            >
-              {dimension.value.title}
-            </span>
-          ))}
-        </div>
+          <span className="ms-2">
+            {row.dimensions?.map((dimension) => (
+              <DimensionBadge
+                key={dimension.dimension.slug}
+                dimension={dimension}
+              />
+            ))}
+          </span>
+        </>
       ),
     },
   ];
