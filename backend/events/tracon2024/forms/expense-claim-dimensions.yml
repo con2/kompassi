@@ -1,3 +1,23 @@
+- slug: event
+  title:
+    fi: Tapahtuma
+    en: Event
+  is_key_dimension: true
+  is_shown_to_respondent: true
+  choices:
+    - slug: tracon2024
+      title:
+        fi: Tracon 2024
+        en: Tracon 2024
+    - slug: hitpoint2024
+      title:
+        fi: Tracon Hitpoint 2024
+        en: Tracon Hitpoint 2024
+    - slug: no-event
+      title:
+        fi: Maksu ei liity tapahtumaan
+        en: The payment is not related to an event
+
 - slug: type
   title:
     fi: Maksun tyyppi
