@@ -57,6 +57,7 @@ fields:
     type: FileUpload
     title: Tositteet
     required: true
+    multiple: true
     helpText: |
       Liitä mukaan kaikki kulukorvauksen kannalta tarpeelliset tositteet.
       Tositteista tulee käydä ilmi kulun päivämäärä, summa, ALV-kanta ja maksun saaja.

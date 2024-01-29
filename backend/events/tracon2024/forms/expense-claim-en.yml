@@ -58,6 +58,7 @@ fields:
     type: FileUpload
     title: Receipts
     required: true
+    multiple: true
     helpText: |
       Attach all receipts necessary for the expense reimbursement.
       The date of the expense, the amount, the VAT rate, and the recipient of the payment must be apparent from the receipts.
