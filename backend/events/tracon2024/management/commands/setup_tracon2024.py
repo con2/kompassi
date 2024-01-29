@@ -1010,12 +1010,6 @@ class Setup:
             defaults=data,
         )
 
-        # TODO(#386) remove when there is a form editor
-        if not created:
-            for key, value in data.items():
-                setattr(expense_claim_fi, key, value)
-            expense_claim_fi.save()
-
         expense_claim_survey.languages.set([expense_claim_fi, expense_claim_en])
 
 
