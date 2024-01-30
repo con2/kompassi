@@ -18,27 +18,6 @@
         fi: Maksu ei liity tapahtumaan
         en: The payment is not related to an event
 
-- slug: type
-  title:
-    fi: Maksun tyyppi
-    en: Payment type
-  is_key_dimension: true
-  choices:
-    - slug: bank-transfer
-      # TODO(#391): implement form-visible default values
-      # is_default: true
-      title:
-        fi: Tilisiirto
-        en: Bank transfer
-    - slug: invoice
-      title:
-        fi: Lasku
-        en: Invoice
-    - slug: card-payment
-      title:
-        fi: Korttimaksu
-        en: Card payment
-
 - slug: status
   title:
     fi: Maksun tila
