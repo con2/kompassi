@@ -357,6 +357,8 @@ const translations = {
     warnings: {
       choiceNotFound:
         "Choice not found. It may have been removed after this response was submitted.",
+      cannotRemoveDimensionThatIsInUse:
+        "Dimensions and values that have been assigned to responses cannot be removed.",
     },
     checkbox: {
       checked: "Checked",

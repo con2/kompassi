@@ -360,6 +360,8 @@ const translations: Translations = {
     warnings: {
       choiceNotFound:
         "Vaihtoehtoa ei löydy. Se on voitu poistaa tämän vastauksen lähettämisen jälkeen.",
+      cannotRemoveDimensionThatIsInUse:
+        "Dimensioita ja arvoja, jotka on liitetty vastauksiin, ei voi poistaa.",
     },
     checkbox: {
       checked: "Valittu",

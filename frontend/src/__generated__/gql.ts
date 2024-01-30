@@ -19,8 +19,8 @@ const documents = {
     "\n  mutation InitFileUploadMutation($input: InitFileUploadInput!) {\n    initFileUpload(input: $input) {\n      uploadUrl\n      fileUrl\n    }\n  }\n": types.InitFileUploadMutationDocument,
     "\n  mutation CreateSurveyDimension($input: CreateSurveyDimensionInput!) {\n    createSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n": types.CreateSurveyDimensionDocument,
     "\n  mutation DeleteSurveyDimension($input: DeleteSurveyDimensionInput!) {\n    deleteSurveyDimension(input: $input) {\n      slug\n    }\n  }\n": types.DeleteSurveyDimensionDocument,
-    "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n": types.ValueFieldsFragmentDoc,
-    "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n": types.DimensionRowGroupFragmentDoc,
+    "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    canRemove\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n": types.ValueFieldsFragmentDoc,
+    "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    canRemove\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n": types.DimensionRowGroupFragmentDoc,
     "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n": types.DimensionsListDocument,
     "\n  query SurveyPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          loginRequired\n          anonymity\n          maxResponsesPerUser\n          countResponsesByCurrentUser\n\n          form(lang: $locale) {\n            title\n            description\n            fields\n            layout\n          }\n        }\n      }\n    }\n  }\n": types.SurveyPageQueryDocument,
     "\n  mutation UpdateResponseDimensions($input: UpdateResponseDimensionsInput!) {\n    updateResponseDimensions(input: $input) {\n      response {\n        id\n      }\n    }\n  }\n": types.UpdateResponseDimensionsDocument,
@@ -78,11 +78,11 @@ export function graphql(source: "\n  mutation DeleteSurveyDimension($input: Dele
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n"): (typeof documents)["\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n"];
+export function graphql(source: "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    canRemove\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n"): (typeof documents)["\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    canRemove\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n"): (typeof documents)["\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n"];
+export function graphql(source: "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    canRemove\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n"): (typeof documents)["\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    canRemove\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

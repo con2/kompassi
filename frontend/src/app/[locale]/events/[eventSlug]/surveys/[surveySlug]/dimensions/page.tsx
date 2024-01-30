@@ -28,6 +28,7 @@ graphql(`
   fragment ValueFields on SurveyDimensionValueType {
     slug
     color
+    canRemove
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
   }
@@ -36,6 +37,7 @@ graphql(`
 graphql(`
   fragment DimensionRowGroup on SurveyDimensionType {
     slug
+    canRemove
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
     values {
@@ -134,6 +136,38 @@ export default async function SurveyDimensionsPage({ params }: Props) {
 
   const countColumns = 6;
 
+  function DeleteButton({
+    subject,
+    title,
+  }: {
+    subject: { canRemove: boolean };
+    title: string;
+  }) {
+    if (!subject.canRemove) {
+      return (
+        <button
+          disabled
+          type="submit"
+          className="btn btn-link btn-sm p-0 link-xsubtle"
+          title={t.warnings.cannotRemoveDimensionThatIsInUse}
+          style={{ filter: "grayscale(100%)" }}
+        >
+          ❌
+        </button>
+      );
+    }
+
+    return (
+      <button
+        type="submit"
+        className="btn btn-link btn-sm p-0 link-xsubtle"
+        title={title}
+      >
+        ❌
+      </button>
+    );
+  }
+
   function DimensionCells({
     dimension,
   }: {
@@ -152,13 +186,10 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               dimension.slug,
             )}
           >
-            <button
-              type="submit"
-              className="btn btn-link btn-sm p-0 link-xsubtle"
+            <DeleteButton
+              subject={dimension}
               title={t.actions.deleteDimension}
-            >
-              ❌
-            </button>
+            />
           </form>
           <ModalButton
             className="btn btn-link btn-sm p-0 link-xsubtle me-1"
@@ -242,13 +273,10 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               value.slug,
             )}
           >
-            <button
-              type="submit"
-              className="btn btn-link btn-sm p-0 link-xsubtle"
+            <DeleteButton
+              subject={value}
               title={t.actions.deleteDimensionValue}
-            >
-              ❌
-            </button>
+            />
           </form>
           <ModalButton
             className="btn btn-link btn-sm p-0 link-xsubtle"

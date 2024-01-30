@@ -49,6 +49,10 @@ class Dimension(models.Model):
     def event(self) -> Event:
         return self.survey.event
 
+    @property
+    def can_remove(self) -> bool:
+        return not self.values.exists()
+
     def get_choices(self, language: str | None = None) -> list[Choice]:
         return [
             Choice(
@@ -96,6 +100,10 @@ class DimensionValue(models.Model):
     @property
     def survey(self) -> Survey:
         return self.dimension.survey
+
+    @property
+    def can_remove(self) -> bool:
+        return not ResponseDimensionValue.objects.filter(value=self).exists()
 
     class Meta:
         unique_together = ("dimension", "slug")
