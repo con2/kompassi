@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ReactNode } from "react";
 import {
   createDimension,
   createDimensionValue,
@@ -8,6 +9,7 @@ import {
   updateDimension,
   updateDimensionValue,
 } from "./actions";
+import DeleteButton from "./DeleteButton";
 import EditDimensionForm from "./EditDimensionForm";
 import ModalButton from "./ModalButton";
 import { graphql } from "@/__generated__";
@@ -29,6 +31,7 @@ graphql(`
     slug
     color
     canRemove
+    title(lang: $locale)
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
   }
@@ -38,6 +41,7 @@ graphql(`
   fragment DimensionRowGroup on SurveyDimensionType {
     slug
     canRemove
+    title(lang: $locale)
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
     values {
@@ -138,33 +142,29 @@ export default async function SurveyDimensionsPage({ params }: Props) {
 
   function DeleteButton({
     subject,
-    title,
+    action,
+    children,
   }: {
-    subject: { canRemove: boolean };
-    title: string;
+    subject: {
+      title?: string | null;
+      slug: string;
+      canRemove: boolean;
+    };
+    action: (formData: FormData) => void;
+    children?: ReactNode;
   }) {
-    if (!subject.canRemove) {
-      return (
-        <button
-          disabled
-          type="submit"
-          className="btn btn-link btn-sm p-0 link-xsubtle"
-          title={t.warnings.cannotRemoveDimensionThatIsInUse}
-          style={{ filter: "grayscale(100%)" }}
-        >
-          ❌
-        </button>
-      );
-    }
-
     return (
-      <button
-        type="submit"
-        className="btn btn-link btn-sm p-0 link-xsubtle"
-        title={title}
+      <ModalButton
+        className="btn btn-link btn-sm p-0 link-xsubtle me-1"
+        title={t.actions.deleteDimension.title}
+        label={subject.canRemove ? "❌" : "🔒"}
+        messages={t.actions.deleteDimension.modalActions}
+        action={action}
+        submitButtonVariant="danger"
+        disabled={!subject.canRemove}
       >
-        ❌
-      </button>
+        {children}
+      </ModalButton>
     );
   }
 
@@ -177,8 +177,8 @@ export default async function SurveyDimensionsPage({ params }: Props) {
     return (
       <>
         <td rowSpan={rowspan} scope="rowgroup">
-          <form
-            className="d-inline me-2"
+          <DeleteButton
+            subject={dimension}
             action={deleteDimension.bind(
               null,
               eventSlug,
@@ -186,11 +186,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               dimension.slug,
             )}
           >
-            <DeleteButton
-              subject={dimension}
-              title={t.actions.deleteDimension}
-            />
-          </form>
+            <p>
+              {t.actions.deleteDimension.confirmation(
+                dimension.title || dimension.slug,
+              )}
+            </p>
+          </DeleteButton>
+
           <ModalButton
             className="btn btn-link btn-sm p-0 link-xsubtle me-1"
             title={t.actions.editDimension}
@@ -263,8 +265,8 @@ export default async function SurveyDimensionsPage({ params }: Props) {
     return (
       <>
         <td style={{ backgroundColor }}>
-          <form
-            className="d-inline me-2"
+          <DeleteButton
+            subject={dimension}
             action={deleteDimensionValue.bind(
               null,
               eventSlug,
@@ -273,11 +275,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               value.slug,
             )}
           >
-            <DeleteButton
-              subject={value}
-              title={t.actions.deleteDimensionValue}
-            />
-          </form>
+            <p>
+              {t.actions.deleteDimensionValue.confirmation(
+                dimension.title || dimension.slug,
+                value.title || value.slug,
+              )}
+            </p>
+          </DeleteButton>
           <ModalButton
             className="btn btn-link btn-sm p-0 link-xsubtle"
             title={t.actions.editDimensionValue}

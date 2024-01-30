@@ -11,7 +11,9 @@ interface Props {
   children?: ReactNode;
   action?(formData: FormData): void;
   messages: Translations["Modal"];
+  disabled?: boolean;
   className?: string;
+  submitButtonVariant?: "primary" | "danger";
 }
 
 /// Renders a button that opens a modal. Pass modal contents as children
@@ -21,7 +23,9 @@ export default function ModalButton({
   children,
   action,
   messages,
+  disabled,
   className = "btn btn-link p-0 link-subtle",
+  submitButtonVariant = "primary",
 }: Props) {
   const [isVisible, setIsVisible] = useState(false);
   const close = useCallback(() => {
@@ -34,27 +38,30 @@ export default function ModalButton({
         className={className}
         onClick={() => setIsVisible(true)}
         title={label ? title : undefined}
+        disabled={disabled}
       >
         {label ?? `${title}…`}
       </button>
-      <Modal show={isVisible} onHide={close}>
-        <Modal.Header closeButton>
-          <Modal.Title>{title}</Modal.Title>
-        </Modal.Header>
+      {!disabled && (
+        <Modal show={isVisible} onHide={close}>
+          <Modal.Header closeButton>
+            <Modal.Title>{title}</Modal.Title>
+          </Modal.Header>
 
-        <form action={action} onSubmit={close}>
-          <Modal.Body>{children}</Modal.Body>
+          <form action={action} onSubmit={close}>
+            <Modal.Body>{children}</Modal.Body>
 
-          <Modal.Footer>
-            <Button variant="secondary" onClick={close}>
-              {messages.cancel}
-            </Button>
-            <Button variant="primary" type="submit">
-              {messages.submit}
-            </Button>
-          </Modal.Footer>
-        </form>
-      </Modal>
+            <Modal.Footer>
+              <Button variant="secondary" onClick={close}>
+                {messages.cancel}
+              </Button>
+              <Button variant={submitButtonVariant} type="submit">
+                {messages.submit}
+              </Button>
+            </Modal.Footer>
+          </form>
+        </Modal>
+      )}
     </>
   );
 }

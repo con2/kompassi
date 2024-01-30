@@ -111,18 +111,33 @@ export async function updateDimensionValue(
   );
 }
 
+const deleteDimensionValueMutation = graphql(`
+  mutation DeleteSurveyDimensionValue(
+    $input: DeleteSurveyDimensionValueInput!
+  ) {
+    deleteSurveyDimensionValue(input: $input) {
+      slug
+    }
+  }
+`);
+
 export async function deleteDimensionValue(
   eventSlug: string,
   surveySlug: string,
   dimensionSlug: string,
   valueSlug: string,
 ) {
-  // TODO stubb
-  console.log(
-    "deleteDimensionValue",
-    eventSlug,
-    surveySlug,
-    dimensionSlug,
-    valueSlug,
-  );
+  await getClient().mutate({
+    mutation: deleteDimensionValueMutation,
+    variables: {
+      input: {
+        eventSlug,
+        surveySlug,
+        dimensionSlug,
+        valueSlug,
+      },
+    },
+  });
+  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }

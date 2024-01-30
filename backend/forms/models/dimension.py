@@ -51,7 +51,7 @@ class Dimension(models.Model):
 
     @property
     def can_remove(self) -> bool:
-        return not self.values.exists()
+        return not ResponseDimensionValue.objects.filter(dimension=self).exists()
 
     def get_choices(self, language: str | None = None) -> list[Choice]:
         return [

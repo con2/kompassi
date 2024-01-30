@@ -9,6 +9,7 @@ from core.models import Event, Person
 from forms.graphql.mutations.create_survey_dimension import CreateSurveyDimension
 from forms.graphql.mutations.create_survey_response import CreateSurveyResponse
 from forms.graphql.mutations.delete_survey_dimension import DeleteSurveyDimension
+from forms.graphql.mutations.delete_survey_dimension_value import DeleteSurveyDimensionValue
 from forms.graphql.mutations.init_file_upload import InitFileUpload
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 
@@ -64,6 +65,7 @@ class Mutation(graphene.ObjectType):
     create_survey_dimension = CreateSurveyDimension.Field()
     create_survey_response = CreateSurveyResponse.Field()
     delete_survey_dimension = DeleteSurveyDimension.Field()
+    delete_survey_dimension_value = DeleteSurveyDimensionValue.Field()
     init_file_upload = InitFileUpload.Field()
     update_response_dimensions = UpdateResponseDimensions.Field()
 

@@ -330,8 +330,32 @@ const translations = {
       saveDimensions: "Save dimensions",
       addDimension: "Add dimension",
       addDimensionValue: "Add value",
-      deleteDimension: "Delete dimension",
-      deleteDimensionValue: "Delete value",
+      deleteDimension: {
+        title: "Remove dimension",
+        cannotRemove:
+          "A dimension that has been associated with a response cannot be removed.",
+        confirmation: (dimensionTitle: string) => (
+          <>
+            Remove dimension <strong>{dimensionTitle}</strong> and and all its
+            values?
+          </>
+        ),
+        modalActions: {
+          submit: "Remove",
+          cancel: "Cancel",
+        },
+      },
+      deleteDimensionValue: {
+        title: "Remove value",
+        cannotRemove:
+          "A value that has been associated with a response cannot be removed.",
+        confirmation: (dimensionTitle: string, valueTitle: string) => (
+          <>
+            Remove value <strong>{dimensionTitle}</strong>
+            from dimension <strong>{valueTitle}</strong>?
+          </>
+        ),
+      },
       editDimension: "Edit dimension",
       editDimensionValue: "Edit value",
     },
@@ -357,8 +381,6 @@ const translations = {
     warnings: {
       choiceNotFound:
         "Choice not found. It may have been removed after this response was submitted.",
-      cannotRemoveDimensionThatIsInUse:
-        "Dimensions and values that have been assigned to responses cannot be removed.",
     },
     checkbox: {
       checked: "Checked",
