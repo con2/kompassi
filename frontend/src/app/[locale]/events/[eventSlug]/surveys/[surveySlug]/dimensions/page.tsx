@@ -9,8 +9,7 @@ import {
   updateDimension,
   updateDimensionValue,
 } from "./actions";
-import DeleteButton from "./DeleteButton";
-import EditDimensionForm from "./EditDimensionForm";
+import DimensionForm from "./DimensionForm";
 import ModalButton from "./ModalButton";
 import { graphql } from "@/__generated__";
 import {
@@ -42,6 +41,9 @@ graphql(`
     slug
     canRemove
     title(lang: $locale)
+    isKeyDimension
+    isMultiValue
+    isShownToRespondent
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
     values {
@@ -210,7 +212,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               dimension.slug,
             )}
           >
-            <p>TODO</p>
+            <DimensionForm
+              messages={{
+                SchemaForm: translations.SchemaForm,
+                Survey: translations.Survey,
+              }}
+              dimension={dimension}
+            />
           </ModalButton>
         </td>
         <td rowSpan={rowspan} scope="rowgroup">
@@ -379,8 +387,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
                 messages={t.editDimensionModal.actions}
                 action={createDimension.bind(null, eventSlug, surveySlug)}
               >
-                <EditDimensionForm
-                  headingLevel="h5"
+                <DimensionForm
                   messages={{
                     SchemaForm: translations.SchemaForm,
                     Survey: translations.Survey,

@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const createDimensionMutation = graphql(`
-  mutation CreateSurveyDimension($input: CreateSurveyDimensionInput!) {
-    createSurveyDimension(input: $input) {
+const putDimensionMutation = graphql(`
+  mutation PutSurveyDimension($input: PutSurveyDimensionInput!) {
+    putSurveyDimension(input: $input) {
       dimension {
         slug
       }
@@ -21,7 +21,7 @@ export async function createDimension(
   formData: FormData,
 ) {
   await getClient().mutate({
-    mutation: createDimensionMutation,
+    mutation: putDimensionMutation,
     variables: {
       input: {
         eventSlug,
@@ -40,14 +40,19 @@ export async function updateDimension(
   dimensionSlug: string,
   formData: FormData,
 ) {
-  // TODO stubb
-  console.log(
-    "updateDimension",
-    eventSlug,
-    surveySlug,
-    dimensionSlug,
-    formData,
-  );
+  await getClient().mutate({
+    mutation: putDimensionMutation,
+    variables: {
+      input: {
+        eventSlug,
+        surveySlug,
+        dimensionSlug,
+        formData: Object.fromEntries(formData),
+      },
+    },
+  });
+  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 const deleteDimensionMutation = graphql(`

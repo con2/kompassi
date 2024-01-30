@@ -136,16 +136,14 @@ class DimensionDTO(pydantic.BaseModel):
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
-    slug: str
+    slug: str = pydantic.Field(min_length=1)
     title: dict[str, str]
-    choices: list[DimensionValueDTO] = pydantic.Field(default_factory=list)
+    choices: list[DimensionValueDTO] | None = pydantic.Field(default=None)
     is_key_dimension: bool = pydantic.Field(default=False, alias="isKeyDimension")
     is_multi_value: bool = pydantic.Field(default=False, alias="isMultiValue")
     is_shown_to_respondent: bool = pydantic.Field(default=False, alias="isShownToRespondent")
 
     def save(self, survey: Survey, order: int = 0):
-        # TODO(#386) change to get_or_create when form editor is implemented
-        # so that these can be loaded once but user changes are not overwritten
         dimension, _created = Dimension.objects.update_or_create(
             survey=survey,
             slug=self.slug,
@@ -157,6 +155,9 @@ class DimensionDTO(pydantic.BaseModel):
                 order=order,
             ),
         )
+
+        if self.choices is None:
+            return dimension
 
         # delete choices that are no longer present
         if not _created:

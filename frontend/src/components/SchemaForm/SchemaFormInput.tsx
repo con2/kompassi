@@ -15,10 +15,18 @@ const defaultRows = 8;
 function SchemaFormInput({
   field,
   value,
-  readOnly,
   messages,
+  readOnly: elementReadOnly = false,
 }: SchemaFormInputProps) {
-  const { slug, type, required, htmlType } = field;
+  const {
+    slug,
+    type,
+    required,
+    htmlType,
+    readOnly: fieldReadOnly = false,
+  } = field;
+  const readOnly = elementReadOnly || fieldReadOnly;
+
   // TODO: make id unique in a deterministic fashion
   switch (type) {
     case "Spacer":

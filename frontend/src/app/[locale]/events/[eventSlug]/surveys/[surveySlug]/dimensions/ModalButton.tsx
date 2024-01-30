@@ -43,7 +43,7 @@ export default function ModalButton({
         {label ?? `${title}…`}
       </button>
       {!disabled && (
-        <Modal show={isVisible} onHide={close}>
+        <Modal show={isVisible} onHide={close} size="lg">
           <Modal.Header closeButton>
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>

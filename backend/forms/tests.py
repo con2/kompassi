@@ -7,7 +7,7 @@ import yaml
 from core.models import Event
 
 from .excel_export import get_header_cells, get_response_cells
-from .graphql.mutations.create_survey_dimension import CreateSurveyDimension
+from .graphql.mutations.put_survey_dimension import PutSurveyDimension
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from .models.dimension import Dimension, DimensionValue
 from .models.field import Choice, Field, FieldType
@@ -713,7 +713,7 @@ def test_create_survey_dimension(_patched_graphql_check_access):
         slug="test-survey",
     )
 
-    CreateSurveyDimension.mutate(
+    PutSurveyDimension.mutate(
         None,
         MOCK_INFO,
         SimpleNamespace(
