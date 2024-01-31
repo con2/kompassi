@@ -429,6 +429,32 @@ const translations: Translations = {
         },
       },
     },
+    editValueModal: {
+      editTitle: "Muokkaa arvoa",
+      addTitle: "Lisää arvo",
+      actions: {
+        submit: "Tallenna arvo",
+        cancel: "Peruuta",
+      },
+      attributes: {
+        slug: {
+          title: "Tekninen nimi",
+          // TODO add pattern for slug and document it in helpText
+          helpText:
+            "Koneluettava, lyhyt nimi arvolle. Teknistä nimeä ei voi muuttaa dimension luomisen jälkeen.",
+        },
+        localizedTitleHeader: {
+          title: "Otsikko lokalisoituna",
+          helpText:
+            "Arvolle voi antaa otsikon eri kielillä. Otsikkoa ei tarvitse antaa kaikilla tuetuilla kielillä: jos otsikkoa ei ole annettu valitulla kielellä, käytetään tilalla oletuskieltä, ja jos sitäkään ei ole asetettu, teknistä nimeä.",
+        },
+        title: {
+          fi: "Otsikko suomeksi",
+          en: "Otsikko englanniksi",
+          sv: "Otsikko ruotsiksi",
+        },
+      },
+    },
   },
 
   SignInRequired: {

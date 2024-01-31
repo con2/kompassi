@@ -1,4 +1,4 @@
-import { DimensionRowGroupFragment } from "@/__generated__/graphql";
+import { ValueFieldsFragment } from "@/__generated__/graphql";
 import { SchemaForm } from "@/components/SchemaForm";
 import { Field, Layout } from "@/components/SchemaForm/models";
 import { supportedLanguages } from "@/translations";
@@ -9,38 +9,21 @@ interface Props {
     SchemaForm: Translations["SchemaForm"];
     Survey: Translations["Survey"];
   };
-  dimension?: DimensionRowGroupFragment;
+  value?: ValueFieldsFragment;
 }
 
 const headingLevel = "h5";
 
-export default function DimensionForm({ messages, dimension }: Props) {
-  const t = messages.Survey.editDimensionModal;
+/// Value form society. Value form life.
+export default function ValueForm({ messages, value }: Props) {
+  const t = messages.Survey.editValueModal;
   const fields: Field[] = [
     {
       type: "SingleLineText",
       slug: "slug",
-      required: typeof dimension === "undefined",
-      readOnly: typeof dimension !== "undefined",
+      required: typeof value === "undefined",
+      readOnly: typeof value !== "undefined",
       ...t.attributes.slug,
-    },
-    {
-      type: "SingleCheckbox",
-      slug: "isKeyDimension",
-      title: t.attributes.isKeyDimension.title,
-      helpText: t.attributes.isKeyDimension.helpText,
-    },
-    {
-      type: "SingleCheckbox",
-      slug: "isMultiValue",
-      title: t.attributes.isMultiValue.title,
-      helpText: t.attributes.isMultiValue.helpText,
-    },
-    {
-      type: "SingleCheckbox",
-      slug: "isShownToRespondent",
-      title: t.attributes.isShownToRespondent.title,
-      helpText: t.attributes.isShownToRespondent.helpText,
     },
     {
       type: "StaticText",
@@ -59,15 +42,12 @@ export default function DimensionForm({ messages, dimension }: Props) {
 
   // TODO ugly
   let values: Record<string, unknown> = {};
-  if (dimension) {
+  if (value) {
     values = {
-      slug: dimension.slug,
-      isKeyDimension: dimension.isKeyDimension,
-      isMultiValue: dimension.isMultiValue,
-      isShownToRespondent: dimension.isShownToRespondent,
+      slug: value.slug,
       // TODO hard-coded languages
-      "title.fi": dimension.titleFi,
-      "title.en": dimension.titleEn,
+      "title.fi": value.titleFi,
+      "title.en": value.titleEn,
     };
   }
 

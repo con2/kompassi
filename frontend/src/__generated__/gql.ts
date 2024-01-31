@@ -19,6 +19,7 @@ const documents = {
     "\n  mutation InitFileUploadMutation($input: InitFileUploadInput!) {\n    initFileUpload(input: $input) {\n      uploadUrl\n      fileUrl\n    }\n  }\n": types.InitFileUploadMutationDocument,
     "\n  mutation PutSurveyDimension($input: PutSurveyDimensionInput!) {\n    putSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n": types.PutSurveyDimensionDocument,
     "\n  mutation DeleteSurveyDimension($input: DeleteSurveyDimensionInput!) {\n    deleteSurveyDimension(input: $input) {\n      slug\n    }\n  }\n": types.DeleteSurveyDimensionDocument,
+    "\n  mutation PutSurveyDimensionValue($input: PutSurveyDimensionValueInput!) {\n    putSurveyDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n": types.PutSurveyDimensionValueDocument,
     "\n  mutation DeleteSurveyDimensionValue(\n    $input: DeleteSurveyDimensionValueInput!\n  ) {\n    deleteSurveyDimensionValue(input: $input) {\n      slug\n    }\n  }\n": types.DeleteSurveyDimensionValueDocument,
     "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    canRemove\n    title(lang: $locale)\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n": types.ValueFieldsFragmentDoc,
     "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isKeyDimension\n    isMultiValue\n    isShownToRespondent\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n": types.DimensionRowGroupFragmentDoc,
@@ -76,6 +77,10 @@ export function graphql(source: "\n  mutation PutSurveyDimension($input: PutSurv
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteSurveyDimension($input: DeleteSurveyDimensionInput!) {\n    deleteSurveyDimension(input: $input) {\n      slug\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteSurveyDimension($input: DeleteSurveyDimensionInput!) {\n    deleteSurveyDimension(input: $input) {\n      slug\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation PutSurveyDimensionValue($input: PutSurveyDimensionValueInput!) {\n    putSurveyDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation PutSurveyDimensionValue($input: PutSurveyDimensionValueInput!) {\n    putSurveyDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

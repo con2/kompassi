@@ -351,8 +351,8 @@ const translations = {
           "A value that has been associated with a response cannot be removed.",
         confirmation: (dimensionTitle: string, valueTitle: string) => (
           <>
-            Remove value <strong>{dimensionTitle}</strong>
-            from dimension <strong>{valueTitle}</strong>?
+            Remove value <strong>{valueTitle}</strong> from dimension{" "}
+            <strong>{dimensionTitle}</strong>?
           </>
         ),
       },
@@ -424,6 +424,32 @@ const translations = {
           title: "Shown to respondent",
           helpText:
             "If checked, the values of this dimension are shown to the respondent in the single response view under their profile. Additionally, if this dimension is also a key dimension, it is shown in the responses list under their profile.",
+        },
+      },
+    },
+    editValueModal: {
+      editTitle: "Edit value",
+      addTitle: "Add value",
+      actions: {
+        submit: "Save value",
+        cancel: "Cancel",
+      },
+      attributes: {
+        slug: {
+          title: "Technical name",
+          // TODO add pattern for slug and document it in helpText
+          helpText:
+            "Machine-readable name of the value. Cannot be changed after creation.",
+        },
+        localizedTitleHeader: {
+          title: "Localized titles",
+          helpText:
+            "The title of the value in different languages. The title need not be provided in all supported languages: if the title is missing in the selected language, it will fall back first to the default language and then to the technical name.",
+        },
+        title: {
+          fi: "Title in Finnish",
+          en: "Title in English",
+          sv: "Title in Swedish",
         },
       },
     },

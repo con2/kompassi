@@ -11,6 +11,7 @@ import {
 } from "./actions";
 import DimensionForm from "./DimensionForm";
 import ModalButton from "./ModalButton";
+import ValueForm from "./ValueForm";
 import { graphql } from "@/__generated__";
 import {
   DimensionRowGroupFragment,
@@ -247,7 +248,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               {t.actions.addDimensionValue}
             </>
           }
-          messages={t.editDimensionModal.actions}
+          messages={t.editValueModal.actions}
           action={createDimensionValue.bind(
             null,
             eventSlug,
@@ -255,7 +256,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
             dimension.slug,
           )}
         >
-          <p>TODO</p>
+          {" "}
+          <ValueForm
+            messages={{
+              SchemaForm: translations.SchemaForm,
+              Survey: translations.Survey,
+            }}
+          />
         </ModalButton>
       </td>
     );
@@ -274,7 +281,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
       <>
         <td style={{ backgroundColor }}>
           <DeleteButton
-            subject={dimension}
+            subject={value}
             action={deleteDimensionValue.bind(
               null,
               eventSlug,
@@ -308,7 +315,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               value.slug,
             )}
           >
-            <p>TODO</p>
+            <ValueForm
+              messages={{
+                SchemaForm: translations.SchemaForm,
+                Survey: translations.Survey,
+              }}
+              value={value}
+            />
           </ModalButton>
         </td>
         <td style={{ backgroundColor }}>{value.titleFi}</td>
