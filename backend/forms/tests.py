@@ -697,8 +697,8 @@ def test_lift_and_set_dimensions(_patched_graphql_check_access):
 
 
 @pytest.mark.django_db
-@mock.patch("forms.graphql.mutations.create_survey_dimension.graphql_check_access", autospec=True)
-def test_create_survey_dimension(_patched_graphql_check_access):
+@mock.patch("forms.graphql.mutations.put_survey_dimension.graphql_check_access", autospec=True)
+def test_put_survey_dimension(_patched_graphql_check_access):
     form_data = {
         "slug": "test-dimension",
         "title.en": "Test dimension",
@@ -720,6 +720,7 @@ def test_create_survey_dimension(_patched_graphql_check_access):
             event_slug=event.slug,
             survey_slug=survey.slug,
             form_data=form_data,
+            dimension_slug=None,
         ),  # type: ignore
     )
 
