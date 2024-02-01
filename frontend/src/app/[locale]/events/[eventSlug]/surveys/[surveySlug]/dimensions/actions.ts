@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const createDimensionMutation = graphql(`
-  mutation CreateSurveyDimension($input: CreateSurveyDimensionInput!) {
-    createSurveyDimension(input: $input) {
+const putDimensionMutation = graphql(`
+  mutation PutSurveyDimension($input: PutSurveyDimensionInput!) {
+    putSurveyDimension(input: $input) {
       dimension {
         slug
       }
@@ -21,7 +21,7 @@ export async function createDimension(
   formData: FormData,
 ) {
   await getClient().mutate({
-    mutation: createDimensionMutation,
+    mutation: putDimensionMutation,
     variables: {
       input: {
         eventSlug,
@@ -40,14 +40,19 @@ export async function updateDimension(
   dimensionSlug: string,
   formData: FormData,
 ) {
-  // TODO stubb
-  console.log(
-    "updateDimension",
-    eventSlug,
-    surveySlug,
-    dimensionSlug,
-    formData,
-  );
+  await getClient().mutate({
+    mutation: putDimensionMutation,
+    variables: {
+      input: {
+        eventSlug,
+        surveySlug,
+        dimensionSlug,
+        formData: Object.fromEntries(formData),
+      },
+    },
+  });
+  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 const deleteDimensionMutation = graphql(`
@@ -77,20 +82,35 @@ export async function deleteDimension(
   redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
+const putDimensionValueMutation = graphql(`
+  mutation PutSurveyDimensionValue($input: PutSurveyDimensionValueInput!) {
+    putSurveyDimensionValue(input: $input) {
+      value {
+        slug
+      }
+    }
+  }
+`);
+
 export async function createDimensionValue(
   eventSlug: string,
   surveySlug: string,
   dimensionSlug: string,
   formData: FormData,
 ) {
-  // TODO stubb
-  console.log(
-    "createDimensionValue",
-    eventSlug,
-    surveySlug,
-    dimensionSlug,
-    formData,
-  );
+  await getClient().mutate({
+    mutation: putDimensionValueMutation,
+    variables: {
+      input: {
+        eventSlug,
+        surveySlug,
+        dimensionSlug,
+        formData: Object.fromEntries(formData),
+      },
+    },
+  });
+  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 export async function updateDimensionValue(
@@ -100,16 +120,31 @@ export async function updateDimensionValue(
   valueSlug: string,
   formData: FormData,
 ) {
-  // TODO stubb
-  console.log(
-    "updateDimensionValue",
-    eventSlug,
-    surveySlug,
-    dimensionSlug,
-    valueSlug,
-    formData,
-  );
+  await getClient().mutate({
+    mutation: putDimensionValueMutation,
+    variables: {
+      input: {
+        eventSlug,
+        surveySlug,
+        dimensionSlug,
+        valueSlug,
+        formData: Object.fromEntries(formData),
+      },
+    },
+  });
+  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
+
+const deleteDimensionValueMutation = graphql(`
+  mutation DeleteSurveyDimensionValue(
+    $input: DeleteSurveyDimensionValueInput!
+  ) {
+    deleteSurveyDimensionValue(input: $input) {
+      slug
+    }
+  }
+`);
 
 export async function deleteDimensionValue(
   eventSlug: string,
@@ -117,12 +152,17 @@ export async function deleteDimensionValue(
   dimensionSlug: string,
   valueSlug: string,
 ) {
-  // TODO stubb
-  console.log(
-    "deleteDimensionValue",
-    eventSlug,
-    surveySlug,
-    dimensionSlug,
-    valueSlug,
-  );
+  await getClient().mutate({
+    mutation: deleteDimensionValueMutation,
+    variables: {
+      input: {
+        eventSlug,
+        surveySlug,
+        dimensionSlug,
+        valueSlug,
+      },
+    },
+  });
+  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }

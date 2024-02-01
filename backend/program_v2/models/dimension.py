@@ -13,11 +13,12 @@ if typing.TYPE_CHECKING:
 
 
 logger = logging.getLogger("kompassi")
+DIMENSION_SLUG_MAX_LENGTH = 255
 
 
 class Dimension(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="dimensions")
-    slug = models.CharField(max_length=255, validators=[validate_slug])
+    slug = models.CharField(max_length=DIMENSION_SLUG_MAX_LENGTH, validators=[validate_slug])
     title = HStoreField(blank=True, default=dict)
     color = models.CharField(max_length=63, blank=True, default="")
     icon = models.FileField(upload_to="program_v2/dimension_icons", blank=True)

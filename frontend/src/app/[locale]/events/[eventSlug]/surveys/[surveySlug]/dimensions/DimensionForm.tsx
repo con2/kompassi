@@ -1,24 +1,27 @@
-import { HeadingLevel } from "@/components/helpers/Heading";
+import { DimensionRowGroupFragment } from "@/__generated__/graphql";
 import { SchemaForm } from "@/components/SchemaForm";
 import { Field, Layout } from "@/components/SchemaForm/models";
 import { supportedLanguages } from "@/translations";
 import type { Translations } from "@/translations/en";
 
 interface Props {
-  headingLevel: HeadingLevel;
   messages: {
     SchemaForm: Translations["SchemaForm"];
     Survey: Translations["Survey"];
   };
+  dimension?: DimensionRowGroupFragment;
 }
 
-export default function EditDimensionForm({ messages, headingLevel }: Props) {
+const headingLevel = "h5";
+
+export default function DimensionForm({ messages, dimension }: Props) {
   const t = messages.Survey.editDimensionModal;
   const fields: Field[] = [
     {
       type: "SingleLineText",
       slug: "slug",
-      required: true,
+      required: typeof dimension === "undefined",
+      readOnly: typeof dimension !== "undefined",
       ...t.attributes.slug,
     },
     {
@@ -54,12 +57,27 @@ export default function EditDimensionForm({ messages, headingLevel }: Props) {
     ),
   ];
 
+  // TODO ugly
+  let values: Record<string, unknown> = {};
+  if (dimension) {
+    values = {
+      slug: dimension.slug,
+      isKeyDimension: dimension.isKeyDimension,
+      isMultiValue: dimension.isMultiValue,
+      isShownToRespondent: dimension.isShownToRespondent,
+      // TODO hard-coded languages
+      "title.fi": dimension.titleFi,
+      "title.en": dimension.titleEn,
+    };
+  }
+
   return (
     <SchemaForm
       fields={fields}
       layout={Layout.Vertical}
       messages={messages.SchemaForm}
       headingLevel={headingLevel}
+      values={values}
     ></SchemaForm>
   );
 }

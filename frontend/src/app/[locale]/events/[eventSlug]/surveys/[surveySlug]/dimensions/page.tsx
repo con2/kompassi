@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ReactNode } from "react";
 import {
   createDimension,
   createDimensionValue,
@@ -8,8 +9,9 @@ import {
   updateDimension,
   updateDimensionValue,
 } from "./actions";
-import EditDimensionForm from "./EditDimensionForm";
+import DimensionForm from "./DimensionForm";
 import ModalButton from "./ModalButton";
+import ValueForm from "./ValueForm";
 import { graphql } from "@/__generated__";
 import {
   DimensionRowGroupFragment,
@@ -28,6 +30,8 @@ graphql(`
   fragment ValueFields on SurveyDimensionValueType {
     slug
     color
+    canRemove
+    title(lang: $locale)
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
   }
@@ -36,6 +40,11 @@ graphql(`
 graphql(`
   fragment DimensionRowGroup on SurveyDimensionType {
     slug
+    canRemove
+    title(lang: $locale)
+    isKeyDimension
+    isMultiValue
+    isShownToRespondent
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
     values {
@@ -134,6 +143,34 @@ export default async function SurveyDimensionsPage({ params }: Props) {
 
   const countColumns = 6;
 
+  function DeleteButton({
+    subject,
+    action,
+    children,
+  }: {
+    subject: {
+      title?: string | null;
+      slug: string;
+      canRemove: boolean;
+    };
+    action: (formData: FormData) => void;
+    children?: ReactNode;
+  }) {
+    return (
+      <ModalButton
+        className="btn btn-link btn-sm p-0 link-xsubtle me-1"
+        title={t.actions.deleteDimension.title}
+        label={subject.canRemove ? "❌" : "🔒"}
+        messages={t.actions.deleteDimension.modalActions}
+        action={action}
+        submitButtonVariant="danger"
+        disabled={!subject.canRemove}
+      >
+        {children}
+      </ModalButton>
+    );
+  }
+
   function DimensionCells({
     dimension,
   }: {
@@ -143,8 +180,8 @@ export default async function SurveyDimensionsPage({ params }: Props) {
     return (
       <>
         <td rowSpan={rowspan} scope="rowgroup">
-          <form
-            className="d-inline me-2"
+          <DeleteButton
+            subject={dimension}
             action={deleteDimension.bind(
               null,
               eventSlug,
@@ -152,14 +189,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               dimension.slug,
             )}
           >
-            <button
-              type="submit"
-              className="btn btn-link btn-sm p-0 link-xsubtle"
-              title={t.actions.deleteDimension}
-            >
-              ❌
-            </button>
-          </form>
+            <p>
+              {t.actions.deleteDimension.confirmation(
+                dimension.title || dimension.slug,
+              )}
+            </p>
+          </DeleteButton>
+
           <ModalButton
             className="btn btn-link btn-sm p-0 link-xsubtle me-1"
             title={t.actions.editDimension}
@@ -177,7 +213,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               dimension.slug,
             )}
           >
-            <p>TODO</p>
+            <DimensionForm
+              messages={{
+                SchemaForm: translations.SchemaForm,
+                Survey: translations.Survey,
+              }}
+              dimension={dimension}
+            />
           </ModalButton>
         </td>
         <td rowSpan={rowspan} scope="rowgroup">
@@ -206,7 +248,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               {t.actions.addDimensionValue}
             </>
           }
-          messages={t.editDimensionModal.actions}
+          messages={t.editValueModal.actions}
           action={createDimensionValue.bind(
             null,
             eventSlug,
@@ -214,7 +256,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
             dimension.slug,
           )}
         >
-          <p>TODO</p>
+          {" "}
+          <ValueForm
+            messages={{
+              SchemaForm: translations.SchemaForm,
+              Survey: translations.Survey,
+            }}
+          />
         </ModalButton>
       </td>
     );
@@ -232,8 +280,8 @@ export default async function SurveyDimensionsPage({ params }: Props) {
     return (
       <>
         <td style={{ backgroundColor }}>
-          <form
-            className="d-inline me-2"
+          <DeleteButton
+            subject={value}
             action={deleteDimensionValue.bind(
               null,
               eventSlug,
@@ -242,14 +290,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               value.slug,
             )}
           >
-            <button
-              type="submit"
-              className="btn btn-link btn-sm p-0 link-xsubtle"
-              title={t.actions.deleteDimensionValue}
-            >
-              ❌
-            </button>
-          </form>
+            <p>
+              {t.actions.deleteDimensionValue.confirmation(
+                dimension.title || dimension.slug,
+                value.title || value.slug,
+              )}
+            </p>
+          </DeleteButton>
           <ModalButton
             className="btn btn-link btn-sm p-0 link-xsubtle"
             title={t.actions.editDimensionValue}
@@ -268,7 +315,13 @@ export default async function SurveyDimensionsPage({ params }: Props) {
               value.slug,
             )}
           >
-            <p>TODO</p>
+            <ValueForm
+              messages={{
+                SchemaForm: translations.SchemaForm,
+                Survey: translations.Survey,
+              }}
+              value={value}
+            />
           </ModalButton>
         </td>
         <td style={{ backgroundColor }}>{value.titleFi}</td>
@@ -347,8 +400,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
                 messages={t.editDimensionModal.actions}
                 action={createDimension.bind(null, eventSlug, surveySlug)}
               >
-                <EditDimensionForm
-                  headingLevel="h5"
+                <DimensionForm
                   messages={{
                     SchemaForm: translations.SchemaForm,
                     Survey: translations.Survey,

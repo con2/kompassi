@@ -7,7 +7,7 @@ import yaml
 from core.models import Event
 
 from .excel_export import get_header_cells, get_response_cells
-from .graphql.mutations.create_survey_dimension import CreateSurveyDimension
+from .graphql.mutations.put_survey_dimension import PutSurveyDimension
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from .models.dimension import Dimension, DimensionValue
 from .models.field import Choice, Field, FieldType
@@ -697,8 +697,8 @@ def test_lift_and_set_dimensions(_patched_graphql_check_access):
 
 
 @pytest.mark.django_db
-@mock.patch("forms.graphql.mutations.create_survey_dimension.graphql_check_access", autospec=True)
-def test_create_survey_dimension(_patched_graphql_check_access):
+@mock.patch("forms.graphql.mutations.put_survey_dimension.graphql_check_access", autospec=True)
+def test_put_survey_dimension(_patched_graphql_check_access):
     form_data = {
         "slug": "test-dimension",
         "title.en": "Test dimension",
@@ -713,13 +713,14 @@ def test_create_survey_dimension(_patched_graphql_check_access):
         slug="test-survey",
     )
 
-    CreateSurveyDimension.mutate(
+    PutSurveyDimension.mutate(
         None,
         MOCK_INFO,
         SimpleNamespace(
             event_slug=event.slug,
             survey_slug=survey.slug,
             form_data=form_data,
+            dimension_slug=None,
         ),  # type: ignore
     )
 

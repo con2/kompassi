@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import Self
 
 import pydantic
 from django.db import models
@@ -48,6 +49,10 @@ class Dimension(models.Model):
     @property
     def event(self) -> Event:
         return self.survey.event
+
+    @property
+    def can_remove(self) -> bool:
+        return not ResponseDimensionValue.objects.filter(dimension=self).exists()
 
     def get_choices(self, language: str | None = None) -> list[Choice]:
         return [
@@ -97,8 +102,26 @@ class DimensionValue(models.Model):
     def survey(self) -> Survey:
         return self.dimension.survey
 
+    @property
+    def can_remove(self) -> bool:
+        return not ResponseDimensionValue.objects.filter(value=self).exists()
+
     class Meta:
         unique_together = ("dimension", "slug")
+
+
+def unpack_localized_value(form_data: dict[str, str], field_name: str) -> dict[str, str | dict[str, str]]:
+    """
+    In some forms, localized values are splat into multiple fields title.fi, title.en etc.
+    Database expects them as a single JSON field. Do the needful.
+    """
+    prefix = f"{field_name}."
+    title = {key.removeprefix(prefix): value for key, value in form_data.items() if key.startswith(prefix)}
+    data: dict[str, str | dict[str, str]] = {
+        key: value for key, value in form_data.items() if not key.startswith(prefix)
+    }
+    data["title"] = title
+    return data
 
 
 class DimensionValueDTO(pydantic.BaseModel):
@@ -108,8 +131,6 @@ class DimensionValueDTO(pydantic.BaseModel):
     is_initial: bool = False
 
     def save(self, dimension: Dimension):
-        # TODO(#386) change to get_or_create when form editor is implemented
-        # so that these can be loaded once but user changes are not overwritten
         DimensionValue.objects.update_or_create(
             dimension=dimension,
             slug=self.slug,
@@ -120,6 +141,16 @@ class DimensionValueDTO(pydantic.BaseModel):
             ),
         )
 
+    @classmethod
+    def from_form_data(cls, form_data: dict[str, str]) -> Self:
+        """
+        Used by dimension editor to create and edit dimension values.
+        The localized title field is presented as field per language.
+        """
+        data = unpack_localized_value(form_data, "title")
+
+        return cls.model_validate(data)
+
 
 class DimensionDTO(pydantic.BaseModel):
     """
@@ -128,16 +159,14 @@ class DimensionDTO(pydantic.BaseModel):
 
     model_config = pydantic.ConfigDict(populate_by_name=True)
 
-    slug: str
+    slug: str = pydantic.Field(min_length=1)
     title: dict[str, str]
-    choices: list[DimensionValueDTO] = pydantic.Field(default_factory=list)
+    choices: list[DimensionValueDTO] | None = pydantic.Field(default=None)
     is_key_dimension: bool = pydantic.Field(default=False, alias="isKeyDimension")
     is_multi_value: bool = pydantic.Field(default=False, alias="isMultiValue")
     is_shown_to_respondent: bool = pydantic.Field(default=False, alias="isShownToRespondent")
 
     def save(self, survey: Survey, order: int = 0):
-        # TODO(#386) change to get_or_create when form editor is implemented
-        # so that these can be loaded once but user changes are not overwritten
         dimension, _created = Dimension.objects.update_or_create(
             survey=survey,
             slug=self.slug,
@@ -149,6 +178,9 @@ class DimensionDTO(pydantic.BaseModel):
                 order=order,
             ),
         )
+
+        if self.choices is None:
+            return dimension
 
         # delete choices that are no longer present
         if not _created:
@@ -162,23 +194,20 @@ class DimensionDTO(pydantic.BaseModel):
         return dimension
 
     @classmethod
-    def save_many(cls, survey: Survey, dimensions: list[DimensionDTO]):
+    def save_many(cls, survey: Survey, dimensions: list[Self]):
+        # TODO(perf) bulk save & refresh once
         order = 0
         for dimension in dimensions:
             order += 10
             dimension.save(survey, order)
 
     @classmethod
-    def from_form_data(cls, form_data: dict[str, str]) -> DimensionDTO:
+    def from_form_data(cls, form_data: dict[str, str]) -> Self:
         """
         Used by dimension editor to create and edit dimensions.
         The localized title field is presented as field per language.
         """
-        title = {key.removeprefix("title."): value for key, value in form_data.items() if key.startswith("title.")}
-        data: dict[str, str | dict[str, str]] = {
-            key: value for key, value in form_data.items() if not key.startswith("title.")
-        }
-        data["title"] = title
+        data = unpack_localized_value(form_data, "title")
 
         return cls.model_validate(data)
 

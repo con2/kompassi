@@ -17,10 +17,12 @@ const documents = {
     "\n  query NewProgramFormSelectionQuery($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        skipOfferFormSelection\n\n        offerForms {\n          slug\n          shortDescription(lang: $locale)\n          form(lang: $locale) {\n            title\n            slug\n          }\n        }\n      }\n    }\n  }\n": types.NewProgramFormSelectionQueryDocument,
     "\n  mutation CreateSurveyResponse($input: CreateSurveyResponseInput!) {\n    createSurveyResponse(input: $input) {\n      response {\n        id\n      }\n    }\n  }\n": types.CreateSurveyResponseDocument,
     "\n  mutation InitFileUploadMutation($input: InitFileUploadInput!) {\n    initFileUpload(input: $input) {\n      uploadUrl\n      fileUrl\n    }\n  }\n": types.InitFileUploadMutationDocument,
-    "\n  mutation CreateSurveyDimension($input: CreateSurveyDimensionInput!) {\n    createSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n": types.CreateSurveyDimensionDocument,
+    "\n  mutation PutSurveyDimension($input: PutSurveyDimensionInput!) {\n    putSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n": types.PutSurveyDimensionDocument,
     "\n  mutation DeleteSurveyDimension($input: DeleteSurveyDimensionInput!) {\n    deleteSurveyDimension(input: $input) {\n      slug\n    }\n  }\n": types.DeleteSurveyDimensionDocument,
-    "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n": types.ValueFieldsFragmentDoc,
-    "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n": types.DimensionRowGroupFragmentDoc,
+    "\n  mutation PutSurveyDimensionValue($input: PutSurveyDimensionValueInput!) {\n    putSurveyDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n": types.PutSurveyDimensionValueDocument,
+    "\n  mutation DeleteSurveyDimensionValue(\n    $input: DeleteSurveyDimensionValueInput!\n  ) {\n    deleteSurveyDimensionValue(input: $input) {\n      slug\n    }\n  }\n": types.DeleteSurveyDimensionValueDocument,
+    "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    canRemove\n    title(lang: $locale)\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n": types.ValueFieldsFragmentDoc,
+    "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isKeyDimension\n    isMultiValue\n    isShownToRespondent\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n": types.DimensionRowGroupFragmentDoc,
     "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n": types.DimensionsListDocument,
     "\n  query SurveyPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          loginRequired\n          anonymity\n          maxResponsesPerUser\n          countResponsesByCurrentUser\n\n          form(lang: $locale) {\n            title\n            description\n            fields\n            layout\n          }\n        }\n      }\n    }\n  }\n": types.SurveyPageQueryDocument,
     "\n  mutation UpdateResponseDimensions($input: UpdateResponseDimensionsInput!) {\n    updateResponseDimensions(input: $input) {\n      response {\n        id\n      }\n    }\n  }\n": types.UpdateResponseDimensionsDocument,
@@ -70,7 +72,7 @@ export function graphql(source: "\n  mutation InitFileUploadMutation($input: Ini
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation CreateSurveyDimension($input: CreateSurveyDimensionInput!) {\n    createSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateSurveyDimension($input: CreateSurveyDimensionInput!) {\n    createSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  mutation PutSurveyDimension($input: PutSurveyDimensionInput!) {\n    putSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation PutSurveyDimension($input: PutSurveyDimensionInput!) {\n    putSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -78,11 +80,19 @@ export function graphql(source: "\n  mutation DeleteSurveyDimension($input: Dele
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n"): (typeof documents)["\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n"];
+export function graphql(source: "\n  mutation PutSurveyDimensionValue($input: PutSurveyDimensionValueInput!) {\n    putSurveyDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation PutSurveyDimensionValue($input: PutSurveyDimensionValueInput!) {\n    putSurveyDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n"): (typeof documents)["\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n"];
+export function graphql(source: "\n  mutation DeleteSurveyDimensionValue(\n    $input: DeleteSurveyDimensionValueInput!\n  ) {\n    deleteSurveyDimensionValue(input: $input) {\n      slug\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteSurveyDimensionValue(\n    $input: DeleteSurveyDimensionValueInput!\n  ) {\n    deleteSurveyDimensionValue(input: $input) {\n      slug\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    canRemove\n    title(lang: $locale)\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n"): (typeof documents)["\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    canRemove\n    title(lang: $locale)\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isKeyDimension\n    isMultiValue\n    isShownToRespondent\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n"): (typeof documents)["\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isKeyDimension\n    isMultiValue\n    isShownToRespondent\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

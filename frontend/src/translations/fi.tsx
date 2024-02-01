@@ -329,8 +329,32 @@ const translations: Translations = {
       saveDimensions: "Tallenna dimensiot",
       addDimension: "Lisää dimensio",
       addDimensionValue: "Lisää arvo",
-      deleteDimension: "Poista dimensio",
-      deleteDimensionValue: "Poista arvo",
+      deleteDimension: {
+        title: "Poista dimensio",
+        cannotRemove:
+          "Dimensiota ei voi poistaa, jos se on jo liitetty kyselyvastaukseen.",
+        confirmation: (dimensionTitle: string) => (
+          <>
+            Poista dimensio <strong>{dimensionTitle}</strong> kaikkine
+            arvoineen?
+          </>
+        ),
+        modalActions: {
+          submit: "Poista",
+          cancel: "Peruuta",
+        },
+      },
+      deleteDimensionValue: {
+        title: "Poista arvo",
+        cannotRemove:
+          "Arvoa ei voi poistaa, jos se on jo liitetty kyselyvastaukseen.",
+        confirmation: (dimensionTitle: string, valueTitle: string) => (
+          <>
+            Poista arvo <strong>{dimensionTitle}</strong>
+            dimensionsta <strong>{valueTitle}</strong>?
+          </>
+        ),
+      },
       editDimension: "Muokkaa dimensiota",
       editDimensionValue: "Muokkaa arvoa",
     },
@@ -402,6 +426,32 @@ const translations: Translations = {
           title: "Näytetään vastaajalle",
           helpText:
             "Jos tämä on valittuna, tämän dimension arvot näytetään vastaajalle yksittäisen vastauksen näkymässä hänen profiilissaan. Lisäksi, jos tämä dimensio on myös avaindimensio, se näytetään profiilin vastauslistassa.",
+        },
+      },
+    },
+    editValueModal: {
+      editTitle: "Muokkaa arvoa",
+      addTitle: "Lisää arvo",
+      actions: {
+        submit: "Tallenna arvo",
+        cancel: "Peruuta",
+      },
+      attributes: {
+        slug: {
+          title: "Tekninen nimi",
+          // TODO add pattern for slug and document it in helpText
+          helpText:
+            "Koneluettava, lyhyt nimi arvolle. Teknistä nimeä ei voi muuttaa dimension luomisen jälkeen.",
+        },
+        localizedTitleHeader: {
+          title: "Otsikko lokalisoituna",
+          helpText:
+            "Arvolle voi antaa otsikon eri kielillä. Otsikkoa ei tarvitse antaa kaikilla tuetuilla kielillä: jos otsikkoa ei ole annettu valitulla kielellä, käytetään tilalla oletuskieltä, ja jos sitäkään ei ole asetettu, teknistä nimeä.",
+        },
+        title: {
+          fi: "Otsikko suomeksi",
+          en: "Otsikko englanniksi",
+          sv: "Otsikko ruotsiksi",
         },
       },
     },
