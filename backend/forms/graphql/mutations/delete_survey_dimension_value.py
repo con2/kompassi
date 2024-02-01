@@ -30,8 +30,6 @@ class DeleteSurveyDimensionValue(graphene.Mutation):
         # TODO bastardization of graphql_check_access, rethink
         graphql_check_access(survey, info, "dimensions", "mutation")
 
-        # TODO can_delete
-
         value = DimensionValue.objects.get(dimension__slug=input.dimension_slug, slug=input.value_slug)
         if not value.can_remove:
             raise Exception("Cannot remove dimension value that is in use")
