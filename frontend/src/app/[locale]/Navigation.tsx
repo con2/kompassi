@@ -28,7 +28,9 @@ export default async function Navigation({ locale }: NavigationProps) {
         <Link href="/" className="navbar-brand">
           {translations.Brand.appName}
         </Link>
+        {/* key: force remount when language changed to fix A->B->A transition */}
         <NavigationMenus
+          key={locale}
           session={session}
           locale={locale}
           messages={messages}
