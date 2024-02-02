@@ -7,12 +7,11 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { buildDimensionForm } from "@/components/dimensions/helpers";
-import { SchemaForm } from "@/components/SchemaForm";
-import { Field, validateFields } from "@/components/SchemaForm/models";
-import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
-import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
-import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
-import SubmitButton from "@/components/SchemaForm/SubmitButton";
+import { Field, validateFields } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
+import SchemaFormField from "@/components/forms/SchemaFormField";
+import SchemaFormInput from "@/components/forms/SchemaFormInput";
+import SubmitButton from "@/components/forms/SubmitButton";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -238,11 +237,12 @@ export default async function SurveyResponsePage({ params }: Props) {
         </div>
       </div>
 
-      <SchemaFormResponse
+      <SchemaForm
         fields={fields}
         values={values}
         layout={layout}
         messages={translations.SchemaForm}
+        readOnly
       />
     </ViewContainer>
   );

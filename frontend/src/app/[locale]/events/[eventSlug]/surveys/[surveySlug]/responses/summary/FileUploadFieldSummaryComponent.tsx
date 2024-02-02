@@ -1,5 +1,5 @@
-import { FileUploadFieldSummary } from "@/components/SchemaForm/models";
-import UploadedFileCards from "@/components/SchemaForm/UploadedFileCards";
+import { FileUploadFieldSummary } from "@/components/forms/models";
+import UploadedFileCards from "@/components/forms/UploadedFileCards";
 import { Translations } from "@/translations/en";
 
 interface Props {

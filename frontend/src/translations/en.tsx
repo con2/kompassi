@@ -90,7 +90,7 @@ const translations = {
     saveFailedErrorMessage:
       "Something went wrong while saving the form. There may be further information in the JavaScript console.",
 
-    Tabs: {
+    tabs: {
       design: "Design",
       preview: "Preview",
       properties: "Properties",
@@ -135,11 +135,11 @@ const translations = {
       },
     },
 
-    EditFieldForm: {
-      name: {
+    editFieldForm: {
+      slug: {
         title: "Technical name",
         helpText:
-          "Machine-readable field name. Valid characters: letters A-Za-z, numbers 0-9, underscore _. Must not start with a number.",
+          "Machine-readable field name. Valid characters: letters A-Za-z, numbers 0-9, dash -. Must not start with a number.",
       },
       title: {
         title: "Title",
@@ -153,27 +153,42 @@ const translations = {
       required: {
         title: "Required",
       },
-      options: {
-        title: "Options",
+      choices: {
+        title: "Choices",
         helpText: "value=label pairs, separated by newline",
       },
     },
 
-    FieldTypes: {
+    fieldTypes: {
       SingleLineText: "Single line text field",
       MultiLineText: "Multi-line text field",
       Divider: "Divider",
       StaticText: "Static text",
       Spacer: "Empty space",
       SingleCheckbox: "Single check box",
-      SingleSelect: "Single select drop-down",
+      SingleSelect: "Single select",
+      MultiSelect: "Multiple select",
+      RadioMatrix: "Radio button matrix",
+      FileUpload: "File upload",
+      NumberField: "Number",
+      DecimalField: "Decimal number",
     },
 
-    RemoveFieldModal: {
+    removeFieldModal: {
       title: "Confirm field removal",
       message: "Remove the selected field?",
-      yes: "Yes, remove",
-      no: "No, cancel",
+      actions: {
+        submit: "Remove",
+        cancel: "Cancel",
+      },
+    },
+
+    editFieldModal: {
+      title: "Edit field",
+      actions: {
+        submit: "Save field",
+        cancel: "Cancel",
+      },
     },
   },
 
@@ -310,6 +325,11 @@ const translations = {
       countMissingResponses: "No response",
       percentageOfResponses: "Share of responses",
       technicalDetails: "Technical details",
+      loginRequired: {
+        title: "Sign-in required",
+        helpText:
+          "If checked, the survey can only be filled in by signed-in users.",
+      },
     },
     actions: {
       fillIn: {
@@ -358,6 +378,7 @@ const translations = {
       },
       editDimension: "Edit dimension",
       editDimensionValue: "Edit value",
+      editSurvey: "Edit",
     },
     tabs: {
       summary: "Summary",
@@ -451,6 +472,14 @@ const translations = {
           en: "Title in English",
           sv: "Title in Swedish",
         },
+      },
+    },
+    editSurveyPage: {
+      title: "Muokkaa kyselyä",
+    },
+    editFormTabs: {
+      actions: {
+        addLanguageVersion: "Lisää kieliversio",
       },
     },
   },

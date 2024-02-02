@@ -7,7 +7,7 @@ import {
   Field,
   FieldSummary,
   SelectFieldSummary,
-} from "@/components/SchemaForm/models";
+} from "@/components/forms/models";
 import { Translations } from "@/translations/en";
 
 /// For actual choice fields, return their choices.

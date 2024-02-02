@@ -1,5 +1,5 @@
+import { TextFieldSummary } from "@/components/forms/models";
 import Linebreaks from "@/components/helpers/Linebreaks";
-import { TextFieldSummary } from "@/components/SchemaForm/models";
 import { Translations } from "@/translations/en";
 
 interface TextFieldSummaryComponentProps {

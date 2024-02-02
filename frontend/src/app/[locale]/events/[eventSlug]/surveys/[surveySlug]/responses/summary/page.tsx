@@ -11,8 +11,8 @@ import {
   Layout,
   validateFields,
   validateSummary,
-} from "@/components/SchemaForm/models";
-import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
+} from "@/components/forms/models";
+import SchemaFormField from "@/components/forms/SchemaFormField";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";

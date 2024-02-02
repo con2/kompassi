@@ -176,10 +176,10 @@ export default async function SurveysPage({ params }: Props) {
               messages={t.actions.share}
             />{" "}
             <Link
-              href={`${url}/dimensions`}
+              href={`${url}/edit`}
               className="btn btn-sm btn-outline-primary"
             >
-              {t.attributes.dimensions}…
+              {t.actions.editSurvey}…
             </Link>{" "}
             <Link
               href={`${url}/responses`}

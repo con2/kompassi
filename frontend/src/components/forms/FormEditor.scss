@@ -1,0 +1,20 @@
+.FormEditor-field {
+  margin-bottom: 1rem;
+}
+
+.FormEditor-background {
+  margin: -0.5rem;
+  padding: 0.5rem;
+  background-color: #f8f8f8;
+
+  // to make controls not overflow for spacer and divider
+  // min-height: 46px;
+}
+
+.FormEditor-background .form-group + .form-group {
+  margin-bottom: 0;
+}
+
+.FormEditor-background .form-group {
+  margin-bottom: 0.5rem;
+}

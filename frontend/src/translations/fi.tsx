@@ -91,7 +91,7 @@ const translations: Translations = {
     saveFailedErrorMessage:
       "Jokin meni pieleen lomaketta tallennettaessa. JavaScript-konsolissa voi olla lisätietoja.",
 
-    Tabs: {
+    tabs: {
       design: "Muokkaa",
       preview: "Esikatsele",
       properties: "Asetukset",
@@ -136,11 +136,11 @@ const translations: Translations = {
       },
     },
 
-    EditFieldForm: {
-      name: {
+    editFieldForm: {
+      slug: {
         title: "Tekninen nimi",
         helpText:
-          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla.",
+          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja viiva -. Ei saa alkaa numerolla.",
       },
       title: {
         title: "Otsikko",
@@ -154,13 +154,13 @@ const translations: Translations = {
       required: {
         title: "Pakollinen",
       },
-      options: {
+      choices: {
         title: "Vaihtoehdot",
         helpText: "arvo=teksti -pareja, yksi per rivi",
       },
     },
 
-    FieldTypes: {
+    fieldTypes: {
       SingleLineText: "Yksirivinen tekstikenttä",
       MultiLineText: "Monirivinen tekstikenttä",
       Divider: "Erotinviiva",
@@ -168,13 +168,28 @@ const translations: Translations = {
       Spacer: "Tyhjä tila",
       SingleCheckbox: "Yksittäinen rasti ruutuun -kenttä",
       SingleSelect: "Alasvetovalikko (yksi valinta)",
+      MultiSelect: "Alasvetovalikko (useita valintoja)",
+      RadioMatrix: "Valintamatriisi",
+      FileUpload: "Tiedoston lähetys",
+      NumberField: "Numero",
+      DecimalField: "Desimaaliluku",
     },
 
-    RemoveFieldModal: {
+    removeFieldModal: {
       title: "Vahvista kentän poisto",
       message: "Poistetaanko kenttä?",
-      yes: "Kyllä, poista",
-      no: "Ei, peruuta",
+      actions: {
+        submit: "Poista",
+        cancel: "Peruuta",
+      },
+    },
+
+    editFieldModal: {
+      title: "Muokkaa kenttää",
+      actions: {
+        submit: "Tallenna",
+        cancel: "Peruuta",
+      },
     },
   },
 
@@ -309,6 +324,11 @@ const translations: Translations = {
       countMissingResponses: "Ei vastausta",
       percentageOfResponses: "Osuus vastauksista",
       technicalDetails: "Tekniset tiedot",
+      loginRequired: {
+        title: "Sisäänkirjautuminen vaaditaan",
+        helpText:
+          "Jos tämä on valittuna, kyselyyn vastaaminen vaatii sisäänkirjautumisen.",
+      },
     },
     actions: {
       fillIn: {
@@ -357,6 +377,7 @@ const translations: Translations = {
       },
       editDimension: "Muokkaa dimensiota",
       editDimensionValue: "Muokkaa arvoa",
+      editSurvey: "Muokkaa",
     },
     tabs: {
       summary: "Yhteenveto",
@@ -453,6 +474,14 @@ const translations: Translations = {
           en: "Otsikko englanniksi",
           sv: "Otsikko ruotsiksi",
         },
+      },
+    },
+    editSurveyPage: {
+      title: "Muokkaa kyselyä",
+    },
+    editFormTabs: {
+      actions: {
+        addLanguageVersion: "Lisää kieliversio",
       },
     },
   },

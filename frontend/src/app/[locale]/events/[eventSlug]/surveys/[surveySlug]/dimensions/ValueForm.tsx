@@ -1,6 +1,6 @@
 import { ValueFieldsFragment } from "@/__generated__/graphql";
-import { SchemaForm } from "@/components/SchemaForm";
-import { Field, Layout } from "@/components/SchemaForm/models";
+import { Field, Layout } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
 import { supportedLanguages } from "@/translations";
 import type { Translations } from "@/translations/en";
 

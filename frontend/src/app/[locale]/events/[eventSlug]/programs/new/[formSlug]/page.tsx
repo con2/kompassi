@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 import { submit } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import { SchemaForm } from "@/components/SchemaForm";
-import { validateFields } from "@/components/SchemaForm/models";
-import SubmitButton from "@/components/SchemaForm/SubmitButton";
+import { validateFields } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
+import SubmitButton from "@/components/forms/SubmitButton";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`

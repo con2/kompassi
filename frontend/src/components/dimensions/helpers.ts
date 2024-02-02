@@ -1,4 +1,4 @@
-import { Choice, MultiSelect, SingleSelect } from "../SchemaForm/models";
+import { Choice, MultiSelect, SingleSelect } from "../forms/models";
 import type { Dimension } from "./models";
 import { validateCachedDimensions } from "./models";
 import type { DimensionFilterInput } from "@/__generated__/graphql";
