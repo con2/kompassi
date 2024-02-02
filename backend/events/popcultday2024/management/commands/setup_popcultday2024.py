@@ -28,7 +28,7 @@ class Setup:
         self.setup_labour()
         self.setup_badges()
         self.setup_programme()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_intra()
 
     def setup_core(self):
@@ -165,6 +165,7 @@ class Setup:
         (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
 
         defaults = dict(
+            tickets_view_version="v1.5",
             admin_group=tickets_admin_group,
             due_days=14,
             reference_number_template="2024{:06d}",
@@ -209,26 +210,36 @@ class Setup:
                 name="Pääsylippu: Popcult Day 2024",
                 description="Pääsylippu Popcult Day -tapahtumaan 18.5.2024 Helsingin Suvilahdessa. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.",
                 limit_groups=[
-                    limit_group("Pääsyliput", 950),
+                    limit_group("Day", 600),
                 ],
-                price_cents=2500,
+                price_cents=20_00,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
             ),
-            # dict(
-            #     name='Kahden lipun tarjouspaketti Popcult Dayhin 2018',
-            #     override_electronic_ticket_title='Popcult Day 2024 -tarjouslippu',
-            #     description='Kaksi pääsylippua Popcult Day -tapahtumaan lauantaille 12.5.2018. Osta liput edullisemmin itsellesi ja vaikka lahjaksi kaverille! Sisältää kaksi sähköistä lippua, jotka vaihdetaan rannekkeisiin tapahtumapaikalla. Rajoitettu tarjous, myynnissä su 18.2. klo 23:59 asti.',
-            #     limit_groups=[
-            #         limit_group('Kahden lipun tarjouspaketit', 100),
-            #     ],
-            #     price_cents=2500,
-            #     electronic_ticket=True,
-            #     electronic_tickets_per_product=2,
-            #     available=True,
-            #     ordering=ordering(),
-            # ),
+            dict(
+                name="Pääsylippu: Popcult Nights 2024",
+                description="Pääsylippu Popcult Nights -iltatapahtumaan 18.5.2024 Helsingin Suvilahdessa. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.",
+                limit_groups=[
+                    limit_group("Nights", 400),
+                ],
+                price_cents=15_00,
+                electronic_ticket=True,
+                available=False,
+                ordering=ordering(),
+            ),
+            dict(
+                name="Pääsylippu: Popcult Day + Nights 2024",
+                description="Yhdistelmälippu Popcult Day & Nights -tapahtumiin 18.5.2024 Helsingin Suvilahdessa. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.",
+                limit_groups=[
+                    limit_group("Day", 600),
+                    limit_group("Nights", 400),
+                ],
+                price_cents=25_00,
+                electronic_ticket=True,
+                available=False,
+                ordering=ordering(),
+            ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
