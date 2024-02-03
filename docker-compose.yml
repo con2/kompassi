@@ -3,6 +3,10 @@ services:
     build: backend
     init: true
     command: python manage.py docker_start
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
     # note: frontend and backend have network_mode: service:backend
     # because they to reach backend and minio at same address as browser
     # cannot publish ports from container that has this network_mode
