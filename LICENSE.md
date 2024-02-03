@@ -9,7 +9,7 @@
     Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö
     Copyright © 2015–2017 Miika Ojamo
-    Copyright © 2014–2016 Jyrki Launonen
+    Copyright © 2014–2024 Jyrki Launonen
     Copyright © 2012–2018 Meeri Panula
     Copyright © 2009–2015 Jussi Sorjonen
     Copyright © 2014 Pekka Wallendahl
