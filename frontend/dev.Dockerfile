@@ -12,5 +12,5 @@ COPY codegen.ts package.json package-lock.json next.config.js tsconfig.json .esl
 # COPY public public
 COPY src src
 
-ENTRYPOINT [ "scripts/wait-for-it.sh", "-s", "-t", "120", "backend:8000", "--" ]
+ENTRYPOINT [ "scripts/wait-for-it.sh", "-s", "-t", "120", "router:8000", "--" ]
 CMD [ "npm", "run", "dev" ]
