@@ -2,6 +2,7 @@ services:
   router:
     image: busybox
     command: "sleep infinity"
+    init: true
     # note: frontend, backend and minio have network_mode: service:router
     # because they to reach backend and minio at same address as browser
     # cannot publish ports from container that has this network_mode
