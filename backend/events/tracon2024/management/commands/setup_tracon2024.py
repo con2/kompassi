@@ -1012,6 +1012,48 @@ class Setup:
 
         expense_claim_survey.languages.set([expense_claim_fi, expense_claim_en])
 
+        # Artesan signup form
+
+        artesan_signup_survey, _ = Survey.objects.update_or_create(
+            event=self.event,
+            slug="artesan-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["taiteilija_nimi_artesaani"],
+                login_required=True,
+                anonymity="NAME_AND_EMAIL",
+            ),
+        )
+
+        # with resource_stream("events.tracon2024", "forms/artesan-signup-dimensions.yml") as f:
+        #     data = yaml.safe_load(f)
+
+        # dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
+        # DimensionDTO.save_many(artesan_signup_survey, dimensions)
+
+        with resource_stream("events.tracon2024", "forms/artesan-signup-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        expense_claim_fi, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="artesan-signup-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # with resource_stream("events.tracon2024", "forms/artesan-signup-en.yml") as f:
+        #     data = yaml.safe_load(f)
+
+        # expense_claim_en, created = Form.objects.update_or_create(
+        #     event=self.event,
+        #     slug="artesan-signup-en",
+        #     language="en",
+        #     defaults=data,
+        # )
+
+        # artesan_signup_survey.languages.set([expense_claim_fi, expense_claim_en])
+        artesan_signup_survey.languages.set([expense_claim_fi])
+
 
 class Command(BaseCommand):
     args = ""

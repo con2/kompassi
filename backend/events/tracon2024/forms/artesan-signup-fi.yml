@@ -1,0 +1,108 @@
+title: Tracon artesaanihaku 2024
+layout: vertical
+description: |
+  Lomakkeella haetaan artesaanipöytää Tracon tapahtumasta 6.-8.9.2024. Artesaanialue sijaitsee sisätiloissa ja on auki perjantaista sunnuntaihin. Edellytämme artesaanipyödän pitämistä auki ennalta ilmoitettuina myyntiaikoina.
+
+  Artesaanipöydän hinta perjantaista sunnuntaihin 350 €, sisältäen 2 kpl viikonloppurannekkeita.
+
+  Form is used to apply for artisan spots at the Tracon event on September 6-8, 2024. The artisan area is located indoors and area is open from Friday to Sunday during convention weekend. We require the artisan tables to be open during the pre-announced sales hours.
+
+  The price of the artisan table from Friday to Sunday is 350 €, including 2 tickets.
+
+  <strong>Lisätietoja suomeksi:</strong> <a href="https://2024.tracon.fi/artesaanihaku/">Artesaanihaku</a>.
+   <strong>Information in English:</strong> <a href="https://2024.tracon.fi/apply-as-artisan/">Apply as artisan</a>.
+fields:
+  - type: StaticText
+    title: PERUSTIEDOT
+    slug: background
+
+  - slug: nimi_artesaani
+    title: Vastuuhenkilön etu- ja sukunimi | Contact person's first and surname
+    helpText: ""
+    type: SingleLineText
+
+
+  - slug: email_artesaani
+    title: Vastuuhenkilön sähköposti | Contact person's email
+    helpText: ""
+    type: SingleLineText
+
+
+  - slug: apunimi_artesaani
+    title: Apumyyjän nimi | Helper´s name
+    helpText: ""
+    type: SingleLineText
+
+
+  - slug: portfolio_artesaani
+    type: StaticText
+    title: PORTFOLIO
+    helpText: >
+      Ethän käytä portfoliopohjana sosiaalista mediaa (Facebook, Instagram, Twitter) tai taidesivustoa josta löytää kaiken tuotantosi. Portfolio tulee olla varta vasten portfolioksi rakennettu sivu / tiedosto tai muu asiansa ajava pohja. Varmistathan ettei jaetun linkin sisältö ole suojattu salasanalla.
+      Please do not use social media platforms as the base of your portfolio (Facebook, Instagram, Twitter etc.) or an art site that consists all of your production.
+
+
+  - slug: portfolio_linkki_artesaani
+    title: Portfolio linkki
+    type: MultiLineText
+    helpText: >
+      Portfolio linkki.  Enintään (1) linkki per henkilö | Portfolio, one (1) link per person.
+
+
+
+  - slug: taiteilija_tiedot_artesaani
+    type: StaticText
+    title: Tiedot verkkosivujen esittelyihin
+    helpText: >
+      Taiteilijatiedot julkaistaan tapahtuman verkkosivuilla tapahtuman lähestyessä.
+
+  - slug: taiteilija_nimi_artesaani
+    title: Taiteilijanimi | Artist name
+    helpText: ""
+    type: SingleLineText
+
+  - slug: taiteilija_kotisivu_artesaani
+    title: Taiteilijan kotisivu linkki | Artist website link
+    helpText: ""
+    type: SingleLineText
+
+  - slug: esittelyteksti_artesaani
+    title: Lyhyt esittelyteksti | Short introduction
+    type: MultiLineText
+
+  - slug: taiteilija_avatar_artesaani
+    title: Avatar kuvake linkki | Avatar picture link
+    helpText: "Koko | Size 200 px x 200 px. Files .jpg or .png preferred."
+    type: FileUpload
+
+
+  - slug: lisatiedot_artesaani_otsikko
+    type: StaticText
+    title: LISÄTIEDOT | ADDITIONAL DETAILS
+
+  - slug: lisatiedot_artesaani
+    title: Lisätiedot
+    helpText: >
+      Vapaa kenttä kommenteille, toiveille, maininta esteettömyyden tarpeesta ja esim. perusteluille pöytätoiveiden suhteen. | Free comment section.
+    type: MultiLineText
+
+  - slug: tietosuoja_artesaani
+    type: StaticText
+    title: TIETOSUOJA | DATA PROTECTION
+    helpText: >
+      Henkilötietojen käsittelijä on Tracon ry edustajanaan Niina "Nino" Kytöharju.
+      Tietoja käytetään tamperelaisen Tracon -tapahtuman artesaanialueen järjestämiseen.
+      Tietoja säilytetään tapahtumavuoden ajan ja sen jälkeen ne poistetaan.
+      Tietoja ei luovuteta ulkopuolisille.
+      Tietoja ei käytetä suoramarkkinointiin.
+      Tietoja ei siirretä EU:n tai Euroopan talousalueen ulkopuolelle.
+      Luovutetut taiteilijatiedot (taiteilijanimi, web-osoite, kuvaus ja avatar) lisätään tapahtuman kotisivuille.
+      Rekisteröitynä sinulla on oikeuksia, joihin voit tutustua <a href="https://tietosuoja.fi/yksityishenkilot">Tietosuojavaltuutetun sivuilla</a>.
+
+      The controller of personal data is Tracon ry represented by Niina "Nino" Kytöharju.
+      The information is used to organize the artisan area of the Tracon event in Tampere.
+      The information is stored for the duration of the event year and then deleted.
+      The information is not disclosed to third parties. The information is not used for direct marketing.
+      The information is not transferred outside the EU or the European Economic Area.
+      The submitted artist information (artist name, website, description and avatar) will be added to the event's homepage.
+      As a data subject, you have rights that you can familiarize yourself with on the <a href="https://tietosuoja.fi/en/private-persons">Data Protection Ombudsman's website</a>.
