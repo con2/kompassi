@@ -1,0 +1,85 @@
+title: Tracon artisan application 2024
+layout: vertical
+description: |
+  Form is used to apply for artisan spots at the Tracon event on September 6-8, 2024. The artisan area is located indoors and area is open from Friday to Sunday during convention weekend. We require the artisan tables to be open during the pre-announced sales hours.
+
+  The price of the artisan table from Friday to Sunday is 350 €, including 2 tickets.
+
+  <strong>Information in English:</strong> <a href="https://2024.tracon.fi/apply-as-artisan/">Apply as artisan</a>.
+fields:
+  - type: StaticText
+    title: BASIC INFO
+    slug: basic_info_title
+
+  - slug: name
+    title: Contact person's first name and surname
+    helpText: ""
+    type: SingleLineText
+
+  - slug: email
+    title: Contact person's email
+    helpText: ""
+    type: SingleLineText
+
+  - slug: helper_name
+    title: Helper's name
+    helpText: ""
+    type: SingleLineText
+
+  - slug: portfolio_title
+    type: StaticText
+    title: PORTFOLIO
+    helpText: >
+      Please do not use social media platforms as the base of your portfolio (Facebook, Instagram, Twitter etc.) or an art site that consists all of your production.
+
+  - slug: portfolio_link
+    title: Portfolio linkki
+    type: MultiLineText
+    helpText: >
+      Portfolio, one (1) link per person.
+
+  - slug: artist_info_title
+    type: StaticText
+    title: Information for artist profile on event website
+    helpText: >
+      Artist info will be published on the event website later.
+
+  - slug: artist_name
+    title: Artist name
+    helpText: ""
+    type: SingleLineText
+
+  - slug: artist_website
+    title: Artist website link
+    helpText: ""
+    type: SingleLineText
+
+  - slug: artist_intro
+    title: Short introduction
+    type: MultiLineText
+
+  - slug: artist_avatar
+    title: Avatar picture
+    helpText: "Size 200 px x 200 px. Files .jpg or .png preferred."
+    type: FileUpload
+
+  - slug: additional_details_title
+    type: StaticText
+    title: ADDITIONAL DETAILS
+
+  - slug: additional_details
+    helpText: >
+      Free comment section.
+    type: MultiLineText
+
+  - slug: data_protection_text
+    type: StaticText
+    title: DATA PROTECTION
+    helpText: >
+      The controller of personal data is Tracon ry represented by Niina "Nino" Kytöharju. 
+      The information is used to organize the artisan area of the Tracon event in Tampere.
+      The information is stored for the duration of the event year and then deleted. 
+      The information is not disclosed to third parties. The information is not used for direct marketing. 
+      The information is not transferred outside the EU or the European Economic Area. 
+      The submitted artist information (artist name, website, description and avatar) will be added to the event's homepage.
+      As a data subject, you have rights that you can familiarize yourself with on the <a href="https://tietosuoja.fi/en/private-persons">Data Protection Ombudsman's website</a>.
