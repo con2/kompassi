@@ -1,19 +1,26 @@
 services:
-  backend:
-    build: backend
+  router:
+    image: busybox
+    command: "sleep infinity"
     init: true
-    command: python manage.py docker_start
-    # note: frontend and backend have network_mode: service:backend
+    # note: frontend, backend and minio have network_mode: service:router
     # because they to reach backend and minio at same address as browser
     # cannot publish ports from container that has this network_mode
-    # so publish their ports from backend instead
-    # see #357 #375
+    # also need to use separate router container so backend can restart
+    # without breaking connectivity
+    # see #357 #375 #408
     ports:
       - 3000:3000
       - 8000:8000
       - 9000:9000
       - 9001:9001
-    links:
+  backend:
+    build: backend
+    init: true
+    command: python manage.py docker_start
+    restart: unless-stopped
+    network_mode: service:router
+    depends_on:
       - redis
       - postgres
     volumes:
@@ -34,7 +41,7 @@ services:
     build: backend
     init: true
     command: celery -A kompassi.celery_app:app worker
-    links:
+    depends_on:
       - redis
       - postgres
     volumes:
@@ -47,7 +54,9 @@ services:
       context: frontend
       dockerfile: dev.Dockerfile
     init: true
-    network_mode: service:backend
+    network_mode: service:router
+    depends_on:
+      - backend
     volumes:
       - ./frontend/src:/usr/src/app/src
     environment:
@@ -75,7 +84,7 @@ services:
     image: minio/minio
     entrypoint: /usr/bin/env
     command: sh -c 'mkdir -p /data/kompassi && minio server /data --console-address ":9001"'
-    network_mode: service:backend
+    network_mode: service:router
     volumes:
       - minio-data:/data
     environment:
