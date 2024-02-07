@@ -27,7 +27,6 @@ fields:
     title: Helper's name
     helpText: ""
     type: SingleLineText
-    required: true
 
   - slug: portfolio_title
     type: StaticText
