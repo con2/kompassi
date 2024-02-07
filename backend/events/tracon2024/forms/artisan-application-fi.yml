@@ -57,6 +57,7 @@ fields:
     title: Taiteilijan kotisivu linkki
     helpText: ""
     type: SingleLineText
+    required: true
 
   - slug: artist_intro
     title: Lyhyt esittelyteksti
@@ -64,7 +65,7 @@ fields:
     required: true
 
   - slug: artist_avatar
-    title: Avatar kuvake linkki
+    title: Avatar kuvake
     helpText: "Koko 200 px x 200 px. Suosimme .jpg ja .png tiedostoja."
     type: FileUpload
     required: true
