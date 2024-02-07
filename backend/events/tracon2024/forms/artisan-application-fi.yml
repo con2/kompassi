@@ -60,7 +60,7 @@ fields:
 
   - slug: artist_avatar
     title: Avatar kuvake linkki
-    helpText: "Koko 200 px x 200 px. Files .jpg or .png preferred."
+    helpText: "Koko 200 px x 200 px. Suosimme .jpg ja .png tiedostoja."
     type: FileUpload
 
   - slug: additional_details_title
@@ -69,7 +69,7 @@ fields:
 
   - slug: additional_details
     helpText: >
-      Vapaa kenttä kommenteille, toiveille, maininta esteettömyyden tarpeesta ja esim. perusteluille pöytätoiveiden suhteen. | Free comment section.
+      Vapaa kenttä kommenteille, toiveille, maininta esteettömyyden tarpeesta ja esim. perusteluille pöytätoiveiden suhteen.
     type: MultiLineText
 
   - slug: tietosuoja_artesaani
