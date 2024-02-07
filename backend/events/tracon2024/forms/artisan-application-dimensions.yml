@@ -21,8 +21,8 @@
       title:
         fi: Hylätty
         en: Rejected
-    - slug: canceled
+    - slug: cancelled
       color: yellow
       title:
         fi: Perunut
-        en: Canceled
+        en: Cancelled
