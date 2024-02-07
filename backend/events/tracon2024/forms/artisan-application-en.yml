@@ -69,7 +69,7 @@ fields:
 
   - slug: additional_details
     helpText: >
-      Free comment section.
+      Section for comments, wishes, accessibility need requests etc.
     type: MultiLineText
 
   - slug: data_protection_text
