@@ -33,7 +33,7 @@ fields:
       Please do not use social media platforms as the base of your portfolio (Facebook, Instagram, Twitter etc.) or an art site that consists all of your production.
 
   - slug: portfolio_link
-    title: Portfolio linkki
+    title: Portfolio link
     type: MultiLineText
     helpText: >
       Portfolio, one (1) link per person.
