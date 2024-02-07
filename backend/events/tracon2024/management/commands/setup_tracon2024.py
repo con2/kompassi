@@ -1052,6 +1052,7 @@ class Setup:
             defaults=dict(
                 active_from=now(),
                 key_fields=["name", "email", "helper"],
+                login_required=True,
             ),
         )
 
