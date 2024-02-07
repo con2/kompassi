@@ -15,16 +15,19 @@ fields:
     title: Contact person's first name and surname
     helpText: ""
     type: SingleLineText
+    required: true
 
   - slug: email
     title: Contact person's email
     helpText: ""
     type: SingleLineText
+    required: true
 
   - slug: helper_name
     title: Helper's name
     helpText: ""
     type: SingleLineText
+    required: true
 
   - slug: portfolio_title
     type: StaticText
@@ -35,6 +38,7 @@ fields:
   - slug: portfolio_link
     title: Portfolio link
     type: MultiLineText
+    required: true
     helpText: >
       Portfolio, one (1) link per person.
 
@@ -47,20 +51,24 @@ fields:
   - slug: artist_name
     title: Artist name
     helpText: ""
+    required: true
     type: SingleLineText
 
   - slug: artist_website
     title: Artist website link
     helpText: ""
+    required: true
     type: SingleLineText
 
   - slug: artist_intro
     title: Short introduction
+    required: true
     type: MultiLineText
 
   - slug: artist_avatar
     title: Avatar picture
     helpText: "Size 200 px x 200 px. Files .jpg or .png preferred."
+    required: true
     type: FileUpload
 
   - slug: additional_details_title
