@@ -63,11 +63,11 @@ fields:
     type: SingleSelect
     required: true
     choices:
-      - slug: "No"
+      - slug: "no"
         title: En halua jonottaa varasijaa
-      - slug: "Yes"
+      - slug: "yes"
         title: Haluan jonottaa varasijaa
-      - slug: "Fast"
+      - slug: "fast"
         title: Pääsen nopeallakin varoitusajalla paikalle
 
   - type: StaticText
