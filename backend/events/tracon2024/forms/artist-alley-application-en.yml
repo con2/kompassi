@@ -5,7 +5,7 @@ description: |
 
   The application is open 1.4. - 26.4.2024.
 
-  More information: OSOITE
+ <strong>More information:</strong> <a href="https://2024.tracon.fi/apply-for-artist-alley/">Apply for Artist Alley and Art Path</a>.
 
 fields:
   - type: StaticText
@@ -114,37 +114,37 @@ fields:
     title: Artits information for the site
     helpText: "If you're coming as a collective, please only fill one of the artist slots. Leave the extra slots empty.
 Hox. Avatar size is 200 px x 200 px"
-    slug: artits_info
+    slug: artist_info
+
 
   - type: StaticText
     title: Artist 1 info
-    slug: artits_info1
+    slug: artist_info1
 
-
-  - slug: artist_name
+  - slug: artist_name1
     title: Artist name
     type: SingleLineText
     required: true
   
-  - slug: artist_site
+  - slug: artist_site1
     title: Website
     type: SingleLineText
     required: true
 
-  - slug: artist_avatar
+  - slug: artist_avatar1
     title: Avatar
     type: FileUpload
     required: true
   
-  - slug: artist_desc
+  - slug: artist_desc1
     title: Short description for the website
     type: SingleLineText
     required: true
 
+
   - type: StaticText
     title: Artist 2 info
-    slug: artits_info1
-
+    slug: artist_info2
 
   - slug: artist_name2
     title: Artist name
@@ -165,11 +165,11 @@ Hox. Avatar size is 200 px x 200 px"
     title: Short description for the website
     type: SingleLineText
     required: false
+
   
   - type: StaticText
     title: Artist 3 info
-    slug: artits_info1
-
+    slug: artist_info3
 
   - slug: artist_name3
     title: Artist name
