@@ -79,7 +79,7 @@ fields:
       Vapaa kenttä kommenteille, toiveille, maininta esteettömyyden tarpeesta ja esim. perusteluille pöytätoiveiden suhteen.
     type: MultiLineText
 
-  - slug: tietosuoja_artesaani
+  - slug: data_protection_text
     type: StaticText
     title: Tietosuoja
     helpText: >
