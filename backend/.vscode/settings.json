@@ -9,5 +9,11 @@
       "source.fixAll": "explicit",
       "source.organizeImports": "explicit"
     }
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml",
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true
   }
 }
