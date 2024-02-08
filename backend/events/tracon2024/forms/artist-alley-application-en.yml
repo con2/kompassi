@@ -63,11 +63,11 @@ fields:
     type: SingleSelect
     required: true
     choices:
-      - slug: res_no
+      - slug: "no"
         title: I don't want on the reserve list
-      - slug: res_yes
+      - slug: "yes"
         title: I want on the reserve list
-      - slug: res_fast
+      - slug: "fast"
         title: I can make it very close to the event
 
   - type: StaticText
@@ -89,9 +89,9 @@ fields:
     type: SingleSelect
     required: true
     choices:
-      - slug: loc_fin
+      - slug: finland
         title: Finland
-      - slug: loc_other
+      - slug: abroad
         title: Abroad
 
   - slug: helper
