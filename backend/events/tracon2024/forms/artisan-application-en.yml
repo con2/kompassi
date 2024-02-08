@@ -8,7 +8,7 @@ description: |
   <strong>Information in English:</strong> <a href="https://2024.tracon.fi/apply-as-artisan/">Apply as Artisan</a>.
 fields:
   - type: StaticText
-    title: BASIC INFO
+    title: Basic info
     slug: basic_info_title
 
   - slug: name
@@ -30,7 +30,7 @@ fields:
 
   - slug: portfolio_title
     type: StaticText
-    title: PORTFOLIO
+    title: Portfolio
     helpText: >
       Please do not use social media platforms as the base of your portfolio (Facebook, Instagram, Twitter etc.) or an art site that consists all of your production.
 
@@ -72,7 +72,7 @@ fields:
 
   - slug: additional_details_title
     type: StaticText
-    title: ADDITIONAL DETAILS
+    title: Additional details
 
   - slug: additional_details
     helpText: >
@@ -81,7 +81,7 @@ fields:
 
   - slug: data_protection_text
     type: StaticText
-    title: DATA PROTECTION
+    title: Data protection
     helpText: >
       The controller of personal data is Tracon ry represented by Niina "Nino" Kytöharju.
       The information is used to organize the Artisan area of the Tracon event in Tampere.
