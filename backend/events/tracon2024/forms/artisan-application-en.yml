@@ -1,11 +1,11 @@
 title: Apply for Artisan Spot
 layout: vertical
 description: |
-  Form is used to apply for artisan spots at the Tracon event on September 6-8, 2024. The artisan area is located indoors and area is open from Friday to Sunday during convention weekend. We require the artisan tables to be open during the pre-announced sales hours.
+  This form is used to apply for Artisan spots at the Tracon event on the 6th to 8th of September 2024. The Artisan area is located indoors and the area is open from Friday to Sunday during convention weekend. We require the Artisan tables to be open during the pre-announced sales hours.
 
-  The price of the artisan table from Friday to Sunday is 350 €, including 2 tickets.
+  The price of the Artisan spot from Friday to Sunday is 350 €. The price includes 2 tickets.
 
-  <strong>Information in English:</strong> <a href="https://2024.tracon.fi/apply-as-artisan/">Apply as artisan</a>.
+  <strong>Information in English:</strong> <a href="https://2024.tracon.fi/apply-as-artisan/">Apply as Artisan</a>.
 fields:
   - type: StaticText
     title: BASIC INFO
@@ -84,7 +84,7 @@ fields:
     title: DATA PROTECTION
     helpText: >
       The controller of personal data is Tracon ry represented by Niina "Nino" Kytöharju.
-      The information is used to organize the artisan area of the Tracon event in Tampere.
+      The information is used to organize the Artisan area of the Tracon event in Tampere.
       The information is stored for the duration of the event year and then deleted.
       The information is not disclosed to third parties. The information is not used for direct marketing.
       The information is not transferred outside the EU or the European Economic Area.
