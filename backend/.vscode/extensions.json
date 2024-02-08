@@ -2,7 +2,6 @@
   "recommendations": [
     "ms-python.python",
     "ms-python.vscode-pylance",
-    "charliermarsh.ruff",
-    "redhat.vscode-yaml"
+    "charliermarsh.ruff"
   ]
 }
