@@ -1,0 +1,28 @@
+- slug: status
+  title:
+    fi: Tila
+    en: Status
+  is_key_dimension: true
+  is_shown_to_respondent: true
+  choices:
+    - slug: new
+      color: blue
+      is_initial: true
+      title:
+        fi: Uusi
+        en: New
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+        en: Accepted
+    - slug: rejected
+      color: red
+      title:
+        fi: Hylätty
+        en: Rejected
+    - slug: cancelled
+      color: yellow
+      title:
+        fi: Perunut
+        en: Cancelled

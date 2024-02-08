@@ -1,10 +1,12 @@
 import os
 from datetime import datetime, timedelta
 
+import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
+from pkg_resources import resource_stream
 
 from core.utils import slugify
 
@@ -30,6 +32,7 @@ class Setup:
         self.setup_badges()
         self.setup_tickets()
         self.setup_intra()
+        self.setup_forms()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -424,6 +427,52 @@ class Setup:
                     group=team_group,
                 ),
             )
+
+    def setup_forms(self):
+        # TODO(#386) change update_or_create to get_or_create to avoid overriding local changes
+        from forms.models.dimension import DimensionDTO
+        from forms.models.form import Form
+        from forms.models.survey import Survey
+
+        # Artist Alley application
+
+        with resource_stream("events.matsucon2024", "forms/artist-alley-application-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        artist_alley_application_en, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="artist-alley-application-en",
+            language="en",
+            defaults=data,
+        )
+
+        with resource_stream("events.matsucon2024", "forms/artist-alley-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        artist_alley_application_fi, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="artist-alley-application-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        artist_alley_application, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="artist-alley-application",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name", "email", "artist_name1", "location", "reserve"],
+                login_required=True,
+            ),
+        )
+
+        artist_alley_application.languages.set([artist_alley_application_fi, artist_alley_application_en])
+
+        with resource_stream("events.matsucon2024", "forms/artist-alley-application-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(artist_alley_application)
 
 
 class Command(BaseCommand):
