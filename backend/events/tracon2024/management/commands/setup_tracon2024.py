@@ -1035,6 +1035,46 @@ class Setup:
         for dimension in data:
             DimensionDTO.model_validate(dimension).save(artisan_application)
 
+        # Artist Alley application
+
+        with resource_stream("events.tracon2024", "forms/artist-alley-application-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        artist_alley_application_en, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="artist-alley-application-en",
+            language="en",
+            defaults=data,
+        )
+
+        with resource_stream("events.tracon2024", "forms/artist-alley-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        artist_alley_application_fi, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="artist-alley-application-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        artist_alley_application, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="artist-alley-application",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name", "email"],
+                login_required=True,
+            ),
+        )
+
+        artist_alley_application.languages.set([artist_alley_application_fi, artist_alley_application_en])
+
+        with resource_stream("events.tracon2024", "forms/artist-alley-application-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(artist_alley_application)
+
 
 class Command(BaseCommand):
     args = ""
