@@ -287,6 +287,7 @@ class Setup:
         )
 
     def setup_forms(self):
+        # TODO(#386) change update_or_create to get_or_create to avoid overriding local changes
         from forms.models.dimension import DimensionDTO
         from forms.models.form import Form
         from forms.models.survey import Survey
@@ -311,18 +312,12 @@ class Setup:
         with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        dance_judge_signup_fi, created = Form.objects.get_or_create(
+        dance_judge_signup_fi, created = Form.objects.update_or_create(
             event=self.event,
             slug="dance-judge-signup-fi",
             language="fi",
             defaults=data,
         )
-
-        # TODO(#386) remove when there is a form editor
-        if not created:
-            for key, value in data.items():
-                setattr(dance_judge_signup_fi, key, value)
-            dance_judge_signup_fi.save()
 
         dance_judge_signup_survey.languages.set([dance_judge_signup_fi])
 
@@ -346,18 +341,12 @@ class Setup:
         with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        cosplay_judge_signup_fi, created = Form.objects.get_or_create(
+        cosplay_judge_signup_fi, created = Form.objects.update_or_create(
             event=self.event,
             slug="cosplay-judge-signup-fi",
             language="fi",
             defaults=data,
         )
-
-        # TODO(#386) remove when there is a form editor
-        if not created:
-            for key, value in data.items():
-                setattr(cosplay_judge_signup_fi, key, value)
-            cosplay_judge_signup_fi.save()
 
         cosplay_judge_signup_survey.languages.set([cosplay_judge_signup_fi])
 
@@ -381,18 +370,12 @@ class Setup:
         with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        cmv_judge_signup_fi, created = Form.objects.get_or_create(
+        cmv_judge_signup_fi, created = Form.objects.update_or_create(
             event=self.event,
             slug="cmv-judge-signup-fi",
             language="fi",
             defaults=data,
         )
-
-        # TODO(#386) remove when there is a form editor
-        if not created:
-            for key, value in data.items():
-                setattr(cmv_judge_signup_fi, key, value)
-            cmv_judge_signup_fi.save()
 
         cmv_judge_signup_survey.languages.set([cmv_judge_signup_fi])
 

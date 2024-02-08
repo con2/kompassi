@@ -484,39 +484,28 @@ class Setup:
             )
 
     def setup_forms(self):
+        # TODO(#386) change update_or_create to get_or_create to avoid overriding local changes
         from forms.models import Form, Survey
 
         with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        form_fi, created = Form.objects.get_or_create(
+        form_fi, created = Form.objects.update_or_create(
             event=self.event,
             slug="larp-survey-fi",
             language="fi",
             defaults=data,
         )
 
-        # TODO(#386) remove when there is a form editor
-        if not created:
-            for key, value in data.items():
-                setattr(form_fi, key, value)
-            form_fi.save()
-
         with resource_stream("events.hitpoint2024", "forms/larp-survey-en.yml") as f:
             data = yaml.safe_load(f)
 
-        form_en, created = Form.objects.get_or_create(
+        form_en, created = Form.objects.update_or_create(
             event=self.event,
             slug="larp-survey-en",
             language="en",
             defaults=data,
         )
-
-        # TODO(#386) remove when there is a form editor
-        if not created:
-            for key, value in data.items():
-                setattr(form_en, key, value)
-            form_en.save()
 
         survey, _ = Survey.objects.get_or_create(
             event=self.event,
