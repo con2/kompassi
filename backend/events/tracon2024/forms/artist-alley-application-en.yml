@@ -76,8 +76,8 @@ fields:
 
   - slug: experience
     title: Experience
-    type: SingleSelect
-    required: true
+    type: MultiSelect
+    required: false
     choices:
       - slug: exp_new
         title: Newbie (under 5 artist alleys)
