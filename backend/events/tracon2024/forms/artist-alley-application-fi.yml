@@ -63,11 +63,11 @@ fields:
     type: SingleSelect
     required: true
     choices:
-      - slug: res_no
+      - slug: "No"
         title: En halua jonottaa varasijaa
-      - slug: res_yes
+      - slug: "Yes"
         title: Haluan jonottaa varasijaa
-      - slug: res_fast
+      - slug: "Fast"
         title: Pääsen nopeallakin varoitusajalla paikalle
 
   - type: StaticText
@@ -88,9 +88,9 @@ fields:
     type: SingleSelect
     required: true
     choices:
-      - slug: loc_fin
+      - slug: finland
         title: Suomesta
-      - slug: loc_other
+      - slug: abroad
         title: Ulkomailta
 
   - slug: helper
