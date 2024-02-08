@@ -1,20 +1,37 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
 import { submit } from "./actions";
-import LanguageTabs from "./LanguageTabs";
+import getTabs from "./SurveyEditorTabs";
+import SurveyEditorTabs from "./SurveyEditorTabs";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Field, validateFields } from "@/components/forms/models";
+import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
-import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+
+graphql(`
+  fragment EditSurveyPage on SurveyType {
+    title(lang: $locale)
+    loginRequired
+    anonymity
+    maxResponsesPerUser
+    countResponsesByCurrentUser
+
+    languages {
+      title
+      language
+    }
+  }
+`);
 
 const query = graphql(`
   query EditSurveyPageQuery(
@@ -27,18 +44,7 @@ const query = graphql(`
 
       forms {
         survey(slug: $surveySlug) {
-          title(lang: $locale)
-          loginRequired
-          anonymity
-          maxResponsesPerUser
-          countResponsesByCurrentUser
-
-          form(lang: $locale) {
-            title
-            description
-            fields
-            layout
-          }
+          ...EditSurveyPage
         }
       }
     }
@@ -109,19 +115,22 @@ export default async function EditSurveyPage({ params }: Props) {
   const { event } = data;
   const survey = data?.event?.forms?.survey;
   const {
-    form,
     loginRequired,
     anonymity,
     maxResponsesPerUser,
     countResponsesByCurrentUser,
   } = survey;
-  const { title, description, layout } = form!;
 
   const fields: Field[] = [
     {
       slug: "loginRequired",
       type: "SingleCheckbox",
       ...t.attributes.loginRequired,
+    },
+    {
+      slug: "maxResponsesPerUser",
+      type: "NumberField",
+      ...t.attributes.maxResponsesPerUser,
     },
   ];
 
@@ -136,10 +145,20 @@ export default async function EditSurveyPage({ params }: Props) {
         <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
       </ViewHeading>
 
-      <form action={submit.bind(null)}>
-        <SchemaForm fields={fields} messages={translations.SchemaForm} />
-        <LanguageTabs messages={translations.Survey.editFormTabs} />
-      </form>
+      <SurveyEditorTabs
+        eventSlug={eventSlug}
+        survey={data.event.forms.survey}
+        translations={translations}
+        active="properties"
+      />
+      <Card>
+        <CardBody>
+          <form action={submit.bind(null)}>
+            <SchemaForm fields={fields} messages={translations.SchemaForm} />
+            <SubmitButton>{t.actions.saveProperties}</SubmitButton>
+          </form>
+        </CardBody>
+      </Card>
     </ViewContainer>
   );
 }

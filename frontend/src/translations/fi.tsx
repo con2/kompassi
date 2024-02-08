@@ -96,46 +96,6 @@ const translations: Translations = {
       preview: "Esikatsele",
       properties: "Asetukset",
     },
-
-    FormPropertiesForm: {
-      flags: {
-        title: "Toiminta",
-      },
-      title: {
-        title: "Lomakkeen otsikko",
-        helpText:
-          "Ihmisen luettava lomakkeen otsikko. Ei välttämättä näytetä lomakkeiden kaikkien käyttötarkoitusten yhteydessä.",
-      },
-      slug: {
-        title: "Tekninen nimi",
-        helpText:
-          "Lomakkeen tekninen nimi. Tulee osaksi lomakkeen osoitetta. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla.",
-      },
-      layout: {
-        title: "Asettelu",
-        helpText:
-          "Tässä valittu asettelu ei välttämättä ole käytössä kaikkien käyttötarkoitusten yhteydessä (esim. ahtaassa tilassa asettelu voi olla pakotettu vaakasuuntaiseksi).",
-        choices: {
-          horizontal: "Vaakasuuntainen",
-          vertical: "Pystysuuntainen",
-        },
-      },
-      standalone: {
-        title: "Itsenäinen lomake",
-        helpText:
-          "Itsenäisen lomakkeen voi täyttää yleiskäyttöisen lomakenäkymän kautta. Ei-itsenäisen lomakkeen voi täyttää vain toiseen käyttötapaukseen upotettuna.",
-      },
-      active: {
-        title: "Aktiivinen",
-        helpText:
-          "Ei-aktiivisia lomakkeita ei voi täyttää. Tämä koskee ainoastaan itsenäisiä lomakkeita; ei-itsenäisen lomakkeen aktiivisuuden ratkaisee käyttötapaus, johon lomake on upotettu.",
-      },
-      loginRequired: {
-        title: "Vaatii sisäänkirjautumisen",
-        helpText: "Koskee ainoastaan itsenäisiä lomakkeita.",
-      },
-    },
-
     editFieldForm: {
       slug: {
         title: "Tekninen nimi",
@@ -329,6 +289,11 @@ const translations: Translations = {
         helpText:
           "Jos tämä on valittuna, kyselyyn vastaaminen vaatii sisäänkirjautumisen.",
       },
+      maxResponsesPerUser: {
+        title: "Käyttäjän vastausten maksimimäärä",
+        helpText:
+          "Yksittäisen käyttäjän vastausten maksimimäärä tähän kyselyyn. Jos arvoksi on asetettu 0, määrää ei rajoiteta. Huomaathan, että tämä vaikuttaa ainoastaan sisäänkirjautuneisiin käyttäjiin. Jotta rajoitus toimisi, kyselyyn vastaaminen tulee olla rajoitettu sisäänkirjautuneille käyttäjille.",
+      },
     },
     actions: {
       fillIn: {
@@ -347,6 +312,7 @@ const translations: Translations = {
       returnToSurveyList: "Palaa kyselylistaukseen",
       returnToDimensionList: "Palaa dimensiolistaukseen",
       saveDimensions: "Tallenna dimensiot",
+      saveProperties: "Tallenna asetukset",
       addDimension: "Lisää dimensio",
       addDimensionValue: "Lisää arvo",
       deleteDimension: {
@@ -382,6 +348,8 @@ const translations: Translations = {
     tabs: {
       summary: "Yhteenveto",
       responses: "Vastaukset",
+      properties: "Kyselyn asetukset",
+      addLanguage: "Lisää kieliversio",
     },
     thankYou: {
       title: "Kiitos vastauksistasi!",
@@ -409,6 +377,12 @@ const translations: Translations = {
     checkbox: {
       checked: "Valittu",
       unchecked: "Ei valittu",
+    },
+    addLanguageModal: {
+      actions: {
+        submit: "Lisää kieliversio",
+        cancel: "Peruuta",
+      },
     },
     editDimensionModal: {
       editTitle: "Muokkaa dimensiota",
@@ -479,11 +453,6 @@ const translations: Translations = {
     editSurveyPage: {
       title: "Muokkaa kyselyä",
     },
-    editFormTabs: {
-      actions: {
-        addLanguageVersion: "Lisää kieliversio",
-      },
-    },
   },
 
   SignInRequired: {
@@ -504,10 +473,13 @@ const translations: Translations = {
     plainAppName: "Kompassi",
   },
 
-  // Do not translate
   LanguageSwitcher: {
-    // NOTE: value always in target language
     supportedLanguages: {
+      fi: "suomi",
+      en: "englanti",
+    },
+    // NOTE: value always in target language
+    switchTo: {
       fi: "suomeksi",
       en: "In English",
     },

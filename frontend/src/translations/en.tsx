@@ -96,45 +96,6 @@ const translations = {
       properties: "Properties",
     },
 
-    FormPropertiesForm: {
-      flags: {
-        title: "Behaviour",
-      },
-      title: {
-        title: "Form title",
-        helpText:
-          "Human-readable form title. May not be displayed in all contexts.",
-      },
-      slug: {
-        title: "Technical name",
-        helpText:
-          "Machine-readable form name. Will be a part of the URL of the form. Valid characters: letters A-Za-z, numbers 0-9, underscore _. Must not start with a number.",
-      },
-      layout: {
-        title: "Layout",
-        helpText:
-          "May not take effect in some contexts (eg. space-constrained forms may be forced to be horizontal).",
-        choices: {
-          horizontal: "Horizontal",
-          vertical: "Vertical",
-        },
-      },
-      standalone: {
-        title: "Stand-alone",
-        helpText:
-          "Stand-alone forms can be filled using the generic form view. Non-stand-alone forms can only be filled when embedded in another use-case.",
-      },
-      active: {
-        title: "Active",
-        helpText:
-          "Inactive forms cannot be filled. Only applies to stand-alone forms.",
-      },
-      loginRequired: {
-        title: "Login required",
-        helpText: "Only applies to stand-alone forms.",
-      },
-    },
-
     editFieldForm: {
       slug: {
         title: "Technical name",
@@ -330,6 +291,11 @@ const translations = {
         helpText:
           "If checked, the survey can only be filled in by signed-in users.",
       },
+      maxResponsesPerUser: {
+        title: "Maximum number of responses per user",
+        helpText:
+          "The maximum number of responses a single user can submit to this survey. If set to 0, there is no limit. Note that this only applies to signed-in users. To enforce the limit, select Sign-in required as well.",
+      },
     },
     actions: {
       fillIn: {
@@ -348,6 +314,7 @@ const translations = {
       returnToSurveyList: "Return to the list of surveys",
       returnToDimensionList: "Return to the list of dimensions",
       saveDimensions: "Save dimensions",
+      saveProperties: "Save properties",
       addDimension: "Add dimension",
       addDimensionValue: "Add value",
       deleteDimension: {
@@ -383,6 +350,8 @@ const translations = {
     tabs: {
       summary: "Summary",
       responses: "Responses",
+      properties: "Survey properties",
+      addLanguage: "Add language",
     },
     thankYou: {
       title: "Thank you for your answers!",
@@ -406,6 +375,12 @@ const translations = {
     checkbox: {
       checked: "Checked",
       unchecked: "Not checked",
+    },
+    addLanguageModal: {
+      actions: {
+        submit: "Add language",
+        cancel: "Cancel",
+      },
     },
     editDimensionModal: {
       editTitle: "Edit dimension",
@@ -477,11 +452,6 @@ const translations = {
     editSurveyPage: {
       title: "Muokkaa kyselyä",
     },
-    editFormTabs: {
-      actions: {
-        addLanguageVersion: "Lisää kieliversio",
-      },
-    },
   },
 
   SignInRequired: {
@@ -502,10 +472,13 @@ const translations = {
     plainAppName: "Kompassi",
   },
 
-  // Do not translate
   LanguageSwitcher: {
-    // NOTE: value always in target language
     supportedLanguages: {
+      fi: "suomi",
+      en: "englanti",
+    },
+    // NOTE: value always in target language
+    switchTo: {
       fi: "suomeksi",
       en: "In English",
     },

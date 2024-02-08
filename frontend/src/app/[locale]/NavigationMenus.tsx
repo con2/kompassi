@@ -33,7 +33,7 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
     setOpenMenu((openMenu) => (openMenu === "user" ? "none" : "user"));
   };
 
-  const { supportedLanguages } = messages.LanguageSwitcher;
+  const { switchTo: supportedLanguages } = messages.LanguageSwitcher;
   let pathname = usePathname();
 
   // Remove the language prefix from the pathname
