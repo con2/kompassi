@@ -23,7 +23,7 @@ fields:
     required: true
 
   - slug: location_select
-    title: Myyntipakan valinta
+    title: Myyntipaikan valinta
     helpText: "Valitse kaikki sopivat vaihtoehdot. Sinulle tarjotaan vain valitsemiasi paikkoja."
     type: StaticText
 
@@ -77,7 +77,6 @@ fields:
   - slug: experience
     title: Kokemus
     type: SingleSelect
-    required: true
     choices:
       - slug: exp_new
         title: Aloittelija (alle 5 kujaa takana)
