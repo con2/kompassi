@@ -95,7 +95,7 @@ fields:
 
   - type: StaticText
     title: Artits information for the website
-    helpText: "t: "If you're coming as a collective, please only fill one of the artist slots. Leave the extra slots empty. Hox. Avatar size is 200 px x 20"
+    helpText: "If you're coming as a collective, please only fill one of the artist slots. Leave the extra slots empty. Hox. Avatar size is 200 px x 20"
 
   - type: StaticText
     title: Artist 1 info
