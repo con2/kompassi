@@ -39,16 +39,16 @@ fields:
       - slug: alley_satsun
         title: Lauantai ja sunnuntai
 
-  - slug: artist_path
+  - slug: art_trail
     title: Taidepolku valinta
     type: MultiSelect
     required: false
     choices:
-      - slug: path_fri
+      - slug: trail_fri
         title: Perjantai
-      - slug: path_sat
+      - slug: trail_sat
         title: Lauantai
-      - slug: path_sun
+      - slug: trail_sun
         title: Sunnuntai
 
   - slug: portfolio
