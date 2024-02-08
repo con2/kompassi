@@ -1012,6 +1012,58 @@ class Setup:
 
         expense_claim_survey.languages.set([expense_claim_fi, expense_claim_en])
 
+        # Artisan application
+
+        with resource_stream("events.tracon2024", "forms/artisan-application-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        artisan_appliation_en, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="artisan-application-en",
+            language="en",
+            defaults=data,
+        )
+
+        # TODO(#386) remove when there is a form editor
+        if not created:
+            for key, value in data.items():
+                setattr(artisan_appliation_en, key, value)
+            artisan_appliation_en.save()
+
+        with resource_stream("events.tracon2024", "forms/artisan-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        artisan_appliation_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="artisan-application-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO(#386) remove when there is a form editor
+        if not created:
+            for key, value in data.items():
+                setattr(artisan_appliation_fi, key, value)
+            artisan_appliation_fi.save()
+
+        artisan_application, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="artisan-application",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name", "email", "helper"],
+                login_required=True,
+            ),
+        )
+
+        artisan_application.languages.set([artisan_appliation_fi, artisan_appliation_en])
+
+        with resource_stream("events.tracon2024", "forms/artisan-application-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(artisan_application)
+
 
 class Command(BaseCommand):
     args = ""
