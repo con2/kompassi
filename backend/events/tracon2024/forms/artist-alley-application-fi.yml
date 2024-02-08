@@ -76,7 +76,7 @@ fields:
 
   - slug: experience
     title: Kokemus
-    type: SingleSelect
+    type: MultiSelect
     choices:
       - slug: exp_new
         title: Aloittelija (alle 5 kujaa takana)
