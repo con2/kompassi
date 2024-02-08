@@ -8,7 +8,7 @@ description: |
   <strong>Lisätietoja suomeksi:</strong> <a href="https://2024.tracon.fi/artesaanihaku/">Artesaanihaku</a>.
 fields:
   - type: StaticText
-    title: PERUSTIEDOT
+    title: Perustiedot
     slug: basic_info_title
 
   - slug: name
@@ -30,7 +30,7 @@ fields:
 
   - slug: portfolio_title
     type: StaticText
-    title: PORTFOLIO
+    title: Portfolio
     helpText: >
       Ethän käytä portfoliopohjana sosiaalista mediaa (Facebook, Instagram, Twitter) tai taidesivustoa josta löytää kaiken tuotantosi. Portfolio tulee olla varta vasten portfolioksi rakennettu sivu / tiedosto tai muu asiansa ajava pohja. Varmistathan ettei jaetun linkin sisältö ole suojattu salasanalla.
 
@@ -72,7 +72,7 @@ fields:
 
   - slug: additional_details_title
     type: StaticText
-    title: LISÄTIEDOT
+    title: Lisätiedot
 
   - slug: additional_details
     helpText: >
@@ -81,7 +81,7 @@ fields:
 
   - slug: tietosuoja_artesaani
     type: StaticText
-    title: TIETOSUOJA
+    title: Tietosuoja
     helpText: >
       Henkilötietojen käsittelijä on Tracon ry edustajanaan Niina "Nino" Kytöharju.
       Tietoja käytetään tamperelaisen Tracon -tapahtuman artesaanialueen järjestämiseen.
