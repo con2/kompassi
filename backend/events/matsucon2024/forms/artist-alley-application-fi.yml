@@ -1,0 +1,174 @@
+title: Taidekujahaku
+layout: vertical
+description: |
+  Lomakkeella haetaan taidekujapaikkaa Matsuconista 10.-11.8.2024.
+
+  Haku on auki 1.3. - 1.4.2024.
+
+fields:
+  - type: StaticText
+    title: Perustiedot
+    slug: basic_info_title
+
+  - slug: name
+    title: Etunimi ja sukunimi
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Vastuuhenkilön sähköposti
+    type: SingleLineText
+    required: true
+
+  - slug: table_size
+    title: Pöytäkoko
+    type: MultiSelect
+    required: false
+    choices:
+      - slug: small
+        title: 140x50cm
+      - slug: big
+        title: 180x74cm
+
+  - slug: portfolio
+    title: Portfolio
+    helpText: "Yksi (1) portfoliolinkki per taiteilija / ryhmä. Tarkistathan ettei lomake ole suojattu salasanalla tai edellytä kirjautumista."
+    type: SingleLineText
+    required: true
+    
+  - slug: reserve
+    title: Varasija
+    helpText: "Ilmaise halukkuutesi varasijalle. Varasijallisista koostetaan lista joita lähestytään mikäli paikkoja vapautuu. Erillistä varasijalistaa ei julkaista tai ilmoiteta. Voit vapaassa kentässä täsmentää kuinka lyhyellä ajalla olet valmis tulemaan."
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: "no"
+        title: En halua jonottaa varasijaa
+      - slug: "yes"
+        title: Haluan jonottaa varasijaa
+      - slug: "fast"
+        title: Pääsen nopeallakin varoitusajalla paikalle
+
+  - type: StaticText
+    title: Taustatiedot
+    slug: background_info
+
+  - slug: experience
+    title: Kokemus
+    type: MultiSelect
+    choices:
+      - slug: exp_new
+        title: Aloittelija (alle 5 kujaa takana)
+      - slug: exp_first
+        title: Ensikertaa Matsucon -tapahtumassa
+
+  - slug: location
+    title: Osallistutko tapahtumaan Suomesta vai ulkomailta
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: finland
+        title: Suomesta
+      - slug: abroad
+        title: Ulkomailta
+
+  - slug: helper
+    title: Tuleeko mukanasi avustaja
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: help_yes
+        title: Kyllä
+      - slug: help_no
+        title: Ei
+
+  - slug: help_name
+    title: Avustajan nimi
+    type: SingleLineText
+    required: false
+
+  - slug: comments
+    title: Vapaa sana
+    helpText: "Vapaa alue lisätiedoille ja toiveille. Ilmaisethan jos tarvitset esteettömyyden huomiointia taidekuja sijoituksessa, jotta voimme järjestää mahdollisimman sujuvan pääsyn pöydän ääreen."
+    type: MultiLineText
+    required: false
+
+  - type: StaticText
+    title: Taiteilijatiedot sivuille
+    helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi.
+Huom. Avatar-kuvan koko 200 px x 200 px"
+
+    slug: artist_info
+  - type: StaticText
+    title: Taiteilijan 1 tiedot
+    slug: artist_info1
+
+  - slug: artist_name1
+    title: Taiteilijanimi
+    type: SingleLineText
+    required: true
+  
+  - slug: artist_site1
+    title: Kotisivu
+    type: SingleLineText
+    required: true
+
+  - slug: artist_avatar1
+    title: Avatar
+    type: FileUpload
+    required: true
+  
+  - slug: artist_desc1
+    title: Lyhyt kuvaus nettisivuille
+    type: SingleLineText
+    required: true
+
+
+  - type: StaticText
+    title: Taiteilijan 2 tiedot
+    slug: artist_info2
+
+  - slug: artist_name2
+    title: Taiteilijanimi
+    type: SingleLineText
+    required: false
+  
+  - slug: artist_site2
+    title: Kotisivu
+    type: SingleLineText
+    required: false
+
+  - slug: artist_avatar2
+    title: Avatar
+    type: FileUpload
+    required: false
+  
+  - slug: artist_desc2
+    title: Lyhyt kuvaus nettisivuille
+    type: SingleLineText
+    required: false
+
+  
+  - type: StaticText
+    title: Taiteilijan 3 tiedot
+    slug: artist_info3
+
+  - slug: artist_name3
+    title: Taiteilijanimi
+    type: SingleLineText
+    required: false
+  
+  - slug: artist_site3
+    title: Kotisivu
+    type: SingleLineText
+    required: false
+
+  - slug: artist_avatar3
+    title: Avatar
+    type: FileUpload
+    required: false
+  
+  - slug: artist_desc3
+    title: Lyhyt kuvaus nettisivuille
+    type: SingleLineText
+    required: false
