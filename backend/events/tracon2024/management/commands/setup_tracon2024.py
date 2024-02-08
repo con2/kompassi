@@ -1062,7 +1062,7 @@ class Setup:
             slug="artist-alley-application",
             defaults=dict(
                 active_from=now(),
-                key_fields=["name", "email"],
+                key_fields=["name", "email", "artist_name1", "location", "reserve"],
                 login_required=True,
             ),
         )
