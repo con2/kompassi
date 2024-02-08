@@ -1,11 +1,11 @@
-title: Artist Alley- and Art Path Application
+title: Artist Alley- and Art Trail Application
 layout: vertical
 description: |
-  With this application you can apply for the Artist Alley and Art Path in the Tracon event 6.-8.9.2024.
+  With this application you can apply for the Artist Alley and Art Trail in the Tracon event 6.-8.9.2024.
 
   The application is open 1.4. - 26.4.2024.
 
- <strong>More information:</strong> <a href="https://2024.tracon.fi/apply-for-artist-alley/">Apply for Artist Alley and Art Path</a>.
+ <strong>More information:</strong> <a href="https://2024.tracon.fi/apply-for-artist-alley/">Apply for Artist Alley and Art Trail</a>.
 
 fields:
   - type: StaticText
@@ -39,16 +39,16 @@ fields:
       - slug: alley_satsun
         title: Saturday and sunday
 
-  - slug: artist_path
-    title: Art Path selection
+  - slug: art_trail
+    title: Art Trail selection
     type: MultiSelect
     required: false
     choices:
-      - slug: path_fri
+      - slug: trail_fri
         title: Friday
-      - slug: path_sat
+      - slug: trail_sat
         title: Saturday
-      - slug: path_sun
+      - slug: trail_sun
         title: Sunday
 
   - slug: portfolio
@@ -106,7 +106,7 @@ fields:
 
   - slug: comments
     title: Free space
-    helpText: "Free space for comments and wishes. Please let us know if you need us to take in to account your accessibility needs in your artist alley or art path location, so we can make sure your table is accessible to you."
+    helpText: "Free space for comments and wishes. Please let us know if you need us to take in to account your accessibility needs in your Artist Alley or Art Trail location, so we can make sure your table is accessible to you."
     type: MultiLineText
     required: false
 
