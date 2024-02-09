@@ -116,8 +116,7 @@ fields:
 
   - type: StaticText
     title: Taiteilijatiedot sivuille
-    helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi.
-Huom. Avatar-kuvan koko 200 px x 200 px"
+    helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi. Huom. Avatar-kuvan koko 200 px x 200 px"
 
     slug: artist_info
   - type: StaticText
