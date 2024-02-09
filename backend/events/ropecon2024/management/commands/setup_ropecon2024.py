@@ -527,7 +527,6 @@ class Setup:
             "beneath the bar code and show that at a ticket exchange desk.\n\n"
             "In case the event has to be canceled you can be reimbursed for your ticket.\n"
             "For event cancellation related reimbursement please contact us at lipunmyynti@ropecon.fi.\n\n"
-            
             "Welcome to Ropecon!",
             front_page_text="<h2>Tervetuloa Ropeconin lippukauppaan! / Welcome to Ropecon's Ticket Store!</h2>"
             "<p>Liput maksetaan oston yhteydessä Paytrailin kautta. Lippujen ostamiseen tarvitset suomalaiset verkkopankkitunnukset, luottokortin (Visa/Mastercard/American Express) tai MobilePayn. Pyydämme suosimaan verkkopankkia, mikäli mahdollista.</p>"
