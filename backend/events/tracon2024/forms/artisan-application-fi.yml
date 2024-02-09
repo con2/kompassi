@@ -1,9 +1,9 @@
 title: Hae artesaanipöytää
 layout: vertical
 description: |
-  Lomakkeella haetaan artesaanipöytää Tracon tapahtumasta 6.-8.9.2024. Artesaanialue sijaitsee sisätiloissa ja on auki perjantaista sunnuntaihin. Edellytämme artesaanipyödän pitämistä auki ennalta ilmoitettuina myyntiaikoina.
+  Tällä lomakkeella haetaan artesaanipöytää Tracon-tapahtumasta 6.-8.9.2024. Artesaanialue sijaitsee sisätiloissa ja on auki perjantaista sunnuntaihin. Edellytämme artesaanipyödän pitämistä auki ennalta ilmoitettuina myyntiaikoina.
 
-  Artesaanipöydän hinta perjantaista sunnuntaihin 350 €, sisältäen 2 kpl viikonloppurannekkeita.
+  Artesaanipöydän hinta perjantaista sunnuntaihin on 350 €, sisältäen 2 kpl viikonloppurannekkeita.
 
   <strong>Lisätietoja suomeksi:</strong> <a href="https://2024.tracon.fi/artesaanihaku/">Artesaanihaku</a>.
 fields:
@@ -32,20 +32,20 @@ fields:
     type: StaticText
     title: Portfolio
     helpText: >
-      Ethän käytä portfoliopohjana sosiaalista mediaa (Facebook, Instagram, Twitter) tai taidesivustoa josta löytää kaiken tuotantosi. Portfolio tulee olla varta vasten portfolioksi rakennettu sivu / tiedosto tai muu asiansa ajava pohja. Varmistathan ettei jaetun linkin sisältö ole suojattu salasanalla.
+      Ethän käytä portfoliopohjana sosiaalista mediaa (Facebook, Instagram, Twitter tms) tai taidesivustoa josta löytää kaiken tuotantosi. Portfolion tulee olla varta vasten portfolioksi rakennettu sivu / tiedosto tai muu asiansa ajava pohja. Varmistathan ettei jaetun linkin sisältö ole suojattu salasanalla.
 
   - slug: portfolio_link
-    title: Portfolio linkki
+    title: Portfolion linkki
     type: MultiLineText
     required: true
     helpText: >
-      Portfolio linkki. Enintään (1) linkki per henkilö.
+      Portfolion linkki. Enintään yksi (1) linkki per henkilö.
 
   - slug: artist_info_title
     type: StaticText
     title: Tiedot verkkosivujen esittelyihin
     helpText: >
-      Taiteilijatiedot julkaistaan tapahtuman verkkosivuilla tapahtuman lähestyessä.
+      Taiteilijatiedot julkaistaan Traconin verkkosivuilla lähempänä tapahtumaa.
 
   - slug: artist_name
     title: Taiteilijanimi
@@ -54,7 +54,7 @@ fields:
     type: SingleLineText
 
   - slug: artist_website
-    title: Taiteilijan kotisivu linkki
+    title: Linkki taiteilijan kotisivuille
     helpText: ""
     type: SingleLineText
     required: true
@@ -65,8 +65,8 @@ fields:
     required: true
 
   - slug: artist_avatar
-    title: Avatar kuvake
-    helpText: "Koko 200 px x 200 px. Suosimme .jpg ja .png tiedostoja."
+    title: Avatar-kuva
+    helpText: "Koko 200 px x 200 px. Suosimme .jpg ja .png -tiedostoja."
     type: FileUpload
     required: true
 
@@ -76,7 +76,7 @@ fields:
 
   - slug: additional_details
     helpText: >
-      Vapaa kenttä kommenteille, toiveille, maininta esteettömyyden tarpeesta ja esim. perusteluille pöytätoiveiden suhteen.
+      Vapaa kenttä kommenteille, toiveille, maininta esteettömyyden tarpeesta ja esimerkiksi perusteluille pöytätoiveiden suhteen.
     type: MultiLineText
 
   - slug: data_protection_text
