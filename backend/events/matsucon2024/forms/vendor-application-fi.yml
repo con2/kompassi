@@ -1,0 +1,70 @@
+title: Myyjähaku
+layout: vertical
+description: |
+  Lomakkeella haetaan myyjäpaikkaa Matsuconista 10.-11.8.2024.
+
+  Haku on auki x.x - x.x.2024.
+
+fields:
+  - type: StaticText
+    title: Perustiedot
+    slug: basic_info_title
+
+  - slug: name
+    title: Etunimi ja sukunimi
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Vastuuhenkilön sähköposti
+    type: SingleLineText
+    required: true
+
+  - slug: id
+    title: Y-tunnus
+    type: SingleLineText
+    required: true
+
+  - slug: help
+    title: Tuleeko mukanasi työntekijöitä
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: help_yes
+        title: "Kyllä"
+      - slug: help_no
+        title: "Ei"
+
+  - slug: help_name
+    title: Työntekijöiden nimet
+    type: SingleLineText
+    required: false
+
+  - slug: businessname
+    title: Yrityksen nimi
+    type: SingleLineText
+    required: true
+
+  - slug: website
+    title: Nettisivut
+    type: SingleLineText
+    required: true
+
+  - slug: description
+    title: Kuvaus nettisivuille
+    type: MultiLineText
+    required: true
+
+  - slug: avatar
+    title: Kuva nettisivuille
+    helpText: "Huom. avatar 200x200px ja jpeg tai png muodossa"
+    type: FileUpload
+    required: true
+
+  - slug: pirate
+    title: Tämän kohdan rastimalla ymmärrän että tuotteiden tulee noudattaa Suomen lakia, mitä tulee tekijänoikeuslakiin ja piraattituotteisiin
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: pir_yes
+        title: "Kyllä"

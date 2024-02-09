@@ -1,0 +1,70 @@
+title: Vendor application
+layout: vertical
+description: |
+  With this form you're applying to be a vendor at Matsucon on 10.-11.8.2024.
+
+  The form is open: x.x - x.x.2024.
+
+fields:
+  - type: StaticText
+    title: Basic info
+    slug: basic_info_title
+
+  - slug: name
+    title: First and surname
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Email
+    type: SingleLineText
+    required: true
+
+  - slug: id
+    title: Business ID
+    type: SingleLineText
+    required: true
+
+  - slug: help
+    title: Will you have workers with you?
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: help_yes
+        title: "Yes"
+      - slug: help_no
+        title: "No"
+
+  - slug: help_name
+    title: Workers names
+    type: SingleLineText
+    required: false
+
+  - slug: businessname
+    title: Vendor name
+    type: SingleLineText
+    required: true
+
+  - slug: website
+    title: Website
+    type: SingleLineText
+    required: true
+
+  - slug: description
+    title: Description for our website
+    type: MultiLineText
+    required: true
+
+  - slug: avatar
+    title: Avatar for the website
+    helpText: "Hox. avatar 200x200px and in jpeg or png"
+    type: FileUpload
+    required: true
+
+  - slug: pirate
+    title: By checking this box I understand that my products have to comply with the finnish law, when it comes to copyright law and pirated products
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: pir_yes
+        title: "Yes"

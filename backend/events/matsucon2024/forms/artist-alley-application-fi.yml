@@ -5,6 +5,8 @@ description: |
 
   Haku on auki 1.3. - 1.4.2024.
 
+  Taidekuja tulee sijaitsemaan Pohjankartanon koulun 2 kerroksessa, ja sinne on esteetön pääsy hissillä. Lisätietoa löydät nettisivuiltamme osoitteesta: Jos sinulla herää mitään kysymyksiä voit olla yhteydessä taidekujavastaavaan sähköpostilla: taidekujavastaava@matsucon.fi
+
 fields:
   - type: StaticText
     title: Perustiedot
@@ -35,7 +37,7 @@ fields:
     helpText: "Yksi (1) portfoliolinkki per taiteilija / ryhmä. Tarkistathan ettei lomake ole suojattu salasanalla tai edellytä kirjautumista."
     type: SingleLineText
     required: true
-    
+
   - slug: reserve
     title: Varasija
     helpText: "Ilmaise halukkuutesi varasijalle. Varasijallisista koostetaan lista joita lähestytään mikäli paikkoja vapautuu. Erillistä varasijalistaa ei julkaista tai ilmoiteta. Voit vapaassa kentässä täsmentää kuinka lyhyellä ajalla olet valmis tulemaan."
@@ -95,8 +97,7 @@ fields:
 
   - type: StaticText
     title: Taiteilijatiedot sivuille
-    helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi.
-Huom. Avatar-kuvan koko 200 px x 200 px"
+    helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi. Huom. Avatar-kuvan koko 200 px x 200 px"
 
     slug: artist_info
   - type: StaticText
@@ -107,7 +108,7 @@ Huom. Avatar-kuvan koko 200 px x 200 px"
     title: Taiteilijanimi
     type: SingleLineText
     required: true
-  
+
   - slug: artist_site1
     title: Kotisivu
     type: SingleLineText
@@ -117,12 +118,11 @@ Huom. Avatar-kuvan koko 200 px x 200 px"
     title: Avatar
     type: FileUpload
     required: true
-  
+
   - slug: artist_desc1
     title: Lyhyt kuvaus nettisivuille
     type: SingleLineText
     required: true
-
 
   - type: StaticText
     title: Taiteilijan 2 tiedot
@@ -132,7 +132,7 @@ Huom. Avatar-kuvan koko 200 px x 200 px"
     title: Taiteilijanimi
     type: SingleLineText
     required: false
-  
+
   - slug: artist_site2
     title: Kotisivu
     type: SingleLineText
@@ -142,13 +142,12 @@ Huom. Avatar-kuvan koko 200 px x 200 px"
     title: Avatar
     type: FileUpload
     required: false
-  
+
   - slug: artist_desc2
     title: Lyhyt kuvaus nettisivuille
     type: SingleLineText
     required: false
 
-  
   - type: StaticText
     title: Taiteilijan 3 tiedot
     slug: artist_info3
@@ -157,7 +156,7 @@ Huom. Avatar-kuvan koko 200 px x 200 px"
     title: Taiteilijanimi
     type: SingleLineText
     required: false
-  
+
   - slug: artist_site3
     title: Kotisivu
     type: SingleLineText
@@ -167,7 +166,7 @@ Huom. Avatar-kuvan koko 200 px x 200 px"
     title: Avatar
     type: FileUpload
     required: false
-  
+
   - slug: artist_desc3
     title: Lyhyt kuvaus nettisivuille
     type: SingleLineText

@@ -5,6 +5,8 @@ description: |
 
   The form is open during 1.3. - 1.4.2024.
 
+  The artist alley will be located on the 2nd floor of Pohjankartano's school and has an accessible elevator. You can find more information on our website at: If you have any questions you can reach our artist alley respondent at: taidekujavastaava@matsucon.fi
+
 fields:
   - type: StaticText
     title: Basic info
@@ -35,7 +37,7 @@ fields:
     helpText: "One (1) portfoliolink per artist / group. Please make sure that the link does not require a password or logging in."
     type: SingleLineText
     required: true
-    
+
   - slug: reserve
     title: Reserve list
     helpText: "Choose if you want a table if they become available. We make a list of people and send an email to those who said yes, if a table frees up. We do not publish a list of people on the list. In the free comment section you can specify how soon before the event you're able to accept a spot."
@@ -105,7 +107,7 @@ fields:
     title: Artist name
     type: SingleLineText
     required: true
-  
+
   - slug: artist_site1
     title: Website
     type: SingleLineText
@@ -115,12 +117,11 @@ fields:
     title: Avatar
     type: FileUpload
     required: true
-  
+
   - slug: artist_desc1
     title: Short description for the website
     type: SingleLineText
     required: true
-
 
   - type: StaticText
     title: Artist 2 info
@@ -130,7 +131,7 @@ fields:
     title: Artist name
     type: SingleLineText
     required: false
-  
+
   - slug: artist_site2
     title: Website
     type: SingleLineText
@@ -140,13 +141,12 @@ fields:
     title: Avatar
     type: FileUpload
     required: false
-  
+
   - slug: artist_desc2
     title: Short description for the website
     type: SingleLineText
     required: false
 
-  
   - type: StaticText
     title: Artist 3 info
     slug: artist_info3
@@ -155,7 +155,7 @@ fields:
     title: Artist name
     type: SingleLineText
     required: false
-  
+
   - slug: artist_site3
     title: Website
     type: SingleLineText
@@ -165,7 +165,7 @@ fields:
     title: Avatar
     type: FileUpload
     required: false
-  
+
   - slug: artist_desc3
     title: Short description for the website
     type: SingleLineText

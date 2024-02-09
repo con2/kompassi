@@ -474,6 +474,50 @@ class Setup:
         for dimension in data:
             DimensionDTO.model_validate(dimension).save(artist_alley_application)
 
+        # Vendor application
+
+        with resource_stream("events.matsucon2024", "forms/vendor-application-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        vendor_application_en, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="vendor-application-en",
+            language="en",
+            defaults=data,
+        )
+
+        with resource_stream("events.matsucon2024", "forms/vendor-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        vendor_application_fi, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="vendor-application-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        vendor_application, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="vendor-application",
+            defaults=dict(
+                active_from=now(),
+                key_fields=[
+                    "name",
+                    "email",
+                    "website",
+                ],
+                login_required=True,
+            ),
+        )
+
+        vendor_application.languages.set([vendor_application_fi, vendor_application_en])
+
+        with resource_stream("events.matsucon2024", "forms/vendor-application-dimensions.yml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(vendor_application)
+
 
 class Command(BaseCommand):
     args = ""
