@@ -117,8 +117,7 @@ fields:
 
   - type: StaticText
     title: Artits information for the site
-    helpText: "If you're coming as a collective, please only fill one of the artist slots. Leave the extra slots empty.
-Hox. Avatar size is 200 px x 200 px"
+    helpText: "If you're coming as a collective, please only fill one of the artist slots. Leave the extra slots empty. Hox. Avatar size is 200 px x 200 px"
     slug: artist_info
 
 
