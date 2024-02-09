@@ -56,7 +56,7 @@ fields:
     helpText: "Yksi (1) portfoliolinkki per taiteilija / ryhmä. Tarkistathan ettei lomake ole suojattu salasanalla tai edellytä kirjautumista."
     type: SingleLineText
     required: true
-    
+
   - slug: reserve
     title: Varasija
     helpText: "Ilmaise halukkuutesi varasijalle. Varasijallisista koostetaan lista joita lähestytään mikäli paikkoja vapautuu. Erillistä varasijalistaa ei julkaista tai ilmoiteta. Voit vapaassa kentässä täsmentää kuinka lyhyellä ajalla olet valmis tulemaan."
@@ -127,7 +127,7 @@ fields:
     title: Taiteilijanimi
     type: SingleLineText
     required: true
-  
+
   - slug: artist_site1
     title: Kotisivu
     type: SingleLineText
@@ -137,12 +137,11 @@ fields:
     title: Avatar
     type: FileUpload
     required: true
-  
+
   - slug: artist_desc1
     title: Lyhyt kuvaus nettisivuille
     type: SingleLineText
     required: true
-
 
   - type: StaticText
     title: Taiteilijan 2 tiedot
@@ -152,7 +151,7 @@ fields:
     title: Taiteilijanimi
     type: SingleLineText
     required: false
-  
+
   - slug: artist_site2
     title: Kotisivu
     type: SingleLineText
@@ -162,13 +161,12 @@ fields:
     title: Avatar
     type: FileUpload
     required: false
-  
+
   - slug: artist_desc2
     title: Lyhyt kuvaus nettisivuille
     type: SingleLineText
     required: false
 
-  
   - type: StaticText
     title: Taiteilijan 3 tiedot
     slug: artist_info3
@@ -177,7 +175,7 @@ fields:
     title: Taiteilijanimi
     type: SingleLineText
     required: false
-  
+
   - slug: artist_site3
     title: Kotisivu
     type: SingleLineText
@@ -187,7 +185,7 @@ fields:
     title: Avatar
     type: FileUpload
     required: false
-  
+
   - slug: artist_desc3
     title: Lyhyt kuvaus nettisivuille
     type: SingleLineText
