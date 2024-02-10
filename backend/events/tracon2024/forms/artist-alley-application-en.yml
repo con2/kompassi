@@ -1,9 +1,9 @@
-title: Artist Alley- and Art Trail Application
+title: Artist Alley and Art Trail Application
 layout: vertical
 description: |
-  With this application you can apply for the Artist Alley and Art Trail in the Tracon event 6.-8.9.2024.
+  With this application you can apply for the Artist Alley and the Art Trail in the Tracon event 6. – 8.9.2024.
 
-  The application is open 1.4. - 26.4.2024.
+  The application period is 1. – 26.4.2024.
 
   <strong>More information:</strong> <a href="https://2024.tracon.fi/apply-for-artist-alley/">Apply for Artist Alley and Art Trail</a>.
 
@@ -28,7 +28,7 @@ fields:
     type: StaticText
 
   - slug: artist_alley
-    title: Artist alley choice
+    title: Artist Alley choice
     type: MultiSelect
     required: false
     choices:
@@ -37,7 +37,7 @@ fields:
       - slug: alley_sun
         title: Sunday
       - slug: alley_satsun
-        title: Saturday and sunday
+        title: Saturday and Sunday
 
   - slug: art_trail
     title: Art Trail selection
@@ -59,16 +59,16 @@ fields:
 
   - slug: reserve
     title: Reserve list
-    helpText: "Choose if you want a table i they become available. We make a list of people and send an email to those who said yes, if a table frees up. We do not publish a list of people on the list. In the free comment section you can specify how soon before the event you're able to accept a spot."
+    helpText: "Choose if you want to be on the reserve list if tables become available. We will make a reserve list of people and send an email to those who said yes if a table frees up. We will not publish a list of people on the reserve list. In the free comment section you can specify how soon before the event you will be able to accept a table."
     type: SingleSelect
     required: true
     choices:
       - slug: "no"
-        title: I don't want on the reserve list
+        title: I do not want on be on the reserve list
       - slug: "yes"
         title: I want on the reserve list
       - slug: "fast"
-        title: I can make it very close to the event
+        title: I want on the reserve list and can be notified very close to the event
 
   - type: StaticText
     title: Background info
@@ -80,7 +80,7 @@ fields:
     required: false
     choices:
       - slug: exp_new
-        title: Newbie (under 5 artist alleys)
+        title: Newbie (under 5 Artist Alleys)
       - slug: exp_first
         title: First time at the Tracon event
 
@@ -95,7 +95,7 @@ fields:
         title: Abroad
 
   - slug: helper
-    title: Do you have a helper with you
+    title: Will you have a helper with you
     type: SingleSelect
     required: true
     choices:
@@ -105,7 +105,7 @@ fields:
         title: "No"
 
   - slug: help_name
-    title: Helpers name
+    title: Helper's name
     type: SingleLineText
     required: false
 
@@ -117,7 +117,7 @@ fields:
 
   - type: StaticText
     title: Artits information for the site
-    helpText: "If you're coming as a collective, please only fill one of the artist slots. Leave the extra slots empty. Hox. Avatar size is 200 px x 200 px"
+    helpText: "If you are coming as a collective, please only fill one of the artist slots. Leave the extra slots empty. Please note: avatar size is 200 px x 200 px"
     slug: artist_info
 
   - type: StaticText
