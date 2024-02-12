@@ -143,7 +143,8 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
 class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
     def get_job_categories_query(self, event, admin=False):
-        assert not admin
+        if admin:
+            raise AssertionError()
 
         return Q(event__slug="frostbite2020", public=False) & ~Q(slug="vastaava")
 
