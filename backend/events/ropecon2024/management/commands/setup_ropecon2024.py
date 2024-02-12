@@ -29,7 +29,7 @@ class Setup:
         self.setup_labour()
         self.setup_intra()
         # self.setup_programme()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_badges()
 
     def setup_core(self):
@@ -506,36 +506,36 @@ class Setup:
         tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 
         defaults = dict(
+            tickets_view_version="v1.5",
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
             due_days=14,
             reference_number_template="2024{:06d}",
             contact_email="Ropecon 2024 -lipunmyynti <lipunmyynti@ropecon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Ropecon 2024 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-            "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-            "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-            "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
-            "lipunvaihtopisteessä.\n\n"
-            "Jos tapahtuma joudutaan perumaan, lippusi käy sellaisenaan seuraavassa Ropeconissa tai voit saada\n"
-            "hyvityksen ottamalla yhteyttä: lipunmyynti@ropecon.fi.\n\n"
+            "lipunvaihtopisteessä saapuessasi tapahtumaan. Ranneke tulee pitää ranteessa koko lipun\n"
+            "voimassaoloajan. Voit tulostaa tämän lipun tai näyttää sen älypuhelimen tai tablettitietokoneen näytöltä.\n"
+            "Mikäli kumpikaan näistä ei ole mahdollista, ota ylös kunkin viivakoodin alla oleva neljästä tai viidestä\n"
+            "sanasta koostuva Kissakoodi ja ilmoita se lipunvaihtopisteessä.\n\n"
+            "Jos tapahtuma joudutaan perumaan, voit saada hyvityksen ottamalla yhteyttä: lipunmyynti@ropecon.fi. \n\n"
             "Tervetuloa Ropeconiin!\n\n"
             "---\n\n"
             "This is your electronic ticket to Ropecon 2024. The electronic ticket will be exchanged to a wrist band\n"
-            "at a ticket exchange desk on your arrival at the event. You can print this ticket or show it from the\n"
-            "screen of a smartphone or tablet. If neither is possible, please write down the four or five words from\n"
+            "at a ticket exchange desk on your arrival at the event. The wristband must be kept on the wrist for\n"
+            "the entire duration of the ticket validity. You can print this ticket or show it from the screen of\n"
+            "a smartphone or tablet. If neither is possible, please write down the four or five words from\n"
             "beneath the bar code and show that at a ticket exchange desk.\n\n"
-            "In case the event has to be canceled your ticket will be valid for the next Ropecon or you can be\n"
-            "reimbursed for your ticket. For event cancellation related reimbursement please contact us at\n"
-            "lipunmyynti@ropecon.fi.\n\n"
+            "In case the event has to be canceled you can be reimbursed for your ticket.\n"
+            "For event cancellation related reimbursement please contact us at lipunmyynti@ropecon.fi.\n\n"
             "Welcome to Ropecon!",
             front_page_text="<h2>Tervetuloa Ropeconin lippukauppaan! / Welcome to Ropecon's Ticket Store!</h2>"
             "<p>Liput maksetaan oston yhteydessä Paytrailin kautta. Lippujen ostamiseen tarvitset suomalaiset verkkopankkitunnukset, luottokortin (Visa/Mastercard/American Express) tai MobilePayn. Pyydämme suosimaan verkkopankkia, mikäli mahdollista.</p>"
-            "<p>Maksetut liput toimitetaan e-lippuina sähköpostitse asiakkaan antamaan osoitteeseen. E-liput vaihdetaan rannekkeiksi tapahtumaan saavuttaessa.</p>"
-            "<p>Lisätietoja lipuista saat tapahtuman verkkosivuilta. <a href='https://ropecon.fi/liput/'>Siirry takaisin tapahtuman verkkosivuille</a>.</p>"
+            "<p>Maksetut liput toimitetaan e-lippuina sähköpostitse asiakkaan antamaan osoitteeseen. E-liput vaihdetaan rannekkeiksi tapahtumaan saavuttaessa. Ranneke tulee pitää ranteessa koko lipun voimassaoloajan.</p>"
+            "<p>Lisätietoja lipuista saat tapahtuman verkkosivuilta. <a href='https://ropecon.fi/liput/lippuehdot/' target='_blank'>Luethan päivitetyt lippuehdot verkkosivuilta</a>.</p>"
             "<p>---</p>"
             "<p>The tickets must be paid at purchase using a Finnish online banking service, credit card (Visa/Mastercard/American Express) or MobilePay. We would prefer payment through online banking, if possible.</p>"
-            "<p>Paid tickets will be sent as e-tickets to the e-mail address provided by the costumer. E-tickets will be exchanged to wrist bands at the event venue.</p>"
-            "<p>More information about the tickets can be found on Ropecon's website. <a href='https://ropecon.fi/en/tickets/'> Go back to the event's website</a>.</p>",
+            "<p>Paid tickets will be sent as e-tickets to the e-mail address provided by the costumer. E-tickets will be exchanged to wrist bands at the event venue. The wristband must be kept on the wrist for the entire duration of the ticket validity.</p>"
+            "<p>More information about the tickets can be found on Ropecon's website. <a href='https://ropecon.fi/en/tickets/terms-and-conditions/' target='_blank'>Please read updated ticket terms and contions</a>.</p>",
         )
 
         if self.test:
@@ -625,7 +625,7 @@ class Setup:
             ),
             dict(
                 name="Ropecon 2024 Academic Seminar and Friday Ticket",
-                description="Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2024 -tapahtumaan perjantaina. Rekisteröitymislinkki: ?? / Includes the entrance to the Academic seminar and Ropecon 2024 on friday. Please sign up to the event here: ???",
+                description="Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2024 -tapahtumaan perjantaina. Rekisteröitymislinkki: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a> / Includes the entrance to the Academic seminar and Ropecon 2024 on friday. Please sign up to the event here: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target='_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a>",
                 limit_groups=[
                     limit_group("Pääsyliput", 9999),
                 ],
@@ -636,11 +636,22 @@ class Setup:
             ),
             dict(
                 name="Ropecon 2024 Academic Seminar and Weekend Ticket",
-                description="Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2024 -tapahtumaan koko viikonlopun ajan. Rekisteröitymislinkki: ?? / Includes the entrance to the Academic seminar and Ropecon 2024 for the weekend. Please sign up to the event here: ???",
+                description="Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2024 -tapahtumaan koko viikonlopun ajan. Rekisteröitymislinkki: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a> / Includes the entrance to the Academic seminar and Ropecon 2024 for the weekend. Please sign up to the event here: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a>",
                 limit_groups=[
                     limit_group("Pääsyliput", 9999),
                 ],
-                price_cents=6700,
+                price_cents=6600,
+                electronic_ticket=True,
+                available=False,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Ropecon 2024 Academic seminar",
+                description="Sisältää pääsyn Akateemiseen seminaariin. Rekisteröitymislinkki: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a> / Includes the entrance to the Academic seminar. Please sign up to the event here: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a>",
+                limit_groups=[
+                    limit_group("Pääsyliput", 9999),
+                ],
+                price_cents=2100,
                 electronic_ticket=True,
                 available=False,
                 ordering=self.get_ordering_number(),

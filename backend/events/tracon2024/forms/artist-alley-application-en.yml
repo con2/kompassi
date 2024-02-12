@@ -1,0 +1,193 @@
+title: Artist Alley and Art Trail Application
+layout: vertical
+description: |
+  With this application you can apply for the Artist Alley and the Art Trail in the Tracon event 6. – 8.9.2024.
+
+  The application period is 1. – 26.4.2024.
+
+  <strong>More information:</strong> <a href="https://2024.tracon.fi/apply-for-artist-alley/">Apply for Artist Alley and Art Trail</a>.
+
+fields:
+  - type: StaticText
+    title: Basic info
+    slug: basic_info_title
+
+  - slug: name
+    title: First and surname
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Contact person's email
+    type: SingleLineText
+    required: true
+
+  - slug: location_select
+    title: Seller location selection
+    helpText: "Please select all of the suitable options. You will only be offered the options you selected."
+    type: StaticText
+
+  - slug: artist_alley
+    title: Artist Alley choice
+    type: MultiSelect
+    required: false
+    choices:
+      - slug: alley_sat
+        title: Saturday
+      - slug: alley_sun
+        title: Sunday
+      - slug: alley_satsun
+        title: Saturday and Sunday
+
+  - slug: art_trail
+    title: Art Trail selection
+    type: MultiSelect
+    required: false
+    choices:
+      - slug: trail_fri
+        title: Friday
+      - slug: trail_sat
+        title: Saturday
+      - slug: trail_sun
+        title: Sunday
+
+  - slug: portfolio
+    title: Portfolio
+    helpText: "One (1) portfoliolink per artist / group. Please make sure that the link does not require a password or logging in."
+    type: SingleLineText
+    required: true
+
+  - slug: reserve
+    title: Reserve list
+    helpText: "Choose if you want to be on the reserve list if tables become available. We will make a reserve list of people and send an email to those who said yes if a table frees up. We will not publish a list of people on the reserve list. In the free comment section you can specify how soon before the event you will be able to accept a table."
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: "no"
+        title: I do not want on be on the reserve list
+      - slug: "yes"
+        title: I want on the reserve list
+      - slug: "fast"
+        title: I want on the reserve list and can be notified very close to the event
+
+  - type: StaticText
+    title: Background info
+    slug: background_info
+
+  - slug: experience
+    title: Experience
+    type: MultiSelect
+    required: false
+    choices:
+      - slug: exp_new
+        title: Newbie (under 5 Artist Alleys)
+      - slug: exp_first
+        title: First time at the Tracon event
+
+  - slug: location
+    title: Are you coming to the event from Finland or abroad
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: finland
+        title: Finland
+      - slug: abroad
+        title: Abroad
+
+  - slug: helper
+    title: Will you have a helper with you
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: help_yes
+        title: "Yes"
+      - slug: help_no
+        title: "No"
+
+  - slug: help_name
+    title: Helper's name
+    type: SingleLineText
+    required: false
+
+  - slug: comments
+    title: Free space
+    helpText: "Free space for comments and wishes. Please let us know if you need us to take in to account your accessibility needs in your Artist Alley or Art Trail location, so we can make sure your table is accessible to you."
+    type: MultiLineText
+    required: false
+
+  - type: StaticText
+    title: Artits information for the site
+    helpText: "If you are coming as a collective, please only fill one of the artist slots. Leave the extra slots empty. Please note: avatar size is 200 px x 200 px"
+    slug: artist_info
+
+  - type: StaticText
+    title: Artist 1 info
+    slug: artist_info1
+
+  - slug: artist_name1
+    title: Artist name
+    type: SingleLineText
+    required: true
+
+  - slug: artist_site1
+    title: Website
+    type: SingleLineText
+    required: true
+
+  - slug: artist_avatar1
+    title: Avatar
+    type: FileUpload
+    required: true
+
+  - slug: artist_desc1
+    title: Short description for the website
+    type: SingleLineText
+    required: true
+
+  - type: StaticText
+    title: Artist 2 info
+    slug: artist_info2
+
+  - slug: artist_name2
+    title: Artist name
+    type: SingleLineText
+    required: false
+
+  - slug: artist_site2
+    title: Website
+    type: SingleLineText
+    required: false
+
+  - slug: artist_avatar2
+    title: Avatar
+    type: FileUpload
+    required: false
+
+  - slug: artist_desc2
+    title: Short description for the website
+    type: SingleLineText
+    required: false
+
+  - type: StaticText
+    title: Artist 3 info
+    slug: artist_info3
+
+  - slug: artist_name3
+    title: Artist name
+    type: SingleLineText
+    required: false
+
+  - slug: artist_site3
+    title: Website
+    type: SingleLineText
+    required: false
+
+  - slug: artist_avatar3
+    title: Avatar
+    type: FileUpload
+    required: false
+
+  - slug: artist_desc3
+    title: Short description for the website
+    type: SingleLineText
+    required: false

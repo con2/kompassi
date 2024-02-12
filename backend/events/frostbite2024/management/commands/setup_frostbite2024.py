@@ -465,23 +465,18 @@ class Setup:
         )
 
     def setup_forms(self):
+        # TODO(#386) change update_or_create to get_or_create to avoid overriding local changes
         from forms.models import Form, Survey
 
         with resource_stream("events.frostbite2024", "forms/number-field-test.yml") as f:
             data = yaml.safe_load(f)
 
-        form_fi, created = Form.objects.get_or_create(
+        form_fi, created = Form.objects.update_or_create(
             event=self.event,
             slug="number-field-test",
             language="fi",
             defaults=data,
         )
-
-        # TODO temporary for development
-        if not created:
-            for key, value in data.items():
-                setattr(form_fi, key, value)
-            form_fi.save()
 
         survey, _ = Survey.objects.get_or_create(
             event=self.event,

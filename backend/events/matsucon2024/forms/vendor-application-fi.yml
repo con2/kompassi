@@ -1,0 +1,104 @@
+title: Myyjähaku
+layout: vertical
+description: |
+  Lomakkeella haetaan myyjäpaikkaa Matsuconista 10.-11.8.2024.
+
+  Hintamme myyntisaliin:
+  50 euroa / neliö
+  100 euroa pöytä (180x74cm)
+
+  Jos olet kiinnostunut vain mainospaikasta, ota suoraan yhteyttä markkinointivastaavaan sähköpostilla markkinointivastaava@matsucon.fi
+
+  Haku on auki 19.2. - 25.6.2024.
+
+fields:
+  - type: StaticText
+    title: Perustiedot
+    slug: basic_info_title
+
+  - slug: name
+    title: Etunimi ja sukunimi
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Vastuuhenkilön sähköposti
+    type: SingleLineText
+    required: true
+
+  - slug: id
+    title: Y-tunnus
+    type: SingleLineText
+    required: true
+
+  - slug: help
+    title: Tuleeko mukanasi työntekijöitä
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: help_yes
+        title: "Kyllä"
+      - slug: help_no
+        title: "Ei"
+
+  - slug: help_name
+    title: Työntekijöiden nimet
+    type: SingleLineText
+    required: false
+
+  - slug: location
+    title: Paikkatoiveet
+    helpText: "Esim. seinää vasten/saarekkeessa, tietyn muun myyjän viereen, jne."
+    type: SingleLineText
+    required: false
+
+  - slug: products
+    title: Myydyt tuoteluokat
+    type: SingleLineText
+    required: true
+
+  - slug: days
+    title: Myyntipäivät
+    type: MultiSelect
+    required: true
+    choices:
+      - slug: sat
+        title: Lauantai
+      - slug: sun
+        title: Sunnuntai
+      - slug: satsun
+        title: Lauantai ja sunnuntai
+
+  - slug: space
+    title: Arvio tarvittavasta neliömäärästä
+    type: SingleLineText
+    required: true
+
+  - slug: businessname
+    title: Yrityksen nimi
+    type: SingleLineText
+    required: true
+
+  - slug: website
+    title: Nettisivut
+    type: SingleLineText
+    required: true
+
+  - slug: description
+    title: Kuvaus nettisivuille
+    type: MultiLineText
+    required: true
+
+  - slug: avatar
+    title: Kuva nettisivuille
+    helpText: "Huom. avatar 200x200px ja jpeg tai png muodossa"
+    type: FileUpload
+    required: true
+
+  - slug: pirate
+    title: Tämän kohdan rastimalla ymmärrän että tuotteiden tulee noudattaa Suomen lakia, mitä tulee tekijänoikeuslakiin ja piraattituotteisiin
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: pir_yes
+        title: "Kyllä"

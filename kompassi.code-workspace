@@ -6,5 +6,18 @@
     {
       "path": "frontend"
     }
-  ]
+  ],
+  "settings": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
+    "[yaml]": {
+      "editor.insertSpaces": true,
+      "editor.tabSize": 2,
+      "editor.formatOnSave": true
+    }
+  },
+  "extensions": {
+    "recommendations": ["esbenp.prettier-vscode"]
+  }
 }

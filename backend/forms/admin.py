@@ -53,6 +53,7 @@ class SurveyAdmin(admin.ModelAdmin):
         "max_responses_per_user",
         "active_from",
         "active_until",
+        "key_fields",
     )
     inlines = (SurveyFormInline,)
 
