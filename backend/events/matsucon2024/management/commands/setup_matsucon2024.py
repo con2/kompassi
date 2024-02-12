@@ -461,7 +461,7 @@ class Setup:
             slug="artist-alley-application",
             defaults=dict(
                 active_from=now(),
-                key_fields=["name", "email", "artist_name1", "location", "reserve"],
+                key_fields=["name", "email", "artist_name1", "table_size", "experience", "reserve"],
                 login_required=True,
             ),
         )
