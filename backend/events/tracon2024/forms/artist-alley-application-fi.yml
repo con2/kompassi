@@ -109,6 +109,7 @@ fields:
     required: false
 
   - slug: comments
+    title: Vapaa sana
     helpText: "Vapaa alue lisätiedoille ja toiveille. Ilmaisethan jos tarvitset esteettömyyden huomiointia taidekuja- tai taidepolkupöydän sijoituksessa, jotta voimme järjestää mahdollisimman sujuvan pääsyn pöydän ääreen."
     type: MultiLineText
     required: false
