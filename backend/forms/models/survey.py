@@ -155,6 +155,9 @@ class Survey(models.Model):
 
         return Response.objects.filter(form__in=self.languages.all()).order_by("created_at")
 
+    def get_next_sequence_number(self):
+        return (self.responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1
+
     def preload_dimensions(self, dimension_values: Mapping[str, Collection[str]] | None = None):
         dimensions = self.dimensions.all().prefetch_related("values")
         if dimension_values is not None:

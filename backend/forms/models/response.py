@@ -38,6 +38,11 @@ class Response(models.Model):
         verbose_name=_("IP address"),
     )
 
+    sequence_number = models.PositiveIntegerField(
+        default=0,
+        help_text="Sequence number of this response within the use case (eg. survey).",
+    )
+
     # denormalized fields
     cached_dimensions = models.JSONField(
         default=dict,

@@ -1,4 +1,5 @@
 import graphene
+from django.db import transaction
 from graphene.types.generic import GenericScalar
 
 from core.utils import get_ip
@@ -54,13 +55,15 @@ class CreateSurveyResponse(graphene.Mutation):
             created_by = None
             ip_address = ""
 
-        response = Response.objects.create(
-            form=form,
-            form_data=input.form_data,
-            created_by=created_by,
-            ip_address=ip_address,
-        )
+        with transaction.atomic():
+            response = Response.objects.create(
+                form=form,
+                form_data=input.form_data,
+                created_by=created_by,
+                ip_address=ip_address,
+                sequence_number=survey.get_next_sequence_number(),
+            )
 
-        response.lift_dimension_values()
+            response.lift_dimension_values()
 
         return CreateSurveyResponse(response=response)  # type: ignore
