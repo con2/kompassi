@@ -55,7 +55,7 @@ fields:
   - slug: products
     title: Myydyt tuoteluokat
     type: SingleLineText
-    required: false
+    required: true
 
   - slug: days
     title: Myyntipäivät
