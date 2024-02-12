@@ -378,8 +378,9 @@ const translations = {
       unchecked: "Not checked",
     },
     addLanguageModal: {
+      language: "Language",
       actions: {
-        submit: "Add language",
+        submit: "Continue",
         cancel: "Cancel",
       },
     },

@@ -380,8 +380,9 @@ const translations: Translations = {
       unchecked: "Ei valittu",
     },
     addLanguageModal: {
+      language: "Kieli",
       actions: {
-        submit: "Lisää kieliversio",
+        submit: "Jatka",
         cancel: "Peruuta",
       },
     },

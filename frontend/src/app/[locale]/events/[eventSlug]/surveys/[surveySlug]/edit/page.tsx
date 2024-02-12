@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
-import { submit } from "./actions";
-import getTabs from "./SurveyEditorTabs";
+import { updateSurvey } from "./actions";
 import SurveyEditorTabs from "./SurveyEditorTabs";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
@@ -20,6 +19,7 @@ import { getTranslations } from "@/translations";
 
 graphql(`
   fragment EditSurveyPage on SurveyType {
+    slug
     title(lang: $locale)
     loginRequired
     anonymity
@@ -153,7 +153,7 @@ export default async function EditSurveyPage({ params }: Props) {
       />
       <Card>
         <CardBody>
-          <form action={submit.bind(null)}>
+          <form action={updateSurvey.bind(null, eventSlug, surveySlug)}>
             <SchemaForm fields={fields} messages={translations.SchemaForm} />
             <SubmitButton>{t.actions.saveProperties}</SubmitButton>
           </form>
