@@ -1,11 +1,13 @@
-title: Taidekuja- ja Taidepolkuhaku
+title: Taidekujahaku
 layout: vertical
 description: |
-  Lomakkeella haetaan taidekuja- ja taidepolkupöytäpaikkaa Tracon-tapahtumasta 6.-8.9.2024.
+  Lomakkeella haetaan taidekujapaikkaa Matsuconista 10.-11.8.2024.
 
-  Haku on auki 1.-26.4.2024.
+  Lisää tietoa löydät: <a href="https://matsucon.fi/taidekujan-saannot/">
 
-   <strong>Lisätietoja hausta:</strong> <a href="https://2024.tracon.fi/taidekujahaku/">Hae taidekujalle ja taidepolulle</a>.
+  Haku on auki 1.3. - 1.4.2024.
+
+  Taidekuja tulee sijaitsemaan Pohjankartanon koulun 2 kerroksessa, ja sinne on esteetön pääsy hissillä. Lisätietoa löydät nettisivuiltamme osoitteesta: Jos sinulla herää mitään kysymyksiä voit olla yhteydessä taidekujavastaavaan sähköpostilla: taidekujavastaava@matsucon.fi
 
 fields:
   - type: StaticText
@@ -22,34 +24,15 @@ fields:
     type: SingleLineText
     required: true
 
-  - slug: location_select
-    title: Myyntipaikan valinta
-    helpText: "Valitse kaikki sopivat vaihtoehdot. Sinulle tarjotaan vain valitsemiasi paikkoja."
-    type: StaticText
-
-  - slug: artist_alley
-    title: Taidekujan valinta
+  - slug: table_size
+    title: Pöytäkoko
     type: MultiSelect
     required: false
     choices:
-      - slug: alley_sat
-        title: Lauantai
-      - slug: alley_sun
-        title: Sunnuntai
-      - slug: alley_satsun
-        title: Lauantai ja sunnuntai
-
-  - slug: art_trail
-    title: Taidepolun valinta
-    type: MultiSelect
-    required: false
-    choices:
-      - slug: trail_fri
-        title: Perjantai
-      - slug: trail_sat
-        title: Lauantai
-      - slug: trail_sun
-        title: Sunnuntai
+      - slug: small
+        title: 140x50cm
+      - slug: big
+        title: 180x74cm
 
   - slug: portfolio
     title: Portfolio
@@ -59,7 +42,7 @@ fields:
 
   - slug: reserve
     title: Varasija
-    helpText: "Ilmaise halukkuutesi varasijalle. Teemme listan varasijallisista, joita lähestytään sähköpostilla, mikäli paikkoja vapautuu. Erillistä varasijalistaa ei julkaista tai ilmoiteta. Alempana voit vapaassa kentässä täsmentää, kuinka lyhyellä ajalla olet valmis tulemaan."
+    helpText: "Ilmaise halukkuutesi varasijalle. Varasijallisista koostetaan lista joita lähestytään mikäli paikkoja vapautuu. Erillistä varasijalistaa ei julkaista tai ilmoiteta. Voit vapaassa kentässä täsmentää kuinka lyhyellä ajalla olet valmis tulemaan."
     type: SingleSelect
     required: true
     choices:
@@ -68,7 +51,7 @@ fields:
       - slug: "yes"
         title: Haluan jonottaa varasijaa
       - slug: "fast"
-        title: Haluan jonottaa varasijaa ja pääsen nopeallakin varoitusajalla paikalle
+        title: Pääsen nopeallakin varoitusajalla paikalle
 
   - type: StaticText
     title: Taustatiedot
@@ -79,9 +62,9 @@ fields:
     type: MultiSelect
     choices:
       - slug: exp_new
-        title: Aloittelija (alle viisi (5) kujaa takana)
+        title: Aloittelija (alle 5 kujaa takana)
       - slug: exp_first
-        title: Ensikertaa Tracon -tapahtumassa
+        title: Ensikertaa Matsucon -tapahtumassa
 
   - slug: location
     title: Osallistutko tapahtumaan Suomesta vai ulkomailta
@@ -109,13 +92,14 @@ fields:
     required: false
 
   - slug: comments
-    helpText: "Vapaa alue lisätiedoille ja toiveille. Ilmaisethan jos tarvitset esteettömyyden huomiointia taidekuja- tai taidepolkupöydän sijoituksessa, jotta voimme järjestää mahdollisimman sujuvan pääsyn pöydän ääreen."
+    title: Vapaa sana
+    helpText: "Vapaa alue lisätiedoille ja toiveille. Ilmaisethan jos tarvitset esteettömyyden huomiointia taidekuja sijoituksessa, jotta voimme järjestää mahdollisimman sujuvan pääsyn pöydän ääreen."
     type: MultiLineText
     required: false
 
   - type: StaticText
     title: Taiteilijatiedot sivuille
-    helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi. Huom. avatar-kuvan koko 200 px x 200 px"
+    helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi. Huom. Avatar-kuvan koko 200 px x 200 px"
 
     slug: artist_info
   - type: StaticText

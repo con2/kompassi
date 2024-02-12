@@ -1,11 +1,13 @@
-title: Artist Alley and Art Trail Application
+title: Artist Alley application
 layout: vertical
 description: |
-  With this application you can apply for the Artist Alley and the Art Trail in the Tracon event 6. – 8.9.2024.
+  With this form you're applying for the artist alley in Matsucon 10.-11.8.2024.
 
-  The application period is 1. – 26.4.2024.
+  The form is open during 1.3. - 1.4.2024.
 
-  <strong>More information:</strong> <a href="https://2024.tracon.fi/apply-for-artist-alley/">Apply for Artist Alley and Art Trail</a>.
+  More information you can find at: <a href="https://matsucon.fi/taidekujan-saannot/">
+
+  The artist alley will be located on the 2nd floor of Pohjankartano's school and has an accessible elevator. You can find more information on our website at: If you have any questions you can reach our artist alley respondent at: taidekujavastaava@matsucon.fi
 
 fields:
   - type: StaticText
@@ -13,7 +15,7 @@ fields:
     slug: basic_info_title
 
   - slug: name
-    title: First name and surname
+    title: First and surname
     type: SingleLineText
     required: true
 
@@ -22,53 +24,34 @@ fields:
     type: SingleLineText
     required: true
 
-  - slug: location_select
-    title: Seller location selection
-    helpText: "Please select all of the suitable options. You will only be offered the options you selected."
-    type: StaticText
-
-  - slug: artist_alley
-    title: Artist Alley choice
+  - slug: table_size
+    title: Table size
     type: MultiSelect
     required: false
     choices:
-      - slug: alley_sat
-        title: Saturday
-      - slug: alley_sun
-        title: Sunday
-      - slug: alley_satsun
-        title: Saturday and Sunday
-
-  - slug: art_trail
-    title: Art Trail selection
-    type: MultiSelect
-    required: false
-    choices:
-      - slug: trail_fri
-        title: Friday
-      - slug: trail_sat
-        title: Saturday
-      - slug: trail_sun
-        title: Sunday
+      - slug: small
+        title: 140x50cm
+      - slug: big
+        title: 180x74cm
 
   - slug: portfolio
     title: Portfolio
-    helpText: "One (1) portfolio link per artist / group. Please make sure that the link does not require a password or logging in."
+    helpText: "One (1) portfoliolink per artist / group. Please make sure that the link does not require a password or logging in."
     type: SingleLineText
     required: true
 
   - slug: reserve
     title: Reserve list
-    helpText: "Choose if you want to be on the reserve list if tables become available. We will make a reserve list of people and send an email to those who said yes if a table frees up. We will not publish a list of people on the reserve list. In the free comment section you can specify how soon before the event you will be able to accept a table."
+    helpText: "Choose if you want a table if they become available. We make a list of people and send an email to those who said yes, if a table frees up. We do not publish a list of people on the list. In the free comment section you can specify how soon before the event you're able to accept a spot."
     type: SingleSelect
     required: true
     choices:
       - slug: "no"
-        title: I do not want on be on the reserve list
+        title: I don't want on the reserve list
       - slug: "yes"
-        title: I want to be on the reserve list
+        title: I want on the reserve list
       - slug: "fast"
-        title: I want on the reserve list and can be notified very close to the event
+        title: I can make it very close to the event
 
   - type: StaticText
     title: Background info
@@ -77,12 +60,11 @@ fields:
   - slug: experience
     title: Experience
     type: MultiSelect
-    required: false
     choices:
       - slug: exp_new
-        title: Newbie (under 5 Artist Alleys)
+        title: Newbie (under 5 artist alleys)
       - slug: exp_first
-        title: First time at the Tracon event
+        title: First time at the Matsucon -event
 
   - slug: location
     title: Are you coming to the event from Finland or abroad
@@ -95,7 +77,7 @@ fields:
         title: Abroad
 
   - slug: helper
-    title: Will you have a helper with you
+    title: Do you have a helper with you
     type: SingleSelect
     required: true
     choices:
@@ -105,7 +87,7 @@ fields:
         title: "No"
 
   - slug: help_name
-    title: Helper's name
+    title: Helpers name
     type: SingleLineText
     required: false
 
@@ -116,9 +98,8 @@ fields:
     required: false
 
   - type: StaticText
-    title: Artits information for the site
-    helpText: "If you are coming as a collective, please only fill one of the artist slots. Leave the extra slots empty. Please note: avatar size is 200 px x 200 px"
-    slug: artist_info
+    title: Artits information for the website
+    helpText: "If you're coming as a collective, please only fill one of the artist slots. Leave the extra slots empty. Hox. Avatar size is 200 px x 20"
 
   - type: StaticText
     title: Artist 1 info
