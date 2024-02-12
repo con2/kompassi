@@ -13,19 +13,16 @@ fields:
 
   - slug: name
     title: Vastuuhenkilön etu- ja sukunimi
-    helpText: ""
     type: SingleLineText
     required: true
 
   - slug: email
     title: Vastuuhenkilön sähköposti
-    helpText: ""
     type: SingleLineText
     required: true
 
   - slug: helper_name
     title: Apumyyjän nimi
-    helpText: ""
     type: SingleLineText
 
   - slug: portfolio_title
@@ -49,13 +46,11 @@ fields:
 
   - slug: artist_name
     title: Taiteilijanimi
-    helpText: ""
     required: true
     type: SingleLineText
 
   - slug: artist_website
     title: Linkki taiteilijan kotisivuille
-    helpText: ""
     type: SingleLineText
     required: true
 
