@@ -1,7 +1,7 @@
 title: Taidekuja- ja Taidepolkuhaku
 layout: vertical
 description: |
-  Lomakkeella haetaan taidekuja- ja taidepolkupöytäpaikkaa Tracon tapahtumasta 6.-8.9.2024.
+  Lomakkeella haetaan taidekuja- ja taidepolkupöytäpaikkaa Tracon-tapahtumasta 6.-8.9.2024.
 
   Haku on auki 1.4. - 26.4.2024.
 
@@ -28,7 +28,7 @@ fields:
     type: StaticText
 
   - slug: artist_alley
-    title: Taidekuja valinta
+    title: Taidekujan valinta
     type: MultiSelect
     required: false
     choices:
@@ -40,7 +40,7 @@ fields:
         title: Lauantai ja sunnuntai
 
   - slug: art_trail
-    title: Taidepolku valinta
+    title: Taidepolun valinta
     type: MultiSelect
     required: false
     choices:
@@ -59,7 +59,7 @@ fields:
 
   - slug: reserve
     title: Varasija
-    helpText: "Ilmaise halukkuutesi varasijalle. Varasijallisista koostetaan lista joita lähestytään mikäli paikkoja vapautuu. Erillistä varasijalistaa ei julkaista tai ilmoiteta. Voit vapaassa kentässä täsmentää kuinka lyhyellä ajalla olet valmis tulemaan."
+    helpText: "Ilmaise halukkuutesi varasijalle. Varasijallisista koostetaan lista joita lähestytään mikäli paikkoja vapautuu. Erillistä varasijalistaa ei julkaista tai ilmoiteta. Voit vapaassa kentässä täsmentää kuinka lyhyellä varoitusajalla olet valmis tulemaan paikalle."
     type: SingleSelect
     required: true
     choices:
@@ -79,7 +79,7 @@ fields:
     type: MultiSelect
     choices:
       - slug: exp_new
-        title: Aloittelija (alle 5 kujaa takana)
+        title: Aloittelija (alle viisi (5) kujaa takana)
       - slug: exp_first
         title: Ensikertaa Tracon -tapahtumassa
 
@@ -110,13 +110,13 @@ fields:
 
   - slug: comments
     title: Vapaa sana
-    helpText: "Vapaa alue lisätiedoille ja toiveille. Ilmaisethan jos tarvitset esteettömyyden huomiointia taidekuja- tai taidepolku sijoituksessa, jotta voimme järjestää mahdollisimman sujuvan pääsyn pöydän ääreen."
+    helpText: "Vapaa alue lisätiedoille ja toiveille. Ilmaisethan jos tarvitset esteettömyyden huomiointia taidekujan tai taidepolun sijoituksessa, jotta voimme järjestää mahdollisimman sujuvan pääsyn pöydän ääreen."
     type: MultiLineText
     required: false
 
   - type: StaticText
     title: Taiteilijatiedot sivuille
-    helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi. Huom. Avatar-kuvan koko 200 px x 200 px"
+    helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi. Huom. avatar-kuvan koko 200 px x 200 px"
 
     slug: artist_info
   - type: StaticText
