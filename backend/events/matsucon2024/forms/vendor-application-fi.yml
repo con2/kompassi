@@ -3,7 +3,9 @@ layout: vertical
 description: |
   Lomakkeella haetaan myyjäpaikkaa Matsuconista 10.-11.8.2024.
 
-  Haku on auki x.x - x.x.2024.
+  Jos olet kiinnostunut vain mainospaikasta, ota suoraan yhteyttä markkinointivastaavaan sähköpostilla markkinointivastaava@matsucon.fi
+
+  Haku on auki 19.2. - 25.6.2024.
 
 fields:
   - type: StaticText
@@ -39,6 +41,34 @@ fields:
     title: Työntekijöiden nimet
     type: SingleLineText
     required: false
+
+  - slug: location
+    title: Paikkatoiveet
+    helpText: "Esim. seinää vasten/saarekkeessa, tietyn muun myyjän viereen, jne."
+    type: SingleLineText
+    required: false
+
+  - slug: products
+    title: Myydyt tuoteluokat
+    type: SingleLineText
+    required: false
+
+  - slug: days
+    title: Myyntipäivät
+    type: MultiSelect
+    required: true
+    choices:
+      - slug: sat
+        title: Lauantai
+      - slug: sun
+        title: Sunnuntai
+      - slug: satsun
+        title: Lauantai ja sunnuntai
+
+  - slug: space
+    title: Arvio tarvittavasta neliömäärästä
+    type: SingleLineText
+    required: true
 
   - slug: businessname
     title: Yrityksen nimi
