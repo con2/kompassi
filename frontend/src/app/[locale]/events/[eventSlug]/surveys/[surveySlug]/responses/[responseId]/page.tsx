@@ -8,7 +8,7 @@ import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { buildDimensionForm } from "@/components/dimensions/helpers";
 import { SchemaForm } from "@/components/SchemaForm";
-import { Field, validateFields } from "@/components/SchemaForm/models";
+import { Field, Layout, validateFields } from "@/components/SchemaForm/models";
 import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
 import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
 import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
@@ -44,6 +44,7 @@ const query = graphql(`
           }
           response(id: $responseId) {
             id
+            sequenceNumber
             createdAt
             createdBy {
               displayName
@@ -122,7 +123,8 @@ export default async function SurveyResponsePage({ params }: Props) {
   const t = translations.Survey;
 
   const { anonymity } = data.event.forms.survey;
-  const { createdAt, language, form } = data.event.forms.survey.response;
+  const { sequenceNumber, createdAt, language, form } =
+    data.event.forms.survey.response;
   const { fields, layout } = form;
 
   const response = data.event.forms.survey.response;
@@ -132,34 +134,40 @@ export default async function SurveyResponsePage({ params }: Props) {
 
   // TODO using synthetic form fields for presentation is a hack
   // but it shall suffice until someone comes up with a Design Vision™
-  const createdAtField: Field = {
-    slug: "createdAt",
-    type: "SingleLineText",
-    title: t.attributes.createdAt,
-  };
+  const technicalFields: Field[] = [
+    {
+      slug: "sequenceNumber",
+      type: "SingleLineText",
+      title: t.attributes.sequenceNumber,
+    },
+    {
+      slug: "createdAt",
+      type: "SingleLineText",
+      title: t.attributes.createdAt,
+    },
+  ];
+
+  if (anonymity === "NAME_AND_EMAIL") {
+    technicalFields.push({
+      slug: "createdBy",
+      type: "SingleLineText",
+      title: t.attributes.createdBy,
+    });
+  }
+
   const formattedCreatedAt = createdAt
     ? new Date(createdAt).toLocaleString(locale)
     : "";
-
-  const languageField: Field = {
-    slug: "language",
-    type: "SingleLineText",
-    title: t.attributes.language,
-  };
-
-  const createdByField: Field | undefined =
-    anonymity == "NAME_AND_EMAIL"
-      ? {
-          slug: "createdBy",
-          type: "SingleLineText",
-          title: t.attributes.createdBy,
-        }
-      : undefined;
-
   const createdBy = response.createdBy;
   const formattedCreatedBy = createdBy
     ? `${createdBy.displayName} <${createdBy.email}>`
     : "-";
+
+  const technicalValues = {
+    sequenceNumber,
+    createdAt: formattedCreatedAt,
+    createdBy: formattedCreatedBy,
+  };
 
   const dimensions = data.event.forms.survey.dimensions ?? [];
 
@@ -214,25 +222,12 @@ export default async function SurveyResponsePage({ params }: Props) {
               <h5 className="card-title mb-3">
                 {t.attributes.technicalDetails}
               </h5>
-              {createdByField && (
-                <SchemaFormField field={createdByField} layout={layout}>
-                  <SchemaFormInput
-                    field={createdByField}
-                    value={formattedCreatedBy}
-                    messages={translations.SchemaForm}
-                    readOnly
-                  />
-                </SchemaFormField>
-              )}
-
-              <SchemaFormField field={createdAtField} layout={layout}>
-                <SchemaFormInput
-                  field={createdAtField}
-                  value={formattedCreatedAt}
-                  messages={translations.SchemaForm}
-                  readOnly
-                />
-              </SchemaFormField>
+              <SchemaFormResponse
+                fields={technicalFields}
+                values={technicalValues}
+                layout={Layout.Vertical}
+                messages={translations.SchemaForm}
+              />
             </div>
           </div>
         </div>

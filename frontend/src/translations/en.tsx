@@ -300,6 +300,7 @@ const translations = {
       dimension: "Dimension",
       values: "Values",
       value: "Arvo",
+      sequenceNumber: "Sequence number",
       createdAt: "Created at",
       createdBy: "Created by",
       event: "Event",

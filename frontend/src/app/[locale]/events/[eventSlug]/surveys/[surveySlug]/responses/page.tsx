@@ -26,6 +26,7 @@ import { getTranslations } from "@/translations";
 graphql(`
   fragment SurveyResponse on LimitedResponseType {
     id
+    sequenceNumber
     createdAt
     createdBy {
       displayName
@@ -151,6 +152,10 @@ export default async function FormResponsesPage({
   validateFields(keyFields);
 
   const columns: Column<SurveyResponseFragment>[] = [
+    {
+      slug: "sequenceNumber",
+      title: "#",
+    },
     {
       slug: "createdAt",
       title: t.attributes.createdAt,

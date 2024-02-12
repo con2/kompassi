@@ -299,6 +299,7 @@ const translations: Translations = {
       dimension: "Dimensio",
       values: "Arvot",
       value: "Arvo",
+      sequenceNumber: "Järjestysnumero",
       createdAt: "Lähetysaika",
       createdBy: "Lähettäjä",
       event: "Tapahtuma",

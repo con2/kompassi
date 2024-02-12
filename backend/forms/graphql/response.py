@@ -95,7 +95,12 @@ class LimitedResponseType(DjangoObjectType):
 
     class Meta:
         model = Response
-        fields = ("id", "form_data", "created_at")
+        fields = (
+            "id",
+            "form_data",
+            "created_at",
+            "sequence_number",
+        )
 
 
 class FullResponseType(LimitedResponseType):
@@ -125,6 +130,7 @@ class FullResponseType(LimitedResponseType):
             "id",
             "form_data",
             "created_at",
+            "sequence_number",
         )
 
 
