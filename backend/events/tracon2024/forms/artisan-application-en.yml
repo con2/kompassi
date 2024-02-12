@@ -13,19 +13,16 @@ fields:
 
   - slug: name
     title: Contact person's first name and surname
-    helpText: ""
     type: SingleLineText
     required: true
 
   - slug: email
     title: Contact person's email
-    helpText: ""
     type: SingleLineText
     required: true
 
   - slug: helper_name
     title: Helper's name
-    helpText: ""
     type: SingleLineText
 
   - slug: portfolio_title
@@ -49,13 +46,11 @@ fields:
 
   - slug: artist_name
     title: Artist name
-    helpText: ""
     required: true
     type: SingleLineText
 
   - slug: artist_website
     title: Artist website link
-    helpText: ""
     required: true
     type: SingleLineText
 
