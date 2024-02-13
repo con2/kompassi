@@ -1,9 +1,5 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import Card from "react-bootstrap/Card";
-import CardBody from "react-bootstrap/CardBody";
-import SurveyEditorTabs from "../SurveyEditorTabs";
 import SurveyEditorView from "../SurveyEditorView";
 import { updateForm } from "./actions";
 import { graphql } from "@/__generated__";
@@ -14,8 +10,6 @@ import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import SignInRequired from "@/components/SignInRequired";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
