@@ -66,6 +66,7 @@ class Setup:
             ProgrammeEventMeta,
             Role,
             SpecialStartTime,
+            Tag,
             TimeBlock,
         )
 
@@ -127,6 +128,21 @@ class Setup:
                 defaults=dict(
                     style=style,
                     public=title != "AWeek program",
+                ),
+            )
+
+        for tag_title, tag_class in [
+            ("A Week - Larp", "label-default"),
+            ("A Week - Seminar", "label-default"),
+            ("A Week - Visit", "label-default"),
+            ("A Week - Workshop", "label-default"),
+            ("A Week - Entertainment", "label-default"),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    style=tag_class,
                 ),
             )
 
