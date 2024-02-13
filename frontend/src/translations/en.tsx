@@ -120,6 +120,22 @@ const translations = {
       },
     },
 
+    formPropertiesForm: {
+      title: {
+        title: "Title",
+        helpText: "Human-readable title for the form.",
+      },
+      description: {
+        title: "Description",
+        helpText: "Will be shown to the user at the top of the form.",
+      },
+      thankYouMessage: {
+        title: "Thank you message",
+        helpText:
+          "Will be shown to the user after they have submitted the form. If the thank you message is not set, the default message will be shown.",
+      },
+    },
+
     fieldTypes: {
       SingleLineText: "Single line text field",
       MultiLineText: "Multi-line text field",
@@ -353,6 +369,8 @@ const translations = {
       responses: "Responses",
       properties: "Survey properties",
       addLanguage: "Add language",
+      languageVersion: (languageName: string) =>
+        `Language version: ${languageName}`,
     },
     thankYou: {
       title: "Thank you for your answers!",

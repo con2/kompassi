@@ -2,30 +2,26 @@ import { Field } from "./models";
 import { Translations } from "@/translations/en";
 
 export function getPropertiesFormFields(
-  messages: Translations["FormEditor"]["FormPropertiesForm"],
+  messages: Translations["FormEditor"]["formPropertiesForm"],
 ): Field[] {
+  const rows = 3;
   return [
     {
       slug: "title",
       type: "SingleLineText",
-      title: messages.title.title,
-      helpText: messages.title.helpText,
+      ...messages.title,
     },
     {
-      slug: "layout",
-      type: "SingleSelect",
-      title: messages.layout.title,
-      helpText: messages.layout.helpText,
-      choices: [
-        {
-          slug: "vertical",
-          title: messages.layout.choices.vertical,
-        },
-        {
-          slug: "horizontal",
-          title: messages.layout.choices.horizontal,
-        },
-      ],
+      slug: "description",
+      type: "MultiLineText",
+      rows,
+      ...messages.description,
+    },
+    {
+      slug: "thankYouMessage",
+      type: "MultiLineText",
+      rows,
+      ...messages.thankYouMessage,
     },
   ];
 }

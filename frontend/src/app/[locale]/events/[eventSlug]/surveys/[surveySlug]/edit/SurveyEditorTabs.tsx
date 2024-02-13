@@ -1,6 +1,6 @@
 import ModalButton from "../dimensions/ModalButton";
 import { addLanguageVersion } from "./actions";
-import { EditSurveyPageFragment } from "@/__generated__/graphql";
+import { Survey } from "./models";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ServerTabs, { Tab } from "@/components/ServerTabs";
@@ -9,7 +9,7 @@ import { Translations } from "@/translations/en";
 interface Props {
   translations: Translations;
   eventSlug: string;
-  survey: EditSurveyPageFragment;
+  survey: Survey;
   active: string;
 }
 
@@ -23,35 +23,45 @@ export default function SurveyEditorTabs({
   const supportedLanguages: Record<string, string> =
     translations.LanguageSwitcher.supportedLanguages;
 
+  const url = `/events/${eventSlug}/surveys/${survey.slug}/edit/`;
   const tabs: Tab[] = [
     {
       slug: "properties",
       title: t.tabs.properties,
-      href: "/edit",
+      href: `${url}`,
     },
   ];
+
   for (const languageVersion of survey.languages) {
     // graphql enums are upper case :(
     const languageCode = languageVersion.language.toLowerCase();
+    const languageName =
+      supportedLanguages[languageCode] ?? languageVersion.language;
 
     tabs.push({
       slug: languageCode,
-      title: supportedLanguages[languageCode] ?? languageVersion.language,
-      href: `/events/${eventSlug}/surveys/${survey.slug}/edit/${languageCode}`,
+      title: t.tabs.languageVersion(languageName),
+      href: `${url}/${languageCode}`,
     });
   }
+
+  // languages that are not yet added to the survey
+  const potentialLanguages = Object.entries(supportedLanguages).filter(
+    ([languageCode, _]) =>
+      !survey.languages.find(
+        (form) => form.language.toLowerCase() === languageCode,
+      ),
+  );
 
   const addLanguageFields: Field[] = [
     {
       slug: "language",
       type: "SingleSelect",
       title: t.addLanguageModal.language,
-      choices: Object.entries(supportedLanguages).map(
-        ([languageCode, language]) => ({
-          slug: languageCode,
-          title: language,
-        }),
-      ),
+      choices: potentialLanguages.map(([languageCode, language]) => ({
+        slug: languageCode,
+        title: language,
+      })),
     },
   ];
 
@@ -66,6 +76,7 @@ export default function SurveyEditorTabs({
           label={`➕ ${t.tabs.addLanguage}…`}
           messages={t.addLanguageModal.actions}
           action={addLanguageVersion.bind(null, eventSlug, survey.slug)}
+          disabled={potentialLanguages.length === 0}
         >
           <SchemaForm
             fields={addLanguageFields}
@@ -75,5 +86,6 @@ export default function SurveyEditorTabs({
       );
     },
   });
+
   return <ServerTabs tabs={tabs} active={active} />;
 }

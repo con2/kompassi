@@ -3,9 +3,9 @@ import type { Translations } from "@/translations/en";
 
 export default function getFieldEditorFields(
   fieldType: FieldType,
-  messages: Translations["FormEditor"],
+  messages: Translations["FormEditor"]["editFieldForm"],
 ): Field[] {
-  const t = messages.editFieldForm;
+  const t = messages;
   const slugField: Field = {
     type: "SingleLineText",
     slug: "slug",

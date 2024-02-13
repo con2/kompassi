@@ -96,6 +96,7 @@ const translations: Translations = {
       preview: "Esikatsele",
       properties: "Asetukset",
     },
+
     editFieldForm: {
       slug: {
         title: "Tekninen nimi",
@@ -117,6 +118,22 @@ const translations: Translations = {
       choices: {
         title: "Vaihtoehdot",
         helpText: "arvo=teksti -pareja, yksi per rivi",
+      },
+    },
+
+    formPropertiesForm: {
+      title: {
+        title: "Otsikko",
+        helpText: "Ihmisluettava otsikko. Näytetään loppukäyttäjälle.",
+      },
+      description: {
+        title: "Kuvaus",
+        helpText: "Näytetään lomakkeen yläpuolella.",
+      },
+      thankYouMessage: {
+        title: "Kiitosviesti",
+        helpText:
+          "Näytetään lomakkeen lähetyksen jälkeen. Mikäli kiitosviestiä ei ole asetettu, näytetään oletusviesti.",
       },
     },
 
@@ -351,6 +368,7 @@ const translations: Translations = {
       responses: "Vastaukset",
       properties: "Kyselyn asetukset",
       addLanguage: "Lisää kieliversio",
+      languageVersion: (languageName: string) => `Kieliversio: ${languageName}`,
     },
     thankYou: {
       title: "Kiitos vastauksistasi!",
