@@ -255,7 +255,11 @@ const translations: Translations = {
       </>
     ),
     attributes: {
-      slug: "Tekninen nimi",
+      slug: {
+        title: "Tekninen nimi",
+        helpText:
+          "Koneellisesti luettava nimi kyselylle. Teknisen nimen täytyy olla uniikki tapahtuman sisällä. Teknistä nimeä ei voi muuttaa luomisen jälkeen.",
+      },
       title: "Otsikko",
       isActive: {
         title: "Avoinna vastauksille",
@@ -314,6 +318,7 @@ const translations: Translations = {
       },
     },
     actions: {
+      createSurvey: "Luo kysely",
       fillIn: {
         title: "Täytä",
         disabledTooltip: "Suljettua kyselyä ei voi täyttää",
@@ -468,6 +473,13 @@ const translations: Translations = {
           en: "Otsikko englanniksi",
           sv: "Otsikko ruotsiksi",
         },
+      },
+    },
+    createSurveyModal: {
+      title: "Luo uusi kysely",
+      actions: {
+        submit: "Luo kysely",
+        cancel: "Peruuta",
       },
     },
     editSurveyPage: {

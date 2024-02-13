@@ -256,7 +256,11 @@ const translations = {
       </>
     ),
     attributes: {
-      slug: "Slug",
+      slug: {
+        title: "Slug",
+        helpText:
+          "Machine-readable name of the survey. Must be unique within the event. Cannot be changed after creation.",
+      },
       title: "Title",
       isActive: {
         title: "Receiving responses",
@@ -315,6 +319,7 @@ const translations = {
       },
     },
     actions: {
+      createSurvey: "Create survey",
       fillIn: {
         title: "Fill in",
         disabledTooltip: "Closed survey cannot be filled in",
@@ -467,6 +472,13 @@ const translations = {
           en: "Title in English",
           sv: "Title in Swedish",
         },
+      },
+    },
+    createSurveyModal: {
+      title: "Create a new survey",
+      actions: {
+        submit: "Create",
+        cancel: "Cancel",
       },
     },
     editSurveyPage: {
