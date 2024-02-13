@@ -6,6 +6,7 @@ from django.conf import settings
 from core.graphql.event import FullEventType
 from core.graphql.profile import ProfileType
 from core.models import Event, Person
+from forms.graphql.mutations.create_survey import CreateSurvey
 from forms.graphql.mutations.create_survey_response import CreateSurveyResponse
 from forms.graphql.mutations.delete_survey_dimension import DeleteSurveyDimension
 from forms.graphql.mutations.delete_survey_dimension_value import DeleteSurveyDimensionValue
@@ -63,13 +64,18 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    put_survey_dimension = PutSurveyDimension.Field()
-    put_survey_dimension_value = PutSurveyDimensionValue.Field()
+    create_survey = CreateSurvey.Field()
+
     create_survey_response = CreateSurveyResponse.Field()
-    delete_survey_dimension = DeleteSurveyDimension.Field()
-    delete_survey_dimension_value = DeleteSurveyDimensionValue.Field()
-    init_file_upload = InitFileUpload.Field()
     update_response_dimensions = UpdateResponseDimensions.Field()
+
+    put_survey_dimension = PutSurveyDimension.Field()
+    delete_survey_dimension = DeleteSurveyDimension.Field()
+
+    put_survey_dimension_value = PutSurveyDimensionValue.Field()
+    delete_survey_dimension_value = DeleteSurveyDimensionValue.Field()
+
+    init_file_upload = InitFileUpload.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

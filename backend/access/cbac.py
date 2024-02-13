@@ -134,6 +134,28 @@ def is_graphql_allowed_for_model(
     )
 
 
+def graphql_check_create(model, event: "Event", info):
+    user = info.context.user
+    app = model._meta.app_label
+
+    allowed, claims = is_graphql_allowed(
+        user,
+        event=event,
+        operation="mutation",
+        app=app,
+        object_type=model.__name__,
+        field="create",  # XXX(#324)
+    )
+    if not allowed:
+        emit(
+            "access.cbac.denied",
+            request=info.context,
+            other_fields={"claims": claims},
+        )
+
+        raise Exception("Unauthorized")
+
+
 def graphql_check_access(instance, info, field: str, operation: Operation = "query"):
     user = info.context.user
     extra = dict(slug=instance.slug) if hasattr(instance, "slug") else {}

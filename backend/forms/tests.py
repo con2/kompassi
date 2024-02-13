@@ -5,6 +5,7 @@ import pytest
 import yaml
 
 from core.models import Event
+from graphql_api.schema import schema
 
 from .excel_export import get_header_cells, get_response_cells
 from .graphql.mutations.put_survey_dimension import PutSurveyDimension
@@ -730,3 +731,35 @@ def test_put_survey_dimension(_patched_graphql_check_access):
     assert dimension.title == {"en": "Test dimension", "sv": "Testdimension"}
     assert dimension.is_key_dimension is True
     assert dimension.is_multi_value is False
+
+
+@pytest.mark.django_db
+@mock.patch("forms.graphql.meta.graphql_check_access", autospec=True)
+def test_survey_without_forms(_patched_graphql_check_access):
+    """
+    A survey that doesn't yet have any Forms should degrade gracefully.
+    """
+    event, _created = Event.get_or_create_dummy()
+
+    Survey.objects.create(
+        event=event,
+        slug="test-survey",
+    )
+
+    result = schema.execute(
+        """
+          query SurveyWithoutForms {
+            event(slug: "dummy-event") {
+              forms {
+                survey(slug: "test-survey") {
+                  title(lang: "fi")
+                }
+              }
+            }
+          }
+        """,
+        None,
+        MOCK_INFO,
+    )
+
+    assert not result.errors

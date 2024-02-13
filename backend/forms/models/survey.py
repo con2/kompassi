@@ -147,7 +147,7 @@ class Survey(models.Model):
             except Form.DoesNotExist:
                 pass
 
-        raise Form.DoesNotExist()
+        return None
 
     @property
     def responses(self):

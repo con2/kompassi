@@ -34,7 +34,7 @@ class FormsEventMetaType(graphene.ObjectType):
         survey = Survey.objects.get(event=meta.event, slug=slug)
 
         if not survey.is_active:
-            graphql_check_access(meta, info, "survey")
+            graphql_check_access(survey, info, "self")
 
         return survey
 

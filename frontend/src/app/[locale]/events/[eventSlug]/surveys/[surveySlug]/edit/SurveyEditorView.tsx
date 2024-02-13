@@ -39,7 +39,7 @@ export default function SurveyEditorView({
 
       <ViewHeading>
         {t.editSurveyPage.title}
-        <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
+        <ViewHeading.Sub>{survey.title || survey.slug}</ViewHeading.Sub>
       </ViewHeading>
 
       <SurveyEditorTabs
