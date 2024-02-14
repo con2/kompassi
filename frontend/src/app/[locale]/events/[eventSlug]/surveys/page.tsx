@@ -13,7 +13,10 @@ import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import { publicUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
@@ -210,12 +213,12 @@ export default async function SurveysPage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <div className="d-flex align-items-middle">
+      <ViewHeadingActionsWrapper>
         <ViewHeading>
           {t.listTitle}
           <ViewHeading.Sub>{t.forEvent(data.event.name)}</ViewHeading.Sub>
         </ViewHeading>
-        <div className="ms-auto">
+        <ViewHeadingActions>
           <ModalButton
             className="btn btn-outline-primary"
             label={t.actions.createSurvey + "…"}
@@ -228,8 +231,8 @@ export default async function SurveysPage({ params }: Props) {
               messages={translations.SchemaForm}
             />
           </ModalButton>
-        </div>
-      </div>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <DataTable rows={surveys} columns={columns} />
       <p>{t.surveyTableFooter(surveys.length)}</p>

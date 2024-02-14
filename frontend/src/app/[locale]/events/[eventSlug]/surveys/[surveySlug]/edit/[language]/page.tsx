@@ -17,12 +17,14 @@ graphql(`
   fragment EditSurveyLanguagePage on SurveyType {
     slug
     title(lang: $locale)
+    canRemove
 
     form(lang: $language) {
       title
       description
       thankYouMessage
       fields
+      canRemove
     }
 
     languages {

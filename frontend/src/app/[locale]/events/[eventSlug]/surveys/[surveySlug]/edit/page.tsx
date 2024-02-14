@@ -22,6 +22,7 @@ graphql(`
     countResponsesByCurrentUser
     activeFrom
     activeUntil
+    canRemove
 
     languages {
       title
@@ -133,8 +134,6 @@ export default async function EditSurveyPage({ params }: Props) {
       ...t.attributes.activeUntil,
     },
   ];
-
-  console.log({ survey });
 
   return (
     <SurveyEditorView params={params} survey={survey} activeTab="properties">

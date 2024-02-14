@@ -64,6 +64,11 @@ class Form(models.Model):
         return self.title
 
     @property
+    def can_remove(self):
+        # TODO(#432) Revisit criteria for can_remove
+        return not self.responses.exists()
+
+    @property
     def enriched_fields(self) -> list[dict[str, Any]]:
         """
         There is a chicken and egg problem with the enriched_fields property, mostly when

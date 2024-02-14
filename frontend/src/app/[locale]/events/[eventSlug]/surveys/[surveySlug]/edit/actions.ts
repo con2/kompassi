@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
@@ -43,4 +44,26 @@ export async function updateSurvey(
     },
   });
   revalidatePath(`/events/${eventSlug}/surveys`);
+}
+
+const deleteSurveyMutation = graphql(`
+  mutation DeleteSurveyMutation($input: DeleteSurveyInput!) {
+    deleteSurvey(input: $input) {
+      slug
+    }
+  }
+`);
+
+export async function deleteSurvey(eventSlug: string, surveySlug: string) {
+  await getClient().mutate({
+    mutation: deleteSurveyMutation,
+    variables: {
+      input: {
+        eventSlug,
+        surveySlug,
+      },
+    },
+  });
+  revalidatePath(`/events/${eventSlug}/surveys`);
+  redirect(`/events/${eventSlug}/surveys`);
 }

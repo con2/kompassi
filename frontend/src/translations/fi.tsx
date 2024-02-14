@@ -374,6 +374,19 @@ const translations: Translations = {
           </>
         ),
       },
+      deleteSurvey: {
+        title: "Poista kysely",
+        cannotRemove: "Kyselyä, joka on jo saanut vastauksia, ei voi poistaa.",
+        confirmation: (surveyTitle: string) => (
+          <>
+            Haluatko varmasti poistaa kyselyn <strong>{surveyTitle}</strong>?
+          </>
+        ),
+        modalActions: {
+          submit: "Poista",
+          cancel: "Peruuta",
+        },
+      },
       editDimension: "Muokkaa dimensiota",
       editDimensionValue: "Muokkaa arvoa",
       editSurvey: "Muokkaa",
@@ -413,7 +426,15 @@ const translations: Translations = {
       unchecked: "Ei valittu",
     },
     addLanguageModal: {
-      language: "Kieli",
+      language: {
+        title: "Kieli",
+        helpText: "Vain tuettuja kieliä voi lisätä.",
+      },
+      copyFrom: {
+        title: "Alusta kieliversiosta",
+        helpText:
+          "Uusi kieliversio luodaan valitun kieliversion pohjalta. Voit myös valita lähteä liikkeelle tyhjällä lomakkeella.",
+      },
       actions: {
         submit: "Jatka",
         cancel: "Peruuta",

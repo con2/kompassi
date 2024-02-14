@@ -32,6 +32,8 @@ export default function ModalButton({
     setIsVisible(false);
   }, []);
 
+  /// TODO Change manual button to React Bootstrap one.
+  /// Add a tooltip to the button if it is disabled to tell us why.
   return (
     <>
       <button

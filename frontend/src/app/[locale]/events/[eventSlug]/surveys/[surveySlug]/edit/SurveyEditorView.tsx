@@ -3,10 +3,15 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
+import ModalButton from "../dimensions/ModalButton";
+import { deleteSurvey } from "./actions";
 import { Survey } from "./models";
 import SurveyEditorTabs from "./SurveyEditorTabs";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 interface Props {
@@ -21,6 +26,7 @@ interface Props {
   children: ReactNode;
 }
 
+/// TODO could this / should this be a layout?
 export default function SurveyEditorView({
   params,
   survey,
@@ -37,10 +43,25 @@ export default function SurveyEditorView({
         &lt; {t.actions.returnToSurveyList}
       </Link>
 
-      <ViewHeading>
-        {t.editSurveyPage.title}
-        <ViewHeading.Sub>{survey.title || survey.slug}</ViewHeading.Sub>
-      </ViewHeading>
+      <ViewHeadingActionsWrapper>
+        <ViewHeading>
+          {t.editSurveyPage.title}
+          <ViewHeading.Sub>{survey.title || survey.slug}</ViewHeading.Sub>
+        </ViewHeading>
+        <ViewHeadingActions>
+          <ModalButton
+            title={t.actions.deleteSurvey.title}
+            messages={t.actions.deleteSurvey.modalActions}
+            className="btn btn-outline-danger"
+            submitButtonVariant="danger"
+            action={deleteSurvey.bind(null, eventSlug, survey.slug)}
+            disabled={!survey.canRemove}
+            // TODO disabledMessage={t.actions.deleteSurvey.cannotRemove}
+          >
+            {t.actions.deleteSurvey.confirmation(survey.title || survey.slug)}
+          </ModalButton>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <SurveyEditorTabs
         eventSlug={eventSlug}

@@ -57,13 +57,37 @@ export default function SurveyEditorTabs({
     {
       slug: "language",
       type: "SingleSelect",
-      title: t.addLanguageModal.language,
+      presentation: "dropdown",
+      required: true,
       choices: potentialLanguages.map(([languageCode, language]) => ({
         slug: languageCode,
         title: language,
       })),
+      ...t.addLanguageModal.language,
     },
   ];
+
+  if (survey.languages.length > 0) {
+    addLanguageFields.push({
+      slug: "copyFrom",
+      type: "SingleSelect",
+      presentation: "dropdown",
+      choices: survey.languages.map((form) => ({
+        slug: form.language.toLowerCase(),
+        title: supportedLanguages[form.language.toLowerCase()] ?? form.language,
+      })),
+      ...t.addLanguageModal.copyFrom,
+    });
+  }
+
+  // prefill the form if there's only one option
+  const addLanguageValues: Record<string, string> = {};
+  if (potentialLanguages.length === 1) {
+    addLanguageValues.language = potentialLanguages[0][0];
+  }
+  if (survey.languages.length === 1) {
+    addLanguageValues.copyFrom = survey.languages[0].language.toLowerCase();
+  }
 
   tabs.push({
     slug: "addLanguage",
@@ -80,6 +104,7 @@ export default function SurveyEditorTabs({
         >
           <SchemaForm
             fields={addLanguageFields}
+            values={addLanguageValues}
             messages={translations.SchemaForm}
           />
         </ModalButton>

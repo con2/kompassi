@@ -182,6 +182,19 @@ class SurveyType(LimitedSurveyType):
         # TODO supported_languages order instead of alphabetical?
         return parent.languages.order_by("language")
 
+    @staticmethod
+    def resolve_can_remove(survey: Survey, info):
+        """
+        Surveys that have language versions cannot be removed.
+        Having language versions is also a prerequisite for a survey to have responses.
+        """
+        return survey.can_remove
+
+    can_remove = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_remove.__doc__ or ""),
+    )
+
     class Meta:
         model = Survey
         fields = (

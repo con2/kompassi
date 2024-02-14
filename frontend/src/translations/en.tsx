@@ -373,6 +373,20 @@ const translations = {
           </>
         ),
       },
+      deleteSurvey: {
+        title: "Remove survey",
+        cannotRemove: "A survey that has responses cannot be removed.",
+        confirmation: (surveyTitle: string) => (
+          <>
+            Are you sure you want to remove the survey{" "}
+            <strong>{surveyTitle}</strong>?
+          </>
+        ),
+        modalActions: {
+          submit: "Remove",
+          cancel: "Cancel",
+        },
+      },
       editDimension: "Edit dimension",
       editDimensionValue: "Edit value",
       editSurvey: "Edit",
@@ -409,7 +423,15 @@ const translations = {
       unchecked: "Not checked",
     },
     addLanguageModal: {
-      language: "Language",
+      language: {
+        title: "Language",
+        helpText: "Only supported languages can be added.",
+      },
+      copyFrom: {
+        title: "Copy from",
+        helpText:
+          "The new language version will be a copy of the selected one. You can also select to start from scratch.",
+      },
       actions: {
         submit: "Continue",
         cancel: "Cancel",
