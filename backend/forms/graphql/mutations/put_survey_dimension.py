@@ -1,7 +1,7 @@
 import graphene
 from graphene.types.generic import GenericScalar
 
-from access.cbac import graphql_check_access
+from access.cbac import graphql_check_instance
 
 from ...models.dimension import DimensionDTO
 from ...models.survey import Survey
@@ -31,7 +31,7 @@ class PutSurveyDimension(graphene.Mutation):
         form_data: dict[str, str] = input.form_data  # type: ignore
 
         # TODO bastardization of graphql_check_access, rethink
-        graphql_check_access(survey, info, "dimensions", "mutation")
+        graphql_check_instance(survey, info, "dimensions", "mutation")
 
         if input.dimension_slug is None:
             if survey.dimensions.filter(slug=form_data["slug"]).exists():

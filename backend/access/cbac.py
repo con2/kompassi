@@ -134,17 +134,18 @@ def is_graphql_allowed_for_model(
     )
 
 
-def graphql_check_create(model, event: "Event", info):
+# TODO(#324) rethink
+def graphql_check_model(model, event: "Event", info, operation: Operation = "query"):
     user = info.context.user
     app = model._meta.app_label
 
     allowed, claims = is_graphql_allowed(
         user,
         event=event,
-        operation="mutation",
+        operation=operation,
         app=app,
         object_type=model.__name__,
-        field="create",  # XXX(#324)
+        field="self",
     )
     if not allowed:
         emit(
@@ -156,7 +157,12 @@ def graphql_check_create(model, event: "Event", info):
         raise Exception("Unauthorized")
 
 
-def graphql_check_access(instance, info, field: str, operation: Operation = "query"):
+# TODO(#324) rethink
+def graphql_check_instance(instance, info, field: str, operation: Operation = "query"):
+    """
+    Check that the user has access to a single object. Pass "self" as the field
+    for operations targeting the entire model instance.
+    """
     user = info.context.user
     extra = dict(slug=instance.slug) if hasattr(instance, "slug") else {}
 
@@ -190,7 +196,7 @@ def graphql_query_cbac_required(func: Callable):
         # used instead of info.field_name because info.field_name is camel case
         field = func.__name__.removeprefix("resolve_")
 
-        graphql_check_access(instance, info, field=field)
+        graphql_check_instance(instance, info, field=field)
         return func(instance, info, *args, **kwargs)
 
     return wrapper

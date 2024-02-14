@@ -134,6 +134,8 @@ export default async function EditSurveyPage({ params }: Props) {
     },
   ];
 
+  console.log({ survey });
+
   return (
     <SurveyEditorView params={params} survey={survey} activeTab="properties">
       <form action={updateSurvey.bind(null, eventSlug, surveySlug)}>

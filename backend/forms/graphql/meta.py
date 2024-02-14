@@ -2,7 +2,7 @@ import graphene
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 
-from access.cbac import graphql_check_access
+from access.cbac import graphql_check_instance, graphql_check_model
 from core.utils import get_objects_within_period, normalize_whitespace
 
 from ..models.meta import FormsEventMeta, FormsProfileMeta
@@ -20,7 +20,7 @@ class FormsEventMetaType(graphene.ObjectType):
     @staticmethod
     def resolve_surveys(meta: FormsEventMeta, info, include_inactive: bool = False):
         if include_inactive:
-            graphql_check_access(meta, info, "surveys")
+            graphql_check_model(Survey, meta.event, info)
             qs = Survey.objects.filter(event=meta.event)
         else:
             qs = get_objects_within_period(Survey, event=meta.event)
@@ -34,7 +34,7 @@ class FormsEventMetaType(graphene.ObjectType):
         survey = Survey.objects.get(event=meta.event, slug=slug)
 
         if not survey.is_active:
-            graphql_check_access(survey, info, "self")
+            graphql_check_instance(survey, info, "self")
 
         return survey
 

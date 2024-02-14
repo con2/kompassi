@@ -95,3 +95,11 @@ class RenderTemplate:
 
     def render(self, form, form_style, context, template_pack=None, **kwargs):
         return get_template(self.template_name).render({})
+
+
+def camel_case_to_snake_case(camel_case: str) -> str:
+    return "".join(["_" + c.lower() if c.isupper() else c for c in camel_case]).lstrip("_")
+
+
+def camel_case_keys_to_snake_case(form_data: dict[str, str]):
+    return {camel_case_to_snake_case(k): v for (k, v) in form_data.items()}

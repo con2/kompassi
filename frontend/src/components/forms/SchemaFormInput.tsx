@@ -1,5 +1,7 @@
+import { Temporal } from "@js-temporal/polyfill";
 import type { Field } from "./models";
 import UploadedFileCards from "./UploadedFileCards";
+import { timezone } from "@/config";
 import type { Translations } from "@/translations/en";
 
 interface SchemaFormInputProps {
@@ -10,6 +12,15 @@ interface SchemaFormInputProps {
 }
 
 const defaultRows = 8;
+
+/// Full ISO 8601 to YYYY-MM-DDTHH:MM in local time.
+/// This is used to render the value attribute of <input type="datetime-local">.
+function dateTimeToHtml(value: string) {
+  return Temporal.Instant.from(value)
+    .toZonedDateTimeISO(timezone)
+    .toString()
+    .slice(0, 16);
+}
 
 /** SchemaFormInput is responsible for rendering the actual input component. */
 function SchemaFormInput({
@@ -235,13 +246,11 @@ function SchemaFormInput({
         />
       );
     case "DateTimeField":
-      // TODO browsers don't really support datetime-local
-      // split into separate .date and .time subfields
       return (
         <input
           className="form-control"
           type="datetime-local"
-          defaultValue={value}
+          defaultValue={value ? dateTimeToHtml(value) : undefined}
           required={required}
           readOnly={readOnly}
           id={slug}

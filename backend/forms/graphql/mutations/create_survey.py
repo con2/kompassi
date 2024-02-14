@@ -1,6 +1,6 @@
 import graphene
 
-from access.cbac import graphql_check_create
+from access.cbac import graphql_check_model
 from core.models import Event
 
 from ...models.survey import Survey
@@ -25,6 +25,6 @@ class CreateSurvey(graphene.Mutation):
         input: CreateSurveyInput,
     ):
         event = Event.objects.get(slug=input.event_slug)
-        graphql_check_create(Survey, event, info)
+        graphql_check_model(Survey, event, info, "mutation")
         survey = Survey.objects.create(event=event, slug=input.survey_slug)
         return CreateSurvey(survey=survey)  # type: ignore

@@ -14,6 +14,7 @@ from forms.graphql.mutations.init_file_upload import InitFileUpload
 from forms.graphql.mutations.put_survey_dimension import PutSurveyDimension
 from forms.graphql.mutations.put_survey_dimension_value import PutSurveyDimensionValue
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
+from forms.graphql.mutations.update_survey import UpdateSurvey
 
 
 @dataclass
@@ -65,6 +66,7 @@ class Query(graphene.ObjectType):
 
 class Mutation(graphene.ObjectType):
     create_survey = CreateSurvey.Field()
+    update_survey = UpdateSurvey.Field()
 
     create_survey_response = CreateSurveyResponse.Field()
     update_response_dimensions = UpdateResponseDimensions.Field()

@@ -1,7 +1,7 @@
 import graphene
 from graphene.types.generic import GenericScalar
 
-from access.cbac import graphql_check_access
+from access.cbac import graphql_check_instance
 
 from ...models.field import Field, FieldType
 from ...models.survey import Survey
@@ -42,7 +42,7 @@ class UpdateResponseDimensions(graphene.Mutation):
         dimensions = list(survey.dimensions.all())
 
         # TODO bastardization of graphql_check_access, rethink
-        graphql_check_access(survey, info, "response", "mutation")
+        graphql_check_instance(survey, info, "response", "mutation")
 
         fields_single = [Field.from_dimension(dimension, FieldType.SINGLE_SELECT) for dimension in dimensions]
         fields_multi = [Field.from_dimension(dimension, FieldType.MULTI_SELECT) for dimension in dimensions]

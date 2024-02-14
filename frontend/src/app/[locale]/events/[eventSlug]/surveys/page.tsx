@@ -39,7 +39,7 @@ const query = graphql(`
       name
 
       forms {
-        surveys {
+        surveys(includeInactive: true) {
           ...Survey
         }
       }
