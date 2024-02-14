@@ -337,7 +337,7 @@ const translations = {
         tooltip: "Copy link to clipboard",
         success: "A link to the survey has been copied to clipboard.",
       },
-      viewResponses: "View responses",
+      viewResponses: "Responses",
       submit: "Submit",
       downloadAsExcel: "Download as Excel",
       returnToResponseList: "Return to the list of responses",

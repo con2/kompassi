@@ -24,6 +24,7 @@ const documents = {
     "\n  fragment ValueFields on SurveyDimensionValueType {\n    slug\n    color\n    canRemove\n    title(lang: $locale)\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n  }\n": types.ValueFieldsFragmentDoc,
     "\n  fragment DimensionRowGroup on SurveyDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isKeyDimension\n    isMultiValue\n    isShownToRespondent\n    titleFi: title(lang: \"fi\")\n    titleEn: title(lang: \"en\")\n    values {\n      ...ValueFields\n    }\n  }\n": types.DimensionRowGroupFragmentDoc,
     "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n": types.DimensionsListDocument,
+    "\n  mutation UpdateSurveyLanguageMutation($input: UpdateSurveyLanguageInput!) {\n    updateSurveyLanguage(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateSurveyLanguageMutationDocument,
     "\n  fragment EditSurveyLanguagePage on SurveyType {\n    slug\n    title(lang: $locale)\n    canRemove\n\n    form(lang: $language) {\n      title\n      description\n      thankYouMessage\n      fields\n      canRemove\n    }\n\n    languages {\n      language\n    }\n  }\n": types.EditSurveyLanguagePageFragmentDoc,
     "\n  query EditSurveyLanguagePageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          ...EditSurveyLanguagePage\n        }\n      }\n    }\n  }\n": types.EditSurveyLanguagePageQueryDocument,
     "\n  mutation UpdateSurveyMutation($input: UpdateSurveyInput!) {\n    updateSurvey(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateSurveyMutationDocument,
@@ -104,6 +105,10 @@ export function graphql(source: "\n  fragment DimensionRowGroup on SurveyDimensi
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          title(lang: $locale)\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateSurveyLanguageMutation($input: UpdateSurveyLanguageInput!) {\n    updateSurveyLanguage(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateSurveyLanguageMutation($input: UpdateSurveyLanguageInput!) {\n    updateSurveyLanguage(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

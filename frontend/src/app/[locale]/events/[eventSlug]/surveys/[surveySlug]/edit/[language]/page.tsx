@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import SurveyEditorView from "../SurveyEditorView";
-import { updateForm } from "./actions";
+import { updateSurveyLanguage } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -127,7 +127,14 @@ export default async function EditSurveyPage({ params }: Props) {
 
   return (
     <SurveyEditorView params={params} survey={survey} activeTab={language}>
-      <form action={updateForm.bind(null, eventSlug, surveySlug, language)}>
+      <form
+        action={updateSurveyLanguage.bind(
+          null,
+          eventSlug,
+          surveySlug,
+          language,
+        )}
+      >
         <SchemaForm
           fields={fields}
           values={form}

@@ -16,6 +16,7 @@ from forms.graphql.mutations.put_survey_dimension import PutSurveyDimension
 from forms.graphql.mutations.put_survey_dimension_value import PutSurveyDimensionValue
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
+from forms.graphql.mutations.update_survey_language import UpdateSurveyLanguage
 
 
 @dataclass
@@ -69,6 +70,10 @@ class Mutation(graphene.ObjectType):
     create_survey = CreateSurvey.Field()
     update_survey = UpdateSurvey.Field()
     delete_survey = DeleteSurvey.Field()
+
+    # create_survey_language = CreateSurveyLanguage.Field()
+    update_survey_language = UpdateSurveyLanguage.Field()
+    # delete_survey_language = DeleteSurveyLanguage.Field()
 
     create_survey_response = CreateSurveyResponse.Field()
     update_response_dimensions = UpdateResponseDimensions.Field()
