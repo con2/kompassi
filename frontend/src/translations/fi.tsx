@@ -268,6 +268,16 @@ const translations: Translations = {
         openingAt: (time: Date) => `Avautuu ${time.toLocaleString()}`,
         closed: "Suljettu",
       },
+      activeFrom: {
+        title: "Avautumisaika",
+        helpText:
+          "Jos tämä on asetettu, kysely alkaa ottaa vastaan vastauksia tähän aikaan.",
+      },
+      activeUntil: {
+        title: "Sulkeutumisaika",
+        helpText:
+          "Jos tämä on asetettu, kysely lakkaa ottamasta vastaan vastauksia tähän aikaan.",
+      },
       countResponses: "Vastauksia",
       languages: "Kielet",
       actions: "Toiminnot",

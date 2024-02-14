@@ -269,6 +269,14 @@ const translations = {
         openingAt: (time: Date) => `Opening at ${time.toLocaleString()}`,
         closed: "Closed",
       },
+      activeFrom: {
+        title: "Active from",
+        helpText: "If set, the survey will open for responses at this time.",
+      },
+      activeUntil: {
+        title: "Active until",
+        helpText: "If set, the survey will close for responses at this time.",
+      },
       countResponses: "Responses",
       languages: "Languages",
       actions: "Actions",

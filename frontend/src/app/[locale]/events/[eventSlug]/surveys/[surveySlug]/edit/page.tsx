@@ -20,6 +20,8 @@ graphql(`
     anonymity
     maxResponsesPerUser
     countResponsesByCurrentUser
+    activeFrom
+    activeUntil
 
     languages {
       title
@@ -119,6 +121,16 @@ export default async function EditSurveyPage({ params }: Props) {
       slug: "maxResponsesPerUser",
       type: "NumberField",
       ...t.attributes.maxResponsesPerUser,
+    },
+    {
+      slug: "activeFrom",
+      type: "DateTimeField",
+      ...t.attributes.activeFrom,
+    },
+    {
+      slug: "activeUntil",
+      type: "DateTimeField",
+      ...t.attributes.activeUntil,
     },
   ];
 

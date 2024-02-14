@@ -210,6 +210,44 @@ function SchemaFormInput({
           />
         );
       }
+    case "DateField":
+      return (
+        <input
+          className="form-control"
+          type={"date"}
+          defaultValue={value}
+          required={required}
+          readOnly={readOnly}
+          id={slug}
+          name={slug}
+        />
+      );
+    case "TimeField":
+      return (
+        <input
+          className="form-control"
+          pattern="[0-9]{1,2}:[0-9]{2}"
+          defaultValue={value}
+          required={required}
+          readOnly={readOnly}
+          id={slug}
+          name={slug}
+        />
+      );
+    case "DateTimeField":
+      // TODO browsers don't really support datetime-local
+      // split into separate .date and .time subfields
+      return (
+        <input
+          className="form-control"
+          type="datetime-local"
+          defaultValue={value}
+          required={required}
+          readOnly={readOnly}
+          id={slug}
+          name={slug}
+        />
+      );
   }
 }
 
