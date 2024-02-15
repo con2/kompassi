@@ -100,7 +100,9 @@ export default function SurveyEditorTabs({
           label={`➕ ${t.tabs.addLanguage}…`}
           messages={t.addLanguageModal.actions}
           action={addLanguageVersion.bind(null, eventSlug, survey.slug)}
-          disabled={potentialLanguages.length === 0}
+          // TODO implement addLanguageVersion
+          // disabled={potentialLanguages.length === 0}
+          disabled
         >
           <SchemaForm
             fields={addLanguageFields}
