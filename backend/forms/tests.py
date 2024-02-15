@@ -593,8 +593,8 @@ def test_summarize_responses():
 
 
 @pytest.mark.django_db
-@mock.patch("forms.graphql.mutations.update_response_dimensions.graphql_check_access", autospec=True)
-def test_lift_and_set_dimensions(_patched_graphql_check_access):
+@mock.patch("forms.graphql.mutations.update_response_dimensions.graphql_check_instance", autospec=True)
+def test_lift_and_set_dimensions(_patched_graphql_check_instance):
     event, _created = Event.get_or_create_dummy()
 
     survey = Survey.objects.create(
@@ -698,8 +698,8 @@ def test_lift_and_set_dimensions(_patched_graphql_check_access):
 
 
 @pytest.mark.django_db
-@mock.patch("forms.graphql.mutations.put_survey_dimension.graphql_check_access", autospec=True)
-def test_put_survey_dimension(_patched_graphql_check_access):
+@mock.patch("forms.graphql.mutations.put_survey_dimension.graphql_check_instance", autospec=True)
+def test_put_survey_dimension(_patched_graphql_check_instance):
     form_data = {
         "slug": "test-dimension",
         "title.en": "Test dimension",
@@ -734,8 +734,8 @@ def test_put_survey_dimension(_patched_graphql_check_access):
 
 
 @pytest.mark.django_db
-@mock.patch("forms.graphql.meta.graphql_check_access", autospec=True)
-def test_survey_without_forms(_patched_graphql_check_access):
+@mock.patch("forms.graphql.meta.graphql_check_instance", autospec=True)
+def test_survey_without_forms(_patched_graphql_check_instance):
     """
     A survey that doesn't yet have any Forms should degrade gracefully.
     """
