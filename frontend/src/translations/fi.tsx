@@ -150,6 +150,9 @@ const translations: Translations = {
       FileUpload: "Tiedoston lähetys",
       NumberField: "Numero",
       DecimalField: "Desimaaliluku",
+      DateField: "Päivämäärä",
+      DateTimeField: "Päivämäärä ja kellonaika",
+      TimeField: "Kellonaika",
     },
 
     removeFieldModal: {

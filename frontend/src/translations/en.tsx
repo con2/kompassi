@@ -137,8 +137,8 @@ const translations = {
     },
 
     fieldTypes: {
-      SingleLineText: "Single line text field",
-      MultiLineText: "Multi-line text field",
+      SingleLineText: "Single line text",
+      MultiLineText: "Multi-line text",
       Divider: "Divider",
       StaticText: "Static text",
       Spacer: "Empty space",
@@ -149,6 +149,9 @@ const translations = {
       FileUpload: "File upload",
       NumberField: "Number",
       DecimalField: "Decimal number",
+      DateField: "Date",
+      DateTimeField: "Date and time",
+      TimeField: "Time",
     },
 
     removeFieldModal: {

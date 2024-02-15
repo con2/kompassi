@@ -24,7 +24,10 @@ const EditFieldModal = ({
   messages,
 }: EditFieldModalProps) => {
   const t = messages.FormEditor;
-  const fields = getFieldEditorFields(initialValues.type, messages.FormEditor);
+  const fields = getFieldEditorFields(
+    initialValues.type,
+    messages.FormEditor.editFieldForm,
+  );
   const modal = useModal({ isOpen: true });
 
   return (
