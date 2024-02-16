@@ -62,17 +62,6 @@ const translations = {
       noFileUploaded: "No file uploaded.",
     },
   },
-  Forms: {
-    heading: "Forms",
-    title: "Title",
-    slug: "Slug",
-    create: "New form",
-  },
-  FormResponses: {
-    heading: "Form responses",
-    form: "Form",
-    user: "User",
-  },
   MainView: {
     defaultErrorMessage:
       "Something went wrong. There may be further information in the JavaScript console.",
@@ -96,6 +85,22 @@ const translations = {
       properties: "Properties",
     },
 
+    attributes: {
+      title: {
+        title: "Title",
+        helpText: "Human-readable title for the form.",
+      },
+      description: {
+        title: "Description",
+        helpText: "Will be shown to the user at the top of the form.",
+      },
+      thankYouMessage: {
+        title: "Thank you message",
+        helpText:
+          "Will be shown to the user after they have submitted the form. If the thank you message is not set, the default message will be shown.",
+      },
+    },
+
     editFieldForm: {
       slug: {
         title: "Technical name",
@@ -117,22 +122,6 @@ const translations = {
       choices: {
         title: "Choices",
         helpText: "value=label pairs, separated by newline",
-      },
-    },
-
-    formPropertiesForm: {
-      title: {
-        title: "Title",
-        helpText: "Human-readable title for the form.",
-      },
-      description: {
-        title: "Description",
-        helpText: "Will be shown to the user at the top of the form.",
-      },
-      thankYouMessage: {
-        title: "Thank you message",
-        helpText:
-          "Will be shown to the user after they have submitted the form. If the thank you message is not set, the default message will be shown.",
       },
     },
 
@@ -437,6 +426,18 @@ const translations = {
       },
       actions: {
         submit: "Continue",
+        cancel: "Cancel",
+      },
+    },
+    deleteLanguageModal: {
+      title: "Remove language version",
+      confirmation: (languageName: string) => (
+        <>
+          Remove the <strong>{languageName}</strong> language version?
+        </>
+      ),
+      modalActions: {
+        submit: "Remove",
         cancel: "Cancel",
       },
     },

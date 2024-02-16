@@ -27,6 +27,7 @@ graphql(`
     languages {
       title
       language
+      canRemove
     }
   }
 `);

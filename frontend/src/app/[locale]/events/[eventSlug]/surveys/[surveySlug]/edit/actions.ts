@@ -5,17 +5,35 @@ import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-export async function addLanguageVersion(
+const createSurveyLanguageMutation = graphql(`
+  mutation CreateSurveyLanguage($input: CreateSurveyLanguageInput!) {
+    createSurveyLanguage(input: $input) {
+      form {
+        language
+      }
+    }
+  }
+`);
+
+export async function createSurveyLanguage(
   eventSlug: string,
   surveySlug: string,
   formData: FormData,
 ) {
-  // TODO stubb
-  console.log("addLanguageVersion", {
-    eventSlug,
-    surveySlug,
-    formData: Object.fromEntries(formData),
+  const language = "" + formData.get("language");
+  await getClient().mutate({
+    mutation: createSurveyLanguageMutation,
+    variables: {
+      input: {
+        eventSlug,
+        surveySlug,
+        language,
+        copyFrom: "" + formData.get("copyFrom"),
+      },
+    },
   });
+  revalidatePath(`/events/${eventSlug}/surveys`);
+  redirect(`/events/${eventSlug}/surveys/${surveySlug}/edit/${language}`);
 }
 
 const updateSurveyMutation = graphql(`
