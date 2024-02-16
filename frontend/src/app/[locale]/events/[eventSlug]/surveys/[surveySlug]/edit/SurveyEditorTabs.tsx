@@ -23,12 +23,17 @@ export default function SurveyEditorTabs({
   const supportedLanguages: Record<string, string> =
     translations.LanguageSwitcher.supportedLanguages;
 
-  const url = `/events/${eventSlug}/surveys/${survey.slug}/edit/`;
+  const url = `/events/${eventSlug}/surveys/${survey.slug}`;
   const tabs: Tab[] = [
     {
       slug: "properties",
       title: t.tabs.properties,
-      href: `${url}`,
+      href: `${url}/edit`,
+    },
+    {
+      slug: "dimensions",
+      title: t.attributes.dimensions,
+      href: `${url}/dimensions`,
     },
   ];
 
@@ -41,7 +46,7 @@ export default function SurveyEditorTabs({
     tabs.push({
       slug: languageCode,
       title: t.tabs.languageVersion(languageName),
-      href: `${url}/${languageCode}`,
+      href: `${url}/edit/${languageCode}`,
     });
   }
 

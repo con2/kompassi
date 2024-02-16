@@ -361,8 +361,8 @@ const translations: Translations = {
           "Arvoa ei voi poistaa, jos se on jo liitetty kyselyvastaukseen.",
         confirmation: (dimensionTitle: string, valueTitle: string) => (
           <>
-            Poista arvo <strong>{dimensionTitle}</strong>
-            dimensionsta <strong>{valueTitle}</strong>?
+            Poista arvo <strong>{dimensionTitle}</strong> dimensionsta{" "}
+            <strong>{valueTitle}</strong>?
           </>
         ),
       },
