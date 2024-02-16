@@ -12,7 +12,10 @@ export type FieldType =
   | "RadioMatrix"
   | "FileUpload"
   | "NumberField"
-  | "DecimalField";
+  | "DecimalField"
+  | "DateField"
+  | "TimeField"
+  | "DateTimeField";
 
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
@@ -27,6 +30,9 @@ export const fieldTypes: FieldType[] = [
   "FileUpload",
   "NumberField",
   "DecimalField",
+  "DateField",
+  "TimeField",
+  "DateTimeField",
 ];
 
 /** These field types represent static elements on the form and don't have values. */
@@ -93,6 +99,18 @@ export interface DecimalField extends BaseField {
   maxValue?: number;
 }
 
+export interface DateField extends BaseField {
+  type: "DateField";
+}
+
+export interface TimeField extends BaseField {
+  type: "TimeField";
+}
+
+export interface DateTimeField extends BaseField {
+  type: "DateTimeField";
+}
+
 export interface SingleCheckbox extends BaseField {
   type: "SingleCheckbox";
 }
@@ -148,7 +166,10 @@ export type Field =
   | RadioMatrix
   | FileUpload
   | NumberField
-  | DecimalField;
+  | DecimalField
+  | DateField
+  | TimeField
+  | DateTimeField;
 
 export interface FormSchema {
   title: string;

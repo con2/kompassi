@@ -1,4 +1,4 @@
-import { Choice, SelectFieldSummary } from "@/components/SchemaForm/models";
+import { Choice, SelectFieldSummary } from "@/components/forms/models";
 import { Translations } from "@/translations/en";
 
 interface SelectFieldSummaryComponentProps {

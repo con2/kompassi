@@ -14,8 +14,8 @@ import {
   buildDimensionFilters,
   getDimensionValueTitle,
 } from "@/components/dimensions/helpers";
-import { validateFields } from "@/components/SchemaForm/models";
-import UploadedFileLink from "@/components/SchemaForm/UploadedFileLink";
+import { validateFields } from "@/components/forms/models";
+import UploadedFileLink from "@/components/forms/UploadedFileLink";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";

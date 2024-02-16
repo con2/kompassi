@@ -91,56 +91,17 @@ const translations: Translations = {
     saveFailedErrorMessage:
       "Jokin meni pieleen lomaketta tallennettaessa. JavaScript-konsolissa voi olla lisätietoja.",
 
-    Tabs: {
+    tabs: {
       design: "Muokkaa",
       preview: "Esikatsele",
       properties: "Asetukset",
     },
 
-    FormPropertiesForm: {
-      flags: {
-        title: "Toiminta",
-      },
-      title: {
-        title: "Lomakkeen otsikko",
-        helpText:
-          "Ihmisen luettava lomakkeen otsikko. Ei välttämättä näytetä lomakkeiden kaikkien käyttötarkoitusten yhteydessä.",
-      },
+    editFieldForm: {
       slug: {
         title: "Tekninen nimi",
         helpText:
-          "Lomakkeen tekninen nimi. Tulee osaksi lomakkeen osoitetta. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla.",
-      },
-      layout: {
-        title: "Asettelu",
-        helpText:
-          "Tässä valittu asettelu ei välttämättä ole käytössä kaikkien käyttötarkoitusten yhteydessä (esim. ahtaassa tilassa asettelu voi olla pakotettu vaakasuuntaiseksi).",
-        choices: {
-          horizontal: "Vaakasuuntainen",
-          vertical: "Pystysuuntainen",
-        },
-      },
-      standalone: {
-        title: "Itsenäinen lomake",
-        helpText:
-          "Itsenäisen lomakkeen voi täyttää yleiskäyttöisen lomakenäkymän kautta. Ei-itsenäisen lomakkeen voi täyttää vain toiseen käyttötapaukseen upotettuna.",
-      },
-      active: {
-        title: "Aktiivinen",
-        helpText:
-          "Ei-aktiivisia lomakkeita ei voi täyttää. Tämä koskee ainoastaan itsenäisiä lomakkeita; ei-itsenäisen lomakkeen aktiivisuuden ratkaisee käyttötapaus, johon lomake on upotettu.",
-      },
-      loginRequired: {
-        title: "Vaatii sisäänkirjautumisen",
-        helpText: "Koskee ainoastaan itsenäisiä lomakkeita.",
-      },
-    },
-
-    EditFieldForm: {
-      name: {
-        title: "Tekninen nimi",
-        helpText:
-          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla.",
+          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja viiva -. Ei saa alkaa numerolla.",
       },
       title: {
         title: "Otsikko",
@@ -154,13 +115,29 @@ const translations: Translations = {
       required: {
         title: "Pakollinen",
       },
-      options: {
+      choices: {
         title: "Vaihtoehdot",
         helpText: "arvo=teksti -pareja, yksi per rivi",
       },
     },
 
-    FieldTypes: {
+    formPropertiesForm: {
+      title: {
+        title: "Otsikko",
+        helpText: "Ihmisluettava otsikko. Näytetään loppukäyttäjälle.",
+      },
+      description: {
+        title: "Kuvaus",
+        helpText: "Näytetään lomakkeen yläpuolella.",
+      },
+      thankYouMessage: {
+        title: "Kiitosviesti",
+        helpText:
+          "Näytetään lomakkeen lähetyksen jälkeen. Mikäli kiitosviestiä ei ole asetettu, näytetään oletusviesti.",
+      },
+    },
+
+    fieldTypes: {
       SingleLineText: "Yksirivinen tekstikenttä",
       MultiLineText: "Monirivinen tekstikenttä",
       Divider: "Erotinviiva",
@@ -168,13 +145,31 @@ const translations: Translations = {
       Spacer: "Tyhjä tila",
       SingleCheckbox: "Yksittäinen rasti ruutuun -kenttä",
       SingleSelect: "Alasvetovalikko (yksi valinta)",
+      MultiSelect: "Alasvetovalikko (useita valintoja)",
+      RadioMatrix: "Valintamatriisi",
+      FileUpload: "Tiedoston lähetys",
+      NumberField: "Numero",
+      DecimalField: "Desimaaliluku",
+      DateField: "Päivämäärä",
+      DateTimeField: "Päivämäärä ja kellonaika",
+      TimeField: "Kellonaika",
     },
 
-    RemoveFieldModal: {
+    removeFieldModal: {
       title: "Vahvista kentän poisto",
       message: "Poistetaanko kenttä?",
-      yes: "Kyllä, poista",
-      no: "Ei, peruuta",
+      actions: {
+        submit: "Poista",
+        cancel: "Peruuta",
+      },
+    },
+
+    editFieldModal: {
+      title: "Muokkaa kenttää",
+      actions: {
+        submit: "Tallenna",
+        cancel: "Peruuta",
+      },
     },
   },
 
@@ -263,7 +258,11 @@ const translations: Translations = {
       </>
     ),
     attributes: {
-      slug: "Tekninen nimi",
+      slug: {
+        title: "Tekninen nimi",
+        helpText:
+          "Koneellisesti luettava nimi kyselylle. Teknisen nimen täytyy olla uniikki tapahtuman sisällä. Teknistä nimeä ei voi muuttaa luomisen jälkeen.",
+      },
       title: "Otsikko",
       isActive: {
         title: "Avoinna vastauksille",
@@ -271,6 +270,16 @@ const translations: Translations = {
         untilTime: (time: Date) => `Avoinna ${time.toLocaleString()} asti`,
         openingAt: (time: Date) => `Avautuu ${time.toLocaleString()}`,
         closed: "Suljettu",
+      },
+      activeFrom: {
+        title: "Avautumisaika",
+        helpText:
+          "Jos tämä on asetettu, kysely alkaa ottaa vastaan vastauksia tähän aikaan.",
+      },
+      activeUntil: {
+        title: "Sulkeutumisaika",
+        helpText:
+          "Jos tämä on asetettu, kysely lakkaa ottamasta vastaan vastauksia tähän aikaan.",
       },
       countResponses: "Vastauksia",
       languages: "Kielet",
@@ -310,8 +319,19 @@ const translations: Translations = {
       countMissingResponses: "Ei vastausta",
       percentageOfResponses: "Osuus vastauksista",
       technicalDetails: "Tekniset tiedot",
+      loginRequired: {
+        title: "Sisäänkirjautuminen vaaditaan",
+        helpText:
+          "Jos tämä on valittuna, kyselyyn vastaaminen vaatii sisäänkirjautumisen.",
+      },
+      maxResponsesPerUser: {
+        title: "Käyttäjän vastausten maksimimäärä",
+        helpText:
+          "Yksittäisen käyttäjän vastausten maksimimäärä tähän kyselyyn. Jos arvoksi on asetettu 0, määrää ei rajoiteta. Huomaathan, että tämä vaikuttaa ainoastaan sisäänkirjautuneisiin käyttäjiin. Jotta rajoitus toimisi, kyselyyn vastaaminen tulee olla rajoitettu sisäänkirjautuneille käyttäjille.",
+      },
     },
     actions: {
+      createSurvey: "Luo kysely",
       fillIn: {
         title: "Täytä",
         disabledTooltip: "Suljettua kyselyä ei voi täyttää",
@@ -328,6 +348,7 @@ const translations: Translations = {
       returnToSurveyList: "Palaa kyselylistaukseen",
       returnToDimensionList: "Palaa dimensiolistaukseen",
       saveDimensions: "Tallenna dimensiot",
+      saveProperties: "Tallenna asetukset",
       addDimension: "Lisää dimensio",
       addDimensionValue: "Lisää arvo",
       deleteDimension: {
@@ -356,12 +377,29 @@ const translations: Translations = {
           </>
         ),
       },
+      deleteSurvey: {
+        title: "Poista kysely",
+        cannotRemove: "Kyselyä, joka on jo saanut vastauksia, ei voi poistaa.",
+        confirmation: (surveyTitle: string) => (
+          <>
+            Haluatko varmasti poistaa kyselyn <strong>{surveyTitle}</strong>?
+          </>
+        ),
+        modalActions: {
+          submit: "Poista",
+          cancel: "Peruuta",
+        },
+      },
       editDimension: "Muokkaa dimensiota",
       editDimensionValue: "Muokkaa arvoa",
+      editSurvey: "Muokkaa",
     },
     tabs: {
       summary: "Yhteenveto",
       responses: "Vastaukset",
+      properties: "Kyselyn asetukset",
+      addLanguage: "Lisää kieliversio",
+      languageVersion: (languageName: string) => `Kieliversio: ${languageName}`,
     },
     thankYou: {
       title: "Kiitos vastauksistasi!",
@@ -389,6 +427,21 @@ const translations: Translations = {
     checkbox: {
       checked: "Valittu",
       unchecked: "Ei valittu",
+    },
+    addLanguageModal: {
+      language: {
+        title: "Kieli",
+        helpText: "Vain tuettuja kieliä voi lisätä.",
+      },
+      copyFrom: {
+        title: "Alusta kieliversiosta",
+        helpText:
+          "Uusi kieliversio luodaan valitun kieliversion pohjalta. Voit myös valita lähteä liikkeelle tyhjällä lomakkeella.",
+      },
+      actions: {
+        submit: "Jatka",
+        cancel: "Peruuta",
+      },
     },
     editDimensionModal: {
       editTitle: "Muokkaa dimensiota",
@@ -456,6 +509,16 @@ const translations: Translations = {
         },
       },
     },
+    createSurveyModal: {
+      title: "Luo uusi kysely",
+      actions: {
+        submit: "Luo kysely",
+        cancel: "Peruuta",
+      },
+    },
+    editSurveyPage: {
+      title: "Muokkaa kyselyä",
+    },
   },
 
   SignInRequired: {
@@ -476,10 +539,13 @@ const translations: Translations = {
     plainAppName: "Kompassi",
   },
 
-  // Do not translate
   LanguageSwitcher: {
-    // NOTE: value always in target language
     supportedLanguages: {
+      fi: "suomi",
+      en: "englanti",
+    },
+    // NOTE: value always in target language
+    switchTo: {
       fi: "suomeksi",
       en: "In English",
     },

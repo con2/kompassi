@@ -90,56 +90,17 @@ const translations = {
     saveFailedErrorMessage:
       "Something went wrong while saving the form. There may be further information in the JavaScript console.",
 
-    Tabs: {
+    tabs: {
       design: "Design",
       preview: "Preview",
       properties: "Properties",
     },
 
-    FormPropertiesForm: {
-      flags: {
-        title: "Behaviour",
-      },
-      title: {
-        title: "Form title",
-        helpText:
-          "Human-readable form title. May not be displayed in all contexts.",
-      },
+    editFieldForm: {
       slug: {
         title: "Technical name",
         helpText:
-          "Machine-readable form name. Will be a part of the URL of the form. Valid characters: letters A-Za-z, numbers 0-9, underscore _. Must not start with a number.",
-      },
-      layout: {
-        title: "Layout",
-        helpText:
-          "May not take effect in some contexts (eg. space-constrained forms may be forced to be horizontal).",
-        choices: {
-          horizontal: "Horizontal",
-          vertical: "Vertical",
-        },
-      },
-      standalone: {
-        title: "Stand-alone",
-        helpText:
-          "Stand-alone forms can be filled using the generic form view. Non-stand-alone forms can only be filled when embedded in another use-case.",
-      },
-      active: {
-        title: "Active",
-        helpText:
-          "Inactive forms cannot be filled. Only applies to stand-alone forms.",
-      },
-      loginRequired: {
-        title: "Login required",
-        helpText: "Only applies to stand-alone forms.",
-      },
-    },
-
-    EditFieldForm: {
-      name: {
-        title: "Technical name",
-        helpText:
-          "Machine-readable field name. Valid characters: letters A-Za-z, numbers 0-9, underscore _. Must not start with a number.",
+          "Machine-readable field name. Valid characters: letters A-Za-z, numbers 0-9, dash -. Must not start with a number.",
       },
       title: {
         title: "Title",
@@ -153,27 +114,61 @@ const translations = {
       required: {
         title: "Required",
       },
-      options: {
-        title: "Options",
+      choices: {
+        title: "Choices",
         helpText: "value=label pairs, separated by newline",
       },
     },
 
-    FieldTypes: {
-      SingleLineText: "Single line text field",
-      MultiLineText: "Multi-line text field",
+    formPropertiesForm: {
+      title: {
+        title: "Title",
+        helpText: "Human-readable title for the form.",
+      },
+      description: {
+        title: "Description",
+        helpText: "Will be shown to the user at the top of the form.",
+      },
+      thankYouMessage: {
+        title: "Thank you message",
+        helpText:
+          "Will be shown to the user after they have submitted the form. If the thank you message is not set, the default message will be shown.",
+      },
+    },
+
+    fieldTypes: {
+      SingleLineText: "Single line text",
+      MultiLineText: "Multi-line text",
       Divider: "Divider",
       StaticText: "Static text",
       Spacer: "Empty space",
       SingleCheckbox: "Single check box",
-      SingleSelect: "Single select drop-down",
+      SingleSelect: "Single select",
+      MultiSelect: "Multiple select",
+      RadioMatrix: "Radio button matrix",
+      FileUpload: "File upload",
+      NumberField: "Number",
+      DecimalField: "Decimal number",
+      DateField: "Date",
+      DateTimeField: "Date and time",
+      TimeField: "Time",
     },
 
-    RemoveFieldModal: {
+    removeFieldModal: {
       title: "Confirm field removal",
       message: "Remove the selected field?",
-      yes: "Yes, remove",
-      no: "No, cancel",
+      actions: {
+        submit: "Remove",
+        cancel: "Cancel",
+      },
+    },
+
+    editFieldModal: {
+      title: "Edit field",
+      actions: {
+        submit: "Save field",
+        cancel: "Cancel",
+      },
     },
   },
 
@@ -264,7 +259,11 @@ const translations = {
       </>
     ),
     attributes: {
-      slug: "Slug",
+      slug: {
+        title: "Slug",
+        helpText:
+          "Machine-readable name of the survey. Must be unique within the event. Cannot be changed after creation.",
+      },
       title: "Title",
       isActive: {
         title: "Receiving responses",
@@ -272,6 +271,14 @@ const translations = {
         untilTime: (time: Date) => `Open until ${time.toLocaleString()}`,
         openingAt: (time: Date) => `Opening at ${time.toLocaleString()}`,
         closed: "Closed",
+      },
+      activeFrom: {
+        title: "Active from",
+        helpText: "If set, the survey will open for responses at this time.",
+      },
+      activeUntil: {
+        title: "Active until",
+        helpText: "If set, the survey will close for responses at this time.",
       },
       countResponses: "Responses",
       languages: "Languages",
@@ -311,8 +318,19 @@ const translations = {
       countMissingResponses: "No response",
       percentageOfResponses: "Share of responses",
       technicalDetails: "Technical details",
+      loginRequired: {
+        title: "Sign-in required",
+        helpText:
+          "If checked, the survey can only be filled in by signed-in users.",
+      },
+      maxResponsesPerUser: {
+        title: "Maximum number of responses per user",
+        helpText:
+          "The maximum number of responses a single user can submit to this survey. If set to 0, there is no limit. Note that this only applies to signed-in users. To enforce the limit, select Sign-in required as well.",
+      },
     },
     actions: {
+      createSurvey: "Create survey",
       fillIn: {
         title: "Fill in",
         disabledTooltip: "Closed survey cannot be filled in",
@@ -322,13 +340,14 @@ const translations = {
         tooltip: "Copy link to clipboard",
         success: "A link to the survey has been copied to clipboard.",
       },
-      viewResponses: "View responses",
+      viewResponses: "Responses",
       submit: "Submit",
       downloadAsExcel: "Download as Excel",
       returnToResponseList: "Return to the list of responses",
       returnToSurveyList: "Return to the list of surveys",
       returnToDimensionList: "Return to the list of dimensions",
       saveDimensions: "Save dimensions",
+      saveProperties: "Save properties",
       addDimension: "Add dimension",
       addDimensionValue: "Add value",
       deleteDimension: {
@@ -357,12 +376,31 @@ const translations = {
           </>
         ),
       },
+      deleteSurvey: {
+        title: "Remove survey",
+        cannotRemove: "A survey that has responses cannot be removed.",
+        confirmation: (surveyTitle: string) => (
+          <>
+            Are you sure you want to remove the survey{" "}
+            <strong>{surveyTitle}</strong>?
+          </>
+        ),
+        modalActions: {
+          submit: "Remove",
+          cancel: "Cancel",
+        },
+      },
       editDimension: "Edit dimension",
       editDimensionValue: "Edit value",
+      editSurvey: "Edit",
     },
     tabs: {
       summary: "Summary",
       responses: "Responses",
+      properties: "Survey properties",
+      addLanguage: "Add language",
+      languageVersion: (languageName: string) =>
+        `Language version: ${languageName}`,
     },
     thankYou: {
       title: "Thank you for your answers!",
@@ -386,6 +424,21 @@ const translations = {
     checkbox: {
       checked: "Checked",
       unchecked: "Not checked",
+    },
+    addLanguageModal: {
+      language: {
+        title: "Language",
+        helpText: "Only supported languages can be added.",
+      },
+      copyFrom: {
+        title: "Copy from",
+        helpText:
+          "The new language version will be a copy of the selected one. You can also select to start from scratch.",
+      },
+      actions: {
+        submit: "Continue",
+        cancel: "Cancel",
+      },
     },
     editDimensionModal: {
       editTitle: "Edit dimension",
@@ -454,6 +507,16 @@ const translations = {
         },
       },
     },
+    createSurveyModal: {
+      title: "Create a new survey",
+      actions: {
+        submit: "Create",
+        cancel: "Cancel",
+      },
+    },
+    editSurveyPage: {
+      title: "Muokkaa kyselyä",
+    },
   },
 
   SignInRequired: {
@@ -474,10 +537,13 @@ const translations = {
     plainAppName: "Kompassi",
   },
 
-  // Do not translate
   LanguageSwitcher: {
-    // NOTE: value always in target language
     supportedLanguages: {
+      fi: "suomi",
+      en: "englanti",
+    },
+    // NOTE: value always in target language
+    switchTo: {
       fi: "suomeksi",
       en: "In English",
     },

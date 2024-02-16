@@ -2,7 +2,7 @@ import graphene
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
-from access.cbac import graphql_check_access
+from access.cbac import graphql_check_instance
 from core.graphql.common import DimensionFilterInput
 from core.utils import get_objects_within_period
 from forms.graphql.form import FormType
@@ -148,7 +148,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
     @staticmethod
     def resolve_offer_forms(meta: ProgramV2EventMeta, info, include_inactive: bool = False):
         if include_inactive:
-            graphql_check_access(meta, info, "offer_forms")
+            graphql_check_instance(meta, info, "offer_forms")
             qs = OfferForm.objects.filter(event=meta.event)
         else:
             qs = get_objects_within_period(OfferForm, event=meta.event)

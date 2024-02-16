@@ -1,6 +1,6 @@
 import graphene
 
-from access.cbac import graphql_check_access
+from access.cbac import graphql_check_instance
 
 from ...models.dimension import DimensionValue
 from ...models.survey import Survey
@@ -26,9 +26,7 @@ class DeleteSurveyDimensionValue(graphene.Mutation):
         input: DeleteSurveyDimensionValueInput,
     ):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-
-        # TODO bastardization of graphql_check_access, rethink
-        graphql_check_access(survey, info, "dimensions", "mutation")
+        graphql_check_instance(survey, info, "dimensions", "mutation")
 
         value = DimensionValue.objects.get(dimension__slug=input.dimension_slug, slug=input.value_slug)
         if not value.can_remove:

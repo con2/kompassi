@@ -1,3 +1,5 @@
+import { Temporal } from "@js-temporal/polyfill";
+
 export const kompassiBaseUrl =
   process.env.NEXT_PUBLIC_KOMPASSI_BASE_URL || "https://dev.kompassi.eu";
 
@@ -13,3 +15,7 @@ export const kompassiOidc = {
 };
 
 export const publicUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+export const timezone = Temporal.TimeZone.from(
+  process.env.KOMPASSI_TIMEZONE || "Europe/Helsinki",
+);

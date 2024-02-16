@@ -7,12 +7,9 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { buildDimensionForm } from "@/components/dimensions/helpers";
-import { SchemaForm } from "@/components/SchemaForm";
-import { Field, Layout, validateFields } from "@/components/SchemaForm/models";
-import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
-import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
-import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
-import SubmitButton from "@/components/SchemaForm/SubmitButton";
+import { Field, Layout, validateFields } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
+import SubmitButton from "@/components/forms/SubmitButton";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -222,22 +219,24 @@ export default async function SurveyResponsePage({ params }: Props) {
               <h5 className="card-title mb-3">
                 {t.attributes.technicalDetails}
               </h5>
-              <SchemaFormResponse
+              <SchemaForm
                 fields={technicalFields}
                 values={technicalValues}
                 layout={Layout.Vertical}
                 messages={translations.SchemaForm}
+                readOnly
               />
             </div>
           </div>
         </div>
       </div>
 
-      <SchemaFormResponse
+      <SchemaForm
         fields={fields}
         values={values}
         layout={layout}
         messages={translations.SchemaForm}
+        readOnly
       />
     </ViewContainer>
   );

@@ -14,3 +14,15 @@ ViewHeading.Sub = function Sub({ children }: Props) {
     </>
   );
 };
+
+export function ViewHeadingActionsWrapper({ children }: Props) {
+  return (
+    <div className="d-flex justify-content-between align-items-center">
+      {children}
+    </div>
+  );
+}
+
+export function ViewHeadingActions({ children }: Props) {
+  return <div className="ms-auto">{children}</div>;
+}

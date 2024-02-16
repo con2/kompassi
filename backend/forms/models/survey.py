@@ -147,13 +147,18 @@ class Survey(models.Model):
             except Form.DoesNotExist:
                 pass
 
-        raise Form.DoesNotExist()
+        return None
 
     @property
     def responses(self):
         from .response import Response
 
         return Response.objects.filter(form__in=self.languages.all()).order_by("created_at")
+
+    @property
+    def can_remove(self):
+        # TODO(#432) Revisit criteria for can_remove
+        return not self.languages.exists()
 
     def get_next_sequence_number(self):
         return (self.responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1

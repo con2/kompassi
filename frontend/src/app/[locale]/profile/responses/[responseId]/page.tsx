@@ -5,10 +5,10 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
-import { Field, validateFields } from "@/components/SchemaForm/models";
-import SchemaFormField from "@/components/SchemaForm/SchemaFormField";
-import SchemaFormInput from "@/components/SchemaForm/SchemaFormInput";
-import { SchemaFormResponse } from "@/components/SchemaForm/SchemaFormResponse";
+import { Field, validateFields } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
+import SchemaFormField from "@/components/forms/SchemaFormField";
+import SchemaFormInput from "@/components/forms/SchemaFormInput";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -185,11 +185,12 @@ export default async function ProfileSurveyResponsePage({ params }: Props) {
         </div>
       </div>
 
-      <SchemaFormResponse
+      <SchemaForm
         fields={fields}
         values={values}
         layout={layout}
         messages={translations.SchemaForm}
+        readOnly
       />
     </ViewContainer>
   );

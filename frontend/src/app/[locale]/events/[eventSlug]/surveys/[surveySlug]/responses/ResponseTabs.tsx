@@ -1,4 +1,4 @@
-import Tabs, { Tab } from "@/components/Tabs";
+import Tabs, { Tab } from "@/components/ServerTabs";
 import { Translations } from "@/translations/en";
 
 interface Props {

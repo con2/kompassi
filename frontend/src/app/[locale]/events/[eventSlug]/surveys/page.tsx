@@ -1,15 +1,22 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import ModalButton from "./[surveySlug]/dimensions/ModalButton";
+import { createSurvey } from "./actions";
 import { graphql } from "@/__generated__";
 import { SurveyFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import CopyButton from "@/components/CopyButton";
 import { Column, DataTable } from "@/components/DataTable";
+import { Field } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import { publicUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
@@ -35,7 +42,7 @@ const query = graphql(`
       name
 
       forms {
-        surveys {
+        surveys(includeInactive: true) {
           ...Survey
         }
       }
@@ -101,8 +108,8 @@ export default async function SurveysPage({ params }: Props) {
   const columns: Column<SurveyFragment>[] = [
     {
       slug: "slug",
-      title: t.attributes.slug,
       getCellContents: (survey) => <em>{survey.slug}</em>,
+      ...t.attributes.slug,
     },
     {
       slug: "title",
@@ -176,10 +183,10 @@ export default async function SurveysPage({ params }: Props) {
               messages={t.actions.share}
             />{" "}
             <Link
-              href={`${url}/dimensions`}
+              href={`${url}/edit`}
               className="btn btn-sm btn-outline-primary"
             >
-              {t.attributes.dimensions}…
+              {t.actions.editSurvey}…
             </Link>{" "}
             <Link
               href={`${url}/responses`}
@@ -195,12 +202,38 @@ export default async function SurveysPage({ params }: Props) {
 
   const surveys = data.event.forms.surveys;
 
+  const createSurveyFields: Field[] = [
+    {
+      slug: "slug",
+      type: "SingleLineText",
+      required: true,
+      ...t.attributes.slug,
+    },
+  ];
+
   return (
     <ViewContainer>
-      <ViewHeading>
-        {t.listTitle}
-        <ViewHeading.Sub>{t.forEvent(data.event.name)}</ViewHeading.Sub>
-      </ViewHeading>
+      <ViewHeadingActionsWrapper>
+        <ViewHeading>
+          {t.listTitle}
+          <ViewHeading.Sub>{t.forEvent(data.event.name)}</ViewHeading.Sub>
+        </ViewHeading>
+        <ViewHeadingActions>
+          <ModalButton
+            className="btn btn-outline-primary"
+            label={t.actions.createSurvey + "…"}
+            title={t.createSurveyModal.title}
+            messages={t.createSurveyModal.actions}
+            action={createSurvey.bind(null, eventSlug)}
+          >
+            <SchemaForm
+              fields={createSurveyFields}
+              messages={translations.SchemaForm}
+            />
+          </ModalButton>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
+
       <DataTable rows={surveys} columns={columns} />
       <p>{t.surveyTableFooter(surveys.length)}</p>
     </ViewContainer>

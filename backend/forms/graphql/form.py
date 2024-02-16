@@ -4,6 +4,7 @@ from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
 from core.graphql.limited_event import LimitedEventType
+from core.utils.text_utils import normalize_whitespace
 
 from ..models.form import Form
 from .limited_survey import LimitedSurveyType
@@ -41,6 +42,25 @@ class FormType(DjangoObjectType):
 
     survey = graphene.Field(LimitedSurveyType)
 
+    @staticmethod
+    def resolve_can_remove(form: Form, info):
+        """
+        A form can be removed if it has no responses.
+        """
+        return form.can_remove
+
+    can_remove = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_remove.__doc__ or ""),
+    )
+
     class Meta:
         model = Form
-        fields = ("slug", "title", "description", "thank_you_message", "layout", "language")
+        fields = (
+            "slug",
+            "title",
+            "description",
+            "thank_you_message",
+            "layout",
+            "language",
+        )

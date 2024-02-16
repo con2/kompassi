@@ -10,10 +10,18 @@ interface SchemaFormProps {
   values?: Record<string, any>;
   messages: Translations["SchemaForm"];
   headingLevel?: HeadingLevel;
+  readOnly?: boolean;
 }
 
 export function SchemaForm(props: SchemaFormProps) {
-  const { fields, layout, values, messages, headingLevel } = props;
+  const {
+    fields,
+    layout = Layout.Vertical,
+    values,
+    messages,
+    headingLevel,
+    readOnly,
+  } = props;
   return (
     <>
       {fields.map((field, index) => {
@@ -27,13 +35,14 @@ export function SchemaForm(props: SchemaFormProps) {
           <SchemaFormField
             key={slug}
             field={field}
-            layout={layout ?? Layout.Vertical}
+            layout={layout}
             headingLevel={headingLevel}
           >
             <SchemaFormInput
               field={field}
               value={values?.[field.slug]}
               messages={messages}
+              readOnly={readOnly}
             />
           </SchemaFormField>
         );
