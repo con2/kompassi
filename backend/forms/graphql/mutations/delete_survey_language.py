@@ -30,7 +30,7 @@ class DeleteSurveyLanguage(graphene.Mutation):
 
         form = survey.languages.get(language=input.language)
         if not form.can_remove:
-            raise Exception("Cannot delete survey")
+            raise Exception("Cannot delete survey language")
 
         form.delete()
 
