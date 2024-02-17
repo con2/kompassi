@@ -32,6 +32,7 @@ extend-ignore = [
     "PLR0915",  # too many statements
     "PLW2901",  # for loop variable overwritten (too many false positives)
     "RET505",  # Unnecessary `else` after `return` statement
+    "RET507",  # Unnecessary `elif` after `continue` statement
     "SIM105",  # contextlib.suppress has a performance cost
     "SIM108",  # ternary operators can be less readable
     "PERF401", # manual-list-comprehension

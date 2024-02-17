@@ -99,7 +99,9 @@ def get_number_of_tickets(order: Order):
     num_tickets = 0
 
     for op in order.order_product_set.all():
-        if "Suite" in op.product.name or "Business" in op.product.name:
+        if "Single person" in op.product.name:
+            continue
+        elif "Suite" in op.product.name or "Business" in op.product.name:
             num_tickets += 2 * op.count
         else:
             num_tickets += op.count
