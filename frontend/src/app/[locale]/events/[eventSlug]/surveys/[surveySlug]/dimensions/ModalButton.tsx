@@ -1,6 +1,6 @@
 "use client";
 
-import { ReactNode, useCallback, useState } from "react";
+import { ReactNode, MouseEvent, useCallback, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import type { Translations } from "@/translations/en";
@@ -31,14 +31,18 @@ export default function ModalButton({
   const close = useCallback(() => {
     setIsVisible(false);
   }, []);
+  const open = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+    setIsVisible(true);
+  }, []);
 
   /// TODO Change manual button to React Bootstrap one.
   /// Add a tooltip to the button if it is disabled to tell us why.
   return (
     <>
       <button
+        type="button"
         className={className}
-        onClick={() => setIsVisible(true)}
+        onClick={open}
         title={label ? title : undefined}
         disabled={disabled}
       >

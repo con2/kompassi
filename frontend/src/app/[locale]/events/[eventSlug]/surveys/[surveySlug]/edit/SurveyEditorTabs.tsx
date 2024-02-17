@@ -1,5 +1,5 @@
 import ModalButton from "../dimensions/ModalButton";
-import { addLanguageVersion } from "./actions";
+import { createSurveyLanguage } from "./actions";
 import { Survey } from "./models";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
@@ -23,12 +23,17 @@ export default function SurveyEditorTabs({
   const supportedLanguages: Record<string, string> =
     translations.LanguageSwitcher.supportedLanguages;
 
-  const url = `/events/${eventSlug}/surveys/${survey.slug}/edit/`;
+  const url = `/events/${eventSlug}/surveys/${survey.slug}`;
   const tabs: Tab[] = [
     {
       slug: "properties",
       title: t.tabs.properties,
-      href: `${url}`,
+      href: `${url}/edit`,
+    },
+    {
+      slug: "dimensions",
+      title: t.attributes.dimensions,
+      href: `${url}/dimensions`,
     },
   ];
 
@@ -41,7 +46,7 @@ export default function SurveyEditorTabs({
     tabs.push({
       slug: languageCode,
       title: t.tabs.languageVersion(languageName),
-      href: `${url}/${languageCode}`,
+      href: `${url}/edit/${languageCode}`,
     });
   }
 
@@ -99,10 +104,8 @@ export default function SurveyEditorTabs({
           title={t.tabs.addLanguage}
           label={`➕ ${t.tabs.addLanguage}…`}
           messages={t.addLanguageModal.actions}
-          action={addLanguageVersion.bind(null, eventSlug, survey.slug)}
-          // TODO implement addLanguageVersion
-          // disabled={potentialLanguages.length === 0}
-          disabled
+          action={createSurveyLanguage.bind(null, eventSlug, survey.slug)}
+          disabled={potentialLanguages.length === 0}
         >
           <SchemaForm
             fields={addLanguageFields}

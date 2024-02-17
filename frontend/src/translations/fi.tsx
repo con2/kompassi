@@ -63,17 +63,6 @@ const translations: Translations = {
       noFileUploaded: "Ei tiedostoja.",
     },
   },
-  Forms: {
-    heading: "Lomakkeet",
-    title: "Otsikko",
-    slug: "Tekninen nimi",
-    create: "Uusi lomake",
-  },
-  FormResponses: {
-    heading: "Lomakkeiden vastaukset",
-    form: "Lomake",
-    user: "Käyttäjä",
-  },
   MainView: {
     defaultErrorMessage:
       "Jokin meni pieleen. JavaScript-konsolissa voi olla lisätietoja.",
@@ -97,6 +86,22 @@ const translations: Translations = {
       properties: "Asetukset",
     },
 
+    attributes: {
+      title: {
+        title: "Otsikko",
+        helpText: "Ihmisluettava otsikko. Näytetään loppukäyttäjälle.",
+      },
+      description: {
+        title: "Kuvaus",
+        helpText: "Näytetään lomakkeen yläpuolella.",
+      },
+      thankYouMessage: {
+        title: "Kiitosviesti",
+        helpText:
+          "Näytetään lomakkeen lähetyksen jälkeen. Mikäli kiitosviestiä ei ole asetettu, näytetään oletusviesti.",
+      },
+    },
+
     editFieldForm: {
       slug: {
         title: "Tekninen nimi",
@@ -118,22 +123,6 @@ const translations: Translations = {
       choices: {
         title: "Vaihtoehdot",
         helpText: "arvo=teksti -pareja, yksi per rivi",
-      },
-    },
-
-    formPropertiesForm: {
-      title: {
-        title: "Otsikko",
-        helpText: "Ihmisluettava otsikko. Näytetään loppukäyttäjälle.",
-      },
-      description: {
-        title: "Kuvaus",
-        helpText: "Näytetään lomakkeen yläpuolella.",
-      },
-      thankYouMessage: {
-        title: "Kiitosviesti",
-        helpText:
-          "Näytetään lomakkeen lähetyksen jälkeen. Mikäli kiitosviestiä ei ole asetettu, näytetään oletusviesti.",
       },
     },
 
@@ -372,8 +361,8 @@ const translations: Translations = {
           "Arvoa ei voi poistaa, jos se on jo liitetty kyselyvastaukseen.",
         confirmation: (dimensionTitle: string, valueTitle: string) => (
           <>
-            Poista arvo <strong>{dimensionTitle}</strong>
-            dimensionsta <strong>{valueTitle}</strong>?
+            Poista arvo <strong>{dimensionTitle}</strong> dimensionsta{" "}
+            <strong>{valueTitle}</strong>?
           </>
         ),
       },
@@ -440,6 +429,19 @@ const translations: Translations = {
       },
       actions: {
         submit: "Jatka",
+        cancel: "Peruuta",
+      },
+    },
+    deleteLanguageModal: {
+      title: "Poista kieliversio",
+      confirmation: (languageName: string) => (
+        <>
+          Haluatko varmasti poistaa kieliversion <strong>{languageName}</strong>
+          ?
+        </>
+      ),
+      modalActions: {
+        submit: "Poista",
         cancel: "Peruuta",
       },
     },

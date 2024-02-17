@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
+import SurveyEditorView from "../edit/SurveyEditorView";
 import {
   createDimension,
   createDimensionValue,
@@ -63,7 +64,12 @@ const query = graphql(`
       name
       forms {
         survey(slug: $surveySlug) {
+          slug
           title(lang: $locale)
+          canRemove
+          languages {
+            language
+          }
           dimensions {
             ...DimensionRowGroup
           }
@@ -362,15 +368,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
   }
 
   return (
-    <ViewContainer>
-      <Link className="link-subtle" href={`/events/${eventSlug}/surveys`}>
-        &lt; {t.actions.returnToSurveyList}
-      </Link>
-      <ViewHeading>
-        {t.attributes.dimensions}
-        <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
-      </ViewHeading>
-
+    <SurveyEditorView params={params} survey={survey} activeTab="dimensions">
       <table className="table table-bordered">
         <thead>
           <tr style={{ borderWidth: "1px 0 3px 0" }}>
@@ -411,7 +409,9 @@ export default async function SurveyDimensionsPage({ params }: Props) {
           </tr>
         </tbody>
       </table>
-      <p>{t.dimensionTableFooter(dimensions.length, countValues)}</p>
-    </ViewContainer>
+      <div className="mb-1">
+        {t.dimensionTableFooter(dimensions.length, countValues)}
+      </div>
+    </SurveyEditorView>
   );
 }

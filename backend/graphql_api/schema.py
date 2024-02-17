@@ -7,10 +7,12 @@ from core.graphql.event import FullEventType
 from core.graphql.profile import ProfileType
 from core.models import Event, Person
 from forms.graphql.mutations.create_survey import CreateSurvey
+from forms.graphql.mutations.create_survey_language import CreateSurveyLanguage
 from forms.graphql.mutations.create_survey_response import CreateSurveyResponse
 from forms.graphql.mutations.delete_survey import DeleteSurvey
 from forms.graphql.mutations.delete_survey_dimension import DeleteSurveyDimension
 from forms.graphql.mutations.delete_survey_dimension_value import DeleteSurveyDimensionValue
+from forms.graphql.mutations.delete_survey_language import DeleteSurveyLanguage
 from forms.graphql.mutations.init_file_upload import InitFileUpload
 from forms.graphql.mutations.put_survey_dimension import PutSurveyDimension
 from forms.graphql.mutations.put_survey_dimension_value import PutSurveyDimensionValue
@@ -71,9 +73,9 @@ class Mutation(graphene.ObjectType):
     update_survey = UpdateSurvey.Field()
     delete_survey = DeleteSurvey.Field()
 
-    # create_survey_language = CreateSurveyLanguage.Field()
+    create_survey_language = CreateSurveyLanguage.Field()
     update_survey_language = UpdateSurveyLanguage.Field()
-    # delete_survey_language = DeleteSurveyLanguage.Field()
+    delete_survey_language = DeleteSurveyLanguage.Field()
 
     create_survey_response = CreateSurveyResponse.Field()
     update_response_dimensions = UpdateResponseDimensions.Field()

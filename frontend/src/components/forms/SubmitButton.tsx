@@ -30,11 +30,7 @@ export default function SubmitButton({ layout, children }: SubmitButtonProps) {
       );
     default:
       return (
-        <button
-          type="submit"
-          className="btn btn-primary mb-2"
-          disabled={pending}
-        >
+        <button type="submit" className="btn btn-primary" disabled={pending}>
           {children}
         </button>
       );

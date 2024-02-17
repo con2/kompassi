@@ -34,7 +34,7 @@ DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 class Form(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="forms")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, default="")
     description = models.TextField(blank=True, default="")
     thank_you_message = models.TextField(blank=True, default="")
     language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=settings.LANGUAGES)
