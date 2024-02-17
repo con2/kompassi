@@ -138,7 +138,7 @@ class Product(models.Model):
         """
         Returns a list of products that are available for the given event and code.
         """
-        criteria: dict[str, Any] = dict(event=event, available=True)
+        criteria: dict[str, Any] = dict(event=event)
         if not admin:
-            criteria.update(code=code)
+            criteria.update(code=code, available=True)
         return cls.objects.filter(**criteria).order_by("ordering", "id")
