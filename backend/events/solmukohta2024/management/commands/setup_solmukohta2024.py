@@ -1,10 +1,12 @@
 import os
 from datetime import datetime, timedelta
 
+import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
+from pkg_resources import resource_stream
 
 
 def mkpath(*parts):
@@ -25,6 +27,7 @@ class Setup:
         self.setup_core()
         self.setup_programme()
         self.setup_tickets()
+        self.setup_forms()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -409,6 +412,40 @@ class Setup:
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
+
+    def setup_forms(self):
+        # TODO(#386) change update_or_create to get_or_create to avoid overriding local changes
+        from forms.models.dimension import DimensionDTO
+        from forms.models.form import Form
+        from forms.models.survey import Survey
+
+        passenger_registration, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="passenger-registration",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["official_last_name", "official_first_names"],
+                login_required=True,
+            ),
+        )
+
+        with resource_stream("events.solmukohta2024", "forms/passenger-registration-dimensions.yaml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(passenger_registration)
+
+        with resource_stream("events.solmukohta2024", "forms/passenger-registration-en.yaml") as f:
+            data = yaml.safe_load(f)
+
+        passenger_registration_en, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="passenger-registration-en",
+            language="en",
+            defaults=data,
+        )
+
+        passenger_registration.languages.set([passenger_registration_en])
 
 
 class Command(BaseCommand):

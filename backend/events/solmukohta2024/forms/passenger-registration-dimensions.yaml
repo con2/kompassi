@@ -1,0 +1,37 @@
+- slug: status
+  title:
+    en: Payment status
+  is_key_dimension: true
+  is_shown_to_respondent: true
+  choices:
+    - slug: new
+      color: blue
+      is_initial: true
+      title:
+        fi: Uusi
+        en: New
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+        en: Accepted
+    - slug: checked-in
+      color: teal
+      title:
+        fi: Kirjattu sisään
+        en: Checked in
+    - slug: info-requested
+      color: yellow
+      title:
+        fi: Lisätietoja pyydetty
+        en: Further details requested
+    - slug: checked-out
+      color: maroon
+      title:
+        fi: Kirjattu ulos
+        en: Checked out
+    - slug: rejected
+      color: grey
+      title:
+        fi: Hylätty
+        en: Rejected

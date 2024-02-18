@@ -1,0 +1,36 @@
+title: Passenger Registration
+layout: vertical
+description: |
+  The Finnish legislation requires us to collect the contact information of all passengers. This information is used for the purposes of mandatory passenger registration only and will only be shared with the hotel. The information will be deleted after the event.
+fields:
+  - slug: official_first_names
+    title: Legal first names (all)
+    type: SingleLineText
+    required: true
+
+  - slug: official_last_name
+    title: Legal surname(s)
+    type: SingleLineText
+    required: true
+
+  - slug: date_of_birth
+    title: Date of birth
+    type: DateField
+    required: true
+
+  - slug: ssn_or_passport_number
+    title: Social security number (FI) or passport number (others)
+    helpText: For Finnish nationals, the social security number (SSN) is required. For nationals of other countries than Finland, the passport number is required.
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Email address
+    type: SingleLineText
+    htmlType: email
+    required: true
+
+  - slug: phone
+    title: Phone number
+    type: SingleLineText
+    required: true
