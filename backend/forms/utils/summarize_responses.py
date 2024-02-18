@@ -95,7 +95,14 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                     summary=dict(field_summary),
                 )
 
-            case FieldType.SINGLE_LINE_TEXT | FieldType.MULTI_LINE_TEXT:
+            # TODO(#436) Time zone handling
+            case (
+                FieldType.SINGLE_LINE_TEXT
+                | FieldType.MULTI_LINE_TEXT
+                | FieldType.DATE_FIELD
+                | FieldType.TIME_FIELD
+                | FieldType.DATE_TIME_FIELD
+            ):
                 field_summary = []
 
                 for values in valuesies:

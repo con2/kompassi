@@ -229,6 +229,10 @@ FIELD_PROCESSORS: dict[FieldType, FieldProcessor] = {
     FieldType.FILE_UPLOAD: FileUploadFieldProcessor(),
     FieldType.NUMBER_FIELD: NumberFieldProcessor(),
     FieldType.DECIMAL_FIELD: DecimalFieldProcessor(),
+    # TODO(#436) Time zone handling
+    FieldType.DATE_FIELD: FieldProcessor(),
+    FieldType.TIME_FIELD: FieldProcessor(),
+    FieldType.DATE_TIME_FIELD: FieldProcessor(),
 }
 
 # This is deprecated in favour of NumberField but kept for backwards compatibility

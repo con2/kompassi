@@ -22,6 +22,9 @@ class FieldType(str, Enum):
     FILE_UPLOAD = "FileUpload"
     NUMBER_FIELD = "NumberField"
     DECIMAL_FIELD = "DecimalField"
+    DATE_FIELD = "DateField"
+    TIME_FIELD = "TimeField"
+    DATE_TIME_FIELD = "DateField"
 
 
 class Choice(pydantic.BaseModel):
