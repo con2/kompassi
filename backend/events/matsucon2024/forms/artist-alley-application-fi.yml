@@ -3,7 +3,7 @@ layout: vertical
 description: |
   Lomakkeella haetaan taidekujapaikkaa Matsuconista 10.-11.8.2024.
 
-  Lisää tietoa löydät: <a href="https://matsucon.fi/taidekujan-saannot/">
+  Lisää tietoa löydät: <a href="https://matsucon.fi/taidekujan-saannot/">Taidekujan säännöt sivulta</a>
 
   Haku on auki 1.3. - 1.4.2024.
 
@@ -97,11 +97,11 @@ fields:
     type: MultiLineText
     required: false
 
-  - type: StaticText
+  - slug: artist_info_title
+    type: StaticText
     title: Taiteilijatiedot sivuille
     helpText: "Mikäli toimitte kollektiivina, täytättehän vain yhden taiteilijakohdan. Jätä ylimääräiset kentät tyhjäksi. Huom. Avatar-kuvan koko 200 px x 200 px"
 
-    slug: artist_info
   - type: StaticText
     title: Taiteilijan 1 tiedot
     slug: artist_info1
