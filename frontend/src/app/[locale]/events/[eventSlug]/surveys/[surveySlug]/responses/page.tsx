@@ -20,6 +20,7 @@ import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { kompassiBaseUrl } from "@/config";
+import { timezone } from "@/config";
 import { getTranslations } from "@/translations";
 
 // this fragment is just to give a name to the type so that we can import it from generated
@@ -163,7 +164,11 @@ export default async function FormResponsesPage({
         <Link
           href={`/events/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}
         >
-          {new Date(row.createdAt).toLocaleString()}
+          {Intl.DateTimeFormat(locale, {
+            dateStyle: "short",
+            timeStyle: "short",
+            timeZone: timezone,
+          }).format(new Date(row.createdAt))}
         </Link>
       ),
     },

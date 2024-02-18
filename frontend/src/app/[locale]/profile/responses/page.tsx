@@ -10,6 +10,7 @@ import DimensionBadge from "@/components/dimensions/DimensionBadge";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { timezone } from "@/config";
 import { getTranslations } from "@/translations";
 
 graphql(`
@@ -97,7 +98,11 @@ export default async function OwnResponsesPage({ params }: Props) {
       title: t.attributes.createdAt,
       getCellContents: (row) => (
         <Link href={`/profile/responses/${row.id}`}>
-          {new Date(row.createdAt).toLocaleString()}
+          {Intl.DateTimeFormat(locale, {
+            dateStyle: "short",
+            timeStyle: "short",
+            timeZone: timezone,
+          }).format(new Date(row.createdAt))}
         </Link>
       ),
     },
