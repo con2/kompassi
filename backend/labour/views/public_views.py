@@ -3,6 +3,7 @@ import json
 from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.utils.timezone import now
@@ -21,6 +22,7 @@ from core.utils import (
     set_attrs,
     url,
 )
+from emprinten.utils import render_obj
 from event_log.utils import emit
 
 from ..helpers import labour_event_required
@@ -274,6 +276,25 @@ def profile_signups_view(request):
     )
 
     return render(request, "labour_profile_signups_view.pug", vars)
+
+
+@person_required
+@labour_event_required
+def profile_work_reference(request, event):
+    signup = get_object_or_404(Signup, event=event, person=request.user.person)
+
+    if not signup.has_work_reference:
+        raise Http404()
+
+    return render_obj(
+        event.labour_event_meta.work_certificate_pdf_project,
+        {
+            "event": event,
+            "venue": event.venue,
+            "full_name": signup.person.firstname_surname,
+            "job_title": signup.some_job_title,
+        },
+    )
 
 
 @person_required
