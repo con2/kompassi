@@ -8,6 +8,7 @@ from .renderer import DataRow, render_pdf
 
 __all__ = [
     "render_csv",
+    "render_list",
     "render_obj",
 ]
 
@@ -23,6 +24,21 @@ def render_csv(
         project.name_pattern,
         project.title_pattern,
         read_csv(csv_io),
+        return_archive=return_archive,
+    )
+
+
+def render_list(
+    project: Project,
+    data: list[DataRow],
+    *,
+    return_archive: bool = False,
+) -> HttpResponseBase:
+    return render_pdf(
+        project.current_files(),
+        project.name_pattern,
+        project.title_pattern,
+        data,
         return_archive=return_archive,
     )
 
