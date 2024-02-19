@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -14,6 +15,7 @@ import {
   buildDimensionFilters,
   getDimensionValueTitle,
 } from "@/components/dimensions/helpers";
+import FormattedDateTime from "@/components/FormattedDateTime";
 import { validateFields } from "@/components/forms/models";
 import UploadedFileLink from "@/components/forms/UploadedFileLink";
 import SignInRequired from "@/components/SignInRequired";
@@ -164,11 +166,12 @@ export default async function FormResponsesPage({
         <Link
           href={`/events/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}
         >
-          {Intl.DateTimeFormat(locale, {
-            dateStyle: "short",
-            timeStyle: "short",
-            timeZone: timezone,
-          }).format(new Date(row.createdAt))}
+          <FormattedDateTime
+            value={row.createdAt}
+            locale={locale}
+            scope={data.event}
+            session={session}
+          />
         </Link>
       ),
     },

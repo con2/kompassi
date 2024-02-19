@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -7,12 +8,14 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { buildDimensionForm } from "@/components/dimensions/helpers";
+import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, Layout, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { timezone } from "@/config";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
@@ -139,6 +142,7 @@ export default async function SurveyResponsePage({ params }: Props) {
     },
     {
       slug: "createdAt",
+      // TODO(#438) use DateTimeField
       type: "SingleLineText",
       title: t.attributes.createdAt,
     },
@@ -152,9 +156,8 @@ export default async function SurveyResponsePage({ params }: Props) {
     });
   }
 
-  const formattedCreatedAt = createdAt
-    ? new Date(createdAt).toLocaleString(locale)
-    : "";
+  // TODO(#438) use DateTimeField
+  const formattedCreatedAt = createdAt ? formatDateTime(createdAt, locale) : "";
   const createdBy = response.createdBy;
   const formattedCreatedBy = createdBy
     ? `${createdBy.displayName} <${createdBy.email}>`

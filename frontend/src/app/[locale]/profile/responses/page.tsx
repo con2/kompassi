@@ -7,6 +7,7 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
+import FormattedDateTime from "@/components/FormattedDateTime";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -98,11 +99,12 @@ export default async function OwnResponsesPage({ params }: Props) {
       title: t.attributes.createdAt,
       getCellContents: (row) => (
         <Link href={`/profile/responses/${row.id}`}>
-          {Intl.DateTimeFormat(locale, {
-            dateStyle: "short",
-            timeStyle: "short",
-            timeZone: timezone,
-          }).format(new Date(row.createdAt))}
+          <FormattedDateTime
+            value={row.createdAt}
+            locale={locale}
+            scope={row.form.event}
+            session={session}
+          />
         </Link>
       ),
     },

@@ -256,8 +256,8 @@ const translations: Translations = {
       isActive: {
         title: "Avoinna vastauksille",
         untilFurtherNotice: "Avoinna toistaiseksi",
-        untilTime: (time: Date) => `Avoinna ${time.toLocaleString()} asti`,
-        openingAt: (time: Date) => `Avautuu ${time.toLocaleString()}`,
+        untilTime: (formattedTime: String) => `Avoinna ${formattedTime} asti`,
+        openingAt: (formattedTime: String) => `Avautuu ${formattedTime}`,
         closed: "Suljettu",
       },
       activeFrom: {
