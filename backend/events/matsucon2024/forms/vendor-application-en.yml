@@ -3,9 +3,11 @@ layout: vertical
 description: |
   With this form you're applying to be a vendor at Matsucon on 10.-11.8.2024.
 
-  The prices are:
-  50 euros / square meter
-  100e for one table (180x74cm)
+  Prices:
+
+  - Sales booth 100 € for each table (including 180x74cm table and chairs)
+
+  - Floor space in vendor hall 50 € per square meter (vendor's own tables, etc.)
 
   If you're only interested in an ad, please directly contact our marketing correspondent at markkinointivastaava@matsucon.fi
 
@@ -91,7 +93,7 @@ fields:
 
   - slug: avatar
     title: Avatar for the website
-    helpText: "Hox. avatar 200x200px and in jpeg or png"
+    helpText: "Note. avatar 200x200px jpeg or png"
     type: FileUpload
     required: true
 
