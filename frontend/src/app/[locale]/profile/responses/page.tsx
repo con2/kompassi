@@ -7,9 +7,11 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
+import FormattedDateTime from "@/components/FormattedDateTime";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { timezone } from "@/config";
 import { getTranslations } from "@/translations";
 
 graphql(`
@@ -97,7 +99,12 @@ export default async function OwnResponsesPage({ params }: Props) {
       title: t.attributes.createdAt,
       getCellContents: (row) => (
         <Link href={`/profile/responses/${row.id}`}>
-          {new Date(row.createdAt).toLocaleString()}
+          <FormattedDateTime
+            value={row.createdAt}
+            locale={locale}
+            scope={row.form.event}
+            session={session}
+          />
         </Link>
       ),
     },

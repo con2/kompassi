@@ -257,8 +257,8 @@ const translations = {
       isActive: {
         title: "Receiving responses",
         untilFurtherNotice: "Open until further notice",
-        untilTime: (time: Date) => `Open until ${time.toLocaleString()}`,
-        openingAt: (time: Date) => `Opening at ${time.toLocaleString()}`,
+        untilTime: (formattedTime: String) => `Open until ${formattedTime}`,
+        openingAt: (formattedTime: String) => `Opening at ${formattedTime}`,
         closed: "Closed",
       },
       activeFrom: {

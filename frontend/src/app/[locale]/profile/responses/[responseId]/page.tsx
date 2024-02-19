@@ -5,10 +5,9 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
+import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SchemaFormField from "@/components/forms/SchemaFormField";
-import SchemaFormInput from "@/components/forms/SchemaFormInput";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -104,30 +103,25 @@ export default async function ProfileSurveyResponsePage({ params }: Props) {
 
   // TODO using synthetic form fields for presentation is a hack
   // but it shall suffice until someone comes up with a Design Vision™
-  const createdAtField: Field = {
-    slug: "createdAt",
-    type: "SingleLineText",
-    title: t.attributes.createdAt,
-  };
-  const formattedCreatedAt = createdAt
-    ? new Date(createdAt).toLocaleString(locale)
-    : "";
-
-  const languageField: Field = {
-    slug: "language",
-    type: "SingleLineText",
-    title: t.attributes.language,
+  const technicalFields: Field[] = [
+    // TODO(#438) use DateTimeField
+    {
+      slug: "createdAt",
+      type: "SingleLineText",
+      title: t.attributes.createdAt,
+    },
+    {
+      slug: "language",
+      type: "SingleLineText",
+      title: t.attributes.language,
+    },
+  ];
+  const technicalValues = {
+    createdAt: createdAt ? formatDateTime(createdAt, locale) : "",
+    language,
   };
 
   const dimensions = response.dimensions ?? [];
-
-  function buildDimensionField(dimension: (typeof dimensions)[0]): Field {
-    return {
-      slug: dimension.dimension.slug,
-      type: "SingleLineText",
-      title: dimension.dimension.title ?? dimension.dimension.slug,
-    };
-  }
 
   return (
     <ViewContainer>
@@ -164,24 +158,13 @@ export default async function ProfileSurveyResponsePage({ params }: Props) {
       <div className="card mb-3">
         <div className="card-body">
           <h5 className="card-title mb-3">{t.attributes.technicalDetails}</h5>
-
-          <SchemaFormField field={createdAtField} layout={layout}>
-            <SchemaFormInput
-              field={createdAtField}
-              value={formattedCreatedAt}
-              messages={translations.SchemaForm}
-              readOnly
-            />
-          </SchemaFormField>
-
-          <SchemaFormField field={languageField} layout={layout}>
-            <SchemaFormInput
-              field={languageField}
-              value={language}
-              messages={translations.SchemaForm}
-              readOnly
-            />
-          </SchemaFormField>
+          <SchemaForm
+            fields={technicalFields}
+            values={technicalValues}
+            layout={layout}
+            messages={translations.SchemaForm}
+            readOnly
+          />
         </div>
       </div>
 

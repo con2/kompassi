@@ -9,6 +9,7 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import CopyButton from "@/components/CopyButton";
 import { Column, DataTable } from "@/components/DataTable";
+import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SignInRequired from "@/components/SignInRequired";
@@ -122,10 +123,13 @@ export default async function SurveysPage({ params }: Props) {
         let activityEmoji = survey.isActive ? "✅" : "❌";
         let message = "";
 
+        // TODO(#436) proper handling of event & session time zones
+        // Change untilTime(t: String): String to UntilTime(props: { children: ReactNode }): ReactNode
+        // and init as <….UntilTime><FormattedDateTime … /></UntilTime>?
         if (survey.isActive) {
           if (survey.activeUntil) {
             message = t.attributes.isActive.untilTime(
-              new Date(survey.activeUntil),
+              formatDateTime(survey.activeUntil, locale),
             );
           } else {
             message = t.attributes.isActive.untilFurtherNotice;
@@ -134,7 +138,7 @@ export default async function SurveysPage({ params }: Props) {
           if (survey.activeFrom) {
             activityEmoji = "⏳";
             message = t.attributes.isActive.openingAt(
-              new Date(survey.activeFrom),
+              formatDateTime(survey.activeFrom, locale),
             );
           } else {
             message = t.attributes.isActive.closed;
