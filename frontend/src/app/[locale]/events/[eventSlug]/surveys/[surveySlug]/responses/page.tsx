@@ -167,7 +167,7 @@ export default async function FormResponsesPage({
           {Intl.DateTimeFormat(locale, {
             dateStyle: "short",
             timeStyle: "short",
-            timeZone: timezone,
+            timeZone: timezone.id,
           }).format(new Date(row.createdAt))}
         </Link>
       ),

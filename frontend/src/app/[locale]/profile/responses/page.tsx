@@ -101,7 +101,7 @@ export default async function OwnResponsesPage({ params }: Props) {
           {Intl.DateTimeFormat(locale, {
             dateStyle: "short",
             timeStyle: "short",
-            timeZone: timezone,
+            timeZone: timezone.id,
           }).format(new Date(row.createdAt))}
         </Link>
       ),
