@@ -97,6 +97,11 @@ fields:
     type: FileUpload
     required: true
 
+  - slug: additional_info
+    title: Lisätietoja
+    type: MultiLineText
+    required: false
+
   - slug: pirate
     title: Tämän kohdan rastimalla ymmärrän että tuotteiden tulee noudattaa Suomen lakia, mitä tulee tekijänoikeuslakiin ja piraattituotteisiin
     type: SingleSelect
