@@ -11,7 +11,7 @@ interface Props {
 }
 
 const defaultOptions: Intl.DateTimeFormatOptions = {
-  dateStyle: "short",
+  dateStyle: "medium", // used to disambiguate day and month
   timeStyle: "short",
 };
 
