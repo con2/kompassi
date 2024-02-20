@@ -97,6 +97,12 @@ fields:
     type: FileUpload
     required: true
 
+  - slug: additional_info
+    title: Additional info
+    type: MultiLineText
+    required: false
+    helpText: "For any comments or info that didn't fit the categories above"
+
   - slug: pirate
     title: By checking this box I understand that my products have to comply with the finnish law, when it comes to copyright law and pirated products
     type: SingleSelect

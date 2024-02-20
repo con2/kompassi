@@ -97,6 +97,12 @@ fields:
     type: FileUpload
     required: true
 
+  - slug: additional_info
+    title: Lisätietoja
+    type: MultiLineText
+    required: false
+    helpText: "Kommenteille ja muulle infolle joka ei sopinut aikaisempiin kenttiin."
+
   - slug: pirate
     title: Tämän kohdan rastimalla ymmärrän että tuotteiden tulee noudattaa Suomen lakia, mitä tulee tekijänoikeuslakiin ja piraattituotteisiin
     type: SingleSelect
