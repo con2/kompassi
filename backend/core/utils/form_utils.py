@@ -93,7 +93,7 @@ class RenderTemplate:
     def __init__(self, template_name):
         self.template_name = template_name
 
-    def render(self, form, form_style, context, template_pack=None, **kwargs):
+    def render(self, form, form_style, context=None, template_pack=None, **kwargs):
         return get_template(self.template_name).render({})
 
 
