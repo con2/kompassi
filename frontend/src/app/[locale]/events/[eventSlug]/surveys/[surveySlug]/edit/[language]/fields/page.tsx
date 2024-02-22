@@ -1,20 +1,18 @@
 import { notFound } from "next/navigation";
 
-import ModalButton from "../../dimensions/ModalButton";
-import SurveyEditorView from "../SurveyEditorView";
-import { deleteSurveyLanguage, updateSurveyLanguage } from "./actions";
+import SurveyEditorView from "../../SurveyEditorView";
+import { updateSurveyFields } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Field } from "@/components/forms/models";
-import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
+import CrouchingFormEditorHiddenField from "@/components/forms/CrouchingFormEditorHiddenField";
+import { validateFields } from "@/components/forms/models";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment EditSurveyLanguagePage on SurveyType {
+  fragment EditSurveyFieldsPage on SurveyType {
     slug
     title(lang: $locale)
     canRemove
@@ -22,8 +20,6 @@ graphql(`
     form(lang: $language) {
       title
       language
-      description
-      thankYouMessage
       fields
       canRemove
     }
@@ -35,7 +31,7 @@ graphql(`
 `);
 
 const query = graphql(`
-  query EditSurveyLanguagePageQuery(
+  query EditSurveyFieldsPageQuery(
     $eventSlug: String!
     $surveySlug: String!
     $language: String!
@@ -46,7 +42,7 @@ const query = graphql(`
 
       forms {
         survey(slug: $surveySlug) {
-          ...EditSurveyLanguagePage
+          ...EditSurveyFieldsPage
         }
       }
     }
@@ -117,66 +113,22 @@ export default async function EditSurveyLanguagePage({ params }: Props) {
 
   const survey = data.event.forms.survey;
   const form = data.event.forms.survey.form;
+  const activeTab = `fields-${language}`;
 
-  const rows = 3;
-  const fields: Field[] = [
-    {
-      slug: "title",
-      type: "SingleLineText",
-      ...translations.FormEditor.attributes.title,
-    },
-    {
-      slug: "description",
-      type: "MultiLineText",
-      rows,
-      ...translations.FormEditor.attributes.description,
-    },
-    {
-      slug: "thankYouMessage",
-      type: "MultiLineText",
-      rows,
-      ...translations.FormEditor.attributes.thankYouMessage,
-    },
-  ];
-
-  const supportedLanguages: Record<string, string> =
-    translations.LanguageSwitcher.supportedLanguages;
-  const languageName = supportedLanguages[language] ?? form.language;
-  const activeTab = `texts-${language}`;
+  validateFields(form.fields);
 
   return (
     <SurveyEditorView params={params} survey={survey} activeTab={activeTab}>
       <form
-        action={updateSurveyLanguage.bind(
-          null,
-          eventSlug,
-          surveySlug,
-          language,
-        )}
+        action={updateSurveyFields.bind(null, eventSlug, surveySlug, language)}
       >
-        <SchemaForm
-          fields={fields}
-          values={form}
-          messages={translations.SchemaForm}
+        <CrouchingFormEditorHiddenField
+          initialFields={form.fields}
+          messages={{
+            FormEditor: translations.FormEditor,
+            SchemaForm: translations.SchemaForm,
+          }}
         />
-        <div className="d-flex">
-          <SubmitButton>{t.actions.saveProperties}</SubmitButton>
-          <ModalButton
-            className="btn btn-outline-danger ms-auto"
-            title={t.deleteLanguageModal.title}
-            messages={t.deleteLanguageModal.modalActions}
-            action={deleteSurveyLanguage.bind(
-              null,
-              eventSlug,
-              survey.slug,
-              language,
-            )}
-            submitButtonVariant="danger"
-            disabled={!form.canRemove}
-          >
-            {t.deleteLanguageModal.confirmation(languageName)}
-          </ModalButton>
-        </div>
       </form>
     </SurveyEditorView>
   );

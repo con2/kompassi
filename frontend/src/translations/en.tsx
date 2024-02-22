@@ -388,8 +388,8 @@ const translations = {
       responses: "Responses",
       properties: "Survey properties",
       addLanguage: "Add language",
-      languageVersion: (languageName: string) =>
-        `Language version: ${languageName}`,
+      texts: (languageName: string) => `Texts (${languageName})`,
+      fields: (languageName: string) => `Fields (${languageName})`,
     },
     thankYou: {
       title: "Thank you for your answers!",

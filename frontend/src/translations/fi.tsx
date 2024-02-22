@@ -388,7 +388,8 @@ const translations: Translations = {
       responses: "Vastaukset",
       properties: "Kyselyn asetukset",
       addLanguage: "Lisää kieliversio",
-      languageVersion: (languageName: string) => `Kieliversio: ${languageName}`,
+      texts: (languageName: string) => `Tekstit (${languageName})`,
+      fields: (languageName: string) => `Kentät (${languageName})`,
     },
     thankYou: {
       title: "Kiitos vastauksistasi!",

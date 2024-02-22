@@ -26,6 +26,9 @@ const documents = {
     "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n": types.DimensionsListDocument,
     "\n  mutation UpdateSurveyLanguageMutation($input: UpdateSurveyLanguageInput!) {\n    updateSurveyLanguage(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateSurveyLanguageMutationDocument,
     "\n  mutation DeleteSurveyLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n": types.DeleteSurveyLanguageDocument,
+    "\n  mutation UpdateSurveyFieldsLanguageMutation(\n    $input: UpdateSurveyLanguageInput!\n  ) {\n    updateSurveyLanguage(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateSurveyFieldsLanguageMutationDocument,
+    "\n  fragment EditSurveyFieldsPage on SurveyType {\n    slug\n    title(lang: $locale)\n    canRemove\n\n    form(lang: $language) {\n      title\n      language\n      fields\n      canRemove\n    }\n\n    languages {\n      language\n    }\n  }\n": types.EditSurveyFieldsPageFragmentDoc,
+    "\n  query EditSurveyFieldsPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          ...EditSurveyFieldsPage\n        }\n      }\n    }\n  }\n": types.EditSurveyFieldsPageQueryDocument,
     "\n  fragment EditSurveyLanguagePage on SurveyType {\n    slug\n    title(lang: $locale)\n    canRemove\n\n    form(lang: $language) {\n      title\n      language\n      description\n      thankYouMessage\n      fields\n      canRemove\n    }\n\n    languages {\n      language\n    }\n  }\n": types.EditSurveyLanguagePageFragmentDoc,
     "\n  query EditSurveyLanguagePageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          ...EditSurveyLanguagePage\n        }\n      }\n    }\n  }\n": types.EditSurveyLanguagePageQueryDocument,
     "\n  mutation CreateSurveyLanguage($input: CreateSurveyLanguageInput!) {\n    createSurveyLanguage(input: $input) {\n      form {\n        language\n      }\n    }\n  }\n": types.CreateSurveyLanguageDocument,
@@ -115,6 +118,18 @@ export function graphql(source: "\n  mutation UpdateSurveyLanguageMutation($inpu
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteSurveyLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteSurveyLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateSurveyFieldsLanguageMutation(\n    $input: UpdateSurveyLanguageInput!\n  ) {\n    updateSurveyLanguage(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateSurveyFieldsLanguageMutation(\n    $input: UpdateSurveyLanguageInput!\n  ) {\n    updateSurveyLanguage(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment EditSurveyFieldsPage on SurveyType {\n    slug\n    title(lang: $locale)\n    canRemove\n\n    form(lang: $language) {\n      title\n      language\n      fields\n      canRemove\n    }\n\n    languages {\n      language\n    }\n  }\n"): (typeof documents)["\n  fragment EditSurveyFieldsPage on SurveyType {\n    slug\n    title(lang: $locale)\n    canRemove\n\n    form(lang: $language) {\n      title\n      language\n      fields\n      canRemove\n    }\n\n    languages {\n      language\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query EditSurveyFieldsPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          ...EditSurveyFieldsPage\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query EditSurveyFieldsPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          ...EditSurveyFieldsPage\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

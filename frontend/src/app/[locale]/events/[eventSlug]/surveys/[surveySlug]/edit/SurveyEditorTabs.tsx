@@ -44,9 +44,14 @@ export default function SurveyEditorTabs({
       supportedLanguages[languageCode] ?? languageVersion.language;
 
     tabs.push({
-      slug: languageCode,
-      title: t.tabs.languageVersion(languageName),
+      slug: `texts-${languageCode}`,
+      title: t.tabs.texts(languageName),
       href: `${url}/edit/${languageCode}`,
+    });
+    tabs.push({
+      slug: `fields-${languageCode}`,
+      title: t.tabs.fields(languageName),
+      href: `${url}/edit/${languageCode}/fields`,
     });
   }
 
