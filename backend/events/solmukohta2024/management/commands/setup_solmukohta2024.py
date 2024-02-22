@@ -418,13 +418,12 @@ class Setup:
         from forms.models.form import Form
         from forms.models.survey import Survey
 
-        passenger_registration, _ = Survey.objects.get_or_create(
+        passenger_registration, _ = Survey.objects.update_or_create(
             event=self.event,
             slug="passenger-registration",
             defaults=dict(
                 active_from=now(),
                 key_fields=["official_last_name", "official_first_names"],
-                login_required=True,
             ),
         )
 
@@ -445,6 +444,33 @@ class Setup:
         )
 
         passenger_registration.languages.set([passenger_registration_en])
+
+        hackathon_signup, _ = Survey.objects.update_or_create(
+            event=self.event,
+            slug="hackathon-signup",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["name"],
+            ),
+        )
+
+        with resource_stream("events.solmukohta2024", "forms/hackathon-signup-dimensions.yaml") as f:
+            data = yaml.safe_load(f)
+
+        for dimension in data:
+            DimensionDTO.model_validate(dimension).save(hackathon_signup)
+
+        with resource_stream("events.solmukohta2024", "forms/hackathon-signup-en.yaml") as f:
+            data = yaml.safe_load(f)
+
+        hackathon_signup_en, created = Form.objects.update_or_create(
+            event=self.event,
+            slug="hackathon-signup-en",
+            language="en",
+            defaults=data,
+        )
+
+        hackathon_signup.languages.set([hackathon_signup_en])
 
 
 class Command(BaseCommand):

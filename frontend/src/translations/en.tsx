@@ -277,7 +277,7 @@ const translations = {
           title: "Connecting your response to you",
           choices: {
             HARD: "Responses are anonymous. You cannot return to view or edit your responses.",
-            SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your identity will not be shared with the survey owner.",
+            SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your user profile will not be shared with the survey owner.",
             NAME_AND_EMAIL:
               "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses.",
           },

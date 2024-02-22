@@ -122,12 +122,6 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
       <ParagraphsDangerousHtml html={description} />
-      <p>
-        <small>
-          <strong>{anonymityMessages.title}: </strong>
-          {anonymityMessages.choices[anonymity]}
-        </small>
-      </p>
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
         <SchemaForm
           fields={fields}
@@ -136,6 +130,12 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
         />
         <SubmitButton layout={layout}>{t.actions.submit}</SubmitButton>
       </form>
+      <p className="mt-3">
+        <small>
+          <strong>{anonymityMessages.title}: </strong>
+          {anonymityMessages.choices[anonymity]}
+        </small>
+      </p>
     </ViewContainer>
   );
 }

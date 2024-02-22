@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 import { Heading, HeadingLevel } from "../helpers/Heading";
+import ParagraphsDangerousHtml from "../helpers/ParagraphsDangerousHtml";
 import { Field, Layout } from "./models";
 
 function Label({ field, layout }: { field: Field; layout: Layout }) {
@@ -48,7 +49,7 @@ export default function SchemaFormField({
     return (
       <>
         {title && <Heading level={headingLevel}>{title}</Heading>}
-        {helpText && <p>{helpText}</p>}
+        {helpText && <ParagraphsDangerousHtml html={helpText} />}
         {children}
       </>
     );

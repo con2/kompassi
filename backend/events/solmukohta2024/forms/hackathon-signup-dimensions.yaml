@@ -1,0 +1,37 @@
+- slug: role
+  title:
+    en: Role
+  is_key_dimension: true
+  is_multi_value: true
+  choices:
+    - slug: organizer
+      title:
+        en: KP/SK organizer
+    - slug: developer
+      title:
+        en: Developer
+    - slug: designer
+      title:
+        en: Designer
+
+- slug: status
+  title:
+    en: Payment status
+  is_key_dimension: true
+  choices:
+    - slug: new
+      color: blue
+      is_initial: true
+      title:
+        fi: Uusi
+        en: New
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+        en: Accepted
+    - slug: cancelled
+      color: red
+      title:
+        fi: Peruutettu
+        en: Cancelled

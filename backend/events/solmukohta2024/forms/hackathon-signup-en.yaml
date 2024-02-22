@@ -1,0 +1,77 @@
+title: KP/SK IT Hackathon – A Week in Finland 2024
+layout: vertical
+description: |
+  Please fill in this form to sign up for the KP/SK IT Hackathon at A Week in Finland 2024.
+  The hackathon will take place on Wednesday 10 April at the Polar Squad office in downtown
+  Tampere.
+fields:
+  - slug: name
+    title: Name
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Email address
+    type: SingleLineText
+    htmlType: email
+    required: true
+
+  - slug: phone
+    title: Phone number
+    type: SingleLineText
+    helpText: |
+      We will only use your phone number to contact you in case of last-minute changes.
+      Please provide your phone number in international format, e.g. +358 40 123 4567.
+
+  - slug: discord
+    title: Discord username
+    type: SingleLineText
+    helpText: |
+      We will use the Solmukohta 2024 Discord server to discuss the hackathon in advance and during the
+      event. If you have a Discord account, please provide your username here to help us connect with you.
+      If you have not yet joined the Solmukohta 2024 Discord server but would like to do so, please see the <a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1D30rNe8Kt6PBsSlkjJVsLlwSLabCQF_3Xv4-JIsUOlM/edit#heading=h.kafw14kkcd82">Solmukohta 2024 Discord Guide for Participants</a> and use the <a target="_blank" rel="noopener noreferrer" href="https://discord.gg/AB8qqJxDTV">invitation link</a> to join.
+
+  - slug: stake
+    title: What is your stake in KP/SK IT systems?
+    type: MultiLineText
+    helpText: |
+      Are you involved with the organization of one or more KP/SK events? Are you a developer,
+      designer or other kind of software professional or aspiring to become one, and interested in
+      contributing to the KP/SK IT systems? Are you a KP/SK participant who has ideas for improving
+      processes such as ticket sales and signup, call for programme or run-time information systems?
+      We welcome all interested parties regardless of affiliation or experience level, but we would
+      like to know what you are interested in and what you can bring to the table to help us plan the
+      hackathon.
+
+  - slug: expectations
+    title: What are your expectations for the hackathon?
+    type: MultiLineText
+    helpText: |
+      What would you like to achieve during the hackathon? What kind of projects would you like to
+      work on, and in what capacity? What kind of skills or knowledge would you like to share or
+      learn from others? We will try to tailor the hackathon to meet the needs and expectations of
+      the participants, so please let us know what you are hoping to get out of the event.
+
+  - slug: notes
+    title: Anything else you would like to tell us?
+    type: MultiLineText
+    helpText: |
+      If you have any special needs or requests, please let us know here. If you have any questions
+      or comments about the hackathon, please feel free to share them here.
+
+  - slug: consentTitle
+    type: StaticText
+    title: Processing of personally identifiable information
+    helpText: |
+      The controller of personal data is Tracon ry represented by Santtu "Japsu" Pajukanta.
+      The information is used only for organizing the KP/SK IT Hackathon at A Week in Finland 2024.
+      The information is stored for the duration of the event and then deleted.
+      The information is not disclosed to third parties.
+      The information is not used for direct marketing.
+      The information is not transferred outside the EU or the European Economic Area with the exception of your email address as required to send email to you.
+      As a data subject, you have rights that you can familiarize yourself with on the <a target="_blank" rel="noopener noreferrer" href="https://tietosuoja.fi/en/private-persons">Data Protection Ombudsman's website</a>.
+
+  - slug: consent
+    type: SingleCheckbox
+    title: I consent to the processing of my personally identifiable information as described above.
+    required: true
