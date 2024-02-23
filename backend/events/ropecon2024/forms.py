@@ -101,25 +101,25 @@ class ProgrammeSignupExtraForm(AlternativeFormMixin, forms.ModelForm):
 RPG_FORM_FIELD_TEXTS = dict(
     title=(
         _("Title of your game"),
-         _(
+        _(
             'Come up with a catchy, concise title for your game. If you plan to have multiple games with the same name, please add the number of the session or the date at the end of the title, e.g. "2nd game" or "(Fri)". Ropecon reserves the right to edit the title if necessary.<br><br>Write the title of the game in the language the game will be played in (Finnish or English). If the game can be played both in English and in Finnish, please write the description in both languages.'
         ),
-        
-        ),
+    ),
     rpg_system=(_("RPG system"), _("What role-playing game system is used?")),
-    approximate_length=(_("Estimated duration of your game (minutes)"),
-         _(
-            'Please make an estimation for the duration of your game.<br>Our attendees have hoped to see more shorter games of 2 to 4 hours (120-240 min) in length.'
+    approximate_length=(
+        _("Estimated duration of your game (minutes)"),
+        _(
+            "Please make an estimation for the duration of your game.<br>Our attendees have hoped to see more shorter games of 2 to 4 hours (120-240 min) in length."
         ),
-        
-        ),
+    ),
     min_players=(
         _("Minimum number of players"),
         _(
             "How many players are needed for the game to be organized?<br><br>Consider the minimum number of players required to run your game carefully: by setting it as low as possible, you increase the chances of your game being able to be run."
         ),
     ),
-    max_players=(_("Maximum number of players"), 
+    max_players=(
+        _("Maximum number of players"),
         _(
             "If the maximum number of players in your game is limited, please set the maximum number of players that can participate at the same time."
         ),
@@ -326,7 +326,9 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
 LARP_FORM_FIELD_TEXTS = dict(
     title=(
         _("Title of your larp"),
-        _("Give your larp a catchy and concise title. We reserve the right to edit the title if necessary.<br><br>Write the title of the game in the language the game will be played in (Finnish or English). If the game can be played both in English and in Finnish, please write the description in both languages."),
+        _(
+            "Give your larp a catchy and concise title. We reserve the right to edit the title if necessary.<br><br>Write the title of the game in the language the game will be played in (Finnish or English). If the game can be played both in English and in Finnish, please write the description in both languages."
+        ),
     ),
     approximate_length=(
         _("Estimated duration (minutes)"),
@@ -1044,7 +1046,7 @@ WORKSHOP_FORM_FIELD_TEXTS = dict(
         _("I'm interested in participating in a panel discussion related to my field(s) of expertise."),
     ),
     ropecon2023_workshop_fee=(
-    _("Workshop fee"),
+        _("Workshop fee"),
         _(
             "If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application).<br/>If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide. Note that you may only charge enough to cover your material expenses - making a profit with workshops is not allowed."
         ),
