@@ -837,6 +837,15 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_("Examples: spiders, violence, phobias or other possibly triggering themes"),
     )
     ropecon2023_blocked_time_slots = models.ManyToManyField(
+        "ropecon2023.TimeSlot",
+        verbose_name=_("When are you NOT able to host your programme?"),
+        help_text=_(
+            "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
+        ),
+        blank=True,
+        related_name="+",
+    )
+    ropecon2024_blocked_time_slots = models.ManyToManyField(
         "ropecon2024.TimeSlot",
         verbose_name=_("When are you NOT able to host your programme?"),
         help_text=_(
