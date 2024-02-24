@@ -1,5 +1,6 @@
 import collections.abc
 import contextlib
+import functools
 import os
 import shutil
 import tempfile
@@ -155,16 +156,31 @@ def render_pdf(
 
 
 class _TemplateCompiler:
+    T = typing.TypeVar("T", bound=collections.abc.Callable)
+
+    @staticmethod
+    def wrap_as_safe_call(fn: T) -> T:
+        @functools.wraps(fn)
+        def wrapped(*args, **kwargs):
+            return fn(*args, **kwargs)
+
+        wrapped.is_safe_to_call = True
+        return wrapped
+
+    class Environment(SandboxedEnvironment):
+        def is_safe_callable(self, obj: typing.Any) -> bool:
+            return hasattr(obj, "is_safe_to_call") and obj.is_safe_to_call
+
     def __init__(self, vfs: Vfs) -> None:
         self.vfs = vfs
 
-        env = SandboxedEnvironment(
+        env = self.Environment(
             autoescape=True,
             loader=FunctionLoader(self._do_lookup),
         )
 
         filters.add_all_to(env.filters)
-        env.globals["lorem"] = django.utils.lorem_ipsum.paragraphs
+        env.globals["lorem"] = self.wrap_as_safe_call(django.utils.lorem_ipsum.paragraphs)
 
         self.env = env
 
