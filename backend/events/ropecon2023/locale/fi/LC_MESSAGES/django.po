@@ -63,7 +63,7 @@ msgid "If the maximum number of players in your game programme is limited, pleas
 msgstr "Mikäli peliohjelmasi pelaajamäärä on rajattu, kirjoita tähän kuinka monta pelaajaa maksimissaan mahtuu kerralla mukaan."
 
 msgid 'What game system is used in your game programme? For example, "Magic the Gathering" or "Carcassonne".<br/>If you designed the game system yourself, describe it in a few words. For example, "4X, space battle, conquest"'
-msgstr 'Mitä pelisysteemiä peliohjelmassasi käytetään? Esim. "Magic the Gathering tai Carcassonne".<br/>Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. "4X, avaruustaistelu, valloitus".'
+msgstr 'Mitä pelisysteemiä peliohjelmassasi käytetään? Esim. "Magic the Gathering" tai "Carcassonne".<br/>Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. "4X, avaruustaistelu, valloitus".'
 
 msgid "Language used in game materials"
 msgstr "Pelimateriaalin kieli"
@@ -127,7 +127,7 @@ msgid "This includes time for propping, brief and debrief, as well as the actual
 msgstr "Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
 
 msgid "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests."
-msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme välttämättä pysty toteuttamaan kaikkia toiveita."
 
 # Roolipelit 2023
 

@@ -99,16 +99,31 @@ class ProgrammeSignupExtraForm(AlternativeFormMixin, forms.ModelForm):
 
 
 RPG_FORM_FIELD_TEXTS = dict(
-    title=(_("Title of your game"), None),
+    title=(
+        _("Title of your game"),
+        _(
+            'Come up with a catchy, concise title for your game. If you plan to have multiple games with the same name, please add the number of the session or the date at the end of the title, e.g. "2nd game" or "(Fri)". Ropecon reserves the right to edit the title if necessary.<br><br>Write the title of the game in the language the game will be played in (Finnish or English). If the game can be played both in English and in Finnish, please write the description in both languages.'
+        ),
+    ),
     rpg_system=(_("RPG system"), _("What role-playing game system is used?")),
-    approximate_length=(_("Estimated duration of your game (minutes)"), None),
+    approximate_length=(
+        _("Estimated duration of your game (minutes)"),
+        _(
+            "Please make an estimation for the duration of your game.<br>Our attendees have hoped to see more shorter games of 2 to 4 hours (120-240 min) in length."
+        ),
+    ),
     min_players=(
         _("Minimum number of players"),
         _(
-            "Consider the minimum number of players required to run your game carefully: by setting it as low as possible, you increase the chances of your game being able to be run."
+            "How many players are needed for the game to be organized?<br><br>Consider the minimum number of players required to run your game carefully: by setting it as low as possible, you increase the chances of your game being able to be run."
         ),
     ),
-    max_players=(_("Maximum number of players"), None),
+    max_players=(
+        _("Maximum number of players"),
+        _(
+            "If the maximum number of players in your game is limited, please set the maximum number of players that can participate at the same time."
+        ),
+    ),
     is_revolving_door=(
         _("Revolving door RPG"),
         _(
@@ -116,8 +131,8 @@ RPG_FORM_FIELD_TEXTS = dict(
         ),
     ),
     ropecon_theme=(
-        _("Theme: Past and Future"),
-        _("If your programme is related to the theme of Ropecon 2024, please tick this box."),
+        _("Theme: Monsters"),
+        _("If your programme is related to this year's theme, please tick this box."),
     ),
     ropecon2018_style_serious=(_("Serious playstyle"), None),
     ropecon2018_style_light=(_("Lighthearted playstyle"), None),
@@ -129,19 +144,19 @@ RPG_FORM_FIELD_TEXTS = dict(
     description=(
         _("Description of your game"),
         _(
-            "Advertise your game for potential players. If your game includes any potentially shocking or distressing themes, please mention it here.<br><br>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.<br><br>Write the description in the language the game will be run in (Finnish, English). You can write the description in both languages if you want."
+            "Advertise your game for potential players. If your game includes any potentially shocking or distressing themes, please mention it here.<br><br>Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the game programme if necessary.<br><br>Write the description of the game programme in the language the game will be played in (Finnish and/or English). If the game can be played both in English and in Finnish, please write the description in both languages.<br><br>Please note, that this field will be visible in the online programme guide."
         ),
     ),
     three_word_description=(
         _("Slogan for your game"),
         _(
-            "Condense the essence of your game into one short sentence that will let players know what your game have to offer. For example, “A traditional D&D dungeon crawl”, or “Lovecraftian horror in Equestria”. We reserve the right to edit the slogan if necessary."
+            'Condense the essence of your game into one short sentence that will let players know what your game has to offer. For example, "A traditional D&D dungeon crawl", or "Lovecraftian horror in Equestria". We reserve the right to edit the slogan if necessary.'
         ),
     ),
     ropecon2023_blocked_time_slots=(
         _("When are you NOT able to run your game?"),
         _(
-            "Select the times when you are <b>NOT able</b> to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
+            "Select the times when you are <b>NOT able</b> to run your game. Time slots have been intentionally left vague.<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below."
         ),
     ),
     notes_from_host=(
@@ -191,7 +206,8 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             ),
             Fieldset(
                 _("Who is your programme for?"),
-                "ropecon2023_language",
+                "ropecon2024_language",
+                "ropecon2024_language_other",
                 "ropecon2023_suitable_for_all_ages",
                 "ropecon2023_aimed_at_children_under_13",
                 "ropecon2023_aimed_at_children_between_13_17",
@@ -199,7 +215,6 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
                 "ropecon2023_for_18_plus_only",
                 "ropecon2023_beginner_friendly",
                 "ropecon_theme",
-                "ropecon2023_celebratory_year",
                 "photography",
             ),
             Fieldset(
@@ -232,6 +247,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
 
         self.fields["rpg_system"].required = True
         self.fields["approximate_length"].required = True
+        self.fields["approximate_length"].initial = 180
         self.fields["min_players"].required = True
         self.fields["min_players"].initial = 2
         self.fields["max_players"].required = True
@@ -266,7 +282,8 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             "three_word_description",
             "ropecon2023_blocked_time_slots",
             "notes_from_host",
-            "ropecon2023_language",
+            "ropecon2024_language",
+            "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
             "ropecon2023_aimed_at_children_between_13_17",
@@ -274,7 +291,6 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             "ropecon2023_for_18_plus_only",
             "ropecon2023_beginner_friendly",
             "ropecon_theme",
-            "ropecon2023_celebratory_year",
             "photography",
             "ropecon2023_accessibility_cant_use_mic",
             "ropecon2021_accessibility_loud_sounds",
@@ -310,7 +326,9 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
 LARP_FORM_FIELD_TEXTS = dict(
     title=(
         _("Title of your larp"),
-        _("Give your larp a catchy and concise title. We reserve the right to edit the title if necessary."),
+        _(
+            "Give your larp a catchy and concise title. We reserve the right to edit the title if necessary.<br><br>Write the title of the game in the language the game will be played in (Finnish or English). If the game can be played both in English and in Finnish, please write the description in both languages."
+        ),
     ),
     approximate_length=(
         _("Estimated duration (minutes)"),
@@ -332,7 +350,7 @@ LARP_FORM_FIELD_TEXTS = dict(
     description=(
         _("Description"),
         _(
-            "Advertise your larp for potential players. Inform players about what is expected of them, and what themes your larp contains. If your larp includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br/><br/>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary."
+            "Advertise your larp for potential players. Inform players about what is expected of them, and what themes your larp contains. If your larp includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br/><br/>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.<br/><br/>Write the description of the game programme in the language the game will be played in (Finnish and/or English). If the game can be played both in English and in Finnish, please write the description in both languages.<br/><br/>Please note, that this field will be visible in the online programme guide."
         ),
     ),
     other_author=(
@@ -348,20 +366,20 @@ LARP_FORM_FIELD_TEXTS = dict(
         ),
     ),
     ropecon2023_blocked_time_slots=(
-        _("When are you NOT able to run your larp?"),
+        _("When are you NOT able to run your game?"),
         _(
-            "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be <b>able</b> to run your larp unselected!<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.<br/><br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below."
+            "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be able to run your larp unselected! Time slots have been intentionally left vague.<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night or if you need to leave the venue by 11pm), please let us know in the Comments section below."
         ),
     ),
     notes_from_host=(
         _("Comments"),
         _(
-            "Do you want to say something to the larp-conittee that does not fit any of the fields above or clarify some answer?<br/><br/>If the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br/><br/>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br/><br/>You can also specify your preferred schedule here."
+            "Do you want to say something to the larp coordinator that does not fit any of the fields above or clarify some answer?<br/><br/>If the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br/><br/>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br/><br/>You can also specify your preferred schedule here."
         ),
     ),
     ropecon_theme=(
-        _("Theme: Past and Future"),
-        _("If your programme is related to the theme of Ropecon 2024, please tick this box."),
+        _("Theme: Monsters"),
+        _("If your programme is related to this year's theme, please tick this box."),
     ),
     ropecon2018_space_requirements=(
         _("Space and technical needs"),
@@ -411,7 +429,8 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ),
             Fieldset(
                 _("Who is your programme for?"),
-                "ropecon2023_language",
+                "ropecon2024_language",
+                "ropecon2024_language_other",
                 "ropecon2023_suitable_for_all_ages",
                 "ropecon2023_aimed_at_children_under_13",
                 "ropecon2023_aimed_at_children_between_13_17",
@@ -419,7 +438,6 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "ropecon2023_for_18_plus_only",
                 "ropecon2023_beginner_friendly",
                 "ropecon_theme",
-                "ropecon2023_celebratory_year",
                 "photography",
             ),
             Fieldset(
@@ -485,7 +503,8 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2018_prop_requirements",
             "ropecon2023_blocked_time_slots",
             "notes_from_host",
-            "ropecon2023_language",
+            "ropecon2024_language",
+            "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
             "ropecon2023_aimed_at_children_between_13_17",
@@ -493,7 +512,6 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_for_18_plus_only",
             "ropecon2023_beginner_friendly",
             "ropecon_theme",
-            "ropecon2023_celebratory_year",
             "photography",
             "ropecon2021_accessibility_loud_sounds",
             "ropecon2021_accessibility_flashing_lights",
@@ -536,7 +554,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
     description=(
         _("Description"),
         _(
-            "Describe your programme to your potential audience or participants in an appealing way. If your programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your programme is meant as humorous or entertaining in nature, let it show in the description as well. Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the programme if necessary."
+            "Describe your programme to your potential audience or participants in an appealing way. If your programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your programme is meant as humorous or entertaining in nature, let it show in the description as well. Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the programme if necessary.<br><br>Note that the text in this field is shown to the public in the programme guide."
         ),
     ),
     category=(
@@ -551,15 +569,9 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
             "Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes (one hour and 45 minutes)."
         ),
     ),
-    ropecon2023_language=(
-        _("Choose the language used in your programme"),
-        _(
-            "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with either of the two languages. The programme team will contact you regarding the final choice of language."
-        ),
-    ),
     ropecon_theme=(
-        _("Theme: Past and Future"),
-        _("If your programme is related to the theme of Ropecon 2024, please tick this box."),
+        _("Theme: Monsters"),
+        _("If your programme is related to this year's theme, please tick this box."),
     ),
     max_players=(
         _("Number of participants"),
@@ -616,7 +628,8 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "ropecon2023_language",
+            "ropecon2024_language_prog",
+            "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
             "ropecon2023_aimed_at_children_between_13_17",
@@ -624,7 +637,6 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_for_18_plus_only",
             "ropecon2023_beginner_friendly",
             "ropecon_theme",
-            "ropecon2023_celebratory_year",
             "max_players",
             "computer",
             "tech_requirements",
@@ -702,7 +714,8 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "ropecon2023_language",
+            "ropecon2024_language_prog",
+            "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
             "ropecon2023_aimed_at_children_between_13_17",
@@ -710,7 +723,6 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_for_18_plus_only",
             "ropecon2023_beginner_friendly",
             "ropecon_theme",
-            "ropecon2023_celebratory_year",
             "max_players",
             "computer",
             "tech_requirements",
@@ -747,19 +759,19 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
     title=(
         _("Title of your game programme"),
         _(
-            "Come up with a catchy, concise title for your game programme. Ropecon reserves the right to edit the title if necessary.<br/>Write the title of the game programme in the language the game will be played in (Finnish or English). You can also write the title in both languages, if you prefer."
+            'Come up with a catchy, concise title for your game programme. If you plan to have multiple games with the same name, please add the number of the session or the date at the end of the title, e.g. "2nd game" or "(Fri)". Ropecon reserves the right to edit the title if necessary.<br><br>Write the title of the game programme in the language the game will be played in (Finnish or English). If the game can be played both in English and in Finnish, please write the description in both languages.'
         ),
     ),
     description=(
         _("Description"),
         _(
-            "Describe your game programme to your potential players in an appealing way. Inform players what is expected of them and what themes your game contains. If your game programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your game programme is meant as humorous or entertaining in nature, let it show in the description as well.<br/>Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the game programme if necessary.<br/>Write the description of the game programme in the language the game will be played in (Finnish or English). You can also write the description in both languages, if you prefer."
+            "Describe your game programme to your potential players in an appealing way. Inform players what is expected of them and what themes your game contains. If your game programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your game programme is meant as humorous or entertaining in nature, let it show in the description as well.<br/><br/>Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the game programme if necessary.<br/><br/>Write the description of the game programme in the language the game will be played in (Finnish and/or English). If the game can be played both in English and in Finnish, please write the description in both languages.<br/><br/>Please note, that this field will be visible in the online programme guide."
         ),
     ),
     category=(
         _("Category of the game programme"),
         _(
-            "Choose the category that best suits your game programme. Ropecon reserves the right to change the programme category if necessary.<br/>Experience Point - Demo games (i.e. showcasing, demonstrating or running a game) and open games (i.e. running a certain card game or board game for attendees by request) organized at the Experience Point.<br/>Miniature wargames - demonstrations and open games organized at the miniature wargame area.<br/>Tournaments - organizing a game tournament or a competition at the tournament area or the miniature wargame area.<br/>Other game programme - something other than mentioned above, e.g. jigsaw puzzles."
+            "Choose the category that best suits your game programme. Ropecon reserves the right to change the programme category if necessary.<br/>Experience Point - Demo games (i.e. showcasing, demonstrating or running a game) and open games (i.e. running a certain card game, board game or tabletop role-playing game for attendees by request) organized at the Experience Point.<br/>Miniature wargames - demonstrations and open games organized at the miniature wargame area.<br/>Tournaments - organizing a game tournament or a competition at the tournament area or the miniature wargame area.<br/>Other game programme - something other than mentioned above, e.g. jigsaw puzzles."
         ),
     ),
     approximate_length=(
@@ -824,8 +836,8 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
         ),
     ),
     ropecon_theme=(
-        _("Theme: Past and Future"),
-        _("If your programme is related to the theme of Ropecon 2024, please tick this box."),
+        _("Theme: Monsters"),
+        _("If your programme is related to this year's theme, please tick this box."),
     ),
 )
 
@@ -860,7 +872,8 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "photography",
             Fieldset(
                 _("Who is your programme for?"),
-                "ropecon2023_language",
+                "ropecon2024_language",
+                "ropecon2024_language_other",
                 "ropecon2023_suitable_for_all_ages",
                 "ropecon2023_aimed_at_children_under_13",
                 "ropecon2023_aimed_at_children_between_13_17",
@@ -868,7 +881,6 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "ropecon2023_for_18_plus_only",
                 "ropecon2023_beginner_friendly",
                 "ropecon_theme",
-                "ropecon2023_celebratory_year",
             ),
             Fieldset(
                 _("Accessibility and inclusivity"),
@@ -909,7 +921,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ),
         )
         self.fields["approximate_length"].required = True
-        self.fields["approximate_length"].initial = 180
+        self.fields["approximate_length"].initial = 120
         self.fields["min_players"].required = True
         self.fields["min_players"].initial = False
         self.fields["description"].required = True
@@ -945,7 +957,8 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "is_available_for_panel",
             "field_of_expertise",
             "photography",
-            "ropecon2023_language",
+            "ropecon2024_language",
+            "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
             "ropecon2023_aimed_at_children_between_13_17",
@@ -953,7 +966,6 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_for_18_plus_only",
             "ropecon2023_beginner_friendly",
             "ropecon_theme",
-            "ropecon2023_celebratory_year",
             "ropecon2023_accessibility_cant_use_mic",
             "ropecon2021_accessibility_loud_sounds",
             "ropecon2021_accessibility_flashing_lights",
@@ -986,7 +998,7 @@ WORKSHOP_FORM_FIELD_TEXTS = dict(
     description=(
         _("Description"),
         _(
-            "Describe your programme to your potential audience or participants in an appealing way. If your programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your programme is meant as humorous or entertaining in nature, let it show in the description as well. Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the programme if necessary."
+            "Describe your programme to your potential audience or participants in an appealing way. If your programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your programme is meant as humorous or entertaining in nature, let it show in the description as well. Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the programme if necessary.<br/><br/>Note that the text in this field is shown to the public in the programme guide."
         ),
     ),
     category=(
@@ -999,15 +1011,9 @@ WORKSHOP_FORM_FIELD_TEXTS = dict(
         _("Estimated duration (minutes)"),
         _("Duration of workshops is either 45 minutes, 105 minutes or 165 minutes."),
     ),
-    ropecon2023_language=(
-        _("Choose the language used in your programme"),
-        _(
-            "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with either of the two languages. The programme team will contact you regarding the final choice of language."
-        ),
-    ),
     ropecon_theme=(
-        _("Theme: Past and Future"),
-        _("If your programme is related to the theme of Ropecon 2024, please tick this box."),
+        _("Theme: Monsters"),
+        _("If your programme is related to this year's theme, please tick this box."),
     ),
     max_players=(
         _("Number of participants"),
@@ -1039,6 +1045,12 @@ WORKSHOP_FORM_FIELD_TEXTS = dict(
         _("Panel discussions"),
         _("I'm interested in participating in a panel discussion related to my field(s) of expertise."),
     ),
+    ropecon2023_workshop_fee=(
+        _("Workshop fee"),
+        _(
+            "If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application).<br/>If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide. Note that you may only charge enough to cover your material expenses - making a profit with workshops is not allowed."
+        ),
+    ),
     field_of_expertise=(_("My field(s) of expertise"), None),
     photography=(
         _("Programme photography"),
@@ -1063,7 +1075,8 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "ropecon2023_language",
+            "ropecon2024_language_prog",
+            "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
             "ropecon2023_aimed_at_children_between_13_17",
@@ -1071,7 +1084,6 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_for_18_plus_only",
             "ropecon2023_beginner_friendly",
             "ropecon_theme",
-            "ropecon2023_celebratory_year",
             "max_players",
             "ropecon2023_workshop_fee",
             "ropecon2023_material_needs",
@@ -1147,7 +1159,8 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "ropecon2023_language",
+            "ropecon2024_language_prog",
+            "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
             "ropecon2023_aimed_at_children_between_13_17",
@@ -1155,7 +1168,6 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_for_18_plus_only",
             "ropecon2023_beginner_friendly",
             "ropecon_theme",
-            "ropecon2023_celebratory_year",
             "max_players",
             "ropecon2023_workshop_fee",
             "ropecon2023_material_needs",

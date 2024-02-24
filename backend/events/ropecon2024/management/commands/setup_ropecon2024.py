@@ -28,7 +28,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_programme()
+        self.setup_programme()
         self.setup_tickets()
         self.setup_badges()
 
@@ -229,39 +229,38 @@ class Setup:
 
         if not Room.objects.filter(event=self.event).exists():
             for room_name in [
-                "Halli 3",
-                "Halli 3 Bofferialue",
-                "Halli 1 Myyntialue",
-                "Halli 3 Näyttelyalue",
-                "Halli 3 Korttipelialue",
-                "Halli 3 Figupelialue",
-                "Halli 3 Pukukilpailutiski",
-                "Halli 3 Ohjelmalava",
-                "Halli 3 Puhesali",
-                "Halli 3 Ohjelmasali",
-                "Ylä-Galleria",
-                "Ala-Galleria",
-                "Larp-tiski",
+                "Pohjoinen aukio",
+                "Pohjoisen sisäänkäynnin aula",
+                "Ala-galleria",
+                "Eteläisen sisäänkäynnin aula",
                 "Messuaukio",
-                "Klubiravintola",
+                "Lasigalleria",
+                "Lastenhuone",
+                "Säde",
+                "Sali 102",
                 "Sali 103",
+                "Sali 104",
                 "Sali 201",
-                "Sali 202",
-                "Sali 203a",
-                "Sali 203b",
+                "Sali 203A",
+                "Sali 203B",
+                "Mesta",
                 "Sali 204",
                 "Sali 205",
                 "Sali 206",
                 "Sali 207",
+                "Sali 208",
+                "Sali 209",
+                "Sali 210",
                 "Sali 211",
                 "Sali 212",
                 "Sali 213",
                 "Sali 214",
                 "Sali 215",
                 "Sali 216",
-                "Sali 216a",
+                "Sali 216A",
                 "Sali 217",
                 "Sali 218",
+                "Sali 219",
                 "Sali 301",
                 "Sali 302",
                 "Sali 303",
@@ -269,7 +268,20 @@ class Setup:
                 "Sali 305",
                 "Sali 306",
                 "Sali 307",
-                "Salin 203 aula",
+                "Halli 1 Spektaakkelisali",
+                "Halli 1 Kahvila",
+                "Halli 1B Työpajasali",
+                "Halli 3 Kahvila",
+                "Halli 3 Perhealue",
+                "Halli 3 Boffaussali",
+                "Halli 3 Tanssiharjoitussali",
+                "Halli 3 Figualue",
+                "Halli 3 Turnaussali",
+                "Halli 3 Lautapelikirjaston pelialue",
+                "Halli 3 Kokemuspiste",
+                "Halli 3 Vapaa pelialue",
+                "Halli 6B Myyntialue",
+                "Halli 6B Näyttelyalue",
             ]:
                 room, created = Room.objects.get_or_create(
                     event=self.event,
@@ -278,27 +290,8 @@ class Setup:
 
         priority = 0
         for pc_slug, role_title, role_is_default in [
-            ("ohjelma", "Ohjelma, päivä, avustaja", False),
-            ("ohjelma", "Ohjelma, päivä, lyhyt ohjelma", True),
-            ("ohjelma", "Ohjelma, VKL, pitkä ohjelma", False),
-            ("ohjelma", "Ohjelma, VKL, kombo", False),
-            ("ohjelma", "Työpaja, päivä, avustaja", False),
-            ("ohjelma", "Työpaja, päivä, lyhyt ohjelma", False),
-            ("ohjelma", "Työpaja, VKL, pitkä ohjelma", False),
-            ("ohjelma", "Työpaja, VKL, kombo", False),
-            ("ohjelma", "Peliohjelma, päivä, avustaja", False),
-            ("ohjelma", "Peliohjelma, päivä, lyhyt ohjelma", False),
-            ("ohjelma", "Peliohjelma, VKL, pitkä ohjelma", False),
-            ("ohjelma", "Peliohjelma, VKL, kombo", False),
-            ("ohjelma", "Roolipelit, päivä, avustaja", False),
-            ("ohjelma", "Roolipelit, päivä, lyhyt ohjelma", False),
-            ("ohjelma", "Roolipelit, VKL, pitkä ohjelma", False),
-            ("ohjelma", "Roolipelit, VKL, kombo", False),
-            ("ohjelma", "Larpit, päivä, avustaja", False),
-            ("ohjelma", "Larpit, päivä, lyhyt ohjelma", False),
-            ("ohjelma", "Larpit, VKL, pitkä ohjelma", False),
-            ("ohjelma", "Larpit, VKL, kombo", False),
-            ("ohjelma", "Näkymätön ohjelmanjärjestäjä", False),
+            ("ohjelma", "Ohjelma, päivä, 1 ruoka", True),
+            ("ohjelma", "N Ohjelma, päivä, 1 ruoka", False),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
             role, created = Role.objects.get_or_create(
@@ -351,7 +344,7 @@ class Setup:
                 ("Muu peliohjelma / Other game programme", "othergame", "color3"),
                 ("Roolipeli / Pen & Paper RPG", "rpg", "color4"),
                 ("LARP", "larp", "color5"),
-                ("Muu ohjelma / None of the above", "other", "color6"),
+                ("Muu ohjelma / Other programme", "other", "color6"),
                 ("Sisäinen ohjelma", "internal", "sisainen"),
             ]:
                 Category.objects.get_or_create(
@@ -384,9 +377,7 @@ class Setup:
                 (
                     "Pääohjelmatilat",
                     [
-                        "Halli 3 Ohjelmalava",
-                        "Halli 3 Korttipelialue",
-                        "Halli 3 Figupelialue",
+                        "Halli 1 Spektaakkelisali",
                     ],
                 ),
             ]:
@@ -398,7 +389,7 @@ class Setup:
                     view.rooms = rooms
                     view.save()
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Roolipelit, VKL, pitkä ohjelma")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="roolipeli",
@@ -412,7 +403,7 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Larpit, VKL, pitkä ohjelma")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="larp",
@@ -426,7 +417,7 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Peliohjelma, VKL, pitkä ohjelma")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="pelitiski",
@@ -441,7 +432,7 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Työpaja, päivä, lyhyt ohjelma")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="tyopaja",
@@ -455,7 +446,7 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, lyhyt ohjelma")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="default",
@@ -481,6 +472,7 @@ class Setup:
             "EI lauantain ja sunnuntain välisenä yönä / NOT Saturday night",
             "EI sunnuntaina aamupäivällä / NOT Sunday morning",
             "EI sunnuntaina päivällä / NOT Sunday noon",
+            "EI sunnuntaina iltapäivällä / NOT Sunday afternoon",
             "Kaikki käy / Any time is fine",
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)

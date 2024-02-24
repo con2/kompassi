@@ -179,6 +179,22 @@ SOLMUKOHTA2024_HAVE_YOU_HOSTED_BEFORE_CHOICES = [
     ("nope", "No, this is my first time"),
 ]
 
+ROPECON2024_LANGUAGE_CHOICES = [
+    ("finnish", _("Finnish")),
+    ("english", _("English")),
+    ("language_free", _("Language-free")),
+    ("fin_and_eng", _("Finnish and English")),
+    ("other", _("Other")),
+]
+ROPECON2024_LANGUAGE_PROG_CHOICES = [
+    ("finnish", _("Finnish")),
+    ("english", _("English")),
+    ("language_free", _("Language-free")),
+    ("fin_or_eng", _("Finnish or English")),
+    ("fin_and_eng", _("Finnish and English")),
+    ("other", _("Other")),
+]
+
 valid_hex_color = RegexValidator(r"#[\da-fA-F]{3,6}")
 
 
@@ -821,7 +837,7 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_("Examples: spiders, violence, phobias or other possibly triggering themes"),
     )
     ropecon2023_blocked_time_slots = models.ManyToManyField(
-        "ropecon2023.TimeSlot",
+        "ropecon2024.TimeSlot",
         verbose_name=_("When are you NOT able to host your programme?"),
         help_text=_(
             "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
@@ -974,6 +990,33 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_(
             "Inform us here, if you need a specific kind of space (and/or furniture) for your workshop. For example if tables and chairs need to be moved for empty space in your workshop, because it is not possible to do so in every room."
         ),
+    )
+    ropecon2024_language = models.CharField(
+        max_length=max(len(key) for (key, text) in ROPECON2024_LANGUAGE_CHOICES),
+        choices=ROPECON2024_LANGUAGE_CHOICES,
+        default=ROPECON2024_LANGUAGE_CHOICES[0][0],
+        verbose_name=_("Choose the language used in your programme"),
+        help_text=_(
+            "Finnish - choose this, if only Finnish is spoken in your programme.<br><br>English - choose this, if only English is spoken in your programme.<br><br>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br><br>Finnish and English - choose this, if your programme item will use both Finnish and English (e.g. if you will switch languages based on participants). If chosen, please provide the title and description of your programme in both languages.<br><br>Other - choose this, if your programme is in a language other than Finnish or English. If chosen, please provide the title and description of your programme in the chosen language."
+        ),
+        null=True,
+    )
+    ropecon2024_language_prog = models.CharField(
+        max_length=max(len(key) for (key, text) in ROPECON2024_LANGUAGE_CHOICES),
+        choices=ROPECON2024_LANGUAGE_PROG_CHOICES,
+        default=ROPECON2024_LANGUAGE_PROG_CHOICES[0][0],
+        verbose_name=_("Choose the language used in your programme"),
+        help_text=_(
+            "Finnish - choose this, if only Finnish is spoken in your programme.<br><br>English - choose this, if only English is spoken in your programme.<br><br>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br><br>Finnish or English - choose this, if you are okay with either of the two languages. The programme team will contact you regarding the final choice of language.<br><br>Finnish and English - choose this, if your programme item will use both Finnish and English (e.g. if you will switch languages based on participants).<br><br>Other - choose this, if your programme is in a language other than Finnish or English. If chosen, please provide the title and description of your programme in the chosen language."
+        ),
+        null=True,
+    )
+    ropecon2024_language_other = models.CharField(
+        max_length=1023,
+        blank=True,
+        default="",
+        verbose_name=_("Other"),
+        help_text=_('If you chose "other", enter the language or languages you will be using in your programme here'),
     )
     is_using_paikkala = models.BooleanField(
         default=False,
