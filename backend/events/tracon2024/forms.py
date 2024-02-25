@@ -5,12 +5,8 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import horizontal_form_helper, indented_without_label
-from events.hitpoint2020.forms import (
-    APPROXIMATE_LENGTH_HELP_TEXT,
-)
-from events.hitpoint2020.forms import (
-    DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT,
-)
+from events.hitpoint2020.forms import APPROXIMATE_LENGTH_HELP_TEXT
+from events.hitpoint2020.forms import DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT
 from labour.forms import AlternativeFormMixin
 from labour.models import JobCategory, Signup
 from programme.models import AlternativeProgrammeFormMixin, Category, Programme
@@ -211,6 +207,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "tracon2023_accessibility_warnings",
                 "tracon2023_content_warnings",
                 "category",
+                "length_from_host",
                 "requested_time_slot",
             ),
             Fieldset(
@@ -262,6 +259,15 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             (k, t) for (k, t) in self.fields["stream_permission"].choices if k != "please"
         ]
 
+        self.fields["requested_time_slot"].help_text = (
+            "Onko sinulla erityisiä aikatoiveita siitä, mihin aikaan tahtoisit ohjelmasi pitää? "
+            "Onko sinulla joitain aikoja milloin et voi pitää ohjelmaasi? "
+            "Haluatko päästä katsomaan jotain tiettyjä muita ohjelmanumeroita?"
+        )
+
+        self.fields["length_from_host"].label = "Ohjelman pituus"
+        self.fields["length_from_host"].help_text = "Kuinka kauan ohjelmasi kestää?"
+
     def get_excluded_field_defaults(self):
         return dict()
 
@@ -275,6 +281,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "tracon2023_content_warnings",
             "category",
             "requested_time_slot",
+            "length_from_host",
             "computer",
             "use_audio",
             "use_video",
