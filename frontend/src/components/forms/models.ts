@@ -152,7 +152,7 @@ interface FileUpload extends BaseField {
 export type Layout = FormsFormLayoutChoices;
 export const Layout = FormsFormLayoutChoices;
 
-export const defaultLayout = Layout.Horizontal;
+export const defaultLayout = Layout.Vertical;
 
 export type Field =
   | SingleLineText

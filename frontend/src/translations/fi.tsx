@@ -521,6 +521,9 @@ const translations: Translations = {
     },
     editSurveyPage: {
       title: "Muokkaa kyselyä",
+      actions: {
+        submit: "Tallenna kentät",
+      },
     },
   },
 

@@ -516,7 +516,10 @@ const translations = {
       },
     },
     editSurveyPage: {
-      title: "Muokkaa kyselyä",
+      title: "Edit survey",
+      actions: {
+        submit: "Save fields",
+      },
     },
   },
 

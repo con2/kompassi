@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
+import { Field } from "@/components/forms/models";
 
 const mutation = graphql(`
   mutation UpdateSurveyFieldsLanguageMutation(
@@ -20,17 +21,21 @@ export async function updateSurveyFields(
   eventSlug: string,
   surveySlug: string,
   language: string,
-  formData: FormData,
+  fields: Field[],
 ) {
+  const input = {
+    eventSlug,
+    surveySlug,
+    language,
+    formData: fields, // TODO
+  };
+
+  console.log({ input });
+
   await getClient().mutate({
     mutation: mutation,
     variables: {
-      input: {
-        eventSlug,
-        surveySlug,
-        language,
-        formData: Object.fromEntries(formData),
-      },
+      input,
     },
   });
   revalidatePath(`/events/${eventSlug}/surveys`);

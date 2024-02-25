@@ -2,6 +2,7 @@
 
 import React from "react";
 
+import AddFieldDropdown from "./AddFieldDropdown";
 import EditFieldModal from "./EditFieldModal";
 import FormEditorControls from "./FormEditorControls";
 import { addField, removeField, replaceField } from "./formEditorLogic";
@@ -97,7 +98,6 @@ export default function FormEditor(props: FormEditorProps) {
             <SchemaFormField layout={layout} key={field.slug} field={field}>
               <SchemaFormInput
                 field={field}
-                value={""}
                 readOnly={true}
                 messages={messages.SchemaForm}
               />
@@ -114,7 +114,11 @@ export default function FormEditor(props: FormEditorProps) {
           </div>
         </div>
       ))}
-      {/* <AddFieldDropdown title={t.addField} onSelect={handleAddField} /> */}
+      <AddFieldDropdown
+        title={t.addField}
+        onSelect={handleAddField}
+        messages={messages.FormEditor}
+      />
 
       <Modal
         {...removeFieldModal}

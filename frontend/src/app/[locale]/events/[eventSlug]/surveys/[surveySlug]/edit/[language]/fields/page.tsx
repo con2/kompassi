@@ -5,8 +5,9 @@ import { updateSurveyFields } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import CrouchingFormEditorHiddenField from "@/components/forms/CrouchingFormEditorHiddenField";
+import FormEditorWrapper from "@/components/forms/FormEditorWrapper";
 import { validateFields } from "@/components/forms/models";
+import SubmitButton from "@/components/forms/SubmitButton";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -20,7 +21,7 @@ graphql(`
     form(lang: $language) {
       title
       language
-      fields
+      fields(enrich: false)
       canRemove
     }
 
@@ -119,17 +120,19 @@ export default async function EditSurveyLanguagePage({ params }: Props) {
 
   return (
     <SurveyEditorView params={params} survey={survey} activeTab={activeTab}>
-      <form
-        action={updateSurveyFields.bind(null, eventSlug, surveySlug, language)}
-      >
-        <CrouchingFormEditorHiddenField
-          initialFields={form.fields}
-          messages={{
-            FormEditor: translations.FormEditor,
-            SchemaForm: translations.SchemaForm,
-          }}
-        />
-      </form>
+      <FormEditorWrapper
+        initialFields={form.fields}
+        messages={{
+          FormEditor: translations.FormEditor,
+          SchemaForm: translations.SchemaForm,
+        }}
+        onChange={updateSurveyFields.bind(
+          null,
+          eventSlug,
+          surveySlug,
+          language,
+        )}
+      />
     </SurveyEditorView>
   );
 }
