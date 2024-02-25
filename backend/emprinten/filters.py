@@ -6,11 +6,14 @@ from jinja2 import is_undefined, pass_eval_context
 from jinja2.runtime import Undefined
 from markupsafe import Markup
 
+from .files import NameFactory
+
 SValue = str | Undefined
 
 
 def add_all_to(filters: dict[str, callable]) -> None:
     filters["nl2br"] = nl2br
+    filters["filename"] = NameFactory.sanitize
     filters.update(make_date_fns())
 
 

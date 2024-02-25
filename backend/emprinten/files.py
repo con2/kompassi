@@ -1,6 +1,7 @@
 import csv
 import io
 import json
+import os
 import re
 import typing
 from collections import OrderedDict
@@ -125,7 +126,7 @@ def read_csv(csv_io: typing.TextIO) -> list[dict[str, str | dict[str, typing.Any
 
 
 class NameFactory:
-    non_word = re.compile(r"[/\\?*<>|]+")
+    non_word = re.compile(r"[/\\?*<>|\"\0]+")
     whitespace = re.compile(r"\s+")
     max_len = 255
     index_fmt = " (%d)"
@@ -159,10 +160,7 @@ class NameFactory:
         'a (1).pdf'
         """
         fallback = fallback.removesuffix(ext)
-        formatted = self.whitespace.sub(
-            " ",
-            (self.non_word.sub(" ", self._tpl.render(row) if self._tpl is not None else fallback)),
-        ).strip()
+        formatted = self.sanitize(self._tpl.render(row) if self._tpl is not None else fallback)
 
         if not formatted:
             formatted = fallback
@@ -175,3 +173,22 @@ class NameFactory:
         if new_number > 0:
             return clipped + self.index_fmt % new_number + ext
         return clipped + ext
+
+    @classmethod
+    def sanitize(cls, value: str, illegal_replacement: str = " ") -> str:
+        """
+        >>> NameFactory.sanitize("foo/bar/baz.txt")
+        'foo bar baz.txt'
+        >>> NameFactory.sanitize("   ")
+        ''
+        >>> NameFactory.sanitize("Foo?.txt")
+        'Foo.txt'
+        >>> NameFactory.sanitize("Foo?? Bar.txt")
+        'Foo Bar.txt'
+        """
+        v = cls.whitespace.sub(" ", cls.non_word.sub(illegal_replacement, value)).strip()
+        root, ext = os.path.splitext(v)
+        root = root.strip()
+        if ext:
+            return root + ext.strip()
+        return root
