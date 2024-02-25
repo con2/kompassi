@@ -153,7 +153,7 @@ RPG_FORM_FIELD_TEXTS = dict(
             'Condense the essence of your game into one short sentence that will let players know what your game has to offer. For example, "A traditional D&D dungeon crawl", or "Lovecraftian horror in Equestria". We reserve the right to edit the slogan if necessary.'
         ),
     ),
-    ropecon2023_blocked_time_slots=(
+    ropecon2024_blocked_time_slots=(
         _("When are you NOT able to run your game?"),
         _(
             "Select the times when you are <b>NOT able</b> to run your game. Time slots have been intentionally left vague.<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below."
@@ -169,6 +169,12 @@ RPG_FORM_FIELD_TEXTS = dict(
         _("Programme photography"),
         _(
             "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
+        ),
+    ),
+    ropecon2024_language=(
+        _("Choose the language used in your programme"),
+        _(
+            "Finnish - choose this, if only Finnish is spoken in your programme.<br><br>English - choose this, if only English is spoken in your programme.<br><br>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br><br>Finnish and English - choose this, if your programme item will use both Finnish and English (e.g. if you will switch languages based on participants). If chosen, please provide the title and description of your programme in both languages.<br><br>Other - choose this, if your programme is in a language other than Finnish or English. If chosen, please provide the title and description of your programme in the chosen language."
         ),
     ),
 )
@@ -201,7 +207,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
                 "ropecon2018_style_combat_driven",
                 "description",
                 "three_word_description",
-                "ropecon2023_blocked_time_slots",
+                "ropecon2024_blocked_time_slots",
                 "notes_from_host",
             ),
             Fieldset(
@@ -254,13 +260,20 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
         self.fields["max_players"].initial = 5
         self.fields["description"].required = True
         self.fields["three_word_description"].required = True
-        self.fields["ropecon2023_blocked_time_slots"].required = True
+        self.fields["ropecon2024_blocked_time_slots"].required = True
         self.fields["photography"].choices = [
             ("please", _("Please photograph my programme")),
             ("okay", _("My programme can be photographed")),
             ("nope", _("I request my programme to not be photographed")),
         ]
         self.fields["photography"].initial = "okay"
+        self.fields["ropecon2024_language"].choices = [
+            ("finnish", _("Finnish")),
+            ("english", _("English")),
+            ("language_free", _("Language-free")),
+            ("fin_and_eng", _("Finnish and English")),
+            ("other", _("Other")),
+        ]
 
     class Meta:
         model = Programme
@@ -280,7 +293,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             "ropecon2018_style_combat_driven",
             "description",
             "three_word_description",
-            "ropecon2023_blocked_time_slots",
+            "ropecon2024_blocked_time_slots",
             "notes_from_host",
             "ropecon2024_language",
             "ropecon2024_language_other",
@@ -314,7 +327,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
         ]
 
         widgets = dict(
-            ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2024_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
@@ -365,7 +378,7 @@ LARP_FORM_FIELD_TEXTS = dict(
             'If you make the sign-up list for your larp yourself, you can ask more specific questions about player preferences. A sign-up list made by the Larp Desk is simply a list of names. In this case, select "Larp Desk makes the list".'
         ),
     ),
-    ropecon2023_blocked_time_slots=(
+    ropecon2024_blocked_time_slots=(
         _("When are you NOT able to run your game?"),
         _(
             "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be able to run your larp unselected! Time slots have been intentionally left vague.<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night or if you need to leave the venue by 11pm), please let us know in the Comments section below."
@@ -399,6 +412,12 @@ LARP_FORM_FIELD_TEXTS = dict(
             "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
         ),
     ),
+    ropecon2024_language=(
+        _("Choose the language used in your programme"),
+        _(
+            "Finnish - choose this, if only Finnish is spoken in your programme.<br><br>English - choose this, if only English is spoken in your programme.<br><br>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br><br>Finnish and English - choose this, if your programme item will use both Finnish and English (e.g. if you will switch languages based on participants). If chosen, please provide the title and description of your programme in both languages.<br><br>Other - choose this, if your programme is in a language other than Finnish or English. If chosen, please provide the title and description of your programme in the chosen language."
+        ),
+    ),
 )
 
 
@@ -424,7 +443,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "ropecon2018_signuplist",
                 "ropecon2018_space_requirements",
                 "ropecon2018_prop_requirements",
-                "ropecon2023_blocked_time_slots",
+                "ropecon2024_blocked_time_slots",
                 "notes_from_host",
             ),
             Fieldset(
@@ -480,13 +499,20 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields["ropecon2018_signuplist"].choices = [
             (k, t) for (k, t) in self.fields["ropecon2018_signuplist"].choices if k != "none"
         ]
-        self.fields["ropecon2023_blocked_time_slots"].required = True
+        self.fields["ropecon2024_blocked_time_slots"].required = True
         self.fields["photography"].choices = [
             ("please", _("Please photograph my programme")),
             ("okay", _("My programme can be photographed")),
             ("nope", _("I request my programme to not be photographed")),
         ]
         self.fields["photography"].initial = "okay"
+        self.fields["ropecon2024_language"].choices = [
+            ("finnish", _("Finnish")),
+            ("english", _("English")),
+            ("language_free", _("Language-free")),
+            ("fin_and_eng", _("Finnish and English")),
+            ("other", _("Other")),
+        ]
 
     class Meta:
         model = Programme
@@ -501,7 +527,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2018_signuplist",
             "ropecon2018_space_requirements",
             "ropecon2018_prop_requirements",
-            "ropecon2023_blocked_time_slots",
+            "ropecon2024_blocked_time_slots",
             "notes_from_host",
             "ropecon2024_language",
             "ropecon2024_language_other",
@@ -535,7 +561,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         widgets = dict(
             content_warnings=forms.Textarea,
-            ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2024_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
@@ -586,7 +612,7 @@ PROGRAMME_FORM_FIELD_TEXTS = dict(
         ),
     ),
     tech_requirements=(_("Other technical needs"), None),
-    ropecon2023_blocked_time_slots=(
+    ropecon2024_blocked_time_slots=(
         _("When are you NOT able to host your programme?"),
         _(
             "Select the times when you <b>DO NOT</b> want to host your programme. Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
@@ -628,7 +654,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "ropecon2024_language_prog",
+            "ropecon2024_language",
             "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
@@ -640,7 +666,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "max_players",
             "computer",
             "tech_requirements",
-            "ropecon2023_blocked_time_slots",
+            "ropecon2024_blocked_time_slots",
             "notes_from_host",
             "is_available_for_panel",
             "field_of_expertise",
@@ -694,7 +720,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ("mac", _("Own laptop (Mac)")),
             ("none", _("No laptop is needed in my programme")),
         ]
-        self.fields["ropecon2023_blocked_time_slots"].required = True
+        self.fields["ropecon2024_blocked_time_slots"].required = True
         self.fields["video_permission"].choices = [
             ("public", _("I give permission to record and publish my programme")),
             ("forbidden", _("I do not give permission to record or publish my programme")),
@@ -714,7 +740,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "ropecon2024_language_prog",
+            "ropecon2024_language",
             "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
@@ -726,7 +752,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "max_players",
             "computer",
             "tech_requirements",
-            "ropecon2023_blocked_time_slots",
+            "ropecon2024_blocked_time_slots",
             "notes_from_host",
             "is_available_for_panel",
             "field_of_expertise",
@@ -751,7 +777,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
-            ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2024_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
 
@@ -814,7 +840,7 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
             "Does your game programme have any technical needs (e.g. electricity) or other specific needs regarding e.g. the programme space itself?<br/>Please keep in mind that we might not be able to fulfill all requests, so please justify how your requests would benefit your game programme."
         ),
     ),
-    ropecon2023_blocked_time_slots=(
+    ropecon2024_blocked_time_slots=(
         _("When are you NOT able to host your game programme?"),
         _(
             "Select the times when you are <b>NOT able</b> to organize your game programme.<br/><br/>Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
@@ -838,6 +864,12 @@ GAMING_DESK_FORM_FIELD_TEXTS = dict(
     ropecon_theme=(
         _("Theme: Monsters"),
         _("If your programme is related to this year's theme, please tick this box."),
+    ),
+    ropecon2024_language=(
+        _("Choose the language used in your programme"),
+        _(
+            "Finnish - choose this, if only Finnish is spoken in your programme.<br><br>English - choose this, if only English is spoken in your programme.<br><br>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br><br>Finnish and English - choose this, if your programme item will use both Finnish and English (e.g. if you will switch languages based on participants). If chosen, please provide the title and description of your programme in both languages.<br><br>Other - choose this, if your programme is in a language other than Finnish or English. If chosen, please provide the title and description of your programme in the chosen language."
+        ),
     ),
 )
 
@@ -865,7 +897,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_tables",
             "ropecon2023_chairs",
             "tech_requirements",
-            "ropecon2023_blocked_time_slots",
+            "ropecon2024_blocked_time_slots",
             "notes_from_host",
             "is_available_for_panel",
             "field_of_expertise",
@@ -927,12 +959,20 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.fields["description"].required = True
         self.fields["ropecon2023_tables"].required = True
         self.fields["ropecon2023_chairs"].required = True
-        self.fields["ropecon2023_blocked_time_slots"].required = True
+        self.fields["ropecon2024_blocked_time_slots"].required = True
         self.fields["photography"].choices = [
             ("please", _("Please photograph my programme")),
             ("okay", _("My programme can be photographed")),
             ("nope", _("I request my programme to not be photographed")),
         ]
+        self.fields["ropecon2024_language"].choices = [
+            ("finnish", _("Finnish")),
+            ("english", _("English")),
+            ("language_free", _("Language-free")),
+            ("fin_and_eng", _("Finnish and English")),
+            ("other", _("Other")),
+        ]
+
         self.fields["photography"].required = True
         self.fields["photography"].initial = "okay"
 
@@ -952,7 +992,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_tables",
             "ropecon2023_chairs",
             "tech_requirements",
-            "ropecon2023_blocked_time_slots",
+            "ropecon2024_blocked_time_slots",
             "notes_from_host",
             "is_available_for_panel",
             "field_of_expertise",
@@ -984,7 +1024,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
 
         widgets = dict(
             content_warnings=forms.Textarea,
-            ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2024_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
 
@@ -1031,7 +1071,7 @@ WORKSHOP_FORM_FIELD_TEXTS = dict(
         _("Other technical needs"),
         _("Inform us about other possible technical needs at your workshop."),
     ),
-    ropecon2023_blocked_time_slots=(
+    ropecon2024_blocked_time_slots=(
         _("When are you NOT able to host your programme?"),
         _(
             "Select the times when you <b>DO NOT</b> want to host your programme. Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
@@ -1075,7 +1115,7 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "ropecon2024_language_prog",
+            "ropecon2024_language",
             "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
@@ -1091,7 +1131,7 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_furniture_needs",
             "computer",
             "tech_requirements",
-            "ropecon2023_blocked_time_slots",
+            "ropecon2024_blocked_time_slots",
             "notes_from_host",
             "is_available_for_panel",
             "field_of_expertise",
@@ -1144,7 +1184,7 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ("mac", _("Own laptop (Mac)")),
         ]
         self.fields["computer"].initial = "none"
-        self.fields["ropecon2023_blocked_time_slots"].required = True
+        self.fields["ropecon2024_blocked_time_slots"].required = True
         self.fields["photography"].choices = [
             ("please", _("Please photograph my programme")),
             ("okay", _("My programme can be photographed")),
@@ -1159,7 +1199,7 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "description",
             "category",
             "approximate_length",
-            "ropecon2024_language_prog",
+            "ropecon2024_language",
             "ropecon2024_language_other",
             "ropecon2023_suitable_for_all_ages",
             "ropecon2023_aimed_at_children_under_13",
@@ -1175,7 +1215,7 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_furniture_needs",
             "computer",
             "tech_requirements",
-            "ropecon2023_blocked_time_slots",
+            "ropecon2024_blocked_time_slots",
             "notes_from_host",
             "is_available_for_panel",
             "field_of_expertise",
@@ -1201,7 +1241,7 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         )
 
         widgets = dict(
-            ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
+            ropecon2024_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
 

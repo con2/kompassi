@@ -183,13 +183,6 @@ ROPECON2024_LANGUAGE_CHOICES = [
     ("finnish", _("Finnish")),
     ("english", _("English")),
     ("language_free", _("Language-free")),
-    ("fin_and_eng", _("Finnish and English")),
-    ("other", _("Other")),
-]
-ROPECON2024_LANGUAGE_PROG_CHOICES = [
-    ("finnish", _("Finnish")),
-    ("english", _("English")),
-    ("language_free", _("Language-free")),
     ("fin_or_eng", _("Finnish or English")),
     ("fin_and_eng", _("Finnish and English")),
     ("other", _("Other")),
@@ -1004,16 +997,6 @@ class Programme(models.Model, CsvExportMixin):
         max_length=max(len(key) for (key, text) in ROPECON2024_LANGUAGE_CHOICES),
         choices=ROPECON2024_LANGUAGE_CHOICES,
         default=ROPECON2024_LANGUAGE_CHOICES[0][0],
-        verbose_name=_("Choose the language used in your programme"),
-        help_text=_(
-            "Finnish - choose this, if only Finnish is spoken in your programme.<br><br>English - choose this, if only English is spoken in your programme.<br><br>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br><br>Finnish and English - choose this, if your programme item will use both Finnish and English (e.g. if you will switch languages based on participants). If chosen, please provide the title and description of your programme in both languages.<br><br>Other - choose this, if your programme is in a language other than Finnish or English. If chosen, please provide the title and description of your programme in the chosen language."
-        ),
-        null=True,
-    )
-    ropecon2024_language_prog = models.CharField(
-        max_length=max(len(key) for (key, text) in ROPECON2024_LANGUAGE_CHOICES),
-        choices=ROPECON2024_LANGUAGE_PROG_CHOICES,
-        default=ROPECON2024_LANGUAGE_PROG_CHOICES[0][0],
         verbose_name=_("Choose the language used in your programme"),
         help_text=_(
             "Finnish - choose this, if only Finnish is spoken in your programme.<br><br>English - choose this, if only English is spoken in your programme.<br><br>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br><br>Finnish or English - choose this, if you are okay with either of the two languages. The programme team will contact you regarding the final choice of language.<br><br>Finnish and English - choose this, if your programme item will use both Finnish and English (e.g. if you will switch languages based on participants).<br><br>Other - choose this, if your programme is in a language other than Finnish or English. If chosen, please provide the title and description of your programme in the chosen language."
