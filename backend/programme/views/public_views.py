@@ -11,17 +11,8 @@ from core.sort_and_filter import Filter
 from core.tabs import Tab
 from core.utils import url
 
-from ..helpers import (
-    group_programmes_by_start_time,
-    programme_event_required,
-    public_programme_required,
-)
-from ..models import (
-    AllRoomsPseudoView,
-    Category,
-    Programme,
-    View,
-)
+from ..helpers import group_programmes_by_start_time, programme_event_required, public_programme_required
+from ..models import AllRoomsPseudoView, Category, Programme, Room, View
 
 
 def get_schedule_tabs(request, event):
@@ -109,17 +100,18 @@ def actual_schedule_view(
     if not vars:
         vars = dict()
 
-    all_rooms = AllRoomsPseudoView(event)
-
-    category_query = dict(event=event)
-
+    query = dict(event=event)
     if not internal_programmes:
-        category_query.update(public=True)
+        query.update(public=True)
+
+    views = View.objects.filter(**query)
+    rooms = Room.objects.filter(views__in=views).distinct()
+    all_rooms = AllRoomsPseudoView(event, rooms=rooms)
 
     vars.update(
         event=event,
-        views=View.objects.filter(event=event, public=True),
-        categories=Category.objects.filter(**category_query),
+        views=views,
+        categories=Category.objects.filter(**query),
         internal_programmes=internal_programmes,
         programmes_by_start_time=all_rooms.get_programmes_by_start_time(request=request),
         show_programme_actions=show_programme_actions,

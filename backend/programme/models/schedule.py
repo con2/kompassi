@@ -1,16 +1,18 @@
 import logging
 from collections import defaultdict
 from datetime import timedelta
+from typing import Any
 
 from dateutil.tz import tzlocal
 from django.contrib import messages
 from django.db import models
-from django.db.models import Max
+from django.db.models import Max, QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import format_datetime, get_previous_and_next
 
 from .programme import Programme
+from .room import Room
 
 logger = logging.getLogger("kompassi")
 
@@ -18,6 +20,8 @@ ONE_HOUR = timedelta(hours=1)
 
 
 class OrderingMixin:
+    objects: Any
+
     @classmethod
     def get_next_order(cls, **kwargs):
         cur_max_value = cls.objects.filter(**kwargs).aggregate(Max("order"))["order__max"] or 0
@@ -139,7 +143,11 @@ class ViewMethodsMixin:
 class View(models.Model, ViewMethodsMixin, OrderingMixin):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="views")
     name = models.CharField(max_length=32, verbose_name=_("Title"))
-    public = models.BooleanField(default=True)
+    public = models.BooleanField(
+        default=True,
+        verbose_name=_("Visible"),
+        help_text=_("Even if the schedule is already published, you can hide this view by unchecking this box."),
+    )
     order = models.IntegerField(help_text=_("This will be automatically filled in if not provided."))
     start_time = models.DateTimeField(
         null=True,
@@ -215,11 +223,14 @@ class ViewRoom(models.Model, OrderingMixin):
 
 
 class AllRoomsPseudoView(ViewMethodsMixin):
-    def __init__(self, event):
+    def __init__(self, event, rooms: QuerySet[Room] | None = None):
+        if rooms is None:
+            rooms = Room.objects.filter(event=event)
+
         self.name = _("All rooms")
         self.public = True
         self.order = 0
-        self.rooms = event.rooms.all()
+        self.rooms = rooms
         self.event = event
         self.start_time = None
         self.end_time = None

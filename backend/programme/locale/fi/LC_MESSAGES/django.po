@@ -1615,3 +1615,6 @@ msgstr "Sinulla on ohjelmavastaavan oikeudet tähän tapahtumaan"
 
 msgid "Go to programme admin"
 msgstr "Siirry ohjelmanhallintaan"
+
+msgid "Even if the schedule is already published, you can hide this view by unchecking this box."
+msgstr "Voit piilottaa tämän näkymän poistamalla ruksin tästä ruudusta, vaikka ohjelmakartta olisi jo julkaistu."

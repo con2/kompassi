@@ -87,7 +87,7 @@ class ViewForm(forms.ModelForm):
 
     class Meta:
         model = View
-        fields = ("name", "start_time", "end_time")
+        fields = ("name", "start_time", "end_time", "public")
 
 
 NEW_ROOM_HELP_TEXT = _(
