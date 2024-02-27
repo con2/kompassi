@@ -93,21 +93,6 @@ fields:
       - slug: abroad
         title: Ulkomailta
 
-  - slug: helper
-    title: Tuleeko mukanasi avustaja
-    type: SingleSelect
-    required: true
-    choices:
-      - slug: help_yes
-        title: Kyllä
-      - slug: help_no
-        title: Ei
-
-  - slug: help_name
-    title: Avustajan nimi
-    type: SingleLineText
-    required: false
-
   - slug: comments
     title: Vapaa sana
     helpText: "Vapaa alue lisätiedoille ja toiveille. Ilmaisethan jos tarvitset esteettömyyden huomiointia taidekuja- tai taidepolkupöydän sijoituksessa, jotta voimme järjestää mahdollisimman sujuvan pääsyn pöydän ääreen."
