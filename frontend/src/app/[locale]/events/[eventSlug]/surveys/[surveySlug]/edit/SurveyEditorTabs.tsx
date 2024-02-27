@@ -48,11 +48,13 @@ export default function SurveyEditorTabs({
       title: t.tabs.texts(languageName),
       href: `${url}/edit/${languageCode}`,
     });
-    tabs.push({
-      slug: `fields-${languageCode}`,
-      title: t.tabs.fields(languageName),
-      href: `${url}/edit/${languageCode}/fields`,
-    });
+
+    // TODO un-hide the field editor when it works
+    // tabs.push({
+    //   slug: `fields-${languageCode}`,
+    //   title: t.tabs.fields(languageName),
+    //   href: `${url}/edit/${languageCode}/fields`,
+    // });
   }
 
   // languages that are not yet added to the survey
