@@ -16,13 +16,13 @@ ACCEPTABLE_FILENAMES_RE = re.compile(r"^.*\.(js|py|pug|html)$", re.I)
 
 
 def extract_template(fileobj, keywords, comment_tags, options):
-    src = force_str(fileobj.read(), settings.FILE_CHARSET)
+    src = force_str(fileobj.read(), "utf8")
     if fileobj.name.endswith(".pug"):
         src = process(src, compiler=Compiler)
-    src = templatize(src, "")
+    src = templatize(src)
     if "gettext" in src:
         src = re.sub(r"\n\s+", "\n", src)  # Remove indentation
-        return extract_python(io.StringIO(src.encode("utf8")), keywords, comment_tags, options)
+        return extract_python(io.BytesIO(src.encode("utf8")), keywords, comment_tags, options)
     return ()
 
 
@@ -110,8 +110,14 @@ class Command(BaseCommand):
                 lang_catalog = Catalog(locale=lang, charset="utf8")
             lang_catalog.update(template_catalog)
             if len(lang_catalog):
-                with open(po_path, "w") as outf:
-                    pofile.write_po(outf, lang_catalog, width=1000, omit_header=True, sort_output=True)
+                with open(po_path, "wb") as outf:
+                    pofile.write_po(
+                        outf,
+                        lang_catalog,
+                        width=1000,
+                        omit_header=True,
+                        sort_output=True,
+                    )
                     self.log.info("%s: updated %s", app.label, po_path)
 
     def _extract(self, app):
@@ -137,7 +143,7 @@ class Command(BaseCommand):
                     catalog.add(message, locations=[(rel_filename, 0)], auto_comments=comments)
         if len(catalog):
             pot_path = _get_pot_path(app)
-            with open(pot_path, "w") as outf:
+            with open(pot_path, "wb") as outf:
                 pofile.write_po(outf, catalog, width=1000, omit_header=True, sort_output=True)
                 self.log.info("%s: %d messages in %s", app.label, len(catalog), pot_path)
         return catalog
