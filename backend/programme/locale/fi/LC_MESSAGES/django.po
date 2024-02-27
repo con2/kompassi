@@ -1620,4 +1620,4 @@ msgid "Even if the schedule is already published, you can hide this view by unch
 msgstr "Voit piilottaa tämän näkymän poistamalla ruksin tästä ruudusta, vaikka ohjelmakartta olisi jo julkaistu."
 
 msgid "This view is currently not visible."
-msgid "Tämä näkymä ei tällä hetkellä ole näkyvissä."
+msgstr "Tämä näkymä ei tällä hetkellä ole näkyvissä."
