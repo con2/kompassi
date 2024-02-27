@@ -1046,6 +1046,11 @@ class Setup:
             defaults=data,
         )
 
+        # TODO(#386)
+        if not created:
+            artist_alley_application_en.fields = data["fields"]
+            artist_alley_application_en.save()
+
         with resource_stream("events.tracon2024", "forms/artist-alley-application-fi.yml") as f:
             data = yaml.safe_load(f)
 
@@ -1055,6 +1060,11 @@ class Setup:
             language="fi",
             defaults=data,
         )
+
+        # TODO(#386)
+        if not created:
+            artist_alley_application_fi.fields = data["fields"]
+            artist_alley_application_fi.save()
 
         artist_alley_application, _ = Survey.objects.get_or_create(
             event=self.event,
