@@ -105,7 +105,7 @@ def actual_schedule_view(
         query.update(public=True)
 
     views = View.objects.filter(**query)
-    rooms = Room.objects.filter(views__in=views).distinct()
+    rooms = Room.objects.filter(view_rooms__view__in=views).distinct()
     all_rooms = AllRoomsPseudoView(event, rooms=rooms)
 
     vars.update(

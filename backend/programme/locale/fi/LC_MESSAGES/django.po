@@ -1618,3 +1618,6 @@ msgstr "Siirry ohjelmanhallintaan"
 
 msgid "Even if the schedule is already published, you can hide this view by unchecking this box."
 msgstr "Voit piilottaa tämän näkymän poistamalla ruksin tästä ruudusta, vaikka ohjelmakartta olisi jo julkaistu."
+
+msgid "This view is currently not visible."
+msgid "Tämä näkymä ei tällä hetkellä ole näkyvissä."
