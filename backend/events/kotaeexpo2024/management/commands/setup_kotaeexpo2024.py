@@ -287,7 +287,6 @@ class Setup:
         )
 
     def setup_forms(self):
-        # TODO(#386) change update_or_create to get_or_create to avoid overriding local changes
         from forms.models.dimension import DimensionDTO
         from forms.models.form import Form
         from forms.models.survey import Survey
@@ -312,7 +311,7 @@ class Setup:
         with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        dance_judge_signup_fi, created = Form.objects.update_or_create(
+        dance_judge_signup_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="dance-judge-signup-fi",
             language="fi",
@@ -341,7 +340,7 @@ class Setup:
         with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        cosplay_judge_signup_fi, created = Form.objects.update_or_create(
+        cosplay_judge_signup_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="cosplay-judge-signup-fi",
             language="fi",
@@ -370,7 +369,7 @@ class Setup:
         with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        cmv_judge_signup_fi, created = Form.objects.update_or_create(
+        cmv_judge_signup_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="cmv-judge-signup-fi",
             language="fi",

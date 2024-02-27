@@ -69,13 +69,7 @@ class Setup:
         from django.contrib.contenttypes.models import ContentType
 
         from core.models import Event, Person
-        from labour.models import (
-            AlternativeSignupForm,
-            JobCategory,
-            LabourEventMeta,
-            PersonnelClass,
-            Qualification,
-        )
+        from labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Qualification
 
         from ...models import SignupExtra
 
@@ -199,13 +193,7 @@ class Setup:
     def setup_programme(self):
         from core.utils import full_hours_between
         from labour.models import PersonnelClass
-        from programme.models import (
-            Category,
-            ProgrammeEventMeta,
-            Role,
-            SpecialStartTime,
-            TimeBlock,
-        )
+        from programme.models import Category, ProgrammeEventMeta, Role, SpecialStartTime, TimeBlock
 
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
@@ -429,7 +417,6 @@ class Setup:
             )
 
     def setup_forms(self):
-        # TODO(#386) change update_or_create to get_or_create to avoid overriding local changes
         from forms.models.dimension import DimensionDTO
         from forms.models.form import Form
         from forms.models.survey import Survey
@@ -439,7 +426,7 @@ class Setup:
         with resource_stream("events.matsucon2024", "forms/artist-alley-application-en.yml") as f:
             data = yaml.safe_load(f)
 
-        artist_alley_application_en, created = Form.objects.update_or_create(
+        artist_alley_application_en, created = Form.objects.get_or_create(
             event=self.event,
             slug="artist-alley-application-en",
             language="en",
@@ -449,7 +436,7 @@ class Setup:
         with resource_stream("events.matsucon2024", "forms/artist-alley-application-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        artist_alley_application_fi, created = Form.objects.update_or_create(
+        artist_alley_application_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="artist-alley-application-fi",
             language="fi",
@@ -479,7 +466,7 @@ class Setup:
         with resource_stream("events.matsucon2024", "forms/vendor-application-en.yml") as f:
             data = yaml.safe_load(f)
 
-        vendor_application_en, created = Form.objects.update_or_create(
+        vendor_application_en, created = Form.objects.get_or_create(
             event=self.event,
             slug="vendor-application-en",
             language="en",
@@ -489,7 +476,7 @@ class Setup:
         with resource_stream("events.matsucon2024", "forms/vendor-application-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        vendor_application_fi, created = Form.objects.update_or_create(
+        vendor_application_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="vendor-application-fi",
             language="fi",

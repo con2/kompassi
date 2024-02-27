@@ -414,7 +414,6 @@ class Setup:
                 product.save()
 
     def setup_forms(self):
-        # TODO(#386) change update_or_create to get_or_create to avoid overriding local changes
         from forms.models.dimension import DimensionDTO
         from forms.models.form import Form
         from forms.models.survey import Survey
@@ -438,7 +437,7 @@ class Setup:
         with resource_stream("events.solmukohta2024", "forms/passenger-registration-en.yaml") as f:
             data = yaml.safe_load(f)
 
-        passenger_registration_en, created = Form.objects.update_or_create(
+        passenger_registration_en, created = Form.objects.get_or_create(
             event=self.event,
             slug="passenger-registration-en",
             language="en",

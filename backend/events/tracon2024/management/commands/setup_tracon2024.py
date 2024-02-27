@@ -640,7 +640,7 @@ class Setup:
         with resource_stream("program_v2.models", "default_forms/fi.yml") as f:
             default_form_fi_fields = yaml.safe_load(f)["fields"]
 
-        default_form_fi, _ = Form.objects.update_or_create(
+        default_form_fi, _ = Form.objects.get_or_create(
             event=self.event,
             slug="program-default-fi",
             language="fi",
@@ -653,7 +653,7 @@ class Setup:
         with resource_stream("program_v2.models", "default_forms/en.yml") as f:
             default_form_en_fields = yaml.safe_load(f)["fields"]
 
-        default_form_en, _ = Form.objects.update_or_create(
+        default_form_en, _ = Form.objects.get_or_create(
             event=self.event,
             slug="program-default-en",
             language="en",
@@ -678,7 +678,7 @@ class Setup:
         if not default_form.languages.exists():
             default_form.languages.set([default_form_fi, default_form_en])
 
-        rpg_form_fi, _ = Form.objects.update_or_create(
+        rpg_form_fi, _ = Form.objects.get_or_create(
             event=self.event,
             slug="program-rpg-fi",
             defaults=dict(
@@ -688,7 +688,7 @@ class Setup:
             ),
         )
 
-        rpg_form_en, _ = Form.objects.update_or_create(
+        rpg_form_en, _ = Form.objects.get_or_create(
             event=self.event,
             slug="program-rpg-en",
             defaults=dict(
@@ -888,7 +888,6 @@ class Setup:
             Poison.objects.get_or_create(name=poison_name)
 
     def setup_forms(self):
-        # TODO(#386) change update_or_create to get_or_create to avoid overriding local changes
         from forms.models.dimension import DimensionDTO
         from forms.models.form import Form
         from forms.models.survey import Survey
@@ -898,7 +897,7 @@ class Setup:
         with resource_stream("events.tracon2024", "forms/hackathon-feedback.yml") as f:
             data = yaml.safe_load(f)
 
-        hackathon_feedback_fi, created = Form.objects.update_or_create(
+        hackathon_feedback_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="hackathon-feedback",
             language="fi",
@@ -920,7 +919,7 @@ class Setup:
         with resource_stream("events.tracon2024", "forms/vendor-signup-en.yml") as f:
             data = yaml.safe_load(f)
 
-        vendor_signup_en, created = Form.objects.update_or_create(
+        vendor_signup_en, created = Form.objects.get_or_create(
             event=self.event,
             slug="vendor-signup-en",
             language="en",
@@ -930,7 +929,7 @@ class Setup:
         with resource_stream("events.tracon2024", "forms/vendor-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        vendor_signup_fi, created = Form.objects.update_or_create(
+        vendor_signup_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="vendor-signup-fi",
             language="fi",
@@ -956,7 +955,7 @@ class Setup:
 
         # Expense claim form
 
-        expense_claim_survey, _ = Survey.objects.update_or_create(
+        expense_claim_survey, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="expense-claim",
             defaults=dict(
@@ -976,7 +975,7 @@ class Setup:
         with resource_stream("events.tracon2024", "forms/expense-claim-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        expense_claim_fi, created = Form.objects.update_or_create(
+        expense_claim_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="expense-claim-fi",
             language="fi",
@@ -986,7 +985,7 @@ class Setup:
         with resource_stream("events.tracon2024", "forms/expense-claim-en.yml") as f:
             data = yaml.safe_load(f)
 
-        expense_claim_en, created = Form.objects.update_or_create(
+        expense_claim_en, created = Form.objects.get_or_create(
             event=self.event,
             slug="expense-claim-en",
             language="en",
@@ -1000,7 +999,7 @@ class Setup:
         with resource_stream("events.tracon2024", "forms/artisan-application-en.yml") as f:
             data = yaml.safe_load(f)
 
-        artisan_appliation_en, created = Form.objects.update_or_create(
+        artisan_appliation_en, created = Form.objects.get_or_create(
             event=self.event,
             slug="artisan-application-en",
             language="en",
@@ -1010,7 +1009,7 @@ class Setup:
         with resource_stream("events.tracon2024", "forms/artisan-application-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        artisan_appliation_fi, created = Form.objects.update_or_create(
+        artisan_appliation_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="artisan-application-fi",
             language="fi",
@@ -1040,7 +1039,7 @@ class Setup:
         with resource_stream("events.tracon2024", "forms/artist-alley-application-en.yml") as f:
             data = yaml.safe_load(f)
 
-        artist_alley_application_en, created = Form.objects.update_or_create(
+        artist_alley_application_en, created = Form.objects.get_or_create(
             event=self.event,
             slug="artist-alley-application-en",
             language="en",
@@ -1050,7 +1049,7 @@ class Setup:
         with resource_stream("events.tracon2024", "forms/artist-alley-application-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        artist_alley_application_fi, created = Form.objects.update_or_create(
+        artist_alley_application_fi, created = Form.objects.get_or_create(
             event=self.event,
             slug="artist-alley-application-fi",
             language="fi",
