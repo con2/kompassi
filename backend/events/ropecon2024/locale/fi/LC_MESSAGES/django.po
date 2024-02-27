@@ -1,13 +1,10 @@
-Työpajat 2024
+# Työpajat 2024
 
 msgid "Describe your programme to your potential audience or participants in an appealing way. If your programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your programme is meant as humorous or entertaining in nature, let it show in the description as well. Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the programme if necessary.<br/><br/>Note that the text in this field is shown to the public in the programme guide."
 msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Jos ohjelmasi on humoristinen tai viihteellinen, annathan sen näkyä myös kuvauksessa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä. Huomaa, että tämä kenttä näkyy suoraan ohjelmaoppaassa."
 
 msgid "If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application).<br/>If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide. Note that you may only charge enough to cover your material expenses - making a profit with workshops is not allowed."
 msgstr "Mikäli työpajaan on kävijälle vaatimuksena materiaalimaksu, kirjoita mahdollisimman tarkka määrä tähän (jos tiedossa jo hakuhetkellä). Jos ei tiedossa (tai minkäänlaista maksua ei ole), kirjoita 0€. Muista päivittää tarkka määrä Kompassiin ennen ohjelmakartan julkaisua. Huomaathan, että työpajasta saa veloittaa ainoastaan materiaalikustannusten verran, eikä sillä saa tehdä voittoa."
-
-msgid ""
-msgstr ""
 
 # Peliohjelma 2024
 
