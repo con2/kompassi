@@ -1,4 +1,4 @@
-#: templates/core_organization_boxen.pug
+#: templates/core_organizations_view.pug
 msgid "Accepting applications"
 msgstr "Ottaa vastaan hakemuksia"
 
@@ -18,11 +18,27 @@ msgstr "Perustiedot"
 msgid "Birth date"
 msgstr "Syntymäpäivä"
 
+#: models/constants.py
+msgid "Birth date in the following format: DD.MM.YYYY"
+msgstr "Syntymäaika muodossa PP.KK.VVVV"
+
+#: templates/core_frontpage_view.pug
+msgid "Browse all events"
+msgstr "Selaa kaikkia tapahtumia"
+
+#: templates/core_frontpage_view.pug
+msgid "Browse organizations"
+msgstr "Selaa yhdistyksiä"
+
+#: models/event.py templates/core_event_box.pug
+msgid "Cancelled"
+msgstr "Peruutettu"
+
 #: forms.py views/profile_views.py
 msgid "Change password"
 msgstr "Salasanan vaihto"
 
-#: forms.py
+#: forms.py templates/core_contact_information_panel.pug
 msgid "Contact information"
 msgstr "Yhteystiedot"
 
@@ -30,13 +46,26 @@ msgstr "Yhteystiedot"
 msgid "Create a Kompassi account"
 msgstr "Luo Kompassi-tunnus"
 
-#: forms.py models/one_time_code.py
+#: templates/core_contact_information_panel.pug
+#, fuzzy
+msgid "Discord handle"
+msgstr "Discord-käyttäjänimi"
+
+#: models/person.py
+msgid "Discord username"
+msgstr "Discord-käyttäjänimi"
+
+#: forms.py models/one_time_code.py templates/core_contact_information_panel.pug
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
-#: views/profile_views.py
+#: templates/core_email_verification_request_view.pug views/profile_views.py
 msgid "E-mail address verification"
 msgstr "Sähköpostiosoitteen vahvistaminen"
+
+#: models/person.py
+msgid "Email is the primary means of contact for event-related matters."
+msgstr "Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä asioissa."
 
 #: templates/core_event_box.pug
 msgid "Enrollment"
@@ -46,11 +75,20 @@ msgstr "Ilmoittautuminen"
 msgid "Enrollment open"
 msgstr "Ilmoittautuminen käynnissä"
 
+#: templates/core_events_view.pug
+#, fuzzy
+msgid "Events"
+msgstr "Menneet tapahtumat"
+
 #: templates/core_event_boxen.pug
 msgid "Events currently in progress"
 msgstr "Parhaillaan käynnissä olevat tapahtumat"
 
-#: models/person.py
+#: templates/core_registration_view.pug
+msgid "Fields marked with an asterisk are mandatory."
+msgstr ""
+
+#: models/person.py templates/core_contact_information_panel.pug
 msgid "First name"
 msgstr "Etunimi"
 
@@ -65,6 +103,11 @@ msgstr "Etunimi \"Nick\" Sukunimi"
 #: models/constants.py
 msgid "Firstname Surname"
 msgstr "Etunimi Sukunimi"
+
+# XXX FMH how do I blocktrans with links
+#: templates/core_event_view.pug
+msgid "For more information, see the"
+msgstr "Lisätietoja löydät"
 
 #: templates/core_login_view.pug
 msgid "For some of the services of this site you will need a user account which you can easily create here."
@@ -83,6 +126,10 @@ msgid "I hereby authorize the use of my personal information as outlined in the 
 msgstr "Annan luvan henkilötietojeni käyttöön rekisteriselosteen mukaisesti. Linkki rekisteriselosteeseen löytyy sivuston alatunnisteesta. <i>(pakollinen)</i>"
 
 #: models/person.py
+msgid "I may be sent information about future events by email <i>(optional)</i>"
+msgstr "Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>"
+
+#: models/person.py
 msgid "If you go by a nick name or handle that you want printed in your badge and programme details, enter it here."
 msgstr "Vakiintunut lempinimi tai Internet-nick."
 
@@ -98,13 +145,17 @@ msgstr "Käyttäjänimi ei kelpaa"
 msgid "Log out"
 msgstr "Kirjaudu ulos"
 
-#: templates/core_organization_boxen.pug
+#: templates/core_organizations_view.pug
 msgid "Membership roster"
 msgstr "Jäsenrekisteri"
 
 #: forms.py
 msgid "Membership roster information"
 msgstr "Jäsenrekisteritiedot"
+
+#: templates/core_contact_information_panel.pug
+msgid "Name as displayed"
+msgstr ""
 
 #: forms.py
 msgid "New password"
@@ -114,7 +165,11 @@ msgstr "Uusi salasana"
 msgid "New password (again)"
 msgstr "Uusi salasana (uudestaan)"
 
-#: models/person.py
+#: models/carousel_slide.py
+msgid "New window"
+msgstr "Uudessa ikkunassa"
+
+#: models/person.py templates/core_contact_information_panel.pug
 msgid "Nick name"
 msgstr "Nick"
 
@@ -134,7 +189,7 @@ msgstr "Viralliset etunimet"
 msgid "Old password"
 msgstr "Vanha salasana"
 
-#: templates/core_organization_boxen.pug
+#: templates/core_organizations_view.pug
 msgid "Organizations"
 msgstr "Yhdistykset"
 
@@ -146,6 +201,10 @@ msgstr "Salasana"
 msgid "Password (again)"
 msgstr "Salasana (uudestaan)"
 
+#: utils/password_utils.py
+msgid "Password too weak. Please use a stronger password."
+msgstr "Salasana on liian heikko. Ole hyvä ja käytä vahvempaa salasanaa."
+
 #: forms.py
 msgid "Passwords do not match."
 msgstr "Salasanat eivät täsmää."
@@ -154,9 +213,22 @@ msgstr "Salasanat eivät täsmää."
 msgid "Past events"
 msgstr "Menneet tapahtumat"
 
+#: templates/core_contact_information_panel.pug
+#, fuzzy
+msgid "Phone number"
+msgstr "Puhelinnumero ei kelpaa."
+
+#: templates/core_frontpage_carousel.pug
+msgid "Picture:"
+msgstr "Kuva:"
+
 #: views/profile_views.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
+
+#: templates/core_contact_information_panel.pug
+msgid "Please check your contact information and update your profile if necessary. By submitting this form you agree that this contact information will be shared with the organizer of the event."
+msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Täyttämällä tämän lomakkeen annat luvan luovuttaa nämä yhteystiedot tapahtuman järjestäjille."
 
 #: forms.py
 msgid "Please choose a user name. The user name must consist of 4 to 30 characters. The following characters are allowed: <b>small</b> letters <i>a&ndash;z</i>, numbers <i>0&ndash;9</i> and underscore </i>_</i>. You can use either this user name or your e-mail address to sign in."
@@ -165,6 +237,10 @@ msgstr "Valitse itsellesi 4–30 merkin pituinen käyttäjänimi. Seuraavat merk
 #: templates/core_registration_view.pug
 msgid "Please note that creating an account takes a while. Please press the Sign up button only once."
 msgstr "Huomaathan, että tunnuksen luonnissa kestää hetken. Painathan Luo tunnus -nappia vain kerran."
+
+#: forms.py
+msgid "Please use a strong password."
+msgstr "Ole hyvä ja käytä vahvaa salasanaa."
 
 #: forms.py
 msgid "Privacy"
@@ -186,6 +262,10 @@ msgstr "Työvoimahaku avoinna"
 msgid "Revoked"
 msgstr "Mitätöity"
 
+#: models/carousel_slide.py
+msgid "Same window"
+msgstr "Samassa ikkunassa"
+
 #: templates/core_personify_view.pug templates/core_profile_view.pug
 msgid "Save changes"
 msgstr "Tallenna muutokset"
@@ -201,6 +281,10 @@ msgstr "Ohjelmakartta julkaistu"
 #: templates/core_event_box.pug
 msgid "Selling tickets"
 msgstr "Lipunmyynti käynnissä"
+
+#: templates/core_email_verification_request_view.pug
+msgid "Send verification link"
+msgstr "Lähetä vahvistuslinkki"
 
 #: templates/core_login_view.pug
 msgid "Sign in"
@@ -234,7 +318,7 @@ msgstr "Sivuston ylläpito"
 msgid "Submit"
 msgstr "Lähetä"
 
-#: models/person.py
+#: models/person.py templates/core_contact_information_panel.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
@@ -243,17 +327,20 @@ msgid "The changes were saved."
 msgstr "Muutokset tallennettiin."
 
 #: forms.py
-#, python-format
-msgid "The password must consist of at least %(min_length)d characters and contain %(min_classes)d of the following: small letter, capital letter, number, special character."
-msgstr "Salasanassa tulee olla vähintään %(min_length)d merkkiä, ja sen tulee sisältää vähintään %(min_classes)d seuraavista: pieni kirjain, iso kirjain, numero, erikoismerkki."
-
-#: forms.py
 msgid "The passwords do not match."
 msgstr "Salasanat eivät täsmää."
+
+#: event_log_entry_types.py
+msgid "The personal information of {entry.person} was viewed by {entry.created_by}"
+msgstr ""
 
 #: forms.py
 msgid "There is already a user account associated with this e-mail address. If you have forgotten your password, please do not create another user account but rather restore your password using the Forgot password link at the sign in form."
 msgstr "Tähän sähköpostiosoitteeseen on jo liitetty käyttäjätunnus. Jos olet unohtanut salasanasi, ole hyvä ja palauta salasanasi Salasana unohtunut -toiminnolla sisäänkirjautumislomakkeelta käsin."
+
+#: templates/core_event_view.pug
+msgid "This event has been cancelled"
+msgstr "Tämä tapahtuma on peruutettu"
 
 #: forms.py
 msgid "This user name is already taken."
@@ -271,6 +358,10 @@ msgstr "Lipunmyynti"
 msgid "Upcoming events"
 msgstr "Tulevat tapahtumat"
 
+#: templates/core_contact_information_panel.pug
+msgid "Update profile..."
+msgstr ""
+
 #: models/one_time_code.py
 msgid "Used"
 msgstr "Käytetty"
@@ -287,13 +378,38 @@ msgstr "Käyttäjänimi ja salasana"
 msgid "User name or e-mail address"
 msgstr "Käyttäjänimi tai sähköpostiosoite"
 
+#: event_log_entry_types.py
+msgid "User {entry.created_by} administratively impersonated {entry.person}"
+msgstr ""
+
+#: event_log_entry_types.py
+#, fuzzy
+msgid "User {entry.created_by} changed their password"
+msgstr "Käyttäjänimi ja salasana"
+
+#: event_log_entry_types.py
+msgid "User {entry.created_by} exported personally identifiable information"
+msgstr ""
+
 #: models/one_time_code.py
 msgid "Valid"
 msgstr "Kelvollinen"
 
+#: models/email_verification_token.py
+msgid "Verify your email address"
+msgstr "Vahvista sähköpostiosoitteesi"
+
 #: templates/core_event_box.pug
 msgid "Volunteers"
 msgstr "Työvoima"
+
+#: templates/core_email_verification_request_view.pug
+msgid "We ask all users to verify their e-mail addresses using a link sent to the address provided. If you have not received the verification e-mail, you can request a new one using the button below."
+msgstr "Pyydämme kaikkia käyttäjiä vahvistamaan sähköpostiosoitteensa annettuun osoitteeseen lähetetyllä linkillä. Jos et ole saanut vahvistusviestiä, voit pyytää uuden alla olevasta painikkeesta."
+
+#: utils/password_utils.py
+msgid "We check passwords securely against a database of known leaked passwords. This password has been compromised in a known leak. Please use another password."
+msgstr "Tarkistamme turvallisesti uudet salasanat tunnettujen tietovuotojen tietokantaa vasten. Tämä salasana löytyy tietokannasta. Ole hyvä ja keksi uusi salasana."
 
 #: forms.py
 msgid "Wrong password."
@@ -303,92 +419,43 @@ msgstr "Salasana väärin."
 msgid "Yes"
 msgstr "Kyllä"
 
-#: templates/core_contact_information_panel.pug
-msgid "Please check your contact information and update your profile if necessary. By submitting this form you agree that this contact information will be shared with the organizer of the event."
-msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Täyttämällä tämän lomakkeen annat luvan luovuttaa nämä yhteystiedot tapahtuman järjestäjille."
-
-#:
-msgid "Picture:"
-msgstr "Kuva:"
-
-#:
-msgid "Same window"
-msgstr "Samassa ikkunassa"
-
-#:
-msgid "New window"
-msgstr "Uudessa ikkunassa"
-
-#:
-msgid "carousel slide"
-msgstr "Etusivun kuva"
-
-#:
-msgid "carousel slides"
-msgstr "Etusivun kuvat"
-
-#:
-msgid "Browse all events"
-msgstr "Selaa kaikkia tapahtumia"
-
-#:
-msgid "Browse organizations"
-msgstr "Selaa yhdistyksiä"
-
-#:
-msgid "Password too weak. Please use a stronger password."
-msgstr "Salasana on liian heikko. Ole hyvä ja käytä vahvempaa salasanaa."
-
-#:
-msgid "Please use a strong password."
-msgstr "Ole hyvä ja käytä vahvaa salasanaa."
-
-#:
-msgid "We check passwords securely against a database of known leaked passwords. This password has been compromised in a known leak. Please use another password."
-msgstr "Tarkistamme turvallisesti uudet salasanat tunnettujen tietovuotojen tietokantaa vasten. Tämä salasana löytyy tietokannasta. Ole hyvä ja keksi uusi salasana."
-
-msgid "Cancelled"
-msgstr "Peruutettu"
-
-msgid "This event has been cancelled"
-msgstr "Tämä tapahtuma on peruutettu"
-
-# XXX FMH how do I blocktrans with links
-msgid "For more information, see the"
-msgstr "Lisätietoja löydät"
-
-msgid "event home page"
-msgstr "tapahtuman kotisivulta"
-
-msgid "Discord username"
-msgstr "Discord-käyttäjänimi"
-
-msgid "Your Discord username (NOTE: not display name). Events may use this to give you roles based on your participation."
-msgstr "Discord-käyttäjänimesi (HUOM: ei näyttönimi). Tapahtumat voivat käyttää tätä esimerkiksi antamaan sinulle rooleja Discord-serverillään."
-
+#: views/password_reset_views.py
 msgid "You are logged in. In order to use a password reset link, please log out first or use the Incognito/Private Browsing mode of your browser."
 msgstr "Olet kirjautunut sisään. Käyttääksesi salasanan palautuslinkkiä ole hyvä ja kirjaudu ensin ulos tai käytä selaimesi Incognito/Private Browsing -tilaa."
 
-msgid "We ask all users to verify their e-mail addresses using a link sent to the address provided. If you have not received the verification e-mail, you can request a new one using the button below."
-msgstr "Pyydämme kaikkia käyttäjiä vahvistamaan sähköpostiosoitteensa annettuun osoitteeseen lähetetyllä linkillä. Jos et ole saanut vahvistusviestiä, voit pyytää uuden alla olevasta painikkeesta."
+#: models/person.py
+msgid "Your Discord username (NOTE: not display name). Events may use this to give you roles based on your participation."
+msgstr "Discord-käyttäjänimesi (HUOM: ei näyttönimi). Tapahtumat voivat käyttää tätä esimerkiksi antamaan sinulle rooleja Discord-serverillään."
 
-msgid "E-mail address verification"
-msgstr "Sähköpostiosoitteen vahvistaminen"
-
-msgid "Send verification link"
-msgstr "Lähetä vahvistuslinkki"
-
-msgid "Verify your email address"
-msgstr "Vahvista sähköpostiosoitteesi"
-
-msgid "Birth date in the following format: DD.MM.YYYY"
-msgstr "Syntymäaika muodossa PP.KK.VVVV"
-
+#: models/person.py
 msgid "Your phone number is used only for urgent contact regarding your participation in the event."
 msgstr "Puhelinnumeroasi käytetään tarvittaessa kiireellisiin yhteydenottoihin koskien osallistumistasi tapahtumaan."
 
-msgid "Email is the primary means of contact for event-related matters."
-msgstr "Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä asioissa."
+#: models/carousel_slide.py
+msgid "carousel slide"
+msgstr "Etusivun kuva"
 
-msgid "I may be sent information about future events by email <i>(optional)</i>"
-msgstr "Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>"
+#: models/carousel_slide.py
+msgid "carousel slides"
+msgstr "Etusivun kuvat"
+
+#: apps.py
+msgid "core"
+msgstr ""
+
+#: models/person.py
+#, fuzzy
+msgid "email address"
+msgstr "Sähköpostiosoite"
+
+#: templates/core_event_view.pug
+msgid "event home page"
+msgstr "tapahtuman kotisivulta"
+
+#: models/person.py
+#, fuzzy
+msgid "phone number"
+msgstr "Puhelinnumero ei kelpaa."
+
+#~ msgid "The password must consist of at least %(min_length)d characters and contain %(min_classes)d of the following: small letter, capital letter, number, special character."
+#~ msgstr "Salasanassa tulee olla vähintään %(min_length)d merkkiä, ja sen tulee sisältää vähintään %(min_classes)d seuraavista: pieni kirjain, iso kirjain, numero, erikoismerkki."

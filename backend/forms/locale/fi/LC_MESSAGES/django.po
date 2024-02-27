@@ -1,8 +1,99 @@
+#: apps.py
+msgid "Forms"
+msgstr ""
+
+#: templates/forms_event_box.pug
+msgid "Go to admin"
+msgstr "Siirry hallintaan"
+
+#: models/survey.py
+msgid "Hard anonymous"
+msgstr ""
+
+#: models/survey.py
+msgid "Hard anonymous: responses are not linked to user accounts and IP addresses are not recorded. Soft anonymous: responses are linked to user accounts but not shown to survey owners. Name and email: responses are linked to user accounts and shown to survey owners."
+msgstr ""
+
+#: models/form.py
+msgid "Horizontal"
+msgstr ""
+
+#: models/response.py
+msgid "IP address"
+msgstr ""
+
+#: models/survey.py
+msgid "Key fields will be shown in the response list."
+msgstr ""
+
+#: models/form.py
+msgid "Layout"
+msgstr ""
+
+#: models/survey.py
+msgid "Login required"
+msgstr ""
+
+#: models/survey.py
+msgid "Maximum number of responses per user. 0 = unlimited. Note that if login_required is not set, this only takes effect for logged in users.Has no effect if the survey is hard anonymous."
+msgstr ""
+
+#: models/survey.py
+msgid "Name and email shown to survey owner if responded logged-in"
+msgstr ""
+
+#: models/survey.py
+msgid "Soft anonymous (linked to user account but not shown to survey owner)"
+msgstr ""
+
+#: templates/forms_event_box.pug
 msgid "Surveys"
 msgstr "Kyselyt"
 
+#: models/survey.py
+msgid "The form will be available from this date onwards. If not set, the form will not be available."
+msgstr ""
+
+#: models/survey.py
+msgid "The form will be available in these languages. Each language can have its own set of fields. There must be exactly one form per supported language."
+msgstr ""
+
+#: models/survey.py
+msgid "The form will be available until this date. If not set, the form will be available indefinitely provided that active_from is set and has passed."
+msgstr ""
+
+#: models/form.py
+msgid "Vertical"
+msgstr ""
+
+#: templates/forms_event_box.pug
 msgid "You have survey admin privileges for this event"
 msgstr "Sinulla on kyselyiden hallintaoikeudet tähän tapahtumaan"
 
-msgid "Go to admin"
-msgstr "Siirry hallintaan"
+#: models/survey.py
+msgid "active"
+msgstr ""
+
+#: models/survey.py
+msgid "active from"
+msgstr ""
+
+#: models/survey.py
+msgid "active until"
+msgstr ""
+
+#: models/survey.py
+msgid "anonymity"
+msgstr ""
+
+#: models/survey.py
+msgid "key fields"
+msgstr ""
+
+#: models/survey.py
+msgid "language versions"
+msgstr ""
+
+#: models/survey.py
+msgid "max responses per user"
+msgstr ""

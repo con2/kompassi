@@ -1,0 +1,15 @@
+#: templates/membership_admin_member_views/payments_tab.pug
+msgid "Cancel"
+msgstr ""
+
+#: templates/membership_admin_member_views/payments_tab.pug
+msgid "Merkitse jäsenmaksu maksetuksi"
+msgstr ""
+
+#: event_log_entry_types.py
+msgid "New membership application"
+msgstr ""
+
+#: views/membership_admin_term_view.py
+msgid "Please check the form."
+msgstr ""
