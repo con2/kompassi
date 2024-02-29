@@ -3,18 +3,25 @@ msgid "Advertise your game to potential players. Also explain, what is expected 
 msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
 #: forms.py
+msgid "Check this box if your RPG is played in English."
+msgstr "Ruksaa tämä ruutu, jos pelisi pelataan englanniksi."
+
+#: forms.py
+msgid "In English"
+msgstr ""
+
+#: forms.py
 msgid "In order to gain free entry, you are required to run at in total least four hours of games."
 msgstr "Saadaksesi maksuttoman sisäänpääsyn, sinun tulee pitää pelejä vähintään neljän tunnin edestä."
 
 #: forms.py
-msgid "Whom is the game for?"
-msgstr "Kenelle peli on tarkoitettu?"
-
-msgid "Summary in one sentence"
-msgstr "Yhden lauseen kuvaus"
-
 msgid "Summarize the description of your game in one sentence."
 msgstr "Tiivistä pelisi kuvaus yhteen lauseeseen."
 
-msgid "Check this box if your RPG is played in English."
-msgstr "Ruksaa tämä ruutu, jos pelisi pelataan englanniksi."
+#: forms.py
+msgid "Summary in one sentence"
+msgstr "Yhden lauseen kuvaus"
+
+#: forms.py
+msgid "Whom is the game for?"
+msgstr "Kenelle peli on tarkoitettu?"

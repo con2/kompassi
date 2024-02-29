@@ -1,6 +1,18 @@
-#: templates/enrollment_enroll_view.pug
-msgid "Additional information"
-msgstr "Lisätiedot"
+#: models/enrollment.py models/enrollment_event_meta.py
+msgid "Accepted"
+msgstr ""
+
+#: models/enrollment.py
+msgid "Cancelled"
+msgstr ""
+
+#: templates/enrollment_event_box.pug
+msgid "Change or cancel your enrollment…"
+msgstr "Muokkaa ilmoittautumistasi tai peru se…"
+
+#: models/enrollment_event_meta.py
+msgid "Change this to New to require approval for new enrollments."
+msgstr ""
 
 #: templates/enrollment_enroll_view.pug
 msgid "Contact information"
@@ -10,7 +22,7 @@ msgstr "Yhteystiedot"
 msgid "Count"
 msgstr "Lukumäärä"
 
-#: models.py models/enrollment.py
+#: models/enrollment.py
 msgid "Diet"
 msgstr "Ruokavalio"
 
@@ -18,39 +30,57 @@ msgstr "Ruokavalio"
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
-#: templates/enrollment_enroll_view.pug
+#: templates/enrollment_admin_start_view.pug
+msgid "End now"
+msgstr ""
+
+#: templates/enrollment_enroll_view.pug templates/enrollment_list_view.pug
 msgid "Enroll"
 msgstr "Ilmoittaudu"
 
 #: templates/enrollment_event_box.pug
-msgid "Enroll for this event"
+#, fuzzy
+msgid "Enroll for this event…"
 msgstr "Ilmoittaudu tapahtumaan"
 
 #: templates/enrollment_admin_view.pug views/enrollment_admin_menu_items.py
 msgid "Enrolled people"
 msgstr "Ilmoittautuneet"
 
-#: apps.py templates/enrollment_event_box.pug
+#: apps.py templates/enrollment_enroll_view.pug templates/enrollment_event_box.pug
 msgid "Enrollment"
 msgstr "Ilmoittautuminen"
 
-#: models.py models/enrollment_event_meta.py
+#: models/enrollment_event_meta.py
 msgid "Enrollment closes"
 msgstr "Ilmoittautuminen päättyy"
 
-#: templates/enrollment_event_box.pug
+#: templates/enrollment_event_box.pug views/enrollment_enroll_view.py
 msgid "Enrollment for this event is not currently open."
 msgstr "Ilmoittautuminen tähän tapahtumaan ei ole juuri nyt käynnissä."
 
-#: models.py models/enrollment_event_meta.py
+#: views/enrollment_enroll_view.py
+#, fuzzy
+msgid "Enrollment for this event is not currently open. You are only seeing this page because you are an event admin."
+msgstr "Ilmoittautuminen tähän tapahtumaan ei ole juuri nyt käynnissä."
+
+#: models/enrollment_event_meta.py
 msgid "Enrollment form message"
 msgstr "Ilmoittautumislomakkeen viesti"
 
-#: models.py models/enrollment_event_meta.py
+#: models/enrollment_event_meta.py
 msgid "Enrollment opens"
 msgstr "Ilmoittautuminen alkaa"
 
-#: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug
+#: templates/enrollment_admin_start_view.pug views/enrollment_admin_menu_items.py
+msgid "Enrollment period"
+msgstr "Ilmoittautumisaika"
+
+#: templates/enrollment_admin_view.pug
+msgid "Filter enrolled"
+msgstr "Suodata ilmoittautuneita"
+
+#: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug templates/enrollment_list_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
@@ -58,13 +88,33 @@ msgstr "Etunimi"
 msgid "Go to admin view…"
 msgstr "Siirry ylläpitonäkymään…"
 
-#: models.py models/enrollment.py
+#: templates/enrollment_admin_start_view.pug
+msgid "Here you can set the starting and ending times for the enrollment period. The enrollment form will automatically open at the beginning and close at the end of the enrollment period."
+msgstr "Tässä voit asettaa ilmoittautumisajan alun ja lopun. Ilmoittautumislomake aukeaa automaattisesti ilmoittautumisajan lopussa ja sulkeutuu ilmoittautumisajan lopussa."
+
+#: templates/enrollment_admin_start_view.pug
+msgid "If the <em>Registration starts</em> field is empty, the enrollment form will stay closed. If the <em>Registration starts</em> is set but the <em>Registration closes</em> field is empty, the enrollment form will stay open once the beginning of the enrollment period has been reached."
+msgstr "Jos <em>Ilmoittautumisaika alkaa</em> -kenttä on tyhjä, ilmoittautumislomake pysyy suljettuna. Mikäli <em>Ilmoittautumisaika alkaa</em> -kenttä on asetettu mutta <em>Ilmoittautumisaika päättyy</em> -kenttä on tyhjä, ilmoittautumislomake pysyy auettuaan auki."
+
+#: models/enrollment_event_meta.py
+msgid "If this option is selected, participants will be required to fill in their official names in their profile."
+msgstr ""
+
+#: models/enrollment_event_meta.py
+msgid "If this option is selected, the names of participants who have given the permission to do so will be published."
+msgstr ""
+
+#: models/enrollment.py
 msgid "If you're on a diet that's not included in the list, please detail your diet here. Event organizer will try to take dietary needs into consideration, but all diets may not be catered for."
 msgstr "Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään."
 
 #: templates/enrollment_enroll_view.pug
 msgid "If your name is publicly displayed, this is how your name will be published. You can change the name display style in your profile."
 msgstr "Jos nimesi näytetään julkisesti, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
+
+#: models/enrollment_event_meta.py
+msgid "Initial state"
+msgstr ""
 
 #: helpers.py
 msgid "Manage enrollment"
@@ -74,7 +124,11 @@ msgstr "Ilmoittautumisten hallinta"
 msgid "Name as displayed"
 msgstr "Nimen esittäminen"
 
-#: templates/enrollment_admin_view.pug
+#: models/enrollment.py models/enrollment_event_meta.py
+msgid "New"
+msgstr "Uusi"
+
+#: templates/enrollment_admin_view.pug templates/enrollment_list_view.pug
 msgid "Nick"
 msgstr "Nick"
 
@@ -87,6 +141,19 @@ msgstr "Nick"
 msgid "No enrolled people visible (total %(num_total_enrolled)s)."
 msgstr "Ei ilmoittautuneita näkyvissä (yhteensä %(num_total_enrolled)s)."
 
+#: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug
+#, fuzzy
+msgid "Official first names"
+msgstr "Etunimi"
+
+#: models/enrollment_event_meta.py
+msgid "Official name required"
+msgstr ""
+
+#: views/enrollment_enroll_view.py
+msgid "One does not simply cancel an enrollment that has not yet been made."
+msgstr "Ilmoittautumista, jota ei ole vielä tehty, ei noin vain peruta."
+
 #: templates/enrollment_admin_view.pug
 #, python-format
 msgid "One enrolled person visible (total %(num_total_enrolled)s)."
@@ -94,7 +161,7 @@ msgid_plural "%(num_enrolled)s enrolled people visible (total %(num_total_enroll
 msgstr[0] "Näytetään yksi ilmoittautunut (yhteensä %(num_total_enrolled)s)."
 msgstr[1] "Näytetään %(num_enrolled)s ilmoittautunutta (yhteensä %(num_total_enrolled)s)."
 
-#: models.py models/enrollment.py
+#: models/enrollment.py
 msgid "Other diets"
 msgstr "Muu erikoisruokavalio"
 
@@ -105,6 +172,11 @@ msgstr "Muu erikoisruokavalio"
 #: templates/enrollment_admin_special_diets_view.pug
 msgid "Other special diets"
 msgstr "Muu erikoisruokavalio"
+
+#: models/enrollment_event_meta.py
+#, fuzzy
+msgid "Participant list is public"
+msgstr "Tapahtuman osallistujalista on julkinen."
 
 #: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug
 msgid "Phone number"
@@ -118,9 +190,25 @@ msgstr "Ole hyvä ja tarkista lomake."
 msgid "Please check your contact information and update your profile if necessary. By submitting this form you agree to these contact details being shared with the event organizer."
 msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman järjestäjille."
 
-#: models.py models/enrollment_event_meta.py
+#: models/enrollment_event_meta.py
 msgid "Reference to form class. Example: events.yukicon2016.forms:EnrollmentForm"
 msgstr "Form-luokan viittaus. Esimerkki: events.yukicon2016.forms:EnrollmentForm"
+
+#: models/enrollment.py
+msgid "Rejected"
+msgstr ""
+
+#: templates/enrollment_admin_start_view.pug
+msgid "Save and return"
+msgstr ""
+
+#: templates/enrollment_admin_start_view.pug
+msgid "Save changes"
+msgstr ""
+
+#: templates/enrollment_event_box.pug
+msgid "See participant list…"
+msgstr "Katsele osallistujalistaa…"
 
 #: templates/enrollment_admin_special_diets_view.pug
 msgid "Special diet"
@@ -138,13 +226,63 @@ msgstr "Tyypillinen erikoisruokavalio"
 msgid "Standard special diets"
 msgstr "Tyypilliset erikoisruokavaliot"
 
-#: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug
+#: templates/enrollment_admin_start_view.pug
+msgid "Start now"
+msgstr ""
+
+#: models/enrollment.py templates/enrollment_admin_view.pug
+msgid "State"
+msgstr ""
+
+#: templates/enrollment_admin_view.pug templates/enrollment_enroll_view.pug templates/enrollment_list_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
 #: views/enrollment_enroll_view.py
 msgid "Thank you for enrolling."
 msgstr "Kiitos ilmoittautumisestasi."
+
+#: forms.py
+msgid "The closing time must be after the opening time."
+msgstr ""
+
+#: templates/enrollment_admin_start_view.pug
+msgid "The enrollment period is currently underway."
+msgstr "Ilmoittautumislomake on parhaillaan auki."
+
+#: templates/enrollment_admin_start_view.pug
+msgid "The enrollment period is not currently underway."
+msgstr "Ilmoittautumislomake ei ole tällä hetkellä auki."
+
+#: views/enrollment_admin_start_view.py
+msgid "The enrollment period was ended."
+msgstr "Ilmoittautumislomake on nyt suljettu."
+
+#: views/enrollment_admin_start_view.py
+msgid "The enrollment period was started."
+msgstr "Ilmoittautumislomake on nyt avattu."
+
+#: views/enrollment_admin_start_view.py
+msgid "The event was already accepting enrollments."
+msgstr ""
+
+#: views/enrollment_list_view.py
+#, fuzzy
+msgid "The participant list for this event is not public."
+msgstr "Tapahtuman osallistujalista on julkinen."
+
+#: views/enrollment_list_view.py
+msgid "The participant list for this event is not public. You are only seeing this page because you are an event admin."
+msgstr ""
+
+#: templates/enrollment_event_box.pug
+msgid "The participant list of this event is public"
+msgstr "Tapahtuman osallistujalista on julkinen."
+
+#: views/enrollment_admin_start_view.py
+#, fuzzy
+msgid "The times for the enrollment period were saved."
+msgstr "Ilmoittautumislomake on nyt avattu."
 
 #: helpers.py
 msgid "This event does not use this site to manage enrollment."
@@ -154,25 +292,25 @@ msgstr "Tämä tapahtuma ei käytä tätä sivustoa ilmoittautumisten hallintaan
 msgid "Update profile..."
 msgstr "Päivitä profiili..."
 
-#: models.py models/enrollment_event_meta.py
+#: models/enrollment_event_meta.py
 msgid "Use this field to override the message that is shown in top of the enrollment form. If this field is not filled in, a default message is shown."
 msgstr "Käytä tätä kenttää korvaamaan viesti, joka näytetään ilmoittautumislomakkeen yläosassa. Jos kenttä on tyhjä, näytetään oletusviesti."
-
-#: models.py models/enrollment_event_meta.py
-msgid "Using this form you can enroll in the event. Please note that filling in the form does not guarantee automatic admittance into the event. You will be contacted by the event organizer and notified of the decision whether to accept your enrollment or not."
-msgstr "Tällä lomakkeella voit ilmoittautua tapahtumaan. Huomaathan, että tämän lomakkeen täyttäminen ei takaa automaattista pääsyä tapahtumaan. Tapahtuman järjestäjät ottavat sinuun yhteyttä ja kertovat päätöksestään hyväksyä ilmoittautumisesi."
-
-#: views/enrollment_enroll_view.py
-msgid "You are already enrolled in this event."
-msgstr "Olet jo ilmoittautunut tähän tapahtumaan."
 
 #: helpers.py
 msgid "You are not allowed to manage enrollment for this event."
 msgstr "Sinulla ei ole ilmoittautumisten ylläpito-oikeuksia tähän tapahtumaan.."
 
+#: templates/enrollment_admin_start_view.pug
+msgid "You can also start or stop the enrollment period immediately."
+msgstr "Voit myös avata tai sulkea ilmoittautumislomakkeen heti."
+
 #: templates/enrollment_event_box.pug
 msgid "You can enroll for this event"
 msgstr "Voit ilmoittautua tähän tapahtumaan"
+
+#: templates/enrollment_event_box.pug
+msgid "You can no longer change your enrollment yourself."
+msgstr "Et voi enää muokata ilmoittautumistasi itse."
 
 #: templates/enrollment_event_box.pug
 msgid "You have already signed up for this event"
@@ -182,47 +320,32 @@ msgstr "Olet jo ilmoittautunut tähän tapahtumaan"
 msgid "You have enrollment admin privileges for this event"
 msgstr "Sinulla on ylläpitäjän oikeudet tähän tapahtumaan"
 
-msgid "The participant list of this event is public"
-msgstr "Tapahtuman osallistujalista on julkinen."
+#: views/enrollment_enroll_view.py
+msgid "Your enrollment for this event has been rejected by the organizer. You cannot re-enroll by yourself. If you believe this is in error, please contact the organizer."
+msgstr ""
 
-msgid "See participant list…"
-msgstr "Katsele osallistujalistaa…"
+#: templates/enrollment_event_box.pug
+#, fuzzy
+msgid "Your enrollment for this event is awaiting approval"
+msgstr "Ilmoittautuminen tähän tapahtumaan ei ole juuri nyt käynnissä."
 
-msgid "Change or cancel your enrollment…"
-msgstr "Muokkaa ilmoittautumistasi tai peru se…"
+#: views/enrollment_enroll_view.py
+msgid "Your enrollment has now been cancelled."
+msgstr ""
 
-msgid "One does not simply cancel an enrollment that has not yet been made."
-msgstr "Ilmoittautumista, jota ei ole vielä tehty, ei noin vain peruta."
+#: models/enrollment.py
+msgid "created at"
+msgstr ""
 
-msgid "You can no longer change your enrollment yourself."
-msgstr "Et voi enää muokata ilmoittautumistasi itse."
+#: models/enrollment.py
+msgid "updated at"
+msgstr ""
 
-msgid "Filter enrolled"
-msgstr "Suodata ilmoittautuneita"
+#~ msgid "Additional information"
+#~ msgstr "Lisätiedot"
 
-msgid "New"
-msgstr "Uusi"
+#~ msgid "Using this form you can enroll in the event. Please note that filling in the form does not guarantee automatic admittance into the event. You will be contacted by the event organizer and notified of the decision whether to accept your enrollment or not."
+#~ msgstr "Tällä lomakkeella voit ilmoittautua tapahtumaan. Huomaathan, että tämän lomakkeen täyttäminen ei takaa automaattista pääsyä tapahtumaan. Tapahtuman järjestäjät ottavat sinuun yhteyttä ja kertovat päätöksestään hyväksyä ilmoittautumisesi."
 
-msgid "The enrollment period is currently underway."
-msgstr "Ilmoittautumislomake on parhaillaan auki."
-
-msgid "Here you can set the starting and ending times for the enrollment period. The enrollment form will automatically open at the beginning and close at the end of the enrollment period."
-msgstr "Tässä voit asettaa ilmoittautumisajan alun ja lopun. Ilmoittautumislomake aukeaa automaattisesti ilmoittautumisajan lopussa ja sulkeutuu ilmoittautumisajan lopussa."
-
-msgid "If the <em>Registration starts</em> field is empty, the enrollment form will stay closed. If the <em>Registration starts</em> is set but the <em>Registration closes</em> field is empty, the enrollment form will stay open once the beginning of the enrollment period has been reached."
-msgstr "Jos <em>Ilmoittautumisaika alkaa</em> -kenttä on tyhjä, ilmoittautumislomake pysyy suljettuna. Mikäli <em>Ilmoittautumisaika alkaa</em> -kenttä on asetettu mutta <em>Ilmoittautumisaika päättyy</em> -kenttä on tyhjä, ilmoittautumislomake pysyy auettuaan auki."
-
-msgid "You can also start or stop the enrollment period immediately."
-msgstr "Voit myös avata tai sulkea ilmoittautumislomakkeen heti."
-
-msgid "The enrollment period was started."
-msgstr "Ilmoittautumislomake on nyt avattu."
-
-msgid "The enrollment period was ended."
-msgstr "Ilmoittautumislomake on nyt suljettu."
-
-msgid "The enrollment period is not currently underway."
-msgstr "Ilmoittautumislomake ei ole tällä hetkellä auki."
-
-msgid "Enrollment period"
-msgstr "Ilmoittautumisaika"
+#~ msgid "You are already enrolled in this event."
+#~ msgstr "Olet jo ilmoittautunut tähän tapahtumaan."

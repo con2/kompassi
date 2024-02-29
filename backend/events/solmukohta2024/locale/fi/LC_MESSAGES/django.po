@@ -1,0 +1,47 @@
+#: forms.py
+msgid "How long should your item be? Please note that each programme slot ends at least 15 minutes before the next slot begins. (So a 1-hour slot is 45 minutes, a 2-hour one is 105 minutes, and so on. We suggest larps and workshops have a maximum of 3:45 including debrief. One-hour room parties, however, are a whole hour!)"
+msgstr ""
+
+#: forms.py
+msgid "If you have anything else to say, this is the place for it!"
+msgstr ""
+
+#: forms.py
+msgid "If your programme item has other content warnings not covered by the choices above (depictions of or references to violence, etc.), please list them here. See the Guide to Hosting Programme for more info."
+msgstr ""
+
+#: forms.py
+msgid "Maximum number of participants"
+msgstr ""
+
+#: forms.py
+msgid "Name of programme item"
+msgstr ""
+
+#: forms.py
+msgid "Other content warnings"
+msgstr ""
+
+#: forms.py
+msgid "Please enter the programme description as it should be shown in the programme guide. Solmukohta 2024 reserves the right to edit the description. The suggested length is 300 - 500 characters."
+msgstr ""
+
+#: forms.py
+msgid "Programme length"
+msgstr ""
+
+#: forms.py
+msgid "See the Hosting Guide for descriptions of the programme types."
+msgstr ""
+
+#: forms.py
+msgid "Solmukohta 2024 reserves the right to edit the name for length or clarity."
+msgstr ""
+
+#: forms.py
+msgid "What type of programme are you suggesting?"
+msgstr ""
+
+#: forms.py
+msgid "What’s the maximum number of participants? (If unlimited, leave this blank.)"
+msgstr ""

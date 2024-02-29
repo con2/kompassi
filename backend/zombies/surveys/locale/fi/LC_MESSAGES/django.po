@@ -1,0 +1,11 @@
+#: event_log_entry_types.py
+msgid "New survey answer: {entry.event_survey_result.survey.title}"
+msgstr ""
+
+#: event_log_entry_types.py
+msgid "New survey answer: {entry.global_survey_result.survey.title}"
+msgstr ""
+
+#: apps.py
+msgid "Surveys"
+msgstr ""

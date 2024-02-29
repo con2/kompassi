@@ -1,6 +1,18 @@
+#: event_log_entry_types.py
+msgid "A CBAC entry for {entry.person} was created by {entry.created_by}: {entry.other_fields}"
+msgstr ""
+
+#: event_log_entry_types.py
+msgid "A CBAC entry for {entry.person} was deleted by {entry.created_by}: {entry.other_fields}"
+msgstr ""
+
 #: models/internal_email_alias.py
 msgid "E-mail to this alias will be directed to these e-mail addresses (separated by whitespace)"
 msgstr ""
+
+#: templates/access_profile_granted_privilege_box.pug templates/access_profile_slack_access_box.pug
+msgid "Open app"
+msgstr "Avaa sovellus"
 
 #: models/smtp_password.py
 msgid "SMTP password"
@@ -16,6 +28,10 @@ msgstr ""
 
 #: models/smtp_server.py
 msgid "SMTP servers"
+msgstr ""
+
+#: models/smtp_server.py
+msgid "SSH server"
 msgstr ""
 
 #: models/slack_access.py
@@ -170,5 +186,10 @@ msgstr ""
 msgid "updated at"
 msgstr ""
 
-msgid "Open app"
-msgstr "Avaa sovellus"
+#: event_log_entry_types.py
+msgid "{entry.created_by} bypassed the permissions check: {entry.cbac_claims}"
+msgstr ""
+
+#: event_log_entry_types.py
+msgid "{entry.created_by} was denied permission by CBAC: {entry.cbac_claims}"
+msgstr ""

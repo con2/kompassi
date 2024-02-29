@@ -1,0 +1,15 @@
+#: forms.py
+msgid "Language skills"
+msgstr ""
+
+#: forms.py
+msgid "Other details"
+msgstr ""
+
+#: forms.py
+msgid "Programme content"
+msgstr ""
+
+#: forms.py
+msgid "Technical details"
+msgstr ""

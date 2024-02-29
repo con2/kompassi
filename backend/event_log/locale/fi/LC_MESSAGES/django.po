@@ -3,7 +3,55 @@ msgid "An event of type {entry.entry_type} occurred"
 msgstr ""
 
 #: models/subscription.py
+msgid "Callback"
+msgstr ""
+
+#: models/subscription.py
+msgid "Callback function"
+msgstr ""
+
+#: models/subscription.py
+msgid "Code path to a callback function. Only used when channel=callback. Eg. event_log.tests:test_callback."
+msgstr ""
+
+#: models/entry.py
+msgid "Context"
+msgstr ""
+
+#: models/subscription.py
 msgid "E-mail"
+msgstr ""
+
+#: models/subscription.py
+msgid "Event filter"
+msgstr ""
+
+#: models/entry.py
+msgid "IP address"
+msgstr ""
+
+#: models/subscription.py
+msgid "Job category filter"
+msgstr ""
+
+#: models/entry.py
+msgid "The IP address this action was performed from."
+msgstr ""
+
+#: models/entry.py
+msgid "The URL of the view in which the event occurred."
+msgstr ""
+
+#: models/subscription.py
+msgid "The callback field must only be used when the channel is \"callback\"."
+msgstr ""
+
+#: models/subscription.py
+msgid "When specified, only entries related to this JobCategory will match the subscription."
+msgstr ""
+
+#: models/subscription.py
+msgid "When specified, only entries related to this event will match the subscription."
 msgstr ""
 
 #: apps.py

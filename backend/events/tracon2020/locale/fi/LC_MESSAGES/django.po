@@ -1,0 +1,3 @@
+#: forms.py
+msgid "Whom is the game for?"
+msgstr ""

@@ -1,20 +1,145 @@
-msgid "Involvement in current events"
-msgstr "Parhaillaan käynnissä olevissa tapahtumissa"
+#: templates/directory_person_view.pug
+msgid "Contact information"
+msgstr ""
 
-msgid "Involvement in future events"
-msgstr "Tulevissa tapahtumissa"
+#: helpers.py templates/directory_view.pug
+msgid "Directory"
+msgstr ""
 
-msgid "Involvement in past events"
-msgstr "Menneissä tapahtumissa"
+#: templates/directory_view.pug
+#, python-format
+msgid "Displaying one person (total %(num_total_people)s people visible to your organization)."
+msgid_plural "Displaying %(num_people)s people (total %(num_total_people)s visible to your organization)."
+msgstr[0] ""
+msgstr[1] ""
 
-msgid "Organization membership"
-msgstr "Yhdistyksen jäsenyys"
+#: templates/directory_person_view.pug
+msgid "E-mail address"
+msgstr ""
 
+#: templates/directory_event_involvement_box.pug
+msgid "Enrollment"
+msgstr ""
+
+#: templates/directory_view.pug
+msgid "Event"
+msgstr ""
+
+#: templates/directory_person_view.pug templates/directory_view.pug
+msgid "First name"
+msgstr ""
+
+#: templates/directory_person_view.pug
 msgid "Go to membership administration…"
 msgstr "Siirry jäsenrekisterin hallintanäkymään…"
 
+#: templates/directory_view.pug
+msgid "Hide this warning"
+msgstr ""
+
+#: templates/directory_person_view.pug
+msgid "Involvement in current events"
+msgstr "Parhaillaan käynnissä olevissa tapahtumissa"
+
+#: templates/directory_person_view.pug
+msgid "Involvement in future events"
+msgstr "Tulevissa tapahtumissa"
+
+#: templates/directory_person_view.pug
+msgid "Involvement in past events"
+msgstr "Menneissä tapahtumissa"
+
+#: templates/directory_person_view.pug
+msgid "Name as displayed"
+msgstr ""
+
+#: templates/directory_person_view.pug templates/directory_view.pug
+msgid "Nick name"
+msgstr ""
+
+#: templates/directory_person_view.pug
+msgid "Organization membership"
+msgstr "Yhdistyksen jäsenyys"
+
+#: templates/directory_person_view.pug
+msgid "Phone number"
+msgstr ""
+
+#: templates/directory_event_involvement_box.pug
+msgid "Programme item"
+msgstr "Ohjelmanumero"
+
+#: templates/directory_view.pug
+msgid "Search and filter"
+msgstr ""
+
+#: templates/directory_view.pug
+msgid "Search results"
+msgstr ""
+
+#: forms.py
+msgid "Search term"
+msgstr ""
+
+#: forms.py
+msgid "Searchable fields: first name, last name, e-mail address, phone number, nick name, user name"
+msgstr ""
+
+#: templates/directory_view.pug
+msgid "Stern warning!"
+msgstr ""
+
+#: templates/directory_person_view.pug templates/directory_view.pug
+msgid "Surname"
+msgstr ""
+
+#: helpers.py
+msgid "This organization does not use the directory."
+msgstr ""
+
+#: views/directory_view.py
+msgid "Unknown action."
+msgstr ""
+
+#: event_log_entry_types.py
+msgid "User {entry.created_by} browsed the {entry.organization} directory without a search term."
+msgstr ""
+
+#: event_log_entry_types.py
+msgid "User {entry.created_by} searched the {entry.organization} directory for: {entry.search_term}"
+msgstr ""
+
+#: templates/directory_event_involvement_box.pug
 msgid "Volunteer work"
 msgstr "Vapaaehtoistyöskentely"
 
-msgid "Programme item"
-msgstr "Ohjelmanumero"
+#: templates/directory_view.pug
+#, python-format
+msgid "You are accessing the personally identifiable information of other people. You are allowed access to these strictly as part of duties related to <strong>%(organization)s</strong> and events related to it. All access is logged and unauthorized access will be prosecuted."
+msgstr ""
+
+#: helpers.py
+msgid "You do not have access to the directory."
+msgstr ""
+
+#: apps.py
+msgid "directory"
+msgstr ""
+
+#: models/directory_access_group.py
+msgid "directory access group"
+msgstr ""
+
+#: models/directory_access_group.py
+msgid "directory access groups"
+msgstr ""
+
+#: templates/directory_person_view.pug
+#, python-format
+msgid "in the <a href=\"%(directory_url)s\">%(organization)s directory</a>"
+msgstr ""
+
+#: models/directory_organization_meta.py
+#, fuzzy
+msgid "organization"
+msgstr "Yhdistyksen jäsenyys"

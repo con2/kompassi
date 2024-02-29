@@ -1,11 +1,34 @@
-msgid "The payment was not completed. Please try again."
-msgstr "Maksu keskeytyi tai epäonnistui. Ole hyvä ja yritä uudelleen."
+#: models/checkout_payment.py
+msgid "Delayed"
+msgstr ""
 
-msgid "The order was successful, but we are still waiting for final confirmation of payment from the payment processor. You will receive your e-tickets once we have received the confirmation. This may take up to three banking days."
-msgstr "Tilaus onnistui, mutta odotamme maksunvälittäjältä yhä lopullista vahvistusta maksustasi. Saat sähköiset lippusi kunhan saamme vahvistuksen maksunvälittäjältä. Tähän voi mennä yhdestä kolmeen pankkipäivää."
+#: models/checkout_payment.py
+msgid "Failed"
+msgstr ""
 
+#: models/checkout_payment.py
+msgid "New"
+msgstr ""
+
+#: models/checkout_payment.py
+msgid "OK"
+msgstr ""
+
+#: views.py
 msgid "Payment successful. Thank you for your order!"
 msgstr "Maksu onnistui. Kiitos tilauksestasi!"
 
-msgid "Abort order"
-msgstr "Keskeytä tilaus"
+#: models/checkout_payment.py
+msgid "Pending"
+msgstr ""
+
+#: views.py
+msgid "The order was successful, but we are still waiting for final confirmation of payment from the payment processor. You will receive your e-tickets once we have received the confirmation. This may take up to three banking days."
+msgstr "Tilaus onnistui, mutta odotamme maksunvälittäjältä yhä lopullista vahvistusta maksustasi. Saat sähköiset lippusi kunhan saamme vahvistuksen maksunvälittäjältä. Tähän voi mennä yhdestä kolmeen pankkipäivää."
+
+#: views.py
+msgid "The payment was not completed. Please try again."
+msgstr "Maksu keskeytyi tai epäonnistui. Ole hyvä ja yritä uudelleen."
+
+#~ msgid "Abort order"
+#~ msgstr "Keskeytä tilaus"
