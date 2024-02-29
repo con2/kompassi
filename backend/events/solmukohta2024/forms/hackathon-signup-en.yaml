@@ -31,6 +31,15 @@ fields:
       event. If you have a Discord account, please provide your username here to help us connect with you.
       If you have not yet joined the Solmukohta 2024 Discord server but would like to do so, please see the <a target="_blank" rel="noopener noreferrer" href="https://docs.google.com/document/d/1D30rNe8Kt6PBsSlkjJVsLlwSLabCQF_3Xv4-JIsUOlM/edit#heading=h.kafw14kkcd82">Solmukohta 2024 Discord Guide for Participants</a> and use the <a target="_blank" rel="noopener noreferrer" href="https://discord.gg/AB8qqJxDTV">invitation link</a> to join.
 
+  - slug: participation
+    title: Participation
+    type: SingleSelect
+    required: true
+    helpText: |
+      Will you participate in the hackathon on site in Tampere, or online from elsewhere?
+    choicesFrom:
+      dimension: participation
+
   - slug: stake
     title: What is your stake in KP/SK IT systems?
     type: MultiLineText

@@ -14,9 +14,22 @@
       title:
         en: Designer
 
+- slug: participation
+  title:
+    en: Participation
+  is_key_dimension: true
+  is_multi_value: true
+  choices:
+    - slug: onsite
+      title:
+        en: On site
+    - slug: online
+      title:
+        en: Online
+
 - slug: status
   title:
-    en: Payment status
+    en: Signup status
   is_key_dimension: true
   choices:
     - slug: new
