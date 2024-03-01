@@ -240,6 +240,18 @@ class Setup:
                 available=False,
                 ordering=ordering(),
             ),
+            dict(
+                name="Pääsylippu: Popcult Nights 2024 (Day 2024 -lipun haltijalle)",
+                description="HUOM! Voimassa vain yhdessä Popcult Day 2024 -lipun kanssa! Pääsylippu Popcult Nights -iltatapahtumaan 18.5.2024 Helsingin Suvilahdessa. Sähköinen lippu vaihdetaan rannekkeeseen tapahtumapaikalla.",
+                limit_groups=[
+                    limit_group("Nights", 400),
+                ],
+                price_cents=5_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=ordering(),
+                code="nightsaddon-jhzdvxhd",  # will be changed in production
+            ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
