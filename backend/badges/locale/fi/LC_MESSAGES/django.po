@@ -51,6 +51,10 @@ msgstr "Luonut"
 msgid "Dashboard"
 msgstr "Kojelauta"
 
+#: models/badges_event_meta.py
+msgid "Emphasize nick name"
+msgstr "Korosta nickiä"
+
 #: views/admin_views.py
 msgid "Entrance lists"
 msgstr "Nimilistat"
@@ -88,14 +92,6 @@ msgid "In most events, it is up to the person carrying the badge to decide wheth
 msgstr "Useimmissa tapahtumissa badgen haltija saa päättää, näytetäänkö hänen oikea nimensä badgessa. Jotkut haluavat badgeensa ainoastaan etunimen tai nickin. Tietyt tapahtumat ovat päättäneet rajoittaa tätä. Mikäli tämä asetus on valittu, badgessa näkyy aina haltijansa etunimi ja sukunimi."
 
 #: models/badge.py
-msgid "Internal notes"
-msgstr ""
-
-#: models/badge.py
-msgid "Internal notes are only visible to the event organizer. However, if the person in question requests a transcript of records, this field is also disclosed."
-msgstr ""
-
-#: models/badge.py
 msgid "Is first name visible"
 msgstr "Etunimi näkyvissä"
 
@@ -119,10 +115,6 @@ msgstr "Badgen lisääminen käsin"
 msgid "Manually add a badge"
 msgstr "Lisää badge käsin"
 
-#: models/badges_event_meta.py
-msgid "Members of this group are granted access to the onboarding view without being badges admins."
-msgstr ""
-
 #: models/badge.py templates/badges_admin_onboarding_view.pug
 msgid "Name"
 msgstr "Nimi"
@@ -139,15 +131,10 @@ msgstr "Badgejen lukumäärä"
 msgid "Onboarding"
 msgstr "Saapuneeksi kirjaaminen"
 
-#: models/badges_event_meta.py
-#, fuzzy
-msgid "Onboarding access group"
-msgstr "Saapuneeksi kirjaaminen"
-
 #: templates/badges_admin_badges_view.pug
 #, python-format
 msgid "One badge."
-msgid_plural "%(num_badges)s badges."
+msgid_plural "%(num_badges)s badges."
 msgstr[0] "Yksi badge."
 msgstr[1] "%(num_badges)s badgea."
 
@@ -194,10 +181,6 @@ msgstr "Erillistulostusaika"
 #: models/badge.py
 msgid "Printing batch"
 msgstr "Tulostuserä"
-
-#: views/admin_views.py
-msgid "Reports"
-msgstr "Raportit"
 
 #: models/badges_event_meta.py
 msgid "Require real name to be visible"
@@ -263,10 +246,6 @@ msgstr "Badge on nyt mitätöity."
 msgid "The badge was already valid."
 msgstr "Badge oli jo voimassa."
 
-#: models/badges_event_meta.py
-msgid "These instructions will be shown at the top of the onboarding view. Markdown formatting available."
-msgstr ""
-
 #: templates/badges_admin_badges_view.pug
 msgid "This badge cannot be marked separately printed because it is revoked."
 msgstr "Tätä badgea ei voi merkitä erikseen tulostetuksi, koska badge on mitätöity."
@@ -279,9 +258,17 @@ msgstr "Tätä badgea ei voi mitätöidä tässä, koska se on luotu työvoiman-
 msgid "This badge cannot be un-marked separately printed because it is revoked."
 msgstr "Tästä badgesta ei voi pyyhkiä erikseen tulostettu -merkintää, koska badge on mitätöity."
 
+#: models/badges_event_meta.py
+msgid "This controls how fields are grouped in the badge. Traditional: job title, firstname surname, nick. Emphasize nick name: first name or nick, surname or full name, job title."
+msgstr "Tämä kontrolloi sitä, miten kentät niputetaan badgessa. Perinteinen: tehtävänimike, etunimi sukunimi, nick. Korosta nickiä: etunimi tai nick, sukunimi tai koko nimi, tehtävänimike."
+
 #: templates/badges_admin_badges_view.pug views/badges_admin_badges_view.py
 msgid "This revoked badge cannot be un-revoked here because it is managed by either the labour or the programme management system."
 msgstr "Tätä mitätöityä badgea ei voi palauttaa tässä, koska se on luotu työvoiman- tai ohjelmanhallintajärjestelmän kautta."
+
+#: models/badges_event_meta.py
+msgid "Traditional"
+msgstr "Perinteinen"
 
 #: templates/badges_admin_badges_view.pug
 msgid "Un-revoke badge"
@@ -299,16 +286,5 @@ msgstr "Odottaa"
 msgid "Waiting in batch"
 msgstr "Odottaa erässä"
 
-#: models/badges_event_meta.py
-#, fuzzy
-msgid "onboarding instructions"
-msgstr "Saapuneeksi kirjaaminen"
-
-#~ msgid "Emphasize nick name"
-#~ msgstr "Korosta nickiä"
-
-#~ msgid "This controls how fields are grouped in the badge. Traditional: job title, firstname surname, nick. Emphasize nick name: first name or nick, surname or full name, job title."
-#~ msgstr "Tämä kontrolloi sitä, miten kentät niputetaan badgessa. Perinteinen: tehtävänimike, etunimi sukunimi, nick. Korosta nickiä: etunimi tai nick, sukunimi tai koko nimi, tehtävänimike."
-
-#~ msgid "Traditional"
-#~ msgstr "Perinteinen"
+msgid "Reports"
+msgstr "Raportit"

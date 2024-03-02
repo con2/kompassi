@@ -1,3 +1,2 @@
-#: views.py
 msgid "You need to verify your e-mail address before logging in to other services. Please verify your e-mail address below and then try logging in again from the service that sent you here."
 msgstr "Sähköpostiosoite on vahvistettava ennen muihin palveluihin kirjautumista. Ole hyvä ja vahvista sähköpostiosoitteesi alla ja yritä sitten uudelleen kirjautua palveluun josta päädyit tänne."

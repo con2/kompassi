@@ -1,1230 +1,1129 @@
-#: forms.py
-msgid "Accessibility and inclusivity"
-msgstr "Esteettömyys, inklusiivisuus ja saavutettavuus"
-
-#: forms.py
-msgid "Additional information"
-msgstr ""
-
-#: forms.py
-msgid "Advertise your game for potential players. If your game includes any potentially shocking or distressing themes, please mention it here.<br><br>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.<br><br>Write the description in the language the game will be run in (Finnish, English). You can write the description in both languages if you want."
-msgstr "Mainosta peliäsi pelaajille. Varmista, että kerrot mahdollisesti järkyttävistä tai häiritsevistä teemoista. Suositeltu pituus on 300-500 merkkiä. Pidätämme oikeuden muokata tekstiä tarpeen mukaan.<br><br>Kirjoita kuvaus ainakin sillä kielellä, jolla peli peluutetaan (suomeksi tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
-
-#: forms.py
-msgid "Advertise your larp for potential players. Inform players about what is expected of them, and what themes your larp contains. If your larp includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br/><br/>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary."
-msgstr "Mainosta larppiasi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja larpissa käsitellään. Mainitsethan, jos larpissa käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
-
-#: forms.py
-msgid "Category of the game programme"
-msgstr "Peliohjelmaluokka"
-
-#: forms.py
-msgid "Character-driven"
-msgstr "Hahmovetoinen"
-
-#: forms.py
-msgid "Choose the category that best suits your game programme. Ropecon reserves the right to change the programme category if necessary.<br/>Experience Point - Demo games (i.e. showcasing, demonstrating or running a game) and open games (i.e. running a certain card game or board game for attendees by request) organized at the Experience Point.<br/>Miniature wargames - demonstrations and open games organized at the miniature wargame area.<br/>Tournaments - organizing a game tournament or a competition at the tournament area or the miniature wargame area.<br/>Other game programme - something other than mentioned above, e.g. jigsaw puzzles."
-msgstr "Valitse parhaiten peliohjelmaasi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa.<br/>Kokemuspiste - kokemuspistealueella järjestettäviä demotuksia (eli pelin esittelyä, demottamista ja/tai pelaamista) ja avoimia pelautuksia (eli tietyn pelin pelauttamista pyynnöstä) lauta- ja korttipeleistä.<br/>Figupelit - figualueella järjestettäviä demotuksia ja avoimia pelautuksia miniatyyripeleistä.<br/>Turnaukset - turnauksen tai kilpailun järjestäminen turnausalueella tai figualueella.<br/>Muu peliohjelma - jokin muu kuin ylläoleva, esim. palapelit."
-
-#: forms.py
-msgid "Choose the category that best suits your programme. Ropecon reserves the right to change the programme category if necessary."
-msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa."
-
-# Muu ohjelma 2023
-#: forms.py
-msgid "Choose the category that best suits your programme. Ropecon reserves the right to change the programme category if necessary.<br/>Presentation: traditional lecture<br/>Panel discussion: multiple panelists in front of an audience, usually with a moderator present<br/>Discussion group: discussion that equally includes the audience<br/>Dance programme: dance rehearsals and for example a ball; dance programmes where attendees also dance<br/>Performance programme: all types of performances; choir, dance performance, fencing performance or other<br/>Meetup: informal gathering related to a certain topic or scene<br/>Other programme: programmes that do not fit the previous categories"
-msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa.<br/>Esitelmä: perinteinen luento<br/>Paneeli: usean panelistin keskustelu yleisön edessä, yleensä moderaattorin kera<br/>Keskustelu: yleisön tasavertaisesti mukaan ottava keskustelu<br/>Tanssiohjelma: tanssiharjoitukset ja esimerkiksi tanssiaiset; tanssiohjelmat, joissa osallistujatkin tanssivat<br/>Esitysohjelma: kaikenlaiset esitykset; kuoro, tanssiesitys, miekkailuesitys tai muu<br/>Miitti: vapaamuotoinen tapaaminen jonkin aiheen tai skenen ympärillä<br/>Muu ohjelma: ohjelmat, jotka eivät sovi edellä mainittuihin kategorioihin"
-
-#: forms.py
-msgid "Choose the language used in your programme"
-msgstr "Valitse kieli, jolla pidät ohjelmasi"
-
-#: forms.py
-msgid "Combat-driven"
-msgstr "Taisteluvetoinen"
-
-#: forms.py
-msgid "Come up with a catchy, concise title for your game programme. Ropecon reserves the right to edit the title if necessary.<br/>Write the title of the game programme in the language the game will be played in (Finnish or English). You can also write the title in both languages, if you prefer."
-msgstr "Keksi ytimekäs nimi peliohjelmallesi. Varaamme oikeuden muokata nimeä.<br/>Kirjoita peliohjelman nimi sillä kielellä, jolla peli peluutetaan (suomeksi ja/tai englanniksi). Voit halutessasi kirjoittaa nimen kummallakin kielellä."
-
-#: forms.py
-msgid "Come up with a catchy, concise title for your programme. Ropecon reserves the right to edit the title if necessary."
-msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
-
-#: forms.py
-msgid "Comments"
-msgstr "Muuta tietoa roolipelivastaaville"
-
-#: forms.py
-msgid "Condense the essence of your game into one short sentence that will let players know what your game have to offer. For example, “A traditional D&D dungeon crawl”, or “Lovecraftian horror in Equestria”. We reserve the right to edit the slogan if necessary."
-msgstr "Tiivistä pelisi yhteen lauseeseen, joka kertoo pelaajalle pelin sisällöstä tärkeimmän. Esim. \"Perinteistä D&D-luolastoseikkailua\" tai \"Lovecraftilaista kauhua Equestriassa\". Pidätämme oikeuden muokata tekstiä."
-
-#: forms.py
-msgid "Consent for information processing"
-msgstr "Suostumus tietojen käsittelyyn"
-
-#: forms.py
-msgid "Consider the minimum number of players required to run your game carefully: by setting it as low as possible, you increase the chances of your game being able to be run."
-msgstr "Harkitse pelaajien vähimmäismäärä tarkkaan: Maksimoit pelin toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
-
-#: forms.py
-msgid "Describe what kind of space you hope to organise your larp in (completely dark, separate rooms, water supply, etc.) and whether you have any technical needs (lights, sound, etc). Please keep in mind that we may not be able to fulfill all requests, so please justify how yours would benefit your larp."
-msgstr "Kerro tässä millaisessa tilassa (täysin pimennettävä, erilliset huoneet, vesipiste jne.) toivot larppisi järjestettävän ja tarvitsetko erityistä tekniikkaa (esim. valot, ääni). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan, miten toiveesi tukee larpin kulkua."
-
-#: forms.py
-msgid "Describe your game programme to your potential players in an appealing way. Inform players what is expected of them and what themes your game contains. If your game programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your game programme is meant as humorous or entertaining in nature, let it show in the description as well.<br/>Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the game programme if necessary.<br/>Write the description of the game programme in the language the game will be played in (Finnish or English). You can also write the description in both languages, if you prefer."
-msgstr "Mainosta peliohjelmaasi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos peliohjelmassasi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa.<br/>Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja nimeä tarpeen mukaan esimerkiksi lyhentämällä niitä.<br/>Kirjoita kuvaus sillä kielellä, jolla peli peluutetaan (suomeksi ja/tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
-
-#: forms.py
-msgid "Describe your programme to your potential audience or participants in an appealing way. If your programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your programme is meant as humorous or entertaining in nature, let it show in the description as well. Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the programme if necessary."
-msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Jos ohjelmasi on humoristinen tai viihteellinen, annathan sen näkyä myös kuvauksessa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
-
-#: forms.py
-msgid "Description"
-msgstr "Kuvaus"
-
-#: forms.py
-msgid "Description of your game"
-msgstr "Kuvaus"
-
-#: forms.py
-msgid "Do you give Ropecon permission to record your programme and publish it on the Internet?"
-msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
-
-#: forms.py
-msgid "Do you want to say something to the larp-conittee that does not fit any of the fields above or clarify some answer?<br/><br/>If the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br/><br/>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br/><br/>You can also specify your preferred schedule here."
-msgstr "Haluatko sanoa larp-coniitille jotain, mikä ei sovi mihinkään yllä olevista kentistä tai tarkentaa jotain vastausta?<br/><br/>Mainitse tässä, esimerkiksi jos larppisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br/><br/>Pyrimme, että conin peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br/><br/>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
-
-#: forms.py
-msgid "Does your game programme have any technical needs (e.g. electricity) or other specific needs regarding e.g. the programme space itself?<br/>Please keep in mind that we might not be able to fulfill all requests, so please justify how your requests would benefit your game programme."
-msgstr "Kerro tässä onko peliohjelmallasi erityisiä tila- tai tekniikkatarpeita (esim. sähkö).<br/>Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee peliohjelmaasi."
-
-#: forms.py
-msgid "Does your programme require materials from the players?"
-msgstr "Vaatiiko ohjelmasi pelaajien omia materiaaleja?"
-
-#: forms.py
-msgid "Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes (one hour and 45 minutes)."
-msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia (tunti ja 45 minuuttia)."
-
 # Työpajat 2023
-#: forms.py
+
 msgid "Duration of workshops is either 45 minutes, 105 minutes or 165 minutes."
 msgstr "Työpaja voi olla 45, 105 tai 165 minuuttia."
 
-#: forms.py
-msgid "Equipment needed in your larp"
-msgstr "Larpin tarvitsemat tarvikkeet"
-
-#: forms.py
-msgid "Estimated duration (minutes)"
-msgstr "Arvioitu pituus (minuuttia)"
-
-#: forms.py
-msgid "Estimated duration of your game (minutes)"
-msgstr "Pelin kesto (minuuttia)"
-
-#: forms.py
-msgid "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with either of the two languages. The programme team will contact you regarding the final choice of language."
-msgstr "Suomi - valitse tämä, jos ohjelmassasi puhutaan ainoastaan suomea.<br/>Englanti - valitse tämä, jos ohjelmassasi puhutaan ainoastaan englantia.<br/>Kielivapaa - valitse tämä, jos ohjelmaan osallistuakseen ei tarvitse osata suomea tai englantia (esim. työpaja, jossa kuvalliset ohjeet, tai tanssi, jossa voi seurata muita).<br/>Suomi tai englanti - valitse tämä, jos olet valmis pitämään ohjelmasi kummalla tahansa kielellä. Ohjelmatiimi on sinuun yhteydessä lopullisen kielivalinnan suhteen."
-
-#: forms.py
-msgid "Game designer (if other than GM)"
-msgstr "Pelin kirjoittaja (jos muu kuin pelinjohtaja)"
-
-#: forms.py
-msgid "Game system"
-msgstr "Pelisysteemi"
-
-#: forms.py
-msgid "Give your larp a catchy and concise title. We reserve the right to edit the title if necessary."
-msgstr "Keksi ytimekäs otsikko larpillesi. Varaamme oikeuden muokata otsikkoa."
-
-#: forms.py
-msgid "How many players are needed for the game programe to be organized?<br/>Select the minimum number of players carefully: by setting the minimum number of players as low as possible, you maximize the chances for your game programme to be organized successfully."
-msgstr "Kuinka monta pelaajaa tarvitaan peliohjelman toteutumiseksi?<br/>Harkitse pelaajien vähimmäismäärä tarkkaan: maksimoit peliohjelmasi toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
-
-#: forms.py
-msgid "How many players must sign up for the larp to be able to run it?"
-msgstr "Kuinka monta pelaajaa larppiin täytyy vähintään ilmoittautua, jotta larppi toteutuu?"
-
-#: forms.py
-msgid "I do not give permission to record or publish my programme"
-msgstr "Kiellän ohjelmani videoinnin kokonaan"
-
-#: models.py
-msgid "I give my consent for Ropecon to publish my name to my co-workers in the volunteer roster of my assigned station."
-msgstr "Ymmärrän, että ilmoittautumalla vapaaehtoiseksi annan luvan siihen, että nimeni saa näkyä työpisteellä olevassa työvuorolistassa muille työpisteen vapaaehtoisille."
-
-#: forms.py
-msgid "I give permission to record and publish my programme"
-msgstr "Ohjelmanumeroni saa videoida ja julkaista"
-
-#: forms.py
-msgid "I request my programme to not be photographed"
-msgstr "Pyydän ettei ohjelmanumeroani valokuvata"
-
-#: forms.py
-msgid "I will make my own sign-up list"
-msgstr "Teen itse"
-
-#: forms.py
-msgid "I'm interested in participating in a panel discussion related to my field(s) of expertise."
-msgstr "Voin osallistua erikoisalaani/-alojani sivuavaan paneelikeskusteluun"
-
-#: forms.py
-msgid "If new players can join your game while it is already running and old players can leave freely before the game has ended, please tick this box. Mention this in the description of your game as well, and provide additional information in the Comments section below if needed. If you are not sure whether your game is a revolving door RPG or not, contact us and we will figure it out together!"
-msgstr "Rastita tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa jo käynnissä ja vanhat pelaajat voivat poistua pelistä ennen pelin loppua. Anna tarvittaessa lisätietoja lomakkeen lopussa. Jos et ole varma pelisi luonteesta, ole yhteydessä meihin niin katsotaan!"
-
-#: forms.py
-msgid "If the design of your larp requires gendered characters, please mention it in the Comments section of this form."
-msgstr "Jos larpin design vaatii sukupuolitettuja hahmoja, kerro siitä vapaamuotoisissa terveisissä."
-
-#: forms.py
-msgid "If the larp was designed by someone other than the GM running it at Ropecon, please enter the name of the designer here."
-msgstr "Jos larpin on kirjoittanut joku muu kuin sen tässä tapahtumassa vetävä pelinjohtaja, ilmoita kirjoittaja tässä."
-
-#: forms.py
-msgid "If the maximum number of players in your game programme is limited, please set the maximum number of players that can participate at the same time."
-msgstr "Mikäli peliohjelmasi pelaajamäärä on rajattu, kirjoita tähän kuinka monta pelaajaa maksimissaan mahtuu kerralla mukaan."
-
-#: forms.py
-msgid "If the number of participants in your programme is limited, please provide the maximum number of participants."
-msgstr "Mikäli ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
-
-#: forms.py
 msgid "If the number of participants in your workshop is limited, please provide the maximum number of participants."
 msgstr "Mikäli työpajan osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
 
-#: forms.py
-msgid "If you make the sign-up list for your larp yourself, you can ask more specific questions about player preferences. A sign-up list made by the Larp Desk is simply a list of names. In this case, select \"Larp Desk makes the list\"."
-msgstr "Itse tehdyssä ilmoittautumislistassa voit kysyä tarkemmin pelaajien mieltymyksiä. Larp-tiskin tekemä lista on nimilista larppiin tulevista ihmisistä. Valitse tällöin vaihtoehto \"Larp-tiski tekee\"."
+msgid "Workshop fee"
+msgstr "Työpajamaksu"
 
-#: forms.py
-msgid "If your programme is related to the theme of Ropecon 2023, please tick this box."
-msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden teemaan."
+msgid "If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application). If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide!"
+msgstr "Mikäli työpajaan on kävijälle vaatimuksena esimerkiksi materiaalimaksu, kirjoita mahdollisimman tarkka määrä tähän (jos tiedossa jo hakuhetkellä). Jos ei tiedossa (tai minkäänlaista maksua ei ole), kirjoita 0€. Muista päivittää tarkka määrä Kompassiin ennen ohjelmankartan julkaisua!"
 
-#: forms.py
-msgid "Inform us about other possible technical needs at your workshop."
-msgstr "Kerro muista mahdollisista työpajasi tekniikkatarpeista."
+msgid "Material needs"
+msgstr "Materiaalin tarve"
 
-#: forms.py
-msgid "Is there anything else you would like to tell the RPG coordinators that doesn’t fit any of the fields above or would you like to clarify something?<br/>For example, if you are a beginner GM and would like some additional support, let us know and we will gladly help you out!"
-msgstr "Jos haluat kertoa roolipelivastaaville jotakin joka ei sisälly ylläoleviin kenttiin tai tarkentaa jotain, kirjoita se tähän. Jos olet esimerkiksi aloitteleva pelinjohtaja, ja kaipaat lisätukea, autamme mielellämme!"
+msgid "If you need assistance from Ropecon in acquiring or loaning the materials, inform about your needs here. It can be for example pens and paper, flip chart, miniature parts, miniature paint, iron wire etc."
+msgstr "Mikäli tarvitset Ropeconilta apua materiaalien hankkimiseen tai lainaamiseen, kerro tarpeesta tässä. Se voi olla esimerkiksi kyniä ja paperia, fläppitaulu, figujen osia, figumaaleja, rautalankaa, jne."
 
-#: forms.py
-msgid "Is there anything else you would like to tell the game programme coordinators?"
-msgstr "Haluatko sanoa peliohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+msgid "Number of tables and chairs"
+msgstr "Pöytien ja tuolien määrä"
 
-#: forms.py
-msgid "Is there anything else you would like to tell the programme coordinators or organisers of Ropecon?"
-msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+msgid "Inform us how many tables and chairs are needed in your workshop."
+msgstr "Kerro montako pöytää ja tuolia työpajassasi tarvitaan."
 
-#: forms.py
-#, fuzzy
-msgid "Language skills"
-msgstr "Muu kielitaito"
+msgid "Other space and furniture needs"
+msgstr "Muut tila- ja kalustetarpeet"
 
-#: forms.py
-msgid "Language used in game materials"
-msgstr "Pelimateriaalin kieli"
+msgid "Inform us here, if you need a specific kind of space (and/or furniture) for your workshop. For example if tables and chairs need to be moved for empty space in your workshop, because it is not possible to do so in every room."
+msgstr "Kerro tässä, jos tarvitset tietynlaista tilaa (ja/tai kalusteita) työpajallesi. Esimerkiksi tarvitseeko työpajassasi siirtää pöytiä ja tuoleja tyhjän tilan saamiseksi, koska jokaisessa huoneessa näin ei voi tehdä."
 
-#: forms.py
-msgid "Laptop needs"
-msgstr "Tietokoneen käyttö"
-
-#: forms.py
-msgid "Laptop provided by Ropecon"
-msgstr "Tapahtuman toimittama kannettava tietokone"
-
-#: forms.py
-msgid "Lighthearted playstyle"
-msgstr "Kevyt pelityyli"
-
-#: forms.py
-msgid "Maximum number of players"
-msgstr "Pelaajien enimmäismäärä"
-
-#: forms.py
-msgid "Minimum number of players"
-msgstr "Pelaajien vähimmäismäärä"
-
-#: forms.py
-msgid "My field(s) of expertise"
-msgstr ""
-
-#: forms.py
-msgid "My programme can be photographed"
-msgstr "Ohjelmanumeroani saa valokuvata"
-
-#: forms.py
-msgid "No laptop is needed in my programme"
-msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
-
-#: forms.py
-#, fuzzy
-msgid "No sign-up"
-msgstr "Ilmoittautuminen"
-
-#: forms.py
-msgid "Number of characters"
-msgstr "Hahmojen lukumäärä"
-
-#: forms.py
-msgid "Number of participants"
-msgstr "Osallistujamäärä"
-
-#: forms.py
-msgid "Number of runs"
-msgstr "Pelautusten lukumäärä"
-
-#: models.py
-msgid "Other languages"
-msgstr "Muu kielitaito"
-
-#: forms.py
-msgid "Other technical needs"
-msgstr "Muut tekniikkatarpeet"
-
-#: forms.py
-msgid "Own laptop (Mac)"
-msgstr "Oma Mac-kannettava"
-
-#: forms.py
-msgid "Own laptop (PC)"
-msgstr "Oma PC-kannettava"
-
-#: forms.py
-msgid "Panel discussions"
-msgstr ""
-
-# Roolipelit 2023
-#: forms.py
-msgid "Playstyle and mechanics of your game (Choose any which apply)"
-msgstr "Pelin tyyli (valitse soveltuvat)"
-
-#: forms.py
-msgid "Please make an estimation for the duration of your game programme.<br/>For game programme held at the Experience Point, shorter games of 1-3 hours (60-180 min) are preferred."
-msgstr "Anna arvio peliohjelmasi kestosta.<br/>Kokemuspisteelle suositellaan lyhyempiä 1-3 tunnin (60-180 min) pelautuksia."
-
-# Muu ohjelma 2022
-#: forms.py
-#, fuzzy
-msgid "Please photograph my programme"
-msgstr "Otsikko"
-
-#: models.py
-msgid "Please select those languages with which you feel comfortable doing customer service work and list those not listed in the free text field. You can also describe how proficient you are with those languages in the text field."
-msgstr "Valitse ne kielet, joilla koet pystyväsi antamaan asiakaspalvelua. Listaa vapaatekstikentässä ne kielet, joille ei ole omaa ruutua. Voit myös kuvailla kielitaitoasi tarkemmin vapaatekstikentässä."
-
-#: forms.py
-msgid "Practicalities"
-msgstr "Käytäntö"
-
-#: forms.py
-msgid "Programme category"
-msgstr "Ohjelmaluokka"
-
-#: forms.py
-msgid "Programme photography"
-msgstr "Ohjelman valokuvaus"
-
-#: forms.py
-msgid "RPG system"
-msgstr "Roolipelijärjestelmä"
-
-#: forms.py
-msgid "Recording & publishing consent"
-msgstr "Videointilupa"
-
-#: forms.py
-msgid "Revolving door RPG"
-msgstr "Pyöröovipeli (revolving door) jee jee"
-
-#: forms.py
-msgid "Rules-heavy"
-msgstr "Raskaat säännöt"
-
-#: forms.py
-msgid "Rules-light"
-msgstr "Kevyet säännöt"
-
-#: forms.py
-msgid "Select the times when you <b>DO NOT</b> want to host your programme. Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
-msgstr "Ruksaa ne ajat, jolloin <b>ET halua</b> pitää ohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
-
-#: forms.py
-msgid "Select the times when you are <b>NOT able</b> to organize your game programme.<br/><br/>Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
-msgstr "Ruksaa ne ajat, jolloin <b>ET pysty</b> pitämään peliohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä.<br/>Jos sinulla on tarkempia toivomuksia ajankohdan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
-
-#: forms.py
-msgid "Select the times when you are <b>NOT able</b> to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
-msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."
-
-#: forms.py
-msgid "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be <b>able</b> to run your larp unselected!<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.<br/><br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below."
-msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa larppiasi. Tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (esim. täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi.)<br/><br/>Alla vapaamuotoisissa terveisissä voit esittää toiveita sinulle parhaiten sopivista ajankohdista (esim. “en haluaisi pelauttaa aikaisin aamulla”)."
-
-#: forms.py
-msgid "Serious playstyle"
-msgstr "Vakava pelityyli"
-
-#: forms.py
-msgid "Slogan for your game"
-msgstr "Lyhyt mainoslause"
-
-#: forms.py
-msgid "Space and technical needs"
-msgstr "Tilatoiveet ja tekniikka"
-
-#: forms.py
-msgid "Specify here whether the attendees participating in your game programme are expected to bring their own game tools or other equipment for the game and what that equipment is (e.g. card decks, figure armies)."
-msgstr "Kerro tässä, jos kävijöiden odotetaan tuovan omat pelivälineensä tai muita tarvikkeita voidakseen osallistua peliohjelmaan, ja mitä ne välineet ovat (esim. korttipakkoja, figuarmeijoita)."
-
-#: forms.py
-msgid "Story-driven"
-msgstr "Tarinavetoinen"
-
-#: forms.py
-msgid "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests."
-msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme välttämättä pysty toteuttamaan kaikkia toiveita."
-
-#: forms.py
-msgid "Tell us what kind of equipment or props are required in your larp and which of them you can provide yourself. Please keep in mind that due to limited resources we are not able to fulfill the most outlandish of requests. Water and cups will be provided for all larps."
-msgstr "Kerro tässä, mitä tarvikkeita / proppeja larppisi tarvitsee ja mitä niistä voit tuoda itse. Rajallisten resurssien vuoksi emme pysty toteuttamaan kaikkein villeimpiä toiveita. Kaikille peleille tuodaan vettä ja vesilaseja."
-
-#: forms.py
-msgid "The Larp Desk will make the sign-up list"
-msgstr "Larp-tiski tekee"
-
-#: forms.py
-msgid "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
-msgstr "Tapahtuman viralliset valokuvaajat pyrkivät ottamaan valokuvia ohjelmanumeroista joista niitä on pyydetty."
-
-#: forms.py
-msgid "Theme: Past and Future"
-msgstr "Teema: Menneisyys ja tulevaisuus"
-
-# Larpit 2023
-#: forms.py
-msgid "This includes time for propping, brief and debrief, as well as the actual game."
-msgstr "Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
-
-# Roolipelit 2022
-#: forms.py
-msgid "Title of your game"
-msgstr "Pelin nimi"
-
-# Peliohjelma 2023
-#: forms.py
-msgid "Title of your game programme"
-msgstr "Peliohjelman nimi"
-
-# Larpit 2022
-#: forms.py
-msgid "Title of your larp"
-msgstr "Pelin nimi"
-
-# Muu ohjelma 2022
-#: forms.py
-msgid "Title of your programme"
-msgstr "Otsikko"
-
-#: forms.py
-msgid "What game system is used in your game programme? For example, \"Magic the Gathering\" or \"Carcassonne\".<br/>If you designed the game system yourself, describe it in a few words. For example, \"4X, space battle, conquest\""
-msgstr "Mitä pelisysteemiä peliohjelmassasi käytetään? Esim. \"Magic the Gathering\" tai \"Carcassonne\".<br/>Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. \"4X, avaruustaistelu, valloitus\"."
-
-#: forms.py
-msgid "What kind of a laptop will you use? We strongly recommend using a laptop provided by Ropecon. Using your own laptop is possible only when notified in advance."
-msgstr "Minkälaista tietokonetta haluat käyttää? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
-
-#: forms.py
-msgid "What language is used in the game materials offered for attendees?"
-msgstr "Millä kielellä pelimateriaalit on tarjottu?"
-
-#: forms.py
-msgid "What role-playing game system is used?"
-msgstr "Mitä järjestelmää peli käyttää?"
-
-#: forms.py
-msgid "When are you NOT able to host your game programme?"
-msgstr "Milloin ET pysty pitämään ohjelmaasi?"
-
-#: forms.py
-msgid "When are you NOT able to host your programme?"
-msgstr "Milloin ET pysty pitämään ohjelmaasi?"
-
-#: forms.py
-msgid "When are you NOT able to run your game?"
-msgstr "Milloin ET PYSTY pelauttamaan peliäsi?"
-
-#: forms.py
-msgid "When are you NOT able to run your larp?"
-msgstr "Milloin ET PYSTY pelauttamaan larppiasi?"
-
-#: forms.py
-msgid "Who is your programme for?"
-msgstr "Kenelle ohjelma on tarkoitettu?"
-
-#: forms.py
-msgid "Who makes the sign-up list - you or the Larp Desk?"
-msgstr "Teetkö itse ilmoittautumislistan vai tekeekö larp-tiski sen?"
-
-#: forms.py
 msgid "Will you need a laptop at your workshop? We strongly recommend using a laptop provided by Ropecon. Using your own laptop is possible only when notified in advance."
 msgstr "Tarvitsetko työpajassasi tietokonetta? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
 
-#: forms.py
-msgid "Work certificate"
-msgstr ""
+msgid "Inform us about other possible technical needs at your workshop."
+msgstr "Kerro muista mahdollisista työpajasi tekniikkatarpeista."
 
-#~ msgid "Accessibility"
-#~ msgstr "Esteellisyys"
+# Peliohjelma 2023
 
-#~ msgid "Advertise your game for potential players. Include information about what is expected of players and what kind of themes the game involves. Please mention here if your game involves difficult themes such as physical or psychological abuse. The recommended length of the description is 300-500 characters. We reserve the right to edit the description if necessary."
-#~ msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos pelissäsi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+msgid "Title of your game programme"
+msgstr "Peliohjelman nimi"
 
-#~ msgid "Advertise your game for potential players. Inform players about what is expected of them, and what themes your game contains. If your game includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br/><br/>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary."
-#~ msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos pelissäsi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa.<br/><br/>Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+msgid "Come up with a catchy, concise title for your game programme. Ropecon reserves the right to edit the title if necessary.<br/>Write the title of the game programme in the language the game will be played in (Finnish or English). You can also write the title in both languages, if you prefer."
+msgstr "Keksi ytimekäs nimi peliohjelmallesi. Varaamme oikeuden muokata nimeä.<br/>Kirjoita peliohjelman nimi sillä kielellä, jolla peli peluutetaan (suomeksi ja/tai englanniksi). Voit halutessasi kirjoittaa nimen kummallakin kielellä."
 
-#~ msgid "Advertise your game to potential players. Be extra sure to inform about potentially shocking or disturbing themes. Recommended length is 300–500 characters. We reserve the right to edit the text as necessary.<br><br>Please write the description at least in the language the game will be run in (English or Finnish). You may include the description in both languages, if you wish."
-#~ msgstr "Mainosta peliäsi pelaajille. Varmista, että kerrot mahdollisesti järkyttävistä tai häiritsevistä teemoista. Suositeltu pituus on 300-500 merkkiä. Pidätämme oikeuden muokata tekstiä tarpeen mukaan.<br><br>Kirjoita kuvaus ainakin sillä kielellä, jolla peli peluutetaan (suomeksi tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
+msgid "Describe your game programme to your potential players in an appealing way. Inform players what is expected of them and what themes your game contains. If your game programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your game programme is meant as humorous or entertaining in nature, let it show in the description as well.<br/>Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the game programme if necessary.<br/>Write the description of the game programme in the language the game will be played in (Finnish or English). You can also write the description in both languages, if you prefer."
+msgstr "Mainosta peliohjelmaasi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos peliohjelmassasi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa.<br/>Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja nimeä tarpeen mukaan esimerkiksi lyhentämällä niitä.<br/>Kirjoita kuvaus sillä kielellä, jolla peli peluutetaan (suomeksi ja/tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
 
-#~ msgid "Ages 18+ only"
-#~ msgstr "Vain täysi-ikäisille"
+msgid "Category of the game programme"
+msgstr "Peliohjelmaluokka"
 
-#~ msgid "Aimed at adult attendees"
-#~ msgstr "Suunnattu täysi-ikäisille"
+msgid "Choose the category that best suits your game programme. Ropecon reserves the right to change the programme category if necessary.<br/>Experience Point - Demo games (i.e. showcasing, demonstrating or running a game) and open games (i.e. running a certain card game or board game for attendees by request) organized at the Experience Point.<br/>Miniature wargames - demonstrations and open games organized at the miniature wargame area.<br/>Tournaments - organizing a game tournament or a competition at the tournament area or the miniature wargame area.<br/>Other game programme - something other than mentioned above, e.g. jigsaw puzzles."
+msgstr "Valitse parhaiten peliohjelmaasi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa.<br/>Kokemuspiste - kokemuspistealueella järjestettäviä demotuksia (eli pelin esittelyä, demottamista ja/tai pelaamista) ja avoimia pelautuksia (eli tietyn pelin pelauttamista pyynnöstä) lauta- ja korttipeleistä.<br/>Figupelit - figualueella järjestettäviä demotuksia ja avoimia pelautuksia miniatyyripeleistä.<br/>Turnaukset - turnauksen tai kilpailun järjestäminen turnausalueella tai figualueella.<br/>Muu peliohjelma - jokin muu kuin ylläoleva, esim. palapelit."
 
-#~ msgid "Aimed at adult participants"
-#~ msgstr "Suunnattu täysi-ikäisille"
+msgid "Please make an estimation for the duration of your game programme.<br/>For game programme held at the Experience Point, shorter games of 1-3 hours (60-180 min) are preferred."
+msgstr "Anna arvio peliohjelmasi kestosta.<br/>Kokemuspisteelle suositellaan lyhyempiä 1-3 tunnin (60-180 min) pelautuksia."
 
-#~ msgid "Aimed at children between 13-17"
-#~ msgstr "Suunnattu 13-17-vuotiaille"
+msgid "How many players are needed for the game programe to be organized?<br/>Select the minimum number of players carefully: by setting the minimum number of players as low as possible, you maximize the chances for your game programme to be organized successfully."
+msgstr "Kuinka monta pelaajaa tarvitaan peliohjelman toteutumiseksi?<br/>Harkitse pelaajien vähimmäismäärä tarkkaan: maksimoit peliohjelmasi toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
 
-#~ msgid "Aimed at children under 10 years old"
-#~ msgstr "Suunnattu alle 10-vuotiaille"
+msgid "If the maximum number of players in your game programme is limited, please set the maximum number of players that can participate at the same time."
+msgstr "Mikäli peliohjelmasi pelaajamäärä on rajattu, kirjoita tähän kuinka monta pelaajaa maksimissaan mahtuu kerralla mukaan."
 
-#~ msgid "Aimed at children under 13"
-#~ msgstr "Suunnattu alle 13-vuotiaille"
+msgid 'What game system is used in your game programme? For example, "Magic the Gathering" or "Carcassonne".<br/>If you designed the game system yourself, describe it in a few words. For example, "4X, space battle, conquest"'
+msgstr 'Mitä pelisysteemiä peliohjelmassasi käytetään? Esim. "Magic the Gathering" tai "Carcassonne".<br/>Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. "4X, avaruustaistelu, valloitus".'
 
-#~ msgid "Aimed at underage participants"
-#~ msgstr "Suunnattu alaikäisille"
+msgid "Language used in game materials"
+msgstr "Pelimateriaalin kieli"
 
-#~ msgid "Any clarifications?"
-#~ msgstr "Tarkennuksia?"
+msgid "What language is used in the game materials offered for attendees?"
+msgstr "Millä kielellä pelimateriaalit on tarjottu?"
 
-#~ msgid "Beginner-friendly"
-#~ msgstr "Aloittelijaystävällinen"
+msgid "Specify here whether the attendees participating in your game programme are expected to bring their own game tools or other equipment for the game and what that equipment is (e.g. card decks, figure armies)."
+msgstr "Kerro tässä, jos kävijöiden odotetaan tuovan omat pelivälineensä tai muita tarvikkeita voidakseen osallistua peliohjelmaan, ja mitä ne välineet ovat (esim. korttipakkoja, figuarmeijoita)."
 
-#~ msgid "Both"
-#~ msgstr "Molempiin"
+msgid "How will players sign up for your game programme?<br/>No sign-up - no sign-up is required to participate in the game programme.<br/>Sign-up via the Konsti app - the sign-up process for the game programme is done via the Konsti app during the event.<br/>Other sign-up process - if your game programme requires attendees to sign up beforehand and you prefer to handle it through some other means (e.g. at the Gaming Desk), please choose this option and describe the sign-up process in the Comments section below."
+msgstr "Miten peliohjelmaasi ilmoittaudutaan?<br/>Ei ilmoittautumista - Peliohjelma ei vaadi erityistä ilmoittautumista.<br/>Ilmoittautuminen Konstissa - Peliohjelmaan ilmoittaudutaan Konstin kautta tapahtuman aikana.<br/>Muu ilmoittautuminen - Peliohjelmaan ilmoittaudutaan tapahtuman aikana muulla tavalla, esim. pelitiskille. Kerro tällöin tarkemmin peliohjelmasi ilmoittautumistavasta vapaamuotoisissa terveisissä."
 
-#~ msgid "Celebratory Year"
-#~ msgstr "Juhlavuosi"
+msgid "Sign-up via the Konsti app"
+msgstr "Ilmoittautuminen Konstissa"
 
-#~ msgid "Check this box, if your programme is related to Ropecon's 30th celebratory year."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy Ropeconin 30-vuotisjuhlavuoteen."
+msgid "Other sign-up process"
+msgstr "Muu ilmoittautuminen"
 
-#~ msgid "Check this if the game requires knowledge of the world or the rules of the game."
-#~ msgstr "Valitse tämä jos peli vaatii pelin maailman tai sääntöjen tuntemusta."
+msgid "Number of tables"
+msgstr "Pöytien määrä"
 
-#~ msgid "Choose the program category that best suits your program. Ropecon reserves the right to change the program category if necessary."
-#~ msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa."
+msgid "How much table space is needed for your game programme: how many tables in total?<br/>Table size is 70 cm x 200 cm."
+msgstr "Kerro tässä paljonko ohjelmasi tarvitsee pöytätilaa: montako pöytää peliohjelmassasi tarvitaan?<br/>Yhden pöydän koko on 70 cm x 200 cm."
 
-#~ msgid "Come up with a catchy and concise name for your larp. Ropecon reserves the right to edit the title."
-#~ msgstr "Keksi ytimekäs otsikko larpillesi. Varaamme oikeuden muokata otsikkoa."
+msgid "Number of chairs"
+msgstr "Tuolien määrä"
 
-# ohjelmalomake
-#~ msgid "Come up with a catchy, concise title for your program. Ropecon reserves the right to edit the title if necessary."
-#~ msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
+msgid "How many chairs are needed for your game programme."
+msgstr "Kerro tässä montako tuolia peliohjelmassasi tarvitaan."
 
-#~ msgid "Consider the minimum number of players carefully: You will maximize your chances of running the game by setting the number as low as possible."
-#~ msgstr "Harkitse pelaajien vähimmäismäärä tarkkaan: Maksimoit pelin toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
+msgid "Does your game programme have any technical needs (e.g. electricity) or other specific needs regarding e.g. the programme space itself?<br/>Please keep in mind that we might not be able to fulfill all requests, so please justify how your requests would benefit your game programme."
+msgstr "Kerro tässä onko peliohjelmallasi erityisiä tila- tai tekniikkatarpeita (esim. sähkö).<br/>Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee peliohjelmaasi."
 
-#~ msgid "Darkness/low lighting"
-#~ msgstr "Pimeä/heikko valaistus"
+msgid "Select the times when you are <b>NOT able</b> to organize your game programme.<br/><br/>Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
+msgstr "Ruksaa ne ajat, jolloin <b>ET pysty</b> pitämään peliohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä.<br/>Jos sinulla on tarkempia toivomuksia ajankohdan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
 
-#~ msgid "Describe your program to your potential audience or participants in an appealing way. If your program contains topics that are heavy or potentially distressing, please pay special attention to this in the description. Recommended length is 300-500 characters. Ropecon reserves the right to edit the description and title of the program if necessary, for example reducing their length."
-#~ msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+msgid "Is there anything else you would like to tell the game programme coordinators?"
+msgstr "Haluatko sanoa peliohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
 
-#~ msgid "Do you have any further information, details, comments or questions that you would like to let our program coordinators to know?"
-#~ msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+# Muu ohjelma 2023
 
-#~ msgid "Do you want to say something to the larp-conittee something that does not fit any of the fields above or clarify some answer?<br/><br/>If the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br/><br/>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br/><br/>You can also specify your preferred schedule here."
-#~ msgstr "Haluatko sanoa larp-coniitille jotain, mikä ei sovi mihinkään yllä olevista kentistä tai tarkentaa jotain vastausta?<br/><br/>Mainitse tässä, esimerkiksi jos larppisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br/><br/>Pyrimme, että conin peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br/><br/>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+msgid "Choose the category that best suits your programme. Ropecon reserves the right to change the programme category if necessary.<br/>Presentation: traditional lecture<br/>Panel discussion: multiple panelists in front of an audience, usually with a moderator present<br/>Discussion group: discussion that equally includes the audience<br/>Dance programme: dance rehearsals and for example a ball; dance programmes where attendees also dance<br/>Performance programme: all types of performances; choir, dance performance, fencing performance or other<br/>Meetup: informal gathering related to a certain topic or scene<br/>Other programme: programmes that do not fit the previous categories"
+msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa.<br/>Esitelmä: perinteinen luento<br/>Paneeli: usean panelistin keskustelu yleisön edessä, yleensä moderaattorin kera<br/>Keskustelu: yleisön tasavertaisesti mukaan ottava keskustelu<br/>Tanssiohjelma: tanssiharjoitukset ja esimerkiksi tanssiaiset; tanssiohjelmat, joissa osallistujatkin tanssivat<br/>Esitysohjelma: kaikenlaiset esitykset; kuoro, tanssiesitys, miekkailuesitys tai muu<br/>Miitti: vapaamuotoinen tapaaminen jonkin aiheen tai skenen ympärillä<br/>Muu ohjelma: ohjelmat, jotka eivät sovi edellä mainittuihin kategorioihin"
 
-#~ msgid "Duration of lectures and panel discussions is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other program, please make an estimation."
-#~ msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia. Työpaja voi olla 45, 105 tai 165 minuuttia. Muut ohjelmat voivat arvioida keston."
+msgid "Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes (one hour and 45 minutes)."
+msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia (tunti ja 45 minuuttia)."
 
-#~ msgid "Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other programme, please make an estimation."
-#~ msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia. Työpaja voi olla 45, 105 tai 165 minuuttia. Muut ohjelmat voivat arvioida keston."
+msgid "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with either of the two languages. The programme team will contact you regarding the final choice of language."
+msgstr "Suomi - valitse tämä, jos ohjelmassasi puhutaan ainoastaan suomea.<br/>Englanti - valitse tämä, jos ohjelmassasi puhutaan ainoastaan englantia.<br/>Kielivapaa - valitse tämä, jos ohjelmaan osallistuakseen ei tarvitse osata suomea tai englantia (esim. työpaja, jossa kuvalliset ohjeet, tai tanssi, jossa voi seurata muita).<br/>Suomi tai englanti - valitse tämä, jos olet valmis pitämään ohjelmasi kummalla tahansa kielellä. Ohjelmatiimi on sinuun yhteydessä lopullisen kielivalinnan suhteen."
 
-#~ msgid "Examples: spiders, violence, phobias or other possibly triggering themes"
-#~ msgstr "Esimerkkejä: hämähäkit, väkivalta, fobioita tai muita mahdollisesti triggeröiviä aiheita"
+msgid "If the number of participants in your programme is limited, please provide the maximum number of participants."
+msgstr "Mikäli ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
 
-#~ msgid "Family program"
-#~ msgstr "Perheohjelma"
+msgid "I'm interested in participating in a panel discussion related to my field(s) of expertise."
+msgstr "Voin osallistua erikoisalaani/-alojani sivuavaan paneelikeskusteluun"
 
-#~ msgid "Family-friendly"
-#~ msgstr "Perheohjelma"
+# Larpit 2023
 
-#~ msgid "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with having your programme language based on what language the attendees speak. Please write your title and programme description in both languages."
-#~ msgstr "Suomi - valitse tämä, jos ohjelmassasi puhutaan ainoastaan suomea.<br/>Englanti - valitse tämä, jos ohjelmassasi puhutaan ainoastaan englantia.<br/>Kielivapaa - valitse tämä, jos ohjelmaan osallistuakseen ei tarvitse osata suomea tai englantia (esim. työpaja, jossa kuvalliset ohjeet, tai tanssi, jossa voi seurata muita).<br/>Suomi tai englanti - valitse tämä, jos voit pitää ohjelmasi kummalla tahansa kielellä sen mukaan, mitä kieltä osallistujat osaavat. Tuotathan myös otsikon ja ohjelmakuvauksen molemmilla kielillä."
+msgid "This includes time for propping, brief and debrief, as well as the actual game."
+msgstr "Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
 
-#~ msgid "Finnish or English"
-#~ msgstr "Suomi tai englanti"
+msgid "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme välttämättä pysty toteuttamaan kaikkia toiveita."
 
-#~ msgid "Flashing or bright lights"
-#~ msgstr "Välkkyvät tai voimakkaat valot"
+# Roolipelit 2023
 
-#~ msgid "For 18+ only"
-#~ msgstr "Vain täysi-ikäisille"
+msgid "Playstyle and mechanics of your game (Choose any which apply)"
+msgstr "Pelin tyyli (valitse soveltuvat)"
 
-#~ msgid "For 3 to 5 hours (180-300 minutes) of game programme you will receive a one-day ticket to Ropecon.<br/><br/>For 6 to 8 hours (360-480 minutes) of game programme you will receive a weekend ticket to Ropecon."
-#~ msgstr "3-5 tunnin (180-300 minuutin) peliohjelmasta saat vaivanpalkaksi yhden päivärannekkeen.<br/><br/>6-8 tunnin (360-480 minuutin) peliohjelmasta saat vaivanpalkaksi yhden viikonloppurannekkeen."
+msgid "Who is your programme for?"
+msgstr "Kenelle ohjelma on tarkoitettu?"
 
-#~ msgid "For 3-4 hours (180-240 minutes) of game program you will receive a one-day ticket to Ropecon. For 6-8 hours (360-480 minutes) of game program you will receive a weekend ticket to Ropecon."
-#~ msgstr "3-4 tunnin (180-240 minuutin) peliohjelmasta saat vaivanpalkaksi yhden päivärannekkeen. 6-8 tunnin (360-480 minuutin) peliohjelmasta saat vaivanpalkaksi yhden viikonloppurannekkeen."
+msgid "Language-free"
+msgstr "Kielivapaa"
 
-#~ msgid "For children aged 12+"
-#~ msgstr "Sopii yli 12-vuotiaille"
+msgid "Finnish or English"
+msgstr "Suomi tai englanti"
 
-#~ msgid "For children aged 7-12"
-#~ msgstr "Sopii 7-12-vuotiaille"
+msgid "Choose the language used in your programme"
+msgstr "Valitse kieli, jolla pidät ohjelmasi"
 
-#~ msgid "For children under 7"
-#~ msgstr "Sopii alle 7-vuotiaille"
+msgid "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with having your programme language based on what language the attendees speak. Please write your title and programme description in both languages."
+msgstr "Suomi - valitse tämä, jos ohjelmassasi puhutaan ainoastaan suomea.<br/>Englanti - valitse tämä, jos ohjelmassasi puhutaan ainoastaan englantia.<br/>Kielivapaa - valitse tämä, jos ohjelmaan osallistuakseen ei tarvitse osata suomea tai englantia (esim. työpaja, jossa kuvalliset ohjeet, tai tanssi, jossa voi seurata muita).<br/>Suomi tai englanti - valitse tämä, jos voit pitää ohjelmasi kummalla tahansa kielellä sen mukaan, mitä kieltä osallistujat osaavat. Tuotathan myös otsikon ja ohjelmakuvauksen molemmilla kielillä."
 
-#~ msgid "For experienced players"
-#~ msgstr "Kokeneille pelaajille"
+msgid "Suitable for all ages"
+msgstr "Sopii kaiken ikäisille"
 
-#~ msgid "For one run of a 3-4 hour game (180-240 minutes) of your own writing you will receive one free weekend ticket. This includes time for propping, brief and debrief, as well as the actual game time."
-#~ msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman larppisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+msgid "If your programme is suitable for all ages, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi sopii kaiken ikäisille."
 
-#~ msgid "For one run of a 3-4 hour original larp (180-240 minutes) you will receive a one-day ticket to Ropecon. This includes time for propping, brief and debrief, as well as the actual game."
-#~ msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman larppisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+msgid "Aimed at children under 13"
+msgstr "Suunnattu alle 13-vuotiaille"
 
-#~ msgid "For players over 18 only"
-#~ msgstr "Vain täysi-ikäisille"
+msgid "If your programme is designed for attendees under the age of 13 years, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 13-vuotiaille"
+
+msgid "Aimed at children between 13-17"
+msgstr "Suunnattu 13-17-vuotiaille"
+
+msgid "If your programme is designed for attendees between 13-17 years of age, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu 13-17-vuotiaille"
+
+msgid "Aimed at adult attendees"
+msgstr "Suunnattu täysi-ikäisille"
+
+msgid "If your programme is designed for adult attendees, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
+
+msgid "If your programme contains themes that require attendees to be 18 years or older, please tick this box. There will be an ID check for all attendees."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+
+msgid "If your programme is suitable for attendees with very limited knowledge or without any previous experience about the programme or subject matter in question, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmaan voi osallistua, vaikka aiempaa kokemusta ohjelmasta tai aiheesta olisi hyvin vähän tai ei lainkaan."
+
+msgid "Theme: Past and Future"
+msgstr "Teema: Menneisyys ja tulevaisuus"
+
+msgid "Celebratory Year"
+msgstr "Juhlavuosi"
+
+msgid "Check this box, if your programme is related to Ropecon's 30th celebratory year."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy Ropeconin 30-vuotisjuhlavuoteen."
+
+msgid "Programme photography"
+msgstr "Ohjelman valokuvaus"
+
+msgid "The official photographers of Ropecon aim to take pictures at those programme events they have been requested to take photos of."
+msgstr "Tapahtuman viralliset valokuvaajat pyrkivät ottamaan valokuvia ohjelmanumeroista joista niitä on pyydetty."
+
+msgid "My programme can be photographed"
+msgstr "Ohjelmanumeroani saa valokuvata"
+
+msgid "I request my programme to not be photographed"
+msgstr "Pyydän ettei ohjelmanumeroani valokuvata"
+
+msgid "I can't use a microphone"
+msgstr "En voi käyttää mikrofonia"
+
+msgid "The duration of the programme is over two hours without breaks."
+msgstr "Ohjelma kestää yli kaksi tuntia ilman taukoa"
+
+msgid "There are limited opportunities to move around during the programme."
+msgstr "Ohjelman aikana on rajatut mahdollisuudet liikkumiseen."
+
+msgid "Participation involves reading long texts independently"
+msgstr "Osallistuminen vaatii pitkien tekstien itsenäistä lukemista"
+
+msgid "The programme includes texts that are essential to participation, and the texts are not available as recordings or read out loud."
+msgstr "Ohjelma sisältää osallistumisen kannalta olennaista tekstiä, josta ei ole saatavilla nauhoitetta tai jota ei lueta ääneen."
+
+msgid "Participation requires some dexterity, e.g. that of hands and fingers."
+msgstr "Ohjelmaan osallistuminen vaatii sorminäppäryyttä"
+
+msgid "Participation requires the ability to react quickly."
+msgstr "Ohjelmaan osallistuminen vaatii nopeaa reaktiokykyä"
+
+msgid "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in some participants"
+msgstr "Listaa tähän ohjelmasi sisältämät aiheet, jotka voivat aiheuttaa joillekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta."
+
+msgid "In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."
+msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli ohjelmassasi on joitakin muita seikkoja, jotka voivat rajoittaa tai mahdollistaa osallistumista (esimerkiksi jos ohjelma on viitottu)."
+
+msgid "Other accessibility information"
+msgstr "Muu saavutettavuus"
+
+# Muu ohjelma 2022
+
+msgid "Title of your programme"
+msgstr "Otsikko"
+
+msgid "Come up with a catchy, concise title for your programme. Ropecon reserves the right to edit the title if necessary."
+msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
+
+msgid "Describe your programme to your potential audience or participants in an appealing way. If your programme contains topics or themes that are heavy or potentially distressing, please pay special attention to those in the description. If your programme is meant as humorous or entertaining in nature, let it show in the description as well. Recommended length is 300-500 characters. Ropecon reserves the right to edit and condense the description and title of the programme if necessary."
+msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Jos ohjelmasi on humoristinen tai viihteellinen, annathan sen näkyä myös kuvauksessa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+msgid "If your programme contains topics or themes that are heavy or distressing, please mention them here."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
+
+msgid "Programme category"
+msgstr "Ohjelmaluokka"
+
+msgid "Choose the category that best suits your programme. Ropecon reserves the right to change the programme category if necessary."
+msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa."
+
+msgid "Duration of presentations, panel discussions and other similar programme is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other programme, please make an estimation."
+msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia. Työpaja voi olla 45, 105 tai 165 minuuttia. Muut ohjelmat voivat arvioida keston."
+
+msgid "If you are able, prepared and willing to organise your programme in English if necessary, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään ohjelmasi tarvittaessa englanniksi."
+
+msgid "If your programme is suitable for people with very limited or without any previous knowledge about the subject, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmaan voi osallistua vaikka aiempaa kokemusta aiheesta olisi hyvin vähän tai ei lainkaan."
+
+msgid "If you are able, prepared and willing to organise your programme in English if necessary, please tick this box. If your programme is selected for the event, the programme team will be in contact with you in regards to your language choice."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään ohjelmasi tarvittaessa englanniksi. Mikäli ohjelmasi valitaan tapahtumaan, ohjelmatiimi on yhteydessä sinuun kielen valinnan suhteen."
+
+msgid "The organisers of Ropecon strive to organise a physical  con; if it can be organised thusly, virtual programmes cannot be organised. If a physical con cannot be organised, physical programmes cannot be organised, naturally.<br/><br/>Specify here whether you can organise your programme at a physical con, at a virtual con, or at both."
+msgstr "Ropeconin järjestäjien tavoitteena on järjestää lähicon, ja sen toteutuessa etäohjelmia ei pystytä järjestämään. Jos lähiconia ei voida järjestää, emme luonnollisesti voi järjestää lähiohjelmaa etäconissa.<br/><br/>Kerro tässä, voitko järjestää ohjelmasi lähiconissa, etäconissa vai molemmissa."
+
+msgid "For children under 7"
+msgstr "Sopii alle 7-vuotiaille"
+
+msgid "If your programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your programme is suitable for children under 7 years, even if it is not specifically aimed at them."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "For children aged 7-12"
+msgstr "Sopii 7-12-vuotiaille"
+
+msgid "If your programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your programme is suitable for children aged 7-12 years, even if it is not specifically aimed at them."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "For children aged 12+"
+msgstr "Sopii yli 12-vuotiaille"
+
+msgid "If your programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your programme is suitable for children aged 12 years and older, even if it is not specifically aimed at them."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+
+msgid "If your programme is not suitable for children under 15 years of age, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi ei sovellu alle 15-vuotiaille lapsille."
+
+msgid "If your programme is aimed at children and their guardians, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu lapsille ja heidän huoltajilleen."
+
+msgid "For 18+ only"
+msgstr "Vain täysi-ikäisille"
+
+msgid "If your programme contains themes that require participants to be 18 years or older, please tick this box. There will be an ID check for all participants."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+
+msgid "Accessibility"
+msgstr "Esteellisyys"
+
+msgid "If your programme contains any loud noises, flashing lights or other elements that can limit accessibility, please tick this box. More details can be provided in the Comments section below if necessary."
+msgstr "Ruksaa tämä ruutu, jos ohjelma sisältää kovia ääniä, valoja tai muuta, mikä voi rajoittaa osallistumista. Tarkenna tarvittaessa viimeisessä avoimessa kentässä."
+
+msgid "If your programme is related to the theme of Ropecon 2023, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden teemaan."
+
+msgid "If your programme is related to the children’s theme of Ropecon 2023 (dinosaurs), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden lasten teemaan."
+
+msgid "If the number of participants in your workshop or other programme is limited, please provide the maximum number of participants."
+msgstr "Mikäli työpajan tai muun ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
+
+msgid "Laptop needs"
+msgstr "Tietokoneen käyttö"
+
+msgid "What kind of a laptop will you use? We strongly recommend using a laptop provided by Ropecon. Using your own laptop is possible only when notified in advance."
+msgstr "Minkälaista tietokonetta haluat käyttää? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
+
+msgid "Laptop provided by Ropecon"
+msgstr "Tapahtuman toimittama kannettava tietokone"
+
+msgid "Own laptop (PC)"
+msgstr "Oma PC-kannettava"
+
+msgid "Own laptop (Mac)"
+msgstr "Oma Mac-kannettava"
+
+msgid "No laptop is needed in my programme"
+msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
+
+msgid "Other technical needs"
+msgstr "Muut tekniikkatarpeet"
+
+msgid "When are you NOT able to host your programme?"
+msgstr "Milloin ET pysty pitämään ohjelmaasi?"
+
+msgid "Select the times when you <b>DO NOT</b> want to host your programme. Time slots have been intentionally left vague. If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below."
+msgstr "Ruksaa ne ajat, jolloin <b>ET halua</b> pitää ohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
+
+msgid "Is there anything else you would like to tell the programme coordinators or organisers of Ropecon?"
+msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+
+msgid "I’m interested in participating in a panel discussion related to my field(s) of expertise."
+msgstr "Voin osallistua erikoisalaani/-alojani sivuavaan paneelikeskusteluun."
+
+msgid "Recording & publishing consent"
+msgstr "Videointilupa"
+
+msgid "Do you give Ropecon permission to record your programme and publish it on the Internet?"
+msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
+
+msgid "I give permission to record and publish my programme"
+msgstr "Ohjelmanumeroni saa videoida ja julkaista"
+
+msgid "I do not give permission to record or publish my programme"
+msgstr "Kiellän ohjelmani videoinnin kokonaan"
+
+msgid "The programme involves watching a video without subtitles for the hearing impaired"
+msgstr "Ohjelmanumerossa katsotaan video, jossa ei ole tekstitystä kuulorajoitteisille"
+
+msgid "Material used in the programme can cause problems for the colourblind"
+msgstr "Ohjelmanumerossa käytettävät materiaalit voivat tuottaa haasteita värisokeille"
+
+msgid "Other inaccessibility"
+msgstr "Muu esteellisyys"
+
+msgid "The program involves some other form of inaccessibility. Please clarify."
+msgstr "Ohjelmanumero on jotenkin muuten esteellinen, miten?"
+
+msgid "Tick this box if your programme is designed for children under the age of 10."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 10-vuotiaille lapsille."
+
+msgid "Tick this box if your programme is designed for underage participants."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alaikäisille."
+
+msgid "Tick this box if your programme is designed for adult participants."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
+
+msgid "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your programme addresses themes or issues related to war."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta.<br>HUOM! Ukrainan tilanteesta johtuen, mainitse tässä jos ohjelmasi käsittelee sotaan liittyviä aiheita."
+
+msgid "In the open field, define if necessary what features of your programme may possibly limit participation."
+msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli ohjelmassasi/pelissäsi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
 
 # Pelitiski 2022
-#~ msgid "Game category"
-#~ msgstr "Pelityyppi"
 
-#~ msgid "Game genre (Choose all which apply)"
-#~ msgstr "Pelin genre (valitse soveltuvat)"
+msgid "Game category"
+msgstr "Pelityyppi"
 
-#~ msgid "Game length (minutes)"
-#~ msgstr "Pelin kesto (minuuttia)"
+msgid "Which category does your game programme belong to?"
+msgstr "Mihin kategoriaan peliohjelmasi mielestäsi kuuluu?"
 
-#~ msgid "Game program area"
-#~ msgstr "Peliohjelman alue"
+msgid "Game programme type"
+msgstr "Peliohjelman tyyppi"
 
-#~ msgid "Game programme title"
-#~ msgstr "Peliohjelman nimi"
+msgid "What type of game programme are you offering?<br><br>Tournament - organising your own game tournament or contest<br><br>Demonstration - showcasing, demonstrating and running demo games at the Experience Point<br><br>Open game - running games with or without specific scenarios by request<br><br>Other - Something other than mentioned above"
+msgstr "Minkä tyyppinen peliohjelma on kyseessä?<br><br>Turnaus - nimenomaan turnauksen ja kilpailun järjestämistä.<br><br>Demotus - pelin esittelyä ja demottamista sekä pelaamista.<br><br>Avoin peluutus - avointa peluutusta pyynnöstä<br><br>Muu - jokin muu kuin ylläoleva"
 
-#~ msgid "Game programme type"
-#~ msgstr "Peliohjelman tyyppi"
+msgid "Other"
+msgstr "Muu"
 
-#~ msgid "Game style (Choose any which apply)"
-#~ msgstr "Pelin tyyli (valitse soveltuvat)"
+msgid "Game programme title"
+msgstr "Peliohjelman nimi"
 
-#~ msgid "Game title"
-#~ msgstr "Pelin nimi"
+msgid "Give your game programme a catchy and concise title. We reserve the right to edit the title if necessary."
+msgstr "Keksi ytimekäs otsikko peliohjelmalle. Varaamme oikeuden muokata otsikkoa."
 
-#~ msgid "Give your game program a catchy and concise title. We reserve the right to change the title if necessary."
-#~ msgstr "Keksi ytimekäs otsikko peliohjelmalle. Varaamme oikeuden muokata otsikkoa."
+msgid "For 3 to 5 hours (180-300 minutes) of game programme you will receive a one-day ticket to Ropecon.<br/><br/>For 6 to 8 hours (360-480 minutes) of game programme you will receive a weekend ticket to Ropecon."
+msgstr "3-5 tunnin (180-300 minuutin) peliohjelmasta saat vaivanpalkaksi yhden päivärannekkeen.<br/><br/>6-8 tunnin (360-480 minuutin) peliohjelmasta saat vaivanpalkaksi yhden viikonloppurannekkeen."
 
-#~ msgid "Give your game programme a catchy and concise title. We reserve the right to edit the title if necessary."
-#~ msgstr "Keksi ytimekäs otsikko peliohjelmalle. Varaamme oikeuden muokata otsikkoa."
+msgid "Number of players"
+msgstr "Osallistujamäärä"
 
-#~ msgid "Here you can request how many times you would like to run your game during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour game of your own writing or two runs of a pre-written scenario you will receive one free weekend ticket. Additional runs of your game will yield an extra one-day ticket."
-#~ msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita.<br><br>Yhdellä itse kirjoitetun larpin 3-4 tunnin pelautuksella tai kahdella skenaarion pelautuksella saa yhden viikonloppurannekkeen. Lisäpelautuksella saa lisäksi päivärannekkeen."
+msgid "How many players can participate in the game programme?"
+msgstr "Kuinka monta pelaajaa mahtuu mukaan?"
 
-#~ msgid "How do players sign up for your program? Sign up at the Gaming Desk - The Gaming Desk will collect a list of the participants. I will collect sign-ups - You will collect sign-ups yourself in any way you prefer. No sign-up - The game does not require sign-ups."
-#~ msgstr "Miten ohjelmaan ilmoittaudutaan? Ilmoittautuminen pelitiskille - pelitiskin tekemä lista on nimilista peliin tulevista ihmisistä. Hoidan itse ilmoittautumisen - Hoidat itse ilmoittautumisen miten tahdot. Ei ilmoittautumista - Peli ei vaadi erityistä ilmoittautumista."
+msgid "Advertise your game for potential players. Inform players about what is expected of them, and what themes your game contains. If your game includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br/><br/>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary."
+msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos pelissäsi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa.<br/><br/>Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
-#~ msgid "How many chairs are needed for your game programme."
-#~ msgstr "Kerro tässä montako tuolia peliohjelmassasi tarvitaan."
+msgid "If your game programme contains any heavy topics or themes that some players may find distressing, please mention them here."
+msgstr "Mikäli ohjelmasi sisältää jotain ronskeja ja osalle sopimattomia aiheita niin ilmoita ne tässä."
 
-#~ msgid "How many players can participate in the game programme?"
-#~ msgstr "Kuinka monta pelaajaa mahtuu mukaan?"
+msgid "What game system is used? For example, “Magic the Gathering”. If you designed the game system yourself, describe it in a few words. For example, “4X, space battle, conquest”"
+msgstr "Mikä on pelisysteemi? Esim. “Magic the Gathering” Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. “4X, avaruustaistelu, valloitus”"
 
-#~ msgid "How many players can participate in the game?"
-#~ msgstr "Kuinka monta pelaajaa mahtuu mukaan?"
+msgid "What language is used in the game materials?"
+msgstr "Millä kielellä pelimateriaalit on tarjottu?"
 
-#~ msgid "How much table space and how many chairs do you need for your game programme? Do you have any technical needs (for example, electricity)? Please keep in mind that we may not be able to fulfill all requests, so please justify how yours would benefit your game programme. Table size is 70 cm x 200 cm."
-#~ msgstr "Kerro tässä paljonko tarvitset pöytätilaa, tuoleja ja tarvitsetko erityistä tekniikkaa (esim. sähköä). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee ohjelmaa. Pöytien koko on 70cm x 200cm."
+msgid "Does your programme require materials from the players?"
+msgstr "Vaatiiko ohjelmasi pelaajien omia materiaaleja?"
 
-#~ msgid "How much table space is needed for your game programme: how many tables in total?<br/>Table size is 70 cm x 200 cm."
-#~ msgstr "Kerro tässä paljonko ohjelmasi tarvitsee pöytätilaa: montako pöytää peliohjelmassasi tarvitaan?<br/>Yhden pöydän koko on 70 cm x 200 cm."
+msgid "Specify here whether your players are expected to bring their own game tools or other equipment and what that equipment is (e.g. card decks, figure armies)."
+msgstr "Kerro tässä, jos pelaajien odotetaan tuovan omat pelivälineensä tai muita tarvikkeita, ja mitä ne välineet ovat (esim. korttipakkoja, figuarmeijoita)."
 
-#~ msgid "How will players sign up for your game programme?<br/><br/>No sign-up - No sign-up is required to participate.<br/><br/>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br/><br/>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option."
-#~ msgstr "Miten ohjelmaan ilmoittaudutaan?<br><br>Ei ilmoittautumista - Peli ei vaadi erityistä ilmoittautumista.<br><br>Ilmoittautuminen ennakkoon - figuturnausten ilmoittautumisen tulee aueta viimeistään 31.5.<br><br>Ilmoittautuminen pelitiskille - pelitiskin tekemä lista on nimilista peliin tulevista ihmisistä. Jos ohjelmasi vaatii ilmoittautumisen, eikä kyseessä ole figuturnaus, valitse tämä."
+msgid "Sign-up process"
+msgstr "Ilmoittautuminen"
 
-#~ msgid "How will players sign up for your game programme?<br/>No sign-up - no sign-up is required to participate in the game programme.<br/>Sign-up via the Konsti app - the sign-up process for the game programme is done via the Konsti app during the event.<br/>Other sign-up process - if your game programme requires attendees to sign up beforehand and you prefer to handle it through some other means (e.g. at the Gaming Desk), please choose this option and describe the sign-up process in the Comments section below."
-#~ msgstr "Miten peliohjelmaasi ilmoittaudutaan?<br/>Ei ilmoittautumista - Peliohjelma ei vaadi erityistä ilmoittautumista.<br/>Ilmoittautuminen Konstissa - Peliohjelmaan ilmoittaudutaan Konstin kautta tapahtuman aikana.<br/>Muu ilmoittautuminen - Peliohjelmaan ilmoittaudutaan tapahtuman aikana muulla tavalla, esim. pelitiskille. Kerro tällöin tarkemmin peliohjelmasi ilmoittautumistavasta vapaamuotoisissa terveisissä."
+msgid "How will players sign up for your game programme?<br/><br/>No sign-up - No sign-up is required to participate.<br/><br/>Sign-up in advance - Please note that the sign-up for miniature wargame tournaments must open before 31st of May.<br/><br/>Sign-up at the Gaming Desk - Staff at the Gaming Desk will collect a list of participants. If signing up is required for your programme and it is not a miniature wargame tournament, choose this option."
+msgstr "Miten ohjelmaan ilmoittaudutaan?<br><br>Ei ilmoittautumista - Peli ei vaadi erityistä ilmoittautumista.<br><br>Ilmoittautuminen ennakkoon - figuturnausten ilmoittautumisen tulee aueta viimeistään 31.5.<br><br>Ilmoittautuminen pelitiskille - pelitiskin tekemä lista on nimilista peliin tulevista ihmisistä. Jos ohjelmasi vaatii ilmoittautumisen, eikä kyseessä ole figuturnaus, valitse tämä."
 
-#~ msgid "I am submitting a larp for"
-#~ msgstr "Tarjoan larppia"
+msgid "Sign-up in advance"
+msgstr "Ilmoittautuminen ennakkoon"
 
-#~ msgid "I can't use a microphone"
-#~ msgstr "En voi käyttää mikrofonia"
+msgid "Sign-up at the Gaming Desk"
+msgstr "Ilmoittautuminen pelitiskille"
 
-#~ msgid "If Ropecon is held virtually, I can run my game virtually"
-#~ msgstr "Jos Ropecon siirtyy verkkoon, voin pelauttaa pelini etänä"
+msgid "How much table space and how many chairs do you need for your game programme? Do you have any technical needs (for example, electricity)? Please keep in mind that we may not be able to fulfill all requests, so please justify how yours would benefit your game programme. Table size is 70 cm x 200 cm."
+msgstr "Kerro tässä paljonko tarvitset pöytätilaa, tuoleja ja tarvitsetko erityistä tekniikkaa (esim. sähköä). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee ohjelmaa. Pöytien koko on 70cm x 200cm."
 
-#~ msgid "If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application). If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide!"
-#~ msgstr "Mikäli työpajaan on kävijälle vaatimuksena esimerkiksi materiaalimaksu, kirjoita mahdollisimman tarkka määrä tähän (jos tiedossa jo hakuhetkellä). Jos ei tiedossa (tai minkäänlaista maksua ei ole), kirjoita 0€. Muista päivittää tarkka määrä Kompassiin ennen ohjelmankartan julkaisua!"
+msgid "When are you NOT able to host your game programme?"
+msgstr "Milloin ET pysty pitämään ohjelmaasi?"
 
-#~ msgid "If the number of participants in your workshop or other programme is limited, please provide the maximum number of participants."
-#~ msgstr "Mikäli työpajan tai muun ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
+msgid "Select the times when you are <b>NOT able</b> to run your game programme.<br/><br/>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below (e.g. “I would like to run my game late in the evening”).<br/><br/>In this section, we wish that you would include information about restrictions set by e.g. work schedules or bus schedules (if you need to e.g. leave Messukeskus by 23 o’clock in order to get to your lodgings)."
+msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."
 
-#~ msgid "If there is anything else you wish to say to the RPG coordinator that is not covered by the above questions, please enter it here."
-#~ msgstr "Jos haluat kertoa roolipelivastaavalle jotakin joka ei sisälly ylläoleviin kenttiin, kirjoita se tähän."
+msgid "Is there anything else you would like to tell the organisers of Ropecon? You can also specify your preferred schedule here."
+msgstr "Haluatko sanoa coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä? Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
 
-#~ msgid "If you are able, prepared and willing to host your game programme in English if necessary, please tick this box. If your game is selected for the event, the programming team will contact you regarding the choice of language."
-#~ msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi. Mikäli pelisi valitaan tapahtumaan, ohjelmatiimi on yhteydessä sinuun kielen valinnan suhteen."
+msgid "Who is your game programme for?"
+msgstr "Kenelle peli on tarkoitettu?"
 
-#~ msgid "If you are able, prepared and willing to organise your program in English if necessary, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
+msgid "If you are able, prepared and willing to host your game programme in English if necessary, please tick this box. If your game is selected for the event, the programming team will contact you regarding the choice of language."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi. Mikäli pelisi valitaan tapahtumaan, ohjelmatiimi on yhteydessä sinuun kielen valinnan suhteen."
 
-#~ msgid "If you are able, prepared and willing to organise your programme in English if necessary, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään ohjelmasi tarvittaessa englanniksi."
+msgid "If your game programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
 
-#~ msgid "If you are able, prepared and willing to organise your programme in English if necessary, please tick this box. If your programme is selected for the event, the programme team will be in contact with you in regards to your language choice."
-#~ msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään ohjelmasi tarvittaessa englanniksi. Mikäli ohjelmasi valitaan tapahtumaan, ohjelmatiimi on yhteydessä sinuun kielen valinnan suhteen."
+msgid "If your game programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
-#~ msgid "If you are able, prepared and willing to run your game in English if necessary, please tick this box. If your game is selected for the event, we will contact you regarding the choice of language."
-#~ msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi. Mikäli pelisi valitaan tapahtumaan, roolipelivastaava on yhteydessä sinuun kielen valinnan suhteen."
+msgid "If your game programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
-#~ msgid "If you are able, prepared and willing to run your larp in English if necessary, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään larppisi tarvittaessa englanniksi."
+msgid "If your game programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
 
-#~ msgid "If you are able, prepared and willing to run your larp in English if necessary, please tick this box. If your larp is selected for the event, the programming team will contact you regarding the choice of language."
-#~ msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään larppisi tarvittaessa englanniksi. Mikäli larppisi valitaan tapahtumaan, ohjelmatiimi on yhteydessä sinuun kielen valinnan suhteen."
+msgid "If your game programme is aimed at children and their guardians, tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu lapsille ja heidän huoltajilleen."
 
-#~ msgid "If you need assistance from Ropecon in acquiring or loaning the materials, inform about your needs here. It can be for example pens and paper, flip chart, miniature parts, miniature paint, iron wire etc."
-#~ msgstr "Mikäli tarvitset Ropeconilta apua materiaalien hankkimiseen tai lainaamiseen, kerro tarpeesta tässä. Se voi olla esimerkiksi kyniä ja paperia, fläppitaulu, figujen osia, figumaaleja, rautalankaa, jne."
+msgid "If your game programme is related to this year’s theme, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden teemaan."
 
-#~ msgid "If your game can be run in English, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos peli pelataan englanniksi."
+msgid "If your game programme is suitable for players with very limited or without any previous knowledge about the game in question, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemusta aiheesta olisi hyvin vähän tai ei lainkaan."
 
-#~ msgid "If your game contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
-#~ msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+msgid "If your game programme is related to the theme of Ropecon 2023 (end of the world), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
 
-#~ msgid "If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "If your game programme is related to the children’s theme of Ropecon 2023 (dinosaurs), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden lasten teemaan."
 
-#~ msgid "If your game is aimed at children and their guardians, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu lapsille ja heidän huoltajilleen."
+msgid "Tick this box if your game programme is designed for children under the age of 10."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 10-vuotiaille lapsille."
 
-#~ msgid "If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "Tick this box if your game programme is designed for underage participants."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alaikäisille."
 
-#~ msgid "If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "Tick this box if your game programme is designed for adult participants."
+msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
 
-#~ msgid "If your game is not suitable for children under 15 years of age, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi ei sovellu alle 15-vuotiaille lapsille."
+# Larpit 2022
 
-#~ msgid "If your game is related to the children’s theme of Ropecon 2023 (dinosaurs), please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden lasten teemaan."
+msgid "Title of your larp"
+msgstr "Pelin nimi"
 
-#~ msgid "If your game is related to the theme of Ropecon 2023 (end of the world), please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
+msgid "Give your larp a catchy and concise title. We reserve the right to edit the title if necessary."
+msgstr "Keksi ytimekäs otsikko larpillesi. Varaamme oikeuden muokata otsikkoa."
 
-#~ msgid "If your game is related to the theme of Ropecon 2023, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
+msgid "For one run of a 3-4 hour original larp (180-240 minutes) you will receive a one-day ticket to Ropecon. This includes time for propping, brief and debrief, as well as the actual game."
+msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman larppisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
 
-#~ msgid "If your game is suitable for players with very limited or without any previous experience about RPGs, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemusta roolipeleistä olisi hyvin vähän tai ei lainkaan."
+msgid "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour original larp or two runs of a pre-written scenario you will receive one weekend ticket as a GM. Additional runs of your larp will yield an extra one-day ticket."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita.<br><br>Yhdellä itse kirjoitetun larpin 3-4 tunnin pelautuksella tai kahdella skenaarion pelautuksella saa yhden viikonloppurannekkeen. Lisäpelautuksella saa lisäksi päivärannekkeen."
 
-#~ msgid "If your game is suitable for players with very limited or without any previous experience about role-playing games, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemusta roolipeleistä olisi hyvin vähän tai ei lainkaan."
+msgid "Number of characters"
+msgstr "Hahmojen lukumäärä"
 
-#~ msgid "If your game is suitable for players without any or with very limited larping experience, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa larppikokemusta olisi hyvin vähän tai ei lainkaan."
+msgid "If the design of your larp requires gendered characters, please mention it in the Comments section of this form."
+msgstr "Jos larpin design vaatii sukupuolitettuja hahmoja, kerro siitä vapaamuotoisissa terveisissä."
 
-#~ msgid "If your game is suitable for players without any or with very limited previous knowledge about the subject, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa kokemusta olisi hyvin vähän tai ei lainkaan."
+msgid "How many players must sign up for the larp to be able to run it?"
+msgstr "Kuinka monta pelaajaa larppiin täytyy vähintään ilmoittautua, jotta larppi toteutuu?"
 
-#~ msgid "If your game is suitable for the whole family and people of all ages, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, mikäli pelisi soveltuu koko perheelle ja kaiken ikäisille."
+msgid "Advertise your larp for potential players. Inform players about what is expected of them, and what themes your larp contains. If your larp includes any heavy themes, such as physical violence or psychological abuse, please mention it here.<br/><br/>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary."
+msgstr "Mainosta larppiasi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja larpissa käsitellään. Mainitsethan, jos larpissa käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
 
-#~ msgid "If your game programme contains any heavy topics or themes that some players may find distressing, please mention them here."
-#~ msgstr "Mikäli ohjelmasi sisältää jotain ronskeja ja osalle sopimattomia aiheita niin ilmoita ne tässä."
+msgid "If your larp contains any heavy topics or themes that some players may find distressing, please mention them here."
+msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita."
 
-#~ msgid "If your game programme contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
-#~ msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+msgid "Game designer (if other than GM)"
+msgstr "Pelin kirjoittaja (jos muu kuin pelinjohtaja)"
 
-#~ msgid "If your game programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "If the larp was designed by someone other than the GM running it at Ropecon, please enter the name of the designer here."
+msgstr "Jos larpin on kirjoittanut joku muu kuin sen tässä tapahtumassa vetävä pelinjohtaja, ilmoita kirjoittaja tässä."
 
-#~ msgid "If your game programme is aimed at children and their guardians, tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu lapsille ja heidän huoltajilleen."
+msgid "Who makes the sign-up list - you or the Larp Desk?"
+msgstr "Teetkö itse ilmoittautumislistan vai tekeekö larp-tiski sen?"
 
-#~ msgid "If your game programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "The Larp Desk will make the sign-up list"
+msgstr "Larp-tiski tekee"
 
-#~ msgid "If your game programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "I will make my own sign-up list"
+msgstr "Teen itse"
 
-#~ msgid "If your game programme is related to the children’s theme of Ropecon 2023 (dinosaurs), please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden lasten teemaan."
+msgid 'If you make the sign-up list for your larp yourself, you can ask more specific questions about player preferences. A sign-up list made by the Larp Desk is simply a list of names. In this case, select "Larp Desk makes the list".'
+msgstr 'Itse tehdyssä ilmoittautumislistassa voit kysyä tarkemmin pelaajien mieltymyksiä. Larp-tiskin tekemä lista on nimilista larppiin tulevista ihmisistä. Valitse tällöin vaihtoehto "Larp-tiski tekee".'
 
-#~ msgid "If your game programme is related to the theme of Ropecon 2023 (end of the world), please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
+msgid "Select the times when you are NOT able to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
+msgstr "Merkitse tähän ne ajat, jolloin sinun EI OLE mahdollista pelauttaa peliäsi. HUOM! valitse siis ne ajat, jolloin ET pysty pelauttamaan peliäsi!<br><br>Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. haluaisin peluuttaa pelini myöhään illalla), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)"
 
-#~ msgid "If your game programme is related to this year’s theme, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden teemaan."
+msgid "Is there anything else you would like to tell the larp coordinators?<br><br>Please mention here if the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br><br>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br><br>You can also specify your preferred schedule here."
+msgstr "Haluatko sanoa larp-coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä?<br><br>Mainitse tässä, jos pelisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br><br>Pyrimme, että kokonaisuudessaan conissa olevissa peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br><br>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
 
-#~ msgid "If your game programme is suitable for players with very limited or without any previous knowledge about the game in question, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemusta aiheesta olisi hyvin vähän tai ei lainkaan."
+msgid "Who is your larp for?"
+msgstr "Kenelle larppi on tarkoitettu?"
 
-#~ msgid "If your larp contains any heavy topics or themes that some players may find distressing, please mention them here."
-#~ msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita."
+msgid "If you are able, prepared and willing to run your larp in English if necessary, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään larppisi tarvittaessa englanniksi."
 
-#~ msgid "If your larp contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
-#~ msgstr "Ruksaa tämä ruutu, mikäli larppisi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+msgid "If your larp contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
+msgstr "Ruksaa tämä ruutu, mikäli larppisi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
 
-#~ msgid "If your larp is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your larp is suitable for children aged 7-12 years, even if it is not specifically designed for them."
-#~ msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos larppisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "If your larp is aimed at children under 7 years of age, please tick this box. You can also tick this box if your larp is suitable for children under 7 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos larppisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
-#~ msgid "If your larp is aimed at children and their guardians, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu lapsille ja heidän huoltajilleen."
+msgid "If your larp is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your larp is suitable for children aged 7-12 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos larppisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
-#~ msgid "If your larp is aimed at children over the age of 12, please tick this box. You can also tick this box if your larp is suitable for children aged 12 years and older, even if it is not specifically designed for them."
-#~ msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos larppisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "If your larp is aimed at children over the age of 12, please tick this box. You can also tick this box if your larp is suitable for children aged 12 years and older, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos larppisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
 
-#~ msgid "If your larp is aimed at children under 7 years of age, please tick this box. You can also tick this box if your larp is suitable for children under 7 years, even if it is not specifically designed for them."
-#~ msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos larppisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "If your larp is not suitable for children under 15 years of age, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos larppisi ei sovellu alle 15-vuotiaille lapsille."
 
-#~ msgid "If your larp is not suitable for children under 15 years of age, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos larppisi ei sovellu alle 15-vuotiaille lapsille."
+msgid "If your larp is aimed at children and their guardians, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu lapsille ja heidän huoltajilleen."
 
-#~ msgid "If your larp is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden lasten teemaan."
+msgid "If your larp is suitable for players with very limited or without any previous experience about larping, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos larppiisi voi osallistua, vaikka aiempaa kokemusta larppauksesta olisi hyvin vähän tai ei lainkaan."
 
-#~ msgid "If your larp is related to the theme of Ropecon 2020 (end of the world), please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
+msgid "If your larp is related to the theme of Ropecon 2023, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos larppisi liittyy tämän vuoden teemaan."
 
-#~ msgid "If your larp is related to the theme of Ropecon 2023, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos larppisi liittyy tämän vuoden teemaan."
+msgid "If your larp is related to the theme of Ropecon 2020 (end of the world), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
 
-#~ msgid "If your larp is suitable for players with very limited or without any previous experience about larping, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos larppiisi voi osallistua, vaikka aiempaa kokemusta larppauksesta olisi hyvin vähän tai ei lainkaan."
+msgid "If your larp is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden lasten teemaan."
 
-#~ msgid "If your program is suitable for or aimed at children, teenagers or families, please tick the checkbox. More details can be provided in the last text field."
-#~ msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sopii myös nuoremmille osallistujille. Anna tarvittaessa lisätietoja ikäsuosituksista viimeisessä avoimessa kentässä."
+msgid "Practicalities"
+msgstr "Käytäntö"
 
-#~ msgid "If your programme contains any loud noises, flashing lights or other elements that can limit accessibility, please tick this box. More details can be provided in the Comments section below if necessary."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelma sisältää kovia ääniä, valoja tai muuta, mikä voi rajoittaa osallistumista. Tarkenna tarvittaessa viimeisessä avoimessa kentässä."
+msgid "I am submitting a larp for"
+msgstr "Tarjoan larppia"
 
-#~ msgid "If your programme contains themes that require attendees to be 18 years or older, please tick this box. There will be an ID check for all attendees."
-#~ msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+msgid "Select the event form appropriate for the larp you have planned."
+msgstr "Valitse suunnittelemallesi larpille sopiva tapahtumamuoto."
 
-#~ msgid "If your programme contains themes that require participants to be 18 years or older, please tick this box. There will be an ID check for all participants."
-#~ msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
+msgid "Physical con"
+msgstr "Lähiconiin"
 
-#~ msgid "If your programme contains topics or themes that are heavy or distressing, please mention them here."
-#~ msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
+msgid "Virtual con"
+msgstr "Etäconiin"
 
-#~ msgid "If your programme is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your programme is suitable for children aged 7-12 years, even if it is not specifically aimed at them."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "Both"
+msgstr "Molempiin"
 
-#~ msgid "If your programme is aimed at children and their guardians, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu lapsille ja heidän huoltajilleen."
+msgid "Describe what kind of space you hope to organise your larp in (completely dark, separate rooms, water supply, etc.) and whether you have any technical needs (lights, sound, etc). Please keep in mind that we may not be able to fulfill all requests, so please justify how yours would benefit your larp."
+msgstr "Kerro tässä millaisessa tilassa (täysin pimennettävä, erilliset huoneet, vesipiste jne.) toivot larppisi järjestettävän ja tarvitsetko erityistä tekniikkaa (esim. valot, ääni). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan, miten toiveesi tukee larpin kulkua."
 
-#~ msgid "If your programme is aimed at children over the age of 12, please tick this box. You can also tick this box if your programme is suitable for children aged 12 years and older, even if it is not specifically aimed at them."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "Equipment needed in your larp"
+msgstr "Larpin tarvitsemat tarvikkeet"
 
-#~ msgid "If your programme is aimed at children under 7 years of age, please tick this box. You can also tick this box if your programme is suitable for children under 7 years, even if it is not specifically aimed at them."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos ohjelmasi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
+msgid "Tell us what kind of equipment or props are required in your larp and which of them you can provide yourself. Please keep in mind that due to limited resources we are not able to fulfill the most outlandish of requests. Water and cups will be provided for all larps."
+msgstr "Kerro tässä, mitä tarvikkeita / proppeja larppisi tarvitsee ja mitä niistä voit tuoda itse. Rajallisten resurssien vuoksi emme pysty toteuttamaan kaikkein villeimpiä toiveita. Kaikille peleille tuodaan vettä ja vesilaseja."
 
-#~ msgid "If your programme is designed for adult attendees, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
+msgid "When are you NOT able to run your larp?"
+msgstr "Milloin ET PYSTY pelauttamaan larppiasi?"
 
-#~ msgid "If your programme is designed for attendees between 13-17 years of age, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu 13-17-vuotiaille"
+msgid "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be <b>able</b> to run your larp unselected!<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation.<br/><br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below."
+msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa larppiasi. Tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (esim. täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi.)<br/><br/>Alla vapaamuotoisissa terveisissä voit esittää toiveita sinulle parhaiten sopivista ajankohdista (esim. “en haluaisi pelauttaa aikaisin aamulla”)."
 
-#~ msgid "If your programme is designed for attendees under the age of 13 years, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 13-vuotiaille"
+msgid "The larp involves watching a video without subtitles for the hearing impaired"
+msgstr "Larpissa katsotaan video, jossa ei ole tekstitystä kuulorajoitteisille"
 
-#~ msgid "If your programme is not suitable for children under 15 years of age, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi ei sovellu alle 15-vuotiaille lapsille."
+msgid "Material used in the larp can cause problems for the colourblind"
+msgstr "Larpissa käytettävät materiaalit voivat tuottaa haasteita värisokeille"
 
-#~ msgid "If your programme is related to the children’s theme of Ropecon 2023 (dinosaurs), please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi liittyy tämän vuoden lasten teemaan."
+msgid "Do you want to say something to the larp-conittee something that does not fit any of the fields above or clarify some answer?<br/><br/>If the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br/><br/>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br/><br/>You can also specify your preferred schedule here."
+msgstr "Haluatko sanoa larp-coniitille jotain, mikä ei sovi mihinkään yllä olevista kentistä tai tarkentaa jotain vastausta?<br/><br/>Mainitse tässä, esimerkiksi jos larppisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br/><br/>Pyrimme, että conin peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br/><br/>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
 
-#~ msgid "If your programme is suitable for all ages, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi sopii kaiken ikäisille."
+msgid "Do you want to say something to the larp-conittee that does not fit any of the fields above or clarify some answer?<br/><br/>If the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br/><br/>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br/><br/>You can also specify your preferred schedule here."
+msgstr "Haluatko sanoa larp-coniitille jotain, mikä ei sovi mihinkään yllä olevista kentistä tai tarkentaa jotain vastausta?<br/><br/>Mainitse tässä, esimerkiksi jos larppisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br/><br/>Pyrimme, että conin peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br/><br/>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
 
-#~ msgid "If your programme is suitable for attendees with very limited knowledge or without any previous experience about the programme or subject matter in question, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmaan voi osallistua, vaikka aiempaa kokemusta ohjelmasta tai aiheesta olisi hyvin vähän tai ei lainkaan."
+msgid "If you are able, prepared and willing to run your larp in English if necessary, please tick this box. If your larp is selected for the event, the programming team will contact you regarding the choice of language."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään larppisi tarvittaessa englanniksi. Mikäli larppisi valitaan tapahtumaan, ohjelmatiimi on yhteydessä sinuun kielen valinnan suhteen."
 
-#~ msgid "If your programme is suitable for people with very limited or without any previous knowledge about the subject, please tick this box."
-#~ msgstr "Ruksaa tämä ruutu, mikäli ohjelmaan voi osallistua vaikka aiempaa kokemusta aiheesta olisi hyvin vähän tai ei lainkaan."
+msgid "Tick this box if your larp is designed for children under the age of 10."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu alle 10-vuotiaille lapsille."
 
-#~ msgid "If your workshop or other program can only host a limited number of participants, please provide a maximum number of attendees."
-#~ msgstr "Mikäli työpajan tai muun ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
+msgid "Tick this box if your larp is designed for underage participants."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu alaikäisille."
 
-#~ msgid "In English"
-#~ msgstr "Englanninkielinen"
+msgid "Tick this box if your larp is designed for adult participants."
+msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu täysi-ikäisille."
 
-#~ msgid "In the open field, define if necessary what features of your game may possibly limit participation."
-#~ msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli pelissäsi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
+msgid "Tell us here if your larp contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your larp addresses themes or issues related to war."
+msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta.<br>HUOM! Ukrainan tilanteesta johtuen, mainitse tässä jos larppisi käsittelee sotaan liittyviä aiheita."
 
-#~ msgid "In the open field, define if necessary what features of your larp may possibly limit participation."
-#~ msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli larpissasi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
+msgid "In the open field, define if necessary what features of your larp may possibly limit participation."
+msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli larpissasi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
 
-#~ msgid "In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."
-#~ msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli ohjelmassasi on joitakin muita seikkoja, jotka voivat rajoittaa tai mahdollistaa osallistumista (esimerkiksi jos ohjelma on viitottu)."
+# Roolipelit 2022
 
-#~ msgid "In the open field, define if necessary what features of your programme may possibly limit participation."
-#~ msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli ohjelmassasi/pelissäsi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
+msgid "Title of your game"
+msgstr "Pelin nimi"
 
-#~ msgid "Inform us here, if you need a specific kind of space (and/or furniture) for your workshop. For example if tables and chairs need to be moved for empty space in your workshop, because it is not possible to do so in every room."
-#~ msgstr "Kerro tässä, jos tarvitset tietynlaista tilaa (ja/tai kalusteita) työpajallesi. Esimerkiksi tarvitseeko työpajassasi siirtää pöytiä ja tuoleja tyhjän tilan saamiseksi, koska jokaisessa huoneessa näin ei voi tehdä."
+msgid "RPG system"
+msgstr "Roolipelijärjestelmä"
 
-#~ msgid "Inform us how many tables and chairs are needed in your workshop."
-#~ msgstr "Kerro montako pöytää ja tuolia työpajassasi tarvitaan."
+msgid "What role-playing game system is used?"
+msgstr "Mitä järjestelmää peli käyttää?"
 
-#~ msgid "Is there anything else you would like to tell the larp coordinators?<br><br>Please mention here if the design of your larp requires a large number of your characters to be gendered (for example, a larp about a sauna night with the guys, or about female pilots in WWII).<br><br>When deciding which larps to include at Ropecon, we want as many larps as possible to be accessible for as many attendees as possible, regardless of their gender or the gender they prefer to larp as. Requiring a large number of your characters to be gendered may affect whether or not your submission for a larp is accepted.<br><br>You can also specify your preferred schedule here."
-#~ msgstr "Haluatko sanoa larp-coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä?<br><br>Mainitse tässä, jos pelisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br><br>Pyrimme, että kokonaisuudessaan conissa olevissa peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br><br>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+msgid "Estimated duration of your game (minutes)"
+msgstr "Pelin kesto (minuuttia)"
 
-#~ msgid "Is there anything else you would like to tell the organisers of Ropecon? You can also specify your preferred schedule here."
-#~ msgstr "Haluatko sanoa coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä? Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+msgid "Consider the minimum number of players required to run your game carefully: by setting it as low as possible, you increase the chances of your game being able to be run."
+msgstr "Harkitse pelaajien vähimmäismäärä tarkkaan: Maksimoit pelin toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
 
-#~ msgid "Is there anything else you would like to tell the organizers? You can also specify your desired schedule here."
-#~ msgstr "Haluatko sanoa coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä? Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+msgid "Revolving door RPG"
+msgstr "Pyöröovipeli (revolving door) jee jee"
 
-#~ msgid "Is there anything else you would like to tell the organizers?<br><br>Please mention here if the design of your game dictates that some of the characters need to be a specific gender (eg. larps about a men’s sauna night or World War II female fighter pilots).<br><br>We would like the larp program as a whole to offer something for all attendees, even if not all players wish to play all genders. Due to this, some larps may be cut from the program.<br><br>You can also enter your more specific scheduling preferences here."
-#~ msgstr "Haluatko sanoa larp-coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä?<br><br>Mainitse tässä, jos pelisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br><br>Pyrimme, että kokonaisuudessaan conissa olevissa peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br><br>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+msgid "If new players can join your game while it is already running and old players can leave freely before the game has ended, please tick this box. Mention this in the description of your game as well, and provide additional information in the Comments section below if needed. If you are not sure whether your game is a revolving door RPG or not, contact us and we will figure it out together!"
+msgstr "Rastita tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa jo käynnissä ja vanhat pelaajat voivat poistua pelistä ennen pelin loppua. Anna tarvittaessa lisätietoja lomakkeen lopussa. Jos et ole varma pelisi luonteesta, ole yhteydessä meihin niin katsotaan!"
 
-#~ msgid "I’m interested in participating in a panel discussion related to my field(s) of expertise."
-#~ msgstr "Voin osallistua erikoisalaani/-alojani sivuavaan paneelikeskusteluun."
+msgid "Who is your game for?"
+msgstr "Kenelle peli on tarkoitettu?"
 
-#~ msgid "Language-free"
-#~ msgstr "Kielivapaa"
+msgid "If your game can be run in English, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos peli pelataan englanniksi."
 
-#~ msgid "Loud sounds"
-#~ msgstr "Kovat äänet"
+msgid "For players over 18 only"
+msgstr "Vain täysi-ikäisille"
 
-#~ msgid "Material needs"
-#~ msgstr "Materiaalin tarve"
+msgid "If your game contains themes that require players to be 18 years or older, please tick this box. There will be an ID check for all players."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia osallistujien on oltava täysi-ikäisiä. Tällöin osallistujien ikä tarkastetaan."
 
-#~ msgid "Material used in the game can cause problems for the colourblind"
-#~ msgstr "Pelissä käytettävät materiaalit voivat tuottaa haasteita värisokeille"
+msgid "Suitable for children under 7"
+msgstr "Sopii alle 7-vuotiaille"
 
-#~ msgid "Material used in the larp can cause problems for the colourblind"
-#~ msgstr "Larpissa käytettävät materiaalit voivat tuottaa haasteita värisokeille"
+msgid "If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 7-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu alle 7-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
-#~ msgid "Material used in the programme can cause problems for the colourblind"
-#~ msgstr "Ohjelmanumerossa käytettävät materiaalit voivat tuottaa haasteita värisokeille"
+msgid "Suitable for children aged 7-12"
+msgstr "Sopii 7-12-vuotiaille"
 
-#~ msgid "Materials or substances that irritate the skin"
-#~ msgstr "Ihoa ärsyttävät aineet tai materiaalit"
+msgid "If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu 7-12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu 7-12-vuotiaille, vaikka ei olisikaan suunniteltu juuri heille."
 
-#~ msgid "Max. number of participants"
-#~ msgstr "Osallistujamäärä"
+msgid "Suitable for children aged 12+"
+msgstr "Sopii yli 12-vuotiaille"
 
-#~ msgid "Not suitable for children under 15"
-#~ msgstr "Ei sovellu alle 15-vuotiaille"
+msgid "If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu yli 12-vuotiaille lapsille. Voit ruksata tämän myös, jos pelisi soveltuu yli 12-vuotiaille lapsille, vaikka ei olisikaan suunniteltu juuri heille."
 
-#~ msgid "Number of chairs"
-#~ msgstr "Tuolien määrä"
+msgid "Not suitable for children under 15"
+msgstr "Ei sovellu alle 15-vuotiaille"
 
-#~ msgid "Number of players"
-#~ msgstr "Osallistujamäärä"
+msgid "If your game is not suitable for children under 15 years of age, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi ei sovellu alle 15-vuotiaille lapsille."
 
-#~ msgid "Number of tables"
-#~ msgstr "Pöytien määrä"
+msgid "Programme for children"
+msgstr "Lastenohjelma"
 
-#~ msgid "Number of tables and chairs"
-#~ msgstr "Pöytien ja tuolien määrä"
+msgid "If your game is aimed at children and their guardians, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu lapsille ja heidän huoltajilleen."
 
-#~ msgid "Other"
-#~ msgstr "Muu"
+msgid "Theme: Friendship"
+msgstr "Teema: Ystävyys"
 
-#~ msgid "Other accessibility information"
-#~ msgstr "Muu saavutettavuus"
+msgid "If your game is related to the theme of Ropecon 2023, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
 
-#~ msgid "Other inaccessibility"
-#~ msgstr "Muu esteellisyys"
+msgid "Any clarifications?"
+msgstr "Tarkennuksia?"
 
-#~ msgid "Other information for the RPG coordinator"
-#~ msgstr "Muuta tietoa roolipelivastaavalle"
+msgid "Specify here if you have any clarifications or if you have anything to expand upon regarding the above questions."
+msgstr "Kirjoita tähän, mikäli haluat täsmentää tai tarkentaa ylläolevia soveltuvuuskysymyksiä."
 
-#~ msgid "Other questions"
-#~ msgstr "Muut kysymykset"
+msgid "If your game is suitable for players with very limited or without any previous experience about RPGs, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemusta roolipeleistä olisi hyvin vähän tai ei lainkaan."
 
-#~ msgid "Other sign-up process"
-#~ msgstr "Muu ilmoittautuminen"
+msgid "Theme: End of the world"
+msgstr "Teema: Maailmanloppu"
 
-#~ msgid "Other space and furniture needs"
-#~ msgstr "Muut tila- ja kalustetarpeet"
+msgid "If your game is related to the theme of Ropecon 2023 (end of the world), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden teemaan."
 
-#~ msgid "Participation involves a lot of moving around without a chance for sitting down"
-#~ msgstr "Osallistuminen vaatii paljon liikkumista ilman mahdollisuutta istumiseen"
+msgid "Theme: Dinosaurs"
+msgstr "Teema: Dinosaurukset"
 
-#~ msgid "Participation involves a lot of remaining in one place without a chance to take breaks and move around"
-#~ msgstr "Ohjelmanumero/peli vaatii pitkää paikallaan oloa ilman mahdollisuutta taukoihin ja liikkumiseen"
+msgid "If your game is related to the children’s theme of Ropecon 2023 (dinosaurs), please tick this box."
+msgstr "Ruksaa tämä ruutu, jos pelisi liittyy tämän vuoden lasten teemaan."
 
-#~ msgid "Participation involves reading long texts independently"
-#~ msgstr "Osallistuminen vaatii pitkien tekstien itsenäistä lukemista"
+msgid "Playstyle and mechanics (Choose any which apply)"
+msgstr "Pelin tyyli (valitse soveltuvat)"
 
-#~ msgid "Participation involves reading long texts independently, and the texts are not available as recordings for those with visual impairment"
-#~ msgstr "Osallistuminen vaatii pitkien tekstien itsenäistä lukemista, eikä tekstejä ole mahdollista saada äänitteinä näkörajoitteisille"
+msgid "Serious playstyle"
+msgstr "Vakava pelityyli"
 
-#~ msgid "Participation requires listening to a recording that does not have a text version for the hearing impaired"
-#~ msgstr "Osallistuminen edellyttää sellaisen äänitteen kuuntelemista, josta ei ole tekstiversiota kuulorajoitteisille"
+msgid "Lighthearted playstyle"
+msgstr "Kevyt pelityyli"
 
-#~ msgid "Participation requires some dexterity, e.g. that of hands and fingers."
-#~ msgstr "Ohjelmaan osallistuminen vaatii sorminäppäryyttä"
+msgid "Rules-heavy"
+msgstr "Raskaat säännöt"
 
-#~ msgid "Participation requires the ability to react quickly."
-#~ msgstr "Ohjelmaan osallistuminen vaatii nopeaa reaktiokykyä"
+msgid "Rules-light"
+msgstr "Kevyet säännöt"
 
-#~ msgid "Physical con"
-#~ msgstr "Lähiconiin"
+msgid "Story-driven"
+msgstr "Tarinavetoinen"
 
-#~ msgid "Physical contact and/or low chances of personal space"
-#~ msgstr "Fyysinen kontakti ja/tai suppea henkilökohtaisen tilan mahdollisuus"
+msgid "Character-driven"
+msgstr "Hahmovetoinen"
 
-#~ msgid "Playstyle and mechanics (Choose any which apply)"
-#~ msgstr "Pelin tyyli (valitse soveltuvat)"
+msgid "Combat-driven"
+msgstr "Taisteluvetoinen"
 
-#~ msgid "Please tick this box if the game is played in English."
-#~ msgstr "Ruksaa tämä ruutu, jos peli pelataan englanniksi."
+msgid "Description of your game"
+msgstr "Kuvaus"
 
-#~ msgid "Please tick this box if your game contains themes which require it to be restricted to players who are 18+ years old. Please give more details in the game description."
-#~ msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä. Anna lisätietoja pelin kuvauksessa."
+msgid "Advertise your game for potential players. If your game includes any potentially shocking or distressing themes, please mention it here.<br><br>Recommended length for descriptions is 300-500 characters. We reserve the right to edit and condense the description and the title if necessary.<br><br>Write the description in the language the game will be run in (Finnish, English). You can write the description in both languages if you want."
+msgstr "Mainosta peliäsi pelaajille. Varmista, että kerrot mahdollisesti järkyttävistä tai häiritsevistä teemoista. Suositeltu pituus on 300-500 merkkiä. Pidätämme oikeuden muokata tekstiä tarpeen mukaan.<br><br>Kirjoita kuvaus ainakin sillä kielellä, jolla peli peluutetaan (suomeksi tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
 
-#~ msgid "Please tick this box if your game has been designed also for the youngest players, and the players’ guardians may help the players or participate in the game with them. If necessary, you can give more details in the game description."
-#~ msgstr "Ruksaa tämä ruutu jos pelisi on erityisesti suunniteltu myös pienimmille pelaajille, ja huoltajat voivat toimia pelaajien tukena tai osallistua peliin heidän kanssaan. Voit antaa lisätietoja pelin kuvauksessa."
+msgid "Slogan for your game"
+msgstr "Lyhyt mainoslause"
 
-#~ msgid "Please tick this box if your game involves themes necessitating that all players are 18 years or older."
-#~ msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä."
+msgid "Condense the essence of your game into one short sentence that will let players know what your game have to offer. For example, “A traditional D&D dungeon crawl”, or “Lovecraftian horror in Equestria”. We reserve the right to edit the slogan if necessary."
+msgstr "Tiivistä pelisi yhteen lauseeseen, joka kertoo pelaajalle pelin sisällöstä tärkeimmän. Esim. "Perinteistä D&D-luolastoseikkailua" tai "Lovecraftilaista kauhua Equestriassa". Pidätämme oikeuden muokata tekstiä."
 
-#~ msgid "Please tick this box if your game is also suitable for children. If necessary, you can give more details in the game description."
-#~ msgstr "Ruksaa tämä ruutu jos pelisi soveltuu myös lapsille. Voit antaa lisätietoja pelin kuvauksessa."
+msgid "When are you NOT able to run your game?"
+msgstr "Milloin ET PYSTY pelauttamaan peliäsi?"
 
-#~ msgid "Please tick this box if your game is designed for children."
-#~ msgstr "Ruksaa tämä ruutu, mikäli pelisi on suunniteltu lapsille."
+msgid "Select the times when you are <b>NOT able</b> to run your game. If you have a more specific request in mind regarding your schedule (for example, you would like to run your game late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
+msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."
 
-#~ msgid "Preferred schedule"
-#~ msgstr "Aikatoiveet"
+msgid "Accessibility and inclusivity"
+msgstr "Esteettömyys, inklusiivisuus ja saavutettavuus"
 
-#~ msgid "Program category"
-#~ msgstr "Ohjelmaluokka"
+msgid "We face life as individuals, but together we can make Ropecon a safer, more comfortable space, where everyone can be themselves without limits, harassment or discrimination."
+msgstr "Kaikki me kohtaamme elämäämme yksilöllisesti, mutta yhdessä voimme tehdä Ropeconista turvallisemman tilan periaatteiden mukaisen, viihtyisän paikan, jossa jokainen saa olla oma itsensä ilman rajoituksia, häirintää tai syrjintää."
 
-#~ msgid "Programme for children"
-#~ msgstr "Lastenohjelma"
+msgid "Loud sounds"
+msgstr "Kovat äänet"
 
-#~ msgid "Select the event form appropriate for the larp you have planned."
-#~ msgstr "Valitse suunnittelemallesi larpille sopiva tapahtumamuoto."
+msgid "Flashing or bright lights"
+msgstr "Välkkyvät tai voimakkaat valot"
 
-#~ msgid "Select the times when you DO NOT want to have your program. Time slots have been intentionally left vague. If you have further requests on time slots and schedule, more details can be provided in the open comment field below."
-#~ msgstr "Ruksaa ne ajat, jolloin ET halua pitää ohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
+msgid "Strong smells"
+msgstr "Voimakkaat tuoksut"
 
-#~ msgid "Select the times when you are <b>NOT able</b> to run your game programme.<br/><br/>If you have a more specific request in mind regarding your schedule, please let us know in the Comments section below (e.g. “I would like to run my game late in the evening”).<br/><br/>In this section, we wish that you would include information about restrictions set by e.g. work schedules or bus schedules (if you need to e.g. leave Messukeskus by 23 o’clock in order to get to your lodgings)."
-#~ msgstr "Merkitse tähän ne ajat, jolloin sinun <b>ei ole mahdollista</b> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. “haluaisin peluuttaa pelini myöhään illalla”), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)."
+msgid "Materials or substances that irritate the skin"
+msgstr "Ihoa ärsyttävät aineet tai materiaalit"
 
-#~ msgid "Select the times when you are NOT able to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br><br>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br><br>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
-#~ msgstr "Merkitse tähän ne ajat, jolloin sinun EI OLE mahdollista pelauttaa peliäsi. HUOM! valitse siis ne ajat, jolloin ET pysty pelauttamaan peliäsi!<br><br>Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. haluaisin peluuttaa pelini myöhään illalla), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)"
+msgid "Physical contact and/or low chances of personal space"
+msgstr "Fyysinen kontakti ja/tai suppea henkilökohtaisen tilan mahdollisuus"
 
-#~ msgid "Short blurb"
-#~ msgstr "Lyhyt mainoslause"
+msgid "Darkness/low lighting"
+msgstr "Pimeä/heikko valaistus"
 
-#~ msgid "Sign-up at the Gaming Desk"
-#~ msgstr "Ilmoittautuminen pelitiskille"
+msgid "Participation involves a lot of moving around without a chance for sitting down"
+msgstr "Osallistuminen vaatii paljon liikkumista ilman mahdollisuutta istumiseen"
 
-#~ msgid "Sign-up in advance"
-#~ msgstr "Ilmoittautuminen ennakkoon"
+msgid "The game involves watching a video without subtitles for the hearing impaired"
+msgstr "Pelissä katsotaan video, jossa ei ole tekstitystä kuulorajoitteisille"
 
-#~ msgid "Sign-up process"
-#~ msgstr "Ilmoittautuminen"
+msgid "Participation requires listening to a recording that does not have a text version for the hearing impaired"
+msgstr "Osallistuminen edellyttää sellaisen äänitteen kuuntelemista, josta ei ole tekstiversiota kuulorajoitteisille"
 
-#~ msgid "Sign-up via the Konsti app"
-#~ msgstr "Ilmoittautuminen Konstissa"
+msgid "Participation involves reading long texts independently, and the texts are not available as recordings for those with visual impairment"
+msgstr "Osallistuminen vaatii pitkien tekstien itsenäistä lukemista, eikä tekstejä ole mahdollista saada äänitteinä näkörajoitteisille"
 
-#~ msgid "Specify here if you have any clarifications or if you have anything to expand upon regarding the above questions."
-#~ msgstr "Kirjoita tähän, mikäli haluat täsmentää tai tarkentaa ylläolevia soveltuvuuskysymyksiä."
+msgid "Material used in the game can cause problems for the colourblind"
+msgstr "Pelissä käytettävät materiaalit voivat tuottaa haasteita värisokeille"
 
-#~ msgid "Specify here whether your players are expected to bring their own game tools or other equipment and what that equipment is (e.g. card decks, figure armies)."
-#~ msgstr "Kerro tässä, jos pelaajien odotetaan tuovan omat pelivälineensä tai muita tarvikkeita, ja mitä ne välineet ovat (esim. korttipakkoja, figuarmeijoita)."
+msgid "Other questions"
+msgstr "Muut kysymykset"
 
-#~ msgid "Strong smells"
-#~ msgstr "Voimakkaat tuoksut"
+msgid "Comments"
+msgstr "Muuta tietoa roolipelivastaaville"
 
-#~ msgid "Suitable for all ages"
-#~ msgstr "Sopii kaiken ikäisille"
+msgid "Is there anything else you would like to tell the RPG coordinators that doesn’t fit any of the fields above or would you like to clarify something?<br/>For example, if you are a beginner GM and would like some additional support, let us know and we will gladly help you out!"
+msgstr "Jos haluat kertoa roolipelivastaaville jotakin joka ei sisälly ylläoleviin kenttiin tai tarkentaa jotain, kirjoita se tähän. Jos olet esimerkiksi aloitteleva pelinjohtaja, ja kaipaat lisätukea, autamme mielellämme!"
 
-#~ msgid "Suitable for children"
-#~ msgstr "Lapsiystävällinen"
+msgid "If Ropecon is held virtually, I can run my game virtually"
+msgstr "Jos Ropecon siirtyy verkkoon, voin pelauttaa pelini etänä"
 
-#~ msgid "Suitable for children aged 12+"
-#~ msgstr "Sopii yli 12-vuotiaille"
+msgid "If you are able, prepared and willing to run your game in English if necessary, please tick this box. If your game is selected for the event, we will contact you regarding the choice of language."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi. Mikäli pelisi valitaan tapahtumaan, roolipelivastaava on yhteydessä sinuun kielen valinnan suhteen."
 
-#~ msgid "Suitable for children aged 7-12"
-#~ msgstr "Sopii 7-12-vuotiaille"
+msgid "Aimed at children under 10 years old"
+msgstr "Suunnattu alle 10-vuotiaille"
 
-#~ msgid "Suitable for children under 7"
-#~ msgstr "Sopii alle 7-vuotiaille"
+msgid "Tick this box if your game is designed for children under the age of 10."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 10-vuotiaille lapsille."
 
-#~ msgid "Summarize your game in one sentence which helps potential players get the gist of your game. For example, “Traditional D&D dungeon adventure” or “Lovecraftian horror in Equestria”. We reserve the right to edit the text."
-#~ msgstr "Tiivistä pelisi yhteen lauseeseen, joka kertoo pelaajalle pelin sisällöstä tärkeimmän. Esim. “Perinteistä D&D-luolastoseikkailua” tai “Lovecraftilaista kauhua Equestriassa”. Pidätämme oikeuden muokata tekstiä."
+msgid "Aimed at underage participants"
+msgstr "Suunnattu alaikäisille"
 
-#~ msgid "Tell us here if your game contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your game addresses themes or issues related to war."
-#~ msgstr "Kerro tässä, mikäli pelisi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta.<br>HUOM! Ukrainan tilanteesta johtuen, mainitse tässä jos pelisi käsittelee sotaan liittyviä aiheita."
+msgid "Tick this box if your game is designed for underage participants."
+msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alaikäisille."
 
-#~ msgid "Tell us here if your larp contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your larp addresses themes or issues related to war."
-#~ msgstr "Kerro tässä, mikäli larppisi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta.<br>HUOM! Ukrainan tilanteesta johtuen, mainitse tässä jos larppisi käsittelee sotaan liittyviä aiheita."
+msgid "Aimed at adult participants"
+msgstr "Suunnattu täysi-ikäisille"
 
-#~ msgid "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your programme addresses themes or issues related to war."
-#~ msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta.<br>HUOM! Ukrainan tilanteesta johtuen, mainitse tässä jos ohjelmasi käsittelee sotaan liittyviä aiheita."
+msgid "Tick this box if your game is designed for adult participants."
+msgstr "Ruksaa tämä ruutu, jos peiisi on suunnattu täysi-ikäisille."
 
-#~ msgid "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in some participants"
-#~ msgstr "Listaa tähän ohjelmasi sisältämät aiheet, jotka voivat aiheuttaa joillekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta."
+msgid "If your game is suitable for players with very limited or without any previous experience about role-playing games, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos peliisi voi osallistua, vaikka aiempaa kokemusta roolipeleistä olisi hyvin vähän tai ei lainkaan."
 
-#~ msgid "Tell us how many times you would like to run your larp during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour original larp or two runs of a pre-written scenario you will receive one weekend ticket as a GM. Additional runs of your larp will yield an extra one-day ticket."
-#~ msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita.<br><br>Yhdellä itse kirjoitetun larpin 3-4 tunnin pelautuksella tai kahdella skenaarion pelautuksella saa yhden viikonloppurannekkeen. Lisäpelautuksella saa lisäksi päivärannekkeen."
+msgid "Participation involves a lot of remaining in one place without a chance to take breaks and move around"
+msgstr "Ohjelmanumero/peli vaatii pitkää paikallaan oloa ilman mahdollisuutta taukoihin ja liikkumiseen"
 
-#~ msgid "Tell us how much table space and how many chairs you need, and whether you have any technical needs (eg. electricity). Unfortunately all requests cannot be fulfilled, so please justify how your request serves the program. Table size is 70cm x 200cm."
-#~ msgstr "Kerro tässä paljonko tarvitset pöytätilaa, tuoleja ja tarvitsetko erityistä tekniikkaa (esim. sähköä). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee ohjelmaa. Pöytien koko on 70cm x 200cm."
+msgid "Tell us here if your game contains heavy subjects that may cause discomfort or distress in participants.<br>Due to the situation in Ukraine, please mention here if your game addresses themes or issues related to war."
+msgstr "Kerro tässä, mikäli pelisi sisältää raskaita aiheita, jotka voivat aiheuttaa jollekin osallistujille epämiellyttäviä tuntemuksia tai ahdistusta.<br>HUOM! Ukrainan tilanteesta johtuen, mainitse tässä jos pelisi käsittelee sotaan liittyviä aiheita."
 
-#~ msgid "The duration of the programme is over two hours without breaks."
-#~ msgstr "Ohjelma kestää yli kaksi tuntia ilman taukoa"
+msgid "Examples: spiders, violence, phobias or other possibly triggering themes"
+msgstr "Esimerkkejä: hämähäkit, väkivalta, fobioita tai muita mahdollisesti triggeröiviä aiheita"
 
-#~ msgid "The game can be run in English"
-#~ msgstr "Pelin voi pelauttaa englanniksi"
+msgid "In the open field, define if necessary what features of your game may possibly limit participation."
+msgstr "Tarkenna tarvittaessa avoimeen kenttään, mikäli pelissäsi on joitakin muita seikkoja, jotka voivat mahdollisesti rajoittaa osallistumista."
 
-#~ msgid "The game involves watching a video without subtitles for the hearing impaired"
-#~ msgstr "Pelissä katsotaan video, jossa ei ole tekstitystä kuulorajoitteisille"
-
-#~ msgid "The game is intended for children"
-#~ msgstr "Peli on tarkoitettu lapsille"
-
-#~ msgid "The game is intended for players over 18"
-#~ msgstr "Peli on tarkoitettu vain täysi-ikäisille pelaajille"
-
-#~ msgid "The larp involves watching a video without subtitles for the hearing impaired"
-#~ msgstr "Larpissa katsotaan video, jossa ei ole tekstitystä kuulorajoitteisille"
-
-#~ msgid "The organisers of Ropecon strive to organise a physical  con; if it can be organised thusly, virtual programmes cannot be organised. If a physical con cannot be organised, physical programmes cannot be organised, naturally.<br/><br/>Specify here whether you can organise your programme at a physical con, at a virtual con, or at both."
-#~ msgstr "Ropeconin järjestäjien tavoitteena on järjestää lähicon, ja sen toteutuessa etäohjelmia ei pystytä järjestämään. Jos lähiconia ei voida järjestää, emme luonnollisesti voi järjestää lähiohjelmaa etäconissa.<br/><br/>Kerro tässä, voitko järjestää ohjelmasi lähiconissa, etäconissa vai molemmissa."
-
-#~ msgid "The program involves some other form of inaccessibility. Please clarify."
-#~ msgstr "Ohjelmanumero on jotenkin muuten esteellinen, miten?"
-
-#~ msgid "The programme includes texts that are essential to participation, and the texts are not available as recordings or read out loud."
-#~ msgstr "Ohjelma sisältää osallistumisen kannalta olennaista tekstiä, josta ei ole saatavilla nauhoitetta tai jota ei lueta ääneen."
-
-#~ msgid "The programme involves watching a video without subtitles for the hearing impaired"
-#~ msgstr "Ohjelmanumerossa katsotaan video, jossa ei ole tekstitystä kuulorajoitteisille"
-
-#~ msgid "Theme: Dinosaurs"
-#~ msgstr "Teema: Dinosaurukset"
-
-#~ msgid "Theme: End of the world"
-#~ msgstr "Teema: Maailmanloppu"
-
-#~ msgid "Theme: Friendship"
-#~ msgstr "Teema: Ystävyys"
-
-#~ msgid "There are limited opportunities to move around during the programme."
-#~ msgstr "Ohjelman aikana on rajatut mahdollisuudet liikkumiseen."
-
-#~ msgid "Tick this box if your game is designed for adult participants."
-#~ msgstr "Ruksaa tämä ruutu, jos peiisi on suunnattu täysi-ikäisille."
-
-#~ msgid "Tick this box if your game is designed for children under the age of 10."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alle 10-vuotiaille lapsille."
-
-#~ msgid "Tick this box if your game is designed for underage participants."
-#~ msgstr "Ruksaa tämä ruutu, jos pelisi on suunnattu alaikäisille."
-
-#~ msgid "Tick this box if your game programme is designed for adult participants."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
-
-#~ msgid "Tick this box if your game programme is designed for children under the age of 10."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 10-vuotiaille lapsille."
-
-#~ msgid "Tick this box if your game programme is designed for underage participants."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alaikäisille."
-
-#~ msgid "Tick this box if your larp is designed for adult participants."
-#~ msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu täysi-ikäisille."
-
-#~ msgid "Tick this box if your larp is designed for children under the age of 10."
-#~ msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu alle 10-vuotiaille lapsille."
-
-#~ msgid "Tick this box if your larp is designed for underage participants."
-#~ msgstr "Ruksaa tämä ruutu, jos larppisi on suunnattu alaikäisille."
-
-#~ msgid "Tick this box if your programme is designed for adult participants."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu täysi-ikäisille."
-
-#~ msgid "Tick this box if your programme is designed for children under the age of 10."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alle 10-vuotiaille lapsille."
-
-#~ msgid "Tick this box if your programme is designed for underage participants."
-#~ msgstr "Ruksaa tämä ruutu, jos ohjelmasi on suunnattu alaikäisille."
-
-# larppilomake
-#~ msgid "Title of the larp"
-#~ msgstr "Pelin nimi"
-
-#~ msgid "Virtual con"
-#~ msgstr "Etäconiin"
-
-#~ msgid "We face life as individuals, but together we can make Ropecon a safer, more comfortable space, where everyone can be themselves without limits, harassment or discrimination."
-#~ msgstr "Kaikki me kohtaamme elämäämme yksilöllisesti, mutta yhdessä voimme tehdä Ropeconista turvallisemman tilan periaatteiden mukaisen, viihtyisän paikan, jossa jokainen saa olla oma itsensä ilman rajoituksia, häirintää tai syrjintää."
-
-#~ msgid "What game system is used? For example, “Magic the Gathering”. If you designed the game system yourself, describe it in a few words. For example, “4X, space battle, conquest”"
-#~ msgstr "Mikä on pelisysteemi? Esim. “Magic the Gathering” Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. “4X, avaruustaistelu, valloitus”"
-
-#~ msgid "What is the game system used? For example, “Magic the Gathering” Did you design the game yourself? Describe it in a few words, for example “4X, space battle, conquest”"
-#~ msgstr "Mikä on pelisysteemi? Esim. “Magic the Gathering” Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. “4X, avaruustaistelu, valloitus”"
-
-#~ msgid "What language is used in the game materials?"
-#~ msgstr "Millä kielellä pelimateriaalit on tarjottu?"
-
-#~ msgid "What type of game programme are you offering?<br><br>Tournament - organising your own game tournament or contest<br><br>Demonstration - showcasing, demonstrating and running demo games at the Experience Point<br><br>Open game - running games with or without specific scenarios by request<br><br>Other - Something other than mentioned above"
-#~ msgstr "Minkä tyyppinen peliohjelma on kyseessä?<br><br>Turnaus - nimenomaan turnauksen ja kilpailun järjestämistä.<br><br>Demotus - pelin esittelyä ja demottamista sekä pelaamista.<br><br>Avoin peluutus - avointa peluutusta pyynnöstä<br><br>Muu - jokin muu kuin ylläoleva"
-
-#~ msgid "When are you unable to have your program item?"
-#~ msgstr "Milloin et pysty pitämään ohjelmaasi?"
-
-#~ msgid "When are you unable to run your game?"
-#~ msgstr "Milloin et pysty pelauttamaan peliäsi?"
-
-#~ msgid "Which RPG system does the game use?"
-#~ msgstr "Mitä järjestelmää peli käyttää?"
-
-#~ msgid "Which area do you think your game program belongs to?"
-#~ msgstr "Mihin alueelle mielestäsi peliohjelma kuuluu?"
-
-#~ msgid "Which category does your game programme belong to?"
-#~ msgstr "Mihin kategoriaan peliohjelmasi mielestäsi kuuluu?"
-
-#~ msgid "Who is the game for?"
-#~ msgstr "Kenelle peli on tarkoitettu?"
 
 # ropelomake
-#~ msgid "Who is the game meant for?"
-#~ msgstr "Kenelle peli on tarkoitettu?"
 
-#~ msgid "Who is your game for?"
-#~ msgstr "Kenelle peli on tarkoitettu?"
+msgid "Who is the game meant for?"
+msgstr "Kenelle peli on tarkoitettu?"
 
-#~ msgid "Who is your game programme for?"
-#~ msgstr "Kenelle peli on tarkoitettu?"
+msgid "Game title"
+msgstr "Pelin nimi"
 
-#~ msgid "Who is your larp for?"
-#~ msgstr "Kenelle larppi on tarkoitettu?"
+msgid "Which RPG system does the game use?"
+msgstr "Mitä järjestelmää peli käyttää?"
 
-#~ msgid "Workshop fee"
-#~ msgstr "Työpajamaksu"
+msgid "Game length (minutes)"
+msgstr "Pelin kesto (minuuttia)"
+
+msgid "Minimum number of players"
+msgstr "Pelaajien vähimmäismäärä"
+
+msgid "Consider the minimum number of players carefully: You will maximize your chances of running the game by setting the number as low as possible."
+msgstr "Harkitse pelaajien vähimmäismäärä tarkkaan: Maksimoit pelin toteutumismahdollisuuden asettamalla pelaajien vähimmäismäärän mahdollisimman matalaksi."
+
+msgid "Maximum number of players"
+msgstr "Pelaajien enimmäismäärä"
+
+msgid "In English"
+msgstr "Englanninkielinen"
+
+msgid "Please tick this box if the game is played in English."
+msgstr "Ruksaa tämä ruutu, jos peli pelataan englanniksi."
+
+msgid "Ages 18+ only"
+msgstr "Vain täysi-ikäisille"
+
+msgid "Please tick this box if your game contains themes which require it to be restricted to players who are 18+ years old. Please give more details in the game description."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä. Anna lisätietoja pelin kuvauksessa."
+
+msgid "Suitable for children"
+msgstr "Lapsiystävällinen"
+
+msgid "Please tick this box if your game is also suitable for children. If necessary, you can give more details in the game description."
+msgstr "Ruksaa tämä ruutu jos pelisi soveltuu myös lapsille. Voit antaa lisätietoja pelin kuvauksessa."
+
+msgid "Family program"
+msgstr "Perheohjelma"
+
+msgid "Please tick this box if your game has been designed also for the youngest players, and the players’ guardians may help the players or participate in the game with them. If necessary, you can give more details in the game description."
+msgstr "Ruksaa tämä ruutu jos pelisi on erityisesti suunniteltu myös pienimmille pelaajille, ja huoltajat voivat toimia pelaajien tukena tai osallistua peliin heidän kanssaan. Voit antaa lisätietoja pelin kuvauksessa."
+
+msgid "For experienced players"
+msgstr "Kokeneille pelaajille"
+
+msgid "Check this if the game requires knowledge of the world or the rules of the game."
+msgstr "Valitse tämä jos peli vaatii pelin maailman tai sääntöjen tuntemusta."
+
+msgid "Game genre (Choose all which apply)"
+msgstr "Pelin genre (valitse soveltuvat)"
+
+msgid "Game style (Choose any which apply)"
+msgstr "Pelin tyyli (valitse soveltuvat)"
+
+msgid "Description"
+msgstr "Kuvaus"
+
+msgid "Advertise your game to potential players. Be extra sure to inform about potentially shocking or disturbing themes. Recommended length is 300–500 characters. We reserve the right to edit the text as necessary.<br><br>Please write the description at least in the language the game will be run in (English or Finnish). You may include the description in both languages, if you wish."
+msgstr "Mainosta peliäsi pelaajille. Varmista, että kerrot mahdollisesti järkyttävistä tai häiritsevistä teemoista. Suositeltu pituus on 300-500 merkkiä. Pidätämme oikeuden muokata tekstiä tarpeen mukaan.<br><br>Kirjoita kuvaus ainakin sillä kielellä, jolla peli peluutetaan (suomeksi tai englanniksi). Voit halutessasi kirjoittaa kuvauksen kummallakin kielellä."
+
+msgid "Short blurb"
+msgstr "Lyhyt mainoslause"
+
+msgid "Summarize your game in one sentence which helps potential players get the gist of your game. For example, “Traditional D&D dungeon adventure” or “Lovecraftian horror in Equestria”. We reserve the right to edit the text."
+msgstr "Tiivistä pelisi yhteen lauseeseen, joka kertoo pelaajalle pelin sisällöstä tärkeimmän. Esim. “Perinteistä D&D-luolastoseikkailua” tai “Lovecraftilaista kauhua Equestriassa”. Pidätämme oikeuden muokata tekstiä."
+
+msgid "Other information for the RPG coordinator"
+msgstr "Muuta tietoa roolipelivastaavalle"
+
+msgid "If there is anything else you wish to say to the RPG coordinator that is not covered by the above questions, please enter it here."
+msgstr "Jos haluat kertoa roolipelivastaavalle jotakin joka ei sisälly ylläoleviin kenttiin, kirjoita se tähän."
+
+
+# larppilomake
+
+msgid "Title of the larp"
+msgstr "Pelin nimi"
+
+msgid "Come up with a catchy and concise name for your larp. Ropecon reserves the right to edit the title."
+msgstr "Keksi ytimekäs otsikko larpillesi. Varaamme oikeuden muokata otsikkoa."
+
+msgid "Estimated duration (minutes)"
+msgstr "Arvioitu pituus (minuuttia)"
+
+msgid "For one run of a 3-4 hour game (180-240 minutes) of your own writing you will receive one free weekend ticket. This includes time for propping, brief and debrief, as well as the actual game time."
+msgstr "Yhdestä 3-4 tunnin (180-240 minuuttia) oman larppisi pelautuksesta saat vaivanpalkaksi yhden viikonloppurannekkeen. Tähän kokonaiskestoon sisältyvät proppaus, alku- ja loppubriiffit sekä peliaika."
+
+msgid "Number of runs"
+msgstr "Pelautusten lukumäärä"
+
+msgid "Here you can request how many times you would like to run your game during the convention. Due to limited space we may not be able to fulfill all requests.<br><br>For one run of a 3-4 hour game of your own writing or two runs of a pre-written scenario you will receive one free weekend ticket. Additional runs of your game will yield an extra one-day ticket."
+msgstr "Tässä voit esittää toiveen montako kertaa haluaisit larppisi pelauttaa. Tilojen rajallisuuden vuoksi emme pysty toteuttamaan kaikkia toiveita.<br><br>Yhdellä itse kirjoitetun larpin 3-4 tunnin pelautuksella tai kahdella skenaarion pelautuksella saa yhden viikonloppurannekkeen. Lisäpelautuksella saa lisäksi päivärannekkeen."
+
+msgid "Comments"
+msgstr "Vapaamuotoiset terveiset"
+
+msgid "Is there anything else you would like to tell the organizers?<br><br>Please mention here if the design of your game dictates that some of the characters need to be a specific gender (eg. larps about a men’s sauna night or World War II female fighter pilots).<br><br>We would like the larp program as a whole to offer something for all attendees, even if not all players wish to play all genders. Due to this, some larps may be cut from the program.<br><br>You can also enter your more specific scheduling preferences here."
+msgstr "Haluatko sanoa larp-coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä?<br><br>Mainitse tässä, jos pelisi design vaatii osan hahmoista olevan tiettyä sukupuolta (esim. aiheena miesten saunailta tai toisen maailmansodan naislentäjät).<br><br>Pyrimme, että kokonaisuudessaan conissa olevissa peleissä olisi pelattavaa kaikille kävijöille, vaikka kaikki pelaajat eivät esimerkiksi halua pelata kaikkia sukupuolia ja osa peleistä saattaa rajautua tämän vuoksi pois.<br><br>Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+
+msgid "The game can be run in English"
+msgstr "Pelin voi pelauttaa englanniksi"
+
+msgid "If you are able, prepared and willing to organise your program in English if necessary, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
+
+msgid "The game is intended for players over 18"
+msgstr "Peli on tarkoitettu vain täysi-ikäisille pelaajille"
+
+msgid "Please tick this box if your game involves themes necessitating that all players are 18 years or older."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä."
+
+msgid "The game is intended for children"
+msgstr "Peli on tarkoitettu lapsille"
+
+msgid "Please tick this box if your game is designed for children."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi on suunniteltu lapsille."
+
+msgid "Beginner-friendly"
+msgstr "Aloittelijaystävällinen"
+
+msgid "If your game is suitable for players without any or with very limited larping experience, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa larppikokemusta olisi hyvin vähän tai ei lainkaan."
+
+msgid "Family-friendly"
+msgstr "Perheohjelma"
+
+# ohjelmalomake
+
+msgid "Come up with a catchy, concise title for your program. Ropecon reserves the right to edit the title if necessary."
+msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
+
+msgid "Describe your program to your potential audience or participants in an appealing way. If your program contains topics that are heavy or potentially distressing, please pay special attention to this in the description. Recommended length is 300-500 characters. Ropecon reserves the right to edit the description and title of the program if necessary, for example reducing their length."
+msgstr "Mainosta ohjelmaasi potentiaalisille osallistujille. Kiinnitä erityisesti huomiota teemoihin, jotka ovat mahdollisesti raskaita tai järkyttäviä. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+msgid "Program category"
+msgstr "Ohjelmaluokka"
+
+msgid "Choose the program category that best suits your program. Ropecon reserves the right to change the program category if necessary."
+msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa."
+
+msgid "Duration of lectures and panel discussions is either 45 minutes or 105 minutes. Duration of workshops is either 45 minutes, 105 minutes or 165 minutes. For other program, please make an estimation."
+msgstr "Puheohjelmien pituus voi olla joko 45 tai 105 minuuttia. Työpaja voi olla 45, 105 tai 165 minuuttia. Muut ohjelmat voivat arvioida keston."
+
+msgid "If your program is suitable for or aimed at children, teenagers or families, please tick the checkbox. More details can be provided in the last text field."
+msgstr "Ruksaa tämä ruutu, mikäli ohjelmasi sopii myös nuoremmille osallistujille. Anna tarvittaessa lisätietoja ikäsuosituksista viimeisessä avoimessa kentässä."
+
+msgid "Max. number of participants"
+msgstr "Osallistujamäärä"
+
+msgid "If your workshop or other program can only host a limited number of participants, please provide a maximum number of attendees."
+msgstr "Mikäli työpajan tai muun ohjelman osallistujamäärä on rajattu, kirjoita tähän maksimiosallistujamäärä."
+
+msgid "Preferred schedule"
+msgstr "Aikatoiveet"
+
+msgid "Select the times when you DO NOT want to have your program. Time slots have been intentionally left vague. If you have further requests on time slots and schedule, more details can be provided in the open comment field below."
+msgstr "Ruksaa ne ajat, jolloin ET halua pitää ohjelmaasi. Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, voit kertoa niistä vapaamuotoisissa terveisissä."
+
+msgid "Do you have any further information, details, comments or questions that you would like to let our program coordinators to know?"
+msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
+
+msgid "Game program area"
+msgstr "Peliohjelman alue"
+
+msgid "Which area do you think your game program belongs to?"
+msgstr "Mihin alueelle mielestäsi peliohjelma kuuluu?"
+
+msgid "Give your game program a catchy and concise title. We reserve the right to change the title if necessary."
+msgstr "Keksi ytimekäs otsikko peliohjelmalle. Varaamme oikeuden muokata otsikkoa."
+
+msgid "For 3-4 hours (180-240 minutes) of game program you will receive a one-day ticket to Ropecon. For 6-8 hours (360-480 minutes) of game program you will receive a weekend ticket to Ropecon."
+msgstr "3-4 tunnin (180-240 minuutin) peliohjelmasta saat vaivanpalkaksi yhden päivärannekkeen. 6-8 tunnin (360-480 minuutin) peliohjelmasta saat vaivanpalkaksi yhden viikonloppurannekkeen."
+
+msgid "Number of participants"
+msgstr "Osallistujamäärä"
+
+msgid "How many players can participate in the game?"
+msgstr "Kuinka monta pelaajaa mahtuu mukaan?"
+
+msgid "Advertise your game for potential players. Include information about what is expected of players and what kind of themes the game involves. Please mention here if your game involves difficult themes such as physical or psychological abuse. The recommended length of the description is 300-500 characters. We reserve the right to edit the description if necessary."
+msgstr "Mainosta peliäsi potentiaalisille pelaajille. Kerro myös, mitä pelaajilta odotetaan ja minkälaisia teemoja pelissä käsitellään. Mainitsethan, jos pelissäsi käsitellään vaikeita teemoja, esim. fyysistä tai henkistä väkivaltaa. Suositeltu pituus on 300–500 merkkiä. Varaamme oikeuden muokata kuvausta ja otsikkoa tarpeen mukaan esimerkiksi lyhentämällä niitä."
+
+msgid "Game system"
+msgstr "Pelisysteemi"
+
+msgid "What is the game system used? For example, “Magic the Gathering” Did you design the game yourself? Describe it in a few words, for example “4X, space battle, conquest”"
+msgstr "Mikä on pelisysteemi? Esim. “Magic the Gathering” Onko kyseessä itse tehty peli? Kerro siitä parilla sanalla, esim. “4X, avaruustaistelu, valloitus”"
+
+msgid "When are you unable to run your game?"
+msgstr "Milloin et pysty pelauttamaan peliäsi?"
+
+msgid "If your game is suitable for the whole family and people of all ages, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi soveltuu koko perheelle ja kaiken ikäisille."
+
+msgid "Signup"
+msgstr "Ilmoittautuminen"
+
+msgid "How do players sign up for your program? Sign up at the Gaming Desk - The Gaming Desk will collect a list of the participants. I will collect sign-ups - You will collect sign-ups yourself in any way you prefer. No sign-up - The game does not require sign-ups."
+msgstr "Miten ohjelmaan ilmoittaudutaan? Ilmoittautuminen pelitiskille - pelitiskin tekemä lista on nimilista peliin tulevista ihmisistä. Hoidan itse ilmoittautumisen - Hoidat itse ilmoittautumisen miten tahdot. Ei ilmoittautumista - Peli ei vaadi erityistä ilmoittautumista."
+
+msgid "Space and technical needs"
+msgstr "Tilatoiveet ja tekniikka"
+
+msgid "Tell us how much table space and how many chairs you need, and whether you have any technical needs (eg. electricity). Unfortunately all requests cannot be fulfilled, so please justify how your request serves the program. Table size is 70cm x 200cm."
+msgstr "Kerro tässä paljonko tarvitset pöytätilaa, tuoleja ja tarvitsetko erityistä tekniikkaa (esim. sähköä). Kaikkia toiveita ei valitettavasti voida toteuttaa, joten perustelethan miten toiveesi tukee ohjelmaa. Pöytien koko on 70cm x 200cm."
+
+msgid "Is there anything else you would like to tell the organizers? You can also specify your desired schedule here."
+msgstr "Haluatko sanoa coniiteille jotain, mikä ei sovi mihinkään yllä olevista kentistä? Voit kertoa tässä myös tarkemmista aikataulutoiveistasi."
+
+msgid "The game can be run in English"
+msgstr "Pelin voi pelauttaa englanniksi"
+
+msgid "If you are able, prepared and willing to organise your program in English if necessary, please tick this box."
+msgstr "Ruksaa tämä ruutu, jos olet kykenevä, valmistautunut ja halukas vetämään pelisi tarvittaessa englanniksi."
+
+msgid "The game is intended for players over 18"
+msgstr "Peli on tarkoitettu vain täysi-ikäisille pelaajille"
+
+msgid "Please tick this box if your game involves themes necessitating that all players are 18 years or older."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää teemoja, joiden takia pelaajien on oltava täysi-ikäisiä."
+
+msgid "The game is intended for children"
+msgstr "Peli on tarkoitettu lapsille"
+
+msgid "Please tick this box if your game is designed for children."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi on suunniteltu lapsille."
+
+msgid "If your game is suitable for players without any or with very limited previous knowledge about the subject, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli peliisi voi osallistua vaikka aiempaa kokemusta olisi hyvin vähän tai ei lainkaan."
+
+msgid "If your game is suitable for the whole family and people of all ages, please tick this box."
+msgstr "Ruksaa tämä ruutu, mikäli pelisi soveltuu koko perheelle ja kaiken ikäisille."
+
+msgid "Who is the game for?"
+msgstr "Kenelle peli on tarkoitettu?"
+
+msgid "When are you unable to have your program item?"
+msgstr "Milloin et pysty pitämään ohjelmaasi?"
+
+msgid "Other languages"
+msgstr "Muu kielitaito"
+
+msgid "Please select those languages with which you feel comfortable doing customer service work and list those not listed in the free text field. You can also describe how proficient you are with those languages in the text field."
+msgstr "Valitse ne kielet, joilla koet pystyväsi antamaan asiakaspalvelua. Listaa vapaatekstikentässä ne kielet, joille ei ole omaa ruutua. Voit myös kuvailla kielitaitoasi tarkemmin vapaatekstikentässä."
+
+msgid "I give my consent for Ropecon to publish my name to my co-workers in the volunteer roster of my assigned station."
+msgstr "Ymmärrän, että ilmoittautumalla vapaaehtoiseksi annan luvan siihen, että nimeni saa näkyä työpisteellä olevassa työvuorolistassa muille työpisteen vapaaehtoisille."
+
+msgid "Consent for information processing"
+msgstr "Suostumus tietojen käsittelyyn"

@@ -1,58 +1,10 @@
 #: models/programme.py
-msgid "1 table"
-msgstr ""
-
-#: models/programme.py
-msgid "100 – 150"
-msgstr ""
-
-#: models/programme.py
-msgid "150 – 200"
-msgstr ""
-
-#: models/programme.py
-msgid "2 tables"
-msgstr ""
-
-#: models/programme.py
-msgid "200 – 250"
-msgstr ""
-
-#: models/programme.py
-msgid "3 tables"
-msgstr ""
-
-#: models/programme.py
-msgid "4 hours"
-msgstr ""
-
-#: models/programme.py
-msgid "4+ tables"
-msgstr ""
-
-#: models/programme.py
-msgid "50 – 100"
-msgstr ""
-
-#: models/programme.py
-msgid "8 hours"
-msgstr ""
-
-#: models/programme.py
-msgid "A Week-in is happening from Monday to Wednesday. Check above the available times at the main location Artteli. Please include your preparation time on the location as well, if your programme item is happening at Artteli. We do our best to make things not overlap!"
-msgstr ""
-
-#: models/programme.py
 msgid "A link to a recording of the programme in an external video service such as YouTube"
 msgstr "Linkki videotallenteeseen ohjelmasta ulkoisessa videopalvelussa kuten YouTubessa"
 
 #: models/alternative_programme_form.py
 msgid "A reference to the form class that implements the form. Example: hitpoint2017.forms:RolePlayingGameForm"
 msgstr "Viittaus lomakkeen toteuttavaan luokkaan. Esimerkki: hitpoint2017.forms:RpgForm"
-
-#: models/programme.py
-msgid "A self-made signup sheet allows you to ask more detailed player preferences. Larp-desk-made signup sheet is a list of participant names."
-msgstr ""
 
 #: templates/programme_admin_detail_views/buttons.pug templates/programme_profile_detail_view.pug
 msgid "Abandon changes and return"
@@ -66,22 +18,13 @@ msgstr "Hyväksy kutsu"
 msgid "Accepted"
 msgstr "Hyväksytty"
 
-#: forms/misc_forms.py models/programme_event_meta.py
+#: forms.py models/programme_event_meta.py
 msgid "Accepting cold offers from"
 msgstr "Ohjelmahaku alkaa"
 
-#: forms/misc_forms.py models/programme_event_meta.py
+#: forms.py models/programme_event_meta.py
 msgid "Accepting cold offers until"
 msgstr "Ohjelmahaku päättyy"
-
-#: models/programme.py
-msgid "Accessibility hazard"
-msgstr "Esteellinen"
-
-#: models/programme.py
-#, fuzzy
-msgid "Accessibility warnings"
-msgstr "Esteellinen"
 
 #: admin.py
 msgid "Activate selected items"
@@ -91,41 +34,17 @@ msgstr "Aktivoi valitut kohteet"
 msgid "Active"
 msgstr "Aktiivinen"
 
+#: models/alternative_programme_form.py
+msgid "Active from"
+msgstr "Käyttöaika alkaa"
+
+#: models/alternative_programme_form.py
+msgid "Active until"
+msgstr "Käyttöaika päättyy"
+
 #: templates/programme_admin_detail_views/freeform_host_modal.pug templates/programme_admin_detail_views/hosts_tab.pug
 msgid "Add free-form organizer"
 msgstr "Lisää vapaamuotoinen ohjelmanjärjestäjä"
-
-#: models/programme.py
-msgid "Advanced"
-msgstr ""
-
-#: models/programme.py
-msgid "Adventure"
-msgstr ""
-
-#: models/programme.py
-msgid "Aimed at adult attendees"
-msgstr ""
-
-#: models/programme.py
-msgid "Aimed at adult participants"
-msgstr ""
-
-#: models/programme.py
-msgid "Aimed at children between 13-17"
-msgstr ""
-
-#: models/programme.py
-msgid "Aimed at children under 10 years old"
-msgstr ""
-
-#: models/programme.py
-msgid "Aimed at children under 13"
-msgstr ""
-
-#: models/programme.py
-msgid "Aimed at underage participants"
-msgstr ""
 
 #: views/admin_invitations_view.py
 msgid "All pending invitations were cancelled."
@@ -144,22 +63,8 @@ msgid "Anonymous"
 msgstr "Anonyymi"
 
 #: models/programme.py
-#, fuzzy
-msgid "Any clarifications?"
-msgstr "Peruuta kutsu"
-
-#: models/programme.py
 msgid "Anything else?"
 msgstr "Vapaamuotoiset terveiset"
-
-#: templates/programme_profile_reservations_view.pug
-msgid "Are you sure you want to relinquish the following seat reservation?"
-msgstr "Haluatko varmasti vapauttaa seuraavan paikkavarauksen?"
-
-#: models/programme.py
-#, fuzzy
-msgid "Areas of expertise"
-msgstr "Erikoisalani"
 
 #: models/programme.py
 msgid "Asked from the host"
@@ -168,10 +73,6 @@ msgstr "Kysytty ohjelmanjärjestäjältä"
 #: models/programme.py
 msgid "At what time would you like to hold your programme? Are there other programme that you do not wish to co-incide with?"
 msgstr "Mihin aikaan ja kuinka pitkänä haluaisit pitää ohjelmanumerosi? Onko tiedossasi muita ohjelmanumeroita, joiden kanssa et haluaisi ohjelmasi olevan samaan aikaan?"
-
-#: models/programme.py
-msgid "Audience estimate"
-msgstr ""
 
 #: models/programme.py
 msgid "Audio playback"
@@ -185,22 +86,9 @@ msgstr "Kirjoittaja"
 msgid "Author (if other than the GM)"
 msgstr "Pelin kirjoittaja (jos muu kuin pelinjohtaja)"
 
-#: forms/feedback_forms.py
+#: forms.py
 msgid "Because you are the host of this programme, you cannot leave your feedback anonymously."
 msgstr "Et voi antaa palautetta omasta ohjelmanumerostasi anonyymisti."
-
-#: models/programme.py
-#, fuzzy
-msgid "Beginner-friendly"
-msgstr "aloittelijaystävällinen"
-
-#: models/programme.py
-msgid "Both"
-msgstr ""
-
-#: forms/paikkala_forms.py
-msgid "Both reservation start and reservation end must be set for the reservation to be considered open."
-msgstr "Sekä alku- että loppuaika täytyy asettaa jotta varausjärjestelmä aukeaa."
 
 #: admin.py
 msgid "By clearing this tick box you can hide an abusive comment from the site."
@@ -222,10 +110,6 @@ msgstr "Peruutettu"
 msgid "Cancelled and rejected programmes"
 msgstr "Peruutetut ja hylätyt ohjelmanumerot"
 
-#: models/programme.py
-msgid "Celebratory Year"
-msgstr ""
-
 #: templates/programme_admin_detail_views/change_host_role_modals.pug templates/programme_admin_detail_views/change_invitation_role_modals.pug
 msgid "Change role"
 msgstr "Vaihda roolia"
@@ -239,70 +123,28 @@ msgid "Change role of invited host"
 msgstr "Vaihda ohjelmanjärjestäjäkutsun roolia"
 
 #: models/programme.py
-msgid "Character driven"
-msgstr ""
-
-#: models/programme.py
-msgid "Check all that apply; you can learn more about these options in the Hosting Guide."
-msgstr ""
-
-#: models/programme.py
-msgid "Check this box if new players can join during gameplay and old players may (or must) leave before the game is over. Please mention this in the game description below, and give more details if necessary."
-msgstr "Ruksaa tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa käynnissä ja vanhat pelaajat voivat poistua (tai joutuvat poistumaan) pelistä ennen pelin loppua. Kerro tästä myös pelin kuvauksessa alla, ja anna tarvittaessa lisätietoja."
-
-#: models/programme.py
-msgid "Check this box, if your programme is related to Ropecon's 30th celebratory year."
-msgstr ""
-
-#: models/programme.py
 msgid "Choose the category that fits your programme the best. We reserve the right to change this."
 msgstr "Valitse parhaiten ohjelmanumeroosi sopiva ohjelmaluokka. Varaamme oikeuden vaihtaa ohjelmaluokkaa."
 
-#: models/programme.py
-#, fuzzy
-msgid "Choose the language used in your programme"
-msgstr "Mikä on ohjelmanumerosi ensisijainen kieli?"
-
-#: templates/programme_admin_cold_offers_view.pug views/admin_menu_items.py
+#: templates/programme_admin_cold_offers_view.pug views/programme_admin_menu_items.py
 msgid "Cold offer period starting and ending times"
 msgstr "Ohjelmahaun ajastaminen"
-
-#: models/programme.py
-msgid "Combat driven"
-msgstr ""
 
 #: models/programme.py
 msgid "Computer use"
 msgstr "Tietokoneen käyttö"
 
-#: templates/programme_profile_reservations_view.pug
-#, fuzzy
-msgid "Confirmation"
+#: templates/core_contact_information_panel.pug
+msgid "Contact information"
 msgstr "Yhteystiedot"
-
-#: models/programme.py
-msgid "Content warnings"
-msgstr "Sisältövaroitukset"
-
-#: forms/paikkala_forms.py
-msgid "Count"
-msgstr "Lukumäärä"
 
 #: models/programme.py templates/programme_admin_detail_views/internal_tab.pug
 msgid "Created at"
 msgstr "Luontiaika"
 
-#: models/programme.py
-msgid "Darkness/low lighting"
-msgstr ""
-
 #: admin.py
 msgid "Deactivate selected items"
 msgstr "Deaktivoi valitut kohteet"
-
-#: models/programme.py
-msgid "Demonstration"
-msgstr "Demotus"
 
 #: models/programme.py
 msgid "Describe your game in three words: for example, genre, theme and attitude."
@@ -320,53 +162,17 @@ msgstr "Hylkää muutokset ja palaa"
 msgid "Discard feedback and return to schedule"
 msgstr "Hylkää muutokset ja palaa ohjelmakarttaan"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug
-msgid "Discord handle"
-msgstr ""
-
-#: models/programme.py
-msgid "Do the participants need to prepare somehow?"
-msgstr ""
-
 #: models/programme.py
 msgid "Do you have tech requirements that are not covered by the previous questions?"
 msgstr "Onko ohjelmallasi tekniikkatarpeita joita edeltävät kysymykset eivät kata?"
 
-#: models/programme.py
-msgid "Does your program item need sign-up or is it free for everyone to attend?"
-msgstr ""
-
-#: models/programme.py
-msgid "Does your programme require materials from the players?"
-msgstr ""
-
-#: forms/schedule_admin_forms.py
-msgid "Down"
-msgstr ""
-
-#: models/programme.py
-msgid "Drama"
-msgstr ""
-
-#: templates/programme_admin_detail_views/change_invitation_role_modals.pug templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug
+#: templates/programme_admin_detail_views/change_invitation_role_modals.pug templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug templates/core_contact_information_panel.pug
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
 #: templates/programme_profile_box.pug templates/programme_profile_detail_view.pug
 msgid "Edit programme"
 msgstr "Muokkaa ohjelmanumeroa"
-
-#: templates/programme_admin_rooms_view.pug views/admin_menu_items.py
-msgid "Edit rooms"
-msgstr "Ohjelmasalien muokkaus"
-
-#: views/admin_menu_items.py
-msgid "Edit schedule"
-msgstr "Ohjelmakartan muokkaus"
-
-#: models/programme.py
-msgid "Email addresses of other programme hosts"
-msgstr ""
 
 #: models/programme.py
 msgid "Encumbered content"
@@ -380,62 +186,25 @@ msgstr "Sisältääkö ohjelmasi tekijänoikeudella suojattua sisältöä? YouTu
 msgid "End now"
 msgstr "Sulje heti"
 
-#: models/schedule.py
-msgid "End time"
-msgstr "Loppuaika"
-
 #: models/programme.py
 msgid "Ending time"
 msgstr "Loppumisaika"
 
 #: models/programme.py
-msgid "English"
-msgstr "Englanti"
-
-#: models/programme.py
 msgid "English OK"
 msgstr "Englanti OK"
 
-#: models/programme.py
-msgid "Estimate of audience size for talk/presentation, if you have previous experience."
-msgstr ""
-
-#: models/schedule.py
-msgid "Even if the schedule is already published, you can hide this view by unchecking this box."
-msgstr "Voit piilottaa tämän näkymän poistamalla ruksin tästä ruudusta, vaikka ohjelmakartta olisi jo julkaistu."
-
-#: models/role.py models/schedule.py models/special_reservation.py proxies/helpers.py
+#: models/role.py proxies/helpers.py
 msgid "Event"
 msgstr "Tapahtuma"
 
-#: models/programme.py
-msgid "Examples: spiders, violence, phobias or other possibly triggering themes"
-msgstr ""
-
-#: forms/schedule_admin_forms.py
-msgid "Existing room"
-msgstr "Olemassaoleva sali"
-
-#: models/programme.py
-#, fuzzy
-msgid "Exploration"
-msgstr "Vie"
-
-#: templates/programme_admin_organizers_view.pug templates/programme_admin_reservation_status_view.pug
+#: templates/programme_admin_organizers_view.pug
 msgid "Export"
 msgstr "Vie"
-
-#: models/programme_feedback.py
-msgid "External username"
-msgstr ""
 
 #: models/invitation.py models/programme_role.py
 msgid "Extra invites"
 msgstr "Lisäkutsut"
-
-#: models/programme.py
-msgid "Fantasy"
-msgstr ""
 
 #: admin.py templates/programme_admin_feedback_view.pug templates/programme_feedback_table.pug views/admin_detail_view.py
 msgid "Feedback"
@@ -445,47 +214,11 @@ msgstr "Palaute"
 msgid "Filter organizers"
 msgstr "Suodata ohjelmanjärjestäjiä"
 
-#: models/programme.py
-msgid "Finnish"
-msgstr "Suomi"
-
-#: models/programme.py
-msgid "Finnish - choose this, if only Finnish is spoken in your programme.<br/>English - choose this, if only English is spoken in your programme.<br/>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br/>Finnish or English - choose this, if you are okay with having your programme language based on what language the attendees speak. Please write your title and programme description in both languages."
-msgstr ""
-
-#: models/programme.py
-msgid "Finnish - choose this, if only Finnish is spoken in your programme.<br><br>English - choose this, if only English is spoken in your programme.<br><br>Language-free - choose this, if no Finnish or English is necessary to participate in the programme (e.g. a workshop with picture instructions or a dance where one can follow what others are doing).<br><br>Finnish or English - choose this, if you are okay with either of the two languages. The programme team will contact you regarding the final choice of language.<br><br>Finnish and English - choose this, if your programme item will use both Finnish and English (e.g. if you will switch languages based on participants).<br><br>Other - choose this, if your programme is in a language other than Finnish or English. If chosen, please provide the title and description of your programme in the chosen language."
-msgstr ""
-
-#: models/programme.py
-msgid "Finnish and English"
-msgstr ""
-
-#: models/programme.py
-msgid "Finnish or English"
-msgstr ""
-
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
-#: models/programme.py
-msgid "Flashing or bright lights"
-msgstr ""
-
-#: models/programme.py
-msgid "For 18+ only"
-msgstr ""
-
-#: models/programme.py
-msgid "For how many people your program item is for?"
-msgstr ""
-
-#: templates/programme_admin_organizers_view.pug
-msgid "Form used"
-msgstr "Käytetty lomake"
-
-#: forms/misc_forms.py
+#: forms.py
 msgid "Format: YYYY-MM-DD HH:MM:SS"
 msgstr "Muoto: YYYY-MM-DD HH:MM:SS"
 
@@ -497,10 +230,6 @@ msgstr "Vapaamuotoinen ohjelmanjärjestäjä"
 msgid "Frozen"
 msgstr "Lukittu"
 
-#: templates/programme_profile_reservations_view.pug
-msgid "Full"
-msgstr "Täynnä"
-
 #: models/programme_event_meta.py
 msgid "Full-width"
 msgstr "Koko leveys"
@@ -508,14 +237,6 @@ msgstr "Koko leveys"
 #: templates/programme_profile_view.pug
 msgid "Future programmes"
 msgstr "Tulevat ohjelmanumerot"
-
-#: models/programme.py
-msgid "Game difficulty and complexity"
-msgstr ""
-
-#: models/programme.py
-msgid "Game program type"
-msgstr "Peliohjelman tyyppi"
 
 #: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_info_fragment.pug
 msgid "Give feedback"
@@ -534,25 +255,9 @@ msgstr "Anna palaute anonyymisti"
 msgid "Give feedback: %(programme_title)s"
 msgstr "Anna palautetta: %(programme_title)s"
 
-#: templates/programme_event_box.pug
-msgid "Go to programme admin"
-msgstr "Siirry ohjelmanhallintaan"
-
-#: templates/programme_event_box.pug
-msgid "Go to reservations"
-msgstr "Siirry paikkavarauksiin"
-
-#: models/programme.py
-msgid "Have you hosted program for SK/KP before?"
-msgstr ""
-
 #: models/programme.py
 msgid "Have you presented this same programme at another event before the event you are offering it to now, or do you intend to present it in another event before this one? If you are unsure about the re-run policy of this event, please consult the programme managers."
 msgstr "Oletko esittänyt tämän saman ohjelman toisessa tapahtumassa ennen tapahtumaa, johon nyt sitä tarjoat, tai aiotko esittää sen ensin tapahtumassa joka on ennen tätä tapahtumaa? Jos et ole varma, hyväksyykö tämä tapahtuma uusintaohjelmaa tai mikä katsotaan uusintaohjelmaksi, ota yhteyttä ohjelmavastaavaan."
-
-#: templates/programme_profile_reservations_view.pug
-msgid "Here are the programmes you can currently reserve seats for. Please click the name of the programme to reserve seats. If the programme is currently booked full, seats may become available as visitors release reservations they do not need, so check back later."
-msgstr "Näihin ohjelmanumeroihin voit tällä hetkellä varata paikkoja. Napsauta ohjelmanumeron nimeä varataksesi paikkoja. Jos ohjelmanumero on tällä hetkellä täynnä, paikkoja voi tulla saataville kävijöiden vapauttaessa lippuja joita he eivät tarvitse, joten kannattaa tarkistaa tilanne myöhemmin uudelleen."
 
 #: templates/programme_admin_publish_view.pug
 msgid "Here you can set a time for the programme schedule to be automatically published. You can also publish or un-publish the schedule right away."
@@ -565,18 +270,6 @@ msgstr "Tässä voit ajastaa ohjelmahaun avautumisen ja päättymisen. Ohjelmaha
 #: admin.py
 msgid "Hide selected feedback"
 msgstr "Piilota valitut palautteet"
-
-#: models/programme.py
-msgid "Highly Advanced"
-msgstr ""
-
-#: models/programme.py
-msgid "Historical"
-msgstr ""
-
-#: models/programme.py
-msgid "Horror"
-msgstr ""
 
 #: templates/programme_profile_detail_view.pug
 msgid "Hosts can only be invited by the programme manager. If you have agreed with the programme manager to include people who are not listed here, please contact the programme manager. In order to receive speaker benefits, all hosts of the programme must be listed here."
@@ -591,14 +284,6 @@ msgid "How large an audience do you expect for your programme? What kind of a ro
 msgstr "Miten suurta yleisöä odotat ohjelmallesi? Minkä tyyppistä tilaa toivot ohjelmallesi?"
 
 #: models/programme.py
-msgid "How long do you present your game"
-msgstr ""
-
-#: models/programme.py
-msgid "How many chairs are needed for your game programme."
-msgstr ""
-
-#: models/programme.py
 msgid "How many microphones do you require?"
 msgstr "Montako mikrofonia tarvitset?"
 
@@ -607,66 +292,12 @@ msgid "How many players must there at least be for the game to take place?"
 msgstr "Kuinka monta pelaajaa peliin täytyy vähintään ilmoittautua, jotta peli toteutuu?"
 
 #: models/programme.py
-#, fuzzy
-msgid "How many tables do you need"
-msgstr "Montako mikrofonia tarvitset?"
-
-#: models/programme.py
-msgid "How much table space is needed for your game programme: how many tables in total?<br/>Table size is 70 cm x 200 cm."
-msgstr ""
-
-#: models/programme.py
-msgid "How will players sign up for your game programme?<br/>No sign-up - no sign-up is required to participate in the game programme.<br/>Sign-up via the Konsti app - the sign-up process for the game programme is done via the Konsti app during the event.<br/>Other sign-up process - if your game programme requires attendees to sign up beforehand and you prefer to handle it through some other means (e.g. at the Gaming Desk), please choose this option and describe the sign-up process in the Comments section below."
-msgstr ""
-
-#: models/programme.py
-msgid "Humor"
-msgstr ""
-
-#: models/programme.py
-msgid "I am submitting a larp for"
-msgstr ""
-
-#: models/programme.py
-msgid "I can organize my programme both at a physical con and at a virtual con"
-msgstr "Voin järjestää ohjelmani sekä lähi- että etäconissa"
-
-#: models/programme.py
-msgid "I can organize my programme only at a physical con"
-msgstr "Voin järjestää ohjelmani vain lähiconissa"
-
-#: models/programme.py
-msgid "I can organize my programme only at a virtual con"
-msgstr "Voin järjestää ohjelmani vain etäconissa"
-
-#: models/programme.py
-msgid "I can participate in a panel discussion on my field of expertise during the convention."
-msgstr "Voin osallistua erikoisalaani sivuavaan paneelikeskusteluun"
-
-#: models/programme.py
-#, fuzzy
-msgid "I can participate in a panel discussion related to my field of expertise."
-msgstr "Voin osallistua erikoisalaani sivuavaan paneelikeskusteluun"
-
-#: models/programme.py
-msgid "I can't use a microphone"
-msgstr ""
+msgid "I forbid publishing my programme, but it may be recorded for archiving purposes"
+msgstr "Kiellän ohjelmani julkaisemisen, mutta sen saa videoida arkistokäyttöön"
 
 #: models/programme.py
 msgid "I forbid recording my programme altogether"
 msgstr "Kiellän ohjelmani videoinnin kokonaan"
-
-#: models/programme.py
-msgid "I have purchased or am about to purchase a Solmukohta 2024 ticket"
-msgstr ""
-
-#: models/programme.py
-msgid "I understand that if my programme item is accepted, I will still need to purchase a Solmukohta 2024 ticket in order to attend."
-msgstr ""
-
-#: models/programme.py
-msgid "I will collect sign-ups"
-msgstr "Hoidan itse ilmoittautumisen"
 
 #: models/programme.py
 msgid "I'm not sure whether my programme contains copyright-encumbered content or not"
@@ -676,37 +307,9 @@ msgstr "En ole varma, sisältääkö ohjelmani tekijänoikeudella suojattua sis�
 msgid "IP address"
 msgstr "IP-osoite"
 
-#: models/programme.py
-msgid "If Ropecon is held virtually, I can run my game virtually"
-msgstr ""
-
-#: models/programme.py
-msgid "If participation in the workshop requires a material fee, write the amount here as accurately as possible (if already known at the time of application). If not known (or there is no fee of any type), write 0€. Remember to update the exact amount to Kompassi before the release of the programme guide!"
-msgstr ""
-
-#: models/programme.py
-msgid "If selected, reserved seats for this programme will be offered."
-msgstr "Jos tämä on valittu, tähän ohjelmaan tarjotaan paikkalippuja Kompassin kautta. Paikkalippujärjestelmän käyttöönotto edellyttää, että ohjelmalle on määritelty sali, alkuaika sekä pituus ja sen salille on olemassa paikkadata."
-
-#: models/programme.py
-msgid "If selected, the time of this progrmme will be shown in reservation context. This is used to hide the time in contexts in which the time is not relevant or would be misleading, particularly Tracon afterparty coaches."
-msgstr ""
-
-#: models/programme.py
-msgid "If selected, this programme will be shown in listings as publicly reservable while it is in its reservation period. Non-publicly reservable programmes can only be accessed by knowing the direct URL."
-msgstr ""
-
-#: models/alternative_programme_form.py
-msgid "If set, programme hosts entering programme using this form will by default gain this role."
-msgstr ""
-
 #: templates/programme_admin_cold_offers_view.pug
 msgid "If the <em>Accepting cold offers from</em> field is empty, the cold offer form will stay closed. If the <em>Accepting cold offers from</em> field is set but the <em>Accepting cold offers until</em> field is empty, the cold offer form will stay open once the beginning of the period has been reached."
 msgstr "Jos <em>Ohjelmahaku alkaa</em> -kenttä on tyhjä, ohjelmahaku pysyy suljettuna. Jos <em>Ohjelmahaku alkaa</em> -kenttä on täytetty mutta <em>Ohjelmahaku päättyy</em> -kenttä ei ole täytetty, ohjelmahaku pysyy alettuaan avoimena."
-
-#: models/programme.py
-msgid "If the game design requires characters with a specific gender let us know in the notes."
-msgstr ""
 
 #: models/programme.py
 msgid "If the programme requires signing up in advance, put a link here and it will be shown as a button in the schedule."
@@ -716,113 +319,25 @@ msgstr "Mikäli ohjelmanumero edellyttää ilmoittautumista etukäteen, laita li
 msgid "If the scenario has been written by someone else than the GM, we require that the author be disclosed."
 msgstr "Jos skenaarion on kirjoittanut joku muu kuin sen tässä tapahtumassa vetävä pelinjohtaja, on kirjoittaja ilmoitettava tässä."
 
-#: models/schedule.py
-msgid "If the start and end times are set, this view will be constrained to those times. Use this for eg. day-specific views. If these are not set, the whole event will be displayed in a single view."
-msgstr "Jos alku- ja loppuaika on asetettu, tämä näkymä näyttää vain näiden välisen ajan. Tätä voit käyttää esim. erottamaan eri tapahtumapäivien ohjelman omiin ohjelmakarttanäkymiinsä. Jos näitä ei ole asetettu, koko tapahtuma-aika näytetään samassa ohjelmakarttanäkymässä."
-
 #: models/programme.py
 msgid "If there is anything else you wish to say to the programme manager that is not covered by the above questions, please enter it here."
 msgstr "Haluatko sanoa ohjelmavastaaville jotain, mikä ei sovi mihinkään yllä olevista kentistä?"
 
-#: templates/programme_profile_reservations_view.pug
-msgid "If you change your mind about a programme you have reserved seats for, please relinquish those seats so that others may reserve them."
-msgstr "Jos paikkalipun varattuasi muutat mielesi, vapautathan paikkavarauksesi, jotta joku toinen voi varata sinulta käyttämättä jäävän paikan."
-
-#: models/programme.py
-msgid "If you chose \"other\", enter the language or languages you will be using in your programme here"
-msgstr ""
-
-#: models/programme.py
-msgid "If you need assistance from Ropecon in acquiring or loaning the materials, inform about your needs here. It can be for example pens and paper, flip chart, miniature parts, miniature paint, iron wire etc."
-msgstr ""
-
-#: models/programme.py
-msgid "If your game is aimed at children 7-12 years of age, please tick this box. You can also tick this box if your game is suitable for children aged 7-12 years, even if it is not specifically designed for them."
-msgstr ""
-
-#: models/programme.py
-msgid "If your game is aimed at children over the age of 12, please tick this box. You can also tick this box if your game is suitable for children aged 12 years and older, even if it is not specifically designed for them."
-msgstr ""
-
-#: models/programme.py
-msgid "If your game is aimed at children under 7 years of age, please tick this box. You can also tick this box if your game is suitable for children under 7 years, even if it is not specifically designed for them."
-msgstr ""
-
-#: models/programme.py
-msgid "If your game is related to the children’s theme of Ropecon 2020 (dinosaurs), please tick this box."
-msgstr ""
-
-#: models/programme.py
-msgid "If your game is related to the theme of Ropecon 2020 (end of the world), please tick this box."
-msgstr ""
-
-#: models/programme.py
-msgid "If your game programme is not suitable for children under 15 years of age, please tick this box."
-msgstr ""
-
-#: models/programme.py
-msgid "If your program contains heavy topics or potentially distressing themes, please mention it here."
-msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
-
-#: models/programme.py
-msgid "If your program contains loud noises, flashing lights or other elements that can limit accessibility, please tick the checkbox. More details can be provided in the last text field if necessary."
-msgstr "Ruksaa tämä ruutu, jos ohjelma sisältää kovia ääniä, valoja tai muuta, mikä voi rajoittaa osallistumista. Tarkenna tarvittaessa viimeisessä avoimessa kentässä."
-
-#: models/programme.py
-msgid "If your programme contains themes that require attendees to be 18 years or older, please tick this box. There will be an ID check for all attendees."
-msgstr ""
+#: templates/core_contact_information_panel.pug
+msgid "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile."
+msgstr "Jos nimesi näytetään julkisesti tämän ohjelman järjestäjänä, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
 
 #: templates/programme_offer_form_view.pug
 msgid "If your programme has other hosts in addition to yourself, please write their e-mail addresses here. They will be sent invitations to confirm their participation in your programme. Please note that the programme manager may at their discretion limit the number of hosts allowed for your programme. Inviting someone here does not guarantee automatic admittance into the event. Adding more hosts later requires approval from the programme manager."
 msgstr "Jos ohjelmanumerossasi on lisäksesi muita ohjelmanpitäjiä, syötä heidän sähköpostiosoitteensa tähän. Heille lähetetään kutsu vahvistaa osallistumisensa ohjelmaan. Huomaathan, että kutsun lähettäminen ei takaa automaattista sisäänpääsyä. Ohjelmavastaava voi harkintansa mukaan rajoittaa ohjelmanumeroon hyväksyttävien ohjelmanpitäjien määrää."
 
 #: models/programme.py
-msgid "If your programme is aimed at children and their guardians, please tick this box."
-msgstr ""
-
-#: models/programme.py
-msgid "If your programme is designed for adult attendees, please tick this box."
-msgstr ""
-
-#: models/programme.py
-msgid "If your programme is designed for attendees between 13-17 years of age, please tick this box."
-msgstr ""
-
-#: models/programme.py
-msgid "If your programme is designed for attendees under the age of 13 years, please tick this box."
-msgstr ""
-
-#: models/programme.py
-msgid "If your programme is related to the theme of Ropecon 2021, please tick this box."
-msgstr ""
-
-#: models/programme.py
-msgid "If your programme is suitable for all ages, please tick this box."
-msgstr ""
-
-#: models/programme.py
-msgid "If your programme is suitable for attendees with very limited knowledge or without any previous experience about the programme or subject matter in question, please tick this box."
-msgstr ""
-
-#: models/programme.py
 msgid "In order to be displayed in the schedule, the programme must have a start time and a length and must be assigned into a room."
 msgstr "Jotta ohjelmanumero näkyisi ohjelmakartassa, sillä tulee olla alkuaika sekä pituus ja sen tulee olla sijoitettu johonkin saliin."
 
 #: models/programme.py
-msgid "In the open field, define if necessary what features of your programme may possibly limit or enable participation (e.g. if the programme is available in sign language)."
-msgstr ""
-
-#: models/programme.py
 msgid "In this context, physical play can mean, for example, using your whole body, acting the actions of your character or moving around in the allocated space."
 msgstr "Tässä kontekstissa fyysisellä fyysinen pelaaminen voi tarkoittaa esimerksi koko keholla pelaamista, hahmon näyttelemistä tai pelitilassa liikkumista."
-
-#: models/programme.py
-msgid "Inform us here, if you need a specific kind of space (and/or furniture) for your workshop. For example if tables and chairs need to be moved for empty space in your workshop, because it is not possible to do so in every room."
-msgstr ""
-
-#: models/programme.py
-msgid "Inform us how many tables and chairs are needed in your workshop."
-msgstr ""
 
 #: templates/programme_accept_invitation_view.pug templates/programme_offer_form_view.pug templates/programme_profile_detail_view.pug
 msgid "Information about yourself"
@@ -844,11 +359,7 @@ msgstr "Ideoitu sisäisesti"
 msgid "Invalid action."
 msgstr "Kelvoton toiminto."
 
-#: forms/paikkala_forms.py
-msgid "Invalid after"
-msgstr "Voimassaolo päättyy"
-
-#: views/admin_invitations_view.py views/admin_rooms_view.py
+#: views/admin_invitations_view.py
 msgid "Invalid request."
 msgstr "Kelvoton pyyntö."
 
@@ -889,103 +400,28 @@ msgid "Job title"
 msgstr "Tehtävänimike"
 
 #: models/programme.py
-msgid "Language"
-msgstr "Kieli"
-
-#: models/programme.py
-#, fuzzy
-msgid "Language-free"
-msgstr "Kieli"
-
-#: models/programme.py
 msgid "Laptop provided by the event"
 msgstr "Tapahtuman toimittama kannettava tietokone"
-
-#: forms/schedule_admin_forms.py
-msgid "Left"
-msgstr ""
 
 #: models/programme.py
 msgid "Length (minutes)"
 msgstr "Pituus (minuuttia)"
 
 #: models/programme.py
-#, fuzzy
-msgid "Length of the programme"
-msgstr "Tarjoa ohjelmanumeroa"
-
-#: models/programme.py
-msgid "Less experienced presenters who would like some guidance may request a mentor. More experienced presenters can volunteer here to help. (This usually involves a few emails or Skype calls 1-2 months leading up to the event.)"
-msgstr ""
-
-#: models/programme.py
-msgid "Less than 50"
-msgstr ""
-
-#: models/programme.py
-msgid "Let us know of your requirements. Fully dark, separate rooms, water outlet, sound, light, etc. Not all requests can be accommodated so please explain how your request improves the game."
-msgstr ""
-
-#: models/programme.py
-msgid "Let us know what props and other equipment you need and if you can provide some of them yourself. Not all requests can be accommodated. Water and glasses are always provided."
-msgstr ""
-
-#: models/programme.py
-msgid "Light game style"
-msgstr ""
-
-#: models/programme.py
 msgid "Lots of it"
 msgstr "Paljon"
 
 #: models/programme.py
-msgid "Loud sounds"
-msgstr ""
-
-#: models/programme.py
 msgid "Make up a concise title for your programme. We reserve the right to edit the title."
 msgstr "Keksi ytimekäs otsikko ohjelmanumerollesi. Varaamme oikeuden muokata otsikkoa."
-
-#: views/admin_menu_items.py
-msgid "Mass messages"
-msgstr ""
-
-#: models/programme.py
-#, fuzzy
-msgid "Material needs"
-msgstr "Sisäiset muistiinpanot"
-
-#: models/programme.py
-msgid "Material used in the programme can cause problems for the colourblind"
-msgstr ""
-
-#: models/programme.py
-msgid "Materials or substances that irritate the skin"
-msgstr ""
-
-#: forms/paikkala_forms.py
-msgid "Max tickets per batch"
-msgstr "Kerralla varattavien lippujen enimmäismäärä"
-
-#: forms/paikkala_forms.py
-msgid "Max tickets per user"
-msgstr "Lippujen enimmäismäärä käyttäjää kohden"
 
 #: models/programme.py
 msgid "May your programme be recorded and published in the Internet?"
 msgstr "Saako ohjelmanumerosi videoida ja julkaista Internetissä?"
 
 #: models/programme.py
-msgid "May your programme be streamed live on YouTube? Streamed programmes will also be available afterwards on our channel."
-msgstr "Saako ohjelmasi lähettää suorana YouTubessa? Striimatut ohjelmat ovat katsottavissa kanavaltamme myös jälkikäteen."
-
-#: models/programme.py
 msgid "Maybe. The programme might be presented in a convention that takes place before this one."
 msgstr "Ehkä. Ohjelmanumero saatetaan esittää ensin toisessa tapahtumassa joka on ennen tätä tapahtumaa."
-
-#: models/programme.py
-msgid "Mentoring"
-msgstr ""
 
 #: models/programme.py
 msgid "Microphones"
@@ -996,22 +432,8 @@ msgid "Moderation"
 msgstr "Moderointi"
 
 #: models/programme.py
-#, fuzzy
-msgid "Modern"
-msgstr "Moderointi"
-
-#: models/programme.py
 msgid "More than five – Please elaborate on your needs in the \"Other tech requirements\" field."
 msgstr "Enemmän kuin viisi – Ole hyvä ja selitä tarpeesi Muut tekniikkatarpeet -kentässä."
-
-#: models/programme.py
-msgid "My field of expertise"
-msgstr "Erikoisalani"
-
-#: models/programme.py
-#, fuzzy
-msgid "My field(s) of expertise"
-msgstr "Erikoisalani"
 
 #: models/programme.py
 msgid "My programme contains copyright-encumbered audio or video"
@@ -1025,19 +447,15 @@ msgstr "Ohjelmanumeroni ei sisällä tekijänoikeudella suojattua ääntä tai v
 msgid "My programme may be recorded and published"
 msgstr "Ohjelmanumeroni saa videoida ja julkaista"
 
-#: models/programme.py
-msgid "Mystery"
-msgstr ""
-
-#: templates/programme_accept_invitation_view.pug templates/programme_offer_form_view.pug templates/programme_profile_detail_view.pug
-msgid "NOTE! Do not include yourself in these invites."
-msgstr "HUOM! Älä sisällytä itseäsi näihin kutsuihin."
-
 #: templates/programme_admin_detail_views/change_host_role_modals.pug
 msgid "Name"
 msgstr "Nimi"
 
-#: views/admin_menu_items.py
+#: templates/core_contact_information_panel.pug
+msgid "Name as displayed"
+msgstr "Nimen esittäminen"
+
+#: views/programme_admin_menu_items.py
 msgid "New offers"
 msgstr "Uudet tarjoukset"
 
@@ -1045,15 +463,11 @@ msgstr "Uudet tarjoukset"
 msgid "New programme"
 msgstr "Uusi ohjelmanumero"
 
-#: forms/schedule_admin_forms.py
-msgid "New room name"
-msgstr "Uuden salin nimi"
-
 #: templates/programme_admin_organizers_view.pug
 msgid "Nick"
 msgstr "Nick"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Nick name"
 msgstr "Nick"
 
@@ -1062,26 +476,12 @@ msgid "No"
 msgstr "Ei"
 
 #: models/programme.py
-msgid "No Finnish language needed to participate."
-msgstr ""
-
-#: models/programme.py
 msgid "No computer required"
 msgstr "En käytä ohjelmanumerossani lainkaan tietokonetta"
-
-#: models/programme.py
-#, fuzzy
-msgid "No estimate"
-msgstr "Tila"
 
 #: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug
 msgid "No feedback."
 msgstr "Tämä ohjelmanumero ei ole vielä saanut palautetta."
-
-#: models/programme.py
-#, fuzzy
-msgid "No language"
-msgstr "Kieli"
 
 #: templates/programme_admin_organizers_view.pug
 #, python-format
@@ -1093,18 +493,6 @@ msgid "No programmes"
 msgstr "Ei ohjelmanumeroita"
 
 #: models/programme.py
-msgid "No sign-up"
-msgstr "Ei ilmoittautumista"
-
-#: models/programme.py
-msgid "No, I forbid streaming my programme"
-msgstr "Ei, ohjelmaani ei saa lähettää suorana"
-
-#: templates/programme_profile_reservations_view.pug
-msgid "No, I wish to keep it"
-msgstr "Ei, haluan pitää sen"
-
-#: models/programme.py
 msgid "No. The programme is original to this convention and I promise not to present it elsewhere before."
 msgstr "Ei. Ohjelman ensiesitys on tässä tapahtumassa ja vakuutan etten esitä sitä muualla ensin."
 
@@ -1113,30 +501,12 @@ msgid "Not at all"
 msgstr "Ei lainkaan"
 
 #: models/programme.py
-msgid "Not suitable for children"
-msgstr ""
-
-#: models/programme.py
 msgid "Not sure"
 msgstr "En ole varma"
-
-#: models/programme.py
-#, fuzzy
-msgid "Number of chairs"
-msgstr "pelaajia vähintään"
 
 #: models/alternative_programme_form.py
 msgid "Number of extra invites"
 msgstr "Lisäkutsujen määrä"
-
-#: models/programme.py
-#, fuzzy
-msgid "Number of tables"
-msgstr "Lisäkutsujen määrä"
-
-#: models/programme.py
-msgid "Number of tables and chairs"
-msgstr ""
 
 #: templates/programme_event_box.pug templates/programme_offer_form_view.pug templates/programme_offer_view.pug
 msgid "Offer programme"
@@ -1168,39 +538,9 @@ msgstr "Vain ohjelmanjärjestäjä voi nähdä ohjelmansa palautteen."
 msgid "Only hosts who are assigned public roles will be shown publicly in the programme schedule."
 msgstr "Ohjelmakartassa näytetään ainoastaan ne ohjelmanjärjestäjät, jotka ovat julkisessa roolissa."
 
-#: models/programme.py
-msgid "Open game"
-msgstr "Avoin peluutus"
-
-#: templates/programme_admin_invitations_view.pug views/admin_menu_items.py
+#: templates/programme_admin_invitations_view.pug views/programme_admin_menu_items.py
 msgid "Open invitations"
 msgstr "Avoimet kutsut"
-
-#: models/programme.py
-msgid "Other"
-msgstr ""
-
-#: models/programme.py
-#, fuzzy
-msgid "Other accessibility information"
-msgstr "Yhteystiedot"
-
-#: models/programme.py
-#, fuzzy
-msgid "Other inaccessibility"
-msgstr "Esteellinen"
-
-#: models/programme.py
-msgid "Other needs"
-msgstr ""
-
-#: models/programme.py
-msgid "Other sign-up process"
-msgstr ""
-
-#: models/programme.py
-msgid "Other space and furniture needs"
-msgstr ""
 
 #: models/programme.py
 msgid "Other tech requirements"
@@ -1210,76 +550,27 @@ msgstr "Muut tekniikkatarpeet"
 msgid "Our official photographers will try to cover all programmes whose hosts request their programmes to be photographed."
 msgstr "Tapahtuman viralliset valokuvaajat pyrkivät ottamaan valokuvia kaikista ohjelmanumeroista joista niitä on pyydetty."
 
-#: models/programme.py
-msgid "Over 250"
-msgstr ""
-
 #: models/role.py
 msgid "Override public job title"
 msgstr "Korvaa tehtävänimike julkisesti"
-
-#: models/programme.py
-msgid "Own laptop – Mac"
-msgstr "Oma Mac-kannettava"
 
 #: models/programme.py
 msgid "Own laptop – PC"
 msgstr "Oma PC-kannettava"
 
 #: models/programme.py
-msgid "Panel discussions"
-msgstr "Paneelikeskustelu"
-
-#: models/programme.py
-#, fuzzy
-msgid "Panel participation"
-msgstr "Peruuta kutsu"
-
-#: models/programme.py
-msgid "Panel talk"
-msgstr ""
-
-#: models/programme.py
-msgid "Participation involves a lot of moving around without a chance for sitting down"
-msgstr ""
-
-#: models/programme.py
-msgid "Participation involves a lot of remaining in one place without a chance to take breaks and move around"
-msgstr ""
-
-#: models/programme.py
-msgid "Participation involves reading long texts independently"
-msgstr ""
-
-#: models/programme.py
-msgid "Participation involves reading long texts independently, and the texts are not available as recordings for those with visual impairment"
-msgstr ""
-
-#: models/programme.py
-msgid "Participation requires listening to a recording that does not have a text version for the hearing impaired"
-msgstr ""
-
-#: models/programme.py
-msgid "Participation requires some dexterity, e.g. that of hands and fingers."
-msgstr ""
-
-#: models/programme.py
-msgid "Participation requires the ability to react quickly."
-msgstr ""
+msgid "Own laptop – Mac"
+msgstr "Oma Mac-kannettava"
 
 #: templates/programme_profile_view.pug
 msgid "Past programmes"
 msgstr "Menneet ohjelmanumerot"
 
-#: views/paikkala_views.py
-msgid "Permission denied."
-msgstr "Pääsy estetty."
-
 #: models/role.py templates/programme_admin_organizers_view.pug
 msgid "Personnel class"
 msgstr "Henkilöstöluokka"
 
-#: templates/programme_admin_detail_views/hosts_tab.pug
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/core_contact_information_panel.pug
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
@@ -1287,65 +578,33 @@ msgstr "Puhelinnumero"
 msgid "Photography of your programme"
 msgstr "Ohjelman valokuvaus"
 
-#: models/programme.py
-msgid "Physical con"
-msgstr ""
-
-#: models/programme.py
-msgid "Physical contact and/or low chances of personal space"
-msgstr ""
-
-#: models/programme.py
-msgid "Physical or virtual programme?"
-msgstr "Lähi- vai etäohjelmaa?"
-
 #: templates/programme_admin_publish_view.pug
 msgid "Please bear in mind that only programmes that are in the \"Published\" state are shown in the schedule."
 msgstr "Muistathan, että ohjelmakartassa näytetään vain ohjelmanumerot jotka ovat Julkaistu-tilassa."
 
-#: models/programme.py
-msgid "Please check all that apply; if there are other potential content warnings, add them under \"other\"."
-msgstr ""
-
-#: views/accept_invitation_view.py views/admin_create_view.py views/admin_detail_view.py views/admin_schedule_view.py views/feedback_view.py views/offer_view.py
+#: views/accept_invitation_view.py views/admin_create_view.py views/admin_detail_view.py views/feedback_view.py views/offer_view.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
+
+#: templates/core_contact_information_panel.pug
+msgid "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number."
+msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman ohjelmavastaaville. Mikäli ohjelmanumerollasi on muitakin järjestäjiä, he näkevät nimesi mutteivät sähköpostiosoitettasi tai puhelinnumeroasi."
 
 #: models/programme.py
 msgid "Please do not photograph my programme"
 msgstr "Pyydän, ettei ohjelmanumeroani valokuvata"
 
-#: forms/misc_forms.py
+#: forms.py
 msgid "Please enter an e-mail address to invite another host"
 msgstr "Ole hyvä ja syötä sähköpostiosoite kutsuaksesi toisen ohjelmanjärjestäjän"
-
-#: models/programme.py
-msgid "Please enter any other needs here, such as paper and markers for a workshop, spatial needs for a larp, etc. Also mention here if you want to have your programme item outside, in the pool, or in an otherwise unusual environment."
-msgstr ""
-
-#: models/programme.py
-msgid "Please fill this in only if you checked the Panel participation box above"
-msgstr ""
 
 #: models/programme.py
 msgid "Please give your best guess on how long you expect your game to take."
 msgstr "Heitä paras arvauksesi siitä, kuinka kauan pelisi tulee kestämään."
 
 #: models/programme.py
-msgid "Please let us know your preference. Due to the limited space we are not able to accommodate all requests. One four hour session gives you one weekend ticket. A second session gives you an additional day ticket."
-msgstr ""
-
-#: models/programme.py
 msgid "Please photograph my programme"
 msgstr "Pyydän, että ohjelmastani otetaan valokuvia"
-
-#: models/programme.py
-msgid "Please provide the names as they should be presented in the programme guide. Please indicate their role in the programme, if there are multiple roles (moderator, panelist, etc.). Please also include yourself in the list."
-msgstr ""
-
-#: models/programme.py
-msgid "Please tell us if there are any restrictions to scheduling your programme item (if you will be arriving late or leaving early or the like)."
-msgstr ""
 
 #: models/programme.py
 msgid "Please tick this box if you are able, prepared and willing to host your programme in English if necessary."
@@ -1363,31 +622,17 @@ msgstr "Ruksaa tämä ruutu, mikäli pelisi sisältää sellaisia teemoja, joide
 msgid "Please tick this box if your game is suitable for younger players. Please give more details, if necessary, in the last open field."
 msgstr "Ruksaa tämä ruutu, mikäli pelisi sopii myös nuoremmille pelaajille. Anna tarvittaessa lisätietoja ikäsuosituksista viimeisessä avoimessa kentässä."
 
-#: models/programme.py
-#, fuzzy
-msgid "Preparations required"
-msgstr "Varausaika päättyy"
-
-#: models/programme.py
-msgid "Presenters get a weekend ticket for 8 hours of presenting or a day ticket for 4 hours."
-msgstr ""
-
 #: models/role.py
 msgid "Priority"
 msgstr "Järjestys"
 
-#: models/freeform_organizer.py models/invitation.py templates/programme_admin_feedback_view.pug templates/programme_admin_invitations_view.pug templates/programme_admin_reservation_status_view.pug templates/programme_event_box.pug templates/programme_profile_reservations_view.pug
+#: models/freeform_organizer.py models/invitation.py templates/programme_admin_feedback_view.pug templates/programme_admin_invitations_view.pug
 msgid "Programme"
 msgstr "Ohjelma"
 
-#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug views/admin_menu_items.py
+#: templates/programme_admin_detail_views/feedback_tab.pug templates/programme_admin_feedback_view.pug templates/programme_profile_feedback_view.pug views/programme_admin_menu_items.py
 msgid "Programme feedback"
 msgstr "Ohjelmapalaute"
-
-#: models/programme.py
-#, fuzzy
-msgid "Programme for children"
-msgstr "Ohjelmalomake"
 
 #: templates/programme_admin_detail_views/programme_tab.pug views/admin_detail_view.py
 msgid "Programme form"
@@ -1397,55 +642,31 @@ msgstr "Ohjelmalomake"
 msgid "Programme host"
 msgstr "Ohjelmanjärjestäjä"
 
-#: models/programme.py
-#, fuzzy
-msgid "Programme host names"
-msgstr "Ohjelmanjärjestäjät"
-
-#: models/programme_role.py templates/programme_accept_invitation_view.pug templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/programme_offer_form_view.pug templates/programme_profile_detail_view.pug views/admin_detail_view.py views/admin_menu_items.py
+#: models/programme_role.py templates/programme_accept_invitation_view.pug templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/programme_offer_form_view.pug templates/programme_profile_detail_view.pug views/admin_detail_view.py views/programme_admin_menu_items.py
 msgid "Programme hosts"
 msgstr "Ohjelmanjärjestäjät"
-
-#: models/programme.py
-#, fuzzy
-msgid "Programme icon"
-msgstr "Ohjelmanjärjestäjä"
 
 #: templates/programme_accept_invitation_view.pug templates/programme_offer_form_view.pug
 msgid "Programme information"
 msgstr "Ohjelmanumeron tiedot"
 
-#: models/programme.py
-msgid "Programme time is visible in Paikkala context"
-msgstr ""
-
 #: templates/programme_admin_organizers_view.pug templates/programme_profile_view.pug views/public_views.py
 msgid "Programmes"
 msgstr "Ohjelmanumerot"
-
-#: models/programme.py
-#, fuzzy
-msgid "Prop requirements"
-msgstr "Tilatarpeet"
 
 #: models/role.py
 msgid "Public"
 msgstr "Julkinen"
 
-#: forms/misc_forms.py
+#: forms.py
 msgid "Public from"
 msgstr "Julkaisuaika"
-
-#: models/programme.py
-#, fuzzy
-msgid "Publicly reservable"
-msgstr "Varattavissa"
 
 #: templates/programme_admin_publish_view.pug
 msgid "Publish now"
 msgstr "Julkaise heti"
 
-#: templates/programme_admin_publish_view.pug views/admin_menu_items.py
+#: templates/programme_admin_publish_view.pug views/programme_admin_menu_items.py
 msgid "Publish schedule"
 msgstr "Ohjelmakartan julkaiseminen"
 
@@ -1469,19 +690,6 @@ msgstr "Videointilupa"
 msgid "Rejected"
 msgstr "Hylätty"
 
-#: templates/programme_profile_reservations_view.pug
-msgid "Relinquish"
-msgstr "Vapauta"
-
-#: templates/programme_admin_reservation_status_view.pug
-msgid "Remaining"
-msgstr "Jäljellä"
-
-#: templates/programme_admin_rooms_view.pug
-#, fuzzy
-msgid "Remove"
-msgstr "Poista ohjelmanjärjestäjä"
-
 #: templates/programme_admin_detail_views/hosts_tab.pug
 msgid "Remove free-form host"
 msgstr "Poista vapaamuotoinen ohjelmanjärjestäjä"
@@ -1494,86 +702,25 @@ msgstr "Poista ohjelmanjärjestäjä"
 msgid "Requested time slot"
 msgstr "Aikatoiveet"
 
-#: templates/programme_admin_reservation_status_view.pug
-msgid "Reservable"
-msgstr "Varattavissa"
-
-#: templates/programme_profile_reservations_view.pug
-msgid "Reservable programmes"
-msgstr "Varattavissa olevat ohjelmat"
-
-#: models/programme.py
-msgid "Reservable seats"
-msgstr "Käyttää paikkavarausjärjestelmää"
-
-#: forms/paikkala_forms.py
-msgid "Reservation end"
-msgstr "Varausaika päättyy"
-
-#: forms/paikkala_forms.py
-msgid "Reservation start"
-msgstr "Varausaika alkaa"
-
-#: templates/programme_admin_reservation_status_view.pug
-msgid "Reservation summary"
-msgstr "Paikkavarausten yhteenveto"
-
-#: templates/programme_info_fragment.pug templates/programme_paikkala_reservation_view.pug
-msgid "Reserve seats"
-msgstr "Varaa paikkoja"
-
-#: templates/programme_paikkala_reservation_view.pug
-msgid "Reserve the seats"
-msgstr "Varaa paikat"
-
-#: templates/programme_admin_reservation_status_view.pug
-msgid "Reserved"
-msgstr "Varattu"
-
 #: admin.py
 msgid "Restore selected feedback"
 msgstr "Palauta valitut palautteet näkyviin"
-
-#: templates/programme_paikkala_reservation_view.pug
-msgid "Return without reserving seats"
-msgstr "Palaa varaamatta paikkoja"
 
 #: templates/programme_admin_invitations_view.pug
 msgid "Revoke all open invitations"
 msgstr "Peru kaikki avoimet kutsut"
 
-#: models/programme.py
-msgid "Revolving door game"
-msgstr "Pyöröovipeli (revolving door)"
-
-#: forms/schedule_admin_forms.py
-msgid "Right"
-msgstr ""
-
-#: models/alternative_programme_form.py models/invitation.py templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug templates/programme_admin_organizers_view.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
+#: models/invitation.py templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_invitations_view.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Role"
 msgstr "Rooli"
 
-#: models/programme.py models/room.py templates/programme_admin_rooms_view.pug templates/programme_profile_reservations_view.pug
+#: models/programme.py
 msgid "Room"
 msgstr "Sali"
 
 #: models/programme.py
 msgid "Room requirements"
 msgstr "Tilatarpeet"
-
-#: models/room.py
-#, fuzzy
-msgid "Rooms"
-msgstr "Sali"
-
-#: models/programme.py
-msgid "Rules heavy"
-msgstr ""
-
-#: models/programme.py
-msgid "Rules light"
-msgstr ""
 
 #: templates/programme_admin_create_view.pug templates/programme_admin_detail_view.pug templates/programme_admin_detail_views/buttons.pug
 msgid "Save and continue"
@@ -1595,42 +742,9 @@ msgstr "Ohjelmakarttatiedot"
 msgid "Schedule layout"
 msgstr "Ohjelmakartan asettelu"
 
-#: models/programme.py
-#, fuzzy
-msgid "Scheduling restrictions"
-msgstr "Ohjelmakarttatiedot"
-
-#: models/programme.py
-msgid "Sci-fi"
-msgstr ""
-
-#: templates/programme_profile_reservations_view.pug
-msgid "Seat"
-msgstr "Paikka"
-
-#: templates/programme_paikkala_inspection_view.pug
-msgid "Seat reservation"
-msgstr "Paikkavaraus"
-
-#: templates/programme_admin_detail_views/reservations_tab.pug templates/programme_admin_reservation_status_view.pug templates/programme_profile_reservations_view.pug views/admin_detail_view.py views/admin_menu_items.py views/public_views.py
-msgid "Seat reservations"
-msgstr "Paikkavaraukset"
-
-#: views/paikkala_views.py
-msgid "Seats successfully reserved."
-msgstr "Paikkavaraus onnistui."
-
-#: models/programme.py
-msgid "Select the event form appropriate for the larp you have planned."
-msgstr ""
-
-#: forms/misc_forms.py
+#: forms.py
 msgid "Select the form that will be used to edit the information of this programme. If this field is left blank, the default form will be used. Some events do not offer a choice of different forms, in which case this field will not have options and the default form will always be used. "
 msgstr "Valitse lomake, jota käytetään ohjelmanumeron tietojen syöttämiseen. Mikäli tämä kenttä jätetään tyhjäksi, käytetään oletuslomaketta. Jotkin tapahtumat eivät tarjoa valittavia lomakkeita lainkaan, jolloin tämä kenttä ei tarjoa vaihtoehtoja ja oletuslomaketta käytetään joka tapauksessa."
-
-#: models/programme.py
-msgid "Select the times when you are <b>NOT able</b> to run your larp. In other words, leave the times that you would be able to run your larp unselected!<br/>If you have a more specific request in mind regarding your schedule (for example, you would like to run your larp late at night), please let us know in the Comments section below.<br/>In this section, we would like to know more about how work or volunteer shifts, public transport schedules and other factors might be impacting your schedule. For example, if you need to leave the venue by 11pm to be able to catch the last bus to your accommodation."
-msgstr ""
 
 #: templates/programme_admin_detail_views/invitation_modal.pug
 msgid "Send invitation"
@@ -1640,39 +754,13 @@ msgstr "Lähetä kutsu"
 msgid "Send offer"
 msgstr "Lähetä tarjous"
 
-#: models/programme.py
-msgid "Serious game style"
-msgstr ""
-
 #: templates/programme_info_fragment.pug
 msgid "Sign up"
 msgstr "Ilmoittaudu"
 
 #: models/programme.py
-msgid "Sign up at the Gaming Desk"
-msgstr "Ilmoittautuminen pelitiskille"
-
-#: models/programme.py
-msgid "Sign-up process"
-msgstr ""
-
-#: models/programme.py
-#, fuzzy
-msgid "Sign-up requirements"
-msgstr "Tilatarpeet"
-
-#: models/programme.py
-msgid "Sign-up via the Konsti app"
-msgstr ""
-
-#: models/programme.py
 msgid "Signup link"
 msgstr "Ilmoittautumislinkki"
-
-#: models/programme.py
-#, fuzzy
-msgid "Simple"
-msgstr "näkyvissä"
 
 #: models/invitation.py
 msgid "Sire"
@@ -1694,26 +782,9 @@ msgstr "Jotkut tapahtumat haluavat käyttää ohjelmakartassaan selainikkunan ko
 msgid "Someone else has invited someone, but they have not yet accepted their invitation."
 msgstr "Joku toinen on kutsunut jonkun, mutta tämä ei ole vielä hyväksynyt kutsuaan."
 
-#: models/programme.py
-#, fuzzy
-msgid "Space and technical requirements"
-msgstr "Muut tekniikkatarpeet"
-
-#: models/programme.py
-msgid "Specify here if you have any clarifications or if you have anything to expand upon regarding the above questions."
-msgstr ""
-
-#: models/programme.py
-msgid "Specify here whether your players are expected to bring their own game tools or other equipment and what that equipment is (e.g. card decks, figure armies)."
-msgstr ""
-
 #: templates/programme_admin_cold_offers_view.pug
 msgid "Start now"
 msgstr "Avaa heti"
-
-#: models/schedule.py templates/programme_profile_reservations_view.pug
-msgid "Start time"
-msgstr "Alkuaika"
 
 #: models/programme.py
 msgid "Starting time"
@@ -1723,71 +794,17 @@ msgstr "Alkamisaika"
 msgid "State"
 msgstr "Tila"
 
-#: models/programme.py
-msgid "Story driven"
-msgstr ""
-
-#: models/programme.py
-msgid "Streaming permission"
-msgstr "Striimauslupa"
-
-#: models/programme.py
-#, fuzzy
-msgid "Strong smells"
-msgstr "alkamisaika"
-
 #: templates/programme_feedback_view.pug
 msgid "Submit feedback"
 msgstr "Lähetä palaute"
 
-#: views/paikkala_views.py
-msgid "Successfully relinquished the seat reservation."
-msgstr "Paikkavaraus on vapautettu."
-
-#: models/programme.py
-msgid "Suitable for all ages"
-msgstr ""
-
-#: models/programme.py
-msgid "Suitable for children aged 12+"
-msgstr ""
-
-#: models/programme.py
-msgid "Suitable for children aged 7-12"
-msgstr ""
-
-#: models/programme.py
-msgid "Suitable for children under 7"
-msgstr ""
-
-#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
+#: templates/programme_admin_detail_views/hosts_tab.pug templates/programme_admin_organizers_view.pug templates/core_contact_information_panel.pug templates/programme_invitations_table.pug templates/programme_profile_detail_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
 
 #: models/programme.py
-msgid "Swedish"
-msgstr "Ruotsi"
-
-#: models/programme.py
-msgid "Table size is about 140 x 80 cm."
-msgstr ""
-
-#: models/programme.py
 msgid "Tags"
 msgstr "tägit"
-
-#: models/programme.py
-#, fuzzy
-msgid "Technical needs"
-msgstr "Sisäiset muistiinpanot"
-
-#: models/programme.py
-msgid "Tell us here if your programme contains heavy subjects that may cause discomfort or distress in some participants"
-msgstr ""
-
-#: models/programme.py
-msgid "Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time)."
-msgstr "Merkitse tähän ne ajat, jolloin sinun <strong>ei ole mahdollista</strong> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. <em>haluaisin peluuttaa pelini myöhään illalla</em>), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi)"
 
 #: models/freeform_organizer.py
 msgid "Text"
@@ -1813,7 +830,7 @@ msgstr "IP-osoite näkyy vain hallintakäyttöliittymässä."
 msgid "The changes were saved."
 msgstr "Muutokset tallennettiin."
 
-#: forms/misc_forms.py
+#: forms.py
 msgid "The closing time must be after the opening time."
 msgstr "Sulkeutumisajan täytyy olla avautumisajan jälkeen."
 
@@ -1826,16 +843,8 @@ msgid "The cold offer period was started."
 msgstr "Ohjelmahaku avattiin."
 
 #: models/programme.py
-msgid "The duration of the programme is over two hours without breaks."
-msgstr ""
-
-#: models/programme.py
 msgid "The event has ended and the programme has been archived."
 msgstr "Tapahtuma on ohi ja ohjelmanumero on arkistoitu."
-
-#: templates/programme_event_box.pug
-msgid "The event has programme with reservations open"
-msgstr "Tapahtumassa on ohjelmanumeroita, joiden paikat ovat varattavissa"
 
 #: templates/programme_event_box.pug
 msgid "The event is accepting programme offers"
@@ -1885,30 +894,9 @@ msgstr "Kutsu ei ole enää voimassa."
 msgid "The invitation was cancelled."
 msgstr "Kutsu peruutettu."
 
-#: models/programme.py
-msgid "The organizers of Ropecon strive to organize a physical con, and if the con can be held thusly, virtual programmes will not be organized. If the con cannot be face to face, we cannot organize physical programmes during a virtual con.<br><br>Specify here whether your programme can be organized face to face, virtually, or either way."
-msgstr "Ropeconin järjestäjien tavoitteena on järjestää lähicon, ja sen toteutuessa etäohjelmia ei pystytä järjestämään. Jos lähiconia ei voida järjestää, emme luonnollisesti voi järjestää lähiohjelmaa etäconissa.<br><br>Kerro tässä, voitko järjestää ohjelmasi lähiconissa, etäconissa vai molemmissa."
-
 #: models/role.py
 msgid "The personnel class for the programme hosts that have this role."
 msgstr "Henkilöstöluokka ohjelmanjärjestäjille, joilla on tämä rooli."
-
-#: models/programme.py
-msgid "The programme icon is used to make it harder to mix up reservations of different programmes during inspection."
-msgstr ""
-
-#: models/programme.py
-msgid "The programme includes texts that are essential to participation, and the texts are not available as recordings or read out loud."
-msgstr ""
-
-#: models/programme.py
-msgid "The programme involves watching a video without subtitles for the hearing impaired"
-msgstr ""
-
-#: models/programme.py
-#, fuzzy
-msgid "The programme item contains..."
-msgstr "Tarkastele ohjelmanumeron tietoja"
 
 #: templates/programme_accept_invitation_view.pug
 #, python-format
@@ -1928,14 +916,6 @@ msgstr[1] "Ohjelmavastaava on sallinut sinun kutsua ohjelmaasi %(num_invite)s mu
 msgid "The programme manager has invited you as a host to the programme outlined below. In order to be admitted to the event as a programme organizer, you need to accept this invitation and fill out the requested details."
 msgstr "Ohjelmavastaava on kutsunut sinut järjestämään ohjelmanumeron, joka on yksilöity alla. Saadaksesi ohjelmanjärjestäjän edut sinun tulee hyväksyä tämä kutsu ja täyttää pyydetyt lisätiedot."
 
-#: templates/programme_event_box.pug
-msgid "The programme schedule for this event has been published"
-msgstr "Tapahtuman ohjelmakartta on julkaistu"
-
-#: templates/programme_event_box.pug
-msgid "The programme schedule for this event has not yet been published"
-msgstr "Tapahtuman ohjelmakarttaa ei ole vielä julkaistu"
-
 #: views/admin_create_view.py
 msgid "The programme was created."
 msgstr "Ohjelmanumero luotiin."
@@ -1951,15 +931,6 @@ msgstr "Julkaisuaika tallennettiin."
 #: views/admin_detail_view.py
 msgid "The role was changed."
 msgstr "Rooli vaihdettiin."
-
-#: views/admin_rooms_view.py
-#, fuzzy
-msgid "The room was deleted."
-msgstr "Ohjelmanumero luotiin."
-
-#: views/admin_schedule_view.py
-msgid "The schedule change was successful."
-msgstr "Ohjelmakartan muutos onnistui."
 
 #: templates/programme_admin_publish_view.pug
 msgid "The schedule is currently published."
@@ -1981,41 +952,9 @@ msgstr "Ohjelmakartta julkaistiin."
 msgid "The schedule was un-published."
 msgstr "Ohjelmakartta palautettiin ei-julkaistuksi."
 
-#: views/paikkala_views.py
-msgid "The size of your reservation exceeds the allowed maximum. Please try a smaller reservation."
-msgstr "Varauksesi koko ylittää sallitun. Ole hyvä ja kokeile pienempää varausta."
-
 #: views/admin_cold_offers_view.py
 msgid "The times for cold offer period were saved."
 msgstr "Ohjelmahaun avautumis- ja sulkeutumisajat tallennettiin."
-
-#: models/programme.py
-msgid "Theme: Dinosaurs"
-msgstr ""
-
-#: models/programme.py
-msgid "Theme: Elements"
-msgstr ""
-
-#: models/programme.py
-msgid "Theme: End of the world"
-msgstr ""
-
-#: templates/programme_profile_reservations_view.pug
-msgid "There are currently no reservable programmes."
-msgstr "Minkään ohjelmanumeron paikat eivät ole tällä hetkellä varattavissa."
-
-#: models/programme.py
-msgid "There are limited opportunities to move around during the programme."
-msgstr ""
-
-#: views/paikkala_views.py
-msgid "There isn't sufficient space for your reservation in the selected zone. Please try another zone."
-msgstr "Valitsemallasi alueella ei ole tarpeeksi tilaa varauksellesi. Ole hyvä ja kokeile toista aluetta."
-
-#: templates/programme_admin_rooms_view.pug
-msgid "This Room cannot be removed because it is either added to a schedule view or programmes have been added to it or both."
-msgstr ""
 
 #: models/programme.py
 msgid "This description is published in the web schedule and the programme booklet. The purpose of this description is to give the participant sufficient information to decide whether to take part or not and to market your programme to the participants. We reserve the right to edit the description."
@@ -2037,10 +976,6 @@ msgstr "Tämän kentän sisältö näkyy normaalisti vain ohjelmavastaaville. Se
 msgid "This gets displayed publicly instead of title, if set. Affects eg. badges."
 msgstr "Näytetään tehtävänimikkeen paikalla (esim. badgessa) roolin nimen asemesta."
 
-#: views/paikkala_views.py
-msgid "This programme does not allow reservations at this time."
-msgstr "Tähän ohjelmanumeroon ei tällä hetkellä oteta vastaan paikkavarauksia."
-
 #: models/programme.py
 msgid "This programme has been frozen by the programme manager."
 msgstr "Ohjelmavastaava on lukinnut tämän ohjelmanumeron."
@@ -2049,52 +984,23 @@ msgstr "Ohjelmavastaava on lukinnut tämän ohjelmanumeron."
 msgid "This programme has been rejected by the programme manager."
 msgstr "Ohjelmavastaava on hylännyt tämän ohjelmanumeron."
 
-#: views/paikkala_views.py
-msgid "This programme is currently full."
-msgstr "Ohjelma on tällä hetkellä täynnä."
-
 #: models/freeform_organizer.py
 msgid "This text will be shown as-is in the schedule"
 msgstr "Tämä teksti näytetään ohjelmakartassa sellaisenaan."
-
-#: views/paikkala_views.py
-#, fuzzy
-msgid "This ticket is no longer valid."
-msgstr "Kutsu ei ole enää voimassa."
 
 #: models/alternative_programme_form.py
 msgid "This title is visible to the programme host."
 msgstr "Tämä otsikko näkyy ohjelmanpitäjälle."
 
-#: templates/programme_admin_schedule_view.pug
-msgid "This view is currently not visible."
-msgstr "Tämä näkymä ei tällä hetkellä ole näkyvissä."
-
-#: models/schedule.py
-msgid "This will be automatically filled in if not provided."
-msgstr ""
-
 #: models/programme.py
 msgid "Three-word description"
 msgstr "Kolmen sanan kuvaus"
-
-#: models/programme.py
-msgid "Tick this box if your programme is designed for adult participants."
-msgstr ""
-
-#: models/programme.py
-msgid "Tick this box if your programme is designed for children under the age of 10."
-msgstr ""
-
-#: models/programme.py
-msgid "Tick this box if your programme is designed for underage participants."
-msgstr ""
 
 #: templates/programme_admin_feedback_view.pug templates/programme_feedback_table.pug
 msgid "Timestamp"
 msgstr "Aikaleima"
 
-#: models/programme.py models/schedule.py proxies/helpers.py
+#: models/programme.py proxies/helpers.py
 msgid "Title"
 msgstr "Otsikko"
 
@@ -2102,34 +1008,17 @@ msgstr "Otsikko"
 msgid "To support programmes with multiple hosts, the host offering the programme may be enabled to invite more hosts to their programme by entering their e-mail addresses. This field controls if this is available and at most how many e-mail addresses may be entered."
 msgstr "Joissain ohjelmanumeroissa on useita ohjelmanpitäjiä. Tämän mahdollistamiseksi ohjelman ilmoittajalle voidaan antaa mahdollisuus kutsua ohjelmanumeroon useampia järjestäjiä syöttämällä näiden sähköpostiosoitteet. Tämä kenttä kontrolloi, onko tämä mahdollisuus olemassa ja montako sähköpostiosoitetta on mahdollista syöttää."
 
-#: templates/programme_admin_reservation_status_view.pug
-#, fuzzy
-msgid "Total"
-msgstr "otsikko"
-
-#: models/programme.py
-msgid "Tournament"
-msgstr "Turnaus"
-
 #: templates/programme_admin_publish_view.pug
 msgid "Un-publish now"
 msgstr "Palauta ei-julkaistuksi"
-
-#: views/admin_schedule_view.py
-msgid "Unknown action"
-msgstr ""
 
 #: models/programme_feedback.py
 msgid "Unless you choose to give feedback anonymously, your name and e-mail address will be shared with the programme host and programme manager. Please note that even if you choose to leave feedback anonymously, abusive feedback can be traced back to you by the administrator of the system."
 msgstr "Ellet päätä jättää palautettasi anonyymisti, nimesi ja sähköpostiosoitteesi näytetään ohjelmanjärjestäjälle ja ohjelmavastaaville. Huomaathan, että mikäli palautteesi on asiaton, järjestelmän ylläpitäjä pystyy yhdistämään sen sinuun vaikka antaisit sen anonyymisti."
 
-#: forms/schedule_admin_forms.py
-msgid "Up"
-msgstr ""
-
-#: templates/programme_profile_reservations_view.pug
-msgid "Upcoming seat reservations"
-msgstr "Paikkavaraukset tuleviin ohjelmiin"
+#: templates/core_contact_information_panel.pug
+msgid "Update profile..."
+msgstr "Päivitä profiilia..."
 
 #: models/programme.py templates/programme_admin_detail_views/internal_tab.pug
 msgid "Updated at"
@@ -2155,15 +1044,7 @@ msgstr "Tarkastele ohjelmanumeron tietoja"
 msgid "View programme feedback"
 msgstr "Tarkastele ohjelmanumeron saamaa palautetta"
 
-#: templates/programme_event_box.pug
-msgid "View programme schedule"
-msgstr "Näytä ohjelmakartta"
-
-#: models/programme.py
-msgid "Virtual con"
-msgstr ""
-
-#: admin.py models/schedule.py
+#: admin.py
 msgid "Visible"
 msgstr "Näkyvissä"
 
@@ -2175,82 +1056,25 @@ msgstr "Näkyy sivulla, josta ohjelman tarjoaminen aloitetaan ja josta valitaan,
 msgid "Visible to the hosts that register their programmes using this form."
 msgstr "Näkyy lomakkeen yläpuolella ilmoitettaessa ohjelmaa käyttäen tätä lomaketta."
 
-#: models/programme.py
-msgid "War"
-msgstr ""
-
 #: templates/programme_info_fragment.pug
 msgid "Watch the recording"
 msgstr "Katso tallenne"
-
-#: models/programme.py
-msgid "We will make a mailing list to reach all our programme hosts for the purpose of keeping you informed. You need not add your own email address here – it will be shared with us when you submit this form."
-msgstr ""
-
-#: models/programme.py
-msgid "We will print content warnings in the programme schedule in order to give our visitors the requisite information to make educated choices about programme. If your programme contains bright lights, loud noises, smoke or similar effects, please choose them above. Please include any other content warnings in the text field."
-msgstr ""
 
 #: models/programme.py
 msgid "What is the maximum number of players that can take part in a single run of the game?"
 msgstr "Mikä on suurin määrä pelaajia, mitä peliin otetaan?"
 
 #: models/programme.py
-msgid "What is the primary language of your programme?"
-msgstr "Mikä on ohjelmanumerosi ensisijainen kieli?"
-
-#: models/programme.py
 msgid "What kind of a computer do you wish to use? The use of your own computer is only possible if agreed in advance."
 msgstr "Minkälaista tietokonetta haluat käyttää? Suosittelemme painokkaasti tapahtuman toimittaman ns. coniläppärin käyttöä. Oman tietokoneen käyttö on mahdollista ainoastaan etukäteen sovittuna."
-
-#: models/programme.py
-msgid "What language is used in the game materials?"
-msgstr ""
-
-#: models/programme.py
-#, fuzzy
-msgid "What type of game programme are you offering? Tournament – organising your own game tournament or contest. Demonstration – showcasing, demonstrating and running demo games at the Experience Point. Open game – running games with or without specific scenarios by request. Other – Something other than mentioned above"
-msgstr "Minkä tyyppinen peliohjelma on kyseessä? Turnaus - turnauksen ja kilpailun järjestämistä. Demotus - pelin esittelyä ja demottamista sekä pelaamista. Avoin peluutus - vapaata pelaamista skenaarioita tai ihan yleistä pelaamista."
 
 #: models/programme.py
 msgid "When a programme is frozen, its details can no longer be edited by the programme host. The programme manager may continue to edit these, however."
 msgstr "Kun ohjelmanumero on lukittu, ohjelmanjärjestäjä ei voi enää muokata sen tietoja. Ohjelmavastaava voi muokata myös lukittua ohjelmanumeroa."
 
 #: models/programme.py
-#, fuzzy
-msgid "When are you NOT able to host your programme?"
-msgstr "Milloin et pysty pelauttamaan peliäsi?"
-
-#: models/programme.py
-#, fuzzy
-msgid "When are you NOT able to run your larp?"
-msgstr "Milloin et pysty pelauttamaan peliäsi?"
-
-#: models/programme.py
-msgid "When are you unable to run your game?"
-msgstr "Milloin et pysty pelauttamaan peliäsi?"
-
-#: templates/programme_profile_reservations_view.pug
-msgid "When entering a programme that requires a reserved seat, please open the seat reservation from the table below on your smartphone and show it to the security personnel at the door."
-msgstr "Kun olet menossa paikkavarausta edellyttävään ohjelmaan, ole hyvä ja avaa paikkavaraus valmiiksi älypuhelimesi näytölle napsauttamalla ohjelmanumeron nimeä."
-
-#: models/programme.py
-#, fuzzy
-msgid "When would you like to hold your programme? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them in the last open field."
-msgstr "Mihin aikaan haluaisit pitää ohjelmasi? Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä viimeisessä avoimessa kentässä."
-
-#: models/programme.py
-msgid "When would you like to host your game program? Check the times when you would like to host your game program. If you have more specific needs regarding the timing, please let us know in the Comments field below. We do not restrict your desired times, but we reserve the right to make changes. For example, we would rather have tournaments one after another than at the same time."
-msgstr "Mihin aikaan aiot pitää ohjelmasi? Merkitse tähän ne ajat, jolloin olet suunnitellut pitäväsi peliohjelmasi. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä Vapaamuotoiset terveiset kentässä. Emme rajoita koska haluat pitää ohjelmasi, mutta pidätämme oikeudet muutoksiin (esim. aikataulutamme mieluummin turnauksia peräkkäin kuin samanaikaisesti)."
-
-#: models/programme.py
 msgid "When would you like to run your RPG? The time slots are intentionally vague. If you have more specific needs regarding the time, please explain them in the last open field."
 msgstr "Mihin aikaan haluaisit pitää ohjelmasi? Aikaslotit ovat tarkoituksella epämääräisiä. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä viimeisessä avoimessa kentässä."
-
-#: models/programme.py
-#, fuzzy
-msgid "When would you like to run your programme?"
-msgstr "Milloin et pysty pelauttamaan peliäsi?"
 
 #: models/programme.py
 msgid "Which form was used to offer this Programme? If null, the default form was used."
@@ -2261,10 +1085,6 @@ msgid "Which rule system is your RPG using?"
 msgstr "Mitä pelijärjestelmää roolipelisi käyttää?"
 
 #: models/programme.py
-msgid "Will you make your own signup sheet"
-msgstr ""
-
-#: models/programme.py
 msgid "Will you play audio in your programme?"
 msgstr "Soitatko äänileikkeitä (esim. musiikkia) osana ohjelmaasi?"
 
@@ -2273,24 +1093,8 @@ msgid "Will you play video in your programme?"
 msgstr "Näytätkö videopätkiä osana ohjelmaasi?"
 
 #: models/programme.py
-msgid "Workshop fee"
-msgstr ""
-
-#: models/programme.py
 msgid "Yes"
 msgstr "Kyllä"
-
-#: models/programme.py
-msgid "Yes, I allow streaming my programme live"
-msgstr "Kyllä, ohjelmani saa lähettää suorana"
-
-#: models/programme.py
-msgid "Yes, I would like my programme to be streamed live"
-msgstr "Kyllä, toivon että ohjelmani lähetetään suorana"
-
-#: templates/programme_profile_reservations_view.pug
-msgid "Yes, relinquish it"
-msgstr "Kyllä, vapauta se"
 
 #: models/programme.py
 msgid "Yes. The programme has previously been presented in another convention."
@@ -2312,26 +1116,9 @@ msgstr "Voit muuttaa näitä tietoja myöhemmin profiilisi kautta."
 msgid "You can edit the details of this programme until it is published in the schedule."
 msgstr "Voit muokata tämän ohjelmanumeron tietoja kunnes se on julkaistu ohjelmakarttaan."
 
-#: forms/schedule_admin_forms.py
-msgid "You can either select an existing room or choose to create a new one by typing its name here, but not both."
-msgstr ""
-
-#: forms/paikkala_forms.py
-msgid "You can reserve at most {max_tickets} tickets."
-msgstr "Voit varata enintään {max_tickets} lippua."
-
 #: views/feedback_view.py
 msgid "You cannot leave anonymous feedback about your own programme."
 msgstr "Et voi jättää anonyymiä palautetta omasta ohjelmastasi."
-
-#: views/feedback_view.py
-#, fuzzy
-msgid "You cannot leave feedback about a programme that has not yet been delivered."
-msgstr "Et voi jättää anonyymiä palautetta omasta ohjelmastasi."
-
-#: views/paikkala_views.py
-msgid "You cannot reserve any more tickets for this programme."
-msgstr "Et voi varata enempää lippuja tähän ohjelmaan."
 
 #: views/accept_invitation_view.py
 msgid "You have already accepted this invitation. You can edit the programme below."
@@ -2345,29 +1132,13 @@ msgstr "Olet jo ottanut tämän kutsun vastaan. Et voi enää muokata ohjelmanum
 msgid "You have cancelled this programme."
 msgstr "Olet peruuttanut tämän ohjelmanumeron."
 
-#: templates/programme_profile_reservations_view.pug
-msgid "You have no upcoming seat reservations."
-msgstr "Sinulla ei ole paikkavarauksia tuleviin ohjelmiin."
-
 #: templates/programme_profile_view.pug
 msgid "You have not organized any programme in events that use this site."
 msgstr "Et ole järjestänyt ohjelmaa tapahtumissa, jotka käyttävät tätä sivustoa."
 
-#: templates/programme_event_box.pug
-msgid "You have programme admin privileges for this event"
-msgstr "Sinulla on ohjelmavastaavan oikeudet tähän tapahtumaan"
-
-#: views/paikkala_views.py
-msgid "You need to log in before reserving tickets."
-msgstr "Sinun täytyy kirjautua sisään ennen paikkojen varaamista."
-
 #: templates/programme_feedback_view.pug
 msgid "Your feedback will be shared with the programme host and the programme managers."
 msgstr "Palautteesi toimitetaan ohjelmanjärjestäjälle sekä tapahtuman ohjelmavastaaville."
-
-#: forms/paikkala_forms.py templates/programme_admin_reservation_status_view.pug
-msgid "Zone"
-msgstr "Alue"
 
 #: models/alternative_programme_form.py
 msgid "alternative programme form"
@@ -2417,6 +1188,9 @@ msgstr "palaute"
 msgid "form used"
 msgstr "käytetty lomake"
 
+msgid "Form used"
+msgstr "Käytetty lomake"
+
 #: models/freeform_organizer.py proxies/freeform_organizer/admin.py
 msgid "freeform organizer"
 msgstr "vapaamuotoinen ohjelmanjärjestäjä"
@@ -2442,15 +1216,6 @@ msgid "minimum number of players"
 msgstr "pelaajia vähintään"
 
 #: models/programme.py
-#, fuzzy
-msgid "number of characters"
-msgstr "Lisäkutsujen määrä"
-
-#: models/programme.py
-msgid "number of times you want to run the game"
-msgstr ""
-
-#: models/programme.py
 msgid "preferred time slots"
 msgstr "aikatoiveet"
 
@@ -2461,11 +1226,6 @@ msgstr "ohjelmanumero"
 #: models/programme_feedback.py
 msgid "programme feedback"
 msgstr "ohjelmapalaute"
-
-#: apps.py
-#, fuzzy
-msgid "programme management"
-msgstr "Ohjelmanjärjestäjä"
 
 #: models/programme.py
 msgid "programmes"
@@ -2483,10 +1243,6 @@ msgstr "rooli"
 msgid "roles"
 msgstr "roolit"
 
-#: templates/programme_paikkala_inspection_view.pug templates/programme_profile_reservations_view.pug
-msgid "row"
-msgstr "rivi"
-
 #: models/schedule.py
 msgid "schedule view"
 msgstr "ohjelmakarttanäkymä"
@@ -2494,10 +1250,6 @@ msgstr "ohjelmakarttanäkymä"
 #: models/schedule.py
 msgid "schedule views"
 msgstr "ohjelmakarttanäkymät"
-
-#: templates/programme_paikkala_inspection_view.pug templates/programme_profile_reservations_view.pug
-msgid "seat"
-msgstr "paikka"
 
 #: models/alternative_programme_form.py
 msgid "short description"
@@ -2523,10 +1275,6 @@ msgstr "tägi"
 msgid "tags"
 msgstr "tägit"
 
-#: models/programme.py
-msgid "time preferences"
-msgstr ""
-
 #: models/alternative_programme_form.py
 msgid "title"
 msgstr "otsikko"
@@ -2535,54 +1283,341 @@ msgstr "otsikko"
 msgid "visible"
 msgstr "näkyvissä"
 
-#: forms/paikkala_forms.py
-msgid "{zone} – {remaining} seats remain"
-msgstr "{zone} – {remaining} paikkaa jäljellä"
-
-#~ msgid "Active from"
-#~ msgstr "Käyttöaika alkaa"
-
-#~ msgid "Active until"
-#~ msgstr "Käyttöaika päättyy"
-
 #~ msgid "Host needs"
 #~ msgstr "Ohjelmanjärjestäjän tarpeet"
-
-#~ msgid "I forbid publishing my programme, but it may be recorded for archiving purposes"
-#~ msgstr "Kiellän ohjelmani julkaisemisen, mutta sen saa videoida arkistokäyttöön"
-
-#~ msgid "If your name is publicly displayed as the programme host, this is how your name will be published. You can change the name display style in your profile."
-#~ msgstr "Jos nimesi näytetään julkisesti tämän ohjelman järjestäjänä, se näytetään tässä muodossa. Voit tarvittaessa vaihtaa esitystapaa profiilissasi."
-
-#~ msgid "Language skills"
-#~ msgstr "Kielitaito"
-
-#~ msgid "Miniature painting"
-#~ msgstr "Figumaalausohjelma"
-
-#~ msgid "Name as displayed"
-#~ msgstr "Nimen esittäminen"
-
-#~ msgid "Please check your contact information and update your profile if necessary. By accepting this invitation you agree to these contact details being shared with the programme manager of the event. If there are other hosts to your programme, they will see your surname, first name and nick name but not your e-mail address or phone number."
-#~ msgstr "Ole hyvä ja tarkista yhteystietosi ja korjaa ne tarvittaessa profiiliisi. Hyväksymällä tämän kutsun annat luvan luovuttaa nämä yhteystiedot tapahtuman ohjelmavastaaville. Mikäli ohjelmanumerollasi on muitakin järjestäjiä, he näkevät nimesi mutteivät sähköpostiosoitettasi tai puhelinnumeroasi."
-
-#~ msgid "Please describe your language skills, especially in Finnish, Swedish and English."
-#~ msgstr "Ole hyvä ja kerro kielitaidostasi erityisesti suomen, ruotsin ja englannin kielissä (ohjelmanumerot joissa useampi ohjelmanpitäjä: kaikkien äänessä olevien ohjelmanpitäjien)."
 
 #~ msgid "Public information"
 #~ msgstr "Julkiset tiedot"
 
-#~ msgid "Require user"
-#~ msgstr "Sisäänkirjautuminen vaaditaan"
+msgid "The schedule change was successful."
+msgstr "Ohjelmakartan muutos onnistui."
 
-#~ msgid "Row"
-#~ msgstr "Rivi"
+msgid "Start time"
+msgstr "Alkuaika"
 
-#~ msgid "Total capacity"
-#~ msgstr "Paikkoja yhteensä"
+msgid "End time"
+msgstr "Loppuaika"
 
-#~ msgid "Update profile..."
-#~ msgstr "Päivitä profiilia..."
+msgid "Edit schedule"
+msgstr "Ohjelmakartan muokkaus"
 
-#~ msgid "the time after which tickets for this program are considered out-of-date, e.g. for hiding from UI"
-#~ msgstr "Ohjelman paikkaliput katsotaan tämän jälkeen vanhentuneiksi ja piilotetaan käyttöliittymästä."
+msgid "If the start and end times are set, this view will be constrained to those times. Use this for eg. day-specific views. If these are not set, the whole event will be displayed in a single view."
+msgstr "Jos alku- ja loppuaika on asetettu, tämä näkymä näyttää vain näiden välisen ajan. Tätä voit käyttää esim. erottamaan eri tapahtumapäivien ohjelman omiin ohjelmakarttanäkymiinsä. Jos näitä ei ole asetettu, koko tapahtuma-aika näytetään samassa ohjelmakarttanäkymässä."
+
+msgid "Existing room"
+msgstr "Olemassaoleva sali"
+
+msgid "New room name"
+msgstr "Uuden salin nimi"
+
+msgid "Edit rooms"
+msgstr "Ohjelmasalien muokkaus"
+
+msgid "Finnish"
+msgstr "Suomi"
+
+msgid "Swedish"
+msgstr "Ruotsi"
+
+msgid "English"
+msgstr "Englanti"
+
+msgid "What is the primary language of your programme?"
+msgstr "Mikä on ohjelmanumerosi ensisijainen kieli?"
+
+msgid "Language"
+msgstr "Kieli"
+
+msgid "Language skills"
+msgstr "Kielitaito"
+
+msgid "Please describe your language skills, especially in Finnish, Swedish and English."
+msgstr "Ole hyvä ja kerro kielitaidostasi erityisesti suomen, ruotsin ja englannin kielissä (ohjelmanumerot joissa useampi ohjelmanpitäjä: kaikkien äänessä olevien ohjelmanpitäjien)."
+
+msgid "Reserve seats"
+msgstr "Varaa paikkoja"
+
+msgid "Zone"
+msgstr "Alue"
+
+msgid "Count"
+msgstr "Lukumäärä"
+
+msgid "Row"
+msgstr "Rivi"
+
+msgid "row"
+msgstr "rivi"
+
+msgid "Seat"
+msgstr "Paikka"
+
+msgid "seat"
+msgstr "paikka"
+
+msgid "Return without reserving seats"
+msgstr "Palaa varaamatta paikkoja"
+
+msgid "You can reserve at most {max_tickets} tickets."
+msgstr "Voit varata enintään {max_tickets} lippua."
+
+msgid "Seat reservations"
+msgstr "Paikkavaraukset"
+
+msgid "Seat reservation"
+msgstr "Paikkavaraus"
+
+msgid "When entering a programme that requires a reserved seat, please open the seat reservation from the table below on your smartphone and show it to the security personnel at the door."
+msgstr "Kun olet menossa paikkavarausta edellyttävään ohjelmaan, ole hyvä ja avaa paikkavaraus valmiiksi älypuhelimesi näytölle napsauttamalla ohjelmanumeron nimeä."
+
+msgid "If you change your mind about a programme you have reserved seats for, please relinquish those seats so that others may reserve them."
+msgstr "Jos paikkalipun varattuasi muutat mielesi, vapautathan paikkavarauksesi, jotta joku toinen voi varata sinulta käyttämättä jäävän paikan."
+
+msgid "Are you sure you want to relinquish the following seat reservation?"
+msgstr "Haluatko varmasti vapauttaa seuraavan paikkavarauksen?"
+
+msgid "No, I wish to keep it"
+msgstr "Ei, haluan pitää sen"
+
+msgid "Yes, relinquish it"
+msgstr "Kyllä, vapauta se"
+
+msgid "Successfully relinquished the seat reservation."
+msgstr "Paikkavaraus on vapautettu."
+
+msgid "Seats successfully reserved."
+msgstr "Paikkavaraus onnistui."
+
+msgid "Relinquish"
+msgstr "Vapauta"
+
+msgid "Reserve seats"
+msgstr "Varaa paikkoja"
+
+msgid "Reserve the seats"
+msgstr "Varaa paikat"
+
+msgid "Return without reserving seats"
+msgstr "Palaa varaamatta paikkoja"
+
+msgid "Reservable seats"
+msgstr "Käyttää paikkavarausjärjestelmää"
+
+msgid "If selected, reserved seats for this programme will be offered."
+msgstr "Jos tämä on valittu, tähän ohjelmaan tarjotaan paikkalippuja Kompassin kautta. Paikkalippujärjestelmän käyttöönotto edellyttää, että ohjelmalle on määritelty sali, alkuaika sekä pituus ja sen salille on olemassa paikkadata."
+
+msgid "Reservation start"
+msgstr "Varausaika alkaa"
+
+msgid "Reservation end"
+msgstr "Varausaika päättyy"
+
+msgid "Invalid after"
+msgstr "Voimassaolo päättyy"
+
+msgid "the time after which tickets for this program are considered out-of-date, e.g. for hiding from UI"
+msgstr "Ohjelman paikkaliput katsotaan tämän jälkeen vanhentuneiksi ja piilotetaan käyttöliittymästä."
+
+msgid "Require user"
+msgstr "Sisäänkirjautuminen vaaditaan"
+
+msgid "Max tickets per user"
+msgstr "Lippujen enimmäismäärä käyttäjää kohden"
+
+msgid "Max tickets per batch"
+msgstr "Kerralla varattavien lippujen enimmäismäärä"
+
+msgid "Both reservation start and reservation end must be set for the reservation to be considered open.'
+msgstr "Sekä alku- että loppuaika täytyy asettaa jotta varausjärjestelmä aukeaa."
+
+msgid "May your programme be streamed live on YouTube? Streamed programmes will also be available afterwards on our channel."
+msgstr "Saako ohjelmasi lähettää suorana YouTubessa? Striimatut ohjelmat ovat katsottavissa kanavaltamme myös jälkikäteen."
+
+msgid "Streaming permission"
+msgstr "Striimauslupa"
+
+msgid "Yes, I would like my programme to be streamed live"
+msgstr "Kyllä, toivon että ohjelmani lähetetään suorana"
+
+msgid "Yes, I allow streaming my programme live"
+msgstr "Kyllä, ohjelmani saa lähettää suorana"
+
+msgid "No, I forbid streaming my programme"
+msgstr "Ei, ohjelmaani ei saa lähettää suorana"
+
+msgid "Revolving door game"
+msgstr "Pyöröovipeli (revolving door)"
+
+msgid "Check this box if new players can join during gameplay and old players may (or must) leave before the game is over. Please mention this in the game description below, and give more details if necessary."
+msgstr "Ruksaa tämä ruutu, mikäli peliin voi liittyä uusia pelaajia pelin ollessa käynnissä ja vanhat pelaajat voivat poistua (tai joutuvat poistumaan) pelistä ennen pelin loppua. Kerro tästä myös pelin kuvauksessa alla, ja anna tarvittaessa lisätietoja."
+
+msgid "When are you unable to run your game?"
+msgstr "Milloin et pysty pelauttamaan peliäsi?"
+
+msgid "Tell us when you <strong>can not run</strong> your game. You can write more specific requests in the <em>other information</em> field below (e.g. <em>I'd like to run my game late in the evening</em>), but here we want information about limitations set by for example work or bus schedules (for example if you need to leave the venue by 11 PM to get to your accommodation in time)."
+msgstr "Merkitse tähän ne ajat, jolloin sinun <strong>ei ole mahdollista</strong> pelauttaa peliäsi. Voit kirjoittaa alla oleviin vapaamuotoisiin terveisiin tarkempia toiveita (esim. <em>haluaisin peluuttaa pelini myöhään illalla</em>), mutta tähän kenttään toivomme tietoa esimerkiksi työvuorojen tai bussiaikataulujen asettamista rajoituksista (jos sinun esimerkiksi täytyy lähteä Messukeskukselta viimeistään klo 23 jotta ehdit yöpymispaikkaasi).
+
+msgid "Content warnings"
+msgstr "Sisältövaroitukset"
+
+msgid "If your program contains heavy topics or potentially distressing themes, please mention it here."
+msgstr "Kerro tässä, mikäli ohjelmasi sisältää raskaita aiheita."
+
+msgid "Accessibility hazard"
+msgstr "Esteellinen"
+
+msgid "If your program contains loud noises, flashing lights or other elements that can limit accessibility, please tick the checkbox. More details can be provided in the last text field if necessary."
+msgstr "Ruksaa tämä ruutu, jos ohjelma sisältää kovia ääniä, valoja tai muuta, mikä voi rajoittaa osallistumista. Tarkenna tarvittaessa viimeisessä avoimessa kentässä."
+
+msgid "Panel discussions"
+msgstr "Paneelikeskustelu"
+
+msgid "I can participate in a panel discussion on my field of expertise during the convention."
+msgstr "Voin osallistua erikoisalaani sivuavaan paneelikeskusteluun"
+
+msgid "My field of expertise"
+msgstr "Erikoisalani"
+
+msgid "What type of game program are you offering? Tournament - organizing your own tournament or competition. Demonstration - showcasing, demonstrating and playing a game. Open game - playing a game with or without specific scenarios."
+msgstr "Minkä tyyppinen peliohjelma on kyseessä? Turnaus - turnauksen ja kilpailun järjestämistä. Demotus - pelin esittelyä ja demottamista sekä pelaamista. Avoin peluutus - vapaata pelaamista skenaarioita tai ihan yleistä pelaamista."
+
+msgid "Game program type"
+msgstr "Peliohjelman tyyppi"
+
+msgid "When would you like to host your game program? Check the times when you would like to host your game program. If you have more specific needs regarding the timing, please let us know in the Comments field below. We do not restrict your desired times, but we reserve the right to make changes. For example, we would rather have tournaments one after another than at the same time."
+msgstr "Mihin aikaan aiot pitää ohjelmasi? Merkitse tähän ne ajat, jolloin olet suunnitellut pitäväsi peliohjelmasi. Jos sinulla on tarkempia toivomuksia ajan suhteen, ole hyvä ja kerro niistä Vapaamuotoiset terveiset kentässä. Emme rajoita koska haluat pitää ohjelmasi, mutta pidätämme oikeudet muutoksiin (esim. aikataulutamme mieluummin turnauksia peräkkäin kuin samanaikaisesti)."
+
+msgid "No sign-up"
+msgstr "Ei ilmoittautumista"
+
+msgid "I will collect sign-ups"
+msgstr "Hoidan itse ilmoittautumisen"
+
+msgid "Sign up at the Gaming Desk"
+msgstr "Ilmoittautuminen pelitiskille"
+
+msgid "Tournament"
+msgstr "Turnaus"
+
+msgid "Demonstration"
+msgstr "Demotus"
+
+msgid "Open game"
+msgstr "Avoin peluutus"
+
+msgid "Miniature painting"
+msgstr "Figumaalausohjelma"
+
+msgid "There are currently no reservable programmes."
+msgstr "Minkään ohjelmanumeron paikat eivät ole tällä hetkellä varattavissa."
+
+msgid "Here are the programmes you can currently reserve seats for. Please click the name of the programme to reserve seats. If the programme is currently booked full, seats may become available as visitors release reservations they do not need, so check back later."
+msgstr "Näihin ohjelmanumeroihin voit tällä hetkellä varata paikkoja. Napsauta ohjelmanumeron nimeä varataksesi paikkoja. Jos ohjelmanumero on tällä hetkellä täynnä, paikkoja voi tulla saataville kävijöiden vapauttaessa lippuja joita he eivät tarvitse, joten kannattaa tarkistaa tilanne myöhemmin uudelleen."
+
+msgid "You have no upcoming seat reservations."
+msgstr "Sinulla ei ole paikkavarauksia tuleviin ohjelmiin."
+
+msgid "Upcoming seat reservations"
+msgstr "Paikkavaraukset tuleviin ohjelmiin"
+
+msgid "Reservable programmes"
+msgstr "Varattavissa olevat ohjelmat"
+
+msgid "There isn't sufficient space for your reservation in the selected zone. Please try another zone."
+msgstr "Valitsemallasi alueella ei ole tarpeeksi tilaa varauksellesi. Ole hyvä ja kokeile toista aluetta."
+
+msgid "You cannot reserve any more tickets for this programme."
+msgstr "Et voi varata enempää lippuja tähän ohjelmaan."
+
+msgid "The size of your reservation exceeds the allowed maximum. Please try a smaller reservation."
+msgstr "Varauksesi koko ylittää sallitun. Ole hyvä ja kokeile pienempää varausta."
+
+msgid "This programme does not allow reservations at this time."
+msgstr "Tähän ohjelmanumeroon ei tällä hetkellä oteta vastaan paikkavarauksia."
+
+msgid "You need to log in before reserving tickets."
+msgstr "Sinun täytyy kirjautua sisään ennen paikkojen varaamista."
+
+msgid "{zone} – {remaining} seats remain"
+msgstr "{zone} – {remaining} paikkaa jäljellä"
+
+msgid "Reservation summary"
+msgstr "Paikkavarausten yhteenveto"
+
+msgid "Reserved"
+msgstr "Varattu"
+
+msgid "Remaining"
+msgstr "Jäljellä"
+
+msgid "Total capacity"
+msgstr "Paikkoja yhteensä"
+
+msgid "Reservable"
+msgstr "Varattavissa"
+
+msgid "You need to log in before reserving tickets."
+msgstr "Kirjaudu sisään ennen paikkavarauksen tekemistä."
+
+msgid "The size of your reservation exceeds the allowed maximum. Please try a smaller reservation."
+msgstr "Yritit varata paikkoja yli sallitun määrän. Ole hyvä ja kokeile pienempää varausta."
+
+msgid "This programme is currently full."
+msgstr "Ohjelma on tällä hetkellä täynnä."
+
+msgid "You cannot reserve any more tickets for this programme."
+msgstr "Et voi varata enempää lippuja tähän ohjelmaan."
+
+msgid "This programme does not allow reservations at this time."
+msgstr "Tämä ohjelma ei ole tällä hetkellä varattavissa."
+
+msgid "Permission denied."
+msgstr "Pääsy estetty."
+
+msgid "The event has programme with reservations open"
+msgstr "Tapahtumassa on ohjelmanumeroita, joiden paikat ovat varattavissa"
+
+msgid "Go to reservations"
+msgstr "Siirry paikkavarauksiin"
+
+msgid "Full"
+msgstr "Täynnä"
+
+msgid "Physical or virtual programme?"
+msgstr "Lähi- vai etäohjelmaa?"
+
+msgid "The organizers of Ropecon strive to organize a physical con, and if the con can be held thusly, virtual programmes will not be organized. If the con cannot be face to face, we cannot organize physical programmes during a virtual con.<br><br>Specify here whether your programme can be organized face to face, virtually, or either way."
+msgstr "Ropeconin järjestäjien tavoitteena on järjestää lähicon, ja sen toteutuessa etäohjelmia ei pystytä järjestämään. Jos lähiconia ei voida järjestää, emme luonnollisesti voi järjestää lähiohjelmaa etäconissa.<br><br>Kerro tässä, voitko järjestää ohjelmasi lähiconissa, etäconissa vai molemmissa."
+
+msgid "I can organize my programme only at a physical con"
+msgstr "Voin järjestää ohjelmani vain lähiconissa"
+
+msgid "I can organize my programme only at a virtual con"
+msgstr "Voin järjestää ohjelmani vain etäconissa"
+
+msgid "I can organize my programme both at a physical con and at a virtual con"
+msgstr "Voin järjestää ohjelmani sekä lähi- että etäconissa"
+
+msgid "NOTE! Do not include yourself in these invites."
+msgstr "HUOM! Älä sisällytä itseäsi näihin kutsuihin."
+
+msgid "The programme schedule for this event has been published"
+msgstr "Tapahtuman ohjelmakartta on julkaistu"
+
+msgid "View programme schedule"
+msgstr "Näytä ohjelmakartta"
+
+msgid "The programme schedule for this event has not yet been published"
+msgstr "Tapahtuman ohjelmakarttaa ei ole vielä julkaistu"
+
+msgid "You have programme admin privileges for this event"
+msgstr "Sinulla on ohjelmavastaavan oikeudet tähän tapahtumaan"
+
+msgid "Go to programme admin"
+msgstr "Siirry ohjelmanhallintaan"
+
+msgid "Even if the schedule is already published, you can hide this view by unchecking this box."
+msgstr "Voit piilottaa tämän näkymän poistamalla ruksin tästä ruudusta, vaikka ohjelmakartta olisi jo julkaistu."
+
+msgid "This view is currently not visible."
+msgstr "Tämä näkymä ei tällä hetkellä ole näkyvissä."

@@ -18,6 +18,10 @@ msgstr "IP-osoite"
 msgid "Send feedback"
 msgstr "Lähetä palaute"
 
+#: templates/feedback_widget.pug
+msgid "Thank you for your feedback!"
+msgstr "Kiitos palautteestasi!"
+
 #: forms.py
 msgid "Your feedback"
 msgstr "Palautteesi"
@@ -33,6 +37,3 @@ msgstr "palaute"
 #: models/feedback_message.py
 msgid "feedback messages"
 msgstr "palautteet"
-
-#~ msgid "Thank you for your feedback!"
-#~ msgstr "Kiitos palautteestasi!"

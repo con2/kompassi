@@ -2,13 +2,13 @@
 msgid "Add a member to a team"
 msgstr "Lisää jäsen tiimiin"
 
+#: templates/intra_admin_team_member_view.pug
+msgid "Add member"
+msgstr "Lisää jäsen"
+
 #: templates/intra_admin_team_actions.pug
 msgid "Add member…"
 msgstr "Lisää jäsen…"
-
-#: forms.py
-msgid "Additional options"
-msgstr "Lisäasetukset"
 
 #: models/team_member.py
 msgid "As set by the user themself"
@@ -17,15 +17,6 @@ msgstr "Käyttäjän itsensä asettama"
 #: templates/intra_organizer_view.pug
 msgid "Assign this organizer to a team…"
 msgstr "Sijoita järjestäjä tiimiin…"
-
-#: views/intra_admin_privileges_view.py
-msgid "Badges"
-msgstr "Badget"
-
-#: forms.py
-#, fuzzy
-msgid "Badges admin"
-msgstr "Badget"
 
 #: templates/intra_admin_team_member_view.pug
 msgid "Cancel and return"
@@ -75,7 +66,7 @@ msgstr "Tapahtuma"
 msgid "Export contacts in vCard format"
 msgstr "Vie yhteystiedot vCard-muodossa"
 
-#: templates/intra_admin_privileges_view.pug templates/intra_organizer_view.pug
+#: templates/intra_organizer_view.pug
 msgid "First name"
 msgstr "Etunimi"
 
@@ -92,42 +83,22 @@ msgid "Group membership"
 msgstr "Ryhmän jäsenyys"
 
 #: models/team_member.py
-msgid "If set, this will override the job title of this person for the purposes of this team only. If unset, the above job title field will be used. This field will not affect badge printing."
-msgstr "Mikäli tämä kenttä on asetettu, se korvaa yllä olevan tehtävänimikekentän tämän tiimin listauksissa. Mikäli tätä kenttää ei ole asetettu, käytetään yllä olevan tehtävänimikekentän arvoa. Tämä kenttä ei vaikuta badgetulostukseen."
-
-#: models/team_member.py
 msgid "In some listings where space is tight, the person is only shown under their default team. Designating one team as the default for someone replaces their prior default team."
 msgstr "Joissain listauksissa joissa tila on kortilla kukin henkilö näytetään ainoastaan ensisijaisessa tiimissään. Yhden tiimin määrittäminen henkilölle ensisijaiseksi korvaa tämän mahdollisen aikaisemman ensisijaisen tiimin."
-
-#: views/intra_admin_privileges_view.py
-msgid "Intra"
-msgstr ""
-
-#: forms.py
-msgid "Intra admin"
-msgstr ""
 
 #: views/intra_admin_team_member_view.py
 msgid "Invalid action."
 msgstr "Kelvoton toiminto."
 
-#: forms.py templates/intra_admin_privileges_view.pug templates/intra_organizer_view.pug
+#: templates/intra_organizer_view.pug
 msgid "Job title"
 msgstr "Tehtävänimike"
-
-#: models/team_member.py
-msgid "Job title in this team"
-msgstr "Tehtävänimike tässä tiimissä"
-
-#: forms.py
-msgid "Labour admin"
-msgstr ""
 
 #: models/team.py
 msgid "Name"
 msgstr "Nimi"
 
-#: templates/intra_admin_privileges_view.pug templates/intra_organizer_view.pug
+#: templates/intra_organizer_view.pug
 msgid "Nick name"
 msgstr "Nick"
 
@@ -164,64 +135,25 @@ msgstr "Järjestäjien intranet"
 msgid "Override name display style"
 msgstr "Nimen esitystapa"
 
-#: models/team_member.py
-msgid "Person"
-msgstr ""
-
 #: templates/intra_organizer_view.pug
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
-#: views/intra_admin_privileges_view.py
+#: views/intra_admin_team_member_view.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
-
-#: views/intra_admin_team_member_view.py
-#, fuzzy
-msgid "Please check the team_member_form."
-msgstr "Ole hyvä ja tarkista lomake."
-
-#: forms.py
-msgid "Presentation"
-msgstr "Esitysasetukset"
-
-#: forms.py templates/intra_admin_privileges_view.pug views/menu_items.py
-msgid "Privileges"
-msgstr "Käyttöoikeudet"
-
-#: views/intra_admin_privileges_view.py
-msgid "Programme"
-msgstr "Ohjelma"
-
-#: forms.py
-#, fuzzy
-msgid "Programme admin"
-msgstr "Ohjelma"
-
-#: models/team.py
-msgid "Public"
-msgstr ""
 
 #: templates/intra_admin_team_member_view.pug
 msgid "Remove team member"
 msgstr "Poista jäsen tiimistä"
 
-#: templates/intra_admin_privileges_view.pug templates/intra_admin_team_member_view.pug
-msgid "Save and continue"
-msgstr ""
-
 #: templates/intra_admin_team_member_view.pug
-#, fuzzy
-msgid "Save and return"
-msgstr "Peruuta ja palaa luetteloon"
+msgid "Save changes"
+msgstr "Tallenna muutokset"
 
-#: templates/intra_admin_privileges_view.pug templates/intra_organizer_view.pug
+#: templates/intra_organizer_view.pug
 msgid "Surname"
 msgstr "Sukunimi"
-
-#: models/team.py models/team_member.py
-msgid "Team"
-msgstr "Tiimi"
 
 #: models/team_member.py
 msgid "Team leader"
@@ -239,34 +171,9 @@ msgstr "Tiimin jäsen"
 msgid "Team members"
 msgstr "Tiimin jäsenet"
 
-#: models/team.py
-#, fuzzy
-msgid "Teams"
-msgstr "Tiimi"
-
 #: templates/intra_admin_team_member_view.pug templates/intra_organizer_view.pug views/menu_items.py
 msgid "Teams and organizers"
 msgstr "Tiimit ja järjestäjät"
-
-#: forms.py
-msgid "The Badges admin can add and revoke badges and export entrance lists."
-msgstr ""
-
-#: forms.py
-msgid "The Intra admin can assign organizers to teams and manage these privileges."
-msgstr ""
-
-#: forms.py
-msgid "The Labour admin can approve or reject volunteer worker applications, assign workers to shifts etc."
-msgstr ""
-
-#: forms.py
-msgid "The Programme admin can approve or reject programme offers, modify the event programme schedule etc."
-msgstr ""
-
-#: forms.py
-msgid "The Tickets admin can view, cancel and modify ticket orders and exchange electronic tickets."
-msgstr ""
 
 #: views/intra_admin_team_member_view.py
 msgid "The member was added to the team."
@@ -280,22 +187,9 @@ msgstr "Jäsen poistettiin tiimiistä."
 msgid "The primary contact e-mail of the team."
 msgstr "Tiimin ensisijainen yhteysosoite."
 
-#: views/intra_admin_privileges_view.py
-msgid "The privileges were updated."
-msgstr ""
-
-#: views/intra_admin_team_member_view.py
-#, fuzzy
-msgid "The team member was updated."
-msgstr "Jäsen lisättiin tiimiin."
-
 #: templates/intra_organizer_view.pug
 msgid "These organizers have not yet been assigned to a team."
 msgstr "Näitä järjestäjiä ei ole vielä sijoitettu mihinkään tiimiin."
-
-#: forms.py
-msgid "This corresponds to the job title field in the volunteer worker management. This is what is printed in this person's badge, if they will receive one. If unset, a default value based on the job category will be used for the badge."
-msgstr "Tämä vastaa työvoimanhallinnan tehtävänimikekenttää. Tämän kentän arvo painetaan badgeen, mikäli tämä henkilö saa sellaisen. Mikäli tätä kenttää ei ole asetettu, badgeen painetaan tehtävänimikkeeksi tehtäväalueen nimi."
 
 #: helpers.py
 msgid "This event does not use the organizer intranet."
@@ -305,21 +199,9 @@ msgstr "Tämä tapahtuma ei käytä järjestäjäintranetiä."
 msgid "This team has no members."
 msgstr "Tässä tiimissä ei ole jäseniä."
 
-#: views/intra_admin_privileges_view.py
-msgid "Tickets"
-msgstr ""
-
-#: forms.py
-msgid "Tickets admin"
-msgstr ""
-
 #: templates/intra_organizer_view.pug
 msgid "Unassigned organizers"
 msgstr "Sijoittamattomat järjestäjät"
-
-#: views/intra_admin_privileges_view.py
-msgid "Volunteers"
-msgstr ""
 
 #: models/team.py
 msgid "What is the team responsible for?"
@@ -337,8 +219,36 @@ msgstr "Sinulla ei ole tämän tapahtuman järjestäjäintranetin ylläpito-oike
 msgid "You have access to the organizer intranet."
 msgstr "Sinulla on pääsy järjestäjien intranetiin."
 
-#~ msgid "Add member"
-#~ msgstr "Lisää jäsen"
+#:
+msgid "This corresponds to the job title field in the volunteer worker management. This is what is printed in this person's badge, if they will receive one. If unset, a default value based on the job category will be used for the badge."
+msgstr "Tämä vastaa työvoimanhallinnan tehtävänimikekenttää. Tämän kentän arvo painetaan badgeen, mikäli tämä henkilö saa sellaisen. Mikäli tätä kenttää ei ole asetettu, badgeen painetaan tehtävänimikkeeksi tehtäväalueen nimi."
 
-#~ msgid "Save changes"
-#~ msgstr "Tallenna muutokset"
+#:
+msgid "If set, this will override the job title of this person for the purposes of this team only. If unset, the above job title field will be used. This field will not affect badge printing."
+msgstr "Mikäli tämä kenttä on asetettu, se korvaa yllä olevan tehtävänimikekentän tämän tiimin listauksissa. Mikäli tätä kenttää ei ole asetettu, käytetään yllä olevan tehtävänimikekentän arvoa. Tämä kenttä ei vaikuta badgetulostukseen."
+
+#:
+msgid "Job title in this team"
+msgstr "Tehtävänimike tässä tiimissä"
+
+#:
+msgid "Team"
+msgstr "Tiimi"
+
+#:
+msgid "Presentation"
+msgstr "Esitysasetukset"
+
+#:
+msgid "Additional options"
+msgstr "Lisäasetukset"
+
+#:
+msgid "Privileges"
+msgstr "Käyttöoikeudet"
+
+msgid "Programme"
+msgstr "Ohjelma"
+
+msgid "Badges"
+msgstr "Badget"

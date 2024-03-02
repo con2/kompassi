@@ -22,7 +22,7 @@ msgstr "Käyttöaika päättyy"
 msgid "Add job category"
 msgstr "Lisää tehtäväalue"
 
-#: templates/labour_admin_startstop_view.pug views/admin_menu_items.py
+#: templates/labour_admin_startstop_view.pug views/labour_admin_menu_items.py
 msgid "Application period"
 msgstr "Työvoimahaun alkamis- ja päättymisajat"
 
@@ -30,7 +30,7 @@ msgstr "Työvoimahaun alkamis- ja päättymisajat"
 msgid "Application period start and end times were saved."
 msgstr "Työvoimahaun alkamis- ja päättymisajat tallennettiin."
 
-#: views/admin_menu_items.py
+#: views/labour_admin_menu_items.py
 msgid "Applications"
 msgstr "Hakemukset"
 
@@ -46,7 +46,7 @@ msgstr "Täydennä yhteystiedot"
 msgid "Count"
 msgstr "Lukumäärä"
 
-#: views/admin_menu_items.py
+#: views/labour_admin_menu_items.py
 msgid "Dashboard"
 msgstr "Kojelauta"
 
@@ -62,7 +62,7 @@ msgstr "Kesto"
 msgid "Edit"
 msgstr "Muokkaa"
 
-#: templates/labour_admin_jobcategories_view.pug views/admin_menu_items.py
+#: templates/labour_admin_jobcategories_view.pug views/labour_admin_menu_items.py
 msgid "Edit job categories"
 msgstr "Muokkaa tehtäväalueita"
 
@@ -85,10 +85,6 @@ msgstr "Vie"
 #: templates/labour_admin_shifts_view.pug
 msgid "Filter shifts"
 msgstr "Suodata työvuoroja"
-
-#: models/personnel_class.py
-msgid "Focus on things that are given to the person at check-in. Markdown formatting available."
-msgstr ""
 
 #: models/job_category.py
 msgid "For most job categories, you should select the 'worker' and 'underofficer' classes here, if applicable."
@@ -130,7 +126,7 @@ msgstr "Tehtäväalueisiin, jotka eivät ole julkisessa haussa, ei voi hakea tav
 msgid "Job category"
 msgstr "Tehtäväalue"
 
-#: views/admin_menu_items.py
+#: views/labour_admin_menu_items.py
 msgid "Mass messages"
 msgstr "Viestien lähetys"
 
@@ -173,7 +169,7 @@ msgstr "Shirt"
 msgid "Personnel classes"
 msgstr "Henkilöstöluokat"
 
-#: views/admin_jobcategory_view.py views/admin_startstop_view.py views/public_views.py views/survey_view.py
+#: views/admin_jobcategory_view.py views/admin_startstop_view.py views/survey_view.py views/public_views.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
@@ -190,7 +186,7 @@ msgstr "Tulostettu %(now)s."
 msgid "Publicly accepting applications"
 msgstr "Avoimessa haussa"
 
-#: templates/labour_signup_view.pug views/public_views.py
+#: views/public_views.py
 msgid "Qualifications"
 msgstr "Pätevyydet"
 
@@ -242,11 +238,11 @@ msgstr "Katso hakemus"
 msgid "Shift ends"
 msgstr "Työvuoro päättyy"
 
-#: templates/labour_admin_shifts_view.pug views/admin_menu_items.py
+#: templates/labour_admin_shifts_view.pug views/labour_admin_menu_items.py
 msgid "Shift lists"
 msgstr "Työvuorolistat"
 
-#: views/admin_menu_items.py
+#: views/labour_admin_menu_items.py
 msgid "Shift planning"
 msgstr "Työvuorojen suunnittelu"
 
@@ -258,7 +254,7 @@ msgstr "Työvuoro alkaa"
 msgid "Shifts"
 msgstr "Työvuorot"
 
-#: views/admin_menu_items.py
+#: views/labour_admin_menu_items.py
 msgid "Shirt sizes"
 msgstr "Paitakoot"
 
@@ -277,7 +273,7 @@ msgstr "Rekisteröidy tai kirjaudu sisään..."
 msgid "Special diet"
 msgstr "Erikoisruokavalio"
 
-#: templates/labour_admin_special_diets_view.pug views/admin_menu_items.py
+#: views/labour_admin_menu_items.py
 msgid "Special diets"
 msgstr "Erikoisruokavaliot"
 
@@ -321,16 +317,6 @@ msgstr "Kiitos vastauksistasi!"
 msgid "Thank you for your application!"
 msgstr "Kiitos hakemuksestasi!"
 
-#: event_log_entry_types.py
-#, fuzzy
-msgid "The application of {entry.person} for volunteer work in {entry.event} was archived"
-msgstr "{entry.person} ilmoittautui vapaaehtoistöihin tapahtumaan {entry.event}"
-
-#: event_log_entry_types.py
-#, fuzzy
-msgid "The application of {entry.person} for volunteer work in {entry.event} was deleted"
-msgstr "{entry.person} ilmoittautui vapaaehtoistöihin tapahtumaan {entry.event}"
-
 #: views/admin_startstop_view.py
 msgid "The application period is already underway."
 msgstr "Työvoimahaku on jo käynnissä."
@@ -350,10 +336,6 @@ msgstr "Työvoimahaku suljettiin."
 #: views/admin_startstop_view.py
 msgid "The application period was started."
 msgstr "Työvoimahaku avattiin."
-
-#: views/admin_signups_view.py
-msgid "The applications for this event have been archived. Functionality is limited. Only people who worked at the event are displayed below. Note that as only a positive record is maintained, people who were reprimanded for their performance may also have been omitted."
-msgstr ""
 
 #: views/admin_startstop_view.py
 msgid "The end of the application period was in the past and has now been cleared. If you have an ending date for the application period, please set it below."
@@ -435,7 +417,7 @@ msgstr "Tämä kysely ei sovellu sinuun."
 msgid "This survey is not currently active."
 msgstr "Tämä kysely ei ole tällä hetkellä käytössä."
 
-#: templates/labour_admin_roster_views/TooSmall.pug
+#: templates/admin_roster_views/TooSmall.pug
 msgid "This view has not been designed for a display this small. For an optimal user experience, please switch to a tablet or a computer."
 msgstr "Tätä näkymää ei ole suunniteltu näin kapealle näytölle. Paremman käyttökokemuksen saavuttamiseksi ole hyvä ja käytä tablettia tai tietokonetta."
 
@@ -447,17 +429,9 @@ msgstr "Otsikko"
 msgid "Update application"
 msgstr "Päivitä hakemus"
 
-#: templates/labour_signup_view.pug
-msgid "Update qualifications…"
-msgstr "Päivitä pätevyydet…"
-
 #: apps.py
 msgid "Volunteer management"
 msgstr "Vapaaehtoistyövoiman hallinta"
-
-#: templates/labour_signup_view.pug
-msgid "Volunteer work application"
-msgstr "Vapaaehtoistyöhakemus"
 
 #: views/public_views.py
 msgid "Volunteer work applications"
@@ -479,6 +453,10 @@ msgstr "Työvoimahaun voi myös avata tai sulkea välittömästi."
 #, python-format
 msgid "You can edit your answers via the same link until the survey expires at %(expiration_date)s."
 msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee %(expiration_date)s."
+
+#:
+msgid "{entry.person} signed up for volunteer work in {entry.event}"
+msgstr "{entry.person} ilmoittautui vapaaehtoistöihin tapahtumaan {entry.event}"
 
 #: templates/labour_survey_view.pug
 msgid "You can edit your answers via the same link until the survey is closed."
@@ -507,10 +485,6 @@ msgstr "Hakemus on päivitetty."
 #: views/public_views.py
 msgid "Your application has not been submitted using this form."
 msgstr "Hakemusta ei ole tehty käyttäen tätä lomaketta."
-
-#: templates/labour_event_box.pug
-msgid "Your application to this event"
-msgstr "Hakemuksesi tähän tapahtumaan"
 
 #: models/alternative_signup_forms.py
 msgid "alternative signup form"
@@ -576,7 +550,11 @@ msgstr "tapahtuman työvoima-asetukset"
 msgid "labour event metas"
 msgstr "tapahtumien työvoima-asetukset"
 
-#: models/personnel_class.py
+#: models/perk.py
+msgid "perk"
+msgstr "etu"
+
+#: models/perk.py
 msgid "perks"
 msgstr "edut"
 
@@ -636,15 +614,6 @@ msgstr "aikajae"
 msgid "work periods"
 msgstr "aikajakeet"
 
-#: event_log_entry_types.py
-msgid "{entry.person} signed up for volunteer work in {entry.event}"
-msgstr "{entry.person} ilmoittautui vapaaehtoistöihin tapahtumaan {entry.event}"
-
-#: event_log_entry_types.py
-#, fuzzy
-msgid "{entry.person} updated their application for volunteer work in {entry.event}"
-msgstr "{entry.person} ilmoittautui vapaaehtoistöihin tapahtumaan {entry.event}"
-
 #: views/admin_shifts_view.py
 msgid "{event_name}: Shift list"
 msgstr "{event_name}: Työvuorolista"
@@ -680,5 +649,11 @@ msgstr "{event_name}: Työvuorolista – {job_category_name}"
 #~ msgid "You have not signed up for this event."
 #~ msgstr "Et ole ilmoittautunut tähän tapahtumaan."
 
-#~ msgid "perk"
-#~ msgstr "etu"
+msgid "Volunteer work application"
+msgstr "Vapaaehtoistyöhakemus"
+
+msgid "Update qualifications…"
+msgstr "Päivitä pätevyydet…"
+
+msgid "Your application to this event"
+msgstr "Hakemuksesi tähän tapahtumaan"

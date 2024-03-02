@@ -1,134 +1,86 @@
-#: templates/tickets_buttons_fragment.pug
-#, fuzzy
-msgid "Abort order"
-msgstr "Vahvista tilaus"
-
-#: models/tickets_event_meta.py
-msgid "Accommodation access group"
-msgstr ""
-
-#: views/admin_views.py
-msgid "Accommodation information saved."
-msgstr ""
-
-#: views/admin_views.py
-msgid "Accommodee marked as arrived."
-msgstr "Majoittuja merkitty saapuneeksi."
-
-#: views/admin_views.py
-msgid "Accommodee marked as left."
-msgstr "Majoittuja merkitty poistuneeksi."
-
-#: views/tickets_v1_views.py
+#: views/public_views.py
 msgid "Additional info"
 msgstr "Lisätiedot"
+
+#: models.py
+msgid "Address"
+msgstr "Osoite"
+
+#: models.py
+msgid "Allow sending news and other information related to this event via e-mail"
+msgstr "Minulle saa lähettää sähköpostitse uutisia ja muita tietoja tähän tapahtumaan liittyen"
 
 #: templates/tickets_order_fragment.pug templates/tickets_order_product_table.pug
 msgid "Amount"
 msgstr "Lukumäärä"
 
-#: templates/tickets_admin_reports_view.pug
-#, fuzzy
-msgid "Amount of orders"
-msgstr "Vahvista tilaus"
-
-#: models/accommodation_information.py
-msgid "Arrived"
-msgstr "Paikalla"
-
 #: templates/tickets_event_box.pug
 msgid "Buy tickets"
 msgstr "Osta lippuja"
 
-#: templates/v1.5/tickets_confirmed_view.pug
+#: templates/tickets_buttons_fragment.pug
 msgid "Cancel order"
 msgstr "Peruuta tilaus"
 
-#: models/customer.py
+#: models.py
 msgid "Check the e-mail address carefully. The order confirmation and any electronic tickets will be sent to this e-mail address."
 msgstr "Tarkista sähköpostiosoite huolellisesti. Tilausvahvistus ja mahdolliset e-liput lähetetään tähän osoiteeseen."
+
+#: models.py
+msgid "City"
+msgstr "Postitoimipaikka"
 
 #: templates/tickets_confirm_phase.pug
 msgid "Confirm order"
 msgstr "Vahvista tilaus"
 
-#: views/tickets_v1_views.py
+#: views/public_views.py
 msgid "Confirmation"
 msgstr "Vahvistus"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Contact e-mail address (with description)"
 msgstr "Asiakaspalvelun sähköpostiosoite (selitteen kanssa)"
 
-#: templates/tickets_address_phase.pug templates/tickets_order_fragment.pug templates/v1.5/tickets_view.pug
+#: templates/tickets_order_fragment.pug
 msgid "Contact information"
 msgstr "Yhteystiedot"
 
-#: templates/tickets_admin_reports_view.pug
-msgid "Delayed"
-msgstr ""
+msgid "Count"
+msgstr "Lukumäärä"
 
-#: views/tickets_v1_views.py
+#: templates/tickets_order_fragment.pug views/public_views.py
 msgid "Delivery address"
 msgstr "Toimitusosoite"
 
-#: models/limit_group.py
+#: models.py
 msgid "Description"
 msgstr "Kuvaus"
 
-#: models/customer.py
+#: models.py
 msgid "E-mail address"
 msgstr "Sähköpostiosoite"
 
-#: models/order.py
-msgid "E-ticket"
-msgstr "E-lippu"
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "E-ticket text"
 msgstr "E-lipun teksti"
 
-#: models/consts.py
-msgid "English"
-msgstr ""
-
-#: models/limit_group.py
+#: admin.py models.py
 msgid "Event"
 msgstr "Tapahtuma"
 
-#: templates/tickets_admin_reports_view.pug
-msgid "Fail"
-msgstr ""
-
-#: templates/tickets_address_phase.pug templates/v1.5/tickets_view.pug
-msgid "Fields marked with an asterisk (*) are required."
-msgstr "Tähdellä (*) merkityt kentät ovat pakollisia."
-
-#: models/consts.py
-msgid "Finnish"
-msgstr ""
-
-#: models/customer.py
 msgid "First name"
 msgstr "Etunimi"
 
-#: templates/tickets_admin_reports_view.pug
-msgid "For information on what these mean, see the <a href=\"https://docs.paytrail.com/#/?id=statuses\">Paytrail documentation</a>."
-msgstr ""
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Format: Fooevent Ticket Sales &lt;tickets@fooevent.example.com&gt;"
 msgstr "Muoto: Footapahtuman lipunmyynti &lt;tickets@fooevent.example.com&gt;"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Front page text"
 msgstr "Etusivun teksti"
 
-#: forms.py
-msgid "I accept the <a href='{}' target='_blank' rel='noreferrer noopener'>terms and conditions</a> (required)."
-msgstr "Hyväksyn <a href='{}' target='_blank' rel='noreferrer noopener'>palvelun ehdot</a> (pakollinen)."
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "If set, all tickets-related e-mail messages will be also sent to this e-mail address."
 msgstr "Mikäli tämä on asetettu, kaikki lippuihin liittyvä sähköposti lähetetään piilokopiona myös tähän osoitteeseen."
 
@@ -136,46 +88,25 @@ msgstr "Mikäli tämä on asetettu, kaikki lippuihin liittyvä sähköposti läh
 msgid "In order to ensure speedy delivery of your order, please remember to return to the ticket shop from the payment provider after completing your payment."
 msgstr "Varmistaaksesi tilauksesi nopean toimituksen, muistathan palata maksamisen jälkeen maksupalvelusta verkkokauppaamme."
 
-#: models/accommodation_information.py
-msgid "Left"
-msgstr "Poistunut"
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Logo height (mm)"
 msgstr "Logon korkeus (mm)"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Logo path"
 msgstr "Logon polku"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Logo width (mm)"
 msgstr "Logon leveys (mm)"
 
-#: templates/v1.5/tickets_confirmed_view.pug
-#, fuzzy
-msgid "Make another order"
-msgstr "Peruuta tilaus"
-
-#: models/limit_group.py
+#: models.py
 msgid "Maximum amount to sell"
 msgstr "Maksimimäärä"
 
-#: models/tickets_event_meta.py
-msgid "Members of this group are granted access to the accommodation onboarding view without being ticket admins."
-msgstr ""
-
-#: models/tickets_event_meta.py
-msgid "Members of this group are granted access to the ticket exchange view without being ticket admins."
-msgstr ""
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Monitoring e-mail address"
 msgstr "Tarkkailusähköposti"
-
-#: templates/tickets_admin_reports_view.pug
-msgid "New"
-msgstr ""
 
 #: templates/tickets_buttons_fragment.pug
 msgid "New order"
@@ -185,69 +116,15 @@ msgstr "Uusi tilaus"
 msgid "Next"
 msgstr "Seuraava"
 
-#: models/accommodation_information.py
-msgid "Not arrived"
-msgstr "Ei saapunut"
-
 #: templates/tickets_confirm_phase.pug
 msgid "Note!"
 msgstr "Huom!"
 
-#: templates/tickets_admin_reports_view.pug
-msgid "OK"
-msgstr ""
-
-#: models/order.py
-msgid "Order cancelled"
-msgstr "Tilaus peruttu"
-
-#: models/order.py
-msgid "Order confirmation"
-msgstr "Tilausvahvistus"
-
-#: templates/v1.5/tickets_confirmed_view.pug
-#, fuzzy
-msgid "Order number:"
-msgstr "puhelinnumero"
-
-#: models/order.py
-msgid "Order reinstated"
-msgstr "Tilaus palautettu voimaan"
-
-#: templates/tickets_admin_reports_view.pug
-#, fuzzy
-msgid "Orders by payment status"
-msgstr "Tilaus palautettu voimaan"
-
-#: models/tickets_event_meta.py
-msgid "POS access group"
-msgstr ""
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Payment due (days)"
 msgstr "Maksuaika (päivää)"
 
-#: templates/tickets_admin_reports_view.pug
-msgid "Payment method"
-msgstr ""
-
-#: templates/tickets_admin_reports_view.pug
-msgid "Payment status (according to Paytrail)"
-msgstr ""
-
-#: templates/tickets_admin_reports_view.pug
-msgid "Payments by payment method"
-msgstr ""
-
-#: templates/tickets_admin_reports_view.pug
-msgid "Pending"
-msgstr ""
-
-#: templates/tickets_admin_reports_view.pug
-msgid "Percentage of orders"
-msgstr ""
-
-#: views/admin_views.py views/tickets_v1_5_views.py views/tickets_v1_views.py
+#: views/public_views.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
 
@@ -255,15 +132,23 @@ msgstr "Ole hyvä ja tarkista lomake."
 msgid "Please check your delivery information, especially the e-mail address, and the amounts of products being ordered. By selecting <em>Proceed to payment</em> you will navigate to a payment page on which you will select the payment method."
 msgstr "Ole hyvä ja tarkista toimitusosoite, erityisesti sähköpostiosoite, ja tilattavien tuotteiden määrät. Valitsemalla <em>Siirry maksamaan</em> siirryt maksupalveluun, jossa pääset valitsemaan maksutavan."
 
-#: views/tickets_v1_5_views.py views/tickets_v1_views.py
+#: templates/tickets_tickets_phase.pug
+msgid "Please fill in the amount for each product. You can combine multiple products in a single order."
+msgstr "Ole hyvä ja syötä tilattavien tuotteiden määrät. Voit yhdistää samaan tilaukseen useita eri tuotteita."
+
+#: views/public_views.py
 msgid "Please select at least one product."
 msgstr "Ole hyvä ja valitse vähintään yksi tuote."
+
+#: models.py
+msgid "Postal code"
+msgstr "Postinumero"
 
 #: templates/tickets_buttons_fragment.pug
 msgid "Previous"
 msgstr "Edellinen"
 
-#: templates/tickets_buttons_fragment.pug templates/v1.5/tickets_confirmed_view.pug templates/v1.5/tickets_view.pug
+#: templates/tickets_buttons_fragment.pug
 msgid "Proceed to payment"
 msgstr "Siirry maksamaan"
 
@@ -271,11 +156,7 @@ msgstr "Siirry maksamaan"
 msgid "Product"
 msgstr "Tuote"
 
-#: templates/v1.5/tickets_view.pug
-msgid "Product code in use"
-msgstr ""
-
-#: templates/tickets_tickets_phase.pug templates/v1.5/tickets_view.pug
+#: templates/tickets_tickets_phase.pug
 msgid "Product selection"
 msgstr "Tuotteiden valinta"
 
@@ -283,19 +164,15 @@ msgstr "Tuotteiden valinta"
 msgid "Products"
 msgstr "Tuotteet"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Receipt footer"
 msgstr "Kuitin alatunniste"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Reference number template"
 msgstr "Viitenumeron muoto"
 
-#: views/admin_views.py
-msgid "Reports"
-msgstr "Raportit"
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Reservation period (seconds)"
 msgstr "Varausaika (sekuntia)"
 
@@ -303,82 +180,52 @@ msgstr "Varausaika (sekuntia)"
 msgid "Return to event home page"
 msgstr "Palaa tapahtuman kotisivuille"
 
-#: templates/tickets_order_product_table.pug
-msgid "Sold out"
-msgstr "Loppuunmyyty"
-
-#: models/accommodation_information.py
-msgid "State"
-msgstr ""
-
-#: models/customer.py
 msgid "Surname"
 msgstr "Sukunimi"
 
-#: templates/tickets_thanks_phase.pug templates/v1.5/tickets_confirmed_view.pug
+#: templates/tickets_thanks_phase.pug
 msgid "Thank you for your order!"
 msgstr "Kiitos tilauksestasi!"
 
-#: views/tickets_v1_views.py
+#: views/public_views.py
 msgid "Thank you!"
 msgstr "Kiitos!"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "The file system path to a logo that will be printed on the electronic ticket."
 msgstr "Polku tiedostojärjestelmässä logoon, joka tulostetaan sähköisille lipuille"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "The height of the logo to be printed on electronic tickets, in millimeters. Roughly 20 mm recommended."
 msgstr "Sähköisiin lippuihin tulostettavan logon korkeus millimetreissä. Suositus n. 20 mm."
 
-#: views/tickets_v1_5_views.py
-msgid "The order is paid and cannot be canceled here. Please contact us if you need to cancel it."
-msgstr ""
-
-#: views/tickets_v1_views.py
-msgid "The order was aborted."
-msgstr "Tilaus keskeytettiin."
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "The width of the logo to be printed on electronic tickets, in millimeters. Roughly 40 mm recommended."
 msgstr "Sähköisiin lippuihin tulostettavan logon korkeus millimetreissä. Suositus n. 40 mm."
 
-#: helpers.py
-msgid "This event does not use Kompassi for ticket sales."
-msgstr "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin."
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "This is how long the customer has after confirmation to complete the payment. NOTE: Currently unimplemented."
 msgstr "Ostajalla on tämän verran aikaa tilauksen vahvistuksen jälkeen maksaa tilauksensa. HUOM: Ei toteutettu."
 
-#: views/tickets_v1_5_views.py
-#, fuzzy
-msgid "This order has already been paid."
-msgstr "Tilaus keskeytettiin."
-
-#: models/tickets_event_meta.py
+#: models.py
 msgid "This text will be printed in the electronic ticket."
 msgstr "Tämä teksti tulostetaan sähköiseen lippuun."
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended."
 msgstr "Tämä teksti tulostetaan postitse toimitettavien tilausten keräilylistan alareunaan. Tähän on suositeltavaa sisällyttää yhteystiedot."
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "This text will be shown on the front page of the web shop."
 msgstr "Tämä teksti näytetään verkkokaupan etusivulla."
 
-#: apps.py templates/tickets_event_box.pug templates/v1.5/tickets_confirmed_view.pug templates/v1.5/tickets_view.pug
+#: templates/tickets_event_box.pug
 msgid "Ticket sales"
 msgstr "Lipunmyynti"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Ticket sales ends"
 msgstr "Lipunmyynti päättyy"
-
-#: helpers.py
-msgid "Ticket sales for this event has not yet started."
-msgstr "Tämän tapahtuman lipunmyynti ei ole vielä alkanut."
 
 #: templates/tickets_event_box.pug
 msgid "Ticket sales is currently open."
@@ -388,7 +235,7 @@ msgstr "Lipunmyynti on parhaillaan käynnissä."
 msgid "Ticket sales is not currently open."
 msgstr "Lipunmyynti ei ole tällä hetkellä käynnissä."
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Ticket sales starts"
 msgstr "Lipunmyynti alkaa"
 
@@ -396,19 +243,19 @@ msgstr "Lipunmyynti alkaa"
 msgid "Ticket shop"
 msgstr "Lippukauppa"
 
-#: views/tickets_v1_views.py
+#: views/public_views.py
 msgid "Tickets"
 msgstr "Liput"
 
-#: models/tickets_event_meta.py
-msgid "Tickets view version"
-msgstr ""
-
-#: templates/tickets_admin_reports_view.pug templates/tickets_order_fragment.pug
+#: templates/tickets_order_fragment.pug
 msgid "Total"
 msgstr "Yhteensä"
 
-#: views/tickets_v1_views.py
+#: admin.py
+msgid "Type"
+msgstr "Tyyppi"
+
+#: views/public_views.py
 msgid "Unfortunately a product you have selected has just been sold out."
 msgstr "Valitettavasti jokin valitsemistasi tuotteista on juuri myyty loppuun."
 
@@ -416,118 +263,112 @@ msgstr "Valitettavasti jokin valitsemistasi tuotteista on juuri myyty loppuun."
 msgid "Unit price"
 msgstr "Yksikköhinta"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "Uses Python .format() string formatting."
 msgstr "Käyttää Pythonin .format()-tekstimuotoilua."
 
-#: views/tickets_v1_views.py
-msgid "We're sorry to inform you that a product you have selected has just been sold out."
-msgstr "Valitettavasti valitsemasi tuote on juuri myyty loppuun."
-
-#: views/tickets_v1_5_views.py
-msgid "We're sorry to inform you that a product you have selected is not available in the quantity you have requested."
-msgstr "Valitettavasti valitsemaasi tuotetta ei ole saatavilla pyytämääsi lukumäärää."
-
-#: views/tickets_v1_views.py
+#: views/public_views.py
 msgid "Welcome"
 msgstr "Tervetuloa"
-
-#: templates/v1.5/tickets_view.pug
-msgid "You are using a hidden product code. Only products matching this code are shown."
-msgstr ""
-
-#: templates/tickets_confirm_phase.pug templates/v1.5/tickets_confirmed_view.pug
-msgid "You have already confirmed your order and it can no longer be changed. However, we have not yet received word of your successful payment. If the payment is still in progress in another tab or browser window, please complete it there. If you cancelled the payment, please proceed to payment again or cancel the order using the buttons below. If you completed the payment, it is likely that you did not return to the web shop using the link provided by the payment provider. In this case, please wait three to five banking days before contacting our customer service."
-msgstr "Olet jo vahvistanut tilauksesi etkä siksi enää voi muuttaa sitä. Emme kuitenkaan ole vielä saaneet tietoa onnistuneesta maksustasi. Mikäli maksutapahtuma on edelleen käynnissä toisessa välilehdessä tai selainikkunassa, ole hyvä ja tee se loppuun siellä. Mikäli peruutit maksun, ole hyvä ja siirry uudestaan maksamaan tai peru tilaus alla olevilla napeilla. Mikäli suoritit maksutapahtuman loppuun asti, on todennäköistä että et palannut verkkokauppaamme käyttäen maksunvälittäjän linkkiä. Tässä tapauksessa odota kolmesta viiteen pankkipäivää ennen yhteydenottoa asiakaspalveluumme."
-
-#: templates/v1.5/tickets_confirmed_view.pug
-#, fuzzy
-msgid "Your order is not yet complete!"
-msgstr "Tilauksesi on nyt valmis. Tervetuloa tapahtumaan!"
-
-#: templates/v1.5/tickets_confirmed_view.pug
-msgid "Your order is now complete. A confirmation message with electronic tickets has been sent to the e-mail address you provided."
-msgstr ""
 
 #: templates/tickets_thanks_phase.pug
 msgid "Your order is now complete. Welcome to the event!"
 msgstr "Tilauksesi on nyt valmis. Tervetuloa tapahtumaan!"
 
-#: models/customer.py
+#: models.py
 msgid "customer"
 msgstr "asiakas"
 
-#: models/customer.py
+#: models.py
 msgid "customers"
 msgstr "asiakkaat"
 
-#: models/limit_group.py
+#: models.py
 msgid "limit group"
 msgstr "loppuunmyyntiryhmä"
 
-#: models/limit_group.py
+#: models.py
 msgid "limit groups"
 msgstr "loppuunmyyntiryhmät"
-
-#: models/order.py
-#, fuzzy
-msgid "order"
-msgstr "Uusi tilaus"
-
-#: models/order.py
-#, fuzzy
-msgid "orders"
-msgstr "Uusi tilaus"
 
 #: templates/tickets_order_fragment.pug
 msgid "pcs."
 msgstr "kpl"
 
-#: models/customer.py
+#: models.py
 msgid "phone number"
 msgstr "puhelinnumero"
 
-#: models/product.py
+#: models.py
 msgid "product"
 msgstr "tuote"
 
-#: models/product.py
+#: models.py
 msgid "products"
 msgstr "tuotteet"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "ticket sales settings for event"
 msgstr "tapahtuman lipunmyyntiasetukset"
 
-#: models/tickets_event_meta.py
+#: models.py
 msgid "ticket sales settings for events"
 msgstr "tapahtumien lipunmyyntiasetukset"
 
-#: event_log_entry_types.py
-msgid "{entry.accommodation_information} arrived in {entry.limit_group.description}"
-msgstr ""
+#: templates/tickets_confirm_phase.pug
+msgid "You have already confirmed your order and it can no longer be changed. However, we have not yet received word of your successful payment. If the payment is still in progress in another tab or browser window, please complete it there. If you cancelled the payment, please proceed to payment again or cancel the order using the buttons below. If you completed the payment, it is likely that you did not return to the web shop using the link provided by the payment provider. In this case, please wait three to five banking days before contacting our customer service."
+msgstr "Olet jo vahvistanut tilauksesi etkä siksi enää voi muuttaa sitä. Emme kuitenkaan ole vielä saaneet tietoa onnistuneesta maksustasi. Mikäli maksutapahtuma on edelleen käynnissä toisessa välilehdessä tai selainikkunassa, ole hyvä ja tee se loppuun siellä. Mikäli peruutit maksun, ole hyvä ja siirry uudestaan maksamaan tai peru tilaus alla olevilla napeilla. Mikäli suoritit maksutapahtuman loppuun asti, on todennäköistä että et palannut verkkokauppaamme käyttäen maksunvälittäjän linkkiä. Tässä tapauksessa odota kolmesta viiteen pankkipäivää ennen yhteydenottoa asiakaspalveluumme."
 
-#: event_log_entry_types.py
-msgid "{entry.accommodation_information} left {entry.limit_group.description}"
-msgstr ""
+msgid "The order was aborted."
+msgstr "Tilaus keskeytettiin."
 
-#~ msgid "Address"
-#~ msgstr "Osoite"
+msgid "Fields marked with an asterisk (*) are required."
+msgstr "Tähdellä (*) merkityt kentät ovat pakollisia."
 
-#~ msgid "Allow sending news and other information related to this event via e-mail"
-#~ msgstr "Minulle saa lähettää sähköpostitse uutisia ja muita tietoja tähän tapahtumaan liittyen"
+msgid "I accept the <a href='{}' target='_blank' rel='noreferrer noopener'>terms and conditions</a> (required)."
+msgstr "Hyväksyn <a href='{}' target='_blank' rel='noreferrer noopener'>palvelun ehdot</a> (pakollinen)."
 
-#~ msgid "City"
-#~ msgstr "Postitoimipaikka"
+msgid "Accommodee marked as arrived."
+msgstr "Majoittuja merkitty saapuneeksi."
 
-#~ msgid "Count"
-#~ msgstr "Lukumäärä"
+msgid "Accommodee marked as left."
+msgstr "Majoittuja merkitty poistuneeksi."
 
-#~ msgid "Please fill in the amount for each product. You can combine multiple products in a single order."
-#~ msgstr "Ole hyvä ja syötä tilattavien tuotteiden määrät. Voit yhdistää samaan tilaukseen useita eri tuotteita."
+msgid "Not arrived"
+msgstr "Ei saapunut"
 
-#~ msgid "Postal code"
-#~ msgstr "Postinumero"
+msgid "Arrived"
+msgstr "Paikalla"
 
-#~ msgid "Type"
-#~ msgstr "Tyyppi"
+msgid "Left"
+msgstr "Poistunut"
+
+msgid "Reports"
+msgstr "Raportit"
+
+msgid "We're sorry to inform you that a product you have selected has just been sold out."
+msgstr "Valitettavasti valitsemasi tuote on juuri myyty loppuun."
+
+msgid "We're sorry to inform you that a product you have selected is not available in the quantity you have requested."
+msgstr "Valitettavasti valitsemaasi tuotetta ei ole saatavilla pyytämääsi lukumäärää."
+
+msgid "Sold out"
+msgstr "Loppuunmyyty"
+
+msgid "E-ticket"
+msgstr "E-lippu"
+
+msgid "Order cancelled"
+msgstr "Tilaus peruttu"
+
+msgid "Order confirmation"
+msgstr "Tilausvahvistus"
+
+msgid "Order reinstated"
+msgstr "Tilaus palautettu voimaan"
+
+msgid "This event does not use Kompassi for ticket sales."
+msgstr "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin."
+
+msgid "Ticket sales for this event has not yet started."
+msgstr "Tämän tapahtuman lipunmyynti ei ole vielä alkanut."
