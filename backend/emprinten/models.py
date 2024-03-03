@@ -44,7 +44,7 @@ class ProjectFile(models.Model):
         Image = "img"
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, null=False)
-    file_name = models.CharField(max_length=255, null=False, unique=True)
+    file_name = models.CharField(max_length=255, null=False)
     type = models.CharField(max_length=4, null=False, choices=Type.choices)
 
     hidden = models.BooleanField(default=False, null=False)
@@ -53,6 +53,9 @@ class ProjectFile(models.Model):
 
     def __str__(self) -> str:
         return f"{self.project}/{self.file_name} ({self.type})"
+
+    class Meta:
+        unique_together = (("project", "file_name"),)
 
 
 def make_filename(instance: FileVersion, filename: str) -> str:
