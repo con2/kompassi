@@ -22,6 +22,7 @@ gunicorn
 ipdb
 ipython
 isort
+jinja2
 jsonschema
 markdown
 paramiko
@@ -42,5 +43,6 @@ ruff
 tabulate
 unicodecsv
 vobject
+weasyprint
 XlsxWriter
 zxcvbn

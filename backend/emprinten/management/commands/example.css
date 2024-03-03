@@ -1,0 +1,35 @@
+@page {
+    margin-top: 1cm;
+    margin-left: 2.4cm;
+    margin-right: 2.4cm;
+}
+body {
+    font-family: Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.5;
+}
+
+.page-break {
+    page-break-after: always;
+}
+h1 {
+    font-size: 11pt;
+}
+p {
+    margin-top: 1cm;
+}
+aside {
+    display: flex;
+    margin: 0;
+    font-size: 9pt;
+}
+aside div {
+    flex: 1;
+}
+aside > div:nth-child(2) {
+    margin-left: 1em;
+    text-align: end;
+}
+aside > div:first-child {
+    margin-left: 0;
+}

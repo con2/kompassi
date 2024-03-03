@@ -196,6 +196,7 @@ INSTALLED_APPS = (
     "forms",
     "metrics",
     "background_tasks",
+    "emprinten",
     # organizations
     "organizations.tracon_ry",
     "organizations.kotae_ry",
