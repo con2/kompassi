@@ -3,12 +3,22 @@ from __future__ import annotations
 import os
 import typing
 
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+
+from core.models import Event
 
 
 class Project(models.Model):
     name = models.CharField(max_length=255, null=False)
-    slug = models.SlugField(unique=True, null=False)
+    slug = models.SlugField(unique=True, help_text="Do not change after any file version has been added!")
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        help_text="If set, project is accessible on generator UI by CBAC allowlist.",
+    )
 
     split_output = models.BooleanField(
         null=False,
@@ -29,10 +39,21 @@ class Project(models.Model):
     )
 
     def __str__(self) -> str:
-        return f"{self.slug}: {self.name}"
+        if self.event is not None:
+            return f"{self.event} / {self.slug}: {self.name}"
+        else:
+            return f"{self.slug}: {self.name}"
 
     def current_files(self) -> typing.Iterable[FileVersion]:
         return FileVersion.objects.filter(file__project=self, current=True).select_related("file")
+
+    def is_allowed_to_supply_data(self, user: AbstractUser) -> bool:
+        if self.event is None:
+            return False
+
+        from access.models.cbac_entry import CBACEntry
+
+        return CBACEntry.is_allowed(user, self.event.get_claims(app=self._meta.app_label, slug=self.slug))
 
 
 class ProjectFile(models.Model):

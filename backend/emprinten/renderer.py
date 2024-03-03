@@ -192,8 +192,8 @@ class _TemplateCompiler:
     def get_source(self, file_name: str) -> str:
         return self.env.loader.get_source(self.env, file_name)[0]
 
-    def parse(self, source: str) -> jinja2.nodes.Template:
-        return self.env.parse(source)
+    def parse(self, source: str, **kwargs) -> jinja2.nodes.Template:
+        return self.env.parse(source, **kwargs)
 
     def compile(
         self, main_file_name: str, src_dir: str, data: DataSet, title_pattern: str, *, split_output: bool

@@ -1,0 +1,35 @@
+{% extends "base.pug" %}
+{% block title %}{{ title }} &ndash; emprinten{% endblock %}
+{% block content %}
+    <h2>{{ title }}</h2>
+
+    <form class="form" method="post" action="{% url "emprinten_upload" event=event_slug slug=slug %}" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label class="control-label">
+                Data.csv:
+            </label>
+            <input class="form-control" type="file" name="file" title="Data.csv"/>
+
+            <div class="help-block">The data file must use UTF-8 encoding, and it should contain following columns
+                (character <code>_</code> may be written as a space):<br/>
+                {% if required_vars %}
+                    {% for var in required_vars %}<code>{{ var }}</code>{% if not forloop.last %},
+                    {% endif %}{% endfor %}
+                {% else %}
+                    <p style="font-style: italic;">No variables in template</p>
+                {% endif %}
+                {% if template_error %}<p class="text-danger">Template error: {{ template_error }}</p>{% endif %}
+            </div>
+        </div>
+
+        <div style="margin-top: 1em;">
+            <button class="btn btn-primary{% if unusable %} disabled{% endif %}"
+                    type="submit"
+                    {% if unusable %}disabled="disabled"{% endif %}>
+                {% if is_zip %}Download zip{% else %}Download pdf{% endif %}
+            </button>
+        </div>
+    </form>
+{% endblock %}
