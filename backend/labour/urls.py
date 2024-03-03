@@ -24,6 +24,7 @@ from .views import (
     person_qualification_view,
     person_qualify_view,
     profile_signups_view,
+    profile_work_reference,
     qualifications_view,
     signup_view,
     survey_view,
@@ -56,6 +57,11 @@ urlpatterns = [
         r"^profile/signups/?$",
         profile_signups_view,
         name="profile_signups_view",
+    ),
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/reference/?$",
+        profile_work_reference,
+        name="profile_work_reference",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/confirm/?$",

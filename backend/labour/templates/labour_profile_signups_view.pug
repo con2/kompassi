@@ -24,6 +24,7 @@ block profile_content
             th Tapahtuma
             th Ajankohta
             th Tehtävänimike
+            th
         tbody
           for signup in signups_past_events
             if signup.is_accepted
@@ -31,6 +32,10 @@ block profile_content
                 td: a(href="{% url 'core_event_view' signup.event.slug %}") {{ signup.event.name }}
                 td {{ signup.event.formatted_start_and_end_date }}
                 td {{ signup.some_job_title }}
+                td
+                  if signup.has_work_reference
+                    a(href="{% url 'labour:profile_work_reference' signup.event.slug %}") Työtodistus
+
       .panel-footer
         p.text-muted Yhteensä {{ num_signups_past_events }} tapahtuma{{ num_signups_past_events|pluralize:"a" }}.
 
