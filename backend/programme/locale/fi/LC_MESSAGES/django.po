@@ -755,8 +755,8 @@ msgid "Send offer"
 msgstr "Lähetä tarjous"
 
 #: templates/programme_info_fragment.pug
-msgid "Sign up"
-msgstr "Ilmoittaudu"
+msgid "Sign up for this programme"
+msgstr "Ilmoittaudu tähän ohjelmaan"
 
 #: models/programme.py
 msgid "Signup link"
