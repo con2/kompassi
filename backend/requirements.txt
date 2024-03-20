@@ -72,7 +72,7 @@ decorator==5.1.1
     #   ipython
 deprecated==1.2.14
     # via jwcrypto
-django==5.0.2
+django==5.0.3
     # via
     #   -r requirements.in
     #   crispy-bootstrap3
