@@ -299,6 +299,8 @@ class Setup:
 
         ordering.counter = 0
 
+        day_ticket_mail_description = "Next you need to fill in the sign-up form at https://forms.gle/grCULVpzz1rihnHZA. Please make note of your order number: you will need it while filling the form."
+
         for product_info in [
             dict(
                 name="Suite ticket",
@@ -401,6 +403,43 @@ class Setup:
                 ordering=ordering(),
                 limit_groups=[
                     limit_group("Single person room add-ons", 10),
+                ],
+            ),
+            dict(
+                name="Day ticket – Friday",
+                description="Friday ticket to Solmukohta. This ticket allows you to attend Solmukohta on Friday April 12. The ticket includes lunch and dinner, as well as any parties in the evening, but it does not include accommodation. For the ticket to be valid, you must fill in the sign-up form linked in the confirmation email within one week of purchase. You will have to show identification (ID card, passport or driver's license) at the info desk to get your badge.",
+                mail_description=day_ticket_mail_description,
+                price_cents=80_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("Friday tickets", 15),
+                ],
+            ),
+            dict(
+                name="Day ticket – Saturday",
+                description="Saturday ticket to Solmukohta. This ticket allows you to attend Solmukohta on Saturday April 13. The ticket includes lunch and dinner, as well as any parties in the evening, but it does not include accommodation. For the ticket to be valid, you must fill in the sign-up form linked in the confirmation email within one week of purchase. You will have to show identification (ID card, passport or driver's license) at the info desk to get your badge.",
+                mail_description=day_ticket_mail_description,
+                price_cents=80_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("Saturday tickets", 15),
+                ],
+            ),
+            dict(
+                name="Day ticket – Friday and Saturday",
+                description="Friday & Saturday ticket to Solmukohta at a small discount compared to purchasing Friday & Saturday separately. This ticket allows you to attend Solmukohta on Friday April 12 and Saturday April 13. The ticket includes lunch and dinner, as well as any parties in the evening, but it does not include accommodation. For the ticket to be valid, you must fill in the sign-up form linked in the confirmation email within one week of purchase. You will have to show identification (ID card, passport or driver's license) at the info desk to get your badge.",
+                mail_description=day_ticket_mail_description,
+                price_cents=140_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("Friday tickets", 15),
+                    limit_group("Saturday tickets", 15),
                 ],
             ),
         ]:
