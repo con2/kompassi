@@ -11,6 +11,7 @@ from django.db import connection, models
 from django.db.models import JSONField
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from pkg_resources import resource_string
 
@@ -222,12 +223,14 @@ class CheckoutPayment(models.Model):
         if not settings.DEBUG and self.meta.checkout_merchant == META_DEFAULTS["checkout_merchant"]:
             raise ValueError(f"Event {self.event} has testing merchant in production, please change this in admin")
 
+        language = "FI" if get_language() == "fi" else "EN"
+
         body = {
             "stamp": str(self.stamp),
             "reference": self.reference,
             "amount": self.price_cents,
             "currency": "EUR",
-            "language": "FI",  # TODO user's language
+            "language": language,
             "items": self.items,
             "customer": self.customer,
             "redirectUrls": {
