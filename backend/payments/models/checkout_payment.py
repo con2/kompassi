@@ -256,7 +256,6 @@ class CheckoutPayment(models.Model):
 
         response = requests.post(url, headers=headers, data=body)
         result = response.json()
-        logger.debug("perform_create_payment_request response %r", result)
         response.raise_for_status()
 
         self.checkout_reference = result["reference"]
@@ -271,8 +270,6 @@ class CheckoutPayment(models.Model):
 
         NOTE: Signature must be already verified at this point
         """
-        logger.debug("process_checkout_response %r", response)
-
         for key, expected_value in {
             "checkout-account": self.meta.checkout_merchant,
             "checkout-algorithm": "sha256",
