@@ -1,0 +1,145 @@
+title: Vendor application
+layout: vertical
+description: |
+  Complete this forom to apply to become a vendor at Tracon 2024, organized in September from the 6th to the 8th.
+
+  This form will be open for 1.-26.4.2024.
+
+   <strong>More information about applying::</strong> <a href="https://2024.tracon.fi/myyjahaku/">Apply to become a vendor or advertiser at Tracon 2024</a>.
+
+fields:
+  - slug: basic_info_title
+    title: Basic information
+    type: StaticText
+
+  - slug: public_name
+    type: SingleLineText
+    title: Displayed name
+    required: true
+    helpText: The name which will be publicly displayed in our materials.
+
+  - slug: official_name
+    type: SingleLineText
+    title: Official name
+    required: true
+    helpText: The official name of your company.  This will not be publicly displayed.  (May be same as previous.)
+
+  - slug: company_identification_number
+    type: SingleLineText
+    title: Business ID
+    helpText: The Finnish business identity code, of a form 1234567-8.  (This will not be publicly displayed.)
+
+  - slug: contact_person
+    title: Contact person(s)
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Your contact email
+    type: SingleLineText
+    required: true
+
+  - slug: website
+    title: The URL of your website
+    type: SingleLineText
+    required: false
+
+  - slug: phone_number
+    title: Your phone number
+    type: SingleLineText
+    helpText: "For communication during the event and surrounding days."
+    required: false
+
+
+  - slug: location_title
+    title: Sales area
+    type: StaticText
+    helpText: "The below are your requests - the final areas and dimensions will be determined by the level of demand and our positioning requirements."
+
+  - slug: area_size
+    title: Sales area size, in square meters
+    type: NumberField
+    required: false
+    minValue: 5
+    maxValue: 60
+
+  - slug: edge_length
+    title: Area edge length, in meters
+    helpText: "The length of the edge of your area that is open to customers.  (You may get more than this.)"
+    type: NumberField
+    required: false
+    minValue: 2
+    maxValue: 40
+
+  - slug: customer_may_enter
+    title: Customers may enter my sales area
+    type: SingleCheckbox
+    required: false
+
+  - slug: sales_categories
+    title: Sales categories
+    type: SingleLineText
+    required: false
+    helpText: > 
+      A simple list of the different types of goods you are planning to sell.
+      Eg. books, comics, anime, manga, games: roleplaying, board, miniature, CCGs, video; plush toys, figurines, jewelry, costumes, props, art (posters etc.), imported foodstuffs, art supplies, etc.  
+      Add your own categories if you feel they better describe what you would be selling.
+
+  - slug: location_other
+    title: Preferences or requests (relating to your sales area)
+    helpText: "Tell us here if you desire to be next to another vendor, want to be against the wall / as an island, etc."
+    type: MultiLineText
+    required: false
+
+
+  - slug: advertising_title
+    title: Advertising
+    type: StaticText
+
+  - slug: advertising_booklet
+    title: I want to advertise in the visitor booklet
+    type: MultiSelect
+    required: false
+    choices:
+      - slug: booklet_halfpage
+        title: ½ page
+      - slug: booklet_fullpage
+        title: Single page
+      - slug: booklet_backcover
+        title: Back cover
+
+  - slug: advertising_fence
+    title: I want to advertise on the park fence
+    type: MultiSelect
+    required: false
+    choices:
+      - slug: fence_medium
+        title: Smaller, 1m x 1m
+      - slug: fence_large
+        title: Larger, 2m x 2,5m
+
+  - slug: advertising_web
+    title: I want to advertise on the website
+    type: SingleCheckbox
+    required: false
+
+
+  - slug: additional_details_title
+    type: StaticText
+    title: Additional information
+
+  - slug: comments
+    title: Other comments or preferences
+    type: MultiLineText
+    required: false
+    helpText: "Notes, comments, requests, requirements or questions concerning procedures, communication, or anything else not connected to the sales area."
+
+  - slug: data_protection_text
+    type: StaticText
+    title: Data protection
+    helpText: >
+      The controller of personal data is Tracon ry represented by Otto "Amoeba" Martin.
+      The information is used to organize the vendors and sponsors of the Tracon event in Tampere.
+      The information is stored for the duration of the event year and then deleted.
+      The information is not disclosed to third parties. The information is not used for direct marketing.
+      The information is not transferred outside the EU or the European Economic Area.
