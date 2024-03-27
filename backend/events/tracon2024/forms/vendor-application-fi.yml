@@ -1,0 +1,146 @@
+title: Myyjähaku
+layout: vertical
+description: |
+  Tällä lomakkeella haetaan myyjäpaikkaa Tracon-tapahtumasta 6.-8.9.2024.
+
+  Haku on auki 1.-26.4.2024.
+
+  <strong>Lisätietoja hausta:</strong> <a href="https://2024.tracon.fi/myyjahaku/">Hae myyjäksi tai sponsoriksi Traconiin</a>.
+
+fields:
+  - slug: basic_info_title
+    title: Perustiedot
+    type: StaticText
+
+  - slug: public_name
+    type: SingleLineText
+    title: Kauppanimi
+    required: true
+    helpText: Millä nimellä haluat esittäytyä myyjälistauksessa?
+
+  - slug: official_name
+    type: SingleLineText
+    title: Yrityksen virallinen nimi
+    required: true
+    helpText: Mikä on yrityksesi virallinen nimi? Tämä tieto ei näy myyjälistauksessa.
+
+  - slug: company_identification_number
+    type: SingleLineText
+    title: Yrityksen Y-tunnus
+    helpText: Mikä on yrityksesi Y-tunnus? Tämä tieto ei näy myyjälistauksessa.
+
+  - slug: contact_person
+    title: Yhteyshenkilö(t)
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Yhteyshenkilön sähköposti
+    type: SingleLineText
+    required: true
+
+  - slug: website
+    title: Nettisivut
+    type: SingleLineText
+    required: false
+
+  - slug: phone_number
+    title: Puhelinnumero
+    type: SingleLineText
+    helpText: "Yhteydenpitoon tapahtuman aikana sekä ympäröivinä päivinä."
+    required: false
+
+
+  - slug: location_title
+    title: Myyntialue
+    type: StaticText
+    helpText: "Alla olevat ovat toiveita; lopulliset mitat ja muodot määräytyvät kysynnän ja asettelutarpeiden mukaan."
+
+  - slug: area_size
+    title: Pinta-ala neliömetreinä
+    type: NumberField
+    required: false
+    minValue: 5
+    maxValue: 60
+
+  - slug: edge_length
+    title: Reunan pituus metreinä
+    helpText: "Ostajille avoinna oleva reunan pituus.  (Osalle tulee pitempiä.)"
+    type: NumberField
+    required: false
+    minValue: 2
+    maxValue: 40
+
+  - slug: customer_may_enter
+    title: Asiakkaat voivat tulla myyntialueelle
+    type: SingleCheckbox
+    required: false
+
+  - slug: sales_categories
+    title: Myydyt tuoteluokat 
+    type: SingleLineText
+    required: false
+    helpText: > 
+      Minkälaisia tuotteita olette ajatelleet myydä.
+      Esim. kirjat, sarjakuvat, anime, manga, roolipelit, lautapelit, keräilykorttipelit, videopelit, pehmolelut, figuurit, korut, asut, propit, taide (julisteet yms.), tuonti-elintarvikkeet, piirrustustarvikkeet.  
+      Saa lisätä omia sen mukaan mikä kuvaa myytyjä asioita parhaiten."
+
+  - slug: location_other
+    title: Muut toiveet sijaintiin liittyen
+    helpText: "Jos haluatte olla tietyn muun myyjän vieressä, seinää vasten / saarekkeena, yms."
+    type: MultiLineText
+    required: false
+
+
+  - slug: advertising_title
+    title: Mainospaikat
+    type: StaticText
+
+  - slug: advertising_booklet
+    title: Haluan mainospaikan kävijälehdestä
+    type: MultiSelect
+    required: false
+    choices:
+      - slug: booklet_halfpage
+        title: ½ sivu
+      - slug: booklet_fullpage
+        title: Kokosivu
+      - slug: booklet_backcover
+        title: Takasivu
+
+  - slug: advertising_fence
+    title: Haluan mainospaikan puiston aidasta
+    type: MultiSelect
+    required: false
+    choices:
+      - slug: fence_medium
+        title: Pienempi, 1m x 1m
+      - slug: fence_large
+        title: Isompi, 2m x 2,5m
+
+  - slug: advertising_web
+    title: Haluan mainospaikan www-sivulta
+    type: SingleCheckbox
+    required: false
+
+
+  - slug: additional_details_title
+    type: StaticText
+    title: Lisätiedot
+
+  - slug: comments
+    title: Muut kommentit & toiveet
+    type: MultiLineText
+    required: false
+    helpText: "Järjestelyihin, yhteydenpitoon tai muuhun kuin myyjäsalin sijaintiin liittyvät toiveet."
+
+  - slug: data_protection_text
+    type: StaticText
+    title: Tietosuoja
+    helpText: >
+      Henkilötietojen käsittelijä on Tracon ry edustajanaan Otto "Amoeba" Martin.
+      Tietoja käytetään tamperelaisen Tracon -tapahtuman myyntialueen sekä mainonnan järjestämiseen.
+      Tietoja säilytetään tapahtumavuoden ajan ja sen jälkeen ne poistetaan.
+      Tietoja ei luovuteta ulkopuolisille.
+      Tietoja ei käytetä suoramarkkinointiin.
+      Tietoja ei siirretä EU:n tai Euroopan talousalueen ulkopuolelle.
