@@ -442,6 +442,18 @@ class Setup:
                     limit_group("Saturday tickets", 15),
                 ],
             ),
+            dict(
+                name="Day ticket – Thursday",
+                description="Thursday ticket to Solmukohta. This ticket allows you to attend Solmukohta on Thursday April 11. The ticket includes dinner, as well as any parties in the evening, but it does not include accommodation. For the ticket to be valid, you must fill in the sign-up form linked in the confirmation email within one week of purchase. You will have to show identification (ID card, passport or driver's license) at the info desk to get your badge.",
+                mail_description=day_ticket_mail_description,
+                price_cents=50_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("Thursday tickets", 5),
+                ],
+            ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
