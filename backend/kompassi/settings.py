@@ -441,7 +441,7 @@ OAUTH2_PROVIDER = dict(
 )
 
 # if True, users must verify their email address before they can log in to other services via Kompassi
-KOMPASSI_OIDC_EMAIL_VERIFICATION_REQUIRED = True
+KOMPASSI_OIDC_EMAIL_VERIFICATION_REQUIRED = False
 
 
 if "desuprofile_integration" in INSTALLED_APPS:
