@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -135,7 +136,13 @@ export default async function SurveysPage({ params }: Props) {
             message = t.attributes.isActive.untilFurtherNotice;
           }
         } else {
-          if (survey.activeFrom) {
+          if (
+            survey.activeFrom &&
+            Temporal.Instant.compare(
+              Temporal.Instant.from(survey.activeFrom),
+              Temporal.Now.instant(),
+            ) > 0
+          ) {
             activityEmoji = "⏳";
             message = t.attributes.isActive.openingAt(
               formatDateTime(survey.activeFrom, locale),
