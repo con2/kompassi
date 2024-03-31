@@ -41,6 +41,7 @@ kompassi_csp_allowed_login_redirects:
   - "*.con2.fi"
   - "*.ropecon.fi"
   - "*.kompassi.eu"
+  - "*.solmukohta.eu"
   - "conikuvat.fi"
   - "larppikuvat.fi"
   - "ropekonsti.fi"
