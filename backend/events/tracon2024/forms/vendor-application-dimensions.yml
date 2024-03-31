@@ -1,21 +1,21 @@
-- slug: category
-  title:
-    fi: Myyntipaikan tyyppi
-    en: Type of sales spot
-  is_key_dimension: true
-  choices:
-    - slug: vendor_hall
-      title:
-        fi: Myyntipöytä myyntipöytäsalissa
-        en: Sales table in the Vendor Hall
-    - slug: artisan
-      title:
-        fi: Artesaanipöytä
-        en: Artisan table
-    - slug: food
-      title:
-        fi: Ruokamyynti (ulkona Sorsapuistossa)
-        en: Food sales (outside in Sorsapuisto park)
+# - slug: category
+#   title:
+#     fi: Myyntipaikan tyyppi
+#     en: Type of sales spot
+#   is_key_dimension: true
+#   choices:
+#     - slug: vendor_hall
+#       title:
+#         fi: Myyntipöytä myyntipöytäsalissa
+#         en: Sales table in the Vendor Hall
+#     - slug: artisan
+#       title:
+#         fi: Artesaanipöytä
+#         en: Artisan table
+#     - slug: food
+#       title:
+#         fi: Ruokamyynti (ulkona Sorsapuistossa)
+#         en: Food sales (outside in Sorsapuisto park)
 
 - slug: status
   title:

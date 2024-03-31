@@ -35,7 +35,7 @@ fields:
     type: SingleLineText
     required: true
 
-  - slug: address 
+  - slug: address
     title: Address
     type: MultiLineText
     required: true
@@ -93,9 +93,9 @@ fields:
     title: Sales categories
     type: SingleLineText
     required: false
-    helpText: > 
+    helpText: >
       A simple list of the different types of goods you are planning to sell.
-      Eg. books, comics, anime, manga, games: roleplaying, board, miniature, CCGs, video; plush toys, figurines, jewelry, costumes, props, art (posters etc.), imported foodstuffs, art supplies, etc.  
+      Eg. books, comics, anime, manga, games: roleplaying, board, miniature, CCGs, video; plush toys, figurines, jewelry, costumes, props, art (posters etc.), imported foodstuffs, art supplies, etc.
       Add your own categories if you feel they better describe what you would be selling.
 
   - slug: location_other

@@ -916,42 +916,42 @@ class Setup:
 
         # Vendor signup form
 
-        with resource_stream("events.tracon2024", "forms/vendor-signup-en.yml") as f:
+        with resource_stream("events.tracon2024", "forms/vendor-application-en.yml") as f:
             data = yaml.safe_load(f)
 
-        vendor_signup_en, created = Form.objects.get_or_create(
+        vendor_application_en, created = Form.objects.get_or_create(
             event=self.event,
-            slug="vendor-signup-en",
+            slug="vendor-application-en",
             language="en",
             defaults=data,
         )
 
-        with resource_stream("events.tracon2024", "forms/vendor-signup-fi.yml") as f:
+        with resource_stream("events.tracon2024", "forms/vendor-application-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        vendor_signup_fi, created = Form.objects.get_or_create(
+        vendor_application_fi, created = Form.objects.get_or_create(
             event=self.event,
-            slug="vendor-signup-fi",
+            slug="vendor-application-fi",
             language="fi",
             defaults=data,
         )
 
-        vendor_signup_survey, _ = Survey.objects.get_or_create(
+        vendor_application_survey, _ = Survey.objects.get_or_create(
             event=self.event,
-            slug="vendor-signup",
+            slug="vendor-application",
             defaults=dict(
                 active_from=now(),
                 key_fields=["name"],
             ),
         )
 
-        vendor_signup_survey.languages.set([vendor_signup_fi, vendor_signup_en])
+        vendor_application_survey.languages.set([vendor_application_fi, vendor_application_en])
 
-        with resource_stream("events.tracon2024", "forms/vendor-signup-dimensions.yml") as f:
+        with resource_stream("events.tracon2024", "forms/vendor-application-dimensions.yml") as f:
             data = yaml.safe_load(f)
 
         for dimension in data:
-            DimensionDTO.model_validate(dimension).save(vendor_signup_survey)
+            DimensionDTO.model_validate(dimension).save(vendor_application_survey)
 
         # Expense claim form
 

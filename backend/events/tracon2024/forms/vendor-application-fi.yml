@@ -33,7 +33,7 @@ fields:
     type: SingleLineText
     required: true
 
-  - slug: address 
+  - slug: address
     title: Osoite
     type: MultiLineText
     required: true
@@ -88,12 +88,12 @@ fields:
     maxValue: 10
 
   - slug: sales_categories
-    title: Myydyt tuoteluokat 
+    title: Myydyt tuoteluokat
     type: SingleLineText
     required: false
-    helpText: > 
+    helpText: >
       Minkälaisia tuotteita olette ajatelleet myydä.
-      Esim. kirjat, sarjakuvat, anime, manga, roolipelit, lautapelit, keräilykorttipelit, videopelit, pehmolelut, figuurit, korut, asut, propit, taide (julisteet yms.), tuonti-elintarvikkeet, piirrustustarvikkeet.  
+      Esim. kirjat, sarjakuvat, anime, manga, roolipelit, lautapelit, keräilykorttipelit, videopelit, pehmolelut, figuurit, korut, asut, propit, taide (julisteet yms.), tuonti-elintarvikkeet, piirrustustarvikkeet.
       Saa lisätä omia sen mukaan mikä kuvaa myytyjä asioita parhaiten.
 
   - slug: location_other
