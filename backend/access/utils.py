@@ -32,6 +32,7 @@ def emailify(ustr):
     ustr = EMAILIFY_FORBANNAD_RE.sub("", ustr)
     ustr = EMAILIFY_MULTIDOT_RE.sub(".", ustr)
     ustr = EMAILIFY_MULTIDASH_RE.sub("-", ustr)
+    ustr = ustr.removeprefix(".").removesuffix(".")
     return ustr  # noqa: RET504
 
 
