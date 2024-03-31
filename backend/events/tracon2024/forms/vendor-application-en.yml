@@ -1,11 +1,11 @@
 title: Vendor application
 layout: vertical
 description: |
-  Complete this forom to apply to become a vendor at Tracon 2024, organized in September from the 6th to the 8th.
+  Complete this form to apply to become a vendor at Tracon 2024, organized in September from the 6th to the 8th.
 
   This form will be open for 1.-26.4.2024.
 
-   <strong>More information about applying::</strong> <a href="https://2024.tracon.fi/myyjahaku/">Apply to become a vendor or advertiser at Tracon 2024</a>.
+   <strong>More information about applying::</strong> <a href="https://2024.tracon.fi/apply-as-vendor/">Apply to become a vendor or advertiser at Tracon 2024</a>.
 
 fields:
   - slug: basic_info_title
@@ -22,16 +22,22 @@ fields:
     type: SingleLineText
     title: Official name
     required: true
-    helpText: The official name of your company.  This will not be publicly displayed.  (May be same as previous.)
+    helpText: The official name of your company.  (May be same as previous.)
 
   - slug: company_identification_number
     type: SingleLineText
     title: Business ID
-    helpText: The Finnish business identity code, of a form 1234567-8.  (This will not be publicly displayed.)
+    required: true
+    helpText: The Finnish business identity code, of a form 1234567-8.  (If you don't have a Finnish one but do have one of your own country, you may use that.)
 
   - slug: contact_person
     title: Contact person(s)
     type: SingleLineText
+    required: true
+
+  - slug: address 
+    title: Address
+    type: MultiLineText
     required: true
 
   - slug: email
@@ -54,7 +60,7 @@ fields:
   - slug: location_title
     title: Sales area
     type: StaticText
-    helpText: "The below are your requests - the final areas and dimensions will be determined by the level of demand and our positioning requirements."
+    helpText: "The below are your requests – the final areas and dimensions will be determined by the level of demand and our positioning requirements."
 
   - slug: area_size
     title: Sales area size, in square meters
@@ -65,7 +71,7 @@ fields:
 
   - slug: edge_length
     title: Area edge length, in meters
-    helpText: "The length of the edge of your area that is open to customers.  (You may get more than this.)"
+    helpText: "The minimum length of the edge of your area that is open to customers.  (You may get more than this.)"
     type: NumberField
     required: false
     minValue: 2
@@ -75,6 +81,13 @@ fields:
     title: Customers may enter my sales area
     type: SingleCheckbox
     required: false
+
+  - slug: tables
+    title: Number of table required
+    type: NumberField
+    required: false
+    minValue: 0
+    maxValue: 10
 
   - slug: sales_categories
     title: Sales categories
@@ -86,7 +99,7 @@ fields:
       Add your own categories if you feel they better describe what you would be selling.
 
   - slug: location_other
-    title: Preferences or requests (relating to your sales area)
+    title: Preferences or requests relating to your sales area
     helpText: "Tell us here if you desire to be next to another vendor, want to be against the wall / as an island, etc."
     type: MultiLineText
     required: false
@@ -116,10 +129,15 @@ fields:
       - slug: fence_medium
         title: Smaller, 1m x 1m
       - slug: fence_large
-        title: Larger, 2m x 2,5m
+        title: Larger, 2m x 3,5m
 
   - slug: advertising_web
     title: I want to advertise on the website
+    type: SingleCheckbox
+    required: false
+
+  - slug: advertising_main_auditorium
+    title: I want to advertise in the Main Auditorium
     type: SingleCheckbox
     required: false
 

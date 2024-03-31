@@ -16,22 +16,26 @@ fields:
     type: SingleLineText
     title: Kauppanimi
     required: true
-    helpText: Millä nimellä haluat esittäytyä myyjälistauksessa?
+    helpText: Nimi jonka haluatte näkyvän myyjälistauksissa.
 
   - slug: official_name
     type: SingleLineText
     title: Yrityksen virallinen nimi
     required: true
-    helpText: Mikä on yrityksesi virallinen nimi? Tämä tieto ei näy myyjälistauksessa.
 
   - slug: company_identification_number
     type: SingleLineText
     title: Yrityksen Y-tunnus
-    helpText: Mikä on yrityksesi Y-tunnus? Tämä tieto ei näy myyjälistauksessa.
+    required: true
 
   - slug: contact_person
     title: Yhteyshenkilö(t)
     type: SingleLineText
+    required: true
+
+  - slug: address 
+    title: Osoite
+    type: MultiLineText
     required: true
 
   - slug: email
@@ -65,7 +69,7 @@ fields:
 
   - slug: edge_length
     title: Reunan pituus metreinä
-    helpText: "Ostajille avoinna oleva reunan pituus.  (Osalle tulee pitempiä.)"
+    helpText: "Ostajille avoinna oleva reunan minimi-pituus.  (Osalle tulee pidempiä.)"
     type: NumberField
     required: false
     minValue: 2
@@ -76,6 +80,13 @@ fields:
     type: SingleCheckbox
     required: false
 
+  - slug: tables
+    title: Haluttu pöytämäärä
+    type: NumberField
+    required: false
+    minValue: 0
+    maxValue: 10
+
   - slug: sales_categories
     title: Myydyt tuoteluokat 
     type: SingleLineText
@@ -83,7 +94,7 @@ fields:
     helpText: > 
       Minkälaisia tuotteita olette ajatelleet myydä.
       Esim. kirjat, sarjakuvat, anime, manga, roolipelit, lautapelit, keräilykorttipelit, videopelit, pehmolelut, figuurit, korut, asut, propit, taide (julisteet yms.), tuonti-elintarvikkeet, piirrustustarvikkeet.  
-      Saa lisätä omia sen mukaan mikä kuvaa myytyjä asioita parhaiten."
+      Saa lisätä omia sen mukaan mikä kuvaa myytyjä asioita parhaiten.
 
   - slug: location_other
     title: Muut toiveet sijaintiin liittyen
@@ -116,10 +127,15 @@ fields:
       - slug: fence_medium
         title: Pienempi, 1m x 1m
       - slug: fence_large
-        title: Isompi, 2m x 2,5m
+        title: Isompi, 2m x 3,5m
 
   - slug: advertising_web
     title: Haluan mainospaikan www-sivulta
+    type: SingleCheckbox
+    required: false
+
+  - slug: advertising_main_auditorium
+    title: Haluan mainospaikan Isoon saliin
     type: SingleCheckbox
     required: false
 
