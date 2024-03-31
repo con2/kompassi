@@ -26,11 +26,10 @@ block profile_content
             th Tehtävänimike
         tbody
           for signup in signups_past_events
-            if signup.is_accepted
-              tr
-                td: a(href="{% url 'core_event_view' signup.event.slug %}") {{ signup.event.name }}
-                td {{ signup.event.formatted_start_and_end_date }}
-                td {{ signup.some_job_title }}
+            tr
+              td: a(href="{% url 'core_event_view' signup.event.slug %}") {{ signup.event.name }}
+              td {{ signup.event.formatted_start_and_end_date }}
+              td {{ signup.some_job_title }}
       .panel-footer
         p.text-muted Yhteensä {{ num_signups_past_events }} tapahtuma{{ num_signups_past_events|pluralize:"a" }}.
 

@@ -1,4 +1,5 @@
 import json
+from itertools import chain
 
 from django.conf import settings
 from django.contrib import messages
@@ -254,7 +255,7 @@ def profile_signups_view(request):
 
     archived_signups = person.archived_signups.all()
     signups_past_events = sorted(
-        list(archived_signups) + list(unarchived_signups_past_events),
+        (signup for signup in chain(archived_signups, unarchived_signups_past_events) if signup.is_accepted),
         key=lambda signup: signup.event.start_time,
         reverse=True,
     )
