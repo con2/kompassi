@@ -170,7 +170,7 @@ const tls = tlsEnabled
   ? [{ hosts: [hostname], secretName: tlsSecretName }]
   : [];
 
-const defaultIngreesAnnotations = {
+const defaultIngressAnnotations = {
   "nginx.ingress.kubernetes.io/proxy-body-size": "100m",
   "nginx.org/client-max-body-size": "100m",
 };
@@ -178,9 +178,9 @@ const ingressAnnotations = tlsEnabled
   ? {
       "cert-manager.io/cluster-issuer": clusterIssuer,
       "nginx.ingress.kubernetes.io/ssl-redirect": "true",
-      ...defaultIngreesAnnotations,
+      ...defaultIngressAnnotations,
     }
-  : defaultIngreesAnnotations;
+  : defaultIngressAnnotations;
 
 const ingress = {
   apiVersion: "networking.k8s.io/v1",
