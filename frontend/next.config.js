@@ -3,8 +3,10 @@ const withNextIntl = require("next-intl/plugin")();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: "standalone",
-  serverActions: {
-    bodySizeLimit: "100mb",
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "100mb",
+    },
   },
 };
 
