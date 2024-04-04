@@ -202,6 +202,9 @@ class Programme(models.Model, CsvExportMixin):
     AlternativeProgrammeForms.
     """
 
+    id: int
+    pk: int
+
     category = models.ForeignKey(
         "programme.Category",
         on_delete=models.CASCADE,
