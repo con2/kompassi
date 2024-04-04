@@ -454,6 +454,35 @@ class Setup:
                     limit_group("Thursday tickets", 5),
                 ],
             ),
+            dict(
+                name="Book – What Do We Do When We Play? (2020)",
+                description=(
+                    "ONLY FOR RETRIEVAL AT SOLMUKOHTA 2024. IF YOU CANNOT COME, HAVE A FRIEND PICK IT UP FROM THE INFO WITH THE RECEIPT. WE DO NOT MAIL BOOKS.\n\n"
+                    "Over the course of thirty years, the Nordic larp community has learned a huge amount about the design and analysis of larps. Now, we open the next chapter and ask the question, “what do we do when we play?”\n\n"
+                    "This book focuses on the experience, skills, and understanding of the participant. With 85 texts from 73 authors, we’re still just scratching the surface, but we hope that you'll find pieces in here that change the way you play and how you think about it."
+                ),
+                price_cents=25_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("2020 book", 12),
+                ],
+            ),
+            dict(
+                name="Book – Liminal Encounters (2024)",
+                description=(
+                    "ONLY FOR RETRIEVAL AT SOLMUKOHTA 2024. IF YOU CANNOT COME, HAVE A FRIEND PICK IT UP FROM THE INFO WITH THE RECEIPT. WE DO NOT MAIL BOOKS.\n\n"
+                    "Do you want to know what is going on in larp and where the discourse is going? Read the Solmukohta 2024 book, Liminal Encounters: Evolving Discourse in Nordic and Nordic-inspired Larp. The book contains opinions and debate, concrete tips on how to make larps, and academic style analysis. At 400 pages, with 58 contributors, it both delivers fresh perspectives and further develops established theories."
+                ),
+                price_cents=25_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("2024 book", 24),
+                ],
+            ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
