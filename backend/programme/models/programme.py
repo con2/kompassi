@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import logging
 from datetime import timedelta
 from functools import cached_property
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
@@ -13,6 +16,9 @@ from django.utils.translation import gettext_lazy as _
 from core.csv_export import CsvExportMixin
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, format_datetime, slugify, url
 from core.utils.time_utils import format_interval
+
+if TYPE_CHECKING:
+    from .programme_feedback import ProgrammeFeedback
 
 logger = logging.getLogger("kompassi")
 
@@ -66,7 +72,7 @@ TRISTATE_CHOICES = [
 
 TRISTATE_FIELD_PARAMS = dict(
     choices=TRISTATE_CHOICES,
-    max_length=max(len(key) for (key, _) in TRISTATE_CHOICES),
+    max_length=max(len(key) for (key, _) in TRISTATE_CHOICES),  # type: ignore
 )
 
 ENCUMBERED_CONTENT_CHOICES = [
@@ -204,6 +210,7 @@ class Programme(models.Model, CsvExportMixin):
 
     id: int
     pk: int
+    feedback: models.Manager[ProgrammeFeedback]
 
     category = models.ForeignKey(
         "programme.Category",
@@ -220,7 +227,7 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_("Which form was used to offer this Programme? If null, the default form was used."),
     )
 
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     title = models.CharField(
         max_length=1023,
@@ -272,14 +279,14 @@ class Programme(models.Model, CsvExportMixin):
         default="no",
         verbose_name=_("Audio playback"),
         help_text=_("Will you play audio in your programme?"),
-        **TRISTATE_FIELD_PARAMS,
+        **TRISTATE_FIELD_PARAMS,  # type: ignore
     )
 
     use_video = models.CharField(
         default="no",
         verbose_name=_("Video playback"),
         help_text=_("Will you play video in your programme?"),
-        **TRISTATE_FIELD_PARAMS,
+        **TRISTATE_FIELD_PARAMS,  # type: ignore
     )
 
     number_of_microphones = models.IntegerField(
@@ -1759,9 +1766,10 @@ class Programme(models.Model, CsvExportMixin):
     def apply_state_async(self):
         from ..tasks import programme_apply_state_async
 
-        programme_apply_state_async.delay(self.pk)
+        programme_apply_state_async.delay(self.pk)  # type: ignore
 
     def _apply_state_async(self):
+        self.apply_state_export_to_v2()
         self.apply_state_group_membership()
         self.apply_state_send_messages()
 
@@ -1771,6 +1779,14 @@ class Programme(models.Model, CsvExportMixin):
     def apply_state_update_signup_extras(self):
         for signup_extra in self.signup_extras:
             signup_extra.apply_state()
+
+    def apply_state_export_to_v2(self):
+        if (meta := self.event.program_v2_event_meta) is None or not meta.is_auto_importing_from_v1:
+            return
+
+        from program_v2.models.program import Program
+
+        Program.import_program_from_v1(self.event, Programme.objects.filter(pk=self.pk))
 
     def apply_state_group_membership(self):
         from core.utils import ensure_user_group_membership
@@ -1967,7 +1983,7 @@ class Programme(models.Model, CsvExportMixin):
         from paikkala.models import Program as PaikkalaProgram
         from paikkala.models import Row
 
-        paikkala_room = self.room.paikkalize()
+        paikkala_room = self.room.paikkalize()  # type: ignore
         meta = self.event.programme_event_meta
         tz = get_default_timezone()
 
@@ -1976,7 +1992,7 @@ class Programme(models.Model, CsvExportMixin):
             name=truncatechars(self.title, PaikkalaProgram._meta.get_field("name").max_length),
             room=paikkala_room,
             require_user=True,
-            reservation_start=self.start_time.replace(hour=9, minute=0, tzinfo=tz),
+            reservation_start=self.start_time.replace(hour=9, minute=0, tzinfo=tz),  # type: ignore
             reservation_end=self.end_time,
             invalid_after=self.end_time,
             max_tickets=0,

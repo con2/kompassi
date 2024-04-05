@@ -42,7 +42,7 @@ class Command(BaseCommand):
         with transaction.atomic():
             for event_slug in opts["event_slugs"]:
                 event = Event.objects.get(slug=event_slug)
-                Program.import_program_v1(event, clear=opts["dangerously_clear"])
+                Program.import_program_from_v1(event, clear=opts["dangerously_clear"])
 
             if not opts["really"]:
                 raise NotReally("It was only a dream :')")

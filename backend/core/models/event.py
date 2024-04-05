@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 import typing
 from datetime import timedelta
@@ -13,7 +15,7 @@ from ..utils import SLUG_FIELD_PARAMS, event_meta_property, format_date_range, p
 
 if typing.TYPE_CHECKING:
     from labour.models.signup import Signup
-    from program_v2.models import Dimension, Program
+    from program_v2.models import Dimension, Program, ProgramV2EventMeta
 
 
 logger = logging.getLogger("kompassi")
@@ -105,9 +107,9 @@ class Event(models.Model):
     updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
 
     # related fields
-    programs: models.QuerySet["Program"]
-    dimensions: models.QuerySet["Dimension"]
-    signup_set: models.QuerySet["Signup"]
+    programs: models.QuerySet[Program]
+    dimensions: models.QuerySet[Dimension]
+    signup_set: models.QuerySet[Signup]
 
     class Meta:
         verbose_name = "Tapahtuma"
@@ -222,7 +224,7 @@ class Event(models.Model):
     intra_event_meta = event_meta_property("intra")
 
     @property
-    def program_v2_event_meta(self):
+    def program_v2_event_meta(self) -> ProgramV2EventMeta | None:
         """
         for program_v2, app_label is program_v2 but prefix is programv2
         so event_meta_property("programv2") did not

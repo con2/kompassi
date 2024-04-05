@@ -77,6 +77,12 @@ class ScheduleItemType(DjangoObjectType):
 class ProgramType(DjangoObjectType):
     cached_dimensions = graphene.Field(GenericScalar)
 
+    @staticmethod
+    def resolve_cached_hosts(parent: Program, info):
+        return parent.other_fields.get("formatted_hosts", "")
+
+    cached_hosts = graphene.NonNull(graphene.String)
+
     class Meta:
         model = Program
         fields = ("title", "slug", "dimensions", "cached_dimensions", "schedule_items")
@@ -135,7 +141,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
                     dimensions__value__slug__in=filter.values,
                 )
 
-        return queryset
+        return queryset.order_by("schedule_items__start_time")
 
     dimensions = graphene.List(graphene.NonNull(DimensionType))
 
