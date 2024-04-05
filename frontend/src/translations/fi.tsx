@@ -217,6 +217,12 @@ const translations: Translations = {
     submit: "Lähetä",
   },
 
+  Program: {
+    listTitle: "Ohjelma",
+    singleTitle: "Ohjelmanumero",
+    forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
+  },
+
   Survey: {
     listTitle: "Kyselyt",
     singleTitle: "Kysely",

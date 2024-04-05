@@ -13,6 +13,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
+    "\n  fragment ProgramList on ProgramType {\n    slug\n    title\n    cachedDimensions\n    scheduleItems {\n      startTime\n      endTime\n    }\n  }\n": types.ProgramListFragmentDoc,
+    "\n  query ProgramListQuery(\n    $eventSlug: String!\n    $locale: String\n    $filters: [DimensionFilterInput!]\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        dimensions {\n          slug\n          title(lang: $locale)\n\n          values {\n            slug\n            title(lang: $locale)\n          }\n        }\n\n        programs(filters: $filters) {\n          ...ProgramList\n        }\n      }\n    }\n  }\n": types.ProgramListQueryDocument,
     "\n  query NewProgramQuery(\n    $eventSlug: String!\n    $formSlug: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      program {\n        skipOfferFormSelection\n\n        offerForm(slug: $formSlug) {\n          form(lang: $locale) {\n            title\n            description\n            fields\n            layout\n          }\n        }\n      }\n    }\n  }\n": types.NewProgramQueryDocument,
     "\n  query NewProgramFormSelectionQuery($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        skipOfferFormSelection\n\n        offerForms {\n          slug\n          shortDescription(lang: $locale)\n          form(lang: $locale) {\n            title\n            slug\n          }\n        }\n      }\n    }\n  }\n": types.NewProgramFormSelectionQueryDocument,
     "\n  mutation CreateSurveyResponse($input: CreateSurveyResponseInput!) {\n    createSurveyResponse(input: $input) {\n      response {\n        id\n      }\n    }\n  }\n": types.CreateSurveyResponseDocument,
@@ -66,6 +68,14 @@ const documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ProgramList on ProgramType {\n    slug\n    title\n    cachedDimensions\n    scheduleItems {\n      startTime\n      endTime\n    }\n  }\n"): (typeof documents)["\n  fragment ProgramList on ProgramType {\n    slug\n    title\n    cachedDimensions\n    scheduleItems {\n      startTime\n      endTime\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProgramListQuery(\n    $eventSlug: String!\n    $locale: String\n    $filters: [DimensionFilterInput!]\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        dimensions {\n          slug\n          title(lang: $locale)\n\n          values {\n            slug\n            title(lang: $locale)\n          }\n        }\n\n        programs(filters: $filters) {\n          ...ProgramList\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgramListQuery(\n    $eventSlug: String!\n    $locale: String\n    $filters: [DimensionFilterInput!]\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        dimensions {\n          slug\n          title(lang: $locale)\n\n          values {\n            slug\n            title(lang: $locale)\n          }\n        }\n\n        programs(filters: $filters) {\n          ...ProgramList\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

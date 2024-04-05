@@ -217,6 +217,12 @@ const translations = {
     submit: "Submit",
   },
 
+  Program: {
+    listTitle: "Program",
+    singleTitle: "Program item",
+    forEvent: (eventName: string) => <>for {eventName}</>,
+  },
+
   Survey: {
     listTitle: "Surveys",
     singleTitle: "Survey",
