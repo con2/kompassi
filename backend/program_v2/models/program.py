@@ -175,6 +175,11 @@ class Program(models.Model):
         if clear:
             cls.objects.filter(event=event).delete()
             DimensionValue.objects.filter(dimension__event=event).delete()
+        else:
+            queryset.exclude(state="published").delete()
+
+        # Only imports published programme for now as there is no access control
+        programs_to_upsert = queryset.filter(state="published")
 
         import_function = meta.importer
-        import_function(event, queryset)
+        import_function(event, programs_to_upsert)
