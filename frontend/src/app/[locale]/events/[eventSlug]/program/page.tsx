@@ -79,12 +79,15 @@ export async function generateMetadata({ params, searchParams }: Props) {
   });
   const { event } = data;
   const translations = getTranslations(locale);
-  return getPageTitle({
+  const title = getPageTitle({
     translations,
     event,
     viewTitle: translations.Program.listTitle,
     subject: null,
   });
+  return {
+    title,
+  };
 }
 
 export default async function ProgramListPage({ params, searchParams }: Props) {

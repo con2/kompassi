@@ -64,12 +64,14 @@ export async function generateMetadata({ params }: Props) {
     query,
     variables: { eventSlug, programSlug, locale },
   });
-  return getPageTitle({
+  const title = getPageTitle({
     translations,
     event: data.event,
     viewTitle: translations.Program.singleTitle,
     subject: data?.event?.program?.program?.title,
   });
+  const description = data?.event?.program?.program?.description;
+  return { title, description };
 }
 
 export default async function NewProgramPage({ params }: Props) {
