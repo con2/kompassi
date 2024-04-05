@@ -9,6 +9,7 @@ interface Props {
   end: string | null | undefined; // ISO 8601 (2024-02-24T17:55:00Z)
   scope: unknown | undefined; // TODO(#436) event or organization
   session: unknown | undefined; // TODO(#436) from await auth()
+  includeDuration?: boolean;
   options?: Intl.DateTimeFormatOptions;
 }
 
@@ -27,12 +28,35 @@ export function isSameDay(start: string, end: string) {
   return startDay.equals(endDay);
 }
 
+export function formatDuration(start: string, end: string, locale: string) {
+  const startDateTime =
+    Temporal.Instant.from(start).toZonedDateTimeISO(timezone);
+  const endDateTime = Temporal.Instant.from(end).toZonedDateTimeISO(timezone);
+  const durationMinutes = startDateTime
+    .until(endDateTime)
+    .total({ unit: "minute" });
+
+  const hours = Math.floor(durationMinutes / 60);
+  const minutes = durationMinutes % 60;
+
+  if (hours > 0) {
+    if (minutes > 0) {
+      return `${hours} h ${minutes} min`;
+    } else {
+      return `${hours} h`;
+    }
+  } else {
+    return `${minutes} min`;
+  }
+}
+
 // TODO(#436) proper handling of event & session time zones
 export default function FormattedDateTimeRange({
   start,
   end,
   locale = "en",
   options = defaultOptions,
+  includeDuration = false,
 }: Props) {
   const formattedStart = start ? formatDateTime(start, locale, options) : "";
 
@@ -43,11 +67,15 @@ export default function FormattedDateTimeRange({
   };
   const formattedEnd = end ? formatDateTime(end, locale, endOptions) : "";
 
+  const formattedDuration =
+    start && end && includeDuration ? formatDuration(start, end, locale) : "";
+
   return (
     <span>
       <time dateTime={start ?? undefined}>{formattedStart}</time>
       {" – "}
       <time dateTime={end ?? undefined}>{formattedEnd}</time>
+      {formattedDuration && ` (${formattedDuration})`}
     </span>
   );
 }

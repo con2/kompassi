@@ -138,6 +138,7 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
                       session={null}
                       start={scheduleItem.startTime}
                       end={scheduleItem.endTime}
+                      includeDuration={true}
                     />
                   </CardText>
                 ))}

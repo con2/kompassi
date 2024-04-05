@@ -27,6 +27,7 @@ const query = graphql(`
         program(slug: $programSlug) {
           title
           description
+          cachedHosts
           dimensions {
             dimension {
               slug
@@ -113,17 +114,24 @@ export default async function NewProgramPage({ params }: Props) {
             key={index}
             start={scheduleItem.startTime}
             end={scheduleItem.endTime}
+            includeDuration={true}
           />
         ))}
+        {program.cachedHosts && (
+          <>
+            {", "}
+            {program.cachedHosts}
+          </>
+        )}
       </p>
-      <p>
+      <div className="mb-3 mt-3">
         {dimensions.map((dimension) => (
           <div key={dimension.dimension.slug}>
             <strong>{dimension.dimension.title}</strong>:{" "}
             {dimension.value.title}
           </div>
         ))}
-      </p>
+      </div>
       <Paragraphs text={program.description} />
     </ViewContainer>
   );
