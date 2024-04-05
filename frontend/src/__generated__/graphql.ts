@@ -509,6 +509,7 @@ export type ProgramDimensionValueType = {
 export type ProgramType = {
   __typename?: 'ProgramType';
   cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
+  cachedHosts: Scalars['String']['output'];
   dimensions: Array<ProgramDimensionValueType>;
   scheduleItems: Array<ScheduleItemType>;
   slug: Scalars['String']['output'];

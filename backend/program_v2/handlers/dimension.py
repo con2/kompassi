@@ -18,17 +18,16 @@ def program_dimension_value_pre_save(sender, instance: ProgramDimensionValue, **
 @receiver([post_save, post_delete], sender=Dimension)
 @receiver([post_save, post_delete], sender=DimensionValue)
 def dimension_post_save(sender, instance: Dimension | DimensionValue, **kwargs):
-    Program.refresh_cached_dimensions(instance.event.programs.all())
+    Program.refresh_cached_dimensions_qs(instance.event.programs.all())
 
 
 @receiver([post_save, post_delete], sender=ProgramDimensionValue)
 def program_dimension_value_post_save(sender, instance: ProgramDimensionValue, **kwargs):
     program = instance.program
-    program.cached_dimensions = program._dimensions
-    program.save(update_fields=["cached_dimensions"])
+    program.refresh_cached_dimensions()
 
 
 @receiver(pre_save, sender=(Dimension, DimensionValue))
 def dimension_pre_save(sender, instance: Dimension | DimensionValue, **kwargs):
     if instance.slug is None:
-        instance.slug = slugify(instance.title.en or instance.title.fi)
+        instance.slug = slugify(instance.title.get("en") or instance.title.get("fi") or "")

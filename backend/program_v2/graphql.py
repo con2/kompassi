@@ -77,6 +77,12 @@ class ScheduleItemType(DjangoObjectType):
 class ProgramType(DjangoObjectType):
     cached_dimensions = graphene.Field(GenericScalar)
 
+    @staticmethod
+    def resolve_cached_hosts(parent: Program, info):
+        return parent.other_fields.get("formatted_hosts", "")
+
+    cached_hosts = graphene.NonNull(graphene.String)
+
     class Meta:
         model = Program
         fields = ("title", "slug", "dimensions", "cached_dimensions", "schedule_items")

@@ -28,6 +28,7 @@ class Setup:
         self.setup_programme()
         self.setup_tickets()
         self.setup_forms()
+        self.setup_program_v2()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -252,6 +253,18 @@ class Setup:
                 Technology.objects.get_or_create(name=name)
 
         self.event.programme_event_meta.create_groups()
+
+    def setup_program_v2(self):
+        from program_v2.models import ProgramV2EventMeta
+
+        ProgramV2EventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                primary_dimension=None,
+                importer_name="solmukohta2024",
+                admin_group=self.event.programme_event_meta.admin_group,
+            ),
+        )
 
     def setup_tickets(self):
         from tickets.models import LimitGroup, Product, TicketsEventMeta

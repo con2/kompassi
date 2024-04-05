@@ -1,4 +1,5 @@
 import re
+from collections import Counter
 
 import phonenumbers
 from django.conf import settings
@@ -118,3 +119,20 @@ def format_phone_number(
     phone_number_format = getattr(phonenumbers.PhoneNumberFormat, format, format)
     phone_number = phonenumbers.parse(value, region)
     return phonenumbers.format_number(phone_number, phone_number_format)
+
+
+class EnsuranceCompany:
+    """
+    Ensure unique slugs.
+
+    >>> ensure = EnsuranceCompany()
+    >>> ensure("foo"), ensure("bar"), ensure("foo")
+    ('foo', 'bar', 'foo-2')
+    """
+
+    def __init__(self):
+        self.counter: Counter[str] = Counter()
+
+    def __call__(self, slug: str) -> str:
+        self.counter[slug] += 1
+        return slug if self.counter[slug] == 1 else f"{slug}-{self.counter[slug]}"
