@@ -220,7 +220,11 @@ const translations = {
   Program: {
     listTitle: "Program",
     singleTitle: "Program item",
-    forEvent: (eventName: string) => <>for {eventName}</>,
+    forEvent: (eventName: string) => <>in {eventName}</>,
+    aProgramItemIn: (eventName: string) => <>a program item in {eventName}</>,
+    actions: {
+      returnToProgramList: "Return to the list of program items",
+    },
   },
 
   Survey: {

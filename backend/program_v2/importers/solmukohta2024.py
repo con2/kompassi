@@ -3,7 +3,6 @@ from __future__ import annotations
 import logging
 from datetime import timedelta
 
-from django.conf import settings
 from django.db import models
 
 from core.models import Event
@@ -13,7 +12,7 @@ from programme.models.programme import PROGRAMME_STATES_LIVE, Programme
 from programme.models.room import Room
 from programme.models.tag import Tag
 
-from ..models.dimension import Dimension, DimensionDTO, DimensionValueDTO, ProgramDimensionValue
+from ..models.dimension import DimensionDTO, DimensionValueDTO, ProgramDimensionValue
 from ..models.program import Program
 from ..models.schedule import ScheduleItem
 
@@ -54,6 +53,12 @@ def get_aw_type_value(programme: Programme):
 
 def get_room_value(programme: Programme):
     return normalislug(programme.room.slug) if programme.room else None
+
+
+def get_signup_value(programme: Programme):
+    if programme.signup_link:
+        return "konsti" if "konsti" in programme.signup_link else "other"
+    return "no"
 
 
 def ensure_solmukohta2024_dimensions(event: Event):
@@ -111,12 +116,18 @@ def ensure_solmukohta2024_dimensions(event: Event):
                 DimensionValueDTO(slug=room.slug, title={"en": room.name}) for room in Room.objects.filter(event=event)
             ],
         ),
+        DimensionDTO(
+            slug="signup",
+            title={"en": "Advance signup", "fi": "Ennakkoilmoittautuminen"},
+            choices=[
+                DimensionValueDTO(slug="konsti", title={"en": "Yes, in Konsti", "fi": "Kyllä, Konstin kautta"}),
+                DimensionValueDTO(slug="other", title={"en": "Yes, elsewhere", "fi": "Kyllä, muuta kautta"}),
+                DimensionValueDTO(slug="no", title={"en": "None", "fi": "Ei"}),
+            ],
+        ),
     ]
 
     DimensionDTO.save_many(event, dimensions)
-
-    if settings.DEBUG:
-        Dimension.dump_dimensions(event)
 
 
 def import_solmukohta2024(event: Event, queryset: models.QuerySet[Programme]):
@@ -168,6 +179,7 @@ def import_solmukohta2024(event: Event, queryset: models.QuerySet[Programme]):
                 "sk-type": get_sk_type_value(programme),
                 "aw-type": get_aw_type_value(programme),
                 "room": get_room_value(programme),
+                "signup": get_signup_value(programme),
             },
             *upsert_cache,
         )

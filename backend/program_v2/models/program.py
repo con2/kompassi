@@ -59,11 +59,12 @@ class Program(models.Model):
 
     @classmethod
     def refresh_cached_dimensions_qs(cls, queryset: models.QuerySet[Self]):
-        bulk_update = []
-        for program in queryset.select_for_update(of=("self",)).only("id", "cached_dimensions"):
-            program.cached_dimensions = program._build_dimensions()
-            bulk_update.append(program)
-        cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
+        with transaction.atomic():
+            bulk_update = []
+            for program in queryset.select_for_update(of=("self",)).only("id", "cached_dimensions"):
+                program.cached_dimensions = program._build_dimensions()
+                bulk_update.append(program)
+            cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
 
     @classmethod
     def create_from_form_data(

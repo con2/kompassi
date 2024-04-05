@@ -85,7 +85,7 @@ class ProgramType(DjangoObjectType):
 
     class Meta:
         model = Program
-        fields = ("title", "slug", "dimensions", "cached_dimensions", "schedule_items")
+        fields = ("title", "slug", "description", "dimensions", "cached_dimensions", "schedule_items")
 
 
 class OfferFormType(DjangoObjectType):
@@ -144,6 +144,12 @@ class ProgramV2EventMetaType(DjangoObjectType):
         return queryset.order_by("schedule_items__start_time")
 
     dimensions = graphene.List(graphene.NonNull(DimensionType))
+
+    @staticmethod
+    def resolve_program(meta: ProgramV2EventMeta, info, slug: str):
+        return Program.objects.get(event=meta.event, slug=slug)
+
+    program = graphene.Field(ProgramType, slug=graphene.String(required=True))
 
     @staticmethod
     def resolve_dimensions(meta: ProgramV2EventMeta, info):

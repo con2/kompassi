@@ -28,7 +28,7 @@ export function isSameDay(start: string, end: string) {
 }
 
 // TODO(#436) proper handling of event & session time zones
-export default function FormattedDateTime({
+export default function FormattedDateTimeRange({
   start,
   end,
   locale = "en",

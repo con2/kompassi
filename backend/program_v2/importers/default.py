@@ -4,7 +4,6 @@ import logging
 from datetime import timedelta
 from typing import Literal
 
-from django.conf import settings
 from django.db import models
 
 from core.models import Event
@@ -14,7 +13,7 @@ from programme.models.programme import PROGRAMME_STATES_LIVE, Programme
 from programme.models.room import Room
 from programme.models.tag import Tag
 
-from ..models.dimension import Dimension, DimensionDTO, DimensionValueDTO, ProgramDimensionValue
+from ..models.dimension import DimensionDTO, DimensionValueDTO, ProgramDimensionValue
 from ..models.program import Program
 from ..models.schedule import ScheduleItem
 
@@ -52,9 +51,6 @@ def ensure_default_dimensions(event: Event, language: Literal["en", "fi"] = "fi"
     ]
 
     DimensionDTO.save_many(event, dimensions)
-
-    if settings.DEBUG:
-        Dimension.dump_dimensions(event)
 
 
 def import_default(event: Event, queryset: models.QuerySet[Programme]):
