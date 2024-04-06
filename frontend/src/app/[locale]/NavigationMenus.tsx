@@ -77,6 +77,7 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
                 href={`/${code}${pathname}`}
                 className={`dropdown-item ${code === locale ? "active" : ""}`}
                 onClick={toggleLanguageMenu}
+                prefetch={false}
               >
                 {name}
               </Link>
