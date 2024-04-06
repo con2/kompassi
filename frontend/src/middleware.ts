@@ -1,7 +1,6 @@
 import createMiddleware from "next-intl/middleware";
 import { supportedLanguages } from "./translations";
 
-console.log(supportedLanguages);
 export default createMiddleware({
   locales: supportedLanguages,
   defaultLocale: "en",
