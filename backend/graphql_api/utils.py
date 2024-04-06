@@ -1,8 +1,6 @@
-from django.conf import settings
-
 from core.utils.locale_utils import get_message_in_language
 
-DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
+from .language import DEFAULT_LANGUAGE
 
 
 def resolve_localized_field(field_name: str):

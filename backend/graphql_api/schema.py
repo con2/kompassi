@@ -1,7 +1,4 @@
-from dataclasses import dataclass
-
 import graphene
-from django.conf import settings
 
 from core.graphql.event import FullEventType
 from core.graphql.profile import ProfileType
@@ -20,16 +17,7 @@ from forms.graphql.mutations.update_response_dimensions import UpdateResponseDim
 from forms.graphql.mutations.update_survey import UpdateSurvey
 from forms.graphql.mutations.update_survey_language import UpdateSurveyLanguage
 
-
-@dataclass
-class Language:
-    code: str
-    name_fi: str
-    name_en: str
-
-
-LANGUAGES = [Language("fi", "suomi", "Finnish"), Language("en", "englanti", "English")]
-DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
+from .language import DEFAULT_LANGUAGE, Language
 
 
 class LanguageType(graphene.ObjectType):

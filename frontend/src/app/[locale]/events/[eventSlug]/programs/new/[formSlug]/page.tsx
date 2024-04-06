@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: NewProgramProps) {
 export default async function NewProgramPage({ params }: NewProgramProps) {
   const { locale, eventSlug, formSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.NewProgrammeView;
+  const t = translations.NewProgramView;
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, formSlug, locale },

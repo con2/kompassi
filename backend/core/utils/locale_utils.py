@@ -5,6 +5,8 @@ from babel import Locale
 from django.conf import settings
 from django.utils.translation import get_language
 
+from graphql_api.language import SUPPORTED_LANGUAGES
+
 
 @cache
 def _get_babel_locale(lang):
@@ -32,7 +34,7 @@ def get_message_in_language(
 
     Background: We used to use django-localized-fields for this, but it's a rather complex
     library for such a simple task. It also forces psqlextra as the database engine.
-    So we yote them both and opted to use plain HStoreFields instead.
+    So we yote them both and opted to use plain HStore/JSONFields instead.
     """
     if lang is None:
         lang = get_language()
@@ -40,7 +42,8 @@ def get_message_in_language(
     if found := messages.get(lang):
         return found
 
-    if found := messages.get(settings.LANGUAGE_CODE):
-        return found
+    for language in SUPPORTED_LANGUAGES:
+        if found := messages.get(language.code):
+            return found
 
     return next(iter(messages.values()), None)

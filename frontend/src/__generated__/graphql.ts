@@ -188,7 +188,9 @@ export enum FormsFormLanguageChoices {
   /** English */
   En = 'EN',
   /** Finnish */
-  Fi = 'FI'
+  Fi = 'FI',
+  /** Swedish */
+  Sv = 'SV'
 }
 
 /** An enumeration. */

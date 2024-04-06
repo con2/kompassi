@@ -47,7 +47,7 @@ export async function generateMetadata({
   const { event } = data;
   const translations = getTranslations(locale);
   return {
-    title: `${event?.name}: ${translations.NewProgrammeView.title} – Kompassi`,
+    title: `${event?.name}: ${translations.NewProgramView.title} – Kompassi`,
   };
 }
 
@@ -55,7 +55,7 @@ export default async function NewProgramFormSelectionPage({
   params,
 }: NewProgramFormSelectionProps) {
   const { locale, eventSlug } = params;
-  const t = getTranslations(locale).NewProgrammeView;
+  const t = getTranslations(locale).NewProgramView;
 
   const { data } = await getClient().query({
     query,

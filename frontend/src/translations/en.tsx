@@ -203,7 +203,7 @@ const translations = {
     },
   },
 
-  NewProgrammeView: {
+  NewProgramView: {
     title: "Offer a program item",
     engagement: (eventName: string) => (
       <>
@@ -555,11 +555,13 @@ const translations = {
     supportedLanguages: {
       fi: "suomi",
       en: "englanti",
+      sv: "ruotsi",
     },
     // NOTE: value always in target language
     switchTo: {
       fi: "suomeksi",
       en: "In English",
+      sv: "på svenska",
     },
   },
 };

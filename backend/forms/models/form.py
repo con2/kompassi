@@ -11,6 +11,7 @@ from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 from core.utils.locale_utils import get_message_in_language
+from graphql_api.language import DEFAULT_LANGUAGE, LANGUAGE_CHOICES
 
 from .field import Field
 
@@ -28,8 +29,6 @@ LAYOUT_CHOICES = [
     ("vertical", _("Vertical")),
 ]
 
-DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
-
 
 class Form(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="forms")
@@ -37,7 +36,7 @@ class Form(models.Model):
     title = models.CharField(max_length=255, default="")
     description = models.TextField(blank=True, default="")
     thank_you_message = models.TextField(blank=True, default="")
-    language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=settings.LANGUAGES)
+    language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=LANGUAGE_CHOICES)
     layout = models.CharField(
         verbose_name=_("Layout"),
         choices=LAYOUT_CHOICES,
