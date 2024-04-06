@@ -176,7 +176,8 @@ class Program(models.Model):
             cls.objects.filter(event=event).delete()
             DimensionValue.objects.filter(dimension__event=event).delete()
         else:
-            queryset.exclude(state="published").delete()
+            slugs_to_delete = queryset.exclude(state="published").values_list("slug", flat=True)
+            cls.objects.filter(event=event, slug__in=slugs_to_delete).delete()
 
         # Only imports published programme for now as there is no access control
         programs_to_upsert = queryset.filter(state="published")
