@@ -1,10 +1,10 @@
-from django.conf import settings
 from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
 from forms.models.form import Form
+from graphql_api.language import SUPPORTED_LANGUAGES
 
 
 class OfferForm(models.Model):
@@ -53,13 +53,13 @@ class OfferForm(models.Model):
         except Form.DoesNotExist:
             pass
 
-        for language, _name in settings.LANGUAGES:
-            if language == requested_language:
+        for language in SUPPORTED_LANGUAGES:
+            if language.code == requested_language:
                 # already tried above, skip one extra query
                 continue
 
             try:
-                return self.languages.get(language=language)
+                return self.languages.get(language=language.code)
             except Form.DoesNotExist:
                 pass
 
