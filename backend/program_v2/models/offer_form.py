@@ -2,19 +2,20 @@ from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
 from forms.models.form import Form
 from graphql_api.language import SUPPORTED_LANGUAGES
 
 
 class OfferForm(models.Model):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="program_offer_forms")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="program_offer_forms")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     short_description = HStoreField(blank=True, default=dict)
 
     languages = models.ManyToManyField(
-        "forms.Form",
+        Form,
         verbose_name=_("language versions"),
         help_text=_(
             "The form will be available in these languages. "
