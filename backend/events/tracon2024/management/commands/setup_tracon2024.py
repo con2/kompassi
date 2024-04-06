@@ -939,11 +939,12 @@ class Setup:
 
         vendor_application_survey.languages.set([vendor_application_fi, vendor_application_en])
 
-        with resource_stream("events.tracon2024", "forms/vendor-application-dimensions.yml") as f:
-            data = yaml.safe_load(f)
+        if not vendor_application_survey.dimensions.exists():
+            with resource_stream("events.tracon2024", "forms/vendor-application-dimensions.yml") as f:
+                data = yaml.safe_load(f)
 
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(vendor_application_survey)
+            for dimension in data:
+                DimensionDTO.model_validate(dimension).save(vendor_application_survey)
 
         # Expense claim form
 
@@ -958,11 +959,12 @@ class Setup:
             ),
         )
 
-        with resource_stream("events.tracon2024", "forms/expense-claim-dimensions.yml") as f:
-            data = yaml.safe_load(f)
+        if not expense_claim_survey.dimensions.exists():
+            with resource_stream("events.tracon2024", "forms/expense-claim-dimensions.yml") as f:
+                data = yaml.safe_load(f)
 
-        dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
-        DimensionDTO.save_many(expense_claim_survey, dimensions)
+            dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
+            DimensionDTO.save_many(expense_claim_survey, dimensions)
 
         with resource_stream("events.tracon2024", "forms/expense-claim-fi.yml") as f:
             data = yaml.safe_load(f)
@@ -1020,11 +1022,12 @@ class Setup:
 
         artisan_application.languages.set([artisan_appliation_fi, artisan_appliation_en])
 
-        with resource_stream("events.tracon2024", "forms/artisan-application-dimensions.yml") as f:
-            data = yaml.safe_load(f)
+        if not artisan_application.dimensions.exists():
+            with resource_stream("events.tracon2024", "forms/artisan-application-dimensions.yml") as f:
+                data = yaml.safe_load(f)
 
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(artisan_application)
+            for dimension in data:
+                DimensionDTO.model_validate(dimension).save(artisan_application)
 
         # Artist Alley application
 
@@ -1070,11 +1073,12 @@ class Setup:
 
         artist_alley_application.languages.set([artist_alley_application_fi, artist_alley_application_en])
 
-        with resource_stream("events.tracon2024", "forms/artist-alley-application-dimensions.yml") as f:
-            data = yaml.safe_load(f)
+        if not artist_alley_application.dimensions.exists():
+            with resource_stream("events.tracon2024", "forms/artist-alley-application-dimensions.yml") as f:
+                data = yaml.safe_load(f)
 
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(artist_alley_application)
+            for dimension in data:
+                DimensionDTO.model_validate(dimension).save(artist_alley_application)
 
 
 class Command(BaseCommand):
