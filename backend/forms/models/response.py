@@ -117,7 +117,7 @@ class Response(models.Model):
             for field in self.form.fields
             if field["slug"] in dimensions_by_slug
             and field["type"] in ("SingleSelect", "MultiSelect")
-            and field["choicesFrom"] == {"dimension": field["slug"]}
+            and field.get("choicesFrom", {}).get("dimension", "") == field["slug"]
         ]
         fields_by_slug = {field["slug"]: field for field in fields}
 
