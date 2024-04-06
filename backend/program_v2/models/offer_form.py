@@ -48,7 +48,7 @@ class OfferForm(models.Model):
     def is_active(self):
         return is_within_period(self.active_from, self.active_until)
 
-    def get_form(self, requested_language: str) -> Form | None:
+    def get_form(self, requested_language: str) -> Form:
         try:
             return self.languages.get(language=requested_language)
         except Form.DoesNotExist:

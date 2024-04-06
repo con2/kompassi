@@ -137,12 +137,12 @@ class Survey(models.Model):
             pass
 
         for language in SUPPORTED_LANGUAGES:
-            if language == requested_language:
+            if language.code == requested_language:
                 # already tried above, skip one extra query
                 continue
 
             try:
-                return self.languages.get(language=language)
+                return self.languages.get(language=language.code)
             except Form.DoesNotExist:
                 pass
 
