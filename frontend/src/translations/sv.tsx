@@ -1,3 +1,5 @@
+// Translators: Kirsi Västi, Calle Tengman
+
 import type { Translations } from "./en";
 
 /// Mark untranslated English strings with this
