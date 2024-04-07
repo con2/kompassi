@@ -1080,6 +1080,45 @@ class Setup:
             for dimension in data:
                 DimensionDTO.model_validate(dimension).save(artist_alley_application)
 
+        # Opening & closing ceremony performer application
+
+        with resource_stream("events.tracon2024", "forms/opening-closing-performer-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        opening_closing_application_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="opening-closing-performer-application-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        # TODO(#386)
+        if not created:
+            opening_closing_application_fi.fields = data["fields"]
+            opening_closing_application_fi.save()
+
+        opening_closing_application, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="opening-closing-performer-application",
+            defaults=dict(
+                active_from=now(),
+                key_fields=["performer-name"],
+                login_required=True,
+            ),
+        )
+
+        opening_closing_application.languages.set([opening_closing_application_fi])
+
+        if not opening_closing_application.dimensions.exists():
+            with resource_stream(
+                "events.tracon2024",
+                "forms/opening-closing-performer-application-dimensions.yml",
+            ) as f:
+                data = yaml.safe_load(f)
+
+            dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
+            DimensionDTO.save_many(opening_closing_application, dimensions)
+
 
 class Command(BaseCommand):
     args = ""
