@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
@@ -60,6 +61,15 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
 
     paikkala_default_max_tickets_per_batch = models.IntegerField(default=5)
     paikkala_default_max_tickets_per_user = models.IntegerField(default=5)
+
+    override_schedule_link = models.URLField(
+        blank=True,
+        verbose_name=_("Override schedule link"),
+        help_text=_(
+            "If you have a separate programme system, you can link to it here. "
+            "This link will replace the link to the internal programme schedule."
+        ),
+    )
 
     use_cbac = True
 
@@ -196,6 +206,15 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         from .alternative_programme_form import AlternativeProgrammeForm
 
         return AlternativeProgrammeForm.objects.filter(event=self.event, slug="default").first()
+
+    @property
+    def schedule_link(self):
+        if self.override_schedule_link:
+            return self.override_schedule_link
+        elif self.is_public:
+            return reverse("programme:schedule_view", args=(self.event.slug,))
+        else:
+            return ""
 
     def get_programmes_with_open_reservations(self, t=None):
         from .programme import Programme

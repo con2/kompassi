@@ -91,6 +91,10 @@ class Setup:
             ),
         )
 
+        if not programme_event_meta.override_schedule_link:
+            programme_event_meta.override_schedule_link = "https://solmukohta.eu/programme/guide/#event:solmukohta"
+            programme_event_meta.save(update_fields=["override_schedule_link"])
+
         if settings.DEBUG:
             programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
             programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
