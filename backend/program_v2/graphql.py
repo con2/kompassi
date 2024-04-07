@@ -83,6 +83,12 @@ class ProgramType(DjangoObjectType):
 
     cached_hosts = graphene.NonNull(graphene.String)
 
+    @staticmethod
+    def resolve_signup_link(parent: Program, info):
+        return parent.other_fields.get("signup_link", "")
+
+    signup_link = graphene.NonNull(graphene.String)
+
     class Meta:
         model = Program
         fields = ("title", "slug", "description", "dimensions", "cached_dimensions", "schedule_items")

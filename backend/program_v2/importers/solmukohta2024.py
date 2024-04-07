@@ -95,7 +95,7 @@ def ensure_solmukohta2024_dimensions(event: Event):
         ),
         DimensionDTO(
             slug="sk-type",
-            title={"en": "Program type (SK)", "fi": "Ohjelman tyyppi (SK)"},
+            title={"en": "Program type (Solmukohta)", "fi": "Ohjelman tyyppi (Solmukohta)"},
             choices=[
                 DimensionValueDTO(slug=normalize_sk_type_value(category.slug), title={"en": category.title})
                 for category in Category.objects.filter(event=event).exclude(slug="aweek-program")
@@ -103,7 +103,7 @@ def ensure_solmukohta2024_dimensions(event: Event):
         ),
         DimensionDTO(
             slug="aw-type",
-            title={"en": "Program type (AW)", "fi": "Ohjelman tyyppi (AW)"},
+            title={"en": "Program type (A Week)", "fi": "Ohjelman tyyppi (A Week)"},
             choices=[
                 DimensionValueDTO(slug=normalislug(tag.slug), title={"en": tag.title[len("A Week - ") :]})
                 for tag in Tag.objects.filter(event=event, title__startswith="A Week")
@@ -142,7 +142,10 @@ def import_solmukohta2024(event: Event, queryset: models.QuerySet[Programme]):
             slug=ensure_unique_slug(programme.slug),
             title=programme.title,
             description=programme.description,
-            other_fields=dict(formatted_hosts=programme.formatted_hosts),
+            other_fields=dict(
+                formatted_hosts=programme.formatted_hosts,
+                signup_link=programme.signup_link,
+            ),
         )
         for programme in v1_programmes
     ]
