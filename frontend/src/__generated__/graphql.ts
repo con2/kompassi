@@ -515,6 +515,7 @@ export type ProgramType = {
   description: Scalars['String']['output'];
   dimensions: Array<ProgramDimensionValueType>;
   scheduleItems: Array<ScheduleItemType>;
+  signupLink: Scalars['String']['output'];
   slug: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
