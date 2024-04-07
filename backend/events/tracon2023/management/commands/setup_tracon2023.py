@@ -252,6 +252,14 @@ class Setup:
             ),
         )
 
+        if settings.DEBUG:
+            from emprinten.models import Project
+
+            project = Project.objects.get(slug="example_pdf")
+            meta = self.event.labour_event_meta
+            meta.work_certificate_pdf_project = project
+            meta.save()
+
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 

@@ -657,3 +657,6 @@ msgstr "Päivitä pätevyydet…"
 
 msgid "Your application to this event"
 msgstr "Hakemuksesi tähän tapahtumaan"
+
+msgid "Work reference"
+msgstr "Työtodistus"

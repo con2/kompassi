@@ -28,6 +28,7 @@ kompassi_apps = [
     "listings",
     "metrics",
     "forms",
+    "emprinten",
 ]
 
 urlpatterns = [

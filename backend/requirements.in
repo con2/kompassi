@@ -1,5 +1,5 @@
-git+https://github.com/kcsry/lippukala@v2.0.0
-git+https://github.com/kcsry/paikkala@v0.2.0
+lippukala @ git+https://github.com/kcsry/lippukala@v2.0.0
+paikkala @ git+https://github.com/kcsry/paikkala@v0.2.0
 Babel
 bleach
 boto3
@@ -22,6 +22,7 @@ gunicorn
 ipdb
 ipython
 isort
+jinja2
 jsonschema
 markdown
 paramiko
@@ -42,5 +43,6 @@ ruff
 tabulate
 unicodecsv
 vobject
+weasyprint
 XlsxWriter
 zxcvbn

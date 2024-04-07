@@ -4,6 +4,7 @@
 
     Copyright © 2009–2024 Santtu Pajukanta
     Copyright © 2012–2024 Meeri Panula
+    Copyright © 2014–2024 Jyrki Launonen
     Copyright © 2015–2024 Aarni Koskela, Santeri Hiltunen
     Copyright © 2020–2024 Tuomas Puikkonen
     Copyright © 2024 Arttu Hanska, Juho Juopperi, Anssi Kolehmainen, Maura Kastinen, Natalie Lankila, Otte Mäkipää, Risto Ruuskanen, Hannele Tervo
@@ -11,7 +12,7 @@
     Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö
     Copyright © 2015–2017 Miika Ojamo
-    Copyright © 2014–2016 Jyrki Launonen
+    Copyright © 2012–2018 Meeri Panula
     Copyright © 2009–2015 Jussi Sorjonen
     Copyright © 2014 Pekka Wallendahl
     Copyright © 2013 Esa Ollitervo

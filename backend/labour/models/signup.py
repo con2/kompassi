@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from functools import cached_property
 from typing import TYPE_CHECKING
 
+import django.utils.timezone
 from django.conf import settings
 from django.db import models
 from django.db.models import Sum
@@ -363,6 +364,16 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
             return self.job_categories_accepted.first().name
         else:
             return "Työvoima"
+
+    @property
+    def has_work_reference(self):
+        if (
+            self.is_arrived
+            and not self.is_reprimanded
+            and (self.event.end_time is None or django.utils.timezone.now() > self.event.end_time)
+        ):
+            return self.event.labour_event_meta.work_certificate_pdf_project is not None
+        return False
 
     @property
     def granted_privileges(self):

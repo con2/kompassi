@@ -28,6 +28,7 @@ from .public_views import (
     person_qualification_view,
     person_qualify_view,
     profile_signups_view,
+    profile_work_reference,
     qualifications_view,
     signup_view,
 )

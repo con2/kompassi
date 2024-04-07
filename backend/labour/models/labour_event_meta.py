@@ -59,6 +59,13 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         "erikoistehtäville.",
     )
 
+    work_certificate_pdf_project = models.ForeignKey(
+        "emprinten.Project",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+
     work_certificate_signer = models.TextField(
         null=True,
         blank=True,

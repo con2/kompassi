@@ -68,6 +68,7 @@ class Command(BaseCommand):
             (("setup_labour_common_qualifications",), dict()),
             (("setup_api_v2",), dict()),
             (("setup_access",), dict()),
+            (("setup_emprinten",), dict()),
         ]
 
         management_commands.extend(((command,), dict()) for command in organization_commands)

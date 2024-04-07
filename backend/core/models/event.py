@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
-from ..utils import SLUG_FIELD_PARAMS, event_meta_property, format_date_range, pick_attrs, slugify
+from ..utils import SLUG_FIELD_PARAMS, event_meta_property, format_date, format_date_range, pick_attrs, slugify
 
 if typing.TYPE_CHECKING:
     from labour.models.signup import Signup
@@ -144,6 +144,10 @@ class Event(models.Model):
         if not self.start_time or not self.end_time:
             return ""
         return format_date_range(self.start_time, self.end_time)
+
+    @property
+    def formatted_end_date(self) -> str:
+        return format_date(self.end_time)
 
     @property
     def headline(self):
