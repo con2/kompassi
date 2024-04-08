@@ -4,9 +4,10 @@ import logging
 from datetime import timedelta
 
 from django.db import models
+from django.utils.timezone import get_current_timezone
 
 from core.models import Event
-from core.utils.model_utils import EnsuranceCompany, slugify
+from core.utils.model_utils import slugify
 from programme.models.category import Category
 from programme.models.programme import PROGRAMME_STATES_LIVE, Programme
 from programme.models.room import Room
@@ -17,6 +18,7 @@ from ..models.program import Program
 from ..models.schedule import ScheduleItem
 
 logger = logging.getLogger("kompassi")
+tz = get_current_timezone()
 
 
 def normalislug(slug: str) -> str:
@@ -59,6 +61,25 @@ def get_signup_value(programme: Programme):
     if programme.signup_link:
         return "konsti" if "konsti" in programme.signup_link else "other"
     return "no"
+
+
+def get_start_time(programme: Programme):
+    if programme.start_time:
+        if programme.title == "Breakfast 06:30 - 10:00":
+            return programme.start_time.replace(hour=6, minute=30, tzinfo=tz)
+        elif programme.title == "Breakfast 07:00 - 10:00":
+            return programme.start_time.replace(hour=7, minute=00, tzinfo=tz)
+
+    return programme.start_time
+
+
+def get_length(programme: Programme):
+    if programme.title == "Breakfast 06:30 - 10:00":
+        return timedelta(hours=3, minutes=30)
+    elif programme.title == "Breakfast 07:00 - 10:00":
+        return timedelta(hours=3)
+
+    return timedelta(minutes=programme.length) if programme.length else None
 
 
 def ensure_solmukohta2024_dimensions(event: Event):
@@ -135,11 +156,10 @@ def import_solmukohta2024(event: Event, queryset: models.QuerySet[Programme]):
 
     v1_programmes = [programme for programme in queryset.order_by("id") if programme.state in PROGRAMME_STATES_LIVE]
 
-    ensure_unique_slug = EnsuranceCompany()
     program_upsert = [
         Program(
             event=programme.category.event,
-            slug=ensure_unique_slug(programme.slug),
+            slug=programme.slug,
             title=programme.title,
             description=programme.description,
             other_fields=dict(
@@ -162,8 +182,8 @@ def import_solmukohta2024(event: Event, queryset: models.QuerySet[Programme]):
     schedule_upsert = [
         ScheduleItem(
             program=v2_program,
-            start_time=v1_programme.start_time,
-            length=timedelta(seconds=v1_programme.length * 60),
+            start_time=get_start_time(v1_programme),
+            length=get_length(v1_programme),
         )
         for v1_programme, v2_program in zip(v1_programmes, v2_programs, strict=True)
         if v1_programme.start_time is not None and v1_programme.length is not None

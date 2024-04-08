@@ -1747,7 +1747,18 @@ class Programme(models.Model, CsvExportMixin):
             self.end_time = self.start_time + timedelta(minutes=self.length)
 
         if self.title and not self.slug:
-            self.slug = slugify(self.title)
+            slug = base_slug = slugify(self.title)
+            counter = 1
+
+            qs = Programme.objects.filter(category__event=self.category.event)
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+
+            while qs.filter(slug=slug).exists():
+                counter += 1
+                slug = f"{base_slug}-{counter}"
+
+            self.slug = slug
 
         return super().save(*args, **kwargs)
 
@@ -2031,5 +2042,7 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name = _("programme")
         verbose_name_plural = _("programmes")
         ordering = ["start_time", "room"]
-        indexes = [models.Index(fields=["category", "state"])]
-        # unique_together = [('category', 'slug')]
+        indexes = [
+            models.Index(fields=["category", "state"]),
+            models.Index(fields=["category", "slug"]),
+        ]
