@@ -35,6 +35,7 @@ graphql(`
     title(lang: $locale)
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
+    titleSv: title(lang: "sv")
   }
 `);
 
@@ -48,6 +49,7 @@ graphql(`
     isShownToRespondent
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
+    titleSv: title(lang: "sv")
     values {
       ...ValueFields
     }
@@ -147,8 +149,6 @@ export default async function SurveyDimensionsPage({ params }: Props) {
     0,
   );
 
-  const countColumns = 6;
-
   function DeleteButton({
     subject,
     action,
@@ -229,10 +229,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
           </ModalButton>
         </td>
         <td rowSpan={rowspan} scope="rowgroup">
-          {dimension.titleFi}
-        </td>
-        <td rowSpan={rowspan} scope="rowgroup">
-          {dimension.titleEn}
+          {dimension.title}
         </td>
       </>
     );
@@ -330,8 +327,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
             />
           </ModalButton>
         </td>
-        <td style={{ backgroundColor }}>{value.titleFi}</td>
-        <td style={{ backgroundColor }}>{value.titleEn}</td>
+        <td style={{ backgroundColor }}>{value.title}</td>
       </>
     );
   }
@@ -371,13 +367,15 @@ export default async function SurveyDimensionsPage({ params }: Props) {
     <SurveyEditorView params={params} survey={survey} activeTab="dimensions">
       <table className="table table-bordered">
         <thead>
+          <tr>
+            <th colSpan={2}>{t.attributes.dimensions}</th>
+            <th colSpan={2}>{t.attributes.values}</th>
+          </tr>
           <tr style={{ borderWidth: "1px 0 3px 0" }}>
-            <th scope="col">{t.attributes.dimension}</th>
-            <th scope="col">{t.attributes.dimension} (fi)</th>
-            <th scope="col">{t.attributes.dimension} (en)</th>
-            <th scope="col">{t.attributes.value}</th>
-            <th scope="col">{t.attributes.value} (fi)</th>
-            <th scope="col">{t.attributes.value} (en)</th>
+            <th scope="col">{t.attributes.slug.title}</th>
+            <th scope="col">{t.attributes.title}</th>
+            <th scope="col">{t.attributes.slug.title}</th>
+            <th scope="col">{t.attributes.title}</th>
           </tr>
         </thead>
         <tbody>
@@ -385,7 +383,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
             <DimensionRowGroup key={dimension.slug} dimension={dimension} />
           ))}
           <tr>
-            <td colSpan={countColumns}>
+            <td colSpan={4}>
               <ModalButton
                 className="btn btn-link btn-sm p-0 link-xsubtle"
                 title={t.actions.addDimension}

@@ -506,6 +506,11 @@ const translations = {
           helpText:
             "Machine-readable name of the value. Cannot be changed after creation.",
         },
+        color: {
+          title: "Color",
+          helpText:
+            "Color of the value in the response list. Use bright colors: they will be lightened or darkened as needed.",
+        },
         localizedTitleHeader: {
           title: "Localized titles",
           helpText:

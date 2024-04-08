@@ -1,3 +1,4 @@
+import colors from "./colors";
 import { ValueFieldsFragment } from "@/__generated__/graphql";
 import { Field, Layout } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
@@ -26,6 +27,16 @@ export default function ValueForm({ messages, value }: Props) {
       ...t.attributes.slug,
     },
     {
+      type: "SingleSelect",
+      presentation: "dropdown",
+      slug: "color",
+      choices: colors.map((color) => ({
+        slug: color.toLowerCase(),
+        title: color,
+      })),
+      ...t.attributes.color,
+    },
+    {
       type: "StaticText",
       slug: "localizedTitleHeader",
       ...t.attributes.localizedTitleHeader,
@@ -44,10 +55,10 @@ export default function ValueForm({ messages, value }: Props) {
   let values: Record<string, unknown> = {};
   if (value) {
     values = {
-      slug: value.slug,
-      // TODO hard-coded languages
       "title.fi": value.titleFi,
       "title.en": value.titleEn,
+      "title.sv": value.titleSv,
+      ...value,
     };
   }
 

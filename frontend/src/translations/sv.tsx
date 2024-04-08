@@ -521,6 +521,11 @@ const translations: Translations = {
           helpText:
             "Ett maskinläsbart, kort namn på en dimension. Det tekniska namnet kan inte ändras efter att dimensionen har skapats.",
         },
+        color: UNSURE({
+          title: "Färg",
+          helpText:
+            "Färgen på värdet i svarslistan. Använd ljusa färger: de kommer att ljusas upp eller mörkas efter behov.",
+        }),
         localizedTitleHeader: {
           title: "Titel lokaliserad",
           helpText:

@@ -512,6 +512,11 @@ const translations: Translations = {
           helpText:
             "Koneluettava, lyhyt nimi arvolle. Teknistä nimeä ei voi muuttaa dimension luomisen jälkeen.",
         },
+        color: {
+          title: "Väri",
+          helpText:
+            "Arvon väri vastauslistassa. Käytä kirkkaita värejä: ne vaalenevat tai tummenevat tarvittaessa.",
+        },
         localizedTitleHeader: {
           title: "Otsikko lokalisoituna",
           helpText:
