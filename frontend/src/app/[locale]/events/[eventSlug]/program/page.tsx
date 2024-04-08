@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardLink from "react-bootstrap/CardLink";
 import CardText from "react-bootstrap/CardText";
 import CardTitle from "react-bootstrap/CardTitle";
+import { markAsFavorite } from "./actions";
+import classes from "./page.module.css";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
@@ -119,15 +122,34 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
       {programs.map((program) => (
         <Card key={program.slug} className="mb-4">
           <CardBody>
-            <CardTitle>
-              <CardLink
-                as={Link}
-                href={`/events/${eventSlug}/programs/${program.slug}`}
+            <div className="d-flex justify-content-between">
+              <CardTitle>
+                <CardLink
+                  as={Link}
+                  href={`/events/${eventSlug}/programs/${program.slug}`}
+                  className="link-subtle"
+                >
+                  {program.title}
+                </CardLink>
+              </CardTitle>
+              {/* TODO(#469)
+              <form
+                action={markAsFavorite.bind(null, {
+                  eventSlug,
+                  programSlug: program.slug,
+                })}
+                className={classes.favoriteForm}
               >
-                {program.title}
-              </CardLink>
-            </CardTitle>
-            {/* TODO FormattedDateTimeRange */}
+                <Button
+                  type="submit"
+                  variant="link"
+                  className={classes.favorite}
+                  title="Mark as favorite"
+                >
+                  ⭐
+                </Button>
+              </form> */}
+            </div>
             <div className="d-flex justify-content-between">
               <div>
                 {program.scheduleItems.map((scheduleItem, index) => (

@@ -1,0 +1,21 @@
+.favorite,
+.favoriteForm {
+  margin: 0;
+  padding: 0;
+  line-height: 24px;
+  height: 24px;
+}
+
+.favorite {
+  filter: grayscale(100%);
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.favorite:hover {
+  filter: grayscale(0%) hue-rotate(180deg);
+}
+
+.favorite.active {
+  filter: grayscale(0%);
+}
