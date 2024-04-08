@@ -35,6 +35,7 @@ class Command(BaseCommand):
             qs.update(slug="")
 
             for programme in qs:
+                # pre_save signal will re-create the slug
                 programme.save(update_fields=("slug",))
 
             if not opts["really"]:

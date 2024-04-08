@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import timedelta
+from datetime import time, timedelta
 
 from django.db import models
 from django.utils.timezone import get_current_timezone
@@ -25,6 +25,19 @@ def normalislug(slug: str) -> str:
     slug = slugify(slug)
     slug = slug.removeprefix("a-week-")
     return slug.removesuffix("-")
+
+
+def get_date_value(programme: Programme):
+    if programme.start_time is None:
+        return None
+
+    date = programme.start_time.date()
+
+    # programs starting as late as 2AM are considered to be part of the previous day
+    if programme.start_time.time() < time(2, 0):
+        date -= timedelta(days=1)
+
+    return date.isoformat()
 
 
 def get_event_value(programme: Programme):
@@ -197,7 +210,7 @@ def import_solmukohta2024(event: Event, queryset: models.QuerySet[Programme]):
         for item in ProgramDimensionValue.build_upsertables(
             program_v2,
             {
-                "date": programme.start_time.date().isoformat() if programme.start_time else None,
+                "date": get_date_value(programme),
                 "event": get_event_value(programme),
                 "sk-type": get_sk_type_value(programme),
                 "aw-type": get_aw_type_value(programme),
