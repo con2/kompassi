@@ -1,14 +1,20 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Collection, Mapping
+from dataclasses import asdict, dataclass, field
+from datetime import datetime
 from typing import TYPE_CHECKING
 
+import yaml
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from pkg_resources import resource_stream
 
 from core.models import Event
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, log_get_or_create
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
 
 from ..utils.merge_form_fields import merge_fields
@@ -17,6 +23,7 @@ from .form import Form
 if TYPE_CHECKING:
     from .dimension import Dimension, DimensionValue
 
+logger = logging.getLogger("kompassi")
 ANONYMITY_CHOICES = [
     # not linked to user account, IP address not recorded
     ("hard", _("Hard anonymous")),
@@ -180,3 +187,75 @@ class Survey(models.Model):
 
     def __str__(self):
         return f"{self.event.slug}/{self.slug}"
+
+
+@dataclass
+class SurveyDTO:
+    """
+    A helper to ergonomically create surveys in setup scripts.
+
+    For a survey of event tracon2024 and slug hackathon-signup that is available in English and Finnish,
+    the following files should be created:
+    - forms/hackathon-signup-fi.yml
+    - forms/hackathon-signup-en.yml
+    - an optional forms/hackathon-signup-dimensions.yml for dimensions
+
+    If the survey already exists, its settings are not updated.
+    If a language version (form) already exists, only fields are updated - other settings are not updated.
+    If dimensions already exist, they are not updated.
+    This is to avoid overwriting user data.
+    """
+
+    slug: str
+    login_required: bool = False
+    max_responses_per_user: int = 0
+    anonymity: str = "soft"
+    active_from: datetime = field(default_factory=now)
+    key_fields: list[str] = field(default_factory=list)
+
+    def save(self, event: Event) -> Survey:
+        from .dimension import DimensionDTO
+
+        defaults = asdict(self)
+        slug = defaults.pop("slug")
+
+        survey, created = Survey.objects.get_or_create(event=event, slug=slug, defaults=defaults)
+        log_get_or_create(logger, survey, created)
+
+        if not survey.dimensions.exists():
+            try:
+                with resource_stream(f"events.{event.slug}", f"forms/{slug}-dimensions.yml") as f:
+                    data = yaml.safe_load(f)
+            except FileNotFoundError:
+                pass
+            else:
+                data = yaml.safe_load(f)
+                dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
+                DimensionDTO.save_many(survey, dimensions)
+
+        for language in SUPPORTED_LANGUAGES:
+            form_slug = f"{slug}-{language.code}"
+
+            try:
+                with resource_stream(f"events.{event.slug}", f"forms/{form_slug}.yml") as f:
+                    data = yaml.safe_load(f)
+            except FileNotFoundError:
+                continue
+
+            form, created = Form.objects.get_or_create(
+                event=event,
+                slug=form_slug,
+                language=language.code,
+                defaults=data,
+            )
+            log_get_or_create(logger, form, created)
+
+            # TODO(#403) Remove when form editor is implemented
+            if not created:
+                # Update fields only on existing forms
+                form.fields = data["fields"]
+                form.save(update_fields=["fields"])
+
+            survey.languages.add(form)
+
+        return survey

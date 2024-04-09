@@ -9,6 +9,7 @@ from django.conf import settings
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
+from core.models.event import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 from core.utils.locale_utils import get_message_in_language
 from graphql_api.language import DEFAULT_LANGUAGE, LANGUAGE_CHOICES
@@ -31,7 +32,7 @@ LAYOUT_CHOICES = [
 
 
 class Form(models.Model):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="forms")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="forms")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
     title = models.CharField(max_length=255, default="")
     description = models.TextField(blank=True, default="")
@@ -60,7 +61,7 @@ class Form(models.Model):
         unique_together = [("event", "slug")]
 
     def __str__(self):
-        return self.title
+        return f"{self.event.slug if self.event else None}-{self.slug}"
 
     @property
     def can_remove(self):

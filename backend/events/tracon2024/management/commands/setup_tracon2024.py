@@ -880,244 +880,35 @@ class Setup:
             Poison.objects.get_or_create(name=poison_name)
 
     def setup_forms(self):
-        from forms.models.dimension import DimensionDTO
-        from forms.models.form import Form
-        from forms.models.survey import Survey
+        from forms.models.survey import SurveyDTO
 
-        # Hackathon feedback survey
-
-        with resource_stream("events.tracon2024", "forms/hackathon-feedback.yml") as f:
-            data = yaml.safe_load(f)
-
-        hackathon_feedback_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="hackathon-feedback",
-            language="fi",
-            defaults=data,
-        )
-
-        hackathon_feedback_survey, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="hackathon-feedback",
-            defaults=dict(
-                active_from=now(),
+        for survey in [
+            SurveyDTO(
+                slug="artisan-application",
+                key_fields=["name", "email", "helper"],
             ),
-        )
-
-        hackathon_feedback_survey.languages.set([hackathon_feedback_fi])
-
-        # Vendor signup form
-
-        with resource_stream("events.tracon2024", "forms/vendor-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        vendor_application_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        with resource_stream("events.tracon2024", "forms/vendor-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        vendor_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        vendor_application_survey, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["name"],
+            SurveyDTO(
+                slug="artist-alley-application",
+                key_fields=["name", "email", "artist_name1", "location", "reserve"],
             ),
-        )
-
-        vendor_application_survey.languages.set([vendor_application_fi, vendor_application_en])
-
-        if not vendor_application_survey.dimensions.exists():
-            with resource_stream("events.tracon2024", "forms/vendor-application-dimensions.yml") as f:
-                data = yaml.safe_load(f)
-
-            for dimension in data:
-                DimensionDTO.model_validate(dimension).save(vendor_application_survey)
-
-        # Expense claim form
-
-        expense_claim_survey, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="expense-claim",
-            defaults=dict(
-                active_from=now(),
+            SurveyDTO(
+                slug="expense-claim",
                 key_fields=["title", "amount"],
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),
-        )
-
-        if not expense_claim_survey.dimensions.exists():
-            with resource_stream("events.tracon2024", "forms/expense-claim-dimensions.yml") as f:
-                data = yaml.safe_load(f)
-
-            dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
-            DimensionDTO.save_many(expense_claim_survey, dimensions)
-
-        with resource_stream("events.tracon2024", "forms/expense-claim-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        expense_claim_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="expense-claim-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        with resource_stream("events.tracon2024", "forms/expense-claim-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        expense_claim_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="expense-claim-en",
-            language="en",
-            defaults=data,
-        )
-
-        expense_claim_survey.languages.set([expense_claim_fi, expense_claim_en])
-
-        # Artisan application
-
-        with resource_stream("events.tracon2024", "forms/artisan-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        artisan_appliation_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artisan-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        with resource_stream("events.tracon2024", "forms/artisan-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        artisan_appliation_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artisan-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        artisan_application, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="artisan-application",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["name", "email", "helper"],
-                login_required=True,
-            ),
-        )
-
-        artisan_application.languages.set([artisan_appliation_fi, artisan_appliation_en])
-
-        if not artisan_application.dimensions.exists():
-            with resource_stream("events.tracon2024", "forms/artisan-application-dimensions.yml") as f:
-                data = yaml.safe_load(f)
-
-            for dimension in data:
-                DimensionDTO.model_validate(dimension).save(artisan_application)
-
-        # Artist Alley application
-
-        with resource_stream("events.tracon2024", "forms/artist-alley-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        artist_alley_application_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        # TODO(#386)
-        if not created:
-            artist_alley_application_en.fields = data["fields"]
-            artist_alley_application_en.save()
-
-        with resource_stream("events.tracon2024", "forms/artist-alley-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        artist_alley_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        # TODO(#386)
-        if not created:
-            artist_alley_application_fi.fields = data["fields"]
-            artist_alley_application_fi.save()
-
-        artist_alley_application, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["name", "email", "artist_name1", "location", "reserve"],
-                login_required=True,
-            ),
-        )
-
-        artist_alley_application.languages.set([artist_alley_application_fi, artist_alley_application_en])
-
-        if not artist_alley_application.dimensions.exists():
-            with resource_stream("events.tracon2024", "forms/artist-alley-application-dimensions.yml") as f:
-                data = yaml.safe_load(f)
-
-            for dimension in data:
-                DimensionDTO.model_validate(dimension).save(artist_alley_application)
-
-        # Opening & closing ceremony performer application
-
-        with resource_stream("events.tracon2024", "forms/opening-closing-performer-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        opening_closing_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="opening-closing-performer-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        # TODO(#386)
-        if not created:
-            opening_closing_application_fi.fields = data["fields"]
-            opening_closing_application_fi.save()
-
-        opening_closing_application, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="opening-closing-performer-application",
-            defaults=dict(
-                active_from=now(),
+            SurveyDTO(slug="hackathon-feedback"),
+            SurveyDTO(slug="jv-kertauskurssi"),
+            SurveyDTO(
+                slug="opening-closing-performer-application",
                 key_fields=["performer-name"],
-                login_required=True,
             ),
-        )
-
-        opening_closing_application.languages.set([opening_closing_application_fi])
-
-        if not opening_closing_application.dimensions.exists():
-            with resource_stream(
-                "events.tracon2024",
-                "forms/opening-closing-performer-application-dimensions.yml",
-            ) as f:
-                data = yaml.safe_load(f)
-
-            dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
-            DimensionDTO.save_many(opening_closing_application, dimensions)
+            SurveyDTO(
+                slug="vendor-application",
+                key_fields=["name"],
+            ),
+        ]:
+            survey.save(self.event)
 
 
 class Command(BaseCommand):

@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from ..utils import SLUG_FIELD_PARAMS, event_meta_property, format_date, format_date_range, pick_attrs, slugify
 
 if typing.TYPE_CHECKING:
+    from forms.models.survey import Survey
     from labour.models.signup import Signup
     from program_v2.models import Dimension, Program, ProgramV2EventMeta
 
@@ -110,6 +111,7 @@ class Event(models.Model):
     programs: models.QuerySet[Program]
     dimensions: models.QuerySet[Dimension]
     signup_set: models.QuerySet[Signup]
+    surveys: models.QuerySet[Survey]
 
     class Meta:
         verbose_name = "Tapahtuma"
