@@ -9,18 +9,22 @@ from django.db import models, transaction
 
 from core.models import Event
 from core.utils import validate_slug
+from core.utils.locale_utils import get_message_in_language
+from graphql_api.language import DEFAULT_LANGUAGE
 
 if TYPE_CHECKING:
     from programme.models.programme import Programme
 
     from .dimension import ProgramDimensionValue
+    from .meta import ProgramV2EventMeta
+    from .schedule import ScheduleItem
 
 
 logger = logging.getLogger("kompassi")
 
 
 class Program(models.Model):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="programs")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="programs")
     title = models.CharField(max_length=1023)
     slug = models.CharField(max_length=1023, validators=[validate_slug])
     description = models.TextField(blank=True)
@@ -35,6 +39,7 @@ class Program(models.Model):
 
     # related fields
     dimensions: models.QuerySet[ProgramDimensionValue]
+    schedule_items: models.QuerySet[ScheduleItem]
 
     class Meta:
         unique_together = ("event", "slug")
@@ -184,3 +189,21 @@ class Program(models.Model):
 
         import_function = meta.importer
         import_function(event, programs_to_upsert)
+
+    @property
+    def meta(self) -> ProgramV2EventMeta:
+        if (meta := self.event.program_v2_event_meta) is None:
+            raise TypeError(f"Event {self.event.slug} does not have program_v2_event_meta but Programs are present")
+
+        return meta
+
+    def get_location(self, language=DEFAULT_LANGUAGE):
+        dimension = self.meta.location_dimension
+        if dimension is None:
+            return None
+
+        pdv = self.dimensions.filter(dimension=dimension).first()
+        if pdv is None:
+            return None
+
+        return get_message_in_language(pdv.value.title, language)

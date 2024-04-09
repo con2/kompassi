@@ -4,12 +4,14 @@ from typing import TYPE_CHECKING
 
 from django.db import models
 
+from .program import Program
+
 if TYPE_CHECKING:
     pass
 
 
 class ScheduleItem(models.Model):
-    program = models.ForeignKey("program_v2.Program", on_delete=models.CASCADE, related_name="schedule_items")
+    program = models.ForeignKey(Program, on_delete=models.CASCADE, related_name="schedule_items")
     subtitle = models.CharField(max_length=255, blank=True)
     start_time = models.DateTimeField()
     length = models.DurationField()

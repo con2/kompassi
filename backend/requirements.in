@@ -19,6 +19,7 @@ Django>5
 flake8
 graphene-django
 gunicorn
+ics
 ipdb
 ipython
 isort

@@ -17,6 +17,18 @@ class ProgramV2EventMeta(EventMetaBase):
         blank=True,
     )
 
+    location_dimension = models.ForeignKey(
+        "program_v2.Dimension",
+        on_delete=models.PROTECT,
+        related_name="location_dimension_for_event_meta",
+        null=True,
+        blank=True,
+        help_text=(
+            "If set, this dimension will be used as the location dimension for the event. "
+            "This is used at least by the calendar export for the iCalendar location field."
+        ),
+    )
+
     skip_offer_form_selection = models.BooleanField(
         default=False,
         verbose_name="Skip offer form selection",
