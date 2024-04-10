@@ -39,3 +39,8 @@ def calendar_export_view(request: HttpRequest, event_slug: str):
         )
 
     return export_program_response(programs, language=language)
+
+
+def single_program_calendar_export_view(request: HttpRequest, event_slug: str, program_slug: str):
+    program = get_object_or_404(Program, event__slug=event_slug, slug=program_slug)
+    return export_program_response([program], language=request.GET.get("language", DEFAULT_LANGUAGE))

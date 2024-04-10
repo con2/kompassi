@@ -55,6 +55,8 @@ const query = graphql(`
       slug
 
       program {
+        calendarExportLink
+
         dimensions {
           slug
           title(lang: $locale)
@@ -126,11 +128,16 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
   const userPrograms = data.profile?.program?.programs || [];
   const favoriteProgramSlugs = userPrograms.map((p) => p.slug);
 
+  const queryString = new URLSearchParams(searchParams).toString();
+  const calendarExportLink = queryString
+    ? `${event.program.calendarExportLink}?${queryString}`
+    : event.program.calendarExportLink;
+
   return (
     <ViewContainer>
       <ViewHeading>
         {t.listTitle}
-        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+        <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
       <DimensionFilters dimensions={dimensions}></DimensionFilters>
       <FavoriteContextProvider
@@ -181,6 +188,12 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
           </Card>
         ))}
       </FavoriteContextProvider>
+
+      <p className="mt-4">
+        <a href={calendarExportLink} className="link-subtle">
+          {t.actions.addTheseToCalendar}…
+        </a>
+      </p>
     </ViewContainer>
   );
 }

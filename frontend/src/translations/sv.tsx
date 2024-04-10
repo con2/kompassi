@@ -222,10 +222,11 @@ const translations: Translations = {
   Program: UNSURE({
     listTitle: "Program",
     singleTitle: "Program",
-    forEvent: (eventName: string) => <>i {eventName}</>,
-    aProgramItemIn: (eventName: string) => <>ett program i {eventName}</>,
+    inEvent: (eventName: string) => <>i {eventName}</>,
     actions: {
       returnToProgramList: "Tillbaka till programlistan",
+      addTheseToCalendar: "Lägg till dessa program i kalendern",
+      addThisToCalendar: "Lägg till detta program i kalendern",
     },
     favorites: {
       markAsFavorite: "Markera som favorit",

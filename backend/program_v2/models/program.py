@@ -24,6 +24,8 @@ logger = logging.getLogger("kompassi")
 
 
 class Program(models.Model):
+    id: int
+
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="programs")
     title = models.CharField(max_length=1023)
     slug = models.CharField(max_length=1023, validators=[validate_slug])

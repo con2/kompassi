@@ -1,5 +1,7 @@
 import graphene
 from django.conf import settings
+from django.http import HttpRequest
+from django.urls import reverse
 from graphene_django import DjangoObjectType
 
 from access.cbac import graphql_check_instance
@@ -85,6 +87,25 @@ class ProgramV2EventMetaType(DjangoObjectType):
     @staticmethod
     def resolve_offer_form(meta: ProgramV2EventMeta, info, slug: str):
         return OfferForm.objects.get(event=meta.event, slug=slug)
+
+    @staticmethod
+    def resolve_calendar_export_link(meta: ProgramV2EventMeta, info):
+        """
+        Returns a link to the calendar export view for the event.
+        The calendar export view accepts the following GET parameters, all optional:
+        `favorited` - set to a truthy value to receive only favorites,
+        `slug` - include only these programmes (can be multi-valued or separated by commas),
+        `language` - the language to use when resolving dimensions.
+        """
+        request: HttpRequest = info.context
+        return request.build_absolute_uri(
+            reverse("program_v2:calendar_export_view", kwargs={"event_slug": meta.event.slug})
+        )
+
+    calendar_export_link = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_calendar_export_link.__doc__ or ""),
+    )
 
 
 class ProfileProgramInclude(graphene.Enum):

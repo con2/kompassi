@@ -24,10 +24,12 @@ const query = graphql(`
     event(slug: $eventSlug) {
       name
       program {
+        calendarExportLink
         program(slug: $programSlug) {
           title
           description
           cachedHosts
+          calendarExportLink
           dimensions {
             dimension {
               slug
@@ -103,8 +105,9 @@ export default async function NewProgramPage({ params }: Props) {
 
       <ViewHeading>
         {program.title}
-        <ViewHeading.Sub>{t.aProgramItemIn(event.name)}</ViewHeading.Sub>
+        <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
+
       <p className="fst-italic">
         {program.scheduleItems.map((scheduleItem, index) => (
           <FormattedDateTimeRange
@@ -124,6 +127,7 @@ export default async function NewProgramPage({ params }: Props) {
           </>
         )}
       </p>
+
       <div className="mb-3 mt-3">
         {dimensions.map((dimension) => (
           <div key={dimension.dimension.slug}>
@@ -132,7 +136,16 @@ export default async function NewProgramPage({ params }: Props) {
           </div>
         ))}
       </div>
-      <Paragraphs text={program.description} />
+
+      <article className="mb-4">
+        <Paragraphs text={program.description} />
+      </article>
+
+      <p>
+        <a href={program.calendarExportLink} className="link-subtle">
+          {t.actions.addThisToCalendar}…
+        </a>
+      </p>
     </ViewContainer>
   );
 }

@@ -222,10 +222,11 @@ const translations = {
   Program: {
     listTitle: "Program",
     singleTitle: "Program item",
-    forEvent: (eventName: string) => <>in {eventName}</>,
-    aProgramItemIn: (eventName: string) => <>a program item in {eventName}</>,
+    inEvent: (eventName: string) => <>in {eventName}</>,
     actions: {
       returnToProgramList: "Return to the list of program items",
+      addTheseToCalendar: "Add these program items to your calendar",
+      addThisToCalendar: "Add this program item to your calendar",
     },
     favorites: {
       markAsFavorite: "Mark as favorite",

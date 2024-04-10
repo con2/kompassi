@@ -220,12 +220,11 @@ const translations: Translations = {
   Program: {
     listTitle: "Ohjelma",
     singleTitle: "Ohjelmanumero",
-    forEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
-    aProgramItemIn: (eventName: string) => (
-      <>ohjelmanumero tapahtumassa {eventName}</>
-    ),
+    inEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
     actions: {
       returnToProgramList: "Takaisin ohjelmalistaan",
+      addTheseToCalendar: "Lisää nämä ohjelmanumerot kalenteriin",
+      addThisToCalendar: "Lisää tämä ohjelmanumero kalenteriin",
     },
     favorites: {
       markAsFavorite: "Merkitse suosikiksi",

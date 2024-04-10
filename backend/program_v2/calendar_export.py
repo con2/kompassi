@@ -1,6 +1,6 @@
+from collections.abc import Iterable
 from typing import TextIO
 
-from django.db import models
 from django.http import HttpResponse
 from ics import Calendar
 from ics import Event as CalendarEvent
@@ -11,7 +11,7 @@ from .models.program import Program
 
 
 def export_programs(
-    programs: models.QuerySet[Program],
+    programs: Iterable[Program],
     output_stream: TextIO | HttpResponse,
     language=DEFAULT_LANGUAGE,
 ):
@@ -30,7 +30,7 @@ def export_programs(
 
 
 def export_program_response(
-    programs: models.QuerySet[Program],
+    programs: Iterable[Program],
     language=DEFAULT_LANGUAGE,
 ):
     response = HttpResponse(content_type="text/calendar")
