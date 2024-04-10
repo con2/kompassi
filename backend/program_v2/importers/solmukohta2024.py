@@ -10,7 +10,6 @@ from core.models import Event
 from core.utils.model_utils import slugify
 from programme.models.category import Category
 from programme.models.programme import PROGRAMME_STATES_LIVE, Programme
-from programme.models.room import Room
 from programme.models.tag import Tag
 
 from ..models.dimension import DimensionDTO, DimensionValueDTO, ProgramDimensionValue
@@ -66,7 +65,20 @@ def get_aw_type_value(programme: Programme):
     return normalislug(tag.slug)
 
 
+def get_room_choices(event: Event):
+    rooms = {
+        programme.room.slug: programme.room
+        for programme in Programme.objects.filter(category__event=event).exclude(category__slug="aweek-program")
+        if programme.room
+    }
+
+    return [DimensionValueDTO(slug=room.slug, title={"en": room.name}) for room in rooms.values()]
+
+
 def get_room_value(programme: Programme):
+    if programme.category.slug == "aweek-program":
+        return None
+
     return normalislug(programme.room.slug) if programme.room else None
 
 
@@ -145,10 +157,8 @@ def ensure_solmukohta2024_dimensions(event: Event):
         ),
         DimensionDTO(
             slug="room",
-            title={"en": "Room", "fi": "Sali"},
-            choices=[
-                DimensionValueDTO(slug=room.slug, title={"en": room.name}) for room in Room.objects.filter(event=event)
-            ],
+            title={"en": "Room (Solmukohta)", "fi": "Sali (Solmukohta)"},
+            choices=get_room_choices(event),
         ),
         DimensionDTO(
             slug="signup",
