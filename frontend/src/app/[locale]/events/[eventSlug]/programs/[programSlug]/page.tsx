@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { markAsFavorite, unmarkAsFavorite } from "../../program/actions";
 import FavoriteButton from "../../program/FavoriteButton";
 import { FavoriteContextProvider } from "../../program/FavoriteContext";
 import { graphql } from "@/__generated__";
@@ -124,6 +125,8 @@ export default async function NewProgramPage({ params }: Props) {
             <FavoriteContextProvider
               slugs={favoriteProgramSlugs}
               messages={t.favorites}
+              markAsFavorite={markAsFavorite.bind(null, locale, eventSlug)}
+              unmarkAsFavorite={unmarkAsFavorite.bind(null, locale, eventSlug)}
             >
               <FavoriteButton slug={programSlug} size="xl" />
             </FavoriteContextProvider>

@@ -28,8 +28,8 @@ export const FavoriteContext = createContext<FavoriteContextValue>(
 );
 
 interface Props {
-  markAsFavorite?(programSlug: string): Promise<void>;
-  unmarkAsFavorite?(programSlug: string): Promise<void>;
+  markAsFavorite(programSlug: string): Promise<void>;
+  unmarkAsFavorite(programSlug: string): Promise<void>;
   slugs: string[];
   messages: Translations["Program"]["favorites"];
   children: React.ReactNode;
@@ -50,7 +50,7 @@ export function FavoriteContextProvider(props: Props) {
   const markAsFavorite = useCallback(
     async (programSlug: string) => {
       setFavorites((prev) => new Set([...prev, programSlug]));
-      return upstreamMarkAsFavorite?.(programSlug);
+      return upstreamMarkAsFavorite(programSlug);
     },
     [upstreamMarkAsFavorite],
   );
@@ -62,7 +62,7 @@ export function FavoriteContextProvider(props: Props) {
         next.delete(programSlug);
         return next;
       });
-      return upstreamUnmarkAsFavorite?.(programSlug);
+      return upstreamUnmarkAsFavorite(programSlug);
     },
     [upstreamUnmarkAsFavorite],
   );

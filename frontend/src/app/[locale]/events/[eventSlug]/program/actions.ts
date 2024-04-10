@@ -27,7 +27,7 @@ export async function markAsFavorite(
 
 const unmarkAsFavoriteMutation = graphql(`
   mutation UnmarkProgramAsFavorite($input: FavoriteInput!) {
-    markProgramAsFavorite(input: $input) {
+    unmarkProgramAsFavorite(input: $input) {
       success
     }
   }

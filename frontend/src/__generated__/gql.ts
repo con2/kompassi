@@ -14,7 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  mutation MarkProgramAsFavorite($input: FavoriteInput!) {\n    markProgramAsFavorite(input: $input) {\n      success\n    }\n  }\n": types.MarkProgramAsFavoriteDocument,
-    "\n  mutation UnmarkProgramAsFavorite($input: FavoriteInput!) {\n    markProgramAsFavorite(input: $input) {\n      success\n    }\n  }\n": types.UnmarkProgramAsFavoriteDocument,
+    "\n  mutation UnmarkProgramAsFavorite($input: FavoriteInput!) {\n    unmarkProgramAsFavorite(input: $input) {\n      success\n    }\n  }\n": types.UnmarkProgramAsFavoriteDocument,
     "\n  fragment ProgramList on ProgramType {\n    slug\n    title\n    cachedDimensions\n    scheduleItems {\n      startTime\n      endTime\n    }\n  }\n": types.ProgramListFragmentDoc,
     "\n  query ProgramListQuery(\n    $eventSlug: String!\n    $locale: String\n    $filters: [DimensionFilterInput!]\n  ) {\n    profile {\n      program {\n        programs(eventSlug: $eventSlug, filters: $filters) {\n          ...ProgramList\n        }\n      }\n    }\n\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        calendarExportLink\n\n        dimensions {\n          slug\n          title(lang: $locale)\n\n          values {\n            slug\n            title(lang: $locale)\n          }\n        }\n\n        locationDimension {\n          slug\n        }\n\n        programs(filters: $filters) {\n          ...ProgramList\n        }\n      }\n    }\n  }\n": types.ProgramListQueryDocument,
     "\n  query ProgramDetailQuery(\n    $eventSlug: String!\n    $programSlug: String!\n    $locale: String\n  ) {\n    profile {\n      program {\n        programs(eventSlug: $eventSlug) {\n          slug\n        }\n      }\n    }\n\n    event(slug: $eventSlug) {\n      name\n      program {\n        calendarExportLink\n        program(slug: $programSlug) {\n          title\n          description\n          cachedHosts\n          signupLink\n          calendarExportLink\n          dimensions {\n            dimension {\n              slug\n              title(lang: $locale)\n            }\n            value {\n              slug\n              title(lang: $locale)\n            }\n          }\n          scheduleItems {\n            startTime\n            endTime\n          }\n        }\n      }\n    }\n  }\n": types.ProgramDetailQueryDocument,
@@ -78,7 +78,7 @@ export function graphql(source: "\n  mutation MarkProgramAsFavorite($input: Favo
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation UnmarkProgramAsFavorite($input: FavoriteInput!) {\n    markProgramAsFavorite(input: $input) {\n      success\n    }\n  }\n"): (typeof documents)["\n  mutation UnmarkProgramAsFavorite($input: FavoriteInput!) {\n    markProgramAsFavorite(input: $input) {\n      success\n    }\n  }\n"];
+export function graphql(source: "\n  mutation UnmarkProgramAsFavorite($input: FavoriteInput!) {\n    unmarkProgramAsFavorite(input: $input) {\n      success\n    }\n  }\n"): (typeof documents)["\n  mutation UnmarkProgramAsFavorite($input: FavoriteInput!) {\n    unmarkProgramAsFavorite(input: $input) {\n      success\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
