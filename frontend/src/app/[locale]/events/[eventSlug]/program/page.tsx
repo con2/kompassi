@@ -8,7 +8,8 @@ import CardLink from "react-bootstrap/CardLink";
 import CardText from "react-bootstrap/CardText";
 import CardTitle from "react-bootstrap/CardTitle";
 import { markAsFavorite, unmarkAsFavorite } from "./actions";
-import classes from "./page.module.css";
+import FavoriteButton from "./FavoriteButton";
+import { FavoriteContextProvider } from "./FavoriteContext";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -108,7 +109,6 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
   const t = getTranslations(locale).Program;
   const filters = buildDimensionFilters(searchParams);
 
-  const session = await auth();
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, locale, filters },
@@ -124,15 +124,7 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
   const roomDimension = dimensions.find((d) => d.slug === "room");
 
   const userPrograms = data.profile?.program?.programs || [];
-  function isFavorite(program: { slug: string }) {
-    return userPrograms.some((p) => p.slug === program.slug);
-  }
-  function getCssClass(program: { slug: string }) {
-    const cssClasses = isFavorite(program)
-      ? [classes.favorite, classes.active]
-      : [classes.favorite];
-    return cssClasses.join(" ");
-  }
+  const favoriteProgramSlugs = userPrograms.map((p) => p.slug);
 
   return (
     <ViewContainer>
@@ -141,67 +133,54 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
       <DimensionFilters dimensions={dimensions}></DimensionFilters>
-      {programs.map((program) => (
-        <Card key={program.slug} className="mb-4">
-          <CardBody>
-            <div className="d-flex justify-content-between">
-              <CardTitle>
-                <CardLink
-                  as={Link}
-                  href={`/events/${eventSlug}/programs/${program.slug}`}
-                  className="link-subtle"
-                >
-                  {program.title}
-                </CardLink>
-              </CardTitle>
-              {session && (
-                <form
-                  action={(isFavorite(program)
-                    ? unmarkAsFavorite
-                    : markAsFavorite
-                  ).bind(null, locale, {
-                    eventSlug,
-                    programSlug: program.slug,
-                  })}
-                  className={classes.favoriteForm}
-                >
-                  <Button
-                    type="submit"
-                    variant="link"
-                    className={getCssClass(program)}
-                    title="Mark as favorite"
+      <FavoriteContextProvider
+        slugs={favoriteProgramSlugs}
+        messages={t.favorites}
+        markAsFavorite={markAsFavorite.bind(null, locale, eventSlug)}
+        unmarkAsFavorite={unmarkAsFavorite.bind(null, locale, eventSlug)}
+      >
+        {programs.map((program) => (
+          <Card key={program.slug} className="mb-4">
+            <CardBody>
+              <div className="d-flex justify-content-between">
+                <CardTitle>
+                  <CardLink
+                    as={Link}
+                    href={`/events/${eventSlug}/programs/${program.slug}`}
+                    className="link-subtle"
                   >
-                    ⭐
-                  </Button>
-                </form>
-              )}
-            </div>
-            <div className="d-flex justify-content-between">
-              <div>
-                {program.scheduleItems.map((scheduleItem, index) => (
-                  <CardText key={index}>
-                    <FormattedDateTimeRange
-                      locale={locale}
-                      scope={event}
-                      session={null}
-                      start={scheduleItem.startTime}
-                      end={scheduleItem.endTime}
-                      includeDuration={true}
-                    />
-                  </CardText>
-                ))}
+                    {program.title}
+                  </CardLink>
+                </CardTitle>
+                {data.profile && <FavoriteButton slug={program.slug} />}
               </div>
-              <CardText>
-                {roomDimension &&
-                  getDimensionValueTitle(
-                    roomDimension,
-                    program.cachedDimensions,
-                  )}
-              </CardText>
-            </div>
-          </CardBody>
-        </Card>
-      ))}
+              <div className="d-flex justify-content-between">
+                <div>
+                  {program.scheduleItems.map((scheduleItem, index) => (
+                    <CardText key={index}>
+                      <FormattedDateTimeRange
+                        locale={locale}
+                        scope={event}
+                        session={null}
+                        start={scheduleItem.startTime}
+                        end={scheduleItem.endTime}
+                        includeDuration={true}
+                      />
+                    </CardText>
+                  ))}
+                </div>
+                <CardText>
+                  {roomDimension &&
+                    getDimensionValueTitle(
+                      roomDimension,
+                      program.cachedDimensions,
+                    )}
+                </CardText>
+              </div>
+            </CardBody>
+          </Card>
+        ))}
+      </FavoriteContextProvider>
     </ViewContainer>
   );
 }

@@ -227,6 +227,10 @@ const translations: Translations = {
     actions: {
       returnToProgramList: "Tillbaka till programlistan",
     },
+    favorites: {
+      markAsFavorite: "Markera som favorit",
+      unmarkAsFavorite: "Avmarkera som favorit",
+    },
   }),
 
   NewProgramView: {

@@ -1,3 +1,5 @@
+import { markAsFavorite } from "@/app/[locale]/events/[eventSlug]/program/actions";
+
 const translations = {
   AccommodationOnboardingView: {
     title: "Accommodation onboarding",
@@ -224,6 +226,10 @@ const translations = {
     aProgramItemIn: (eventName: string) => <>a program item in {eventName}</>,
     actions: {
       returnToProgramList: "Return to the list of program items",
+    },
+    favorites: {
+      markAsFavorite: "Mark as favorite",
+      unmarkAsFavorite: "Unmark as favorite",
     },
   },
 

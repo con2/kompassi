@@ -13,12 +13,16 @@ const markAsFavoriteMutation = graphql(`
   }
 `);
 
-export async function markAsFavorite(locale: string, input: FavoriteInput) {
+export async function markAsFavorite(
+  locale: string,
+  eventSlug: string,
+  programSlug: string,
+) {
   const data = await getClient().mutate({
     mutation: markAsFavoriteMutation,
-    variables: { input },
+    variables: { input: { eventSlug, programSlug } },
   });
-  revalidatePath(`/${locale}}/events/${input.eventSlug}/program`);
+  revalidatePath(`/${locale}}/events/${eventSlug}/program`);
 }
 
 const unmarkAsFavoriteMutation = graphql(`
@@ -29,10 +33,14 @@ const unmarkAsFavoriteMutation = graphql(`
   }
 `);
 
-export async function unmarkAsFavorite(locale: string, input: FavoriteInput) {
+export async function unmarkAsFavorite(
+  locale: string,
+  eventSlug: string,
+  programSlug: string,
+) {
   const data = await getClient().mutate({
     mutation: unmarkAsFavoriteMutation,
-    variables: { input },
+    variables: { input: { eventSlug, programSlug } },
   });
-  revalidatePath(`/${locale}}/events/${input.eventSlug}/program`);
+  revalidatePath(`/${locale}}/events/${eventSlug}/program`);
 }

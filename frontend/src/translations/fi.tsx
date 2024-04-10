@@ -227,6 +227,10 @@ const translations: Translations = {
     actions: {
       returnToProgramList: "Takaisin ohjelmalistaan",
     },
+    favorites: {
+      markAsFavorite: "Merkitse suosikiksi",
+      unmarkAsFavorite: "Poista suosikeista",
+    },
   },
 
   Survey: {
