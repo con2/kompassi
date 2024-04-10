@@ -205,7 +205,7 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
 
       <p className="mt-4">
         <a href={calendarExportLink} className="link-subtle">
-          {t.actions.addTheseToCalendar}…
+          📅 {t.actions.addTheseToCalendar}…
         </a>
       </p>
     </ViewContainer>

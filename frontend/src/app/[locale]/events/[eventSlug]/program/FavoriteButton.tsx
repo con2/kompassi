@@ -7,9 +7,10 @@ import { FavoriteContext } from "./FavoriteContext";
 
 interface Props {
   slug: string;
+  size?: "lg" | "xl";
 }
 
-export default function FavoriteButton({ slug }: Props) {
+export default function FavoriteButton({ slug, size }: Props) {
   const { markAsFavorite, unmarkAsFavorite, isFavorite, messages } =
     useContext(FavoriteContext);
 
@@ -17,6 +18,10 @@ export default function FavoriteButton({ slug }: Props) {
   const cssClasses = thisIsFavorite
     ? [classes.favorite, classes.active]
     : [classes.favorite];
+
+  if (size === "xl") {
+    cssClasses.push(classes.xl);
+  }
 
   const toggleFavorite = thisIsFavorite
     ? () => unmarkAsFavorite(slug)

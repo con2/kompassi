@@ -227,6 +227,7 @@ const translations: Translations = {
       returnToProgramList: "Tillbaka till programlistan",
       addTheseToCalendar: "Lägg till dessa program i kalendern",
       addThisToCalendar: "Lägg till detta program i kalendern",
+      signUpForThisProgram: "Anmäl dig till detta program",
     },
     favorites: {
       markAsFavorite: "Markera som favorit",

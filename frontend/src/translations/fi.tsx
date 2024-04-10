@@ -225,6 +225,7 @@ const translations: Translations = {
       returnToProgramList: "Takaisin ohjelmalistaan",
       addTheseToCalendar: "Lisää nämä ohjelmanumerot kalenteriin",
       addThisToCalendar: "Lisää tämä ohjelmanumero kalenteriin",
+      signUpForThisProgram: "Ilmoittaudu tähän ohjelmanumeroon",
     },
     favorites: {
       markAsFavorite: "Merkitse suosikiksi",

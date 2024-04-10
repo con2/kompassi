@@ -227,6 +227,7 @@ const translations = {
       returnToProgramList: "Return to the list of program items",
       addTheseToCalendar: "Add these program items to your calendar",
       addThisToCalendar: "Add this program item to your calendar",
+      signUpForThisProgram: "Sign up for this program item",
     },
     favorites: {
       markAsFavorite: "Mark as favorite",

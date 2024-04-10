@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import FavoriteButton from "../../program/FavoriteButton";
+import { FavoriteContextProvider } from "../../program/FavoriteContext";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
@@ -21,6 +23,14 @@ const query = graphql(`
     $programSlug: String!
     $locale: String
   ) {
+    profile {
+      program {
+        programs(eventSlug: $eventSlug) {
+          slug
+        }
+      }
+    }
+
     event(slug: $eventSlug) {
       name
       program {
@@ -29,6 +39,7 @@ const query = graphql(`
           title
           description
           cachedHosts
+          signupLink
           calendarExportLink
           dimensions {
             dimension {
@@ -91,6 +102,8 @@ export default async function NewProgramPage({ params }: Props) {
   }
 
   const program = event.program.program;
+  const favoriteProgramSlugs =
+    data.profile?.program?.programs?.map((program) => program.slug) ?? [];
 
   // TODO make configurable which dimensions to show
   const dimensions = program.dimensions.filter(
@@ -106,6 +119,16 @@ export default async function NewProgramPage({ params }: Props) {
       <ViewHeading>
         {program.title}
         <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
+        {data.profile && (
+          <div className="d-inline-block ms-2">
+            <FavoriteContextProvider
+              slugs={favoriteProgramSlugs}
+              messages={t.favorites}
+            >
+              <FavoriteButton slug={programSlug} size="xl" />
+            </FavoriteContextProvider>
+          </div>
+        )}
       </ViewHeading>
 
       <p className="fst-italic">
@@ -137,13 +160,21 @@ export default async function NewProgramPage({ params }: Props) {
         ))}
       </div>
 
-      <article className="mb-4">
+      <article className="mb-3">
         <Paragraphs text={program.description} />
       </article>
 
       <p>
+        {program.signupLink && (
+          <>
+            <a href={program.signupLink} className="link-subtle">
+              📝 {t.actions.signUpForThisProgram}…
+            </a>
+            <br />
+          </>
+        )}
         <a href={program.calendarExportLink} className="link-subtle">
-          {t.actions.addThisToCalendar}…
+          📅 {t.actions.addThisToCalendar}…
         </a>
       </p>
     </ViewContainer>
