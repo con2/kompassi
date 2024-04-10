@@ -16,6 +16,7 @@ from forms.graphql.mutations.put_survey_dimension_value import PutSurveyDimensio
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
 from forms.graphql.mutations.update_survey_language import UpdateSurveyLanguage
+from program_v2.graphql.mutations.favorites import MarkProgramAsFavorite, UnmarkProgramAsFavorite
 
 from .language import DEFAULT_LANGUAGE, Language
 
@@ -75,6 +76,9 @@ class Mutation(graphene.ObjectType):
     delete_survey_dimension_value = DeleteSurveyDimensionValue.Field()
 
     init_file_upload = InitFileUpload.Field()
+
+    mark_program_as_favorite = MarkProgramAsFavorite.Field()
+    unmark_program_as_favorite = UnmarkProgramAsFavorite.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

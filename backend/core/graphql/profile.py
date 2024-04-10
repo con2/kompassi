@@ -5,6 +5,8 @@ from core.models import Person
 from core.utils import normalize_whitespace
 from forms.graphql.meta import FormsProfileMetaType
 from forms.models.meta import FormsProfileMeta
+from program_v2.graphql.meta import ProgramV2ProfileMetaType
+from program_v2.models.meta import ProgramV2ProfileMeta
 
 
 class ProfileType(DjangoObjectType):
@@ -40,4 +42,16 @@ class ProfileType(DjangoObjectType):
     forms = graphene.Field(
         graphene.NonNull(FormsProfileMetaType),
         description=normalize_whitespace(resolve_forms.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_program(person: Person, info):
+        """
+        Namespace for queries related to programs and the current user.
+        """
+        return ProgramV2ProfileMeta(person)
+
+    program = graphene.Field(
+        graphene.NonNull(ProgramV2ProfileMetaType),
+        description=normalize_whitespace(resolve_program.__doc__ or ""),
     )

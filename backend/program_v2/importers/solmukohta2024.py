@@ -161,7 +161,7 @@ def ensure_solmukohta2024_dimensions(event: Event):
         ),
     ]
 
-    DimensionDTO.save_many(event, dimensions)
+    return DimensionDTO.save_many(event, dimensions)
 
 
 def import_solmukohta2024(event: Event, queryset: models.QuerySet[Programme]):

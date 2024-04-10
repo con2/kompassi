@@ -229,7 +229,6 @@ class SurveyDTO:
             except FileNotFoundError:
                 pass
             else:
-                data = yaml.safe_load(f)
                 dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
                 DimensionDTO.save_many(survey, dimensions)
 

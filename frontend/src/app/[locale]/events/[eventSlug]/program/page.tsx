@@ -7,10 +7,11 @@ import CardBody from "react-bootstrap/CardBody";
 import CardLink from "react-bootstrap/CardLink";
 import CardText from "react-bootstrap/CardText";
 import CardTitle from "react-bootstrap/CardTitle";
-import { markAsFavorite } from "./actions";
+import { markAsFavorite, unmarkAsFavorite } from "./actions";
 import classes from "./page.module.css";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
+import { auth } from "@/auth";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import {
   buildDimensionFilters,
@@ -40,6 +41,14 @@ const query = graphql(`
     $locale: String
     $filters: [DimensionFilterInput!]
   ) {
+    profile {
+      program {
+        programs(eventSlug: $eventSlug, filters: $filters) {
+          slug
+        }
+      }
+    }
+
     event(slug: $eventSlug) {
       name
       slug
@@ -71,7 +80,8 @@ interface Props {
   searchParams: Record<string, string>;
 }
 
-export const revalidate = 5;
+// TODO move favorites into a client component
+export const revalidate = 0;
 
 export async function generateMetadata({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
@@ -98,6 +108,7 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
   const t = getTranslations(locale).Program;
   const filters = buildDimensionFilters(searchParams);
 
+  const session = await auth();
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, locale, filters },
@@ -111,6 +122,17 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
   const programs = event.program.programs;
   const dimensions = event.program.dimensions || [];
   const roomDimension = dimensions.find((d) => d.slug === "room");
+
+  const userPrograms = data.profile?.program?.programs || [];
+  function isFavorite(program: { slug: string }) {
+    return userPrograms.some((p) => p.slug === program.slug);
+  }
+  function getCssClass(program: { slug: string }) {
+    const cssClasses = isFavorite(program)
+      ? [classes.favorite, classes.active]
+      : [classes.favorite];
+    return cssClasses.join(" ");
+  }
 
   return (
     <ViewContainer>
@@ -132,23 +154,27 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
                   {program.title}
                 </CardLink>
               </CardTitle>
-              {/* TODO(#469)
-              <form
-                action={markAsFavorite.bind(null, {
-                  eventSlug,
-                  programSlug: program.slug,
-                })}
-                className={classes.favoriteForm}
-              >
-                <Button
-                  type="submit"
-                  variant="link"
-                  className={classes.favorite}
-                  title="Mark as favorite"
+              {session && (
+                <form
+                  action={(isFavorite(program)
+                    ? unmarkAsFavorite
+                    : markAsFavorite
+                  ).bind(null, locale, {
+                    eventSlug,
+                    programSlug: program.slug,
+                  })}
+                  className={classes.favoriteForm}
                 >
-                  ⭐
-                </Button>
-              </form> */}
+                  <Button
+                    type="submit"
+                    variant="link"
+                    className={getCssClass(program)}
+                    title="Mark as favorite"
+                  >
+                    ⭐
+                  </Button>
+                </form>
+              )}
             </div>
             <div className="d-flex justify-content-between">
               <div>

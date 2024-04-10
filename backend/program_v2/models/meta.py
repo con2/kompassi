@@ -1,6 +1,9 @@
+from dataclasses import dataclass
+
 from django.db import models
 
-from core.models import EventMetaBase
+from core.models.event_meta_base import EventMetaBase
+from core.models.person import Person
 
 IMPORTER_CHOICES = [
     ("default", "Default"),
@@ -67,3 +70,12 @@ class ProgramV2EventMeta(EventMetaBase):
     @property
     def is_auto_importing_from_v1(self):
         return self.importer_name != ""
+
+
+@dataclass
+class ProgramV2ProfileMeta:
+    """
+    No need for an actual model for now. This serves as a stand-in for GraphQL.
+    """
+
+    person: Person

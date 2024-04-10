@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 from core.models import Event
 from forms.graphql.meta import FormsEventMetaType
 from forms.models.meta import FormsEventMeta
-from program_v2.graphql import ProgramV2EventMetaType
+from program_v2.graphql.meta import ProgramV2EventMetaType
 
 
 class FullEventType(DjangoObjectType):

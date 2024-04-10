@@ -12,7 +12,8 @@
   font-size: 20px;
 }
 
-.favorite:hover {
+.favorite:hover,
+.favorite.active:hover {
   filter: grayscale(0%) hue-rotate(180deg);
 }
 
