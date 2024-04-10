@@ -10,7 +10,7 @@ urlpatterns = [
         name="calendar_export_view",
     ),
     path(
-        "events/<slug:event_slug>/program/<slug:program_slug>.ics",
+        "events/<slug:event_slug>/programs/<slug:program_slug>.ics",
         single_program_calendar_export_view,
         name="single_program_calendar_export_view",
     ),
