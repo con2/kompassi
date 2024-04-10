@@ -231,6 +231,7 @@ const translations: Translations = {
     favorites: {
       markAsFavorite: "Markera som favorit",
       unmarkAsFavorite: "Avmarkera som favorit",
+      showOnlyFavorites: "Visa endast favoriter",
     },
   }),
 

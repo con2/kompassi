@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardLink from "react-bootstrap/CardLink";
@@ -12,7 +11,6 @@ import FavoriteButton from "./FavoriteButton";
 import { FavoriteContextProvider } from "./FavoriteContext";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import { auth } from "@/auth";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import {
   buildDimensionFilters,
@@ -45,7 +43,7 @@ const query = graphql(`
     profile {
       program {
         programs(eventSlug: $eventSlug, filters: $filters) {
-          slug
+          ...ProgramList
         }
       }
     }
@@ -65,6 +63,10 @@ const query = graphql(`
             slug
             title(lang: $locale)
           }
+        }
+
+        locationDimension {
+          slug
         }
 
         programs(filters: $filters) {
@@ -121,11 +123,15 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
     notFound();
   }
 
-  const programs = event.program.programs;
-  const dimensions = event.program.dimensions || [];
-  const roomDimension = dimensions.find((d) => d.slug === "room");
-
+  const favoritesOnly = !!searchParams.favorited;
   const userPrograms = data.profile?.program?.programs || [];
+  const programs = favoritesOnly ? userPrograms : event.program.programs;
+  const dimensions = event.program.dimensions || [];
+  const locationDimensionSlug = event.program.locationDimension?.slug;
+  const locationDimension =
+    locationDimensionSlug &&
+    dimensions.find((d) => d.slug === locationDimensionSlug);
+
   const favoriteProgramSlugs = userPrograms.map((p) => p.slug);
 
   const queryString = new URLSearchParams(searchParams).toString();
@@ -139,7 +145,15 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
         {t.listTitle}
         <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
-      <DimensionFilters dimensions={dimensions}></DimensionFilters>
+      {data.profile ? (
+        <DimensionFilters
+          dimensions={dimensions}
+          favoriteFilter={true}
+          messages={{ showOnlyFavorites: t.favorites.showOnlyFavorites }}
+        />
+      ) : (
+        <DimensionFilters dimensions={dimensions} />
+      )}
       <FavoriteContextProvider
         slugs={favoriteProgramSlugs}
         messages={t.favorites}
@@ -177,9 +191,9 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
                   ))}
                 </div>
                 <CardText>
-                  {roomDimension &&
+                  {locationDimension &&
                     getDimensionValueTitle(
-                      roomDimension,
+                      locationDimension,
                       program.cachedDimensions,
                     )}
                 </CardText>

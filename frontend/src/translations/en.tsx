@@ -231,6 +231,7 @@ const translations = {
     favorites: {
       markAsFavorite: "Mark as favorite",
       unmarkAsFavorite: "Unmark as favorite",
+      showOnlyFavorites: "Show only favorites",
     },
   },
 

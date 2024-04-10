@@ -26,7 +26,7 @@ DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 class ProgramV2EventMetaType(DjangoObjectType):
     class Meta:
         model = ProgramV2EventMeta
-        fields = ("skip_offer_form_selection",)
+        fields = ("skip_offer_form_selection", "location_dimension")
 
     programs = graphene.List(
         graphene.NonNull(ProgramType),

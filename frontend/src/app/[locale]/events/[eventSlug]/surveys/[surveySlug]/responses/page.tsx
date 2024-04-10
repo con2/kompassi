@@ -1,4 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -22,7 +21,6 @@ import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { kompassiBaseUrl } from "@/config";
-import { timezone } from "@/config";
 import { getTranslations } from "@/translations";
 
 // this fragment is just to give a name to the type so that we can import it from generated
