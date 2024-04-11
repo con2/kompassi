@@ -69,6 +69,8 @@ class DimensionValue(models.Model):
 
 
 class ProgramDimensionValue(models.Model):
+    id: int
+
     program = models.ForeignKey(
         Program,
         on_delete=models.CASCADE,

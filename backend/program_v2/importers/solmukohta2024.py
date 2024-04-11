@@ -230,7 +230,12 @@ def import_solmukohta2024(event: Event, queryset: models.QuerySet[Programme]):
             *upsert_cache,
         )
     ]
-    ProgramDimensionValue.bulk_upsert(pdv_upsert)
+    pdvs = ProgramDimensionValue.bulk_upsert(pdv_upsert)
+
+    # delete program dimension values that are not set in the new data
+    pdv_ids = {pdv.id for pdv in pdvs}
+    ProgramDimensionValue.objects.filter(program__in=v2_programs).exclude(id__in=pdv_ids).delete()
+
     Program.refresh_cached_dimensions_qs(event.programs.all())
 
     return v2_programs
