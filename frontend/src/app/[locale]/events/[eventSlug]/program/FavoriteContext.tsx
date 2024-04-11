@@ -20,6 +20,7 @@ const nullFavoriteContextValue: FavoriteContextValue = {
     markAsFavorite: "",
     unmarkAsFavorite: "",
     showOnlyFavorites: "",
+    signInToAddFavorites: "",
   },
 };
 

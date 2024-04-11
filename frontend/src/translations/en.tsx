@@ -233,6 +233,8 @@ const translations = {
       markAsFavorite: "Mark as favorite",
       unmarkAsFavorite: "Unmark as favorite",
       showOnlyFavorites: "Show only favorites",
+      signInToAddFavorites:
+        "By logging in, you can mark program items as favorites, filter this view to show only favorites and add favorite program items to your calendar.",
     },
   },
 

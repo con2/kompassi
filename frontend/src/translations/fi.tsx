@@ -231,6 +231,8 @@ const translations: Translations = {
       markAsFavorite: "Merkitse suosikiksi",
       unmarkAsFavorite: "Poista suosikeista",
       showOnlyFavorites: "Näytä vain suosikit",
+      signInToAddFavorites:
+        "Kirjautumalla sisään voit merkitä ohjelmanumeroita suosikeiksi, suodattaa näkymää näyttämään vain suosikit ja lisätä suosikkiohjelmanumerot kalenteriisi.",
     },
   },
 

@@ -152,7 +152,12 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
           messages={{ showOnlyFavorites: t.favorites.showOnlyFavorites }}
         />
       ) : (
-        <DimensionFilters dimensions={dimensions} />
+        <>
+          <DimensionFilters dimensions={dimensions} />
+          <p className="text-muted">
+            <small>{t.favorites.signInToAddFavorites}</small>
+          </p>
+        </>
       )}
       <FavoriteContextProvider
         slugs={favoriteProgramSlugs}
