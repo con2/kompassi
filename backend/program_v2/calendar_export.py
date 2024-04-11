@@ -22,7 +22,7 @@ def export_programs(
             event.name = schedule_item.title
             event.begin = schedule_item.start_time
             event.end = schedule_item.end_time
-            event.description = program.description
+            event.description = program.description.replace("\r", "")
             event.location = program.get_location(language)
             calendar.events.add(event)
 
