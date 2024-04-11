@@ -72,7 +72,7 @@ def get_room_choices(event: Event):
         if programme.room
     }
 
-    return [DimensionValueDTO(slug=room.slug, title={"en": room.name}) for room in rooms.values()]
+    return [DimensionValueDTO(slug=normalislug(room.slug), title={"en": room.name}) for room in rooms.values()]
 
 
 def get_room_value(programme: Programme):
