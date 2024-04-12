@@ -232,9 +232,12 @@ const translations: Translations = {
     favorites: {
       markAsFavorite: "Markera som favorit",
       unmarkAsFavorite: "Avmarkera som favorit",
-      showOnlyFavorites: "Visa endast favoriter",
       signInToAddFavorites:
         "Genom att logga in kan du markera program som favoriter, filtrera program efter favoriter och lägga till dina favoritprogram i kalendern.",
+    },
+    filters: {
+      showOnlyFavorites: "Visa endast favoriter",
+      hidePastPrograms: "Dölj förflutna program",
     },
   }),
 

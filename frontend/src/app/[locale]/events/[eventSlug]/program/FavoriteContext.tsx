@@ -19,7 +19,6 @@ const nullFavoriteContextValue: FavoriteContextValue = {
   messages: {
     markAsFavorite: "",
     unmarkAsFavorite: "",
-    showOnlyFavorites: "",
     signInToAddFavorites: "",
   },
 };

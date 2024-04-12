@@ -1,1 +1,1 @@
-from . import dimension, program
+from . import dimension, program, schedule

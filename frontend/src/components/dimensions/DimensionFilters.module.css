@@ -1,0 +1,4 @@
+.dimensionFilter:has(option:checked:not([value=""])) {
+  background-color: var(--bs-primary);
+  color: white;
+}

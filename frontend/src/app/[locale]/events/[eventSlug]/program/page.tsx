@@ -1,3 +1,4 @@
+import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -19,6 +20,7 @@ import {
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { decodeBoolean } from "@/helpers/decodeBoolean";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -36,13 +38,18 @@ graphql(`
 
 const query = graphql(`
   query ProgramListQuery(
-    $eventSlug: String!
     $locale: String
+    $eventSlug: String!
     $filters: [DimensionFilterInput!]
+    $hidePast: Boolean
   ) {
     profile {
       program {
-        programs(eventSlug: $eventSlug, filters: $filters) {
+        programs(
+          eventSlug: $eventSlug
+          filters: $filters
+          hidePast: $hidePast
+        ) {
           ...ProgramList
         }
       }
@@ -69,7 +76,7 @@ const query = graphql(`
           slug
         }
 
-        programs(filters: $filters) {
+        programs(filters: $filters, hidePast: $hidePast) {
           ...ProgramList
         }
       }
@@ -91,9 +98,10 @@ export const revalidate = 0;
 export async function generateMetadata({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
   const filters = buildDimensionFilters(searchParams);
+  const hidePast = !!searchParams.past && !decodeBoolean(searchParams.past);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale, filters },
+    variables: { eventSlug, locale, filters, hidePast },
   });
   const { event } = data;
   const translations = getTranslations(locale);
@@ -112,10 +120,11 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
   const t = getTranslations(locale).Program;
   const filters = buildDimensionFilters(searchParams);
+  const hidePast = !!searchParams.past && !decodeBoolean(searchParams.past);
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale, filters },
+    variables: { eventSlug, locale, filters, hidePast },
   });
   const { event } = data;
 
@@ -145,20 +154,12 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
         {t.listTitle}
         <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
-      {data.profile ? (
-        <DimensionFilters
-          dimensions={dimensions}
-          favoriteFilter={true}
-          messages={{ showOnlyFavorites: t.favorites.showOnlyFavorites }}
-        />
-      ) : (
-        <>
-          <DimensionFilters dimensions={dimensions} />
-          <p className="text-muted">
-            <small>{t.favorites.signInToAddFavorites}</small>
-          </p>
-        </>
-      )}
+      <DimensionFilters
+        dimensions={dimensions}
+        programFilters={true}
+        messages={t.filters}
+        isLoggedIn={!!data.profile}
+      />
       <FavoriteContextProvider
         slugs={favoriteProgramSlugs}
         messages={t.favorites}

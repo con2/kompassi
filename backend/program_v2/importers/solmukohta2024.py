@@ -98,6 +98,18 @@ def get_start_time(programme: Programme):
     return programme.start_time
 
 
+def get_end_time(programme):
+    start_time = get_start_time(programme)
+    if start_time is None:
+        return None
+
+    length = get_length(programme)
+    if length is None:
+        return None
+
+    return start_time + length
+
+
 def get_length(programme: Programme):
     if programme.title == "Breakfast 06:30 - 10:00":
         return timedelta(hours=3, minutes=30)
@@ -207,6 +219,8 @@ def import_solmukohta2024(event: Event, queryset: models.QuerySet[Programme]):
             program=v2_program,
             start_time=get_start_time(v1_programme),
             length=get_length(v1_programme),
+            # bulk create does not execute handlers, so we need to set this manually
+            cached_end_time=get_end_time(v1_programme),
         )
         for v1_programme, v2_program in zip(v1_programmes, v2_programs, strict=True)
         if v1_programme.start_time is not None and v1_programme.length is not None

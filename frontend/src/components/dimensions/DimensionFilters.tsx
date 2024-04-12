@@ -3,31 +3,35 @@
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useCallback } from "react";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ToggleButton from "react-bootstrap/ToggleButton";
 
+import classes from "./DimensionFilters.module.css";
 import type { Dimension, DimensionValue } from "./models";
 
-interface PropsWithoutFavoriteFilter {
+interface PropsWithoutProgramFilters {
   dimensions: Dimension[];
-  favoriteFilter?: false;
+  programFilters?: false;
 }
 
-interface PropsWithFavoriteFilter {
+interface PropsWithProgramFilters {
   dimensions: Dimension[];
-  favoriteFilter: true;
+  programFilters: true;
+  isLoggedIn: boolean;
   messages: {
     showOnlyFavorites: string;
+    hidePastPrograms: string;
   };
 }
 
-type Props = PropsWithoutFavoriteFilter | PropsWithFavoriteFilter;
+type Props = PropsWithoutProgramFilters | PropsWithProgramFilters;
 
 /// Presents the dimensions as dropdowns.
 /// Updates the search params when the user selects a value.
 /// Can be used in all use cases that follow the dimension pattern.
 /// Gracefully degrades to showing a submit button when JavaScript is disabled.
 export function DimensionFilters(props: Props) {
-  const { dimensions, favoriteFilter } = props;
+  const { dimensions, programFilters } = props;
   const searchParams = useSearchParams();
   const { replace } = useRouter();
 
@@ -52,11 +56,11 @@ export function DimensionFilters(props: Props) {
 
   const onChangeFavorite = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, checked } = event.target;
+      const { name, checked, value } = event.target;
       const newSearchParams = new URLSearchParams(searchParams);
 
       if (checked) {
-        newSearchParams.set(name, "1");
+        newSearchParams.set(name, value);
       } else {
         newSearchParams.delete(name);
       }
@@ -88,7 +92,7 @@ export function DimensionFilters(props: Props) {
             <select
               name={dimension.slug}
               id={inputId}
-              className="form-select form-select-sm border-secondary-subtle"
+              className={`form-select form-select-sm border-secondary-subtle ${classes.dimensionFilter}`}
               defaultValue={selectedSlug}
               onChange={onChange}
             >
@@ -101,23 +105,39 @@ export function DimensionFilters(props: Props) {
           </div>
         );
       })}
-      {favoriteFilter && (
-        <div className="col-12">
+      {programFilters && (
+        <ButtonGroup className="col-12">
+          {props.isLoggedIn && (
+            <ToggleButton
+              variant="outline-primary"
+              className="border-secondary-subtle"
+              type="checkbox"
+              id="favorites-only"
+              value="1"
+              size="sm"
+              onChange={onChangeFavorite}
+              name="favorited"
+              checked={!!searchParams.get("favorited")}
+              title={props.messages.showOnlyFavorites}
+            >
+              ⭐
+            </ToggleButton>
+          )}
           <ToggleButton
             variant="outline-primary"
             className="border-secondary-subtle"
             type="checkbox"
-            id="favorites-only"
-            value="1"
+            id="hide-past-programs"
+            value="0"
             size="sm"
             onChange={onChangeFavorite}
-            name="favorited"
-            checked={!!searchParams.get("favorited")}
-            title={props.messages.showOnlyFavorites}
+            name="past"
+            checked={!!searchParams.get("past")}
+            title={props.messages.hidePastPrograms}
           >
-            ⭐
+            🕒
           </ToggleButton>
-        </div>
+        </ButtonGroup>
       )}
       <noscript>
         <button type="submit" className="btn btn-sm btn-primary">

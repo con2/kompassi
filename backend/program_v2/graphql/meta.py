@@ -6,9 +6,11 @@ from graphene_django import DjangoObjectType
 
 from access.cbac import graphql_check_instance
 from core.graphql.common import DimensionFilterInput
+from core.models import Event
 from core.utils import get_objects_within_period
 from core.utils.text_utils import normalize_whitespace
 
+from ..filters import ProgramFilters
 from ..models import (
     Dimension,
     OfferForm,
@@ -32,6 +34,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         graphene.NonNull(ProgramType),
         filters=graphene.List(DimensionFilterInput),
         favorites_only=graphene.Boolean(),
+        hide_past=graphene.Boolean(),
     )
 
     @staticmethod
@@ -40,23 +43,15 @@ class ProgramV2EventMetaType(DjangoObjectType):
         info,
         filters: list[DimensionFilterInput] | None = None,
         favorites_only: bool = False,
+        hide_past: bool = False,
     ):
-        if filters is None:
-            filters = []
-
-        queryset = Program.objects.filter(event=meta.event)
-
-        if filters:
-            for filter in filters:
-                queryset = queryset.filter(
-                    dimensions__dimension__slug=filter.dimension,
-                    dimensions__value__slug__in=filter.values,
-                )
-
-        if (user := info.context.user) and user.is_authenticated and favorites_only:
-            queryset = queryset.filter(favorited_by=user)
-
-        return queryset.order_by("schedule_items__start_time")
+        request: HttpRequest = info.context
+        programs = Program.objects.filter(event=meta.event)
+        return ProgramFilters.from_graphql(
+            filters,
+            favorites_only=favorites_only,
+            hide_past=hide_past,
+        ).filter_program(programs, user=request.user)
 
     dimensions = graphene.List(graphene.NonNull(DimensionType))
 
@@ -122,40 +117,33 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
         event_slug: str | None = None,
         filters: list[DimensionFilterInput] | None = None,
         include: list[ProfileProgramInclude] | None = None,
+        hide_past: bool = False,
     ):
         """
         Get programs that relate to this user in some way.
         Currently only favorites are implemented, but in the future also signed up and hosting.
         Dimension filter may only be specified when event_slug is given.
         """
-        if include is None:
-            include = list(ProfileProgramInclude)
+        request: HttpRequest = info.context
 
-        # TODO implement SIGNED_UP, HOSTING
-        if ProfileProgramInclude.FAVORITED in include:
-            programs = Program.objects.filter(favorited_by=meta.person.user)
+        if event_slug is not None:
+            # validate event_slug
+            event = Event.objects.get(slug=event_slug)
+            programs = Program.objects.filter(event=event)
         else:
-            return Program.objects.none()
+            programs = Program.objects.all()
 
-        if event_slug:
-            programs = programs.filter(event__slug=event_slug)
-
-        if filters:
-            if not event_slug:
-                raise ValueError("Event slug is required when filtering by dimensions")
-
-            for filter in filters:
-                programs = programs.filter(
-                    dimensions__dimension__slug=filter.dimension,
-                    dimensions__value__slug__in=filter.values,
-                )
-
-        return programs.order_by("schedule_items__start_time").distinct()
+        return ProgramFilters.from_graphql(
+            filters,
+            favorites_only=True,
+            hide_past=hide_past,
+        ).filter_program(programs, user=request.user)
 
     programs = graphene.List(
         graphene.NonNull(ProgramType),
         event_slug=graphene.String(),
         filters=graphene.List(DimensionFilterInput),
         include=graphene.List(ProfileProgramInclude),
+        hide_past=graphene.Boolean(),
         description=normalize_whitespace(resolve_programs.__doc__ or ""),
     )

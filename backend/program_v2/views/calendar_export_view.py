@@ -5,7 +5,7 @@ from core.models.event import Event
 from graphql_api.language import DEFAULT_LANGUAGE
 
 from ..calendar_export import export_program_response
-from ..filters import filter_program
+from ..filters import ProgramFilters
 from ..models.program import Program
 
 
@@ -15,7 +15,7 @@ def calendar_export_view(request: HttpRequest, event_slug: str):
     filters: dict[str, list[str]] = {k: [str(v) for v in vs] for k, vs in request.GET.lists()}
     language = filters.pop("language", [DEFAULT_LANGUAGE])[0]
     programs = Program.objects.filter(event=event)
-    programs = filter_program(programs, filters, user=request.user)
+    programs = ProgramFilters.from_query_dict(filters).filter_program(programs, user=request.user)
     return export_program_response(programs, language=language)
 
 
