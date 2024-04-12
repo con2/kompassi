@@ -106,7 +106,7 @@ export function DimensionFilters(props: Props) {
         );
       })}
       {programFilters && (
-        <ButtonGroup className="col-12">
+        <ButtonGroup className="col-12 ms-auto">
           {props.isLoggedIn && (
             <ToggleButton
               variant="outline-primary"
