@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING, Any, Self
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models, transaction
+from django.http import HttpRequest
+from django.urls import reverse
 
 from core.models import Event
 from core.utils import validate_slug
@@ -202,6 +204,10 @@ class Program(models.Model):
         return meta
 
     def get_location(self, language=DEFAULT_LANGUAGE):
+        """
+        TODO(#474) Support freeform location
+        https://github.com/con2/kompassi/issues/474
+        """
         dimension = self.meta.location_dimension
         if dimension is None:
             return None
@@ -211,3 +217,14 @@ class Program(models.Model):
             return None
 
         return get_message_in_language(pdv.value.title, language)
+
+    def get_calendar_export_link(self, request: HttpRequest):
+        return request.build_absolute_uri(
+            reverse(
+                "program_v2:single_program_calendar_export_view",
+                kwargs=dict(
+                    event_slug=self.event.slug,
+                    program_slug=self.slug,
+                ),
+            )
+        )

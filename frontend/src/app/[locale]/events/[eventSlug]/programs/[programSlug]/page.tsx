@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Fragment } from "react";
 import { markAsFavorite, unmarkAsFavorite } from "../../program/actions";
 import FavoriteButton from "../../program/FavoriteButton";
 import { FavoriteContextProvider } from "../../program/FavoriteContext";
 import { graphql } from "@/__generated__";
+import { ProgramLinkType } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
 import { validateFields } from "@/components/forms/models";
@@ -40,8 +42,13 @@ const query = graphql(`
           title
           description
           cachedHosts
-          signupLink
-          calendarExportLink
+
+          links(lang: $locale) {
+            type
+            href
+            title
+          }
+
           dimensions {
             dimension {
               slug
@@ -87,6 +94,27 @@ export async function generateMetadata({ params }: Props) {
   });
   const description = data?.event?.program?.program?.description;
   return { title, description };
+}
+
+function getLinkEmoji(type: ProgramLinkType) {
+  switch (type) {
+    case ProgramLinkType.Calendar:
+      return "📅";
+    case ProgramLinkType.Signup:
+      return "✍️";
+    case ProgramLinkType.Feedback:
+      return "📝";
+    case ProgramLinkType.Recording:
+      return "🎥";
+    case ProgramLinkType.Remote:
+      return "🌐";
+    case ProgramLinkType.Reservation:
+    case ProgramLinkType.Tickets:
+      return "🎟️";
+    case ProgramLinkType.Other:
+    default:
+      return "🔗";
+  }
 }
 
 export default async function NewProgramPage({ params }: Props) {
@@ -155,6 +183,22 @@ export default async function NewProgramPage({ params }: Props) {
       </p>
 
       <div className="mb-3 mt-3">
+        {program.links.map((link, index) => (
+          <div key={index}>
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link-subtle"
+            >
+              {getLinkEmoji(link.type) + " "}
+              {link.title}…
+            </a>
+          </div>
+        ))}
+      </div>
+
+      <div className="mb-3 mt-3">
         {dimensions.map((dimension) => (
           <div key={dimension.dimension.slug}>
             <strong>{dimension.dimension.title}</strong>:{" "}
@@ -166,20 +210,6 @@ export default async function NewProgramPage({ params }: Props) {
       <article className="mb-3">
         <Paragraphs text={program.description} />
       </article>
-
-      <p>
-        {program.signupLink && (
-          <>
-            <a href={program.signupLink} className="link-subtle">
-              📝 {t.actions.signUpForThisProgram}…
-            </a>
-            <br />
-          </>
-        )}
-        <a href={program.calendarExportLink} className="link-subtle">
-          📅 {t.actions.addThisToCalendar}…
-        </a>
-      </p>
     </ViewContainer>
   );
 }
