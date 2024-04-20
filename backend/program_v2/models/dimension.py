@@ -153,7 +153,7 @@ class ProgramDimensionValue(models.Model):
         """
         For usage example, see ../importers/solmukohta2024.py
 
-        NOTE: It is your responsibility to call Program.refresh_cached_dimensions_qs(…) after calling this method.
+        NOTE: It is your responsibility to call Program.refresh_fields_qs(…) after calling this method.
         """
         return cls.objects.bulk_create(
             upsertables,

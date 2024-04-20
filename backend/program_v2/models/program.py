@@ -42,6 +42,26 @@ class Program(models.Model):
 
     # denormalized fields
     cached_dimensions = models.JSONField(default=dict)
+    cached_earliest_start_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=(
+            "The earliest start time of any schedule item of this program. "
+            "NOTE: This is not the same as the program's start time. "
+            "The intended purpose of this field is to exclude programs that have not yet started. "
+            "Always use `scheduleItems` for the purpose of displaying program times."
+        ),
+    )
+    cached_latest_end_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=(
+            "The latest end time of any schedule item of this program. "
+            "NOTE: This is not the same as the program's start end. "
+            "The intended purpose of this field is to exclude programs that have already ended. "
+            "Always use `scheduleItems` for the purpose of displaying program times."
+        ),
+    )
 
     # related fields
     dimensions: models.QuerySet[ProgramDimensionValue]
@@ -52,6 +72,15 @@ class Program(models.Model):
 
     def __str__(self):
         return str(self.title)
+
+    def refresh_cached_fields(self):
+        self.refresh_cached_dimensions()
+        self.refresh_cached_times()
+
+    @classmethod
+    def refresh_cached_fields_qs(cls, queryset: models.QuerySet[Self]):
+        cls.refresh_cached_dimensions_qs(queryset)
+        cls.refresh_cached_times_qs(queryset)
 
     def _build_dimensions(self):
         """
@@ -76,6 +105,37 @@ class Program(models.Model):
                 program.cached_dimensions = program._build_dimensions()
                 bulk_update.append(program)
             cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
+
+    def refresh_cached_times(self):
+        """
+        Used to populate cached_earliest_start_time and cached_latest_end_time
+        """
+        earliest_start_time = self.schedule_items.order_by("start_time").first()
+        latest_end_time = self.schedule_items.order_by("cached_end_time").last()
+
+        self.cached_earliest_start_time = earliest_start_time.start_time if earliest_start_time else None
+        self.cached_latest_end_time = latest_end_time.cached_end_time if latest_end_time else None
+
+        self.save(update_fields=["cached_earliest_start_time", "cached_latest_end_time"])
+
+    @classmethod
+    def refresh_cached_times_qs(cls, queryset: models.QuerySet[Self]):
+        with transaction.atomic():
+            bulk_update = []
+            for program in queryset.select_for_update(of=("self",)).only(
+                "id",
+                "cached_earliest_start_time",
+                "cached_latest_end_time",
+            ):
+                earliest_start_time = program.schedule_items.order_by("start_time").first()
+                latest_end_time = program.schedule_items.order_by("cached_end_time").last()
+
+                program.cached_earliest_start_time = earliest_start_time.start_time if earliest_start_time else None
+                program.cached_latest_end_time = latest_end_time.cached_end_time if latest_end_time else None
+
+                bulk_update.append(program)
+
+            cls.objects.bulk_update(bulk_update, ["cached_earliest_start_time", "cached_latest_end_time"])
 
     @classmethod
     def create_from_form_data(

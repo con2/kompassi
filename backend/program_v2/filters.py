@@ -85,6 +85,6 @@ class ProgramFilters:
         if self.hide_past:
             if t is None:
                 t = now()
-            programs = programs.filter(schedule_items__cached_end_time__gte=t)
+            programs = programs.filter(cached_latest_end_time__gte=t)
 
-        return programs.distinct().order_by("schedule_items__start_time")
+        return programs.distinct().order_by("cached_earliest_start_time")

@@ -1,5 +1,4 @@
 import re
-from collections import Counter
 
 import phonenumbers
 from django.conf import settings
@@ -58,7 +57,7 @@ def get_slugifier(sep: str = "-"):
     forbannad_re = re.compile(f"[^a-z0-9{sep}]", re.UNICODE)
     multisep_re = re.compile(sep + "+", re.UNICODE)
 
-    def _slugify(ustr):
+    def _slugify(ustr: str) -> str:
         ustr = ustr.lower()
         ustr = "".join(char_map.get(c, c) for c in ustr)
         ustr = forbannad_re.sub("", ustr)
@@ -118,21 +117,4 @@ def format_phone_number(
 
     phone_number_format = getattr(phonenumbers.PhoneNumberFormat, format, format)
     phone_number = phonenumbers.parse(value, region)
-    return phonenumbers.format_number(phone_number, phone_number_format)
-
-
-class EnsuranceCompany:
-    """
-    Ensure unique slugs.
-
-    >>> ensure = EnsuranceCompany()
-    >>> ensure("foo"), ensure("bar"), ensure("foo")
-    ('foo', 'bar', 'foo-2')
-    """
-
-    def __init__(self):
-        self.counter: Counter[str] = Counter()
-
-    def __call__(self, slug: str) -> str:
-        self.counter[slug] += 1
-        return slug if self.counter[slug] == 1 else f"{slug}-{self.counter[slug]}"
+    return phonenumbers.format_number(phone_number, phone_number_format)  # type: ignore[arg-type]

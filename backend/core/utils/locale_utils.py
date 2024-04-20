@@ -1,5 +1,6 @@
 from collections.abc import Mapping
 from functools import cache
+from typing import TypeVar
 
 from babel import Locale
 from django.conf import settings
@@ -17,10 +18,13 @@ def get_current_locale():
     return _get_babel_locale(get_language() or settings.LANGUAGE_CODE)
 
 
+T = TypeVar("T")
+
+
 def get_message_in_language(
-    messages: Mapping[str, str] | Mapping[str, str | None],
+    messages: Mapping[str, T],
     lang: str | None = None,
-):
+) -> T | None:
     """
     Given a HStoreField, JSONField or a plain dict, assume keys are language codes
     and return the value for the current language.

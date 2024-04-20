@@ -1,8 +1,10 @@
 import graphene
 from django.http import HttpRequest
+from django.utils.timezone import now
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
+from core.utils.locale_utils import get_message_in_language
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
 
@@ -65,23 +67,57 @@ class ProgramLink(graphene.ObjectType):
 
     @classmethod
     def from_program(
-        cls, request: HttpRequest, program: Program, link_type: ProgramLinkType, language: str = DEFAULT_LANGUAGE
+        cls,
+        request: HttpRequest,
+        program: Program,
+        link_type: ProgramLinkType,
+        language: str = DEFAULT_LANGUAGE,
     ):
+        """
+        TODO should this be pushed into the Program model?
+        TODO should this be cached? (probably not, as some links are time-sensitive)
+        """
         link_type_str = link_type.value  # type: ignore[attr-defined]
+        title_specifier = ""
 
         match link_type:
             case ProgramLinkType.CALENDAR:
-                href = program.get_calendar_export_link(request)
+                # Do not show these links if the program has ended
+                if program.cached_latest_end_time and now() > program.cached_latest_end_time:
+                    href = ""
+                else:
+                    href = program.get_calendar_export_link(request)
+            case (
+                ProgramLinkType.SIGNUP
+                | ProgramLinkType.RESERVATION
+                | ProgramLinkType.TICKETS
+                | ProgramLinkType.REMOTE
+            ):
+                # Do not show these links if the program has ended
+                if program.cached_latest_end_time and now() > program.cached_latest_end_time:
+                    href = ""
+                else:
+                    href = program.other_fields.get(f"{link_type_str.lower()}_link", "")
+            case ProgramLinkType.FEEDBACK:
+                # Do not show feedback link if the program has not started yet
+                if program.cached_earliest_start_time and now() < program.cached_earliest_start_time:
+                    href = ""
+                else:
+                    href = program.other_fields.get("feedback_link", "")
             case _:
                 href = program.other_fields.get(f"{link_type_str.lower()}_link", "")
 
         if not href:
             return None
 
+        titles = get_message_in_language(DEFAULT_TITLES, language) or {}
         title = program.other_fields.get(
             f"{link_type_str.lower()}_link_title",
-            DEFAULT_TITLES.get(language, {}).get(link_type_str, ""),
+            titles.get(link_type_str, ""),
         )
+
+        if title_specifier:
+            title = f"{title} ({title_specifier})"
 
         return cls(
             type=link_type,
@@ -162,11 +198,13 @@ class ProgramType(DjangoObjectType):
         """
         Deprecated. Use `links(types: CALENDAR)` instead.
         """
-        return ProgramType.resolve_links(
+        if links := ProgramType.resolve_links(
             program,
             info,
             types=[ProgramLinkType.CALENDAR],  # type: ignore[arg-type]
-        )[0].href
+        ):
+            return links[0].href
+        return ""
 
     calendar_export_link = graphene.NonNull(
         graphene.String,
@@ -175,4 +213,13 @@ class ProgramType(DjangoObjectType):
 
     class Meta:
         model = Program
-        fields = ("title", "slug", "description", "dimensions", "cached_dimensions", "schedule_items")
+        fields = (
+            "title",
+            "slug",
+            "description",
+            "dimensions",
+            "cached_dimensions",
+            "schedule_items",
+            "cached_earliest_start_time",
+            "cached_latest_end_time",
+        )

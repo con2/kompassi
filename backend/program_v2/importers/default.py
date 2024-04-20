@@ -7,7 +7,6 @@ from typing import Literal
 from django.db import models
 
 from core.models import Event
-from core.utils.model_utils import EnsuranceCompany
 from programme.models.category import Category
 from programme.models.programme import PROGRAMME_STATES_LIVE, Programme
 from programme.models.room import Room
@@ -58,11 +57,10 @@ def import_default(event: Event, queryset: models.QuerySet[Programme]):
 
     v1_programmes = [programme for programme in queryset.order_by("id") if programme.state in PROGRAMME_STATES_LIVE]
 
-    ensure_unique_slug = EnsuranceCompany()
     program_upsert = [
         Program(
             event=programme.category.event,
-            slug=ensure_unique_slug(programme.slug),
+            slug=programme.slug,
             title=programme.title,
             description=programme.description,
             other_fields=dict(formatted_hosts=programme.formatted_hosts),

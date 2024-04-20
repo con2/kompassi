@@ -3,6 +3,8 @@ from django.dispatch import receiver
 from django.forms import ValidationError
 
 from core.utils import slugify
+from core.utils.locale_utils import get_message_in_language
+from graphql_api.language import DEFAULT_LANGUAGE
 
 from ..models import Dimension, DimensionValue, Program, ProgramDimensionValue
 
@@ -29,5 +31,5 @@ def program_dimension_value_post_save(sender, instance: ProgramDimensionValue, *
 
 @receiver(pre_save, sender=(Dimension, DimensionValue))
 def dimension_pre_save(sender, instance: Dimension | DimensionValue, **kwargs):
-    if instance.slug is None:
-        instance.slug = slugify(instance.title.get("en") or instance.title.get("fi") or "")
+    if instance.slug is None and (title := get_message_in_language(instance.title, DEFAULT_LANGUAGE)):
+        instance.slug = slugify(title)
