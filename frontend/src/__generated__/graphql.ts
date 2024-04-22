@@ -561,8 +561,12 @@ export enum ProgramLinkType {
 export type ProgramType = {
   __typename?: 'ProgramType';
   cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
+  /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
+  cachedEarliestStartTime?: Maybe<Scalars['DateTime']['output']>;
   cachedHosts: Scalars['String']['output'];
-  /** Deprecated. Use `links` instead. */
+  /** The latest end time of any schedule item of this program. NOTE: This is not the same as the program's start end. The intended purpose of this field is to exclude programs that have already ended. Always use `scheduleItems` for the purpose of displaying program times. */
+  cachedLatestEndTime?: Maybe<Scalars['DateTime']['output']>;
+  /** Deprecated. Use `links(types: CALENDAR)` instead. */
   calendarExportLink: Scalars['String']['output'];
   description: Scalars['String']['output'];
   dimensions: Array<ProgramDimensionValueType>;
@@ -571,6 +575,7 @@ export type ProgramType = {
   /** Get the location of the program in the format it should be displayed in to the participant. Currently this simply returns the value of the location dimension in the language specified. In the future, also a freeform location field could be supported. */
   location: Scalars['String']['output'];
   scheduleItems: Array<ScheduleItemType>;
+  /** Deprecated. Use `links(types: SIGNUP)` instead. */
   signupLink: Scalars['String']['output'];
   slug: Scalars['String']['output'];
   title: Scalars['String']['output'];
