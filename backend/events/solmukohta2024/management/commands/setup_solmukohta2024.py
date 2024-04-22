@@ -476,6 +476,18 @@ class Setup:
                 ],
             ),
             dict(
+                name="Day ticket – Sunday",
+                description="Sunday ticket to Solmukohta. This ticket allows you to attend Solmukohta on Sunday April 14.",
+                mail_description=day_ticket_mail_description,
+                price_cents=40_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("Sunday tickets", 1),
+                ],
+            ),
+            dict(
                 name="Book – What Do We Do When We Play? (2020)",
                 description=(
                     "ONLY FOR RETRIEVAL AT SOLMUKOHTA 2024. IF YOU CANNOT COME, HAVE A FRIEND PICK IT UP FROM THE INFO WITH THE RECEIPT. WE DO NOT MAIL BOOKS.\n\n"
