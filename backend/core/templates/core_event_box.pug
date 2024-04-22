@@ -29,7 +29,7 @@
                 rel='noopener noreferrer'
               ) {% trans "Schedule published" %}…
             else
-              span.label.label-primary.kompassi-space-after: a( href='{{ event.programme_event_meta.schedule_link }}'
+              span.label.label-primary.kompassi-space-after: a(href='{{ event.programme_event_meta.schedule_link }}')  {% trans "Schedule published" %}
           else
             if event.programme_event_meta.is_accepting_cold_offers
               span.label.label-primary.kompassi-space-after: a(href='{% url "programme:offer_view" event.slug %}') {% trans "Accepting programme" %}
