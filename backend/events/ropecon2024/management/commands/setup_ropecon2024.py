@@ -288,10 +288,9 @@ class Setup:
                     name=room_name,
                 )
 
-        priority = 0
+        priority = 40
         for pc_slug, role_title, role_is_default in [
-            ("ohjelma", "Ohjelma, päivä, 1 ruoka", True),
-            ("ohjelma", "N Ohjelma, päivä, 1 ruoka", False),
+            ("ohjelma", "Ohjelma, päivä, ruoka", True),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
             role, created = Role.objects.get_or_create(
@@ -311,11 +310,12 @@ class Setup:
 
         Role.objects.get_or_create(
             personnel_class=personnel_class,
-            title="Näkymätön ohjelmanjärjestäjä",
+            title="Ohjelma, päivä, ruoka, näkymätön",
             defaults=dict(
                 override_public_title="Ohjelmanjärjestäjä",
                 is_default=False,
                 is_public=False,
+                priority=50,
             ),
         )
 
@@ -389,7 +389,7 @@ class Setup:
                     view.rooms = rooms
                     view.save()
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="roolipeli",
@@ -403,7 +403,7 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="larp",
@@ -417,7 +417,7 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="pelitiski",
@@ -432,7 +432,7 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="tyopaja",
@@ -446,7 +446,7 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
         form, _ = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="default",
