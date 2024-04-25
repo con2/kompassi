@@ -7,6 +7,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 import yaml
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.timezone import now
@@ -101,6 +102,14 @@ class Survey(models.Model):
         default=list,
         verbose_name=_("key fields"),
         help_text=_("Key fields will be shown in the response list."),
+    )
+
+    subscribers = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name="subscribed_surveys",
+        verbose_name=_("subscribers"),
+        help_text=_("Users who will receive notifications when new responses are submitted."),
+        blank=True,
     )
 
     # related fields

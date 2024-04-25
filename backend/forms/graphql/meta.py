@@ -2,7 +2,7 @@ import graphene
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 
-from access.cbac import graphql_check_instance, graphql_check_model
+from access.cbac import graphql_check_instance, graphql_check_model, is_graphql_allowed_for_model
 from core.utils import get_objects_within_period, normalize_whitespace
 
 from ..models.meta import FormsEventMeta, FormsProfileMeta
@@ -69,4 +69,36 @@ class FormsProfileMetaType(graphene.ObjectType):
         ProfileResponseType,
         id=graphene.String(required=True),
         description=normalize_whitespace(resolve_response.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_surveys(meta: FormsProfileMeta, info, event_slug: str | None = None):
+        """
+        Returns all surveys subscribed to by the current user.
+        """
+        if info.context.user != meta.person.user:
+            raise SuspiciousOperation("User mismatch")
+
+        surveys = Survey.objects.filter(subscribers=meta.person.user)
+
+        if event_slug:
+            surveys = surveys.filter(event__slug=event_slug)
+
+        return [
+            survey
+            for survey in surveys
+            if is_graphql_allowed_for_model(
+                meta.person.user,
+                instance=survey,
+                operation="query",
+                field="self",
+            )
+        ]
+
+    surveys = graphene.NonNull(
+        graphene.List(
+            graphene.NonNull(SurveyType),
+        ),
+        event_slug=graphene.String(),
+        description=normalize_whitespace(resolve_surveys.__doc__ or ""),
     )

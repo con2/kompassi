@@ -354,6 +354,7 @@ const translations = {
         success: "A link to the survey has been copied to clipboard.",
       },
       viewResponses: "Responses",
+      toggleSubscription: "Notify me about new responses",
       submit: "Submit",
       downloadAsExcel: "Download as Excel",
       returnToResponseList: "Return to the list of responses",

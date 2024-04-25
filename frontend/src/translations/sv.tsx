@@ -369,6 +369,7 @@ const translations: Translations = {
         success: "En länk till undersökningen har kopierats till urklipp.",
       },
       viewResponses: "Visa svar",
+      toggleSubscription: "Meddela mig om nya svar",
       submit: "Skicka",
       downloadAsExcel: "Ladda ner som Excel",
       returnToResponseList: "Tillbaka till listan över svar",

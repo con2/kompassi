@@ -2,11 +2,15 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Fragment } from "react";
+import ToggleButton from "react-bootstrap/ToggleButton";
+import { toggleSurveyResponseSubscription } from "./actions";
 import ResponseTabs from "./ResponseTabs";
+import SubscriptionButton from "./SubscriptionButton";
 import { graphql } from "@/__generated__";
 import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
+import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { Column, DataTable } from "@/components/DataTable";
 import ColoredDimensionTableCell from "@/components/dimensions/ColoredDimensionTableCell";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
@@ -45,6 +49,13 @@ const query = graphql(`
     $locale: String
     $filters: [DimensionFilterInput!]
   ) {
+    profile {
+      forms {
+        surveys(eventSlug: $eventSlug) {
+          slug
+        }
+      }
+    }
     event(slug: $eventSlug) {
       name
 
@@ -233,6 +244,11 @@ export default async function FormResponsesPage({
   const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
   const responses = survey.responses || [];
 
+  const subscribedSurveys = data.profile?.forms?.surveys ?? [];
+  const isSubscribed = subscribedSurveys.some(
+    (survey) => survey.slug === surveySlug,
+  );
+
   return (
     <ViewContainer>
       <Link className="link-subtle" href={`/events/${eventSlug}/surveys`}>
@@ -245,9 +261,22 @@ export default async function FormResponsesPage({
           <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
         </ViewHeading>
         <div className="ms-auto">
-          <a className="btn btn-outline-primary" href={excelUrl}>
-            {t.actions.downloadAsExcel}…
-          </a>
+          <div className="btn-group">
+            <SubscriptionButton
+              initialChecked={isSubscribed}
+              onChange={toggleSurveyResponseSubscription.bind(
+                null,
+                locale,
+                eventSlug,
+                surveySlug,
+              )}
+            >
+              {t.actions.toggleSubscription}
+            </SubscriptionButton>
+            <a className="btn btn-outline-primary" href={excelUrl}>
+              {t.actions.downloadAsExcel}…
+            </a>
+          </div>
         </div>
       </div>
 

@@ -353,6 +353,7 @@ const translations: Translations = {
         success: "Linkki kyselyyn on kopioitu leikepöydälle.",
       },
       viewResponses: "Vastaukset",
+      toggleSubscription: "Ilmoita uusista vastauksista",
       submit: "Lähetä",
       downloadAsExcel: "Lataa Excel-tiedostona",
       returnToResponseList: "Palaa vastauslistaukseen",

@@ -82,6 +82,9 @@ class CBACEntry(models.Model):
 
     @classmethod
     def is_allowed(cls, user: AbstractUser, claims: Claims, t: datetime | None = None):
+        if not user.is_authenticated:
+            return False
+
         return cls.get_entries(user, claims, t=t).exists()
 
     @classmethod
