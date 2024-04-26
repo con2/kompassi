@@ -25,14 +25,14 @@ bcrypt==4.1.2
 billiard==4.2.0
     # via celery
 bleach==6.1.0
-boto3==1.34.80
-botocore==1.34.80
+boto3==1.34.92
+botocore==1.34.92
     # via
     #   boto3
     #   s3transfer
 brotli==1.1.0
     # via fonttools
-celery==5.3.6
+celery==5.4.0
 certifi==2024.2.2
     # via requests
 cffi==1.16.0
@@ -83,13 +83,13 @@ django==5.0.4
     #   graphene-django
     #   lippukala
     #   paikkala
-django-bootstrap3==23.6
+django-bootstrap3==24.2
 django-cors-headers==4.3.1
 django-crispy-forms==2.1
     # via crispy-bootstrap3
 django-csp==3.8
 django-environ==0.11.2
-django-ipware==6.0.4
+django-ipware==7.0.1
 django-localflavor==4.0
 django-oauth-toolkit==2.3.0
 django-redis==5.4.0
@@ -111,11 +111,11 @@ graphql-relay==3.2.0
     # via
     #   graphene
     #   graphene-django
-gunicorn==21.2.0
+gunicorn==22.0.0
 html5lib==1.1
     # via weasyprint
 ics==0.7.2
-idna==3.6
+idna==3.7
     # via requests
 iniconfig==2.0.0
     # via pytest
@@ -135,13 +135,13 @@ jsonschema-specifications==2023.12.1
     # via jsonschema
 jwcrypto==1.5.6
     # via django-oauth-toolkit
-kombu==5.3.6
+kombu==5.3.7
     # via celery
 lippukala @ git+https://github.com/kcsry/lippukala@fd6f55f499b12062887f6c78ff2c6749df8ba5cc
 markdown==3.6
 markupsafe==2.1.5
     # via jinja2
-matplotlib-inline==0.1.6
+matplotlib-inline==0.1.7
     # via ipython
 mccabe==0.7.0
     # via flake8
@@ -160,12 +160,12 @@ parso==0.8.4
 passlib==1.7.4
 pexpect==4.9.0
     # via ipython
-phonenumberslite==8.13.34
+phonenumberslite==8.13.35
 pillow==10.3.0
     # via
     #   reportlab
     #   weasyprint
-pluggy==1.4.0
+pluggy==1.5.0
     # via pytest
 promise==2.3
     # via graphene-django
@@ -184,8 +184,8 @@ pycodestyle==2.11.1
     # via flake8
 pycparser==2.22
     # via cffi
-pydantic==2.6.4
-pydantic-core==2.16.3
+pydantic==2.7.1
+pydantic-core==2.18.2
     # via pydantic
 pydyf==0.9.0
     # via weasyprint
@@ -195,7 +195,7 @@ pygments==2.17.2
     # via ipython
 pynacl==1.5.0
     # via paramiko
-pyphen==0.14.0
+pyphen==0.15.0
     # via weasyprint
 pypugjs==5.9.12
 pytest==8.1.1
@@ -208,19 +208,19 @@ python-dateutil==2.9.0.post0
     #   celery
     #   ics
     #   vobject
-python-ipware==2.0.2
+python-ipware==3.0.0
     # via django-ipware
 python-stdnum==1.20
     # via django-localflavor
 pyyaml==6.0.1
-redis==5.0.3
+redis==5.0.4
     # via django-redis
-referencing==0.34.0
+referencing==0.35.0
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2023.12.25
-reportlab==4.1.0
+regex==2024.4.16
+reportlab==4.2.0
     # via lippukala
 requests==2.31.0
     # via
@@ -231,7 +231,7 @@ rpds-py==0.18.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.3.5
+ruff==0.4.2
 s3transfer==0.10.1
     # via boto3
 six==1.16.0
@@ -243,7 +243,7 @@ six==1.16.0
     #   promise
     #   pypugjs
     #   python-dateutil
-sqlparse==0.4.4
+sqlparse==0.5.0
     # via django
 stack-data==0.6.3
     # via ipython
@@ -252,11 +252,11 @@ tatsu==5.12.0
     # via ics
 text-unidecode==1.3
     # via graphene-django
-tinycss2==1.2.1
+tinycss2==1.3.0
     # via
     #   cssselect2
     #   weasyprint
-traitlets==5.14.2
+traitlets==5.14.3
     # via
     #   ipython
     #   matplotlib-inline
