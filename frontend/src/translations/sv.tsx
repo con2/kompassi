@@ -269,8 +269,7 @@ const translations: Translations = {
     ownResponsesTitle: "Mina svar",
     showingResponses: (filteredCount: number, totalCount: number) => (
       <>
-        Visar {filteredCount}-svar{filteredCount === 1 ? "" : "er"} (totalt{" "}
-        {totalCount}).
+        Visar {filteredCount} svar (totalt {totalCount}).
       </>
     ),
     dimensionTableFooter: (countDimensions: number, countValues: number) => (
@@ -366,14 +365,14 @@ const translations: Translations = {
       share: {
         title: "Dela",
         tooltip: "Kopiera länk till urklipp",
-        success: "En länk till undersökningen har kopierats till urklipp.",
+        success: "En länk till enkäten har kopierats till urklipp.",
       },
       viewResponses: "Visa svar",
       toggleSubscription: "Meddela mig om nya svar",
       submit: "Skicka",
       downloadAsExcel: "Ladda ner som Excel",
       returnToResponseList: "Tillbaka till listan över svar",
-      returnToSurveyList: "Tillbaka till listan över undersökningar",
+      returnToSurveyList: "Tillbaka till listan över enkäter",
       returnToDimensionList: "Tillbaka till dimensionslistan",
       saveDimensions: "Spara dimensioner",
       saveProperties: "Spara inställningar",
