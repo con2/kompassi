@@ -65,7 +65,7 @@ def make_graphql_claims(
     event: "Event",
     operation: Operation,
     app: str,
-    object_type: str,
+    model: str,
     field: str,
     **extra: str,
 ) -> Claims:
@@ -74,7 +74,7 @@ def make_graphql_claims(
         organization=event.organization.slug,
         operation=operation,
         app=app,
-        object_type=object_type,
+        model=model,
         field=field,
         view="graphql",
         **extra,
@@ -87,7 +87,7 @@ def is_graphql_allowed(
     event: "Event",
     operation: Operation,
     app: str,
-    object_type: str,
+    model: str,
     field: str,
     **extra: str,
 ):
@@ -95,7 +95,7 @@ def is_graphql_allowed(
         event=event,
         operation=operation,
         app=app,
-        object_type=object_type,
+        model=model,
         field=field,
         **extra,
     )
@@ -120,7 +120,7 @@ def is_graphql_allowed_for_model(
     **extra: str,
 ):
     event = instance.event
-    object_type = instance.__class__.__name__
+    model_name = instance.__class__.__name__
     app = instance.__class__._meta.app_label  # type: ignore
 
     return is_graphql_allowed(
@@ -128,7 +128,7 @@ def is_graphql_allowed_for_model(
         event=event,  # type: ignore
         operation=operation,
         app=app,
-        object_type=object_type,
+        model=model_name,
         field=field,
         **extra,
     )
@@ -144,7 +144,7 @@ def graphql_check_model(model, event: "Event", info, operation: Operation = "que
         event=event,
         operation=operation,
         app=app,
-        object_type=model.__name__,
+        model=model.__name__,
         field="self",
     )
     if not allowed:
@@ -154,7 +154,7 @@ def graphql_check_model(model, event: "Event", info, operation: Operation = "que
             other_fields={"claims": claims},
         )
 
-        raise Exception("Unauthorized")
+        raise CBACPermissionDenied(claims)
 
 
 # TODO(#324) rethink
@@ -180,7 +180,7 @@ def graphql_check_instance(instance, info, field: str, operation: Operation = "q
             other_fields={"claims": claims},
         )
 
-        raise Exception("Unauthorized")
+        raise CBACPermissionDenied(claims)
 
 
 def graphql_query_cbac_required(func: Callable):

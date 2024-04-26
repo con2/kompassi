@@ -1,0 +1,5 @@
+There is a new response in the survey "{{ survey_title }}":
+
+{{ response_url }}
+--
+{{ sender_email }}
