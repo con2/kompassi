@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Literal, Protocol
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
+from django.http import HttpRequest
+from graphene import ResolveInfo
 
 from event_log.utils import emit
 
@@ -135,12 +137,12 @@ def is_graphql_allowed_for_model(
 
 
 # TODO(#324) rethink
-def graphql_check_model(model, event: "Event", info, operation: Operation = "query"):
-    user = info.context.user
+def graphql_check_model(model, event: "Event", info: ResolveInfo | HttpRequest, operation: Operation = "query"):
+    request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
     app = model._meta.app_label
 
     allowed, claims = is_graphql_allowed(
-        user,
+        request.user,
         event=event,
         operation=operation,
         app=app,
@@ -150,7 +152,7 @@ def graphql_check_model(model, event: "Event", info, operation: Operation = "que
     if not allowed:
         emit(
             "access.cbac.denied",
-            request=info.context,
+            request=request,
             other_fields={"claims": claims},
         )
 
@@ -158,16 +160,16 @@ def graphql_check_model(model, event: "Event", info, operation: Operation = "que
 
 
 # TODO(#324) rethink
-def graphql_check_instance(instance, info, field: str, operation: Operation = "query"):
+def graphql_check_instance(instance, info: ResolveInfo | HttpRequest, field: str, operation: Operation = "query"):
     """
     Check that the user has access to a single object. Pass "self" as the field
     for operations targeting the entire model instance.
     """
-    user = info.context.user
+    request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
     extra = dict(slug=instance.slug) if hasattr(instance, "slug") else {}
 
     allowed, claims = is_graphql_allowed_for_model(
-        user,
+        request.user,
         instance=instance,
         operation=operation,
         field=field,
@@ -176,7 +178,7 @@ def graphql_check_instance(instance, info, field: str, operation: Operation = "q
     if not allowed:
         emit(
             "access.cbac.denied",
-            request=info.context,
+            request=request,
             other_fields={"claims": claims},
         )
 
