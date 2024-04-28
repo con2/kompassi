@@ -13,7 +13,8 @@ services:
       - 3000:3000
       - 8000:8000
       - 9000:9000
-      - 9001:9001
+      # minio console, uncomment if you need it
+      # - 9001:9001
   backend:
     build: backend
     init: true
@@ -67,8 +68,10 @@ services:
     # image: postgres
     build: backend/kompassi/sql/
     init: true
-    ports:
-      - 5432:5432
+    # uncomment if you need to access postgres from host
+    # note: you can use `docker compose exec postgres psql -U kompassi` to access psql cli
+    # ports:
+    #   - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
     environment:
