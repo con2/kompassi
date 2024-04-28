@@ -907,6 +907,12 @@ class Setup:
                 slug="vendor-application",
                 key_fields=["name"],
             ),
+            SurveyDTO(
+                slug="cosplay-jury-application",
+                key_fields=["performer_name"],
+                login_required=True,
+                anonymity="NAME_AND_EMAIL",
+            ),
         ]:
             survey.save(self.event)
 
