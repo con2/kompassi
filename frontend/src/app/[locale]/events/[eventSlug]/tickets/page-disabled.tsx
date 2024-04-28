@@ -88,7 +88,7 @@ export default async function TicketsView({
         <h2>{t.contactForm.title}</h2>
         <div className="mb-3">
           <label htmlFor="firstName" className="form-label">
-            {tCommon.formFields.firstName.title}
+            {/* {tCommon.formFields.firstName.title} */}
           </label>
           <input
             type="firstName"
@@ -99,7 +99,7 @@ export default async function TicketsView({
         </div>
         <div className="mb-3">
           <label htmlFor="lastName" className="form-label">
-            {tCommon.formFields.lastName.title}
+            {/* {tCommon.formFields.lastName.title} */}
           </label>
           <input
             type="lastName"
@@ -110,7 +110,7 @@ export default async function TicketsView({
         </div>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
-            {tCommon.formFields.email.title}
+            {/* {tCommon.formFields.email.title} */}
           </label>
           <input
             type="email"
@@ -122,7 +122,7 @@ export default async function TicketsView({
         </div>
         <div className="mb-3">
           <label htmlFor="phone" className="form-label">
-            {tCommon.formFields.phone.title}
+            {/* {tCommon.formFields.phone.title} */}
           </label>
           <input type="text" className="form-control" id="phone" name="phone" />
         </div>

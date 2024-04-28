@@ -18,18 +18,14 @@ const translations = {
       delete: "Delete",
       create: "Create",
     },
-    formFields: {
-      firstName: {
-        title: "First name",
-      },
-      lastName: {
-        title: "Last name",
+  },
+  Profile: {
+    attributes: {
+      displayName: {
+        title: "Name",
       },
       email: {
-        title: "Email address",
-      },
-      phone: {
-        title: "Phone number",
+        title: "Email",
       },
     },
   },
@@ -269,6 +265,17 @@ const translations = {
       <>
         Summary of {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
         (total {totalCount}).
+      </>
+    ),
+    theseProfileFieldsWillBeShared:
+      "When you submit this survey, the following information will be shared with the survey owner:",
+    correctInYourProfile: (profileLink: string) => (
+      <>
+        If these are not correct, please correct them in your{" "}
+        <a href={profileLink} target="_blank" rel="noopener noreferrer">
+          profile
+        </a>{" "}
+        (opens in a new tab).
       </>
     ),
     attributes: {

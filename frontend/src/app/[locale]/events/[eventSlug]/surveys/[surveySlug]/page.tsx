@@ -1,16 +1,22 @@
 import { notFound } from "next/navigation";
 
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
+import CardFooter from "react-bootstrap/CardFooter";
+import CardHeader from "react-bootstrap/CardHeader";
+import CardTitle from "react-bootstrap/CardTitle";
 import { submit } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { validateFields } from "@/components/forms/models";
+import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { kompassiBaseUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
@@ -19,6 +25,11 @@ const query = graphql(`
     $surveySlug: String!
     $locale: String
   ) {
+    profile {
+      displayName
+      email
+    }
+
     event(slug: $eventSlug) {
       name
 
@@ -115,6 +126,26 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
 
   validateFields(fields);
 
+  const profile = data.profile ?? {};
+  let isSharedProfileFieldsShown = false;
+  let sharedProfileFields: Field[] = [];
+  if (data.profile && anonymity == "NAME_AND_EMAIL") {
+    isSharedProfileFieldsShown = true;
+    sharedProfileFields = [
+      {
+        slug: "displayName",
+        type: "SingleLineText",
+        title: translations.Profile.attributes.displayName.title,
+      },
+      {
+        slug: "email",
+        type: "SingleLineText",
+        title: translations.Profile.attributes.email.title,
+      },
+    ];
+  }
+  const profileLink = `${kompassiBaseUrl}/profile`;
+
   return (
     <ViewContainer>
       <ViewHeading>
@@ -122,6 +153,20 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
       <ParagraphsDangerousHtml html={description} />
+      {isSharedProfileFieldsShown && (
+        <Card className="mb-4">
+          <CardBody>
+            <CardTitle>{t.theseProfileFieldsWillBeShared}</CardTitle>
+            <p>{t.correctInYourProfile(profileLink)}</p>
+            <SchemaForm
+              fields={sharedProfileFields}
+              values={profile}
+              messages={translations.SchemaForm}
+              readOnly={true}
+            />
+          </CardBody>
+        </Card>
+      )}
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
         <SchemaForm
           fields={fields}

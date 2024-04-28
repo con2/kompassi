@@ -18,18 +18,14 @@ const translations: Translations = {
       delete: "Poista",
       create: "Uusi",
     },
-    formFields: {
-      firstName: {
-        title: "Etunimi",
-      },
-      lastName: {
-        title: "Sukunimi",
+  },
+  Profile: {
+    attributes: {
+      displayName: {
+        title: "Nimi",
       },
       email: {
         title: "Sähköpostiosoite",
-      },
-      phone: {
-        title: "Puhelinnumero",
       },
     },
   },
@@ -266,6 +262,17 @@ const translations: Translations = {
     summaryOf: (filteredCount: number, totalCount: number) => (
       <>
         Yhteenveto {filteredCount} vastauksesta (yhteensä {totalCount}).
+      </>
+    ),
+    theseProfileFieldsWillBeShared:
+      "Kun lähetät tämän kyselyn, seuraavat tiedot jaetaan kyselyn omistajan kanssa:",
+    correctInYourProfile: (profileLink: string) => (
+      <>
+        Jos tiedot eivät ole oikein, korjaa ne{" "}
+        <a href={profileLink} target="_blank" rel="noopener noreferrer">
+          profiilissasi
+        </a>{" "}
+        (avautuu uuteen välilehteen).
       </>
     ),
     attributes: {

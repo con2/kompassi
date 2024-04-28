@@ -1,4 +1,4 @@
-// Translators: Kirsi Västi, Calle Tengman
+// Translators: Kirsi Västi, Calle Tengman, Santtu Pajukanta
 
 import type { Translations } from "./en";
 
@@ -32,18 +32,14 @@ const translations: Translations = {
       delete: "Radera",
       create: "Skapa",
     },
-    formFields: {
-      firstName: {
-        title: "Förnamn",
-      },
-      lastName: {
-        title: "Efternamn",
+  },
+  Profile: {
+    attributes: {
+      displayName: {
+        title: "Namn",
       },
       email: {
         title: "E-postadress",
-      },
-      phone: {
-        title: "Telefonnummer",
       },
     },
   },
@@ -283,6 +279,19 @@ const translations: Translations = {
         Sammanfattning av {filteredCount} svar (totalt {totalCount}).
       </>
     ),
+    theseProfileFieldsWillBeShared: UNSURE(
+      "Då du skickar in denna enkät, kommer följande information att delas med enkätägaren:",
+    ),
+    correctInYourProfile: UNSURE((profileLink: string) => (
+      <>
+        Om dessa uppgifter inte är korrekta, vänligen korrigera dem i din{" "}
+        <a href={profileLink} target="_blank" rel="noopener noreferrer">
+          profil
+        </a>{" "}
+        (öppnas i ny flik).
+      </>
+    )),
+
     attributes: {
       slug: {
         title: "Tekniskt namn",
