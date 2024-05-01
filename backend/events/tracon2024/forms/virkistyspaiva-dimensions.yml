@@ -1,5 +1,6 @@
 - slug: participation
   is_key_dimension: true
+  is_multi_value: true
   title:
     fi: Osallistuminen
   choices:
