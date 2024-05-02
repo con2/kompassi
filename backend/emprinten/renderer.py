@@ -7,7 +7,6 @@ import tempfile
 import typing
 import zipfile
 
-import django.utils.lorem_ipsum
 import jinja2.nodes
 import weasyprint
 from django.http import FileResponse, HttpResponse, HttpResponseBase
@@ -178,9 +177,13 @@ class _TemplateCompiler:
             autoescape=True,
             loader=FunctionLoader(self._do_lookup),
         )
+        # Mark some default global functions as safe.
+        for name in ("cycler", "dict", "joiner", "lipsum", "range"):
+            fn = env.globals.get(name)
+            if fn is not None:
+                env.globals[name] = self.wrap_as_safe_call(fn)
 
         filters.add_all_to(env.filters)
-        env.globals["lorem"] = self.wrap_as_safe_call(django.utils.lorem_ipsum.paragraphs)
 
         self.env = env
 
