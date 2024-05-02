@@ -146,6 +146,8 @@ class SignupMixin:
 
 
 class Signup(CsvExportMixin, SignupMixin, models.Model):
+    id: int
+
     person = models.ForeignKey("core.Person", on_delete=models.CASCADE, related_name="signups")
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
 
