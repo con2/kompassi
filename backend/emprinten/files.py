@@ -186,6 +186,10 @@ class NameFactory:
         >>> NameFactory.sanitize("Foo?? Bar.txt")
         'Foo Bar.txt'
         """
+        if not value:
+            # None, "", Undefined
+            return ""
+
         v = cls.whitespace.sub(" ", cls.non_word.sub(illegal_replacement, value)).strip()
         root, ext = os.path.splitext(v)
         root = root.strip()
