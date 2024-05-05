@@ -4,6 +4,7 @@ import os
 import typing
 
 from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 from django.db import models
 
 from core.models import Event
@@ -110,3 +111,10 @@ class FileVersion(models.Model):
 
     def __str__(self) -> str:
         return f"{self.data.name} (v{self.version})"
+
+
+class RenderResult(models.Model):
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, null=False)
+    user = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True)
+    row_count = models.PositiveIntegerField()
+    started = models.DateTimeField(auto_now_add=True)

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib import admin
 
 from . import models
@@ -14,3 +15,17 @@ class FileVersionInline(admin.TabularInline):
 @admin.register(models.ProjectFile)
 class ProjectFileAdmin(admin.ModelAdmin):
     inlines = (FileVersionInline,)
+
+
+@admin.register(models.RenderResult)
+class RenderResultAdmin(admin.ModelAdmin):
+    list_display = ("id", "project", "row_count", "started")
+
+    def has_add_permission(self, request, obj=None):
+        return settings.DEBUG
+
+    def has_change_permission(self, request, obj=None):
+        return settings.DEBUG
+
+    def has_delete_permission(self, request, obj=None):
+        return settings.DEBUG

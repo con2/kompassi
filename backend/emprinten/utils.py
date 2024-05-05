@@ -18,14 +18,15 @@ def render_csv(
     csv_io: typing.TextIO,
     *,
     return_archive: bool = False,
-) -> HttpResponseBase:
+) -> tuple[HttpResponseBase, int]:
+    data = read_csv(csv_io)
     return render_pdf(
         project.current_files(),
         project.name_pattern,
         project.title_pattern,
-        read_csv(csv_io),
+        data,
         return_archive=return_archive,
-    )
+    ), len(data)
 
 
 def render_list(

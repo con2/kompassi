@@ -10,11 +10,12 @@ from django.http import (
     HttpResponseForbidden,
 )
 from django.shortcuts import get_object_or_404, render
+from django.utils.timezone import now
 from django.views.decorators.http import require_POST
 
 from jinja2 import exceptions
 
-from .models import FileVersion, Project
+from .models import FileVersion, Project, RenderResult
 from .utils import render_csv, render_obj
 from .var_help import find_vars
 
@@ -84,9 +85,18 @@ def handle_csv_upload(request, event: str, slug: str) -> HttpResponseBase:
     try:
         # csv_upload isn't strictly a buffer, but it is a binary file-like and needs to be interpreted as text.
         wrapped = io.TextIOWrapper(typing.cast(typing.BinaryIO, csv_upload), encoding="utf-8")
-        return render_csv(project, wrapped, return_archive=return_archive)
+        start = now()
+        result = render_csv(project, wrapped, return_archive=return_archive)
     except UnicodeDecodeError:
         return HttpResponse("Invalid text file supplied", status=http.HTTPStatus.BAD_REQUEST)
+
+    RenderResult.objects.create(
+        project=project,
+        user=request.user,
+        row_count=result[1],
+        started=start,
+    )
+    return result[0]
 
 
 @login_required
