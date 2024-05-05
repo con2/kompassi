@@ -150,3 +150,11 @@ class SignupExtra(SignupExtraBase):
     #     from .forms import ProgrammeSignupExtraForm
 
     #     return ProgrammeSignupExtraForm
+
+
+class TimeSlot(SimpleChoice):
+    pass
+
+
+class AccessibilityWarning(SimpleChoice):
+    pass

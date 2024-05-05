@@ -22,7 +22,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
-        #        self.setup_programme()
+        self.setup_programme()
         self.setup_intra()
         self.setup_access()
         self.setup_directory()
@@ -87,9 +87,10 @@ class Setup:
             defaults=labour_event_meta_defaults,
         )
 
-        for pc_name, pc_slug, pc_app_label, pc_afterparty in [
-            ("Vastaava", "vastaava", "labour", True),
-            ("Vapaaehtoinen", "vapaaehtoinen", "labour", True),
+        for pc_name, pc_slug, pc_app_label in [
+            ("Vastaava", "vastaava", "labour"),
+            ("Vapaaehtoinen", "vapaaehtoinen", "labour"),
+            ("Ohjelmanjärjestäjä", "ohjelma", "programme"),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -131,14 +132,6 @@ class Setup:
 
         for name in ["Vastaava"]:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
-
-        # for jc_name, qualification_name in [
-        #     ("Järjestyksenvalvoja", "JV-kortti"),
-        # ]:
-        #     jc = JobCategory.objects.get(event=self.event, name=jc_name)
-        #     qual = Qualification.objects.get(name=qualification_name)
-
-        #     jc.required_qualifications.set([qual])
 
         for language in [
             "Suomi",
@@ -377,6 +370,156 @@ class Setup:
         )
 
         cmv_judge_signup_survey.languages.set([cmv_judge_signup_fi])
+
+    def setup_programme(self):
+        from core.utils import full_hours_between
+        from labour.models import PersonnelClass
+        from programme.models import (
+            AlternativeProgrammeForm,
+            Category,
+            ProgrammeEventMeta,
+            Role,
+            SpecialStartTime,
+            Tag,
+            TimeBlock,
+        )
+
+        from ...models import AccessibilityWarning, TimeSlot
+
+        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                public=False,
+                admin_group=programme_admin_group,
+                contact_email="Kotaen ohjelma <ohjelma@kotae.fi>",
+                schedule_layout="full_width",
+            ),
+        )
+
+        for pc_slug, role_title, role_is_default in [
+            ("ohjelma", "Ohjelmanjärjestäjä", True),
+        ]:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
+            Role.objects.get_or_create(
+                personnel_class=personnel_class,
+                title=role_title,
+                defaults=dict(
+                    is_default=role_is_default,
+                ),
+            )
+
+            # Role.objects.get_or_create(
+            #     personnel_class=personnel_class,
+            #     title=f"Näkymätön {role_title.lower()}",
+            #     defaults=dict(
+            #         override_public_title=role_title,
+            #         is_default=False,
+            #         is_public=False,
+            #     ),
+            # )
+
+        have_categories = Category.objects.filter(event=self.event).exists()
+        if not have_categories:
+            for title, style in [
+                ("Kunniavieraat", "kunniavieraat"),
+                ("Näytökset", "naytokset"),
+                ("Cosplay", "cosplay"),
+                ("Tanssi", "tanssi"),
+                ("Pelaaminen", "pelaaminen"),
+                ("Luennot", "luennot"),
+                ("Visat", "visat"),
+                ("Kamppailulajit", "kamppailulajit"),
+                ("Illanvietto", "illanvietto"),
+                ("Taide", "taide"),
+                ("Pajat", "pajat"),
+                ("Palvelut", "palvelut"),
+            ]:
+                Category.objects.get_or_create(
+                    event=self.event,
+                    style=style,
+                    defaults=dict(
+                        title=title,
+                    ),
+                )
+
+        assert self.event.start_time
+        assert self.event.end_time
+
+        for start_time, end_time in [
+            (
+                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
+                self.event.start_time.replace(hour=23, minute=0, tzinfo=self.tz),
+            ),
+            (
+                self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=17, minute=0, tzinfo=self.tz),
+            ),
+        ]:
+            TimeBlock.objects.get_or_create(
+                event=self.event,
+                start_time=start_time,
+                defaults=dict(end_time=end_time),
+            )
+
+        for time_block in TimeBlock.objects.filter(event=self.event):
+            # Quarter hours
+            # [:-1] – discard 18:00 to 19:00
+            for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
+                # for minute in [15, 30, 45]:
+                for minute in [30]:
+                    SpecialStartTime.objects.get_or_create(
+                        event=self.event,
+                        start_time=hour_start_time.replace(minute=minute),
+                    )
+
+        for tag_title, tag_class in [
+            ("K-18", "label-danger"),
+            ("Kirkkaita/välkkyviä valoja", "label-warning"),
+            ("Kovia ääniä", "label-warning"),
+            ("Savutehosteita", "label-warning"),
+        ]:
+            Tag.objects.get_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    style=tag_class,
+                ),
+            )
+
+        for time_slot_name in [
+            "Lauantaina päivällä",
+            "Lauantaina iltapäivällä",
+            "Lauantaina illalla",
+            "Sunnuntaina aamupäivällä",
+            "Sunnuntaina päivällä",
+            "Sunnuntaina iltapäivällä",
+        ]:
+            TimeSlot.objects.get_or_create(name=time_slot_name)
+
+        for accessibility_warning in [
+            "Välkkyviä valoja",
+            "Kovia ääniä",
+            "Savuefektejä",
+        ]:
+            AccessibilityWarning.objects.get_or_create(name=accessibility_warning)
+
+        default_form, created = AlternativeProgrammeForm.objects.get_or_create(
+            event=self.event,
+            slug="default",
+            defaults=dict(
+                title="Tarjoa ohjelmaa",
+                short_description="",
+                programme_form_code="events.kotaeexpo2024.forms:ProgrammeForm",
+                num_extra_invites=3,
+                order=30,
+            ),
+        )
+        if default_form.programme_form_code == "programme.forms:ProgrammeOfferForm":
+            default_form.programme_form_code = "events.kotaeexpo2024.forms:ProgrammeForm"
+            default_form.save()
+
+        self.event.programme_event_meta.create_groups()
 
 
 class Command(BaseCommand):
