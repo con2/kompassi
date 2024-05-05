@@ -23,7 +23,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
         self.setup_program_v2()
         self.setup_intra()
@@ -288,9 +288,10 @@ class Setup:
             ),
             front_page_text=(
                 "<h2>Tervetuloa ostamaan pääsylippuja Traconiin!</h2>"
-                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla, maksukortilla tai MobilePaylla heti tilauksen yhteydessä.</p>"
                 "<p>Lue lisää tapahtumasta <a href='http://2024.tracon.fi'>Traconin kotisivuilta</a>.</p>"
             ),
+            tickets_view_version="v1.5",
         )
 
         if self.test:
@@ -413,6 +414,69 @@ class Setup:
                     limit_group("TSH-coniteanäytäntö", 90),
                 ],
                 price_cents=75_00,
+                requires_accommodation_information=False,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Katkarapuleipä",
+                description="Laktoositon, saatavilla gluteeniton (ilmoita erikoisruokavaliosta Haiskulle/Dennulle)",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=14_00,
+                requires_accommodation_information=False,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Mordor-leivos",
+                description="Laktoositon, gluteeniton",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=9_00,
+                requires_accommodation_information=False,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Kahvi",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=4_50,
+                requires_accommodation_information=False,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Tee",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=4_50,
+                requires_accommodation_information=False,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Kuohuviini",
+                description="Piccolo (20 cl). Katetaan 1 lasin kanssa; pyydä tarvittaessa toinen lasi ravintolan henkilökunnalta.",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=13_50,
                 requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
@@ -910,6 +974,11 @@ class Setup:
             SurveyDTO(
                 slug="cosplay-jury-application",
                 key_fields=["performer_name"],
+                login_required=True,
+                anonymity="NAME_AND_EMAIL",
+            ),
+            SurveyDTO(
+                slug="virkistyspaiva",
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),
