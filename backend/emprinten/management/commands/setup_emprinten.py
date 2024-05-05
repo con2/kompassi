@@ -64,8 +64,6 @@ class Command(BaseCommand):
         self._create_file(project, "example.css", ProjectFile.Type.CSS)
         self._create_file(project, "example.png", ProjectFile.Type.Image)
 
-
-
     @staticmethod
     def _create_file(project: Project, file_name: str, file_type: ProjectFile.Type):
         project_file, created = ProjectFile.objects.get_or_create(

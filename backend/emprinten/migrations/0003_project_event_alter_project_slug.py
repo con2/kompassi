@@ -5,21 +5,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0040_rename_emailverificationtoken_person_state_core_emailv_person__722147_idx_and_more'),
-        ('emprinten', '0002_alter_projectfile_file_name_and_more'),
+        ("core", "0040_rename_emailverificationtoken_person_state_core_emailv_person__722147_idx_and_more"),
+        ("emprinten", "0002_alter_projectfile_file_name_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='project',
-            name='event',
-            field=models.ForeignKey(blank=True, help_text='If set, project is accessible on generator UI by CBAC allowlist.', null=True, on_delete=django.db.models.deletion.CASCADE, to='core.event'),
+            model_name="project",
+            name="event",
+            field=models.ForeignKey(
+                blank=True,
+                help_text="If set, project is accessible on generator UI by CBAC allowlist.",
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="core.event",
+            ),
         ),
         migrations.AlterField(
-            model_name='project',
-            name='slug',
-            field=models.SlugField(help_text='Do not change after any file version has been added!', unique=True),
+            model_name="project",
+            name="slug",
+            field=models.SlugField(help_text="Do not change after any file version has been added!", unique=True),
         ),
     ]

@@ -12,7 +12,6 @@ from django.http import (
 from django.shortcuts import get_object_or_404, render
 from django.utils.timezone import now
 from django.views.decorators.http import require_POST
-
 from jinja2 import exceptions
 
 from .models import FileVersion, Project, RenderResult

@@ -6,21 +6,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('emprinten', '0003_project_event_alter_project_slug'),
+        ("emprinten", "0003_project_event_alter_project_slug"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RenderResult',
+            name="RenderResult",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('row_count', models.PositiveIntegerField()),
-                ('started', models.DateTimeField(auto_now_add=True)),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='emprinten.project')),
-                ('user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("row_count", models.PositiveIntegerField()),
+                ("started", models.DateTimeField(auto_now_add=True)),
+                ("project", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="emprinten.project")),
+                (
+                    "user",
+                    models.ForeignKey(
+                        null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL
+                    ),
+                ),
             ],
         ),
     ]
