@@ -8,6 +8,7 @@ from .views import (
     tickets_admin_accommodation_view,
     tickets_admin_etickets_view,
     tickets_admin_export_view,
+    tickets_admin_export_yearly_statistics_view,
     tickets_admin_order_view,
     tickets_admin_orders_view,
     tickets_admin_pos_view,
@@ -112,6 +113,11 @@ urlpatterns = [
         r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/reports/?$",
         tickets_admin_reports_view,
         name="tickets_admin_reports_view",
+    ),
+    re_path(
+        r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/reports/statistics.csv$",
+        tickets_admin_export_yearly_statistics_view,
+        name="tickets_admin_export_yearly_statistics_view",
     ),
     re_path(
         r"events/(?P<event_slug>[a-z0-9-]+)/tickets/admin/pos/?$",

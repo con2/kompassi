@@ -12,6 +12,7 @@ from .admin_views import (
     tickets_admin_stats_view,
     tickets_admin_tools_view,
 )
+from .tickets_admin_export_yearly_statistics_view import tickets_admin_export_yearly_statistics_view
 from .tickets_admin_reports_view import tickets_admin_reports_view
 from .tickets_v1_5_views import tickets_router_view
 from .tickets_v1_views import (
