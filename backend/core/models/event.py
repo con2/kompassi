@@ -23,6 +23,8 @@ logger = logging.getLogger("kompassi")
 
 
 class Event(models.Model):
+    id: int
+
     slug = models.CharField(**SLUG_FIELD_PARAMS)  # type: ignore
 
     name = models.CharField(max_length=63, verbose_name="Tapahtuman nimi")

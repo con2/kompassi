@@ -372,3 +372,6 @@ msgstr "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin."
 
 msgid "Ticket sales for this event has not yet started."
 msgstr "Tämän tapahtuman lipunmyynti ei ole vielä alkanut."
+
+msgid "Download event sales statistics as CSV"
+msgstr "Lataa tapahtuman myyntitilastot CSV-tiedostona"
