@@ -1,10 +1,12 @@
 from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
 
 from core.utils import horizontal_form_helper, indented_without_label
 from labour.forms import AlternativeFormMixin, SignupForm
 from labour.models import JobCategory, Signup
+from programme.models import AlternativeProgrammeFormMixin, Category, Programme
 
 from .models import SignupExtra
 
@@ -225,3 +227,117 @@ class ShiftWishesSurvey(forms.ModelForm):
     class Meta:
         model = SignupExtra
         fields = ("shift_wishes",)
+
+
+class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    class Meta:
+        model = SignupExtra
+        fields = ()
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            free_text="Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta",
+            shift_type="kaikkikay",
+        )
+
+
+class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop("event")
+        admin = kwargs.pop("admin", False)
+
+        super().__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        self.helper.layout = Layout(
+            Fieldset(
+                _("Programme content"),
+                "title",
+                "description",
+                "long_description",
+                "category",
+                "length_from_host",
+            ),
+            Fieldset(
+                _("Technical details"),
+                "computer",
+                "use_audio",
+                "use_video",
+                "number_of_microphones",
+                "tech_requirements",
+            ),
+            Fieldset(
+                _("Other details"),
+                "stream_permission",
+                "encumbered_content",
+                "photography",
+                "rerun",
+                "rerun_extra",
+                "room_requirements",
+                "notes_from_host",
+            ),
+        )
+
+        self.fields["title"].required = True
+        if not admin:
+            for field_name in [
+                "description",
+                "encumbered_content",
+                "photography",
+                "rerun",
+                "stream_permission",
+            ]:
+                self.fields[field_name].required = True
+
+        self.fields["category"].queryset = Category.objects.filter(event=event, public=True)
+
+        self.fields["description"].help_text = (
+            "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen "
+            "tarkoitus on antaa osallistujalle riittävät tiedot päättää, osallistuako ohjelmaasi, sekä "
+            "markkinoida ohjelmaasi. Pidä kuvaus kuitenkin ytimekkäänä, jotta se mahtuisi ohjelmalehteen. "
+            "Ohjelmakuvauksen maksimipituus ohjelmalehteä varten on 400 merkkiä. Varaamme oikeuden muokata kuvausta."
+        )
+        self.fields["description"].max_length = 400
+
+        self.fields[
+            "room_requirements"
+        ].help_text = "Miten suurta yleisöä odotat ohjelmallesi? Minkä tyyppistä tilaa toivot ohjelmallesi? Minkälaisia kalusteita tarvitset ohjelmaasi varten? (Luentosaleissa löytyy paikat puhujille ja penkit yleisölle, näitä ei tarvitse tässä listata.)"
+
+        self.fields["stream_permission"].choices = [
+            (k, t) for (k, t) in self.fields["stream_permission"].choices if k != "please"
+        ]
+
+        self.fields["length_from_host"].label = "Ohjelman pituus"
+        self.fields["length_from_host"].help_text = "Kuinka kauan ohjelmasi kestää?"
+
+    def get_excluded_field_defaults(self):
+        return dict()
+
+    class Meta:
+        model = Programme
+        fields = (
+            "title",
+            "description",
+            "long_description",
+            "category",
+            "length_from_host",
+            "computer",
+            "use_audio",
+            "use_video",
+            "number_of_microphones",
+            "tech_requirements",
+            "stream_permission",
+            "encumbered_content",
+            "photography",
+            "rerun",
+            "rerun_extra",
+            "room_requirements",
+            "notes_from_host",
+        )

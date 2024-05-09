@@ -145,8 +145,16 @@ class SignupExtra(SignupExtraBase):
 
         return SignupExtraForm
 
-    # @classmethod
-    # def get_programme_form_class(cls):
-    #     from .forms import ProgrammeSignupExtraForm
+    @classmethod
+    def get_programme_form_class(cls):
+        from .forms import ProgrammeSignupExtraForm
 
-    #     return ProgrammeSignupExtraForm
+        return ProgrammeSignupExtraForm
+
+
+class TimeSlot(SimpleChoice):
+    pass
+
+
+class AccessibilityWarning(SimpleChoice):
+    pass
