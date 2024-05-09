@@ -262,11 +262,8 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
                 "title",
                 "description",
                 "long_description",
-                # "kotaeexpo2024_accessibility_warnings",
-                # "kotaeexpo2024_content_warnings",
                 "category",
                 "length_from_host",
-                "requested_time_slot",
             ),
             Fieldset(
                 _("Technical details"),
@@ -317,12 +314,6 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             (k, t) for (k, t) in self.fields["stream_permission"].choices if k != "please"
         ]
 
-        self.fields["requested_time_slot"].help_text = (
-            "Onko sinulla erityisiä aikatoiveita siitä, mihin aikaan tahtoisit ohjelmasi pitää? "
-            "Onko sinulla joitain aikoja milloin et voi pitää ohjelmaasi? "
-            "Haluatko päästä katsomaan jotain tiettyjä muita ohjelmanumeroita?"
-        )
-
         self.fields["length_from_host"].label = "Ohjelman pituus"
         self.fields["length_from_host"].help_text = "Kuinka kauan ohjelmasi kestää?"
 
@@ -335,10 +326,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "title",
             "description",
             "long_description",
-            # "kotaeexpo2024_accessibility_warnings",
-            # "kotaeexpo2024_content_warnings",
             "category",
-            "requested_time_slot",
             "length_from_host",
             "computer",
             "use_audio",
@@ -353,8 +341,3 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "room_requirements",
             "notes_from_host",
         )
-
-        # widgets = dict(
-        #     kotaeexpo2024_accessibility_warnings=forms.CheckboxSelectMultiple,
-        #     kotaexpo2024_preferred_time_slots=forms.CheckboxSelectMultiple,
-        # )
