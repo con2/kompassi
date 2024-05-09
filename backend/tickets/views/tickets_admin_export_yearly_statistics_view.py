@@ -76,7 +76,7 @@ def tickets_admin_export_yearly_statistics_view(request, vars, event: Event):
             if event.start_time is None:
                 raise AssertionError("This will not happen (filtered in query) but Pyrekt doesn't know that")
 
-            sales_date = row.sales_date if row else event.start_time.date() - timedelta(days=days_to_event)
+            sales_date = row.sales_date if row else event.start_time.date() + timedelta(days=days_to_event)
             cumulative_tickets += row.total_tickets_sold if row else 0
             cumulative_amount += row.total_amount_cents if row else 0
 
