@@ -80,16 +80,21 @@ class Command(BaseCommand):
             file_version = versions[0]
             created = False
         else:
+            path = pathlib.Path(__file__).parent / file_name
             if file_type == ProjectFile.Type.Image:
-                mode = {"mode": "rb"}
+                with path.open(mode="rb") as content:
+                    file_version = FileVersion.objects.create(
+                        current=True,
+                        data=File(content, name=file_name),
+                        file=project_file,
+                    )
             else:
-                mode = {"mode": "rt", "encoding": "UTF-8"}
+                with path.open(encoding="utf-8") as content:
+                    file_version = FileVersion.objects.create(
+                        current=True,
+                        data=File(content, name=file_name),
+                        file=project_file,
+                    )
 
-            with open(pathlib.Path(__file__).parent / file_name, **mode) as content:
-                file_version = FileVersion.objects.create(
-                    current=True,
-                    data=File(content, name=file_name),
-                    file=project_file,
-                )
             created = True
         log_get_or_create(logger, file_version, created)
