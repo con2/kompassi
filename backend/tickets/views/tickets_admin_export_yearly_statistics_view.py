@@ -1,7 +1,7 @@
 import csv
 from collections import defaultdict
 from dataclasses import dataclass
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from django.db import connection
@@ -105,20 +105,25 @@ def tickets_admin_export_yearly_statistics_view(request, vars, event: Event):
         )
     csv_writer.writerow(header_row)
 
+    today = datetime.now().date()
     for days_to_event in range(start_days, end_days + 1):
         event_rows = result[days_to_event]
         result_row: list[Any] = [days_to_event]
 
         for event_row in event_rows:
-            result_row.extend(
-                [
-                    event_row.sales_date,
-                    event_row.total_tickets_sold,
-                    event_row.total_amount_cents / 100,
-                    event_row.cumulative_tickets_sold,
-                    event_row.cumulative_amount_cents / 100,
-                ]
-            )
+            if event_row.sales_date <= today:
+                result_row.extend(
+                    [
+                        event_row.sales_date,
+                        event_row.total_tickets_sold,
+                        event_row.total_amount_cents / 100,
+                        event_row.cumulative_tickets_sold,
+                        event_row.cumulative_amount_cents / 100,
+                    ]
+                )
+            else:
+                # no useful info in future dates, so omit the data
+                result_row.extend([event_row.sales_date, "", "", "", ""])
 
         csv_writer.writerow(result_row)
 
