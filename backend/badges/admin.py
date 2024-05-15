@@ -5,6 +5,7 @@ from .models import Badge, BadgesEventMeta, Batch
 
 class InlineBadgesEventMetaAdmin(admin.StackedInline):
     model = BadgesEventMeta
+    raw_id_fields = ("admin_group", "onboarding_access_group")
 
 
 @admin.register(Badge)

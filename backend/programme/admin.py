@@ -34,6 +34,7 @@ def activate_selected_items(modeladmin, request, queryset):
 
 class InlineProgrammeEventMetaAdmin(admin.StackedInline):
     model = ProgrammeEventMeta
+    raw_id_fields = ("admin_group",)
 
 
 class ProgrammeRoleInline(admin.TabularInline):

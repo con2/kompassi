@@ -27,6 +27,8 @@ class SignupAdmin(admin.ModelAdmin):
 
 class InlineLabourEventMetaAdmin(admin.StackedInline):
     model = LabourEventMeta
+    raw_id_fields = ("admin_group",)
+    exclude = ("signup_extra_content_type",)
 
 
 class InlinePersonQualificationAdmin(admin.TabularInline):
