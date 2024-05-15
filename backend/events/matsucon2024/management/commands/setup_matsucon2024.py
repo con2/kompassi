@@ -314,9 +314,9 @@ class Setup:
                 name="Viikonloppulippu",
                 description="Viikonloppulippu oikeuttaa sisäänpääsyn molempiin Matsuconin päiviin. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Viikonloppuliput", 550),
+                    limit_group("Viikonloppuliput", 650),
                 ],
-                price_cents=1800,
+                price_cents=2000,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -325,9 +325,9 @@ class Setup:
                 name="Lauantailippu",
                 description="Lauantailippu oikeuttaa sisäänpääsyyn Matsuconin ensimmäiseen päivään. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Lauantailiput", 300),
+                    limit_group("Lauantailiput", 200),
                 ],
-                price_cents=1200,
+                price_cents=1500,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -338,7 +338,7 @@ class Setup:
                 limit_groups=[
                     limit_group("Sunnuntailiput", 150),
                 ],
-                price_cents=1200,
+                price_cents=1500,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -347,7 +347,7 @@ class Setup:
                 name="Iltabilelippu",
                 description="Iltabilelippu oikeuttaa sisäänpääsyyn Matsuconin iltabileisiin tapahtuman lauantai-iltana.",
                 limit_groups=[
-                    limit_group("Iltabileliput", 120),
+                    limit_group("Iltabileliput", 150),
                 ],
                 price_cents=1000,
                 electronic_ticket=True,
