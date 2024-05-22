@@ -221,9 +221,12 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
         model = SignupExtra
         fields = (
             "afterparty_participation",
+            "pick_your_poison",
             "special_diet",
             "special_diet_other",
+            "gender_segregation",
         )
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
+            pick_your_poison=forms.CheckboxSelectMultiple,
         )

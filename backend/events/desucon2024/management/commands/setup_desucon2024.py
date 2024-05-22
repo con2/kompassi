@@ -71,7 +71,7 @@ class Setup:
             Survey,
         )
 
-        from ...models import SignupExtra, SpecialDiet
+        from ...models import Poison, SignupExtra, SpecialDiet
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
@@ -181,6 +181,16 @@ class Setup:
             "Lakto-ovo-vegetaristinen",
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
+
+        for poison in [
+            "Olut",
+            "Olut (gluteeniton)",
+            "Siideri",
+            "Lonkero",
+            "Limu (sokerillinen)",
+            "Limu (sokeriton)",
+        ]:
+            Poison.objects.get_or_create(name=poison)
 
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
