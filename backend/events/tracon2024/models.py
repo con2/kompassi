@@ -6,7 +6,7 @@ from labour.models import SignupExtraBase
 
 SHIRT_SIZES = [
     ("NO_SHIRT", "Ei paitaa"),
-    ("BOTTLE", "Juomapullo"),
+    # ("BOTTLE", "Juomapullo"),
     ("XS", "XS Unisex"),
     ("S", "S Unisex"),
     ("M", "M Unisex"),
@@ -23,6 +23,7 @@ SHIRT_SIZES = [
     ("LF_XL", "XL Ladyfit"),
     ("LF_XXL", "2XL Ladyfit"),
     ("LF_3XL", "3XL Ladyfit"),
+    ("BAG", "Kangaskassi"),
 ]
 
 SHIFT_TYPE_CHOICES = [
