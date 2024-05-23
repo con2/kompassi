@@ -224,6 +224,22 @@ class Setup:
             ),
         )
 
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug="tyovoimamajoitus",
+            defaults=dict(
+                title="Ilmoittautuminen työvoimamajoitukseen",
+                description=(
+                    "Tarjoamme työvoimalle ja ohjelmanjärjestäjille tarvittaessa maksuttoman lattiamajoituksen Kuusi-salissa "
+                    "tapahtuman molempina öinä. Majoitustilan riittävyyden arvioimiseksi pyydämme ilmoittamaan, "
+                    "tarvitsetko majoitusta ja mille öille."
+                ),
+                form_class_path="events.desucon2024.forms:AccommodationSurvey",
+                active_from=now(),
+                active_until=self.event.start_time,
+            ),
+        )
+
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
