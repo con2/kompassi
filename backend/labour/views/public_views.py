@@ -306,12 +306,12 @@ def confirm_view(request, event):
 
     if signup.state != "confirmation":
         messages.error(request, _("Your application does not currently need to be confirmed."))
-        return redirect("profile_signups_view")
+        return redirect("labour:profile_signups_view")
 
     signup.confirm()
     messages.success(request, _("Your application has been confirmed."))
 
-    return redirect("profile_signups_view")
+    return redirect("labour:profile_signups_view")
 
 
 @person_required
