@@ -593,6 +593,8 @@ export type ProgramType = {
   links: Array<ProgramLink>;
   /** Get the location of the program in the format it should be displayed in to the participant. Currently this simply returns the value of the location dimension in the language specified. In the future, also a freeform location field could be supported. */
   location: Scalars['String']['output'];
+  /** Additional fields for the program. NOTE: For most use cases, you shouldn't use this field but rather access its data via formattedHosts, links etc. This is here mostly to facilitate the GraphQL importer. */
+  otherFields?: Maybe<Scalars['GenericScalar']['output']>;
   scheduleItems: Array<ScheduleItemType>;
   /** Deprecated. Use `links(types: SIGNUP)` instead. */
   signupLink: Scalars['String']['output'];

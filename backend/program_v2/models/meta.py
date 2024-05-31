@@ -57,15 +57,15 @@ class ProgramV2EventMeta(EventMetaBase):
     use_cbac = True
 
     @property
-    def importer(self):
-        from ..importers.default import import_default
-        from ..importers.solmukohta2024 import import_solmukohta2024
+    def importer_class(self):
+        from ..importers.default import DefaultImporter
+        from ..importers.solmukohta2024 import SolmukohtaImporter
 
         match self.importer_name:
             case "solmukohta2024":
-                return import_solmukohta2024
+                return SolmukohtaImporter
             case _:
-                return import_default
+                return DefaultImporter
 
     @property
     def is_auto_importing_from_v1(self):

@@ -259,10 +259,12 @@ class Setup:
         self.event.programme_event_meta.create_groups()
 
     def setup_program_v2(self):
-        from program_v2.importers.solmukohta2024 import ensure_solmukohta2024_dimensions
-        from program_v2.models import ProgramV2EventMeta
+        from program_v2.importers.solmukohta2024 import SolmukohtaImporter
+        from program_v2.models.dimension import DimensionDTO
+        from program_v2.models.meta import ProgramV2EventMeta
 
-        dimensions = ensure_solmukohta2024_dimensions(self.event)
+        dimensions = SolmukohtaImporter(self.event).get_dimensions()
+        dimensions = DimensionDTO.save_many(self.event, dimensions)
         room_dimension = next(d for d in dimensions if d.slug == "room")
 
         ProgramV2EventMeta.objects.update_or_create(

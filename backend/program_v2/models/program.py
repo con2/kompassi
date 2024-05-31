@@ -251,10 +251,11 @@ class Program(models.Model):
             cls.objects.filter(event=event, slug__in=slugs_to_delete).delete()
 
         # Only imports published programme for now as there is no access control
-        programs_to_upsert = queryset.filter(state="published")
+        queryset = queryset.filter(state="published")
 
-        import_function = meta.importer
-        import_function(event, programs_to_upsert)
+        Importer = meta.importer_class
+        importer = Importer(event=event)
+        return importer.import_program(queryset)
 
     @property
     def meta(self) -> ProgramV2EventMeta:
