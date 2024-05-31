@@ -288,6 +288,7 @@ class Setup:
             "Työpajanpitäjä",
             "Keskustelupiirin vetäjä",
             "Tuomari",
+            "Juontaja",
         ]:
             role_personnel_class = personnel_class if "hjelmanjärjestäjä" in role_title else personnel_2nd_class
 
