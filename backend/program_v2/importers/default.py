@@ -1,8 +1,10 @@
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 from django.db.models import QuerySet
+from django.utils.timezone import get_current_timezone
 
 from core.models import Event
 from programme.models.category import Category
@@ -10,11 +12,19 @@ from programme.models.programme import PROGRAMME_STATES_LIVE, Programme
 from programme.models.room import Room
 from programme.models.tag import Tag
 
+from ..consts import (
+    CATEGORY_DIMENSION_TITLE_LOCALIZED,
+    DATE_DIMENSION_TITLE_LOCALIZED,
+    ROOM_DIMENSION_TITLE_LOCALIZED,
+    TAG_DIMENSION_TITLE_LOCALIZED,
+    WEEKDAYS_LOCALIZED,
+)
 from ..models.dimension import DimensionDTO, DimensionValueDTO, ProgramDimensionValue
 from ..models.program import Program
 from ..models.schedule import ScheduleItem
 
 logger = logging.getLogger("kompassi")
+tz = get_current_timezone()
 
 
 @dataclass
@@ -30,6 +40,39 @@ class DefaultImporter:
     event: Event
     language: str = "fi"
 
+    date_cutoff_time = timedelta(hours=4)  # 04:00 local time
+
+    def get_date_dimension_value(self, programme: Programme) -> str:
+        """
+        Return the date dimension value for the programme.
+
+        The `date_cutoff_time` is used to determine at which time of the night the date changes.
+        Use this to make the wee hours of the night belong to the previous day.
+        """
+        if not programme.start_time:
+            raise ValueError(f"Programme {programme} has no start time")
+
+        return (programme.start_time.astimezone(tz) - self.date_cutoff_time).date().isoformat()
+
+    def _get_date_dimension_values(self) -> Iterable[DimensionValueDTO]:
+        """
+        Return a list of DimensionValueDTOs for the date dimension.
+        """
+        if not self.event.start_time:
+            raise ValueError(f"Event {self.event} has no start time")
+        if not self.event.end_time:
+            raise ValueError(f"Event {self.event} has no end time")
+
+        cur_date = self.event.start_time.astimezone(tz).date()
+        end_date = self.event.end_time.astimezone(tz).date()
+
+        while cur_date <= end_date:
+            yield DimensionValueDTO(
+                slug=cur_date.isoformat(),
+                title={self.language: WEEKDAYS_LOCALIZED[self.language][cur_date.weekday()]},
+            )
+            cur_date += timedelta(days=1)
+
     def get_dimensions(self) -> list[DimensionDTO]:
         """
         Return a list of DimensionDTOs for the event.
@@ -37,8 +80,13 @@ class DefaultImporter:
         """
         return [
             DimensionDTO(
+                slug="date",
+                title=DATE_DIMENSION_TITLE_LOCALIZED,
+                choices=list(self._get_date_dimension_values()),
+            ),
+            DimensionDTO(
                 slug="category",
-                title={"en": "Category", "fi": "Tyyppi", "sv": "Kategori"},
+                title=CATEGORY_DIMENSION_TITLE_LOCALIZED,
                 choices=[
                     DimensionValueDTO(slug=category.slug, title={self.language: category.title})
                     for category in Category.objects.filter(event=self.event)
@@ -46,7 +94,7 @@ class DefaultImporter:
             ),
             DimensionDTO(
                 slug="tag",
-                title={"en": "Tag", "fi": "Tagi", "sv": "Tagg"},
+                title=TAG_DIMENSION_TITLE_LOCALIZED,
                 choices=[
                     DimensionValueDTO(slug=tag.slug, title={self.language: tag.title})
                     for tag in Tag.objects.filter(event=self.event)
@@ -54,7 +102,7 @@ class DefaultImporter:
             ),
             DimensionDTO(
                 slug="room",
-                title={"en": "Room", "fi": "Sali", "sv": "Sal"},
+                title=ROOM_DIMENSION_TITLE_LOCALIZED,
                 choices=[
                     DimensionValueDTO(slug=room.slug, title={self.language: room.name})
                     for room in Room.objects.filter(event=self.event)
@@ -64,6 +112,7 @@ class DefaultImporter:
 
     def get_program_dimension_values(self, programme: Programme) -> dict[str, str | list[str] | None]:
         return dict(
+            date=self.get_date_dimension_value(programme),
             category=programme.category.slug,
             tag=[tag.slug for tag in programme.tags.all()],
             room=programme.room.slug if programme.room else None,
