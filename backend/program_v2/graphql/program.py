@@ -123,7 +123,7 @@ class ProgramLink(graphene.ObjectType):
             type=link_type,
             href=href,
             title=title,
-        )
+        )  # type: ignore[call-arg]
 
 
 class ProgramType(DjangoObjectType):
@@ -211,6 +211,15 @@ class ProgramType(DjangoObjectType):
         description=normalize_whitespace(resolve_calendar_export_link.__doc__ or ""),
     )
 
+    other_fields = GenericScalar(
+        description=(
+            "Additional fields for the program. "
+            "NOTE: For most use cases, you shouldn't use this field "
+            "but rather access its data via formattedHosts, links etc. "
+            "This is here mostly to facilitate the GraphQL importer."
+        ),
+    )
+
     class Meta:
         model = Program
         fields = (
@@ -222,4 +231,5 @@ class ProgramType(DjangoObjectType):
             "schedule_items",
             "cached_earliest_start_time",
             "cached_latest_end_time",
+            "other_fields",
         )
