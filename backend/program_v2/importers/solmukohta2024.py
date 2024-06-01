@@ -12,6 +12,7 @@ from programme.models.category import Category
 from programme.models.programme import Programme
 from programme.models.tag import Tag
 
+from ..consts import DEFAULT_COLORS
 from ..models.dimension import DimensionDTO, DimensionValueDTO
 from .default import DefaultImporter
 
@@ -143,7 +144,11 @@ class SolmukohtaImporter(DefaultImporter):
                 slug="sk-type",
                 title={"en": "Program type (Solmukohta)", "fi": "Ohjelman tyyppi (Solmukohta)"},
                 choices=[
-                    DimensionValueDTO(slug=normalize_sk_type_value(category.slug), title={"en": category.title})
+                    DimensionValueDTO(
+                        slug=normalize_sk_type_value(category.slug),
+                        title={"en": category.title},
+                        color=DEFAULT_COLORS.get(category.style, ""),
+                    )
                     for category in Category.objects.filter(event=self.event).exclude(slug="aweek-program")
                 ],
             ),
@@ -151,7 +156,11 @@ class SolmukohtaImporter(DefaultImporter):
                 slug="aw-type",
                 title={"en": "Program type (A Week)", "fi": "Ohjelman tyyppi (A Week)"},
                 choices=[
-                    DimensionValueDTO(slug=normalislug(tag.slug), title={"en": tag.title[len("A Week - ") :]})
+                    DimensionValueDTO(
+                        slug=normalislug(tag.slug),
+                        title={"en": tag.title[len("A Week - ") :]},
+                        color=DEFAULT_COLORS["color6"],
+                    )
                     for tag in Tag.objects.filter(event=self.event, title__startswith="A Week")
                 ],
             ),

@@ -15,6 +15,7 @@ from programme.models.tag import Tag
 from ..consts import (
     CATEGORY_DIMENSION_TITLE_LOCALIZED,
     DATE_DIMENSION_TITLE_LOCALIZED,
+    DEFAULT_COLORS,
     ROOM_DIMENSION_TITLE_LOCALIZED,
     TAG_DIMENSION_TITLE_LOCALIZED,
     WEEKDAYS_LOCALIZED,
@@ -88,7 +89,11 @@ class DefaultImporter:
                 slug="category",
                 title=CATEGORY_DIMENSION_TITLE_LOCALIZED,
                 choices=[
-                    DimensionValueDTO(slug=category.slug, title={self.language: category.title})
+                    DimensionValueDTO(
+                        slug=category.slug,
+                        title={self.language: category.title},
+                        color=DEFAULT_COLORS.get(category.style, ""),
+                    )
                     for category in Category.objects.filter(event=self.event)
                 ],
             ),

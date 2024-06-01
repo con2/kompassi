@@ -28,3 +28,22 @@ WEEKDAYS_LOCALIZED = dict(
     en=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
     sv=["måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag", "söndag"],
 )
+
+
+DEFAULT_COLORS = dict(
+    color1="#5eb95e",
+    color2="#8058a5",
+    color3="#0e90d2",
+    color4="#dd514c",
+    color5="#f37b1d",
+    color6="#ff50b8",
+    color7="#298da6",
+    # these correspond to color1–5
+    muu="#5eb95e",
+    rope="#8058a5",
+    anime="#0e90d2",
+    cosplay="#dd514c",
+    miitti="#f37b1d",
+    # this used to be striped background but let's make it gray
+    sisainen="#999999",
+)

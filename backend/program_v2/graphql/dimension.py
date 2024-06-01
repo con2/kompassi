@@ -16,7 +16,14 @@ class DimensionType(DjangoObjectType):
 
     class Meta:
         model = Dimension
-        fields = ("slug", "values")
+        fields = (
+            "slug",
+            "values",
+            "is_multi_value",
+            "is_list_filter",
+            "is_shown_in_detail",
+            "is_negative_selection",
+        )
 
 
 class DimensionValueType(DjangoObjectType):
@@ -25,7 +32,10 @@ class DimensionValueType(DjangoObjectType):
 
     class Meta:
         model = DimensionValue
-        fields = ("slug",)
+        fields = (
+            "slug",
+            "color",
+        )
 
 
 class ProgramDimensionValueType(DjangoObjectType):

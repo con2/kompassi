@@ -7,8 +7,10 @@ from graphene_django import DjangoObjectType
 from core.utils.locale_utils import get_message_in_language
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
+from graphql_api.utils import resolve_localized_field
 
 from ..models import Program
+from .dimension import ProgramDimensionValueType
 
 # imported for side effects (register object type used by django object type fields)
 from .schedule import ScheduleItemType  # noqa: F401
@@ -135,18 +137,17 @@ class ProgramType(DjangoObjectType):
 
     cached_hosts = graphene.NonNull(graphene.String)
 
-    @staticmethod
-    def resolve_location(parent: Program, info, lang=DEFAULT_LANGUAGE):
-        """
-        Get the location of the program in the format it should be displayed in to the participant.
-        Currently this simply returns the value of the location dimension in the language specified.
-        In the future, also a freeform location field could be supported.
-        """
-        return parent.get_location(lang) or ""
+    resolve_location = resolve_localized_field("cached_location")
 
-    location = graphene.NonNull(
-        graphene.String,
-        description=normalize_whitespace(resolve_location.__doc__ or ""),
+    location = graphene.String(
+        description=normalize_whitespace(
+            """
+            Supplied for convenience. Prefer scheduleItem.location if possible.
+            Caveat: When a program item has multiple schedule items, they may be in different locations.
+            In such cases, a comma separated list of locations is returned.
+        """
+        ),
+        lang=graphene.String(),
     )
 
     @staticmethod
@@ -220,13 +221,47 @@ class ProgramType(DjangoObjectType):
         ),
     )
 
+    @staticmethod
+    def resolve_dimensions(
+        program: Program,
+        info,
+        is_list_filter: bool = False,
+        is_shown_in_detail: bool = False,
+    ):
+        """
+        `is_list_filter` - only return dimensions that are shown in the list filter.
+        `is_shown_in_detail` - only return dimensions that are shown in the detail view.
+        If you supply both, you only get their intersection.
+        """
+        pdvs = program.dimensions.all()
+
+        if is_list_filter:
+            pdvs = pdvs.filter(dimension__is_list_filter=True)
+
+        if is_shown_in_detail:
+            pdvs = pdvs.filter(dimension__is_shown_in_detail=True)
+
+        return pdvs
+
+    dimensions = graphene.NonNull(
+        graphene.List(graphene.NonNull(ProgramDimensionValueType)),
+        is_list_filter=graphene.Boolean(),
+        is_shown_in_detail=graphene.Boolean(),
+        description=normalize_whitespace(resolve_dimensions.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_color(program: Program, info):
+        return program.cached_color
+
+    color = graphene.NonNull(graphene.String)
+
     class Meta:
         model = Program
         fields = (
             "title",
             "slug",
             "description",
-            "dimensions",
             "cached_dimensions",
             "schedule_items",
             "cached_earliest_start_time",

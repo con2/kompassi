@@ -1,6 +1,8 @@
 import graphene
 from graphene_django import DjangoObjectType
 
+from graphql_api.utils import resolve_localized_field
+
 from ..models import (
     ScheduleItem,
 )
@@ -19,7 +21,7 @@ class ScheduleItemType(DjangoObjectType):
 
     @staticmethod
     def resolve_end_time(parent: ScheduleItem, info):
-        return parent.end_time
+        return parent.cached_end_time
 
     end_time = graphene.NonNull(graphene.DateTime)
 
@@ -31,6 +33,9 @@ class ScheduleItemType(DjangoObjectType):
 
     @staticmethod
     def resolve_end_time_unix_seconds(parent: ScheduleItem, info):
-        return int(parent.end_time.timestamp())
+        return int(parent.cached_end_time.timestamp())
 
     end_time_unix_seconds = graphene.NonNull(graphene.Int)
+
+    resolve_location = resolve_localized_field("cached_location")
+    location = graphene.String(lang=graphene.String())

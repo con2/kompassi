@@ -1,22 +1,18 @@
-import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardLink from "react-bootstrap/CardLink";
-import CardText from "react-bootstrap/CardText";
 import CardTitle from "react-bootstrap/CardTitle";
 import { markAsFavorite, unmarkAsFavorite } from "./actions";
 import FavoriteButton from "./FavoriteButton";
 import { FavoriteContextProvider } from "./FavoriteContext";
 import { graphql } from "@/__generated__";
+import { ProgramListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
-import {
-  buildDimensionFilters,
-  getDimensionValueTitle,
-} from "@/components/dimensions/helpers";
+import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -29,9 +25,11 @@ graphql(`
     slug
     title
     cachedDimensions
+    color
     scheduleItems {
       startTime
       endTime
+      location
     }
   }
 `);
@@ -62,18 +60,16 @@ const query = graphql(`
       program {
         calendarExportLink
 
-        dimensions {
+        listFilters: dimensions(isListFilter: true) {
           slug
           title(lang: $locale)
+          isListFilter
 
           values {
             slug
             title(lang: $locale)
+            color
           }
-        }
-
-        locationDimension {
-          slug
         }
 
         programs(filters: $filters, hidePast: $hidePast) {
@@ -135,18 +131,17 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
   const favoritesOnly = !!searchParams.favorited;
   const userPrograms = data.profile?.program?.programs || [];
   const programs = favoritesOnly ? userPrograms : event.program.programs;
-  const dimensions = event.program.dimensions || [];
-  const locationDimensionSlug = event.program.locationDimension?.slug;
-  const locationDimension =
-    locationDimensionSlug &&
-    dimensions.find((d) => d.slug === locationDimensionSlug);
-
+  const listFilters = event.program.listFilters || [];
   const favoriteProgramSlugs = userPrograms.map((p) => p.slug);
 
   const queryString = new URLSearchParams(searchParams).toString();
   const calendarExportLink = queryString
     ? `${event.program.calendarExportLink}?${queryString}`
     : event.program.calendarExportLink;
+
+  function getCardStyle(program: ProgramListFragment) {
+    return program.color ? { borderLeft: `4px solid ${program.color}` } : {};
+  }
 
   return (
     <ViewContainer>
@@ -155,7 +150,7 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
         <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
       <DimensionFilters
-        dimensions={dimensions}
+        dimensions={listFilters}
         programFilters={true}
         messages={t.filters}
         isLoggedIn={!!data.profile}
@@ -167,7 +162,11 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
         unmarkAsFavorite={unmarkAsFavorite.bind(null, locale, eventSlug)}
       >
         {programs.map((program) => (
-          <Card key={program.slug} className="mb-4">
+          <Card
+            key={program.slug}
+            className="mb-3"
+            style={getCardStyle(program)}
+          >
             <CardBody>
               <div className="d-flex justify-content-between">
                 <CardTitle>
@@ -181,29 +180,21 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
                 </CardTitle>
                 {data.profile && <FavoriteButton slug={program.slug} />}
               </div>
-              <div className="d-flex justify-content-between">
-                <div>
-                  {program.scheduleItems.map((scheduleItem, index) => (
-                    <CardText key={index}>
-                      <FormattedDateTimeRange
-                        locale={locale}
-                        scope={event}
-                        session={null}
-                        start={scheduleItem.startTime}
-                        end={scheduleItem.endTime}
-                        includeDuration={true}
-                      />
-                    </CardText>
-                  ))}
+              {program.scheduleItems.map((scheduleItem, index) => (
+                <div key={index} className="d-flex justify-content-between">
+                  <div>
+                    <FormattedDateTimeRange
+                      locale={locale}
+                      scope={event}
+                      session={null}
+                      start={scheduleItem.startTime}
+                      end={scheduleItem.endTime}
+                      includeDuration={true}
+                    />
+                  </div>
+                  <div>{scheduleItem.location}</div>
                 </div>
-                <CardText>
-                  {locationDimension &&
-                    getDimensionValueTitle(
-                      locationDimension,
-                      program.cachedDimensions,
-                    )}
-                </CardText>
-              </div>
+              ))}
             </CardBody>
           </Card>
         ))}

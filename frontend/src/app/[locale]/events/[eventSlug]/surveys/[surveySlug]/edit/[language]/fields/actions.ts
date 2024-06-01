@@ -30,8 +30,6 @@ export async function updateSurveyFields(
     formData: fields, // TODO
   };
 
-  console.log({ input });
-
   await getClient().mutate({
     mutation: mutation,
     variables: {
