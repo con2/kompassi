@@ -221,13 +221,15 @@ class Membership(models.Model, CsvExportMixin):
 
         # TODO entrance fee
 
-        if not term.membership_fee_cents or self.state != "in_effect":
+        if self.state != "in_effect":
             return None
+
+        membership_fee_cents = term.membership_fee_cents or 0
 
         payment = MembershipFeePayment(
             member=self,
             term=term,
-            amount_cents=term.membership_fee_cents,
+            amount_cents=membership_fee_cents,
             payment_method=term.payment_method,
             payment_type="membership_fee",
         )
