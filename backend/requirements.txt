@@ -4,7 +4,7 @@ amqp==5.2.0
     # via kombu
 aniso8601==9.0.1
     # via graphene
-annotated-types==0.6.0
+annotated-types==0.7.0
     # via pydantic
 arrow==1.3.0
     # via ics
@@ -19,14 +19,14 @@ attrs==23.2.0
     #   ics
     #   jsonschema
     #   referencing
-babel==2.14.0
-bcrypt==4.1.2
+babel==2.15.0
+bcrypt==4.1.3
     # via paramiko
 billiard==4.2.0
     # via celery
 bleach==6.1.0
-boto3==1.34.92
-botocore==1.34.92
+boto3==1.34.117
+botocore==1.34.117
     # via
     #   boto3
     #   s3transfer
@@ -59,7 +59,7 @@ click-plugins==1.1.1
 click-repl==0.3.0
     # via celery
 crispy-bootstrap3==2024.1
-cryptography==42.0.5
+cryptography==42.0.7
     # via
     #   jwcrypto
     #   paramiko
@@ -69,7 +69,7 @@ decorator==5.1.1
     # via
     #   ipdb
     #   ipython
-django==5.0.4
+django==5.0.6
     # via
     #   crispy-bootstrap3
     #   django-bootstrap3
@@ -91,13 +91,13 @@ django-csp==3.8
 django-environ==0.11.2
 django-ipware==7.0.1
 django-localflavor==4.0
-django-oauth-toolkit==2.3.0
+django-oauth-toolkit==2.4.0
 django-redis==5.4.0
-django-storages==1.14.2
+django-storages==1.14.3
 executing==2.0.1
     # via stack-data
 flake8==7.0.0
-fonttools==4.51.0
+fonttools==4.53.0
     # via weasyprint
 graphene==3.3
     # via graphene-django
@@ -120,17 +120,17 @@ idna==3.7
 iniconfig==2.0.0
     # via pytest
 ipdb==0.13.13
-ipython==8.23.0
+ipython==8.25.0
     # via ipdb
 isort==5.13.2
 jedi==0.19.1
     # via ipython
-jinja2==3.1.3
+jinja2==3.1.4
 jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsonschema==4.21.1
+jsonschema==4.22.0
 jsonschema-specifications==2023.12.1
     # via jsonschema
 jwcrypto==1.5.6
@@ -160,7 +160,7 @@ parso==0.8.4
 passlib==1.7.4
 pexpect==4.9.0
     # via ipython
-phonenumberslite==8.13.35
+phonenumberslite==8.13.37
 pillow==10.3.0
     # via
     #   reportlab
@@ -169,12 +169,12 @@ pluggy==1.5.0
     # via pytest
 promise==2.3
     # via graphene-django
-prompt-toolkit==3.0.43
+prompt-toolkit==3.0.45
     # via
     #   click-repl
     #   ipython
-psycopg==3.1.18
-psycopg-c==3.1.18
+psycopg==3.1.19
+psycopg-c==3.1.19
     # via psycopg
 ptyprocess==0.7.0
     # via pexpect
@@ -184,21 +184,21 @@ pycodestyle==2.11.1
     # via flake8
 pycparser==2.22
     # via cffi
-pydantic==2.7.1
-pydantic-core==2.18.2
+pydantic==2.7.2
+pydantic-core==2.18.3
     # via pydantic
-pydyf==0.9.0
+pydyf==0.10.0
     # via weasyprint
 pyflakes==3.2.0
     # via flake8
-pygments==2.17.2
+pygments==2.18.0
     # via ipython
 pynacl==1.5.0
     # via paramiko
 pyphen==0.15.0
     # via weasyprint
-pypugjs==5.9.12
-pytest==8.1.1
+pypugjs==5.11.0
+pytest==8.2.1
     # via pytest-django
 pytest-django==4.8.0
 python-dateutil==2.9.0.post0
@@ -212,26 +212,28 @@ python-ipware==3.0.0
     # via django-ipware
 python-stdnum==1.20
     # via django-localflavor
+pytz==2024.1
+    # via django-oauth-toolkit
 pyyaml==6.0.1
 redis==5.0.4
     # via django-redis
-referencing==0.35.0
+referencing==0.35.1
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2024.4.16
+regex==2024.5.15
 reportlab==4.2.0
     # via lippukala
-requests==2.31.0
+requests==2.32.3
     # via
     #   django-oauth-toolkit
     #   requests-oauthlib
 requests-oauthlib==2.0.0
-rpds-py==0.18.0
+rpds-py==0.18.1
     # via
     #   jsonschema
     #   referencing
-ruff==0.4.2
+ruff==0.4.7
 s3transfer==0.10.1
     # via boto3
 six==1.16.0
@@ -248,7 +250,7 @@ sqlparse==0.5.0
 stack-data==0.6.3
     # via ipython
 tabulate==0.9.0
-tatsu==5.12.0
+tatsu==5.12.1
     # via ics
 text-unidecode==1.3
     # via graphene-django
@@ -262,7 +264,7 @@ traitlets==5.14.3
     #   matplotlib-inline
 types-python-dateutil==2.9.0.20240316
     # via arrow
-typing-extensions==4.11.0
+typing-extensions==4.12.0
     # via
     #   jwcrypto
     #   psycopg
@@ -283,7 +285,7 @@ vine==5.1.0
 vobject==0.9.7
 wcwidth==0.2.13
     # via prompt-toolkit
-weasyprint==61.2
+weasyprint==62.1
 webencodings==0.5.1
     # via
     #   bleach
