@@ -1,18 +1,15 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Self
 
 from django.conf import settings
-from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.http import HttpRequest
 from django.urls import reverse
 
 from core.models import Event
 from core.utils import validate_slug
-from core.utils.locale_utils import get_message_in_language
-from graphql_api.language import DEFAULT_LANGUAGE
 
 if TYPE_CHECKING:
     from programme.models.programme import Programme
@@ -62,6 +59,8 @@ class Program(models.Model):
             "Always use `scheduleItems` for the purpose of displaying program times."
         ),
     )
+    cached_location = models.JSONField(blank=True, default=dict)
+    cached_color = models.CharField(max_length=15, blank=True, default="")
 
     # related fields
     dimensions: models.QuerySet[ProgramDimensionValue]
@@ -93,18 +92,71 @@ class Program(models.Model):
             dimensions[pdv.dimension.slug].append(pdv.value.slug)
         return dimensions
 
+    def _build_location(self):
+        localized_locations: dict[str, set[str]] = {}
+
+        if location_dimension := self.meta.location_dimension:
+            for pdv in self.dimensions.filter(dimension=location_dimension):
+                for lang, title in pdv.value.title.items():
+                    if not title:
+                        # placate typechecker
+                        continue
+
+                    localized_locations.setdefault(lang, set()).add(title)
+
+        return {lang: ", ".join(locations) for lang, locations in localized_locations.items() if locations}
+
+    def _get_color(self):
+        """
+        Gets a color for the program from its dimension values.
+        TODO deterministic behaviour when multiple colors are present (ordering for dimensions/values?)
+        """
+        first_pdv_with_color = self.dimensions.exclude(value__color="").first()
+        return first_pdv_with_color.value.color if first_pdv_with_color else ""
+
     def refresh_cached_dimensions(self):
+        from .schedule import ScheduleItem
+
         self.cached_dimensions = self._build_dimensions()
-        self.save(update_fields=["cached_dimensions"])
+        self.cached_location = self._build_location()
+        self.cached_color = self._get_color()
+        self.save(update_fields=["cached_dimensions", "cached_location", "cached_color"])
+        self.schedule_items.update(cached_location=self.cached_location)
+
+        bulk_update_schedule_items = []
+        for schedule_item in self.schedule_items.filter(program=self).select_for_update(of=("self",)):
+            schedule_item.cached_location = self.cached_location
+            bulk_update_schedule_items.append(schedule_item)
+        ScheduleItem.objects.bulk_update(bulk_update_schedule_items, ["cached_location"])
 
     @classmethod
     def refresh_cached_dimensions_qs(cls, queryset: models.QuerySet[Self]):
+        from .schedule import ScheduleItem
+
         with transaction.atomic():
-            bulk_update = []
-            for program in queryset.select_for_update(of=("self",)).only("id", "cached_dimensions"):
+            bulk_update_programs = []
+            for program in queryset.select_for_update(of=("self",)).only(
+                "id",
+                "cached_dimensions",
+                "cached_location",
+                "cached_color",
+            ):
                 program.cached_dimensions = program._build_dimensions()
-                bulk_update.append(program)
-            cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
+                program.cached_location = program._build_location()
+                program.cached_color = program._get_color()
+                bulk_update_programs.append(program)
+            cls.objects.bulk_update(bulk_update_programs, ["cached_dimensions", "cached_location", "cached_color"])
+
+            bulk_update_schedule_items = []
+            for schedule_item in (
+                ScheduleItem.objects.filter(program__in=queryset)
+                .select_for_update(of=("self",))
+                .select_related("program")
+                .only("program__cached_location")
+            ):
+                schedule_item.cached_location = schedule_item.program.cached_location
+                bulk_update_schedule_items.append(schedule_item)
+            ScheduleItem.objects.bulk_update(bulk_update_schedule_items, ["cached_location"])
 
     def refresh_cached_times(self):
         """
@@ -136,95 +188,6 @@ class Program(models.Model):
                 bulk_update.append(program)
 
             cls.objects.bulk_update(bulk_update, ["cached_earliest_start_time", "cached_latest_end_time"])
-
-    @classmethod
-    def create_from_form_data(
-        cls,
-        event: Event,
-        values: dict[str, Any],
-        created_by: User | None = None,
-    ) -> Self:
-        """
-        Given the responses from a program form, creates a new program.
-        Basic fields such as title and description are populated from the form.
-        Fields whose names match dimension names are assumed to be dimensions.
-        All other fields are stored in other_fields.
-        """
-        from ..forms import ProgramForm
-        from .dimension import DimensionValue, ProgramDimensionValue
-
-        values = values.copy()
-
-        with transaction.atomic():
-            dimension_values: list[DimensionValue] = []
-            for dimension in event.dimensions.all():
-                # TODO multiple values per dimension
-                dimension_value_slug = values.pop(dimension.slug, None)
-                if dimension_value_slug is None:
-                    continue
-
-                dimension_value = DimensionValue.objects.get(dimension=dimension, slug=dimension_value_slug)
-                dimension_values.append(dimension_value)
-
-            program = ProgramForm(values).save(commit=False)
-            program.event = event
-            program.created_by = created_by
-
-            for field_name in ProgramForm.Meta.fields:
-                values.pop(field_name, None)
-
-            program.other_fields = values
-            program.save()
-
-            for dimension_value in dimension_values:
-                ProgramDimensionValue.objects.create(
-                    program=program,
-                    dimension=dimension_value.dimension,
-                    value=dimension_value,
-                )
-
-        return program
-
-    def update_from_form_data(self, values: dict[str, Any]):
-        """
-        Given the responses from a program form, updates the program.
-        Matches semantics from create_from_form_data.
-
-        NOTE: if you need the instance afterwards, use the returned one or do a refresh_from_db.
-        """
-        from ..forms import ProgramForm
-        from .dimension import DimensionValue, ProgramDimensionValue
-
-        values = values.copy()
-
-        with transaction.atomic():
-            for dimension in self.event.dimensions.all():
-                # TODO multiple values per dimension
-                dimension_value_slug = values.pop(dimension.slug, None)
-                if dimension_value_slug is None:
-                    continue
-
-                dimension_value = DimensionValue.objects.get(dimension=dimension, slug=dimension_value_slug)
-
-                ProgramDimensionValue.objects.filter(
-                    program=self,
-                    dimension=dimension,
-                ).delete()
-                ProgramDimensionValue.objects.create(
-                    program=self,
-                    dimension=dimension,
-                    value=dimension_value,
-                )
-
-            program = ProgramForm(values, instance=self).save(commit=False)
-
-            for field_name in ProgramForm.Meta.fields:
-                values.pop(field_name, None)
-
-            program.other_fields = values
-            program.save()
-
-        return program
 
     @classmethod
     def import_program_from_v1(
@@ -263,21 +226,6 @@ class Program(models.Model):
             raise TypeError(f"Event {self.event.slug} does not have program_v2_event_meta but Programs are present")
 
         return meta
-
-    def get_location(self, language=DEFAULT_LANGUAGE):
-        """
-        TODO(#474) Support freeform location
-        https://github.com/con2/kompassi/issues/474
-        """
-        dimension = self.meta.location_dimension
-        if dimension is None:
-            return None
-
-        pdv = self.dimensions.filter(dimension=dimension).first()
-        if pdv is None:
-            return None
-
-        return get_message_in_language(pdv.value.title, language)
 
     def get_calendar_export_link(self, request: HttpRequest):
         return request.build_absolute_uri(

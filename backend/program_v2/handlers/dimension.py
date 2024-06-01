@@ -28,6 +28,9 @@ def program_dimension_value_post_save(sender, instance: ProgramDimensionValue, *
     program = instance.program
     program.refresh_cached_dimensions()
 
+    for schedule_item in program.schedule_items.all():
+        schedule_item.refresh_cached_fields()
+
 
 @receiver(pre_save, sender=(Dimension, DimensionValue))
 def dimension_pre_save(sender, instance: Dimension | DimensionValue, **kwargs):

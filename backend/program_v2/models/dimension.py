@@ -23,8 +23,30 @@ class Dimension(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="dimensions")
     slug = models.CharField(max_length=DIMENSION_SLUG_MAX_LENGTH, validators=[validate_slug])
     title = HStoreField(blank=True, default=dict)
-    color = models.CharField(max_length=63, blank=True, default="")
-    icon = models.FileField(upload_to="program_v2/dimension_icons", blank=True)
+    is_multi_value = models.BooleanField(
+        default=False,
+        help_text=(
+            "Suggests to UI that this dimension is likely to have multiple values selected. "
+            "NOTE: In the database, all dimensions are multi-value, so this is just a UI hint."
+        ),
+    )
+    is_list_filter = models.BooleanField(
+        default=True,
+        help_text="Suggests to UI that this dimension should be shown as a list filter.",
+    )
+    is_shown_in_detail = models.BooleanField(
+        default=True,
+        help_text="Suggests to UI that this dimension should be shown in detail view.",
+    )
+    is_negative_selection = models.BooleanField(
+        default=False,
+        help_text=(
+            "Suggests to UI that when this dimension is not being filtered on, all values should be selected. "
+            "Intended for use cases when the user is expected to rather exclude certain values than only include some. "
+            "One such use case is accessibility and content warnings. "
+            "NOTE: Does not make sense without `is_multi_value`."
+        ),
+    )
 
     values: models.QuerySet[DimensionValue]
 
@@ -46,8 +68,7 @@ class DimensionValue(models.Model):
     dimension = models.ForeignKey(Dimension, on_delete=models.CASCADE, related_name="values")
     slug = models.CharField(max_length=255, validators=[validate_slug])
     title = HStoreField(blank=True, default=dict)
-    override_color = models.CharField(max_length=63, blank=True, default="")
-    override_icon = models.FileField(upload_to="program_v2/dimension_icons", blank=True)
+    color = models.CharField(max_length=63, blank=True, default="")
 
     def __str__(self):
         return self.slug
@@ -55,14 +76,6 @@ class DimensionValue(models.Model):
     @property
     def event(self) -> Event:
         return self.dimension.event
-
-    @property
-    def color(self):
-        return self.override_color or self.dimension.color
-
-    @property
-    def icon(self):
-        return self.override_icon or self.dimension.icon
 
     class Meta:
         unique_together = ("dimension", "slug")
@@ -166,6 +179,7 @@ class ProgramDimensionValue(models.Model):
 class DimensionValueDTO(pydantic.BaseModel):
     slug: str
     title: dict[str, str]
+    color: str = ""
 
 
 class DimensionDTO(pydantic.BaseModel):
@@ -174,6 +188,9 @@ class DimensionDTO(pydantic.BaseModel):
     slug: str = pydantic.Field(min_length=1)
     title: dict[str, str]
     choices: list[DimensionValueDTO] | None = pydantic.Field(default=None)
+    is_list_filter: bool = pydantic.Field(default=True)
+    is_shown_in_detail: bool = pydantic.Field(default=True)
+    is_negative_selection: bool = pydantic.Field(default=False)
 
     @classmethod
     def save_many(cls, event: Event, dimension_dtos: list[Self]):
@@ -182,6 +199,9 @@ class DimensionDTO(pydantic.BaseModel):
                 event=event,
                 slug=dimension_dto.slug,
                 title=dimension_dto.title,
+                is_list_filter=dimension_dto.is_list_filter,
+                is_shown_in_detail=dimension_dto.is_shown_in_detail,
+                is_negative_selection=dimension_dto.is_negative_selection,
             )
             for dimension_dto in dimension_dtos
         ]
@@ -189,7 +209,7 @@ class DimensionDTO(pydantic.BaseModel):
             dimensions_upsert,
             update_conflicts=True,
             unique_fields=("event", "slug"),
-            update_fields=("title",),
+            update_fields=("title", "is_list_filter", "is_shown_in_detail", "is_negative_selection"),
         )
 
         values_upsert = [
@@ -197,6 +217,7 @@ class DimensionDTO(pydantic.BaseModel):
                 dimension=dim_dj,
                 slug=choice.slug,
                 title=choice.title,
+                color=choice.color,
             )
             for (dim_dto, dim_dj) in zip(dimension_dtos, django_dimensions, strict=True)
             for choice in dim_dto.choices or []
@@ -205,7 +226,7 @@ class DimensionDTO(pydantic.BaseModel):
             values_upsert,
             update_conflicts=True,
             unique_fields=("dimension", "slug"),
-            update_fields=("title",),
+            update_fields=("title", "color"),
         )
 
         for dim_dto, dim_dj in zip(dimension_dtos, django_dimensions, strict=True):

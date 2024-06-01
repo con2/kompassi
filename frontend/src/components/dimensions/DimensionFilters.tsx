@@ -73,7 +73,7 @@ export function DimensionFilters(props: Props) {
   );
 
   return (
-    <form className="row row-cols-md-auto g-3 align-items-center mb-3">
+    <form className="row row-cols-md-auto g-3 align-items-center mb-4">
       {dimensions.map((dimension) => {
         const dimensionTitle = dimension.title ?? dimension.slug;
         const nothing: DimensionValue = {

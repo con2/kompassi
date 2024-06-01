@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Fragment } from "react";
 import { markAsFavorite, unmarkAsFavorite } from "../../program/actions";
 import FavoriteButton from "../../program/FavoriteButton";
 import { FavoriteContextProvider } from "../../program/FavoriteContext";
@@ -9,12 +8,7 @@ import { graphql } from "@/__generated__";
 import { ProgramLinkType } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
-import { validateFields } from "@/components/forms/models";
-import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
-import Linebreaks from "@/components/helpers/Linebreaks";
 import Paragraphs from "@/components/helpers/Paragraphs";
-import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -49,7 +43,7 @@ const query = graphql(`
             title
           }
 
-          dimensions {
+          dimensions(isShownInDetail: true) {
             dimension {
               slug
               title(lang: $locale)
@@ -60,6 +54,7 @@ const query = graphql(`
             }
           }
           scheduleItems {
+            location
             startTime
             endTime
           }
@@ -82,7 +77,7 @@ export const revalidate = 5;
 export async function generateMetadata({ params }: Props) {
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
-  const { data } = await getClient().query({
+  const { data, errors } = await getClient().query({
     query,
     variables: { eventSlug, programSlug, locale },
   });
@@ -133,11 +128,6 @@ export default async function NewProgramPage({ params }: Props) {
   const program = event.program.program;
   const favoriteProgramSlugs =
     data.profile?.program?.programs?.map((program) => program.slug) ?? [];
-
-  // TODO make configurable which dimensions to show
-  const dimensions = program.dimensions.filter(
-    (dimension) => dimension.dimension.slug !== "date",
-  );
 
   return (
     <ViewContainer>
@@ -199,7 +189,7 @@ export default async function NewProgramPage({ params }: Props) {
       </div>
 
       <div className="mb-3 mt-3">
-        {dimensions.map((dimension) => (
+        {program.dimensions.map((dimension) => (
           <div key={dimension.dimension.slug}>
             <strong>{dimension.dimension.title}</strong>:{" "}
             {dimension.value.title}

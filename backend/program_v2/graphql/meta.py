@@ -30,13 +30,6 @@ class ProgramV2EventMetaType(DjangoObjectType):
         model = ProgramV2EventMeta
         fields = ("skip_offer_form_selection", "location_dimension")
 
-    programs = graphene.List(
-        graphene.NonNull(ProgramType),
-        filters=graphene.List(DimensionFilterInput),
-        favorites_only=graphene.Boolean(),
-        hide_past=graphene.Boolean(),
-    )
-
     @staticmethod
     def resolve_programs(
         meta: ProgramV2EventMeta,
@@ -53,7 +46,12 @@ class ProgramV2EventMetaType(DjangoObjectType):
             hide_past=hide_past,
         ).filter_program(programs, user=request.user)
 
-    dimensions = graphene.List(graphene.NonNull(DimensionType))
+    programs = graphene.NonNull(
+        graphene.List(graphene.NonNull(ProgramType)),
+        filters=graphene.List(DimensionFilterInput),
+        favorites_only=graphene.Boolean(),
+        hide_past=graphene.Boolean(),
+    )
 
     @staticmethod
     def resolve_program(meta: ProgramV2EventMeta, info, slug: str):
@@ -62,10 +60,33 @@ class ProgramV2EventMetaType(DjangoObjectType):
     program = graphene.Field(ProgramType, slug=graphene.String(required=True))
 
     @staticmethod
-    def resolve_dimensions(meta: ProgramV2EventMeta, info):
-        return Dimension.objects.filter(event=meta.event)
+    def resolve_dimensions(
+        meta: ProgramV2EventMeta,
+        info,
+        is_list_filter: bool = False,
+        is_shown_in_detail: bool = False,
+    ):
+        """
+        `is_list_filter` - only return dimensions that are shown in the list filter.
+        `is_shown_in_detail` - only return dimensions that are shown in the detail view.
+        If you supply both, you only get their intersection.
+        """
+        dimensions = Dimension.objects.filter(event=meta.event)
 
-    offer_forms = graphene.List(graphene.NonNull(OfferFormType), include_inactive=graphene.Boolean())
+        if is_list_filter:
+            dimensions = dimensions.filter(is_list_filter=True)
+
+        if is_shown_in_detail:
+            dimensions = dimensions.filter(is_shown_in_detail=True)
+
+        return dimensions
+
+    dimensions = graphene.NonNull(
+        graphene.List(graphene.NonNull(DimensionType)),
+        is_list_filter=graphene.Boolean(),
+        is_shown_in_detail=graphene.Boolean(),
+        description=normalize_whitespace(resolve_dimensions.__doc__ or ""),
+    )
 
     @staticmethod
     def resolve_offer_forms(meta: ProgramV2EventMeta, info, include_inactive: bool = False):
@@ -77,11 +98,13 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
         return qs
 
-    offer_form = graphene.Field(OfferFormType, slug=graphene.String(required=True))
+    offer_forms = graphene.List(graphene.NonNull(OfferFormType), include_inactive=graphene.Boolean())
 
     @staticmethod
     def resolve_offer_form(meta: ProgramV2EventMeta, info, slug: str):
         return OfferForm.objects.get(event=meta.event, slug=slug)
+
+    offer_form = graphene.Field(OfferFormType, slug=graphene.String(required=True))
 
     @staticmethod
     def resolve_calendar_export_link(meta: ProgramV2EventMeta, info):

@@ -20,6 +20,7 @@ class ScheduleItem(models.Model):
 
     # denormalized fields
     cached_end_time = models.DateTimeField()
+    cached_location = models.JSONField(blank=True, default=dict)
 
     def __str__(self):
         return self.title
@@ -31,6 +32,9 @@ class ScheduleItem(models.Model):
         else:
             return self.program.title
 
-    @property
-    def end_time(self):
-        return self.start_time + self.length
+    def refresh_cached_fields(self):
+        """
+        NOTE: cached_location is refreshed from Program.refresh_cached_dimensions
+        """
+        self.cached_end_time = self.start_time + self.length
+        self.save(update_fields=["cached_end_time"])
