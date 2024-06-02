@@ -1,8 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.models.constants import EMAIL_LENGTH
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, pick_attrs, slugify
+
+if TYPE_CHECKING:
+    from .team_member import TeamMember
 
 
 class Team(models.Model):
@@ -21,7 +28,7 @@ class Team(models.Model):
         verbose_name=_("Description"),
         help_text=_("What is the team responsible for?"),
     )
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
     group = models.ForeignKey("auth.Group", on_delete=models.CASCADE)
 
     email = models.EmailField(
@@ -32,6 +39,9 @@ class Team(models.Model):
     )
 
     is_public = models.BooleanField(default=True, verbose_name=_("Public"))
+
+    members: models.QuerySet[TeamMember]
+    group_id: int
 
     def __str__(self):
         return self.name
