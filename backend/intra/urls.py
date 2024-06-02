@@ -3,9 +3,9 @@ from django.urls import re_path
 from .views import (
     intra_admin_privileges_view,
     intra_admin_team_member_view,
-    intra_api_teams_view,
     intra_organizer_view,
 )
+from .views.intra_api_teams_view import intra_api_teams_view, intra_teams_fragment_view
 
 urlpatterns = [
     re_path(
@@ -39,8 +39,13 @@ urlpatterns = [
         name="intra_admin_team_member_view",
     ),
     re_path(
-        r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/teams",
+        r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/teams/?$",
         intra_api_teams_view,
         name="intra_api_teams_view",
+    ),
+    re_path(
+        r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/teams.html$",
+        intra_teams_fragment_view,
+        name="intra_teams_fragment_view",
     ),
 ]

@@ -1,0 +1,6 @@
+for team in teams
+  h1= team.name
+
+  for member in team.members.all
+    if member.is_shown_publicly
+      div <strong>{{ member.display_name }}</strong>, {{ member.job_title }}

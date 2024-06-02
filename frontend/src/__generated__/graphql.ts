@@ -621,6 +621,7 @@ export type ProgramTypeDimensionsArgs = {
 
 
 export type ProgramTypeLinksArgs = {
+  includeExpired?: InputMaybe<Scalars['Boolean']['input']>;
   lang?: InputMaybe<Scalars['String']['input']>;
   types?: InputMaybe<Array<InputMaybe<ProgramLinkType>>>;
 };
