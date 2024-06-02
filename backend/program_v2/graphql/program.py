@@ -74,6 +74,7 @@ class ProgramLink(graphene.ObjectType):
         program: Program,
         link_type: ProgramLinkType,
         language: str = DEFAULT_LANGUAGE,
+        include_expired: bool = False,
     ):
         """
         TODO should this be pushed into the Program model?
@@ -85,7 +86,7 @@ class ProgramLink(graphene.ObjectType):
         match link_type:
             case ProgramLinkType.CALENDAR:
                 # Do not show these links if the program has ended
-                if program.cached_latest_end_time and now() > program.cached_latest_end_time:
+                if not include_expired and program.cached_latest_end_time and now() > program.cached_latest_end_time:
                     href = ""
                 else:
                     href = program.get_calendar_export_link(request)
@@ -96,7 +97,7 @@ class ProgramLink(graphene.ObjectType):
                 | ProgramLinkType.REMOTE
             ):
                 # Do not show these links if the program has ended
-                if program.cached_latest_end_time and now() > program.cached_latest_end_time:
+                if not include_expired and program.cached_latest_end_time and now() > program.cached_latest_end_time:
                     href = ""
                 else:
                     href = program.other_fields.get(f"{link_type_str.lower()}_link", "")
@@ -156,6 +157,7 @@ class ProgramType(DjangoObjectType):
         info,
         types: list[ProgramLinkType] | None = None,
         lang=DEFAULT_LANGUAGE,
+        include_expired: bool = False,
     ):
         """
         Get the links associated with the program. If types are not specified, all links are returned.
@@ -166,7 +168,15 @@ class ProgramType(DjangoObjectType):
         return [
             program_link
             for link_type in types
-            if (program_link := ProgramLink.from_program(info.context, parent, link_type, lang))
+            if (
+                program_link := ProgramLink.from_program(
+                    info.context,
+                    parent,
+                    link_type,
+                    lang,
+                    include_expired=include_expired,
+                )
+            )
         ]
 
     links = graphene.NonNull(
@@ -174,6 +184,7 @@ class ProgramType(DjangoObjectType):
         description=normalize_whitespace(resolve_links.__doc__ or ""),
         types=graphene.List(ProgramLinkType),
         lang=graphene.String(),
+        include_expired=graphene.Boolean(),
     )
 
     @staticmethod
