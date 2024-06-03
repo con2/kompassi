@@ -5,7 +5,7 @@ block content
   h2 {{ event.name }} – Kaatajaisilmon yhteenveto
 
   .panel.panel-default
-    .panel-heading Viinakset
+    .panel-heading: strong Viinakset
     table.table.table-striped
       thead
         tr
@@ -17,5 +17,15 @@ block content
             td {{ poison.name }}
             td {{ poison.victims }}
 
-  p: a(href="{% url 'tracon2024_afterparty_participants_view' event.slug %}") Lataa osallistujaluettelo (XLSX)
-  p: a(href="{% url 'programme:admin_reservation_status_view' event.slug %}") Kaatobussien tiedot ohjelmanhallinnassa
+  .panel.panel-default
+    .panel-heading: strong Saunavuorot
+    table.table.table-striped
+      thead
+        tr
+          th Saunavuoro
+          th Lukumäärä
+      tbody
+        for gender, count in gender_segregation
+          tr
+            td {{ gender }}
+            td {{ count }}
