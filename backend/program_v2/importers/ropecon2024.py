@@ -133,12 +133,12 @@ class RopeconImporter(DefaultImporter):
 
         other_fields.update(
             **{
-                "ropecon:rpgSystem": programme.rpg_system,
+                "konsti:rpgSystem": programme.rpg_system,
                 "ropecon:otherAuthor": programme.other_author,
                 "konsti:minAttendance": programme.min_players,
                 "konsti:maxAttendance": programme.max_players,
                 "ropecon:numCharacters": programme.ropecon2018_characters,
-                "ropecon:workshopFee": programme.ropecon2023_workshop_fee,
+                "konsti:workshopFee": programme.ropecon2023_workshop_fee,
                 "ropecon:contentWarnings": programme.ropecon2022_content_warnings,
                 "ropecon:accessibilityOther": programme.ropecon2023_other_accessibility_information,
             }
