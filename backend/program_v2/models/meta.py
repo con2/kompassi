@@ -59,11 +59,14 @@ class ProgramV2EventMeta(EventMetaBase):
     @property
     def importer_class(self):
         from ..importers.default import DefaultImporter
+        from ..importers.ropecon2024 import RopeconImporter
         from ..importers.solmukohta2024 import SolmukohtaImporter
 
         match self.importer_name:
             case "solmukohta2024":
                 return SolmukohtaImporter
+            case "ropecon2024":
+                return RopeconImporter
             case _:
                 return DefaultImporter
 

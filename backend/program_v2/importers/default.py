@@ -150,6 +150,12 @@ class DefaultImporter:
     program_unique_fields = ("event", "slug")
     program_update_fields = ("title", "description", "other_fields")
 
+    def get_other_fields(self, programme: Programme) -> dict[str, str]:
+        return dict(
+            formatted_hosts=programme.formatted_hosts,
+            signup_link=programme.signup_link,
+        )
+
     def get_program(self, programme: Programme) -> Program:
         """
         Return an unsaved V2 Program instance for the V1 Programme.
@@ -160,10 +166,7 @@ class DefaultImporter:
             slug=programme.slug,
             title=programme.title,
             description=programme.description,
-            other_fields=dict(
-                formatted_hosts=programme.formatted_hosts,
-                signup_link=programme.signup_link,
-            ),
+            other_fields={k: v for (k, v) in self.get_other_fields(programme).items() if v},
         )
 
     def get_schedule_items(self, v1_programme: Programme, v2_program) -> list[ScheduleItem]:
@@ -180,12 +183,19 @@ class DefaultImporter:
             )
         ]
 
+    def get_eligible_programmes(self, queryset: QuerySet[Programme]) -> QuerySet[Programme]:
+        return queryset.filter(
+            state__in=PROGRAMME_STATES_LIVE,
+            start_time__isnull=False,
+            length__isnull=False,
+        ).order_by("id")
+
     def import_program(self, queryset: QuerySet[Programme]):
         dimensions = self.get_dimensions()
-        DimensionDTO.save_many(self.event, dimensions)
+        DimensionDTO.save_many(self.event, dimensions, remove_others=True)
         logger.info("Imported %d dimensions for %s", len(dimensions), self.event.slug)
 
-        v1_programmes = [programme for programme in queryset.order_by("id") if programme.state in PROGRAMME_STATES_LIVE]
+        v1_programmes = list(self.get_eligible_programmes(queryset))
 
         program_upsert = [self.get_program(programme) for programme in v1_programmes]
         v2_programs = Program.objects.bulk_create(
