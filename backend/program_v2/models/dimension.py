@@ -193,7 +193,7 @@ class DimensionDTO(pydantic.BaseModel):
     is_negative_selection: bool = pydantic.Field(default=False)
 
     @classmethod
-    def save_many(cls, event: Event, dimension_dtos: list[Self]):
+    def save_many(cls, event: Event, dimension_dtos: list[Self], remove_others=False) -> list[Dimension]:
         dimensions_upsert = [
             Dimension(
                 event=event,
@@ -232,6 +232,13 @@ class DimensionDTO(pydantic.BaseModel):
         for dim_dto, dim_dj in zip(dimension_dtos, django_dimensions, strict=True):
             values_to_keep = [choice.slug for choice in dim_dto.choices or []]
             DimensionValue.objects.filter(dimension=dim_dj).exclude(slug__in=values_to_keep).delete()
+
+        if remove_others:
+            Dimension.objects.filter(
+                event=event,
+            ).exclude(
+                slug__in=[dim_dto.slug for dim_dto in dimension_dtos],
+            ).delete()
 
         Program.refresh_cached_dimensions_qs(event.programs.all())
 
