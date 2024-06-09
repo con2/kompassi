@@ -567,7 +567,7 @@ const translations: Translations = {
       },
     },
     editSurveyPage: {
-      title: "Ändra Enkät",
+      title: "Ändra enkät",
       actions: {
         submit: "Spara fält",
       },
