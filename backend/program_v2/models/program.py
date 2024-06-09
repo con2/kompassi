@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from itertools import batched
 from typing import TYPE_CHECKING, Self
 
 from django.conf import settings
@@ -129,34 +130,51 @@ class Program(models.Model):
             bulk_update_schedule_items.append(schedule_item)
         ScheduleItem.objects.bulk_update(bulk_update_schedule_items, ["cached_location"])
 
+    program_batch_size = 100
+    schedule_item_batch_size = 100
+
     @classmethod
     def refresh_cached_dimensions_qs(cls, queryset: models.QuerySet[Self]):
         from .schedule import ScheduleItem
 
         with transaction.atomic():
-            bulk_update_programs = []
-            for program in queryset.select_for_update(of=("self",)).only(
-                "id",
-                "cached_dimensions",
-                "cached_location",
-                "cached_color",
+            for page, program_batch in enumerate(
+                batched(
+                    queryset.select_for_update(of=("self",)).only(
+                        "id",
+                        "cached_dimensions",
+                        "cached_location",
+                        "cached_color",
+                    ),
+                    cls.program_batch_size,
+                )
             ):
-                program.cached_dimensions = program._build_dimensions()
-                program.cached_location = program._build_location()
-                program.cached_color = program._get_color()
-                bulk_update_programs.append(program)
-            cls.objects.bulk_update(bulk_update_programs, ["cached_dimensions", "cached_location", "cached_color"])
+                logger.info("Refreshing cached dimensions for programs, page %d", page)
+                bulk_update_programs = []
+                for program in program_batch:
+                    program.cached_dimensions = program._build_dimensions()
+                    program.cached_location = program._build_location()
+                    program.cached_color = program._get_color()
+                    bulk_update_programs.append(program)
+                cls.objects.bulk_update(bulk_update_programs, ["cached_dimensions", "cached_location", "cached_color"])
 
-            bulk_update_schedule_items = []
-            for schedule_item in (
-                ScheduleItem.objects.filter(program__in=queryset)
-                .select_for_update(of=("self",))
-                .select_related("program")
-                .only("program__cached_location")
+            for page, schedule_item_batch in enumerate(
+                batched(
+                    ScheduleItem.objects.filter(program__in=queryset)
+                    .select_for_update(of=("self",))
+                    .select_related("program")
+                    .only("program__cached_location"),
+                    cls.schedule_item_batch_size,
+                )
             ):
-                schedule_item.cached_location = schedule_item.program.cached_location
-                bulk_update_schedule_items.append(schedule_item)
-            ScheduleItem.objects.bulk_update(bulk_update_schedule_items, ["cached_location"])
+                logger.info("Refreshing cached locations for schedule items, page %d", page)
+                bulk_update_schedule_items = []
+                for schedule_item in schedule_item_batch:
+                    schedule_item.cached_location = schedule_item.program.cached_location
+                    bulk_update_schedule_items.append(schedule_item)
+                ScheduleItem.objects.bulk_update(bulk_update_schedule_items, ["cached_location"])
+
+        logger.info("Finished refreshing cached dimensions for programs")
 
     def refresh_cached_times(self):
         """
@@ -173,21 +191,29 @@ class Program(models.Model):
     @classmethod
     def refresh_cached_times_qs(cls, queryset: models.QuerySet[Self]):
         with transaction.atomic():
-            bulk_update = []
-            for program in queryset.select_for_update(of=("self",)).only(
-                "id",
-                "cached_earliest_start_time",
-                "cached_latest_end_time",
+            for page, batch in enumerate(
+                batched(
+                    queryset.select_for_update(of=("self",)).only(
+                        "id",
+                        "cached_earliest_start_time",
+                        "cached_latest_end_time",
+                    ),
+                    cls.program_batch_size,
+                )
             ):
-                earliest_start_time = program.schedule_items.order_by("start_time").first()
-                latest_end_time = program.schedule_items.order_by("cached_end_time").last()
+                logger.info("Refreshing cached times for programs, page %d", page)
+                bulk_update = []
+                for program in batch:
+                    earliest_start_time = program.schedule_items.order_by("start_time").first()
+                    latest_end_time = program.schedule_items.order_by("cached_end_time").last()
 
-                program.cached_earliest_start_time = earliest_start_time.start_time if earliest_start_time else None
-                program.cached_latest_end_time = latest_end_time.cached_end_time if latest_end_time else None
+                    program.cached_earliest_start_time = earliest_start_time.start_time if earliest_start_time else None
+                    program.cached_latest_end_time = latest_end_time.cached_end_time if latest_end_time else None
 
-                bulk_update.append(program)
+                    bulk_update.append(program)
+                cls.objects.bulk_update(bulk_update, ["cached_earliest_start_time", "cached_latest_end_time"])
 
-            cls.objects.bulk_update(bulk_update, ["cached_earliest_start_time", "cached_latest_end_time"])
+        logger.info("Finished refreshing cached times for programs")
 
     @classmethod
     def import_program_from_v1(

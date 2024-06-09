@@ -2,6 +2,7 @@ import logging
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from itertools import batched
 
 from django.db.models import QuerySet
 from django.utils.timezone import get_current_timezone
@@ -190,36 +191,56 @@ class DefaultImporter:
             length__isnull=False,
         ).order_by("id")
 
+    program_batch_size = 100
+    schedule_item_batch_size = 100
+    pdf_batch_size = 400
+
     def import_program(self, queryset: QuerySet[Programme]):
+        logger.info("Starting program import for %s", self.event.slug)
         dimensions = self.get_dimensions()
-        DimensionDTO.save_many(self.event, dimensions, remove_others=True)
+        DimensionDTO.save_many(self.event, dimensions, remove_others=True, refresh_cached=False)
         logger.info("Imported %d dimensions for %s", len(dimensions), self.event.slug)
 
         v1_programmes = list(self.get_eligible_programmes(queryset))
 
-        program_upsert = [self.get_program(programme) for programme in v1_programmes]
-        v2_programs = Program.objects.bulk_create(
-            program_upsert,
-            update_conflicts=True,
-            unique_fields=self.program_unique_fields,
-            update_fields=self.program_update_fields,
-        )
+        program_upsert = (self.get_program(programme) for programme in v1_programmes)
+        v2_programs = []
+        for page, program_batch in enumerate(batched(program_upsert, self.program_batch_size)):
+            logger.info("Importing page %d of programs", page + 1)
+            v2_programs.extend(
+                Program.objects.bulk_create(
+                    program_batch,
+                    update_conflicts=True,
+                    unique_fields=self.program_unique_fields,
+                    update_fields=self.program_update_fields,
+                )
+            )
         logger.info("Imported %d programs for %s", len(v2_programs), self.event.slug)
 
         # cannot use ScheduleItem.objects.bulk_create(…, update_conflicts=True)
         # because there is no unique constraint
         ScheduleItem.objects.filter(program__in=v2_programs).delete()
-        schedule_upsert = [
+        schedule_upsert = (
             schedule_item
             for v1_programme, v2_program in zip(v1_programmes, v2_programs, strict=True)
             for schedule_item in self.get_schedule_items(v1_programme, v2_program)
             if v1_programme.start_time is not None and v1_programme.length is not None
-        ]
-        schedule_items = ScheduleItem.objects.bulk_create(schedule_upsert)
-        logger.info("Imported %d schedule items for %s", len(schedule_items), self.event.slug)
+        )
+        schedule_item_ids = []
+        for page, schedule_batch in enumerate(batched(schedule_upsert, self.schedule_item_batch_size)):
+            logger.info("Importing page %d of schedule items", page + 1)
+            schedule_item_ids.extend(
+                schedule_item.id for schedule_item in ScheduleItem.objects.bulk_create(schedule_batch)
+            )
+        logger.info("Imported %d schedule items for %s", len(schedule_item_ids), self.event.slug)
+
+        num_deleted_schedule_items, _ = (
+            ScheduleItem.objects.filter(program__in=v2_programs).exclude(id__in=schedule_item_ids).delete()
+        )
+        logger.info("Deleted %s stale schedule items", num_deleted_schedule_items)
 
         upsert_cache = ProgramDimensionValue.build_upsert_cache(self.event)
-        pdv_upsert = [
+        pdv_upserts = (
             item
             for programme, program_v2 in zip(v1_programmes, v2_programs, strict=True)
             for item in ProgramDimensionValue.build_upsertables(
@@ -227,14 +248,21 @@ class DefaultImporter:
                 self.get_program_dimension_values(programme),
                 *upsert_cache,
             )
-        ]
-        pdvs = ProgramDimensionValue.bulk_upsert(pdv_upsert)
-        logger.info("Imported %d program dimension values for %s", len(pdvs), self.event.slug)
+        )
+        pdv_ids = []
+        for page, pdv_batch in enumerate(batched(pdv_upserts, self.pdf_batch_size)):
+            logger.info("Importing page %d of program dimension values", page + 1)
+            pdv_ids.extend(pdv.id for pdv in ProgramDimensionValue.bulk_upsert(pdv_batch))
+        logger.info("Imported %d program dimension values", len(pdv_ids))
 
         # delete program dimension values that are not set in the new data
-        pdv_ids = {pdv.id for pdv in pdvs}
-        ProgramDimensionValue.objects.filter(program__in=v2_programs).exclude(id__in=pdv_ids).delete()
+        num_deleted_pdvs, _ = (
+            ProgramDimensionValue.objects.filter(program__in=v2_programs).exclude(id__in=pdv_ids).delete()
+        )
+        logger.info("Deleted %s stale program dimension values", num_deleted_pdvs)
 
         Program.refresh_cached_fields_qs(self.event.programs.all())
+
+        logger.info("Finished program import for %s", self.event.slug)
 
         return v2_programs

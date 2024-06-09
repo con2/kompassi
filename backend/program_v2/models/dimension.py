@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterable
+from itertools import batched
 from typing import TYPE_CHECKING, Self
 
 import pydantic
@@ -161,7 +163,7 @@ class ProgramDimensionValue(models.Model):
     @classmethod
     def bulk_upsert(
         cls,
-        upsertables: list[Self],
+        upsertables: Iterable[Self],
     ):
         """
         For usage example, see ../importers/solmukohta2024.py
@@ -193,8 +195,16 @@ class DimensionDTO(pydantic.BaseModel):
     is_negative_selection: bool = pydantic.Field(default=False)
 
     @classmethod
-    def save_many(cls, event: Event, dimension_dtos: list[Self], remove_others=False) -> list[Dimension]:
-        dimensions_upsert = [
+    def save_many(
+        cls,
+        event: Event,
+        dimension_dtos: list[Self],
+        remove_others=False,
+        refresh_cached=True,
+        dimension_batch_size=100,
+        dimension_value_batch_size=200,
+    ) -> list[Dimension]:
+        dimensions_upsert = (
             Dimension(
                 event=event,
                 slug=dimension_dto.slug,
@@ -204,15 +214,20 @@ class DimensionDTO(pydantic.BaseModel):
                 is_negative_selection=dimension_dto.is_negative_selection,
             )
             for dimension_dto in dimension_dtos
-        ]
-        django_dimensions = Dimension.objects.bulk_create(
-            dimensions_upsert,
-            update_conflicts=True,
-            unique_fields=("event", "slug"),
-            update_fields=("title", "is_list_filter", "is_shown_in_detail", "is_negative_selection"),
         )
+        django_dimensions = []
+        for page, dimension_batch in enumerate(batched(dimensions_upsert, dimension_batch_size)):
+            django_dimensions.extend(
+                Dimension.objects.bulk_create(
+                    dimension_batch,
+                    update_conflicts=True,
+                    unique_fields=("event", "slug"),
+                    update_fields=("title", "is_list_filter", "is_shown_in_detail", "is_negative_selection"),
+                )
+            )
+            logger.info("Saved page %s of dimensions", page + 1)
 
-        values_upsert = [
+        values_upsert = (
             DimensionValue(
                 dimension=dim_dj,
                 slug=choice.slug,
@@ -221,25 +236,36 @@ class DimensionDTO(pydantic.BaseModel):
             )
             for (dim_dto, dim_dj) in zip(dimension_dtos, django_dimensions, strict=True)
             for choice in dim_dto.choices or []
-        ]
-        DimensionValue.objects.bulk_create(
-            values_upsert,
-            update_conflicts=True,
-            unique_fields=("dimension", "slug"),
-            update_fields=("title", "color"),
         )
+        for page, value_batch in enumerate(batched(values_upsert, dimension_value_batch_size)):
+            DimensionValue.objects.bulk_create(
+                value_batch,
+                update_conflicts=True,
+                unique_fields=("dimension", "slug"),
+                update_fields=("title", "color"),
+            )
+            logger.info("Saved page %s of dimension values", page + 1)
 
         for dim_dto, dim_dj in zip(dimension_dtos, django_dimensions, strict=True):
             values_to_keep = [choice.slug for choice in dim_dto.choices or []]
-            DimensionValue.objects.filter(dimension=dim_dj).exclude(slug__in=values_to_keep).delete()
+            num_deleted_dvs, _ = (
+                DimensionValue.objects.filter(dimension=dim_dj).exclude(slug__in=values_to_keep).delete()
+            )
+            logger.info("Deleted %s stale dimension values for dimension %s", num_deleted_dvs, dim_dj)
 
         if remove_others:
-            Dimension.objects.filter(
-                event=event,
-            ).exclude(
-                slug__in=[dim_dto.slug for dim_dto in dimension_dtos],
-            ).delete()
+            num_deleted_dvs, _ = (
+                Dimension.objects.filter(
+                    event=event,
+                )
+                .exclude(
+                    slug__in=[dim_dto.slug for dim_dto in dimension_dtos],
+                )
+                .delete()
+            )
+            logger.info("Deleted %s stale dimensions", num_deleted_dvs)
 
-        Program.refresh_cached_dimensions_qs(event.programs.all())
+        if refresh_cached:
+            Program.refresh_cached_dimensions_qs(event.programs.all())
 
         return django_dimensions
