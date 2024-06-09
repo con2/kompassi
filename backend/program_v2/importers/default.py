@@ -151,10 +151,10 @@ class DefaultImporter:
     program_update_fields = ("title", "description", "other_fields")
 
     def get_other_fields(self, programme: Programme) -> dict[str, str]:
-        return dict(
-            formatted_hosts=programme.formatted_hosts,
-            signup_link=programme.signup_link,
-        )
+        return {
+            "internal:formattedHosts": programme.formatted_hosts,
+            "internal:links:signup": programme.signup_link,
+        }
 
     def get_program(self, programme: Programme) -> Program:
         """

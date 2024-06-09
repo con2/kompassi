@@ -604,8 +604,8 @@ export type ProgramType = {
   links: Array<ProgramLink>;
   /** Supplied for convenience. Prefer scheduleItem.location if possible. Caveat: When a program item has multiple schedule items, they may be in different locations. In such cases, a comma separated list of locations is returned. */
   location?: Maybe<Scalars['String']['output']>;
-  /** Additional fields for the program. NOTE: For most use cases, you shouldn't use this field but rather access its data via formattedHosts, links etc. This is here mostly to facilitate the GraphQL importer. */
-  otherFields?: Maybe<Scalars['GenericScalar']['output']>;
+  /** Additional fields for the program. NOTE: For most use cases, you shouldn't use this field but rather access its data via formattedHosts, links etc. This is here mostly to facilitate the GraphQL importer. TODO: Provide a way to supply internal: fields to the GraphQL importer. Perhaps make the importer authenticate? */
+  otherFields: Scalars['GenericScalar']['output'];
   scheduleItems: Array<ScheduleItemType>;
   /** Deprecated. Use `links(types: SIGNUP)` instead. */
   signupLink: Scalars['String']['output'];
