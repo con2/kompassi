@@ -15,6 +15,7 @@ django-localflavor
 django-oauth-toolkit
 django-redis
 django-storages
+django-stubs
 Django>5
 flake8
 graphene-django
@@ -30,9 +31,11 @@ paramiko
 passlib
 phonenumberslite
 Pillow
+pre-commit
 psycopg[c]
 pydantic
 pypugjs
+pyright
 pytest-django
 python-dateutil
 PyYAML

@@ -26,3 +26,13 @@ repos:
             ^backend|
             ^.github
           )
+  - repo: https://github.com/RobertCraigie/pyright-python
+    rev: v1.1.367
+    hooks:
+      - id: pyright
+        language: system
+        # add apps as they become fully typechecked
+        files: |
+          (?x)(
+            ^backend/program_v2/
+          )
