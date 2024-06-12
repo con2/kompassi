@@ -111,7 +111,7 @@ class Event(models.Model):
 
     # related fields
     programs: models.QuerySet[Program]
-    dimensions: models.QuerySet[Dimension]
+    program_dimensions: models.QuerySet[Dimension]
     signup_set: models.QuerySet[Signup]
     surveys: models.QuerySet[Survey]
 

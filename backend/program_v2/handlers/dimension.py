@@ -1,3 +1,4 @@
+from django.db.models import QuerySet
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 from django.forms import ValidationError
@@ -20,11 +21,25 @@ def program_dimension_value_pre_save(sender, instance: ProgramDimensionValue, **
 @receiver([post_save, post_delete], sender=Dimension)
 @receiver([post_save, post_delete], sender=DimensionValue)
 def dimension_post_save(sender, instance: Dimension | DimensionValue, **kwargs):
+    if isinstance(kwargs["origin"], QuerySet):
+        # should not run on bulk delete :)
+        return
+
+    if kwargs.get("update_fields", {}):
+        return
+
     Program.refresh_cached_dimensions_qs(instance.event.programs.all())
 
 
 @receiver([post_save, post_delete], sender=ProgramDimensionValue)
 def program_dimension_value_post_save(sender, instance: ProgramDimensionValue, **kwargs):
+    if isinstance(kwargs["origin"], QuerySet):
+        # should not run on bulk delete :)
+        return
+
+    if kwargs.get("update_fields", {}):
+        return
+
     program = instance.program
     program.refresh_cached_dimensions()
 

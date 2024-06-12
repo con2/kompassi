@@ -22,7 +22,7 @@ DIMENSION_SLUG_MAX_LENGTH = 255
 
 
 class Dimension(models.Model):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="dimensions")
+    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="program_dimensions")
     slug = models.CharField(max_length=DIMENSION_SLUG_MAX_LENGTH, validators=[validate_slug])
     title = HStoreField(blank=True, default=dict)
     is_multi_value = models.BooleanField(
@@ -60,7 +60,7 @@ class Dimension(models.Model):
 
     @classmethod
     def dump_dimensions(cls, event: Event):
-        for dimension in event.dimensions.all():
+        for dimension in event.program_dimensions.all():
             print(dimension)
             for value in dimension.values.all():
                 print("-", value)

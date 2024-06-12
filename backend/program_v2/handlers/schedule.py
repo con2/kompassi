@@ -12,4 +12,7 @@ def program_pre_save(sender, instance: ScheduleItem, **kwargs):
 
 @receiver(post_save, sender=ScheduleItem)
 def program_post_save(sender, instance: ScheduleItem, **kwargs):
+    if kwargs.get("update_fields", {}):
+        return
+
     instance.program.refresh_cached_times()

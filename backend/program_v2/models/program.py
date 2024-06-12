@@ -88,7 +88,7 @@ class Program(models.Model):
         """
         # TODO should all event dimensions always be present, or only those with values?
         # TODO when dimensions are changed for an event, refresh all cached_dimensions
-        dimensions = {dimension.slug: [] for dimension in self.event.dimensions.all()}
+        dimensions = {dimension.slug: [] for dimension in self.event.program_dimensions.all()}
         for pdv in self.dimensions.all():
             dimensions[pdv.dimension.slug].append(pdv.value.slug)
         return dimensions
