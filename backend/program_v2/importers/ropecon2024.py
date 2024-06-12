@@ -268,7 +268,7 @@ class RopeconImporter(DefaultImporter):
 
         is_konsti = len(self.get_konsti_dimension_value(programme)) > 0
         if is_konsti:
-            other_fields["internal:links:signup"] = f"https://konsti.solmukohta.eu/games/{programme.slug}"
+            other_fields["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
 
         other_fields.update(
             **{
