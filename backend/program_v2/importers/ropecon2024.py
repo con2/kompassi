@@ -81,6 +81,32 @@ class RopeconImporter(DefaultImporter):
                         ("music", "Musiikki", "Music"),
                         ("penandpaper", "Pöytäroolipelit", "Pen & Paper RPG"),
                         ("boffering", "Boffaus", "Boffering"),
+                        ("goh", "Kunniavieraat", "Guests of Honor"),
+                    ]
+                ],
+            ),
+            DimensionDTO(
+                slug="participation",
+                title=dict(
+                    fi="Osallistumistapa",
+                    en="Way of Participation",
+                    sv="Deltagandetyp",
+                ),
+                choices=[
+                    DimensionValueDTO(
+                        slug=slug,
+                        title=dict(
+                            fi=title_fi,
+                            en=title_en,
+                        ),
+                    )
+                    for slug, title_fi, title_en in [
+                        ("open-gaming", "Avoin pelaaminen", "Open gaming"),
+                        ("demo", "Demo", "Demo"),
+                        ("tournament", "Turnaus", "Tournament"),
+                        ("presentation", "Esitelmä", "Presentation"),
+                        ("discussion", "Keskustelu", "Discussion group"),
+                        ("panel", "Paneeli", "Panel discussion"),
                     ]
                 ],
             ),
@@ -122,151 +148,27 @@ class RopeconImporter(DefaultImporter):
             ),
         ]
 
-    def get_program_dimension_values(self, programme: Programme) -> dict[str, str | list[str] | None]:
-        return dict(
-            date=self.get_date_dimension_value(programme),
-            type=self.get_type_dimension_value(programme),
-            topic=self.get_topic_dimension_value(programme),
-            room=programme.room.slug if programme.room else None,
-            konsti=self.get_konsti_dimension_value(programme),
-        )
-
-    def get_type_dimension_value(self, programme: Programme) -> list[str]:
-        values = set()
-        cat_title_fi = programme.category.title.split("/", 1)[0].strip()
+    def get_program_dimension_values(self, programme: Programme) -> dict[str, list[str]]:
+        values = super().get_program_dimension_values(programme)
         prog_title_lower = programme.title.lower()
-
-        if cat_title_fi == "Esitysohjelma":
-            values.add("performance")
-
-        if cat_title_fi in (
-            "Kokemuspiste: avoin pelautus",
-            "Kokemuspiste: demotus",
-            "Kokemuspiste: muu",
-        ):
-            values.add("experience")
-
-        if cat_title_fi == "Miitti":
-            values.add("meetup")
-
-        if cat_title_fi in (
-            "Figupelit: avoin pelautus",
-            "Figupelit: demotus",
-            "Kokemuspiste: avoin pelautus",
-            "Kokemuspiste: demotus",
-            "LARP",
-            "Muu peliohjelma",
-            "Roolipeli",
-            "Turnaukset: figupelit",
-            "Turnaukset: korttipelit",
-            "Turnaukset: lautapelit",
-            "Turnaukset: muu",
-        ):
-            values.add("gaming")
-
-        if cat_title_fi in (
-            "Puheohjelma: esitelmä",
-            "Puheohjelma: paneeli",
-            "Puheohjelma: keskustelu",
-        ):
-            values.add("talk")
-
-        if cat_title_fi == "Tanssiohjelma" or "boff" in prog_title_lower or "polttopallo" in prog_title_lower:
-            values.add("activity")
-
-        if cat_title_fi in (
-            "Työpaja: figut",
-            "Työpaja: käsityö",
-            "Työpaja: musiikki",
-            "Työpaja: muu",
-        ):
-            values.add("workshop")
-
-        if "näyttely" in prog_title_lower:
-            values.add("exhibit")
-
-        return list(values)
-
-    def get_topic_dimension_value(self, programme: Programme) -> list[str]:
-        values = set()
-        cat_title_fi = programme.category.title.split("/", 1)[0].strip()
-        tag_titles_fi = [tag.title.split("/", 1)[0].strip() for tag in programme.tags.all()]
-        prog_title_lower = programme.title.lower()
-
-        if cat_title_fi in (
-            "Figupelit: avoin pelautus",
-            "Figupelit: demotus",
-            "Turnaukset: figupelit",
-            "Työpaja: figut",
-        ):
-            values.add("miniatures")
-
-        if "Aihe: figupelit" in tag_titles_fi:
-            values.add("miniatures")
-
-        if cat_title_fi == "Turnaukset: lautapelit":
-            values.add("boardgames")
-
-        if "Aihe: lautapelit" in tag_titles_fi:
-            values.add("boardgames")
-
-        if cat_title_fi == "Turnaukset: korttipelit":
-            values.add("cardgames")
-
-        if cat_title_fi == "Työpaja: käsityö":
-            values.add("crafts")
-
-        if cat_title_fi == "Tanssiohjelma":
-            values.add("dance")
-
-        if cat_title_fi == "LARP":
-            values.add("larp")
-
-        if "Aihe: Larpit" in tag_titles_fi:
-            values.add("larp")
-
-        if cat_title_fi == "Työpaja: musiikki":
-            values.add("music")
 
         if "boff" in prog_title_lower:
-            values.add("boffering")
+            values.setdefault("topic", []).append("boffering")
+            values.setdefault("type", []).append("activity")
 
-        return list(values)
+        if "näyttely" in prog_title_lower:
+            values.setdefault("type", []).append("exhibit")
 
-    def get_konsti_dimension_value(self, programme: Programme) -> list[str]:
-        values = set()
-        cat_title_fi = programme.category.title.split("/", 1)[0].strip()
+        if "polttopallo" in prog_title_lower:
+            values.setdefault("type", []).append("activity")
 
-        if cat_title_fi == "LARP":
-            values.add("larp")
-
-        if cat_title_fi == "Roolipeli":
-            values.add("tabletopRPG")
-
-        if cat_title_fi.startswith("Turnaukset:"):
-            values.add("tournament")
-
-        if cat_title_fi.startswith("Työpaja:"):
-            values.add("workshop")
-
-        if cat_title_fi.startswith("Kokemuspiste:"):
-            values.add("experiencePoint")
-
-        # TODO add special case programs with the "other" Konsti settings profile
-        # They are in these categories, but not all program of these categories is included?
-        if cat_title_fi in (
-            "Muu peliohjelma",
-            "Muu ohjelma",
-            "Figupelit: demotus",
-        ):
-            values.add("other")
-
-        return list(values)
+        return values
 
     def get_other_fields(self, programme: Programme) -> dict[str, str]:
         other_fields = super().get_other_fields(programme)
+        dimension_values = self.get_program_dimension_values(programme)
 
-        is_konsti = len(self.get_konsti_dimension_value(programme)) > 0
+        is_konsti = len(dimension_values.get("konsti", [])) > 0
         if is_konsti:
             other_fields["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
 

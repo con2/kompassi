@@ -320,43 +320,217 @@ class Setup:
             ),
         )
 
-        have_categories = Category.objects.filter(event=self.event).exists()
-        if not have_categories:
-            for title, slug, style in [
-                ("Puheohjelma: esitelmä / Presentation", "pres", "color1"),
-                ("Puheohjelma: paneeli / Panel discussion", "panel", "color1"),
-                ("Puheohjelma: keskustelu / Discussion group", "disc", "color1"),
-                ("Työpaja: käsityö / Workshop: crafts", "workcraft", "color2"),
-                ("Työpaja: figut / Workshop: miniature figurines", "workmini", "color2"),
-                ("Työpaja: musiikki / Workshop: music", "workmusic", "color2"),
-                ("Työpaja: muu / Workshop: other", "workother", "color2"),
-                ("Tanssiohjelma / Dance programme", "dance", "color2"),
-                ("Esitysohjelma / Performance programme", "perforprog", "color2"),
-                ("Miitti / Meetup", "meetup", "color2"),
-                ("Kokemuspiste: demotus / Experience Point: Demo game", "expdemo", "color3"),
-                ("Kokemuspiste: avoin pelautus / Experience Point: Open game", "expopen", "color3"),
-                ("Kokemuspiste: muu / Experience Point: Other", "expother", "color3"),
-                ("Figupelit: demotus / Miniature wargames: Demo game", "minidemo", "color3"),
-                ("Figupelit: avoin pelautus / Miniature wargames: Open game", "miniopen", "color3"),
-                ("Turnaukset: figupelit / Tournament: Miniature wargames", "tourmini", "color3"),
-                ("Turnaukset: korttipelit / Tournament: Card games", "tourcard", "color3"),
-                ("Turnaukset: lautapelit / Tournament: Board games", "tourboard", "color3"),
-                ("Turnaukset: muu / Tournament: Other", "tourother", "color3"),
-                ("Muu peliohjelma / Other game programme", "othergame", "color3"),
-                ("Roolipeli / Pen & Paper RPG", "rpg", "color4"),
-                ("LARP", "larp", "color5"),
-                ("Muu ohjelma / Other programme", "other", "color6"),
-                ("Sisäinen ohjelma", "internal", "sisainen"),
-            ]:
-                Category.objects.get_or_create(
-                    event=self.event,
-                    slug=slug,
-                    defaults=dict(
-                        title=title,
-                        style=style,
-                        public=style != "sisainen",
-                    ),
-                )
+        for input_data in [
+            (
+                "Puheohjelma: esitelmä / Presentation",
+                "pres",
+                "color1",
+                {"type": ["talk"], "participation": ["presentation"]},
+            ),
+            (
+                "Puheohjelma: paneeli / Panel discussion",
+                "panel",
+                "color1",
+                {"type": ["talk"], "participation": ["panel"]},
+            ),
+            (
+                "Puheohjelma: keskustelu / Discussion group",
+                "disc",
+                "color1",
+                {"type": ["talk"], "participation": ["discussion"]},
+            ),
+            (
+                "Työpaja: käsityö / Workshop: crafts",
+                "workcraft",
+                "color2",
+                {
+                    "type": ["workshop"],
+                    "topic": ["crafts"],
+                    "konsti": ["workshop"],
+                },
+            ),
+            (
+                "Työpaja: figut / Workshop: miniature figurines",
+                "workmini",
+                "color2",
+                {
+                    "type": ["workshop"],
+                    "topic": ["miniatures"],
+                    "konsti": ["workshop"],
+                },
+            ),
+            (
+                "Työpaja: musiikki / Workshop: music",
+                "workmusic",
+                "color2",
+                {
+                    "type": ["workshop"],
+                    "topic": ["music"],
+                    "konsti": ["workshop"],
+                },
+            ),
+            (
+                "Työpaja: muu / Workshop: other",
+                "workother",
+                "color2",
+                {
+                    "type": ["workshop"],
+                    "konsti": ["workshop"],
+                },
+            ),
+            (
+                "Tanssiohjelma / Dance programme",
+                "dance",
+                "color2",
+                {"type": ["activity"], "topic": ["dance"]},
+            ),
+            (
+                "Esitysohjelma / Performance programme",
+                "perforprog",
+                "color2",
+                {"type": ["performance"]},
+            ),
+            (
+                "Miitti / Meetup",
+                "meetup",
+                "color2",
+                {"type": ["meetup"]},
+            ),
+            (
+                "Kokemuspiste: demotus / Experience Point: Demo game",
+                "expdemo",
+                "color3",
+                {
+                    "type": ["experience", "gaming"],
+                    "participation": ["demo"],
+                    "konsti": ["experiencePoint"],
+                },
+            ),
+            (
+                "Kokemuspiste: avoin pelautus / Experience Point: Open game",
+                "expopen",
+                "color3",
+                {
+                    "type": ["experience", "gaming"],
+                    "participation": ["open-gaming"],
+                    "konsti": ["experiencePoint"],
+                },
+            ),
+            (
+                "Kokemuspiste: muu / Experience Point: Other",
+                "expother",
+                "color3",
+                {
+                    "type": ["experience"],
+                    "konsti": ["experiencePoint"],
+                },
+            ),
+            (
+                "Figupelit: demotus / Miniature wargames: Demo game",
+                "minidemo",
+                "color3",
+                {
+                    "type": ["gaming"],
+                    "topic": ["miniatures"],
+                    "participation": ["demo"],
+                    "konsti": ["other"],
+                },
+            ),
+            (
+                "Figupelit: avoin pelautus / Miniature wargames: Open game",
+                "miniopen",
+                "color3",
+                {"type": ["gaming"], "topic": ["miniatures"], "participation": ["open-gaming"]},
+            ),
+            (
+                "Turnaukset: figupelit / Tournament: Miniature wargames",
+                "tourmini",
+                "color3",
+                {
+                    "type": ["gaming"],
+                    "topic": ["miniatures"],
+                    "participation": ["tournament"],
+                    "konsti": ["tournament"],
+                },
+            ),
+            (
+                "Turnaukset: korttipelit / Tournament: Card games",
+                "tourcard",
+                "color3",
+                {
+                    "type": ["gaming"],
+                    "topic": ["cardgames"],
+                    "participation": ["tournament"],
+                    "konsti": ["tournament"],
+                },
+            ),
+            (
+                "Turnaukset: lautapelit / Tournament: Board games",
+                "tourboard",
+                "color3",
+                {
+                    "type": ["gaming"],
+                    "topic": ["boardgames"],
+                    "participation": ["tournament"],
+                    "konsti": ["tournament"],
+                },
+            ),
+            (
+                "Turnaukset: muu / Tournament: Other",
+                "tourother",
+                "color3",
+                {
+                    "type": ["gaming"],
+                    "participation": ["tournament"],
+                    "konsti": ["tournament"],
+                },
+            ),
+            (
+                "Muu peliohjelma / Other game programme",
+                "othergame",
+                "color3",
+                {"type": ["gaming"], "konsti": ["other"]},
+            ),
+            (
+                "Roolipeli / Pen & Paper RPG",
+                "rpg",
+                "color4",
+                {"type": ["gaming"], "topic": ["penandpaper"], "konsti": ["tabletopRPG"]},
+            ),
+            (
+                "LARP",
+                "larp",
+                "color5",
+                {"type": ["gaming"], "topic": ["larp"], "konsti": ["larp"]},
+            ),
+            (
+                "Muu ohjelma / Other programme",
+                "other",
+                "color6",
+                {"konsti": ["other"]},
+            ),
+            ("Sisäinen ohjelma", "internal", "sisainen"),
+        ]:
+            if len(input_data) == 3:
+                title, slug, style = input_data
+                v2_dimensions = {}
+            elif len(input_data) == 4:
+                title, slug, style, v2_dimensions = input_data
+            else:
+                raise ValueError(input_data)
+
+            Category.objects.update_or_create(
+                event=self.event,
+                slug=slug,
+                create_defaults=dict(
+                    title=title,
+                    style=style,
+                    public=style != "sisainen",
+                ),
+                defaults=dict(
+                    v2_dimensions=v2_dimensions,
+                ),
+            )
 
         TimeBlock.objects.get_or_create(
             event=self.event,
@@ -478,18 +652,24 @@ class Setup:
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
 
-        if not Tag.objects.filter(event=self.event).exists():
-            for tag_title in [
-                "Demo",
-                "Kilpailu/Turnaus",
-                "Kunniavieras",
-                "Aihe: Figupelit",
-                "Aihe: Korttipelit",
-                "Aihe: Larpit",
-                "Aihe: Lautapelit",
-                "Aihe: Pöytäroolipelit",
-            ]:
-                Tag.objects.get_or_create(event=self.event, title=tag_title)
+        for tag_title, v2_dimensions in [
+            ("Demo", {"participation": ["demo"]}),
+            ("Kilpailu/Turnaus", {"participation": ["tournament"]}),
+            ("Kunniavieras", {"topic": ["goh"]}),
+            ("Aihe: Figupelit", {"topic": ["miniatures"]}),
+            ("Aihe: Korttipelit", {"topic": ["cardgames"]}),
+            ("Aihe: Larpit", {"topic": ["larp"]}),
+            ("Aihe: Lautapelit", {"topic": ["boardgames"]}),
+            ("Aihe: Pöytäroolipelit", {"topic": ["penandpaper"]}),
+            ("Boffaus", {"topic": ["boffering"]}),
+        ]:
+            Tag.objects.update_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    v2_dimensions=v2_dimensions,
+                ),
+            )
 
         self.event.programme_event_meta.create_groups()
 

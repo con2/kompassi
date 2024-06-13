@@ -42,4 +42,6 @@ class ProgramAdmin(admin.ModelAdmin):
         "cached_dimensions",
         "cached_earliest_start_time",
         "cached_latest_end_time",
+        "cached_location",
+        "cached_color",
     )

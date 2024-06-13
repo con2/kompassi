@@ -44,7 +44,7 @@ class DefaultImporter:
 
     date_cutoff_time = timedelta(hours=4)  # 04:00 local time
 
-    def get_date_dimension_value(self, programme: Programme) -> str:
+    def get_date_dimension_value(self, programme: Programme) -> list[str]:
         """
         Return the date dimension value for the programme.
 
@@ -54,7 +54,7 @@ class DefaultImporter:
         if not programme.start_time:
             raise ValueError(f"Programme {programme} has no start time")
 
-        return (programme.start_time.astimezone(tz) - self.date_cutoff_time).date().isoformat()
+        return [(programme.start_time.astimezone(tz) - self.date_cutoff_time).date().isoformat()]
 
     def _get_date_dimension_values(self) -> Iterable[DimensionValueDTO]:
         """
@@ -116,13 +116,22 @@ class DefaultImporter:
             ),
         ]
 
-    def get_program_dimension_values(self, programme: Programme) -> dict[str, str | list[str] | None]:
-        return dict(
-            date=self.get_date_dimension_value(programme),
-            category=programme.category.slug,
-            tag=[tag.slug for tag in programme.tags.all()],
-            room=programme.room.slug if programme.room else None,
-        )
+    def get_program_dimension_values(self, programme: Programme) -> dict[str, list[str]]:
+        values: dict[str, set[str]] = dict(date=set(self.get_date_dimension_value(programme)))
+
+        for value_source in [
+            programme.category,
+            programme.room,
+            *programme.tags.all(),
+        ]:
+            if value_source:
+                for dimension_slug, value_slugs in value_source.v2_dimensions.items():
+                    print(value_source.__class__.__name__, value_source.slug, dimension_slug, value_slugs)
+                    values.setdefault(dimension_slug, set()).update(value_slugs)
+
+        print(values)
+
+        return {k: list(v) for k, v in values.items()}
 
     def get_length(self, programme: Programme) -> timedelta:
         """

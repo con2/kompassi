@@ -1,11 +1,18 @@
+from __future__ import annotations
+
 import logging
 import os
+from typing import TYPE_CHECKING
 
 from django.db import models
 from django.db.transaction import atomic
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
+from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
+
+if TYPE_CHECKING:
+    from .programme import Programme
+    from .schedule import ViewRoom
 
 ROOM_NAME_MAX_LENGTH = 1023
 
@@ -17,7 +24,7 @@ class Room(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, null=True, blank=True, related_name="rooms")
     name = models.CharField(max_length=ROOM_NAME_MAX_LENGTH)
     notes = models.TextField(blank=True)
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     paikkala_room = models.ForeignKey(
         "paikkala.Room",
@@ -25,6 +32,18 @@ class Room(models.Model):
         null=True,
         blank=True,
     )
+
+    v2_dimensions = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text=(
+            "dimension slug -> list of dimension value slugs. "
+            "When program is imported to v2, dimension values indicated here are added to programs of this category."
+        ),
+    )
+
+    programmes: models.QuerySet[Programme]
+    view_rooms: models.QuerySet[ViewRoom]
 
     def __str__(self):
         return self.name
@@ -68,6 +87,9 @@ class Room(models.Model):
     def paikkala_schema_path(self):
         from pkg_resources import resource_filename
 
+        if not self.event:
+            raise ValueError("Room %s has no event", self)
+
         return resource_filename(__name__, f"paikkala_data/{self.event.venue.slug}/{self.slug}.csv")
 
     @atomic
@@ -85,7 +107,7 @@ class Room(models.Model):
         paikkala_room_name = str(uuid4())
 
         with open(self.paikkala_schema_path, encoding="UTF-8") as infp:
-            import_zones(row_csv_list=read_csv(infp), default_room_name=paikkala_room_name)
+            import_zones(row_csv_list=list(read_csv(infp)), default_room_name=paikkala_room_name)
 
         self.paikkala_room = PaikkalaRoom.objects.get(name=paikkala_room_name)
         self.paikkala_room.name = self.name
@@ -93,3 +115,18 @@ class Room(models.Model):
         self.save()
 
         return self.paikkala_room
+
+    def save(self, *args, **kwargs):
+        if self.name and not self.slug:
+            self.slug = slugify(self.name)
+
+        if (
+            self.slug
+            and not self.v2_dimensions
+            and self.event
+            and (meta := self.event.program_v2_event_meta)
+            and meta.importer_name == "default"
+        ):
+            self.v2_dimensions = {"room": [self.slug]}
+
+        return super().save(*args, **kwargs)

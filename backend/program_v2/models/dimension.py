@@ -134,19 +134,13 @@ class ProgramDimensionValue(models.Model):
     def build_upsertables(
         cls,
         program: Program,
-        dimension_values: dict[str, list[str] | str | None],
+        dimension_values: dict[str, list[str]],
         dimensions_by_slug: dict[str, Dimension],
         values_by_slug: dict[str, dict[str, DimensionValue]],
     ) -> list[Self]:
         bulk_create = []
 
         for dimension_slug, value_slugs in dimension_values.items():
-            if isinstance(value_slugs, str):
-                value_slugs = [value_slugs]
-
-            if not value_slugs:
-                continue
-
             dimension = dimensions_by_slug[dimension_slug]
             for value_slug in value_slugs:
                 value = values_by_slug[dimension_slug][value_slug]
@@ -269,3 +263,8 @@ class DimensionDTO(pydantic.BaseModel):
             Program.refresh_cached_dimensions_qs(event.programs.all())
 
         return django_dimensions
+
+
+# shorthand types
+CachedDimensions = dict[str, list[str]]
+DimensionInput = dict[str, str | list[str] | None]

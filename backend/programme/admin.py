@@ -48,6 +48,7 @@ class ProgrammeAdmin(admin.ModelAdmin):
     fields = (
         "title",
         "category",
+        "state",
         "room",
         "start_time",
         "length",
@@ -59,6 +60,7 @@ class ProgrammeAdmin(admin.ModelAdmin):
     readonly_fields = (
         "title",
         "category",
+        "state",
         "room",
         "start_time",
         "length",
@@ -67,6 +69,14 @@ class ProgrammeAdmin(admin.ModelAdmin):
     list_display = ("title", "category", "room", "start_time", "length", "end_time")
     list_filter = ("category__event",)
     search_fields = ("title",)
+
+
+class ProgrammeInline(admin.TabularInline):
+    model = Programme
+    fields = ("title", "category", "room", "start_time", "length", "end_time")
+    readonly_fields = ("title", "category", "room", "start_time", "length", "end_time")
+    extra = 0
+    show_change_link = True
 
 
 @admin.register(View)
@@ -99,6 +109,7 @@ class RoleAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("event", "title", "public")
     list_filter = ("event",)
+    inlines = [ProgrammeInline]
 
 
 @admin.register(SpecialStartTime)
