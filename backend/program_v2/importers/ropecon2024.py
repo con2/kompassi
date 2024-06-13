@@ -81,6 +81,7 @@ class RopeconImporter(DefaultImporter):
                         ("music", "Musiikki", "Music"),
                         ("penandpaper", "Pöytäroolipelit", "Pen & Paper RPG"),
                         ("boffering", "Boffaus", "Boffering"),
+                        ("goh", "Kunniavieraat", "Guests of Honor"),
                     ]
                 ],
             ),
@@ -230,6 +231,9 @@ class RopeconImporter(DefaultImporter):
 
         if "boff" in prog_title_lower:
             values.add("boffering")
+
+        if "Kunniavieras" in tag_titles_fi:
+            values.add("goh")
 
         return list(values)
 
