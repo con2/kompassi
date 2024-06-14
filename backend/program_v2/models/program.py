@@ -224,27 +224,17 @@ class Program(models.Model):
     ):
         from programme.models.programme import Programme
 
-        from .dimension import DimensionValue
-
         if (meta := event.program_v2_event_meta) is None:
             raise ValueError(f"Event {event.slug} does not have program_v2_event_meta")
 
         if queryset is None:
             queryset = Programme.objects.filter(category__event=event)
 
-        if clear:
-            cls.objects.filter(event=event).delete()
-            DimensionValue.objects.filter(dimension__event=event).delete()
-        else:
-            slugs_to_delete = queryset.exclude(state="published").values_list("slug", flat=True)
-            cls.objects.filter(event=event, slug__in=slugs_to_delete).delete()
-
-        # Only imports published programme for now as there is no access control
-        queryset = queryset.filter(state="published")
-
         Importer = meta.importer_class
         importer = Importer(event=event)
-        return importer.import_program(queryset)
+
+        importer.import_dimensions(clear=clear, refresh_cached_dimensions=False)
+        return importer.import_program(queryset, clear=clear)
 
     @property
     def meta(self) -> ProgramV2EventMeta:

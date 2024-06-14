@@ -9,7 +9,7 @@ from django.utils.timezone import get_current_timezone
 
 from core.models import Event
 from programme.models.category import Category
-from programme.models.programme import PROGRAMME_STATES_LIVE, Programme
+from programme.models.programme import Programme
 from programme.models.room import Room
 from programme.models.tag import Tag
 
@@ -21,7 +21,7 @@ from ..consts import (
     TAG_DIMENSION_TITLE_LOCALIZED,
     WEEKDAYS_LOCALIZED,
 )
-from ..models.dimension import DimensionDTO, DimensionValueDTO, ProgramDimensionValue
+from ..models.dimension import Dimension, DimensionDTO, DimensionValueDTO, ProgramDimensionValue
 from ..models.program import Program
 from ..models.schedule import ScheduleItem
 
@@ -126,10 +126,7 @@ class DefaultImporter:
         ]:
             if value_source:
                 for dimension_slug, value_slugs in value_source.v2_dimensions.items():
-                    print(value_source.__class__.__name__, value_source.slug, dimension_slug, value_slugs)
                     values.setdefault(dimension_slug, set()).update(value_slugs)
-
-        print(values)
 
         return {k: list(v) for k, v in values.items()}
 
@@ -195,7 +192,7 @@ class DefaultImporter:
 
     def get_eligible_programmes(self, queryset: QuerySet[Programme]) -> QuerySet[Programme]:
         return queryset.filter(
-            state__in=PROGRAMME_STATES_LIVE,
+            state="published",
             start_time__isnull=False,
             length__isnull=False,
         ).order_by("id")
@@ -204,13 +201,92 @@ class DefaultImporter:
     schedule_item_batch_size = 100
     pdf_batch_size = 400
 
-    def import_program(self, queryset: QuerySet[Programme]):
-        logger.info("Starting program import for %s", self.event.slug)
-        dimensions = self.get_dimensions()
-        DimensionDTO.save_many(self.event, dimensions, remove_others=True, refresh_cached=False)
-        logger.info("Imported %d dimensions for %s", len(dimensions), self.event.slug)
+    def import_dimensions(
+        self,
+        clear: bool = False,
+        refresh_cached_dimensions: bool = True,
+    ) -> list[Dimension]:
+        logger.info("Starting dimensions import for %s", self.event.slug)
 
-        v1_programmes = list(self.get_eligible_programmes(queryset))
+        meta = self.event.program_v2_event_meta
+        if not meta:
+            raise ValueError(f"Event {self.event} has no ProgramV2EventMeta")
+
+        location_dimension_slug = ""
+        primary_dimension_slug = ""
+
+        if clear:
+            # we have to replace the location and primary dimensions with their new versions
+            update_fields = []
+            if meta.location_dimension:
+                location_dimension_slug = meta.location_dimension.slug
+                meta.location_dimension = None
+                update_fields.append("location_dimension")
+            if meta.primary_dimension:
+                primary_dimension_slug = meta.primary_dimension.slug
+                meta.primary_dimension = None
+                update_fields.append("primary_dimension")
+            if update_fields:
+                meta.save(update_fields=update_fields)
+
+            _, deleted = Dimension.objects.filter(event=self.event).delete()
+            logger.info("Dimension clearing deleted %s", deleted or "nothing")
+
+        dimension_dtos = self.get_dimensions()
+        dimensions = DimensionDTO.save_many(self.event, dimension_dtos, remove_others=True, refresh_cached=False)
+        logger.info("Imported %d dimensions for %s", len(dimension_dtos), self.event.slug)
+
+        if clear:
+            update_fields = []
+            # XXX pyrekt are you drunk? (type: ignores)
+            if location_dimension_slug:
+                meta.location_dimension = Dimension.objects.get(  # type: ignore
+                    event=self.event,
+                    slug=location_dimension_slug,
+                )
+                update_fields.append("location_dimension")
+            if primary_dimension_slug:
+                meta.primary_dimension = Dimension.objects.get(  # type: ignore
+                    event=self.event,
+                    slug=primary_dimension_slug,
+                )
+                update_fields.append("primary_dimension")
+            if update_fields:
+                meta.save(update_fields=update_fields)
+
+        if refresh_cached_dimensions:
+            Program.refresh_cached_dimensions_qs(self.event.programs.all())
+
+        return dimensions
+
+    def import_program(
+        self,
+        queryset: QuerySet[Programme],
+        clear: bool = False,
+        refresh_cached_fields: bool = True,
+    ) -> list[Program]:
+        logger.info("Starting program import for %s", self.event.slug)
+
+        eligible_queryset = self.get_eligible_programmes(queryset)
+
+        if clear:
+            _, deleted = Program.objects.filter(event=self.event).delete()
+            logger.info("Program clearing deleted %s", deleted or "nothing")
+        else:
+            # remove programs that have since been un-published
+            _, deleted = (
+                Program.objects.filter(
+                    event=self.event,
+                    slug__in=queryset.values_list("slug", flat=True),
+                )
+                .exclude(
+                    slug__in=eligible_queryset.values_list("slug", flat=True),
+                )
+                .delete()
+            )
+            logger.info("Un-published program cleanup deleted %s", deleted or "nothing")
+
+        v1_programmes = list(eligible_queryset)
 
         program_upsert = (self.get_program(programme) for programme in v1_programmes)
         v2_programs = []
@@ -243,10 +319,8 @@ class DefaultImporter:
             )
         logger.info("Imported %d schedule items for %s", len(schedule_item_ids), self.event.slug)
 
-        num_deleted_schedule_items, _ = (
-            ScheduleItem.objects.filter(program__in=v2_programs).exclude(id__in=schedule_item_ids).delete()
-        )
-        logger.info("Deleted %s stale schedule items", num_deleted_schedule_items)
+        _, deleted = ScheduleItem.objects.filter(program__in=v2_programs).exclude(id__in=schedule_item_ids).delete()
+        logger.info("Schedule item cleanup deleted %s", deleted or "nothing")
 
         upsert_cache = ProgramDimensionValue.build_upsert_cache(self.event)
         pdv_upserts = (
@@ -265,12 +339,11 @@ class DefaultImporter:
         logger.info("Imported %d program dimension values", len(pdv_ids))
 
         # delete program dimension values that are not set in the new data
-        num_deleted_pdvs, _ = (
-            ProgramDimensionValue.objects.filter(program__in=v2_programs).exclude(id__in=pdv_ids).delete()
-        )
-        logger.info("Deleted %s stale program dimension values", num_deleted_pdvs)
+        _, deleted = ProgramDimensionValue.objects.filter(program__in=v2_programs).exclude(id__in=pdv_ids).delete()
+        logger.info("Stale PDV cleanup deleted %s", deleted or "nothing")
 
-        Program.refresh_cached_fields_qs(self.event.programs.all())
+        if refresh_cached_fields:
+            Program.refresh_cached_fields_qs(self.event.programs.all())
 
         logger.info("Finished program import for %s", self.event.slug)
 
