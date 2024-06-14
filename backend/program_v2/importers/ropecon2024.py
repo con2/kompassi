@@ -226,11 +226,7 @@ class RopeconImporter(DefaultImporter):
             ),
             DimensionDTO(
                 slug="audience",
-                title=dict(
-                    fi="Kohderyhmä",
-                    en="Target Audience",
-                    sv="Målgrupp"
-                ),
+                title=dict(fi="Kohderyhmä", en="Target Audience", sv="Målgrupp"),
                 choices=[
                     DimensionValueDTO(
                         slug=slug,
@@ -240,46 +236,18 @@ class RopeconImporter(DefaultImporter):
                         ),
                     )
                     for slug, title_fi, title_en in [
-                        (
-                            "all-ages",
-                            "Sopii kaiken ikäisille",
-                            "Suitable for all ages"
-                        ),
-                        (
-                            "aimed-under-13",
-                            "Suunnattu alle 13-vuotiaille",
-                            "Aimed at children under 13"
-                        ),
-                        (
-                            "aimed-between-13-17",
-                            "Suunnattu 13–17-vuotiaille",
-                            "Aimed at children between 13–17"
-                        ),
-                        (
-                            "aimed-adults",
-                            "Suunnattu täysi-ikäisille",
-                            "Aimed at adult attendees"
-                        ),
-                        (
-                            "k-18",
-                            "Vain täysi-ikäisille",
-                            "For 18+ only"
-                        ),
-                        (
-                            "beginners",
-                            "Aloittelijaystävällinen",
-                            "Beginner-friendly"
-                        ),
+                        ("all-ages", "Sopii kaiken ikäisille", "Suitable for all ages"),
+                        ("aimed-under-13", "Suunnattu alle 13-vuotiaille", "Aimed at children under 13"),
+                        ("aimed-between-13-17", "Suunnattu 13–17-vuotiaille", "Aimed at children between 13–17"),
+                        ("aimed-adults", "Suunnattu täysi-ikäisille", "Aimed at adult attendees"),
+                        ("k-18", "Vain täysi-ikäisille", "For 18+ only"),
+                        ("beginners", "Aloittelijaystävällinen", "Beginner-friendly"),
                     ]
-                ]
+                ],
             ),
             DimensionDTO(
                 slug="language",
-                title=dict(
-                    fi="Kieli",
-                    en="Language",
-                    sv="Språk"
-                ),
+                title=dict(fi="Kieli", en="Language", sv="Språk"),
                 choices=[
                     DimensionValueDTO(
                         slug=slug,
@@ -295,7 +263,7 @@ class RopeconImporter(DefaultImporter):
                         ("free", "Kielivapaa", "Language free"),
                         ("sv", "Ruotsi", "Swedish"),
                     ]
-                ]
+                ],
             ),
             DimensionDTO(
                 slug="konsti",
@@ -423,8 +391,8 @@ class RopeconImporter(DefaultImporter):
         if programme.ropecon2024_language == "fin_and_eng":
             values.setdefault("language", []).append("fi_en")
 
-        #if programme.ropecon2024_language == "other":
-            # ?
+        # if programme.ropecon2024_language == "other":
+        # ?
 
         return values
 
