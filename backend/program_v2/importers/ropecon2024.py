@@ -373,9 +373,9 @@ class RopeconImporter(DefaultImporter):
             values.setdefault("audience", []).append("aimed-between-13-17")
         if programme.ropecon2023_aimed_at_adult_attendees:
             values.setdefault("audience", []).append("aimed-adults")
-        if programme.ropecon2023_beginner_friendly:
-            values.setdefault("audience", []).append("k-18")
         if programme.ropecon2023_for_18_plus_only:
+            values.setdefault("audience", []).append("k-18")
+        if programme.ropecon2023_beginner_friendly:
             values.setdefault("audience", []).append("beginners")
 
         # language
