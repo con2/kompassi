@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from itertools import batched
 from typing import TYPE_CHECKING, Self
 
@@ -134,7 +134,7 @@ class ProgramDimensionValue(models.Model):
     def build_upsertables(
         cls,
         program: Program,
-        dimension_values: dict[str, list[str]],
+        dimension_values: Mapping[str, Iterable[str]],
         dimensions_by_slug: dict[str, Dimension],
         values_by_slug: dict[str, dict[str, DimensionValue]],
     ) -> list[Self]:
@@ -142,7 +142,7 @@ class ProgramDimensionValue(models.Model):
 
         for dimension_slug, value_slugs in dimension_values.items():
             dimension = dimensions_by_slug[dimension_slug]
-            for value_slug in value_slugs:
+            for value_slug in set(value_slugs):
                 value = values_by_slug[dimension_slug][value_slug]
                 bulk_create.append(
                     cls(
