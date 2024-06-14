@@ -423,7 +423,7 @@ class RopeconImporter(DefaultImporter):
         if programme.ropecon2024_language == "fin_and_eng":
             values.setdefault("language", []).append("fi_en")
 
-        if programme.ropecon2024_language == "other":
+        #if programme.ropecon2024_language == "other":
             # ?
 
         return values
