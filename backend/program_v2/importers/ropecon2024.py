@@ -299,15 +299,8 @@ class RopeconImporter(DefaultImporter):
         values = super().get_program_dimension_values(programme)
         prog_title_lower = programme.title.lower()
 
-        if "boff" in prog_title_lower:
-            values.setdefault("topic", []).append("boffering")
-            values.setdefault("type", []).append("activity")
-
         if "näyttely" in prog_title_lower:
             values.setdefault("type", []).append("exhibit")
-
-        if "polttopallo" in prog_title_lower:
-            values.setdefault("type", []).append("activity")
 
         if programme.ropecon_theme:
             values.setdefault("topic", []).append("theme")
