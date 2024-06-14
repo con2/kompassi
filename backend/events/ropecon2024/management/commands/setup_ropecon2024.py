@@ -662,6 +662,8 @@ class Setup:
             ("Aihe: Lautapelit", {"topic": ["boardgames"]}),
             ("Aihe: Pöytäroolipelit", {"topic": ["penandpaper"]}),
             ("Boffaus", {"topic": ["boffering"]}),
+            ("Tanssiohjelma", {"topic": ["dance"]}),
+            ("Liikunnallinen ohjelma", {"type": ["activity"]}),
         ]:
             Tag.objects.update_or_create(
                 event=self.event,
