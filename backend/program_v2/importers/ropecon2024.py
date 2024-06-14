@@ -306,9 +306,6 @@ class RopeconImporter(DefaultImporter):
             values.setdefault("topic", []).append("theme")
 
         # accessibility
-        if programme.ropecon2023_accessibility_cant_use_mic:
-            values.setdefault("accessibility", []).append("cant-use-mic")
-
         if programme.ropecon2021_accessibility_loud_sounds:
             values.setdefault("accessibility", []).append("loud-sounds")
 
