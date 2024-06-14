@@ -202,7 +202,7 @@ class RopeconImporter(DefaultImporter):
                         ),
                         (
                             "texts-with-no-recordings",
-                            "Tekstiä, joka ei ole saatavilla nauhoitetta tai jota ei lueta ääneen",
+                            "Tekstiä, josta ei ole saatavilla nauhoitetta tai jota ei lueta ääneen",
                             "Text essential to participation without a recoding or text read out loud",
                         ),
                         (
