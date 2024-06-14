@@ -122,6 +122,7 @@ class DefaultImporter:
         for value_source in [
             programme.category,
             programme.room,
+            programme.form_used,
             *programme.tags.all(),
         ]:
             if value_source:
@@ -233,7 +234,7 @@ class DefaultImporter:
             logger.info("Dimension clearing deleted %s", deleted or "nothing")
 
         dimension_dtos = self.get_dimensions()
-        dimensions = DimensionDTO.save_many(self.event, dimension_dtos, remove_others=True, refresh_cached=False)
+        dimensions = DimensionDTO.save_many(self.event, dimension_dtos, refresh_cached=False)
         logger.info("Imported %d dimensions for %s", len(dimension_dtos), self.event.slug)
 
         if clear:

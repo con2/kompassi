@@ -565,10 +565,10 @@ class Setup:
                     view.save()
 
         role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="roolipeli",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa pöytäroolipeliä / Call for GMs (tabletop role-playing games) 2024",
                 description=resource_string(__name__, "texts/roolipelit.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2024.forms:RpgForm",
@@ -576,13 +576,16 @@ class Setup:
                 order=20,
                 role=role,
             ),
+            defaults=dict(
+                v2_dimensions={"topic": ["penandpaper"], "type": ["gaming"]},
+            ),
         )
 
         role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="larp",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa larppia / Call for Larps 2024",
                 description=resource_string(__name__, "texts/larpit.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2024.forms:LarpForm",
@@ -590,13 +593,16 @@ class Setup:
                 order=30,
                 role=role,
             ),
+            defaults=dict(
+                v2_dimensions={"topic": ["larp"], "type": ["gaming"]},
+            ),
         )
 
         role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="pelitiski",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa peliohjelmaa / Call for Game Programme 2024",
                 short_description="Figupelit, korttipelit, lautapelit, turnaukset, Kokemuspisteen pelit yms. / Miniature wargames, board games, card games, game tournaments, games at the Experience Point etc.",
                 description=resource_string(__name__, "texts/pelitiski.html").decode("UTF-8"),
@@ -608,10 +614,10 @@ class Setup:
         )
 
         role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="tyopaja",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa työpajaohjelmaa / Call for Workshop Programme 2024",
                 description=resource_string(__name__, "texts/tyopaja.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2024.forms:WorkshopForm",
@@ -619,13 +625,16 @@ class Setup:
                 order=70,
                 role=role,
             ),
+            defaults=dict(
+                v2_dimensions={"type": ["workshop"]},
+            ),
         )
 
         role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="default",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa ohjelmaa Ropeconille / Call for Programme 2024",
                 short_description="Puheohjelmat, esitykset ym. / Lecture program, show program etc.",
                 description=resource_string(__name__, "texts/muuohjelma.html").decode("UTF-8"),
@@ -973,12 +982,10 @@ class Setup:
             )
 
     def setup_program_v2(self):
-        from program_v2.importers.default import DefaultImporter
-        from program_v2.models.dimension import DimensionDTO
+        from program_v2.importers.ropecon2024 import RopeconImporter
         from program_v2.models.meta import ProgramV2EventMeta
 
-        dimensions = DefaultImporter(self.event).get_dimensions()
-        dimensions = DimensionDTO.save_many(self.event, dimensions)
+        dimensions = RopeconImporter(self.event).import_dimensions()
         room_dimension = next(d for d in dimensions if d.slug == "room")
 
         ProgramV2EventMeta.objects.update_or_create(
