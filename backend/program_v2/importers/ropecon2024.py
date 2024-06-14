@@ -259,9 +259,8 @@ class RopeconImporter(DefaultImporter):
                     for slug, title_fi, title_en in [
                         ("fi", "Suomi", "Finnish"),
                         ("en", "Englanti", "English"),
-                        ("fi_en", "Suomi tai englanti", "Finnish or English"),
-                        ("free", "Kielivapaa", "Language free"),
                         ("sv", "Ruotsi", "Swedish"),
+                        ("free", "Kielivapaa", "Language free"),
                     ]
                 ],
             ),
@@ -379,7 +378,8 @@ class RopeconImporter(DefaultImporter):
             values.setdefault("language", []).append("free")
 
         if programme.ropecon2024_language == "fin_and_eng":
-            values.setdefault("language", []).append("fi_en")
+            values.setdefault("language", []).append("fi")
+            values.setdefault("language", []).append("en")
 
         for language_name in ("ruots", "swedish", "svensk"):
             if language_name in programme.ropecon2024_language_other.lower():
