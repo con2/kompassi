@@ -235,8 +235,8 @@ class RopeconImporter(DefaultImporter):
                     DimensionValueDTO(
                         slug=slug,
                         title=dict(
-                            fi=title_fi
-                            en=title_en
+                            fi=title_fi,
+                            en=title_en,
                         ),
                     )
                     for slug, title_fi, title_en in [
@@ -284,8 +284,8 @@ class RopeconImporter(DefaultImporter):
                     DimensionValueDTO(
                         slug=slug,
                         title=dict(
-                            fi=title_fi
-                            en=title_en
+                            fi=title_fi,
+                            en=title_en,
                         ),
                     )
                     for slug, title_fi, title_en in [
