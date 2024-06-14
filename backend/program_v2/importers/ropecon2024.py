@@ -120,11 +120,11 @@ class RopeconImporter(DefaultImporter):
             ),
             DimensionDTO(
                 slug="accessibility",
-                is_negative_select=True,
+                is_negative_selection=True,
                 title=dict(
                     fi="Esteettömyys",
                     en="Accessibility",
-                    sv="Tillgänglighet"
+                    sv="Tillgänglighet",
                 ),
                 choices=[
                     DimensionValueDTO(
@@ -135,25 +135,93 @@ class RopeconImporter(DefaultImporter):
                         ),
                     )
                     for slug, title_fi, title_en in [
-                        ("cant-use-mic", "En voi käyttää mikrofonia", "Can't use a microphone"),
-                        ("loud-sounds", "Kovat äänet", "Loud sounds"),
-                        ("flashing-lights", "Välkkyvät tai voimakkaat valot", "Flashing or bright lights"),
-                        ("strong-smells", "Voimakkaat tuoksut", "Strong smells"),
-                        ("irritate-skin", "Ihoa ärsyttävät aineet tai materiaalit", "Materials or substances that irritate the skin"),
-                        ("physical-contact", "Fyysinen kontakti ja/tai suppea henkilökohtaisen tilan mahdollisuus", "Physical contact and/or low chances or personal space"),
-                        ("low-lighting", "Pimeä/heikko valaistus", "Darkness/low lighting"),
-                        ("moving-around", "Paljon liikkumista ilman mahdollisuutta istumiseen", "A lot of moving around without a chance for sitting down"),
-                        ("duration-over-2h", "Kesto yli 2 tuntia ilman taukoja", "Duration over two hours withtout breaks"),
-                        ("limited-moving-opportunities", "Rajatut mahdollisuudet liikkumiseen", "Limited opportunies to move around"),
-                        ("video", "Video, jossa ei ole tekstitystä kuulorajoitteisille", "Video without subtitles for the hearing impaired"),
-                        ("recording", "Äänite, josta ei ole tekstiversiota kuulorajoitteisille", "Recording without a text version for the hearing impaired"),
-                        ("long-texts", "Pitkien tekstien itsenäistä lukemista", "Reading long texts independently"),
-                        ("texts-with-no-recordings", "Tekstiä, joka ei ole saatavilla nauhoitetta tai jota ei lueta ääneen", "Text essential to participation without a recoding or text read out loud"),
-                        ("requires-dexterity", "Vaatii sorminäppäryyttä", "Requires dexterity"),
-                        ("requires-quick-reactions", "Vaatii nopeaa reaktiokykyä", "Requires ability to react quickly"),
-                        ("colorblind", "Materiaalit voivat tuottaa haasteita värisokeille", "Materials used can cause problems for the colourblind"),
+                        (
+                            "cant-use-mic",
+                            "En voi käyttää mikrofonia",
+                            "Can't use a microphone",
+                        ),
+                        (
+                            "loud-sounds",
+                            "Kovat äänet",
+                            "Loud sounds",
+                        ),
+                        (
+                            "flashing-lights",
+                            "Välkkyvät tai voimakkaat valot",
+                            "Flashing or bright lights",
+                        ),
+                        (
+                            "strong-smells",
+                            "Voimakkaat tuoksut",
+                            "Strong smells",
+                        ),
+                        (
+                            "irritate-skin",
+                            "Ihoa ärsyttävät aineet tai materiaalit",
+                            "Materials or substances that irritate the skin",
+                        ),
+                        (
+                            "physical-contact",
+                            "Fyysinen kontakti ja/tai suppea henkilökohtaisen tilan mahdollisuus",
+                            "Physical contact and/or low chances or personal space",
+                        ),
+                        (
+                            "low-lighting",
+                            "Pimeä/heikko valaistus",
+                            "Darkness/low lighting",
+                        ),
+                        (
+                            "moving-around",
+                            "Paljon liikkumista ilman mahdollisuutta istumiseen",
+                            "A lot of moving around without a chance for sitting down",
+                        ),
+                        (
+                            "duration-over-2h",
+                            "Kesto yli 2 tuntia ilman taukoja",
+                            "Duration over two hours withtout breaks",
+                        ),
+                        (
+                            "limited-moving-opportunities",
+                            "Rajatut mahdollisuudet liikkumiseen",
+                            "Limited opportunies to move around",
+                        ),
+                        (
+                            "video",
+                            "Video, jossa ei ole tekstitystä kuulorajoitteisille",
+                            "Video without subtitles for the hearing impaired",
+                        ),
+                        (
+                            "recording",
+                            "Äänite, josta ei ole tekstiversiota kuulorajoitteisille",
+                            "Recording without a text version for the hearing impaired",
+                        ),
+                        (
+                            "long-texts",
+                            "Pitkien tekstien itsenäistä lukemista",
+                            "Reading long texts independently",
+                        ),
+                        (
+                            "texts-with-no-recordings",
+                            "Tekstiä, joka ei ole saatavilla nauhoitetta tai jota ei lueta ääneen",
+                            "Text essential to participation without a recoding or text read out loud",
+                        ),
+                        (
+                            "requires-dexterity",
+                            "Vaatii sorminäppäryyttä",
+                            "Requires dexterity",
+                        ),
+                        (
+                            "requires-quick-reactions",
+                            "Vaatii nopeaa reaktiokykyä",
+                            "Requires ability to react quickly",
+                        ),
+                        (
+                            "colorblind",
+                            "Materiaalit voivat tuottaa haasteita värisokeille",
+                            "Materials used can cause problems for the colourblind",
+                        ),
                     ]
-                ]
+                ],
             ),
             DimensionDTO(
                 slug="konsti",
