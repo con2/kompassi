@@ -49,7 +49,13 @@ class RopeconImporter(DefaultImporter):
                         ("experience", "Kokemus", "Experience"),
                         ("meetup", "Miitti", "Meetup"),
                         ("gaming", "Pelaaminen", "Gaming"),
+                        ("open-gaming", "Avoin pelaaminen", "Open gaming"),
+                        ("demo", "Demo", "Demo"),
+                        ("tournament", "Turnaus", "Tournament"),
                         ("talk", "Puheohjelma", "Talk"),
+                        ("presentation", "Esitelmä", "Presentation"),
+                        ("discussion", "Keskustelu", "Discussion group"),
+                        ("panel", "Paneeli", "Panel discussion"),
                         ("activity", "Liikunnallinen", "Activity"),
                         ("workshop", "Työpaja", "Workshop"),
                         ("exhibit", "Näyttely", "Exhibit"),
@@ -87,31 +93,6 @@ class RopeconImporter(DefaultImporter):
                 ],
             ),
             DimensionDTO(
-                slug="participation",
-                title=dict(
-                    fi="Osallistumistapa",
-                    en="Way of Participation",
-                    sv="Deltagandetyp",
-                ),
-                choices=[
-                    DimensionValueDTO(
-                        slug=slug,
-                        title=dict(
-                            fi=title_fi,
-                            en=title_en,
-                        ),
-                    )
-                    for slug, title_fi, title_en in [
-                        ("open-gaming", "Avoin pelaaminen", "Open gaming"),
-                        ("demo", "Demo", "Demo"),
-                        ("tournament", "Turnaus", "Tournament"),
-                        ("presentation", "Esitelmä", "Presentation"),
-                        ("discussion", "Keskustelu", "Discussion group"),
-                        ("panel", "Paneeli", "Panel discussion"),
-                    ]
-                ],
-            ),
-            DimensionDTO(
                 slug="room",
                 title=ROOM_DIMENSION_TITLE_LOCALIZED,
                 choices=[
@@ -136,11 +117,6 @@ class RopeconImporter(DefaultImporter):
                         ),
                     )
                     for slug, title_fi, title_en in [
-                        (
-                            "cant-use-mic",
-                            "En voi käyttää mikrofonia",
-                            "Can't use a microphone",
-                        ),
                         (
                             "loud-sounds",
                             "Kovat äänet",

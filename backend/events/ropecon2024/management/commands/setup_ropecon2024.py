@@ -325,19 +325,19 @@ class Setup:
                 "Puheohjelma: esitelmä / Presentation",
                 "pres",
                 "color1",
-                {"type": ["talk"], "participation": ["presentation"]},
+                {"type": ["talk", "presentation"]},
             ),
             (
                 "Puheohjelma: paneeli / Panel discussion",
                 "panel",
                 "color1",
-                {"type": ["talk"], "participation": ["panel"]},
+                {"type": ["talk", "panel"]},
             ),
             (
                 "Puheohjelma: keskustelu / Discussion group",
                 "disc",
                 "color1",
-                {"type": ["talk"], "participation": ["discussion"]},
+                {"type": ["talk", "discussion"]},
             ),
             (
                 "Työpaja: käsityö / Workshop: crafts",
@@ -401,8 +401,7 @@ class Setup:
                 "expdemo",
                 "color3",
                 {
-                    "type": ["experience", "gaming"],
-                    "participation": ["demo"],
+                    "type": ["experience", "gaming", "demo"],
                     "konsti": ["experiencePoint"],
                 },
             ),
@@ -411,8 +410,7 @@ class Setup:
                 "expopen",
                 "color3",
                 {
-                    "type": ["experience", "gaming"],
-                    "participation": ["open-gaming"],
+                    "type": ["experience", "gaming", "open-gaming"],
                     "konsti": ["experiencePoint"],
                 },
             ),
@@ -430,9 +428,8 @@ class Setup:
                 "minidemo",
                 "color3",
                 {
-                    "type": ["gaming"],
+                    "type": ["gaming", "demo"],
                     "topic": ["miniatures"],
-                    "participation": ["demo"],
                     "konsti": ["other"],
                 },
             ),
@@ -440,16 +437,15 @@ class Setup:
                 "Figupelit: avoin pelautus / Miniature wargames: Open game",
                 "miniopen",
                 "color3",
-                {"type": ["gaming"], "topic": ["miniatures"], "participation": ["open-gaming"]},
+                {"type": ["gaming", "open-gaming"], "topic": ["miniatures"]},
             ),
             (
                 "Turnaukset: figupelit / Tournament: Miniature wargames",
                 "tourmini",
                 "color3",
                 {
-                    "type": ["gaming"],
+                    "type": ["gaming", "tournament"],
                     "topic": ["miniatures"],
-                    "participation": ["tournament"],
                     "konsti": ["tournament"],
                 },
             ),
@@ -458,9 +454,8 @@ class Setup:
                 "tourcard",
                 "color3",
                 {
-                    "type": ["gaming"],
+                    "type": ["gaming", "tournament"],
                     "topic": ["cardgames"],
-                    "participation": ["tournament"],
                     "konsti": ["tournament"],
                 },
             ),
@@ -469,9 +464,8 @@ class Setup:
                 "tourboard",
                 "color3",
                 {
-                    "type": ["gaming"],
+                    "type": ["gaming", "tournament"],
                     "topic": ["boardgames"],
-                    "participation": ["tournament"],
                     "konsti": ["tournament"],
                 },
             ),
@@ -480,8 +474,7 @@ class Setup:
                 "tourother",
                 "color3",
                 {
-                    "type": ["gaming"],
-                    "participation": ["tournament"],
+                    "type": ["gaming", "tournament"],
                     "konsti": ["tournament"],
                 },
             ),
@@ -662,8 +655,8 @@ class Setup:
             TimeSlot.objects.get_or_create(name=time_slot_name)
 
         for tag_title, v2_dimensions in [
-            ("Demo", {"participation": ["demo"]}),
-            ("Kilpailu/Turnaus", {"participation": ["tournament"]}),
+            ("Demo", {"type": ["demo"]}),
+            ("Kilpailu/Turnaus", {"type": ["tournament"]}),
             ("Kunniavieras", {"topic": ["goh"]}),
             ("Aihe: Figupelit", {"topic": ["miniatures"]}),
             ("Aihe: Korttipelit", {"topic": ["cardgames"]}),
