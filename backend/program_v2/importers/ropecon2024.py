@@ -119,6 +119,43 @@ class RopeconImporter(DefaultImporter):
                 ],
             ),
             DimensionDTO(
+                slug="accessibility",
+                is_negative_select=True,
+                title=dict(
+                    fi="Esteettömyys",
+                    en="Accessibility",
+                    sv="Tillgänglighet"
+                ),
+                choices=[
+                    DimensionValueDTO(
+                        slug=slug,
+                        title=dict(
+                            fi=title_fi,
+                            en=title_en,
+                        ),
+                    )
+                    for slug, title_fi, title_en in [
+                        ("cant-use-mic", "En voi käyttää mikrofonia", "Can't use a microphone"),
+                        ("loud-sounds", "Kovat äänet", "Loud sounds"),
+                        ("flashing-lights", "Välkkyvät tai voimakkaat valot", "Flashing or bright lights"),
+                        ("strong-smells", "Voimakkaat tuoksut", "Strong smells"),
+                        ("irritate-skin", "Ihoa ärsyttävät aineet tai materiaalit", "Materials or substances that irritate the skin"),
+                        ("physical-contact", "Fyysinen kontakti ja/tai suppea henkilökohtaisen tilan mahdollisuus", "Physical contact and/or low chances or personal space"),
+                        ("low-lighting", "Pimeä/heikko valaistus", "Darkness/low lighting"),
+                        ("moving-around", "Paljon liikkumista ilman mahdollisuutta istumiseen", "A lot of moving around without a chance for sitting down"),
+                        ("duration-over-2h", "Kesto yli 2 tuntia ilman taukoja", "Duration over two hours withtout breaks"),
+                        ("limited-moving-opportunities", "Rajatut mahdollisuudet liikkumiseen", "Limited opportunies to move around"),
+                        ("video", "Video, jossa ei ole tekstitystä kuulorajoitteisille", "Video without subtitles for the hearing impaired"),
+                        ("recording", "Äänite, josta ei ole tekstiversiota kuulorajoitteisille", "Recording without a text version for the hearing impaired"),
+                        ("long-texts", "Pitkien tekstien itsenäistä lukemista", "Reading long texts independently"),
+                        ("texts-with-no-recordings", "Tekstiä, joka ei ole saatavilla nauhoitetta tai jota ei lueta ääneen", "Text essential to participation without a recoding or text read out loud"),
+                        ("requires-dexterity", "Vaatii sorminäppäryyttä", "Requires dexterity"),
+                        ("requires-quick-reactions", "Vaatii nopeaa reaktiokykyä", "Requires ability to react quickly"),
+                        ("colorblind", "Materiaalit voivat tuottaa haasteita värisokeille", "Materials used can cause problems for the colourblind"),
+                    ]
+                ]
+            ),
+            DimensionDTO(
                 slug="konsti",
                 is_list_filter=False,
                 is_shown_in_detail=False,
@@ -161,6 +198,58 @@ class RopeconImporter(DefaultImporter):
 
         if "polttopallo" in prog_title_lower:
             values.setdefault("type", []).append("activity")
+
+        # accessibility
+        if programme.ropecon2023_accessibility_cant_use_mic:
+            values.setdefault("accessibility", []).append("cant-use-mic")
+
+        if programme.ropecon2021_accessibility_loud_sounds:
+            values.setdefault("accessibility", []).append("loud-sounds")
+
+        if programme.ropecon2021_accessibility_flashing_lights:
+            values.setdefault("accessibility", []).append("flashing-lights")
+
+        if programme.ropecon2021_accessibility_strong_smells:
+            values.setdefault("accessibility", []).append("strong-smells")
+
+        if programme.ropecon2021_accessibility_irritate_skin:
+            values.setdefault("accessibility", []).append("irritate-skin")
+
+        if programme.ropecon2021_accessibility_physical_contact:
+            values.setdefault("accessibility", []).append("physical-contact")
+
+        if programme.ropecon2021_accessibility_low_lightning:
+            values.setdefault("accessibility", []).append("low-lighting")
+
+        if programme.ropecon2021_accessibility_moving_around:
+            values.setdefault("accessibility", []).append("moving-around")
+
+        if programme.ropecon2023_accessibility_programme_duration_over_2_hours:
+            values.setdefault("accessibility", []).append("duration-over-2h")
+
+        if programme.ropecon2023_accessibility_limited_opportunities_to_move_around:
+            values.setdefault("accessibility", []).append("limited-moving-opportunities")
+
+        if programme.ropecon2021_accessibility_video:
+            values.setdefault("accessibility", []).append("video")
+
+        if programme.ropecon2021_accessibility_recording:
+            values.setdefault("accessibility", []).append("recording")
+
+        if programme.ropecon2023_accessibility_long_texts:
+            values.setdefault("accessibility", []).append("long-texts")
+
+        if programme.ropecon2023_accessibility_texts_not_available_as_recordings:
+            values.setdefault("accessibility", []).append("texts-with-no-recordings")
+
+        if programme.ropecon2023_accessibility_participation_requires_dexterity:
+            values.setdefault("accessibility", []).append("requires-dexterity")
+
+        if programme.ropecon2023_accessibility_participation_requires_react_quickly:
+            values.setdefault("accessibility", []).append("requires-quick-reactions")
+
+        if programme.ropecon2021_accessibility_colourblind:
+            values.setdefault("accessibility", []).append("colorblind")
 
         return values
 
