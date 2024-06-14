@@ -59,16 +59,18 @@ class ProgramV2EventMeta(EventMetaBase):
     @property
     def importer_class(self):
         from ..importers.default import DefaultImporter
+        from ..importers.noop import NoopImporter
         from ..importers.ropecon2024 import RopeconImporter
-        from ..importers.solmukohta2024 import SolmukohtaImporter
 
         match self.importer_name:
-            case "solmukohta2024":
-                return SolmukohtaImporter
+            case "default":
+                return DefaultImporter
+            case "noop":
+                return NoopImporter
             case "ropecon2024":
                 return RopeconImporter
-            case _:
-                return DefaultImporter
+            case unimplemented_importer_name:
+                raise NotImplementedError(unimplemented_importer_name)
 
     @property
     def is_auto_importing_from_v1(self):
