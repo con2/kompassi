@@ -82,6 +82,7 @@ class RopeconImporter(DefaultImporter):
                         ("penandpaper", "Pöytäroolipelit", "Pen & Paper RPG"),
                         ("boffering", "Boffaus", "Boffering"),
                         ("goh", "Kunniavieraat", "Guests of Honor"),
+                        ("theme", "Hirviöt", "Monsters"),
                     ]
                 ],
             ),
@@ -224,6 +225,79 @@ class RopeconImporter(DefaultImporter):
                 ],
             ),
             DimensionDTO(
+                slug="audience",
+                title=dict(
+                    fi="Kohderyhmä",
+                    en="Target Audience",
+                    sv="Målgrupp"
+                ),
+                choices=[
+                    DimensionValueDTO(
+                        slug=slug,
+                        title=dict(
+                            fi=title_fi
+                            en=title_en
+                        ),
+                    )
+                    for slug, title_fi, title_en in [
+                        (
+                            "all-ages",
+                            "Sopii kaiken ikäisille",
+                            "Suitable for all ages"
+                        ),
+                        (
+                            "aimed-under-13",
+                            "Suunnattu alle 13-vuotiaille",
+                            "Aimed at children under 13"
+                        ),
+                        (
+                            "aimed-between-13-17",
+                            "Suunnattu 13–17-vuotiaille",
+                            "Aimed at children between 13–17"
+                        ),
+                        (
+                            "aimed-adults",
+                            "Suunnattu täysi-ikäisille",
+                            "Aimed at adult attendees"
+                        ),
+                        (
+                            "k-18",
+                            "Vain täysi-ikäisille",
+                            "For 18+ only"
+                        ),
+                        (
+                            "beginners",
+                            "Aloittelijaystävällinen",
+                            "Beginner-friendly"
+                        ),
+                    ]
+                ]
+            ),
+            DimensionDTO(
+                slug="language",
+                title=dict(
+                    fi="Kieli",
+                    en="Language",
+                    sv="Språk"
+                ),
+                choices=[
+                    DimensionValueDTO(
+                        slug=slug,
+                        title=dict(
+                            fi=title_fi
+                            en=title_en
+                        ),
+                    )
+                    for slug, title_fi, title_en in [
+                        ("fi", "Suomi", "Finnish"),
+                        ("en", "Englangi", "English"),
+                        ("fi_en", "Suomi tai englanti", "Finnish or English"),
+                        ("free", "Kielivapaa", "Language free"),
+                        ("sv", "Ruotsi", "Swedish"),
+                    ]
+                ]
+            ),
+            DimensionDTO(
                 slug="konsti",
                 is_list_filter=False,
                 is_shown_in_detail=False,
@@ -266,6 +340,9 @@ class RopeconImporter(DefaultImporter):
 
         if "polttopallo" in prog_title_lower:
             values.setdefault("type", []).append("activity")
+
+        if programme.ropecon_theme:
+            values.setdefault("topic", []).append("theme")
 
         # accessibility
         if programme.ropecon2023_accessibility_cant_use_mic:
@@ -318,6 +395,36 @@ class RopeconImporter(DefaultImporter):
 
         if programme.ropecon2021_accessibility_colourblind:
             values.setdefault("accessibility", []).append("colorblind")
+
+        # audience
+        if programme.ropecon2023_suitable_for_all_ages:
+            values.setdefault("audience", []).append("all-ages")
+        if programme.ropecon2023_aimed_at_children_under_13:
+            values.setdefault("audience", []).append("aimed-under-13")
+        if programme.ropecon2023_aimed_at_children_between_13_17:
+            values.setdefault("audience", []).append("aimed-between-13-17")
+        if programme.ropecon2023_aimed_at_adult_attendees:
+            values.setdefault("audience", []).append("aimed-adults")
+        if programme.ropecon2023_beginner_friendly:
+            values.setdefault("audience", []).append("k-18")
+        if programme.ropecon2023_for_18_plus_only:
+            values.setdefault("audience", []).append("beginners")
+
+        # language
+        if programme.ropecon2024_language == "finnish":
+            values.setdefault("language", []).append("fi")
+
+        if programme.ropecon2024_language == "english":
+            values.setdefault("language", []).append("en")
+
+        if programme.ropecon2024_language == "language_free":
+            values.setdefault("language", []).append("free")
+
+        if programme.ropecon2024_language == "fin_and_eng":
+            values.setdefault("language", []).append("fi_en")
+
+        if programme.ropecon2024_language == "other":
+            # ?
 
         return values
 
