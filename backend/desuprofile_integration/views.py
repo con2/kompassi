@@ -256,8 +256,8 @@ class ConfirmationView(View):
                 request,
                 (
                     "Kompassi-tunnukseesi on jo liitetty Desuprofiili. Jos haluat vaihtaa "
-                    "Kompassi-tunnukseesi liitettyä Desuprofiilia, ota yhteyttä ylläpitoon: {email}"
-                ).format(email=settings.DEFAULT_FROM_EMAIL),
+                    f"Kompassi-tunnukseesi liitettyä Desuprofiilia, ota yhteyttä ylläpitoon: {settings.DEFAULT_FROM_EMAIL}"
+                ),
             )
             return redirect("core_frontpage_view")
 
