@@ -41,8 +41,8 @@ block content
       tbody
         for person in people
           tr
-            td: a(href="{% url 'directory_person_view' organization.slug person.id %}") {{ person.surname }}
-            td: a(href="{% url 'directory_person_view' organization.slug person.id %}") {{ person.first_name }}
-            td: a(href="{% url 'directory_person_view' organization.slug person.id %}") {{ person.nick }}
+            td: a(href="{% url 'directory:directory_person_view' organization.slug person.id %}") {{ person.surname }}
+            td: a(href="{% url 'directory:directory_person_view' organization.slug person.id %}") {{ person.first_name }}
+            td: a(href="{% url 'directory:directory_person_view' organization.slug person.id %}") {{ person.nick }}
     .panel-footer
       .text-muted {% blocktrans with num_total_people=num_total_people count num_people=people.count %}Displaying one person (total {{ num_total_people }} people visible to your organization).{% plural %}Displaying {{ num_people }} people (total {{ num_total_people }} visible to your organization).{% endblocktrans %}

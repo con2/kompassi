@@ -25,7 +25,6 @@ class Setup:
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
-        self.setup_directory()
         self.setup_kaatoilmo()
         # self.setup_sms()
 
@@ -594,18 +593,6 @@ class Setup:
                 slug=team_slug,
                 defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
-
-    def setup_directory(self):
-        from directory.models import DirectoryAccessGroup
-
-        labour_admin_group = self.event.labour_event_meta.get_group("admins")
-
-        DirectoryAccessGroup.objects.get_or_create(
-            organization=self.event.organization,
-            group=labour_admin_group,
-            active_from=datetime(2018, 9, 26, 12, 39, 0, tzinfo=self.tz),
-            active_until=self.event.end_time + timedelta(days=30),
-        )
 
     def setup_kaatoilmo(self):
         from labour.models import Survey

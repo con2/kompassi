@@ -5,7 +5,6 @@ from django.contrib.auth.models import Group, User
 
 from access.admin import InlineAccessOrganizationMetaAdmin
 from badges.admin import InlineBadgesEventMetaAdmin
-from directory.admin import InlineDirectoryOrganizationMetaAdmin
 from enrollment.admin import InlineEnrollmentEventMetaAdmin
 from intra.admin import InlineIntraEventMetaAdmin
 from labour.admin import InlineLabourEventMetaAdmin
@@ -25,7 +24,6 @@ class OrganizationAdmin(admin.ModelAdmin):
         InlineMembershipOrganizationMetaAdmin,
         InlineAccessOrganizationMetaAdmin,
         InlinePaymentsOrganizationMetaAdmin,
-        InlineDirectoryOrganizationMetaAdmin,
     )
 
 
@@ -90,7 +88,7 @@ class EventAdmin(admin.ModelAdmin):
                 )
             ),
         ),
-    )
+    )  # type: ignore
 
     def get_readonly_fields(self, request, obj=None) -> tuple[str]:
         # slug may be edited when creating but not when modifying existing event
