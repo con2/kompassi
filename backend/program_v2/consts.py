@@ -47,3 +47,17 @@ DEFAULT_COLORS = dict(
     # this used to be striped background but let's make it gray
     sisainen="#999999",
 )
+
+
+ANNOTATION_TITLES = {
+    "ropecon:contentWarnings": dict(
+        fi="Sisältövaroitukset",
+        en="Content warnings",
+        sv="Innehållsvarningar",
+    ),
+    "ropecon:accessibilityOther": dict(
+        fi="Muut saavutettavuustiedot",
+        en="Other accessibility information",
+        sv="Övrig tillgänglighetsinformation",
+    ),
+}

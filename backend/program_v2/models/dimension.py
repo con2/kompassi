@@ -21,6 +21,12 @@ logger = logging.getLogger("kompassi")
 DIMENSION_SLUG_MAX_LENGTH = 255
 
 
+class ValueOrdering(models.TextChoices):
+    MANUAL = "manual", "Manual"
+    SLUG = "slug", "Alphabetical (slug)"
+    TITLE = "title", "Alphabetical (localized title)"
+
+
 class Dimension(models.Model):
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE, related_name="program_dimensions")
     slug = models.CharField(max_length=DIMENSION_SLUG_MAX_LENGTH, validators=[validate_slug])
@@ -50,10 +56,23 @@ class Dimension(models.Model):
         ),
     )
 
+    value_ordering = models.CharField(
+        choices=ValueOrdering.choices,
+        default=ValueOrdering.TITLE,
+        help_text=(
+            "In which order are the values of this dimension returned in the GraphQL API. "
+            "NOTE: When using Alphabetical (localized title), "
+            "the language needs to be provided to `values` and `values.title` fields separately."
+        ),
+    )
+
+    order = models.SmallIntegerField(default=0)
+
     values: models.QuerySet[DimensionValue]
 
     class Meta:
         unique_together = ("event", "slug")
+        ordering = ("event", "order")
 
     def __str__(self):
         return self.slug
@@ -72,6 +91,11 @@ class DimensionValue(models.Model):
     title = HStoreField(blank=True, default=dict)
     color = models.CharField(max_length=63, blank=True, default="")
 
+    order = models.SmallIntegerField(
+        default=0,
+        help_text="Only applies if `dimension.value_ordering` is `manual`.",
+    )
+
     def __str__(self):
         return self.slug
 
@@ -81,6 +105,7 @@ class DimensionValue(models.Model):
 
     class Meta:
         unique_together = ("dimension", "slug")
+        ordering = ("dimension__order", "order")
 
 
 class ProgramDimensionValue(models.Model):
@@ -111,6 +136,10 @@ class ProgramDimensionValue(models.Model):
 
     class Meta:
         unique_together = ("program", "value")
+
+        # NOTE: only implements the `manual` ordering for now
+        # See https://con2.slack.com/archives/C3ZGNGY48/p1718446605681339
+        ordering = ("dimension__order", "value__order")
 
     @classmethod
     def build_upsert_cache(cls, event: Event) -> tuple[dict[str, Dimension], dict[str, dict[str, DimensionValue]]]:
@@ -187,6 +216,7 @@ class DimensionDTO(pydantic.BaseModel):
     is_list_filter: bool = pydantic.Field(default=True)
     is_shown_in_detail: bool = pydantic.Field(default=True)
     is_negative_selection: bool = pydantic.Field(default=False)
+    value_ordering: ValueOrdering = pydantic.Field(default=ValueOrdering.TITLE)
 
     @classmethod
     def save_many(
@@ -195,7 +225,6 @@ class DimensionDTO(pydantic.BaseModel):
         dimension_dtos: list[Self],
         remove_others=False,
         refresh_cached=True,
-        dimension_batch_size=100,
         dimension_value_batch_size=200,
     ) -> list[Dimension]:
         dimensions_upsert = (
@@ -206,20 +235,28 @@ class DimensionDTO(pydantic.BaseModel):
                 is_list_filter=dimension_dto.is_list_filter,
                 is_shown_in_detail=dimension_dto.is_shown_in_detail,
                 is_negative_selection=dimension_dto.is_negative_selection,
+                value_ordering=dimension_dto.value_ordering.value,
+                order=order * 10,
             )
-            for dimension_dto in dimension_dtos
+            for order, dimension_dto in enumerate(dimension_dtos)
         )
-        django_dimensions = []
-        for page, dimension_batch in enumerate(batched(dimensions_upsert, dimension_batch_size)):
-            django_dimensions.extend(
-                Dimension.objects.bulk_create(
-                    dimension_batch,
-                    update_conflicts=True,
-                    unique_fields=("event", "slug"),
-                    update_fields=("title", "is_list_filter", "is_shown_in_detail", "is_negative_selection"),
-                )
-            )
-            logger.info("Saved page %s of dimensions", page + 1)
+        django_dimensions = Dimension.objects.bulk_create(
+            dimensions_upsert,
+            update_conflicts=True,
+            unique_fields=(
+                "event",
+                "slug",
+            ),
+            update_fields=(
+                "title",
+                "is_list_filter",
+                "is_shown_in_detail",
+                "is_negative_selection",
+                "value_ordering",
+                "order",
+            ),
+        )
+        logger.info("Saved %s dimensions", len(django_dimensions))
 
         values_upsert = (
             DimensionValue(
@@ -227,16 +264,17 @@ class DimensionDTO(pydantic.BaseModel):
                 slug=choice.slug,
                 title=choice.title,
                 color=choice.color,
+                order=order * 10,
             )
             for (dim_dto, dim_dj) in zip(dimension_dtos, django_dimensions, strict=True)
-            for choice in dim_dto.choices or []
+            for order, choice in enumerate(dim_dto.choices or [])
         )
         for page, value_batch in enumerate(batched(values_upsert, dimension_value_batch_size)):
             DimensionValue.objects.bulk_create(
                 value_batch,
                 update_conflicts=True,
                 unique_fields=("dimension", "slug"),
-                update_fields=("title", "color"),
+                update_fields=("title", "color", "order"),
             )
             logger.info("Saved page %s of dimension values", page + 1)
 
@@ -248,15 +286,8 @@ class DimensionDTO(pydantic.BaseModel):
             logger.info("Deleted %s stale dimension values for dimension %s", num_deleted_dvs, dim_dj)
 
         if remove_others:
-            num_deleted_dvs, _ = (
-                Dimension.objects.filter(
-                    event=event,
-                )
-                .exclude(
-                    slug__in=[dim_dto.slug for dim_dto in dimension_dtos],
-                )
-                .delete()
-            )
+            dimensions_to_keep = [dim_dto.slug for dim_dto in dimension_dtos]
+            num_deleted_dvs, _ = Dimension.objects.filter(event=event).exclude(slug__in=dimensions_to_keep).delete()
             logger.info("Deleted %s stale dimensions", num_deleted_dvs)
 
         if refresh_cached:

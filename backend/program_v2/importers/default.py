@@ -210,25 +210,24 @@ class DefaultImporter:
         logger.info("Starting dimensions import for %s", self.event.slug)
 
         meta = self.event.program_v2_event_meta
-        if not meta:
-            raise ValueError(f"Event {self.event} has no ProgramV2EventMeta")
 
         location_dimension_slug = ""
         primary_dimension_slug = ""
 
         if clear:
             # we have to replace the location and primary dimensions with their new versions
-            update_fields = []
-            if meta.location_dimension:
-                location_dimension_slug = meta.location_dimension.slug
-                meta.location_dimension = None
-                update_fields.append("location_dimension")
-            if meta.primary_dimension:
-                primary_dimension_slug = meta.primary_dimension.slug
-                meta.primary_dimension = None
-                update_fields.append("primary_dimension")
-            if update_fields:
-                meta.save(update_fields=update_fields)
+            if meta:
+                update_fields = []
+                if meta.location_dimension:
+                    location_dimension_slug = meta.location_dimension.slug
+                    meta.location_dimension = None
+                    update_fields.append("location_dimension")
+                if meta.primary_dimension:
+                    primary_dimension_slug = meta.primary_dimension.slug
+                    meta.primary_dimension = None
+                    update_fields.append("primary_dimension")
+                if update_fields:
+                    meta.save(update_fields=update_fields)
 
             _, deleted = Dimension.objects.filter(event=self.event).delete()
             logger.info("Dimension clearing deleted %s", deleted or "nothing")
@@ -237,7 +236,7 @@ class DefaultImporter:
         dimensions = DimensionDTO.save_many(self.event, dimension_dtos, refresh_cached=False)
         logger.info("Imported %d dimensions for %s", len(dimension_dtos), self.event.slug)
 
-        if clear:
+        if clear and meta:
             update_fields = []
             # XXX pyrekt are you drunk? (type: ignores)
             if location_dimension_slug:

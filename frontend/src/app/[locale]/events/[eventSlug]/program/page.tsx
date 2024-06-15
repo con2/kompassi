@@ -65,7 +65,7 @@ const query = graphql(`
           title(lang: $locale)
           isListFilter
 
-          values {
+          values(lang: $locale) {
             slug
             title(lang: $locale)
             color

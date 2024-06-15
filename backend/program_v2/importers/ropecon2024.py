@@ -10,7 +10,7 @@ from programme.models.programme import Programme
 from programme.models.room import Room
 
 from ..consts import DATE_DIMENSION_TITLE_LOCALIZED, ROOM_DIMENSION_TITLE_LOCALIZED
-from ..models.dimension import DimensionDTO, DimensionValueDTO
+from ..models.dimension import DimensionDTO, DimensionValueDTO, ValueOrdering
 from .default import DefaultImporter
 
 logger = logging.getLogger("kompassi")
@@ -27,6 +27,7 @@ class RopeconImporter(DefaultImporter):
             DimensionDTO(
                 slug="date",
                 title=DATE_DIMENSION_TITLE_LOCALIZED,
+                value_ordering=ValueOrdering.SLUG,
                 choices=list(self._get_date_dimension_values()),
             ),
             DimensionDTO(
@@ -36,6 +37,7 @@ class RopeconImporter(DefaultImporter):
                     en="Program Type",
                     sv="Programtyp",
                 ),
+                value_ordering=ValueOrdering.MANUAL,
                 choices=[
                     DimensionValueDTO(
                         slug=slug,
@@ -69,6 +71,7 @@ class RopeconImporter(DefaultImporter):
                     en="Topic",
                     sv="Tema",
                 ),
+                value_ordering=ValueOrdering.TITLE,
                 choices=[
                     DimensionValueDTO(
                         slug=slug,
@@ -95,6 +98,7 @@ class RopeconImporter(DefaultImporter):
             DimensionDTO(
                 slug="room",
                 title=ROOM_DIMENSION_TITLE_LOCALIZED,
+                value_ordering=ValueOrdering.MANUAL,
                 choices=[
                     DimensionValueDTO(slug=room.slug, title={self.language: room.name})
                     for room in Room.objects.filter(event=self.event)
@@ -108,6 +112,7 @@ class RopeconImporter(DefaultImporter):
                     en="Accessibility",
                     sv="Tillgänglighet",
                 ),
+                value_ordering=ValueOrdering.TITLE,
                 choices=[
                     DimensionValueDTO(
                         slug=slug,
@@ -203,6 +208,7 @@ class RopeconImporter(DefaultImporter):
             DimensionDTO(
                 slug="audience",
                 title=dict(fi="Kohderyhmä", en="Target Audience", sv="Målgrupp"),
+                value_ordering=ValueOrdering.MANUAL,
                 choices=[
                     DimensionValueDTO(
                         slug=slug,
@@ -224,6 +230,7 @@ class RopeconImporter(DefaultImporter):
             DimensionDTO(
                 slug="language",
                 title=dict(fi="Kieli", en="Language", sv="Språk"),
+                value_ordering=ValueOrdering.MANUAL,
                 choices=[
                     DimensionValueDTO(
                         slug=slug,
@@ -249,6 +256,7 @@ class RopeconImporter(DefaultImporter):
                     en="Konsti signup type",
                     sv="Konsti-anmälningstyp",
                 ),
+                value_ordering=ValueOrdering.MANUAL,
                 choices=[
                     DimensionValueDTO(
                         slug=slug,

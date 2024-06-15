@@ -79,7 +79,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         if is_shown_in_detail:
             dimensions = dimensions.filter(is_shown_in_detail=True)
 
-        return dimensions
+        return dimensions.order_by("order")
 
     dimensions = graphene.NonNull(
         graphene.List(graphene.NonNull(DimensionType)),
