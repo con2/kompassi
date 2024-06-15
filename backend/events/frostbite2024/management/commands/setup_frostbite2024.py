@@ -27,7 +27,6 @@ class Setup:
         self.setup_access()
         self.setup_badges()
         self.setup_intra()
-        self.setup_directory()
         self.setup_forms()
 
     def setup_core(self):
@@ -449,20 +448,6 @@ class Setup:
                 slug=team_slug,
                 defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
-
-    def setup_directory(self):
-        from directory.models import DirectoryAccessGroup, DirectoryOrganizationMeta
-
-        DirectoryOrganizationMeta.objects.get_or_create(organization=self.event.organization)
-
-        labour_admin_group = self.event.labour_event_meta.get_group("admins")
-
-        DirectoryAccessGroup.objects.get_or_create(
-            organization=self.event.organization,
-            group=labour_admin_group,
-            active_from=self.event.created_at,
-            active_until=self.event.end_time + timedelta(days=30),
-        )
 
     def setup_forms(self):
         from forms.models import Form, Survey

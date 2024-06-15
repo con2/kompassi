@@ -25,7 +25,6 @@ class Setup:
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
-        self.setup_directory()
         self.setup_forms()
 
     def setup_core(self):
@@ -266,18 +265,6 @@ class Setup:
         for team in Team.objects.filter(event=self.event):
             team.is_public = True
             team.save()
-
-    def setup_directory(self):
-        from directory.models import DirectoryAccessGroup
-
-        labour_admin_group = self.event.labour_event_meta.get_group("admins")
-
-        DirectoryAccessGroup.objects.get_or_create(
-            organization=self.event.organization,
-            group=labour_admin_group,
-            active_from=now(),
-            active_until=self.event.end_time + timedelta(days=30),
-        )
 
     def setup_forms(self):
         from forms.models.dimension import DimensionDTO
