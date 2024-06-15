@@ -34,5 +34,6 @@ repos:
         # add apps as they become fully typechecked
         files: |
           (?x)(
+            ^backend/directory/|
             ^backend/program_v2/
           )

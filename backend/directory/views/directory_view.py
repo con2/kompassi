@@ -33,6 +33,7 @@ def directory_view(request: HttpRequest, organization_slug: str):
         event = None
 
     search_form = SearchForm(request.GET)
+    query = ""
     if search_form.is_valid():
         query = search_form.cleaned_data["query"]
         if query:
