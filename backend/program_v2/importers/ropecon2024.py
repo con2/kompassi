@@ -101,7 +101,12 @@ class RopeconImporter(DefaultImporter):
                 value_ordering=ValueOrdering.MANUAL,
                 choices=[
                     DimensionValueDTO(slug=room.slug, title={self.language: room.name})
-                    for room in Room.objects.filter(event=self.event)
+                    for room in Room.objects.filter(
+                        event=self.event,
+                        programmes__state="published",
+                        programmes__start_time__isnull=False,
+                        programmes__length__isnull=False,
+                    ).distinct()
                 ],
             ),
             DimensionDTO(

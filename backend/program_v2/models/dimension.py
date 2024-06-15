@@ -269,14 +269,18 @@ class DimensionDTO(pydantic.BaseModel):
             for (dim_dto, dim_dj) in zip(dimension_dtos, django_dimensions, strict=True)
             for order, choice in enumerate(dim_dto.choices or [])
         )
+        num_dvs = 0
         for page, value_batch in enumerate(batched(values_upsert, dimension_value_batch_size)):
-            DimensionValue.objects.bulk_create(
-                value_batch,
-                update_conflicts=True,
-                unique_fields=("dimension", "slug"),
-                update_fields=("title", "color", "order"),
+            num_dvs += len(
+                DimensionValue.objects.bulk_create(
+                    value_batch,
+                    update_conflicts=True,
+                    unique_fields=("dimension", "slug"),
+                    update_fields=("title", "color", "order"),
+                )
             )
             logger.info("Saved page %s of dimension values", page + 1)
+        logger.info("Saved %s dimension values", num_dvs)
 
         for dim_dto, dim_dj in zip(dimension_dtos, django_dimensions, strict=True):
             values_to_keep = [choice.slug for choice in dim_dto.choices or []]
