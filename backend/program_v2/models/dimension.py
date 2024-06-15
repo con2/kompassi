@@ -284,10 +284,8 @@ class DimensionDTO(pydantic.BaseModel):
 
         for dim_dto, dim_dj in zip(dimension_dtos, django_dimensions, strict=True):
             values_to_keep = [choice.slug for choice in dim_dto.choices or []]
-            num_deleted_dvs, _ = (
-                DimensionValue.objects.filter(dimension=dim_dj).exclude(slug__in=values_to_keep).delete()
-            )
-            logger.info("Deleted %s stale dimension values for dimension %s", num_deleted_dvs, dim_dj)
+            _, deleted = dim_dj.values.exclude(slug__in=values_to_keep).delete()
+            logger.info("Stale dimension value cleanup for %s deleted %s", dim_dto.slug, deleted or "nothing")
 
         if remove_others:
             dimensions_to_keep = [dim_dto.slug for dim_dto in dimension_dtos]
