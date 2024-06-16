@@ -482,6 +482,19 @@ class Setup:
                 code="tsh-rcjxrpwl",  # will be changed in production
                 ordering=self.get_ordering_number(),
             ),
+            dict(
+                name="Conitean edustushupparin omavastuu",
+                description="Käytä tätä tuotetta vain jos olet jo tilannut itsellesi hupparin aiemmin ohjeistetulla tavalla.",
+                limit_groups=[
+                    limit_group("Edustustuotteet", 9999),
+                ],
+                price_cents=19_00,
+                requires_accommodation_information=False,
+                electronic_ticket=False,
+                available=True,
+                code="hup-hvltvckn",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
@@ -577,7 +590,7 @@ class Setup:
         for start_time, end_time in [
             (
                 self.event.start_time.replace(hour=16, minute=0, tzinfo=self.tz),
-                self.event.start_time.replace(hour=21, minute=0, tzinfo=self.tz),
+                self.event.start_time.replace(hour=23, minute=30, tzinfo=self.tz),
             ),
             (
                 saturday.replace(hour=9, minute=0, tzinfo=self.tz),
