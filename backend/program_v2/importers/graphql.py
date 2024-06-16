@@ -26,7 +26,7 @@ query ImportProgram($eventSlug: String!, $lang: String!) {
         slug
         title
         description
-        otherFields
+        annotations
         cachedDimensions
         scheduleItems {
           startTime
@@ -98,13 +98,13 @@ def import_graphql(
                 slug=program_data["slug"],
                 title=program_data["title"],
                 description=program_data["description"],
-                other_fields=program_data["otherFields"],
+                annotations=program_data["annotations"],
             )
             for program_data in data["data"]["event"]["program"]["programs"]
         ],
         update_conflicts=True,
         unique_fields=["event", "slug"],
-        update_fields=["title", "description", "other_fields"],
+        update_fields=["title", "description", "annotations"],
     )
     logger.info("Imported %d programs for %s", len(programs), event.slug)
 

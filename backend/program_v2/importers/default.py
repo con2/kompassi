@@ -156,9 +156,9 @@ class DefaultImporter:
         return self.get_start_time(programme) + self.get_length(programme)
 
     program_unique_fields = ("event", "slug")
-    program_update_fields = ("title", "description", "other_fields")
+    program_update_fields = ("title", "description", "annotations")
 
-    def get_other_fields(self, programme: Programme) -> dict[str, str]:
+    def get_annotations(self, programme: Programme) -> dict[str, str]:
         return {
             "internal:formattedHosts": programme.formatted_hosts,
             "internal:links:signup": programme.signup_link,
@@ -174,7 +174,7 @@ class DefaultImporter:
             slug=programme.slug,
             title=programme.title,
             description=programme.description,
-            other_fields={k: v for (k, v) in self.get_other_fields(programme).items() if v},
+            annotations={k: v for (k, v) in self.get_annotations(programme).items() if v},
         )
 
     def get_schedule_items(self, v1_programme: Programme, v2_program) -> list[ScheduleItem]:

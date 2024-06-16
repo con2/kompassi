@@ -30,7 +30,7 @@ class Program(models.Model):
     title = models.CharField(max_length=1023)
     slug = models.CharField(max_length=1023, validators=[validate_slug])
     description = models.TextField(blank=True)
-    other_fields = models.JSONField(blank=True, default=dict)
+    annotations = models.JSONField(blank=True, default=dict)
 
     favorited_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="favorite_programs", blank=True)
 

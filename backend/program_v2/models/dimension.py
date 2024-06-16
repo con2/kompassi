@@ -10,6 +10,8 @@ from django.contrib.postgres.fields import HStoreField
 from django.db import models
 
 from core.utils import validate_slug
+from core.utils.locale_utils import get_message_in_language
+from graphql_api.language import DEFAULT_LANGUAGE
 
 from .program import Program
 
@@ -83,6 +85,23 @@ class Dimension(models.Model):
             print(dimension)
             for value in dimension.values.all():
                 print("-", value)
+
+    def get_values(self, lang: str = DEFAULT_LANGUAGE) -> list[DimensionValue]:
+        """
+        Use this method instead of self.values.all() when you want the values in the correct order.
+        NOTE: If value_ordering is TITLE, you need to provide the language.
+        """
+        values = self.values.all()
+
+        match self.value_ordering:
+            case "manual":
+                return list(values.order_by("order"))
+            case "slug":
+                return list(values.order_by("slug"))
+            case "title":
+                return sorted(values, key=lambda value: get_message_in_language(value.title, lang) or value.slug)
+            case _:
+                raise NotImplementedError(f"Unknown value_ordering: {self.value_ordering}")
 
 
 class DimensionValue(models.Model):

@@ -82,7 +82,7 @@ class ProgramLink(graphene.ObjectType):
         """
         link_type_str = link_type.value  # type: ignore[attr-defined]
         title_specifier = ""
-        link_other_field = f"internal:links:{link_type_str.lower()}"
+        link_annotation = f"internal:links:{link_type_str.lower()}"
 
         match link_type:
             case ProgramLinkType.CALENDAR:
@@ -101,21 +101,21 @@ class ProgramLink(graphene.ObjectType):
                 if not include_expired and program.cached_latest_end_time and now() > program.cached_latest_end_time:
                     href = ""
                 else:
-                    href = program.other_fields.get(link_other_field, "")
+                    href = program.annotations.get(link_annotation, "")
             case ProgramLinkType.FEEDBACK:
                 # Do not show feedback link if the program has not started yet
                 if program.cached_earliest_start_time and now() < program.cached_earliest_start_time:
                     href = ""
                 else:
-                    href = program.other_fields.get(link_other_field, "")
+                    href = program.annotations.get(link_annotation, "")
             case _:
-                href = program.other_fields.get(link_other_field, "")
+                href = program.annotations.get(link_annotation, "")
 
         if not href:
             return None
 
         titles = get_message_in_language(DEFAULT_TITLES, language) or {}
-        title = program.other_fields.get(
+        title = program.annotations.get(
             f"{link_type_str.lower()}",
             titles.get(link_type_str, ""),
         )
@@ -135,7 +135,7 @@ class ProgramType(DjangoObjectType):
 
     @staticmethod
     def resolve_cached_hosts(parent: Program, info):
-        return parent.other_fields.get("internal:formattedHosts", "")
+        return parent.annotations.get("internal:formattedHosts", "")
 
     cached_hosts = graphene.NonNull(graphene.String)
 
@@ -225,19 +225,31 @@ class ProgramType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_other_fields(parent: Program, info):
+    def resolve_annotations(parent: Program, info):
         """
         Additional fields for the program.
 
         NOTE: For most use cases, you shouldn't use this field
-        but rather access its data via formattedHosts, links etc.
+        but rather access its data via cachedHosts, links etc.
         This is here mostly to facilitate the GraphQL importer.
 
         TODO: Provide a way to supply internal: fields to the GraphQL importer.
         Perhaps make the importer authenticate?
         """
 
-        return {k: v for (k, v) in parent.other_fields.items() if v and not k.startswith("internal:")}
+        return {k: v for (k, v) in parent.annotations.items() if v and not k.startswith("internal:")}
+
+    annotations = graphene.NonNull(
+        GenericScalar,
+        description=normalize_whitespace(resolve_annotations.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_other_fields(parent: Program, info):
+        """
+        Deprecated. Use `annotations` instead.
+        """
+        return ProgramType.resolve_annotations(parent, info)
 
     other_fields = graphene.NonNull(
         GenericScalar,

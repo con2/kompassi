@@ -376,15 +376,15 @@ class RopeconImporter(DefaultImporter):
 
         return values
 
-    def get_other_fields(self, programme: Programme) -> dict[str, str]:
-        other_fields = super().get_other_fields(programme)
+    def get_annotations(self, programme: Programme) -> dict[str, str]:
+        annotations = super().get_annotations(programme)
         dimension_values = self.get_program_dimension_values(programme)
 
         is_konsti = len(dimension_values.get("konsti", [])) > 0
         if is_konsti:
-            other_fields["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
+            annotations["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
 
-        other_fields.update(
+        annotations.update(
             **{
                 "konsti:rpgSystem": programme.rpg_system,
                 "ropecon:otherAuthor": programme.other_author,
@@ -397,4 +397,4 @@ class RopeconImporter(DefaultImporter):
             }
         )
 
-        return other_fields
+        return annotations

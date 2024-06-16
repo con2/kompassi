@@ -146,7 +146,6 @@ export type DimensionTypeTitleArgs = {
 
 export type DimensionTypeValuesArgs = {
   lang?: InputMaybe<Scalars['String']['input']>;
-  valueOrdering?: InputMaybe<ValueOrdering>;
 };
 
 export type DimensionValueType = {
@@ -594,6 +593,8 @@ export enum ProgramLinkType {
 
 export type ProgramType = {
   __typename?: 'ProgramType';
+  /** Additional fields for the program. NOTE: For most use cases, you shouldn't use this field but rather access its data via cachedHosts, links etc. This is here mostly to facilitate the GraphQL importer. TODO: Provide a way to supply internal: fields to the GraphQL importer. Perhaps make the importer authenticate? */
+  annotations: Scalars['GenericScalar']['output'];
   cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
   /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
   cachedEarliestStartTime?: Maybe<Scalars['DateTime']['output']>;
@@ -610,7 +611,7 @@ export type ProgramType = {
   links: Array<ProgramLink>;
   /** Supplied for convenience. Prefer scheduleItem.location if possible. Caveat: When a program item has multiple schedule items, they may be in different locations. In such cases, a comma separated list of locations is returned. */
   location?: Maybe<Scalars['String']['output']>;
-  /** Additional fields for the program. NOTE: For most use cases, you shouldn't use this field but rather access its data via formattedHosts, links etc. This is here mostly to facilitate the GraphQL importer. TODO: Provide a way to supply internal: fields to the GraphQL importer. Perhaps make the importer authenticate? */
+  /** Deprecated. Use `annotations` instead. */
   otherFields: Scalars['GenericScalar']['output'];
   scheduleItems: Array<ScheduleItemType>;
   /** Deprecated. Use `links(types: SIGNUP)` instead. */
@@ -920,13 +921,6 @@ export type UpdateSurveyLanguageInput = {
   language: Scalars['String']['input'];
   surveySlug: Scalars['String']['input'];
 };
-
-/** An enumeration. */
-export enum ValueOrdering {
-  Manual = 'MANUAL',
-  Slug = 'SLUG',
-  Title = 'TITLE'
-}
 
 export type MarkProgramAsFavoriteMutationVariables = Exact<{
   input: FavoriteInput;
