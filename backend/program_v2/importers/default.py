@@ -95,7 +95,7 @@ class DefaultImporter:
                         title={self.language: category.title},
                         color=DEFAULT_COLORS.get(category.style, ""),
                     )
-                    for category in Category.objects.filter(event=self.event)
+                    for category in Category.objects.filter(event=self.event, public=True)
                 ],
             ),
             DimensionDTO(
@@ -196,6 +196,7 @@ class DefaultImporter:
             state="published",
             start_time__isnull=False,
             length__isnull=False,
+            category__public=True,
         ).order_by("id")
 
     program_batch_size = 100
