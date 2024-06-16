@@ -330,13 +330,16 @@ class Setup:
             ("Erikoisohjelma", "erik", "color7"),
             ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen"),
         ]:
-            Category.objects.get_or_create(
+            Category.objects.update_or_create(
                 event=self.event,
                 slug=slug,
-                defaults=dict(
+                create_defaults=dict(
                     title=title,
+                ),
+                defaults=dict(
                     style=style,
                     public=style != "sisainen",
+                    v2_dimensions={},  # force its update via .save
                 ),
             )
 
