@@ -590,7 +590,7 @@ class Setup:
         for start_time, end_time in [
             (
                 self.event.start_time.replace(hour=16, minute=0, tzinfo=self.tz),
-                self.event.start_time.replace(hour=23, minute=30, tzinfo=self.tz),
+                saturday.replace(hour=0, minute=0, tzinfo=self.tz),
             ),
             (
                 saturday.replace(hour=9, minute=0, tzinfo=self.tz),
