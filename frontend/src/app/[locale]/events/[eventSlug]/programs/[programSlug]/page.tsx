@@ -45,6 +45,14 @@ const query = graphql(`
             title
           }
 
+          annotations(isShownInDetail: true) {
+            annotation {
+              slug
+              title(lang: $locale)
+            }
+            value(lang: $locale)
+          }
+
           dimensions(isShownInDetail: true) {
             dimension {
               slug
@@ -195,6 +203,12 @@ export default async function NewProgramPage({ params }: Props) {
           <div key={dimension.dimension.slug}>
             <strong>{dimension.dimension.title}</strong>:{" "}
             {dimension.value.title}
+          </div>
+        ))}
+        {program.annotations.map((annotation) => (
+          <div key={annotation.annotation.slug}>
+            <strong>{annotation.annotation.title}</strong>:{" "}
+            {"" + annotation.value}
           </div>
         ))}
       </div>
