@@ -289,6 +289,12 @@ class Setup:
                     name=room_name,
                 )
 
+        # would normally be automatically created when meta.importer_name == "default"
+        # but using custom importer opts out of it
+        for room in Room.objects.filter(event=self.event):
+            room.v2_dimensions = {"room": [room.slug]}
+            room.save(update_fields=["v2_dimensions"])
+
         priority = 40
         for pc_slug, role_title, role_is_default in [
             ("ohjelma", "Ohjelma, päivä, ruoka", True),
