@@ -12,8 +12,8 @@ def resolve_localized_field(field_name: str):
     Field name is required to be provided because info.field_name is in camelCase.
     """
 
-    def _resolve(parent, info, lang: str = DEFAULT_LANGUAGE):
+    def _resolve(parent, info, lang: str = DEFAULT_LANGUAGE) -> str:
         messages = getattr(parent, field_name)
-        return get_message_in_language(messages, lang)
+        return get_message_in_language(messages, lang) or ""
 
     return _resolve

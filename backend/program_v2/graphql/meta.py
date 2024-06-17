@@ -1,5 +1,4 @@
 import graphene
-from django.conf import settings
 from django.http import HttpRequest
 from django.urls import reverse
 from graphene_django import DjangoObjectType
@@ -9,7 +8,9 @@ from core.graphql.common import DimensionFilterInput
 from core.models import Event
 from core.utils import get_objects_within_period
 from core.utils.text_utils import normalize_whitespace
+from graphql_api.language import DEFAULT_LANGUAGE
 
+from ..consts import ANNOTATION_SCHEMA
 from ..filters import ProgramFilters
 from ..models import (
     Dimension,
@@ -18,11 +19,10 @@ from ..models import (
     ProgramV2EventMeta,
 )
 from ..models.meta import ProgramV2ProfileMeta
+from .annotations import AnnotationSchemoidType
 from .dimension import DimensionType
 from .offer_form import OfferFormType
 from .program import ProgramType
-
-DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
 class ProgramV2EventMetaType(DjangoObjectType):
@@ -58,6 +58,15 @@ class ProgramV2EventMetaType(DjangoObjectType):
         return Program.objects.get(event=meta.event, slug=slug)
 
     program = graphene.Field(ProgramType, slug=graphene.String(required=True))
+
+    @staticmethod
+    def resolve_annotations(meta: ProgramV2EventMeta, info, lang: str = DEFAULT_LANGUAGE):
+        return ANNOTATION_SCHEMA
+
+    annotations = graphene.NonNull(
+        graphene.List(graphene.NonNull(AnnotationSchemoidType)),
+        lang=graphene.String(),
+    )
 
     @staticmethod
     def resolve_dimensions(

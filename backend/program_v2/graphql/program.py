@@ -9,7 +9,9 @@ from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
 from graphql_api.utils import resolve_localized_field
 
+from ..consts import ANNOTATION_SCHEMA
 from ..models import Program
+from .annotations import ProgramAnnotationType
 from .dimension import ProgramDimensionValueType
 
 # imported for side effects (register object type used by django object type fields)
@@ -28,7 +30,7 @@ class ProgramLinkType(graphene.Enum):
 
 
 # This is an interim solution until Program V2 has an editing UI.
-DEFAULT_TITLES = dict(
+DEFAULT_LINK_TITLES = dict(
     en={
         ProgramLinkType.SIGNUP: "Sign up",
         ProgramLinkType.RESERVATION: "Reserve seats",
@@ -114,7 +116,7 @@ class ProgramLink(graphene.ObjectType):
         if not href:
             return None
 
-        titles = get_message_in_language(DEFAULT_TITLES, language) or {}
+        titles = get_message_in_language(DEFAULT_LINK_TITLES, language) or {}
         title = program.annotations.get(
             f"{link_type_str.lower()}",
             titles.get(link_type_str, ""),
@@ -225,23 +227,57 @@ class ProgramType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_annotations(parent: Program, info):
+    def resolve_cached_annotations(program: Program, info, is_shown_in_detail: bool = False):
         """
-        Additional fields for the program.
+        A mapping of program annotation slug to annotation value. Only public annotations are returned.
 
-        NOTE: For most use cases, you shouldn't use this field
-        but rather access its data via cachedHosts, links etc.
-        This is here mostly to facilitate the GraphQL importer.
-
-        TODO: Provide a way to supply internal: fields to the GraphQL importer.
+        TODO: Provide a way to supply is_public=False annotations to the GraphQL importer.
         Perhaps make the importer authenticate?
         """
+        annotations = [annotation for annotation in ANNOTATION_SCHEMA if annotation.is_public]
 
-        return {k: v for (k, v) in parent.annotations.items() if v and not k.startswith("internal:")}
+        if is_shown_in_detail:
+            annotations = [annotation for annotation in annotations if annotation.is_shown_in_detail]
+
+        annotations_dict = {annotation.slug: annotation for annotation in annotations}
+
+        return {
+            k: v
+            for (k, v) in program.annotations.items()
+            if v not in (None, "") and (annotation := annotations_dict.get(k)) and annotation.is_public
+        }
+
+    cached_annotations = graphene.NonNull(
+        GenericScalar,
+        description=normalize_whitespace(resolve_cached_annotations.__doc__ or ""),
+        is_shown_in_detail=graphene.Boolean(description="Only return annotations that are shown in the detail view."),
+    )
+
+    @staticmethod
+    def resolve_annotations(program: Program, info, is_shown_in_detail: bool = False):
+        """
+        Program annotation values with schema attached to them. Only public annotations are returned.
+
+        NOTE: If querying a lot of program items, consider using cachedAnnotations instead for SPEED.
+        """
+        annotations = [annotation for annotation in ANNOTATION_SCHEMA if annotation.is_public]
+
+        if is_shown_in_detail:
+            annotations = [annotation for annotation in annotations if annotation.is_shown_in_detail]
+
+        return [
+            ProgramAnnotationType(
+                annotation=annotation,
+                value=value,
+            )  # type: ignore
+            for annotation in annotations
+            if (value := program.annotations.get(annotation.slug, None))
+        ]
 
     annotations = graphene.NonNull(
-        GenericScalar,
+        graphene.List(graphene.NonNull(ProgramAnnotationType)),
         description=normalize_whitespace(resolve_annotations.__doc__ or ""),
+        is_shown_in_detail=graphene.Boolean(description="Only return annotations that are shown in the detail view."),
     )
 
     @staticmethod
@@ -249,7 +285,7 @@ class ProgramType(DjangoObjectType):
         """
         Deprecated. Use `annotations` instead.
         """
-        return ProgramType.resolve_annotations(parent, info)
+        return ProgramType.resolve_cached_annotations(parent, info)
 
     other_fields = graphene.NonNull(
         GenericScalar,

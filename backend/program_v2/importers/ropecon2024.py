@@ -394,6 +394,7 @@ class RopeconImporter(DefaultImporter):
                 "konsti:workshopFee": programme.ropecon2023_workshop_fee,
                 "ropecon:contentWarnings": programme.ropecon2022_content_warnings,
                 "ropecon:accessibilityOther": programme.ropecon2023_other_accessibility_information,
+                "ropecon:gameSlogan": programme.three_word_description,
             }
         )
 

@@ -19,6 +19,7 @@ django-stubs
 Django>5
 flake8
 graphene-django
+graphene-pydantic
 gunicorn
 ics
 ipdb
