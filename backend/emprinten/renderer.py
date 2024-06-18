@@ -156,6 +156,11 @@ def render_pdf(
 
 class _TemplateCompiler:
     T = typing.TypeVar("T", bound=collections.abc.Callable)
+    SafeBuiltins = (
+        "dict.items",
+        "dict.keys",
+        "dict.values",
+    )
 
     @staticmethod
     def wrap_as_safe_call(fn: T) -> T:
@@ -168,6 +173,13 @@ class _TemplateCompiler:
 
     class Environment(SandboxedEnvironment):
         def is_safe_callable(self, obj: typing.Any) -> bool:
+            if isinstance(obj, jinja2.runtime.Macro):
+                return True
+            if (
+                type(obj).__name__ == "builtin_function_or_method"
+                and getattr(obj, "__qualname__", None) in _TemplateCompiler.SafeBuiltins
+            ):
+                return True
             return hasattr(obj, "is_safe_to_call") and obj.is_safe_to_call
 
     def __init__(self, vfs: Vfs) -> None:
