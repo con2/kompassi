@@ -2,6 +2,7 @@ import datetime
 import re
 
 import jinja2.nodes
+from django.conf import settings
 from jinja2 import is_undefined, pass_eval_context
 from jinja2.runtime import Undefined
 from markupsafe import Markup
@@ -14,7 +15,12 @@ SValue = str | Undefined
 def add_all_to(filters: dict[str, callable]) -> None:
     filters["nl2br"] = nl2br
     filters["filename"] = NameFactory.sanitize
-    filters.update(make_date_fns())
+    filters.update(
+        make_date_fns(
+            date_input=settings.DATE_FORMAT_STRFTIME,
+            datetime_input=settings.DATETIME_FORMAT_STRFTIME,
+        )
+    )
 
 
 @pass_eval_context
@@ -47,7 +53,7 @@ def make_date_fns(datetime_input: str | None = None, date_input: str | None = No
             value = datetime.datetime.strptime(value, datetime_input)
         return value.strftime(format)
 
-    def date(value: datetime.date | str | Undefined) -> SValue:
+    def date(value: datetime.date | str | Undefined) -> datetime.date | Undefined:
         if is_undefined(value):
             return value
         if isinstance(value, str):
