@@ -13,12 +13,10 @@ Lut = dict[str, dict[str, str]]
 
 # noinspection PyPropertyDefinition
 class Pathlike(typing.Protocol):
-    def open(self, mode: str = "rb") -> io.BytesIO:
-        ...
+    def open(self, mode: str = "rb") -> io.BytesIO: ...
 
     @property
-    def name(self) -> str:
-        ...
+    def name(self) -> str: ...
 
 
 def make_lut(file: Pathlike, encoding: str) -> Lut:
