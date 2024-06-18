@@ -60,7 +60,7 @@ def find_main(files: typing.Iterable[FileVersion]) -> FileVersion | None:
 
 def find_lookup_tables(files: typing.Iterable[FileVersion]) -> dict[str, Lut]:
     return {
-        make_name(file_version.file.file_name): make_lut(file_version.data, "utf-8")
+        make_name(os.path.splitext(file_version.file.file_name)[0]): make_lut(file_version.data, "utf-8")
         for file_version in files
         if file_version.file.type == ProjectFile.Type.CSV
     }
