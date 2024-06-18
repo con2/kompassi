@@ -351,9 +351,9 @@ MESSAGE_TAGS = {
 
 KOMPASSI_APPLICATION_NAME = "Kompassi"
 KOMPASSI_INSTALLATION_NAME = env("KOMPASSI_INSTALLATION_NAME", default="Kompassi (DEV)")
-KOMPASSI_INSTALLATION_NAME_ILLATIVE = "Kompassin kehitys\u00ADinstanssiin" if DEBUG else "Kompassiin"
-KOMPASSI_INSTALLATION_NAME_GENITIVE = "Kompassin kehitys\u00ADinstanssin" if DEBUG else "Kompassin"
-KOMPASSI_INSTALLATION_NAME_PARTITIVE = "Kompassin kehitys\u00ADinstanssia" if DEBUG else "Kompassia"
+KOMPASSI_INSTALLATION_NAME_ILLATIVE = "Kompassin kehitys\u00adinstanssiin" if DEBUG else "Kompassiin"
+KOMPASSI_INSTALLATION_NAME_GENITIVE = "Kompassin kehitys\u00adinstanssin" if DEBUG else "Kompassin"
+KOMPASSI_INSTALLATION_NAME_PARTITIVE = "Kompassin kehitys\u00adinstanssia" if DEBUG else "Kompassia"
 KOMPASSI_INSTALLATION_SLUG = env("KOMPASSI_INSTALLATION_SLUG", default="turskadev")
 KOMPASSI_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi"
 FEEDBACK_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute"
