@@ -5,6 +5,7 @@ import os
 import shutil
 import tempfile
 import typing
+import urllib.request
 import zipfile
 
 import jinja2.nodes
@@ -13,7 +14,7 @@ from django.http import FileResponse, HttpResponse, HttpResponseBase
 from jinja2 import FunctionLoader
 from jinja2.sandbox import SandboxedEnvironment
 
-from . import filters
+from . import filters, functions
 from .files import Lut, NameFactory, make_lut, make_name
 from .models import FileVersion, ProjectFile
 
@@ -196,6 +197,7 @@ class _TemplateCompiler:
                 env.globals[name] = self.wrap_as_safe_call(fn)
 
         filters.add_all_to(env.filters)
+        env.globals.update({k: self.wrap_as_safe_call(v) for k, v in functions.get().items()})
 
         self.env = env
 
@@ -305,6 +307,19 @@ class _HtmlCompiler:
     # See `weasyprint.urls.default_url_fetcher` for function signature.
     # Note: At least some exceptions are silently ignored by weasyprint.
     def _do_lookup(self, url: str, timeout: int = 10, ssl_context=None) -> dict:
+        if url.startswith("data:"):
+            director = urllib.request.OpenerDirector()
+            director.add_handler(urllib.request.DataHandler())
+            data_response = director.open(url)
+            if data_response is None:
+                restricted_url = "Invalid data URL"
+                raise ValueError(restricted_url)
+            return {
+                "redirected_url": url,
+                "mime_type": data_response.headers["content-type"],
+                "string": data_response.file.read(),
+            }
+
         file_url = url.removeprefix(LOCAL_FILE_URI_PREFIX)
         if file_url == url:
             restricted_url = "Invalid URL to look up for"
