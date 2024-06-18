@@ -111,7 +111,7 @@ def read_csv(csv_io: typing.TextIO) -> list[dict[str, str | dict[str, typing.Any
     header = next(reader)
     header = parse_header_names(header)
     for row_index, row in enumerate(reader):
-        row_data = OrderedDict(zip(header, row, strict=False))
+        row_data: dict[str, typing.Any] = OrderedDict(zip(header, row, strict=False))
         row_data.setdefault(
             "META",
             {

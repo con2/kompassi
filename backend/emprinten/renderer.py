@@ -20,7 +20,7 @@ from .models import FileVersion, ProjectFile
 
 DEBUG = False
 
-FileWithData = tuple[str, dict[str, str] | None]
+FileWithData = tuple[str, dict[str, str | dict[str, typing.Any]] | None]
 DataRow = dict[str, str | dict[str, typing.Any]]
 DataSet = list[DataRow]
 Vfs = dict[str, FileVersion]
@@ -155,8 +155,10 @@ def render_pdf(
         return HttpResponse(status=201)
 
 
+T = typing.TypeVar("T", bound=collections.abc.Callable)
+
+
 class _TemplateCompiler:
-    T = typing.TypeVar("T", bound=collections.abc.Callable)
     SafeBuiltins = (
         "dict.items",
         "dict.keys",
@@ -169,8 +171,8 @@ class _TemplateCompiler:
         def wrapped(*args, **kwargs):
             return fn(*args, **kwargs)
 
-        wrapped.is_safe_to_call = True
-        return wrapped
+        wrapped.is_safe_to_call = True  # pyright: ignore reportAttributeAccessIssue
+        return typing.cast(T, wrapped)
 
     class Environment(SandboxedEnvironment):
         def is_safe_callable(self, obj: typing.Any) -> bool:
@@ -207,7 +209,7 @@ class _TemplateCompiler:
         return self.env.from_string(s)
 
     def get_source(self, file_name: str) -> str:
-        return self.env.loader.get_source(self.env, file_name)[0]
+        return self.env.loader.get_source(self.env, file_name)[0]  # pyright: ignore reportOptionalMemberAccess
 
     def parse(self, source: str, **kwargs) -> jinja2.nodes.Template:
         return self.env.parse(source, **kwargs)
@@ -217,13 +219,13 @@ class _TemplateCompiler:
     ) -> list[FileWithData]:
         lookups = find_lookup_tables(self.vfs.values())
         tpl = self.env.get_template(main_file_name)
-        title_pattern = self.from_string(title_pattern)
+        _title_pattern = self.env.from_string(title_pattern)
 
         sources: list[FileWithData] = []
         if split_output:
             for idx, row in enumerate(data, start=1):
                 row_copy = dict(row)
-                title = title_pattern.render(row=row_copy)
+                title = _title_pattern.render(row=row_copy)
 
                 src_name = os.path.join(src_dir, f"{idx:03d}.html")
                 sources.append((src_name, row_copy))
@@ -235,7 +237,7 @@ class _TemplateCompiler:
         else:
             # Render title if we have any data, but supply the row only if it is singular.
             row_copy = dict(data[0]) if len(data) == 1 else None
-            title = title_pattern.render(row=row_copy) if data else ""
+            title = _title_pattern.render(row=row_copy) if data else ""
 
             src_name = os.path.join(src_dir, "master.html")
             sources.append((src_name, row_copy))
@@ -296,6 +298,10 @@ class _HtmlCompiler:
             pdf = pdf_html.write_pdf(
                 stylesheets=parsed_sheets,
             )
+            # We don't give `target` parameter, so the function should return bytes.
+            if pdf is None:
+                raise RuntimeError("Unexpectedly None result")
+
             dst_base = os.path.splitext(os.path.basename(source))[0]
             dst_name = os.path.join(result_dir, dst_base + ".pdf")
             results.append((dst_name, row))
