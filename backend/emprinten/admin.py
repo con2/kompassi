@@ -1,9 +1,19 @@
 from django.conf import settings
 from django.contrib import admin
+from django.urls import reverse
 
 from . import models
 
-admin.site.register(models.Project)
+
+@admin.register(models.Project)
+class ProjectAdmin(admin.ModelAdmin):
+    # noinspection PyMethodOverriding
+    def view_on_site(self, obj: models.Project) -> str | None:  # pyright: ignore reportIncompatibleMethodOverride
+        if obj.event is None:
+            return None
+        return reverse("emprinten_index", kwargs={"event": obj.event.slug, "slug": obj.slug})
+
+
 admin.site.register(models.FileVersion)
 
 
