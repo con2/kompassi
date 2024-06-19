@@ -286,6 +286,7 @@ class RopeconImporter(DefaultImporter):
     def get_program_dimension_values(self, programme: Programme) -> dict[str, list[str]]:
         values = super().get_program_dimension_values(programme)
         prog_title_lower = programme.title.lower()
+        other_lang_lower = programme.ropecon2024_language_other.lower()
 
         if "näyttely" in prog_title_lower:
             values.setdefault("type", []).append("exhibit")
@@ -371,8 +372,13 @@ class RopeconImporter(DefaultImporter):
             values.setdefault("language", []).append("en")
 
         for language_name in ("ruots", "swedish", "svensk"):
-            if language_name in programme.ropecon2024_language_other.lower():
+            if language_name in other_lang_lower:
                 values.setdefault("language", []).append("sv")
+
+        if "suomi" in other_lang_lower:
+            values.setdefault("language", []).append("fi")
+        if "english" in other_lang_lower:
+            values.setdefault("language", []).append("en")
 
         return values
 
