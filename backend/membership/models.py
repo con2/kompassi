@@ -131,10 +131,7 @@ class Membership(models.Model, CsvExportMixin):
         return f"{self.person.surname}, {self.person.official_first_names}, {self.person.muncipality}"
 
     def __str__(self):
-        return "{organization}/{person}".format(
-            organization=self.organization.name if self.organization else None,
-            person=self.person.official_name if self.person else None,
-        )
+        return f"{self.organization.name if self.organization else None}/{self.person.official_name if self.person else None}"
 
     @classmethod
     def get_csv_fields(cls, unused_organization):

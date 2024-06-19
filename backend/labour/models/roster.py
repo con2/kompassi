@@ -223,12 +223,7 @@ class Shift(models.Model, CsvExportMixin):
 
     def __str__(self):
         parts = [
-            "{interval} ({hours} h): {job_category_name} ({job_name})".format(
-                interval=format_interval(self.start_time, self.end_time),
-                hours=self.hours,
-                job_category_name=self.job.job_category.title if self.job and self.job.job_category else None,
-                job_name=self.job.title if self.job else None,
-            )
+            f"{format_interval(self.start_time, self.end_time)} ({self.hours} h): {self.job.job_category.title if self.job and self.job.job_category else None} ({self.job.title if self.job else None})"
         ]
 
         if self.notes:

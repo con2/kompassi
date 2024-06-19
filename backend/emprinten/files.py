@@ -13,12 +13,10 @@ Lut = dict[str, dict[str, str]]
 
 # noinspection PyPropertyDefinition
 class Pathlike(typing.Protocol):
-    def open(self, mode: str = "rb") -> io.BytesIO:
-        ...
+    def open(self, mode: str = "rb") -> io.BytesIO: ...
 
     @property
-    def name(self) -> str:
-        ...
+    def name(self) -> str: ...
 
 
 def make_lut(file: Pathlike, encoding: str) -> Lut:
@@ -113,7 +111,7 @@ def read_csv(csv_io: typing.TextIO) -> list[dict[str, str | dict[str, typing.Any
     header = next(reader)
     header = parse_header_names(header)
     for row_index, row in enumerate(reader):
-        row_data = OrderedDict(zip(header, row, strict=False))
+        row_data: dict[str, typing.Any] = OrderedDict(zip(header, row, strict=False))
         row_data.setdefault(
             "META",
             {

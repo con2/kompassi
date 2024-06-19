@@ -9,16 +9,16 @@ from .renderer import _TemplateCompiler, files_to_vfs, find_main
 def _parse_node(node: jinja2.compiler.nodes.Node, out: set[str]):
     # XXX: This misses variables from includes / imports.
 
-    if hasattr(node, "nodes"):
+    if (nodes := getattr(node, "nodes", None)) is not None:
         # Classic tree, such as Template or Output.
-        for child in node.nodes:
+        for child in nodes:
             _parse_node(child, out)
-    if hasattr(node, "node"):
+    if (inner := getattr(node, "node", None)) is not None:
         # e.g. filter applied to variable reference
-        _parse_node(node.node, out)
-    if hasattr(node, "args"):
+        _parse_node(inner, out)
+    if (args := getattr(node, "args", None)) is not None:
         # e.g. variable references in macro args
-        for child in node.args:
+        for child in args:
             _parse_node(child, out)
     if isinstance(node, jinja2.compiler.nodes.Getattr):
         if isinstance(node.node, jinja2.compiler.nodes.Name) and node.node.name == "row":

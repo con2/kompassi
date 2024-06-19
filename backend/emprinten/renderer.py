@@ -5,6 +5,7 @@ import os
 import shutil
 import tempfile
 import typing
+import urllib.request
 import zipfile
 
 import jinja2.nodes
@@ -13,13 +14,13 @@ from django.http import FileResponse, HttpResponse, HttpResponseBase
 from jinja2 import FunctionLoader
 from jinja2.sandbox import SandboxedEnvironment
 
-from . import filters
+from . import filters, functions
 from .files import Lut, NameFactory, make_lut, make_name
 from .models import FileVersion, ProjectFile
 
 DEBUG = False
 
-FileWithData = tuple[str, dict[str, str] | None]
+FileWithData = tuple[str, dict[str, str | dict[str, typing.Any]] | None]
 DataRow = dict[str, str | dict[str, typing.Any]]
 DataSet = list[DataRow]
 Vfs = dict[str, FileVersion]
@@ -60,7 +61,7 @@ def find_main(files: typing.Iterable[FileVersion]) -> FileVersion | None:
 
 def find_lookup_tables(files: typing.Iterable[FileVersion]) -> dict[str, Lut]:
     return {
-        make_name(file_version.file.file_name): make_lut(file_version.data, "utf-8")
+        make_name(os.path.splitext(file_version.file.file_name)[0]): make_lut(file_version.data, "utf-8")
         for file_version in files
         if file_version.file.type == ProjectFile.Type.CSV
     }
@@ -154,8 +155,15 @@ def render_pdf(
         return HttpResponse(status=201)
 
 
+T = typing.TypeVar("T", bound=collections.abc.Callable)
+
+
 class _TemplateCompiler:
-    T = typing.TypeVar("T", bound=collections.abc.Callable)
+    SafeBuiltins = (
+        "dict.items",
+        "dict.keys",
+        "dict.values",
+    )
 
     @staticmethod
     def wrap_as_safe_call(fn: T) -> T:
@@ -163,11 +171,18 @@ class _TemplateCompiler:
         def wrapped(*args, **kwargs):
             return fn(*args, **kwargs)
 
-        wrapped.is_safe_to_call = True
-        return wrapped
+        wrapped.is_safe_to_call = True  # pyright: ignore reportAttributeAccessIssue
+        return typing.cast(T, wrapped)
 
     class Environment(SandboxedEnvironment):
         def is_safe_callable(self, obj: typing.Any) -> bool:
+            if isinstance(obj, jinja2.runtime.Macro):
+                return True
+            if (
+                type(obj).__name__ == "builtin_function_or_method"
+                and getattr(obj, "__qualname__", None) in _TemplateCompiler.SafeBuiltins
+            ):
+                return True
             return hasattr(obj, "is_safe_to_call") and obj.is_safe_to_call
 
     def __init__(self, vfs: Vfs) -> None:
@@ -184,6 +199,7 @@ class _TemplateCompiler:
                 env.globals[name] = self.wrap_as_safe_call(fn)
 
         filters.add_all_to(env.filters)
+        env.globals.update({k: self.wrap_as_safe_call(v) for k, v in functions.get().items()})
 
         self.env = env
 
@@ -193,7 +209,7 @@ class _TemplateCompiler:
         return self.env.from_string(s)
 
     def get_source(self, file_name: str) -> str:
-        return self.env.loader.get_source(self.env, file_name)[0]
+        return self.env.loader.get_source(self.env, file_name)[0]  # pyright: ignore reportOptionalMemberAccess
 
     def parse(self, source: str, **kwargs) -> jinja2.nodes.Template:
         return self.env.parse(source, **kwargs)
@@ -203,13 +219,13 @@ class _TemplateCompiler:
     ) -> list[FileWithData]:
         lookups = find_lookup_tables(self.vfs.values())
         tpl = self.env.get_template(main_file_name)
-        title_pattern = self.from_string(title_pattern)
+        _title_pattern = self.env.from_string(title_pattern)
 
         sources: list[FileWithData] = []
         if split_output:
             for idx, row in enumerate(data, start=1):
                 row_copy = dict(row)
-                title = title_pattern.render(row=row_copy)
+                title = _title_pattern.render(row=row_copy)
 
                 src_name = os.path.join(src_dir, f"{idx:03d}.html")
                 sources.append((src_name, row_copy))
@@ -221,7 +237,7 @@ class _TemplateCompiler:
         else:
             # Render title if we have any data, but supply the row only if it is singular.
             row_copy = dict(data[0]) if len(data) == 1 else None
-            title = title_pattern.render(row=row_copy) if data else ""
+            title = _title_pattern.render(row=row_copy) if data else ""
 
             src_name = os.path.join(src_dir, "master.html")
             sources.append((src_name, row_copy))
@@ -282,6 +298,10 @@ class _HtmlCompiler:
             pdf = pdf_html.write_pdf(
                 stylesheets=parsed_sheets,
             )
+            # We don't give `target` parameter, so the function should return bytes.
+            if pdf is None:
+                raise RuntimeError("Unexpectedly None result")
+
             dst_base = os.path.splitext(os.path.basename(source))[0]
             dst_name = os.path.join(result_dir, dst_base + ".pdf")
             results.append((dst_name, row))
@@ -293,6 +313,19 @@ class _HtmlCompiler:
     # See `weasyprint.urls.default_url_fetcher` for function signature.
     # Note: At least some exceptions are silently ignored by weasyprint.
     def _do_lookup(self, url: str, timeout: int = 10, ssl_context=None) -> dict:
+        if url.startswith("data:"):
+            director = urllib.request.OpenerDirector()
+            director.add_handler(urllib.request.DataHandler())
+            data_response = director.open(url)
+            if data_response is None:
+                restricted_url = "Invalid data URL"
+                raise ValueError(restricted_url)
+            return {
+                "redirected_url": url,
+                "mime_type": data_response.headers["content-type"],
+                "string": data_response.file.read(),
+            }
+
         file_url = url.removeprefix(LOCAL_FILE_URI_PREFIX)
         if file_url == url:
             restricted_url = "Invalid URL to look up for"

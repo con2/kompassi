@@ -4,13 +4,15 @@ line-length = 120
 [tool.ruff]
 target-version = "py312"
 line-length = 120
+
+[tool.ruff.lint]
 ignore-init-module-imports = true
 extend-select = [
     "B",
     "C",
     "I", # import sorting
     "PERF",
-    "PGH002",  # .warn is deprecated
+    "G010",  # .warn is deprecated
     "PGH004",  # specific noqa
     "PL",  # pylint
     "RET",
@@ -38,7 +40,7 @@ extend-ignore = [
     "PERF401", # manual-list-comprehension
 ]
 
-[tool.ruff.extend-per-file-ignores]
+[tool.ruff.lint.extend-per-file-ignores]
 "**/__init__.py" = [
     "F401",  # imported but unused
 ]

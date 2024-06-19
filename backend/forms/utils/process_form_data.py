@@ -7,6 +7,7 @@ implementation.
 NOTE: The exact semantics of `process_form_data` are defined by and documented in
 `forms/tests.py:test_process_form_data`.
 """
+
 import decimal
 from collections.abc import Sequence
 from enum import Enum
