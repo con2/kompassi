@@ -142,12 +142,11 @@ export default async function NewProgramPage({ params }: Props) {
   return (
     <ViewContainer>
       <Link className="link-subtle" href={`/events/${eventSlug}/program`}>
-        &lt; {t.actions.returnToProgramList}
+        &lt; {t.actions.returnToProgramList(event.name)}
       </Link>
 
       <ViewHeading>
         {program.title}
-        <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
         {data.profile && (
           <div className="d-inline-block ms-2">
             <FavoriteContextProvider
@@ -162,25 +161,23 @@ export default async function NewProgramPage({ params }: Props) {
         )}
       </ViewHeading>
 
-      <p className="fst-italic">
+      <div>
+        {program.cachedHosts && <strong>{program.cachedHosts}</strong>}
         {program.scheduleItems.map((scheduleItem, index) => (
-          <FormattedDateTimeRange
-            locale={locale}
-            scope={event}
-            session={null}
-            key={index}
-            start={scheduleItem.startTime}
-            end={scheduleItem.endTime}
-            includeDuration={true}
-          />
+          <div key={index} className="fst-italic">
+            {scheduleItem.location && <>{scheduleItem.location}, </>}
+            <FormattedDateTimeRange
+              locale={locale}
+              scope={event}
+              session={null}
+              key={index}
+              start={scheduleItem.startTime}
+              end={scheduleItem.endTime}
+              includeDuration={true}
+            />
+          </div>
         ))}
-        {program.cachedHosts && (
-          <>
-            {", "}
-            {program.cachedHosts}
-          </>
-        )}
-      </p>
+      </div>
 
       <div className="mb-3 mt-3">
         {program.links.map((link, index) => (
@@ -198,13 +195,11 @@ export default async function NewProgramPage({ params }: Props) {
         ))}
       </div>
 
+      <article className="mb-3">
+        <Paragraphs text={program.description} />
+      </article>
+
       <div className="mb-3 mt-3">
-        {program.dimensions.map((dimension) => (
-          <div key={dimension.dimension.slug}>
-            <strong>{dimension.dimension.title}</strong>:{" "}
-            {dimension.value.title}
-          </div>
-        ))}
         {program.annotations.map((annotation) => (
           <div key={annotation.annotation.slug}>
             <strong>{annotation.annotation.title}</strong>:{" "}
@@ -213,9 +208,19 @@ export default async function NewProgramPage({ params }: Props) {
         ))}
       </div>
 
-      <article className="mb-3">
-        <Paragraphs text={program.description} />
-      </article>
+      <div className="mb-3 mt-3">
+        {program.dimensions.map((dimension) => (
+          <Link
+            key={dimension.dimension.slug}
+            href={`/events/${eventSlug}/program?${dimension.dimension.slug}=${dimension.value.slug}`}
+          >
+            <span className="badge text-bg-primary me-2">
+              <strong>{dimension.dimension.title}</strong>:{" "}
+              {dimension.value.title}
+            </span>
+          </Link>
+        ))}
+      </div>
     </ViewContainer>
   );
 }

@@ -220,7 +220,8 @@ const translations: Translations = {
     singleTitle: "Program",
     inEvent: (eventName: string) => <>i {eventName}</>,
     actions: {
-      returnToProgramList: "Tillbaka till programlistan",
+      returnToProgramList: (eventName: string) =>
+        `Tillbaka till programmet för ${eventName}`,
       addTheseToCalendar: "Lägg till dessa program i kalendern",
       addThisToCalendar: "Lägg till detta program i kalendern",
       signUpForThisProgram: "Anmäl dig till detta program",
