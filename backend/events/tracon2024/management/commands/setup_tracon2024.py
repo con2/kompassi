@@ -1,12 +1,10 @@
 from datetime import datetime, timedelta
 
-import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 from django.utils.timezone import now
-from pkg_resources import resource_stream
 
 
 class Setup:
@@ -517,6 +515,7 @@ class Setup:
             Category,
             ProgrammeEventMeta,
             Role,
+            Room,
             SpecialStartTime,
             Tag,
             TimeBlock,
@@ -564,23 +563,22 @@ class Setup:
                 ),
             )
 
-        have_categories = Category.objects.filter(event=self.event).exists()
-        if not have_categories:
-            for title, style in [
-                ("Animeohjelma", "anime"),
-                ("Cosplayohjelma", "cosplay"),
-                ("Miitti", "miitti"),
-                ("Muu ohjelma", "muu"),
-                ("Roolipeliohjelma", "rope"),
-                ("Peliohjelma", "color7"),
-            ]:
-                Category.objects.get_or_create(
-                    event=self.event,
-                    style=style,
-                    defaults=dict(
-                        title=title,
-                    ),
-                )
+        for title, style in [
+            ("Animeohjelma", "anime"),
+            ("Cosplayohjelma", "cosplay"),
+            ("Miitti", "miitti"),
+            ("Muu ohjelma", "muu"),
+            ("Roolipeliohjelma", "rope"),
+            ("Peliohjelma", "color7"),
+        ]:
+            Category.objects.update_or_create(
+                event=self.event,
+                style=style,
+                defaults=dict(
+                    title=title,
+                    v2_dimensions={},  # force computed property to be recalculated
+                ),
+            )
 
         assert self.event.start_time
         assert self.event.end_time
@@ -618,22 +616,25 @@ class Setup:
                         start_time=hour_start_time.replace(minute=minute),
                     )
 
-        for tag_title, tag_class in [
-            ("Suositeltu", "hilight"),
-            ("Musiikki", "label-info"),
-            ("In English", "label-success"),
-            ("English OK", "label-success"),
-            ("K-18", "label-danger"),
-            ("Paikkaliput", "label-default"),
-            ("Kirkkaita/välkkyviä valoja", "label-warning"),
-            ("Kovia ääniä", "label-warning"),
-            ("Savutehosteita", "label-warning"),
+        # truthy "empty" value to opt out of automatic dimensions
+        no_tags = {"accessibility": []}
+        for tag_title, tag_class, v2_dimensions in [
+            ("Suositeltu", "hilight", no_tags),
+            ("Musiikki", "label-info", no_tags),
+            ("In English", "label-success", {"language": ["en"]}),
+            ("English OK", "label-success", {"language": ["en"]}),
+            ("K-18", "label-danger", {"audience": ["r18"]}),
+            ("Paikkaliput", "label-default", {"signup": ["paikkala"]}),
+            ("Kirkkaita/välkkyviä valoja", "label-warning", {"accessibility": ["flashing-lights"]}),
+            ("Kovia ääniä", "label-warning", {"accessibility": ["loud-noises"]}),
+            ("Savutehosteita", "label-warning", {"accessibility": ["smoke-effects"]}),
         ]:
-            Tag.objects.get_or_create(
+            Tag.objects.update_or_create(
                 event=self.event,
                 title=tag_title,
                 defaults=dict(
                     style=tag_class,
+                    v2_dimensions=v2_dimensions,
                 ),
             )
 
@@ -683,111 +684,28 @@ class Setup:
 
         self.event.programme_event_meta.create_groups()
 
+        # hack: force computed property to be recalculated
+        for room in Room.objects.filter(event=self.event, v2_dimensions__room__isnull=True):
+            room.v2_dimensions = {}
+            room.save()
+
     def setup_program_v2(self):
-        """
-        This is for development purposes only. Once program v2 is up and running, there will be some
-        default form that will be used to initialize the event, and a feature will be provided to copy
-        forms from another event.
-        """
-        from forms.models import Form
-        from program_v2.models import Dimension, OfferForm, ProgramV2EventMeta
-        from programme.models import ProgrammeEventMeta
+        from program_v2.importers.default import DefaultImporter
+        from program_v2.models.dimension import DimensionDTO
+        from program_v2.models.meta import ProgramV2EventMeta
 
-        category_dimension, _ = Dimension.objects.get_or_create(
-            event=self.event,
-            slug="category",
-            defaults=dict(
-                title=dict(
-                    fi="Ohjelmatyyppi",
-                    en="Category",
-                ),
-            ),
-        )
+        dimensions = DefaultImporter(self.event).get_dimensions()
+        dimensions = DimensionDTO.save_many(self.event, dimensions)
+        room_dimension = next(d for d in dimensions if d.slug == "room")
 
-        (programme_admin_group,) = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins"])
-        ProgramV2EventMeta.objects.get_or_create(
+        ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
-                admin_group=programme_admin_group,
-                primary_dimension=category_dimension,
+                location_dimension=room_dimension,
+                importer_name="tracon2024",
+                admin_group=self.event.programme_event_meta.admin_group,
             ),
         )
-
-        with resource_stream("program_v2.models", "default_forms/fi.yml") as f:
-            default_form_fi_fields = yaml.safe_load(f)["fields"]
-
-        default_form_fi, _ = Form.objects.get_or_create(
-            event=self.event,
-            slug="program-default-fi",
-            language="fi",
-            defaults=dict(
-                title="Tarjoa puhe- tai muuta ohjelmaa",
-                fields=default_form_fi_fields,
-            ),
-        )
-
-        with resource_stream("program_v2.models", "default_forms/en.yml") as f:
-            default_form_en_fields = yaml.safe_load(f)["fields"]
-
-        default_form_en, _ = Form.objects.get_or_create(
-            event=self.event,
-            slug="program-default-en",
-            language="en",
-            defaults=dict(
-                title="Offer a talk or other programme item",
-                fields=default_form_en_fields,
-            ),
-        )
-
-        default_form, _ = OfferForm.objects.get_or_create(
-            event=self.event,
-            slug="default",
-            defaults=dict(
-                short_description=dict(
-                    fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole pöytäroolipeli.",
-                    en="Select this option if your programme item is not a tabletop role-playing game.",
-                ),
-                active_from=now(),
-            ),
-        )
-
-        if not default_form.languages.exists():
-            default_form.languages.set([default_form_fi, default_form_en])
-
-        rpg_form_fi, _ = Form.objects.get_or_create(
-            event=self.event,
-            slug="program-rpg-fi",
-            defaults=dict(
-                title="Tarjoa pöytäroolipeliä",
-                language="fi",
-                fields=[],
-            ),
-        )
-
-        rpg_form_en, _ = Form.objects.get_or_create(
-            event=self.event,
-            slug="program-rpg-en",
-            defaults=dict(
-                title="Offer a tabletop role-playing game",
-                language="en",
-                fields=[],
-            ),
-        )
-
-        rpg_form, _ = OfferForm.objects.get_or_create(
-            event=self.event,
-            slug="rpg",
-            defaults=dict(
-                short_description=dict(
-                    fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi on pöytäroolipeli.",
-                    en="Select this option if your programme item is a tabletop role-playing game.",
-                ),
-                active_from=now(),
-            ),
-        )
-
-        if not rpg_form.languages.exists():
-            rpg_form.languages.set([rpg_form_fi, rpg_form_en])
 
     def setup_access(self):
         from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege

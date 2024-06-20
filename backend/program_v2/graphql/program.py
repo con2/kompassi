@@ -9,8 +9,8 @@ from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
 from graphql_api.utils import resolve_localized_field
 
-from ..consts import ANNOTATION_SCHEMA
 from ..models import Program
+from ..models.annotations import ANNOTATIONS
 from .annotations import ProgramAnnotationType
 from .dimension import ProgramDimensionValueType
 
@@ -234,7 +234,7 @@ class ProgramType(DjangoObjectType):
         TODO: Provide a way to supply is_public=False annotations to the GraphQL importer.
         Perhaps make the importer authenticate?
         """
-        annotations = [annotation for annotation in ANNOTATION_SCHEMA if annotation.is_public]
+        annotations = [annotation for annotation in ANNOTATIONS if annotation.is_public]
 
         if is_shown_in_detail:
             annotations = [annotation for annotation in annotations if annotation.is_shown_in_detail]
@@ -260,7 +260,7 @@ class ProgramType(DjangoObjectType):
 
         NOTE: If querying a lot of program items, consider using cachedAnnotations instead for SPEED.
         """
-        annotations = [annotation for annotation in ANNOTATION_SCHEMA if annotation.is_public]
+        annotations = [annotation for annotation in ANNOTATIONS if annotation.is_public]
 
         if is_shown_in_detail:
             annotations = [annotation for annotation in annotations if annotation.is_shown_in_detail]

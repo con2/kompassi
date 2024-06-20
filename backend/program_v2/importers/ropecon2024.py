@@ -2,14 +2,15 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from typing import Any
 
 from django.utils.timezone import get_current_timezone
 
 from core.models import Event
 from programme.models.programme import Programme
-from programme.models.room import Room
 
 from ..consts import DATE_DIMENSION_TITLE_LOCALIZED, ROOM_DIMENSION_TITLE_LOCALIZED
+from ..integrations.konsti import KONSTI_DIMENSION_DTO
 from ..models.dimension import DimensionDTO, DimensionValueDTO, ValueOrdering
 from .default import DefaultImporter
 
@@ -98,16 +99,7 @@ class RopeconImporter(DefaultImporter):
             DimensionDTO(
                 slug="room",
                 title=ROOM_DIMENSION_TITLE_LOCALIZED,
-                value_ordering=ValueOrdering.MANUAL,
-                choices=[
-                    DimensionValueDTO(slug=room.slug, title={self.language: room.name})
-                    for room in Room.objects.filter(
-                        event=self.event,
-                        programmes__state="published",
-                        programmes__start_time__isnull=False,
-                        programmes__length__isnull=False,
-                    ).distinct()
-                ],
+                choices=list(self._get_room_dimension_values()),
             ),
             DimensionDTO(
                 slug="accessibility",
@@ -252,35 +244,7 @@ class RopeconImporter(DefaultImporter):
                     ]
                 ],
             ),
-            DimensionDTO(
-                slug="konsti",
-                is_list_filter=False,
-                is_shown_in_detail=False,
-                title=dict(
-                    fi="Konsti-ilmoittautumistyyppi",
-                    en="Konsti signup type",
-                    sv="Konsti-anmälningstyp",
-                ),
-                value_ordering=ValueOrdering.MANUAL,
-                choices=[
-                    DimensionValueDTO(
-                        slug=slug,
-                        title=dict(
-                            fi=title_fi,
-                            en=title_en,
-                        ),
-                    )
-                    for slug, title_fi, title_en in [
-                        # note: camelCase slugs defined by Konsti, pending discussion for consistency in later events
-                        ("tabletopRPG", "Pöytäroolipeli", "Tabletop RPG"),
-                        ("larp", "Larppi", "LARP"),
-                        ("tournament", "Turnaus", "Tournament"),
-                        ("workshop", "Työpaja", "Workshop"),
-                        ("experiencePoint", "Kokemuspiste", "Experience Point"),
-                        ("other", "Muu", "Other"),
-                    ]
-                ],
-            ),
+            KONSTI_DIMENSION_DTO,
         ]
 
     def get_program_dimension_values(self, programme: Programme) -> dict[str, list[str]]:
@@ -382,26 +346,12 @@ class RopeconImporter(DefaultImporter):
 
         return values
 
-    def get_annotations(self, programme: Programme) -> dict[str, str]:
-        annotations = super().get_annotations(programme)
+    def get_program_annotations(self, programme: Programme) -> dict[str, Any]:
+        annotations = super().get_program_annotations(programme)
         dimension_values = self.get_program_dimension_values(programme)
 
         is_konsti = len(dimension_values.get("konsti", [])) > 0
         if is_konsti:
             annotations["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
-
-        annotations.update(
-            **{
-                "konsti:rpgSystem": programme.rpg_system,
-                "ropecon:otherAuthor": programme.other_author,
-                "konsti:minAttendance": programme.min_players,
-                "konsti:maxAttendance": programme.max_players,
-                "ropecon:numCharacters": programme.ropecon2018_characters,
-                "konsti:workshopFee": programme.ropecon2023_workshop_fee,
-                "ropecon:contentWarnings": programme.ropecon2022_content_warnings,
-                "ropecon:accessibilityOther": programme.ropecon2023_other_accessibility_information,
-                "ropecon:gameSlogan": programme.three_word_description,
-            }
-        )
 
         return annotations

@@ -10,7 +10,6 @@ from core.utils import get_objects_within_period
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
 
-from ..consts import ANNOTATION_SCHEMA
 from ..filters import ProgramFilters
 from ..models import (
     Dimension,
@@ -18,6 +17,7 @@ from ..models import (
     Program,
     ProgramV2EventMeta,
 )
+from ..models.annotations import ANNOTATIONS
 from ..models.meta import ProgramV2ProfileMeta
 from .annotations import AnnotationSchemoidType
 from .dimension import DimensionType
@@ -61,7 +61,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     @staticmethod
     def resolve_annotations(meta: ProgramV2EventMeta, info, lang: str = DEFAULT_LANGUAGE):
-        return ANNOTATION_SCHEMA
+        return ANNOTATIONS
 
     annotations = graphene.NonNull(
         graphene.List(graphene.NonNull(AnnotationSchemoidType)),

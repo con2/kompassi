@@ -1,5 +1,4 @@
 # v1 to v2 importer creates these default dimensions
-from .models.annotations import AnnotationDataType, AnnotationSchemoid
 
 DATE_DIMENSION_TITLE_LOCALIZED = dict(
     fi="Päivä",
@@ -50,86 +49,4 @@ DEFAULT_COLORS = dict(
     sisainen="#999999",
 )
 
-
-ANNOTATION_SCHEMA = [
-    AnnotationSchemoid(
-        slug="ropecon:gameSlogan",
-        title=dict(
-            fi="Pelin slogan",
-            en="Game slogan",
-            sv="Spelets slogan",
-        ),
-        description=dict(
-            fi="Lyhyt lause, joka kertoo pelaajille mitä peli tarjoaa. Esimerkiksi ”Perinteinen D&D-luolaseikkailu”, tai ”Lovecraftilaista kauhua Equestriassa”.",
-            en='One short sentence that will let players know what the game has to offer. For example, "A traditional D&D dungeon crawl", or "Lovecraftian horror in Equestria".',
-            sv="En kort mening som berättar för spelarna vad spelet erbjuder. Till exempel ”En traditionell D&D-dungeon crawl” eller ”Lovecraftsk skräck i Equestria”.",
-        ),
-    ),
-    AnnotationSchemoid(
-        slug="konsti:rpgSystem",
-        title=dict(
-            fi="Pelisysteemi",
-            en="RPG system",
-            sv="Rollspelssystem",
-        ),
-    ),
-    AnnotationSchemoid(
-        slug="ropecon:otherAuthor",
-        title=dict(
-            fi="Pelin kirjoittaja (jos muu kuin pelinjohtaja)",
-            en="Author (if other than GM)",
-            sv="Författare (om annan än spelledaren)",
-        ),
-    ),
-    AnnotationSchemoid(
-        slug="konsti:minAttendance",
-        title=dict(
-            fi="Minimiosallistujamäärä",
-            en="Minimum attendance",
-            sv="Minsta antal deltagare",
-        ),
-        type=AnnotationDataType.NUMBER,
-    ),
-    AnnotationSchemoid(
-        slug="konsti:maxAttendance",
-        title=dict(
-            fi="Maksimiosallistujamäärä",
-            en="Maximum attendance",
-            sv="Högsta antal deltagare",
-        ),
-        type=AnnotationDataType.NUMBER,
-    ),
-    AnnotationSchemoid(
-        slug="ropecon:numCharacters",
-        title=dict(
-            fi="Hahmojen määrä",
-            en="Number of characters",
-            sv="Antal karaktärer",
-        ),
-        type=AnnotationDataType.NUMBER,
-    ),
-    AnnotationSchemoid(
-        slug="konsti:workshopFee",
-        title=dict(
-            fi="Työpajamaksu",
-            en="Workshop fee",
-            sv="Workshopavgift",
-        ),
-    ),
-    AnnotationSchemoid(
-        slug="ropecon:contentWarnings",
-        title=dict(
-            fi="Sisältövaroitukset",
-            en="Content warnings",
-            sv="Innehållsvarningar",
-        ),
-    ),
-    AnnotationSchemoid(
-        slug="ropecon:accessibilityOther",
-        title=dict(
-            fi="Muut saavutettavuustiedot",
-            en="Other accessibility information",
-            sv="Övrig tillgänglighetsinformation",
-        ),
-    ),
-]
+# NOTE: ANNOTATION_SCHEMA is now ANNOTATIONS in models/annotations.py

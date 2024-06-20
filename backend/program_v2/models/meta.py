@@ -61,6 +61,7 @@ class ProgramV2EventMeta(EventMetaBase):
         from ..importers.default import DefaultImporter
         from ..importers.noop import NoopImporter
         from ..importers.ropecon2024 import RopeconImporter
+        from ..importers.tracon2024 import TraconImporter
 
         match self.importer_name:
             case "default":
@@ -69,6 +70,8 @@ class ProgramV2EventMeta(EventMetaBase):
                 return NoopImporter
             case "ropecon2024":
                 return RopeconImporter
+            case "tracon2024":
+                return TraconImporter
             case unimplemented_importer_name:
                 raise NotImplementedError(unimplemented_importer_name)
 

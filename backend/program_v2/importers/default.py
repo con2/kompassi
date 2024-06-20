@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from itertools import batched
+from typing import Any
 
 from django.db.models import QuerySet
 from django.utils.timezone import get_current_timezone
@@ -21,7 +22,8 @@ from ..consts import (
     TAG_DIMENSION_TITLE_LOCALIZED,
     WEEKDAYS_LOCALIZED,
 )
-from ..models.dimension import Dimension, DimensionDTO, DimensionValueDTO, ProgramDimensionValue
+from ..models.annotations import ANNOTATIONS
+from ..models.dimension import Dimension, DimensionDTO, DimensionValueDTO, ProgramDimensionValue, ValueOrdering
 from ..models.program import Program
 from ..models.schedule import ScheduleItem
 
@@ -75,6 +77,17 @@ class DefaultImporter:
             )
             cur_date += timedelta(days=1)
 
+    def _get_room_dimension_values(self) -> Iterable[DimensionValueDTO]:
+        return [
+            DimensionValueDTO(slug=room.slug, title={self.language: room.name})
+            for room in Room.objects.filter(
+                event=self.event,
+                programmes__state="published",
+                programmes__start_time__isnull=False,
+                programmes__length__isnull=False,
+            ).distinct()
+        ]
+
     def get_dimensions(self) -> list[DimensionDTO]:
         """
         Return a list of DimensionDTOs for the event.
@@ -85,6 +98,7 @@ class DefaultImporter:
                 slug="date",
                 title=DATE_DIMENSION_TITLE_LOCALIZED,
                 choices=list(self._get_date_dimension_values()),
+                value_ordering=ValueOrdering.SLUG,
             ),
             DimensionDTO(
                 slug="category",
@@ -109,10 +123,7 @@ class DefaultImporter:
             DimensionDTO(
                 slug="room",
                 title=ROOM_DIMENSION_TITLE_LOCALIZED,
-                choices=[
-                    DimensionValueDTO(slug=room.slug, title={self.language: room.name})
-                    for room in Room.objects.filter(event=self.event)
-                ],
+                choices=list(self._get_room_dimension_values()),
             ),
         ]
 
@@ -158,11 +169,14 @@ class DefaultImporter:
     program_unique_fields = ("event", "slug")
     program_update_fields = ("title", "description", "annotations")
 
-    def get_annotations(self, programme: Programme) -> dict[str, str]:
-        return {
-            "internal:formattedHosts": programme.formatted_hosts,
-            "internal:links:signup": programme.signup_link,
-        }
+    def get_program_annotations(self, programme: Programme) -> dict[str, Any]:
+        annotations = {}
+        for annotation in ANNOTATIONS:
+            if extract_value := annotation.from_v1_programme:
+                value = extract_value(programme)
+                if value not in (None, ""):
+                    annotations[annotation.slug] = value
+        return annotations
 
     def get_program(self, programme: Programme) -> Program:
         """
@@ -174,7 +188,7 @@ class DefaultImporter:
             slug=programme.slug,
             title=programme.title,
             description=programme.description,
-            annotations={k: v for (k, v) in self.get_annotations(programme).items() if v},
+            annotations=self.get_program_annotations(programme),
         )
 
     def get_schedule_items(self, v1_programme: Programme, v2_program) -> list[ScheduleItem]:
