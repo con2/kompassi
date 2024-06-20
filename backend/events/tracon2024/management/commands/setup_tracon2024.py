@@ -563,20 +563,20 @@ class Setup:
                 ),
             )
 
-        for title, style in [
-            ("Animeohjelma", "anime"),
-            ("Cosplayohjelma", "cosplay"),
-            ("Miitti", "miitti"),
-            ("Muu ohjelma", "muu"),
-            ("Roolipeliohjelma", "rope"),
-            ("Peliohjelma", "color7"),
+        for title, style, v2_dimensions in [
+            ("Animeohjelma", "anime", {"category": ["animeohjelma"]}),
+            ("Cosplayohjelma", "cosplay", {"category": ["cosplayohjelma"]}),
+            ("Miitti", "miitti", {"category": ["miitti"]}),
+            ("Muu ohjelma", "muu", {"category": ["muu-ohjelma"]}),
+            ("Roolipeliohjelma", "rope", {"category": ["roolipeliohjelma"]}),
+            ("Peliohjelma", "color7", {"category": ["peliohjelma"]}),
         ]:
             Category.objects.update_or_create(
                 event=self.event,
                 style=style,
                 defaults=dict(
                     title=title,
-                    v2_dimensions={},  # force computed property to be recalculated
+                    v2_dimensions=v2_dimensions,
                 ),
             )
 
@@ -684,17 +684,16 @@ class Setup:
 
         self.event.programme_event_meta.create_groups()
 
-        # hack: force computed property to be recalculated
-        for room in Room.objects.filter(event=self.event, v2_dimensions__room__isnull=True):
-            room.v2_dimensions = {}
-            room.save()
+        for room in Room.objects.filter(event=self.event):
+            room.v2_dimensions = {"room": [room.slug]}
+            room.save(update_fields=["v2_dimensions"])
 
     def setup_program_v2(self):
-        from program_v2.importers.default import DefaultImporter
+        from program_v2.importers.tracon2024 import TraconImporter
         from program_v2.models.dimension import DimensionDTO
         from program_v2.models.meta import ProgramV2EventMeta
 
-        dimensions = DefaultImporter(self.event).get_dimensions()
+        dimensions = TraconImporter(self.event).get_dimensions()
         dimensions = DimensionDTO.save_many(self.event, dimensions)
         room_dimension = next(d for d in dimensions if d.slug == "room")
 
