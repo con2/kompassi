@@ -92,6 +92,24 @@ ANNOTATIONS = [
         from_v1_programme=lambda prog: prog.max_players,
     ),
     AnnotationSchemoid(
+        slug="konsti:isPlaceholder",
+        type=AnnotationDataType.BOOLEAN,
+        is_shown_in_detail=False,
+        title=dict(
+            fi="Näytetään Konstissa ilman ilmoittautumista",
+            en="Shown in Konsti without signup",
+            sv="Visas i Konsti utan anmälan",
+        ),
+        description=dict(
+            en=(
+                "If set, the program item will be shown in Konsti without signup. "
+                "This is useful to communicate to visitors that are looking for "
+                "programs of a type that often uses Konsti signup that "
+                "this program exists but does not require signup."
+            ),
+        ),
+    ),
+    AnnotationSchemoid(
         slug="ropecon:numCharacters",
         title=dict(
             fi="Hahmojen määrä",
