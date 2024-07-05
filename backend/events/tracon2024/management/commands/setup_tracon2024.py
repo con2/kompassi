@@ -310,52 +310,52 @@ class Setup:
             return limit_group
 
         for product_info in [
-            # dict(
-            #     name="Viikonloppulippu",
-            #     description="Voimassa koko tapahtuman ajan perjantaista sunnuntaihin. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Perjantain liput", 5200),
-            #         limit_group("Lauantain liput", 5200),
-            #         limit_group("Sunnuntain liput", 5200),
-            #     ],
-            #     price_cents=4500,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name="Perjantailippu",
-            #     description="Voimassa perjantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Perjantain liput", 5200),
-            #     ],
-            #     price_cents=2000,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name="Lauantailippu",
-            #     description="Voimassa lauantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Lauantain liput", 5200),
-            #     ],
-            #     price_cents=3500,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name="Sunnuntailippu",
-            #     description="Voimassa sunnuntaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Sunnuntain liput", 5200),
-            #     ],
-            #     price_cents=3000,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name="Viikonloppulippu",
+                description="Voimassa koko tapahtuman ajan perjantaista sunnuntaihin. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Perjantain liput", 3860),
+                    limit_group("Lauantain liput", 3860),
+                    limit_group("Sunnuntain liput", 3860),
+                ],
+                price_cents=50_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Perjantailippu",
+                description="Voimassa perjantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Perjantain liput", 3860),
+                ],
+                price_cents=25_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Lauantailippu",
+                description="Voimassa lauantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Lauantain liput", 3860),
+                ],
+                price_cents=40_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Sunnuntailippu",
+                description="Voimassa sunnuntaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Sunnuntain liput", 3860),
+                ],
+                price_cents=35_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
             # dict(
             #     name="K18 Iltabilelippu",
             #     description="Voimassa Traconin iltabileiden ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
