@@ -356,17 +356,17 @@ class Setup:
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
-            # dict(
-            #     name="K18 Iltabilelippu",
-            #     description="Voimassa Traconin iltabileiden ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Iltabileliput", 1300),
-            #     ],
-            #     price_cents=1500,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name="K18 Iltabilelippu",
+                description="Voimassa Traconin iltabileiden ajan. Huomioithan, että bileiden ikäraja on 18 vuotta. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Iltabileliput", 1200),
+                ],
+                price_cents=20_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
             # dict(
             #     name="Lattiamajoitus 1 yö pe–la – Amurin koulutalo (ei sis. makuualustaa)",
             #     description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
