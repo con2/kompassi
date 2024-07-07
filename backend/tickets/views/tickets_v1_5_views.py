@@ -5,7 +5,7 @@ https://outline.con2.fi/doc/ticket-sales-1cFCJvcZxc
 
 from csp.decorators import csp_update
 from django.contrib import messages
-from django.db import connection, transaction
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -36,10 +36,6 @@ def tickets_view(request, event):
     code = request.GET.get("code", "")
 
     with transaction.atomic():
-        # TODO handle serialization_failure
-        cursor = connection.cursor()
-        cursor.execute("set transaction isolation level serializable")
-
         order_product_forms = OrderProductForm.get_for_order(request, order, code=code)
         customer_form = initialize_form(CustomerForm, request, order=order)
 
