@@ -149,6 +149,36 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict()
 
 
+class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "shirt_size",
+            "special_diet",
+            "special_diet_other",
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            "shirt_size",
+            "special_diet",
+            "special_diet_other",
+        )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+        )
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            free_text="Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta",
+            shift_type="kaikkikay",
+        )
+
+
 DESCRIPTION_HELP_TEXT = _(
     "Advertise your game to potential players. Also explain, what is expected of players "
     "and what kind of themes are involved. Be extra sure to inform about potentially "
