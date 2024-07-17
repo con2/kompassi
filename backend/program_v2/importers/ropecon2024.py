@@ -277,7 +277,7 @@ class RopeconImporter(DefaultImporter):
 
         konsti_values = values.get("konsti", [])
         if (
-            any(val in konsti_values for val in ["tournament", "experiencePoint", "other"])
+            any((val in konsti_values) for val in ["tournament", "experiencePoint", "other"])
             and programme.ropecon2023_signuplist != "konsti"
         ):
             values["konsti"] = []
