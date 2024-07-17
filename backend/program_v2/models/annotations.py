@@ -155,6 +155,19 @@ ANNOTATIONS = [
         from_v1_programme=lambda prog: prog.ropecon2023_other_accessibility_information,
     ),
     AnnotationSchemoid(
+        slug="ropecon:isRevolvingDoor",
+        title=dict(
+            fi="Pyöröoviohjelma",
+            en="Hop in, hop out",
+        ),
+        description=dict(
+            fi="Ohjelmanumeroon voi tulla ja lähteä kesken.",
+            en="Participants can join and leave the program item while it is running.",
+            sv="Deltagare kan gå med i och lämna programmet medan det pågår.",
+        ),
+        from_v1_programme=lambda prog: prog.is_revolving_door,
+    ),
+    AnnotationSchemoid(
         slug="internal:formattedHosts",
         title=dict(
             fi="Ohjelmanpitäjät",
