@@ -225,6 +225,29 @@ class RopeconImporter(DefaultImporter):
                 ],
             ),
             DimensionDTO(
+                slug="playstyle",
+                title=dict(fi="Pelityyli", en="Playstyle", sv="Spelstil"),
+                value_ordering=ValueOrdering.MANUAL,
+                choices=[
+                    DimensionValueDTO(
+                        slug=slug,
+                        title=dict(
+                            fi=title_fi,
+                            en=title_en,
+                        ),
+                    )
+                    for slug, title_fi, title_en in [
+                        ("serious", "Vakava", "Serious"),
+                        ("light", "Kevyt", "Light"),
+                        ("rules-heavy", "Raskaat säännöt", "Rules-heavy"),
+                        ("rules-light", "Kevyet säännöt", "Rules-light"),
+                        ("story-driven", "Tarinavetoinen", "Story-driven"),
+                        ("character-driven", "Hahmovetoinen", "Character-driven"),
+                        ("combat-driven", "Taisteluvetoinen", "Combat-heavy"),
+                    ]
+                ],
+            ),
+            DimensionDTO(
                 slug="language",
                 title=dict(fi="Kieli", en="Language", sv="Språk"),
                 value_ordering=ValueOrdering.MANUAL,
@@ -343,6 +366,18 @@ class RopeconImporter(DefaultImporter):
             values.setdefault("language", []).append("fi")
         if "english" in other_lang_lower:
             values.setdefault("language", []).append("en")
+
+        for v1_attribute, playstyle_slug in [
+            ("ropecon2018_style_serious", "serious"),
+            ("ropecon2018_style_light", "light"),
+            ("ropecon2018_style_rules_heavy", "rules-heavy"),
+            ("ropecon2018_style_rules_light", "rules-light"),
+            ("ropecon2018_style_story_driven", "story-driven"),
+            ("ropecon2018_style_character_driven", "character-driven"),
+            ("ropecon2018_style_combat_driven", "combat-driven"),
+        ]:
+            if getattr(programme, v1_attribute):
+                values.setdefault("playstyle", []).append(playstyle_slug)
 
         return values
 
