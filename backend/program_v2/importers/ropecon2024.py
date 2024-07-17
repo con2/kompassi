@@ -275,6 +275,13 @@ class RopeconImporter(DefaultImporter):
         prog_title_lower = programme.title.lower()
         other_lang_lower = programme.ropecon2024_language_other.lower()
 
+        konsti_values = values.get("konsti", [])
+        if (
+            any(val in konsti_values for val in ["tournament", "experiencePoint", "other"])
+            and programme.ropecon2023_signuplist != "konsti"
+        ):
+            values["konsti"] = []
+
         if "näyttely" in prog_title_lower:
             values.setdefault("type", []).append("exhibit")
 
