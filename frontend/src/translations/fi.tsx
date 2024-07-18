@@ -18,6 +18,10 @@ const translations: Translations = {
       delete: "Poista",
       create: "Uusi",
     },
+    boolean: {
+      true: "Kyllä",
+      false: "Ei",
+    },
   },
   Profile: {
     attributes: {

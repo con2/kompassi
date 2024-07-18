@@ -32,6 +32,10 @@ const translations: Translations = {
       delete: "Radera",
       create: "Skapa",
     },
+    boolean: {
+      true: "Ja",
+      false: "Nej",
+    },
   },
   Profile: {
     attributes: {

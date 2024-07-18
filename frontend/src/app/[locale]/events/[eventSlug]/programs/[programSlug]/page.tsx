@@ -5,7 +5,11 @@ import { markAsFavorite, unmarkAsFavorite } from "../../program/actions";
 import FavoriteButton from "../../program/FavoriteButton";
 import { FavoriteContextProvider } from "../../program/FavoriteContext";
 import { graphql } from "@/__generated__";
-import { ProgramLinkType } from "@/__generated__/graphql";
+import {
+  AnnotationDataType,
+  ProgramDetailAnnotationFragment,
+  ProgramLinkType,
+} from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
 import Paragraphs from "@/components/helpers/Paragraphs";
@@ -13,6 +17,17 @@ import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+
+graphql(`
+  fragment ProgramDetailAnnotation on ProgramAnnotationType {
+    annotation {
+      slug
+      type
+      title(lang: $locale)
+    }
+    value(lang: $locale)
+  }
+`);
 
 // TODO(Japsu) Deterministic order of dimensions & values
 // See https://con2.slack.com/archives/C3ZGNGY48/p1718446605681339
@@ -46,11 +61,7 @@ const query = graphql(`
           }
 
           annotations(isShownInDetail: true) {
-            annotation {
-              slug
-              title(lang: $locale)
-            }
-            value(lang: $locale)
+            ...ProgramDetailAnnotation
           }
 
           dimensions(isShownInDetail: true) {
@@ -139,6 +150,16 @@ export default async function NewProgramPage({ params }: Props) {
   const favoriteProgramSlugs =
     data.profile?.program?.programs?.map((program) => program.slug) ?? [];
 
+  function formatAnnotationValue(annotation: ProgramDetailAnnotationFragment) {
+    if (annotation.annotation.type === AnnotationDataType.Boolean) {
+      return annotation.value
+        ? translations.Common.boolean.true
+        : translations.Common.boolean.false;
+    }
+
+    return annotation.value;
+  }
+
   return (
     <ViewContainer>
       <Link className="link-subtle" href={`/events/${eventSlug}/program`}>
@@ -203,7 +224,7 @@ export default async function NewProgramPage({ params }: Props) {
         {program.annotations.map((annotation) => (
           <div key={annotation.annotation.slug}>
             <strong>{annotation.annotation.title}</strong>:{" "}
-            {"" + annotation.value}
+            {"" + formatAnnotationValue(annotation)}
           </div>
         ))}
       </div>

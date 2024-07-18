@@ -18,6 +18,10 @@ const translations = {
       delete: "Delete",
       create: "Create",
     },
+    boolean: {
+      true: "Yes",
+      false: "No",
+    },
   },
   Profile: {
     attributes: {
