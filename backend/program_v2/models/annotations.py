@@ -156,6 +156,7 @@ ANNOTATIONS = [
     ),
     AnnotationSchemoid(
         slug="ropecon:isRevolvingDoor",
+        type=AnnotationDataType.BOOLEAN,
         title=dict(
             fi="Pyöröoviohjelma",
             en="Hop in, hop out",
@@ -165,7 +166,7 @@ ANNOTATIONS = [
             en="Participants can join and leave the program item while it is running.",
             sv="Deltagare kan gå med i och lämna programmet medan det pågår.",
         ),
-        from_v1_programme=lambda prog: prog.is_revolving_door,
+        from_v1_programme=lambda prog: True if prog.is_revolving_door else None,
     ),
     AnnotationSchemoid(
         slug="internal:formattedHosts",
