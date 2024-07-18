@@ -11,6 +11,7 @@ import { FavoriteContextProvider } from "./FavoriteContext";
 import { graphql } from "@/__generated__";
 import { ProgramListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
+import { auth } from "@/auth";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
@@ -128,7 +129,8 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
     notFound();
   }
 
-  const favoritesOnly = !!searchParams.favorited;
+  const session = await auth();
+  const favoritesOnly = session && !!searchParams.favorited;
   const userPrograms = data.profile?.program?.programs || [];
   const programs = favoritesOnly ? userPrograms : event.program.programs;
   const listFilters = event.program.listFilters || [];
