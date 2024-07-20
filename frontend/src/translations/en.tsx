@@ -223,6 +223,12 @@ const translations = {
     listTitle: "Program",
     singleTitle: "Program item",
     inEvent: (eventName: string) => <>in {eventName}</>,
+    attributes: {
+      title: "Title",
+      time: "Time",
+      location: "Location",
+      actions: "Actions",
+    },
     actions: {
       returnToProgramList: (eventName: string) =>
         `Return to the program schedule of ${eventName}`,
@@ -239,6 +245,10 @@ const translations = {
     filters: {
       showOnlyFavorites: "Show only favorites",
       hidePastPrograms: "Hide past program items",
+    },
+    tabs: {
+      cards: "Cards",
+      table: "Table",
     },
   },
 

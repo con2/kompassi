@@ -221,6 +221,12 @@ const translations: Translations = {
     listTitle: "Ohjelma",
     singleTitle: "Ohjelmanumero",
     inEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
+    attributes: {
+      title: "Otsikko",
+      time: "Ajankohta",
+      location: "Sijainti",
+      actions: "Toiminnot",
+    },
     actions: {
       returnToProgramList: (eventName: string) =>
         `Takaisin tapahtuman ${eventName} ohjelmaan`,
@@ -237,6 +243,10 @@ const translations: Translations = {
     filters: {
       showOnlyFavorites: "Näytä vain suosikit",
       hidePastPrograms: "Piilota menneet ohjelmat",
+    },
+    tabs: {
+      cards: "Kortit",
+      table: "Taulukko",
     },
   },
 

@@ -2,7 +2,7 @@ import { ReactNode, Fragment } from "react";
 
 export interface Column<Row> {
   slug: string;
-  title: string;
+  title: ReactNode;
   getCellElement?: (row: Row, children?: ReactNode) => ReactNode;
   getCellContents?: (row: Row) => ReactNode;
   scope?: string;

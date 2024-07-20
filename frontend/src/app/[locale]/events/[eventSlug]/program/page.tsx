@@ -8,6 +8,9 @@ import CardTitle from "react-bootstrap/CardTitle";
 import { markAsFavorite, unmarkAsFavorite } from "./actions";
 import FavoriteButton from "./FavoriteButton";
 import { FavoriteContextProvider } from "./FavoriteContext";
+import ProgramCard from "./ProgramCard";
+import ProgramTable from "./ProgramTable";
+import ProgramTabs, { ProgramTab } from "./ProgramTabs";
 import { graphql } from "@/__generated__";
 import { ProgramListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -115,7 +118,8 @@ export async function generateMetadata({ params, searchParams }: Props) {
 
 export default async function ProgramListPage({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
-  const t = getTranslations(locale).Program;
+  const translations = getTranslations(locale);
+  const t = translations.Program;
   const filters = buildDimensionFilters(searchParams);
   const hidePast = !!searchParams.past && !decodeBoolean(searchParams.past);
 
@@ -136,14 +140,13 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
   const listFilters = event.program.listFilters || [];
   const favoriteProgramSlugs = userPrograms.map((p) => p.slug);
 
-  const queryString = new URLSearchParams(searchParams).toString();
+  const urlSearchParams = new URLSearchParams(searchParams);
+  const activeTab =
+    urlSearchParams.get("display") === "table" ? "table" : "cards";
+  const queryString = urlSearchParams.toString();
   const calendarExportLink = queryString
     ? `${event.program.calendarExportLink}?${queryString}`
     : event.program.calendarExportLink;
-
-  function getCardStyle(program: ProgramListFragment) {
-    return program.color ? { borderLeft: `4px solid ${program.color}` } : {};
-  }
 
   return (
     <ViewContainer>
@@ -157,49 +160,39 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
         messages={t.filters}
         isLoggedIn={!!data.profile}
       />
+      <ProgramTabs
+        searchParams={searchParams}
+        eventSlug={event.slug}
+        active={activeTab}
+        translations={translations}
+      />
       <FavoriteContextProvider
         slugs={favoriteProgramSlugs}
         messages={t.favorites}
         markAsFavorite={markAsFavorite.bind(null, locale, eventSlug)}
         unmarkAsFavorite={unmarkAsFavorite.bind(null, locale, eventSlug)}
       >
-        {programs.map((program) => (
-          <Card
-            key={program.slug}
-            className="mb-3"
-            style={getCardStyle(program)}
-          >
-            <CardBody>
-              <div className="d-flex justify-content-between">
-                <CardTitle>
-                  <CardLink
-                    as={Link}
-                    href={`/events/${eventSlug}/programs/${program.slug}`}
-                    className="link-subtle"
-                  >
-                    {program.title}
-                  </CardLink>
-                </CardTitle>
-                {data.profile && <FavoriteButton slug={program.slug} />}
-              </div>
-              {program.scheduleItems.map((scheduleItem, index) => (
-                <div key={index} className="d-flex justify-content-between">
-                  <div>
-                    <FormattedDateTimeRange
-                      locale={locale}
-                      scope={event}
-                      session={null}
-                      start={scheduleItem.startTime}
-                      end={scheduleItem.endTime}
-                      includeDuration={true}
-                    />
-                  </div>
-                  <div>{scheduleItem.location}</div>
-                </div>
-              ))}
-            </CardBody>
-          </Card>
-        ))}
+        {activeTab === "table" ? (
+          <ProgramTable
+            programs={programs}
+            event={event}
+            locale={locale}
+            isLoggedIn={!!data.profile}
+            translations={translations}
+          />
+        ) : (
+          <div className="mt-3">
+            {programs.map((program) => (
+              <ProgramCard
+                key={event.slug}
+                program={program}
+                event={event}
+                isLoggedIn={!!data.profile}
+                locale={locale}
+              />
+            ))}
+          </div>
+        )}
       </FavoriteContextProvider>
 
       <p className="mt-4">

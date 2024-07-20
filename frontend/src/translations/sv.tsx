@@ -223,6 +223,12 @@ const translations: Translations = {
     listTitle: "Program",
     singleTitle: "Program",
     inEvent: (eventName: string) => <>i {eventName}</>,
+    attributes: {
+      title: "Rubrik",
+      time: "Tid",
+      location: "Plats",
+      actions: "Funktioner",
+    },
     actions: {
       returnToProgramList: (eventName: string) =>
         `Tillbaka till programmet för ${eventName}`,
@@ -239,6 +245,10 @@ const translations: Translations = {
     filters: {
       showOnlyFavorites: "Visa endast favoriter",
       hidePastPrograms: "Dölj förflutna program",
+    },
+    tabs: {
+      cards: "Kort",
+      table: "Tabell",
     },
   }),
 

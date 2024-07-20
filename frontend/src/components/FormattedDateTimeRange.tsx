@@ -63,7 +63,7 @@ export default function FormattedDateTimeRange({
   const endOptions = {
     ...options,
     dateStyle:
-      start && end && isSameDay(start, end) ? undefined : ("full" as const),
+      start && end && isSameDay(start, end) ? undefined : options.dateStyle,
   };
   const formattedEnd = end ? formatDateTime(end, locale, endOptions) : "";
 

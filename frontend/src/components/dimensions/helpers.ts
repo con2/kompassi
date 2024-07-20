@@ -3,7 +3,7 @@ import type { Dimension } from "./models";
 import { validateCachedDimensions } from "./models";
 import type { DimensionFilterInput } from "@/__generated__/graphql";
 
-const reservedFilterNames = ["favorited", "past"];
+const reservedFilterNames = ["favorited", "past", "display"];
 
 /// Helper to build turn search params into dimension filters that you can pass into GraphQL
 export function buildDimensionFilters(
