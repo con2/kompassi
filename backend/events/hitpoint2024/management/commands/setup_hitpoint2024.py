@@ -267,7 +267,7 @@ class Setup:
             for title, slug, style in [
                 ("Larp", "larp", "color1"),
                 ("Lautapelit", "lautapelit", "color2"),
-                ("Puheohjelma", "puheohjelma", "color3"),
+                # ("Puheohjelma", "puheohjelma", "color3"),
                 ("Roolipeli", "roolipeli", "color4"),
                 ("Freeform", "freeform", "color1"),
                 ("Korttipelit", "korttipelit", "color5"),
@@ -327,13 +327,13 @@ class Setup:
             ),
         )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
                 title="Tarjoa puhe- tai muuta ohjelmaa",
                 short_description="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole roolipeli tai freeform-skenaario.",
-                programme_form_code="programme.forms:ProgrammeOfferForm",
+                programme_form_code="events.hitpoint2024.forms:ProgrammeOfferForm",
                 num_extra_invites=0,
                 order=30,
             ),

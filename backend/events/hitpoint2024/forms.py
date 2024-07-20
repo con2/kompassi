@@ -149,6 +149,63 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict()
 
 
+class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop("event")
+        if "admin" in kwargs:
+            admin = kwargs.pop("admin")
+        else:
+            admin = False
+
+        super().__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        for field_name in [
+            "title",
+        ]:
+            self.fields[field_name].required = True
+
+        if not admin:
+            for field_name in [
+                "description",
+                # "video_permission",
+                # "stream_permission",
+                "photography",
+                "rerun",
+                # "encumbered_content",
+            ]:
+                self.fields[field_name].required = True
+
+        self.fields["category"].queryset = Category.objects.filter(event=event, public=True)
+        self.fields["category"].label = _("Topic")
+
+    def get_excluded_field_defaults(self):
+        return dict()
+
+    class Meta:
+        model = Programme
+        fields = (
+            "title",
+            "description",
+            "category",
+            "computer",
+            "use_audio",
+            "use_video",
+            # "number_of_microphones",
+            "tech_requirements",
+            # "video_permission",
+            # "stream_permission",
+            # "encumbered_content",
+            "photography",
+            "rerun",
+            "room_requirements",
+            "requested_time_slot",
+            "notes_from_host",
+        )
+
+
 class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -219,7 +276,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ),
         )
 
-        self.fields["maax_runs"].help_text = MAX_RUNS_HELP_TEXT
+        self.fields["max_runs"].help_text = MAX_RUNS_HELP_TEXT
 
         self.fields["three_word_description"].required = True
         self.fields["three_word_description"].label = _("Summary in one sentence")
