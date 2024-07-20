@@ -185,8 +185,8 @@ DESCRIPTION_HELP_TEXT = _(
     "shocking themes. Recommended length is 300–500 characters. We reserve the right "
     "to edit this as necessary (including but not limited to shortening)."
 )
-APPROXIMATE_LENGTH_HELP_TEXT = _(
-    "In order to gain free entry, you are required to run at in total least four " "hours of games."
+MAX_RUNS_HELP_TEXT = _(
+    "How many times are you prepared to run this game? For free entry, you are expected to run a game for at least four hours."
 )
 
 
@@ -203,6 +203,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "title",
             "rpg_system",
             "approximate_length",
+            "max_runs",
             "min_players",
             "max_players",
             "description",
@@ -218,7 +219,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ),
         )
 
-        self.fields["approximate_length"].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields["maax_runs"].help_text = MAX_RUNS_HELP_TEXT
 
         self.fields["three_word_description"].required = True
         self.fields["three_word_description"].label = _("Summary in one sentence")
@@ -238,6 +239,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "title",
             "rpg_system",
             "approximate_length",
+            "max_runs",
             "min_players",
             "max_players",
             "three_word_description",
@@ -279,10 +281,12 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.helper.layout = Layout(
             "title",
             "approximate_length",
+            "max_runs",
             "min_players",
             "max_players",
             "description",
             "three_word_description",
+            "room_requirements",
             "physical_play",
             "other_author",
             "hitpoint2020_preferred_time_slots",
@@ -290,12 +294,13 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             Fieldset(
                 _("Whom is the game for?"),
                 "is_english_ok",
+                "is_children_friendly",
                 "is_age_restricted",
                 "is_beginner_friendly",
             ),
         )
 
-        self.fields["approximate_length"].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields["max_runs"].help_text = MAX_RUNS_HELP_TEXT
 
         self.fields["three_word_description"].required = True
         self.fields["three_word_description"].label = _("Summary in one sentence")
@@ -312,15 +317,18 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         fields = (
             "title",
             "approximate_length",
+            "max_runs",
             "min_players",
             "max_players",
             "description",
             "three_word_description",
+            "room_requirements",
             "physical_play",
             "other_author",
             "hitpoint2020_preferred_time_slots",
             "notes_from_host",
             "is_english_ok",
+            "is_children_friendly",
             "is_age_restricted",
             "is_beginner_friendly",
         )

@@ -483,7 +483,14 @@ class Programme(models.Model, CsvExportMixin):
         null=True,
         default=240,
         verbose_name=_("approximate length (minutes)"),
-        help_text=_("Please give your best guess on how long you expect your game to take."),
+        help_text=_("Please give your best guess on how long you expect one run of your game to take."),
+    )
+    max_runs = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        default=1,
+        verbose_name=_("Maximum number of runs"),
+        help_text=_("How many times are you prepared to run this game?"),
     )
     physical_play = models.CharField(
         max_length=max(len(key) for (key, text) in PHYSICAL_PLAY_CHOICES),

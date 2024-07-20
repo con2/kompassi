@@ -315,11 +315,11 @@ class Setup:
             ),
         )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="freeform",
             defaults=dict(
-                title="Tarjoa freeform-skenaariota",
+                title="Tarjoa larppia tai freeform-skenaariota",
                 short_description="",
                 programme_form_code="events.hitpoint2024.forms:FreeformForm",
                 num_extra_invites=0,

@@ -599,8 +599,14 @@ msgid "Please enter an e-mail address to invite another host"
 msgstr "Ole hyvä ja syötä sähköpostiosoite kutsuaksesi toisen ohjelmanjärjestäjän"
 
 #: models/programme.py
-msgid "Please give your best guess on how long you expect your game to take."
-msgstr "Heitä paras arvauksesi siitä, kuinka kauan pelisi tulee kestämään."
+msgid "Please give your best guess on how long you expect one run of your game to take."
+msgstr "Heitä paras arvauksesi siitä, kuinka kauan yksi pelautus pelistäsi tulee kestämään."
+
+msgid "Maximum number of runs"
+msgstr "Pelautusten maksimimäärä"
+
+msgid "How many times are you prepared to run this game?"
+msgstr "Kuinka monta kertaa olet valmis pelauttamaan tämän pelin?"
 
 #: models/programme.py
 msgid "Please photograph my programme"
