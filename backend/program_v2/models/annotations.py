@@ -4,7 +4,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from programme.models.programme import Programme
+# from programme.models.programme import Programme
 
 
 class AnnotationDataType(Enum):
@@ -20,7 +20,8 @@ class AnnotationSchemoid(BaseModel):
     type: AnnotationDataType = AnnotationDataType.STRING
     is_public: bool = True
     is_shown_in_detail: bool = True
-    from_v1_programme: Callable[[Programme], Any] | None = None
+    # from_v1_programme: Callable[[Programme], Any] | None = None
+    from_v1_programme: Callable[[Any], Any] | None = None
 
 
 class ProgramAnnotation(BaseModel):
@@ -189,6 +190,16 @@ ANNOTATIONS = [
         is_public=False,
         is_shown_in_detail=False,
         from_v1_programme=lambda prog: prog.signup_link,
+    ),
+    AnnotationSchemoid(
+        slug="internal:links:tickets",
+        title=dict(
+            fi="Lipunmyyntilinkki",
+            en="Ticket sales link",
+            sv="Biljettförsäljningslänk",
+        ),
+        is_public=False,
+        is_shown_in_detail=False,
     ),
     AnnotationSchemoid(
         slug="internal:links:recording",

@@ -58,6 +58,7 @@ class Setup:
     def setup_labour(self):
         from django.contrib.contenttypes.models import ContentType
 
+        from badges.emperkelators.tracon2024 import TicketType, TraconEmperkelator
         from core.models import Event, Person
         from labour.models import (
             AlternativeSignupForm,
@@ -108,38 +109,76 @@ class Setup:
         if fmh.exists():
             fmh.update(name="Vuorovastaava", slug="vuorovastaava")
 
-        for pc_name, pc_slug, pc_app_label, pc_afterparty in [
-            ("Coniitti", "coniitti", "labour", True),
-            ("Duniitti", "duniitti", "labour", True),
-            ("Vuorovastaava", "vuorovastaava", "labour", True),
-            ("Työvoima", "tyovoima", "labour", True),
-            ("Ohjelma", "ohjelma", "programme", True),
-            ("Ohjelma 2. luokka", "ohjelma-2lk", "programme", False),
-            ("Ohjelma 3. luokka", "ohjelma-3lk", "programme", False),
+        for pc_data in [
+            (
+                "Coniitti",
+                "coniitti",
+                "labour",
+                TraconEmperkelator(override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote"),
+            ),
+            (
+                "Duniitti",
+                "duniitti",
+                "labour",
+                TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
+            ),
+            (
+                "Vuorovastaava",
+                "vuorovastaava",
+                "labour",
+                TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
+            ),
+            (
+                "Työvoima",
+                "tyovoima",
+                "labour",
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=2, swag=True),
+            ),
+            (
+                "Ohjelma",
+                "ohjelma",
+                "programme",
+                TraconEmperkelator(),  # handled in programme.Role
+            ),
             (
                 "Guest of Honour",
                 "goh",
                 "programme",
-                False,
-            ),  # tervetullut muttei kutsuta automaattiviestillä
-            ("Media", "media", "badges", False),
-            ("Myyjä", "myyja", "badges", False),
-            ("Vieras", "vieras", "badges", False),
-            ("Vapaalippu, viikonloppu", "vapaalippu-vkl", "tickets", False),
-            ("Vapaalippu, lauantai", "vapaalippu-la", "tickets", False),
-            ("Vapaalippu, sunnuntai", "vapaalippu-su", "tickets", False),
-            ("Cosplaykisaaja", "cosplay", "tickets", False),
-            ("AMV-kisaaja", "amv", "tickets", False),
-            ("Taidekuja", "taidekuja", "tickets", False),
-            ("Yhdistyspöydät", "yhdistyspoydat", "tickets", False),
+                "GoH-tiimi hoitaa (ei jaeta ovelta)",
+            ),
+            ("Media", "media", "badges", "Badge (external)"),
+            ("Myyjä", "myyja", "badges", "Myyjäranneke"),
+            ("Artesaani", "artesaani", "badges", "?"),
+            ("Vieras", "vieras", "badges", "Badge (external)"),
+            ("Vapaalippu, viikonloppu", "vapaalippu-vkl", "tickets", "Viikonloppuranneke"),
+            ("Vapaalippu, lauantai", "vapaalippu-la", "tickets", "Lauantairanneke"),
+            ("Vapaalippu, sunnuntai", "vapaalippu-su", "tickets", "Sunnuntairanneke"),
+            ("Cosplaykisaaja", "cosplay", "tickets", "?"),
+            ("AMV-kisaaja", "amv", "tickets", "?"),
+            ("Taidekuja", "taidekuja", "tickets", "?"),
+            ("Taidepolku", "taidepolku", "tickets", "?"),
+            ("Yhdistyspöydät", "yhdistyspoydat", "tickets", "?"),
         ]:
-            personnel_class, created = PersonnelClass.objects.get_or_create(
+            if len(pc_data) == 4:
+                pc_name, pc_slug, pc_app_label, pc_perks = pc_data
+                perks = (
+                    pc_perks
+                    if isinstance(pc_perks, TraconEmperkelator)
+                    else TraconEmperkelator(override_formatted_perks=pc_perks)
+                )
+
+            else:
+                pc_name, pc_slug, pc_app_label = pc_data
+                perks = TraconEmperkelator()
+
+            PersonnelClass.objects.update_or_create(
                 event=self.event,
                 slug=pc_slug,
                 defaults=dict(
                     name=pc_name,
                     app_label=pc_app_label,
                     priority=self.get_ordering_number(),
+                    perks=perks.model_dump(),
                 ),
             )
 
@@ -155,9 +194,6 @@ class Setup:
             slug="duniitti",
             icon_css_class="fa-user",
         ).update(icon_css_class="fa-check-square-o")
-
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
-        coniitti = PersonnelClass.objects.get(event=self.event, slug="coniitti")
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
@@ -256,11 +292,12 @@ class Setup:
         from badges.models import BadgesEventMeta
 
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, unused = BadgesEventMeta.objects.get_or_create(
+        meta, unused = BadgesEventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
                 real_name_must_be_visible=True,
+                emperkelator_name="tracon2024",
             ),
         )
 
@@ -508,6 +545,7 @@ class Setup:
             meta.save()
 
     def setup_programme(self):
+        from badges.emperkelators.tracon2024 import TicketType, TraconEmperkelator
         from core.utils import full_hours_between
         from labour.models import PersonnelClass
         from programme.models import (
@@ -539,27 +577,51 @@ class Setup:
             programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
             programme_event_meta.save()
 
-        for pc_slug, role_title, role_is_default in [
-            ("ohjelma", "Ohjelmanjärjestäjä", True),
-            ("ohjelma-2lk", "Ohjelmanjärjestäjä (2. luokka)", False),
-            ("ohjelma-3lk", "Ohjelmanjärjestäjä (3. luokka)", False),
+        for pc_slug, role_title, role_is_default, perks in [
+            (
+                "ohjelma",
+                "Ohjelmanjärjestäjä",
+                True,
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=True),
+            ),
+            (
+                "ohjelma",
+                "Esiintyjä",
+                False,
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=True),
+            ),
+            (
+                "ohjelma",
+                "Keskustelunvetäjä",
+                False,
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=False),
+            ),
+            (
+                "ohjelma",
+                "Työpajanvetäjä",
+                False,
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=False),
+            ),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
-            Role.objects.get_or_create(
+            perks_dict = perks.model_dump()
+            Role.objects.update_or_create(
                 personnel_class=personnel_class,
                 title=role_title,
                 defaults=dict(
                     is_default=role_is_default,
+                    perks=perks_dict,
                 ),
             )
 
-            Role.objects.get_or_create(
+            Role.objects.update_or_create(
                 personnel_class=personnel_class,
                 title=f"Näkymätön {role_title.lower()}",
                 defaults=dict(
                     override_public_title=role_title,
                     is_default=False,
                     is_public=False,
+                    perks=perks_dict,
                 ),
             )
 

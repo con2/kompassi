@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -5,7 +7,7 @@ from core.utils import SLUG_FIELD_PARAMS
 
 
 class Qualification(models.Model):
-    slug = models.CharField(**SLUG_FIELD_PARAMS)
+    slug = models.CharField(**SLUG_FIELD_PARAMS)  # type: ignore
 
     name = models.CharField(max_length=63, verbose_name="pätevyyden nimi")
     description = models.TextField(blank=True, verbose_name="kuvaus")
@@ -13,6 +15,8 @@ class Qualification(models.Model):
     qualification_extra_content_type = models.ForeignKey(
         "contenttypes.ContentType", on_delete=models.CASCADE, null=True, blank=True
     )
+
+    person_qualifications: models.QuerySet[PersonQualification]
 
     class Meta:
         verbose_name = _("qualification")
@@ -40,8 +44,18 @@ class Qualification(models.Model):
 
 
 class PersonQualification(models.Model):
-    person = models.ForeignKey("core.Person", on_delete=models.CASCADE, verbose_name="henkilö")
-    qualification = models.ForeignKey(Qualification, on_delete=models.CASCADE, verbose_name="pätevyys")
+    person = models.ForeignKey(
+        "core.Person",
+        on_delete=models.CASCADE,
+        verbose_name="henkilö",
+        related_name="qualifications",
+    )
+    qualification = models.ForeignKey(
+        Qualification,
+        on_delete=models.CASCADE,
+        verbose_name="pätevyys",
+        related_name="person_qualifications",
+    )
 
     class Meta:
         verbose_name = _("qualification holder")

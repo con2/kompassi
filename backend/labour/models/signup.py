@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from collections import OrderedDict
 from dataclasses import dataclass
@@ -12,6 +14,7 @@ from django.db.models.functions import Coalesce
 from django.utils.translation import gettext_lazy as _
 
 from core.csv_export import CsvExportMixin
+from core.models import Event, Person
 from core.utils import (
     alias_property,
     ensure_user_group_membership,
@@ -32,6 +35,7 @@ from .constants import (
     STATE_NAME_BY_FLAGS,
     STATE_TIME_FIELDS,
 )
+from .job_category import JobCategory
 
 if TYPE_CHECKING:
     from .roster import Shift
@@ -52,7 +56,7 @@ class StateTransition:
     These state transitions will be represented by buttons on the State tab of the admin signup view.
     """
 
-    signup: "Signup"
+    signup: Signup
     to_state: str
     disabled_reason: str = ""
 
@@ -89,17 +93,23 @@ class SignupMixin:
     Contains functionality common to both Signup and ArchivedSignup.
     """
 
+    state: str
+    is_more_categories: bool
+    # is_accepted: bool
+    job_category_accepted: models.QuerySet[JobCategory]
+    # personnel_classes: models.QuerySet[PersonnelClass]
+
     @property
     def job_category_accepted_labels(self):
         state = self.state
         label_class = SIGNUP_STATE_LABEL_CLASSES[state]
 
         if state == "new":
-            label_texts = [cat.name for cat in self.get_first_categories()]
+            label_texts = [cat.name for cat in self.get_first_categories()]  # type: ignore
             labels = [(label_class, label_text, None) for label_text in label_texts]
 
             if self.is_more_categories:
-                labels.append((label_class, "...", self.get_redacted_category_names()))
+                labels.append((label_class, "...", self.get_redacted_category_names()))  # type: ignore
 
         elif state == "cancelled":
             labels = [(label_class, "Peruutettu", None)]
@@ -110,8 +120,8 @@ class SignupMixin:
         elif state == "beyond_logic":
             labels = [(label_class, "Perätilassa", None)]
 
-        elif self.is_accepted:
-            label_texts = [cat.name for cat in self.job_categories_accepted.all()]
+        elif self.is_accepted:  # type: ignore
+            label_texts = [cat.name for cat in self.job_categories_accepted.all()]  # type: ignore
             labels = [(label_class, label_text, None) for label_text in label_texts]
 
         else:
@@ -122,7 +132,7 @@ class SignupMixin:
 
     @property
     def personnel_class_labels(self):
-        label_texts = [pc.name for pc in self.personnel_classes.all()]
+        label_texts = [pc.name for pc in self.personnel_classes.all()]  # type: ignore
         return [("label-default", label_text, None) for label_text in label_texts]
 
     @property
@@ -160,7 +170,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     )
 
     job_categories = models.ManyToManyField(
-        "labour.JobCategory",
+        JobCategory,
         verbose_name="Haettavat tehtävät",
         help_text="Valitse kaikki ne tehtävät, joissa olisit valmis työskentelemään "
         "tapahtumassa. Huomaathan, että sinulle tarjottavia tehtäviä voi rajoittaa se, "
@@ -182,9 +192,9 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Päivitetty")
 
     job_categories_accepted = models.ManyToManyField(
-        "labour.JobCategory",
+        JobCategory,
         blank=True,
-        related_name="accepted_signup_set",
+        related_name="accepted_signups",
         verbose_name="Hyväksytyt tehtäväalueet",
         help_text="Tehtäväalueet, joilla hyväksytty vapaaehtoistyöntekijä tulee työskentelemään. "
         "Tämän perusteella henkilölle mm. lähetetään oman tehtäväalueensa työvoimaohjeet. "
@@ -192,7 +202,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     )
 
     job_categories_rejected = models.ManyToManyField(
-        "labour.JobCategory",
+        JobCategory,
         blank=True,
         related_name="+",
         verbose_name=_("Rejected job categories"),
@@ -295,6 +305,17 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         verbose_name="Työpanoksesta esitetty moite",
     )
 
+    override_working_hours = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Aseta työtunnit käsin",
+        help_text=(
+            "Huomioidaan työvoimaetujen laskennassa, jos tapahtuma antaa työvoimaedut työntuntien perusteella. "
+            "Jos henkilö tekee tapahtuman eteen töitä, joita ei ole huomioitu Kompassiin kirjatuissa työvuoroissa, "
+            "voit asettaa tähän hänen kokonaistuntimääränsä, ja työvoimaedut lasketaan tämän mukaan."
+        ),
+    )
+
     is_accepted = time_bool_property("time_accepted")
     is_confirmation_requested = time_bool_property("time_confirmation_requested")
     is_finished = time_bool_property("time_finished")
@@ -312,7 +333,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     is_processed = property(lambda self: self.state != "new")
     is_alive = property(lambda self: self.is_active and self.is_accepted and not self.is_cancelled)
 
-    shifts: models.QuerySet["Shift"]
+    shifts: models.QuerySet[Shift]
 
     class Meta:
         verbose_name = _("signup")
@@ -323,6 +344,13 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         e = self.event.name if self.event else "None"
 
         return f"{p} / {e}"
+
+    @property
+    def working_hours(self):
+        if self.override_working_hours is not None:
+            return self.override_working_hours
+
+        return sum((shift.hours for shift in self.shifts.all()), 0)
 
     @property
     def personnel_class(self):
@@ -351,6 +379,15 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         return ", ".join(cat.name for cat in self.job_categories.all()[NUM_FIRST_CATEGORIES:])
 
     @property
+    def some_accepted_job_category(self) -> JobCategory:
+        jc = self.job_categories_accepted.first()
+
+        if jc is None:
+            raise JobCategory.DoesNotExist("Signup has no job categories")
+
+        return jc
+
+    @property
     def some_job_title(self):
         """
         Tries to figure a job title for this worker using the following methods in this order
@@ -363,7 +400,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         if self.job_title:
             return self.job_title
         elif self.job_categories_accepted.exists():
-            return self.job_categories_accepted.first().name
+            return self.some_accepted_job_category.name
         else:
             return "Työvoima"
 
@@ -404,22 +441,37 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         return self.shifts.order_by("start_time")
 
     @classmethod
-    def get_or_create_dummy(cls, accepted=False):
-        from core.models import Event, Person
+    def get_or_create_dummy(
+        cls,
+        accepted=False,
+        person: Person | None = None,
+        event: Event | None = None,
+        override_working_hours: int | None = None,
+    ):
+        if person is None:
+            person, _ = Person.get_or_create_dummy()
 
-        from .job_category import JobCategory
+        if event is None:
+            event, _ = Event.get_or_create_dummy()
 
-        person, unused = Person.get_or_create_dummy()
-        event, unused = Event.get_or_create_dummy()
-        job_category, unused = JobCategory.get_or_create_dummy()
+        job_category, _ = JobCategory.get_or_create_dummy(event=event)
 
-        signup, created = Signup.objects.get_or_create(person=person, event=event)
+        signup, created = Signup.objects.get_or_create(
+            person=person,
+            event=event,
+            override_working_hours=override_working_hours,
+        )
         if created:
             signup.job_categories.set([job_category])
 
         if accepted:
             signup.job_categories_accepted.set(signup.job_categories.all())
-            signup.personnel_classes.add(signup.job_categories.first().personnel_classes.first())
+
+            job_category = signup.job_categories_accepted.first()
+            if job_category is None:
+                raise AssertionError("signup is accepted but it has no job_categories_accepted (this shouldn't happen)")
+
+            signup.personnel_classes.add(job_category.personnel_classes.first())
             signup.state = "accepted"
             signup.save()
             signup.apply_state()
@@ -488,7 +540,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import signup_apply_state
 
-            signup_apply_state.delay(self.pk)
+            signup_apply_state.delay(self.pk)  # type: ignore
         else:
             self._apply_state()
 
@@ -496,7 +548,8 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         self.apply_state_ensure_job_categories_accepted_is_set()
         self.apply_state_ensure_personnel_class_is_set()
 
-        self.signup_extra.apply_state()
+        if self.signup_extra is not None:
+            self.signup_extra.apply_state()
 
         self.apply_state_create_badges()
 
@@ -563,8 +616,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
             if self.personnel_classes.filter(app_label=app_label).exists():
                 continue
 
-            any_jca = self.job_categories_accepted.filter(app_label=app_label).first()
-            personnel_class = any_jca.personnel_classes.first()
+            personnel_class = self.some_accepted_job_category.personnel_classes.first()
             self.personnel_classes.add(personnel_class)
 
     def apply_state_create_badges(self):
@@ -616,7 +668,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
 
     @property
     def state(self):
-        return STATE_NAME_BY_FLAGS[self._state_flags]
+        return STATE_NAME_BY_FLAGS[self._state_flags]  # type: ignore
 
     @state.setter
     def state(self, new_state):
@@ -677,23 +729,17 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
 
     @property
     def person_messages(self):
-        if "mailings" in settings.INSTALLED_APPS:
-            if getattr(self, "_person_messages", None) is None:
-                self._person_messages = self.person.personmessage_set.filter(
-                    message__recipient__event=self.event,
-                    message__recipient__app_label="labour",
-                ).order_by("-created_at")
+        if getattr(self, "_person_messages", None) is None:
+            self._person_messages = self.person.personmessage_set.filter(
+                message__recipient__event=self.event,
+                message__recipient__app_label="labour",
+            ).order_by("-created_at")
 
-            return self._person_messages
-        else:
-            return []
+        return self._person_messages
 
     @property
     def have_person_messages(self):
-        if "mailings" in settings.INSTALLED_APPS:
-            return self.person_messages.exists()
-        else:
-            return False
+        return self.person_messages.exists()
 
     @property
     def applicant_has_actions(self):
@@ -855,18 +901,24 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
 
             try:
                 jv_kortti = JVKortti.objects.get(personqualification__person=self.person)
-                related[JVKortti] = jv_kortti
+                related[JVKortti] = jv_kortti  # type: ignore
             except JVKortti.DoesNotExist:
-                related[JVKortti] = None
+                related[JVKortti] = None  # type: ignore
 
         return related
 
     def as_dict(self):
         # XXX?
         signup_extra = self.signup_extra
-        shift_wishes = signup_extra.shift_wishes if signup_extra.get_field("shift_wishes") else ""
-        total_work = signup_extra.total_work if signup_extra.get_field("total_work") else ""
-        shift_type = signup_extra.get_shift_type_display() if signup_extra.get_field("shift_type") else ""
+
+        if signup_extra is None:
+            shift_wishes = ""
+            total_work = ""
+            shift_type = ""
+        else:
+            shift_wishes = signup_extra.shift_wishes if signup_extra.get_field("shift_wishes") else ""
+            total_work = signup_extra.total_work if signup_extra.get_field("total_work") else ""
+            shift_type = signup_extra.get_shift_type_display() if signup_extra.get_field("shift_type") else ""
 
         return dict(
             id=self.person.id,
