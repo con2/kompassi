@@ -1,9 +1,11 @@
 from unittest import TestCase as NonDatabaseTestCase
 
+import pytest
 from django.test import TestCase
 
 from core.models import Person
 from core.models.event import Event
+from event_log_v2.models.entry import Entry
 from labour.models import LabourEventMeta
 
 from .email_aliases import firstname_surname
@@ -77,7 +79,8 @@ def get_claims(event: Event, app_name: str) -> Claims:
     }
 
 
-def test_ensure_admin_group_privileges(db):
+@pytest.mark.django_db
+def test_ensure_admin_group_privileges():
     """
     Given there is an event that uses the labour module
     And there is a person
@@ -89,10 +92,13 @@ def test_ensure_admin_group_privileges(db):
     Then they cannot perform labour admin actions in that event
     And they cannot perform programme admin actions in that event
     """
+    # TODO find out how to hook this up to pytest.mark.django_db
+    Entry.ensure_partitions()
 
     meta, unused = LabourEventMeta.get_or_create_dummy()
     event = meta.event
     person, unused = Person.get_or_create_dummy()
+    assert person.user
 
     meta.admin_group.user_set.add(person.user)
     CBACEntry.ensure_admin_group_privileges()
