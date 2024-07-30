@@ -6,7 +6,7 @@ from django.views.decorators.http import require_http_methods
 
 from core.tabs import Tab
 from core.utils import initialize_form
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..forms import MemberForm, MembershipFeePaymentForm, MembershipForm
 from ..helpers import membership_admin_required
@@ -73,7 +73,7 @@ def membership_admin_member_view(request, vars, organization, person_id):
         Tab("membership-admin-payments-tab", "Jäsenmaksut"),
     ]
 
-    emit("core.person.viewed", request=request, organization=organization, person=membership.person)
+    emit("core.person.viewed", request=request, person=membership.person.pk)
 
     vars.update(
         current_term=current_term,

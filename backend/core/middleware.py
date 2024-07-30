@@ -35,9 +35,8 @@ class PageWizardMiddleware:
             return False
         if request.path in related:
             return False
-        if any(request.path.startswith(prefix) for prefix in NEVER_BLOW_PAGE_WIZARD_PREFIXES):
-            return False
-        return True
+
+        return any(request.path.startswith(prefix) for prefix in NEVER_BLOW_PAGE_WIZARD_PREFIXES)
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if self._should_clear_page_wizard(request):

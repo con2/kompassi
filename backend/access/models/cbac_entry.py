@@ -9,7 +9,7 @@ from django.db import models
 from django.utils.timezone import now
 
 from core.utils import get_objects_within_period, log_get_or_create
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 from intra.constants import SUPPORTED_APPS
 
 from ..constants import CBAC_VALID_AFTER_EVENT_DAYS

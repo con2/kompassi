@@ -18,7 +18,7 @@ from lippukala.views import POSView
 from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, csv_response
 from core.sort_and_filter import Filter
 from core.utils import initialize_form, login_redirect, slugify, url
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..forms import (
     AccommodationInformationAdminForm,
@@ -258,7 +258,7 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
     # Slightly abusing the core.person.view entry type as there is no Person.
     # But the context field provides enough clue.
-    emit("core.person.viewed", request=request, event=event)
+    emit("core.person.viewed", request=request)
 
     return render(request, "tickets_admin_order_view.pug", vars)
 
@@ -349,7 +349,7 @@ def tickets_admin_accommodation_view(request, event, limit_group_id=None):
             format=format,
         )
 
-        emit("core.person.exported", request=request, event=event)
+        emit("core.person.exported", request=request)
 
         return csv_response(
             event,
@@ -428,9 +428,8 @@ def tickets_admin_accommodation_presence_view(request, event, limit_group_id, ac
             emit(
                 event_type,
                 request=request,
-                event=event,
-                accommodation_information=accommodee,
-                limit_group=limit_group,
+                accommodation_information=accommodee.pk,
+                limit_group=limit_group.pk,
                 other_fields=dict(room_name=accommodee.room_name),
             )
 
@@ -466,9 +465,8 @@ def tickets_admin_accommodation_create_view(request, event, limit_group_id):
             emit(
                 "tickets.accommodation.presence.arrived",
                 request=request,
-                event=event,
-                accommodation_information=info,
-                limit_group=limit_group,
+                accommodation_information=info.pk,
+                limit_group=limit_group.pk,
                 other_fields=dict(room_name=info.room_name),
             )
 

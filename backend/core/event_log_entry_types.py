@@ -1,26 +1,24 @@
-from django.utils.translation import gettext_lazy as _
-
-from event_log import registry
+from event_log_v2 import registry
 
 registry.register(
     name="core.person.viewed",
-    message=_("The personal information of {entry.person} was viewed by {entry.created_by}"),
+    message="The personal information of {person} was viewed by {actor}",
 )
 
 
 registry.register(
     name="core.person.exported",
-    message=_("User {entry.created_by} exported personally identifiable information"),
+    message="User {actor} exported personally identifiable information",
 )
 
 
 registry.register(
     name="core.person.impersonated",
-    message=_("User {entry.created_by} administratively impersonated {entry.person}"),
+    message="User {actor} administratively impersonated {person}",
 )
 
 
 registry.register(
     name="core.password.changed",
-    message=_("User {entry.created_by} changed their password"),
+    message="User {actor} changed their password",
 )

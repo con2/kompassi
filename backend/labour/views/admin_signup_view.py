@@ -113,6 +113,6 @@ def admin_signup_view(request, vars, event, person_id):
         non_qualified_category_names_json=json.dumps(non_qualified_category_names),
     )
 
-    person.log_view(request, event=event)
+    person.log_view(request)
 
     return render(request, "labour_admin_signup_view.pug", vars)

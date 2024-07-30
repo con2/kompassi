@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_safe
 
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..backends import YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN
 from ..models import Person
@@ -23,7 +23,7 @@ def core_admin_impersonate_view(request, username):
     except Person.DoesNotExist:
         person = None
 
-    emit("core.person.impersonated", request=request, person=person)
+    emit("core.person.impersonated", request=request, person=person.pk if person else None)
 
     next = get_next(request)
     user = authenticate(username=username, allow_passwordless_login=YES_PLEASE_ALLOW_PASSWORDLESS_LOGIN)

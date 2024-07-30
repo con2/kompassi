@@ -1,6 +1,6 @@
 from django.db import models
 
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from .constants import JOB_TITLE_LENGTH
 from .signup import SignupMixin
@@ -82,4 +82,9 @@ class ArchivedSignup(SignupMixin, models.Model):
         else:
             event_type = "labour.signup.deleted"
 
-        emit(event_type, person=person, event=event)
+        emit(
+            event_type,
+            event=event.slug,
+            organization=event.organization.slug,
+            person=person.pk,
+        )

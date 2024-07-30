@@ -190,7 +190,7 @@ INSTALLED_APPS = (
     "desuprofile_integration",
     "enrollment",
     "feedback",
-    "event_log",
+    "event_log_v2",
     "directory",
     "listings",
     "forms",
@@ -272,6 +272,7 @@ INSTALLED_APPS = (
     "events.popcultday2024",
     "events.matsucon2024",
     # zombies are obsolete apps that can't be removed due to cross-app references in models
+    "zombies.event_log",
     "zombies.surveys",
     "zombies.hitpoint2017",
 )

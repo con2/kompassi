@@ -15,7 +15,7 @@ from api.utils import api_login_required, cbac_api_view, handle_api_errors
 from core.helpers import person_required
 from core.models import Person
 from core.utils import groupby_strict, pick_attrs, url
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from .constants import CBAC_SUDO_CLAIMS, CBAC_SUDO_VALID_MINUTES
 from .exceptions import CBACPermissionDenied

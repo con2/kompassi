@@ -9,7 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..forms import PasswordForm, PersonForm
 from ..helpers import person_required

@@ -11,7 +11,7 @@ from .utils import horizontal_form_helper, validate_password
 
 valid_username = RegexValidator(
     regex=r"^[a-z0-9_]{4,30}$",
-    message=_("Invalid user name"),
+    message="Invalid user name",
 )
 
 PASSWORD_HELP_TEXT = _("Please use a strong password.")
