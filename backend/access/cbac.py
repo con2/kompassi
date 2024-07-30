@@ -8,7 +8,7 @@ from django.db import models
 from django.http import HttpRequest
 from graphene import ResolveInfo
 
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from .exceptions import CBACPermissionDenied
 from .models.cbac_entry import CBACEntry, Claims

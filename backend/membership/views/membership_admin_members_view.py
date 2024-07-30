@@ -5,7 +5,7 @@ from django.views.decorators.http import require_http_methods
 
 from core.csv_export import CSV_EXPORT_FORMATS, csv_response
 from core.sort_and_filter import Filter
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..helpers import membership_admin_required
 from ..models import STATE_CHOICES, Membership
@@ -102,7 +102,7 @@ def membership_admin_members_view(request, vars, organization, format="screen"):
             format=format,
         )
 
-        emit("core.person.exported", request=request, organization=organization)
+        emit("core.person.exported", request=request)
 
         return csv_response(
             organization,

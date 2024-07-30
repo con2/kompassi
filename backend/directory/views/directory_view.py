@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 from access.cbac import default_cbac_required
 from core.models.organization import Organization
 from core.sort_and_filter import Filter
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..forms import SearchForm
 
@@ -61,8 +61,8 @@ def directory_view(request: HttpRequest, organization_slug: str):
     )
 
     if search_form.is_valid() and query:
-        emit("directory.search.performed", search_term=query, request=request, organization=organization)
+        emit("directory.search.performed", search_term=query, request=request)
     else:
-        emit("directory.viewed", request=request, organization=organization)
+        emit("directory.viewed", request=request)
 
     return render(request, "directory_view.pug", vars)

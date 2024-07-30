@@ -24,7 +24,7 @@ from core.utils import (
     url,
 )
 from emprinten.utils import render_obj
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..helpers import labour_event_required
 from ..models import (
@@ -211,7 +211,11 @@ def actual_signup_view(request, event, alternative_form_slug):
                         for key, values in defaults.items():
                             getattr(obj, key).set(values)
 
-            emit(event_type, request=request, person=request.user.person, event=event)
+            emit(
+                event_type,
+                request=request,
+                person=request.user.person.pk,
+            )
 
             signup.apply_state()
 

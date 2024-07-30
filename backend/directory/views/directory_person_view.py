@@ -76,6 +76,6 @@ def directory_person_view(request: HttpRequest, organization_slug: str, person_i
         involvement_in_future_events=involvement_in_future_events,
     )
 
-    person.log_view(request, organization=organization)
+    person.log_view(request)
 
     return render(request, "directory_person_view.pug", vars)
