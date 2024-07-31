@@ -39,13 +39,49 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         default="",
     )
 
+    emperkelator_name = models.CharField(
+        max_length=63,
+        default="noop",
+        verbose_name=_("Emperkelator"),
+        choices=[
+            ("noop", "Noop (no perks)"),
+            ("tracon2024", "Tracon (2024)"),
+        ],
+        help_text=_(
+            "The emperkelator defines the perks of a volunteer in the event "
+            "based on their involvement with the event."
+        ),
+    )
+
+    @property
+    def emperkelator(self):
+        from ..emperkelators.noop import NoopEmperkelator
+        from ..emperkelators.tracon2024 import TraconEmperkelator
+
+        match self.emperkelator_name:
+            case "noop":
+                return NoopEmperkelator
+            case "tracon2024":
+                return TraconEmperkelator
+            case _:
+                raise NotImplementedError(f"Unknown emperkelator: {self.emperkelator_name}")
+
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(
+        cls,
+        emperkelator_name: str = "noop",
+    ):
         from core.models import Event
 
         event, unused = Event.get_or_create_dummy()
         (group,) = cls.get_or_create_groups(event, ["admins"])
-        return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
+        return cls.objects.get_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=group,
+                emperkelator_name=emperkelator_name,
+            ),
+        )
 
     # for CountBadgesMixin
     @property

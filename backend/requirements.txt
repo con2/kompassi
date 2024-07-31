@@ -215,7 +215,7 @@ passlib==1.7.4
     # via -r requirements.in
 pexpect==4.9.0
     # via ipython
-phonenumberslite==8.13.40
+phonenumberslite==8.13.42
     # via -r requirements.in
 pillow==10.4.0
     # via
@@ -288,7 +288,7 @@ pyyaml==6.0.1
     # via
     #   -r requirements.in
     #   pre-commit
-redis==5.0.7
+redis==5.0.8
     # via django-redis
 referencing==0.35.1
     # via

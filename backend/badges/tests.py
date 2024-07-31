@@ -1,11 +1,13 @@
 import logging
 
+import pytest
 from django.test import TestCase
 
 from core.models import Person
 from labour.models import JobCategory, LabourEventMeta, PersonnelClass, Signup
 from programme.models import Programme, ProgrammeEventMeta, ProgrammeRole, Role
 
+from .emperkelators.tracon2024 import TicketType, TraconEmperkelator
 from .models import Badge, BadgesEventMeta, Batch
 
 logger = logging.getLogger("kompassi")
@@ -34,6 +36,7 @@ class BadgesTestCase(TestCase):
         signup, unused = Signup.get_or_create_dummy(accepted=True)
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert not badge.is_first_name_visible
         assert not badge.is_surname_visible
@@ -47,6 +50,7 @@ class BadgesTestCase(TestCase):
         signup.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.is_first_name_visible
         assert badge.is_surname_visible
@@ -64,9 +68,11 @@ class BadgesTestCase(TestCase):
         signup.save()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
 
         jc1 = signup.job_categories_accepted.first()
+        assert jc1
         assert badge.job_title == jc1.name
 
         jc2, unused = JobCategory.get_or_create_dummy(name="Hitman")
@@ -75,6 +81,7 @@ class BadgesTestCase(TestCase):
         signup.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.job_title == jc2.name
 
@@ -85,6 +92,7 @@ class BadgesTestCase(TestCase):
         signup.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.job_title == title
 
@@ -94,6 +102,7 @@ class BadgesTestCase(TestCase):
         signup.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.job_title == jc2.name
 
@@ -107,20 +116,24 @@ class BadgesTestCase(TestCase):
         """
         signup, unused = Signup.get_or_create_dummy(accepted=True)
         badge, created = Badge.ensure(person=self.person, event=self.event)
-
+        assert badge
         assert not created
         assert not badge.is_printed
+
         badge = badge.revoke()
 
         assert badge is None
         assert not Badge.objects.filter(person=self.person, personnel_class__event=self.event).exists()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+
+        assert badge
         assert created
 
         batch = Batch.create(event=self.event)
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.batch == batch
         assert not badge.is_printed
@@ -130,11 +143,12 @@ class BadgesTestCase(TestCase):
         assert badge.is_revoked
 
         badge = Badge.objects.get(person=self.person, personnel_class__event=self.event)
-
+        assert badge
         assert not created
         assert badge.is_revoked
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert created
         assert not badge.is_revoked
 
@@ -147,6 +161,7 @@ class BadgesTestCase(TestCase):
         pc1 = signup.personnel_classes.get()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.personnel_class == pc1
 
@@ -159,6 +174,7 @@ class BadgesTestCase(TestCase):
         signup.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.personnel_class == pc2
 
@@ -176,12 +192,14 @@ class BadgesTestCase(TestCase):
         programme_role, unused = ProgrammeRole.get_or_create_dummy()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.personnel_class == programme_role.role.personnel_class
 
         signup, created = Signup.get_or_create_dummy(accepted=True)
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.personnel_class == signup.personnel_classes.get()
 
@@ -193,6 +211,7 @@ class BadgesTestCase(TestCase):
         signup.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.personnel_class == programme_role.role.personnel_class
 
@@ -204,6 +223,7 @@ class BadgesTestCase(TestCase):
         signup, created = Signup.get_or_create_dummy(accepted=True)
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.personnel_class == signup.personnel_classes.get()
 
@@ -227,6 +247,7 @@ class BadgesTestCase(TestCase):
         programme = programme_role.programme
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.personnel_class == programme_role.role.personnel_class
 
@@ -246,6 +267,7 @@ class BadgesTestCase(TestCase):
         programme_role, unused = ProgrammeRole.get_or_create_dummy()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.first_name == self.person.first_name
 
@@ -254,6 +276,7 @@ class BadgesTestCase(TestCase):
         self.person.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.first_name == self.person.first_name
 
@@ -267,6 +290,7 @@ class BadgesTestCase(TestCase):
         personnel_class = role.personnel_class
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.job_title == role.title
 
@@ -281,5 +305,65 @@ class BadgesTestCase(TestCase):
         programme2.apply_state()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
+        assert badge
         assert not created
         assert badge.job_title == role2.title
+
+
+@pytest.mark.django_db
+def test_tracon2024_perks():
+    person, _ = Person.get_or_create_dummy()
+
+    meta, _ = BadgesEventMeta.get_or_create_dummy(emperkelator_name="tracon2024")
+    event = meta.event
+
+    role, _ = Role.get_or_create_dummy(
+        event=event,
+        perks=TraconEmperkelator(
+            ticket_type=TicketType.WEEKEND_TICKET,
+            swag=True,
+            meals=1,
+        ).model_dump(),
+    )
+
+    # weekend ticket, one meal, normal swag
+    ProgrammeRole.get_or_create_dummy(
+        event=event,
+        person=person,
+        role=role,
+    )
+
+    # internal badge, three meals, normal swag
+    personnel_class, _ = PersonnelClass.get_or_create_dummy(
+        event=event,
+        app_label="labour",
+        perks=TraconEmperkelator(
+            ticket_type=TicketType.INTERNAL_BADGE,
+            swag=True,
+            meals=3,
+        ).model_dump(),
+    )
+    job_category, _ = JobCategory.get_or_create_dummy(
+        event=event,
+        personnel_class=personnel_class,
+    )
+
+    Signup.get_or_create_dummy(
+        person=person,
+        event=event,
+        accepted=True,
+        override_working_hours=12,
+        job_category=job_category,
+    )
+
+    badge, created = Badge.ensure(person=person, event=event)
+    assert badge
+    assert not created
+    assert badge.personnel_class.slug == "smallfolk"
+
+    perks = TraconEmperkelator.model_validate(badge.perks)
+    assert perks.ticket_type == TicketType.INTERNAL_BADGE
+    assert perks.meals == 3 + 1, "Meal coupons should stack up to four"
+    assert perks.swag
+    assert not perks.extra_swag, "Two sources of normal swag should not an extra swag make"
+    assert str(perks) == "Badge (internal), 4 ruokalippua, valittu työvoimatuote"

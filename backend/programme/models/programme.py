@@ -14,6 +14,7 @@ from django.utils.timezone import get_default_timezone, now
 from django.utils.translation import gettext_lazy as _
 
 from core.csv_export import CsvExportMixin
+from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, format_datetime, slugify, url
 from core.utils.time_utils import format_interval
 
@@ -1535,12 +1536,17 @@ class Programme(models.Model, CsvExportMixin):
         )
 
     @classmethod
-    def get_or_create_dummy(cls, title="Dummy program", state="published"):
+    def get_or_create_dummy(
+        cls,
+        title="Dummy program",
+        state="published",
+        event: Event | None = None,
+    ):
         from .category import Category
         from .room import Room
 
-        category, unused = Category.get_or_create_dummy()
-        room, unused = Room.get_or_create_dummy()
+        category, unused = Category.get_or_create_dummy(event=event)
+        room, unused = Room.get_or_create_dummy(event=event)
 
         return cls.objects.get_or_create(
             title=title,

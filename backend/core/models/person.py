@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from datetime import date, datetime
 from typing import TYPE_CHECKING
@@ -25,6 +27,7 @@ from .constants import (
 
 if TYPE_CHECKING:
     from badges.models.badge import Badge
+    from labour.models.qualifications import PersonQualification
 
 
 logger = logging.getLogger("kompassi")
@@ -130,7 +133,8 @@ class Person(models.Model):
 
     email_verified_at = models.DateTimeField(null=True, blank=True)
 
-    badges: models.QuerySet["Badge"]
+    badges: models.QuerySet[Badge]
+    qualifications: models.QuerySet[PersonQualification]  # XXX naming
 
     class Meta:
         ordering = ["surname"]

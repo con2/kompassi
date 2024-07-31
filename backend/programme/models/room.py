@@ -8,6 +8,7 @@ from django.db import models
 from django.db.transaction import atomic
 from django.utils.translation import gettext_lazy as _
 
+from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 if TYPE_CHECKING:
@@ -21,7 +22,7 @@ logger = logging.getLogger("kompassi")
 
 class Room(models.Model):
     id: int
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, null=True, blank=True, related_name="rooms")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True, related_name="rooms")
     name = models.CharField(max_length=ROOM_NAME_MAX_LENGTH)
     notes = models.TextField(blank=True)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
@@ -66,10 +67,10 @@ class Room(models.Model):
         ]
 
     @classmethod
-    def get_or_create_dummy(cls):
-        from core.models import Event
+    def get_or_create_dummy(cls, event: Event | None = None):
+        if event is None:
+            event, unused = Event.get_or_create_dummy()
 
-        event, unused = Event.get_or_create_dummy()
         return cls.objects.get_or_create(
             event=event,
             name="Iso sali",

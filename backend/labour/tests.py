@@ -15,8 +15,8 @@ def test_event_adminship():
     # TODO find out how to hook this up to pytest.mark.django_db
     Entry.ensure_partitions()
 
-    person, unused = Person.get_or_create_dummy(superuser=False)
-    labour_event_meta, unused = LabourEventMeta.get_or_create_dummy()
+    person, _ = Person.get_or_create_dummy(superuser=False)
+    labour_event_meta, _ = LabourEventMeta.get_or_create_dummy()
 
     assert not labour_event_meta.is_user_admin(person.user)
 
@@ -31,15 +31,15 @@ def test_event_adminship_superuser():
     """
     Under CBAC, superusers are no longer event managers by default (they can sudo though).
     """
-    person, unused = Person.get_or_create_dummy(superuser=True)
-    labour_event_meta, unused = LabourEventMeta.get_or_create_dummy()
+    person, _ = Person.get_or_create_dummy(superuser=True)
+    labour_event_meta, _ = LabourEventMeta.get_or_create_dummy()
 
     assert not labour_event_meta.is_user_admin(person.user)
 
 
 @pytest.mark.django_db
 def test_qualifications():
-    person, unused = Person.get_or_create_dummy()
+    person, _ = Person.get_or_create_dummy()
     qualification1, qualification2 = Qualification.get_or_create_dummies()
     jc1, jc2 = JobCategory.get_or_create_dummies()
 
@@ -48,12 +48,12 @@ def test_qualifications():
     assert not jc1.is_person_qualified(person)
     assert jc2.is_person_qualified(person)
 
-    person.personqualification_set.create(qualification=qualification2)
+    person.qualifications.create(qualification=qualification2)
 
     assert not jc1.is_person_qualified(person)
     assert jc2.is_person_qualified(person)
 
-    person.personqualification_set.create(qualification=qualification1)
+    person.qualifications.create(qualification=qualification1)
 
     assert jc1.is_person_qualified(person)
     assert jc2.is_person_qualified(person)
@@ -70,7 +70,7 @@ def test_get_state_query_params():
 
 @pytest.mark.django_db
 def test_group():
-    jc, unused = JobCategory.get_or_create_dummy()
+    jc, _ = JobCategory.get_or_create_dummy()
     assert jc.group
 
 
@@ -78,7 +78,7 @@ def test_group():
 def test_recipient_group():
     from mailings.models import RecipientGroup
 
-    jc, unused = JobCategory.get_or_create_dummy()
+    jc, _ = JobCategory.get_or_create_dummy()
 
     rg = RecipientGroup.objects.get(job_category=jc)
     assert rg.verbose_name == jc.name
@@ -96,4 +96,11 @@ def test_labour_excel_export():
     signups = Signup.objects.filter(id=signup.id)
 
     with BytesIO() as output_file:
-        export_csv(signup.event, Signup, signups, output_file, m2m_mode="separate_columns", dialect="xlsx")
+        export_csv(
+            signup.event,
+            Signup,
+            signups,
+            output_file,
+            m2m_mode="separate_columns",
+            dialect="xlsx",
+        )

@@ -323,7 +323,7 @@ def confirm_view(request, event):
 def qualifications_view(request):
     vars = page_wizard_vars(request)
 
-    person_qualifications = request.user.person.personqualification_set.all()
+    person_qualifications = request.user.person.qualifications.all()
     qualification_pks = [q.qualification.pk for q in person_qualifications]
     available_qualifications = Qualification.objects.exclude(pk__in=qualification_pks)
 
@@ -346,7 +346,7 @@ def person_qualification_view(request, qualification):
     qualification = get_object_or_404(Qualification, slug=qualification)
 
     try:
-        person_qualification = qualification.personqualification_set.get(person=person)
+        person_qualification = qualification.person_qualifications.get(person=person)
     except PersonQualification.DoesNotExist:
         person_qualification = PersonQualification(person=person, qualification=qualification)
 

@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
-from core.models import ContactEmailMixin, EventMetaBase, contact_email_validator
+from core.models import ContactEmailMixin, Event, EventMetaBase, contact_email_validator
 from core.utils import alias_property, is_within_period
 
 SCHEDULE_LAYOUT_CHOICES = [
@@ -95,7 +97,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         return Programme.objects.filter(**criteria).exclude(room__in=schedule_rooms)
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, event: Event | None = None):
         from django.utils.timezone import now
 
         from core.models import Event

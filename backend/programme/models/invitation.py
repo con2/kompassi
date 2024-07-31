@@ -48,7 +48,7 @@ class Invitation(OneTimeCodeLite):
             "The host that spawned this invitation. Sired invitations consume the extra invite quota of the sire."
         ),
         db_index=True,
-        related_name="sired_invitation_set",
+        related_name="sired_invitations",
     )
 
     def __str__(self):
