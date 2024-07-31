@@ -36,6 +36,7 @@ from .constants import (
     STATE_TIME_FIELDS,
 )
 from .job_category import JobCategory
+from .personnel_class import PersonnelClass
 
 if TYPE_CHECKING:
     from .roster import Shift
@@ -447,6 +448,8 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         person: Person | None = None,
         event: Event | None = None,
         override_working_hours: int | None = None,
+        job_category: JobCategory | None = None,
+        personnel_class: PersonnelClass | None = None,
     ):
         if person is None:
             person, _ = Person.get_or_create_dummy()
@@ -454,7 +457,11 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         if event is None:
             event, _ = Event.get_or_create_dummy()
 
-        job_category, _ = JobCategory.get_or_create_dummy(event=event)
+        if personnel_class is None:
+            personnel_class, _ = PersonnelClass.get_or_create_dummy(event=event, app_label="labour")
+
+        if job_category is None:
+            job_category, _ = JobCategory.get_or_create_dummy(event=event, personnel_class=personnel_class)
 
         signup, created = Signup.objects.get_or_create(
             person=person,

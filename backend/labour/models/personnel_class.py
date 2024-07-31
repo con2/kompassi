@@ -1,4 +1,5 @@
 import logging
+from typing import Any
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -33,6 +34,7 @@ class PersonnelClass(models.Model):
         name="Smallfolk",
         priority=0,
         event: Event | None = None,
+        perks: dict[str, Any] | None = None,
     ):
         from core.models import Event
 
@@ -46,6 +48,7 @@ class PersonnelClass(models.Model):
             defaults=dict(
                 name=app_label,
                 priority=priority,
+                perks=perks or {},
             ),
         )
 

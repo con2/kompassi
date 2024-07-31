@@ -66,15 +66,16 @@ class JobCategory(models.Model):
     def get_or_create_dummy(
         cls,
         event: Event | None = None,
+        personnel_class: PersonnelClass | None = None,
         name="Courier",
     ):
         from .labour_event_meta import LabourEventMeta
 
         if event is None:
-            meta, unused = LabourEventMeta.get_or_create_dummy()
+            meta, _ = LabourEventMeta.get_or_create_dummy()
             event = meta.event
         else:
-            meta, unused = LabourEventMeta.get_or_create_dummy(event=event)
+            meta, _ = LabourEventMeta.get_or_create_dummy(event=event)
 
         job_category, created = cls.objects.get_or_create(
             event=event,
@@ -82,7 +83,9 @@ class JobCategory(models.Model):
         )
 
         if created:
-            personnel_class, unused = PersonnelClass.get_or_create_dummy(app_label="labour")
+            if personnel_class is None:
+                personnel_class, _ = PersonnelClass.get_or_create_dummy(app_label="labour")
+
             job_category.personnel_classes.add(personnel_class)
 
         meta.create_groups()

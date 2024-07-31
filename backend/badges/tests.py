@@ -334,11 +334,26 @@ def test_tracon2024_perks():
     )
 
     # internal badge, three meals, normal swag
+    personnel_class, _ = PersonnelClass.get_or_create_dummy(
+        event=event,
+        app_label="labour",
+        perks=TraconEmperkelator(
+            ticket_type=TicketType.INTERNAL_BADGE,
+            swag=True,
+            meals=3,
+        ).model_dump(),
+    )
+    job_category, _ = JobCategory.get_or_create_dummy(
+        event=event,
+        personnel_class=personnel_class,
+    )
+
     Signup.get_or_create_dummy(
         person=person,
         event=event,
         accepted=True,
         override_working_hours=12,
+        job_category=job_category,
     )
 
     badge, created = Badge.ensure(person=person, event=event)
