@@ -15,7 +15,7 @@ from django.views.decorators.http import require_http_methods, require_POST, req
 from lippukala.consts import BEYOND_LOGIC, MANUAL_INTERVENTION_REQUIRED
 from lippukala.views import POSView
 
-from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, csv_response
+from core.csv_export import CSV_EXPORT_FORMATS, csv_response
 from core.sort_and_filter import Filter
 from core.utils import initialize_form, login_redirect, slugify, url
 from event_log_v2.utils.emit import emit
@@ -33,7 +33,6 @@ from ..models import (
     AccommodationInformation,
     LimitGroup,
     Order,
-    OrderProduct,
 )
 from ..models.consts import UNPAID_CANCEL_HOURS
 from ..utils import format_price
@@ -544,27 +543,3 @@ def tickets_admin_menu_items(request, event):
         (pos_active, pos_url, pos_text),
         (reports_active, reports_url, reports_text),
     ]
-
-
-@tickets_admin_required
-def tickets_admin_export_view(request, vars, event, format="xlsx"):
-    ops = OrderProduct.objects.filter(
-        order__event=event,
-        # Order is confirmed
-        order__confirm_time__isnull=False,
-        # Order is paid
-        order__payment_date__isnull=False,
-        # Order is not cancelled
-        order__cancellation_time__isnull=True,
-        count__gte=1,
-    ).order_by("order__payment_date", "id")
-
-    timestamp = now().strftime("%Y%m%d%H%M%S")
-
-    return csv_response(
-        event,
-        OrderProduct,
-        ops,
-        dialect=next(fmt for fmt in EXPORT_FORMATS if fmt.extension == format).csv_dialect,
-        filename=f"{event.slug}_ticketsales_{timestamp}.{format}",
-    )
