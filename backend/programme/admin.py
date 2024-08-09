@@ -56,6 +56,7 @@ class ProgrammeAdmin(admin.ModelAdmin):
         "paikkala_icon",
         "is_paikkala_public",
         "is_paikkala_time_visible",
+        "hosts_from_host",
     )
     readonly_fields = (
         "title",
