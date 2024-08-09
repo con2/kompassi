@@ -322,7 +322,7 @@ class Setup:
                 title="Tarjoa larppia tai freeform-skenaariota",
                 short_description="",
                 programme_form_code="events.hitpoint2024.forms:FreeformForm",
-                num_extra_invites=0,
+                num_extra_invites=3,
                 order=20,
             ),
         )
@@ -334,7 +334,7 @@ class Setup:
                 title="Tarjoa puhe- tai muuta ohjelmaa",
                 short_description="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole roolipeli tai freeform-skenaario.",
                 programme_form_code="events.hitpoint2024.forms:ProgrammeOfferForm",
-                num_extra_invites=0,
+                num_extra_invites=3,
                 order=30,
             ),
         )
