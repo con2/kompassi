@@ -225,8 +225,7 @@ const translations: Translations = {
     inEvent: (eventName: string) => <>i {eventName}</>,
     attributes: {
       title: "Rubrik",
-      time: "Tid",
-      location: "Plats",
+      placeAndTime: "Plats och tid",
       actions: "Funktioner",
     },
     actions: {

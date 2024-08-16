@@ -1,5 +1,6 @@
 import Link from "next/link";
 import FavoriteButton from "./FavoriteButton";
+import ScheduleItem from "./ScheduleItem";
 import { getProgramColorBorder } from "./style";
 import { ProgramListFragment } from "@/__generated__/graphql";
 import { Column, DataTable } from "@/components/DataTable";
@@ -54,41 +55,18 @@ export default function ProgramTable({
       },
     },
     {
-      slug: "time",
-      title: t.attributes.time,
+      slug: "scheduleItems",
+      title: t.attributes.placeAndTime,
       getCellContents(row) {
         return (
           <>
             {row.scheduleItems.map((scheduleItem, index) => (
-              <FormattedDateTimeRange
-                key={index}
+              <ScheduleItem
+                event={event}
+                scheduleItem={scheduleItem}
                 locale={locale}
-                scope={event}
-                session={null}
-                start={scheduleItem.startTime}
-                end={scheduleItem.endTime}
-                includeDuration={true}
-                options={{
-                  dateStyle: "short",
-                  timeStyle: "short",
-                }}
+                key={index}
               />
-            ))}
-          </>
-        );
-      },
-    },
-    {
-      slug: "location",
-      title: t.attributes.location,
-      getCellContents(row) {
-        return (
-          <>
-            {row.scheduleItems.map((scheduleItem, index) => (
-              <>
-                {scheduleItem.location}
-                <br />
-              </>
             ))}
           </>
         );

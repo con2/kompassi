@@ -75,6 +75,7 @@ const query = graphql(`
             }
           }
           scheduleItems {
+            subtitle
             location
             startTime
             endTime
@@ -196,6 +197,9 @@ export default async function NewProgramPage({ params }: Props) {
               end={scheduleItem.endTime}
               includeDuration={true}
             />
+            {scheduleItem.subtitle && (
+              <span className="ms-2">({scheduleItem.subtitle})</span>
+            )}
           </div>
         ))}
       </div>

@@ -5,14 +5,10 @@ import CardBody from "react-bootstrap/CardBody";
 import CardLink from "react-bootstrap/CardLink";
 import CardTitle from "react-bootstrap/CardTitle";
 import FavoriteButton from "./FavoriteButton";
+import { Event } from "./models";
+import ScheduleItem from "./ScheduleItem";
 import { getProgramColorBorder } from "./style";
 import { ProgramListFragment } from "@/__generated__/graphql";
-import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
-
-// XXX
-interface Event {
-  slug: string;
-}
 
 interface Props {
   event: Event;
@@ -48,17 +44,11 @@ export default function ProgramCard({
         </div>
         {program.scheduleItems.map((scheduleItem, index) => (
           <div key={index} className="d-flex justify-content-between">
-            <div>
-              <FormattedDateTimeRange
-                locale={locale}
-                scope={event}
-                session={null}
-                start={scheduleItem.startTime}
-                end={scheduleItem.endTime}
-                includeDuration={true}
-              />
-            </div>
-            <div>{scheduleItem.location}</div>
+            <ScheduleItem
+              event={event}
+              scheduleItem={scheduleItem}
+              locale={locale}
+            />
           </div>
         ))}
       </CardBody>

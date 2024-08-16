@@ -223,8 +223,7 @@ const translations: Translations = {
     inEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
     attributes: {
       title: "Otsikko",
-      time: "Ajankohta",
-      location: "Sijainti",
+      placeAndTime: "Paikka ja aika",
       actions: "Toiminnot",
     },
     actions: {

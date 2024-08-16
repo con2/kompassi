@@ -1,28 +1,29 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import Card from "react-bootstrap/Card";
-import CardBody from "react-bootstrap/CardBody";
-import CardLink from "react-bootstrap/CardLink";
-import CardTitle from "react-bootstrap/CardTitle";
 import { markAsFavorite, unmarkAsFavorite } from "./actions";
-import FavoriteButton from "./FavoriteButton";
 import { FavoriteContextProvider } from "./FavoriteContext";
 import ProgramCard from "./ProgramCard";
 import ProgramTable from "./ProgramTable";
-import ProgramTabs, { ProgramTab } from "./ProgramTabs";
+import ProgramTabs from "./ProgramTabs";
 import { graphql } from "@/__generated__";
-import { ProgramListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { decodeBoolean } from "@/helpers/decodeBoolean";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+
+graphql(`
+  fragment ScheduleItem on ScheduleItemType {
+    location
+    subtitle
+    startTime
+    endTime
+  }
+`);
 
 graphql(`
   fragment ProgramList on ProgramType {
@@ -31,9 +32,7 @@ graphql(`
     cachedDimensions
     color
     scheduleItems {
-      startTime
-      endTime
-      location
+      ...ScheduleItem
     }
   }
 `);
