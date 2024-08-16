@@ -1,6 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 
+from core.utils.text_utils import normalize_whitespace
 from graphql_api.utils import resolve_localized_field
 
 from ..models import (
@@ -39,3 +40,16 @@ class ScheduleItemType(DjangoObjectType):
 
     resolve_location = resolve_localized_field("cached_location")
     location = graphene.String(lang=graphene.String())
+
+    @staticmethod
+    def resolve_title(parent: ScheduleItem, info):
+        """
+        Returns the title of the program, with subtitle if it exists,
+        in the format "Program title – Schedule item subtitle".
+        """
+        return parent.title
+
+    title = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_title.__doc__ or ""),
+    )

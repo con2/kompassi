@@ -1,12 +1,13 @@
 import logging
 from datetime import date
-from typing import Any
+from typing import Any, TypeVar
 
-from django.db import connection, transaction
+from django.db import connection, models, transaction
 
 from ..utils.uuid7 import uuid7_range_for_month
 
 logger = logging.getLogger("kompassi")
+T = TypeVar("T", bound=models.Model)
 
 
 class PartitionsMixin:
@@ -131,3 +132,8 @@ class PartitionsMixin:
                         f"{cls._meta.app_label}.{cls._meta.model_name}.partition_deleted",
                         partition_name=partition_name,
                     )
+
+    @staticmethod
+    def year_month_filter(queryset: models.QuerySet[T], year: int, month: int) -> models.QuerySet[T]:
+        start, end = uuid7_range_for_month(year, month)
+        return queryset.filter(id__gte=start, id__lt=end)

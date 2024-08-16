@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 from django.utils.timezone import get_current_timezone
@@ -17,6 +17,8 @@ from ..consts import (
 )
 from ..integrations.konsti import KONSTI_DIMENSION_DTO
 from ..models.dimension import DimensionDTO, DimensionValueDTO, ValueOrdering
+from ..models.program import Program
+from ..models.schedule import ScheduleItem
 from .default import DefaultImporter
 
 logger = logging.getLogger("kompassi")
@@ -35,8 +37,8 @@ class TraconImporter(DefaultImporter):
             DimensionDTO(
                 slug="date",
                 title=DATE_DIMENSION_TITLE_LOCALIZED,
-                choices=list(self._get_date_dimension_values()),
                 value_ordering=ValueOrdering.SLUG,
+                choices=list(self._get_date_dimension_values()),
             ),
             DimensionDTO(
                 slug="category",
@@ -160,18 +162,25 @@ class TraconImporter(DefaultImporter):
         if "r18" not in audience:
             audience.append("unrestricted")
 
-        signup = dimensions.setdefault("signup", [])
+        konsti = dimensions.setdefault("konsti", [])
+        if (form := programme.form_used) and form.slug == "rpg":
+            konsti.append("tabletopRPG")
+
+        signup = set(dimensions.get("signup", []))
+        if konsti:
+            signup.add("konsti")
         if link := programme.signup_link:
             if "forms" in link or "survey" in link:
-                signup.append("form")
+                signup.add("form")
             if "konsti" in link:
-                signup.append("konsti")
+                signup.add("konsti")
             if "lippu.fi" in link:
-                signup.append("tickets")
+                signup.add("tickets")
         if programme.is_using_paikkala:
-            signup.append("paikkala")
+            signup.add("paikkala")
         if not signup:
-            signup.append("none")
+            signup.add("none")
+        dimensions["signup"] = list(signup)
 
         return dimensions
 
@@ -179,9 +188,11 @@ class TraconImporter(DefaultImporter):
         annotations = super().get_program_annotations(programme)
         dimension_values = self.get_program_dimension_values(programme)
 
-        is_konsti = len(dimension_values.get("konsti", [])) > 0
-        if is_konsti:
+        konsti = dimension_values.get("konsti", [])
+        if konsti:
             annotations["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
+        if "fleamarket" in konsti:
+            annotations["konsti:maxAttendance"] = 130
 
         if "lippu.fi" in programme.signup_link:
             annotations["internal:links:tickets"] = programme.signup_link
@@ -191,3 +202,61 @@ class TraconImporter(DefaultImporter):
             annotations["internal:links:reservation"] = "https://kompassi.eu/profile/reservations"
 
         return annotations
+
+    def get_fleamarket_schedule_item(
+        self,
+        v2_program: Program,
+        start_time: datetime,
+        end_time: datetime,
+        slot_delta: timedelta,
+        slot_length: timedelta,
+    ) -> ScheduleItem:
+        """
+        We use Konsti for flea market time slot reservations.
+        This is managed as one program per day, with 30-minute time slots for reservations.
+        For technical reasons, the start and end times need to cover the whole period under which reservations are made.
+        This lets Konsti understand that the time slots are mutually exclusive ie. the user should be enrolled in only one slot.
+        The last slot is left out in order to flush the queue.
+        """
+        slot_start_time = start_time + slot_delta
+        slot_end_time = slot_start_time + slot_length
+
+        slot_start_time = slot_start_time.astimezone(tz)
+        slot_end_time = slot_end_time.astimezone(tz)
+
+        return ScheduleItem(
+            subtitle=f"Saapuminen kello {slot_start_time.strftime('%H:%M')}–{slot_end_time.strftime('%H:%M')}",
+            program=v2_program,
+            start_time=start_time,
+            length=end_time - start_time,
+            cached_end_time=end_time,
+            cached_location=v2_program.cached_location,
+        )
+
+    def get_schedule_items(self, v1_programme: Programme, v2_program: Program) -> list[ScheduleItem]:
+        """
+        Return a list of unsaved V2 ScheduleItems for the V1 Programme.
+        """
+        if "kirpputorin-ajanvaraus" not in v1_programme.slug:
+            return super().get_schedule_items(v1_programme, v2_program)
+
+        # flea market gets special treatment, see docstring of get_fleamarket_schedule_item
+        start_time = self.get_start_time(v1_programme)
+        end_time = self.get_end_time(v1_programme)
+        slot_minutes = 30
+        slot_length = timedelta(minutes=slot_minutes)
+
+        # we leave the last 30 min slot out in order to flush the queue
+        # as range() is end exclusive, no need to subtract anything
+        total_minutes = v1_programme.length if v1_programme.length else -1
+
+        return [
+            self.get_fleamarket_schedule_item(
+                v2_program,
+                start_time,
+                end_time,
+                timedelta(minutes=delta_minutes),
+                slot_length,
+            )
+            for delta_minutes in range(0, total_minutes, slot_minutes)
+        ]

@@ -1578,6 +1578,10 @@ class Programme(models.Model, CsvExportMixin):
     def is_public(self):
         return self.state == "published" and self.category is not None and self.category.public
 
+    @property
+    def public_tags(self):
+        return self.tags.filter(public=True)
+
     def as_json(self, format="default"):
         from core.utils import pick_attrs
 

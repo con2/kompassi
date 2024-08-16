@@ -18,7 +18,7 @@ html
           .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')
             h4
               span.title {{ programme.title }}
-              for tag in programme.tags.all
+              for tag in programme.public_tags
                 span.label.kompassi-space-before(class='{{ tag.style }}') {{ tag.title }}
             .programme-info
               .meta

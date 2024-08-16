@@ -2,7 +2,7 @@
 .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')
   h4
     span.title.kompassi-space-after {{ programme.title }}
-    for tag in programme.tags.all
+    for tag in programme.public_tags
       span.label.kompassi-space-after(class='{{ tag.style }}') {{ tag.title }}
   .programme-info
     .meta

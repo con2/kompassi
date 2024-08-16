@@ -191,7 +191,7 @@ class DefaultImporter:
             annotations=self.get_program_annotations(programme),
         )
 
-    def get_schedule_items(self, v1_programme: Programme, v2_program) -> list[ScheduleItem]:
+    def get_schedule_items(self, v1_programme: Programme, v2_program: Program) -> list[ScheduleItem]:
         """
         Return a list of unsaved V2 ScheduleItems for the V1 Programme.
         """
@@ -202,6 +202,7 @@ class DefaultImporter:
                 length=self.get_length(v1_programme),
                 # bulk create does not execute handlers, so we need to set this manually
                 cached_end_time=self.get_end_time(v1_programme),
+                cached_location=v2_program.cached_location,
             )
         ]
 

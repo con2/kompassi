@@ -26,6 +26,7 @@ KONSTI_DIMENSION_DTO = DimensionDTO(
             ("workshop", "Työpaja", "Workshop"),
             ("experiencePoint", "Kokemuspiste", "Experience Point"),
             ("other", "Muu", "Other"),
+            ("fleamarket", "Kirpputori", "Flea market"),
         ]
     ],
 )

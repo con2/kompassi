@@ -125,11 +125,7 @@ class ProgramLink(graphene.ObjectType):
         if title_specifier:
             title = f"{title} ({title_specifier})"
 
-        return cls(
-            type=link_type,
-            href=href,
-            title=title,
-        )  # type: ignore[call-arg]
+        return cls(type=link_type, href=href, title=title)  # type: ignore[call-arg]
 
 
 class ProgramType(DjangoObjectType):

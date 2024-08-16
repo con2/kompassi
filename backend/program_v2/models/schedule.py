@@ -28,7 +28,7 @@ class ScheduleItem(models.Model):
     @property
     def title(self):
         if self.subtitle:
-            return f"{self.program.title}: {self.subtitle}"
+            return f"{self.program.title} – {self.subtitle}"
         else:
             return self.program.title
 

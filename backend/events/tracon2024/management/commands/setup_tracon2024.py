@@ -6,6 +6,8 @@ from django.core.management.base import BaseCommand
 from django.urls import reverse
 from django.utils.timezone import now
 
+from core.utils import slugify
+
 
 class Setup:
     def __init__(self):
@@ -625,20 +627,20 @@ class Setup:
                 ),
             )
 
-        for title, style, v2_dimensions in [
-            ("Animeohjelma", "anime", {"category": ["animeohjelma"]}),
-            ("Cosplayohjelma", "cosplay", {"category": ["cosplayohjelma"]}),
-            ("Miitti", "miitti", {"category": ["miitti"]}),
-            ("Muu ohjelma", "muu", {"category": ["muu-ohjelma"]}),
-            ("Roolipeliohjelma", "rope", {"category": ["roolipeliohjelma"]}),
-            ("Peliohjelma", "color7", {"category": ["peliohjelma"]}),
+        for title, style in [
+            ("Animeohjelma", "anime"),
+            ("Cosplayohjelma", "cosplay"),
+            ("Miitti", "miitti"),
+            ("Muu ohjelma", "muu"),
+            ("Roolipeliohjelma", "rope"),
+            ("Peliohjelma", "color7"),
         ]:
             Category.objects.update_or_create(
                 event=self.event,
                 style=style,
                 defaults=dict(
                     title=title,
-                    v2_dimensions=v2_dimensions,
+                    v2_dimensions={"category": [slugify(title)]},
                 ),
             )
 
@@ -690,6 +692,9 @@ class Setup:
             ("Kirkkaita/välkkyviä valoja", "label-warning", {"accessibility": ["flashing-lights"]}),
             ("Kovia ääniä", "label-warning", {"accessibility": ["loud-noises"]}),
             ("Savutehosteita", "label-warning", {"accessibility": ["smoke-effects"]}),
+            ("Konsti: Kirpputori", "label-default", {"konsti": ["fleamarket"]}),
+            ("Konsti: Larppi", "label-default", {"konsti": ["larp"]}),
+            ("Konsti: Placeholder", "label-default", {}),
         ]:
             Tag.objects.update_or_create(
                 event=self.event,
@@ -697,6 +702,7 @@ class Setup:
                 defaults=dict(
                     style=tag_class,
                     v2_dimensions=v2_dimensions,
+                    public=":" not in tag_title,
                 ),
             )
 
@@ -718,7 +724,7 @@ class Setup:
         ]:
             AccessibilityWarning.objects.get_or_create(name=accessibility_warning)
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="rpg",
             defaults=dict(
@@ -726,6 +732,7 @@ class Setup:
                 programme_form_code="events.tracon2024.forms:RpgForm",
                 num_extra_invites=0,
                 order=10,
+                v2_dimensions={"konsti": ["tabletopRPG"]},
             ),
         )
 

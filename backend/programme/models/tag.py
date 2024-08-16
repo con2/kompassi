@@ -12,6 +12,8 @@ class Tag(models.Model):
     order = models.IntegerField(default=0)
     style = models.CharField(max_length=15, default="label-default")
 
+    public = models.BooleanField(default=True)
+
     v2_dimensions = models.JSONField(
         default=dict,
         blank=True,

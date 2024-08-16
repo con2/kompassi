@@ -109,6 +109,9 @@ ANNOTATIONS = [
                 "this program exists but does not require signup."
             ),
         ),
+        from_v1_programme=(
+            lambda prog: True if any(tag.slug == "konsti-placeholder" for tag in prog.tags.all()) else None
+        ),
     ),
     AnnotationSchemoid(
         slug="ropecon:numCharacters",
