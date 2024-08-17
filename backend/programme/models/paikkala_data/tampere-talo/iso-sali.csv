@@ -1,5 +1,6 @@
 zone,row,start,end
 Etupermanto vasen (1. krs),B2,59,65
+Etupermanto vasen (1. krs),A3,85,94
 Etupermanto vasen (1. krs),B3,95,102
 Etupermanto vasen (1. krs),A4,123,133
 Etupermanto vasen (1. krs),B4,134,142
@@ -7,10 +8,9 @@ Etupermanto vasen (1. krs),A5,164,174
 Etupermanto vasen (1. krs),B5,175,183
 Etupermanto vasen (1. krs),A6,205,216
 Etupermanto vasen (1. krs),B6,217,225
-Etupermanto vasen (1. krs),A7,247,259
+Etupermanto vasen (1. krs),A7,248,259
 Etupermanto vasen (1. krs),B7,260,268
 Etupermanto vasen (1. krs),A8,291,303
-Etupermanto vasen (1. krs),B8,308,312
 Etupermanto vasen (2. krs),A9,328,341
 Etupermanto vasen (2. krs),A10,356,369
 Etupermanto vasen (2. krs),A11,384,396
@@ -36,6 +36,7 @@ Takapermanto vasen (2. krs),B24,418,427
 Takapermanto vasen (2. krs),A25,454,470
 Takapermanto vasen (2. krs),B25,471,479
 Etupermanto oikea (1. krs),B2,32,38
+Etupermanto oikea (1. krs),A3,74,84
 Etupermanto oikea (1. krs),B3,66,73
 Etupermanto oikea (1. krs),B4,103,111
 Etupermanto oikea (1. krs),A4,112,122
@@ -44,8 +45,9 @@ Etupermanto oikea (1. krs),A5,152,163
 Etupermanto oikea (1. krs),B6,184,192
 Etupermanto oikea (1. krs),A6,193,204
 Etupermanto oikea (1. krs),B7,226,234
-Etupermanto oikea (1. krs),A7,235,246
+Etupermanto oikea (1. krs),A7,235,247
 Etupermanto oikea (1. krs),A8,278,290
+Etupermanto oikea (1. krs),B8,269,276
 Etupermanto oikea (2. krs),A9,313,327
 Etupermanto oikea (2. krs),A10,342,355
 Etupermanto oikea (2. krs),A11,370,383
