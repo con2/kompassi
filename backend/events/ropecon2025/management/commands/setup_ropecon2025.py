@@ -83,7 +83,7 @@ class Setup:
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-            work_begins=self.event.start_time.replace(hour=8, minute=0, tzinfo=self.tz),  # type: ignore
+            work_begins=(self.event.start_time - timedelta(days=2)).replace(hour=8, minute=0, tzinfo=self.tz),  # type: ignore
             work_ends=self.event.end_time.replace(hour=23, minute=0, tzinfo=self.tz),  # type: ignore
             admin_group=labour_admin_group,
             contact_email="Ropecon 2025 vapaaehtoisvastaava <vapaaehtoiset@ropecon.fi>",
