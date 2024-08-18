@@ -692,7 +692,6 @@ class Setup:
             tickets_view_version="v1.5",
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
-            due_days=14,
             reference_number_template="2024{:06d}",
             contact_email="Ropecon 2024 -lipunmyynti <lipunmyynti@ropecon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Ropecon 2024 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"

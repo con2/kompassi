@@ -68,7 +68,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2018{:05d}",
             contact_email="Mimicon <lipunmyynti@mimicon.moe>",
             ticket_free_text="Tämä on sähköinen lippusi Mimicon 2018 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"

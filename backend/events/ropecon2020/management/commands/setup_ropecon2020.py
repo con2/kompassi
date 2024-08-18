@@ -472,7 +472,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
-            due_days=14,
             reference_number_template="2020{:06d}",
             contact_email="Ropecon 2020 -lipunmyynti <lipunmyynti@ropecon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Ropecon 2020 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"

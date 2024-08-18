@@ -280,7 +280,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2023{:06d}",
             contact_email="Matsucon <matsuconfi@gmail.com>",
             ticket_free_text="Tämä on sähköinen lippusi Matsucon 2023 -tapahtumaan. Sähköinen lippu vaihdetaan\n"

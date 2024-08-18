@@ -269,7 +269,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2023{:05d}",
             contact_email="Cosvision <info@cosvision.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Cosvision 2023 -tapahtumaan. Voit tulostaa tämän lipun tai\n"

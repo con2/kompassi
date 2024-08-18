@@ -172,7 +172,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2020{:06d}",
             contact_email="Popcult Helsinki <liput@popcult.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Popcult Helsinki 2020 -tapahtumaan. Sähköinen lippu vaihdetaan\n"

@@ -252,7 +252,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
-            due_days=14,
             reference_number_template="2019{:06d}",
             contact_email="Traconin lipunmyynti <liput@tracon.fi>",
             ticket_free_text=(
@@ -394,10 +393,6 @@ class Setup:
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
                 product.save()
-
-        if not meta.receipt_footer:
-            meta.receipt_footer = "Tracon ry / Y-tunnus 2886274-5 / liput@tracon.fi"
-            meta.save()
 
     def setup_programme(self):
         from core.utils import full_hours_between

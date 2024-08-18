@@ -276,7 +276,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2023{:05d}",
             contact_email="Solmukohta 2024 <tickets@solmukohta.eu>",
             ticket_free_text="This is your electronic ticket for Solmukohta 2024.\n"
