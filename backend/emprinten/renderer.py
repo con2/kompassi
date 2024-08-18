@@ -1,6 +1,7 @@
 import collections.abc
 import contextlib
 import functools
+import html
 import os
 import shutil
 import tempfile
@@ -20,12 +21,13 @@ from .models import FileVersion, ProjectFile
 
 DEBUG = False
 
-FileWithData = tuple[str, dict[str, str | dict[str, typing.Any]] | None]
+FileWithData = tuple[str, dict[str, str | dict[str, typing.Any]] | None, bool]
 DataRow = dict[str, str | dict[str, typing.Any]]
 DataSet = list[DataRow]
 Vfs = dict[str, FileVersion]
 
 LOCAL_FILE_URI_PREFIX = "file:///"
+RENDER_FAILURE_FILE_NAME_PATTERN = "ERROR-{}"
 
 
 def html_header(title: str, lang: str = "fi") -> str:
@@ -84,13 +86,14 @@ def render_pdf(
     data: DataSet,
     *,
     return_archive: bool = False,
+    handle_errors: bool = False,
 ) -> HttpResponseBase:
     main = find_main(files)
     if main is None:
         return HttpResponse("Main file not found", status=404)
 
     vfs = files_to_vfs(files)
-    env = _TemplateCompiler(vfs)
+    env = _TemplateCompiler(vfs, handle_errors)
     if DEBUG:
         print(vfs)
 
@@ -131,8 +134,13 @@ def render_pdf(
         if return_archive:
             z_name = os.path.join(tmpdir, "result.zip")
             with zipfile.ZipFile(z_name, "w") as z:
-                for pdf_name, row in results:
-                    arc_name = name_factory.make({"row": row}, fallback=os.path.basename(pdf_name))
+                for pdf_name, row, success in results:
+                    post_format = "{}" if success else RENDER_FAILURE_FILE_NAME_PATTERN
+                    arc_name = name_factory.make(
+                        {"row": row},
+                        fallback=os.path.basename(pdf_name),
+                        post_format=post_format,
+                    )
                     z.write(pdf_name, arcname=arc_name)
             if DEBUG:
                 ls_r(tmpdir)
@@ -143,8 +151,9 @@ def render_pdf(
             return HttpResponse(status=401)
 
         if results:
-            pdf_name, row = results[0]
-            file_name = name_factory.make({"row": row}, fallback="result.pdf")
+            pdf_name, row, success = results[0]
+            post_format = "{}" if success else RENDER_FAILURE_FILE_NAME_PATTERN
+            file_name = name_factory.make({"row": row}, fallback="result.pdf", post_format=post_format)
             # FileResponse closes the open file by itself.
             return FileResponse(
                 open(pdf_name, "rb"),  # noqa: SIM115
@@ -185,8 +194,9 @@ class _TemplateCompiler:
                 return True
             return hasattr(obj, "is_safe_to_call") and obj.is_safe_to_call
 
-    def __init__(self, vfs: Vfs) -> None:
+    def __init__(self, vfs: Vfs, handle_errors: bool) -> None:
         self.vfs = vfs
+        self.handle_errors = handle_errors
 
         env = self.Environment(
             autoescape=True,
@@ -228,26 +238,42 @@ class _TemplateCompiler:
                 title = _title_pattern.render(row=row_copy)
 
                 src_name = os.path.join(src_dir, f"{idx:03d}.html")
-                sources.append((src_name, row_copy))
 
                 with open(src_name, "w") as of:
                     of.write(html_header(title=title))
-                    of.write(tpl.render(row=row_copy, **lookups))
+                    success = self._write_render_or_error(of, tpl, row_copy, idx, lookups)
                     of.write(html_footer())
+                sources.append((src_name, row_copy, success))
         else:
             # Render title if we have any data, but supply the row only if it is singular.
             row_copy = dict(data[0]) if len(data) == 1 else None
             title = _title_pattern.render(row=row_copy) if data else ""
 
             src_name = os.path.join(src_dir, "master.html")
-            sources.append((src_name, row_copy))
 
+            success = True
             with open(src_name, "w") as of:
                 of.write(html_header(title=title))
-                for row in data:
-                    of.write(tpl.render(row=dict(row), **lookups))
+                for idx, row in enumerate(data, start=1):
+                    success &= self._write_render_or_error(of, tpl, dict(row), idx, lookups)
                 of.write(html_footer())
+            sources.append((src_name, row_copy, success))
         return sources
+
+    def _write_render_or_error(self, of, tpl: jinja2.Template, row: dict, idx: int, lookups: dict) -> bool:
+        try:
+            of.write(tpl.render(row=row, **lookups))
+            return True
+        except jinja2.exceptions.SecurityError:
+            # Don't return security details to user.
+            raise
+        except (jinja2.exceptions.TemplateError, ValueError) as e:
+            if self.handle_errors:
+                of.write(f"<h1>ERROR on data line {idx}</h1><pre>")
+                of.write(html.escape(e.args[0] if e.args else ""))
+                of.write("</pre>")
+                return False
+            raise
 
     # See `jinja2.loaders.FunctionLoader.__init__` for function signature.
     def _do_lookup(
@@ -289,7 +315,7 @@ class _HtmlCompiler:
             for sheet_file in self.stylesheets
         ]
         results: list[FileWithData] = []
-        for source, row in sources:
+        for source, row, template_success in sources:
             pdf_html = weasyprint.HTML(
                 filename=source,
                 base_url=LOCAL_FILE_URI_PREFIX,
@@ -304,7 +330,7 @@ class _HtmlCompiler:
 
             dst_base = os.path.splitext(os.path.basename(source))[0]
             dst_name = os.path.join(result_dir, dst_base + ".pdf")
-            results.append((dst_name, row))
+            results.append((dst_name, row, template_success))
             with open(dst_name, "wb") as of:
                 of.write(pdf)
 

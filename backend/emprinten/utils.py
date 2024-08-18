@@ -26,6 +26,7 @@ def render_csv(
         project.title_pattern,
         data,
         return_archive=return_archive,
+        handle_errors=True,
     ), len(data)
 
 
