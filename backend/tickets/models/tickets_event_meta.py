@@ -13,11 +13,6 @@ logger = logging.getLogger("kompassi")
 
 
 class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
-    due_days = models.IntegerField(
-        verbose_name=_("Payment due (days)"),
-        default=14,
-    )
-
     ticket_sales_starts = models.DateTimeField(
         verbose_name=_("Ticket sales starts"),
         null=True,

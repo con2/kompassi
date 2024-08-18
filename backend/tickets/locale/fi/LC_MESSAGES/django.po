@@ -120,10 +120,6 @@ msgstr "Seuraava"
 msgid "Note!"
 msgstr "Huom!"
 
-#: models.py
-msgid "Payment due (days)"
-msgstr "Maksuaika (päivää)"
-
 #: views/public_views.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."

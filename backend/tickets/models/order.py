@@ -1,10 +1,8 @@
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from datetime import time as dtime
 from typing import TYPE_CHECKING
 
-from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.db import connection, models
@@ -15,7 +13,7 @@ from pkg_resources import resource_string
 
 from core.models.event import Event
 
-from ..utils import append_reference_number_checksum, format_date, format_price
+from ..utils import append_reference_number_checksum, format_price
 from .consts import LANGUAGE_CHOICES, UNPAID_CANCEL_HOURS
 from .tickets_event_meta import TicketsEventMeta
 
@@ -90,10 +88,6 @@ class Order(models.Model):
         return self.payment_date is not None
 
     @property
-    def is_overdue(self):
-        return self.due_date and self.is_confirmed and not self.is_paid and self.due_date < timezone.now()
-
-    @property
     def is_cancelled(self):
         return self.cancellation_time is not None
 
@@ -113,13 +107,12 @@ class Order(models.Model):
 
     @property
     def readable_state(self):
-        if self.is_paid:
+        if self.is_cancelled:
+            return "Cancelled"
+        elif self.is_paid:
             return "Paid"
         elif self.is_confirmed:
-            if self.is_overdue:
-                return f"Confirmed; payment overdue since {self.formatted_due_date}"
-            else:
-                return f"Confirmed; payment due {self.formatted_due_date}"
+            return "Confirmed"
         else:
             return "Unconfirmed"
 
@@ -223,19 +216,6 @@ class Order(models.Model):
         return dict(order=self)
 
     @property
-    def due_date(self):
-        if self.confirm_time:
-            return datetime.combine(
-                (self.confirm_time + timedelta(days=self.meta.due_days)).date(), dtime(23, 59, 59)
-            ).replace(tzinfo=tzlocal())
-        else:
-            return None
-
-    @property
-    def formatted_due_date(self):
-        return format_date(self.due_date)
-
-    @property
     def contains_electronic_tickets(self):
         return self.order_product_set.filter(count__gt=0, product__electronic_ticket=True).exists()
 
@@ -256,8 +236,6 @@ class Order(models.Model):
     def css_class(self):
         if self.is_cancelled:
             return "danger"
-        elif self.is_overdue:
-            return "warning"
         else:
             return ""
 
