@@ -208,10 +208,6 @@ msgid "This text will be printed in the electronic ticket."
 msgstr "Tämä teksti tulostetaan sähköiseen lippuun."
 
 #: models.py
-msgid "This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended."
-msgstr "Tämä teksti tulostetaan postitse toimitettavien tilausten keräilylistan alareunaan. Tähän on suositeltavaa sisällyttää yhteystiedot."
-
-#: models.py
 msgid "This text will be shown on the front page of the web shop."
 msgstr "Tämä teksti näytetään verkkokaupan etusivulla."
 

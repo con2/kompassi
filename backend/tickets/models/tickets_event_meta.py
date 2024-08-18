@@ -86,16 +86,6 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         ),
     )
 
-    receipt_footer = models.CharField(
-        blank=True,
-        default="",
-        max_length=1023,
-        verbose_name=_("Receipt footer"),
-        help_text=_(
-            "This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended."
-        ),
-    )
-
     pos_access_group = models.ForeignKey(
         "auth.Group",
         on_delete=models.SET_NULL,
