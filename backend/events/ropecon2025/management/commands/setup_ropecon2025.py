@@ -236,192 +236,191 @@ class Setup:
             return limit_group
 
         for product_info in [
-            dict(
-                name="Ropecon 2025 Early Dragon viikonloppu / Weekend Ticket",
-                description="Sisältää pääsyn Ropecon 2025 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for the weekend.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=4000,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 lasten Early Dragon viikonloppu / Children's Weekend Ticket",
-                description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the weekend.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=2000,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Early Dragon perhelippu (vkl) / Family Ticket (wknd)",
-                description="Sisältää pääsyn Ropecon 2025 -tapahtumaan 2 aikuiselle ja 1 - 3 lapselle (7-12 v) koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for two adults and 1-3 children (aged 7-12) for the weekend",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=9900,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 viikonloppu / Weekend Ticket",
-                description="Sisältää pääsyn Ropecon 2025 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for the weekend.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=4500,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 lasten viikonloppu / Children's Weekend Ticket",
-                description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the weekend.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=2500,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 perhelippu (vkl) / Family Ticket (wknd)",
-                description="Sisältää pääsyn Ropecon 2025 -tapahtumaan 2 aikuiselle ja 1 - 3 lapselle (7-12 v) koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for two adults and 1-3 children (aged 7-12) for the weekend",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=11000,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Academic Seminar and Friday Ticket",
-                description="Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2025 -tapahtumaan perjantaina. Rekisteröitymislinkki: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a> / Includes the entrance to the Academic seminar and Ropecon 2025 on friday. Please sign up to the event here: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target='_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a>",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=5500,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Academic Seminar and Weekend Ticket",
-                description="Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2025 -tapahtumaan koko viikonlopun ajan. Rekisteröitymislinkki: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a> / Includes the entrance to the Academic seminar and Ropecon 2025 for the weekend. Please sign up to the event here: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a>",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=6600,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Academic seminar",
-                description="Sisältää pääsyn Akateemiseen seminaariin. Rekisteröitymislinkki: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a> / Includes the entrance to the Academic seminar. Please sign up to the event here: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a>",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=2100,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Perjantai aikuinen / Friday Ticket ",
-                description="Sisältää pääsyn Ropecon 2025 -tapahtumaan perjantain ajan. / Includes the entrance to Ropecon 2025 for the Friday.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=3400,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Lauantai aikuinen / Saturday Ticket",
-                description="Sisältää pääsyn Ropecon 2025 -tapahtumaan lauantain ajan. / Includes the entrance to Ropecon 2025 for the Saturday.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=3400,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Sunnuntai aikuinen / Sunday Ticket",
-                description="Sisältää pääsyn Ropecon 2025 -tapahtumaan sunnuntain ajan. / Includes the entrance to Ropecon 2025 for the Sunday.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=2000,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Perjantai lapsi / Children's Friday Ticket",
-                description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan perjantain ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the Friday.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=1500,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Lauantai lapsi / Children's Saturday Ticket",
-                description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan lauantain ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the Saturday.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=1500,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Sunnuntai lapsi / Children's Sunday Ticket",
-                description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan sunnuntain ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the Sunday.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=1000,
-                electronic_ticket=True,
-                available=False,
-                ordering=self.get_ordering_number(),
-            ),
-            dict(
-                name="Ropecon 2025 Haltiakummilippu / Fairy Godparent Ticket",
-                description="Lahjoittaa viikonloppupääsyn Haltiakummilippua hakevalle Ropecon 2025 -tapahtumaan. HUOM: Tämä lahjoitustuote ei sisällä sisäänpääsyä itsellesi. / Buy this product to donate a ticket to someone who applies for a Godparent ticket. NOTE: This product does not include admission for yourself.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 9999),
-                ],
-                price_cents=4000,
-                electronic_ticket=False,
-                available=False,
-                ordering=self.get_ordering_number(),
-                mail_description="\n".join(
-                    line.strip()
-                    for line in """
-                        Kiitämme osallistumisestasi Haltiakummilippukeräykseen! <3
-                        Haltiakummiliput jaetaan hakijoiden kesken heinäkuussa.
-
-                        Thank you for participating in collection of Fairy Godparent tickets! <3
-                        The tickets will be distributed among participants in July.
-                    """.strip().splitlines()
-                ),
-            ),
+            # dict(
+            #     name="Ropecon 2025 Early Dragon viikonloppu / Weekend Ticket",
+            #     description="Sisältää pääsyn Ropecon 2025 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for the weekend.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=4000,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 lasten Early Dragon viikonloppu / Children's Weekend Ticket",
+            #     description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the weekend.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=2000,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Early Dragon perhelippu (vkl) / Family Ticket (wknd)",
+            #     description="Sisältää pääsyn Ropecon 2025 -tapahtumaan 2 aikuiselle ja 1 - 3 lapselle (7-12 v) koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for two adults and 1-3 children (aged 7-12) for the weekend",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=9900,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 viikonloppu / Weekend Ticket",
+            #     description="Sisältää pääsyn Ropecon 2025 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for the weekend.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=4500,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 lasten viikonloppu / Children's Weekend Ticket",
+            #     description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the weekend.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=2500,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 perhelippu (vkl) / Family Ticket (wknd)",
+            #     description="Sisältää pääsyn Ropecon 2025 -tapahtumaan 2 aikuiselle ja 1 - 3 lapselle (7-12 v) koko viikonlopun ajan. / Includes the entrance to Ropecon 2025 for two adults and 1-3 children (aged 7-12) for the weekend",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=11000,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Academic Seminar and Friday Ticket",
+            #     description="Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2025 -tapahtumaan perjantaina. Rekisteröitymislinkki: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a> / Includes the entrance to the Academic seminar and Ropecon 2025 on friday. Please sign up to the event here: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target='_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a>",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=5500,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Academic Seminar and Weekend Ticket",
+            #     description="Sisältää pääsyn Akateemiseen seminaariin ja Ropecon 2025 -tapahtumaan koko viikonlopun ajan. Rekisteröitymislinkki: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a> / Includes the entrance to the Academic seminar and Ropecon 2025 for the weekend. Please sign up to the event here: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a>",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=6600,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Academic seminar",
+            #     description="Sisältää pääsyn Akateemiseen seminaariin. Rekisteröitymislinkki: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a> / Includes the entrance to the Academic seminar. Please sign up to the event here: <a href='https://forms.gle/4KT3AHxKBBJWRTFa6' target=_blank'>https://forms.gle/4KT3AHxKBBJWRTFa6</a>",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=2100,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Perjantai aikuinen / Friday Ticket ",
+            #     description="Sisältää pääsyn Ropecon 2025 -tapahtumaan perjantain ajan. / Includes the entrance to Ropecon 2025 for the Friday.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=3400,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Lauantai aikuinen / Saturday Ticket",
+            #     description="Sisältää pääsyn Ropecon 2025 -tapahtumaan lauantain ajan. / Includes the entrance to Ropecon 2025 for the Saturday.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=3400,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Sunnuntai aikuinen / Sunday Ticket",
+            #     description="Sisältää pääsyn Ropecon 2025 -tapahtumaan sunnuntain ajan. / Includes the entrance to Ropecon 2025 for the Sunday.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=2000,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Perjantai lapsi / Children's Friday Ticket",
+            #     description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan perjantain ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the Friday.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=1500,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Lauantai lapsi / Children's Saturday Ticket",
+            #     description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan lauantain ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the Saturday.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=1500,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Sunnuntai lapsi / Children's Sunday Ticket",
+            #     description="Sisältää pääsyn lapselle (7-12v) Ropecon 2025 -tapahtumaan sunnuntain ajan. / Includes the entrance to Ropecon 2025 for children (aged 7-12) for the Sunday.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=1000,
+            #     electronic_ticket=True,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            # ),
+            # dict(
+            #     name="Ropecon 2025 Haltiakummilippu / Fairy Godparent Ticket",
+            #     description="Lahjoittaa viikonloppupääsyn Haltiakummilippua hakevalle Ropecon 2025 -tapahtumaan. HUOM: Tämä lahjoitustuote ei sisällä sisäänpääsyä itsellesi. / Buy this product to donate a ticket to someone who applies for a Godparent ticket. NOTE: This product does not include admission for yourself.",
+            #     limit_groups=[
+            #         limit_group("Pääsyliput", 9999),
+            #     ],
+            #     price_cents=4000,
+            #     electronic_ticket=False,
+            #     available=False,
+            #     ordering=self.get_ordering_number(),
+            #     mail_description="\n".join(
+            #         line.strip()
+            #         for line in """
+            #             Kiitämme osallistumisestasi Haltiakummilippukeräykseen! <3
+            #             Haltiakummiliput jaetaan hakijoiden kesken heinäkuussa.
+            #             Thank you for participating in collection of Fairy Godparent tickets! <3
+            #             The tickets will be distributed among participants in July.
+            #         """.strip().splitlines()
+            #     ),
+            # ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
