@@ -12,7 +12,7 @@ from ..models import (
 class ScheduleItemType(DjangoObjectType):
     class Meta:
         model = ScheduleItem
-        fields = ("subtitle", "start_time")
+        fields = ("slug", "subtitle", "start_time")
 
     @staticmethod
     def resolve_length_minutes(parent: ScheduleItem, info):

@@ -200,10 +200,7 @@ class DefaultImporter:
                 program=v2_program,
                 start_time=self.get_start_time(v1_programme),
                 length=self.get_length(v1_programme),
-                # bulk create does not execute handlers, so we need to set this manually
-                cached_end_time=self.get_end_time(v1_programme),
-                cached_location=v2_program.cached_location,
-            )
+            ).with_generated_fields()
         ]
 
     def get_eligible_programmes(self, queryset: QuerySet[Programme]) -> QuerySet[Programme]:

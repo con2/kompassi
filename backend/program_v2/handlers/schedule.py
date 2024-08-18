@@ -6,8 +6,7 @@ from ..models.schedule import ScheduleItem
 
 @receiver(pre_save, sender=ScheduleItem)
 def program_pre_save(sender, instance: ScheduleItem, **kwargs):
-    if instance.start_time is not None and instance.length is not None:
-        instance.cached_end_time = instance.start_time + instance.length
+    instance.with_generated_fields()
 
 
 @receiver(post_save, sender=ScheduleItem)

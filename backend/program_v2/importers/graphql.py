@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import requests
 
@@ -29,6 +29,8 @@ query ImportProgram($eventSlug: String!, $lang: String!) {
         annotations
         cachedDimensions
         scheduleItems {
+          slug
+          subtitle
           startTime
           lengthMinutes
         }
@@ -113,11 +115,11 @@ def import_graphql(
         [
             ScheduleItem(
                 program=program,
+                slug=schedule_item["slug"],
+                subtitle=schedule_item["subtitle"],
                 start_time=schedule_item["startTime"],
                 length=timedelta(minutes=schedule_item["lengthMinutes"]),
-                cached_end_time=datetime.strptime(schedule_item["startTime"], "%Y-%m-%dT%H:%M:%S%z")
-                + timedelta(minutes=schedule_item["lengthMinutes"]),
-            )
+            ).with_generated_fields()
             for program, program_data in zip(programs, data["data"]["event"]["program"]["programs"], strict=True)
             for schedule_item in program_data["scheduleItems"]
         ]

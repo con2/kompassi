@@ -1,8 +1,10 @@
 import re
+from typing import Literal
 
 import phonenumbers
 from django.conf import settings
 from django.core.validators import RegexValidator
+from django.db import models
 from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
@@ -27,6 +29,34 @@ SLUG_FIELD_PARAMS = dict(
     "muuttaa luomisen jälkeen.",
 )
 NONUNIQUE_SLUG_FIELD_PARAMS = dict(SLUG_FIELD_PARAMS, unique=False)
+SLUG_FIELD_DEFAULT_VALIDATORS = object()
+
+
+def make_slug_field(
+    unique=True,
+    separator: Literal["-", "_"] = "-",
+    verbose_name: str | None = None,
+    help_text: str | None = None,
+):
+    if verbose_name is None:
+        verbose_name = _("Slug")
+
+    if help_text is None:
+        help_text = _(
+            "The slug is a URL-friendly identifier. "
+            "It may only contain lowercase letters, numbers, and hyphens. "
+            "It may not be changed after creation."
+        )
+
+    validators = [validate_slug] if separator == "-" else [validate_slug_underscore]
+
+    return models.CharField(
+        max_length=255,
+        unique=unique,
+        validators=validators,
+        verbose_name=verbose_name,
+        help_text=help_text,
+    )
 
 
 def get_slugifier(sep: str = "-"):

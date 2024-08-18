@@ -802,6 +802,8 @@ export type ScheduleItemType = {
   endTimeUnixSeconds: Scalars['Int']['output'];
   lengthMinutes: Scalars['Int']['output'];
   location?: Maybe<Scalars['String']['output']>;
+  /** NOTE: Slug must be unique within Event. It does not suffice to be unique within Program. */
+  slug: Scalars['String']['output'];
   startTime: Scalars['DateTime']['output'];
   startTimeUnixSeconds: Scalars['Int']['output'];
   subtitle: Scalars['String']['output'];

@@ -225,13 +225,12 @@ class TraconImporter(DefaultImporter):
         slot_end_time = slot_end_time.astimezone(tz)
 
         return ScheduleItem(
+            slug=f"{v2_program.slug}-{slot_start_time.strftime('%H%M')}",
             subtitle=f"Saapuminen kello {slot_start_time.strftime('%H:%M')}–{slot_end_time.strftime('%H:%M')}",
             program=v2_program,
             start_time=start_time,
             length=end_time - start_time,
-            cached_end_time=end_time,
-            cached_location=v2_program.cached_location,
-        )
+        ).with_generated_fields()
 
     def get_schedule_items(self, v1_programme: Programme, v2_program: Program) -> list[ScheduleItem]:
         """
