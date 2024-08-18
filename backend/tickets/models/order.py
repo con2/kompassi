@@ -14,7 +14,6 @@ from django.utils.translation import gettext_lazy as _
 from pkg_resources import resource_string
 
 from core.models.event import Event
-from core.utils import url
 
 from ..utils import append_reference_number_checksum, format_date, format_price
 from .consts import LANGUAGE_CHOICES, UNPAID_CANCEL_HOURS
@@ -100,8 +99,9 @@ class Order(models.Model):
 
     @property
     def price_cents(self):
-        # TODO Port to Django DB reduction functions if possible
-        return sum(op.price_cents for op in self.order_product_set.all())
+        return self.order_product_set.aggregate(
+            sum=models.Sum(models.F("product__price_cents") * models.F("count")),
+        )["sum"]
 
     @property
     def requires_accommodation_information(self):
@@ -234,17 +234,6 @@ class Order(models.Model):
     @property
     def formatted_due_date(self):
         return format_date(self.due_date)
-
-    def checkout_return_url(self, request):
-        return request.build_absolute_uri(url("payments_process_view", self.event.slug))
-
-    @property
-    def reservation_valid_until(self):
-        return (
-            self.confirm_time + timedelta(seconds=self.event.tickets_event_meta.reservation_seconds)
-            if self.confirm_time
-            else None
-        )
 
     @property
     def contains_electronic_tickets(self):
