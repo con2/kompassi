@@ -170,12 +170,12 @@ class TraconImporter(DefaultImporter):
         if konsti:
             signup.add("konsti")
         if link := programme.signup_link:
-            if "forms" in link or "survey" in link:
-                signup.add("form")
             if "konsti" in link:
                 signup.add("konsti")
-            if "lippu.fi" in link:
+            elif "lippu.fi" in link:
                 signup.add("tickets")
+            else:
+                signup.add("form")
         if programme.is_using_paikkala:
             signup.add("paikkala")
         if not signup:

@@ -77,7 +77,7 @@ ANNOTATIONS = [
         from_v1_programme=(
             lambda prog: prog.min_players
             if (form := prog.form_used)
-            and form.slug in ("roolipeli", "larp", "pelitiski")
+            and form.slug in ("roolipeli", "larp", "pelitiski", "rpg")
             and prog.min_players not in (None, 0, 1)
             else None
         ),
