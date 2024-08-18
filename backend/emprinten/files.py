@@ -6,6 +6,7 @@ import re
 import typing
 from collections import OrderedDict
 
+import jinja2
 from jinja2 import Template
 
 Lut = dict[str, dict[str, str]]
@@ -134,7 +135,7 @@ class NameFactory:
         self._tpl: Template | None = tpl
         self.max_len = max_len or NameFactory.max_len
 
-    def make(self, row: dict[str, typing.Any], ext: str = ".pdf", fallback: str = "") -> str:
+    def make(self, row: dict[str, typing.Any], ext: str = ".pdf", fallback: str = "", post_format: str = "{}") -> str:
         """
         Make a unique name.
 
@@ -144,6 +145,13 @@ class NameFactory:
         'abcde.pdf'
         >>> NameFactory().make({}, fallback="a  b\\tc\\r\\n\\nd")
         'a b c d.pdf'
+        >>> e = NameFactory()
+        >>> e.make({}, fallback="a")
+        'a.pdf'
+        >>> e.make({}, fallback="ERROR-a")
+        'ERROR-a.pdf'
+        >>> e.make({}, fallback="a", post_format="ERROR-{}")
+        'ERROR-a (1).pdf'
 
         >>> f = NameFactory(max_len=5)
         >>> f.make({}, fallback="abcde")
@@ -158,11 +166,12 @@ class NameFactory:
         'a (1).pdf'
         """
         fallback = fallback.removesuffix(ext)
-        formatted = self.sanitize(self._tpl.render(row) if self._tpl is not None else fallback)
+        formatted = self.sanitize(self._render(row, fallback))
 
         if not formatted:
             formatted = fallback
 
+        formatted = post_format.format(formatted)
         clipped = formatted[: self.max_len]
 
         new_number = self._names.get(clipped, -1) + 1
@@ -171,6 +180,14 @@ class NameFactory:
         if new_number > 0:
             return clipped + self.index_fmt % new_number + ext
         return clipped + ext
+
+    def _render(self, row: dict, fallback: str) -> str:
+        try:
+            return self._tpl.render(row) if self._tpl is not None else fallback
+        except jinja2.exceptions.SecurityError:
+            raise
+        except (jinja2.exceptions.TemplateError, ValueError):
+            return fallback
 
     @classmethod
     def sanitize(cls, value: str, illegal_replacement: str = " ") -> str:

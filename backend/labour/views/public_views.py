@@ -297,6 +297,7 @@ def profile_work_reference(request, event):
             "event": event,
             "venue": event.venue,
             "full_name": signup.person.firstname_surname,
+            "birth_date": signup.person.birth_date,
             "job_title": signup.some_job_title,
         },
     )

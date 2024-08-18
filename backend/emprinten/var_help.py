@@ -41,7 +41,7 @@ def _parse_vars(env: _TemplateCompiler, source: str | None, **kwargs) -> set[str
 
 
 def find_vars(files: typing.Iterable[FileVersion], file_name_template: str, title_template: str) -> set[str]:
-    env = _TemplateCompiler(files_to_vfs(files))
+    env = _TemplateCompiler(files_to_vfs(files), handle_errors=False)
     main = find_main(files)
     if main is None:
         return set()
