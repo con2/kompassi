@@ -27,6 +27,7 @@ class Setup:
         self.setup_intra()
         self.setup_tickets()
         self.setup_badges()
+        self.setup_access()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -85,7 +86,7 @@ class Setup:
             work_begins=self.event.start_time.replace(hour=8, minute=0, tzinfo=self.tz),  # type: ignore
             work_ends=self.event.end_time.replace(hour=23, minute=0, tzinfo=self.tz),  # type: ignore
             admin_group=labour_admin_group,
-            contact_email="Ropecon 2025 -työvoimatiimi <tyovoima@ropecon.fi>",
+            contact_email="Ropecon 2025 vapaaehtoisvastaava <vapaaehtoiset@ropecon.fi>",
         )
 
         if self.test:
@@ -458,9 +459,10 @@ class Setup:
         for team_slug, team_name in [
             ("talous", "Talous"),
             ("peliohjelma", "Peliohjelma"),
-            ("ohjelma", "Ohjelma"),
+            ("ohjelma", "Puhe- ja muu ohjelma"),
             ("viestinta", "Viestintä"),
-            ("tilatjatekniikka", "Tilat ja tekniikka"),
+            ("tilat", "Tilat"),
+            ("tekniikka", "Tekniikka"),
             ("vapaaehtoiset", "Vapaaehtoiset"),
             ("kavijapalvelut", "Kävijäpalvelut"),
         ]:
@@ -472,6 +474,24 @@ class Setup:
                     name=team_name,
                     order=self.get_ordering_number(),
                     group=team_group,
+                ),
+            )
+
+    def setup_access(self):
+        from access.models import EmailAliasType, GroupEmailAliasGrant
+
+        cc_group = self.event.labour_event_meta.get_group("conitea")
+
+        for metavar in [
+            "firstname.lastname",
+            "nick",
+        ]:
+            alias_type = EmailAliasType.objects.get(domain__domain_name="ropecon.fi", metavar=metavar)
+            GroupEmailAliasGrant.objects.get_or_create(
+                group=cc_group,
+                type=alias_type,
+                defaults=dict(
+                    active_until=self.event.end_time,
                 ),
             )
 

@@ -78,7 +78,6 @@ class Command(BaseCommand):
 
         management_commands.extend(
             (
-                (("setup_intra",), dict()),
                 (("setup_listings",), dict()),
                 (("access_create_internal_aliases",), dict()),
                 (("access_create_missing_cbac_entries",), dict()),
