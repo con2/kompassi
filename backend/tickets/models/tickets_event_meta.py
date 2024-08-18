@@ -54,14 +54,6 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         help_text=_("If set, all tickets-related e-mail messages will be also sent to this e-mail address."),
     )
 
-    reservation_seconds = models.IntegerField(
-        verbose_name=_("Reservation period (seconds)"),
-        help_text=_(
-            "This is how long the customer has after confirmation to complete the payment. NOTE: Currently unimplemented."
-        ),
-        default=1800,
-    )
-
     ticket_free_text = models.TextField(
         blank=True,
         verbose_name=_("E-ticket text"),
