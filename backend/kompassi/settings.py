@@ -216,7 +216,6 @@ INSTALLED_APPS = (
     "events.matsucon2018",
     "events.ropecon2018",
     "events.finncon2018",
-    "events.mimicon2018",
     "events.frostbite2019",
     "events.desucon2019",
     "events.tracon2019",
