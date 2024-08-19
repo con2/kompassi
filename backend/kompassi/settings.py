@@ -392,6 +392,7 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="spam@example.com")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 
 if "lippukala" in INSTALLED_APPS:
