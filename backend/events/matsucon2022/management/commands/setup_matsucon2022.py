@@ -65,7 +65,7 @@ class Setup:
     def setup_labour(self):
         from django.contrib.contenttypes.models import ContentType
 
-        from core.models import Event, Person
+        from core.models import Person
         from labour.models import (
             AlternativeSignupForm,
             JobCategory,
@@ -127,12 +127,6 @@ class Setup:
 
         tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
         coniitti = PersonnelClass.objects.get(event=self.event, slug="coniitti")
-
-        if not JobCategory.objects.filter(event=self.event).exists():
-            JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug="frostbite2018"),
-                target_event=self.event,
-            )
 
         for name, description, pcs in [
             (

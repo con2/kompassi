@@ -61,7 +61,8 @@ class Setup:
         from django.contrib.auth import get_user_model
         from django.contrib.contenttypes.models import ContentType
 
-        from core.models import Event, Person
+        from core.models import Person
+        from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
             JobCategory,
@@ -123,11 +124,27 @@ class Setup:
         tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
         vastaava = PersonnelClass.objects.get(event=self.event, slug="vastaava")
 
-        if not JobCategory.objects.filter(event=self.event).exists():
-            JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug="desucon2018"),
-                target_event=self.event,
+        for name, description, pcs in [
+            ("Vastaava", "Tapahtuman järjestelytoimikunnan jäsen eli vastaava", [vastaava]),
+            (
+                "Järjestyksenvalvoja",
+                "Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa "
+                "JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole "
+                "täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
+                [tyovoima],
+            ),
+        ]:
+            job_category, created = JobCategory.objects.get_or_create(
+                event=self.event,
+                slug=slugify(name),
+                defaults=dict(
+                    name=name,
+                    description=description,
+                ),
             )
+
+            if created:
+                job_category.personnel_classes.set(pcs)
 
         for name in ["Vastaava"]:
             JobCategory.objects.filter(event=self.event, name=name).update(public=False)
