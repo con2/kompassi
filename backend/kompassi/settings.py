@@ -208,11 +208,9 @@ INSTALLED_APPS = (
     "organizations.kotae_ry",
     "organizations.ropecon_ry",
     # events
-    "events.frostbite2018",
     "events.kuplii2018",
     "events.tracon2018",
     "events.popcultday2018",
-    "events.desucon2018",
     "events.matsucon2018",
     "events.ropecon2018",
     "events.finncon2018",
