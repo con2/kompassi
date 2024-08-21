@@ -200,6 +200,4 @@ class ObsoleteSignupExtraBaseV1(SignupExtraMixin, models.Model):
 class ObsoleteEmptySignupExtraV1(ObsoleteSignupExtraBaseV1):
     @classmethod
     def get_form_class(cls):
-        from ..forms import ObsoleteEmptySignupExtraV1Form
-
-        return ObsoleteEmptySignupExtraV1Form
+        raise NotImplementedError("ObsoleteEmptySignupExtraV1Form")

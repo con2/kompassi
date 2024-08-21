@@ -26,7 +26,12 @@ def admin_signup_view(request, vars, event, person_id):
 
     old_state_flags = signup._state_flags
 
-    signup_form, signup_extra_form, signup_admin_form = initialize_signup_forms(request, event, signup, admin=True)
+    signup_form, signup_extra_form, signup_admin_form, override_working_hours_form = initialize_signup_forms(
+        request,
+        event,
+        signup,
+        admin=True,
+    )
     person_form = initialize_form(
         AdminPersonForm,
         request,
@@ -45,10 +50,16 @@ def admin_signup_view(request, vars, event, person_id):
                 signup.state = state_name
                 break
 
-        if signup_form.is_valid() and signup_extra_form.is_valid() and signup_admin_form.is_valid():
+        if (
+            signup_form.is_valid()
+            and signup_extra_form.is_valid()
+            and signup_admin_form.is_valid()
+            and override_working_hours_form.is_valid()
+        ):
             signup_form.save()
             signup_extra_form.save()
             signup_admin_form.save()
+            override_working_hours_form.save()
 
             signup.apply_state()
             messages.success(request, "Tiedot tallennettiin.")
@@ -106,6 +117,7 @@ def admin_signup_view(request, vars, event, person_id):
         signup_admin_form=signup_admin_form,
         signup_extra_form=signup_extra_form,
         signup_form=signup_form,
+        override_working_hours_form=override_working_hours_form,
         tabs=tabs,
         total_hours=signup.shifts.all().aggregate(Sum("hours"))["hours__sum"],
         # XXX hack: widget customization is very difficult, so apply styles via JS

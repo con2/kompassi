@@ -31,7 +31,7 @@ def initialize_signup_forms(request, event, signup, admin=False, SignupFormClass
     )
 
     if admin:
-        from ..forms import SignupAdminForm
+        from ..forms import OverrideWorkingHoursForm, SignupAdminForm
 
         signup_admin_form = initialize_form(
             SignupAdminForm,
@@ -41,6 +41,13 @@ def initialize_signup_forms(request, event, signup, admin=False, SignupFormClass
             prefix="admin",
         )
 
-        return signup_form, signup_extra_form, signup_admin_form
+        override_working_hours_form = initialize_form(
+            OverrideWorkingHoursForm,
+            request,
+            instance=signup,
+            prefix="hours",
+        )
+
+        return signup_form, signup_extra_form, signup_admin_form, override_working_hours_form
     else:
         return signup_form, signup_extra_form

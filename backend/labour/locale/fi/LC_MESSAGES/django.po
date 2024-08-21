@@ -660,3 +660,6 @@ msgstr "Hakemuksesi tähän tapahtumaan"
 
 msgid "Work reference"
 msgstr "Työtodistus"
+
+msgid "Override working hours for benefits calculation"
+msgstr "Aseta työtunnit käsin etuuslaskentaa varten"

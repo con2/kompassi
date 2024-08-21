@@ -42,3 +42,12 @@
         .text-muted {% blocktrans with total_hours=total_hours count num_shifts=signup.shifts.count %}One shift, {{ total_hours}} h.{% plural %}{{ num_shifts}} shifts, total {{ total_hours}} h.{% endblocktrans %}
       else
         .text-muted {% trans "No shifts." %}
+
+  .panel.panel-default
+    .panel-heading
+      strong
+        - trans "Override working hours for benefits calculation"
+    .panel-body
+        - crispy override_working_hours_form
+    .panel-footer.clearfix
+      include labour_admin_signup_views/actions

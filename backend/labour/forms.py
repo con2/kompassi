@@ -14,7 +14,6 @@ from .models import (
     EmptySignupExtra,
     JobCategory,
     LabourEventMeta,
-    ObsoleteEmptySignupExtraV1,
     PersonnelClass,
     Signup,
 )
@@ -118,15 +117,16 @@ class SignupForm(forms.ModelForm, SignupFormMixin):
         )
 
 
-class ObsoleteEmptySignupExtraV1Form(forms.ModelForm):
+class OverrideWorkingHoursForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
     class Meta:
-        model = ObsoleteEmptySignupExtraV1
-        exclude = ("signup", "is_active")
+        model = Signup
+        fields = ("override_working_hours",)
 
 
 class EmptySignupExtraForm(AlternativeFormMixin, forms.ModelForm):
