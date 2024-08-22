@@ -52,7 +52,10 @@ class ScheduleItem(models.Model):
             return self.program.title
 
     def _make_slug(self):
-        return f"{self.program.slug}-{slugify(self.subtitle)}"
+        if self.subtitle:
+            return f"{self.program.slug}-{slugify(self.subtitle)}"
+        else:
+            return self.program.slug
 
     def refresh_cached_fields(self, commit=True):
         if self.program:
