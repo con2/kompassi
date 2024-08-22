@@ -681,7 +681,7 @@ class Setup:
             ("Suositeltu", "hilight", no_tags),
             ("Musiikki", "label-info", no_tags),
             ("In English", "label-success", {"language": ["en"]}),
-            ("English OK", "label-success", {"language": ["en"]}),
+            ("English OK", "label-success", {"language": ["fi", "en"]}),
             ("K-18", "label-danger", {"audience": ["r18"]}),
             ("Paikkaliput", "label-default", {"signup": ["paikkala"]}),
             ("Kirkkaita/välkkyviä valoja", "label-warning", {"accessibility": ["flashing-lights"]}),

@@ -182,6 +182,10 @@ class TraconImporter(DefaultImporter):
             signup.add("none")
         dimensions["signup"] = list(signup)
 
+        language = dimensions.setdefault("language", [])
+        if not language:
+            language.append("fi")
+
         return dimensions
 
     def get_program_annotations(self, programme: Programme) -> dict[str, Any]:
