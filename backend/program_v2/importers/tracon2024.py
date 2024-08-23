@@ -191,9 +191,11 @@ class TraconImporter(DefaultImporter):
 
         konsti = dimension_values.get("konsti", [])
         if konsti:
-            annotations["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
-        if "fleamarket" in konsti:
-            annotations["konsti:maxAttendance"] = 130
+            if "fleamarket" in konsti:
+                annotations["internal:links:signup"] = "https://ropekonsti.fi/program/list?programType=fleamarket"
+                annotations["konsti:maxAttendance"] = 130
+            else:
+                annotations["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
 
         if "lippu.fi" in programme.signup_link:
             annotations["internal:links:tickets"] = programme.signup_link
