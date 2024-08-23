@@ -44,6 +44,8 @@ class Entry(PartitionsMixin, models.Model):
     def message_vars(self):
         return dict(
             self.other_fields,
+            event=self.event,
+            organization=self.organization,
             actor=self.actor.username if self.actor is not None else None,
             actor_display_name=self.actor.get_full_name() if self.actor is not None else None,
             actor_email=self.actor.email if self.actor is not None else None,
@@ -117,5 +119,7 @@ class Entry(PartitionsMixin, models.Model):
             attrs["actor"] = other_fields.pop("actor")
         if "entry_type" in other_fields:
             attrs["entry_type"] = other_fields.pop("entry_type")
+
+        other_fields = {k: v for (k, v) in other_fields.items() if v not in (None, "")}
 
         return attrs, other_fields
