@@ -1,0 +1,38 @@
+title: Sign up to Geek & Trad Jam at Tracon 2024
+layout: vertical
+description: |
+  Ohjelmateltta 1 puistossa, perjantai 6. syyskuuta klo 19:00–21:00.
+
+  Soitatko jotain (mukana kuljetettavaa) soitinta? Haluaisitko soittaa porukalla? Tuo itsesi ja soittimesi puistoon! Soittelemme yhdessä matalalla kynnyksellä nörttimusiikkia (mahdollisesti höystettynä irlantilaisella ym. trad-musiikilla). Osaan biiseistä voinee yhtyä myös yhteislauluna ja saatamme tarjota myös sähköpianon. Suosimme D-pillin kanssa yhteensopivia sävellajeja (D- ja G-duuri, E- ja H-molli) jotta pilleillä ja avaimettomilla huiluilla voi soittaa mukana. Ilmoittautuminen ei ole pakollista, mutta tällä lomakkeella voit myös ehdottaa biisejä! Saa tulla myös mukaan vain kuuntelemaan.
+fields:
+  - slug: nick
+    type: SingleLineText
+    title: Lempinimi
+    required: true
+  - slug: instruments
+    type: MultiLineText
+    title: Soittimet
+    helpText: |
+      Mitä soitinta (jos mitään) tuot mukanasi? Jos soitintasi rajoittaa tietty sävellaji, mainitse myös sävellajit, joissa olet mukavasti soittamaan.
+
+  - slug: song_suggestions
+    type: MultiLineText
+    title: Kappale-ehdotukset
+    helpText: |
+      Mitä kappaleita haluaisit soittaa? YouTube-linkit ääniraitoihin ja cover-versioihin ovat myös tervetulleita.
+
+  - slug: data_protection_text
+    type: StaticText
+    title: Tietosuoja
+    helpText: >
+      Henkilötietojen käsittelijä on Tracon ry edustajanaan Santtu Pajukanta.
+      Tietoja käytetään nörttimusiikkijamien järjestämiseen Tracon 2024 -tapahtumassa.
+      Tietoja säilytetään tapahtumaan asti, jonka jälkeen ne poistetaan.
+      Tietoja ei luovuteta ulkopuolisille.
+      Tietoja ei käytetä suoramarkkinointiin.
+      Tietoja ei siirretä EU:n tai Euroopan talousalueen ulkopuolelle.
+
+  - slug: data_protection_consent
+    type: SingleCheckbox
+    title: Annan suostumukseni henkilötietojeni käsittelyyn em. selosteen mukaisesti.
+    required: true

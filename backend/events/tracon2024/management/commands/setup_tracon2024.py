@@ -965,6 +965,10 @@ class Setup:
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),
+            SurveyDTO(
+                slug="geekjam-signup",
+                key_fields=["nick", "instruments"],
+            ),
         ]:
             survey.save(self.event)
 
