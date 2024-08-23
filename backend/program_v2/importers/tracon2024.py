@@ -106,13 +106,10 @@ class TraconImporter(DefaultImporter):
                 slug="language",
                 title=dict(fi="Kieli", en="Language", sv="Språk"),
                 value_ordering=ValueOrdering.MANUAL,
-                # TODO make visible when populated
-                is_shown_in_detail=False,
-                is_list_filter=False,
                 choices=[
                     DimensionValueDTO(slug="fi", title=dict(fi="Suomi", en="Finnish", sv="Finska")),
                     DimensionValueDTO(slug="en", title=dict(fi="Englanti", en="English", sv="Engelska")),
-                    DimensionValueDTO(slug="free", title=dict(fi="Kielivapaa", en="Language free", sv="Språkfri")),
+                    # DimensionValueDTO(slug="free", title=dict(fi="Kielivapaa", en="Language free", sv="Språkfri")),
                 ],
             ),
             DimensionDTO(
