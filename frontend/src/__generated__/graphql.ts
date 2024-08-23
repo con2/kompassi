@@ -288,6 +288,59 @@ export type FullEventType = {
   startTime?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type FullProgramType = {
+  __typename?: 'FullProgramType';
+  /** Program annotation values with schema attached to them. Only public annotations are returned. NOTE: If querying a lot of program items, consider using cachedAnnotations instead for SPEED. */
+  annotations: Array<ProgramAnnotationType>;
+  /** A mapping of program annotation slug to annotation value. Only public annotations are returned. TODO: Provide a way to supply is_public=False annotations to the GraphQL importer. Perhaps make the importer authenticate? */
+  cachedAnnotations: Scalars['GenericScalar']['output'];
+  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
+  /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
+  cachedEarliestStartTime?: Maybe<Scalars['DateTime']['output']>;
+  cachedHosts: Scalars['String']['output'];
+  /** The latest end time of any schedule item of this program. NOTE: This is not the same as the program's start end. The intended purpose of this field is to exclude programs that have already ended. Always use `scheduleItems` for the purpose of displaying program times. */
+  cachedLatestEndTime?: Maybe<Scalars['DateTime']['output']>;
+  color: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  /** `is_list_filter` - only return dimensions that are shown in the list filter. `is_shown_in_detail` - only return dimensions that are shown in the detail view. If you supply both, you only get their intersection. */
+  dimensions: Array<ProgramDimensionValueType>;
+  /** Get the links associated with the program. If types are not specified, all links are returned. */
+  links: Array<ProgramLink>;
+  /** Supplied for convenience. Prefer scheduleItem.location if possible. Caveat: When a program item has multiple schedule items, they may be in different locations. In such cases, a comma separated list of locations is returned. */
+  location?: Maybe<Scalars['String']['output']>;
+  scheduleItems: Array<LimitedScheduleItemType>;
+  slug: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+
+export type FullProgramTypeAnnotationsArgs = {
+  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type FullProgramTypeCachedAnnotationsArgs = {
+  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type FullProgramTypeDimensionsArgs = {
+  isListFilter?: InputMaybe<Scalars['Boolean']['input']>;
+  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type FullProgramTypeLinksArgs = {
+  includeExpired?: InputMaybe<Scalars['Boolean']['input']>;
+  lang?: InputMaybe<Scalars['String']['input']>;
+  types?: InputMaybe<Array<InputMaybe<ProgramLinkType>>>;
+};
+
+
+export type FullProgramTypeLocationArgs = {
+  lang?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type FullResponseType = {
   __typename?: 'FullResponseType';
   /** Returns the dimensions of the response as a dict of dimension slug -> list of dimension value slugs. If the response is not related to a survey, there will be no dimensions and an empty dict will always be returned. Using this field is more efficient than querying the dimensions field on the response, as the dimensions are cached on the response object. */
@@ -326,6 +379,27 @@ export type FullResponseTypeValuesArgs = {
   keyFieldsOnly?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+export type FullScheduleItemType = {
+  __typename?: 'FullScheduleItemType';
+  endTime: Scalars['DateTime']['output'];
+  endTimeUnixSeconds: Scalars['Int']['output'];
+  lengthMinutes: Scalars['Int']['output'];
+  location?: Maybe<Scalars['String']['output']>;
+  program: LimitedProgramType;
+  /** NOTE: Slug must be unique within Event. It does not suffice to be unique within Program. */
+  slug: Scalars['String']['output'];
+  startTime: Scalars['DateTime']['output'];
+  startTimeUnixSeconds: Scalars['Int']['output'];
+  subtitle: Scalars['String']['output'];
+  /** Returns the title of the program, with subtitle if it exists, in the format "Program title – Schedule item subtitle". */
+  title: Scalars['String']['output'];
+};
+
+
+export type FullScheduleItemTypeLocationArgs = {
+  lang?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type InitFileUploadInput = {
   fileType: Scalars['String']['input'];
   filename: Scalars['String']['input'];
@@ -342,6 +416,71 @@ export type LimitedEventType = {
   name: Scalars['String']['output'];
   /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
   slug: Scalars['String']['output'];
+};
+
+/**
+ * "Limited" program items are returned when queried through ScheduleItem.program so as to
+ * limit DoS via deep nesting. It lacks access to `scheduleItems` which might be used to
+ * cause a rapid expansion of the response via deep nesting, and also lacks access to
+ * some fields that may be expensive to compute such as `dimensions`; however,
+ * `cachedDimensions` is still provided.
+ */
+export type LimitedProgramType = {
+  __typename?: 'LimitedProgramType';
+  /** A mapping of program annotation slug to annotation value. Only public annotations are returned. TODO: Provide a way to supply is_public=False annotations to the GraphQL importer. Perhaps make the importer authenticate? */
+  cachedAnnotations: Scalars['GenericScalar']['output'];
+  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
+  /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
+  cachedEarliestStartTime?: Maybe<Scalars['DateTime']['output']>;
+  cachedHosts: Scalars['String']['output'];
+  /** The latest end time of any schedule item of this program. NOTE: This is not the same as the program's start end. The intended purpose of this field is to exclude programs that have already ended. Always use `scheduleItems` for the purpose of displaying program times. */
+  cachedLatestEndTime?: Maybe<Scalars['DateTime']['output']>;
+  color: Scalars['String']['output'];
+  description: Scalars['String']['output'];
+  /** Get the links associated with the program. If types are not specified, all links are returned. */
+  links: Array<ProgramLink>;
+  /** Supplied for convenience. Prefer scheduleItem.location if possible. Caveat: When a program item has multiple schedule items, they may be in different locations. In such cases, a comma separated list of locations is returned. */
+  location?: Maybe<Scalars['String']['output']>;
+  slug: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+};
+
+
+/**
+ * "Limited" program items are returned when queried through ScheduleItem.program so as to
+ * limit DoS via deep nesting. It lacks access to `scheduleItems` which might be used to
+ * cause a rapid expansion of the response via deep nesting, and also lacks access to
+ * some fields that may be expensive to compute such as `dimensions`; however,
+ * `cachedDimensions` is still provided.
+ */
+export type LimitedProgramTypeCachedAnnotationsArgs = {
+  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+/**
+ * "Limited" program items are returned when queried through ScheduleItem.program so as to
+ * limit DoS via deep nesting. It lacks access to `scheduleItems` which might be used to
+ * cause a rapid expansion of the response via deep nesting, and also lacks access to
+ * some fields that may be expensive to compute such as `dimensions`; however,
+ * `cachedDimensions` is still provided.
+ */
+export type LimitedProgramTypeLinksArgs = {
+  includeExpired?: InputMaybe<Scalars['Boolean']['input']>;
+  lang?: InputMaybe<Scalars['String']['input']>;
+  types?: InputMaybe<Array<InputMaybe<ProgramLinkType>>>;
+};
+
+
+/**
+ * "Limited" program items are returned when queried through ScheduleItem.program so as to
+ * limit DoS via deep nesting. It lacks access to `scheduleItems` which might be used to
+ * cause a rapid expansion of the response via deep nesting, and also lacks access to
+ * some fields that may be expensive to compute such as `dimensions`; however,
+ * `cachedDimensions` is still provided.
+ */
+export type LimitedProgramTypeLocationArgs = {
+  lang?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type LimitedResponseType = {
@@ -373,6 +512,26 @@ export type LimitedResponseTypeCachedDimensionsArgs = {
 
 export type LimitedResponseTypeValuesArgs = {
   keyFieldsOnly?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type LimitedScheduleItemType = {
+  __typename?: 'LimitedScheduleItemType';
+  endTime: Scalars['DateTime']['output'];
+  endTimeUnixSeconds: Scalars['Int']['output'];
+  lengthMinutes: Scalars['Int']['output'];
+  location?: Maybe<Scalars['String']['output']>;
+  /** NOTE: Slug must be unique within Event. It does not suffice to be unique within Program. */
+  slug: Scalars['String']['output'];
+  startTime: Scalars['DateTime']['output'];
+  startTimeUnixSeconds: Scalars['Int']['output'];
+  subtitle: Scalars['String']['output'];
+  /** Returns the title of the program, with subtitle if it exists, in the format "Program title – Schedule item subtitle". */
+  title: Scalars['String']['output'];
+};
+
+
+export type LimitedScheduleItemTypeLocationArgs = {
+  lang?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type LimitedSurveyType = {
@@ -629,65 +788,6 @@ export enum ProgramLinkType {
   Tickets = 'TICKETS'
 }
 
-export type ProgramType = {
-  __typename?: 'ProgramType';
-  /** Program annotation values with schema attached to them. Only public annotations are returned. NOTE: If querying a lot of program items, consider using cachedAnnotations instead for SPEED. */
-  annotations: Array<ProgramAnnotationType>;
-  /** A mapping of program annotation slug to annotation value. Only public annotations are returned. TODO: Provide a way to supply is_public=False annotations to the GraphQL importer. Perhaps make the importer authenticate? */
-  cachedAnnotations: Scalars['GenericScalar']['output'];
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
-  cachedEarliestStartTime?: Maybe<Scalars['DateTime']['output']>;
-  cachedHosts: Scalars['String']['output'];
-  /** The latest end time of any schedule item of this program. NOTE: This is not the same as the program's start end. The intended purpose of this field is to exclude programs that have already ended. Always use `scheduleItems` for the purpose of displaying program times. */
-  cachedLatestEndTime?: Maybe<Scalars['DateTime']['output']>;
-  /** Deprecated. Use `links(types: CALENDAR)` instead. */
-  calendarExportLink: Scalars['String']['output'];
-  color: Scalars['String']['output'];
-  description: Scalars['String']['output'];
-  /** `is_list_filter` - only return dimensions that are shown in the list filter. `is_shown_in_detail` - only return dimensions that are shown in the detail view. If you supply both, you only get their intersection. */
-  dimensions: Array<ProgramDimensionValueType>;
-  /** Get the links associated with the program. If types are not specified, all links are returned. */
-  links: Array<ProgramLink>;
-  /** Supplied for convenience. Prefer scheduleItem.location if possible. Caveat: When a program item has multiple schedule items, they may be in different locations. In such cases, a comma separated list of locations is returned. */
-  location?: Maybe<Scalars['String']['output']>;
-  /** Deprecated. Use `annotations` instead. */
-  otherFields: Scalars['GenericScalar']['output'];
-  scheduleItems: Array<ScheduleItemType>;
-  /** Deprecated. Use `links(types: SIGNUP)` instead. */
-  signupLink: Scalars['String']['output'];
-  slug: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-};
-
-
-export type ProgramTypeAnnotationsArgs = {
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type ProgramTypeCachedAnnotationsArgs = {
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type ProgramTypeDimensionsArgs = {
-  isListFilter?: InputMaybe<Scalars['Boolean']['input']>;
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type ProgramTypeLinksArgs = {
-  includeExpired?: InputMaybe<Scalars['Boolean']['input']>;
-  lang?: InputMaybe<Scalars['String']['input']>;
-  types?: InputMaybe<Array<InputMaybe<ProgramLinkType>>>;
-};
-
-
-export type ProgramTypeLocationArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type ProgramV2EventMetaType = {
   __typename?: 'ProgramV2EventMetaType';
   annotations: Array<AnnotationSchemoidType>;
@@ -699,8 +799,9 @@ export type ProgramV2EventMetaType = {
   locationDimension?: Maybe<DimensionType>;
   offerForm?: Maybe<OfferFormType>;
   offerForms?: Maybe<Array<OfferFormType>>;
-  program?: Maybe<ProgramType>;
-  programs: Array<ProgramType>;
+  program?: Maybe<FullProgramType>;
+  programs: Array<FullProgramType>;
+  scheduleItems: Array<FullScheduleItemType>;
   /** If checked, the user will not be able to choose an offer form. Instead they will be redirected to the default offer form. */
   skipOfferFormSelection: Scalars['Boolean']['output'];
 };
@@ -738,10 +839,17 @@ export type ProgramV2EventMetaTypeProgramsArgs = {
   hidePast?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
+
+export type ProgramV2EventMetaTypeScheduleItemsArgs = {
+  favoritesOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
+  hidePast?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type ProgramV2ProfileMetaType = {
   __typename?: 'ProgramV2ProfileMetaType';
   /** Get programs that relate to this user in some way. Currently only favorites are implemented, but in the future also signed up and hosting. Dimension filter may only be specified when event_slug is given. */
-  programs?: Maybe<Array<ProgramType>>;
+  programs?: Maybe<Array<FullProgramType>>;
 };
 
 
@@ -794,26 +902,6 @@ export type ResponseDimensionValueType = {
   __typename?: 'ResponseDimensionValueType';
   dimension: SurveyDimensionType;
   value: SurveyDimensionValueType;
-};
-
-export type ScheduleItemType = {
-  __typename?: 'ScheduleItemType';
-  endTime: Scalars['DateTime']['output'];
-  endTimeUnixSeconds: Scalars['Int']['output'];
-  lengthMinutes: Scalars['Int']['output'];
-  location?: Maybe<Scalars['String']['output']>;
-  /** NOTE: Slug must be unique within Event. It does not suffice to be unique within Program. */
-  slug: Scalars['String']['output'];
-  startTime: Scalars['DateTime']['output'];
-  startTimeUnixSeconds: Scalars['Int']['output'];
-  subtitle: Scalars['String']['output'];
-  /** Returns the title of the program, with subtitle if it exists, in the format "Program title – Schedule item subtitle". */
-  title: Scalars['String']['output'];
-};
-
-
-export type ScheduleItemTypeLocationArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SubscribeToSurveyResponses = {
@@ -996,9 +1084,9 @@ export type UnmarkProgramAsFavoriteMutationVariables = Exact<{
 
 export type UnmarkProgramAsFavoriteMutation = { __typename?: 'Mutation', unmarkProgramAsFavorite?: { __typename?: 'UnmarkProgramAsFavorite', success: boolean } | null };
 
-export type ScheduleItemFragment = { __typename?: 'ScheduleItemType', location?: string | null, subtitle: string, startTime: string, endTime: string };
+export type ScheduleItemFragment = { __typename?: 'LimitedScheduleItemType', location?: string | null, subtitle: string, startTime: string, endTime: string };
 
-export type ProgramListFragment = { __typename?: 'ProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, scheduleItems: Array<{ __typename?: 'ScheduleItemType', location?: string | null, subtitle: string, startTime: string, endTime: string }> };
+export type ProgramListFragment = { __typename?: 'FullProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', location?: string | null, subtitle: string, startTime: string, endTime: string }> };
 
 export type ProgramListQueryQueryVariables = Exact<{
   locale?: InputMaybe<Scalars['String']['input']>;
@@ -1008,7 +1096,7 @@ export type ProgramListQueryQueryVariables = Exact<{
 }>;
 
 
-export type ProgramListQueryQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', program: { __typename?: 'ProgramV2ProfileMetaType', programs?: Array<{ __typename?: 'ProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, scheduleItems: Array<{ __typename?: 'ScheduleItemType', location?: string | null, subtitle: string, startTime: string, endTime: string }> }> | null } } | null, event?: { __typename?: 'FullEventType', name: string, slug: string, program?: { __typename?: 'ProgramV2EventMetaType', calendarExportLink: string, listFilters: Array<{ __typename?: 'DimensionType', slug: string, title?: string | null, isListFilter: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, programs: Array<{ __typename?: 'ProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, scheduleItems: Array<{ __typename?: 'ScheduleItemType', location?: string | null, subtitle: string, startTime: string, endTime: string }> }> } | null } | null };
+export type ProgramListQueryQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', program: { __typename?: 'ProgramV2ProfileMetaType', programs?: Array<{ __typename?: 'FullProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', location?: string | null, subtitle: string, startTime: string, endTime: string }> }> | null } } | null, event?: { __typename?: 'FullEventType', name: string, slug: string, program?: { __typename?: 'ProgramV2EventMetaType', calendarExportLink: string, listFilters: Array<{ __typename?: 'DimensionType', slug: string, title?: string | null, isListFilter: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, programs: Array<{ __typename?: 'FullProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', location?: string | null, subtitle: string, startTime: string, endTime: string }> }> } | null } | null };
 
 export type ProgramDetailAnnotationFragment = { __typename?: 'ProgramAnnotationType', value?: unknown | null, annotation: { __typename?: 'AnnotationSchemoidType', slug: string, type: AnnotationDataType, title: string } };
 
@@ -1019,7 +1107,7 @@ export type ProgramDetailQueryQueryVariables = Exact<{
 }>;
 
 
-export type ProgramDetailQueryQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', program: { __typename?: 'ProgramV2ProfileMetaType', programs?: Array<{ __typename?: 'ProgramType', slug: string }> | null } } | null, event?: { __typename?: 'FullEventType', name: string, program?: { __typename?: 'ProgramV2EventMetaType', calendarExportLink: string, program?: { __typename?: 'ProgramType', title: string, description: string, cachedHosts: string, links: Array<{ __typename?: 'ProgramLink', type: ProgramLinkType, href: string, title: string }>, annotations: Array<{ __typename?: 'ProgramAnnotationType', value?: unknown | null, annotation: { __typename?: 'AnnotationSchemoidType', slug: string, type: AnnotationDataType, title: string } }>, dimensions: Array<{ __typename?: 'ProgramDimensionValueType', dimension: { __typename?: 'DimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null } }>, scheduleItems: Array<{ __typename?: 'ScheduleItemType', subtitle: string, location?: string | null, startTime: string, endTime: string }> } | null } | null } | null };
+export type ProgramDetailQueryQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', program: { __typename?: 'ProgramV2ProfileMetaType', programs?: Array<{ __typename?: 'FullProgramType', slug: string }> | null } } | null, event?: { __typename?: 'FullEventType', name: string, program?: { __typename?: 'ProgramV2EventMetaType', calendarExportLink: string, program?: { __typename?: 'FullProgramType', title: string, description: string, cachedHosts: string, links: Array<{ __typename?: 'ProgramLink', type: ProgramLinkType, href: string, title: string }>, annotations: Array<{ __typename?: 'ProgramAnnotationType', value?: unknown | null, annotation: { __typename?: 'AnnotationSchemoidType', slug: string, type: AnnotationDataType, title: string } }>, dimensions: Array<{ __typename?: 'ProgramDimensionValueType', dimension: { __typename?: 'DimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null } }>, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', subtitle: string, location?: string | null, startTime: string, endTime: string }> } | null } | null } | null };
 
 export type NewProgramQueryQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -1277,8 +1365,8 @@ export type OwnFormResponsesQuery = { __typename?: 'Query', profile?: { __typena
 
 export type DimensionBadgeFragment = { __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'SurveyDimensionType', slug: string, title?: string | null }, value: { __typename?: 'SurveyDimensionValueType', slug: string, title?: string | null, color: string } };
 
-export const ScheduleItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScheduleItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ScheduleItemType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]} as unknown as DocumentNode<ScheduleItemFragment, unknown>;
-export const ProgramListFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProgramList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProgramType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"cachedDimensions"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"scheduleItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScheduleItem"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScheduleItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ScheduleItemType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]} as unknown as DocumentNode<ProgramListFragment, unknown>;
+export const ScheduleItemFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScheduleItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedScheduleItemType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]} as unknown as DocumentNode<ScheduleItemFragment, unknown>;
+export const ProgramListFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProgramList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProgramType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"cachedDimensions"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"scheduleItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScheduleItem"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScheduleItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedScheduleItemType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]} as unknown as DocumentNode<ProgramListFragment, unknown>;
 export const ProgramDetailAnnotationFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProgramDetailAnnotation"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProgramAnnotationType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"annotation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"value"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}}]} as unknown as DocumentNode<ProgramDetailAnnotationFragment, unknown>;
 export const ValueFieldsFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ValueFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SurveyDimensionValueType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"canRemove"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","alias":{"kind":"Name","value":"titleFi"},"name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"StringValue","value":"fi","block":false}}]},{"kind":"Field","alias":{"kind":"Name","value":"titleEn"},"name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"StringValue","value":"en","block":false}}]},{"kind":"Field","alias":{"kind":"Name","value":"titleSv"},"name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"StringValue","value":"sv","block":false}}]}]}}]} as unknown as DocumentNode<ValueFieldsFragment, unknown>;
 export const DimensionRowGroupFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DimensionRowGroup"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SurveyDimensionType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"canRemove"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"isKeyDimension"}},{"kind":"Field","name":{"kind":"Name","value":"isMultiValue"}},{"kind":"Field","name":{"kind":"Name","value":"isShownToRespondent"}},{"kind":"Field","alias":{"kind":"Name","value":"titleFi"},"name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"StringValue","value":"fi","block":false}}]},{"kind":"Field","alias":{"kind":"Name","value":"titleEn"},"name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"StringValue","value":"en","block":false}}]},{"kind":"Field","alias":{"kind":"Name","value":"titleSv"},"name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"StringValue","value":"sv","block":false}}]},{"kind":"Field","name":{"kind":"Name","value":"values"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ValueFields"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ValueFields"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"SurveyDimensionValueType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"canRemove"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","alias":{"kind":"Name","value":"titleFi"},"name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"StringValue","value":"fi","block":false}}]},{"kind":"Field","alias":{"kind":"Name","value":"titleEn"},"name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"StringValue","value":"en","block":false}}]},{"kind":"Field","alias":{"kind":"Name","value":"titleSv"},"name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"StringValue","value":"sv","block":false}}]}]}}]} as unknown as DocumentNode<DimensionRowGroupFragment, unknown>;
@@ -1291,7 +1379,7 @@ export const ProfileResponsesTableRowFragmentDoc = {"kind":"Document","definitio
 export const DimensionBadgeFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"DimensionBadge"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ResponseDimensionValueType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dimension"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"value"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}}]} as unknown as DocumentNode<DimensionBadgeFragment, unknown>;
 export const MarkProgramAsFavoriteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MarkProgramAsFavorite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FavoriteInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markProgramAsFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<MarkProgramAsFavoriteMutation, MarkProgramAsFavoriteMutationVariables>;
 export const UnmarkProgramAsFavoriteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UnmarkProgramAsFavorite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FavoriteInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"unmarkProgramAsFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<UnmarkProgramAsFavoriteMutation, UnmarkProgramAsFavoriteMutationVariables>;
-export const ProgramListQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProgramListQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DimensionFilterInput"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hidePast"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"eventSlug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}},{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}},{"kind":"Argument","name":{"kind":"Name","value":"hidePast"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hidePast"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProgramList"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarExportLink"}},{"kind":"Field","alias":{"kind":"Name","value":"listFilters"},"name":{"kind":"Name","value":"dimensions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"isListFilter"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"isListFilter"}},{"kind":"Field","name":{"kind":"Name","value":"values"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"programs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}},{"kind":"Argument","name":{"kind":"Name","value":"hidePast"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hidePast"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProgramList"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScheduleItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ScheduleItemType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProgramList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProgramType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"cachedDimensions"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"scheduleItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScheduleItem"}}]}}]}}]} as unknown as DocumentNode<ProgramListQueryQuery, ProgramListQueryQueryVariables>;
+export const ProgramListQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProgramListQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DimensionFilterInput"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"hidePast"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"eventSlug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}},{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}},{"kind":"Argument","name":{"kind":"Name","value":"hidePast"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hidePast"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProgramList"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarExportLink"}},{"kind":"Field","alias":{"kind":"Name","value":"listFilters"},"name":{"kind":"Name","value":"dimensions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"isListFilter"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"isListFilter"}},{"kind":"Field","name":{"kind":"Name","value":"values"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"programs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}},{"kind":"Argument","name":{"kind":"Name","value":"hidePast"},"value":{"kind":"Variable","name":{"kind":"Name","value":"hidePast"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProgramList"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScheduleItem"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedScheduleItemType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProgramList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProgramType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"cachedDimensions"}},{"kind":"Field","name":{"kind":"Name","value":"color"}},{"kind":"Field","name":{"kind":"Name","value":"scheduleItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScheduleItem"}}]}}]}}]} as unknown as DocumentNode<ProgramListQueryQuery, ProgramListQueryQueryVariables>;
 export const ProgramDetailQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProgramDetailQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"programSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"programs"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"eventSlug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"calendarExportLink"}},{"kind":"Field","name":{"kind":"Name","value":"program"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"programSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"cachedHosts"}},{"kind":"Field","name":{"kind":"Name","value":"links"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"href"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}},{"kind":"Field","name":{"kind":"Name","value":"annotations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"isShownInDetail"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProgramDetailAnnotation"}}]}},{"kind":"Field","name":{"kind":"Name","value":"dimensions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"isShownInDetail"},"value":{"kind":"BooleanValue","value":true}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"dimension"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"value"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"scheduleItems"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProgramDetailAnnotation"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProgramAnnotationType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"annotation"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}},{"kind":"Field","name":{"kind":"Name","value":"value"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}}]} as unknown as DocumentNode<ProgramDetailQueryQuery, ProgramDetailQueryQueryVariables>;
 export const NewProgramQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NewProgramQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"formSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"skipOfferFormSelection"}},{"kind":"Field","name":{"kind":"Name","value":"offerForm"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"formSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fields"}},{"kind":"Field","name":{"kind":"Name","value":"layout"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<NewProgramQueryQuery, NewProgramQueryQueryVariables>;
 export const NewProgramFormSelectionQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NewProgramFormSelectionQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"skipOfferFormSelection"}},{"kind":"Field","name":{"kind":"Name","value":"offerForms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"shortDescription"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<NewProgramFormSelectionQueryQuery, NewProgramFormSelectionQueryQueryVariables>;

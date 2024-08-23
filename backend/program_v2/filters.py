@@ -11,6 +11,7 @@ from core.graphql.common import DimensionFilterInput
 from forms.utils.process_form_data import FALSY_VALUES
 
 from .models.program import Program
+from .models.schedule import ScheduleItem
 
 
 @dataclass
@@ -88,3 +89,32 @@ class ProgramFilters:
             programs = programs.filter(cached_latest_end_time__gte=t)
 
         return programs.distinct().order_by("cached_earliest_start_time")
+
+    def filter_schedule_items(
+        self,
+        schedule_items: models.QuerySet[ScheduleItem],
+        user: AbstractBaseUser | AnonymousUser | None = None,
+        t: datetime | None = None,
+    ):
+        if self.slugs:
+            schedule_items = schedule_items.filter(slug__in=self.slugs)
+
+        if self.favorites_only:
+            if user and user.is_authenticated:
+                schedule_items = schedule_items.filter(program__favorited_by=user)
+            else:
+                schedule_items = schedule_items.none()
+
+        for dimension_slug, value_slugs in self.dimensions.items():
+            value_slugs = [slug for slugs in value_slugs for slug in slugs.split(",")]
+            schedule_items = schedule_items.filter(
+                program__dimensions__dimension__slug=dimension_slug,
+                program__dimensions__value__slug__in=value_slugs,
+            )
+
+        if self.hide_past:
+            if t is None:
+                t = now()
+            schedule_items = schedule_items.filter(cached_end_time__gte=t)
+
+        return schedule_items.distinct().order_by("start_time")

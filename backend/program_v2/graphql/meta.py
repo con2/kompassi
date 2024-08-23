@@ -22,7 +22,8 @@ from ..models.meta import ProgramV2ProfileMeta
 from .annotations import AnnotationSchemoidType
 from .dimension import DimensionType
 from .offer_form import OfferFormType
-from .program import ProgramType
+from .program_full import FullProgramType
+from .schedule_item_full import FullScheduleItemType
 
 
 class ProgramV2EventMetaType(DjangoObjectType):
@@ -47,17 +48,39 @@ class ProgramV2EventMetaType(DjangoObjectType):
         ).filter_program(programs, user=request.user)
 
     programs = graphene.NonNull(
-        graphene.List(graphene.NonNull(ProgramType)),
+        graphene.List(graphene.NonNull(FullProgramType)),
         filters=graphene.List(DimensionFilterInput),
         favorites_only=graphene.Boolean(),
         hide_past=graphene.Boolean(),
+        description=normalize_whitespace(resolve_programs.__doc__ or ""),
     )
 
     @staticmethod
     def resolve_program(meta: ProgramV2EventMeta, info, slug: str):
         return Program.objects.get(event=meta.event, slug=slug)
 
-    program = graphene.Field(ProgramType, slug=graphene.String(required=True))
+    program = graphene.Field(FullProgramType, slug=graphene.String(required=True))
+
+    @staticmethod
+    def resolve_schedule_items(
+        meta: ProgramV2EventMeta,
+        info,
+        filters: list[DimensionFilterInput] | None = None,
+        hide_past: bool = False,
+    ):
+        request: HttpRequest = info.context
+        return ProgramFilters.from_graphql(
+            filters,
+            hide_past=hide_past,
+        ).filter_schedule_items(meta.event.schedule_items.all(), user=request.user)
+
+    schedule_items = graphene.NonNull(
+        graphene.List(graphene.NonNull(FullScheduleItemType)),
+        filters=graphene.List(DimensionFilterInput),
+        favorites_only=graphene.Boolean(),
+        hide_past=graphene.Boolean(),
+        description=normalize_whitespace(resolve_schedule_items.__doc__ or ""),
+    )
 
     @staticmethod
     def resolve_annotations(meta: ProgramV2EventMeta, info, lang: str = DEFAULT_LANGUAGE):
@@ -172,7 +195,7 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
         ).filter_program(programs, user=request.user)
 
     programs = graphene.List(
-        graphene.NonNull(ProgramType),
+        graphene.NonNull(FullProgramType),
         event_slug=graphene.String(),
         filters=graphene.List(DimensionFilterInput),
         include=graphene.List(ProfileProgramInclude),

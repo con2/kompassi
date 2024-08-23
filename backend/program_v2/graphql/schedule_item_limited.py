@@ -4,12 +4,10 @@ from graphene_django import DjangoObjectType
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.utils import resolve_localized_field
 
-from ..models import (
-    ScheduleItem,
-)
+from ..models import ScheduleItem
 
 
-class ScheduleItemType(DjangoObjectType):
+class LimitedScheduleItemType(DjangoObjectType):
     class Meta:
         model = ScheduleItem
         fields = ("slug", "subtitle", "start_time")

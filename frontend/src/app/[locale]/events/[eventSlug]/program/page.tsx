@@ -17,7 +17,7 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment ScheduleItem on ScheduleItemType {
+  fragment ScheduleItem on LimitedScheduleItemType {
     location
     subtitle
     startTime
@@ -26,7 +26,7 @@ graphql(`
 `);
 
 graphql(`
-  fragment ProgramList on ProgramType {
+  fragment ProgramList on FullProgramType {
     slug
     title
     cachedDimensions
