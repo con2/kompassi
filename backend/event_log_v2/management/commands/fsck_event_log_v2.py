@@ -40,7 +40,6 @@ class Command(BaseCommand):
                         for entry in entries:
                             # Remove empty strings and null values
                             new_other_fields = {k: v for (k, v) in entry.other_fields.items() if v not in (None, "")}
-
                             if new_other_fields != entry.other_fields:
                                 entry.other_fields = new_other_fields
                                 bulk_update.append(entry)

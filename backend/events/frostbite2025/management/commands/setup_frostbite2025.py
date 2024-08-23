@@ -52,8 +52,8 @@ class Setup:
                 name_inessive="Desucon Frostbitessä",
                 homepage_url="https://desucon.fi/frostbite2025/",
                 organization=self.organization,
-                start_time=datetime(2025, 1, 26, 17, 0, 0, tzinfo=self.tz),
-                end_time=datetime(2025, 1, 28, 17, 0, 0, tzinfo=self.tz),
+                start_time=datetime(2025, 1, 24, 17, 0, 0, tzinfo=self.tz),
+                end_time=datetime(2025, 1, 26, 17, 0, 0, tzinfo=self.tz),
                 venue=self.venue,
             ),
         )

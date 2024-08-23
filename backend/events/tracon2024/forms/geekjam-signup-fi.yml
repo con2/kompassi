@@ -1,4 +1,4 @@
-title: Sign up to Geek & Trad Jam at Tracon 2024
+title: Ilmoittaudu nörtti- ja trad-musiikkijameihin Traconissa 2024
 layout: vertical
 description: |
   Ohjelmateltta 1 puistossa, perjantai 6. syyskuuta klo 19:00–21:00.
@@ -13,19 +13,19 @@ fields:
     type: MultiLineText
     title: Soittimet
     helpText: |
-      Mitä soitinta (jos mitään) tuot mukanasi? Jos soitintasi rajoittaa tietty sävellaji, mainitse myös sävellajit, joissa olet mukavasti soittamaan.
+      Mitä soitinta (jos mitään) tuot mukanasi? Jos soitin rajoittaa soitettavia sävellajeja, listaa myös sävellajit, joissa pystyt mukavasti soittamaan.
 
   - slug: song_suggestions
     type: MultiLineText
     title: Kappale-ehdotukset
     helpText: |
-      Mitä kappaleita haluaisit soittaa? YouTube-linkit ääniraitoihin ja cover-versioihin ovat myös tervetulleita.
+      Mitä kappaleita haluaisit soittaa? YouTube-linkit alkuperäis- ja cover-versioihin ovat myös tervetulleita.
 
   - slug: data_protection_text
     type: StaticText
     title: Tietosuoja
     helpText: >
-      Henkilötietojen käsittelijä on Tracon ry edustajanaan Santtu Pajukanta.
+      Rekisterinpitäjä on Tracon ry edustajanaan Santtu Pajukanta.
       Tietoja käytetään nörttimusiikkijamien järjestämiseen Tracon 2024 -tapahtumassa.
       Tietoja säilytetään tapahtumaan asti, jonka jälkeen ne poistetaan.
       Tietoja ei luovuteta ulkopuolisille.
