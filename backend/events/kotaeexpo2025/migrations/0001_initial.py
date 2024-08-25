@@ -2,8 +2,9 @@
 
 import django.core.validators
 import django.db.models.deletion
-import labour.models.signup_extras
 from django.db import migrations, models
+
+import labour.models.signup_extras
 
 
 class Migration(migrations.Migration):
