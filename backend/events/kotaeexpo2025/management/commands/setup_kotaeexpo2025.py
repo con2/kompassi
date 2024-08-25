@@ -264,6 +264,7 @@ class Setup:
             team.is_public = True
             team.save()
 
+
 class Command(BaseCommand):
     args = ""
     help = "Setup Kotae Expo 2025 specific stuff"
