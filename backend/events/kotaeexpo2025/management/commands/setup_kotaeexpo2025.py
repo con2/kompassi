@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta
 
-import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from pkg_resources import resource_stream
 
 
 class Setup:
