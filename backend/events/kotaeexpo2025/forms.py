@@ -115,6 +115,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
                 "Lisätiedot",
                 "special_diet",
                 "special_diet_other",
+                "accommodation",
                 "email_alias",
             ),
         )
@@ -124,11 +125,13 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         fields = (
             "special_diet",
             "special_diet_other",
+            "accommodation",
             "email_alias",
         )
 
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
+            accommodation=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
