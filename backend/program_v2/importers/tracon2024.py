@@ -190,7 +190,7 @@ class TraconImporter(DefaultImporter):
         dimension_values = self.get_program_dimension_values(programme)
 
         konsti = dimension_values.get("konsti", [])
-        if konsti:
+        if konsti and not annotations.get("konsti:isPlaceholder", False):
             if "fleamarket" in konsti:
                 annotations["internal:links:signup"] = "https://ropekonsti.fi/program/list?programType=fleamarket"
                 annotations["konsti:maxAttendance"] = 130
