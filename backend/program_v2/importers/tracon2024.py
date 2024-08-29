@@ -137,6 +137,12 @@ class TraconImporter(DefaultImporter):
                         ("tickets", "Erilliset pääsyliput", "Separate tickets", "Separata biljetter"),
                         ("paikkala", "Maksuttomat paikkaliput", "Free seating tickets", "Gratis sittplatsbiljetter"),
                         ("konsti", "Ilmoittautuminen Konstilla", "Registration via Konsti", "Anmälan via Konsti"),
+                        (
+                            "rpg-desk",
+                            "Ilmoittautuminen roolipelitiskillä",
+                            "Registration at RPG desk",
+                            "Anmälan vid rollspelsdisken",
+                        ),
                         ("form", "Ilmoittautuminen lomakkeella", "Registration via form", "Anmälan via formulär"),
                     ]
                 ],
@@ -145,6 +151,7 @@ class TraconImporter(DefaultImporter):
         ]
 
     def get_program_dimension_values(self, programme: Programme) -> dict[str, list[str]]:
+        base_annotations = super().get_program_annotations(programme)
         dimensions = super().get_program_dimension_values(programme)
 
         audience = dimensions.setdefault("audience", [])
@@ -175,6 +182,10 @@ class TraconImporter(DefaultImporter):
                 signup.add("form")
         if programme.is_using_paikkala:
             signup.add("paikkala")
+        if base_annotations.get("konsti:isPlaceholder", False):
+            signup.remove("konsti")
+            if "roolipelitiskillä" in programme.description.lower():
+                signup.add("rpg-desk")
         if not signup:
             signup.add("none")
         dimensions["signup"] = list(signup)
