@@ -215,6 +215,13 @@ class TraconImporter(DefaultImporter):
         if "paikkala" in dimension_values.get("signup", []):
             annotations["internal:links:reservation"] = "https://kompassi.eu/profile/reservations"
 
+        if programme.slug == "arsenic-lies":
+            annotations["konsti:minAttendance"] = 5
+            annotations["konsti:maxAttendance"] = 10
+        elif programme.slug == "muistojen-tanssi-larppi":
+            annotations["konsti:minAttendance"] = 6
+            annotations["konsti:maxAttendance"] = 9
+
         return annotations
 
     def get_fleamarket_schedule_item(
