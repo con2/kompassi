@@ -147,6 +147,36 @@ class TraconImporter(DefaultImporter):
                     ]
                 ],
             ),
+            DimensionDTO(
+                slug="tickets",
+                title=dict(
+                    fi="Pääsyliput",
+                    en="Tickets",
+                    sv="Biljetter",
+                ),
+                value_ordering=ValueOrdering.TITLE,
+                choices=[
+                    DimensionValueDTO(
+                        slug=slug,
+                        title=dict(
+                            fi=title_fi,
+                            en=title_en,
+                            sv=title_sv,
+                        ),
+                    )
+                    for slug, title_fi, title_en, title_sv in [
+                        ("free", "Vapaa pääsy", "Free admission", "Fri entré"),
+                        ("tracon", "Traconin pääsylipulla", "With Tracon ticket", "Med Tracons biljett"),
+                        (
+                            "party",
+                            "Iltabileiden pääsylipulla",
+                            "With evening party ticket",
+                            "Med kvällsfestens biljett",
+                        ),
+                        ("special", "Erillisellä pääsylipulla", "With separate ticket", "Med separat biljett"),
+                    ]
+                ],
+            ),
             KONSTI_DIMENSION_DTO,
         ]
 
@@ -189,6 +219,18 @@ class TraconImporter(DefaultImporter):
         if not signup:
             signup.add("none")
         dimensions["signup"] = list(signup)
+
+        tickets = set(dimensions.setdefault("tickets", []))
+        if link := programme.signup_link and "lippu.fi" in link:
+            tickets.add("special")
+        if room := programme.room:
+            if room.slug == "iltabileet":
+                tickets.add("party")
+            elif room.slug in ("boffausalue", "terastaistelualue", "tracon-live") or "Puisto " in room.name:
+                tickets.add("free")
+        if not tickets:
+            tickets.add("tracon")
+        dimensions["tickets"] = list(tickets)
 
         language = dimensions.setdefault("language", [])
         if not language:
