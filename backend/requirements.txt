@@ -28,9 +28,9 @@ billiard==4.2.0
     # via celery
 bleach==6.1.0
     # via -r requirements.in
-boto3==1.35.0
+boto3==1.35.10
     # via -r requirements.in
-botocore==1.35.0
+botocore==1.35.10
     # via
     #   boto3
     #   s3transfer
@@ -38,7 +38,7 @@ brotli==1.1.0
     # via fonttools
 celery==5.4.0
     # via -r requirements.in
-certifi==2024.7.4
+certifi==2024.8.30
     # via requests
 cffi==1.17.0
     # via
@@ -122,7 +122,7 @@ django-stubs==5.0.4
     # via -r requirements.in
 django-stubs-ext==5.0.4
     # via django-stubs
-executing==2.0.1
+executing==2.1.0
     # via stack-data
 filelock==3.15.4
     # via virtualenv
@@ -155,13 +155,13 @@ ics==0.7.2
     # via -r requirements.in
 identify==2.6.0
     # via pre-commit
-idna==3.7
+idna==3.8
     # via requests
 iniconfig==2.0.0
     # via pytest
 ipdb==0.13.13
     # via -r requirements.in
-ipython==8.26.0
+ipython==8.27.0
     # via
     #   -r requirements.in
     #   ipdb
@@ -215,7 +215,7 @@ passlib==1.7.4
     # via -r requirements.in
 pexpect==4.9.0
     # via ipython
-phonenumberslite==8.13.43
+phonenumberslite==8.13.44
     # via -r requirements.in
 pillow==10.4.0
     # via
@@ -264,7 +264,7 @@ pyphen==0.16.0
     # via weasyprint
 pypugjs==5.11.0
     # via -r requirements.in
-pyright==1.1.376
+pyright==1.1.378
     # via -r requirements.in
 pytest==8.3.2
     # via pytest-django
@@ -311,11 +311,11 @@ rpds-py==0.20.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.6.1
+ruff==0.6.3
     # via -r requirements.in
 s3transfer==0.10.2
     # via boto3
-setuptools==72.2.0
+setuptools==74.0.0
     # via -r requirements.in
 six==1.16.0
     # via
@@ -344,7 +344,7 @@ traitlets==5.14.3
     # via
     #   ipython
     #   matplotlib-inline
-types-python-dateutil==2.9.0.20240316
+types-python-dateutil==2.9.0.20240821
     # via arrow
 types-pyyaml==6.0.12.20240808
     # via django-stubs
