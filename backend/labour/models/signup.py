@@ -564,6 +564,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         self.apply_state_group_membership()
         self.apply_state_email_aliases()
         self.apply_state_send_messages()
+        self.apply_state_cleanup_team_membership()
 
     def apply_state_group_membership(self):
         from .job_category import JobCategory
@@ -627,15 +628,35 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
             self.personnel_classes.add(personnel_class)
 
     def apply_state_create_badges(self):
-        if "badges" not in settings.INSTALLED_APPS:
-            return
-
         if self.event.badges_event_meta is None:
             return
 
         from badges.models import Badge
 
         Badge.ensure(event=self.event, person=self.person)
+
+    def apply_state_cleanup_team_membership(self):
+        """
+        When an organizer quits, make sure they are removed from Intra team listing as well.
+        """
+        from access.models import CBACEntry
+        from core.utils import ensure_user_is_member_of_group
+        from intra.models.team_member import TeamMember
+
+        event: Event = self.event
+
+        if (meta := event.intra_event_meta) is None:
+            return
+
+        if self.person.user in meta.organizer_group.user_set.all():
+            return
+
+        TeamMember.objects.filter(person=self.person, team__event=self.event).delete()
+
+        for app_label in meta.get_active_apps():
+            ensure_user_is_member_of_group(self.person.user, event.get_app_event_meta(app_label).admin_group, False)
+
+        CBACEntry.ensure_admin_group_privileges_for_event(event)
 
     def get_previous_and_next_signup(self):
         queryset = self.event.signup_set.order_by("person__surname", "person__first_name", "id").all()
