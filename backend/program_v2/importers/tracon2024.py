@@ -292,7 +292,7 @@ class TraconImporter(DefaultImporter):
             subtitle=f"Saapuminen kello {slot_start_time.strftime('%H:%M')}–{slot_end_time.strftime('%H:%M')}",
             program=v2_program,
             start_time=start_time,
-            length=slot_length,  # see https://ropecon.slack.com/archives/CNQG7QJG2/p1725188582924579
+            length=slot_end_time - start_time,  # see https://ropecon.slack.com/archives/CNQG7QJG2/p1725188582924579
         ).with_generated_fields()
 
     def get_schedule_items(self, v1_programme: Programme, v2_program: Program) -> list[ScheduleItem]:
