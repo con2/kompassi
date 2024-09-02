@@ -38,6 +38,7 @@ extend-ignore = [
     "SIM105",  # contextlib.suppress has a performance cost
     "SIM108",  # ternary operators can be less readable
     "PERF401", # manual-list-comprehension
+    "PLR2004",  # I will not, for the love of God, write AMOUNT_OF_MONTHS_IN_YEAR = 12
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
