@@ -49,10 +49,8 @@ extend-ignore = [
     "B007",  # loop control variable not used
     "F841",  # local variable is assigned to but never used
     "PERF",  # setups are one-off, PERF is not relevant
-    "PLR2004",  # magic values are ok in setup
 ]
 "**/test*.py" = [
-    "PLR2004",  # magic values are ok in tests
     "S101",  # asserts are ok in tests
 ]
 "events/*201*/*.py" = [
