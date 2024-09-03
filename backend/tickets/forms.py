@@ -95,11 +95,8 @@ class OrderProductForm(forms.ModelForm):
 
         max_count_per_product = order.event.tickets_event_meta.max_count_per_product
         if not admin:
-            if product.amount_available < max_count_per_product:
-                max_count_per_product = product.amount_available
-            if max_count_per_product < 0:
-                # oops, we have accidentially oversold the product
-                max_count_per_product = 0
+            max_count_per_product = min(product.amount_available, max_count_per_product)
+            max_count_per_product = max(max_count_per_product, 0)
 
         return initialize_form(
             OrderProductForm,

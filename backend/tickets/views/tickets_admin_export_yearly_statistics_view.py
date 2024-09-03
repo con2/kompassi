@@ -66,17 +66,17 @@ def tickets_admin_export_yearly_statistics_view(request, vars, event: Event):
     start_days = min(min(rows_by_days.keys()) for rows_by_days in rows_by_event_by_days.values())
     end_days = max(max(rows_by_days.keys()) for rows_by_days in rows_by_event_by_days.values())
 
-    for event in events:
+    for compare_event in events:
         cumulative_tickets = 0
         cumulative_amount = 0
 
         for days_to_event in range(start_days, end_days + 1):
-            row = rows_by_event_by_days[event.id].get(days_to_event)
+            row = rows_by_event_by_days[compare_event.id].get(days_to_event)
 
-            if event.start_time is None:
+            if compare_event.start_time is None:
                 raise AssertionError("This will not happen (filtered in query) but Pyrekt doesn't know that")
 
-            sales_date = row.sales_date if row else event.start_time.date() + timedelta(days=days_to_event)
+            sales_date = row.sales_date if row else compare_event.start_time.date() + timedelta(days=days_to_event)
             cumulative_tickets += row.total_tickets_sold if row else 0
             cumulative_amount += row.total_amount_cents if row else 0
 
@@ -93,14 +93,14 @@ def tickets_admin_export_yearly_statistics_view(request, vars, event: Event):
     csv_writer = csv.writer(response)
 
     header_row = ["Days to event"]
-    for event in events:
+    for compare_event in events:
         header_row.extend(
             [
-                f"Date ({event.name})",
-                f"Daily tickets ({event.name})",
-                f"Daily euros ({event.name})",
-                f"Cumulative tickets ({event.name})",
-                f"Cumulative euros ({event.name})",
+                f"Date ({compare_event.name})",
+                f"Daily tickets ({compare_event.name})",
+                f"Daily euros ({compare_event.name})",
+                f"Cumulative tickets ({compare_event.name})",
+                f"Cumulative euros ({compare_event.name})",
             ]
         )
     csv_writer.writerow(header_row)

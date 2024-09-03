@@ -47,7 +47,7 @@ def badges_admin_onboarding_view(request, event):
 
             # Accessing badge.signup_extra for each badge causes one extra query per badge
             # So cache them.
-            if SignupExtra and SignupExtra.schema_version >= 2:  # noqa: PLR2004
+            if SignupExtra and SignupExtra.schema_version >= 2:
                 people = [badge.person_id for badge in badges if badge.person]
                 signup_extras = SignupExtra.objects.filter(event=event, person_id__in=people)
                 signup_extras_by_person_id = {sx.person_id: sx for sx in signup_extras}

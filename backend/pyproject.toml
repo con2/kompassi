@@ -64,3 +64,6 @@ extend-ignore = [
 "**/management/**.py" = [
     "S101",  # asserts are ok in one-off management commands
 ]
+"kompassi/wsgi.py" = [
+    "E402",  # vscode for some reason strips this off as a noqa
+]

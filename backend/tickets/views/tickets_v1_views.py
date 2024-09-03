@@ -283,9 +283,8 @@ class AccommodationPhase(Phase):
         return AccommodationInformationForm.get_for_order(request, order)
 
     def save(self, request, event, form):
-        forms = form
-        for form in forms:
-            info = form.save()
+        for accommodation_form in form:
+            info = accommodation_form.save()
             info.limit_groups.set(info.order_product.product.limit_groups.all())
 
 
