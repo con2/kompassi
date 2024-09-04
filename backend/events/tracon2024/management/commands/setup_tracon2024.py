@@ -28,7 +28,7 @@ class Setup:
         self.setup_program_v2()
         self.setup_intra()
         self.setup_access()
-        # self.setup_kaatoilmo()
+        self.setup_kaatoilmo()
         self.setup_forms()
 
     def setup_core(self):
