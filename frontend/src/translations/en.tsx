@@ -1,4 +1,5 @@
 import { markAsFavorite } from "@/app/[locale]/events/[eventSlug]/program/actions";
+import { submit } from "@/app/[locale]/events/[eventSlug]/surveys/[surveySlug]/actions";
 
 const translations = {
   AccommodationOnboardingView: {
@@ -248,6 +249,34 @@ const translations = {
     tabs: {
       cards: "Cards",
       table: "Table",
+    },
+    feedback: {
+      viewTitle: "Give feedback",
+      notAcceptingFeedback: "This program item is not accepting feedback.",
+      fields: {
+        feedback: {
+          title: "Feedback",
+          helpText:
+            "How did you like the program? Please be constructive and empathetic towards the program host :) Your feedback will be shared with the program host.",
+        },
+        kissa: {
+          title: "Which animal says meow?",
+          helpText: "Please answer to prove you are not a robot. Hint: Cat.",
+        },
+      },
+      actions: {
+        returnToProgram: "Return to the program item",
+        submit: "Submit feedback",
+      },
+      anonymity: {
+        title: "Connecting your response to you",
+        description:
+          "If you give program feedback while logged in, your user profile will be connected to your feedback. However, your user profile will not be shared with the program host.",
+      },
+      thankYou: {
+        title: "Thank you for your feedback!",
+        description: "Your feedback has been recorded.",
+      },
     },
   },
 

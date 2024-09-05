@@ -113,6 +113,22 @@ class LimitedProgramType(DjangoObjectType):
 
     color = graphene.NonNull(graphene.String)
 
+    @staticmethod
+    def resolve_is_accepting_feedback(program: Program, info, lang=DEFAULT_LANGUAGE):
+        """
+        A program item will only accept feedback after it has started.
+        In addition, the feedback facility may be turned off for the event.
+        """
+        from programme.models.programme import Programme
+
+        # TODO programme feedback is saved under V1 data model for now
+        return (
+            program.is_accepting_feedback
+            and Programme.objects.filter(category__event=program.event, slug=program.slug).exists()
+        )
+
+    is_accepting_feedback = graphene.NonNull(graphene.Boolean)
+
     class Meta:
         model = Program
         fields = (
@@ -122,4 +138,5 @@ class LimitedProgramType(DjangoObjectType):
             "cached_dimensions",
             "cached_earliest_start_time",
             "cached_latest_end_time",
+            "is_accepting_feedback",
         )

@@ -15,6 +15,7 @@ import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
 import Paragraphs from "@/components/helpers/Paragraphs";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { publicUrl } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -207,15 +208,25 @@ export default async function NewProgramPage({ params }: Props) {
       <div className="mb-3 mt-3">
         {program.links.map((link, index) => (
           <div key={index}>
-            <a
-              href={link.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link-subtle"
-            >
-              {getLinkEmoji(link.type) + " "}
-              {link.title}…
-            </a>
+            {link.href.startsWith(publicUrl) ? (
+              <Link
+                href={link.href.slice(publicUrl.length)}
+                className="link-subtle"
+              >
+                {getLinkEmoji(link.type) + " "}
+                {link.title}…
+              </Link>
+            ) : (
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-subtle"
+              >
+                {getLinkEmoji(link.type) + " "}
+                {link.title}…
+              </a>
+            )}
           </div>
         ))}
       </div>

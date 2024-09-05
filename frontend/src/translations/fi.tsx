@@ -247,6 +247,34 @@ const translations: Translations = {
       cards: "Kortit",
       table: "Taulukko",
     },
+    feedback: {
+      viewTitle: "Anna palautetta",
+      notAcceptingFeedback: "Tämä ohjelmanumero ei ota vastaan palautetta.",
+      fields: {
+        feedback: {
+          title: "Palaute",
+          helpText:
+            "Mitä pidit ohjelmanumerosta? Olethan rakentava ja empaattinen ohjelmanjärjestäjää kohtaan :) Palautteesi toimitetaan ohjelmanumeron järjestäjälle.",
+        },
+        kissa: {
+          title: "Mikä eläin sanoo miau?",
+          helpText: "Tällä varmistamme, että et ole robotti. Vihje: Kissa.",
+        },
+      },
+      actions: {
+        returnToProgram: "Palaa ohjelmanumeron sivulle",
+        submit: "Lähetä palaute",
+      },
+      anonymity: {
+        title: "Vastausten yhdistäminen sinuun",
+        description:
+          "Jos lähetät ohjelmapalautetta kirjautuneena, palautteesi yhdistetään käyttäjätiliisi. Käyttäjäprofiiliasi ei kuitenkaan jaeta ohjelmanumeron järjestäjälle.",
+      },
+      thankYou: {
+        title: "Kiitos palautteestasi!",
+        description: "Palautteesi on tallennettu.",
+      },
+    },
   },
 
   Survey: {

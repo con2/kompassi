@@ -18,6 +18,7 @@ from forms.graphql.mutations.update_response_dimensions import UpdateResponseDim
 from forms.graphql.mutations.update_survey import UpdateSurvey
 from forms.graphql.mutations.update_survey_language import UpdateSurveyLanguage
 from program_v2.graphql.mutations.favorites import MarkProgramAsFavorite, UnmarkProgramAsFavorite
+from program_v2.graphql.mutations.feedback import CreateProgramFeedback
 
 from .language import DEFAULT_LANGUAGE, Language
 
@@ -80,6 +81,8 @@ class Mutation(graphene.ObjectType):
 
     mark_program_as_favorite = MarkProgramAsFavorite.Field()
     unmark_program_as_favorite = UnmarkProgramAsFavorite.Field()
+
+    create_program_feedback = CreateProgramFeedback.Field()
 
     subscribe_to_survey_responses = SubscribeToSurveyResponses.Field()
     unsubscribe_from_survey_responses = UnsubscribeFromSurveyResponses.Field()

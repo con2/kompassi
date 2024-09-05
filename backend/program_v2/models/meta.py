@@ -54,6 +54,12 @@ class ProgramV2EventMeta(EventMetaBase):
         ),
     )
 
+    is_accepting_feedback = models.BooleanField(
+        default=True,
+        verbose_name="Is accepting feedback",
+        help_text="If checked, feedback can be left for programs.",
+    )
+
     use_cbac = True
 
     @property

@@ -8,6 +8,7 @@ from django.conf import settings
 from django.db import models, transaction
 from django.http import HttpRequest
 from django.urls import reverse
+from django.utils.timezone import now
 
 from core.models import Event
 from core.utils import validate_slug
@@ -252,4 +253,12 @@ class Program(models.Model):
                     program_slug=self.slug,
                 ),
             )
+        )
+
+    @property
+    def is_accepting_feedback(self) -> bool:
+        return bool(
+            self.meta.is_accepting_feedback
+            and self.cached_earliest_start_time
+            and now() >= self.cached_earliest_start_time
         )

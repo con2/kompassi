@@ -1,4 +1,5 @@
 import graphene
+from django.conf import settings
 from django.http import HttpRequest
 from django.utils.timezone import now
 
@@ -98,11 +99,16 @@ class ProgramLink(graphene.ObjectType):
                 else:
                     href = program.annotations.get(link_annotation, "")
             case ProgramLinkType.FEEDBACK:
-                # Do not show feedback link if the program has not started yet
-                if program.cached_earliest_start_time and now() < program.cached_earliest_start_time:
-                    href = ""
-                else:
-                    href = program.annotations.get(link_annotation, "")
+                href = (
+                    program.annotations.get(
+                        link_annotation,
+                        settings.KOMPASSI_V2_BASE_URL
+                        + f"/events/{program.event.slug}/programs/{program.slug}/feedback",
+                    )
+                    if program.is_accepting_feedback
+                    else ""
+                )
+
             case _:
                 href = program.annotations.get(link_annotation, "")
 

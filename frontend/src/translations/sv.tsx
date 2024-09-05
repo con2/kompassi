@@ -249,6 +249,35 @@ const translations: Translations = {
       cards: "Kort",
       table: "Tabell",
     },
+    feedback: UNSURE({
+      viewTitle: "Ge feedback",
+      notAcceptingFeedback: "Det här programmet tar inte emot feedback.",
+      fields: {
+        feedback: {
+          title: "Feedback",
+          helpText:
+            "Hur gillade du programmet? Var snäll och konstruktiv och empatisk mot programvärdarna :) Din feedback kommer att delas med programvärdarna.",
+        },
+        kissa: {
+          title: "Vilket djur säger mjau?",
+          helpText:
+            "Vänligen svara för att bevisa att du inte är en robot. Tips: Katt.",
+        },
+      },
+      actions: {
+        returnToProgram: "Tillbaka till programmet",
+        submit: "Skicka feedback",
+      },
+      anonymity: {
+        title: "Koppla ditt svar till dig",
+        description:
+          "Om du ger feedback på programmet medan du är inloggad kommer ditt användarkonto att kopplas till din feedback. Ditt användarkonto kommer dock inte att delas med programvärdarna.",
+      },
+      thankYou: {
+        title: "Tack för din feedback!",
+        description: "Din feedback har registrerats.",
+      },
+    }),
   }),
 
   NewProgramView: {
