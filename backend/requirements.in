@@ -45,7 +45,6 @@ reportlab
 requests
 requests-oauthlib
 ruff
-setuptools
 tabulate
 unicodecsv
 vobject

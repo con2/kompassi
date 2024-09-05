@@ -28,9 +28,9 @@ billiard==4.2.0
     # via celery
 bleach==6.1.0
     # via -r requirements.in
-boto3==1.35.10
+boto3==1.35.13
     # via -r requirements.in
-botocore==1.35.10
+botocore==1.35.13
     # via
     #   boto3
     #   s3transfer
@@ -40,7 +40,7 @@ celery==5.4.0
     # via -r requirements.in
 certifi==2024.8.30
     # via requests
-cffi==1.17.0
+cffi==1.17.1
     # via
     #   cryptography
     #   pynacl
@@ -67,7 +67,7 @@ click-repl==0.3.0
     # via celery
 crispy-bootstrap3==2024.1
     # via -r requirements.in
-cryptography==43.0.0
+cryptography==43.0.1
     # via
     #   jwcrypto
     #   paramiko
@@ -79,7 +79,7 @@ decorator==5.1.1
     #   ipython
 distlib==0.3.8
     # via virtualenv
-django==5.0.8
+django==5.0.9
     # via
     #   -r requirements.in
     #   crispy-bootstrap3
@@ -138,7 +138,7 @@ graphene-django==3.2.2
     # via -r requirements.in
 graphene-pydantic==0.6.1
     # via -r requirements.in
-graphql-core==3.2.3
+graphql-core==3.2.4
     # via
     #   graphene
     #   graphene-django
@@ -246,11 +246,11 @@ pycodestyle==2.12.1
     # via flake8
 pycparser==2.22
     # via cffi
-pydantic==2.8.2
+pydantic==2.9.0
     # via
     #   -r requirements.in
     #   graphene-pydantic
-pydantic-core==2.20.1
+pydantic-core==2.23.2
     # via pydantic
 pydyf==0.11.0
     # via weasyprint
@@ -264,11 +264,11 @@ pyphen==0.16.0
     # via weasyprint
 pypugjs==5.11.0
     # via -r requirements.in
-pyright==1.1.378
+pyright==1.1.379
     # via -r requirements.in
 pytest==8.3.2
     # via pytest-django
-pytest-django==4.8.0
+pytest-django==4.9.0
     # via -r requirements.in
 python-dateutil==2.9.0.post0
     # via
@@ -311,12 +311,10 @@ rpds-py==0.20.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.6.3
+ruff==0.6.4
     # via -r requirements.in
 s3transfer==0.10.2
     # via boto3
-setuptools==74.0.0
-    # via -r requirements.in
 six==1.16.0
     # via
     #   asttokens
@@ -357,7 +355,9 @@ typing-extensions==4.12.2
     #   pydantic
     #   pydantic-core
 tzdata==2024.1
-    # via celery
+    # via
+    #   celery
+    #   pydantic
 unicodecsv==0.14.1
     # via -r requirements.in
 urllib3==2.2.2
