@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-import os
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from django.db import models
@@ -82,16 +82,14 @@ class Room(models.Model):
 
     @property
     def has_paikkala_schema(self):
-        return os.path.isfile(self.paikkala_schema_path)
+        return self.paikkala_schema_path.exists()
 
     @property
-    def paikkala_schema_path(self):
-        from core.utils.pkg_resources_compat import resource_filename
-
+    def paikkala_schema_path(self) -> Path:
         if not self.event:
             raise ValueError("Room %s has no event", self)
 
-        return resource_filename(__name__, f"paikkala_data/{self.event.venue.slug}/{self.slug}.csv")
+        return Path(__file__).parent / "paikkala_data" / self.event.venue.slug / f"{self.slug}.csv"
 
     @atomic
     def paikkalize(self):
@@ -107,7 +105,7 @@ class Room(models.Model):
         # hack: dun wanna mess up with same-named rooms
         paikkala_room_name = str(uuid4())
 
-        with open(self.paikkala_schema_path, encoding="UTF-8") as infp:
+        with self.paikkala_schema_path.open(encoding="UTF-8") as infp:
             import_zones(row_csv_list=list(read_csv(infp)), default_room_name=paikkala_room_name)
 
         self.paikkala_room = PaikkalaRoom.objects.get(name=paikkala_room_name)
