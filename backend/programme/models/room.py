@@ -86,7 +86,7 @@ class Room(models.Model):
 
     @property
     def paikkala_schema_path(self):
-        from pkg_resources import resource_filename
+        from core.utils.pkg_resources_compat import resource_filename
 
         if not self.event:
             raise ValueError("Room %s has no event", self)

@@ -12,10 +12,10 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from pkg_resources import resource_stream
 
 from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, log_get_or_create
+from core.utils.pkg_resources_compat import resource_stream
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
 
 from ..utils.merge_form_fields import merge_fields

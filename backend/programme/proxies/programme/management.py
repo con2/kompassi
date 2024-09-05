@@ -1,8 +1,7 @@
 import logging
 
-from pkg_resources import resource_string
-
 from core.utils import get_previous_and_next
+from core.utils.pkg_resources_compat import resource_string
 
 from ...models import Programme
 

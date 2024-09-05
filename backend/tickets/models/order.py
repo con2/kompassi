@@ -9,9 +9,9 @@ from django.db import connection, models
 from django.template.loader import render_to_string
 from django.utils import timezone, translation
 from django.utils.translation import gettext_lazy as _
-from pkg_resources import resource_string
 
 from core.models.event import Event
+from core.utils.pkg_resources_compat import resource_string
 
 from ..utils import append_reference_number_checksum, format_price
 from .consts import LANGUAGE_CHOICES, UNPAID_CANCEL_HOURS

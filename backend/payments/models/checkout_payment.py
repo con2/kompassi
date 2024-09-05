@@ -13,8 +13,8 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
-from pkg_resources import resource_string
 
+from core.utils.pkg_resources_compat import resource_string
 from tickets.utils import format_price
 
 from ..utils import calculate_hmac

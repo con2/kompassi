@@ -6,9 +6,9 @@ from typing import Any
 
 from django.db import connection
 from django.http import HttpResponse
-from pkg_resources import resource_string
 
 from core.models.event import Event
+from core.utils.pkg_resources_compat import resource_string
 
 from ..helpers import tickets_admin_required
 
