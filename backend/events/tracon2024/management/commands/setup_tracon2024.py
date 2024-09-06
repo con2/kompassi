@@ -116,7 +116,9 @@ class Setup:
                 "Coniitti",
                 "coniitti",
                 "labour",
-                TraconEmperkelator(override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote"),
+                TraconEmperkelator(
+                    override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
+                ),
             ),
             (
                 "Duniitti",
