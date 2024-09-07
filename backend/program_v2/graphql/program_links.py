@@ -17,6 +17,7 @@ class ProgramLinkType(graphene.Enum):
     RESERVATION = "RESERVATION"
     TICKETS = "TICKETS"
     RECORDING = "RECORDING"
+    MATERIAL = "MATERIAL"
     REMOTE = "REMOTE"
     FEEDBACK = "FEEDBACK"
     CALENDAR = "CALENDAR"
@@ -30,6 +31,7 @@ DEFAULT_LINK_TITLES = dict(
         ProgramLinkType.RESERVATION: "Reserve seats",
         ProgramLinkType.TICKETS: "Buy tickets",
         ProgramLinkType.RECORDING: "Watch recording",
+        ProgramLinkType.MATERIAL: "Katso esitysmateriaalit",
         ProgramLinkType.REMOTE: "Participate remotely",
         ProgramLinkType.FEEDBACK: "Give feedback",
         ProgramLinkType.OTHER: "Link",
@@ -40,6 +42,7 @@ DEFAULT_LINK_TITLES = dict(
         ProgramLinkType.RESERVATION: "Varaa paikkoja",
         ProgramLinkType.TICKETS: "Osta liput",
         ProgramLinkType.RECORDING: "Katso tallenne",
+        ProgramLinkType.MATERIAL: "View presentation materials",
         ProgramLinkType.REMOTE: "Osallistu etänä",
         ProgramLinkType.FEEDBACK: "Anna palautetta",
         ProgramLinkType.OTHER: "Linkki",
@@ -50,6 +53,7 @@ DEFAULT_LINK_TITLES = dict(
         ProgramLinkType.RESERVATION: "Reservera platser",
         ProgramLinkType.TICKETS: "Köp biljetter",
         ProgramLinkType.RECORDING: "Se inspelningen",
+        ProgramLinkType.MATERIAL: "Se presentationsmaterial",  # UNSURE
         ProgramLinkType.REMOTE: "Delta på distans",
         ProgramLinkType.FEEDBACK: "Ge feedback",
         ProgramLinkType.OTHER: "Länk",
@@ -116,9 +120,10 @@ class ProgramLink(graphene.ObjectType):
             return None
 
         titles = get_message_in_language(DEFAULT_LINK_TITLES, language) or {}
-        title = program.annotations.get(
-            f"{link_type_str.lower()}",
-            titles.get(link_type_str, ""),
+        title = (
+            program.annotations.get(f"{link_annotation}:title:{language}")
+            or program.annotations.get(f"{link_annotation}:title:{DEFAULT_LANGUAGE}")
+            or titles.get(link_type_str, "")
         )
 
         if title_specifier:

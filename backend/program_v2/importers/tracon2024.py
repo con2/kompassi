@@ -264,6 +264,17 @@ class TraconImporter(DefaultImporter):
             annotations["konsti:minAttendance"] = 6
             annotations["konsti:maxAttendance"] = 9
 
+        if programme.slug == "musiikkijam":
+            annotations["internal:links:other"] = "https://discord.gg/ntB5Mwapjz"
+            annotations["internal:links:other:title:fi"] = "Liity GeekTradJam-Discordiin"
+            annotations["internal:links:other:title:en"] = "Join the GeekTradJam Discord"
+
+            annotations["internal:links:material"] = (
+                "https://docs.google.com/spreadsheets/d/19sP1IbtQbsVcCLUapfGjC2-0PwtNIT0nlr6ZGx7_V4k/edit"
+            )
+            annotations["internal:links:material:title:fi"] = "Tutustu biisilistaan"
+            annotations["internal:links:material:title:en"] = "Check out the song list"
+
         return annotations
 
     def get_fleamarket_schedule_item(

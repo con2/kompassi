@@ -40,10 +40,13 @@ class CreateProgramFeedback(graphene.Mutation):
             logger.error(f"Programme {program.slug} not found in V1")
             return CreateProgramFeedback(success=False)  # type: ignore
 
+        is_own_programme = request.user and request.user.person in programme.organizers.all()  # type: ignore
+
         ProgrammeFeedback.objects.create(
             programme=programme,
             feedback=input.feedback,
-            author=request.user.person if request.user.is_authenticated else None,  # type: ignore
+            author=request.user.person if request.user and request.user.is_authenticated else None,  # type: ignore
+            is_anonymous=not is_own_programme,
             author_ip_address=get_ip(request),
         )
 
