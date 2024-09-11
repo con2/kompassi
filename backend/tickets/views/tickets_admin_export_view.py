@@ -74,7 +74,7 @@ def tickets_admin_paulig_export_view(
         payment_date__isnull=False,
         # Order is not cancelled
         cancellation_time__isnull=True,
-    ).order_by("payment_date", "id")
+    ).order_by("customer__last_name", "customer__first_name")
 
     orders_with_filtered_products = [
         (order, filtered_products)

@@ -18,6 +18,7 @@ from .consts import LANGUAGE_CHOICES, UNPAID_CANCEL_HOURS
 from .tickets_event_meta import TicketsEventMeta
 
 if TYPE_CHECKING:
+    from .customer import Customer
     from .order_product import OrderProduct
 
 
@@ -36,9 +37,9 @@ class ArrivalsRow:
 class Order(models.Model):
     order_product_set: models.QuerySet["OrderProduct"]
 
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
-    customer = models.OneToOneField("tickets.Customer", on_delete=models.CASCADE, null=True, blank=True)
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, null=True, blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
 
     confirm_time = models.DateTimeField(

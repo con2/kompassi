@@ -14,6 +14,9 @@ logger = logging.getLogger("kompassi")
 
 
 class Product(models.Model):
+    id: int
+    pk: int
+
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
     name = models.CharField(max_length=150)
