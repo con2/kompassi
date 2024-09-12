@@ -44,11 +44,11 @@ class Setup:
         self.event, unused = Event.objects.get_or_create(
             slug="popcultnights2024",
             defaults=dict(
-                name="Popcult Nights 2024",
-                name_genitive="Popcult Nights 2024 -tapahtuman",
-                name_illative="Popcult Nights 2024 -tapahtumaan",
-                name_inessive="Popcult Nights 2024 -tapahtumassa",
-                homepage_url="http://popcult.fi/nights-2024",
+                name="Popcult Nights: Halloween Edition (2024)",
+                name_genitive="Popcult Nightsin",
+                name_illative="Popcult Nightsiin",
+                name_inessive="Popcult Nightsissä",
+                homepage_url="https://popcult.fi/nights-2024-halloween-edition/",
                 organization=self.organization,
                 start_time=datetime(2024, 11, 2, 19, 0, tzinfo=self.tz),
                 end_time=datetime(2024, 11, 2, 23, 0, tzinfo=self.tz),
@@ -66,14 +66,14 @@ class Setup:
             admin_group=tickets_admin_group,
             reference_number_template="2024{:05d}",
             contact_email="Popcult Helsinki <liput@popcult.fi>",
-            ticket_free_text="Tämä on sähköinen lippusi Popcult Nights 2024 -tapahtumaan. Voit tulostaa tämän lipun tai\n"
+            ticket_free_text="Tämä on sähköinen lippusi Popcult Nights: Halloween Edition (2024) -tapahtumaan. Voit tulostaa tämän lipun tai\n"
             "näyttää sen älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole\n"
             "mahdollista, ota ylös kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva\n"
             "Kissakoodi ja ilmoita se lipunvaihtopisteessä.\n\n"
             "Tervetuloa Popcult Nightsiin!",
-            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Popcult Nights 2024 -tapahtumaan!</h2>"
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Popcult Nights: Halloween Edition (2024) -tapahtumaan!</h2>"
             "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
-            "<p>Lue lisää tapahtumasta <a href='http://popcult.fi/nights-2024'>Popcult Nights 2024 -tapahtuman kotisivuilta</a>.</p>",
+            "<p>Lue lisää tapahtumasta <a href='https://popcult.fi/nights-2024-halloween-edition/'>Popcult Nights: Halloween Edition (2024) -tapahtuman kotisivuilta</a>.</p>",
             ticket_sales_starts=t,
             ticket_sales_ends=t + timedelta(days=60) if self.test else self.event.end_time,
             tickets_view_version="v1.5",
@@ -104,7 +104,7 @@ class Setup:
 
         for product_info in [
             dict(
-                name="Popcult Nights 2024 -pääsylippu (K18)",
+                name="Popcult Nights: Halloween Edition (2024) -pääsylippu (K18)",
                 description="Yksi pääsylippu Popcult Nights -tapahtumaan. Sisältää narikan.",
                 limit_groups=[
                     limit_group("Pääsyliput", 400),
