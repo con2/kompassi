@@ -278,6 +278,7 @@ INSTALLED_APPS = (
     "events.frostbite2025",
     "events.desucon2025",
     "events.kotaeexpo2025",
+    "events.popcultnights2024",
     # zombies are obsolete apps that can't be removed due to cross-app references in models
     "zombies.event_log",
     "zombies.surveys",
