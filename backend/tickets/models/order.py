@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
@@ -15,10 +17,10 @@ from core.utils.pkg_resources_compat import resource_string
 
 from ..utils import append_reference_number_checksum, format_price
 from .consts import LANGUAGE_CHOICES, UNPAID_CANCEL_HOURS
+from .customer import Customer
 from .tickets_event_meta import TicketsEventMeta
 
 if TYPE_CHECKING:
-    from .customer import Customer
     from .order_product import OrderProduct
 
 
@@ -35,7 +37,7 @@ class ArrivalsRow:
 
 
 class Order(models.Model):
-    order_product_set: models.QuerySet["OrderProduct"]
+    order_product_set: models.QuerySet[OrderProduct]
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
 

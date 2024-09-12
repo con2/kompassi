@@ -24,7 +24,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
         self.setup_access()
         self.setup_badges()
@@ -385,7 +385,13 @@ class Setup:
                 ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
-        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+        TicketsEventMeta.objects.update_or_create(
+            event=self.event,
+            create_defaults=defaults,
+            defaults=dict(
+                tickets_view_version="v1.5",
+            ),
+        )
 
         def limit_group(description, limit):
             limit_group, unused = LimitGroup.objects.get_or_create(
