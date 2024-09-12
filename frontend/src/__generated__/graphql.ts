@@ -800,6 +800,7 @@ export type ProgramLink = {
 export enum ProgramLinkType {
   Calendar = 'CALENDAR',
   Feedback = 'FEEDBACK',
+  Material = 'MATERIAL',
   Other = 'OTHER',
   Recording = 'RECORDING',
   Remote = 'REMOTE',

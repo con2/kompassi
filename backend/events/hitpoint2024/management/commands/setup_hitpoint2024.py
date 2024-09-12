@@ -415,6 +415,17 @@ class Setup:
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
+            dict(
+                name="Tracon Hitpoint -kummilippu (Hope ry)",
+                description="Kummilippu Tracon Hitpoint 2024 -tapahtumaan. Jokaista ostettua kummilippua kohti lahjoitamme koko viikonlopun lipun tapahtumaamme Hope ry:lle. Heidän kautttaan lahjaliput jaetaan vähävaraisille tai muista syistä lipun hankintaan tukea tarvitseville. HUOM! Tämä tuote ei sisällä sisäänpääsyä itsellesi Tracon Hitpointiin.",
+                limit_groups=[
+                    limit_group("Pääsyliput", 500),
+                ],
+                price_cents=1200,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
