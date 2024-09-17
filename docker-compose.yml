@@ -38,7 +38,6 @@ services:
       MINIO_SECRET_ACCESS_KEY: kompassi
       MINIO_ENDPOINT_URL: http://localhost:9000
       KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH: dev-secrets/id_rsa.key
-      KOMPASSI_INSTALLATION_SLUG: turska
   celery:
     build: backend
     init: true
@@ -73,10 +72,8 @@ services:
     # note: you can use `docker compose exec postgres psql -U kompassi` to access psql cli
     # ports:
     #   - 5432:5432
-    tmpfs:
-      - /var/lib/postgresql/data
     volumes:
-      - ./kompassi-20240903.sql:/docker-entrypoint-initdb.d/00-schema.sql
+      - postgres-data:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: kompassi
       POSTGRES_PASSWORD: secret
