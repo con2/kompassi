@@ -12,6 +12,7 @@ kompassi_apps = [
     "labour",
     "programme",
     "tickets",
+    "tickets_v2",
     "payments",
     "api",
     "api_v2",

@@ -1,11 +1,15 @@
+from __future__ import annotations
+
+from django.contrib.auth.models import Group
 from django.db import models
 
+from .event import Event
 from .group_management_mixin import GroupManagementMixin
 
 
 class EventMetaBase(models.Model, GroupManagementMixin):
-    event = models.OneToOneField("core.Event", on_delete=models.CASCADE, primary_key=True, related_name="%(class)s")
-    admin_group = models.ForeignKey("auth.Group", on_delete=models.CASCADE)
+    event = models.OneToOneField(Event, on_delete=models.CASCADE, primary_key=True, related_name="%(class)s")
+    admin_group = models.ForeignKey(Group, on_delete=models.CASCADE)
 
     use_cbac = False
 
@@ -13,15 +17,11 @@ class EventMetaBase(models.Model, GroupManagementMixin):
         abstract = True
 
     def get_group(self, suffix):
-        from django.contrib.auth.models import Group
-
         group_name = self.make_group_name(self.event, suffix)
 
         return Group.objects.get(name=group_name)
 
     def get_group_if_exists(self, suffix):
-        from django.contrib.auth.models import Group
-
         group_name = self.make_group_name(self.event, suffix)
 
         return Group.objects.filter(name=group_name).first()

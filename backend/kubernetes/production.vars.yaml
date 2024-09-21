@@ -51,6 +51,8 @@ kompassi_readiness_probe: !Void
 kompassi_liveness_probe: !Void
 kompassi_workers: 12
 
+kompassi_uvicorn_enabled: false
+
 smtp_server: sr1.pahaip.fi
 smtp_default_from_email: suunnistajat@kompassi.eu
 

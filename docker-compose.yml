@@ -11,6 +11,8 @@ services:
     # see #357 #375 #408
     ports:
       - 3000:3000
+      - 7999:7999
+      - 7998:7998
       - 8000:8000
       - 9000:9000
       # minio console, uncomment if you need it
@@ -24,7 +26,7 @@ services:
     depends_on:
       - redis
       - postgres
-    volumes:
+    volumes: &volumes
       - ./backend:/usr/src/app
       - ./dev-secrets:/usr/src/app/dev-secrets:rw
     environment: &environment
@@ -38,6 +40,41 @@ services:
       MINIO_SECRET_ACCESS_KEY: kompassi
       MINIO_ENDPOINT_URL: http://localhost:9000
       KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH: dev-secrets/id_rsa.key
+      SECRET_KEY: The SECRET_KEY setting must not be empty.
+  # can be used to load-test ticketsv2
+  # gunicorn:
+  #   build: backend
+  #   init: true
+  #   command:
+  #     - gunicorn
+  #     - --workers=8
+  #     - --bind=0.0.0.0:7999
+  #     # - --access-logfile=-
+  #     - --capture-output
+  #     - kompassi.wsgi
+  #   network_mode: service:router
+  #   depends_on:
+  #     - redis
+  #     - postgres
+  #   volumes: *volumes
+  #   environment:
+  #     <<: *environment
+  #     DEBUG: 0
+  # uvicorn:
+  #   build: backend
+  #   init: true
+  #   command:
+  #     - uvicorn
+  #     - --workers=8
+  #     - --host=0.0.0.0
+  #     - --port=7998
+  #     - --no-access-log
+  #     - tickets_v2.optimized_server.app:app
+  #   network_mode: service:router
+  #   depends_on:
+  #     - postgres
+  #   volumes: *volumes
+  #   environment: *environment
   celery:
     build: backend
     init: true
@@ -48,8 +85,7 @@ services:
     volumes:
       - ./backend:/usr/src/app:ro
       - ./dev-secrets:/usr/src/app/dev-secrets:rw
-    environment:
-      <<: *environment
+    environment: *environment
   frontend:
     build:
       context: frontend
@@ -68,12 +104,18 @@ services:
     # image: postgres
     build: backend/kompassi/sql/
     init: true
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
     # uncomment if you need to access postgres from host
     # note: you can use `docker compose exec postgres psql -U kompassi` to access psql cli
     # ports:
-    #   - 5432:5432
+    #   - 5433:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    # tmpfs:
+    #   - /var/lib/postgresql/data
     environment:
       POSTGRES_USER: kompassi
       POSTGRES_PASSWORD: secret

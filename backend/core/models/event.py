@@ -12,6 +12,8 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
 from ..utils import SLUG_FIELD_PARAMS, event_meta_property, format_date, format_date_range, pick_attrs, slugify
+from .organization import Organization
+from .venue import Venue
 
 if typing.TYPE_CHECKING:
     from forms.models.survey import Survey
@@ -30,7 +32,10 @@ class Event(models.Model):
     name = models.CharField(max_length=63, verbose_name="Tapahtuman nimi")
 
     organization = models.ForeignKey(
-        "core.Organization", on_delete=models.CASCADE, verbose_name="Järjestäjätaho", related_name="events"
+        Organization,
+        on_delete=models.CASCADE,
+        verbose_name="Järjestäjätaho",
+        related_name="events",
     )
 
     name_genitive = models.CharField(
@@ -52,7 +57,7 @@ class Event(models.Model):
     )
 
     venue = models.ForeignKey(
-        "core.Venue",
+        Venue,
         on_delete=models.CASCADE,
         verbose_name="Tapahtumapaikka",
     )

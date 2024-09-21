@@ -1,5 +1,6 @@
 lippukala @ git+https://github.com/kcsry/lippukala@v2.0.0
 paikkala @ git+https://github.com/kcsry/paikkala@v0.2.0
+aiohttp[speedups]
 Babel
 bleach
 boto3
@@ -17,6 +18,7 @@ django-redis
 django-storages
 django-stubs
 Django<5.1
+fastapi[standard]
 flake8
 graphene-django
 graphene-pydantic
@@ -33,8 +35,8 @@ passlib
 phonenumberslite
 Pillow
 pre-commit
-psycopg[c]
-pydantic
+psycopg[c,pool]
+pydantic[email]
 pypugjs
 pyright
 pytest-django
@@ -51,3 +53,4 @@ vobject
 weasyprint
 XlsxWriter
 zxcvbn
+uvicorn

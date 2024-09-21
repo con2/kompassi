@@ -11,7 +11,6 @@ from django.views.decorators.http import require_http_methods
 
 from ..forms import RegistrationForm, RegistrationPersonForm, TermsAndConditionsForm
 from ..models import Person
-from ..page_wizard import page_wizard_vars
 from ..utils import get_next, initialize_form
 from .login_views import do_login
 
@@ -20,8 +19,7 @@ from .login_views import do_login
 @require_http_methods(["GET", "HEAD", "POST"])
 @csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
 def core_registration_view(request):
-    vars = page_wizard_vars(request)
-    next = vars["next"]
+    next = get_next(request)
 
     if request.user.is_authenticated:
         return redirect(next)
@@ -62,7 +60,7 @@ def core_registration_view(request):
         else:
             messages.error(request, "Ole hyvä ja tarkista lomake.")
 
-    vars.update(
+    vars = dict(
         next=next,
         person_form=person_form,
         registration_form=registration_form,

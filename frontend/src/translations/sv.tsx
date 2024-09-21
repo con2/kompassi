@@ -197,14 +197,35 @@ const translations: Translations = {
 
   TicketsView: {
     title: "Köp biljetter",
+    forEvent: (eventName: string) => <>till {eventName}</>,
+    noProducts: UNSURE({
+      title: "Inga produkter tillgängliga",
+      message: "Det finns inga produkter tillgängliga för köp för tillfället.",
+    }),
     productsTable: {
       product: "Produkt",
       price: "Pris",
       quantity: "Antal",
     },
-    contactForm: {
-      title: "Kontakt information",
-    },
+    contactForm: UNSURE({
+      title: "Kontaktinformation",
+      fields: {
+        firstName: {
+          title: "Förnamn",
+        },
+        lastName: {
+          title: "Efternamn",
+        },
+        email: {
+          title: "E-post",
+          helpText:
+            "Kontrollera e-postadressen noggrant! Dina biljetter skickas till denna adress.",
+        },
+        phone: {
+          title: "Telefonnummer",
+        },
+      },
+    }),
     purchaseButtonText: "Köp",
     acceptTermsAndConditions(url: string) {
       return (

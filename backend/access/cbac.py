@@ -8,6 +8,7 @@ from django.db import models
 from django.http import HttpRequest
 from graphene import ResolveInfo
 
+from core.utils.view_utils import get_event_and_organization
 from event_log_v2.utils.emit import emit
 
 from .exceptions import CBACPermissionDenied
@@ -24,10 +25,10 @@ Operation = Literal["query"] | Literal["mutation"]
 def get_default_claims(request, **overrides: str):
     claims = {}
 
-    # from core.middleware.EventOrganizationMiddleware
-    if event := request.event:
+    event, organization = get_event_and_organization(request)
+    if event:
         claims["event"] = event.slug
-    if organization := request.organization:
+    if organization:
         claims["organization"] = organization.slug
 
     # from Django router

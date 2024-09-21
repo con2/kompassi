@@ -40,6 +40,7 @@ DATABASES = {
         "HOST": env("POSTGRES_HOSTNAME", default="postgres"),
         "NAME": env("POSTGRES_DATABASE", default="kompassi"),
         "USER": env("POSTGRES_USERNAME", default="kompassi"),
+        "PORT": env("POSTGRES_PORT", default="5432"),
         "PASSWORD": env("POSTGRES_PASSWORD", default="secret"),
         "OPTIONS": {
             "sslmode": env("POSTGRES_SSLMODE", default="allow"),
@@ -111,8 +112,6 @@ MIDDLEWARE = (
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "core.middleware.PageWizardMiddleware",
-    "core.middleware.EventOrganizationMiddleware",
     "django.middleware.locale.LocaleMiddleware",
 )
 
@@ -138,7 +137,6 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
             ],
             "loaders": [
-                # PyPugJS part:   ##############################
                 (
                     "pypugjs.ext.django.Loader",
                     (
@@ -184,6 +182,7 @@ INSTALLED_APPS = (
     "labour",
     "labour_common_qualifications",
     "tickets",
+    "tickets_v2",
     "payments",
     "mailings",
     "api",
@@ -279,6 +278,7 @@ INSTALLED_APPS = (
     "events.desucon2025",
     "events.kotaeexpo2025",
     "events.popcultnights2024",
+    "events.tracon2025",
     # zombies are obsolete apps that can't be removed due to cross-app references in models
     "zombies.event_log",
     "zombies.surveys",

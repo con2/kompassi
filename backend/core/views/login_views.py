@@ -8,7 +8,6 @@ from django.views.decorators.http import require_http_methods
 
 from ..forms import LoginForm
 from ..models import Person
-from ..page_wizard import page_wizard_clear, page_wizard_vars
 from ..utils import get_next, initialize_form
 from .email_verification_views import remind_email_verification_if_needed
 
@@ -39,7 +38,6 @@ def core_login_view(request):
             user = authenticate(username=username, password=password)
             if user:
                 response = do_login(request, user=user, password=password, next=next)
-                page_wizard_clear(request)
                 messages.success(request, "Olet nyt kirjautunut sisään.")
                 return response
             else:
@@ -47,9 +45,7 @@ def core_login_view(request):
         else:
             messages.error(request, "Ole hyvä ja korjaa virheelliset kentät.")
 
-    vars = page_wizard_vars(request)
-
-    vars.update(form=form, login_page=True)
+    vars = dict(form=form, login_page=True)
 
     return render(request, "core_login_view.pug", vars)
 

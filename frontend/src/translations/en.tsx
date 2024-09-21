@@ -184,6 +184,11 @@ const translations = {
 
   TicketsView: {
     title: "Purchase tickets",
+    forEvent: (eventName: string) => <>for {eventName}</>,
+    noProducts: {
+      title: "No products available",
+      message: "There are no products available for purchase at the moment.",
+    },
     productsTable: {
       product: "Product",
       price: "Price",
@@ -191,6 +196,22 @@ const translations = {
     },
     contactForm: {
       title: "Contact information",
+      fields: {
+        firstName: {
+          title: "First name",
+        },
+        lastName: {
+          title: "Last name",
+        },
+        email: {
+          title: "Email",
+          helpText:
+            "Check the email address carefully! Your tickets will be sent to this address.",
+        },
+        phone: {
+          title: "Phone number",
+        },
+      },
     },
     purchaseButtonText: "Purchase",
     acceptTermsAndConditions(url: string) {
