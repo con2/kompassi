@@ -64,6 +64,7 @@ def qualifications_related():
 
 
 @labour_event_required
+@person_required
 @require_http_methods(["GET", "HEAD", "POST"])
 def signup_view(request, event, alternative_form_slug=None):
     signup = event.labour_event_meta.get_signup_for_person(request.user.person)
