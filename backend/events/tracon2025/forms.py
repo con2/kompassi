@@ -105,7 +105,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
 
     def get_excluded_field_defaults(self):
         return dict(
-            total_work="yli10h",
+            total_work="16h",
         )
 
 
