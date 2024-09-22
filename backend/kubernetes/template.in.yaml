@@ -64,11 +64,11 @@ then: !Include kompassi/secret.in.yaml
 ---
 !If
 test: !Var kompassi_uvicorn_enabled
-then: !Include kompassi/service.in.yaml
+then: !Include uvicorn/service.in.yaml
 ---
 !If
 test: !Var kompassi_uvicorn_enabled
-then: !Include kompassi/deployment.in.yaml
+then: !Include uvicorn/deployment.in.yaml
 
 ##############################
 # CELERY (Background worker) #
