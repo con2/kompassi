@@ -14,7 +14,7 @@ app = FastAPI(lifespan=lifespan)
 EventSlug = Annotated[str, Path()]
 
 
-@app.get("/api/v1/status")
+@app.get("/api/tickets-v2/status")
 async def status():
     return {"status": "OK"}
 
