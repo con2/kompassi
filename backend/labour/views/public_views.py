@@ -95,7 +95,7 @@ def signup_view(request, event, alternative_form_slug=None):
         submit_text = _("Submit application")
 
     signup_extra = signup.signup_extra
-    signup_form, signup_extra_form = initialize_signup_forms(
+    signup_form, signup_extra_form = initialize_signup_forms(  # type: ignore
         request,
         event,
         signup,
@@ -115,7 +115,7 @@ def signup_view(request, event, alternative_form_slug=None):
             if alternative_signup_form is not None:
                 signup.alternative_signup_form_used = alternative_signup_form
 
-                set_attrs(signup, **signup_form.get_excluded_field_defaults())
+                set_attrs(signup, **signup_form.get_excluded_field_defaults())  # type: ignore
                 set_attrs(signup_extra, **signup_extra_form.get_excluded_field_defaults())
 
             with transaction.atomic():
@@ -281,7 +281,8 @@ def person_qualification_view(request, qualification):
             person_qualification.save()
 
             if form:
-                qualification_extra.personqualification = person_qualification
+                if qualification_extra is not None:
+                    qualification_extra.personqualification = person_qualification
                 form.save()
 
             messages.success(request, _("The qualification has been updated."))
