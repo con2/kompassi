@@ -19,7 +19,7 @@ export async function getProducts(
   eventSlug: string,
 ): Promise<GetProductsResponse> {
   const response = await fetch(
-    `${kompassiBaseUrl}/api/v1/events/${eventSlug}/products/`,
+    `${kompassiBaseUrl}/api/tickets-v2/events/${eventSlug}/products/`,
   );
   const products = await response.json();
   return products;
