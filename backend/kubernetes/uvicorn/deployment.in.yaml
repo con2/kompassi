@@ -33,9 +33,32 @@ spec:
             - --no-access-log
             - !Format "--workers={kompassi_workers}"
             - tickets_v2.optimized_server.app:app
-
-          startupProbe: !Var kompassi_startup_probe
-          readinessProbe: !Var kompassi_readiness_probe
-          livenessProbe: !Var kompassi_liveness_probe
-      #     volumeMounts: !Var kompassi_volume_mounts
-      # volumes: !Var kompassi_volumes
+          startupProbe:
+            httpGet:
+              path: /api/tickets-v2/status
+              port: 7998
+              httpHeaders:
+                - name: Host
+                  value: !Lookup ingress_public_hostnames[0]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            # 5 * 12 seconds = 1 minute
+            failureThreshold: 12
+          readinessProbe:
+            httpGet:
+              path: /api/tickets-v2/status
+              port: 7998
+              httpHeaders:
+                - name: Host
+                  value: !Lookup ingress_public_hostnames[0]
+            initialDelaySeconds: 0
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /api/tickets-v2/status
+              port: 7998
+              httpHeaders:
+                - name: Host
+                  value: !Lookup ingress_public_hostnames[0]
+            initialDelaySeconds: 15
+            periodSeconds: 30
