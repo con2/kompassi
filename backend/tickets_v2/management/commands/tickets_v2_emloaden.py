@@ -24,7 +24,7 @@ from ...optimized_server.models.api import CreateOrderResponse, GetProductsRespo
 from ...optimized_server.models.customer import Customer
 from ...optimized_server.models.order import Order
 
-base_url = environ.get("BASE_URL", "http://localhost:7999")
+base_url = environ.get("BASE_URL", "http://localhost:7998")
 event_slug = "tracon2025"
 customer = Customer(
     firstName="John",
