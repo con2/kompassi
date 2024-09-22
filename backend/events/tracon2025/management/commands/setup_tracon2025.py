@@ -39,9 +39,10 @@ class Setup:
         self._ordering += 10
         return self._ordering
 
-    def setup(self, test=False):
+    def setup(self, test=False, dev_tickets: bool = False):
         self.test = test
         self.tz = tzlocal()
+        self.dev_tickets = dev_tickets
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
@@ -556,7 +557,7 @@ class Setup:
         if created:
             sunday_quota.set_quota(5500)
 
-        if self.test:
+        if self.test or self.dev_tickets:
             available_from = now()
             available_until = now() + timedelta(days=1)
         else:
@@ -608,5 +609,8 @@ class Command(BaseCommand):
     args = ""
     help = "Setup tracon2025 specific stuff"
 
+    def add_arguments(self, parser):
+        parser.add_argument("--dev-tickets", action="store_true", default=False)
+
     def handle(self, *args, **opts):
-        Setup().setup(test=settings.DEBUG)
+        Setup().setup(test=settings.DEBUG, dev_tickets=opts["dev_tickets"])
