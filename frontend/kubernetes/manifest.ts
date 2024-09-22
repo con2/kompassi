@@ -106,6 +106,20 @@ const env = Object.entries({
   }
 });
 
+const volumes = [
+  {
+    name: "kompassi2-temp",
+    emptyDir: {},
+  },
+];
+
+const volumeMounts = [
+  {
+    name: "kompassi2-temp",
+    mountPath: "/usr/src/app/.next/cache",
+  },
+];
+
 const deployment = {
   apiVersion: "apps/v1",
   kind: "Deployment",
@@ -128,6 +142,7 @@ const deployment = {
           runAsGroup: 1000,
           fsGroup: 1000,
         },
+        volumes,
         initContainers: [],
         containers: [
           {
@@ -141,6 +156,7 @@ const deployment = {
             },
             startupProbe: probe,
             livenessProbe: probe,
+            volumeMounts,
           },
         ],
       },

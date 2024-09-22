@@ -29,6 +29,8 @@ services:
     volumes: &volumes
       - ./backend:/usr/src/app
       - ./dev-secrets:/usr/src/app/dev-secrets:rw
+    tmpfs:
+      - /tmp
     environment: &environment
       PYTHONUNBUFFERED: 1
       DEBUG: 1
@@ -85,6 +87,8 @@ services:
     volumes:
       - ./backend:/usr/src/app:ro
       - ./dev-secrets:/usr/src/app/dev-secrets:rw
+    tmpfs:
+      - /tmp
     environment: *environment
   frontend:
     build:

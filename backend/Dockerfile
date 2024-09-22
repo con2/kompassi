@@ -18,5 +18,9 @@ RUN env DEBUG=1 python manage.py collectstatic --noinput && \
     python -m compileall -q . && \
     chmod 755 manage.py scripts/*.sh
 USER kompassi
+
+# mount tmpfs at /tmp to silence "FontConfig: No writable cache directories" warnings
+ENV HOME=/tmp
+
 ENTRYPOINT ["/usr/src/app/scripts/docker-entrypoint.sh"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
