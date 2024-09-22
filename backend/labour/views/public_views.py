@@ -1,7 +1,6 @@
 import json
 from itertools import chain
 
-from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
 from django.http import Http404
@@ -16,7 +15,6 @@ from core.models import Person
 from core.utils import (
     initialize_form,
     set_attrs,
-    url,
 )
 from emprinten.utils import render_obj
 from event_log_v2.utils.emit import emit
@@ -30,37 +28,6 @@ from ..models import (
     Signup,
 )
 from .view_helpers import initialize_signup_forms
-
-
-def login_related():
-    related = ["core_registration_view"]
-
-    if "desuprofile_integration" in settings.INSTALLED_APPS:
-        related.extend(
-            [
-                "desuprofile_integration_oauth2_login_view",
-                "desuprofile_integration_oauth2_callback_view",
-                "desuprofile_integration_confirmation_required_view",
-            ]
-        )
-
-    return related
-
-
-# XXX hackish
-def qualifications_related():
-    result = []
-
-    for qual in Qualification.objects.all():
-        # wouldn't need labour_person_(dis)qualify_view if they used POST as they should
-        for view_name in [
-            "labour:person_qualification_view",
-            "labour:person_qualify_view",
-            "labour:person_disqualify_view",
-        ]:
-            result.append(url(view_name, qual.slug))
-
-    return result
 
 
 @labour_event_required
