@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uvicorn
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: uvicorn
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: uvicorn
+    spec:
+      affinity: !With
+        vars:
+          param_component_name: uvicorn
+        template: !Var macro_pod_affinity
+      enableServiceLinks: false
+      securityContext: !Var kompassi_pod_security_context
+      containers:
+        - name: master
+          image: !Var kompassi_image
+          ports:
+            - containerPort: 7998
+          env: !Var kompassi_environment
+          securityContext: !Var kompassi_container_security_context
+          args:
+            - uvicorn
+            - --host=0.0.0.0
+            - --port=7998
+            - --no-access-log
+            - !Format "--workers={kompassi_workers}"
+            - tickets_v2.optimized_server.app:app
+
+          startupProbe: !Var kompassi_startup_probe
+          readinessProbe: !Var kompassi_readiness_probe
+          livenessProbe: !Var kompassi_liveness_probe
+      #     volumeMounts: !Var kompassi_volume_mounts
+      # volumes: !Var kompassi_volumes

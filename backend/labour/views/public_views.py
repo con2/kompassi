@@ -13,13 +13,8 @@ from django.views.decorators.http import require_http_methods, require_POST, req
 
 from core.helpers import person_required
 from core.models import Person
-from core.page_wizard import (
-    page_wizard_init,
-    page_wizard_vars,
-)
 from core.utils import (
     initialize_form,
-    login_redirect,
     set_attrs,
     url,
 )
@@ -70,49 +65,7 @@ def qualifications_related():
 
 @labour_event_required
 @require_http_methods(["GET", "HEAD", "POST"])
-def signup_view(request, event, alternative_form_slug=None):
-    """
-    This is the "gate" function. The implementation is in
-    `actual_signup_view`.
-
-    The purpose of this function is to redirect new users through the process
-    of registering an account, entering qualifications and only then signing up.
-    Existing users are welcomed to sign up right away.
-    """
-
-    if alternative_form_slug:
-        actual_signup_url = url("labour:special_signup_view", event.slug, alternative_form_slug)
-    else:
-        actual_signup_url = url("labour:signup_view", event.slug)
-
-    if not request.user.is_authenticated:
-        pages = [
-            ("core_login_view", _("Sign up or sign in..."), login_related()),
-            ("labour:qualifications_view", _("Revise qualifications"), qualifications_related()),
-            (actual_signup_url, _("Apply for volunteer work")),
-        ]
-
-        page_wizard_init(request, pages)
-        return login_redirect(request)
-
-    try:
-        _person = request.user.person
-    except Person.DoesNotExist:
-        pages = [
-            ("core_personify_view", _("Complete contact information")),
-            ("labour:qualifications_view", _("Revise qualifications"), qualifications_related()),
-            (actual_signup_url, _("Apply for volunteer work")),
-        ]
-
-        page_wizard_init(request, pages)
-        return redirect("core_personify_view")
-
-    return actual_signup_view(request, event, alternative_form_slug=alternative_form_slug)
-
-
-def actual_signup_view(request, event, alternative_form_slug):
-    vars = page_wizard_vars(request)
-
+def signup_view(request, event, alternative_form_slug):
     signup = event.labour_event_meta.get_signup_for_person(request.user.person)
 
     if alternative_form_slug is not None:
@@ -232,7 +185,7 @@ def actual_signup_view(request, event, alternative_form_slug):
         jc.name for jc in available_job_categories if not jc.is_person_qualified(request.user.person)
     ]
 
-    vars.update(
+    vars = dict(
         alternative_signup_form=alternative_signup_form,
         event=event,
         signup_extra_form=signup_extra_form,
@@ -322,27 +275,21 @@ def confirm_view(request, event):
 @person_required
 @require_safe
 def qualifications_view(request):
-    vars = page_wizard_vars(request)
-
     person_qualifications = request.user.person.qualifications.all()
     qualification_pks = [q.qualification.pk for q in person_qualifications]
     available_qualifications = Qualification.objects.exclude(pk__in=qualification_pks)
 
-    vars.update(person_qualifications=person_qualifications, available_qualifications=available_qualifications)
+    vars = dict(
+        person_qualifications=person_qualifications,
+        available_qualifications=available_qualifications,
+    )
 
-    if "page_wizard" in vars:
-        template_name = "labour_new_user_qualifications_view.pug"
-    else:
-        template_name = "labour_profile_qualifications_view.pug"
-
-    return render(request, template_name, vars)
+    return render(request, "labour_profile_qualifications_view.pug", vars)
 
 
 @person_required
 @require_http_methods(["GET", "HEAD", "POST"])
 def person_qualification_view(request, qualification):
-    vars = page_wizard_vars(request)
-
     person = request.user.person
     qualification = get_object_or_404(Qualification, slug=qualification)
 
@@ -374,14 +321,12 @@ def person_qualification_view(request, qualification):
         else:
             messages.error(request, _("Please check the form."))
 
-    vars.update(person_qualification=person_qualification, form=form)
+    vars = dict(
+        person_qualification=person_qualification,
+        form=form,
+    )
 
-    if "page_wizard" in vars:
-        template_name = "labour_new_user_person_qualification_view.pug"
-    else:
-        template_name = "labour_profile_person_qualification_view.pug"
-
-    return render(request, template_name, vars)
+    return render(request, "labour_profile_person_qualification_view.pug", vars)
 
 
 @person_required

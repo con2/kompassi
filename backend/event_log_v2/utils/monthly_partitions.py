@@ -9,7 +9,7 @@ from uuid import UUID
 from django.contrib import admin
 from django.db import connection, models, transaction
 
-from ..utils.uuid7 import uuid7, uuid7_day_range, uuid7_month_range, uuid7_month_range_for_year_month, uuid7_to_datetime
+from .uuid7 import uuid7, uuid7_day_range, uuid7_month_range, uuid7_month_range_for_year_month, uuid7_to_datetime
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T", bound=models.Model)
@@ -131,7 +131,7 @@ class UUID7Mixin:
         return uuid7(uuid7_to_datetime(self.pk))
 
 
-class PartitionsMixin(UUID7Mixin):
+class MonthlyPartitionsMixin(UUID7Mixin):
     _meta: Any
 
     @classmethod
@@ -201,7 +201,7 @@ class PartitionsMixin(UUID7Mixin):
         Ensures that monthly partitions exist for this model in the current month.
         Used by the management command to create missing partitions.
         """
-        from ..utils.emit import emit
+        from .emit import emit
 
         if today is None:
             today = date_type.today()

@@ -180,6 +180,11 @@ const translations: Translations = {
 
   TicketsView: {
     title: "Osta lippuja",
+    forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
+    noProducts: {
+      title: "Ei tuotteita saatavilla",
+      message: "Yhtään tuotetta ei ole tällä hetkellä tilattavissa.",
+    },
     productsTable: {
       product: "Tuote",
       price: "Hinta",
@@ -187,6 +192,22 @@ const translations: Translations = {
     },
     contactForm: {
       title: "Yhteystiedot",
+      fields: {
+        firstName: {
+          title: "Etunimi",
+        },
+        lastName: {
+          title: "Sukunimi",
+        },
+        email: {
+          title: "Sähköposti",
+          helpText:
+            "Tarkista sähköpostiosoite huolellisesti! Liput lähetetään tähän osoitteeseen.",
+        },
+        phone: {
+          title: "Puhelinnumero",
+        },
+      },
     },
     purchaseButtonText: "Osta",
     acceptTermsAndConditions(url: string) {

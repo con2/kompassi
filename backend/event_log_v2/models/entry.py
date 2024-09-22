@@ -8,13 +8,13 @@ from django.db import models
 
 from core.models import Event, Organization, Person
 
-from ..utils.partitions import PartitionsMixin
+from ..utils.monthly_partitions import MonthlyPartitionsMixin
 from ..utils.uuid7 import uuid7, uuid7_month_range_for_year_month, uuid7_to_datetime
 
 logger = logging.getLogger("kompassi")
 
 
-class Entry(PartitionsMixin, models.Model):
+class Entry(MonthlyPartitionsMixin, models.Model):
     id = models.UUIDField(
         primary_key=True,
         default=uuid7,

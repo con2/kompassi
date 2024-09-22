@@ -225,7 +225,7 @@ class SurveyDTO:
     def save(self, event: Event) -> Survey:
         from .dimension import DimensionDTO
 
-        defaults = asdict(self)
+        defaults = asdict(self)  # type: ignore
         slug = defaults.pop("slug")
 
         survey, created = Survey.objects.get_or_create(event=event, slug=slug, defaults=defaults)
