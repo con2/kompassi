@@ -376,7 +376,6 @@ class Setup:
             "<p>Lue lisää tapahtumasta <a href='http://2024.hitpoint.tracon.fi' target='_blank' rel='noreferrer noopener'>Tracon Hitpoint -tapahtuman kotisivuilta</a>.</p>"
             "<p><strong>Note</strong>: Purchasing Tracont Hitpoint tickets through this web shop requires a Finnish web bank service. "
             "If you do not have one, please contact us to purchase tickets: <em>hitpoint@tracon.fi</em>.</p>",
-            tickets_view_version="v1.5",
         )
 
         if self.test:
@@ -389,9 +388,7 @@ class Setup:
         TicketsEventMeta.objects.update_or_create(
             event=self.event,
             create_defaults=defaults,
-            defaults=dict(
-                tickets_view_version="v1.5",
-            ),
+            defaults=dict(),
         )
 
         def limit_group(description, limit):

@@ -328,7 +328,6 @@ class Setup:
                 "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla, maksukortilla tai MobilePaylla heti tilauksen yhteydessä.</p>"
                 "<p>Lue lisää tapahtumasta <a href='http://2024.tracon.fi'>Traconin kotisivuilta</a>.</p>"
             ),
-            tickets_view_version="v1.5",
         )
 
         if self.test:

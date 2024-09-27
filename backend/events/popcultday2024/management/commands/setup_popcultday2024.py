@@ -165,7 +165,6 @@ class Setup:
         (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
 
         defaults = dict(
-            tickets_view_version="v1.5",
             admin_group=tickets_admin_group,
             reference_number_template="2024{:06d}",
             contact_email="Popcult Day <liput@popcult.fi>",

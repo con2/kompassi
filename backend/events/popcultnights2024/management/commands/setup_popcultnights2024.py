@@ -76,15 +76,12 @@ class Setup:
             "<p>Lue lisää tapahtumasta <a href='https://popcult.fi/nights-2024-halloween-edition/'>Popcult Nights: Halloween Edition (2024) -tapahtuman kotisivuilta</a>.</p>",
             ticket_sales_starts=t,
             ticket_sales_ends=t + timedelta(days=60) if self.test else self.event.end_time,
-            tickets_view_version="v1.5",
         )
 
         TicketsEventMeta.objects.update_or_create(
             event=self.event,
             create_defaults=defaults,
-            defaults=dict(
-                tickets_view_version="v1.5",
-            ),
+            defaults=dict(),
         )
 
         def limit_group(description, limit):
