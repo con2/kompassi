@@ -101,10 +101,6 @@ class Order(models.Model):
         )["sum"]
 
     @property
-    def requires_accommodation_information(self):
-        return self.order_product_set.filter(count__gt=0, product__requires_accommodation_information=True).exists()
-
-    @property
     def formatted_price(self):
         return format_price(self.price_cents)
 
@@ -341,10 +337,6 @@ class Order(models.Model):
 
         # don't fail silently, warn admins instead
         bcc: list[str] = []
-        meta = self.event.tickets_event_meta
-
-        if meta.ticket_spam_email:
-            bcc.append(meta.ticket_spam_email)
 
         for op in self.order_product_set.filter(count__gt=0):
             if op.product.notify_email:

@@ -3,26 +3,20 @@ from collections import defaultdict
 
 from csp.decorators import csp_exempt
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
-from django.db.models import Q, Sum
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods, require_POST, require_safe
+from django.views.decorators.http import require_http_methods, require_safe
 from lippukala.consts import BEYOND_LOGIC, MANUAL_INTERVENTION_REQUIRED
 from lippukala.views import POSView
 
-from core.csv_export import CSV_EXPORT_FORMATS, csv_response
-from core.sort_and_filter import Filter
-from core.utils import initialize_form, login_redirect, slugify, url
+from core.utils import initialize_form, login_redirect, url
 from event_log_v2.utils.emit import emit
 
 from ..forms import (
-    AccommodationInformationAdminForm,
-    AccommodationPresenceForm,
     AdminOrderForm,
     CustomerForm,
     OrderProductForm,
@@ -30,8 +24,6 @@ from ..forms import (
 )
 from ..helpers import perform_search, tickets_admin_required, tickets_event_required
 from ..models import (
-    AccommodationInformation,
-    LimitGroup,
     Order,
 )
 from ..models.consts import UNPAID_CANCEL_HOURS
@@ -297,192 +289,6 @@ def tickets_admin_tools_view(request, vars, event):
     return render(request, "tickets_admin_tools_view.pug", vars)
 
 
-@tickets_event_required
-@require_http_methods(["GET", "HEAD", "POST"])
-def tickets_admin_accommodation_view(request, event, limit_group_id=None):
-    if not event.tickets_event_meta.is_user_allowed_accommodation_access(request.user):
-        raise PermissionDenied()
-
-    vars = dict(event=event)
-
-    if limit_group_id is not None:
-        limit_group_id = int(limit_group_id)
-        limit_group = get_object_or_404(LimitGroup, id=limit_group_id, event=event)
-        query = Q(
-            # Belongs to the selected night and school
-            limit_groups=limit_group,
-        ) & (
-            Q(
-                # Accommodation information is manually added
-                order_product__isnull=True
-            )
-            | Q(
-                # Order is confirmed
-                order_product__order__confirm_time__isnull=False,
-                # Order is paid
-                order_product__order__payment_date__isnull=False,
-                # Order is not cancelled
-                order_product__order__cancellation_time__isnull=True,
-            )
-        )
-        accommodees = AccommodationInformation.objects.filter(query).order_by("last_name", "first_name")
-        active_filter = limit_group
-    else:
-        accommodees = AccommodationInformation.objects.none()
-        active_filter = None
-        limit_group = None
-
-    present_filter = Filter(request, "state").add_choices(
-        "state",
-        AccommodationInformation.State.choices,
-    )
-    accommodees = present_filter.filter_queryset(accommodees)
-
-    format = request.GET.get("format", "screen")
-
-    if format in CSV_EXPORT_FORMATS:
-        filename = "{event.slug}-{active_filter}-{timestamp}.{format}".format(
-            event=event,
-            active_filter=slugify(limit_group.description) if limit_group else "tickets",
-            timestamp=now().strftime("%Y%m%d%H%M%S"),
-            format=format,
-        )
-
-        emit("core.person.exported", request=request)
-
-        return csv_response(
-            event,
-            AccommodationInformation,
-            accommodees,
-            filename=filename,
-            dialect=CSV_EXPORT_FORMATS[format],
-        )
-    elif format == "screen":
-        # ticket shoppe limit grouppes that have accommodation products
-        q = Q(
-            event=event,
-            product__requires_accommodation_information=True,
-        )
-
-        # shortcut: limit grouppes that already have accommodees
-        # required for labour accommodation
-        q |= Q(
-            event=event,
-            accommodation_information_set__isnull=False,
-        )
-
-        filters = [(limit_group_id == lg.id, lg) for lg in LimitGroup.objects.filter(q).distinct().order_by("id")]
-
-        vars.update(
-            accommodees=accommodees,
-            present_filter=present_filter,
-            # TODO legacy manual filter
-            active_filter=active_filter,
-            limit_group=limit_group,
-            filters=filters,
-        )
-
-        return render(request, "tickets_admin_accommodation_view.pug", vars)
-    else:
-        raise NotImplementedError(format)
-
-
-@tickets_event_required
-@require_POST
-def tickets_admin_accommodation_presence_view(request, event, limit_group_id, accommodation_information_id):
-    if not event.tickets_event_meta.is_user_allowed_accommodation_access(request.user):
-        raise PermissionDenied()
-
-    limit_group = get_object_or_404(LimitGroup, event=event, id=limit_group_id)
-    accommodee = get_object_or_404(
-        AccommodationInformation,
-        limit_groups=limit_group,
-        id=accommodation_information_id,
-    )
-
-    accommodee_form = initialize_form(AccommodationPresenceForm, request, instance=accommodee)
-    State = AccommodationInformation.State
-
-    if accommodee_form.is_valid():
-        action = request.POST.get("action", "save")
-        accommodee = accommodee_form.save(commit=False)
-
-        if action == "left":
-            accommodee.state = State.LEFT
-            event_type = "tickets.accommodation.presence.left"
-            message = _("Accommodee marked as left.")
-
-        elif action == "arrived":
-            accommodee.state = State.ARRIVED
-            event_type = "tickets.accommodation.presence.arrived"
-            message = _("Accommodee marked as arrived.")
-
-        else:
-            event_type = None
-            message = _("Accommodation information saved.")
-
-        accommodee.save()
-
-        if event_type:
-            emit(
-                event_type,
-                request=request,
-                accommodation_information=accommodee.pk,
-                limit_group=limit_group.pk,
-                other_fields=dict(room_name=accommodee.room_name),
-            )
-
-        messages.success(request, message)
-
-    else:
-        messages.error(request, _("Please check the form."))
-
-    return redirect("tickets_admin_accommodation_filtered_view", event.slug, limit_group_id)
-
-
-@tickets_event_required
-@require_http_methods(["GET", "HEAD", "POST"])
-def tickets_admin_accommodation_create_view(request, event, limit_group_id):
-    if not event.tickets_event_meta.is_user_allowed_accommodation_access(request.user):
-        raise PermissionDenied()
-
-    vars = dict(event=event)
-
-    limit_group_id = int(limit_group_id)
-    limit_group = get_object_or_404(LimitGroup, id=limit_group_id, event=event)
-
-    form = initialize_form(AccommodationInformationAdminForm, request)
-
-    if request.method == "POST":
-        if form.is_valid():
-            info = form.save(commit=False)
-            info.state = AccommodationInformation.State.ARRIVED
-            info.save()
-
-            info.limit_groups.set([limit_group])
-
-            emit(
-                "tickets.accommodation.presence.arrived",
-                request=request,
-                accommodation_information=info.pk,
-                limit_group=limit_group.pk,
-                other_fields=dict(room_name=info.room_name),
-            )
-
-            messages.success(request, "Majoittuja lisättiin.")
-        else:
-            messages.error(request, _("Please check the form."))
-
-        return redirect("tickets_admin_accommodation_filtered_view", event.slug, limit_group_id)
-
-    vars.update(
-        form=form,
-        limit_group=limit_group,
-    )
-
-    return render(request, "tickets_admin_accommodation_create_view.pug", vars)
-
-
 class KompassiPOSView(POSView):
     def get_valid_codes(self, request):
         # Kompassi uses the MIR state for cancelled orders.
@@ -519,10 +325,6 @@ def tickets_admin_menu_items(request, event):
     orders_active = request.path.startswith(orders_url)
     orders_text = "Tilaukset"
 
-    accommodation_url = url("tickets_admin_accommodation_view", event.slug)
-    accommodation_active = request.path.startswith(accommodation_url)
-    accommodation_text = "Majoituslistat"
-
     tools_url = url("tickets_admin_tools_view", event.slug)
     tools_active = request.path.startswith(tools_url)
     tools_text = "Työkalut"
@@ -538,7 +340,6 @@ def tickets_admin_menu_items(request, event):
     return [
         (stats_active, stats_url, stats_text),
         (orders_active, orders_url, orders_text),
-        (accommodation_active, accommodation_url, accommodation_text),
         (tools_active, tools_url, tools_text),
         (pos_active, pos_url, pos_text),
         (reports_active, reports_url, reports_text),

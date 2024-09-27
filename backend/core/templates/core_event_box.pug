@@ -37,6 +37,6 @@
               span.label.label-default.kompassi-space-after {% trans "Schedule" %}
         if event.tickets_event_meta
           if event.tickets_event_meta.is_ticket_sales_open
-            span.label.label-primary.kompassi-space-after: a(href='{% url "tickets_welcome_view" event.slug %}') {% trans "Selling tickets" %}
+            span.label.label-primary.kompassi-space-after: a(href='{% url "tickets_view" event.slug %}') {% trans "Selling tickets" %}
           else
             span.label.label-default.kompassi-space-after {% trans "Ticket sales" %}

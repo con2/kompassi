@@ -15,9 +15,6 @@ function UNSURE<T>(wat: T): T {
 }
 
 const translations: Translations = {
-  AccommodationOnboardingView: {
-    title: "Boende inloggning",
-  },
   Common: {
     ok: "OK",
     cancel: "Avbryt",
