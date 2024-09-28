@@ -358,19 +358,7 @@ class CheckoutPayment(models.Model):
 
     def get_redirect(self):
         if self.tickets_order:
-            match self.tickets_order.event.tickets_event_meta.tickets_view_version:
-                case "v1":
-                    if self.status in ["ok", "pending", "delayed"]:
-                        return redirect("tickets_thanks_view", self.tickets_order.event.slug)
-                    else:
-                        return redirect("tickets_confirm_view", self.tickets_order.event.slug)
-                case "v1.5":
-                    # XXX named tickets_welcome_view for historical reasons
-                    # but it actually shows the order confirmation view
-                    return redirect("tickets_welcome_view", self.tickets_order.event.slug)
-                case unsupported_version:
-                    raise NotImplementedError(unsupported_version)
-
+            return redirect("tickets_view", self.tickets_order.event.slug)
         elif self.membership_fee_payment:
             return redirect("core_organization_view", self.membership_fee_payment.term.organization.slug)
         else:

@@ -7,8 +7,6 @@ from django.utils.translation import gettext_lazy as _
 
 from core.models import ContactEmailMixin, EventMetaBase, contact_email_validator
 
-from .consts import TICKETS_VIEW_VERSION_CHOICES
-
 logger = logging.getLogger("kompassi")
 
 
@@ -40,13 +38,6 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         verbose_name=_("Contact e-mail address (with description)"),
         help_text=_("Format: Fooevent Ticket Sales &lt;tickets@fooevent.example.com&gt;"),
         blank=True,
-    )
-
-    ticket_spam_email = models.CharField(
-        max_length=255,
-        blank=True,
-        verbose_name=_("Monitoring e-mail address"),
-        help_text=_("If set, all tickets-related e-mail messages will be also sent to this e-mail address."),
     )
 
     ticket_free_text = models.TextField(
@@ -98,28 +89,9 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
         related_name="as_pos_access_group_for",
     )
 
-    accommodation_access_group = models.ForeignKey(
-        "auth.Group",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        verbose_name=_("Accommodation access group"),
-        help_text=_(
-            "Members of this group are granted access to the accommodation onboarding view without being ticket admins."
-        ),
-        related_name="as_accommodation_access_group_for",
-    )
-
     terms_and_conditions_url = HStoreField(blank=True, default=dict)
 
     max_count_per_product = models.SmallIntegerField(blank=True, default=99)
-
-    tickets_view_version = models.CharField(
-        max_length=max(len(key) for (key, _) in TICKETS_VIEW_VERSION_CHOICES),
-        choices=TICKETS_VIEW_VERSION_CHOICES,
-        default=TICKETS_VIEW_VERSION_CHOICES[0][0],
-        verbose_name=_("Tickets view version"),
-    )
 
     def __str__(self):
         return self.event.name
@@ -161,12 +133,6 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
             return True
 
         return self.pos_access_group and self.is_user_in_group(user, self.pos_access_group)
-
-    def is_user_allowed_accommodation_access(self, user):
-        if self.is_user_admin(user):
-            return True
-
-        return self.pos_access_group and self.is_user_in_group(user, self.accommodation_access_group)
 
     class Meta:
         verbose_name = _("ticket sales settings for event")

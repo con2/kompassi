@@ -1,9 +1,6 @@
 import type { Translations } from "./en";
 
 const translations: Translations = {
-  AccommodationOnboardingView: {
-    title: "Majoituksen sisäänkirjaus",
-  },
   Common: {
     ok: "OK",
     cancel: "Peruuta",

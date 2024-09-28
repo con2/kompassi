@@ -27,7 +27,6 @@ class Product(models.Model):
     mail_description = models.TextField(null=True, blank=True)
     limit_groups = models.ManyToManyField("tickets.LimitGroup", blank=True)
     price_cents = models.IntegerField()
-    requires_accommodation_information = models.BooleanField(default=False)
     electronic_ticket = models.BooleanField(default=False)
     electronic_tickets_per_product = models.PositiveIntegerField(default=1)
     available = models.BooleanField(default=True)

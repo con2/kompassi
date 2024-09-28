@@ -2,9 +2,6 @@ import { markAsFavorite } from "@/app/[locale]/events/[eventSlug]/program/action
 import { submit } from "@/app/[locale]/events/[eventSlug]/surveys/[surveySlug]/actions";
 
 const translations = {
-  AccommodationOnboardingView: {
-    title: "Accommodation onboarding",
-  },
   Common: {
     ok: "OK",
     cancel: "Cancel",

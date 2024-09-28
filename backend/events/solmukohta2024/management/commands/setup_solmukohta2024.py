@@ -288,7 +288,6 @@ class Setup:
 <p>After completing the purchase a receipt and the ticket will be emailed to the address provided. Double check that you type in the correct email address!</p>
 <p>For faster check in at the Solmukohta 2024 event, we ask all participants to have their identification ready at check in.</p>
 """,
-            tickets_view_version="v1.5",
         )
 
         if self.test:

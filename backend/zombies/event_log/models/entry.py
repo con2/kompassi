@@ -52,12 +52,6 @@ class Entry(models.Model):
         blank=True,
         null=True,
     )
-    accommodation_information = models.ForeignKey(
-        "tickets.AccommodationInformation",
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-    )
     limit_group = models.ForeignKey(
         "tickets.LimitGroup",
         on_delete=models.SET_NULL,

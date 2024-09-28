@@ -1,5 +1,4 @@
 # database models
-from .accommodation_information import AccommodationInformation
 from .customer import Customer
 from .limit_group import LimitGroup
 from .order import Order

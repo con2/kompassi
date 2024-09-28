@@ -48,7 +48,10 @@ class Ticket(EventPartitionsMixin, UUID7Mixin, models.Model):
         on_delete=models.CASCADE,
         related_name="+",
     )
-    order_id = models.UUIDField(null=True)
+    order_id = models.UUIDField(
+        null=True,
+        blank=True,
+    )
 
     event_id: int
     quota_id: int

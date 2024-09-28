@@ -187,7 +187,6 @@ class Setup:
         tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 
         defaults = dict(
-            tickets_view_version="v1.5",
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
             reference_number_template="2025{:06d}",

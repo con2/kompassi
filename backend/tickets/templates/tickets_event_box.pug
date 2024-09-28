@@ -4,7 +4,7 @@ h3 {% trans "Ticket sales" %}
 if event.tickets_event_meta.is_ticket_sales_open
   h4 {% trans "Ticket sales is currently open." %}
 
-  p: a(href='{% url "tickets_welcome_view" event.slug %}').btn.btn-primary {% trans "Buy tickets" %}
+  p: a(href='{% url "tickets_view" event.slug %}').btn.btn-primary {% trans "Buy tickets" %}
 else
   h4 {% trans "Ticket sales is not currently open." %}
 
