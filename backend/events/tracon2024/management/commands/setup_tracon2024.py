@@ -413,7 +413,6 @@ class Setup:
                     limit_group("Majoitus Fista pe-la", 220),
                 ],
                 price_cents=12_00,
-                requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -425,7 +424,6 @@ class Setup:
                     limit_group("Majoitus Fista la-su", 220),
                 ],
                 price_cents=12_00,
-                requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -437,7 +435,6 @@ class Setup:
                     limit_group("TSH-coniteanäytäntö", 90),
                 ],
                 price_cents=35_00,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="tsh-rcjxrpwl",  # will be changed in production
@@ -450,7 +447,6 @@ class Setup:
                     limit_group("TSH-coniteanäytäntö", 90),
                 ],
                 price_cents=75_00,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="tsh-rcjxrpwl",  # will be changed in production
@@ -463,7 +459,6 @@ class Setup:
                     limit_group("TSH-väliaikatarjoilut", 9999),
                 ],
                 price_cents=14_00,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="tsh-rcjxrpwl",  # will be changed in production
@@ -476,7 +471,6 @@ class Setup:
                     limit_group("TSH-väliaikatarjoilut", 9999),
                 ],
                 price_cents=9_00,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="tsh-rcjxrpwl",  # will be changed in production
@@ -488,7 +482,6 @@ class Setup:
                     limit_group("TSH-väliaikatarjoilut", 9999),
                 ],
                 price_cents=4_50,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="tsh-rcjxrpwl",  # will be changed in production
@@ -500,7 +493,6 @@ class Setup:
                     limit_group("TSH-väliaikatarjoilut", 9999),
                 ],
                 price_cents=4_50,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="tsh-rcjxrpwl",  # will be changed in production
@@ -513,7 +505,6 @@ class Setup:
                     limit_group("TSH-väliaikatarjoilut", 9999),
                 ],
                 price_cents=13_50,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="tsh-rcjxrpwl",  # will be changed in production
@@ -526,7 +517,6 @@ class Setup:
                     limit_group("Edustustuotteet", 9999),
                 ],
                 price_cents=19_00,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="hup-hvltvckn",  # will be changed in production

@@ -264,7 +264,6 @@ class Setup:
                 ],
                 price_cents=1500,
                 electronic_ticket=False,
-                requires_accommodation_information=True,
                 available=True,
                 ordering=self.get_ordering_number(),
             ),
