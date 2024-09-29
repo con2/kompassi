@@ -191,7 +191,11 @@ class ProgramDimensionValue(models.Model):
         for dimension_slug, value_slugs in dimension_values.items():
             dimension = dimensions_by_slug[dimension_slug]
             for value_slug in set(value_slugs):
-                value = values_by_slug[dimension_slug][value_slug]
+                value = values_by_slug[dimension_slug].get(value_slug)
+                if value is None:
+                    logger.warning("DimensionValue not found: dimension=%s, value=%s", dimension_slug, value_slug)
+                    continue
+
                 bulk_create.append(
                     cls(
                         program=program,

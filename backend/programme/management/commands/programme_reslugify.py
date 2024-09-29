@@ -31,12 +31,8 @@ class Command(BaseCommand):
 
     def handle(*args, **opts):
         with transaction.atomic():
-            qs = Programme.objects.filter(category__event__slug__in=opts["event_slugs"]).select_for_update(of=("self",))
-            qs.update(slug="")
-
-            for programme in qs:
-                # pre_save signal will re-create the slug
-                programme.save(update_fields=("slug",))
+            queryset = Programme.objects.filter(category__event__slug__in=opts["event_slugs"])
+            Programme.reslugify(queryset)
 
             if not opts["really"]:
                 raise NotReally("It was only a dream :)")
