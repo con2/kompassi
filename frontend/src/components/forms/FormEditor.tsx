@@ -50,7 +50,7 @@ export default function FormEditor(props: FormEditorProps) {
       const usedIdentifiers = fields.map((field) => field.slug);
       const field = newField(fieldType, usedIdentifiers);
 
-      if (nonValueFieldTypes.includes(fieldType)) {
+      if (["Divider", "Spacer"].includes(fieldType)) {
         // This field type has no options to be edited by the user,
         // so skip the edit dialog.
         onChange(addField(fields, field, aboveFieldSlug));
