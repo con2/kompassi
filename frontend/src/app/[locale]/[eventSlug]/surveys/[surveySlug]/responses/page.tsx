@@ -239,7 +239,7 @@ export default async function FormResponsesPage({
       });
     });
 
-  const excelUrl = `${kompassiBaseUrl}/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
+  const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
   const responses = survey.responses || [];
 
   const subscribedSurveys = data.profile?.forms?.surveys ?? [];
