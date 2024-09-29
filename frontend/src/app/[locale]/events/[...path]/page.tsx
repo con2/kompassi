@@ -14,6 +14,6 @@ export function generateMetadata({ params, searchParams }: Props): never {
   return redirect(`/${path.join("/")}${query ? `?${query}` : ""}`);
 }
 
-export default function EventsRedirectPage(props) {
+export default function EventsRedirectPage(props: Props): never {
   return generateMetadata(props);
 }
