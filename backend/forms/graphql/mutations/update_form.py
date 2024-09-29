@@ -29,16 +29,16 @@ class FormForm(django_forms.ModelForm):
         return cls(form_data, instance=survey)
 
 
-class UpdateSurveyLanguageInput(graphene.InputObjectType):
+class UpdateFormInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
     survey_slug = graphene.String(required=True)
     language = graphene.String(required=True)
     form_data = GenericScalar(required=True)
 
 
-class UpdateSurveyLanguage(graphene.Mutation):
+class UpdateForm(graphene.Mutation):
     class Arguments:
-        input = UpdateSurveyLanguageInput(required=True)
+        input = UpdateFormInput(required=True)
 
     survey = graphene.Field(SurveyType)
 
@@ -46,7 +46,7 @@ class UpdateSurveyLanguage(graphene.Mutation):
     def mutate(
         root,
         info,
-        input: UpdateSurveyLanguageInput,
+        input: UpdateFormInput,
     ):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
         form = survey.languages.get(language=input.language)
@@ -57,8 +57,8 @@ class UpdateSurveyLanguage(graphene.Mutation):
 
         form_form = FormForm.from_form_data(form, form_data)
         if not form_form.is_valid():
-            raise django_forms.ValidationError(form_form.errors)
+            raise django_forms.ValidationError(form_form.errors)  # type: ignore
 
         form_form.save()
 
-        return UpdateSurveyLanguage(survey=survey)  # type: ignore
+        return UpdateForm(survey=survey)  # type: ignore

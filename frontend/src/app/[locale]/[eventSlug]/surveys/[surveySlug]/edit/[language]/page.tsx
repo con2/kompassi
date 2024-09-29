@@ -14,7 +14,7 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment EditSurveyLanguagePage on SurveyType {
+  fragment EditFormLanguagePage on SurveyType {
     slug
     title(lang: $locale)
     canRemove
@@ -35,7 +35,7 @@ graphql(`
 `);
 
 const query = graphql(`
-  query EditSurveyLanguagePageQuery(
+  query EditFormLanguagePageQuery(
     $eventSlug: String!
     $surveySlug: String!
     $language: String!
@@ -46,7 +46,7 @@ const query = graphql(`
 
       forms {
         survey(slug: $surveySlug) {
-          ...EditSurveyLanguagePage
+          ...EditFormLanguagePage
         }
       }
     }

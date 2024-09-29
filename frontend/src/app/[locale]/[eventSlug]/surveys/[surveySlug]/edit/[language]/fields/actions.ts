@@ -6,10 +6,8 @@ import { getClient } from "@/apolloClient";
 import { Field } from "@/components/forms/models";
 
 const mutation = graphql(`
-  mutation UpdateSurveyFieldsLanguageMutation(
-    $input: UpdateSurveyLanguageInput!
-  ) {
-    updateSurveyLanguage(input: $input) {
+  mutation UpdateFormFieldsMutation($input: UpdateFormFieldsInput!) {
+    updateFormFields(input: $input) {
       survey {
         slug
       }
@@ -27,7 +25,7 @@ export async function updateSurveyFields(
     eventSlug,
     surveySlug,
     language,
-    formData: fields, // TODO
+    fields,
   };
 
   await getClient().mutate({

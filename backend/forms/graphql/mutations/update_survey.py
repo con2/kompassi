@@ -48,7 +48,7 @@ class UpdateSurvey(graphene.Mutation):
 
         form = SurveyForm.from_form_data(survey, form_data)
         if not form.is_valid():
-            raise django_forms.ValidationError(form.errors)
+            raise django_forms.ValidationError(form.errors)  # type: ignore
 
         form.save()
 

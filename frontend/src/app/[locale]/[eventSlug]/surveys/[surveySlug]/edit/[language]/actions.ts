@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const updateSurveyLanguageMutation = graphql(`
-  mutation UpdateSurveyLanguageMutation($input: UpdateSurveyLanguageInput!) {
-    updateSurveyLanguage(input: $input) {
+const updateFormMutation = graphql(`
+  mutation UpdateFormMutation($input: UpdateFormInput!) {
+    updateForm(input: $input) {
       survey {
         slug
       }
@@ -22,7 +22,7 @@ export async function updateSurveyLanguage(
   formData: FormData,
 ) {
   await getClient().mutate({
-    mutation: updateSurveyLanguageMutation,
+    mutation: updateFormMutation,
     variables: {
       input: {
         eventSlug,
