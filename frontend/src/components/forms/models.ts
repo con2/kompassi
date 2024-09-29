@@ -149,6 +149,16 @@ interface FileUpload extends BaseField {
   multiple?: boolean;
 }
 
+/// Value of a single field (without knowing its type)
+export type Value =
+  | string
+  | number
+  | boolean
+  | string[]
+  | Record<string, string>;
+/// Values of all fields in a form
+export type Values = Record<string, Value>;
+
 export type Layout = FormsFormLayoutChoices;
 export const Layout = FormsFormLayoutChoices;
 

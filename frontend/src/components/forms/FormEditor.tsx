@@ -131,12 +131,13 @@ export default function FormEditor(props: FormEditorProps) {
 
       {editFieldModalOpen && (
         <EditFieldModal
-          initialValues={fieldBeingEdited}
+          fieldToEdit={fieldBeingEdited}
           onSubmit={(values) => {
             const newFields = editExisting
               ? replaceField(fields, targetFieldName, values)
               : addField(fields, values, targetFieldName);
 
+            setEditFieldModalOpen(false);
             onChange(newFields);
           }}
           onClose={() => setEditFieldModalOpen(false)}

@@ -119,7 +119,13 @@ const translations: Translations = {
       },
       choices: {
         title: "Vaihtoehdot",
-        helpText: "arvo=teksti -pareja, yksi per rivi",
+        helpText:
+          'Kullakin rivillä tulisi olla yksi vaihtoehto muodossa "tekninen-nimi: Käyttäjälle näytettävä vaihtoehto".',
+      },
+      questions: {
+        title: "Kysymykset",
+        helpText:
+          'Kullakin rivillä tulisi olla yksi kysymys muodossa "tekninen-nimi: Käyttäjälle näytettävä kysymys".',
       },
     },
 
@@ -130,8 +136,8 @@ const translations: Translations = {
       StaticText: "Kiinteä teksti",
       Spacer: "Tyhjä tila",
       SingleCheckbox: "Yksittäinen rasti ruutuun -kenttä",
-      SingleSelect: "Alasvetovalikko (yksi valinta)",
-      MultiSelect: "Alasvetovalikko (useita valintoja)",
+      SingleSelect: "Valinta",
+      MultiSelect: "Monivalinta",
       RadioMatrix: "Valintamatriisi",
       FileUpload: "Tiedoston lähetys",
       NumberField: "Numero",

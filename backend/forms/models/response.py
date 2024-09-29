@@ -315,4 +315,4 @@ class Response(models.Model):
             )
         ]
 
-        send_mass_mail(mailbag)
+        send_mass_mail(mailbag)  # type: ignore

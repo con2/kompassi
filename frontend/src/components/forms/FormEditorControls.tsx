@@ -6,13 +6,7 @@ import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import Stack from "react-bootstrap/Stack";
 
 import AddFieldDropdown from "./AddFieldDropdown";
-import {
-  canEditField,
-  canMoveDown,
-  canMoveUp,
-  moveDown,
-  moveUp,
-} from "./formEditorLogic";
+import { canMoveDown, canMoveUp, moveDown, moveUp } from "./formEditorLogic";
 import { Field, FieldType } from "./models";
 
 import "./FormEditor.scss";
@@ -69,7 +63,6 @@ const FormEditorControls = ({
           <Button
             size="sm"
             onClick={() => onEditField(field.slug)}
-            disabled={!canEditField(field)}
             variant="outline-secondary"
           >
             {messages.editField}…

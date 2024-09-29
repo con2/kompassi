@@ -118,7 +118,13 @@ const translations = {
       },
       choices: {
         title: "Choices",
-        helpText: "value=label pairs, separated by newline",
+        helpText:
+          'Each line should contain one choice in the form of "slug: Choice shown to the user".',
+      },
+      questions: {
+        title: "Questions",
+        helpText:
+          'Each line should contain one question in the form of "slug: Question shown to the user".',
       },
     },
 

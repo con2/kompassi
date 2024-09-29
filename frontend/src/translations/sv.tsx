@@ -132,10 +132,16 @@ const translations: Translations = {
       required: {
         title: "Obligatoriskt",
       },
-      choices: {
-        title: "Alternativ",
-        helpText: "värde=etikett -par, åtskilda av nyrad",
-      },
+      choices: UNTRANSLATED({
+        title: "Choices",
+        helpText:
+          'Each line should contain one choice in the form of "slug: Choice shown to the user".',
+      }),
+      questions: UNTRANSLATED({
+        title: "Questions",
+        helpText:
+          'Each line should contain one question in the form of "slug: Question shown to the user".',
+      }),
     },
 
     fieldTypes: {
