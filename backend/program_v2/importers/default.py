@@ -225,7 +225,6 @@ class DefaultImporter:
         meta = self.event.program_v2_event_meta
 
         location_dimension_slug = ""
-        primary_dimension_slug = ""
 
         if clear:
             # we have to replace the location and primary dimensions with their new versions
@@ -235,10 +234,6 @@ class DefaultImporter:
                     location_dimension_slug = meta.location_dimension.slug
                     meta.location_dimension = None
                     update_fields.append("location_dimension")
-                if meta.primary_dimension:
-                    primary_dimension_slug = meta.primary_dimension.slug
-                    meta.primary_dimension = None
-                    update_fields.append("primary_dimension")
                 if update_fields:
                     meta.save(update_fields=update_fields)
 
@@ -258,12 +253,6 @@ class DefaultImporter:
                     slug=location_dimension_slug,
                 )
                 update_fields.append("location_dimension")
-            if primary_dimension_slug:
-                meta.primary_dimension = Dimension.objects.get(  # type: ignore
-                    event=self.event,
-                    slug=primary_dimension_slug,
-                )
-                update_fields.append("primary_dimension")
             if update_fields:
                 meta.save(update_fields=update_fields)
 
