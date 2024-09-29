@@ -23,7 +23,7 @@ export default function SurveyEditorTabs({
   const supportedLanguages: Record<string, string> =
     translations.LanguageSwitcher.supportedLanguages;
 
-  const url = `/events/${eventSlug}/surveys/${survey.slug}`;
+  const url = `/${eventSlug}/surveys/${survey.slug}`;
   const tabs: Tab[] = [
     {
       slug: "properties",

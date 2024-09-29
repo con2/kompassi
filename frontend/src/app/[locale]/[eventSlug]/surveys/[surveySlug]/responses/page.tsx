@@ -172,9 +172,7 @@ export default async function FormResponsesPage({
       slug: "createdAt",
       title: t.attributes.createdAt,
       getCellContents: (row) => (
-        <Link
-          href={`/events/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}
-        >
+        <Link href={`/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}>
           <FormattedDateTime
             value={row.createdAt}
             locale={locale}
@@ -241,7 +239,7 @@ export default async function FormResponsesPage({
       });
     });
 
-  const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
+  const excelUrl = `${kompassiBaseUrl}/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
   const responses = survey.responses || [];
 
   const subscribedSurveys = data.profile?.forms?.surveys ?? [];
@@ -251,7 +249,7 @@ export default async function FormResponsesPage({
 
   return (
     <ViewContainer>
-      <Link className="link-subtle" href={`/events/${eventSlug}/surveys`}>
+      <Link className="link-subtle" href={`/${eventSlug}/surveys`}>
         &lt; {t.actions.returnToSurveyList}
       </Link>
 

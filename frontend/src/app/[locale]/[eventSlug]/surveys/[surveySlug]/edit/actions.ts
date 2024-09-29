@@ -32,8 +32,8 @@ export async function createSurveyLanguage(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys`);
-  redirect(`/events/${eventSlug}/surveys/${surveySlug}/edit/${language}`);
+  revalidatePath(`/${eventSlug}/surveys`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/edit/${language}`);
 }
 
 const updateSurveyMutation = graphql(`
@@ -61,7 +61,7 @@ export async function updateSurvey(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys`);
+  revalidatePath(`/${eventSlug}/surveys`);
 }
 
 const deleteSurveyMutation = graphql(`
@@ -82,6 +82,6 @@ export async function deleteSurvey(eventSlug: string, surveySlug: string) {
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys`);
-  redirect(`/events/${eventSlug}/surveys`);
+  revalidatePath(`/${eventSlug}/surveys`);
+  redirect(`/${eventSlug}/surveys`);
 }

@@ -292,7 +292,7 @@ class Response(models.Model):
         vars = dict(
             survey_title=form.title,
             event_name=survey.event.name,
-            response_url=f"{settings.KOMPASSI_V2_BASE_URL}/events/{survey.event.slug}/surveys/{survey.slug}/responses/{self.id}",
+            response_url=f"{settings.KOMPASSI_V2_BASE_URL}/{survey.event.slug}/surveys/{survey.slug}/responses/{self.id}",
             sender_email=settings.DEFAULT_FROM_EMAIL,
         )
 

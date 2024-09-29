@@ -17,7 +17,7 @@ export default function ProgramTabs(props: Props) {
   const href = (display: ProgramTab) => {
     const query = new URLSearchParams(searchParams);
     query.set("display", display);
-    return `/events/${eventSlug}/program?${query.toString()}`;
+    return `/${eventSlug}/program?${query.toString()}`;
   };
   const tabs: Tab[] = programTabs.map((display) => ({
     slug: display,

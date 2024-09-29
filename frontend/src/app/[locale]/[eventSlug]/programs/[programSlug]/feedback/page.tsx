@@ -92,7 +92,7 @@ export default async function ProgramFeedbackPage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <Link className="link-subtle" href={`/events/${eventSlug}/program`}>
+      <Link className="link-subtle" href={`/${eventSlug}/program`}>
         &lt; {t.actions.returnToProgram}
       </Link>
 

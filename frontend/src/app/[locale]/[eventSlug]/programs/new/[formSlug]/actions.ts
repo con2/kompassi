@@ -14,5 +14,5 @@ export async function submit(
     formSlug,
     formData: Object.fromEntries(formData),
   });
-  return void redirect(`/events/${eventSlug}/programs/new`);
+  return void redirect(`/${eventSlug}/programs/new`);
 }

@@ -81,10 +81,7 @@ export default async function NewProgramPage({ params }: NewProgramProps) {
     <main className="container mt-4">
       {skipOfferFormSelection || (
         <nav className="mb-0">
-          <Link
-            className="link-subtle"
-            href={`/events/${eventSlug}/programs/new`}
-          >
+          <Link className="link-subtle" href={`/${eventSlug}/programs/new`}>
             &lt; {t.backToProgramFormSelection}
           </Link>
         </nav>

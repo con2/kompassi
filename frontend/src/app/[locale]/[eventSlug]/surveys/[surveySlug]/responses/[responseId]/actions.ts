@@ -31,5 +31,5 @@ export async function updateResponseDimensions(
     mutation,
     variables: { input },
   });
-  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}/responses`);
+  revalidatePath(`/${eventSlug}/surveys/${surveySlug}/responses`);
 }

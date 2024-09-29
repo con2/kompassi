@@ -9,5 +9,5 @@ interface Props {
 
 export default function ProgramsRedirectPage({ params }: Props) {
   const { locale, eventSlug } = params;
-  redirect(`/${locale}/events/${eventSlug}/program`);
+  redirect(`/${locale}/${eventSlug}/program`);
 }

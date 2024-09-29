@@ -30,8 +30,8 @@ export async function createDimension(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
-  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 export async function updateDimension(
@@ -51,8 +51,8 @@ export async function updateDimension(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
-  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 const deleteDimensionMutation = graphql(`
@@ -78,8 +78,8 @@ export async function deleteDimension(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
-  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 const putDimensionValueMutation = graphql(`
@@ -109,8 +109,8 @@ export async function createDimensionValue(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
-  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 export async function updateDimensionValue(
@@ -132,8 +132,8 @@ export async function updateDimensionValue(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
-  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 const deleteDimensionValueMutation = graphql(`
@@ -163,6 +163,6 @@ export async function deleteDimensionValue(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}`);
-  redirect(`/events/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }

@@ -91,6 +91,6 @@ export async function submit(
     mutation: createSurveyResponseMutation,
     variables: { input },
   });
-  revalidatePath(`/events/${eventSlug}/surveys/${surveySlug}/responses`);
-  return void redirect(`/events/${eventSlug}/surveys/${surveySlug}/thanks`);
+  revalidatePath(`/${eventSlug}/surveys/${surveySlug}/responses`);
+  return void redirect(`/${eventSlug}/surveys/${surveySlug}/thanks`);
 }

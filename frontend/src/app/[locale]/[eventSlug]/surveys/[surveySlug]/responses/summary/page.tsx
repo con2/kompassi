@@ -127,7 +127,7 @@ export default async function SummaryPage({ params, searchParams }: Props) {
 
   return (
     <ViewContainer>
-      <Link className="link-subtle" href={`/events/${eventSlug}/surveys`}>
+      <Link className="link-subtle" href={`/${eventSlug}/surveys`}>
         &lt; {t.actions.returnToSurveyList}
       </Link>
       <ViewHeading>

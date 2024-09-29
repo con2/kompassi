@@ -28,7 +28,7 @@ export async function createOrder(
 
   console.log({ order });
   const response = await fetch(
-    `${kompassiBaseUrl}/api/tickets-v2/events/${eventSlug}/orders/`,
+    `${kompassiBaseUrl}/api/tickets-v2/${eventSlug}/orders/`,
     {
       method: "POST",
       headers: {

@@ -22,7 +22,7 @@ export async function markAsFavorite(
     mutation: markAsFavoriteMutation,
     variables: { input: { eventSlug, programSlug } },
   });
-  revalidatePath(`/${locale}}/events/${eventSlug}/program`);
+  revalidatePath(`/${locale}}/${eventSlug}/program`);
 }
 
 const unmarkAsFavoriteMutation = graphql(`
@@ -42,5 +42,5 @@ export async function unmarkAsFavorite(
     mutation: unmarkAsFavoriteMutation,
     variables: { input: { eventSlug, programSlug } },
   });
-  revalidatePath(`/${locale}}/events/${eventSlug}/program`);
+  revalidatePath(`/${locale}}/${eventSlug}/program`);
 }

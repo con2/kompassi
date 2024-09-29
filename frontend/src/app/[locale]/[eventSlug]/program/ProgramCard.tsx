@@ -34,7 +34,7 @@ export default function ProgramCard({
           <CardTitle>
             <CardLink
               as={Link}
-              href={`/events/${event.slug}/programs/${program.slug}`}
+              href={`/${event.slug}/programs/${program.slug}`}
               className="link-subtle"
             >
               {program.title}

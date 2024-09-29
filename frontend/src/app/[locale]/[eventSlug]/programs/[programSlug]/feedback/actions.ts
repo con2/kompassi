@@ -31,8 +31,6 @@ export async function createProgramFeedback(
       },
     },
   });
-  revalidatePath(
-    `/${locale}}/events/${eventSlug}/programs/${programSlug}/feedback`,
-  );
-  redirect(`/events/${eventSlug}/programs/${programSlug}/feedback/thanks`);
+  revalidatePath(`/${locale}}/${eventSlug}/programs/${programSlug}/feedback`);
+  redirect(`/${eventSlug}/programs/${programSlug}/feedback/thanks`);
 }

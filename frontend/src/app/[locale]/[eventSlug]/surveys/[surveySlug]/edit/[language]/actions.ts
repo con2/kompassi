@@ -32,7 +32,7 @@ export async function updateSurveyLanguage(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys`);
+  revalidatePath(`/${eventSlug}/surveys`);
 }
 
 const deleteSurveyLanguageMutation = graphql(`
@@ -58,6 +58,6 @@ export async function deleteSurveyLanguage(
       },
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys`);
-  redirect(`/events/${eventSlug}/surveys/${surveySlug}/edit`);
+  revalidatePath(`/${eventSlug}/surveys`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/edit`);
 }

@@ -164,7 +164,7 @@ export default async function NewProgramPage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <Link className="link-subtle" href={`/events/${eventSlug}/program`}>
+      <Link className="link-subtle" href={`/${eventSlug}/program`}>
         &lt; {t.actions.returnToProgramList(event.name)}
       </Link>
 
@@ -248,7 +248,7 @@ export default async function NewProgramPage({ params }: Props) {
         {program.dimensions.map((dimension) => (
           <Link
             key={dimension.dimension.slug}
-            href={`/events/${eventSlug}/program?${dimension.dimension.slug}=${dimension.value.slug}`}
+            href={`/${eventSlug}/program?${dimension.dimension.slug}=${dimension.value.slug}`}
           >
             <span className="badge text-bg-primary me-2">
               <strong>{dimension.dimension.title}</strong>:{" "}

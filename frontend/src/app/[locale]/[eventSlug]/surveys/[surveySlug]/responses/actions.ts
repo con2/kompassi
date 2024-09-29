@@ -33,7 +33,5 @@ export async function toggleSurveyResponseSubscription(
     mutation,
     variables: { input: { eventSlug, surveySlug } },
   });
-  revalidatePath(
-    `/${locale}/events/${eventSlug}/surveys/${surveySlug}/responses`,
-  );
+  revalidatePath(`/${locale}/${eventSlug}/surveys/${surveySlug}/responses`);
 }

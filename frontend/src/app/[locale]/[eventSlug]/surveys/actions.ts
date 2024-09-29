@@ -23,6 +23,6 @@ export async function createSurvey(eventSlug: string, formData: FormData) {
     variables: { input: { eventSlug, surveySlug } },
   });
 
-  revalidatePath(`/events/${eventSlug}/surveys`);
-  redirect(`/events/${eventSlug}/surveys/${surveySlug}/edit`);
+  revalidatePath(`/${eventSlug}/surveys`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/edit`);
 }

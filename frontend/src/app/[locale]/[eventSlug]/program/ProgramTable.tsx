@@ -35,7 +35,7 @@ export default function ProgramTable({
       getCellContents(row) {
         return (
           <Link
-            href={`/events/${event.slug}/programs/${row.slug}`}
+            href={`/${event.slug}/programs/${row.slug}`}
             className="link-subtle"
           >
             {row.title}

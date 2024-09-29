@@ -178,7 +178,7 @@ export default async function SurveyResponsePage({ params }: Props) {
     <ViewContainer>
       <Link
         className="link-subtle"
-        href={`/events/${eventSlug}/surveys/${surveySlug}/responses`}
+        href={`/${eventSlug}/surveys/${surveySlug}/responses`}
       >
         &lt; {t.actions.returnToResponseList}
       </Link>

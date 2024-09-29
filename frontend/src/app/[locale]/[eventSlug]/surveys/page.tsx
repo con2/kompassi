@@ -171,7 +171,7 @@ export default async function SurveysPage({ params }: Props) {
       slug: "actions",
       title: t.attributes.actions,
       getCellContents: (survey) => {
-        const url = `/events/${eventSlug}/surveys/${survey.slug}`;
+        const url = `/${eventSlug}/surveys/${survey.slug}`;
         const absoluteUrl = `${publicUrl}${url}`;
         return (
           <>

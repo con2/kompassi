@@ -17,12 +17,12 @@ export default function ResponseTabs(props: Props) {
     {
       slug: "responses",
       title: t.tabs.responses,
-      href: `/events/${eventSlug}/surveys/${surveySlug}/responses?${query}`,
+      href: `/${eventSlug}/surveys/${surveySlug}/responses?${query}`,
     },
     {
       slug: "summary",
       title: t.tabs.summary,
-      href: `/events/${eventSlug}/surveys/${surveySlug}/responses/summary?${query}`,
+      href: `/${eventSlug}/surveys/${surveySlug}/responses/summary?${query}`,
     },
   ];
 

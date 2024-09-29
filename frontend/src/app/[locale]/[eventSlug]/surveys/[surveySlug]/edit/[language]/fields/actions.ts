@@ -34,5 +34,5 @@ export async function updateSurveyFields(
       input,
     },
   });
-  revalidatePath(`/events/${eventSlug}/surveys`);
+  revalidatePath(`/${eventSlug}/surveys`);
 }
