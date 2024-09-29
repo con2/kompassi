@@ -644,9 +644,9 @@ const translations = {
 
   LanguageSwitcher: {
     supportedLanguages: {
-      fi: "suomi",
-      en: "englanti",
-      sv: "ruotsi",
+      fi: "Finnish",
+      en: "English",
+      sv: "Swedish",
     },
     // NOTE: value always in target language
     switchTo: {
