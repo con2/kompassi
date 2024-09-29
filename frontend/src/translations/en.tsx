@@ -1,6 +1,3 @@
-import { markAsFavorite } from "@/app/[locale]/events/[eventSlug]/program/actions";
-import { submit } from "@/app/[locale]/events/[eventSlug]/surveys/[surveySlug]/actions";
-
 const translations = {
   Common: {
     ok: "OK",
