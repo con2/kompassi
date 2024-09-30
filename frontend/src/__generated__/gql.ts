@@ -57,6 +57,10 @@ const documents = {
     "\n  mutation CreateSurvey($input: CreateSurveyInput!) {\n    createSurvey(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.CreateSurveyDocument,
     "\n  fragment Survey on SurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n    countResponses\n\n    languages {\n      language\n    }\n  }\n": types.SurveyFragmentDoc,
     "\n  query Surveys($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys(includeInactive: true) {\n          ...Survey\n        }\n      }\n    }\n  }\n": types.SurveysDocument,
+    "\n  mutation GenerateKeyPair($password: String!) {\n    generateKeyPair(password: $password) {\n      id\n    }\n  }\n": types.GenerateKeyPairDocument,
+    "\n  mutation RevokeKeyPair($id: String!) {\n    revokeKeyPair(id: $id) {\n      id\n    }\n  }\n": types.RevokeKeyPairDocument,
+    "\n  fragment ProfileEncryptionKeys on KeyPairType {\n    id\n    createdAt\n  }\n": types.ProfileEncryptionKeysFragmentDoc,
+    "\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n": types.ProfileEncryptionKeysDocument,
     "\n  query ProfileSurveyResponsePage($locale: String!, $responseId: String!) {\n    profile {\n      forms {\n        response(id: $responseId) {\n          id\n          createdAt\n          values\n\n          dimensions {\n            ...DimensionBadge\n          }\n\n          form {\n            slug\n            title\n            language\n            fields\n            layout\n            event {\n              slug\n              name\n            }\n            survey {\n              anonymity\n            }\n          }\n        }\n      }\n    }\n  }\n": types.ProfileSurveyResponsePageDocument,
     "\n  fragment ProfileResponsesTableRow on ProfileResponseType {\n    id\n    createdAt\n    dimensions(keyDimensionsOnly: true) {\n      dimension {\n        slug\n        title(lang: $locale)\n      }\n\n      value {\n        slug\n        title(lang: $locale)\n        color\n      }\n    }\n    form {\n      slug\n      title\n      event {\n        slug\n        name\n      }\n    }\n  }\n": types.ProfileResponsesTableRowFragmentDoc,
     "\n  query OwnFormResponses($locale: String!) {\n    profile {\n      forms {\n        responses {\n          ...ProfileResponsesTableRow\n        }\n      }\n    }\n  }\n": types.OwnFormResponsesDocument,
@@ -253,6 +257,22 @@ export function graphql(source: "\n  fragment Survey on SurveyType {\n    slug\n
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query Surveys($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys(includeInactive: true) {\n          ...Survey\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query Surveys($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys(includeInactive: true) {\n          ...Survey\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation GenerateKeyPair($password: String!) {\n    generateKeyPair(password: $password) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation GenerateKeyPair($password: String!) {\n    generateKeyPair(password: $password) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation RevokeKeyPair($id: String!) {\n    revokeKeyPair(id: $id) {\n      id\n    }\n  }\n"): (typeof documents)["\n  mutation RevokeKeyPair($id: String!) {\n    revokeKeyPair(id: $id) {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ProfileEncryptionKeys on KeyPairType {\n    id\n    createdAt\n  }\n"): (typeof documents)["\n  fragment ProfileEncryptionKeys on KeyPairType {\n    id\n    createdAt\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

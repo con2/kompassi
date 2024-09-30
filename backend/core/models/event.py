@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import typing
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.db import models
@@ -282,3 +282,43 @@ class Event(models.Model):
         Shorthand for commonly used CBAC claims.
         """
         return dict(organization=self.organization.slug, event=self.slug, **extra_claims)
+
+    @classmethod
+    def get_or_create_lite_event(
+        cls,
+        name: str,
+        organization_name: str,
+        venue_name: str,
+        start_time: datetime,
+        end_time: datetime,
+    ):
+        """
+        Create an event for pure V2 use with minimal information required.
+        Can be used out of the box with Surveys V2.
+        """
+        # if created here, these need to be fixed via taka-admin at least for the inflected names
+        organization, _ = Organization.objects.get_or_create(
+            slug=slugify(organization_name),
+            defaults=dict(
+                name=organization_name,
+                name_genitive=organization_name,
+            ),
+        )
+        venue, _ = Venue.objects.get_or_create(
+            name=venue_name,
+            defaults=dict(
+                name_inessive=venue_name,
+            ),
+        )
+
+        return cls.objects.get_or_create(
+            slug=slugify(name).replace("-", ""),
+            defaults=dict(
+                name=name,
+                organization=organization,
+                venue=venue,
+                start_time=start_time,
+                end_time=end_time,
+                slug=slugify(name),
+            ),
+        )
