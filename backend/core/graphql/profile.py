@@ -3,7 +3,9 @@ from graphene_django import DjangoObjectType
 
 from core.models import Person
 from core.utils import normalize_whitespace
+from forms.graphql.keypair import KeyPairType
 from forms.graphql.meta import FormsProfileMetaType
+from forms.models.keypair import KeyPair
 from forms.models.meta import FormsProfileMeta
 from program_v2.graphql.meta import ProgramV2ProfileMetaType
 from program_v2.models.meta import ProgramV2ProfileMeta
@@ -54,4 +56,13 @@ class ProfileType(DjangoObjectType):
     program = graphene.Field(
         graphene.NonNull(ProgramV2ProfileMetaType),
         description=normalize_whitespace(resolve_program.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_keypairs(person: Person, info):
+        return person.user.keypairs.all() if person.user else KeyPair.objects.none()
+
+    keypairs = graphene.List(
+        graphene.NonNull(KeyPairType),
+        description=normalize_whitespace(resolve_keypairs.__doc__ or ""),
     )

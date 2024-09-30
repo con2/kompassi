@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -71,8 +72,12 @@ def core_password_view(request):
                 messages.error(request, "Nykyinen salasana ei täsmää.")
                 return redirect("core_password_view")
 
-            user.set_password(new_password)
-            user.save()
+            with transaction.atomic():
+                for keypair in user.keypairs.all():
+                    keypair.reencrypt_private_key(old_password, new_password)
+
+                user.set_password(new_password)
+                user.save(update_fields=["password"])
 
             messages.success(
                 request,

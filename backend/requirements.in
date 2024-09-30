@@ -29,6 +29,7 @@ ipython
 isort
 jinja2
 jsonschema
+jwskate
 markdown
 paramiko
 passlib
