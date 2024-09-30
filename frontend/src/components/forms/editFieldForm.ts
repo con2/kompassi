@@ -26,6 +26,7 @@ export function getFieldEditorFields(
       type: "MultiLineText",
       slug: "helpText",
       required: false,
+      rows: 3,
       ...t.helpText,
     },
     {
@@ -50,17 +51,33 @@ export function getFieldEditorFields(
     ...t.questions,
   };
 
+  const encryptTo: Field = {
+    type: "MultiLineText",
+    slug: "encryptTo",
+    required: false,
+    rows: 3,
+    ...t.encryptTo,
+  };
+
   switch (fieldType) {
     case "SingleSelect":
     case "MultiSelect":
-      return baseFieldEditorFields.concat([choicesField]);
+      return baseFieldEditorFields.concat([choicesField, encryptTo]);
     case "RadioMatrix":
-      return baseFieldEditorFields.concat([questionsField, choicesField]);
+      return baseFieldEditorFields.concat([
+        questionsField,
+        choicesField,
+        encryptTo,
+      ]);
     case "Divider":
     case "Spacer":
       return [slugField];
-    default:
+    case "FileUpload":
+    case "StaticText":
+      // TODO implement encryption for uploaded files
       return baseFieldEditorFields;
+    default:
+      return baseFieldEditorFields.concat([encryptTo]);
   }
 }
 
