@@ -73,6 +73,7 @@ export function getFieldEditorFields(
     case "Spacer":
       return [slugField];
     case "FileUpload":
+    case "StaticText":
       // TODO implement encryption for uploaded files
       return baseFieldEditorFields;
     default:
