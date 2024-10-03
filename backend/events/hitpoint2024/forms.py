@@ -411,7 +411,7 @@ class SwagSurvey(forms.ModelForm):
 
     @classmethod
     def get_instance_for_event_and_person(cls, event, person):
-        return SignupExtra.objects.get(signup__event=event, signup__person=person)
+        return SignupExtra.objects.get(event=event, person=person)
 
     class Meta:
         model = SignupExtra
