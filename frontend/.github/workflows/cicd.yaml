@@ -35,7 +35,7 @@ jobs:
         run: |
           skaffold build --file-output build.json
       - name: Store build.json artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-json
           path: build.json
@@ -47,7 +47,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: build-json
       - uses: actions/setup-node@v4
@@ -79,7 +79,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v1
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: build-json
       - uses: actions/setup-node@v4

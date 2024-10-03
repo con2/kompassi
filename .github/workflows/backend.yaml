@@ -62,7 +62,7 @@ jobs:
           python3 -m pip install emskaffolden
           emskaffolden -E staging -- build --file-output build.json
         working-directory: backend
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: build-json
           path: backend/build.json
@@ -75,7 +75,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: build-json
       - uses: actions/setup-python@v5
@@ -108,7 +108,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: build-json
       - uses: actions/setup-python@v5
