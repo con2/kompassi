@@ -240,7 +240,7 @@ class Setup:
 
         for url, link_title, link_group in [
             (
-                "https://wiki.tracon.fi/collection/tracon-2025-SWoEDT7utU",
+                "https://wiki.tracon.fi/collection/tracon-2025-mhHLdYhJEc",
                 "Coniteawiki",
                 "conitea",
             ),
@@ -250,7 +250,7 @@ class Setup:
                 "accepted",
             ),
         ]:
-            InfoLink.objects.get_or_create(
+            InfoLink.objects.update_or_create(
                 event=self.event,
                 title=link_title,
                 defaults=dict(
