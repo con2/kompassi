@@ -21,6 +21,7 @@ export async function createSurveyLanguage(
   formData: FormData,
 ) {
   const language = "" + formData.get("language");
+  const copyFrom = formData.get("copyFrom");
   await getClient().mutate({
     mutation: createSurveyLanguageMutation,
     variables: {
@@ -28,7 +29,7 @@ export async function createSurveyLanguage(
         eventSlug,
         surveySlug,
         language,
-        copyFrom: "" + formData.get("copyFrom"),
+        copyFrom: copyFrom ? "" + copyFrom : undefined,
       },
     },
   });

@@ -329,6 +329,13 @@ LOGGING = {
     },
 }
 
+GRAPHENE = {
+    "SCHEMA": "graphql_api.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_api.graphene_middleware.LoggingErrorsMiddleware",
+    ],
+}
+
 LOGIN_URL = "/login"
 
 CRISPY_TEMPLATE_PACK = "bootstrap3"
