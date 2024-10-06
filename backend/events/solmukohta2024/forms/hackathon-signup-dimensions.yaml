@@ -34,7 +34,7 @@
   choices:
     - slug: new
       color: blue
-      is_initial: true
+      isInitial: true
       title:
         fi: Uusi
         en: New

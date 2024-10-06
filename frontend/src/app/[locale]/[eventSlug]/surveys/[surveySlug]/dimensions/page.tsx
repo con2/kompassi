@@ -31,6 +31,7 @@ graphql(`
   fragment ValueFields on SurveyDimensionValueType {
     slug
     color
+    isInitial
     canRemove
     title(lang: $locale)
     titleFi: title(lang: "fi")
@@ -309,7 +310,7 @@ export default async function SurveyDimensionsPage({ params }: Props) {
                 <code>{value.slug}</code>
               </>
             }
-            messages={t.editDimensionModal.actions}
+            messages={t.editValueModal.actions}
             action={updateDimensionValue.bind(
               null,
               eventSlug,

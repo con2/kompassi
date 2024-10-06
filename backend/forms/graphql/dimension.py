@@ -39,7 +39,7 @@ class SurveyDimensionValueType(DjangoObjectType):
 
     class Meta:
         model = DimensionValue
-        fields = ("slug", "color")
+        fields = ("slug", "color", "is_initial")
 
 
 class ResponseDimensionValueType(DjangoObjectType):

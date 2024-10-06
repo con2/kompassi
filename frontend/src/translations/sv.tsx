@@ -614,6 +614,10 @@ const translations: Translations = {
           helpText:
             "Färgen på värdet i svarslistan. Använd ljusa färger: de kommer att ljusas upp eller mörkas efter behov.",
         }),
+        isInitial: UNTRANSLATED({
+          title: "Initial value",
+          helpText: "If set, this value will be applied to all new responses.",
+        }),
         localizedTitleHeader: {
           title: "Titel lokaliserad",
           helpText:

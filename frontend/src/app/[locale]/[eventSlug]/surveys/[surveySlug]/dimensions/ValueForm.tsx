@@ -37,6 +37,11 @@ export default function ValueForm({ messages, value }: Props) {
       ...t.attributes.color,
     },
     {
+      type: "SingleCheckbox",
+      slug: "isInitial",
+      ...t.attributes.isInitial,
+    },
+    {
       type: "StaticText",
       slug: "localizedTitleHeader",
       ...t.attributes.localizedTitleHeader,

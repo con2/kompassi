@@ -2,7 +2,7 @@
   title:
     fi: Tapahtuma
     en: Event
-  is_key_dimension: true
+  isKeyDimension: true
   is_shown_to_respondent: true
   choices:
     - slug: tracon2024
@@ -22,12 +22,12 @@
   title:
     fi: Maksun tila
     en: Payment status
-  is_key_dimension: true
+  isKeyDimension: true
   is_shown_to_respondent: true
   choices:
     - slug: new
       color: blue
-      is_initial: true
+      isInitial: true
       title:
         fi: Uusi
         en: New

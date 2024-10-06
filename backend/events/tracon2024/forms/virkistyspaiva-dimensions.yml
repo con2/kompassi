@@ -1,6 +1,6 @@
 - slug: participation
-  is_key_dimension: true
-  is_multi_value: true
+  isKeyDimension: true
+  isMultiValue: true
   title:
     fi: Osallistuminen
   choices:
@@ -12,13 +12,13 @@
         fi: Iltaohjelmaan
 
 - slug: status
-  is_key_dimension: true
+  isKeyDimension: true
   is_shown_to_respondent: true
   title:
     fi: Tila
   choices:
     - slug: in-effect
-      is_initial: true
+      isInitial: true
       color: blue
       title:
         fi: Voimassa

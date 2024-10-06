@@ -10,7 +10,8 @@ from core.models import Event
 from core.utils.locale_utils import get_message_in_language
 from core.utils.model_utils import validate_slug
 
-from .field import Choice
+from ..utils.process_form_data import process_form_data
+from .field import Choice, Field, FieldType
 from .response import Response
 from .survey import Survey
 
@@ -124,11 +125,11 @@ def unpack_localized_value(form_data: dict[str, str], field_name: str) -> dict[s
     return data
 
 
-class DimensionValueDTO(pydantic.BaseModel):
+class DimensionValueDTO(pydantic.BaseModel, populate_by_name=True):
     slug: str
     title: dict[str, str]
     color: str = ""
-    is_initial: bool = False
+    is_initial: bool = pydantic.Field(default=False, alias="isInitial")
 
     def save(self, dimension: Dimension):
         DimensionValue.objects.update_or_create(
@@ -149,15 +150,20 @@ class DimensionValueDTO(pydantic.BaseModel):
         """
         data = unpack_localized_value(form_data, "title")
 
+        # FIXME the whole form needs to go through process_form_data but the form definition is generated clientside
+        fields = [Field(slug="isInitial", type=FieldType.SINGLE_CHECKBOX)]
+        data2, _warnings = process_form_data(fields, form_data)
+        data = dict(data, **data2)
+
+        print(data)
+
         return cls.model_validate(data)
 
 
-class DimensionDTO(pydantic.BaseModel):
+class DimensionDTO(pydantic.BaseModel, populate_by_name=True):
     """
     Helper to load dimensions from YAML, form data or similar external sources.
     """
-
-    model_config = pydantic.ConfigDict(populate_by_name=True)
 
     slug: str = pydantic.Field(min_length=1)
     title: dict[str, str]

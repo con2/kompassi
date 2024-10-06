@@ -1,11 +1,11 @@
 - slug: status
   title:
     fi: Hakemuksen tila
-  is_key_dimension: true
+  isKeyDimension: true
   choices:
     - slug: new
       color: blue
-      is_initial: true
+      isInitial: true
       title:
         fi: Uusi
     - slug: accepted

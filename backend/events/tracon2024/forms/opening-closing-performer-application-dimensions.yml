@@ -2,7 +2,7 @@
   title:
     fi: Ohjelma
     en: Program
-  is_key_dimension: true
+  isKeyDimension: true
   is_shown_to_respondent: true
   choices:
     - slug: opening-ceremony
@@ -22,12 +22,12 @@
   title:
     fi: Hakemuksen tila
     en: Application status
-  is_key_dimension: true
+  isKeyDimension: true
   is_shown_to_respondent: true
   choices:
     - slug: new
       color: blue
-      is_initial: true
+      isInitial: true
       title:
         fi: Uusi
         en: New
