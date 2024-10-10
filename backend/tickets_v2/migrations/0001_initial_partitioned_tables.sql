@@ -1,12 +1,15 @@
 create table tickets_v2_order (
   id uuid not null,
   event_id integer not null,
-  customer_data jsonb not null,
-  product_data jsonb not null,
+  user_id integer null,
   paid_at timestamp with time zone null,
   cancelled_at timestamp with time zone null,
   cached_price numeric(10, 2) not null,
-  user_id integer null,
+  product_data jsonb not null,
+  first_name text not null,
+  last_name text not null,
+  phone text not null,
+  email text not null,
 
   primary key (event_id, id),
   foreign key (event_id) references core_event (id) deferrable initially deferred

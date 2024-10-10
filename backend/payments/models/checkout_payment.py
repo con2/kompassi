@@ -168,8 +168,6 @@ class CheckoutPayment(models.Model):
     def from_order_v2(cls, order: OrderV2):
         if order.event.start_time is None:
             raise ValueError(f"Event {order.event} has no start time")
-        if not order.customer_data:
-            raise ValueError(f"Order {order} has no customer data")
 
         items = [
             {
@@ -188,7 +186,12 @@ class CheckoutPayment(models.Model):
             reference=order.reference_number,
             price_cents=order.price_cents,
             items=items,
-            customer=order.customer_data,
+            customer={
+                "email": order.email,
+                "firstName": order.first_name,
+                "lastName": order.last_name,
+                "phone": order.phone,
+            },
         )
 
     @classmethod

@@ -83,8 +83,8 @@ class Result(Enum):
 
 
 async def _buyer(
-    max_tardiness_seconds: int = 20,
-    max_time_to_buy_seconds: int = 10,
+    max_tardiness_seconds: int = 0,
+    max_time_to_buy_seconds: int = 0,
 ) -> tuple[Result, float | None, float | None]:
     time_loading_products = None
     time_buying_tickets = None

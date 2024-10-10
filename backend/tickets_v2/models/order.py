@@ -46,14 +46,9 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
         related_name="+",
     )
 
-    customer_data = models.JSONField(
-        default=dict,
-        help_text="{firstName, lastName, phone, email}",
-    )
-    product_data = models.JSONField(
-        default=dict,
-        help_text="product id -> quantity",
-    )
+    # NOTE: confirmed_at is called timestamp and backed by id which is UUID7
+    paid_at = models.DateTimeField(null=True, blank=True)
+    cancelled_at = models.DateTimeField(null=True, blank=True)
 
     user = models.ForeignKey(
         User,
@@ -63,15 +58,22 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
         related_name="+",
     )
 
-    # NOTE: confirmed_at is called timestamp and backed by id which is UUID7
-    paid_at = models.DateTimeField(null=True, blank=True)
-    cancelled_at = models.DateTimeField(null=True, blank=True)
-
     cached_price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=Decimal(0),
     )
+
+    product_data = models.JSONField(
+        default=dict,
+        help_text="product id -> quantity",
+    )
+
+    # NOTE: lengths validated in server code, see optimized_server/models/customer.py
+    first_name = models.TextField()
+    last_name = models.TextField()
+    email = models.EmailField()
+    phone = models.TextField()
 
     event_id: int
 

@@ -26,8 +26,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger("kompassi")
 
 LAYOUT_CHOICES = [
-    ("horizontal", _("Horizontal")),
     ("vertical", _("Vertical")),
+    ("horizontal", _("Horizontal")),
 ]
 
 

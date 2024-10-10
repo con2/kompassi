@@ -21,21 +21,21 @@ class Order(pydantic.BaseModel):
 
     create_query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "create_order.sql").read_bytes()
 
-    async def save(self, db: AsyncConnection, event_id: int):
-        order_id = uuid7()
-        customer_data = self.customer.model_dump(mode="json", by_alias=True)
+    def get_params(self, event_id: int):
+        return (
+            uuid7(),
+            event_id,
+            json.dumps(self.products),
+            self.customer.first_name,
+            self.customer.last_name,
+            self.customer.email,
+            self.customer.phone,
+        )
 
+    async def save(self, db: AsyncConnection, event_id: int):
         async with db.cursor() as cursor:
             try:
-                await cursor.execute(
-                    self.create_query,
-                    dict(
-                        order_id=order_id,
-                        event_id=event_id,
-                        product_data=json.dumps(self.products),
-                        customer_data=json.dumps(customer_data),
-                    ),
-                )
+                await cursor.execute(self.create_query, self.get_params(event_id))
             except NotNullViolation as e:
                 raise InvalidProducts() from e
 
@@ -52,20 +52,9 @@ class Order(pydantic.BaseModel):
     def save_django(self, event_id: int):
         from django.db import connection
 
-        order_id = uuid7()
-        customer_data = self.customer.model_dump(mode="json", by_alias=True)
-
         with connection.cursor() as cursor:
             try:
-                cursor.execute(
-                    self.create_query.decode(),
-                    dict(
-                        order_id=order_id,
-                        event_id=event_id,
-                        product_data=json.dumps(self.products),
-                        customer_data=json.dumps(customer_data),
-                    ),
-                )
+                cursor.execute(self.create_query.decode(), self.get_params(event_id))
             except NotNullViolation as e:
                 raise InvalidProducts() from e
 
