@@ -102,7 +102,7 @@ const translations = {
       slug: {
         title: "Technical name",
         helpText:
-          "Machine-readable field name. Valid characters: letters A-Za-z, numbers 0-9, dash -. Must not start with a number.",
+          "Machine-readable field name. Valid characters: letters A-Za-z, numbers 0-9, underscore _. Must not start with a number. The slug must be the same in different languages.",
       },
       title: {
         title: "Title",

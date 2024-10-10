@@ -354,8 +354,8 @@ export type FullResponseType = {
   createdAt: Scalars['DateTime']['output'];
   /**
    *
-   *         Returns the user who submitted the response. If response is to an anonymous survey,
-   *         this information will not be available.
+   * Returns the user who submitted the response. If response is to an anonymous survey,
+   * this information will not be available.
    *
    */
   createdBy?: Maybe<LimitedUserType>;
@@ -497,8 +497,8 @@ export type LimitedResponseType = {
   createdAt: Scalars['DateTime']['output'];
   /**
    *
-   *         Returns the user who submitted the response. If response is to an anonymous survey,
-   *         this information will not be available.
+   * Returns the user who submitted the response. If response is to an anonymous survey,
+   * this information will not be available.
    *
    */
   createdBy?: Maybe<LimitedUserType>;
@@ -727,8 +727,8 @@ export type ProfileResponseType = {
   createdAt: Scalars['DateTime']['output'];
   /**
    *
-   *         Returns the user who submitted the response. If response is to an anonymous survey,
-   *         this information will not be available.
+   * Returns the user who submitted the response. If response is to an anonymous survey,
+   * this information will not be available.
    *
    */
   createdBy?: Maybe<LimitedUserType>;

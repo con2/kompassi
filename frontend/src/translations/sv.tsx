@@ -117,8 +117,9 @@ const translations: Translations = {
     editFieldForm: {
       slug: {
         title: "Tekniskt namn",
-        helpText:
-          "Maskinläsbart fältnamn. Giltiga tecken: bokstäverna A-Za-z, siffrorna 0-9, understreck _. Får inte börja med en siffra.",
+        helpText: UNSURE(
+          "Maskinläsbart fältnamn. Giltiga tecken: bokstäverna A-Za-z, siffrorna 0-9, understreck _. Får inte börja med en siffra. Måste vara densamma i alla språkversioner.",
+        ),
       },
       title: {
         title: "Titel",

@@ -103,7 +103,7 @@ const translations: Translations = {
       slug: {
         title: "Tekninen nimi",
         helpText:
-          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja viiva -. Ei saa alkaa numerolla.",
+          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla. Kentän teknisen nimen tulee olla sama eri kieliversioissa.",
       },
       title: {
         title: "Otsikko",
