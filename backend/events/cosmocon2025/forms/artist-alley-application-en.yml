@@ -1,0 +1,175 @@
+title: Artist Alley application
+layout: vertical
+description: |
+  With this form you're applying for the artist alley in Cosmocon 8.-9.2.2025.
+
+  The form is open during x.x. - x.x.2025.
+
+  More information you can find at: <a href="https://cosmocon.fi/xx/">Artist alley rules page</a>
+
+  The artist alley will be located on the xx. You can find more information on our website at: If you have any questions you can reach our artist alley respondent at: xx@cosmocon.fi
+
+fields:
+  - type: StaticText
+    title: Basic info
+    slug: basic_info_title
+
+  - slug: name
+    title: First and surname
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Contact person's email
+    type: SingleLineText
+    required: true
+
+  - slug: table_size
+    title: Table size
+    type: MultiSelect
+    required: false
+    choices:
+      - slug: small
+        title: 140x50cm
+      - slug: big
+        title: 180x74cm
+
+  - slug: portfolio
+    title: Portfolio
+    helpText: "One (1) portfoliolink per artist / group. Please make sure that the link does not require a password or logging in."
+    type: SingleLineText
+    required: true
+
+  - slug: reserve
+    title: Reserve list
+    helpText: "Choose if you want a table if they become available. We make a list of people and send an email to those who said yes, if a table frees up. We do not publish a list of people on the list. In the free comment section you can specify how soon before the event you're able to accept a spot."
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: "no"
+        title: I don't want on the reserve list
+      - slug: "yes"
+        title: I want on the reserve list
+      - slug: "fast"
+        title: I can make it very close to the event
+
+  - type: StaticText
+    title: Background info
+    slug: background_info
+
+  - slug: experience
+    title: Experience
+    type: MultiSelect
+    choices:
+      - slug: exp_new
+        title: Newbie (under 5 artist alleys)
+      - slug: exp_first
+        title: First time at the Matsucon -event
+
+  - slug: location
+    title: Are you coming to the event from Finland or abroad
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: finland
+        title: Finland
+      - slug: abroad
+        title: Abroad
+
+  - slug: helper
+    title: Do you have a helper with you
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: help_yes
+        title: "Yes"
+      - slug: help_no
+        title: "No"
+
+  - slug: help_name
+    title: Helpers name
+    type: SingleLineText
+    required: false
+
+  - slug: comments
+    title: Free space
+    helpText: "Free space for comments and wishes. Please let us know if you need us to take in to account your accessibility needs in your Artist Alley or Art Trail location, so we can make sure your table is accessible to you."
+    type: MultiLineText
+    required: false
+
+  - slug: artist_info_title
+    type: StaticText
+    title: Artits information for the website
+    helpText: "If you're coming as a collective, please only fill one of the artist slots. Leave the extra slots empty. Hox. Avatar size is 200 px x 20"
+
+  - type: StaticText
+    title: Artist 1 info
+    slug: artist_info1
+
+  - slug: artist_name1
+    title: Artist name
+    type: SingleLineText
+    required: true
+
+  - slug: artist_site1
+    title: Website
+    type: SingleLineText
+    required: true
+
+  - slug: artist_avatar1
+    title: Avatar
+    type: FileUpload
+    required: true
+
+  - slug: artist_desc1
+    title: Short description for the website
+    type: SingleLineText
+    required: true
+
+  - type: StaticText
+    title: Artist 2 info
+    slug: artist_info2
+
+  - slug: artist_name2
+    title: Artist name
+    type: SingleLineText
+    required: false
+
+  - slug: artist_site2
+    title: Website
+    type: SingleLineText
+    required: false
+
+  - slug: artist_avatar2
+    title: Avatar
+    type: FileUpload
+    required: false
+
+  - slug: artist_desc2
+    title: Short description for the website
+    type: SingleLineText
+    required: false
+
+  - type: StaticText
+    title: Artist 3 info
+    slug: artist_info3
+
+  - slug: artist_name3
+    title: Artist name
+    type: SingleLineText
+    required: false
+
+  - slug: artist_site3
+    title: Website
+    type: SingleLineText
+    required: false
+
+  - slug: artist_avatar3
+    title: Avatar
+    type: FileUpload
+    required: false
+
+  - slug: artist_desc3
+    title: Short description for the website
+    type: SingleLineText
+    required: false
