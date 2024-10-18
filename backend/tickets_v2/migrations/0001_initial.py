@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
                         ("first_name", models.TextField()),
                         ("last_name", models.TextField()),
                         ("phone", models.TextField()),
-                        ("email", models.EmailField(max_length=254)),
+                        ("email", models.EmailField()),
                         ("product_data", models.JSONField(default=dict, help_text="product id -> quantity")),
                         ("paid_at", models.DateTimeField(blank=True, null=True)),
                         ("cancelled_at", models.DateTimeField(blank=True, null=True)),
