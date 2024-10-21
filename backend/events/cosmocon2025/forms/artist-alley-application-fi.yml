@@ -1,7 +1,7 @@
 title: Taidekujahaku
 layout: vertical
 description: |
-  Cosmoconin taidekujahaku aukeaa 19.10.2024 ja sulkeutuu 3.11.2024. Haku suoritetaan portfoliohakuna ja jokainen hakija arvioidaan Cosmoconin työryhmän sisältä koostuvan raadin toimesta. Cosmoconin taidekujalla on käytössä ensikertalaiskiintiö. Valintoihin vaikuttavia tekijöitä ovat mm. Soveltuvuus tapahtumaan, tekninen osaaminen ja monipuolisuus.
+  Cosmoconin taidekujahaku aukeaa 21.10.2024 ja sulkeutuu 7.11.2024. Haku suoritetaan portfoliohakuna ja jokainen hakija arvioidaan Cosmoconin työryhmän sisältä koostuvan raadin toimesta. Cosmoconin taidekujalla on käytössä ensikertalaiskiintiö. Valintoihin vaikuttavia tekijöitä ovat mm. Soveltuvuus tapahtumaan, tekninen osaaminen ja monipuolisuus.
 
   Tarjolla on sekä koko viikonlopun, että yhden päivän pöytiä. Pöydän koko on 140 x 60 cm.
   Taidekujapaikan hinta koko viikonlopun ajalta on 30€, lauantailta 15€ ja sunnuntailta 10€.
@@ -81,7 +81,7 @@ fields:
   - slug: avatar
     title: Kuvake esittelyn yhteyteen
     type: FileUpload
-    required: true
+    required: false
 
   - slug: email
     title: Sähköpostiosoitteesi, josta tavoitamme sinut mikäli tulet valituksi taidekujalle
