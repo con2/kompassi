@@ -57,6 +57,7 @@ class ProgramV2EventMeta(EventMetaBase):
     @property
     def importer_class(self):
         from ..importers.default import DefaultImporter
+        from ..importers.hitpoint2024 import HitpointImporter
         from ..importers.noop import NoopImporter
         from ..importers.ropecon2024 import RopeconImporter
         from ..importers.tracon2024 import TraconImporter
@@ -70,6 +71,8 @@ class ProgramV2EventMeta(EventMetaBase):
                 return RopeconImporter
             case "tracon2024":
                 return TraconImporter
+            case "hitpoint2024":
+                return HitpointImporter
             case unimplemented_importer_name:
                 raise NotImplementedError(unimplemented_importer_name)
 
