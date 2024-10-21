@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('forms', '0026_survey_subscribers'),
+        ("forms", "0026_survey_subscribers"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='form',
-            name='layout',
-            field=models.CharField(choices=[('vertical', 'Vertical'), ('horizontal', 'Horizontal')], default='vertical', max_length=10, verbose_name='Layout'),
+            model_name="form",
+            name="layout",
+            field=models.CharField(
+                choices=[("vertical", "Vertical"), ("horizontal", "Horizontal")],
+                default="vertical",
+                max_length=10,
+                verbose_name="Layout",
+            ),
         ),
     ]
