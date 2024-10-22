@@ -66,9 +66,13 @@ class Command(BaseCommand):
                 raise RuntimeError("Some events were not found.")
 
         for event in events:
-            logger.info("Starting programme import for %s", event.slug)
             v1_meta = event.programme_event_meta
             v2_meta = event.program_v2_event_meta
+            logger.info(
+                "Starting programme import for %s with importer %s",
+                event.slug,
+                v2_meta.importer_name if v2_meta else "default",
+            )
             queryset = Programme.objects.filter(category__event=event)
 
             try:

@@ -29,6 +29,7 @@ class Setup:
         self.setup_access()
         self.setup_badges()
         self.setup_forms()
+        self.setup_program_v2()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -227,6 +228,7 @@ class Setup:
             ProgrammeEventMeta,
             Role,
             SpecialStartTime,
+            Tag,
             TimeBlock,
         )
 
@@ -262,26 +264,39 @@ class Setup:
                 ),
             )
 
-        have_categories = Category.objects.filter(event=self.event).exists()
-        if not have_categories:
-            for title, slug, style in [
-                ("Larp", "larp", "color1"),
-                ("Lautapelit", "lautapelit", "color2"),
-                # ("Puheohjelma", "puheohjelma", "color3"),
-                ("Roolipeli", "roolipeli", "color4"),
-                ("Freeform", "freeform", "color1"),
-                ("Korttipelit", "korttipelit", "color5"),
-                ("Figupelit", "figupelit", "color6"),
-                ("Muu ohjelma", "muu-ohjelma", "color7"),
-                ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen"),
-            ]:
-                Category.objects.get_or_create(
+        for title, slug, style in [
+            ("Larp", "larp", "color1"),
+            ("Lautapelit", "lautapelit", "color2"),
+            ("Puheohjelma", "puheohjelma", "color3"),
+            ("Roolipeli", "roolipeli", "color4"),
+            ("Freeform", "freeform", "color1"),
+            ("Korttipelit", "korttipelit", "color5"),
+            ("Figupelit", "figupelit", "color6"),
+            ("Muu ohjelma", "muu-ohjelma", "color7"),
+            ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen"),
+        ]:
+            v2_dimensions = {"category": ["larp" if slug == "freeform" else slug]}
+
+            Category.objects.update_or_create(
+                event=self.event,
+                slug=slug,
+                defaults=dict(
+                    title=title,
+                    style=style,
+                    public=style != "sisainen",
+                    v2_dimensions=v2_dimensions,
+                ),
+            )
+
+            if slug not in ["freeform", "muu-ohjelma"]:
+                Tag.objects.update_or_create(
                     event=self.event,
                     slug=slug,
                     defaults=dict(
-                        title=title,
-                        style=style,
-                        public=style != "sisainen",
+                        title=f"Kategoria: {title}",
+                        style="label-default",
+                        v2_dimensions=v2_dimensions,
+                        public=False,
                     ),
                 )
 
@@ -533,6 +548,27 @@ class Setup:
             survey.save()
 
         survey.languages.set([form_fi, form_en])
+
+    def setup_program_v2(self):
+        from program_v2.importers.tracon2024 import TraconImporter
+        from program_v2.models.dimension import Dimension, DimensionDTO
+        from program_v2.models.meta import ProgramV2EventMeta
+
+        try:
+            room_dimension = Dimension.objects.get(event=self.event, slug="room")
+        except Dimension.DoesNotExist:
+            dimensions = TraconImporter(self.event).get_dimensions()
+            dimensions = DimensionDTO.save_many(self.event, dimensions)
+            room_dimension = next(d for d in dimensions if d.slug == "room")
+
+        ProgramV2EventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                location_dimension=room_dimension,
+                importer_name="hitpoint2024",
+                admin_group=self.event.programme_event_meta.admin_group,
+            ),
+        )
 
 
 class Command(BaseCommand):
