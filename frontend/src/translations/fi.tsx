@@ -29,6 +29,62 @@ const translations: Translations = {
         title: "Sähköpostiosoite",
       },
     },
+    keysView: {
+      title: "Salausavaimet",
+      description:
+        "Kompassissa säilytettävät luottamukselliset tiedot salataan tietyissä tapauksissa epäsymmetrisellä salauksella. " +
+        "Jos sinun tarvitsee toimia vastaanottajana tällaisille tiedoille, tarvitset salausavainparin. " +
+        "Voit luoda sellaisen alla. " +
+        "Avainparin luonti edellyttää salasanaasi, koska yksityinen avain salataan sillä. " +
+        "Tulevaisuudessa mahdollistamme tehokäyttäjille omilla laitteilla säilytettävien salausavainten käytön, " +
+        "jotta yksityinen avain ei koskaan poistu laitteelta.",
+      resetPasswordWarning: (
+        <>
+          <strong>Varoitus!</strong> Jos unohdat salasanasi ja resetoit sen,
+          menetät salausavaimesi ja kaikki sillä salatut tiedot.
+        </>
+      ),
+      attributes: {
+        id: {
+          title: "Tunniste",
+        },
+        createdAt: {
+          title: "Luotu",
+        },
+        actions: {
+          title: "Toiminnot",
+        },
+        password: {
+          title: "Salasana",
+          helpText: "Syötä salasanasi yksityisen avaimen salaamista varten.",
+        },
+      },
+      actions: {
+        generate: {
+          title: "Luo avainpari",
+          enterPassword:
+            "Syötä salasanasi yksityisen avaimen salaamista varten.",
+          modalActions: {
+            submit: "Luo avainpari",
+            cancel: "Peruuta",
+          },
+        },
+        revoke: {
+          title: "Mitätöi avainpari",
+          confirmation: (formattedCreatedAt: string) => (
+            <>
+              Haluatko varmasti mitätöidä avainparin, joka luotiin{" "}
+              <strong>{formattedCreatedAt}</strong>? Mitätöidyllä avainparilla
+              salattua tietoa ei voi enää purkaa. Tätä toimintoa ei voi perua.
+            </>
+          ),
+          modalActions: {
+            submit: "Mitätöi",
+            cancel: "Peruuta",
+          },
+        },
+      },
+    },
   },
   Modal: {
     submit: "Submit",
@@ -45,8 +101,9 @@ const translations: Translations = {
       "Kompassi v2 on työn alla. Tämä ei ole vielä valmis etusivu, vaan taulukkokomponentin demo.",
   },
   UserMenu: {
-    signIn: "Kirjaudu sisään",
     responses: "Kyselyvastaukset",
+    keys: "Salausavaimet",
+    signIn: "Kirjaudu sisään",
     signOut: "Kirjaudu ulos",
   },
   NotFound: {
@@ -126,6 +183,11 @@ const translations: Translations = {
         title: "Kysymykset",
         helpText:
           'Kullakin rivillä tulisi olla yksi kysymys muodossa "tekninen-nimi: Käyttäjälle näytettävä kysymys".',
+      },
+      encryptTo: {
+        title: "Salaa vastaukset",
+        helpText:
+          "Jos haluat salata vastaukset tähän kenttään, luettele tässä kentässä käyttäjänimet jotka saavat purkaa salauksen (yksi per rivi). Näillä käyttäjillä tulee olla avainpari luotuna.",
       },
     },
 

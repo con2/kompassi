@@ -57,6 +57,7 @@ class Field(pydantic.BaseModel):
     questions: Optional[list[Choice]] = pydantic.Field(default=None, alias="questions", repr=False)
     multiple: Optional[bool] = pydantic.Field(default=None, alias="multiple", repr=False)
     decimal_places: Optional[int] = pydantic.Field(default=None, alias="decimalPlaces", repr=False)
+    encrypt_to: Optional[list[str]] = pydantic.Field(default=None, alias="encryptTo", repr=False)
 
     @classmethod
     def from_dimension(

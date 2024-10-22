@@ -112,6 +112,15 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
               </Link>
             </li>
             <li>
+              <Link
+                className="dropdown-item"
+                href={`/profile/keys`}
+                onClick={toggleUserMenu}
+              >
+                {messages.UserMenu.keys}
+              </Link>
+            </li>
+            <li>
               <hr className="dropdown-divider" />
             </li>
             <li>
