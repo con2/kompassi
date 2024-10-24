@@ -43,7 +43,7 @@ block content_full_width
                   td
                     .btn-group
                       a.btn.btn-xs.btn-success(
-                        href='{% url "intra_admin_member_add_team_view" event.slug unassigned_organizer.person.id %}'
+                        href='{% url "intra:admin_member_add_team_view" event.slug unassigned_organizer.person.id %}'
                         title='{% trans "Assign this organizer to a team…" %}'
                       )
                         i.fa.fa-user-plus
@@ -106,7 +106,7 @@ block content_full_width
 
     .clearfix(style='margin-bottom: 1em')
       .btn-group.pull-right
-        a.btn.btn-default(href='{% url "intra_organizer_export_view" event.slug "vcf" %}')
+        a.btn.btn-default(href='{% url "intra:organizer_export_view" event.slug "vcf" %}')
           i.fa.fa-cloud-download.kompassi-icon-space-right
           {% trans "Export contacts in vCard format" %}
 

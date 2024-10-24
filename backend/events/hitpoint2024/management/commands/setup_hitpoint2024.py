@@ -519,6 +519,16 @@ class Setup:
 
     def setup_forms(self):
         from forms.models import Form, Survey
+        from forms.models.meta import FormsEventMeta
+
+        (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])
+
+        FormsEventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
 
         with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
             data = yaml.safe_load(f)

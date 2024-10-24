@@ -1,6 +1,5 @@
 from crispy_forms.layout import Fieldset, Layout
 from django import forms
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
@@ -134,6 +133,11 @@ class PrivilegesForm(forms.Form):
         label=_("Intra admin"),
         help_text=_("The Intra admin can assign organizers to teams and manage these privileges."),
     )
+    forms = forms.BooleanField(
+        required=False,
+        label=_("Surveys admin"),
+        help_text=_("The Surveys admin can manage surveys and view survey responses."),
+    )
 
     def __init__(self, *args, **kwargs):
         if "initial" in kwargs:
@@ -162,19 +166,14 @@ class PrivilegesForm(forms.Form):
 
     @classmethod
     def save(cls, forms: list["PrivilegesForm"]):
+        from .tasks import privileges_form_save
+
         if not forms:
             return
 
         event = forms[0].event
-
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from .tasks import privileges_form_save
-
-            data = [(form.user.id, form.cleaned_data) for form in forms]
-            privileges_form_save.delay(event.id, data)
-        else:
-            data = [(form.user, form.cleaned_data) for form in forms]
-            cls._save(event, data)
+        data = [(form.user.id, form.cleaned_data) for form in forms]
+        privileges_form_save.delay(event.id, data)  # type: ignore
 
     @classmethod
     def _save(cls, event: Event, data: list[tuple[AbstractUser, dict[str, bool]]]):
