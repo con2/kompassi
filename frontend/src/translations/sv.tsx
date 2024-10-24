@@ -201,6 +201,11 @@ const translations: Translations = {
         helpText:
           'Each line should contain one question in the form of "slug: Question shown to the user".',
       }),
+      encryptTo: UNTRANSLATED({
+        title: "Encrypt to",
+        helpText:
+          "If you want to encrypt the responses to this field, enter the user names of users who should be able to decrypt the responses (one per line). These users must have a key pair generated in their profile.",
+      }),
     },
 
     fieldTypes: {
