@@ -11,7 +11,7 @@ from event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7
 
 # https://guillp.github.io/jwskate/#supported-encryption-algorithms
 EC_ALG = "ECDH-ES+A256KW"
-EC_CURVE = "P-521"
+EC_CURVE = "P-256"
 SYM_ALG = "A256GCM"
 PBE_ALG = "PBES2-HS512+A256KW"
 
