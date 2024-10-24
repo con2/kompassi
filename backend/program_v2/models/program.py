@@ -106,7 +106,16 @@ class Program(models.Model):
 
                     localized_locations.setdefault(lang, set()).add(title)
 
-        return {lang: ", ".join(locations) for lang, locations in localized_locations.items() if locations}
+        # if both "foo" and "foo, bar" are present, only "foo, bar" is included
+        for locations in localized_locations.values():
+            for location in list(locations):
+                for other_location in list(locations):
+                    if location != other_location and location in other_location and location in locations:
+                        locations.remove(location)
+
+        result = {lang: ", ".join(locations) for lang, locations in localized_locations.items() if locations}
+        print(result)
+        return result
 
     def _get_color(self):
         """

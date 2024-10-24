@@ -1,11 +1,12 @@
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import timedelta
 
 from django.utils.timezone import get_current_timezone
 
 from core.models import Event
-from program_v2.models.dimension import DimensionDTO
+from program_v2.models.dimension import DimensionDTO, DimensionValueDTO
 from programme.models.programme import Programme
 
 from .default import DefaultImporter
@@ -24,6 +25,14 @@ class HitpointImporter(DefaultImporter):
     language: str = "fi"
 
     date_cutoff_time = timedelta(hours=4)  # 04:00 local time
+
+    def _get_room_dimension_values(self) -> Iterable[DimensionValueDTO]:
+        return [
+            *super()._get_room_dimension_values(),
+            DimensionValueDTO(slug="ropeluokka-1", title=dict(fi="Ropeluokka 1")),
+            DimensionValueDTO(slug="ropeluokka-2", title=dict(fi="Ropeluokka 2")),
+            DimensionValueDTO(slug="ropeluokka-3", title=dict(fi="Ropeluokka 3")),
+        ]
 
     def get_dimensions(self) -> list[DimensionDTO]:
         dimensions = super().get_dimensions()
@@ -57,5 +66,18 @@ class HitpointImporter(DefaultImporter):
         if without_misc:
             category_dimension_values = without_misc
         dimensions["category"] = list(category_dimension_values)
+
+        # introduce some hierarchy to rooms
+        room_dimension_values = set(dimensions.get("room", []))
+        if programme.room:
+            if "Lautapelialue" in programme.room.name:
+                room_dimension_values.add("lautapelialue")
+            if "Ropeluokka 1" in programme.room.name:
+                room_dimension_values.add("ropeluokka-1")
+            if "Ropeluokka 2" in programme.room.name:
+                room_dimension_values.add("ropeluokka-2")
+            if "Ropeluokka 3" in programme.room.name:
+                room_dimension_values.add("ropeluokka-3")
+        dimensions["room"] = list(room_dimension_values)
 
         return dimensions

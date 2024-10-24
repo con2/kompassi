@@ -227,6 +227,7 @@ class Setup:
             Category,
             ProgrammeEventMeta,
             Role,
+            Room,
             SpecialStartTime,
             Tag,
             TimeBlock,
@@ -370,6 +371,10 @@ class Setup:
         ).delete()
 
         self.event.programme_event_meta.create_groups()
+
+        for room in Room.objects.filter(event=self.event):
+            room.v2_dimensions = {"room": [room.slug]}
+            room.save(update_fields=["v2_dimensions"])
 
     def setup_tickets(self):
         from tickets.models import LimitGroup, Product, TicketsEventMeta
