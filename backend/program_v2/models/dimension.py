@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable, Mapping
-from itertools import batched
 from typing import TYPE_CHECKING, Self
 
 import pydantic
@@ -210,6 +209,7 @@ class ProgramDimensionValue(models.Model):
     def bulk_upsert(
         cls,
         upsertables: Iterable[Self],
+        batch_size=400,
     ):
         """
         For usage example, see ../importers/solmukohta2024.py
@@ -221,6 +221,7 @@ class ProgramDimensionValue(models.Model):
             update_conflicts=True,
             unique_fields=("program", "value"),
             update_fields=("dimension",),  # shouldn't change, but just to be safe as we don't call handlers
+            batch_size=batch_size,
         )
 
 
@@ -292,17 +293,15 @@ class DimensionDTO(pydantic.BaseModel):
             for (dim_dto, dim_dj) in zip(dimension_dtos, django_dimensions, strict=True)
             for order, choice in enumerate(dim_dto.choices or [])
         )
-        num_dvs = 0
-        for page, value_batch in enumerate(batched(values_upsert, dimension_value_batch_size)):
-            num_dvs += len(
-                DimensionValue.objects.bulk_create(
-                    value_batch,
-                    update_conflicts=True,
-                    unique_fields=("dimension", "slug"),
-                    update_fields=("title", "color", "order"),
-                )
+        num_dvs = len(
+            DimensionValue.objects.bulk_create(
+                values_upsert,
+                update_conflicts=True,
+                unique_fields=("dimension", "slug"),
+                update_fields=("title", "color", "order"),
+                batch_size=dimension_value_batch_size,
             )
-            logger.info("Saved page %s of dimension values", page + 1)
+        )
         logger.info("Saved %s dimension values", num_dvs)
 
         for dim_dto, dim_dj in zip(dimension_dtos, django_dimensions, strict=True):

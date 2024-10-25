@@ -6,9 +6,11 @@ from datetime import timedelta
 from django.utils.timezone import get_current_timezone
 
 from core.models import Event
-from program_v2.models.dimension import DimensionDTO, DimensionValueDTO
+from program_v2.models.dimension import DimensionDTO, DimensionValueDTO, ValueOrdering
 from programme.models.programme import Programme
 
+from ..consts import DEFAULT_COLORS
+from ..integrations.konsti import KONSTI_DIMENSION_DTO
 from .default import DefaultImporter
 
 logger = logging.getLogger("kompassi")
@@ -35,37 +37,94 @@ class HitpointImporter(DefaultImporter):
         ]
 
     def get_dimensions(self) -> list[DimensionDTO]:
-        dimensions = super().get_dimensions()
-
-        # remove tag dimension
-        dimensions = [d for d in dimensions if d.slug != "tag"]
-
-        # remove freeform from categories
-        category_dimension = next(d for d in dimensions if d.slug == "category")
-        category_dimension_choices = category_dimension.choices or []
-        freeform_index = next(i for (i, d) in enumerate(category_dimension_choices or []) if d.slug == "freeform")
-        if freeform_index is not None:
-            category_dimension_choices.pop(freeform_index)
-
-        # turn freeform into larp
-        larp_choice = next(d for d in category_dimension_choices if d.slug == "larp")
-        larp_choice.title = dict(fi="Larppaaminen", en="LARP")
-
-        return dimensions
+        return [
+            self._get_date_dimension(),
+            DimensionDTO(
+                slug="type",
+                title=dict(
+                    fi="Ohjelmatyyppi",
+                    en="Program Type",
+                    sv="Programtyp",
+                ),
+                value_ordering=ValueOrdering.MANUAL,
+                choices=[
+                    DimensionValueDTO(
+                        slug=slug,
+                        title=dict(
+                            fi=title_fi,
+                            en=title_en,
+                            color=color,
+                        ),
+                    )
+                    for slug, title_fi, title_en, color in [
+                        ("gaming", "Pelaaminen", "Gaming", ""),
+                        ("talk", "Puheohjelma", "Talk", DEFAULT_COLORS["color3"]),
+                        ("workshop", "Työpaja", "Workshop", DEFAULT_COLORS["color7"]),
+                    ]
+                ],
+            ),
+            DimensionDTO(
+                slug="topic",
+                title=dict(
+                    fi="Aihe",
+                    en="Topic",
+                    sv="Tema",
+                ),
+                value_ordering=ValueOrdering.TITLE,
+                choices=[
+                    DimensionValueDTO(
+                        slug=slug,
+                        title=dict(
+                            fi=title_fi,
+                            en=title_en,
+                        ),
+                        color=color,
+                    )
+                    for slug, title_fi, title_en, color in [
+                        ("miniatures", "Figupelit", "Miniature games", DEFAULT_COLORS["color6"]),
+                        ("boardgames", "Lautapelit", "Board games", DEFAULT_COLORS["color2"]),
+                        ("cardgames", "Korttipelit", "Card games", DEFAULT_COLORS["color5"]),
+                        ("larp", "Larppaaminen", "LARP", DEFAULT_COLORS["color1"]),
+                        ("penandpaper", "Pöytäroolipelit", "Pen & Paper RPG", DEFAULT_COLORS["color4"]),
+                    ]
+                ],
+            ),
+            self._get_room_dimension(),
+            DimensionDTO(
+                slug="signup",
+                title=dict(
+                    fi="Ennakkoilmoittautuminen",
+                    en="Advance Registration",
+                    sv="Förhandsanmälan",
+                ),
+                choices=[
+                    DimensionValueDTO(
+                        slug=slug,
+                        title=dict(
+                            fi=title_fi,
+                            en=title_en,
+                        ),
+                    )
+                    for slug, title_fi, title_en, title_sv in [
+                        ("none", "Ei ennakkoilmoittautumista", "No advance registration", "Ingen förhandsanmälan"),
+                        # ("tickets", "Erilliset pääsyliput", "Separate tickets", "Separata biljetter"),
+                        # ("paikkala", "Maksuttomat paikkaliput", "Free seating tickets", "Gratis sittplatsbiljetter"),
+                        ("konsti", "Ilmoittautuminen Konstilla", "Registration via Konsti", "Anmälan via Konsti"),
+                        (
+                            "rpg-desk",
+                            "Ilmoittautuminen roolipelitiskillä",
+                            "Registration at RPG desk",
+                            "Anmälan vid rollspelsdisken",
+                        ),
+                        # ("form", "Ilmoittautuminen lomakkeella", "Registration via form", "Anmälan via formulär"),
+                    ]
+                ],
+            ),
+            KONSTI_DIMENSION_DTO,
+        ]
 
     def get_program_dimension_values(self, programme: Programme) -> dict[str, list[str]]:
         dimensions = super().get_program_dimension_values(programme)
-
-        # turn freeform into larp
-        category_dimension_values = set(dimensions.get("category", []))
-        if "freeform" in category_dimension_values:
-            category_dimension_values.remove("freeform")
-            category_dimension_values.add("larp")
-        # if there are other categories, remove misc
-        without_misc = category_dimension_values - {"muu-ohjelma"}
-        if without_misc:
-            category_dimension_values = without_misc
-        dimensions["category"] = list(category_dimension_values)
 
         # introduce some hierarchy to rooms
         room_dimension_values = set(dimensions.get("room", []))
@@ -79,5 +138,31 @@ class HitpointImporter(DefaultImporter):
             if "Ropeluokka 3" in programme.room.name:
                 room_dimension_values.add("ropeluokka-3")
         dimensions["room"] = list(room_dimension_values)
+
+        topic_dimension_values = set(dimensions.get("topic", []))
+
+        type_dimension_values = set(dimensions.get("type", []))
+        if not type_dimension_values:
+            if programme.form_used and programme.form_used.slug in ("freeform", "rpg"):
+                type_dimension_values.add("gaming")
+
+            for slug in ("larp", "boardgames", "cardgames", "penandpaper"):
+                if slug in topic_dimension_values:
+                    type_dimension_values.add("gaming")
+                    break
+        dimensions["type"] = list(type_dimension_values)
+
+        konsti_dimension_value = ""
+        if "gaming" in type_dimension_values:
+            if "penandpaper" in topic_dimension_values:
+                konsti_dimension_value = "tabletopRPG"
+            if "larp" in topic_dimension_values:
+                konsti_dimension_value = "larp"
+        if konsti_dimension_value:
+            dimensions["konsti"] = [konsti_dimension_value]
+            dimensions["signup"] = ["konsti"]
+        else:
+            dimensions["konsti"] = []
+            dimensions["signup"] = ["none"]
 
         return dimensions

@@ -1,7 +1,14 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
+
+if TYPE_CHECKING:
+    from .programme import Programme
 
 
 class Tag(models.Model):
@@ -22,6 +29,8 @@ class Tag(models.Model):
             "When program is imported to v2, dimension values indicated here are added to programs of this category."
         ),
     )
+
+    programme_set: models.QuerySet[Programme]
 
     def __str__(self):
         return self.title

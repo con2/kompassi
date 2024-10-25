@@ -265,19 +265,17 @@ class Setup:
                 ),
             )
 
-        for title, slug, style in [
-            ("Larp", "larp", "color1"),
-            ("Lautapelit", "lautapelit", "color2"),
-            ("Puheohjelma", "puheohjelma", "color3"),
-            ("Roolipeli", "roolipeli", "color4"),
-            ("Freeform", "freeform", "color1"),
-            ("Korttipelit", "korttipelit", "color5"),
-            ("Figupelit", "figupelit", "color6"),
-            ("Muu ohjelma", "muu-ohjelma", "color7"),
-            ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen"),
+        for title, slug, style, v2_dimensions in [
+            ("Larppaaminen", "larp", "color1", {"topic": ["larp"]}),
+            ("Lautapelit", "lautapelit", "color2", {"topic": ["boardgames"]}),
+            ("Puheohjelma", "puheohjelma", "color3", {"type": ["talk"]}),
+            ("Roolipeli", "roolipeli", "color4", {"topic": ["penandpaper"]}),
+            ("Freeform", "freeform", "color1", {"topic": ["larp"]}),
+            ("Korttipelit", "korttipelit", "color5", {"topic": ["cardgames"]}),
+            ("Figupelit", "figupelit", "color6", {"topic": ["miniatures"]}),
+            ("Muu ohjelma", "muu-ohjelma", "color7", {"topic": []}),  # nonfalsy to avoid default
+            ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen", {"topic": []}),
         ]:
-            v2_dimensions = {"category": ["larp" if slug == "freeform" else slug]}
-
             Category.objects.update_or_create(
                 event=self.event,
                 slug=slug,
@@ -289,17 +287,54 @@ class Setup:
                 ),
             )
 
-            if slug not in ["freeform", "muu-ohjelma"]:
-                Tag.objects.update_or_create(
-                    event=self.event,
-                    slug=slug,
-                    defaults=dict(
-                        title=f"Kategoria: {title}",
-                        style="label-default",
-                        v2_dimensions=v2_dimensions,
-                        public=False,
-                    ),
-                )
+        from program_v2.importers.hitpoint2024 import HitpointImporter
+
+        dimensions = HitpointImporter(self.event).get_dimensions()
+        topic_dimension = next(dimension for dimension in dimensions if dimension.slug == "topic")
+        type_dimension = next(dimension for dimension in dimensions if dimension.slug == "type")
+
+        for choice in topic_dimension.choices or []:
+            Tag.objects.update_or_create(
+                event=self.event,
+                slug=choice.slug,
+                defaults=dict(
+                    title=f"Aihe: {choice.title["fi"]}",
+                    style="label-default",
+                    v2_dimensions={"topic": [choice.slug]},
+                    public=False,
+                ),
+            )
+
+        for choice in type_dimension.choices or []:
+            Tag.objects.update_or_create(
+                event=self.event,
+                slug=choice.slug,
+                defaults=dict(
+                    title=f"Tyyppi: {choice.title["fi"]}",
+                    style="label-default",
+                    v2_dimensions={"type": [choice.slug]},
+                    public=False,
+                ),
+            )
+
+        Tag.objects.filter(
+            event=self.event,
+            slug="sisainen-ohjelma",
+        ).delete()
+
+        for old_tag_slug, new_tag_slug in [
+            ("figupelit", "miniatures"),
+            ("korttipelit", "cardgames"),
+            ("roolipeli", "penandpaper"),
+            ("lautapelit", "boardgames"),
+            ("puheohjelma", "talk"),
+        ]:
+            old_tag = Tag.objects.filter(event=self.event, slug=old_tag_slug).first()
+            new_tag = Tag.objects.filter(event=self.event, slug=new_tag_slug).first()
+            if old_tag and new_tag:
+                for programme in old_tag.programme_set.all():
+                    programme.tags.add(new_tag)
+                old_tag.delete()
 
         for start_time, end_time in [
             (
@@ -328,6 +363,7 @@ class Setup:
                 programme_form_code="events.hitpoint2024.forms:RpgForm",
                 num_extra_invites=0,
                 order=10,
+                v2_dimensions={"type": ["gaming"], "topic": ["penandpaper"]},
             ),
         )
 
@@ -340,6 +376,7 @@ class Setup:
                 programme_form_code="events.hitpoint2024.forms:FreeformForm",
                 num_extra_invites=3,
                 order=20,
+                v2_dimensions={"type": ["gaming"], "topic": ["larp"]},
             ),
         )
 
@@ -565,14 +602,14 @@ class Setup:
         survey.languages.set([form_fi, form_en])
 
     def setup_program_v2(self):
-        from program_v2.importers.tracon2024 import TraconImporter
+        from program_v2.importers.hitpoint2024 import HitpointImporter
         from program_v2.models.dimension import Dimension, DimensionDTO
         from program_v2.models.meta import ProgramV2EventMeta
 
         try:
             room_dimension = Dimension.objects.get(event=self.event, slug="room")
         except Dimension.DoesNotExist:
-            dimensions = TraconImporter(self.event).get_dimensions()
+            dimensions = HitpointImporter(self.event).get_dimensions()
             dimensions = DimensionDTO.save_many(self.event, dimensions)
             room_dimension = next(d for d in dimensions if d.slug == "room")
 
