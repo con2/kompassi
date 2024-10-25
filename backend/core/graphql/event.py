@@ -3,7 +3,7 @@ from graphene_django import DjangoObjectType
 
 from core.models import Event
 from forms.graphql.meta import FormsEventMetaType
-from forms.models.meta import FormsEventMeta
+from forms.models.meta import FormsEventMetaPlaceholder
 from program_v2.graphql.meta import ProgramV2EventMetaType
 
 
@@ -22,4 +22,4 @@ class FullEventType(DjangoObjectType):
 
     @staticmethod
     def resolve_forms(event: Event, info):
-        return FormsEventMeta(event)
+        return FormsEventMetaPlaceholder(event)

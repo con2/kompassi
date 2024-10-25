@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 
-from core.models import EventMetaBase, Person
+from core.models.event import Event
+from core.models.event_meta_base import EventMetaBase
+from core.models.person import Person
 
 
 class FormsEventMeta(EventMetaBase):
@@ -12,6 +14,16 @@ class FormsEventMeta(EventMetaBase):
     """
 
     use_cbac = True
+
+
+@dataclass
+class FormsEventMetaPlaceholder:
+    """
+    This is what GraphQL uses to facilitate the above.
+    TODO perhaps remove and create FormsEventMeta for all events using Forms?
+    """
+
+    event: Event
 
 
 @dataclass
