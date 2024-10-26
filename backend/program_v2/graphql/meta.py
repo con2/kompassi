@@ -16,6 +16,7 @@ from ..models import (
     OfferForm,
     Program,
     ProgramV2EventMeta,
+    ScheduleItem,
 )
 from ..models.annotations import ANNOTATIONS
 from ..models.meta import ProgramV2ProfileMeta
@@ -196,6 +197,44 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
 
     programs = graphene.List(
         graphene.NonNull(FullProgramType),
+        event_slug=graphene.String(),
+        filters=graphene.List(DimensionFilterInput),
+        include=graphene.List(ProfileProgramInclude),
+        hide_past=graphene.Boolean(),
+        description=normalize_whitespace(resolve_programs.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_schedule_items(
+        meta: ProgramV2ProfileMeta,
+        info,
+        event_slug: str | None = None,
+        filters: list[DimensionFilterInput] | None = None,
+        include: list[ProfileProgramInclude] | None = None,
+        hide_past: bool = False,
+    ):
+        """
+        Get programs that relate to this user in some way.
+        Currently only favorites are implemented, but in the future also signed up and hosting.
+        Dimension filter may only be specified when event_slug is given.
+        """
+        request: HttpRequest = info.context
+
+        if event_slug is not None:
+            # validate event_slug
+            event = Event.objects.get(slug=event_slug)
+            schedule_items = ScheduleItem.objects.filter(cached_event=event)
+        else:
+            schedule_items = ScheduleItem.objects.all()
+
+        return ProgramFilters.from_graphql(
+            filters,
+            favorites_only=True,
+            hide_past=hide_past,
+        ).filter_schedule_items(schedule_items, user=request.user)
+
+    schedule_items = graphene.List(
+        graphene.NonNull(FullScheduleItemType),
         event_slug=graphene.String(),
         filters=graphene.List(DimensionFilterInput),
         include=graphene.List(ProfileProgramInclude),

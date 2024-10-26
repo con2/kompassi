@@ -72,7 +72,7 @@ class ProgramFilters:
 
         if self.favorites_only:
             if user and user.is_authenticated:
-                programs = programs.filter(favorited_by=user)
+                programs = programs.filter(schedule_items__favorited_by=user)
             else:
                 programs = programs.none()
 
@@ -101,7 +101,7 @@ class ProgramFilters:
 
         if self.favorites_only:
             if user and user.is_authenticated:
-                schedule_items = schedule_items.filter(program__favorited_by=user)
+                schedule_items = schedule_items.filter(favorited_by=user)
             else:
                 schedule_items = schedule_items.none()
 
@@ -117,4 +117,4 @@ class ProgramFilters:
                 t = now()
             schedule_items = schedule_items.filter(cached_end_time__gte=t)
 
-        return schedule_items.distinct().select_related("event").order_by("start_time")
+        return schedule_items.distinct().select_related("cached_event").order_by("start_time")

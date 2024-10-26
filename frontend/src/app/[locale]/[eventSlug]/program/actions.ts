@@ -2,32 +2,31 @@
 
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
-import { FavoriteInput } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 
-const markAsFavoriteMutation = graphql(`
-  mutation MarkProgramAsFavorite($input: FavoriteInput!) {
-    markProgramAsFavorite(input: $input) {
+const markScheduleItemAsFavoriteMutation = graphql(`
+  mutation MarkScheduleItemAsFavorite($input: FavoriteScheduleItemInput!) {
+    markScheduleItemAsFavorite(input: $input) {
       success
     }
   }
 `);
 
-export async function markAsFavorite(
+export async function markScheduleItemAsFavorite(
   locale: string,
   eventSlug: string,
-  programSlug: string,
+  scheduleItemSlug: string,
 ) {
   const data = await getClient().mutate({
-    mutation: markAsFavoriteMutation,
-    variables: { input: { eventSlug, programSlug } },
+    mutation: markScheduleItemAsFavoriteMutation,
+    variables: { input: { eventSlug, scheduleItemSlug } },
   });
   revalidatePath(`/${locale}}/${eventSlug}/program`);
 }
 
-const unmarkAsFavoriteMutation = graphql(`
-  mutation UnmarkProgramAsFavorite($input: FavoriteInput!) {
-    unmarkProgramAsFavorite(input: $input) {
+const unmarkScheduleItemAsFavoriteMutation = graphql(`
+  mutation UnmarkScheduleItemAsFavorite($input: FavoriteScheduleItemInput!) {
+    unmarkScheduleItemAsFavorite(input: $input) {
       success
     }
   }
@@ -36,11 +35,11 @@ const unmarkAsFavoriteMutation = graphql(`
 export async function unmarkAsFavorite(
   locale: string,
   eventSlug: string,
-  programSlug: string,
+  scheduleItemSlug: string,
 ) {
   const data = await getClient().mutate({
-    mutation: unmarkAsFavoriteMutation,
-    variables: { input: { eventSlug, programSlug } },
+    mutation: unmarkScheduleItemAsFavoriteMutation,
+    variables: { input: { eventSlug, scheduleItemSlug } },
   });
   revalidatePath(`/${locale}}/${eventSlug}/program`);
 }

@@ -34,8 +34,6 @@ class Program(models.Model):
     description = models.TextField(blank=True)
     annotations = models.JSONField(blank=True, default=dict)
 
-    favorited_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="favorite_programs", blank=True)
-
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

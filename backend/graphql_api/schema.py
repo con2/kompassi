@@ -20,7 +20,12 @@ from forms.graphql.mutations.update_form import UpdateForm
 from forms.graphql.mutations.update_form_fields import UpdateFormFields
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
-from program_v2.graphql.mutations.favorites import MarkProgramAsFavorite, UnmarkProgramAsFavorite
+from program_v2.graphql.mutations.favorites import (
+    MarkProgramAsFavorite,
+    MarkScheduleItemAsFavorite,
+    UnmarkProgramAsFavorite,
+    UnmarkScheduleItemAsFavorite,
+)
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
 
 from .language import DEFAULT_LANGUAGE, Language
@@ -85,6 +90,8 @@ class Mutation(graphene.ObjectType):
 
     mark_program_as_favorite = MarkProgramAsFavorite.Field()
     unmark_program_as_favorite = UnmarkProgramAsFavorite.Field()
+    mark_schedule_item_as_favorite = MarkScheduleItemAsFavorite.Field()
+    unmark_schedule_item_as_favorite = UnmarkScheduleItemAsFavorite.Field()
 
     create_program_feedback = CreateProgramFeedback.Field()
 

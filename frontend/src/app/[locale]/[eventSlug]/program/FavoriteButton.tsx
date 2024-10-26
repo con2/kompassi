@@ -6,14 +6,17 @@ import classes from "./FavoriteButton.module.css";
 import { FavoriteContext } from "./FavoriteContext";
 
 interface Props {
-  slug: string;
+  scheduleItem: {
+    slug: string;
+  };
   size?: "lg" | "xl";
 }
 
-export default function FavoriteButton({ slug, size }: Props) {
+export default function FavoriteButton({ scheduleItem, size }: Props) {
   const { markAsFavorite, unmarkAsFavorite, isFavorite, messages } =
     useContext(FavoriteContext);
 
+  const { slug } = scheduleItem;
   const thisIsFavorite = isFavorite(slug);
   const cssClasses = thisIsFavorite
     ? [classes.favorite, classes.active]

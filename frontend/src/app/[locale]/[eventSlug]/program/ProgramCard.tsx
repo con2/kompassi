@@ -8,27 +8,28 @@ import FavoriteButton from "./FavoriteButton";
 import { Event } from "./models";
 import ScheduleItem from "./ScheduleItem";
 import { getProgramColorBorder } from "./style";
-import { ProgramListFragment } from "@/__generated__/graphql";
+import {
+  ScheduleItemListFragment,
+  ScheduleProgramFragment,
+} from "@/__generated__/graphql";
 
 interface Props {
   event: Event;
-  program: ProgramListFragment;
+  program: ScheduleProgramFragment;
+  scheduleItem: ScheduleItemListFragment;
   locale: string;
   isLoggedIn: boolean;
 }
 
 export default function ProgramCard({
   program,
+  scheduleItem,
   event,
   locale,
   isLoggedIn,
 }: Props) {
   return (
-    <Card
-      key={program.slug}
-      className="mb-3"
-      style={getProgramColorBorder(program)}
-    >
+    <Card className="mb-3" style={getProgramColorBorder(program)}>
       <CardBody>
         <div className="d-flex justify-content-between">
           <CardTitle>
@@ -40,17 +41,15 @@ export default function ProgramCard({
               {program.title}
             </CardLink>
           </CardTitle>
-          {isLoggedIn && <FavoriteButton slug={program.slug} />}
+          {isLoggedIn && <FavoriteButton scheduleItem={scheduleItem} />}
         </div>
-        {program.scheduleItems.map((scheduleItem, index) => (
-          <div key={index} className="d-flex justify-content-between">
-            <ScheduleItem
-              event={event}
-              scheduleItem={scheduleItem}
-              locale={locale}
-            />
-          </div>
-        ))}
+        <div className="d-flex justify-content-between">
+          <ScheduleItem
+            event={event}
+            scheduleItem={scheduleItem}
+            locale={locale}
+          />
+        </div>
       </CardBody>
     </Card>
   );

@@ -1,9 +1,9 @@
 import { Event } from "./models";
-import { ScheduleItemFragment } from "@/__generated__/graphql";
+import { ScheduleItemListFragment } from "@/__generated__/graphql";
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
 
 interface Props {
-  scheduleItem: ScheduleItemFragment;
+  scheduleItem: ScheduleItemListFragment;
   event: Event;
   locale: string;
 }
