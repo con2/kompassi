@@ -2,11 +2,14 @@ import logging
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import timedelta
+from typing import Any
 
 from django.utils.timezone import get_current_timezone
 
 from core.models import Event
 from program_v2.models.dimension import DimensionDTO, DimensionValueDTO, ValueOrdering
+from program_v2.models.program import Program
+from program_v2.models.schedule import ScheduleItem
 from programme.models.programme import Programme
 
 from ..consts import DEFAULT_COLORS
@@ -166,3 +169,28 @@ class HitpointImporter(DefaultImporter):
             dimensions["signup"] = ["none"]
 
         return dimensions
+
+    def get_schedule_items(self, v1_programme: Programme, v2_program: Program) -> list[ScheduleItem]:
+        if v2_program.slug != "elava-pakohuone":
+            return super().get_schedule_items(v1_programme, v2_program)
+
+        # Elävä pakohuone – runs start at 12PM, 2PM, 4PM
+        return [
+            ScheduleItem(
+                slug=f"{v2_program.slug}-{hour}",
+                program=v2_program,
+                start_time=self.get_start_time(v1_programme).replace(hour=hour, tzinfo=tz),
+                length=timedelta(minutes=60),
+            ).with_generated_fields()
+            for hour in [12, 14, 16]
+        ]
+
+    def get_program_annotations(self, programme: Programme) -> dict[str, Any]:
+        annotations = super().get_program_annotations(programme)
+
+        if programme.slug != "elava-pakohuone":
+            return annotations
+
+        annotations["konsti:maxAttendance"] = 4
+
+        return annotations
