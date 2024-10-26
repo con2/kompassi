@@ -117,4 +117,12 @@ class ProgramFilters:
                 t = now()
             schedule_items = schedule_items.filter(cached_end_time__gte=t)
 
-        return schedule_items.distinct().select_related("cached_event").order_by("start_time")
+        return (
+            schedule_items.distinct()
+            .select_related(
+                "cached_event",
+                "program__event",
+                "program",
+            )
+            .order_by("start_time")
+        )
