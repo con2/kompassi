@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
 from django.db import models
@@ -50,6 +51,10 @@ class ScheduleItem(models.Model):
             return f"{self.program.title} – {self.subtitle}"
         else:
             return self.program.title
+
+    @cached_property
+    def timezone(self):
+        return self.cached_event.timezone
 
     def _make_slug(self):
         if self.subtitle:

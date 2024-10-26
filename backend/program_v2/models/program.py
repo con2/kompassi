@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import logging
+from datetime import tzinfo
+from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
 from django.conf import settings
@@ -66,6 +68,7 @@ class Program(models.Model):
     # related fields
     dimensions: models.QuerySet[ProgramDimensionValue]
     schedule_items: models.QuerySet[ScheduleItem]
+    event_id: int
 
     class Meta:
         unique_together = ("event", "slug")
@@ -235,12 +238,16 @@ class Program(models.Model):
         importer.import_dimensions(clear=clear, refresh_cached_dimensions=False)
         return importer.import_program(queryset, clear=clear)
 
-    @property
+    @cached_property
     def meta(self) -> ProgramV2EventMeta:
         if (meta := self.event.program_v2_event_meta) is None:
             raise TypeError(f"Event {self.event.slug} does not have program_v2_event_meta but Programs are present")
 
         return meta
+
+    @cached_property
+    def timezone(self) -> tzinfo:
+        return self.event.timezone
 
     def get_calendar_export_link(self, request: HttpRequest):
         return request.build_absolute_uri(

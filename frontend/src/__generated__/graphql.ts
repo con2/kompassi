@@ -291,6 +291,7 @@ export type FullEventType = {
   /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
   slug: Scalars['String']['output'];
   startTime?: Maybe<Scalars['DateTime']['output']>;
+  timezoneName: Scalars['String']['output'];
 };
 
 export type FullProgramType = {
