@@ -88,7 +88,15 @@ class ProgramFilters:
                 t = now()
             programs = programs.filter(cached_latest_end_time__gte=t)
 
-        return programs.distinct().select_related("event").order_by("cached_earliest_start_time")
+        return (
+            programs.distinct()
+            .select_related("event")
+            .prefetch_related(
+                "schedule_items",
+                "schedule_items__cached_event",
+            )
+            .order_by("cached_earliest_start_time")
+        )
 
     def filter_schedule_items(
         self,
