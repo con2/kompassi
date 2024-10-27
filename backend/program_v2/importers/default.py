@@ -175,7 +175,7 @@ class DefaultImporter:
         return self.get_start_time(programme) + self.get_length(programme)
 
     program_unique_fields = ("event", "slug")
-    program_update_fields = ("title", "description", "annotations")
+    program_update_fields = ("title", "description", "annotations", "updated_at")
 
     def get_program_annotations(self, programme: Programme) -> dict[str, Any]:
         annotations = {}

@@ -30,6 +30,9 @@ class ScheduleItem(models.Model):
     start_time = models.DateTimeField()
     length = models.DurationField()
 
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     # denormalized fields
     cached_end_time = models.DateTimeField()
     cached_event = models.ForeignKey(
@@ -74,7 +77,7 @@ class ScheduleItem(models.Model):
             self.cached_end_time = self.start_time + self.length
 
         if commit:
-            self.save(update_fields=["cached_end_time", "cached_event", "cached_location"])
+            self.save(update_fields=["cached_end_time", "cached_event", "cached_location", "updated_at"])
 
     def with_generated_fields(self) -> Self:
         """

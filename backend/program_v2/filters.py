@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Self
 
 from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
@@ -14,12 +14,26 @@ from .models.program import Program
 from .models.schedule import ScheduleItem
 
 
+def ensure_aware(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt
+
+
+def parse_datetime(s: str) -> datetime:
+    """
+    If there is no timezone info, assume UTC.
+    """
+    return ensure_aware(datetime.fromisoformat(s))
+
+
 @dataclass
 class ProgramFilters:
     slugs: list[str] | None = None
     dimensions: dict[str, list[str]] = field(default_factory=dict)
     favorites_only: bool = False
     hide_past: bool = False
+    updated_after: datetime | None = None
 
     @classmethod
     def from_query_dict(
@@ -39,11 +53,16 @@ class ProgramFilters:
         favorites_only = any(v.lower() not in FALSY_VALUES for v in filters.pop("favorited", []))
         hide_past = all(v.lower() in FALSY_VALUES for v in filters.pop("past", []))
 
+        updated_after = (
+            parse_datetime(updated_after_str) if (updated_after_str := max(filters.pop("updated_after", []))) else None
+        )
+
         return cls(
             slugs=slugs,
             dimensions=dict(filters),
             favorites_only=favorites_only,
             hide_past=hide_past,
+            updated_after=updated_after,
         )
 
     @classmethod
@@ -52,6 +71,7 @@ class ProgramFilters:
         filters: list[DimensionFilterInput] | None,
         favorites_only: bool = False,
         hide_past: bool = False,
+        updated_after: datetime | None = None,
     ):
         dimensions = {filter.dimension: filter.values for filter in filters} if filters else {}
 
@@ -59,6 +79,7 @@ class ProgramFilters:
             dimensions=dimensions,  # type: ignore
             favorites_only=favorites_only,
             hide_past=hide_past,
+            updated_after=ensure_aware(updated_after) if updated_after else None,
         )
 
     def filter_program(
@@ -87,6 +108,9 @@ class ProgramFilters:
             if t is None:
                 t = now()
             programs = programs.filter(cached_latest_end_time__gte=t)
+
+        if self.updated_after:
+            programs = programs.filter(updated_at__gt=self.updated_after)
 
         return (
             programs.distinct()
@@ -124,6 +148,9 @@ class ProgramFilters:
             if t is None:
                 t = now()
             schedule_items = schedule_items.filter(cached_end_time__gte=t)
+
+        if self.updated_after:
+            schedule_items = schedule_items.filter(updated_at__gt=self.updated_after)
 
         return (
             schedule_items.distinct()

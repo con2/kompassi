@@ -86,4 +86,6 @@ class FullProgramType(LimitedProgramType):
             "cached_dimensions",
             "cached_earliest_start_time",
             "cached_latest_end_time",
+            "created_at",
+            "updated_at",
         )

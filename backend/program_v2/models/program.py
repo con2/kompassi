@@ -129,7 +129,7 @@ class Program(models.Model):
         self.cached_dimensions = self._build_dimensions()
         self.cached_location = self._build_location()
         self.cached_color = self._get_color()
-        self.save(update_fields=["cached_dimensions", "cached_location", "cached_color"])
+        self.save(update_fields=["cached_dimensions", "cached_location", "cached_color", "updated_at"])
         self.schedule_items.update(cached_location=self.cached_location)
 
         bulk_update_schedule_items = []
@@ -190,7 +190,7 @@ class Program(models.Model):
         self.cached_earliest_start_time = earliest_start_time.start_time if earliest_start_time else None
         self.cached_latest_end_time = latest_end_time.cached_end_time if latest_end_time else None
 
-        self.save(update_fields=["cached_earliest_start_time", "cached_latest_end_time"])
+        self.save(update_fields=["cached_earliest_start_time", "cached_latest_end_time", "updated_at"])
 
     @classmethod
     def refresh_cached_times_qs(cls, queryset: models.QuerySet[Self]):

@@ -10,7 +10,13 @@ from ..models import ScheduleItem
 class LimitedScheduleItemType(DjangoObjectType):
     class Meta:
         model = ScheduleItem
-        fields = ("slug", "subtitle", "start_time")
+        fields = (
+            "slug",
+            "subtitle",
+            "start_time",
+            "created_at",
+            "updated_at",
+        )
 
     @staticmethod
     def resolve_length_minutes(parent: ScheduleItem, info):
@@ -31,6 +37,9 @@ class LimitedScheduleItemType(DjangoObjectType):
 
     resolve_location = resolve_localized_field("cached_location")
     location = graphene.String(lang=graphene.String())
+
+    resolve_created_at = resolve_local_datetime_field("created_at")
+    resolve_updated_at = resolve_local_datetime_field("updated_at")
 
     @staticmethod
     def resolve_title(parent: ScheduleItem, info):

@@ -125,7 +125,7 @@ class Command(BaseCommand):
                         Room.objects.bulk_update(bulk_update_rooms, ["v2_dimensions"])
 
                         v1_meta.override_schedule_link = f"{settings.KOMPASSI_V2_BASE_URL}/{event.slug}/program"
-                        v1_meta.save(update_fields=["override_schedule_link"])
+                        v1_meta.save(update_fields=["override_schedule_link", "updated_at"])
                     else:
                         # this event may have paulig already in the database so respect the existing data
                         importer = v2_meta.importer_class(event)

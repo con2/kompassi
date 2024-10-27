@@ -131,6 +131,8 @@ class LimitedProgramType(DjangoObjectType):
 
     resolve_cached_earliest_start_time = resolve_local_datetime_field("cached_earliest_start_time")
     resolve_cached_latest_end_time = resolve_local_datetime_field("cached_latest_end_time")
+    resolve_created_at = resolve_local_datetime_field("created_at")
+    resolve_updated_at = resolve_local_datetime_field("updated_at")
 
     class Meta:
         model = Program
@@ -142,4 +144,6 @@ class LimitedProgramType(DjangoObjectType):
             "cached_earliest_start_time",
             "cached_latest_end_time",
             "is_accepting_feedback",
+            "created_at",
+            "updated_at",
         )

@@ -15,4 +15,6 @@ class FullScheduleItemType(LimitedScheduleItemType):
             "subtitle",
             "start_time",
             "program",
+            "created_at",
+            "updated_at",
         )
