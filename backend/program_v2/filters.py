@@ -54,7 +54,10 @@ class ProgramFilters:
         hide_past = all(v.lower() in FALSY_VALUES for v in filters.pop("past", []))
 
         updated_after = (
-            parse_datetime(updated_after_str) if (updated_after_str := max(filters.pop("updated_after", []))) else None
+            parse_datetime(updated_after_str)
+            if (updated_after_strs := filters.pop("updated_after", []))
+            and (updated_after_str := max(updated_after_strs))
+            else None
         )
 
         return cls(
