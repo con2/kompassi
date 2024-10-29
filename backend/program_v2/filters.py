@@ -76,7 +76,11 @@ class ProgramFilters:
         hide_past: bool = False,
         updated_after: datetime | None = None,
     ):
-        dimensions = {filter.dimension: filter.values for filter in filters} if filters else {}
+        dimensions = (
+            {filter.dimension: ["*"] if filter.values is None else filter.values for filter in filters}
+            if filters
+            else {}
+        )
 
         return cls(
             dimensions=dimensions,  # type: ignore
@@ -102,10 +106,13 @@ class ProgramFilters:
 
         for dimension_slug, value_slugs in self.dimensions.items():
             value_slugs = [slug for slugs in value_slugs for slug in slugs.split(",")]
-            programs = programs.filter(
-                dimensions__dimension__slug=dimension_slug,
-                dimensions__value__slug__in=value_slugs,
-            )
+            if "*" in value_slugs:
+                programs = programs.filter(dimensions__dimension__slug=dimension_slug)
+            else:
+                programs = programs.filter(
+                    dimensions__dimension__slug=dimension_slug,
+                    dimensions__value__slug__in=value_slugs,
+                )
 
         if self.hide_past:
             if t is None:
@@ -142,10 +149,13 @@ class ProgramFilters:
 
         for dimension_slug, value_slugs in self.dimensions.items():
             value_slugs = [slug for slugs in value_slugs for slug in slugs.split(",")]
-            schedule_items = schedule_items.filter(
-                program__dimensions__dimension__slug=dimension_slug,
-                program__dimensions__value__slug__in=value_slugs,
-            )
+            if "*" in value_slugs:
+                schedule_items = schedule_items.filter(program__dimensions__dimension__slug=dimension_slug)
+            else:
+                schedule_items = schedule_items.filter(
+                    program__dimensions__dimension__slug=dimension_slug,
+                    program__dimensions__value__slug__in=value_slugs,
+                )
 
         if self.hide_past:
             if t is None:

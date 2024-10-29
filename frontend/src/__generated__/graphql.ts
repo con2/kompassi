@@ -150,9 +150,15 @@ export type DeleteSurveyLanguageInput = {
   surveySlug: Scalars['String']['input'];
 };
 
+/**
+ * Used to construct dimension filters in GraphQL queries.
+ * When a list of these is present, the semantics are AND.
+ * For each element in the list, with respect to the values list, the semantics are OR.
+ * The absence of the values list, or the special value "*" in the values list, means that the dimension must exist.
+ */
 export type DimensionFilterInput = {
-  dimension?: InputMaybe<Scalars['String']['input']>;
-  values?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  dimension: Scalars['String']['input'];
+  values?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type DimensionType = {
@@ -312,6 +318,7 @@ export type FullProgramType = {
   /** The latest end time of any schedule item of this program. NOTE: This is not the same as the program's start end. The intended purpose of this field is to exclude programs that have already ended. Always use `scheduleItems` for the purpose of displaying program times. */
   cachedLatestEndTime?: Maybe<Scalars['DateTime']['output']>;
   color: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   /** `is_list_filter` - only return dimensions that are shown in the list filter. `is_shown_in_detail` - only return dimensions that are shown in the detail view. If you supply both, you only get their intersection. */
   dimensions: Array<ProgramDimensionValueType>;
@@ -323,6 +330,7 @@ export type FullProgramType = {
   scheduleItems: Array<LimitedScheduleItemType>;
   slug: Scalars['String']['output'];
   title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 
@@ -393,6 +401,7 @@ export type FullResponseTypeValuesArgs = {
 
 export type FullScheduleItemType = {
   __typename?: 'FullScheduleItemType';
+  createdAt: Scalars['DateTime']['output'];
   endTime: Scalars['DateTime']['output'];
   endTimeUnixSeconds: Scalars['Int']['output'];
   lengthMinutes: Scalars['Int']['output'];
@@ -405,6 +414,7 @@ export type FullScheduleItemType = {
   subtitle: Scalars['String']['output'];
   /** Returns the title of the program, with subtitle if it exists, in the format "Program title – Schedule item subtitle". */
   title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 
@@ -460,6 +470,7 @@ export type LimitedProgramType = {
   /** The latest end time of any schedule item of this program. NOTE: This is not the same as the program's start end. The intended purpose of this field is to exclude programs that have already ended. Always use `scheduleItems` for the purpose of displaying program times. */
   cachedLatestEndTime?: Maybe<Scalars['DateTime']['output']>;
   color: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   isAcceptingFeedback: Scalars['Boolean']['output'];
   /** Get the links associated with the program. If types are not specified, all links are returned. */
@@ -468,6 +479,7 @@ export type LimitedProgramType = {
   location?: Maybe<Scalars['String']['output']>;
   slug: Scalars['String']['output'];
   title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 
@@ -541,6 +553,7 @@ export type LimitedResponseTypeValuesArgs = {
 
 export type LimitedScheduleItemType = {
   __typename?: 'LimitedScheduleItemType';
+  createdAt: Scalars['DateTime']['output'];
   endTime: Scalars['DateTime']['output'];
   endTimeUnixSeconds: Scalars['Int']['output'];
   lengthMinutes: Scalars['Int']['output'];
@@ -552,6 +565,7 @@ export type LimitedScheduleItemType = {
   subtitle: Scalars['String']['output'];
   /** Returns the title of the program, with subtitle if it exists, in the format "Program title – Schedule item subtitle". */
   title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
 };
 
 
@@ -915,6 +929,7 @@ export type ProgramV2EventMetaTypeProgramsArgs = {
   favoritesOnly?: InputMaybe<Scalars['Boolean']['input']>;
   filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
   hidePast?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAfter?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 
@@ -922,6 +937,7 @@ export type ProgramV2EventMetaTypeScheduleItemsArgs = {
   favoritesOnly?: InputMaybe<Scalars['Boolean']['input']>;
   filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
   hidePast?: InputMaybe<Scalars['Boolean']['input']>;
+  updatedAfter?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type ProgramV2ProfileMetaType = {

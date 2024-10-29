@@ -128,6 +128,7 @@ class HitpointImporter(DefaultImporter):
 
     def get_program_dimension_values(self, programme: Programme) -> dict[str, list[str]]:
         dimensions = super().get_program_dimension_values(programme)
+        annotations = self.get_program_annotations(programme)
 
         # introduce some hierarchy to rooms
         room_dimension_values = set(dimensions.get("room", []))
@@ -161,9 +162,14 @@ class HitpointImporter(DefaultImporter):
                 konsti_dimension_value = "tabletopRPG"
             if "larp" in topic_dimension_values:
                 konsti_dimension_value = "larp"
+        if "workshop" in type_dimension_values:
+            konsti_dimension_value = "workshop"
         if konsti_dimension_value:
             dimensions["konsti"] = [konsti_dimension_value]
-            dimensions["signup"] = ["konsti"]
+            if annotations.get("konsti:isPlaceholder", False):
+                dimensions["signup"] = ["none"]
+            else:
+                dimensions["signup"] = ["konsti"]
         else:
             dimensions["konsti"] = []
             dimensions["signup"] = ["none"]
@@ -188,9 +194,13 @@ class HitpointImporter(DefaultImporter):
     def get_program_annotations(self, programme: Programme) -> dict[str, Any]:
         annotations = super().get_program_annotations(programme)
 
-        if programme.slug != "elava-pakohuone":
-            return annotations
+        match programme.slug:
+            case "elava-pakohuone":
+                annotations["konsti:maxAttendance"] = 4
+            case "larppimiekkailuworkshop":
+                annotations["konsti:maxAttendance"] = 10
 
-        annotations["konsti:maxAttendance"] = 4
+        if "hahmotyopaja" in programme.slug:
+            annotations["konsti:isPlaceholder"] = True
 
         return annotations

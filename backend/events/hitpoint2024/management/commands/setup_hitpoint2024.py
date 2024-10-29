@@ -317,6 +317,20 @@ class Setup:
                 ),
             )
 
+        for tag_slug, tag_title, v2_dimensions in [
+            ("konsti-placeholder", "Konsti: Placeholder", {"tag": []}),
+        ]:
+            Tag.objects.update_or_create(
+                event=self.event,
+                slug=tag_slug,
+                defaults=dict(
+                    title=tag_title,
+                    style="label-default",
+                    v2_dimensions=v2_dimensions,
+                    public=False,
+                ),
+            )
+
         Tag.objects.filter(
             event=self.event,
             slug="sisainen-ohjelma",
