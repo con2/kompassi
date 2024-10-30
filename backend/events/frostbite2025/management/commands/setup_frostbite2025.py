@@ -366,7 +366,7 @@ class Setup:
                 self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),  # type: ignore
             ),
         ]:
-            TimeBlock.objects.create(event=self.event, start_time=start_time, defaults=dict(end_time=end_time))
+            TimeBlock.objects.create(event=self.event, start_time=start_time, end_time=end_time)
 
         SpecialStartTime.objects.filter(event=self.event).delete()
         for time_block in TimeBlock.objects.filter(event=self.event):
