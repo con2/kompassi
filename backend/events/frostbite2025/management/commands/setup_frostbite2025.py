@@ -399,6 +399,10 @@ class Setup:
             ]
             view.save()
 
+        for room in Room.objects.filter(event=self.event):
+            room.v2_dimensions = {"room": [room.slug]}
+            room.save(update_fields=["v2_dimensions"])
+
         tag_order = 0
         for tag_title, tag_slug, tag_style in [
             ("Cosplaypainotteinen ohjelma", "cosplay", "label-danger"),
