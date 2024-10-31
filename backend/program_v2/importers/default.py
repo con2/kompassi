@@ -2,7 +2,6 @@ import logging
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from itertools import batched
 from typing import Any
 
 from django.db.models import QuerySet
@@ -77,6 +76,17 @@ class DefaultImporter:
             )
             cur_date += timedelta(days=1)
 
+    def _get_date_dimension(self) -> DimensionDTO:
+        """
+        Reusable date dimension for importers that define their own dimensions in `get_dimensions`.
+        """
+        return DimensionDTO(
+            slug="date",
+            title=DATE_DIMENSION_TITLE_LOCALIZED,
+            choices=list(self._get_date_dimension_values()),
+            value_ordering=ValueOrdering.SLUG,
+        )
+
     def _get_room_dimension_values(self) -> Iterable[DimensionValueDTO]:
         return [
             DimensionValueDTO(slug=room.slug, title={self.language: room.name})
@@ -88,18 +98,20 @@ class DefaultImporter:
             ).distinct()
         ]
 
+    def _get_room_dimension(self) -> DimensionDTO:
+        return DimensionDTO(
+            slug="room",
+            title=ROOM_DIMENSION_TITLE_LOCALIZED,
+            choices=list(self._get_room_dimension_values()),
+        )
+
     def get_dimensions(self) -> list[DimensionDTO]:
         """
         Return a list of DimensionDTOs for the event.
         Don't call `DimensionDTO.save_many` on them, as this method is called by the importer.
         """
         return [
-            DimensionDTO(
-                slug="date",
-                title=DATE_DIMENSION_TITLE_LOCALIZED,
-                choices=list(self._get_date_dimension_values()),
-                value_ordering=ValueOrdering.SLUG,
-            ),
+            self._get_date_dimension(),
             DimensionDTO(
                 slug="category",
                 title=CATEGORY_DIMENSION_TITLE_LOCALIZED,
@@ -120,11 +132,7 @@ class DefaultImporter:
                     for tag in Tag.objects.filter(event=self.event)
                 ],
             ),
-            DimensionDTO(
-                slug="room",
-                title=ROOM_DIMENSION_TITLE_LOCALIZED,
-                choices=list(self._get_room_dimension_values()),
-            ),
+            self._get_room_dimension(),
         ]
 
     def get_program_dimension_values(self, programme: Programme) -> dict[str, list[str]]:
@@ -167,7 +175,7 @@ class DefaultImporter:
         return self.get_start_time(programme) + self.get_length(programme)
 
     program_unique_fields = ("event", "slug")
-    program_update_fields = ("title", "description", "annotations")
+    program_update_fields = ("title", "description", "annotations", "updated_at")
 
     def get_program_annotations(self, programme: Programme) -> dict[str, Any]:
         annotations = {}
@@ -213,7 +221,7 @@ class DefaultImporter:
 
     program_batch_size = 100
     schedule_item_batch_size = 100
-    pdf_batch_size = 400
+    pdv_batch_size = 400
 
     def import_dimensions(
         self,
@@ -290,18 +298,14 @@ class DefaultImporter:
 
         v1_programmes = list(eligible_queryset)
 
-        program_upsert = (self.get_program(programme) for programme in v1_programmes)
-        v2_programs = []
-        for page, program_batch in enumerate(batched(program_upsert, self.program_batch_size)):
-            logger.info("Importing page %d of programs", page + 1)
-            v2_programs.extend(
-                Program.objects.bulk_create(
-                    program_batch,
-                    update_conflicts=True,
-                    unique_fields=self.program_unique_fields,
-                    update_fields=self.program_update_fields,
-                )
-            )
+        v2_programs = Program.objects.bulk_create(
+            (self.get_program(programme) for programme in v1_programmes),
+            update_conflicts=True,
+            unique_fields=self.program_unique_fields,
+            update_fields=self.program_update_fields,
+            batch_size=self.program_batch_size,
+        )
+
         logger.info("Imported %d programs for %s", len(v2_programs), self.event.slug)
 
         # cannot use ScheduleItem.objects.bulk_create(…, update_conflicts=True)
@@ -313,12 +317,13 @@ class DefaultImporter:
             for schedule_item in self.get_schedule_items(v1_programme, v2_program)
             if v1_programme.start_time is not None and v1_programme.length is not None
         )
-        schedule_item_ids = []
-        for page, schedule_batch in enumerate(batched(schedule_upsert, self.schedule_item_batch_size)):
-            logger.info("Importing page %d of schedule items", page + 1)
-            schedule_item_ids.extend(
-                schedule_item.id for schedule_item in ScheduleItem.objects.bulk_create(schedule_batch)
+        schedule_item_ids = [
+            schedule_item.id
+            for schedule_item in ScheduleItem.objects.bulk_create(
+                schedule_upsert,
+                batch_size=self.schedule_item_batch_size,
             )
+        ]
         logger.info("Imported %d schedule items for %s", len(schedule_item_ids), self.event.slug)
 
         _, deleted = ScheduleItem.objects.filter(program__in=v2_programs).exclude(id__in=schedule_item_ids).delete()
@@ -334,10 +339,7 @@ class DefaultImporter:
                 *upsert_cache,
             )
         )
-        pdv_ids = []
-        for page, pdv_batch in enumerate(batched(pdv_upserts, self.pdf_batch_size)):
-            logger.info("Importing page %d of program dimension values", page + 1)
-            pdv_ids.extend(pdv.id for pdv in ProgramDimensionValue.bulk_upsert(pdv_batch))
+        pdv_ids = [pdv.id for pdv in ProgramDimensionValue.bulk_upsert(pdv_upserts, batch_size=self.pdv_batch_size)]
         logger.info("Imported %d program dimension values", len(pdv_ids))
 
         # delete program dimension values that are not set in the new data

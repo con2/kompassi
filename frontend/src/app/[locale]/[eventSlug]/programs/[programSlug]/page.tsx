@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { markAsFavorite, unmarkAsFavorite } from "../../program/actions";
+import {
+  markScheduleItemAsFavorite,
+  unmarkAsFavorite,
+} from "../../program/actions";
 import FavoriteButton from "../../program/FavoriteButton";
 import { FavoriteContextProvider } from "../../program/FavoriteContext";
 import { graphql } from "@/__generated__";
@@ -40,7 +43,7 @@ const query = graphql(`
   ) {
     profile {
       program {
-        programs(eventSlug: $eventSlug) {
+        scheduleItems(eventSlug: $eventSlug) {
           slug
         }
       }
@@ -50,6 +53,7 @@ const query = graphql(`
       name
       program {
         calendarExportLink
+
         program(slug: $programSlug) {
           title
           description
@@ -76,6 +80,7 @@ const query = graphql(`
             }
           }
           scheduleItems {
+            slug
             subtitle
             location
             startTime
@@ -149,8 +154,10 @@ export default async function NewProgramPage({ params }: Props) {
   }
 
   const program = event.program.program;
-  const favoriteProgramSlugs =
-    data.profile?.program?.programs?.map((program) => program.slug) ?? [];
+  const favoriteScheduleItemSlugs =
+    data.profile?.program?.scheduleItems?.map(
+      (scheduleItem) => scheduleItem.slug,
+    ) ?? [];
 
   function formatAnnotationValue(annotation: ProgramDetailAnnotationFragment) {
     if (annotation.annotation.type === AnnotationDataType.Boolean) {
@@ -168,21 +175,7 @@ export default async function NewProgramPage({ params }: Props) {
         &lt; {t.actions.returnToProgramList(event.name)}
       </Link>
 
-      <ViewHeading>
-        {program.title}
-        {data.profile && (
-          <div className="d-inline-block ms-2">
-            <FavoriteContextProvider
-              slugs={favoriteProgramSlugs}
-              messages={t.favorites}
-              markAsFavorite={markAsFavorite.bind(null, locale, eventSlug)}
-              unmarkAsFavorite={unmarkAsFavorite.bind(null, locale, eventSlug)}
-            >
-              <FavoriteButton slug={programSlug} size="xl" />
-            </FavoriteContextProvider>
-          </div>
-        )}
-      </ViewHeading>
+      <ViewHeading>{program.title}</ViewHeading>
 
       <div>
         {program.cachedHosts && <strong>{program.cachedHosts}</strong>}
@@ -200,6 +193,24 @@ export default async function NewProgramPage({ params }: Props) {
             />
             {scheduleItem.subtitle && (
               <span className="ms-2">({scheduleItem.subtitle})</span>
+            )}{" "}
+            {data.profile && (
+              <FavoriteContextProvider
+                slugs={favoriteScheduleItemSlugs}
+                messages={t.favorites}
+                markAsFavorite={markScheduleItemAsFavorite.bind(
+                  null,
+                  locale,
+                  eventSlug,
+                )}
+                unmarkAsFavorite={unmarkAsFavorite.bind(
+                  null,
+                  locale,
+                  eventSlug,
+                )}
+              >
+                <FavoriteButton scheduleItem={scheduleItem} />
+              </FavoriteContextProvider>
             )}
           </div>
         ))}

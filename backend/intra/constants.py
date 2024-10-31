@@ -4,4 +4,5 @@ SUPPORTED_APPS = [
     "tickets",
     "badges",
     "intra",
+    "forms",
 ]

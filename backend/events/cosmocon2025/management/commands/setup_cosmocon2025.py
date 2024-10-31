@@ -214,7 +214,17 @@ class Setup:
     def setup_forms(self):
         from forms.models.dimension import DimensionDTO
         from forms.models.form import Form
+        from forms.models.meta import FormsEventMeta
         from forms.models.survey import Survey
+
+        (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])
+
+        FormsEventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
 
         # Artist Alley application
 

@@ -18,7 +18,7 @@ django-redis
 django-storages
 django-stubs
 Django<5.1
-fastapi
+fastapi[standard]
 flake8
 graphene-django
 graphene-pydantic
@@ -29,6 +29,7 @@ ipython
 isort
 jinja2
 jsonschema
+jwskate
 markdown
 paramiko
 passlib
@@ -49,8 +50,7 @@ requests-oauthlib
 ruff
 tabulate
 unicodecsv
-uvicorn
-uvloop==0.21.0b1
+uvicorn[standard]
 vobject
 weasyprint
 XlsxWriter

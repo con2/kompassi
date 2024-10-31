@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
-from graphql_api.utils import resolve_localized_field
+from graphql_api.utils import resolve_local_datetime_field, resolve_localized_field
 
 from ..models import Program
 from ..models.annotations import ANNOTATIONS
@@ -124,10 +124,15 @@ class LimitedProgramType(DjangoObjectType):
         # TODO programme feedback is saved under V1 data model for now
         return (
             program.is_accepting_feedback
-            and Programme.objects.filter(category__event=program.event, slug=program.slug).exists()
+            and Programme.objects.filter(category__event=program.event_id, slug=program.slug).exists()
         )
 
     is_accepting_feedback = graphene.NonNull(graphene.Boolean)
+
+    resolve_cached_earliest_start_time = resolve_local_datetime_field("cached_earliest_start_time")
+    resolve_cached_latest_end_time = resolve_local_datetime_field("cached_latest_end_time")
+    resolve_created_at = resolve_local_datetime_field("created_at")
+    resolve_updated_at = resolve_local_datetime_field("updated_at")
 
     class Meta:
         model = Program
@@ -139,4 +144,6 @@ class LimitedProgramType(DjangoObjectType):
             "cached_earliest_start_time",
             "cached_latest_end_time",
             "is_accepting_feedback",
+            "created_at",
+            "updated_at",
         )

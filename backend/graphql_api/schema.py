@@ -10,15 +10,22 @@ from forms.graphql.mutations.delete_survey import DeleteSurvey
 from forms.graphql.mutations.delete_survey_dimension import DeleteSurveyDimension
 from forms.graphql.mutations.delete_survey_dimension_value import DeleteSurveyDimensionValue
 from forms.graphql.mutations.delete_survey_language import DeleteSurveyLanguage
+from forms.graphql.mutations.generate_key_pair import GenerateKeyPair
 from forms.graphql.mutations.init_file_upload import InitFileUpload
 from forms.graphql.mutations.put_survey_dimension import PutSurveyDimension
 from forms.graphql.mutations.put_survey_dimension_value import PutSurveyDimensionValue
+from forms.graphql.mutations.revoke_key_pair import RevokeKeyPair
 from forms.graphql.mutations.subscriptions import SubscribeToSurveyResponses, UnsubscribeFromSurveyResponses
 from forms.graphql.mutations.update_form import UpdateForm
 from forms.graphql.mutations.update_form_fields import UpdateFormFields
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
-from program_v2.graphql.mutations.favorites import MarkProgramAsFavorite, UnmarkProgramAsFavorite
+from program_v2.graphql.mutations.favorites import (
+    MarkProgramAsFavorite,
+    MarkScheduleItemAsFavorite,
+    UnmarkProgramAsFavorite,
+    UnmarkScheduleItemAsFavorite,
+)
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
 
 from .language import DEFAULT_LANGUAGE, Language
@@ -83,11 +90,16 @@ class Mutation(graphene.ObjectType):
 
     mark_program_as_favorite = MarkProgramAsFavorite.Field()
     unmark_program_as_favorite = UnmarkProgramAsFavorite.Field()
+    mark_schedule_item_as_favorite = MarkScheduleItemAsFavorite.Field()
+    unmark_schedule_item_as_favorite = UnmarkScheduleItemAsFavorite.Field()
 
     create_program_feedback = CreateProgramFeedback.Field()
 
     subscribe_to_survey_responses = SubscribeToSurveyResponses.Field()
     unsubscribe_from_survey_responses = UnsubscribeFromSurveyResponses.Field()
+
+    generate_key_pair = GenerateKeyPair.Field()
+    revoke_key_pair = RevokeKeyPair.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

@@ -106,7 +106,7 @@ def import_graphql(
         ],
         update_conflicts=True,
         unique_fields=["event", "slug"],
-        update_fields=["title", "description", "annotations"],
+        update_fields=["title", "description", "annotations", "updated_at"],
     )
     logger.info("Imported %d programs for %s", len(programs), event.slug)
 

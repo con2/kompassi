@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import logging
 import typing
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta, tzinfo
+from functools import cached_property
+from zoneinfo import ZoneInfo
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -18,10 +21,17 @@ from .venue import Venue
 if typing.TYPE_CHECKING:
     from forms.models.survey import Survey
     from labour.models.signup import Signup
-    from program_v2.models import Dimension, Program, ProgramV2EventMeta
+    from program_v2.models import Dimension, Program, ProgramV2EventMeta, ScheduleItem
 
 
 logger = logging.getLogger("kompassi")
+
+
+def validate_timezone_name(value: str) -> None:
+    try:
+        ZoneInfo(value)
+    except Exception as e:
+        raise ValidationError(f"Invalid timezone name: {value}") from e
 
 
 class Event(models.Model):
@@ -111,11 +121,17 @@ class Event(models.Model):
         help_text="Muutaman kappaleen mittainen kuvaus tapahtumasta. Näkyy tapahtumasivulla.",
     )
 
+    timezone_name = models.CharField(
+        default="Europe/Helsinki",
+        validators=[validate_timezone_name],
+    )
+
     created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
 
     # related fields
     programs: models.QuerySet[Program]
+    schedule_items: models.QuerySet[ScheduleItem]
     program_dimensions: models.QuerySet[Dimension]
     signup_set: models.QuerySet[Signup]
     surveys: models.QuerySet[Survey]
@@ -180,6 +196,14 @@ class Event(models.Model):
     @property
     def venue_name(self):
         return self.venue.name if self.venue else None
+
+    @cached_property
+    def timezone(self) -> tzinfo:
+        try:
+            return ZoneInfo(self.timezone_name)
+        except Exception:
+            logger.warning(f"Invalid timezone name: {self.timezone_name}", exc_info=True)
+            return UTC
 
     @classmethod
     def get_or_create_dummy(cls, name="Dummy event"):

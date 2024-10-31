@@ -58,6 +58,7 @@ interface BaseField {
   required?: boolean;
   readOnly?: boolean;
   htmlType?: HtmlType;
+  encryptTo?: string[];
 }
 
 export interface Divider extends BaseField {

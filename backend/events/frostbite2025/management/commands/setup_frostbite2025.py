@@ -329,7 +329,7 @@ class Setup:
             ("Erikoisohjelma", "erik", "color7"),
             ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen"),
         ]:
-            Category.objects.get_or_create(
+            Category.objects.update_or_create(
                 event=self.event,
                 slug=slug,
                 defaults=dict(
@@ -350,31 +350,30 @@ class Setup:
             ),
         )
 
-        if not TimeBlock.objects.filter(event=self.event).exists():
-            saturday = self.event.start_time + timedelta(days=1)  # type: ignore
-            for start_time, end_time in [
-                (
-                    self.event.start_time.replace(hour=17, minute=0, tzinfo=self.tz),  # type: ignore
-                    saturday.replace(hour=1, minute=0, tzinfo=self.tz),
-                ),
-                (
-                    saturday.replace(hour=9, minute=0, tzinfo=self.tz),
-                    self.event.end_time.replace(hour=1, minute=0, tzinfo=self.tz),  # type: ignore
-                ),
-                (
-                    self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),  # type: ignore
-                    self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),  # type: ignore
-                ),
-            ]:
-                TimeBlock.objects.get_or_create(
-                    event=self.event, start_time=start_time, defaults=dict(end_time=end_time)
-                )
+        TimeBlock.objects.filter(event=self.event).delete()
+        saturday = self.event.start_time + timedelta(days=1)  # type: ignore
+        for start_time, end_time in [
+            (
+                self.event.start_time.replace(hour=17, minute=0, tzinfo=self.tz),  # type: ignore
+                saturday.replace(hour=1, minute=0, tzinfo=self.tz),
+            ),
+            (
+                saturday.replace(hour=9, minute=0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=1, minute=0, tzinfo=self.tz),  # type: ignore
+            ),
+            (
+                self.event.end_time.replace(hour=9, minute=0, tzinfo=self.tz),  # type: ignore
+                self.event.end_time.replace(hour=18, minute=0, tzinfo=self.tz),  # type: ignore
+            ),
+        ]:
+            TimeBlock.objects.create(event=self.event, start_time=start_time, end_time=end_time)
 
+        SpecialStartTime.objects.filter(event=self.event).delete()
         for time_block in TimeBlock.objects.filter(event=self.event):
             # Half hours
             # [:-1] – discard 18:30
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
-                SpecialStartTime.objects.get_or_create(
+                SpecialStartTime.objects.create(
                     event=self.event,
                     start_time=hour_start_time.replace(minute=30),  # look, no tz
                 )
@@ -398,6 +397,10 @@ class Setup:
                 ]
             ]
             view.save()
+
+        for room in Room.objects.filter(event=self.event):
+            room.v2_dimensions = {"room": [room.slug]}
+            room.save(update_fields=["v2_dimensions"])
 
         tag_order = 0
         for tag_title, tag_slug, tag_style in [

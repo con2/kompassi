@@ -1,9 +1,8 @@
 import { notFound } from "next/navigation";
 
-import { markAsFavorite, unmarkAsFavorite } from "./actions";
+import { markScheduleItemAsFavorite, unmarkAsFavorite } from "./actions";
 import { FavoriteContextProvider } from "./FavoriteContext";
 import ProgramCard from "./ProgramCard";
-import ProgramTable from "./ProgramTable";
 import ProgramTabs from "./ProgramTabs";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
@@ -17,22 +16,23 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment ScheduleItem on LimitedScheduleItemType {
-    location
-    subtitle
-    startTime
-    endTime
-  }
-`);
-
-graphql(`
-  fragment ProgramList on FullProgramType {
+  fragment ScheduleProgram on LimitedProgramType {
     slug
     title
     cachedDimensions
     color
-    scheduleItems {
-      ...ScheduleItem
+  }
+`);
+
+graphql(`
+  fragment ScheduleItemList on FullScheduleItemType {
+    slug
+    location
+    subtitle
+    startTime
+    endTime
+    program {
+      ...ScheduleProgram
     }
   }
 `);
@@ -46,12 +46,12 @@ const query = graphql(`
   ) {
     profile {
       program {
-        programs(
+        scheduleItems(
           eventSlug: $eventSlug
           filters: $filters
           hidePast: $hidePast
         ) {
-          ...ProgramList
+          ...ScheduleItemList
         }
       }
     }
@@ -75,8 +75,8 @@ const query = graphql(`
           }
         }
 
-        programs(filters: $filters, hidePast: $hidePast) {
-          ...ProgramList
+        scheduleItems(filters: $filters, hidePast: $hidePast) {
+          ...ScheduleItemList
         }
       }
     }
@@ -128,16 +128,18 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
   });
   const { event } = data;
 
-  if (!event?.program?.programs) {
+  if (!event?.program?.scheduleItems) {
     notFound();
   }
 
   const session = await auth();
   const favoritesOnly = session && !!searchParams.favorited;
-  const userPrograms = data.profile?.program?.programs || [];
-  const programs = favoritesOnly ? userPrograms : event.program.programs;
+  const userScheduleItems = data.profile?.program?.scheduleItems || [];
+  const scheduleItems = favoritesOnly
+    ? userScheduleItems
+    : event.program.scheduleItems;
   const listFilters = event.program.listFilters || [];
-  const favoriteProgramSlugs = userPrograms.map((p) => p.slug);
+  const favoriteScheduleItemSlugs = userScheduleItems.map((p) => p.slug);
 
   const urlSearchParams = new URLSearchParams(searchParams);
   const activeTab =
@@ -159,39 +161,44 @@ export default async function ProgramListPage({ params, searchParams }: Props) {
         messages={t.filters}
         isLoggedIn={!!data.profile}
       />
-      <ProgramTabs
+      {/* <ProgramTabs
         searchParams={searchParams}
         eventSlug={event.slug}
         active={activeTab}
         translations={translations}
-      />
+      /> */}
       <FavoriteContextProvider
-        slugs={favoriteProgramSlugs}
+        slugs={favoriteScheduleItemSlugs}
         messages={t.favorites}
-        markAsFavorite={markAsFavorite.bind(null, locale, eventSlug)}
+        markAsFavorite={markScheduleItemAsFavorite.bind(
+          null,
+          locale,
+          eventSlug,
+        )}
         unmarkAsFavorite={unmarkAsFavorite.bind(null, locale, eventSlug)}
       >
-        {activeTab === "table" ? (
+        {/* {activeTab === "table" ? (
           <ProgramTable
-            programs={programs}
+            scheduleItems={scheduleItems}
             event={event}
             locale={locale}
             isLoggedIn={!!data.profile}
             translations={translations}
           />
-        ) : (
-          <div className="mt-3">
-            {programs.map((program) => (
-              <ProgramCard
-                key={event.slug}
-                program={program}
-                event={event}
-                isLoggedIn={!!data.profile}
-                locale={locale}
-              />
-            ))}
-          </div>
-        )}
+        ) : ( */}
+        <div className="mt-3">
+          {scheduleItems.map((scheduleItem) => (
+            <ProgramCard
+              key={scheduleItem.slug}
+              program={scheduleItem.program}
+              scheduleItem={scheduleItem}
+              event={event}
+              isLoggedIn={!!data.profile}
+              locale={locale}
+            />
+          ))}
+        </div>
+        {/* )} */}
       </FavoriteContextProvider>
 
       <p className="mt-4">

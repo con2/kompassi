@@ -2,7 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from core.utils.text_utils import normalize_whitespace
-from graphql_api.utils import resolve_localized_field
+from graphql_api.utils import resolve_local_datetime_field, resolve_localized_field, resolve_unix_seconds_field
 
 from ..models import ScheduleItem
 
@@ -10,7 +10,13 @@ from ..models import ScheduleItem
 class LimitedScheduleItemType(DjangoObjectType):
     class Meta:
         model = ScheduleItem
-        fields = ("slug", "subtitle", "start_time")
+        fields = (
+            "slug",
+            "subtitle",
+            "start_time",
+            "created_at",
+            "updated_at",
+        )
 
     @staticmethod
     def resolve_length_minutes(parent: ScheduleItem, info):
@@ -18,26 +24,22 @@ class LimitedScheduleItemType(DjangoObjectType):
 
     length_minutes = graphene.NonNull(graphene.Int)
 
-    @staticmethod
-    def resolve_end_time(parent: ScheduleItem, info):
-        return parent.cached_end_time
+    resolve_start_time = resolve_local_datetime_field("start_time")
 
     end_time = graphene.NonNull(graphene.DateTime)
-
-    @staticmethod
-    def resolve_start_time_unix_seconds(parent: ScheduleItem, info):
-        return int(parent.start_time.timestamp())
+    resolve_end_time = resolve_local_datetime_field("cached_end_time")
 
     start_time_unix_seconds = graphene.NonNull(graphene.Int)
-
-    @staticmethod
-    def resolve_end_time_unix_seconds(parent: ScheduleItem, info):
-        return int(parent.cached_end_time.timestamp())
+    resolve_start_time_unix_seconds = resolve_unix_seconds_field("start_time")
 
     end_time_unix_seconds = graphene.NonNull(graphene.Int)
+    resolve_end_time_unix_seconds = resolve_unix_seconds_field("end_time)")
 
     resolve_location = resolve_localized_field("cached_location")
     location = graphene.String(lang=graphene.String())
+
+    resolve_created_at = resolve_local_datetime_field("created_at")
+    resolve_updated_at = resolve_local_datetime_field("updated_at")
 
     @staticmethod
     def resolve_title(parent: ScheduleItem, info):

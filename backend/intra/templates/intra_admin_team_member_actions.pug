@@ -1,8 +1,8 @@
 if is_intra_admin
-  form(method='POST', action='{% url "intra_admin_team_member_view" event.slug team_member.team.slug team_member.person.id %}')
+  form(method='POST', action='{% url "intra:admin_team_member_view" event.slug team_member.team.slug team_member.person.id %}')
     {% csrf_token %}
     .btn-group
-      a.btn.btn-primary.btn-xs(href='{% url "intra_admin_team_member_view" event.slug team_member.team.slug team_member.person.id %}')
+      a.btn.btn-primary.btn-xs(href='{% url "intra:admin_team_member_view" event.slug team_member.team.slug team_member.person.id %}')
         i.fa.fa-pencil-square
       button.btn.btn-danger.btn-xs(type='submit', name='action', value='delete')
         i.fa.fa-trash

@@ -43,6 +43,63 @@ const translations: Translations = {
         title: "E-postadress",
       },
     },
+    keysView: UNTRANSLATED({
+      title: "Encryption keys",
+      description:
+        "In some cases, confidential data is encrypted in Kompassi using asymmetric encryption. " +
+        "If you need to be the recipient of such confidential information, you need to have a key pair. " +
+        "You can generate one below. " +
+        "Generating a key pair requires your password as the private key will be encrypted with it. " +
+        "In the future, we will allow advanced users to use keys stored on their own devices only, " +
+        "so that the private key never leaves the device.",
+      resetPasswordWarning: (
+        <>
+          <strong>Warning!</strong> If you forget your password and resert it,
+          you will lose your encryption keys and will no longer be able to
+          access data encrypted to them.
+        </>
+      ),
+      attributes: {
+        id: {
+          title: "Key ID",
+        },
+        createdAt: {
+          title: "Created at",
+        },
+        actions: {
+          title: "Actions",
+        },
+        password: {
+          title: "Password",
+          helpText: "Enter your password to encrypt the private key.",
+        },
+      },
+      actions: {
+        generate: {
+          title: "Generate key pair",
+          enterPassword: "Enter your password to encrypt the private key.",
+          modalActions: {
+            submit: "Generate",
+            cancel: "Cancel",
+          },
+        },
+        revoke: {
+          title: "Revoke key pair",
+          confirmation: (formattedCreatedAt: string) => (
+            <>
+              Are you sure you want to revoke the key pair that was created on{" "}
+              <strong>{formattedCreatedAt}</strong>? Once revoked, information
+              that was encrypted with the private key will no longer be
+              accessible. This action cannot be undone.
+            </>
+          ),
+          modalActions: {
+            submit: "Revoke",
+            cancel: "Cancel",
+          },
+        },
+      },
+    }),
   },
   // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
   Modal: {
@@ -61,6 +118,7 @@ const translations: Translations = {
   },
   UserMenu: {
     responses: "Enkätsvar",
+    keys: UNSURE("Krypteringsnycklar"),
     signIn: "Logga in",
     signOut: "Logga ut",
   },
@@ -142,6 +200,11 @@ const translations: Translations = {
         title: "Questions",
         helpText:
           'Each line should contain one question in the form of "slug: Question shown to the user".',
+      }),
+      encryptTo: UNTRANSLATED({
+        title: "Encrypt to",
+        helpText:
+          "If you want to encrypt the responses to this field, enter the user names of users who should be able to decrypt the responses (one per line). These users must have a key pair generated in their profile.",
       }),
     },
 
