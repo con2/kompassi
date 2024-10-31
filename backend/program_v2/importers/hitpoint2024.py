@@ -156,23 +156,21 @@ class HitpointImporter(DefaultImporter):
                     break
         dimensions["type"] = list(type_dimension_values)
 
-        konsti_dimension_value = ""
+        konsti_dimension_values = set(dimensions.get("konsti", []))
+        signup_dimension_values = set(dimensions.get("signup", []))
         if "gaming" in type_dimension_values:
             if "penandpaper" in topic_dimension_values:
-                konsti_dimension_value = "tabletopRPG"
+                konsti_dimension_values.add("tabletopRPG")
             if "larp" in topic_dimension_values:
-                konsti_dimension_value = "larp"
+                konsti_dimension_values.add("larp")
         if "workshop" in type_dimension_values:
-            konsti_dimension_value = "workshop"
-        if konsti_dimension_value:
-            dimensions["konsti"] = [konsti_dimension_value]
-            if annotations.get("konsti:isPlaceholder", False):
-                dimensions["signup"] = ["none"]
-            else:
-                dimensions["signup"] = ["konsti"]
-        else:
-            dimensions["konsti"] = []
-            dimensions["signup"] = ["none"]
+            konsti_dimension_values.add("workshop")
+        if konsti_dimension_values and not annotations.get("konsti:isPlaceholder", False):
+            signup_dimension_values.add("konsti")
+        if not signup_dimension_values:
+            signup_dimension_values.add("none")
+        dimensions["konsti"] = list(konsti_dimension_values)
+        dimensions["signup"] = list(signup_dimension_values)
 
         return dimensions
 

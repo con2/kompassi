@@ -319,6 +319,7 @@ class Setup:
 
         for tag_slug, tag_title, v2_dimensions in [
             ("konsti-placeholder", "Konsti: Placeholder", {"konsti": []}),
+            ("signup-rpg-desk", "Ilmoittautuminen roolipelitiskillä", {"signup": ["rpg-desk"]}),
         ]:
             Tag.objects.update_or_create(
                 event=self.event,
