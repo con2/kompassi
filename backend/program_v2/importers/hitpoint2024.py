@@ -204,7 +204,7 @@ class HitpointImporter(DefaultImporter):
         if dimensions.get("konsti", []) and not annotations.get("konsti:isPlaceholder", False):
             if programme.slug == "elava-pakohuone":
                 # HACK multiple schedule items
-                annotations["internal:links:signup"] = "https://ropekonsti.fi/program/list?type=workshop"
+                annotations["internal:links:signup"] = "https://ropekonsti.fi/program/list?type=larp"
             else:
                 annotations["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
 
