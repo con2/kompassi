@@ -272,6 +272,39 @@ class Setup:
         for dimension in artist_alley_dimensions:
             DimensionDTO.model_validate(dimension).save(artist_alley_application)
 
+        # Cosplay competition application
+
+        ## Cosplay competition application - FI
+
+        with resource_stream("events.cosmocon2025", "forms/cosplay-competition-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        cosplay_competition_application_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            slug="cosplay-competition-application-fi",
+            language="fi",
+            defaults=data,
+        )
+
+        cosplay_competition_application, _ = Survey.objects.get_or_create(
+            event=self.event,
+            slug="cosplay-competition-application",
+            defaults=dict(
+                active_from=datetime(2024, 11, 1, 0, 0, tzinfo=self.tz),
+                active_until=datetime(2024, 12, 16, 0, 0, tzinfo=self.tz),
+                max_responses_per_user=1,
+                key_fields=["name", "email", "character", "reserve"],
+                login_required=True,
+            ),
+        )
+
+        cosplay_competition_application.languages.set([cosplay_competition_application_fi])
+
+        with resource_stream("events.cosmocon2025", "forms/cosplay-competition-application-dimensions.yml") as f:
+            cosplay_competition_dimensions = yaml.safe_load(f)
+        for dimension in cosplay_competition_dimensions:
+            DimensionDTO.model_validate(dimension).save(cosplay_competition_application)
+
 
 class Command(BaseCommand):
     args = ""
