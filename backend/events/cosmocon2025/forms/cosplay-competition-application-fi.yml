@@ -53,3 +53,41 @@ fields:
     helptext: Lisää tähän linkki referenssikuviin ja valkokankaalle heijastettavaan kuvaan hahmosta. Lähetäthän sellaiset referenssikuvat, jossa hahmo näkyy kokonaisuudessaan.
     type: SingleLineText
     required: true
+
+  - slug: feedback
+    title: Haluatko tuomaripalautteen asustasi kirjallisena? 
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: feed_yes
+        title: Kyllä
+      - slug: feed_no
+        title: Ei
+        
+  - slug: privacy
+    title: Hyväksyn ja ymmärrän, että Cosmoconia järjestävät tahot näkevät ja käsittelevät tietojani liittyen cosplaykilpailuun. Tiedot tuhotaan Cosmocon -tapahtuman jälkeen. 
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: priv_yes
+        title: Kyllä
+        
+  - slug: rules
+    title: Olen lukenut Cosmoconin cosplaykilpailun säännöt
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: rules_yes
+        title: Kyllä
+
+  - slug: reserve
+    title: Mikäli en tule heti valituksi, haluan jäädä varasijalle siltä varalta, että joku valituista kisaajista jää kisasta pois. 
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: res_yes
+        title: Kyllä
+      - slug: res_no
+        title: Ei
+    
+     
