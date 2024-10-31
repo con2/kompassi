@@ -128,7 +128,7 @@ class HitpointImporter(DefaultImporter):
 
     def get_program_dimension_values(self, programme: Programme) -> dict[str, list[str]]:
         dimensions = super().get_program_dimension_values(programme)
-        annotations = self.get_program_annotations(programme)
+        annotations = super().get_program_annotations(programme)
 
         # introduce some hierarchy to rooms
         room_dimension_values = set(dimensions.get("room", []))
@@ -192,6 +192,7 @@ class HitpointImporter(DefaultImporter):
         ]
 
     def get_program_annotations(self, programme: Programme) -> dict[str, Any]:
+        dimensions = self.get_program_dimension_values(programme)
         annotations = super().get_program_annotations(programme)
 
         match programme.slug:
@@ -200,7 +201,11 @@ class HitpointImporter(DefaultImporter):
             case "larppimiekkailuworkshop":
                 annotations["konsti:maxAttendance"] = 10
 
-        if "hahmotyopaja" in programme.slug:
-            annotations["konsti:isPlaceholder"] = True
+        if dimensions.get("konsti", []) and not annotations.get("konsti:isPlaceholder", False):
+            if programme.slug == "elava-pakohuone":
+                # HACK multiple schedule items
+                annotations["internal:links:signup"] = "https://ropekonsti.fi/program/list?type=workshop"
+            else:
+                annotations["internal:links:signup"] = f"https://ropekonsti.fi/program/item/{programme.slug}"
 
         return annotations

@@ -318,7 +318,7 @@ class Setup:
             )
 
         for tag_slug, tag_title, v2_dimensions in [
-            ("konsti-placeholder", "Konsti: Placeholder", {"tag": []}),
+            ("konsti-placeholder", "Konsti: Placeholder", {"konsti": []}),
         ]:
             Tag.objects.update_or_create(
                 event=self.event,
