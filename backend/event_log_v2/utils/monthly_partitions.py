@@ -176,7 +176,6 @@ class MonthlyPartitionsMixin(UUID7Mixin):
         >>> Entry.get_current_partitions(months_past=2, months_future=1, today=date(2023,1,27))
         [(2022, 11), (2022, 12), (2023, 1), (2023, 2)]
         """
-
         if today is None:
             today = datetime.now(UTC).date()
 
