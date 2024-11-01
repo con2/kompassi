@@ -176,8 +176,10 @@ class MonthlyPartitionsMixin(UUID7Mixin):
         >>> Entry.get_current_partitions(months_past=2, months_future=1, today=date(2023,1,27))
         [(2022, 11), (2022, 12), (2023, 1), (2023, 2)]
         """
+
         if today is None:
-            today = date_type.today()
+            today = datetime.now(UTC).date()
+
         year, month = today.year, today.month
 
         expected_partitions = []
@@ -204,7 +206,7 @@ class MonthlyPartitionsMixin(UUID7Mixin):
         from .emit import emit
 
         if today is None:
-            today = date_type.today()
+            today = datetime.now(UTC).date()
 
         expected_partitions = cls.get_expected_partitions(months_past, months_future, today)
         expected_partition_names = {cls.get_partition_name(year, month) for year, month in expected_partitions}
