@@ -6,6 +6,7 @@ from .views import (
     badges_admin_create_view,
     badges_admin_dashboard_view,
     badges_admin_export_view,
+    badges_admin_import_view,
     badges_admin_onboarding_view,
     badges_admin_reports_view,
 )
@@ -25,6 +26,11 @@ urlpatterns = [
         r"^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/badges/new/?$",
         badges_admin_create_view,
         name="badges_admin_create_view",
+    ),
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/badges/import/?$",
+        badges_admin_import_view,
+        name="badges_admin_import_view",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/badges/admin/badges/(?P<personnel_class_slug>[a-z0-9-]+)/?$",

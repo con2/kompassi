@@ -15,7 +15,7 @@ from ..helpers import badges_admin_required
 from ..models import Badge
 from ..proxies.badge.management import BadgeManagementProxy
 
-BADGE_ORDER = ("personnel_class", "person__surname", "person__first_name")
+BADGE_ORDER = ("personnel_class", "surname", "first_name")
 BADGE_LIST_TEMPLATES = dict(
     screen=dict(
         normal="badges_admin_badges_view.pug",

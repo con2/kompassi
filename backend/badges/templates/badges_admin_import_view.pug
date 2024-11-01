@@ -1,0 +1,19 @@
+extends core_admin_base.pug
+- load trans from i18n
+- load crispy_forms_tags
+block title
+  | {% trans "Import badges" %}
+block admin_content
+  form(method='POST', enctype="multipart/form-data").form.form-horizontal
+    .panel.panel-default
+      .panel-heading: strong {% trans "Import badges" %}
+      .panel-body
+        - crispy form
+      .panel-footer.clearfix
+        .btn-group.pull-right
+          a.btn.btn-default(href='{% url "badges_admin_dashboard_view" event.slug %}')
+            i.fa.fa-undo.kompassi-icon-space-right
+            {% trans "Abandon changes and return" %}
+          button.btn.btn-success(type='submit')
+            i.fa.fa-check.kompassi-icon-space-right
+            {% trans "Import badges" %}

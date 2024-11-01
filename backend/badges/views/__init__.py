@@ -7,5 +7,6 @@ from .admin_views import (
 from .badges_admin_badges_view import badges_admin_badges_view
 from .badges_admin_create_view import badges_admin_create_view
 from .badges_admin_export_view import badges_admin_export_view
+from .badges_admin_import_view import badges_admin_import_view
 from .badges_admin_onboarding_view import badges_admin_onboarding_view
 from .badges_admin_reports_view import badges_admin_reports_view
