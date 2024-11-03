@@ -92,5 +92,5 @@ export async function submit(
     variables: { input },
   });
   revalidatePath(`/${eventSlug}/surveys/${surveySlug}/responses`);
-  return void redirect(`/${eventSlug}/surveys/${surveySlug}/thanks`);
+  return void redirect(`/${eventSlug}/${surveySlug}/thanks`);
 }

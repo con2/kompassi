@@ -30,7 +30,8 @@ export async function createDimension(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  revalidatePath(`/${eventSlug}/${surveySlug}`);
+
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
@@ -51,7 +52,8 @@ export async function updateDimension(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  revalidatePath(`/${eventSlug}/${surveySlug}`);
+
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
@@ -78,7 +80,8 @@ export async function deleteDimension(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  revalidatePath(`/${eventSlug}/${surveySlug}`);
+
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
@@ -109,7 +112,8 @@ export async function createDimensionValue(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  revalidatePath(`/${eventSlug}/${surveySlug}`);
+
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
@@ -132,7 +136,8 @@ export async function updateDimensionValue(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  revalidatePath(`/${eventSlug}/${surveySlug}`);
+
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
@@ -163,6 +168,7 @@ export async function deleteDimensionValue(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/surveys/${surveySlug}`);
+  revalidatePath(`/${eventSlug}/${surveySlug}`);
+
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
