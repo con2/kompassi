@@ -7,7 +7,6 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import FormEditorWrapper from "@/components/forms/FormEditorWrapper";
 import { validateFields } from "@/components/forms/models";
-import SubmitButton from "@/components/forms/SubmitButton";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";

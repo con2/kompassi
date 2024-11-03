@@ -1,4 +1,3 @@
-import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -15,7 +14,6 @@ import SubmitButton from "@/components/forms/SubmitButton";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
-import { timezone } from "@/config";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`

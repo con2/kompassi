@@ -171,12 +171,13 @@ export default async function SurveysPage({ params }: Props) {
       slug: "actions",
       title: t.attributes.actions,
       getCellContents: (survey) => {
-        const url = `/${eventSlug}/surveys/${survey.slug}`;
-        const absoluteUrl = `${publicUrl}${url}`;
+        const fillInUrl = `/${eventSlug}/${survey.slug}`;
+        const adminUrl = `/${eventSlug}/surveys/${survey.slug}`;
+        const absoluteUrl = `${publicUrl}${fillInUrl}`;
         return (
           <>
             {survey.isActive ? (
-              <Link href={url} className="btn btn-sm btn-outline-primary">
+              <Link href={fillInUrl} className="btn btn-sm btn-outline-primary">
                 {t.actions.fillIn.title}…
               </Link>
             ) : (
@@ -194,13 +195,13 @@ export default async function SurveysPage({ params }: Props) {
               messages={t.actions.share}
             />{" "}
             <Link
-              href={`${url}/edit`}
+              href={`${adminUrl}/edit`}
               className="btn btn-sm btn-outline-primary"
             >
               {t.actions.editSurvey}…
             </Link>{" "}
             <Link
-              href={`${url}/responses`}
+              href={`${adminUrl}/responses`}
               className="btn btn-sm btn-outline-primary"
             >
               {t.actions.viewResponses}…

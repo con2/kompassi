@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 import SurveyEditorView from "../edit/SurveyEditorView";
@@ -22,8 +21,6 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { makeColorTranslucent } from "@/components/dimensions/helpers";
 import SignInRequired from "@/components/SignInRequired";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 

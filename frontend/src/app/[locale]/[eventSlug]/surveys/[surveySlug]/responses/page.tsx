@@ -1,8 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
 import { Fragment } from "react";
-import ToggleButton from "react-bootstrap/ToggleButton";
+
 import { toggleSurveyResponseSubscription } from "./actions";
 import ResponseTabs from "./ResponseTabs";
 import SubscriptionButton from "./SubscriptionButton";
@@ -10,7 +9,6 @@ import { graphql } from "@/__generated__";
 import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { Column, DataTable } from "@/components/DataTable";
 import ColoredDimensionTableCell from "@/components/dimensions/ColoredDimensionTableCell";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
