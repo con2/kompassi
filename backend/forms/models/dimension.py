@@ -8,6 +8,7 @@ from django.db import models
 
 from core.models import Event
 from core.utils.locale_utils import get_message_in_language
+from core.utils.log_utils import log_get_or_create
 from core.utils.model_utils import validate_slug
 
 from ..utils.process_form_data import process_form_data
@@ -131,6 +132,15 @@ class DimensionValueDTO(pydantic.BaseModel, populate_by_name=True):
     color: str = ""
     is_initial: bool = pydantic.Field(default=False, alias="isInitial")
 
+    @classmethod
+    def from_model(cls, value: DimensionValue) -> Self:
+        return cls(
+            slug=value.slug,
+            title=value.title,
+            color=value.color,
+            isInitial=value.is_initial,
+        )
+
     def save(self, dimension: Dimension):
         DimensionValue.objects.update_or_create(
             dimension=dimension,
@@ -172,8 +182,19 @@ class DimensionDTO(pydantic.BaseModel, populate_by_name=True):
     is_multi_value: bool = pydantic.Field(default=False, alias="isMultiValue")
     is_shown_to_respondent: bool = pydantic.Field(default=False, alias="isShownToRespondent")
 
+    @classmethod
+    def from_model(cls, dimension: Dimension) -> Self:
+        return cls(
+            slug=dimension.slug,
+            title=dimension.title,
+            isKeyDimension=dimension.is_key_dimension,
+            isMultiValue=dimension.is_multi_value,
+            isShownToRespondent=dimension.is_shown_to_respondent,
+            choices=[DimensionValueDTO.from_model(value) for value in dimension.values.all()],
+        )
+
     def save(self, survey: Survey, order: int = 0):
-        dimension, _created = Dimension.objects.update_or_create(
+        dimension, created = Dimension.objects.update_or_create(
             survey=survey,
             slug=self.slug,
             defaults=dict(
@@ -185,11 +206,13 @@ class DimensionDTO(pydantic.BaseModel, populate_by_name=True):
             ),
         )
 
+        log_get_or_create(logger, dimension, created)
+
         if self.choices is None:
             return dimension
 
         # delete choices that are no longer present
-        if not _created:
+        if not created:
             DimensionValue.objects.filter(dimension=dimension).exclude(
                 slug__in=[choice.slug for choice in self.choices]
             ).delete()

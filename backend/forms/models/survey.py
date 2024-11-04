@@ -87,7 +87,7 @@ class Survey(models.Model):
     )
 
     languages = models.ManyToManyField(
-        "forms.Form",
+        Form,
         verbose_name=_("language versions"),
         help_text=_(
             "The form will be available in these languages. "
@@ -222,7 +222,7 @@ class SurveyDTO:
     active_from: datetime = field(default_factory=now)
     key_fields: list[str] = field(default_factory=list)
 
-    def save(self, event: Event) -> Survey:
+    def save(self, event: Event, overwrite=False) -> Survey:
         from .dimension import DimensionDTO
 
         defaults = asdict(self)  # type: ignore
@@ -231,15 +231,17 @@ class SurveyDTO:
         survey, created = Survey.objects.get_or_create(event=event, slug=slug, defaults=defaults)
         log_get_or_create(logger, survey, created)
 
-        if not survey.dimensions.exists():
-            try:
-                with resource_stream(f"events.{event.slug}", f"forms/{slug}-dimensions.yml") as f:
-                    data = yaml.safe_load(f)
-            except FileNotFoundError:
-                pass
-            else:
-                dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
-                DimensionDTO.save_many(survey, dimensions)
+        if not overwrite and not created:
+            return survey
+
+        try:
+            with resource_stream(f"events.{event.slug}", f"forms/{slug}-dimensions.yml") as f:
+                data = yaml.safe_load(f)
+        except FileNotFoundError:
+            pass
+        else:
+            dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
+            DimensionDTO.save_many(survey, dimensions)
 
         for language in SUPPORTED_LANGUAGES:
             form_slug = f"{slug}-{language.code}"
@@ -250,19 +252,13 @@ class SurveyDTO:
             except FileNotFoundError:
                 continue
 
-            form, created = Form.objects.get_or_create(
+            form, created = Form.objects.update_or_create(
                 event=event,
                 slug=form_slug,
                 language=language.code,
                 defaults=data,
             )
             log_get_or_create(logger, form, created)
-
-            # TODO(#403) Remove when form editor is implemented
-            if not created:
-                # Update fields only on existing forms
-                form.fields = data["fields"]
-                form.save(update_fields=["fields"])
 
             survey.languages.add(form)
 
