@@ -8,7 +8,6 @@ from django.db import models
 
 from core.models import Event
 from core.utils.locale_utils import get_message_in_language
-from core.utils.log_utils import log_get_or_create
 from core.utils.model_utils import validate_slug
 
 from ..utils.process_form_data import process_form_data
@@ -205,8 +204,6 @@ class DimensionDTO(pydantic.BaseModel, populate_by_name=True):
                 order=order,
             ),
         )
-
-        log_get_or_create(logger, dimension, created)
 
         if self.choices is None:
             return dimension
