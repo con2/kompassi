@@ -228,11 +228,11 @@ class SurveyDTO:
         defaults = asdict(self)  # type: ignore
         slug = defaults.pop("slug")
 
-        survey, created = Survey.objects.get_or_create(event=event, slug=slug, defaults=defaults)
-        log_get_or_create(logger, survey, created)
+        if not overwrite and Survey.objects.filter(event=event, slug=slug).exists():
+            return Survey.objects.get(event=event, slug=slug)
 
-        if not overwrite and not created:
-            return survey
+        survey, created = Survey.objects.update_or_create(event=event, slug=slug, defaults=defaults)
+        log_get_or_create(logger, survey, created)
 
         try:
             with resource_stream(f"events.{event.slug}", f"forms/{slug}-dimensions.yml") as f:

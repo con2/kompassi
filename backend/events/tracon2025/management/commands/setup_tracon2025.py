@@ -485,7 +485,10 @@ class Setup:
         )
 
         for survey in [
-            SurveyDTO(slug="kickoff-signup"),
+            SurveyDTO(
+                slug="kickoff-signup",
+                anonymity="name_and_email",
+            ),
         ]:
             survey.save(self.event, overwrite=True)
 
