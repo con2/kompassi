@@ -1,0 +1,38 @@
+title: Ilmoittautuminen Tracon 2025 Kick Offiin ja Pikkujouluihin 2024
+description:
+  "Ilmoittautumislomake Traconin Kick Offiin ja yhteisiin Pikkujouluihin.\r\
+  \n\r\nLomakkeella voit ilmoittautua koko päivään, pelkkään Kick Offiin tai Pikkujouluihin.\r\
+  \nMikäli et pääse osallistumaan, lomaketta ei tarvitse täyttää. \r\n\r\nKick Off\
+  \ osuuden ruokailua varten tulee slackin kautta kysely myöhemmin.\r\n\r\nIlmoittautuminen\
+  \ on sitova ja päättyy 18.11.\r\n\r\nMikäli herää kysyttävää, otathan yhteyttä virkistykseen\
+  \ Slackissa <em>@Haisku</em> tai <em>@dennu</em>"
+thank_you_message: ""
+fields:
+  - slug: participation
+    type: MultiSelect
+    title: Osallistun...
+    choicesFrom:
+      dimension: participation
+    helpText: Jos osallistut sekä kick-offiin että pikkujouluihin, valitse molemmat.
+    required: true
+  - slug: special_diet
+    type: MultiSelect
+    title: Mahdolliset erikoisruokavaliot
+    choices:
+      - slug: laktoositon
+        title: Laktoositon
+      - slug: maidoton
+        title: Maidoton
+      - slug: gluteeniton
+        title: Gluteeniton
+      - slug: kasvisruokavalio
+        title: Kasvisruokavalio
+      - slug: vegaani
+        title: Vegaani
+    helpText: Pyritään huomioimaan mahdollisimman hyvin pikkujoulutarjoiluissa.
+    required: false
+  - slug: extrainfo
+    type: MultiLineText
+    title: Lisätietoa virkistykselle
+    helpText: Muuta huomioitavaa, esimerkiksi tarkennukset erikoisruokavalioihin.
+    required: false

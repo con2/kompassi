@@ -10,13 +10,17 @@ from django.core.management.base import BaseCommand
 from django.urls import reverse
 from django.utils.timezone import now
 
+from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
 from badges.emperkelators.tracon2024 import TicketType, TraconEmperkelator
 from badges.models.badges_event_meta import BadgesEventMeta
 from core.models.event import Event
 from core.models.organization import Organization
 from core.models.person import Person
 from core.models.venue import Venue
+from forms.models.meta import FormsEventMeta
 from forms.models.survey import SurveyDTO
+from intra.models import IntraEventMeta, Team
+from labour.models import Survey
 from labour.models.alternative_signup_forms import AlternativeSignupForm
 from labour.models.info_link import InfoLink
 from labour.models.job_category import JobCategory
@@ -24,11 +28,15 @@ from labour.models.labour_event_meta import LabourEventMeta
 from labour.models.personnel_class import PersonnelClass
 from labour.models.qualifications import Qualification
 from labour.models.survey import Survey as LabourSurvey
+from program_v2.importers.tracon2024 import TraconImporter
+from program_v2.models.dimension import Dimension, DimensionDTO
+from program_v2.models.meta import ProgramV2EventMeta
+from programme.models import Category, Programme, Room
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.models.product import Product
 from tickets_v2.models.quota import Quota
 
-from ...models import Night, SignupExtra
+from ...models import Night, Poison, SignupExtra
 
 
 class Setup:
@@ -49,6 +57,7 @@ class Setup:
         self.setup_intra()
         self.setup_access()
         self.setup_tickets_v2()
+        self.setup_forms()
         # self.setup_kaatoilmo()
 
     def setup_core(self):
@@ -306,10 +315,6 @@ class Setup:
         )
 
     def setup_program_v2(self):
-        from program_v2.importers.tracon2024 import TraconImporter
-        from program_v2.models.dimension import Dimension, DimensionDTO
-        from program_v2.models.meta import ProgramV2EventMeta
-
         try:
             room_dimension = Dimension.objects.get(event=self.event, slug="room")
         except Dimension.DoesNotExist:
@@ -327,8 +332,6 @@ class Setup:
         )
 
     def setup_access(self):
-        from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
-
         # Grant accepted workers access to Tracon Slack
         privilege = Privilege.objects.get(slug="tracon-slack")
         for group in [
@@ -353,8 +356,6 @@ class Setup:
             )
 
     def setup_intra(self):
-        from intra.models import IntraEventMeta, Team
-
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("conitea")
         IntraEventMeta.objects.get_or_create(
@@ -396,11 +397,6 @@ class Setup:
             team.save()
 
     def setup_kaatoilmo(self):
-        from labour.models import Survey
-        from programme.models import Category, Programme, Room
-
-        from ...models import Poison
-
         assert self.event.start_time
         saturday = self.event.start_time + timedelta(days=1)
 
@@ -479,51 +475,19 @@ class Setup:
             Poison.objects.get_or_create(name=poison_name)
 
     def setup_forms(self):
-        # TODO check the forms before setup
-        return
+        (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])
+
+        FormsEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
 
         for survey in [
-            SurveyDTO(
-                slug="artisan-application",
-                key_fields=["name", "email", "helper"],
-            ),
-            SurveyDTO(
-                slug="artist-alley-application",
-                key_fields=["name", "email", "artist_name1", "location", "reserve"],
-            ),
-            SurveyDTO(
-                slug="expense-claim",
-                key_fields=["title", "amount"],
-                login_required=True,
-                anonymity="NAME_AND_EMAIL",
-            ),
-            SurveyDTO(slug="hackathon-feedback"),
-            SurveyDTO(slug="jv-kertauskurssi"),
-            SurveyDTO(
-                slug="opening-closing-performer-application",
-                key_fields=["performer-name"],
-            ),
-            SurveyDTO(
-                slug="vendor-application",
-                key_fields=["name"],
-            ),
-            SurveyDTO(
-                slug="cosplay-jury-application",
-                key_fields=["performer_name"],
-                login_required=True,
-                anonymity="NAME_AND_EMAIL",
-            ),
-            SurveyDTO(
-                slug="virkistyspaiva",
-                login_required=True,
-                anonymity="NAME_AND_EMAIL",
-            ),
-            SurveyDTO(
-                slug="geekjam-signup",
-                key_fields=["nick", "instruments"],
-            ),
+            SurveyDTO(slug="kickoff-signup"),
         ]:
-            survey.save(self.event)
+            survey.save(self.event, overwrite=True)
 
     def setup_tickets_v2(self):
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
