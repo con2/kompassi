@@ -488,9 +488,11 @@ class Setup:
             SurveyDTO(
                 slug="kickoff-signup",
                 anonymity="name_and_email",
+                max_responses_per_user=1,
+                login_required=True,
             ),
         ]:
-            survey.save(self.event, overwrite=True)
+            survey.save(self.event)
 
     def setup_tickets_v2(self):
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
