@@ -3,14 +3,12 @@ from __future__ import annotations
 import logging
 from collections.abc import Collection, Mapping
 from dataclasses import asdict, dataclass, field
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 import yaml
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from core.models import Event
@@ -219,7 +217,6 @@ class SurveyDTO:
     login_required: bool = False
     max_responses_per_user: int = 0
     anonymity: str = "soft"
-    active_from: datetime = field(default_factory=now)
     key_fields: list[str] = field(default_factory=list)
 
     def save(self, event: Event, overwrite=False) -> Survey:
