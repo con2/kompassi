@@ -9,12 +9,12 @@ from django.forms import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 validate_slug = RegexValidator(
-    regex=r"[a-z0-9-]+",
+    regex=r"^[a-z0-9-]+$",
     message="Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä väliviivoja.",
 )
 
 validate_slug_underscore = RegexValidator(
-    regex=r"[a-z0-9_]+",
+    regex=r"^[a-z0-9_]+$",
     message="Tekninen nimi saa sisältää vain pieniä kirjaimia, numeroita sekä alaviivoja.",
 )
 
