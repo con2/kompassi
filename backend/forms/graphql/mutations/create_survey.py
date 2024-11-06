@@ -26,5 +26,7 @@ class CreateSurvey(graphene.Mutation):
     ):
         event = Event.objects.get(slug=input.event_slug)
         graphql_check_model(Survey, event, info, "mutation")
-        survey = Survey.objects.create(event=event, slug=input.survey_slug)
+        survey = Survey(event=event, slug=input.survey_slug)
+        survey.full_clean()  # Validate fields
+        survey.save()
         return CreateSurvey(survey=survey)  # type: ignore
