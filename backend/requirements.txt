@@ -4,11 +4,11 @@ aiodns==3.2.0
     # via aiohttp
 aiohappyeyeballs==2.4.3
     # via aiohttp
-aiohttp==3.10.10
+aiohttp==3.11.7
     # via -r requirements.in
 aiosignal==1.3.1
     # via aiohttp
-amqp==5.2.0
+amqp==5.3.1
     # via kombu
 annotated-types==0.7.0
     # via pydantic
@@ -34,17 +34,17 @@ attrs==24.2.0
     #   referencing
 babel==2.16.0
     # via -r requirements.in
-bcrypt==4.2.0
+bcrypt==4.2.1
     # via paramiko
 billiard==4.2.1
     # via celery
 binapy==0.8.0
     # via jwskate
-bleach==6.1.0
+bleach==6.2.0
     # via -r requirements.in
-boto3==1.35.45
+boto3==1.35.69
     # via -r requirements.in
-botocore==1.35.45
+botocore==1.35.69
     # via
     #   boto3
     #   s3transfer
@@ -121,7 +121,7 @@ django==5.0.9
     #   paikkala
 django-bootstrap3==24.3
     # via -r requirements.in
-django-cors-headers==4.5.0
+django-cors-headers==4.6.0
     # via -r requirements.in
 django-crispy-forms==2.3
     # via
@@ -141,9 +141,9 @@ django-redis==5.4.0
     # via -r requirements.in
 django-storages==1.14.4
     # via -r requirements.in
-django-stubs==5.1.0
+django-stubs==5.1.1
     # via -r requirements.in
-django-stubs-ext==5.1.0
+django-stubs-ext==5.1.1
     # via django-stubs
 dnspython==2.7.0
     # via email-validator
@@ -153,7 +153,7 @@ email-validator==2.2.0
     #   pydantic
 executing==2.1.0
     # via stack-data
-fastapi==0.115.2
+fastapi==0.115.5
     # via -r requirements.in
 fastapi-cli==0.0.5
     # via fastapi
@@ -161,13 +161,13 @@ filelock==3.16.1
     # via virtualenv
 flake8==7.1.1
     # via -r requirements.in
-fonttools==4.54.1
+fonttools==4.55.0
     # via weasyprint
-frozenlist==1.4.1
+frozenlist==1.5.0
     # via
     #   aiohttp
     #   aiosignal
-graphene==3.4
+graphene==3.4.3
     # via
     #   graphene-django
     #   graphene-pydantic
@@ -192,7 +192,7 @@ h11==0.14.0
     #   uvicorn
 html5lib==1.1
     # via weasyprint
-httpcore==1.0.6
+httpcore==1.0.7
     # via httpx
 httptools==0.6.4
     # via uvicorn
@@ -200,7 +200,7 @@ httpx==0.27.2
     # via fastapi
 ics==0.7.2
     # via -r requirements.in
-identify==2.6.1
+identify==2.6.3
     # via pre-commit
 idna==3.10
     # via
@@ -213,13 +213,13 @@ iniconfig==2.0.0
     # via pytest
 ipdb==0.13.13
     # via -r requirements.in
-ipython==8.28.0
+ipython==8.29.0
     # via
     #   -r requirements.in
     #   ipdb
 isort==5.13.2
     # via -r requirements.in
-jedi==0.19.1
+jedi==0.19.2
     # via ipython
 jinja2==3.1.4
     # via
@@ -265,7 +265,7 @@ oauthlib==3.2.2
     # via
     #   django-oauth-toolkit
     #   requests-oauthlib
-packaging==24.1
+packaging==24.2
     # via
     #   gunicorn
     #   pytest
@@ -279,7 +279,7 @@ passlib==1.7.4
     # via -r requirements.in
 pexpect==4.9.0
     # via ipython
-phonenumberslite==8.13.47
+phonenumberslite==8.13.50
     # via -r requirements.in
 pillow==11.0.0
     # via
@@ -299,29 +299,31 @@ prompt-toolkit==3.0.48
     #   click-repl
     #   ipython
 propcache==0.2.0
-    # via yarl
+    # via
+    #   aiohttp
+    #   yarl
 psycopg==3.2.3
     # via -r requirements.in
 psycopg-c==3.2.3
     # via psycopg
-psycopg-pool==3.2.3
+psycopg-pool==3.2.4
     # via psycopg
 ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
-pycares==4.4.0
+pycares==4.5.0
     # via aiodns
 pycodestyle==2.12.1
     # via flake8
 pycparser==2.22
     # via cffi
-pydantic==2.9.2
+pydantic==2.10.2
     # via
     #   -r requirements.in
     #   fastapi
     #   graphene-pydantic
-pydantic-core==2.23.4
+pydantic-core==2.27.1
     # via pydantic
 pydyf==0.11.0
     # via weasyprint
@@ -333,11 +335,11 @@ pygments==2.18.0
     #   rich
 pynacl==1.5.0
     # via paramiko
-pyphen==0.16.0
+pyphen==0.17.0
     # via weasyprint
 pypugjs==5.11.0
     # via -r requirements.in
-pyright==1.1.385
+pyright==1.1.389
     # via -r requirements.in
 pytest==8.3.3
     # via pytest-django
@@ -349,13 +351,14 @@ python-dateutil==2.9.0.post0
     #   arrow
     #   botocore
     #   celery
+    #   graphene
     #   ics
     #   vobject
 python-dotenv==1.0.1
     # via uvicorn
 python-ipware==3.0.0
     # via django-ipware
-python-multipart==0.0.12
+python-multipart==0.0.17
     # via fastapi
 python-stdnum==1.20
     # via django-localflavor
@@ -366,13 +369,13 @@ pyyaml==6.0.2
     #   -r requirements.in
     #   pre-commit
     #   uvicorn
-redis==5.1.1
+redis==5.2.0
     # via django-redis
 referencing==0.35.1
     # via
     #   jsonschema
     #   jsonschema-specifications
-regex==2024.9.11
+regex==2024.11.6
     # via -r requirements.in
 reportlab==4.2.5
     # via
@@ -385,22 +388,21 @@ requests==2.32.3
     #   requests-oauthlib
 requests-oauthlib==2.0.0
     # via -r requirements.in
-rich==13.9.2
+rich==13.9.4
     # via typer
-rpds-py==0.20.0
+rpds-py==0.21.0
     # via
     #   jsonschema
     #   referencing
-ruff==0.7.0
+ruff==0.8.0
     # via -r requirements.in
-s3transfer==0.10.3
+s3transfer==0.10.4
     # via boto3
 shellingham==1.5.4
     # via typer
 six==1.16.0
     # via
     #   asttokens
-    #   bleach
     #   html5lib
     #   ics
     #   promise
@@ -411,19 +413,19 @@ sniffio==1.3.1
     # via
     #   anyio
     #   httpx
-sqlparse==0.5.1
+sqlparse==0.5.2
     # via django
 stack-data==0.6.3
     # via ipython
-starlette==0.40.0
+starlette==0.41.3
     # via fastapi
 tabulate==0.9.0
     # via -r requirements.in
-tatsu==5.12.1
+tatsu==5.12.2
     # via ics
 text-unidecode==1.3
     # via graphene-django
-tinycss2==1.3.0
+tinycss2==1.4.0
     # via
     #   cssselect2
     #   weasyprint
@@ -431,7 +433,7 @@ traitlets==5.14.3
     # via
     #   ipython
     #   matplotlib-inline
-typer==0.12.5
+typer==0.13.1
     # via fastapi-cli
 types-python-dateutil==2.9.0.20241003
     # via arrow
@@ -461,7 +463,7 @@ urllib3==2.2.3
     # via
     #   botocore
     #   requests
-uvicorn==0.32.0
+uvicorn==0.32.1
     # via
     #   -r requirements.in
     #   fastapi
@@ -473,11 +475,11 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.27.0
+virtualenv==20.28.0
     # via pre-commit
 vobject==0.9.8
     # via -r requirements.in
-watchfiles==0.24.0
+watchfiles==1.0.0
     # via uvicorn
 wcwidth==0.2.13
     # via prompt-toolkit
@@ -489,13 +491,13 @@ webencodings==0.5.1
     #   cssselect2
     #   html5lib
     #   tinycss2
-websockets==13.1
+websockets==14.1
     # via uvicorn
 xlsxwriter==3.2.0
     # via -r requirements.in
 xlwt==1.3.0
     # via lippukala
-yarl==1.16.0
+yarl==1.18.0
     # via aiohttp
 zopfli==0.2.3.post1
     # via fonttools
