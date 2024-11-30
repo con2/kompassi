@@ -261,6 +261,7 @@ INSTALLED_APPS = (
     "events.finncon2023",
     "events.cosvision2023",
     "events.shumicon2023",
+    "events.shumicon2025",
     "events.matsucon2023",
     "events.popcultnights2023",
     "events.kotaeexpo2024",
