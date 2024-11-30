@@ -503,7 +503,6 @@ class Setup:
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),
-
         ]:
             survey.save(self.event)
 
