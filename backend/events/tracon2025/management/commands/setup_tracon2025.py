@@ -495,13 +495,13 @@ class Setup:
                 slug="expense-claim",
                 key_fields=["title", "amount"],
                 login_required=True,
-                anonymity="NAME_AND_EMAIL",
+                anonymity="name_and_email",
             ),
             SurveyDTO(
                 slug="car-usage",
                 key_fields=["title", "kilometers"],
                 login_required=True,
-                anonymity="NAME_AND_EMAIL",
+                anonymity="name_and_email",
             ),
         ]:
             survey.save(self.event)
