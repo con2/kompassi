@@ -491,6 +491,18 @@ class Setup:
                 max_responses_per_user=1,
                 login_required=True,
             ),
+            SurveyDTO(
+                slug="expense-claim",
+                key_fields=["title", "amount"],
+                login_required=True,
+                anonymity="name_and_email",
+            ),
+            SurveyDTO(
+                slug="car-usage",
+                key_fields=["title", "kilometers"],
+                login_required=True,
+                anonymity="name_and_email",
+            ),
         ]:
             survey.save(self.event)
 
