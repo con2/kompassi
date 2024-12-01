@@ -3,7 +3,7 @@
     fi: Tila
     en: Status
   isKeyDimension: true
-  is_shown_to_respondent: true
+  is_shown_to_subject: true
   choices:
     - slug: new
       color: blue

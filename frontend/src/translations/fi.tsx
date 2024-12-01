@@ -637,7 +637,7 @@ const translations: Translations = {
           helpText:
             "Jos tämä on valittuna, tähän dimensioon voidaan valita useita arvoja.",
         },
-        isShownToRespondent: {
+        isShownToSubject: {
           title: "Näytetään vastaajalle",
           helpText:
             "Jos tämä on valittuna, tämän dimension arvot näytetään vastaajalle yksittäisen vastauksen näkymässä hänen profiilissaan. Lisäksi, jos tämä dimensio on myös avaindimensio, se näytetään profiilin vastauslistassa.",

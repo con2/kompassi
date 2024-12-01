@@ -447,11 +447,11 @@ class Setup:
 
     def setup_program_v2(self):
         from program_v2.importers.default import DefaultImporter
-        from program_v2.models.dimension import Dimension, DimensionDTO
+        from program_v2.models.dimension_dto import Dimension, DimensionDTO
         from program_v2.models.meta import ProgramV2EventMeta
 
         try:
-            room_dimension = Dimension.objects.get(event=self.event, slug="room")
+            room_dimension = Dimension.objects.get(universe=self.event.program_universe, slug="room")
         except Dimension.DoesNotExist:
             dimensions = DefaultImporter(self.event).get_dimensions()
             dimensions = DimensionDTO.save_many(self.event, dimensions)

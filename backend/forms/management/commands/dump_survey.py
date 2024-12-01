@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand, CommandParser
 
 from core.models.event import Event
 
-from ...models.dimension import DimensionDTO
+from ...models.dimension_dto import DimensionDTO
 from ...models.survey import Survey
 
 

@@ -20,9 +20,12 @@ from graphql_api.utils import get_message_in_language
 from .form import Form
 
 if TYPE_CHECKING:
+    from dimensions.models.dimension import Dimension
+    from dimensions.models.dimension_value import DimensionValue
+
     from ..utils.process_form_data import FieldWarning
-    from .dimension import Dimension, DimensionValue, ResponseDimensionValue
     from .field import Field
+    from .response_dimension_value import ResponseDimensionValue
     from .survey import Survey
 
 
@@ -69,7 +72,7 @@ class Response(models.Model):
         """
         new_cached_dimensions = {}
         for sdv in self.dimensions.all():
-            new_cached_dimensions.setdefault(sdv.dimension.slug, []).append(sdv.value.slug)
+            new_cached_dimensions.setdefault(sdv.value.dimension.slug, []).append(sdv.value.slug)
 
         return new_cached_dimensions
 
@@ -80,12 +83,12 @@ class Response(models.Model):
         for response in (
             responses.select_for_update(of=("self",))
             .prefetch_related(
-                "dimensions__dimension",
+                "dimensions__value__dimension",
                 "dimensions__value",
             )
             .only(
                 "id",
-                "dimensions__dimension__slug",
+                "dimensions__value__dimension__slug",
                 "dimensions__value__slug",
             )
         ):
@@ -107,7 +110,7 @@ class Response(models.Model):
         If you call this later, be sure to yeet the existing dimension values first,
         or rework this method to use set_dimension_values that accounts for existing ones.
         """
-        from .dimension import ResponseDimensionValue
+        from .response_dimension_value import ResponseDimensionValue
 
         survey = self.survey
         if survey is None:
@@ -139,7 +142,6 @@ class Response(models.Model):
             bulk_create.append(
                 ResponseDimensionValue(
                     response=self,
-                    dimension=dimension,
                     value=value,
                 )
             )
@@ -204,7 +206,7 @@ class Response(models.Model):
         """
         Changes only those dimension values that are present in dimension_values.
         """
-        from .dimension import ResponseDimensionValue
+        from .response_dimension_value import ResponseDimensionValue
 
         survey = self.survey
         if survey is None:
@@ -213,13 +215,14 @@ class Response(models.Model):
         dimensions_by_slug, values_by_dimension_by_slug = survey.preload_dimensions(values_to_set)
 
         cached_dimensions = self.cached_dimensions
-        bulk_delete = self.dimensions.filter(dimension__slug__in=dimensions_by_slug.keys())
+        bulk_delete = self.dimensions.filter(value__dimension__slug__in=dimensions_by_slug.keys())
         bulk_create: list[ResponseDimensionValue] = []
 
         for dimension_slug, value_slugs in values_to_set.items():
-            bulk_delete = bulk_delete.exclude(dimension__slug=dimension_slug, value__slug__in=value_slugs)
-
-            dimension = dimensions_by_slug[dimension_slug]
+            bulk_delete = bulk_delete.exclude(
+                value__dimension__slug=dimension_slug,
+                value__slug__in=value_slugs,
+            )
             values_by_slug = values_by_dimension_by_slug[dimension_slug]
 
             for value_slug in value_slugs:
@@ -228,7 +231,6 @@ class Response(models.Model):
                     bulk_create.append(
                         ResponseDimensionValue(
                             response=self,
-                            dimension=dimension,
                             value=value,
                         )
                     )

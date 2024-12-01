@@ -8,6 +8,8 @@ from django.db.models import QuerySet
 from django.utils.timezone import get_current_timezone
 
 from core.models import Event
+from dimensions.models.dimension import Dimension
+from dimensions.models.value_ordering import ValueOrdering
 from programme.models.category import Category
 from programme.models.programme import Programme
 from programme.models.room import Room
@@ -22,8 +24,9 @@ from ..consts import (
     WEEKDAYS_LOCALIZED,
 )
 from ..models.annotations import ANNOTATIONS
-from ..models.dimension import Dimension, DimensionDTO, DimensionValueDTO, ProgramDimensionValue, ValueOrdering
+from ..models.dimension_dto import DimensionDTO, DimensionValueDTO
 from ..models.program import Program
+from ..models.program_dimension_value import ProgramDimensionValue
 from ..models.schedule import ScheduleItem
 
 logger = logging.getLogger("kompassi")
@@ -229,8 +232,8 @@ class DefaultImporter:
         refresh_cached_dimensions: bool = True,
     ) -> list[Dimension]:
         logger.info("Starting dimensions import for %s", self.event.slug)
-
         meta = self.event.program_v2_event_meta
+        universe = self.event.program_universe
 
         location_dimension_slug = ""
 
@@ -245,7 +248,7 @@ class DefaultImporter:
                 if update_fields:
                     meta.save(update_fields=update_fields)
 
-            _, deleted = Dimension.objects.filter(event=self.event).delete()
+            _, deleted = universe.dimensions.all().delete()
             logger.info("Dimension clearing deleted %s", deleted or "nothing")
 
         dimension_dtos = self.get_dimensions()
@@ -336,7 +339,7 @@ class DefaultImporter:
             for item in ProgramDimensionValue.build_upsertables(
                 program_v2,
                 self.get_program_dimension_values(programme),
-                *upsert_cache,
+                upsert_cache,
             )
         )
         pdv_ids = [pdv.id for pdv in ProgramDimensionValue.bulk_upsert(pdv_upserts, batch_size=self.pdv_batch_size)]

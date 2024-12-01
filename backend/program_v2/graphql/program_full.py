@@ -60,12 +60,12 @@ class FullProgramType(LimitedProgramType):
         pdvs = program.dimensions.all()
 
         if is_list_filter:
-            pdvs = pdvs.filter(dimension__is_list_filter=True)
+            pdvs = pdvs.filter(value__dimension__is_list_filter=True)
 
         if is_shown_in_detail:
-            pdvs = pdvs.filter(dimension__is_shown_in_detail=True)
+            pdvs = pdvs.filter(value__dimension__is_shown_in_detail=True)
 
-        return pdvs
+        return pdvs.distinct()
 
     dimensions = graphene.NonNull(
         graphene.List(graphene.NonNull(ProgramDimensionValueType)),

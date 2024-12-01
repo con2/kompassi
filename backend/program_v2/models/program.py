@@ -13,12 +13,14 @@ from django.utils.timezone import now
 
 from core.models import Event
 from core.utils import validate_slug
+from core.utils.locale_utils import getattr_message_in_language
+from graphql_api.language import SUPPORTED_LANGUAGES
 
 if TYPE_CHECKING:
     from programme.models.programme import Programme
 
-    from .dimension import ProgramDimensionValue
     from .meta import ProgramV2EventMeta
+    from .program_dimension_value import ProgramDimensionValue
     from .schedule import ScheduleItem
 
 
@@ -88,23 +90,23 @@ class Program(models.Model):
         Used to populate cached_dimensions
         """
         # TODO should all event dimensions always be present, or only those with values?
-        # TODO when dimensions are changed for an event, refresh all cached_dimensions
-        dimensions = {dimension.slug: [] for dimension in self.event.program_dimensions.all()}
+        dimensions = {dimension.slug: [] for dimension in self.event.program_universe.dimensions.all()}
         for pdv in self.dimensions.all():
-            dimensions[pdv.dimension.slug].append(pdv.value.slug)
+            dimensions[pdv.value.dimension.slug].append(pdv.value.slug)
         return dimensions
 
     def _build_location(self):
         localized_locations: dict[str, set[str]] = {}
 
         if location_dimension := self.meta.location_dimension:
-            for pdv in self.dimensions.filter(dimension=location_dimension):
-                for lang, title in pdv.value.title.items():
+            for pdv in self.dimensions.filter(value__dimension=location_dimension).distinct():
+                for lang in SUPPORTED_LANGUAGES:
+                    title = getattr_message_in_language(pdv.value, "title", lang.code)
                     if not title:
                         # placate typechecker
                         continue
 
-                    localized_locations.setdefault(lang, set()).add(title)
+                    localized_locations.setdefault(lang.code, set()).add(title)
 
         # if both "foo" and "foo, bar" are present, only "foo, bar" is included
         for locations in localized_locations.values():

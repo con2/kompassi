@@ -1,4 +1,4 @@
-from ..models.dimension import DimensionDTO, DimensionValueDTO, ValueOrdering
+from ..models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 
 KONSTI_DIMENSION_DTO = DimensionDTO(
     slug="konsti",

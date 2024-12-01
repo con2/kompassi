@@ -634,7 +634,7 @@ const translations = {
           helpText:
             "If checked, multiple values can be selected for this dimension.",
         },
-        isShownToRespondent: {
+        isShownToSubject: {
           title: "Shown to respondent",
           helpText:
             "If checked, the values of this dimension are shown to the respondent in the single response view under their profile. Additionally, if this dimension is also a key dimension, it is shown in the responses list under their profile.",

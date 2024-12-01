@@ -44,7 +44,7 @@ graphql(`
     title(lang: $locale)
     isKeyDimension
     isMultiValue
-    isShownToRespondent
+    isShownToSubject
     titleFi: title(lang: "fi")
     titleEn: title(lang: "en")
     titleSv: title(lang: "sv")

@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Collection, Mapping
 from dataclasses import asdict, dataclass, field
-from typing import TYPE_CHECKING
+from functools import cached_property
 
 import yaml
 from django.conf import settings
@@ -14,13 +14,14 @@ from django.utils.translation import gettext_lazy as _
 from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, log_get_or_create
 from core.utils.pkg_resources_compat import resource_stream
+from dimensions.models.dimension import Dimension
+from dimensions.models.dimension_value import DimensionValue
+from dimensions.models.scope import Scope
+from dimensions.models.universe import Universe
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
 
 from ..utils.merge_form_fields import merge_fields
 from .form import Form
-
-if TYPE_CHECKING:
-    from .dimension import Dimension, DimensionValue
 
 logger = logging.getLogger("kompassi")
 ANONYMITY_CHOICES = [
@@ -110,8 +111,25 @@ class Survey(models.Model):
         blank=True,
     )
 
-    # related fields
-    dimensions: models.QuerySet[Dimension]
+    @property
+    def dimensions(self) -> models.QuerySet[Dimension]:
+        return self.universe.dimensions.all()
+
+    @property
+    def scope(self) -> Scope:
+        """
+        NOTE: Used by CBAC via HasScope protocol
+        """
+        return self.event.scope
+
+    # TODO should this be a fkey?
+    @cached_property
+    def universe(self) -> Universe:
+        return Universe.objects.get_or_create(
+            scope=self.scope,
+            slug=self.slug,
+            app="forms",
+        )[0]
 
     @property
     def is_active(self):
@@ -220,7 +238,7 @@ class SurveyDTO:
     key_fields: list[str] = field(default_factory=list)
 
     def save(self, event: Event, overwrite=False) -> Survey:
-        from .dimension import DimensionDTO
+        from .dimension_dto import DimensionDTO
 
         defaults = asdict(self)  # type: ignore
         slug = defaults.pop("slug")

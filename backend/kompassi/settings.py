@@ -177,6 +177,7 @@ INSTALLED_APPS = (
     "paikkala",
     # kompassi core apps
     "core",
+    "dimensions",
     "programme",
     "program_v2",
     "labour",

@@ -11,7 +11,7 @@ from programme.models.programme import Programme
 
 from ..consts import DATE_DIMENSION_TITLE_LOCALIZED, ROOM_DIMENSION_TITLE_LOCALIZED
 from ..integrations.konsti import KONSTI_DIMENSION_DTO
-from ..models.dimension import DimensionDTO, DimensionValueDTO, ValueOrdering
+from ..models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from .default import DefaultImporter
 
 logger = logging.getLogger("kompassi")

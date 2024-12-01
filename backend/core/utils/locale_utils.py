@@ -8,6 +8,8 @@ from django.utils.translation import get_language
 
 from graphql_api.language import SUPPORTED_LANGUAGES
 
+DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
+
 
 @cache
 def _get_babel_locale(lang):
@@ -15,7 +17,7 @@ def _get_babel_locale(lang):
 
 
 def get_current_locale():
-    return _get_babel_locale(get_language() or settings.LANGUAGE_CODE)
+    return _get_babel_locale(get_language() or DEFAULT_LANGUAGE)
 
 
 T = TypeVar("T")
@@ -51,3 +53,21 @@ def get_message_in_language(
             return found
 
     return next(iter(messages.values()), None)
+
+
+def getattr_message_in_language(obj, attr: str, lang: str | None = None) -> str:
+    """
+    Like get_message_in_language, except different languages are stored as separate
+    attributes on the object.
+    """
+    if lang is None:
+        lang = get_language()
+
+    if found := getattr(obj, f"{attr}_{lang}", ""):
+        return found
+
+    for language in SUPPORTED_LANGUAGES:
+        if found := getattr(obj, f"{attr}_{language.code}", ""):
+            return found
+
+    return ""

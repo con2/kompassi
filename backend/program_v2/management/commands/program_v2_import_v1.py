@@ -5,13 +5,13 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 
 from core.models.event import Event
+from dimensions.models.dimension import Dimension
 from programme.models.category import Category
 from programme.models.programme import Programme
 from programme.models.room import Room
 from programme.models.tag import Tag
 
 from ...importers.default import DefaultImporter
-from ...models.dimension import Dimension
 from ...models.meta import ProgramV2EventMeta
 
 logger = logging.getLogger("kompassi")
@@ -84,7 +84,7 @@ class Command(BaseCommand):
                         Programme.reslugify(queryset)
 
                         try:
-                            room_dimension = Dimension.objects.get(event=event, slug="room")
+                            room_dimension = Dimension.objects.get(universe=event.program_universe, slug="room")
                         except Dimension.DoesNotExist:
                             dimensions = importer.import_dimensions(
                                 clear=opts["dangerously_clear"],
@@ -125,7 +125,7 @@ class Command(BaseCommand):
                         Room.objects.bulk_update(bulk_update_rooms, ["v2_dimensions"])
 
                         v1_meta.override_schedule_link = f"{settings.KOMPASSI_V2_BASE_URL}/{event.slug}/program"
-                        v1_meta.save(update_fields=["override_schedule_link", "updated_at"])
+                        v1_meta.save(update_fields=["override_schedule_link"])
                     else:
                         # this event may have paulig already in the database so respect the existing data
                         importer = v2_meta.importer_class(event)

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 from django.db import models
@@ -82,6 +83,18 @@ class Organization(models.Model):
 
     def __str__(self):
         return self.name
+
+    @cached_property
+    def scope(self):
+        from dimensions.models import Scope
+
+        return Scope.objects.get_or_create(
+            organization=self,
+            defaults=dict(
+                slug=self.slug,
+                name=self.name,
+            ),
+        )[0]
 
     @classmethod
     def get_or_create_dummy(cls):

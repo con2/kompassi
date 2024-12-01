@@ -5,7 +5,8 @@ from django.db import models
 from django.http import HttpResponse
 from django.utils.timezone import localtime
 
-from .models.dimension import Dimension
+from dimensions.models.dimension import Dimension
+
 from .models.field import Field, FieldType
 from .models.response import Response
 

@@ -19,9 +19,11 @@ from .organization import Organization
 from .venue import Venue
 
 if typing.TYPE_CHECKING:
+    from dimensions.models.scope import Scope
+    from dimensions.models.universe import Universe
     from forms.models.survey import Survey
     from labour.models.signup import Signup
-    from program_v2.models import Dimension, Program, ProgramV2EventMeta, ScheduleItem
+    from program_v2.models import Program, ProgramV2EventMeta, ScheduleItem
 
 
 logger = logging.getLogger("kompassi")
@@ -132,7 +134,6 @@ class Event(models.Model):
     # related fields
     programs: models.QuerySet[Program]
     schedule_items: models.QuerySet[ScheduleItem]
-    program_dimensions: models.QuerySet[Dimension]
     signup_set: models.QuerySet[Signup]
     surveys: models.QuerySet[Survey]
 
@@ -154,6 +155,19 @@ class Event(models.Model):
                     setattr(self, field, self.name + suffix)
 
         return super().save(*args, **kwargs)
+
+    @cached_property
+    def scope(self) -> Scope:
+        from dimensions.models import Scope
+
+        return Scope.objects.get_or_create(
+            event=self,
+            defaults=dict(
+                slug=self.slug,
+                name=self.name,
+                organization=self.organization,
+            ),
+        )[0]
 
     @property
     def panel_css_class(self):
@@ -204,6 +218,20 @@ class Event(models.Model):
         except Exception:
             logger.warning(f"Invalid timezone name: {self.timezone_name}", exc_info=True)
             return UTC
+
+    @cached_property
+    def program_universe(self) -> Universe:
+        """
+        The Universe for Dimensions that are attached to program items.
+        NOTE: Must return the same as ProgramV2EventMeta.universe.
+        """
+        from dimensions.models.universe import Universe
+
+        return Universe.objects.get_or_create(
+            scope=self.scope,
+            slug="default",
+            app="program_v2",
+        )[0]
 
     @classmethod
     def get_or_create_dummy(cls, name="Dummy event"):

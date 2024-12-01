@@ -652,7 +652,7 @@ const translations: Translations = {
           title: "Flera val",
           helpText: "Om markerad kan flera värden väljas för denna dimension.",
         },
-        isShownToRespondent: {
+        isShownToSubject: {
           title: "Visas för respondenten",
           helpText:
             "Om detta är valt kommer värdena för denna dimension att visas för respondenten i den individuella svarsvyn i deras profil. Om den här dimensionen dessutom är en nyckeldimension kommer den att visas i profilsvarslistan.",

@@ -1,22 +1,18 @@
 import logging
 from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Literal, Protocol
+from typing import Literal, Protocol
 
 from django.contrib.auth.decorators import login_required
-from django.db import models
 from django.http import HttpRequest
 from graphene import ResolveInfo
 
 from core.utils.view_utils import get_event_and_organization
+from dimensions.models.scope import Scope
 from event_log_v2.utils.emit import emit
 
 from .exceptions import CBACPermissionDenied
 from .models.cbac_entry import CBACEntry, Claims
-
-if TYPE_CHECKING:
-    from core.models.event import Event
-
 
 logger = logging.getLogger("kompassi")
 Operation = Literal["query"] | Literal["mutation"]
@@ -65,16 +61,17 @@ def default_cbac_required(view_func):
 
 def make_graphql_claims(
     *,
-    event: "Event",
+    scope: Scope,
     operation: Operation,
     app: str,
     model: str,
     field: str,
     **extra: str,
 ) -> Claims:
+    # event and organization
+    extra.update(scope.cbac_claims)
+
     return dict(
-        event=event.slug,
-        organization=event.organization.slug,
         operation=operation,
         app=app,
         model=model,
@@ -87,7 +84,7 @@ def make_graphql_claims(
 def is_graphql_allowed(
     user,
     *,
-    event: "Event",
+    scope: Scope,
     operation: Operation,
     app: str,
     model: str,
@@ -95,7 +92,7 @@ def is_graphql_allowed(
     **extra: str,
 ):
     claims = make_graphql_claims(
-        event=event,
+        scope=scope,
         operation=operation,
         app=app,
         model=model,
@@ -106,29 +103,24 @@ def is_graphql_allowed(
     return CBACEntry.is_allowed(user, claims), claims
 
 
-class HasEventProperty(Protocol):
-    event: "Event"
-
-
-class HasEventForeignKey(Protocol):
-    event: models.ForeignKey["Event"]
+class HasScope(Protocol):
+    scope: Scope
 
 
 def is_graphql_allowed_for_model(
     user,
     *,
-    instance: HasEventProperty | HasEventForeignKey,
+    instance: HasScope,
     operation: Literal["query"] | Literal["mutation"],
     field: str,
     **extra: str,
 ):
-    event = instance.event
     model_name = instance.__class__.__name__
     app = instance.__class__._meta.app_label  # type: ignore
 
     return is_graphql_allowed(
         user,
-        event=event,  # type: ignore
+        scope=instance.scope,
         operation=operation,
         app=app,
         model=model_name,
@@ -138,13 +130,18 @@ def is_graphql_allowed_for_model(
 
 
 # TODO(#324) rethink
-def graphql_check_model(model, event: "Event", info: ResolveInfo | HttpRequest, operation: Operation = "query"):
+def graphql_check_model(
+    model,
+    scope: Scope,
+    info: ResolveInfo | HttpRequest,
+    operation: Operation = "query",
+):
     request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
     app = model._meta.app_label
 
     allowed, claims = is_graphql_allowed(
         request.user,
-        event=event,
+        scope=scope,
         operation=operation,
         app=app,
         model=model.__name__,
