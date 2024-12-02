@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from asyncio import Future, ensure_future
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 import pydantic
 
@@ -9,38 +9,41 @@ if TYPE_CHECKING:
     from psycopg import AsyncConnection
 
 
-_cache: dict[str, Event] = {}
-_cache_refresh: Future[dict[str, Event]] | None = None
-
-
 class Event(pydantic.BaseModel):
     id: int
     slug: str
     name: str
 
+    cache: ClassVar[dict[str, Event]] = {}
+    cache_refresh: ClassVar[Future[dict[str, Event]] | None] = None
+
     @classmethod
     async def get_event_by_slug(cls, db: AsyncConnection, slug: str) -> Event | None:
-        cache = _cache
-        if cache is None or slug not in cache:
-            cache = await cls._refresh_cache(db)
+        if cls.cache is None or slug not in cls.cache:
+            cls.cache = await cls._refresh_cache(db)
 
-        return cache.get(slug)
+        return cls.cache.get(slug)
 
     @classmethod
     async def _refresh_cache(cls, db: AsyncConnection) -> dict[str, Event]:
-        global _cache_refresh  # noqa: PLW0603
-        if _cache_refresh is None:
-            _cache_refresh = ensure_future(cls._do_refresh_cache(db))
+        """
+        Ensure only one refresh is running at a time.
+        """
+        if cls.cache_refresh is None:
+            cls.cache_refresh = ensure_future(cls._do_refresh_cache(db))
 
-        return await _cache_refresh
+        return await cls.cache_refresh
 
     @classmethod
     async def _do_refresh_cache(cls, db: AsyncConnection):
+        """
+        Actually refresh the cache.
+        """
         async with db.cursor() as cursor:
             await cursor.execute("select id, slug, name from core_event")
 
-            _cache.clear()
+            cls.cache.clear()
             async for id, slug, name in cursor:
-                _cache[slug] = cls(id=id, slug=slug, name=name)
+                cls.cache[slug] = cls(id=id, slug=slug, name=name)
 
-        return _cache
+        return cls.cache

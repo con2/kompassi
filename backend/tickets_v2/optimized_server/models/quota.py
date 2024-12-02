@@ -57,24 +57,3 @@ async def get_expected_tickets_for_products(
     _cache[cache_key] = expected_quantities_by_quota_id
 
     return expected_quantities_by_quota_id
-
-
-def get_expected_tickets_for_products_django(
-    event_id: int,
-    products: dict[int, int],
-) -> dict[int, int]:
-    cache_key = (event_id, tuple(sorted(products.items())))
-    if cache_key in _cache:
-        return _cache[cache_key]
-
-    quota_ids_by_product_id = get_quota_ids_by_product_id_django(event_id)
-
-    expected_quantities_by_quota_id: dict[int, int] = {}
-    for product_id, quantity in products.items():
-        for quota_id in quota_ids_by_product_id[product_id]:
-            expected_quantities_by_quota_id.setdefault(quota_id, 0)
-            expected_quantities_by_quota_id[quota_id] += quantity
-
-    _cache[cache_key] = expected_quantities_by_quota_id
-
-    return expected_quantities_by_quota_id

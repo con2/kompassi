@@ -14,6 +14,6 @@ class GetProductsResponse(pydantic.BaseModel):
     products: list[Product]
 
 
-class CreateOrderResponse(pydantic.BaseModel):
-    order_id: UUID
-    payment_redirect: str
+class CreateOrderResponse(pydantic.BaseModel, populate_by_name=True):
+    order_id: UUID = pydantic.Field(alias="orderId")
+    payment_redirect: str = pydantic.Field(alias="paymentRedirect", default="")
