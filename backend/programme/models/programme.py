@@ -17,6 +17,7 @@ from core.csv_export import CsvExportMixin
 from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, format_datetime, slugify, url
 from core.utils.time_utils import format_interval
+from graphql_api.language import get_language_choices
 
 if TYPE_CHECKING:
     from .programme_feedback import ProgrammeFeedback
@@ -108,12 +109,6 @@ PROGRAMME_STATES_NEW = ["idea", "asked", "offered"]
 PROGRAMME_STATES_LIVE = ["accepted", "published"]
 PROGRAMME_STATES_ACTIVE = PROGRAMME_STATES_NEW + PROGRAMME_STATES_LIVE
 PROGRAMME_STATES_INACTIVE = ["rejected", "cancelled"]
-
-LANGUAGE_CHOICES = [
-    ("fi", _("Finnish")),
-    ("sv", _("Swedish")),
-    ("en", _("English")),
-]
 
 ROPECON2018_SIGNUP_LIST_CHOICES = [
     ("none", _("No sign-up")),
@@ -458,7 +453,7 @@ class Programme(models.Model, CsvExportMixin):
     language = models.CharField(
         max_length=2,
         default="fi",
-        choices=LANGUAGE_CHOICES,
+        choices=get_language_choices(),
         verbose_name=_("Language"),
         help_text=_("What is the primary language of your programme?"),
     )

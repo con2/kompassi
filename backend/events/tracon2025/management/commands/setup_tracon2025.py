@@ -35,6 +35,7 @@ from programme.models import Category, Programme, Room
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.models.product import Product
 from tickets_v2.models.quota import Quota
+from tickets_v2.optimized_server.models.enums import PaymentProvider
 
 from ...models import Night, Poison, SignupExtra
 
@@ -508,12 +509,14 @@ class Setup:
 
     def setup_tickets_v2(self):
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, _ = TicketsV2EventMeta.objects.get_or_create(
+        meta, _ = TicketsV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                provider=PaymentProvider.PAYTRAIL.value,
             ),
         )
+        print("hop")
 
         meta.ensure_partitions()
 

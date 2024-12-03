@@ -272,7 +272,7 @@ const translations: Translations = {
     }),
     productsTable: {
       product: "Produkt",
-      price: "Pris",
+      unitPrice: "Pris per enhet",
       quantity: {
         title: "Antal",
         unit: "st",

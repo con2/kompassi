@@ -2,7 +2,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
-from event_log_v2.utils import uuid7
+from tickets_v2.optimized_server.utils import uuid7
 
 
 class Migration(migrations.Migration):

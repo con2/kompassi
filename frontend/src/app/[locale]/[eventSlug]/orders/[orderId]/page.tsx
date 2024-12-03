@@ -1,3 +1,4 @@
+import { payOrder } from "./actions";
 import { getOrder } from "./service";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -14,6 +15,10 @@ interface Props {
 
 export const revalidate = 1;
 
+function formatOrderNumber(orderNumber: number) {
+  return `#${orderNumber.toString().padStart(6, "0")}`;
+}
+
 /// NOTE: This page is on the Critical Path of the Hunger Games, so be extra mindful of performance.
 /// Also this page can be accessed without authentication (ie. we don't know the accessor is the person who ordered)
 /// so absolutely no PII.
@@ -27,7 +32,7 @@ export default async function OrderPage({ params }: Props) {
   return (
     <ViewContainer>
       <ViewHeading>
-        {t.orderPage.title(orderId)}
+        {t.orderPage.title(formatOrderNumber(order.orderNumber))}
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
 
@@ -38,8 +43,8 @@ export default async function OrderPage({ params }: Props) {
         <thead>
           <tr className="row">
             <th className="col-8">{t.productsTable.product}</th>
-            <th className="col">{t.productsTable.price}</th>
-            <th className="col">{t.productsTable.quantity.title}</th>
+            <th className="col text-end">{t.productsTable.quantity.title}</th>
+            <th className="col text-end">{t.productsTable.unitPrice}</th>
           </tr>
         </thead>
         <tbody>
@@ -48,11 +53,13 @@ export default async function OrderPage({ params }: Props) {
               <td className="col-8">
                 <strong>{product.title}</strong>
               </td>
-              <td className="col fs-4">{formatMoney(product.price)}</td>
-              <td className="col">
+              <td className="col text-end">
                 <span className="fs-3">
                   {product.quantity}&nbsp;{t.productsTable.quantity.unit}
                 </span>
+              </td>
+              <td className="col fs-4 text-end">
+                {formatMoney(product.price)}
               </td>
             </tr>
           ))}
@@ -62,19 +69,21 @@ export default async function OrderPage({ params }: Props) {
             <td className="col-8">
               <strong>{t.productsTable.total}</strong>
             </td>
-            <td className="col fs-4">
-              <strong>{formatMoney(order.total)}</strong>
+            <td className="col text-end"></td>
+            <td className="col fs-4 text-end">
+              <strong>{formatMoney(order.totalPrice)}</strong>
             </td>
-            <td className="col"></td>
           </tr>
         </tfoot>
       </table>
 
-      <div className="d-grid gap-2 mb-4">
-        <button className="btn btn-primary btn-lg" type="submit">
-          {t.orderPage.payButtonText}
-        </button>
-      </div>
+      <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
+        <div className="d-grid gap-2 mb-4">
+          <button className="btn btn-primary btn-lg" type="submit">
+            {t.orderPage.payButtonText}
+          </button>
+        </div>
+      </form>
     </ViewContainer>
   );
 }

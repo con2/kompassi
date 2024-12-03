@@ -28,6 +28,7 @@ export async function createOrder(
         )
         .filter(([_, quantity]) => quantity > 0),
     ),
+    language: locale,
   };
 
   console.log({ order });

@@ -37,6 +37,7 @@ export interface CreateOrderRequest {
   products: {
     [productId: string]: number;
   };
+  language: string;
 }
 
 export interface SuccessfulOrderResponse {

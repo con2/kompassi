@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
     global _pool  # noqa: PLW0603
 
     async with AsyncConnectionPool(get_conninfo()) as pool:
-        _pool = pool
+        _pool = pool  # type: ignore
         yield
         _pool = None
 

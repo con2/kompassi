@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 from core.models.event import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 from dimensions.models.dimension import Dimension
-from graphql_api.language import DEFAULT_LANGUAGE, LANGUAGE_CHOICES
+from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
 from .field import Field
 
@@ -35,7 +35,7 @@ class Form(models.Model):
     title = models.CharField(max_length=255, default="")
     description = models.TextField(blank=True, default="")
     thank_you_message = models.TextField(blank=True, default="")
-    language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=LANGUAGE_CHOICES)
+    language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=get_language_choices())
     layout = models.CharField(
         verbose_name=_("Layout"),
         choices=LAYOUT_CHOICES,

@@ -42,6 +42,9 @@ services:
       MINIO_ENDPOINT_URL: http://localhost:9000
       KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH: dev-secrets/id_rsa.key
       SECRET_KEY: The SECRET_KEY setting must not be empty.
+      KOMPASSI_BASE_URL: http://localhost:8000
+      TICKETS_BASE_URL: http://localhost:7998
+      KOMPASSI_V2_BASE_URL: http://localhost:3000
   uvicorn:
     build: backend
     init: true

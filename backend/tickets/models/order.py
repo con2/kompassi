@@ -14,9 +14,10 @@ from django.utils.translation import gettext_lazy as _
 
 from core.models.event import Event
 from core.utils.pkg_resources_compat import resource_string
+from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
 from ..utils import append_reference_number_checksum, format_price
-from .consts import LANGUAGE_CHOICES, UNPAID_CANCEL_HOURS
+from .consts import UNPAID_CANCEL_HOURS
 from .customer import Customer
 from .tickets_event_meta import TicketsEventMeta
 
@@ -74,7 +75,8 @@ class Order(models.Model):
     language = models.CharField(
         max_length=2,
         blank=True,
-        default=LANGUAGE_CHOICES[0][0],
+        choices=get_language_choices(),
+        default=DEFAULT_LANGUAGE,
         verbose_name="Kieli",
     )
 

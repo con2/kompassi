@@ -253,7 +253,7 @@ const translations: Translations = {
     },
     productsTable: {
       product: "Tuote",
-      price: "Hinta",
+      unitPrice: "Kappalehinta",
       quantity: {
         title: "Lukumäärä",
         unit: "kpl",

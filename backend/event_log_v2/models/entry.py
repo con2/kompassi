@@ -7,9 +7,9 @@ from django.conf import settings
 from django.db import models
 
 from core.models import Event, Organization, Person
+from tickets_v2.optimized_server.utils.uuid7 import uuid7, uuid7_month_range_for_year_month, uuid7_to_datetime
 
 from ..utils.monthly_partitions import MonthlyPartitionsMixin
-from ..utils.uuid7 import uuid7, uuid7_month_range_for_year_month, uuid7_to_datetime
 
 logger = logging.getLogger("kompassi")
 

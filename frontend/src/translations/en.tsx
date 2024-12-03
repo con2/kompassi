@@ -255,7 +255,7 @@ const translations = {
     },
     productsTable: {
       product: "Product",
-      price: "Price",
+      unitPrice: "Unit price",
       quantity: {
         title: "Quantity",
         unit: "pcs",

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import migrations, models
 
 import event_log_v2.utils.monthly_partitions
-import event_log_v2.utils.uuid7
+import tickets_v2.optimized_server.utils.uuid7
 
 
 class Migration(migrations.Migration):
@@ -21,7 +21,10 @@ class Migration(migrations.Migration):
                 (
                     "id",
                     models.UUIDField(
-                        default=event_log_v2.utils.uuid7.uuid7, editable=False, primary_key=True, serialize=False
+                        default=tickets_v2.optimized_server.utils.uuid7.uuid7,
+                        editable=False,
+                        primary_key=True,
+                        serialize=False,
                     ),
                 ),
                 ("public_key", models.JSONField()),

@@ -8,7 +8,7 @@ from django.db import models
 
 from core.models.event import Event
 from event_log_v2.utils.monthly_partitions import UUID7Mixin
-from event_log_v2.utils.uuid7 import uuid7
+from tickets_v2.optimized_server.utils.uuid7 import uuid7
 
 from ..utils.event_partitions import EventPartitionsMixin
 from .order import Order
@@ -62,4 +62,7 @@ class Ticket(EventPartitionsMixin, UUID7Mixin, models.Model):
 
     @cached_property
     def order(self):
+        """
+        Direct the query to the correct partition.
+        """
         return Order.objects.get(event=self.event, id=self.order_id)

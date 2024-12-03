@@ -25,6 +25,7 @@ kompassi_storage_nfs_path: /
 
 kompassi_installation_slug: komplocaldev
 kompassi_installation_name: Kompassi (LOCAL DEV)
+kompassi_base_url: http://kompassi.localhost
 kompassi_v2_base_url: http://kompassi2.localhost
 
 kompassi_allowed_hosts: !Var ingress_public_hostnames
@@ -190,6 +191,8 @@ kompassi_environment:
     value: !Var kompassi_installation_name
   - name: KOMPASSI_INSTALLATION_SLUG
     value: !Var kompassi_installation_slug
+  - name: KOMPASSI_BASE_URL
+    value: !Var kompassi_base_url
   - name: KOMPASSI_V2_BASE_URL
     value: !Var kompassi_v2_base_url
   - name: KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID
@@ -271,7 +274,7 @@ kompassi_volumes:
         server: !Var kompassi_storage_nfs
         path: !Var kompassi_storage_nfs_path
   - !If
-    test: !Not,Any [!Var kompassi_storage_pvc, !Var kompassi_storage_nfs]
+    test: !Not ,Any [!Var kompassi_storage_pvc, !Var kompassi_storage_nfs]
     then:
       name: kompassi-media
       emptyDir: {}

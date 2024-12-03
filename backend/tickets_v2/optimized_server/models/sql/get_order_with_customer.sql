@@ -10,7 +10,11 @@ select
     where
       ps.event_id = %(event_id)s
       and ps.order_id = %(order_id)s
-  ) as status
+  ) as status,
+  o.last_name,
+  o.first_name,
+  o.email,
+  o.phone
 from
   tickets_v2_order o
   join lateral (

@@ -9,12 +9,14 @@ def calculate_hmac(
     hash_algorithm="sha256",
 ):
     """
+    Calculate the HMAC-SHA256/SHA512 digest as specified by Paytrail's API documentation.
+
     :param secret: Merchant shared secret
     :param params: Headers or query string parameters
     :param body: Request body or empty string for GET requests
 
     Based on the following Node.js example code from
-    https://checkoutfinland.github.io/psp-api/#/examples?id=hmac-calculation-node-js
+    https://docs.paytrail.com/#/examples?id=hmac-calculation-nodejs
 
     ```javascript
     const calculateHmac = (secret, params, body) => {
