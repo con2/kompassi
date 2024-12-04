@@ -13,6 +13,7 @@ from psycopg.errors import NotNullViolation
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 
 from ...optimized_server.utils.uuid7 import uuid7, uuid7_to_datetime
+from ..config import KOMPASSI_V2_BASE_URL
 from ..excs import InvalidProducts, UnsaneSituation
 from ..utils.order_numbers import order_number_to_reference
 from .customer import Customer
@@ -105,6 +106,10 @@ class Order(pydantic.BaseModel):
 
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_order.sql").read_bytes()
 
+    @pydantic.field_serializer("status")
+    def serialize_status(self, value: PaymentStatus):
+        return value.name
+
     @classmethod
     async def get(cls, db: AsyncConnection, event_id: int, order_id: UUID) -> Order | None:
         async with db.cursor() as cursor:
@@ -137,6 +142,9 @@ class Order(pydantic.BaseModel):
     @property
     def reference(self):
         return order_number_to_reference(self.timestamp, self.order_number)
+
+    def get_url(self, event_slug: str):
+        return f"{KOMPASSI_V2_BASE_URL}/{event_slug}/orders/{self.id}/"
 
 
 class OrderWithCustomer(Order):

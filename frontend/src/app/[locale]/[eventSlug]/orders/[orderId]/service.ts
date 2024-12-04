@@ -2,7 +2,7 @@ import { ticketsBaseUrl } from "@/config";
 
 export interface Order {
   orderNumber: number;
-  status: "CONFIRMED" | "PAID" | "CANCELLED";
+  status: "PENDING" | "PAID" | "CANCELLED";
   totalPrice: string;
   products: {
     title: string;

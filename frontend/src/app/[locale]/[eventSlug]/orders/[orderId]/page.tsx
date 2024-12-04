@@ -13,7 +13,7 @@ interface Props {
   };
 }
 
-export const revalidate = 1;
+export const revalidate = 0;
 
 function formatOrderNumber(orderNumber: number) {
   return `#${orderNumber.toString().padStart(6, "0")}`;
@@ -77,13 +77,15 @@ export default async function OrderPage({ params }: Props) {
         </tfoot>
       </table>
 
-      <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
-        <div className="d-grid gap-2 mb-4">
-          <button className="btn btn-primary btn-lg" type="submit">
-            {t.orderPage.payButtonText}
-          </button>
-        </div>
-      </form>
+      {order.status == "PENDING" && (
+        <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
+          <div className="d-grid gap-2 mb-4">
+            <button className="btn btn-primary btn-lg" type="submit">
+              {t.orderPage.payButtonText}
+            </button>
+          </div>
+        </form>
+      )}
     </ViewContainer>
   );
 }

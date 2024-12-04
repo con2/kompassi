@@ -1,9 +1,10 @@
 import hmac
+from collections.abc import Mapping
 
 
 def calculate_hmac(
     secret: str,
-    params: dict[str, str],
+    params: Mapping[str, str],
     body: str | None = None,
     encoding="UTF-8",
     hash_algorithm="sha256",
@@ -35,9 +36,9 @@ def calculate_hmac(
     };
     """
     hmac_payload_parts = []
-    for key in sorted(params.keys()):
+    for key, value in sorted(params.items()):
         if key.startswith("checkout-"):
-            hmac_payload_parts.append(f"{key}:{params[key]}")
+            hmac_payload_parts.append(f"{key}:{value}")
     hmac_payload_parts.append(body if body else "")
     hmac_payload = "\n".join(hmac_payload_parts)
     return hmac.new(

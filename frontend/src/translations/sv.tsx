@@ -303,7 +303,7 @@ const translations: Translations = {
       payButtonText: "Betala",
     },
     orderState: UNTRANSLATED({
-      CONFIRMED: {
+      PENDING: {
         title: "Your order is awaiting payment",
         message:
           "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",

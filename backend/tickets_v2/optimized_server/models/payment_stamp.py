@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 from pathlib import Path
 from typing import Any, ClassVar
@@ -36,4 +38,24 @@ class PaymentStamp(pydantic.BaseModel):
                     self.correlation_id,
                     json.dumps(self.data),
                 ),
+            )
+
+    @classmethod
+    async def save_many(cls, db: AsyncConnection, stamps: list[PaymentStamp]):
+        async with db.cursor() as cursor:
+            await cursor.executemany(
+                cls.create_query,
+                [
+                    (
+                        uuid7(),
+                        stamp.event_id,
+                        stamp.order_id,
+                        stamp.provider.value,
+                        stamp.type.value,
+                        stamp.status.value,
+                        stamp.correlation_id,
+                        json.dumps(stamp.data),
+                    )
+                    for stamp in stamps
+                ],
             )

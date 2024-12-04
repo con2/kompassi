@@ -284,7 +284,7 @@ const translations: Translations = {
       payButtonText: "Maksa",
     },
     orderState: {
-      CONFIRMED: {
+      PENDING: {
         title: "Tilauksesi odottaa maksua",
         message:
           "Tilaus on vahvistettu ja tuotteet on varattu sinulle, mutta emme ole vielä saaneet maksuasi. Käytä alla olevaa painiketta maksaaksesi tilauksesi mahdollisimman pian. Maksamattomat tilaukset perutaan.",

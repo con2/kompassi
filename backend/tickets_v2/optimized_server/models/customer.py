@@ -22,9 +22,16 @@ class Customer(pydantic.BaseModel, frozen=True, populate_by_name=True):
         serialization_alias="email",
         max_length=300,
     )
-    phone: str = pydantic.Field(
+    phone: str | None = pydantic.Field(
         validation_alias="phone",
         serialization_alias="phone",
-        default="",
+        default=None,
         max_length=50,
     )
+
+    # @pydantic.field_validator("phone", mode="before")
+    # @staticmethod
+    # def validate_phone(value: str | None) -> str | None:
+    #     if value == "":
+    #         return None
+    #     return value

@@ -2,23 +2,55 @@ import logging
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import FastAPI, HTTPException, Path
+from fastapi import Depends, FastAPI, HTTPException, Path
+from starlette.requests import Request
+from starlette.responses import PlainTextResponse, RedirectResponse
 
 from .db import DB, lifespan
 from .excs import InvalidProducts, NotEnoughTickets
 from .models.api import PayOrderRequest
-from .models.enums import PaymentProvider
+from .models.enums import PaymentProvider, PaymentStampType
 from .models.event import Event
 from .models.order import CreateOrderRequest, Order, OrderWithCustomer
+from .models.payment_stamp import PaymentStamp
 from .models.product import Product
-from .services.paytrail import CreatePaymentRequest
+from .services.paytrail import CreatePaymentRequest, PaymentCallback
 
 app = FastAPI(lifespan=lifespan)
 logger = logging.getLogger(__name__)
 
-
 EventSlug = Annotated[str, Path()]
 OrderId = Annotated[UUID, Path()]
+
+
+async def _event(event_slug: EventSlug, db: DB) -> Event:
+    event = await Event.get(db, event_slug)
+    if event is None:
+        raise HTTPException(status_code=400, detail="EVENT_NOT_FOUND")
+    return event
+
+
+_Event = Annotated[Event, Depends(_event)]
+
+
+async def _order(event: _Event, order_id: OrderId, db: DB) -> Order:
+    order = await Order.get(db, event.id, order_id)
+    if order is None:
+        raise HTTPException(status_code=400, detail="ORDER_NOT_FOUND")
+    return order
+
+
+_Order = Annotated[Order, Depends(_order)]
+
+
+async def _order_with_customer(event: _Event, order_id: OrderId, db: DB) -> OrderWithCustomer:
+    order = await OrderWithCustomer.get(db, event.id, order_id)
+    if order is None:
+        raise HTTPException(status_code=400, detail="ORDER_NOT_FOUND")
+    return order
+
+
+_OrderWithCustomer = Annotated[OrderWithCustomer, Depends(_order_with_customer)]
 
 
 @app.get("/api/tickets-v2/status/")
@@ -27,11 +59,7 @@ async def status():
 
 
 @app.get("/api/tickets-v2/{event_slug}/products/")
-async def get_products(event_slug: EventSlug, db: DB):
-    event = await Event.get(db, event_slug)
-    if event is None:
-        raise HTTPException(status_code=400, detail="EVENT_NOT_FOUND")
-
+async def get_products(event: _Event, db: DB):
     products = await Product.get_products(db, event.id)
 
     return {
@@ -43,11 +71,7 @@ async def get_products(event_slug: EventSlug, db: DB):
 
 
 @app.post("/api/tickets-v2/{event_slug}/orders/")
-async def create_order(event_slug: EventSlug, order: CreateOrderRequest, db: DB):
-    event = await Event.get(db, event_slug)
-    if event is None:
-        raise HTTPException(status_code=400, detail="INVALID_ORDER")
-
+async def create_order(event: _Event, order: CreateOrderRequest, db: DB):
     try:
         async with db.transaction():
             result = await order.save(db, event.id)
@@ -64,11 +88,14 @@ async def create_order(event_slug: EventSlug, order: CreateOrderRequest, db: DB)
                 raise HTTPException(400, "INVALID_ORDER")
         case PaymentProvider.PAYTRAIL:
             request = CreatePaymentRequest.from_create_order_request(event, order, result)
-            response = await request.send(db, event, result.order_id)
+            response, stamps = await request.send(event, result.order_id)
             payment_redirect = response.href
         case _:
             logger.error("Payment provider not implemented: %s", event.provider)
             raise HTTPException(400, "INVALID_ORDER")
+
+    async with db.transaction():
+        await PaymentStamp.save_many(db, stamps)
 
     return {
         "orderId": result.order_id,
@@ -77,15 +104,7 @@ async def create_order(event_slug: EventSlug, order: CreateOrderRequest, db: DB)
 
 
 @app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/")
-async def get_order(event_slug: EventSlug, order_id: OrderId, db: DB):
-    event = await Event.get(db, event_slug)
-    if event is None:
-        raise HTTPException(status_code=400, detail="EVENT_NOT_FOUND")
-
-    order = await Order.get(db, event.id, order_id)
-    if order is None:
-        raise HTTPException(status_code=400, detail="ORDER_NOT_FOUND")
-
+async def get_order(event: _Event, order: _Order):
     return {
         "event": {
             "name": event.name,
@@ -96,25 +115,20 @@ async def get_order(event_slug: EventSlug, order_id: OrderId, db: DB):
 
 @app.post("/api/tickets-v2/{event_slug}/orders/{order_id}/payment/")
 async def pay(
-    event_slug: EventSlug,
-    order_id: OrderId,
+    event: _Event,
+    order: _OrderWithCustomer,
     pay_order_request: PayOrderRequest,
     db: DB,
 ):
-    event = await Event.get(db, event_slug)
-    if event is None:
-        raise HTTPException(status_code=400, detail="EVENT_NOT_FOUND")
-
-    order = await OrderWithCustomer.get(db, event.id, order_id)
-    if order is None:
-        raise HTTPException(status_code=400, detail="ORDER_NOT_FOUND")
-
     payment_redirect = ""
     match event.provider:
         case PaymentProvider.PAYTRAIL:
             request = CreatePaymentRequest.from_order(event, order, pay_order_request.language)
-            response = await request.send(db, event, order_id)
+            response, stamps = await request.send(event, order.id)
             payment_redirect = response.href
+
+    async with db.transaction():
+        await PaymentStamp.save_many(db, stamps)
 
     if not payment_redirect:
         raise HTTPException(status_code=400, detail="INVALID_ORDER")
@@ -123,3 +137,40 @@ async def pay(
         "orderId": order.id,
         "paymentRedirect": payment_redirect,
     }
+
+
+def valid_callback(event: _Event, request: Request) -> PaymentCallback:
+    return PaymentCallback.from_query_params(request.query_params, event)
+
+
+_Callback = Annotated[PaymentCallback, Depends(valid_callback)]
+
+
+@app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/redirect/")
+async def paytrail_redirect(
+    event: _Event,
+    order: _Order,
+    paytrail_callback: _Callback,
+    db: DB,
+):
+    await paytrail_callback.to_payment_stamp(
+        event,
+        order,
+        PaymentStampType.PAYMENT_REDIRECT,
+    ).save(db)
+    return RedirectResponse(order.get_url(event.slug), 303)
+
+
+@app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/callback/")
+async def paytrail_callback(
+    event: _Event,
+    order: _Order,
+    paytrail_callback: _Callback,
+    db: DB,
+):
+    await paytrail_callback.to_payment_stamp(
+        event,
+        order,
+        PaymentStampType.PAYMENT_REDIRECT,
+    ).save(db)
+    return PlainTextResponse("")
