@@ -133,6 +133,13 @@ class Migration(migrations.Migration):
                             ),
                         ),
                         (
+                            "language",
+                            models.CharField(
+                                choices=[("en", "English"), ("fi", "Finnish"), ("sv", "Swedish")],
+                                max_length=2,
+                            ),
+                        ),
+                        (
                             "product_data",
                             models.JSONField(
                                 default=dict,

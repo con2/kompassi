@@ -15,7 +15,7 @@ from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from ...optimized_server.utils.uuid7 import uuid7, uuid7_to_datetime
 from ..config import KOMPASSI_V2_BASE_URL
 from ..excs import InvalidProducts, UnsaneSituation
-from ..utils.order_numbers import order_number_to_reference
+from ..utils.formatting import order_number_to_reference
 from .customer import Customer
 from .enums import PaymentStatus
 from .ticket import reserve_tickets
@@ -63,6 +63,7 @@ class CreateOrderRequest(pydantic.BaseModel):
                         uuid7(),
                         event_id,
                         json.dumps(self.products),
+                        self.language,
                         self.customer.first_name,
                         self.customer.last_name,
                         self.customer.email,
@@ -135,6 +136,14 @@ class Order(pydantic.BaseModel):
                 products=order_products,
             )
 
+    @classmethod
+    async def notify(cls, db: AsyncConnection):
+        """
+        Notify the customer about the order.
+        """
+        async with db.cursor() as cursor:
+            await cursor.execute("notify tickets_v2_order")
+
     @property
     def timestamp(self):
         return uuid7_to_datetime(self.id)
@@ -166,6 +175,7 @@ class OrderWithCustomer(Order):
             email = ""
             phone = ""
 
+            # TODO dehorriblen this
             async for (
                 total_,
                 order_number_,

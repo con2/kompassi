@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from typing import Self
 
 from django.conf import settings
 from django.db import models
@@ -9,9 +9,6 @@ from django.db import models
 from core.utils.model_utils import make_slug_field, slugify
 
 from .program import Program
-
-if TYPE_CHECKING:
-    pass
 
 
 class ScheduleItem(models.Model):

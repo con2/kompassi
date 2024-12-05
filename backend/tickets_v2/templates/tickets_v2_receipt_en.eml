@@ -1,0 +1,34 @@
+Dear recipient,
+
+Thank you for your order at the {{ event_name }} online shop!
+Your order number is {{ formatted_order_number }}.
+
+We confirm the following products have been paid for:
+
+{% for product, quantity in products %}{{ quantity }} pcs  {{ product.title }}
+    {{ quantity }} x {{ product.formatted_price }}
+{% endfor %}
+Total: {{ formatted_total_price }} (VAT 0%){% if have_etickets %}
+
+Please find attached your electronic tickets. The electronic ticket will be
+exchanged for a wristband at the ticket exchange when you arrive at the event.
+You can print the electronic ticket or show it from the screen of your smartphone
+or tablet device. If neither of these is possible, please make note of the
+ticket code under each ticket barcode and supply it at the ticket exchange.{% endif %}
+
+The contact information you supplied:
+
+{{ first_name }} {{ last_name }}{% if phone %}
+{{ phone }}{% endif %}
+{{ email }}
+
+If there are any errors in the details above, please contact us without delay
+by replying to this message.
+
+Yours sincerely
+--
+On behalf of {{ event_name }}
+Kompassi Event Management System
+
+Under Finnish tax regulations, the seller is not required to pay VAT
+as it is a non-profit organization.
