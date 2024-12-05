@@ -19,8 +19,8 @@ sanakoodi ja ilmoita se lipunvaihtopisteessä.{% endif %}
 
 Antamasi yhteystiedot:
 
-{{ first_name }} {{ last_name }}{% if phone_number %}
-{{ phone_number }}{% endif %}
+{{ first_name }} {{ last_name }}{% if phone %}
+{{ phone }}{% endif %}
 {{ order.customer.email }}
 
 Jos yllä olevissa tiedoissa on virheitä, otathan välittömästi yhteyttä

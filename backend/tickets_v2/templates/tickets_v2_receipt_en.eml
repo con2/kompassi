@@ -18,9 +18,9 @@ ticket code under each ticket barcode and supply it at the ticket exchange.{% en
 
 The contact information you supplied:
 
-{{ first_name }} {{ last_name }}{% if phone_number %}
-{{ phone_number }}{% endif %}
-{{ order.customer.email }}
+{{ first_name }} {{ last_name }}{% if phone %}
+{{ phone }}{% endif %}
+{{ email }}
 
 If there are any errors in the details above, please contact us without delay
 by replying to this message.

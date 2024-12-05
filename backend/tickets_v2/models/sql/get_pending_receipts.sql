@@ -9,6 +9,7 @@ select distinct on (o.id, ps_paid.correlation_id)
   o.first_name,
   o.last_name,
   o.email,
+  o.phone,
   o.product_data,
   o.order_number,
   o.cached_price as total_price

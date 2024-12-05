@@ -113,6 +113,13 @@ class ReceiptStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
 
 
 class LocalizedOrderPrinter(OrderPrinter):
+    """
+    Overrides some texts of the default lippukala.printing.OrderPrinter
+    to better support non-Finnish-speaking customers.
+
+    TODO Upstream this
+    """
+
     def __init__(self, language: str):
         super().__init__(print_logo_path=None)
         self.language = language
@@ -153,6 +160,7 @@ class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     first_name: str
     last_name: str
     email: str
+    phone: str
     product_data: dict[int, int]
     order_number: int
     total_price: Decimal
