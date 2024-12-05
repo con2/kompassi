@@ -348,6 +348,7 @@ AWS_ACCESS_KEY_ID = env("MINIO_ACCESS_KEY_ID", default="kompassi")
 AWS_SECRET_ACCESS_KEY = env("MINIO_SECRET_ACCESS_KEY", default="kompassi")
 AWS_S3_ENDPOINT_URL = env("MINIO_ENDPOINT_URL", default="http://localhost:9000")
 
+KOMPASSI_BASE_URL = env("KOMPASSI_BASE_URL", default="http://localhost:8000")
 KOMPASSI_V2_BASE_URL = env("KOMPASSI_V2_BASE_URL", default="http://localhost:3000")
 
 # TODO script-src unsafe-inline needed at least by feedback.js. unsafe-eval needed by Knockout (roster.js).

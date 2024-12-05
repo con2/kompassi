@@ -1,20 +1,17 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import TYPE_CHECKING
 
 from django.db import models
 
 from core.models.event import Event
 from event_log_v2.utils.monthly_partitions import UUID7Mixin
+from graphql_api.language import SUPPORTED_LANGUAGES
 from tickets.utils import append_reference_number_checksum
 from tickets_v2.optimized_server.utils.uuid7 import uuid7
 
 from ..utils.event_partitions import EventPartitionsMixin
 from .product import Product
-
-if TYPE_CHECKING:
-    pass
 
 
 class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
@@ -61,6 +58,11 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
     product_data = models.JSONField(
         default=dict,
         help_text="product id -> quantity",
+    )
+
+    language = models.CharField(
+        max_length=2,
+        choices=[(lang.code, lang.name_django) for lang in SUPPORTED_LANGUAGES],
     )
 
     # NOTE: lengths validated in server code, see optimized_server/models/customer.py

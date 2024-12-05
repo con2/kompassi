@@ -1,0 +1,34 @@
+Hyvä vastaanottaja,
+
+Kiitos tilauksestasi {{ event_name }} -tapahtuman verkkokaupassa!
+Tilauksesi numero on {{ formatted_order_number }}.
+
+Vahvistamme maksetuiksi seuraavat lipputuotteet:
+
+{% for product, quantity in products %}{{ quantity }} kpl  {{ product.title }}
+    {{ quantity }} x {{ product.formatted_price }}
+{% endfor %}
+Yhteensä: {{ formatted_total_price }} (ALV 0%){% if have_etickets %}
+
+Löydät tilaamasi sähköiset liput liitetiedostosta. Sähköinen lippu
+vaihdetaan rannekkeeseen lipunvaihtopisteessä saapuessasi tapahtumaan. Voit
+tulostaa sähköisen lipun tai näyttää sen älypuhelimen tai tablettitietokoneen
+näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös jokaisesta
+e-lipusta viivakoodin alla oleva neljästä tai viidestä sanasta koostuva
+sanakoodi ja ilmoita se lipunvaihtopisteessä.{% endif %}
+
+Antamasi yhteystiedot:
+
+{{ first_name }} {{ last_name }}{% if phone_number %}
+{{ phone_number }}{% endif %}
+{{ order.customer.email }}
+
+Jos yllä olevissa tiedoissa on virheitä, otathan välittömästi yhteyttä
+lipunmyyntiin vastaamalla tähän viestiin.
+
+Ystävällisin terveisin
+--
+{{ event_name }} -tapahtuman puolesta
+Kompassi-tapahtumanhallintajärjestelmä
+
+Yleishyödyllisenä yhteisönä myyjä ei ole arvonlisäverovelvollinen.

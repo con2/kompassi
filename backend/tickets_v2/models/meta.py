@@ -14,8 +14,10 @@ class TicketsV2EventMeta(EventMetaBase):
     def ensure_partitions(self):
         from .order import Order
         from .payment_stamp import PaymentStamp
+        from .receipts import ReceiptStamp
         from .ticket import Ticket
 
         Order.ensure_partition(self.event)
         Ticket.ensure_partition(self.event)
         PaymentStamp.ensure_partition(self.event)
+        ReceiptStamp.ensure_partition(self.event)

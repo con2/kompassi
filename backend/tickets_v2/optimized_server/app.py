@@ -9,7 +9,7 @@ from starlette.responses import PlainTextResponse, RedirectResponse
 from .db import DB, lifespan
 from .excs import InvalidProducts, NotEnoughTickets
 from .models.api import PayOrderRequest
-from .models.enums import PaymentProvider, PaymentStampType
+from .models.enums import PaymentProvider, PaymentStampType, PaymentStatus
 from .models.event import Event
 from .models.order import CreateOrderRequest, Order, OrderWithCustomer
 from .models.payment_stamp import PaymentStamp
@@ -153,11 +153,18 @@ async def paytrail_redirect(
     paytrail_callback: _Callback,
     db: DB,
 ):
-    await paytrail_callback.to_payment_stamp(
+    stamp = await paytrail_callback.to_payment_stamp(
         event,
         order,
         PaymentStampType.PAYMENT_REDIRECT,
     ).save(db)
+
+    # TODO this could be made a trigger in the database
+    # on insert into payment_stamp when status = PAID
+    if stamp.status == PaymentStatus.PAID:
+        # signal worker to send receipts
+        await Order.notify(db)
+
     return RedirectResponse(order.get_url(event.slug), 303)
 
 
@@ -168,9 +175,14 @@ async def paytrail_callback(
     paytrail_callback: _Callback,
     db: DB,
 ):
-    await paytrail_callback.to_payment_stamp(
+    stamp = await paytrail_callback.to_payment_stamp(
         event,
         order,
-        PaymentStampType.PAYMENT_REDIRECT,
+        PaymentStampType.PAYMENT_CALLBACK,
     ).save(db)
+
+    if stamp.status == PaymentStatus.PAID:
+        # signal worker to send receipts
+        await Order.notify(db)
+
     return PlainTextResponse("")

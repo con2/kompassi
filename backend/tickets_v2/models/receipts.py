@@ -1,0 +1,344 @@
+from __future__ import annotations
+
+import json
+from decimal import Decimal
+from enum import IntEnum
+from functools import cached_property
+from pathlib import Path
+from typing import ClassVar, Self
+from uuid import UUID
+
+import pydantic
+from django.conf import settings
+from django.core.mail import EmailMessage
+from django.db import connection, models
+from django.template.loader import render_to_string
+from lippukala.models import Code
+from lippukala.models import Order as LippukalaOrder
+from lippukala.printing import OrderPrinter
+
+from core.models.event import Event
+from event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7
+from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
+from tickets.lippukala_integration import Queue as LippukalaQueue
+
+from ..optimized_server.utils.formatting import format_money, format_order_number
+from ..utils.event_partitions import EventPartitionsMixin
+from .order import Order
+from .product import Product
+
+
+class ReceiptStampType(IntEnum):
+    ORDER_CONFIRMATION = 1
+    CANCELLATION = 2
+
+
+class ReceiptStatus(IntEnum):
+    PROCESSING = 1
+    SUCCESS = 2
+    FAILURE = 3
+
+
+# TODO missing Swedish (message template too)
+ETICKET_TEXT = dict(
+    fi="Tässä sähköiset lippusi {event_name} -tapahtumaan. Kiitos tilauksestasi!",
+    en="Here are your e-tickets for {event_name}. Thank you for your order!",
+)
+ETICKET_SUBJECT = dict(
+    fi="E-lippu",
+    en="E-ticket",
+)
+RECEIPT_SUBJECT = dict(
+    fi="Tilausvahvistus",
+    en="Order confirmation",
+)
+
+FROM_EMAIL: str = settings.DEFAULT_FROM_EMAIL
+MAIL_DOMAIN = FROM_EMAIL.split("@", 1)[1].rstrip(">")
+LIPPUKALA_PREFIX = LippukalaQueue.ONE_QUEUE
+ETICKET_FILENAME = "e-ticket.pdf"
+
+
+class ReceiptStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
+    """
+    Receipt stamps are created for paid orders to indicate various stages of
+    receipt and electronic ticket delivery. The table is strictly insert only;
+    no updates or deletes will ever be made.
+
+    Partitioned by event_id.
+    Primary key is (event_id, id).
+    Migrations managed manually.
+    """
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid7,
+        editable=False,
+    )
+
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.RESTRICT,
+        related_name="+",
+    )
+
+    order_id = models.UUIDField(
+        null=True,
+        blank=True,
+    )
+
+    correlation_id = models.UUIDField(
+        help_text=(
+            "The correlation ID ties together the receipt stamps related to the same receipt attempt. "
+            "Usually you would use the correlation ID of the payment stamp that you used to determine this order is paid."
+        ),
+    )
+
+    type = models.SmallIntegerField(
+        choices=[(t.value, t.name) for t in ReceiptStampType],
+    )
+    status = models.SmallIntegerField(
+        choices=[(s.value, s.name) for s in ReceiptStatus],
+    )
+
+    event_id: int
+    pk: UUID
+
+    @cached_property
+    def order(self):
+        """
+        Direct the query to the correct partition.
+        """
+        return Order.objects.get(event=self.event, id=self.order_id)
+
+
+class LocalizedOrderPrinter(OrderPrinter):
+    def __init__(self, language: str):
+        super().__init__(print_logo_path=None)
+        self.language = language
+
+    def get_heading_texts(self, order: LippukalaOrder, n_orders: int) -> list[str | None]:
+        match self.language:
+            case "fi":
+                return [
+                    (f"Tilausnumero: {order.reference_number}" if order.reference_number else None),
+                    f"Tilausaika: {order.created_on.strftime('%d.%m.%Y klo %H:%M')}",
+                ]
+            case _:
+                return [
+                    (f"Order number: {order.reference_number}" if order.reference_number else None),
+                    f"Order time: {order.created_on.strftime('%Y-%m-%d %H:%M')}",
+                ]
+
+    # quality of life
+    def print_order(self, order: LippukalaOrder):
+        self.process_order(order)
+        return self.finish()
+
+
+class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
+    """
+    Represents an item of work to be done by the receipt worker.
+    It results in a receipt being sent to the customer, with or without e-tickets.
+    Should contain all the information it needs to do its job (save for easily cacheable stuff).
+    """
+
+    order_id: UUID
+    event_id: int
+    # TODO event_cache?
+    event_name: str
+    event_slug: str
+    correlation_id: UUID
+    language: str
+    first_name: str
+    last_name: str
+    email: str
+    product_data: dict[int, int]
+    order_number: int
+    total_price: Decimal
+
+    # NOTE: fields and their order must match fields returned by the query
+    query: ClassVar[str] = (Path(__file__).parent / "sql" / "get_pending_receipts.sql").read_text()
+    batch_size: ClassVar[int] = 100
+    product_cache: ClassVar[dict[int, dict[int, Product]]] = {}
+
+    @pydantic.field_validator("language", mode="before")
+    @staticmethod
+    def validate_language(value: str):
+        if value not in SUPPORTED_LANGUAGE_CODES:
+            return DEFAULT_LANGUAGE
+
+        # TODO Missing Swedish message template
+        if value == "sv":
+            return "en"
+
+        return value
+
+    @pydantic.field_validator("product_data", mode="before")
+    @staticmethod
+    def validate_product_data(value: str | dict[str, int]):
+        if isinstance(value, str):
+            return json.loads(value)
+
+        return value
+
+    @pydantic.computed_field
+    @cached_property
+    def formatted_order_number(self) -> str:
+        return format_order_number(self.order_number)
+
+    @pydantic.computed_field
+    @cached_property
+    def formatted_total_price(self) -> str:
+        return format_money(self.total_price)
+
+    @classmethod
+    def _get_product(cls, event_id: int, product_id: int):
+        """
+        Products are immutable once sold, so it's safe to cache them forever (or for the lifetime of the process).
+        If a product is changed after a single instance is sold, a new product version is created that supersedes the old one.
+        If a super admin mutates a product from taka-admin, they should restart the worker to clear the cache.
+        """
+        if found := cls.product_cache.get(event_id, {}).get(product_id):
+            return found
+
+        cls.product_cache[event_id] = {
+            p.id: p
+            for p in Product.objects.filter(event_id=event_id).only(
+                "title",
+                "description",
+                "price",
+                # not a real field… yet
+                # "electronic_tickets_per_product",
+            )
+        }
+
+        return cls.product_cache[event_id][product_id]
+
+    @pydantic.computed_field
+    @cached_property
+    def products(self) -> list[tuple[Product, int]]:
+        return [
+            (
+                self._get_product(self.event_id, product_id),
+                quantity,
+            )
+            for product_id, quantity in self.product_data.items()
+            if quantity > 0
+        ]
+
+    @cached_property
+    def etickets(self) -> list[Product]:
+        return [
+            product
+            for product, quantity in self.products
+            for _ in range(quantity * product.electronic_tickets_per_product)
+            if product.electronic_tickets_per_product > 0
+        ]
+
+    @pydantic.computed_field
+    @cached_property
+    def have_etickets(self) -> bool:
+        return bool(self.etickets)
+
+    def eticket_text(self) -> str:
+        return ETICKET_TEXT[self.language].format(event_name=self.event_name)
+
+    @classmethod
+    def get_pending_receipts(cls, batch_size: int = batch_size) -> tuple[list[Self], bool]:
+        """
+        Iterate this to find orders for which a receipt needs to be sent.
+        You'll get a batch of `ReceiptPending.batch_size` orders at a time, and
+        a boolean telling if there's more orders to process
+        (ie. a subsequent call to this method will return more orders).
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(cls.query, [batch_size + 1])
+            results = [
+                cls(**dict(zip(cls.model_fields, row, strict=True)))  # type: ignore
+                for row in cursor
+            ]
+
+        if have_more := len(results) > batch_size:
+            results.pop(batch_size)
+
+        return results, have_more
+
+    @staticmethod
+    def make_code(lippukala_order: LippukalaOrder, product: Product) -> Code:
+        """
+        Generate computed fields as Code.__init__ does to allow bulk_create.
+        """
+        code = Code(
+            order=lippukala_order,
+            prefix=LIPPUKALA_PREFIX,
+            product_text=product.title,
+        )
+
+        code.code = code._generate_code()
+        code.literate_code = code._generate_literate_code()
+
+        return code
+
+    def get_lippukala_order(self) -> LippukalaOrder | None:
+        if not self.have_etickets:
+            return None
+
+        lippukala_order, created = LippukalaOrder.objects.get_or_create(
+            # order number makes more sense to customer and event personnel than (bank) reference number
+            reference_number=self.formatted_order_number,
+            defaults=dict(
+                event=self.event_slug,
+                address_text=f"{self.first_name} {self.last_name}\n{self.email}",
+                free_text=self.eticket_text,
+            ),
+        )
+
+        if not created:
+            return lippukala_order
+
+        Code.objects.bulk_create(
+            self.make_code(
+                lippukala_order,
+                product,
+            )
+            for product in self.etickets
+        )
+
+        return lippukala_order
+
+    def send_receipt(self, from_email: str = FROM_EMAIL, mail_domain: str = MAIL_DOMAIN):
+        if lippukala_order := self.get_lippukala_order():
+            etickets_pdf = LocalizedOrderPrinter(self.language).print_order(lippukala_order)
+            subject = ETICKET_SUBJECT[self.language]
+        else:
+            etickets_pdf = None
+            subject = RECEIPT_SUBJECT[self.language]
+
+        body = render_to_string(f"tickets_v2_receipt_{self.language}.eml", self.model_dump(mode="python"))
+        subject = f"{self.event_name}: {subject} ({self.formatted_order_number})"
+
+        # NOTE doesn't check this internal alias exists (perf), too bad if it doesn't
+        reply_to_email = (f"{self.event_slug}-tickets@{mail_domain}",)
+        to_email = (f"{self.first_name} {self.last_name} <{self.email}>",)
+
+        if settings.DEBUG:
+            print(subject, body, sep="\n\n", end="\n\n")
+            if etickets_pdf:
+                path = Path("dev-secrets") / f"eticket-{self.order_id}.pdf"
+                with path.open("wb") as f:
+                    f.write(etickets_pdf)
+                print("Wrote attachment to", path)
+
+        message = EmailMessage(
+            subject=subject,
+            body=body,
+            from_email=from_email,
+            reply_to=reply_to_email,
+            to=to_email,
+        )
+
+        if etickets_pdf:
+            message.attach(ETICKET_FILENAME, etickets_pdf, "application/pdf")
+
+        message.send(fail_silently=True)

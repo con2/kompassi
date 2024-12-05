@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Self
 from uuid import UUID
 
 import pydantic
@@ -24,7 +24,7 @@ class PaymentStamp(pydantic.BaseModel):
 
     create_query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "create_payment_stamp.sql").read_bytes()
 
-    async def save(self, db: AsyncConnection):
+    async def save(self, db: AsyncConnection) -> Self:
         async with db.cursor() as cursor:
             await cursor.execute(
                 self.create_query,
@@ -39,6 +39,8 @@ class PaymentStamp(pydantic.BaseModel):
                     json.dumps(self.data),
                 ),
             )
+
+        return self
 
     @classmethod
     async def save_many(cls, db: AsyncConnection, stamps: list[PaymentStamp]):

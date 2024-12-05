@@ -1,5 +1,14 @@
 from datetime import date as date_type
 from datetime import datetime
+from decimal import Decimal
+
+
+def format_money(euros: Decimal) -> str:
+    """
+    >>> format_money(Decimal('123.45'))
+    '123,45 €'
+    """
+    return f"{euros:0.2f} €".replace(".", ",")
 
 
 def format_order_number(order_number: int):
