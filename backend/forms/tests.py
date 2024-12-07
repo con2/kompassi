@@ -5,12 +5,13 @@ import pytest
 import yaml
 
 from core.models import Event
+from dimensions.models.dimension import Dimension
+from dimensions.models.dimension_value import DimensionValue
 from graphql_api.schema import schema
 
 from .excel_export import get_header_cells, get_response_cells
 from .graphql.mutations.put_survey_dimension import PutSurveyDimension
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
-from .models.dimension import Dimension, DimensionValue
 from .models.field import Choice, Field, FieldType
 from .models.response import Response
 from .models.survey import Survey
@@ -603,9 +604,8 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
     )
 
     dimension = Dimension.objects.create(
-        survey=survey,
+        universe=survey.universe,
         slug="test-dimension",
-        title="Test dimension",
     )
 
     DimensionValue.objects.bulk_create(
@@ -613,20 +613,18 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
             DimensionValue(
                 dimension=dimension,
                 slug="test-dimension-value-1",
-                title=dict(en="Test dimension value 1"),
             ),
             DimensionValue(
                 dimension=dimension,
                 slug="test-dimension-value-2",
-                title=dict(en="Test dimension value 2"),
             ),
         ]
     )
 
     dimension2 = Dimension.objects.create(
-        survey=survey,
+        universe=survey.universe,
         slug="test-dimension2",
-        title="Test dimension 2",
+        title_en="Test dimension 2",
     )
 
     DimensionValue.objects.bulk_create(
@@ -634,12 +632,10 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
             DimensionValue(
                 dimension=dimension2,
                 slug="test-dimension2-value-1",
-                title=dict(en="Test dimension 2 value 1"),
             ),
             DimensionValue(
                 dimension=dimension2,
                 slug="test-dimension2-value-2",
-                title=dict(en="Test dimension 2 value 2"),
             ),
         ]
     )
@@ -725,10 +721,12 @@ def test_put_survey_dimension(_patched_graphql_check_instance):
         ),  # type: ignore
     )
 
-    dimension = Dimension.objects.get(survey=survey, slug="test-dimension")
+    dimension = Dimension.objects.get(universe=survey.universe, slug="test-dimension")
 
     assert dimension.slug == "test-dimension"
-    assert dimension.title == {"en": "Test dimension", "sv": "Testdimension"}
+    assert dimension.title_en == "Test dimension"
+    assert dimension.title_sv == "Testdimension"
+    assert dimension.title_fi == ""
     assert dimension.is_key_dimension is True
     assert dimension.is_multi_value is False
 

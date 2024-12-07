@@ -5,8 +5,9 @@ import requests
 
 from core.models.event import Event
 
-from ..models.dimension import DimensionDTO, DimensionValueDTO, ProgramDimensionValue
+from ..models.dimension_dto import DimensionDTO, DimensionValueDTO
 from ..models.program import Program
+from ..models.program_dimension_value import ProgramDimensionValue
 from ..models.schedule import ScheduleItem
 
 logger = logging.getLogger("kompassi")

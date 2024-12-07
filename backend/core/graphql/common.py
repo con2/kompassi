@@ -24,10 +24,10 @@ class DimensionFilterInput(graphene.InputObjectType):
 
         for filter in filters:
             if filter.values is None:
-                queryset = queryset.filter(dimensions__dimension__slug=filter.dimension)
+                queryset = queryset.filter(dimensions__value__dimension__slug=filter.dimension)
             else:
                 queryset = queryset.filter(
-                    dimensions__dimension__slug=filter.dimension,
+                    dimensions__value__dimension__slug=filter.dimension,
                     dimensions__value__slug__in=filter.values,
                 )
 

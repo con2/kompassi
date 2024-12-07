@@ -20,8 +20,8 @@ from django.utils.translation import gettext_lazy as _
 
 from core.utils.pkg_resources_compat import resource_string
 from tickets.utils import format_price
+from tickets_v2.optimized_server.utils.paytrail_hmac import calculate_hmac
 
-from ..utils import calculate_hmac
 from .payments_organization_meta import META_DEFAULTS
 
 if TYPE_CHECKING:

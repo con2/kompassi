@@ -2,7 +2,7 @@ import logging
 
 from django.db.models import QuerySet
 
-from program_v2.models.dimension import Dimension
+from dimensions.models.dimension import Dimension
 from program_v2.models.program import Program
 from programme.models.programme import Programme
 

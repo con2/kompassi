@@ -2,6 +2,7 @@
 
     The MIT License (MIT)
 
+    Copyright © 2024 Tracon ry
     Copyright © 2009–2024 Santtu Pajukanta
     Copyright © 2012–2024 Meeri Panula
     Copyright © 2014–2024 Jyrki Launonen

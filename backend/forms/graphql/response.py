@@ -79,9 +79,9 @@ class LimitedResponseType(DjangoObjectType):
 
         if key_dimensions_only:
             key_dimension_slugs = response.dimensions.filter(
-                dimension__slug__in=cached_dimensions.keys(),
-                dimension__is_key_dimension=True,
-            ).values_list("dimension__slug", flat=True)
+                value__dimension__slug__in=cached_dimensions.keys(),
+                value__dimension__is_key_dimension=True,
+            ).values_list("value__dimension__slug", flat=True)
 
             return {k: v for k, v in cached_dimensions.items() if k in key_dimension_slugs}
 
@@ -142,15 +142,15 @@ class ProfileResponseType(LimitedResponseType):
     form = graphene.Field(graphene.NonNull(FormType))
 
     @staticmethod
-    def resolve_dimensions(parent: Response, info, key_dimensions_only: bool = False):
+    def resolve_dimensions(response: Response, info, key_dimensions_only: bool = False):
         """
         The respondent will only see values of dimensions that are designated as
         being shown to the respondent.
         """
-        qs = parent.dimensions.filter(dimension__is_shown_to_respondent=True)
+        qs = response.dimensions.filter(value__dimension__is_shown_to_subject=True)
 
         if key_dimensions_only:
-            qs = qs.filter(dimension__is_key_dimension=True)
+            qs = qs.filter(value__dimension__is_key_dimension=True)
 
         return qs
 
@@ -176,14 +176,14 @@ class ProfileResponseType(LimitedResponseType):
         cached_dimensions = response.cached_dimensions
 
         included_dimensions = response.dimensions.filter(
-            dimension__slug__in=cached_dimensions.keys(),
-            dimension__is_shown_to_respondent=True,
+            value__dimension__slug__in=cached_dimensions.keys(),
+            value__dimension__is_shown_to_subject=True,
         )
 
         if key_dimensions_only:
-            included_dimensions = included_dimensions.filter(dimension__is_key_dimension=True)
+            included_dimensions = included_dimensions.filter(value__dimension__is_key_dimension=True)
 
-        included_dimension_slugs = response.dimensions.values_list("dimension__slug", flat=True)
+        included_dimension_slugs = response.dimensions.values_list("value__dimension__slug", flat=True)
 
         return {k: v for k, v in cached_dimensions.items() if k in included_dimension_slugs}
 

@@ -1,10 +1,12 @@
 import graphene
 from graphene_django import DjangoObjectType
 
+from dimensions.models.dimension import Dimension
+from dimensions.models.dimension_value import DimensionValue
 from graphql_api.language import DEFAULT_LANGUAGE
-from graphql_api.utils import resolve_localized_field
+from graphql_api.utils import resolve_localized_field_getattr
 
-from ..models.dimension import Dimension, DimensionValue, ProgramDimensionValue
+from ..models.program_dimension_value import ProgramDimensionValue
 
 # class ValueOrdering(graphene.Enum):
 #     DEFAULT = "default"
@@ -15,7 +17,7 @@ from ..models.dimension import Dimension, DimensionValue, ProgramDimensionValue
 
 class DimensionValueType(DjangoObjectType):
     title = graphene.String(lang=graphene.String())
-    resolve_title = resolve_localized_field("title")
+    resolve_title = resolve_localized_field_getattr("title")
 
     class Meta:
         model = DimensionValue
@@ -27,7 +29,7 @@ class DimensionValueType(DjangoObjectType):
 
 class DimensionType(DjangoObjectType):
     title = graphene.String(lang=graphene.String())
-    resolve_title = resolve_localized_field("title")
+    resolve_title = resolve_localized_field_getattr("title")
 
     @staticmethod
     def resolve_values(
@@ -61,3 +63,9 @@ class ProgramDimensionValueType(DjangoObjectType):
     class Meta:
         model = ProgramDimensionValue
         fields = ("dimension", "value")
+
+    dimension = graphene.NonNull(DimensionType)
+
+    @staticmethod
+    def resolve_dimension(pdv: ProgramDimensionValue, info):
+        return pdv.value.dimension

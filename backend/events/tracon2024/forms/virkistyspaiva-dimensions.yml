@@ -13,7 +13,7 @@
 
 - slug: status
   isKeyDimension: true
-  is_shown_to_respondent: true
+  is_shown_to_subject: true
   title:
     fi: Tila
   choices:

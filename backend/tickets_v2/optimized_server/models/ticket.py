@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ..excs import NotEnoughTickets, UnsaneSituation
-from .quota import get_expected_tickets_for_products, get_expected_tickets_for_products_django
+from .quota import get_expected_tickets_for_products
 
 if TYPE_CHECKING:
     from uuid import UUID
@@ -56,48 +56,6 @@ async def reserve_tickets(
 
         actual_tickets: dict[int, int] = {}
         async for row in cursor:
-            id, event_id, quota_id, row_order_id = row
-
-            if row_order_id != order_id:
-                raise UnsaneSituation()
-
-            actual_tickets.setdefault(quota_id, 0)
-            actual_tickets[quota_id] += 1
-
-    if actual_tickets != expected_tickets:
-        raise NotEnoughTickets()
-
-
-def reserve_tickets_django(
-    event_id: int,
-    order_id: UUID,
-    products: dict[int, int],
-):
-    from django.db import connection
-
-    # quota_id -> quantity
-    expected_tickets: dict[int, int] = get_expected_tickets_for_products_django(event_id, products)
-
-    with connection.cursor() as cursor:
-        cursor.execute(
-            reserve_query.decode("UTF-8"),
-            dict(
-                event_id=event_id,
-                order_id=order_id,
-                quantities_by_quota_id=json.dumps(
-                    [
-                        {
-                            "quota_id": quota_id,
-                            "quantity": quantity,
-                        }
-                        for (quota_id, quantity) in expected_tickets.items()
-                    ]
-                ),
-            ),
-        )
-
-        actual_tickets: dict[int, int] = {}
-        for row in cursor:
             id, event_id, quota_id, row_order_id = row
 
             if row_order_id != order_id:

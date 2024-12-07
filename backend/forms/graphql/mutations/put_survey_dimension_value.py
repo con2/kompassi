@@ -3,7 +3,7 @@ from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 
-from ...models.dimension import DimensionValueDTO
+from ...models.dimension_dto import DimensionValueDTO
 from ...models.survey import Survey
 from ..dimension import SurveyDimensionValueType
 

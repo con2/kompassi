@@ -11,14 +11,12 @@ from django.utils.translation import gettext_lazy as _
 
 from core.models.event import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
-from core.utils.locale_utils import get_message_in_language
-from graphql_api.language import DEFAULT_LANGUAGE, LANGUAGE_CHOICES
+from dimensions.models.dimension import Dimension
+from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
 from .field import Field
 
 if TYPE_CHECKING:
-    from program_v2.models.offer_form import OfferForm
-
     from .response import Response
     from .survey import Survey
 
@@ -37,7 +35,7 @@ class Form(models.Model):
     title = models.CharField(max_length=255, default="")
     description = models.TextField(blank=True, default="")
     thank_you_message = models.TextField(blank=True, default="")
-    language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=LANGUAGE_CHOICES)
+    language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=get_language_choices())
     layout = models.CharField(
         verbose_name=_("Layout"),
         choices=LAYOUT_CHOICES,
@@ -108,9 +106,6 @@ class Form(models.Model):
         Some field types may contain server side directives that need to be resolved before
         turning the form specification over to the frontend.
         """
-        from forms.models.dimension import Dimension as SurveyDimension
-        from program_v2.models.dimension import Dimension as ProgramDimension
-
         field = deepcopy(field)
 
         if choices_from := field.get("choicesFrom"):
@@ -121,30 +116,15 @@ class Form(models.Model):
 
             ((source_type, source),) = choices_from.items()
             if source_type == "dimension":
-                # TODO store use_case or similar on Form to avoid trying all use cases in a loop
                 if survey := self.survey:
-                    # form used as survey form
                     try:
-                        dimension = SurveyDimension.objects.get(survey=survey, slug=source)
-                        field["choices"] = [
-                            choice.model_dump(by_alias=True) for choice in dimension.get_choices(self.language)
-                        ]
-                    except SurveyDimension.DoesNotExist:
+                        dimension = survey.universe.dimensions.get(slug=source)
+                    except Dimension.DoesNotExist:
                         logger.warning(f"Survey dimension {source} does not exist on survey {survey}")
-                elif self.offer_form:
-                    # form used as program signup form
-                    try:
-                        dimension = ProgramDimension.objects.get(event=self.event, slug=source)
+                    else:
                         field["choices"] = [
-                            dict(
-                                slug=value_slug,
-                                title=get_message_in_language(value_title, self.language),
-                            )
-                            for value_slug, value_title in dimension.values.all().values_list("slug", "title")
+                            choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)
                         ]
-                    except ProgramDimension.DoesNotExist:
-                        logger.warning(f"Program dimension {source} does not exist on event {self.event}")
-
                 else:
                     raise ValueError("A form that is not used as a survey or program offer form cannot use valuesFrom")
 
@@ -169,16 +149,4 @@ class Form(models.Model):
         except Survey.DoesNotExist:
             return None
         except Survey.MultipleObjectsReturned:
-            raise
-
-    @property
-    def offer_form(self) -> OfferForm | None:
-        from program_v2.models.offer_form import OfferForm
-
-        # there can only be one
-        try:
-            return OfferForm.objects.get(event=self.event, languages=self)
-        except OfferForm.DoesNotExist:
-            return None
-        except OfferForm.MultipleObjectsReturned:
             raise

@@ -38,9 +38,9 @@ export default function DimensionForm({ messages, dimension }: Props) {
     },
     {
       type: "SingleCheckbox",
-      slug: "isShownToRespondent",
-      title: t.attributes.isShownToRespondent.title,
-      helpText: t.attributes.isShownToRespondent.helpText,
+      slug: "isShownToSubject",
+      title: t.attributes.isShownToSubject.title,
+      helpText: t.attributes.isShownToSubject.helpText,
     },
     {
       type: "StaticText",
@@ -64,7 +64,7 @@ export default function DimensionForm({ messages, dimension }: Props) {
       slug: dimension.slug,
       isKeyDimension: dimension.isKeyDimension,
       isMultiValue: dimension.isMultiValue,
-      isShownToRespondent: dimension.isShownToRespondent,
+      isShownToSubject: dimension.isShownToSubject,
       // TODO hard-coded languages
       "title.fi": dimension.titleFi,
       "title.en": dimension.titleEn,

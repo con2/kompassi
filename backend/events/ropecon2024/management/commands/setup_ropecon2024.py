@@ -979,12 +979,12 @@ class Setup:
             )
 
     def setup_program_v2(self):
+        from dimensions.models.dimension import Dimension
         from program_v2.importers.ropecon2024 import RopeconImporter
-        from program_v2.models.dimension import Dimension
         from program_v2.models.meta import ProgramV2EventMeta
 
         try:
-            room_dimension = Dimension.objects.get(event=self.event, slug="room")
+            room_dimension = Dimension.objects.get(universe=self.event.program_universe, slug="room")
         except Dimension.DoesNotExist:
             dimensions = RopeconImporter(self.event).import_dimensions()
             room_dimension = next(d for d in dimensions if d.slug == "room")

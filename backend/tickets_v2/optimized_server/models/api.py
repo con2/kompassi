@@ -2,6 +2,8 @@ from uuid import UUID
 
 import pydantic
 
+from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
+
 from .product import Product
 
 
@@ -14,6 +16,17 @@ class GetProductsResponse(pydantic.BaseModel):
     products: list[Product]
 
 
-class CreateOrderResponse(pydantic.BaseModel):
-    order_id: UUID
-    payment_redirect: str
+class CreateOrderResponse(pydantic.BaseModel, populate_by_name=True):
+    order_id: UUID = pydantic.Field(alias="orderId")
+    payment_redirect: str = pydantic.Field(alias="paymentRedirect", default="")
+
+
+class PayOrderRequest(pydantic.BaseModel):
+    language: str
+
+    @pydantic.field_validator("language", mode="before")
+    @staticmethod
+    def validate_language(value: str):
+        if value not in SUPPORTED_LANGUAGE_CODES:
+            return DEFAULT_LANGUAGE
+        return value

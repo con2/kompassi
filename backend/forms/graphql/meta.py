@@ -20,7 +20,7 @@ class FormsEventMetaType(graphene.ObjectType):
     @staticmethod
     def resolve_surveys(meta: FormsEventMeta, info, include_inactive: bool = False):
         if include_inactive:
-            graphql_check_model(Survey, meta.event, info)
+            graphql_check_model(Survey, meta.event.scope, info)
             qs = Survey.objects.filter(event=meta.event)
         else:
             qs = get_objects_within_period(Survey, event=meta.event)
@@ -89,7 +89,7 @@ class FormsProfileMetaType(graphene.ObjectType):
             for survey in surveys
             if is_graphql_allowed_for_model(
                 meta.person.user,
-                instance=survey,
+                instance=survey,  # type: ignore
                 operation="query",
                 field="self",
             )

@@ -9,7 +9,13 @@ from uuid import UUID
 from django.contrib import admin
 from django.db import connection, models, transaction
 
-from .uuid7 import uuid7, uuid7_day_range, uuid7_month_range, uuid7_month_range_for_year_month, uuid7_to_datetime
+from tickets_v2.optimized_server.utils.uuid7 import (
+    uuid7,
+    uuid7_day_range,
+    uuid7_month_range,
+    uuid7_month_range_for_year_month,
+    uuid7_to_datetime,
+)
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T", bound=models.Model)

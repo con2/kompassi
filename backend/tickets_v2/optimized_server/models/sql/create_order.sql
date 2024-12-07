@@ -44,4 +44,4 @@ from
     where
       product.event_id = input.event_id
   ) as price on true
-returning event_id, id;
+returning event_id, id, cached_price, order_number;

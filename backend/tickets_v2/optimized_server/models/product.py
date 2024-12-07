@@ -38,25 +38,3 @@ class Product(pydantic.BaseModel):
                 )
 
             return products
-
-    @classmethod
-    def get_products_django(cls, event_id: int) -> list[Self]:
-        from django.db import connection
-
-        with connection.cursor() as cursor:
-            cursor.execute(cls.list_query.decode(), dict(event_id=event_id))
-
-            products = []
-            for row in cursor:
-                id, title, description, price, available = row
-                products.append(
-                    cls(
-                        id=id,
-                        title=title,
-                        description=description,
-                        price=price,
-                        available=available,
-                    )
-                )
-
-            return products

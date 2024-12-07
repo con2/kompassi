@@ -521,7 +521,7 @@ class Setup:
                 product.save()
 
     def setup_forms(self):
-        from forms.models.dimension import DimensionDTO
+        from forms.models.dimension_dto import DimensionDTO
         from forms.models.form import Form
         from forms.models.survey import Survey
 

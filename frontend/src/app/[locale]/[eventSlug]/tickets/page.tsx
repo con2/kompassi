@@ -4,12 +4,9 @@ import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
-
-function formatMoney(value: string) {
-  return parseFloat(value).toFixed(2).replace(".", ",") + " €";
-}
 
 interface Props {
   params: {
@@ -19,9 +16,10 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props) {
+  console.log({ params });
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.TicketsView;
+  const t = translations.Tickets;
   const { event } = await getProducts(eventSlug);
 
   const title = getPageTitle({ translations, event, viewTitle: t.title });
@@ -36,7 +34,7 @@ export const revalidate = 1;
 export default async function TicketsPage({ params }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.TicketsView;
+  const t = translations.Tickets;
   const { event, products } = await getProducts(eventSlug);
 
   const fields: Field[] = [
@@ -85,12 +83,12 @@ export default async function TicketsPage({ params }: Props) {
       </ViewHeading>
 
       <form action={createOrder.bind(null, locale, eventSlug)}>
-        <table className="table table-striped mb-4">
+        <table className="table table-striped mt-4 mb-5">
           <thead>
             <tr className="row">
               <th className="col-8">{t.productsTable.product}</th>
-              <th className="col">{t.productsTable.price}</th>
-              <th className="col">{t.productsTable.quantity}</th>
+              <th className="col">{t.productsTable.unitPrice}</th>
+              <th className="col">{t.productsTable.quantity.title}</th>
             </tr>
           </thead>
           <tbody>
@@ -108,7 +106,7 @@ export default async function TicketsPage({ params }: Props) {
                     htmlFor={`quantity-${product.id}`}
                     className="visually-hidden"
                   >
-                    {t.productsTable.quantity}
+                    {t.productsTable.quantity.title}
                   </label>
                   <input
                     type="number"
@@ -123,7 +121,7 @@ export default async function TicketsPage({ params }: Props) {
           </tbody>
         </table>
 
-        <div className="mb-4">
+        <div className="mb-5">
           <h2>{t.contactForm.title}</h2>
           <SchemaForm fields={fields} messages={translations.SchemaForm} />
         </div>

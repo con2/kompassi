@@ -1,9 +1,12 @@
 from dataclasses import dataclass
+from functools import cached_property
 
 from django.db import models
 
 from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
+from dimensions.models.dimension import Dimension
+from dimensions.models.universe import Universe
 
 IMPORTER_CHOICES = [
     ("default", "Default"),
@@ -13,7 +16,7 @@ IMPORTER_CHOICES = [
 
 class ProgramV2EventMeta(EventMetaBase):
     location_dimension = models.ForeignKey(
-        "program_v2.Dimension",
+        Dimension,
         on_delete=models.PROTECT,
         related_name="location_dimension_for_event_meta",
         null=True,
@@ -79,6 +82,15 @@ class ProgramV2EventMeta(EventMetaBase):
     @property
     def is_auto_importing_from_v1(self):
         return self.importer_name != ""
+
+    # TODO should this be a fkey?
+    @cached_property
+    def universe(self) -> Universe:
+        return Universe.objects.get_or_create(
+            scope=self.event.scope,
+            slug="default",
+            app="program_v2",
+        )[0]
 
 
 @dataclass

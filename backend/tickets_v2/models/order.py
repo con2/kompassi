@@ -1,23 +1,20 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
-from django.contrib.auth.models import User
 from django.db import models
 
 from core.models.event import Event
 from event_log_v2.utils.monthly_partitions import UUID7Mixin
-from event_log_v2.utils.uuid7 import uuid7
 from tickets.utils import append_reference_number_checksum
+from tickets_v2.optimized_server.utils.uuid7 import uuid7
 
 from ..utils.event_partitions import EventPartitionsMixin
 from .product import Product
 
 if TYPE_CHECKING:
     pass
-
-OrderState = Literal["unpaid", "paid", "cancelled"]
 
 
 class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
@@ -46,22 +43,19 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
         related_name="+",
     )
 
-    # NOTE: confirmed_at is called timestamp and backed by id which is UUID7
-    paid_at = models.DateTimeField(null=True, blank=True)
-    cancelled_at = models.DateTimeField(null=True, blank=True)
-
-    user = models.ForeignKey(
-        User,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-    )
-
     cached_price = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         default=Decimal(0),
+    )
+
+    order_number = models.IntegerField(
+        help_text=(
+            "Order number used in contexts where UUID cannot be used. "
+            "Such places include generating reference numbers and "
+            "the customer reading the order number aloud to an event rep. "
+            "Prefer id (UUID) for everything else (eg. URLs)."
+        )
     )
 
     product_data = models.JSONField(

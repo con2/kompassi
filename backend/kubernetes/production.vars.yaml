@@ -21,6 +21,7 @@ kompassi_storage_pvc: false
 kompassi_storage_pvc_storageclass: longhorn-nfs
 kompassi_installation_name: Kompassi
 kompassi_installation_slug: turska
+kompassi_base_url: https://kompassi.eu
 kompassi_v2_base_url: https://v2.kompassi.eu
 kompassi_admins:
   - Santtu Pajukanta <santtu@pajukanta.fi>

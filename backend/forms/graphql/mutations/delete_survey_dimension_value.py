@@ -1,8 +1,8 @@
 import graphene
 
 from access.cbac import graphql_check_instance
+from dimensions.models.dimension_value import DimensionValue
 
-from ...models.dimension import DimensionValue
 from ...models.survey import Survey
 
 

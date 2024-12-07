@@ -243,17 +243,22 @@ const translations: Translations = {
     title: "Tapahtumat",
   },
 
-  TicketsView: {
+  Tickets: {
     title: "Osta lippuja",
     forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
+    returnToTicketsPage: "Palaa lippusivulle",
     noProducts: {
       title: "Ei tuotteita saatavilla",
       message: "Yhtään tuotetta ei ole tällä hetkellä tilattavissa.",
     },
     productsTable: {
       product: "Tuote",
-      price: "Hinta",
-      quantity: "Lukumäärä",
+      unitPrice: "Kappalehinta",
+      quantity: {
+        title: "Lukumäärä",
+        unit: "kpl",
+      },
+      total: "Yhteensä",
     },
     contactForm: {
       title: "Yhteystiedot",
@@ -272,6 +277,44 @@ const translations: Translations = {
         phone: {
           title: "Puhelinnumero",
         },
+      },
+    },
+    orderPage: {
+      title: (orderNumber: string) => <>Tilaus {orderNumber}</>,
+      payButtonText: "Maksa",
+    },
+    orderState: {
+      PENDING: {
+        title: "Tilauksesi odottaa maksua",
+        message:
+          "Tilaus on vahvistettu ja tuotteet on varattu sinulle, mutta emme ole vielä saaneet maksuasi. Käytä alla olevaa painiketta maksaaksesi tilauksesi mahdollisimman pian. Maksamattomat tilaukset perutaan.",
+      },
+      PAID: {
+        title: "Tilauksesi on valmis!",
+        message:
+          "Tilaus on maksettu. Saat pian sähköpostivahvistuksen. Jos tilauksessa on sähköisiä lippuja, ne toimitetaan sähköpostin liitteenä.",
+      },
+      CANCELLED: {
+        title: "Tilauksesi on peruttu",
+        message:
+          "Tilaus on peruttu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
+      },
+    },
+    errors: {
+      NOT_ENOUGH_TICKETS: {
+        title: "Lippuja ei ole riittävästi",
+        message:
+          "Yhtä tai useampaa tuotetta ei ole saatavissa sitä määrää jonka yritit tilata.",
+      },
+      INVALID_ORDER: {
+        title: "Virhe tilauksen tiedoissa",
+        message:
+          "Antamasi tilaustiedot eivät kelpaa. Tarkista tilaus ja yritä uudelleen.",
+      },
+      UNKNOWN_ERROR: {
+        title: "Virhe tilauksen käsittelyssä",
+        message:
+          "Tilauksesi käsittelyssä tapahtui virhe. Ole hyvä ja yritä uudelleen.",
       },
     },
     purchaseButtonText: "Osta",
@@ -637,7 +680,7 @@ const translations: Translations = {
           helpText:
             "Jos tämä on valittuna, tähän dimensioon voidaan valita useita arvoja.",
         },
-        isShownToRespondent: {
+        isShownToSubject: {
           title: "Näytetään vastaajalle",
           helpText:
             "Jos tämä on valittuna, tämän dimension arvot näytetään vastaajalle yksittäisen vastauksen näkymässä hänen profiilissaan. Lisäksi, jos tämä dimensio on myös avaindimensio, se näytetään profiilin vastauslistassa.",

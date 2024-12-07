@@ -107,10 +107,10 @@ class ProgramFilters:
         for dimension_slug, value_slugs in self.dimensions.items():
             value_slugs = [slug for slugs in value_slugs for slug in slugs.split(",")]
             if "*" in value_slugs:
-                programs = programs.filter(dimensions__dimension__slug=dimension_slug)
+                programs = programs.filter(dimensions__value__dimension__slug=dimension_slug)
             else:
                 programs = programs.filter(
-                    dimensions__dimension__slug=dimension_slug,
+                    dimensions__value__dimension__slug=dimension_slug,
                     dimensions__value__slug__in=value_slugs,
                 )
 
@@ -150,10 +150,10 @@ class ProgramFilters:
         for dimension_slug, value_slugs in self.dimensions.items():
             value_slugs = [slug for slugs in value_slugs for slug in slugs.split(",")]
             if "*" in value_slugs:
-                schedule_items = schedule_items.filter(program__dimensions__dimension__slug=dimension_slug)
+                schedule_items = schedule_items.filter(program__dimensions__value__dimension__slug=dimension_slug)
             else:
                 schedule_items = schedule_items.filter(
-                    program__dimensions__dimension__slug=dimension_slug,
+                    program__dimensions__value__dimension__slug=dimension_slug,
                     program__dimensions__value__slug__in=value_slugs,
                 )
 

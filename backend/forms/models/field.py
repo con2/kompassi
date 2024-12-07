@@ -1,12 +1,11 @@
-# TODO: not sure if the current version of Pydantic would allow new-style annotations
-# ruff: noqa: UP007
+from __future__ import annotations
+
 from enum import Enum
-from typing import TYPE_CHECKING, Literal, Optional
+from typing import Literal
 
 import pydantic
 
-if TYPE_CHECKING:
-    from .dimension import Dimension
+from dimensions.models.dimension import Dimension
 
 
 class FieldType(str, Enum):
@@ -42,33 +41,34 @@ class Field(pydantic.BaseModel):
 
     type: FieldType = pydantic.Field(alias="type", repr=False)
     slug: str = pydantic.Field(alias="slug")
-    title: Optional[str] = pydantic.Field(default=None, alias="title", repr=False)
-    summary_title: Optional[str] = pydantic.Field(default=None, alias="summaryTitle", repr=False)
-    help_text: Optional[str] = pydantic.Field(default=None, alias="helpText", repr=False)
-    required: Optional[bool] = pydantic.Field(default=None, alias="required", repr=False)
-    read_only: Optional[bool] = pydantic.Field(default=None, alias="readOnly", repr=False)
+    title: str | None = pydantic.Field(default=None, alias="title", repr=False)
+    summary_title: str | None = pydantic.Field(default=None, alias="summaryTitle", repr=False)
+    help_text: str | None = pydantic.Field(default=None, alias="helpText", repr=False)
+    required: bool | None = pydantic.Field(default=None, alias="required", repr=False)
+    read_only: bool | None = pydantic.Field(default=None, alias="readOnly", repr=False)
     # TODO silly union of all field types. refactor this into proper (GraphQL?) types
     # htmlType only makes sense for SingleLineText
     # choices only makes sense for SingleSelect, Multiselect, RadioMatrix
     # multiple only makes sense for FileUpload
     # decimal_places only makes sense for NumberField, DecimalField
-    html_type: Optional[str] = pydantic.Field(default=None, alias="htmlType", repr=False)
-    choices: Optional[list[Choice]] = pydantic.Field(default=None, alias="choices", repr=False)
-    questions: Optional[list[Choice]] = pydantic.Field(default=None, alias="questions", repr=False)
-    multiple: Optional[bool] = pydantic.Field(default=None, alias="multiple", repr=False)
-    decimal_places: Optional[int] = pydantic.Field(default=None, alias="decimalPlaces", repr=False)
-    encrypt_to: Optional[list[str]] = pydantic.Field(default=None, alias="encryptTo", repr=False)
+    html_type: str | None = pydantic.Field(default=None, alias="htmlType", repr=False)
+    choices: list[Choice] | None = pydantic.Field(default=None, alias="choices", repr=False)
+    questions: list[Choice] | None = pydantic.Field(default=None, alias="questions", repr=False)
+    multiple: bool | None = pydantic.Field(default=None, alias="multiple", repr=False)
+    decimal_places: int | None = pydantic.Field(default=None, alias="decimalPlaces", repr=False)
+    encrypt_to: list[str] | None = pydantic.Field(default=None, alias="encryptTo", repr=False)
 
     @classmethod
     def from_dimension(
         cls,
-        dimension: "Dimension",
+        dimension: Dimension,
         type: Literal[FieldType.SINGLE_SELECT] | Literal[FieldType.MULTI_SELECT],
-    ) -> "Field":
+        language: str | None = None,
+    ) -> Field:
         return cls(
             slug=dimension.slug,
             type=type,
-            choices=dimension.get_choices(),
+            choices=dimension.as_choices(language=language),
         )
 
     class Config:

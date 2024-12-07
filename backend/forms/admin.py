@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from .models.dimension import Dimension, DimensionValue, ResponseDimensionValue
 from .models.form import Form
 from .models.response import Response
+from .models.response_dimension_value import ResponseDimensionValue
 from .models.survey import Survey
 
 
@@ -64,22 +64,3 @@ class SurveyAdmin(admin.ModelAdmin):
         "key_fields",
     )
     inlines = (SurveyFormInline,)
-
-
-class DimensionValueInline(admin.TabularInline):
-    model = DimensionValue
-    extra = 1
-
-
-@admin.register(Dimension)
-class DimensionAdmin(admin.ModelAdmin):
-    model = Dimension
-    list_display = ("admin_get_event", "survey", "slug")
-    list_filter = (
-        "survey__event",
-        "survey",
-    )
-    search_fields = ("slug", "title")
-    fields = ("survey", "slug", "title", "order", "is_key_dimension")
-    readonly_fields = ("survey",)
-    inlines = (DimensionValueInline,)

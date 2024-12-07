@@ -5,17 +5,13 @@ from django.http import HttpRequest
 from django.urls import reverse
 from graphene_django import DjangoObjectType
 
-from access.cbac import graphql_check_instance
 from core.graphql.common import DimensionFilterInput
 from core.models import Event
-from core.utils import get_objects_within_period
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
 
 from ..filters import ProgramFilters
 from ..models import (
-    Dimension,
-    OfferForm,
     Program,
     ProgramV2EventMeta,
     ScheduleItem,
@@ -24,7 +20,6 @@ from ..models.annotations import ANNOTATIONS
 from ..models.meta import ProgramV2ProfileMeta
 from .annotations import AnnotationSchemoidType
 from .dimension import DimensionType
-from .offer_form import OfferFormType
 from .program_full import FullProgramType
 from .schedule_item_full import FullScheduleItemType
 
@@ -114,7 +109,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         `is_shown_in_detail` - only return dimensions that are shown in the detail view.
         If you supply both, you only get their intersection.
         """
-        dimensions = Dimension.objects.filter(event=meta.event)
+        dimensions = meta.universe.dimensions.all()
 
         if is_list_filter:
             dimensions = dimensions.filter(is_list_filter=True)
@@ -130,24 +125,6 @@ class ProgramV2EventMetaType(DjangoObjectType):
         is_shown_in_detail=graphene.Boolean(),
         description=normalize_whitespace(resolve_dimensions.__doc__ or ""),
     )
-
-    @staticmethod
-    def resolve_offer_forms(meta: ProgramV2EventMeta, info, include_inactive: bool = False):
-        if include_inactive:
-            graphql_check_instance(meta, info, "offer_forms")
-            qs = OfferForm.objects.filter(event=meta.event)
-        else:
-            qs = get_objects_within_period(OfferForm, event=meta.event)
-
-        return qs
-
-    offer_forms = graphene.List(graphene.NonNull(OfferFormType), include_inactive=graphene.Boolean())
-
-    @staticmethod
-    def resolve_offer_form(meta: ProgramV2EventMeta, info, slug: str):
-        return OfferForm.objects.get(event=meta.event, slug=slug)
-
-    offer_form = graphene.Field(OfferFormType, slug=graphene.String(required=True))
 
     @staticmethod
     def resolve_calendar_export_link(meta: ProgramV2EventMeta, info):

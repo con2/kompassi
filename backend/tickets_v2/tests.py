@@ -1,100 +1,44 @@
-from datetime import timedelta
-from decimal import Decimal
+import json
 
-import pytest
-from django.utils.timezone import now
-
-from core.models.event import Event
-from tickets_v2.models.meta import TicketsV2EventMeta
-from tickets_v2.models.product import Product
-from tickets_v2.models.quota import Quota
-from tickets_v2.models.ticket import Ticket
-from tickets_v2.optimized_server.models.customer import Customer
-from tickets_v2.optimized_server.models.order import Order
+from tickets_v2.optimized_server.utils.paytrail_hmac import calculate_hmac
 
 
-@pytest.mark.django_db
-@pytest.mark.xfail
-def test_reserve():
-    """
-    XFAIL Pytest-django does something strange with transactions, causing this test to fail.
-    """
-    event, _ = Event.get_or_create_dummy()
+def test_paytrail_hmac():
+    account = "375917"
+    secret = "SAIPPUAKAUPPIAS"
 
-    (admin_group,) = TicketsV2EventMeta.get_or_create_groups(event, ["admins"])
-    meta = TicketsV2EventMeta.objects.create(
-        event=event,
-        admin_group=admin_group,
-    )
+    headers = {
+        "checkout-account": account,
+        "checkout-algorithm": "sha256",
+        "checkout-method": "POST",
+        "checkout-nonce": "564635208570151",
+        "checkout-timestamp": "2018-07-06T10:01:31.904Z",
+    }
 
-    meta.ensure_partitions()
-
-    friday_quota = Quota.objects.create(
-        event=event,
-        name="Perjantai",
-    )
-    friday_quota.set_quota(5500)
-
-    saturday_quota = Quota.objects.create(
-        event=event,
-        name="Lauantai",
-    )
-    saturday_quota.set_quota(5500)
-
-    sunday_quota = Quota.objects.create(
-        event=event,
-        name="Sunnuntai",
-    )
-    sunday_quota.set_quota(5500)
-
-    available_from = now()
-    available_until = now() + timedelta(days=1)
-
-    friday_quota.products.create(
-        event=event,
-        title="Perjantailippu",
-        price=Decimal("25.00"),
-        available_from=available_from,
-        available_until=available_until,
-    )
-    saturday_quota.products.create(
-        event=event,
-        title="Lauantailippu",
-        price=Decimal("40.00"),
-        available_from=available_from,
-        available_until=available_until,
-    )
-    sunday_quota.products.create(
-        event=event,
-        title="Sunnuntailippu",
-        price=Decimal("35.00"),
-        available_from=available_from,
-        available_until=available_until,
-    )
-
-    weekend_ticket = Product.objects.create(
-        event=event,
-        title="Viikonloppulippu",
-        price=Decimal("50.00"),
-        available_from=available_from,
-        available_until=available_until,
-    )
-
-    weekend_ticket.quotas.set([friday_quota, saturday_quota, sunday_quota])
-
-    order_dto = Order(
-        customer=Customer(
-            firstName="John",
-            lastName="Doe",
-            email="john.doe@example.com",
-            phone="+358505551234",
-        ),
-        products={
-            weekend_ticket.id: 1,
+    body = {
+        "stamp": "unique-identifier-for-merchant",
+        "reference": "3759170",
+        "amount": 1525,
+        "currency": "EUR",
+        "language": "FI",
+        "items": [
+            {
+                "unitPrice": 1525,
+                "units": 1,
+                "vatPercentage": 24,
+                "productCode": "#1234",
+                "deliveryDate": "2018-09-01",
+            }
+        ],
+        "customer": {"email": "test.customer@example.com"},
+        "redirectUrls": {
+            "success": "https://ecom.example.com/cart/success",
+            "cancel": "https://ecom.example.com/cart/cancel",
         },
-    )
+    }
 
-    order_id = order_dto.save_django(event.id)
+    # encoded here without spaces in the output to match known hmac from examples
+    # https://checkoutfinland.github.io/psp-api/#/examples?id=hmac-calculation-node-js
+    body = json.dumps(body, separators=(",", ":"))
 
-    tickets = Ticket.objects.filter(event=event, order_id=order_id)
-    assert len(tickets) == 3
+    assert calculate_hmac(secret, headers, body) == "3708f6497ae7cc55a2e6009fc90aa10c3ad0ef125260ee91b19168750f6d74f6"

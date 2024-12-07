@@ -7,7 +7,7 @@ from django.db import migrations, models
 
 import core.models.group_management_mixin
 import event_log_v2.utils.monthly_partitions
-import event_log_v2.utils.uuid7
+import tickets_v2.optimized_server.utils.uuid7
 import tickets_v2.utils.event_partitions
 
 
@@ -35,6 +35,13 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 ("admin_group", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="auth.group")),
+                (
+                    "provider",
+                    models.SmallIntegerField(
+                        choices=[(0, "NONE"), (1, "PAYTRAIL"), (2, "STRIPE")],
+                        default=0,
+                    ),
+                ),
             ],
             options={
                 "abstract": False,
@@ -82,6 +89,7 @@ class Migration(migrations.Migration):
             sql=Path(__file__).with_name("0001_initial_partitioned_tables.sql").read_text(),
             reverse_sql="""
             drop table if exists tickets_v2_ticket cascade;
+            drop table if exists tickets_v2_paymentstamp cascade,
             drop table if exists tickets_v2_order cascade;
             """,
             state_operations=[
@@ -91,36 +99,50 @@ class Migration(migrations.Migration):
                         (
                             "id",
                             models.UUIDField(
-                                default=event_log_v2.utils.uuid7.uuid7,
+                                default=tickets_v2.optimized_server.utils.uuid7.uuid7,
                                 editable=False,
                                 primary_key=True,  # cheating!
                                 serialize=False,
                             ),
                         ),
-                        ("first_name", models.TextField()),
-                        ("last_name", models.TextField()),
-                        ("phone", models.TextField()),
-                        ("email", models.EmailField()),
-                        ("product_data", models.JSONField(default=dict, help_text="product id -> quantity")),
-                        ("paid_at", models.DateTimeField(blank=True, null=True)),
-                        ("cancelled_at", models.DateTimeField(blank=True, null=True)),
-                        ("cached_price", models.DecimalField(decimal_places=2, default=Decimal("0"), max_digits=10)),
                         (
                             "event",
                             models.ForeignKey(
-                                on_delete=django.db.models.deletion.RESTRICT, related_name="+", to="core.event"
+                                on_delete=django.db.models.deletion.RESTRICT,
+                                related_name="+",
+                                to="core.event",
                             ),
                         ),
                         (
-                            "user",
-                            models.ForeignKey(
-                                blank=True,
-                                null=True,
-                                on_delete=django.db.models.deletion.SET_NULL,
-                                related_name="+",
-                                to=settings.AUTH_USER_MODEL,
+                            "cached_price",
+                            models.DecimalField(
+                                decimal_places=2,
+                                default=Decimal("0"),
+                                max_digits=10,
                             ),
                         ),
+                        (
+                            "order_number",
+                            models.IntegerField(
+                                help_text=(
+                                    "Order number used in contexts where UUID cannot be used. "
+                                    "Such places include generating reference numbers and "
+                                    "the customer reading the order number aloud to an event rep. "
+                                    "Prefer id (UUID) for everything else (eg. URLs)."
+                                )
+                            ),
+                        ),
+                        (
+                            "product_data",
+                            models.JSONField(
+                                default=dict,
+                                help_text="product id -> quantity",
+                            ),
+                        ),
+                        ("first_name", models.TextField()),
+                        ("last_name", models.TextField()),
+                        ("email", models.EmailField()),
+                        ("phone", models.TextField()),
                     ],
                     bases=(
                         tickets_v2.utils.event_partitions.EventPartitionsMixin,
@@ -134,7 +156,7 @@ class Migration(migrations.Migration):
                         (
                             "id",
                             models.UUIDField(
-                                default=event_log_v2.utils.uuid7.uuid7,
+                                default=tickets_v2.optimized_server.utils.uuid7.uuid7,
                                 editable=False,
                                 primary_key=True,  # cheating!
                                 serialize=False,
@@ -151,6 +173,62 @@ class Migration(migrations.Migration):
                             "quota",
                             models.ForeignKey(
                                 on_delete=django.db.models.deletion.CASCADE, related_name="+", to="tickets_v2.quota"
+                            ),
+                        ),
+                    ],
+                    bases=(
+                        tickets_v2.utils.event_partitions.EventPartitionsMixin,
+                        event_log_v2.utils.monthly_partitions.UUID7Mixin,
+                        models.Model,
+                    ),
+                ),
+                migrations.CreateModel(
+                    name="PaymentStamp",
+                    fields=[
+                        (
+                            "id",
+                            models.UUIDField(
+                                default=tickets_v2.optimized_server.utils.uuid7.uuid7,
+                                editable=False,
+                                primary_key=True,
+                                serialize=False,
+                            ),
+                        ),
+                        ("order_id", models.UUIDField(blank=True, null=True)),
+                        (
+                            "correlation_id",
+                            models.UUIDField(
+                                help_text="The correlation ID ties together the payment stamps related to the same payment attempt. For Paytrail, this is what they call 'stamp'."
+                            ),
+                        ),
+                        ("provider", models.SmallIntegerField(choices=[(0, "NONE"), (1, "PAYTRAIL"), (2, "STRIPE")])),
+                        (
+                            "type",
+                            models.SmallIntegerField(
+                                choices=[
+                                    (1, "CREATE_PAYMENT_REQUEST"),
+                                    (2, "CREATE_PAYMENT_RESPONSE"),
+                                    (3, "PAYMENT_REDIRECT"),
+                                    (4, "PAYMENT_CALLBACK"),
+                                ]
+                            ),
+                        ),
+                        (
+                            "status",
+                            models.SmallIntegerField(
+                                choices=[(0, "UNKNOWN"), (1, "PENDING"), (2, "PAID"), (3, "REFUNDED")]
+                            ),
+                        ),
+                        (
+                            "data",
+                            models.JSONField(
+                                help_text="What we sent to or received from the payment provider. Sensitive details such as API credentials, PII etc. may be redacted. Also fields lifted to relational fields need not be repeated here."
+                            ),
+                        ),
+                        (
+                            "event",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.RESTRICT, related_name="+", to="core.event"
                             ),
                         ),
                     ],

@@ -29,12 +29,13 @@ from labour.models.personnel_class import PersonnelClass
 from labour.models.qualifications import Qualification
 from labour.models.survey import Survey as LabourSurvey
 from program_v2.importers.tracon2024 import TraconImporter
-from program_v2.models.dimension import Dimension, DimensionDTO
+from program_v2.models.dimension_dto import Dimension, DimensionDTO
 from program_v2.models.meta import ProgramV2EventMeta
 from programme.models import Category, Programme, Room
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.models.product import Product
 from tickets_v2.models.quota import Quota
+from tickets_v2.optimized_server.models.enums import PaymentProvider
 
 from ...models import Night, Poison, SignupExtra
 
@@ -316,7 +317,7 @@ class Setup:
 
     def setup_program_v2(self):
         try:
-            room_dimension = Dimension.objects.get(event=self.event, slug="room")
+            room_dimension = Dimension.objects.get(universe=self.event.program_universe, slug="room")
         except Dimension.DoesNotExist:
             dimensions = TraconImporter(self.event).get_dimensions()
             dimensions = DimensionDTO.save_many(self.event, dimensions)
@@ -491,17 +492,31 @@ class Setup:
                 max_responses_per_user=1,
                 login_required=True,
             ),
+            SurveyDTO(
+                slug="expense-claim",
+                key_fields=["title", "amount"],
+                login_required=True,
+                anonymity="name_and_email",
+            ),
+            SurveyDTO(
+                slug="car-usage",
+                key_fields=["title", "kilometers"],
+                login_required=True,
+                anonymity="name_and_email",
+            ),
         ]:
             survey.save(self.event)
 
     def setup_tickets_v2(self):
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, _ = TicketsV2EventMeta.objects.get_or_create(
+        meta, _ = TicketsV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                provider=PaymentProvider.PAYTRAIL.value,
             ),
         )
+        print("hop")
 
         meta.ensure_partitions()
 

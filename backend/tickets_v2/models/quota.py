@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from django.db import models, transaction
 
 from core.models.event import Event
-from event_log_v2.utils.uuid7 import uuid7
+from tickets_v2.optimized_server.utils.uuid7 import uuid7
 
 if TYPE_CHECKING:
     from .product import Product

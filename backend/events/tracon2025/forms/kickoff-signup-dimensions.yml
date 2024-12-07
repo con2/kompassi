@@ -20,7 +20,7 @@
       is_initial: false
   is_key_dimension: true
   is_multi_value: true
-  is_shown_to_respondent: false
+  is_shown_to_subject: false
 - slug: status
   title:
     en: Tila
@@ -43,4 +43,4 @@
       is_initial: false
   is_key_dimension: true
   is_multi_value: false
-  is_shown_to_respondent: true
+  is_shown_to_subject: true

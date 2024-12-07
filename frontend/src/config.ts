@@ -3,6 +3,9 @@ import { Temporal } from "@js-temporal/polyfill";
 export const kompassiBaseUrl =
   process.env.NEXT_PUBLIC_KOMPASSI_BASE_URL || "https://dev.kompassi.eu";
 
+export const ticketsBaseUrl =
+  process.env.NEXT_PUBLIC_TICKETS_BASE_URL || kompassiBaseUrl;
+
 export const kompassiOidc = {
   wellKnown:
     process.env.KOMPASSI_OIDC_WELL_KNOWN ||

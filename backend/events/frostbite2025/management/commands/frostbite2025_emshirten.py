@@ -27,6 +27,7 @@ JOB_CATEGORY_MAPPING = {
     "DesuTV": "DESUTV",
     "Järjestyksenvalvoja": "DESURITY",
     "Valokuvaus": "KUVAAJA",
+    "Valokuvaaja": "KUVAAJA",
     # "Taltiointi": "KUVAAJA",
 }
 

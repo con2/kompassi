@@ -11,7 +11,6 @@ services:
     # see #357 #375 #408
     ports:
       - 3000:3000
-      - 7999:7999
       - 7998:7998
       - 8000:8000
       - 9000:9000
@@ -43,40 +42,24 @@ services:
       MINIO_ENDPOINT_URL: http://localhost:9000
       KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH: dev-secrets/id_rsa.key
       SECRET_KEY: The SECRET_KEY setting must not be empty.
-  # can be used to load-test ticketsv2
-  # gunicorn:
-  #   build: backend
-  #   init: true
-  #   command:
-  #     - gunicorn
-  #     - --workers=8
-  #     - --bind=0.0.0.0:7999
-  #     # - --access-logfile=-
-  #     - --capture-output
-  #     - kompassi.wsgi
-  #   network_mode: service:router
-  #   depends_on:
-  #     - redis
-  #     - postgres
-  #   volumes: *volumes
-  #   environment:
-  #     <<: *environment
-  #     DEBUG: 0
-  # uvicorn:
-  #   build: backend
-  #   init: true
-  #   command:
-  #     - uvicorn
-  #     - --workers=8
-  #     - --host=0.0.0.0
-  #     - --port=7998
-  #     - --no-access-log
-  #     - tickets_v2.optimized_server.app:app
-  #   network_mode: service:router
-  #   depends_on:
-  #     - postgres
-  #   volumes: *volumes
-  #   environment: *environment
+      KOMPASSI_BASE_URL: http://localhost:8000
+      TICKETS_BASE_URL: http://localhost:7998
+      KOMPASSI_V2_BASE_URL: http://localhost:3000
+  uvicorn:
+    build: backend
+    init: true
+    command:
+      - uvicorn
+      - --workers=8
+      - --host=0.0.0.0
+      - --port=7998
+      - --no-access-log
+      - tickets_v2.optimized_server.app:app
+    network_mode: service:router
+    depends_on:
+      - postgres
+    volumes: *volumes
+    environment: *environment
   celery:
     build: backend
     init: true
@@ -102,6 +85,7 @@ services:
       - ./frontend/src:/usr/src/app/src
     environment:
       NEXT_PUBLIC_KOMPASSI_BASE_URL: http://localhost:8000
+      NEXT_PUBLIC_TICKETS_BASE_URL: http://localhost:7998
       NEXTAUTH_URL: http://localhost:3000
       NEXTAUTH_SECRET: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
   postgres:

@@ -22,7 +22,7 @@ from aiohttp.client_exceptions import ClientConnectionError, ClientResponseError
 
 from ...optimized_server.models.api import CreateOrderResponse, GetProductsResponse
 from ...optimized_server.models.customer import Customer
-from ...optimized_server.models.order import Order
+from ...optimized_server.models.order import CreateOrderRequest
 
 base_url = environ.get("BASE_URL", "http://localhost:7998")
 event_slug = "tracon2025"
@@ -49,7 +49,7 @@ async def _buy_tickets(session: ClientSession, products: dict[int, int]):
     """
     Simulates a buyer buying tickets.
     """
-    order_dto = Order(
+    order_dto = CreateOrderRequest(
         customer=customer,
         products=products,
     )

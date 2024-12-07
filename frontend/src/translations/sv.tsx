@@ -262,17 +262,22 @@ const translations: Translations = {
     title: "Evenemang",
   },
 
-  TicketsView: {
+  Tickets: {
     title: "Köp biljetter",
     forEvent: (eventName: string) => <>till {eventName}</>,
+    returnToTicketsPage: "Tillbaka till biljettsidan",
     noProducts: UNSURE({
       title: "Inga produkter tillgängliga",
       message: "Det finns inga produkter tillgängliga för köp för tillfället.",
     }),
     productsTable: {
       product: "Produkt",
-      price: "Pris",
-      quantity: "Antal",
+      unitPrice: "Pris per enhet",
+      quantity: {
+        title: "Antal",
+        unit: "st",
+      },
+      total: "Totalt",
     },
     contactForm: UNSURE({
       title: "Kontaktinformation",
@@ -291,6 +296,44 @@ const translations: Translations = {
         phone: {
           title: "Telefonnummer",
         },
+      },
+    }),
+    orderPage: {
+      title: (orderNumber: string) => <>Beställning {orderNumber}</>,
+      payButtonText: "Betala",
+    },
+    orderState: UNTRANSLATED({
+      PENDING: {
+        title: "Your order is awaiting payment",
+        message:
+          "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
+      },
+      PAID: {
+        title: "Your order is complete!",
+        message:
+          "Your order has been paid. You will receive a confirmation email shortly. If there are electronic tickets, they will be attached to the email.",
+      },
+      CANCELLED: {
+        title: "Your order has been cancelled",
+        message:
+          "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+      },
+    }),
+    errors: UNTRANSLATED({
+      NOT_ENOUGH_TICKETS: {
+        title: "Not enough tickets",
+        message:
+          "One or more of the products you tried to purchase are no longer available in the quantity you requested.",
+      },
+      INVALID_ORDER: {
+        title: "Invalid order",
+        message:
+          "The details you entered on the order page were not accepted. Please check your order and try again.",
+      },
+      UNKNOWN_ERROR: {
+        title: "Error processing order",
+        message:
+          "An error occurred while processing your order. Please try again later.",
       },
     }),
     purchaseButtonText: "Köp",
@@ -652,7 +695,7 @@ const translations: Translations = {
           title: "Flera val",
           helpText: "Om markerad kan flera värden väljas för denna dimension.",
         },
-        isShownToRespondent: {
+        isShownToSubject: {
           title: "Visas för respondenten",
           helpText:
             "Om detta är valt kommer värdena för denna dimension att visas för respondenten i den individuella svarsvyn i deras profil. Om den här dimensionen dessutom är en nyckeldimension kommer den att visas i profilsvarslistan.",

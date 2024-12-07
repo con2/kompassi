@@ -245,17 +245,22 @@ const translations = {
     title: "Events",
   },
 
-  TicketsView: {
+  Tickets: {
     title: "Purchase tickets",
     forEvent: (eventName: string) => <>for {eventName}</>,
+    returnToTicketsPage: "Return to the tickets page",
     noProducts: {
       title: "No products available",
       message: "There are no products available for purchase at the moment.",
     },
     productsTable: {
       product: "Product",
-      price: "Price",
-      quantity: "Quantity",
+      unitPrice: "Unit price",
+      quantity: {
+        title: "Quantity",
+        unit: "pcs",
+      },
+      total: "Total",
     },
     contactForm: {
       title: "Contact information",
@@ -274,6 +279,44 @@ const translations = {
         phone: {
           title: "Phone number",
         },
+      },
+    },
+    orderPage: {
+      title: (orderNumber: string) => <>Order {orderNumber}</>,
+      payButtonText: "Pay",
+    },
+    orderState: {
+      PENDING: {
+        title: "Your order is awaiting payment",
+        message:
+          "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
+      },
+      PAID: {
+        title: "Your order is complete!",
+        message:
+          "Your order has been paid. You will receive a confirmation email shortly. If there are electronic tickets, they will be attached to the email.",
+      },
+      CANCELLED: {
+        title: "Your order has been cancelled",
+        message:
+          "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+      },
+    },
+    errors: {
+      NOT_ENOUGH_TICKETS: {
+        title: "Not enough tickets",
+        message:
+          "One or more of the products you tried to purchase are no longer available in the quantity you requested.",
+      },
+      INVALID_ORDER: {
+        title: "Invalid order",
+        message:
+          "The details you entered on the order page were not accepted. Please check your order and try again.",
+      },
+      UNKNOWN_ERROR: {
+        title: "Error processing order",
+        message:
+          "An error occurred while processing your order. Please try again later.",
       },
     },
     purchaseButtonText: "Purchase",
@@ -634,7 +677,7 @@ const translations = {
           helpText:
             "If checked, multiple values can be selected for this dimension.",
         },
-        isShownToRespondent: {
+        isShownToSubject: {
           title: "Shown to respondent",
           helpText:
             "If checked, the values of this dimension are shown to the respondent in the single response view under their profile. Additionally, if this dimension is also a key dimension, it is shown in the responses list under their profile.",
