@@ -65,6 +65,7 @@ class NativeLanguage(SimpleChoice):
 class KnownLanguage(SimpleChoice):
     pass
 
+
 class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(
         max_length=15,
@@ -104,6 +105,12 @@ class SignupExtra(SignupExtraBase):
         verbose_name="Paidan koko",
         help_text="Ajoissa ilmoittautuneet vänkärit saattavat saada maksuttoman työvoimapaidan.",
         default="NO_SHIRT",
+        blank=True,
+    )
+    parking_needed = models.BooleanField(default=False, verbose_name="Tarvitsetko autollesi pysäköintilupaa?")
+    car_regnr = models.TextField(
+        blank=True,
+        verbose_name="Auton rekisterinumero (pysäköintilupaa varten)",
     )
 
     native_language = models.ManyToManyField(

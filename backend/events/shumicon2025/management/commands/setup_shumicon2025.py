@@ -20,7 +20,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
-        self.setup_tickets()
+        # self.setup_tickets()
         self.setup_programme()
         self.setup_intra()
         # self.setup_access()
@@ -79,7 +79,7 @@ class Setup:
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-            work_begins=self.event.start_time.replace(hour=8, minute=0, tzinfo=self.tz),
+            work_begins=datetime(2025, 5, 23, 10, 0, tzinfo=self.tz),
             work_ends=self.event.end_time.replace(hour=20, minute=0, tzinfo=self.tz),
             admin_group=labour_admin_group,
             contact_email="Shumicon <tyovoima@shumicon.fi>",
@@ -413,6 +413,7 @@ class Setup:
                 ("Puheohjelma", "color2"),
                 ("Miitti", "miitti"),
                 ("Työpaja", "color3"),
+                ("One night illusion -esiintyjä", "color1"),
                 ("Muu ohjelma", "muu"),
             ]:
                 Category.objects.get_or_create(
@@ -455,7 +456,6 @@ class Setup:
             ("Musiikki", "label-info"),
             ("In English", "label-success"),
             ("English OK", "label-success"),
-            ("K-18", "label-danger"),
             ("Paikkaliput", "label-default"),
             ("Kirkkaita/välkkyviä valoja", "label-warning"),
             ("Kovia ääniä", "label-warning"),
@@ -473,8 +473,8 @@ class Setup:
             event=self.event,
             slug="default",
             defaults=dict(
-                title="Tarjoa puhe- tai muuta ohjelmaa",
-                short_description="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole pöytäroolipeli.",
+                title="Tarjoa ohjelmaa tai esitystä",
+                short_description="Voit tarjota puheohjelmia, miittejä, työpajoja tai esitystä.",
                 programme_form_code="events.shumicon2025.forms:ProgrammeForm",
                 num_extra_invites=3,
                 order=30,

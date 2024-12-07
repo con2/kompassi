@@ -41,6 +41,7 @@ class SignupExtraForm(forms.ModelForm):
         fields = (
             "shift_type",
             "shift_leader",
+            "shirt_size",
             "build_participation",
             "native_language",
             "native_language_other",
@@ -140,6 +141,8 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
                 "shirt_size",
                 "special_diet",
                 "special_diet_other",
+                "parking_needed",
+                "car_regnr",
                 Fieldset(
                     _("Language skills"),
                     "native_language",
@@ -155,6 +158,8 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         fields = (
             "shirt_size",
             "build_participation",
+            "parking_needed",
+            "car_regnr",
             "native_language",
             "native_language_other",
             "known_language",
@@ -164,6 +169,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         )
 
         widgets = dict(
+            car_regnr=forms.TextInput,
             native_language=forms.CheckboxSelectMultiple,
             native_language_other=forms.TextInput,
             known_language=forms.CheckboxSelectMultiple,
@@ -177,8 +183,8 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             construction=False,
             # overseer=False,
             # need_lodging=False,
-            #want_certificate=True,
-            #certificate_delivery_address="",
+            # want_certificate=True,
+            # certificate_delivery_address="",
             prior_experience="",
             free_text="Syötetty käyttäen coniitin ilmoittautumislomaketta",
         )
