@@ -119,6 +119,9 @@ kompassi_container_security_context:
   readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
 
+# new background worker (to replace celery at some point)
+kompassi_background_worker_enabled: true
+
 # macro to render pod affinity
 # this goes into spec/template/spec/affinity in deployment with param_component_name set to component name
 # override with !Void to disable affinity
