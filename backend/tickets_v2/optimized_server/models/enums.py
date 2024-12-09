@@ -8,6 +8,8 @@ class PaymentProvider(IntEnum):
 
 
 class PaymentStampType(IntEnum):
+    ZERO_PRICE = 0
+
     CREATE_PAYMENT_REQUEST = 1
     CREATE_PAYMENT_RESPONSE = 2
 

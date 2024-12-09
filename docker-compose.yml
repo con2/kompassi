@@ -54,7 +54,6 @@ services:
       - --host=0.0.0.0
       - --port=7998
       - --no-access-log
-      - --reload-dir=tickets_v2/optimized_server
       - tickets_v2.optimized_server.app:app
     network_mode: service:router
     depends_on:

@@ -50,6 +50,16 @@ class CreateOrderRequest(pydantic.BaseModel):
             return DEFAULT_LANGUAGE
         return value
 
+    @pydantic.field_validator("products", mode="after")
+    @staticmethod
+    def validate_products(value: dict[int, int]):
+        """
+        Negative quantities are not allowed.
+        """
+        if any(quantity < 0 for quantity in value.values()):
+            raise InvalidProducts()
+        return value
+
     async def save(self, db: AsyncConnection, event_id: int):
         """
         Create order and reserve tickets.
@@ -98,11 +108,17 @@ class OrderProduct(pydantic.BaseModel):
     quantity: int
 
 
-class Order(pydantic.BaseModel):
+class Order(pydantic.BaseModel, populate_by_name=True):
     id: UUID
-    order_number: int = pydantic.Field(serialization_alias="orderNumber")
+    order_number: int = pydantic.Field(
+        serialization_alias="orderNumber",
+        validation_alias="orderNumber",
+    )
     status: PaymentStatus
-    total_price: Decimal = pydantic.Field(serialization_alias="totalPrice")
+    total_price: Decimal = pydantic.Field(
+        serialization_alias="totalPrice",
+        validation_alias="totalPrice",
+    )
     products: list[OrderProduct]
 
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_order.sql").read_bytes()
@@ -110,6 +126,14 @@ class Order(pydantic.BaseModel):
     @pydantic.field_serializer("status")
     def serialize_status(self, value: PaymentStatus):
         return value.name
+
+    @pydantic.field_validator("status", mode="before")
+    @staticmethod
+    def validate_status(value: str | int | PaymentStatus):
+        if isinstance(value, str):
+            return PaymentStatus[value]
+        else:
+            return PaymentStatus(value)
 
     @classmethod
     async def get(cls, db: AsyncConnection, event_id: int, order_id: UUID) -> Order | None:
@@ -135,14 +159,6 @@ class Order(pydantic.BaseModel):
                 order_number=order_number,
                 products=order_products,
             )
-
-    @classmethod
-    async def notify(cls, db: AsyncConnection):
-        """
-        Notify the customer about the order.
-        """
-        async with db.cursor() as cursor:
-            await cursor.execute("notify tickets_v2_order")
 
     @property
     def timestamp(self):

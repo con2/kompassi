@@ -38,6 +38,9 @@ class ReceiptStatus(IntEnum):
     SUCCESS = 2
     FAILURE = 3
 
+    # could add:
+    # BOUNCE = 4
+
 
 # TODO missing Swedish (message template too)
 ETICKET_TEXT = dict(
@@ -330,13 +333,14 @@ class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
         reply_to_email = (f"{self.event_slug}-tickets@{mail_domain}",)
         to_email = (f"{self.first_name} {self.last_name} <{self.email}>",)
 
-        if settings.DEBUG:
-            print(subject, body, sep="\n\n", end="\n\n")
-            if etickets_pdf:
-                path = Path("dev-secrets") / f"eticket-{self.order_id}.pdf"
-                with path.open("wb") as f:
-                    f.write(etickets_pdf)
-                print("Wrote attachment to", path)
+        # uncomment to see the receipts on terminal & write etickets to file
+        # if settings.DEBUG:
+        #     print(subject, body, sep="\n\n", end="\n\n")
+        #     if etickets_pdf:
+        #         path = Path("dev-secrets") / f"eticket-{self.order_id}.pdf"
+        #         with path.open("wb") as f:
+        #             f.write(etickets_pdf)
+        #         print("Wrote attachment to", path)
 
         message = EmailMessage(
             subject=subject,

@@ -2,7 +2,7 @@
 usage: python manage.py tickets_v2_worker
 
 A worker that sends receipts.
-The worker is notified via `notify tickets_v2_server` in Postgres.
+The worker is notified via `notify tickets_v2_paymentstamp` in Postgres.
 In the absence of such notifications, the worker will poll the database every NOTIFY_TIMEOUT_SECONDS.
 When roused, the worker will process all pending receipts and then go back to sleep.
 """
@@ -80,8 +80,8 @@ def run():
         logger.info("Connected to database")
 
         with conn.cursor() as cursor:
-            cursor.execute("listen tickets_v2_order")
-        logger.info("Listening for notifications on tickets_v2_order")
+            cursor.execute("listen tickets_v2_paymentstamp")
+        logger.info("Listening for notifications on tickets_v2_paymentstamp")
 
         while True:
             # process all work that is currently available

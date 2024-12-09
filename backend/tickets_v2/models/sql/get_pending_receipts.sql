@@ -1,3 +1,5 @@
+-- FIXME scans all event partitions of the order table
+-- make it take event_id as input and filter on that
 select distinct on (o.id, ps_paid.correlation_id)
   -- NOTE: fields returned must match the ReceiptPending class
   o.id as order_id,

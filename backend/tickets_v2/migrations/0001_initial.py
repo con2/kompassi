@@ -89,7 +89,8 @@ class Migration(migrations.Migration):
             sql=Path(__file__).with_name("0001_initial_partitioned_tables.sql").read_text(),
             reverse_sql="""
             drop table if exists tickets_v2_ticket cascade;
-            drop table if exists tickets_v2_paymentstamp cascade,
+            drop table if exists tickets_v2_paymentstamp cascade;
+            drop table if exists tickets_v2_receiptstamp cascade;
             drop table if exists tickets_v2_order cascade;
             """,
             state_operations=[

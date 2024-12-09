@@ -9,7 +9,7 @@ from starlette.responses import PlainTextResponse, RedirectResponse
 from .db import DB, lifespan
 from .excs import InvalidProducts, NotEnoughTickets
 from .models.api import PayOrderRequest
-from .models.enums import PaymentProvider, PaymentStampType, PaymentStatus
+from .models.enums import PaymentProvider, PaymentStampType
 from .models.event import Event
 from .models.order import CreateOrderRequest, Order, OrderWithCustomer
 from .models.payment_stamp import PaymentStamp
@@ -81,18 +81,25 @@ async def create_order(event: _Event, order: CreateOrderRequest, db: DB):
         raise HTTPException(400, "INVALID_ORDER") from e
 
     payment_redirect = ""
-    match event.provider:
-        case PaymentProvider.NONE:
-            if result.total_price > 0:
-                logger.error("Order %s has non-zero price with no payment provider", result.order_id)
+    stamps = []
+
+    if result.total_price > 0:
+        match event.provider:
+            case PaymentProvider.NONE:
+                logger.error("New order %s has non-zero price with no payment provider", result.order_id)
                 raise HTTPException(400, "INVALID_ORDER")
-        case PaymentProvider.PAYTRAIL:
-            request = CreatePaymentRequest.from_create_order_request(event, order, result)
-            response, stamps = await request.send(event, result.order_id)
-            payment_redirect = response.href
-        case _:
-            logger.error("Payment provider not implemented: %s", event.provider)
-            raise HTTPException(400, "INVALID_ORDER")
+            case PaymentProvider.PAYTRAIL:
+                request = CreatePaymentRequest.from_create_order_request(event, order, result)
+                response, stamps = await request.send(event, result.order_id)
+                payment_redirect = response.href
+            case _:
+                logger.error("Payment provider not implemented: %s", event.provider)
+                raise HTTPException(400, "INVALID_ORDER")
+    elif result.total_price == 0:
+        stamps.append(PaymentStamp.for_zero_price_order(event, result.order_id))
+    else:
+        logger.error("New order %s has negative price", result.order_id)
+        raise HTTPException(400, "INVALID_ORDER")
 
     async with db.transaction():
         await PaymentStamp.save_many(db, stamps)
@@ -121,16 +128,29 @@ async def pay(
     db: DB,
 ):
     payment_redirect = ""
+    stamps = []
+
+    if order.total_price <= 0:
+        logger.error("Asked to pay for existing order %s with nonpositive price", order.id)
+        raise HTTPException(status_code=400, detail="INVALID_ORDER")
+
     match event.provider:
         case PaymentProvider.PAYTRAIL:
             request = CreatePaymentRequest.from_order(event, order, pay_order_request.language)
             response, stamps = await request.send(event, order.id)
             payment_redirect = response.href
+        case PaymentProvider.NONE:
+            logger.error("Asked to pay for existing order %s with nonzero price but no payment provider", order.id)
+            raise HTTPException(status_code=400, detail="INVALID_ORDER")
+        case _:
+            logger.error("Payment provider not implemented: %s (order %s)", event.provider, order.id)
+            raise HTTPException(400, "INVALID_ORDER")
 
     async with db.transaction():
         await PaymentStamp.save_many(db, stamps)
 
     if not payment_redirect:
+        logger.error("Payment method did not return a redirect URL for order %s", order.id)
         raise HTTPException(status_code=400, detail="INVALID_ORDER")
 
     return {
@@ -153,17 +173,11 @@ async def paytrail_redirect(
     paytrail_callback: _Callback,
     db: DB,
 ):
-    stamp = await paytrail_callback.to_payment_stamp(
+    await paytrail_callback.to_payment_stamp(
         event,
         order,
         PaymentStampType.PAYMENT_REDIRECT,
     ).save(db)
-
-    # TODO this could be made a trigger in the database
-    # on insert into payment_stamp when status = PAID
-    if stamp.status == PaymentStatus.PAID:
-        # signal worker to send receipts
-        await Order.notify(db)
 
     return RedirectResponse(order.get_url(event.slug), 303)
 
@@ -175,14 +189,10 @@ async def paytrail_callback(
     paytrail_callback: _Callback,
     db: DB,
 ):
-    stamp = await paytrail_callback.to_payment_stamp(
+    await paytrail_callback.to_payment_stamp(
         event,
         order,
         PaymentStampType.PAYMENT_CALLBACK,
     ).save(db)
-
-    if stamp.status == PaymentStatus.PAID:
-        # signal worker to send receipts
-        await Order.notify(db)
 
     return PlainTextResponse("")
