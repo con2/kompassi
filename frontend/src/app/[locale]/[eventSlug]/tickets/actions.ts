@@ -31,8 +31,6 @@ export async function createOrder(
     language: locale,
   };
 
-  console.log({ order });
-
   const response = await TicketsService.createOrder(eventSlug, order);
 
   if (response.success) {

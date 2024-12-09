@@ -89,7 +89,8 @@ class Migration(migrations.Migration):
             sql=Path(__file__).with_name("0001_initial_partitioned_tables.sql").read_text(),
             reverse_sql="""
             drop table if exists tickets_v2_ticket cascade;
-            drop table if exists tickets_v2_paymentstamp cascade,
+            drop table if exists tickets_v2_paymentstamp cascade;
+            drop table if exists tickets_v2_receiptstamp cascade;
             drop table if exists tickets_v2_order cascade;
             """,
             state_operations=[
@@ -130,6 +131,13 @@ class Migration(migrations.Migration):
                                     "the customer reading the order number aloud to an event rep. "
                                     "Prefer id (UUID) for everything else (eg. URLs)."
                                 )
+                            ),
+                        ),
+                        (
+                            "language",
+                            models.CharField(
+                                choices=[("en", "English"), ("fi", "Finnish"), ("sv", "Swedish")],
+                                max_length=2,
                             ),
                         ),
                         (

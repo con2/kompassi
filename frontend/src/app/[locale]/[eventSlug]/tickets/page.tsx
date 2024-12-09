@@ -16,7 +16,6 @@ interface Props {
 }
 
 export async function generateMetadata({ params }: Props) {
-  console.log({ params });
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets;

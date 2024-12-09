@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Literal
 
 from django.db import models
 
 from core.models.event import Event
 
+from ..optimized_server.utils.formatting import format_money
 from .quota import Quota
-
-if TYPE_CHECKING:
-    pass
 
 
 class Product(models.Model):
@@ -41,8 +39,15 @@ class Product(models.Model):
         related_name="products",
     )
 
+    # TODO make into a field to allow for zero or multiple e-tickets per product
+    # NOTE grep for it when you do
+    electronic_tickets_per_product: Literal[1] = 1
     event_id: int
 
     @property
     def price_cents(self) -> int:
         return int(self.price * 100)
+
+    @property
+    def formatted_price(self) -> str:
+        return format_money(self.price)

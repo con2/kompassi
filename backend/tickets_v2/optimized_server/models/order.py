@@ -15,7 +15,7 @@ from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from ...optimized_server.utils.uuid7 import uuid7, uuid7_to_datetime
 from ..config import KOMPASSI_V2_BASE_URL
 from ..excs import InvalidProducts, UnsaneSituation
-from ..utils.order_numbers import order_number_to_reference
+from ..utils.formatting import order_number_to_reference
 from .customer import Customer
 from .enums import PaymentStatus
 from .ticket import reserve_tickets
@@ -50,6 +50,16 @@ class CreateOrderRequest(pydantic.BaseModel):
             return DEFAULT_LANGUAGE
         return value
 
+    @pydantic.field_validator("products", mode="after")
+    @staticmethod
+    def validate_products(value: dict[int, int]):
+        """
+        Negative quantities are not allowed.
+        """
+        if any(quantity < 0 for quantity in value.values()):
+            raise InvalidProducts()
+        return value
+
     async def save(self, db: AsyncConnection, event_id: int):
         """
         Create order and reserve tickets.
@@ -63,6 +73,7 @@ class CreateOrderRequest(pydantic.BaseModel):
                         uuid7(),
                         event_id,
                         json.dumps(self.products),
+                        self.language,
                         self.customer.first_name,
                         self.customer.last_name,
                         self.customer.email,
@@ -97,11 +108,17 @@ class OrderProduct(pydantic.BaseModel):
     quantity: int
 
 
-class Order(pydantic.BaseModel):
+class Order(pydantic.BaseModel, populate_by_name=True):
     id: UUID
-    order_number: int = pydantic.Field(serialization_alias="orderNumber")
+    order_number: int = pydantic.Field(
+        serialization_alias="orderNumber",
+        validation_alias="orderNumber",
+    )
     status: PaymentStatus
-    total_price: Decimal = pydantic.Field(serialization_alias="totalPrice")
+    total_price: Decimal = pydantic.Field(
+        serialization_alias="totalPrice",
+        validation_alias="totalPrice",
+    )
     products: list[OrderProduct]
 
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_order.sql").read_bytes()
@@ -109,6 +126,14 @@ class Order(pydantic.BaseModel):
     @pydantic.field_serializer("status")
     def serialize_status(self, value: PaymentStatus):
         return value.name
+
+    @pydantic.field_validator("status", mode="before")
+    @staticmethod
+    def validate_status(value: str | int | PaymentStatus):
+        if isinstance(value, str):
+            return PaymentStatus[value]
+        else:
+            return PaymentStatus(value)
 
     @classmethod
     async def get(cls, db: AsyncConnection, event_id: int, order_id: UUID) -> Order | None:
@@ -166,6 +191,7 @@ class OrderWithCustomer(Order):
             email = ""
             phone = ""
 
+            # TODO dehorriblen this
             async for (
                 total_,
                 order_number_,

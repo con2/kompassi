@@ -69,12 +69,18 @@ then: !Include uvicorn/service.in.yaml
 !If
 test: !Var kompassi_uvicorn_enabled
 then: !Include uvicorn/deployment.in.yaml
-
 ##############################
 # CELERY (Background worker) #
 ##############################
 ---
 !Include celery/deployment.in.yaml
+###########################################################
+# NEW BACKGROUND WORKER (to replace celery at some point) #
+###########################################################
+---
+!If
+test: !Var kompassi_background_worker_enabled
+then: !Include worker/deployment.in.yaml
 ###############################
 # NGINX (Static file serving) #
 ###############################
