@@ -24,6 +24,7 @@ if typing.TYPE_CHECKING:
     from forms.models.survey import Survey
     from labour.models.signup import Signup
     from program_v2.models import Program, ProgramV2EventMeta, ScheduleItem
+    from tickets_v2.models import TicketsV2EventMeta
 
 
 logger = logging.getLogger("kompassi")
@@ -288,7 +289,7 @@ class Event(models.Model):
     enrollment_event_meta = event_meta_property("enrollment")
     intra_event_meta = event_meta_property("intra")
 
-    @property
+    @cached_property
     def program_v2_event_meta(self) -> ProgramV2EventMeta | None:
         """
         for program_v2, app_label is program_v2 but prefix is programv2
@@ -299,6 +300,15 @@ class Event(models.Model):
         try:
             return ProgramV2EventMeta.objects.get(event=self)
         except ProgramV2EventMeta.DoesNotExist:
+            return None
+
+    @cached_property
+    def tickets_v2_event_meta(self) -> TicketsV2EventMeta | None:
+        from tickets_v2.models import TicketsV2EventMeta
+
+        try:
+            return TicketsV2EventMeta.objects.get(event=self)
+        except TicketsV2EventMeta.DoesNotExist:
             return None
 
     def get_app_event_meta(self, app_label: str):

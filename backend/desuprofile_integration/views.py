@@ -242,6 +242,7 @@ class ConfirmationView(View):
     this view to redeem the confirmation code and link the accounts.
     """
 
+    @transaction.atomic
     def get(self, request, code):
         try:
             code = ConfirmationCode.objects.get(code=code, state="valid")
@@ -270,7 +271,7 @@ class ConfirmationView(View):
 
         # We just effectively verified their email, so reflect that in the Person.
         if not code.person.is_email_verified:
-            code.person.verify_email()
+            code.person.verify_email(None)
 
         messages.success(
             request,

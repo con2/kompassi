@@ -17,6 +17,11 @@ interface Props {
   };
 }
 
+interface ProfileLink {
+  title: string;
+  href: string;
+}
+
 type OpenMenu = "none" | "user" | "language";
 
 export default function NavigationMenus({ session, locale, messages }: Props) {
@@ -52,6 +57,12 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
   // TODO: Remove hard-coded data-bs-theme when dark mode support is implemented
   // There's a catch: The navbar is dark also in light mode, but the menus should
   // follow the theme. So we may need to implement some kind of useTheme hook.
+
+  const links: ProfileLink[] = [
+    { href: "/profile/orders", title: messages.UserMenu.tickets },
+    { href: "/profile/responses", title: messages.UserMenu.responses },
+    { href: "/profile/keys", title: messages.UserMenu.keys },
+  ];
 
   return (
     <div className="navbar-nav ms-auto">
@@ -102,24 +113,17 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
             }`}
             aria-labelledby="user-menu"
           >
-            <li>
-              <Link
-                className="dropdown-item"
-                href={`/profile/responses`}
-                onClick={toggleUserMenu}
-              >
-                {messages.UserMenu.responses}
-              </Link>
-            </li>
-            <li>
-              <Link
-                className="dropdown-item"
-                href={`/profile/keys`}
-                onClick={toggleUserMenu}
-              >
-                {messages.UserMenu.keys}
-              </Link>
-            </li>
+            {links.map(({ href, title }) => (
+              <li key={href}>
+                <Link
+                  className="dropdown-item"
+                  href={href}
+                  onClick={toggleUserMenu}
+                >
+                  {title}
+                </Link>
+              </li>
+            ))}
             <li>
               <hr className="dropdown-divider" />
             </li>

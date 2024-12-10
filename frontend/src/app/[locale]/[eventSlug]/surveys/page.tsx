@@ -2,7 +2,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import ModalButton from "./[surveySlug]/dimensions/ModalButton";
+import ModalButton from "../../../../components/ModalButton";
 import { createSurvey } from "./actions";
 import { graphql } from "@/__generated__";
 import { SurveyFragment } from "@/__generated__/graphql";

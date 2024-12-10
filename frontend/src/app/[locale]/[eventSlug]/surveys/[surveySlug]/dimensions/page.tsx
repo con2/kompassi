@@ -10,7 +10,7 @@ import {
   updateDimensionValue,
 } from "./actions";
 import DimensionForm from "./DimensionForm";
-import ModalButton from "./ModalButton";
+import ModalButton from "../../../../../../components/ModalButton";
 import ValueForm from "./ValueForm";
 import { graphql } from "@/__generated__";
 import {

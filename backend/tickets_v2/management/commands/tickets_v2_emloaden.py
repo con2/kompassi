@@ -21,7 +21,7 @@ from os import environ
 from random import choice, randint, uniform
 from statistics import quantiles
 from time import monotonic
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from aiohttp import ClientSession
 from aiohttp.client_exceptions import ClientConnectionError, ClientResponseError
@@ -33,13 +33,16 @@ from ...optimized_server.models.order import CreateOrderRequest
 
 base_url = environ.get("BASE_URL", "http://localhost:7998")
 event_slug = "tracon2025"
-customer = Customer(
-    first_name="John",
-    last_name="Doe",
-    email="john.doe@example.com",
-    phone="",
-)
 logger = logging.getLogger("kompassi")
+
+
+def get_customer() -> Customer:
+    return Customer(
+        first_name="John",
+        last_name="Doe",
+        email=f"{uuid4()}@example.com",
+        phone="",
+    )
 
 
 async def _view_products_page(session: ClientSession):
@@ -59,7 +62,7 @@ async def _buy_tickets(session: ClientSession, products: dict[int, int]):
     Simulates a buyer buying tickets.
     """
     order_dto = CreateOrderRequest(
-        customer=customer,
+        customer=get_customer(),
         products=products,
         language="en",
     )

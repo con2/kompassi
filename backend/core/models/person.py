@@ -135,6 +135,7 @@ class Person(models.Model):
 
     badges: models.QuerySet[Badge]
     qualifications: models.QuerySet[PersonQualification]  # XXX naming
+    user_id: int
 
     class Meta:
         ordering = ["surname"]
@@ -363,35 +364,46 @@ class Person(models.Model):
 
         self.setup_code(request, PasswordResetToken, ip_address=get_ip(request) or "")
 
-    def verify_email(self, code=None):
+    def verify_email(self, code: str | None):
+        """
+        Verify this users's email. If code is provided, it must match a valid EmailVerificationToken.
+        Note that a verified email may also be verified again. This is useful for claiming new orders
+        made while not logged in.
+        """
+        from tickets_v2.models.order import OrderOwner
+
         from .email_verification_token import EmailVerificationError, EmailVerificationToken
 
-        if self.is_email_verified:
-            raise EmailVerificationError("already_verified")
+        if not self.user:
+            raise EmailVerificationError("no_user")
 
-        if isinstance(code, str):
+        if code:
             try:
-                code = EmailVerificationToken.objects.get(code=code)
+                code_instance = EmailVerificationToken.objects.get(code=code)
             except EmailVerificationToken.DoesNotExist as dne:
                 raise EmailVerificationError("invalid_code") from dne
 
-        if code:
             # Verify with a single code. The code needs to be checked.
-
-            if code.person != self:
+            if code_instance.person != self:
                 raise EmailVerificationError("wrong_person")
-            if code.state != "valid":
+            if code_instance.state != "valid":
                 raise EmailVerificationError("code_not_valid")
-            if code.email != self.email:
+            if code_instance.email != self.email:
                 raise EmailVerificationError("email_changed")
 
-            code.mark_used()
+            code_instance.mark_used()
         else:
             # Forcibly verify, regardless of codes.
-            EmailVerificationToken.objects.filter(person=self, state="valid").update(state="revoked")
+            pass
 
         self.email_verified_at = timezone.now()
         self.save()
+
+        # Mark other pending verification codes as revoked
+        EmailVerificationToken.objects.filter(person=self, state="valid").update(state="revoked")
+
+        # Claim all unclaimed orders with this email address
+        OrderOwner.claim_orders(self.user)
 
     @property
     def age_now(self):

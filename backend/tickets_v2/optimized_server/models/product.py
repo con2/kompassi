@@ -15,7 +15,7 @@ class Product(pydantic.BaseModel):
     title: str
     description: str
     price: Decimal
-    available: bool
+    available: bool | None
 
     list_query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "list_products.sql").read_bytes()
 

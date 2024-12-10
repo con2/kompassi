@@ -9,6 +9,8 @@ from forms.models.keypair import KeyPair
 from forms.models.meta import FormsProfileMeta
 from program_v2.graphql.meta import ProgramV2ProfileMetaType
 from program_v2.models.meta import ProgramV2ProfileMeta
+from tickets_v2.graphql.meta import TicketsV2ProfileMetaType
+from tickets_v2.models.meta import TicketsV2ProfileMeta
 
 
 class ProfileType(DjangoObjectType):
@@ -56,6 +58,18 @@ class ProfileType(DjangoObjectType):
     program = graphene.Field(
         graphene.NonNull(ProgramV2ProfileMetaType),
         description=normalize_whitespace(resolve_program.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_tickets(person: Person, info):
+        """
+        Namespace for queries related to tickets and the current user.
+        """
+        return TicketsV2ProfileMeta(person)
+
+    tickets = graphene.Field(
+        graphene.NonNull(TicketsV2ProfileMetaType),
+        description=normalize_whitespace(resolve_tickets.__doc__ or ""),
     )
 
     @staticmethod

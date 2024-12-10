@@ -1,4 +1,4 @@
-import ModalButton from "../../[eventSlug]/surveys/[surveySlug]/dimensions/ModalButton";
+import ModalButton from "../../../../components/ModalButton";
 import { generateKeyPair, revokeKeyPair } from "./actions";
 import { graphql } from "@/__generated__";
 import { ProfileEncryptionKeysFragment } from "@/__generated__/graphql";

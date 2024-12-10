@@ -101,6 +101,7 @@ const translations: Translations = {
       "Kompassi v2 on työn alla. Tämä ei ole vielä valmis etusivu, vaan taulukkokomponentin demo.",
   },
   UserMenu: {
+    tickets: "Liput",
     responses: "Kyselyvastaukset",
     keys: "Salausavaimet",
     signIn: "Kirjaudu sisään",
@@ -283,21 +284,36 @@ const translations: Translations = {
       title: (orderNumber: string) => <>Tilaus {orderNumber}</>,
       payButtonText: "Maksa",
     },
-    orderState: {
+    orderStatus: {
+      UNKNOWN: {
+        title: "Tilauksen tila tuntematon",
+        shortTitle: "Tuntematon",
+        message:
+          "Tilauksesi tila on tuntematon. Ole hyvä ja ota yhteyttä tapahtuman järjestäjään.",
+      },
       PENDING: {
         title: "Tilauksesi odottaa maksua",
+        shortTitle: "Odottaa maksua",
         message:
           "Tilaus on vahvistettu ja tuotteet on varattu sinulle, mutta emme ole vielä saaneet maksuasi. Käytä alla olevaa painiketta maksaaksesi tilauksesi mahdollisimman pian. Maksamattomat tilaukset perutaan.",
       },
       PAID: {
         title: "Tilauksesi on valmis!",
+        shortTitle: "Maksettu",
         message:
           "Tilaus on maksettu. Saat pian sähköpostivahvistuksen. Jos tilauksessa on sähköisiä lippuja, ne toimitetaan sähköpostin liitteenä.",
       },
       CANCELLED: {
         title: "Tilauksesi on peruttu",
+        shortTitle: "Peruutettu",
         message:
           "Tilaus on peruttu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
+      },
+      REFUNDED: {
+        title: "Tilauksesi maksu on palautettu",
+        shortTitle: "Palautettu",
+        message:
+          "Tilauksen maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity.",
       },
     },
     errors: {
@@ -316,6 +332,15 @@ const translations: Translations = {
         message:
           "Tilauksesi käsittelyssä tapahtui virhe. Ole hyvä ja yritä uudelleen.",
       },
+      ORDER_NOT_FOUND: {
+        title: "Tilausta ei löydy",
+        message:
+          "Tilausta ei ole olemassa tai sitä ei ole liitetty käyttäjätiliisi.",
+        actions: {
+          returnToOrderList: "Takaisin tilauslistaan",
+          returnToTicketsPage: "Takaisin lippukauppaan",
+        },
+      },
     },
     purchaseButtonText: "Osta",
     acceptTermsAndConditions(url: string) {
@@ -328,6 +353,46 @@ const translations: Translations = {
           (pakollinen).
         </>
       );
+    },
+    profileOrdersView: {
+      title: "Lipputilaukset",
+      description:
+        "Näet tässä lipputilauksesi, jotka on tehty vuonna 2025 tai myöhemmin. Voit myös maksaa maksamattomat tilauksesi ja ladata sähköiset lippusi täältä.",
+      haveUnlinkedOrders: {
+        title: "Confirm your email address to see more orders",
+        message:
+          "There are ticket orders associated with your email address that are not linked to your user account. Confirm your email address to see these orders.",
+      },
+      attributes: {
+        orderNumber: "Tilausnumero",
+        createdAt: "Tilauspäivä",
+        eventName: "Tapahtuma",
+        totalPrice: "Yhteensä",
+        actions: "Toiminnot",
+        status: "Tila",
+        totalOrders: (count: number) => (
+          <>
+            Yhteensä {count} tilaus{count === 1 ? "" : "ta"}.
+          </>
+        ),
+      },
+      actions: {
+        confirmEmail: {
+          title: "Vahvista sähköpostiosoitteesi",
+          description:
+            "Käyttäjätunnukseesi liitettyyn sähköpostiosoitteeseen lähetetään sähköpostiviesti, jossa olevasta linkistä voit vahvistaa sähköpostiosoitteesi ja nähdä loput tilauksesi.",
+          modalActions: {
+            submit: "Lähetä vahvistusviesti",
+            cancel: "Peruuta",
+          },
+        },
+        pay: {
+          title: "Maksa",
+        },
+        downloadTickets: {
+          title: "Lataa liput",
+        },
+      },
     },
   },
 

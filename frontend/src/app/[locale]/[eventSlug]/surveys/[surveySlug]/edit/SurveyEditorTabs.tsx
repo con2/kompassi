@@ -1,4 +1,4 @@
-import ModalButton from "../dimensions/ModalButton";
+import ModalButton from "../../../../../../components/ModalButton";
 import { createSurveyLanguage } from "./actions";
 import { Survey } from "./models";
 import { Field } from "@/components/forms/models";

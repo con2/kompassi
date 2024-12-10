@@ -101,6 +101,7 @@ const translations = {
       "Kompassi v2 is a work in progress. This is not the final front page, but rather a demo of the table component.",
   },
   UserMenu: {
+    tickets: "Tickets",
     responses: "Survey responses",
     keys: "Encryption keys",
     signIn: "Sign in",
@@ -285,21 +286,36 @@ const translations = {
       title: (orderNumber: string) => <>Order {orderNumber}</>,
       payButtonText: "Pay",
     },
-    orderState: {
+    orderStatus: {
+      UNKNOWN: {
+        title: "Unknown order status",
+        shortTitle: "Unknown",
+        message:
+          "The status of your order is unknown. Please contact the event organizer for more information.",
+      },
       PENDING: {
         title: "Your order is awaiting payment",
+        shortTitle: "Awaiting payment",
         message:
           "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
       },
       PAID: {
         title: "Your order is complete!",
+        shortTitle: "Paid",
         message:
           "Your order has been paid. You will receive a confirmation email shortly. If there are electronic tickets, they will be attached to the email.",
       },
       CANCELLED: {
         title: "Your order has been cancelled",
+        shortTitle: "Cancelled",
         message:
           "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+      },
+      REFUNDED: {
+        title: "Your order has been refunded",
+        shortTitle: "Refunded",
+        message:
+          "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
       },
     },
     errors: {
@@ -318,6 +334,15 @@ const translations = {
         message:
           "An error occurred while processing your order. Please try again later.",
       },
+      ORDER_NOT_FOUND: {
+        title: "Order not found",
+        message:
+          "The order you are trying to view does not exist or is not associated with your user account.",
+        actions: {
+          returnToOrderList: "Return to list of orders",
+          returnToTicketsPage: "Return to the tickets page",
+        },
+      },
     },
     purchaseButtonText: "Purchase",
     acceptTermsAndConditions(url: string) {
@@ -330,6 +355,46 @@ const translations = {
           (required).
         </>
       );
+    },
+    profileOrdersView: {
+      title: "Ticket orders",
+      description:
+        "Here you can see your ticket orders made in 2025 and later. You can pay for unpaid orders and download your electronic tickets here.",
+      haveUnlinkedOrders: {
+        title: "Confirm your email address to see more orders",
+        message:
+          "There are ticket orders associated with your email address that are not linked to your user account. Confirm your email address to see these orders.",
+      },
+      attributes: {
+        orderNumber: "Order number",
+        createdAt: "Order date",
+        eventName: "Event",
+        totalPrice: "Total",
+        actions: "Actions",
+        status: "Status",
+        totalOrders: (numOrders: number) => (
+          <>
+            Total {numOrders} order{numOrders === 1 ? "" : "s"}.
+          </>
+        ),
+      },
+      actions: {
+        confirmEmail: {
+          title: "Confirm email address",
+          description:
+            "An email will be sent to the email address of your user account. Follow the instructions in the email to confirm your email address and see the rest of your orders.",
+          modalActions: {
+            submit: "Send confirmation message",
+            cancel: "Cancel",
+          },
+        },
+        pay: {
+          title: "Pay",
+        },
+        downloadTickets: {
+          title: "Download tickets",
+        },
+      },
     },
   },
 

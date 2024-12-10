@@ -117,6 +117,7 @@ const translations: Translations = {
       "Kompassi v2 är ett pågående arbete. Detta är inte den färdiga förstasidan, utan snarare en demo av tabellkomponenten.",
   },
   UserMenu: {
+    tickets: "Biljetter",
     responses: "Enkätsvar",
     keys: UNSURE("Krypteringsnycklar"),
     signIn: "Logga in",
@@ -302,21 +303,36 @@ const translations: Translations = {
       title: (orderNumber: string) => <>Beställning {orderNumber}</>,
       payButtonText: "Betala",
     },
-    orderState: UNTRANSLATED({
+    orderStatus: UNTRANSLATED({
+      UNKNOWN: {
+        title: "Unknown order status",
+        shortTitle: "Unknown",
+        message:
+          "The status of your order is unknown. Please contact the event organizer for more information.",
+      },
       PENDING: {
         title: "Your order is awaiting payment",
+        shortTitle: "Awaiting payment",
         message:
           "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
       },
       PAID: {
         title: "Your order is complete!",
+        shortTitle: "Paid",
         message:
           "Your order has been paid. You will receive a confirmation email shortly. If there are electronic tickets, they will be attached to the email.",
       },
       CANCELLED: {
         title: "Your order has been cancelled",
+        shortTitle: "Cancelled",
         message:
           "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+      },
+      REFUNDED: {
+        title: "Your order has been refunded",
+        shortTitle: "Refunded",
+        message:
+          "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
       },
     }),
     errors: UNTRANSLATED({
@@ -335,6 +351,15 @@ const translations: Translations = {
         message:
           "An error occurred while processing your order. Please try again later.",
       },
+      ORDER_NOT_FOUND: {
+        title: "Order not found",
+        message:
+          "The order you are trying to view does not exist or is not associated with your user account.",
+        actions: {
+          returnToOrderList: "Return to list of orders",
+          returnToTicketsPage: "Return to the tickets page",
+        },
+      },
     }),
     purchaseButtonText: "Köp",
     acceptTermsAndConditions(url: string) {
@@ -347,6 +372,47 @@ const translations: Translations = {
           (nödvändig).
         </>
       );
+    },
+    profileOrdersView: {
+      title: "Biljettbeställningar",
+      description:
+        "Här kan du se dina biljetter som du har köpt i 2025 och senare. Du kan betala för obetalda beställningar och ladda ner elektroniska biljetter här.",
+      haveUnlinkedOrders: {
+        title: "Bekräfta din e-postadress för att se fler beställningar",
+        message:
+          "Det finns biljetter som är kopplade till din e-postadress som inte är kopplade till ditt användarkonto. Bekräfta din e-postadress för att se dessa beställningar.",
+      },
+      attributes: {
+        orderNumber: "Beställningsnummer",
+        createdAt: "Beställningstid",
+        eventName: "Evenemang",
+        totalPrice: "Totalt",
+        actions: "Funktioner",
+        status: "Status",
+        totalOrders: (count: number) => (
+          <>
+            Totalt {count} beställning{count === 1 ? "" : "ar"}.
+          </>
+        ),
+      },
+      actions: {
+        confirmEmail: {
+          title: "Bekräfta din e-postadress",
+          description: UNSURE(
+            "Ett e-postmeddelande kommer att skickas till e-postaddressen som har registrerats med din konto. Följ instruktionerna i e-postmeddelandet för att bekräfta din e-postadress och se fler beställningar.",
+          ),
+          modalActions: {
+            submit: "Skicka e-postbekräftelse",
+            cancel: "Avbryt",
+          },
+        },
+        pay: {
+          title: "Betala",
+        },
+        downloadTickets: {
+          title: "Ladda ner biljetter",
+        },
+      },
     },
   },
 
