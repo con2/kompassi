@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: worker
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: worker
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: worker
+    spec:
+      affinity: !With
+        vars:
+          param_component_name: worker
+        template: !Var macro_pod_affinity
+      enableServiceLinks: false
+      securityContext: !Var kompassi_pod_security_context
+      containers:
+        - name: main
+          image: !Var kompassi_image
+          args: ["python", "manage.py", "tickets_v2_worker"]
+          env: !Var kompassi_environment
+          volumeMounts: !Var kompassi_volume_mounts
+          securityContext: !Var kompassi_container_security_context
+      volumes: !Var kompassi_volumes

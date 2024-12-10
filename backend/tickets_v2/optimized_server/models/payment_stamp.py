@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, ClassVar
+from typing import Any, ClassVar, Self
 from uuid import UUID
 
 import pydantic
@@ -11,6 +11,7 @@ from psycopg import AsyncConnection
 from tickets_v2.optimized_server.utils.uuid7 import uuid7
 
 from .enums import PaymentProvider, PaymentStampType, PaymentStatus
+from .event import Event
 
 
 class PaymentStamp(pydantic.BaseModel):
@@ -24,7 +25,7 @@ class PaymentStamp(pydantic.BaseModel):
 
     create_query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "create_payment_stamp.sql").read_bytes()
 
-    async def save(self, db: AsyncConnection):
+    async def save(self, db: AsyncConnection) -> Self:
         async with db.cursor() as cursor:
             await cursor.execute(
                 self.create_query,
@@ -39,6 +40,8 @@ class PaymentStamp(pydantic.BaseModel):
                     json.dumps(self.data),
                 ),
             )
+
+        return self
 
     @classmethod
     async def save_many(cls, db: AsyncConnection, stamps: list[PaymentStamp]):
@@ -59,3 +62,19 @@ class PaymentStamp(pydantic.BaseModel):
                     for stamp in stamps
                 ],
             )
+
+    @classmethod
+    def for_zero_price_order(
+        cls,
+        event: Event,
+        order_id: UUID,
+    ) -> PaymentStamp:
+        return cls(
+            event_id=event.id,
+            order_id=order_id,
+            provider=event.provider,
+            type=PaymentStampType.ZERO_PRICE,
+            status=PaymentStatus.PAID,
+            correlation_id=uuid7(),
+            data={},
+        )

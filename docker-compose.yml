@@ -67,11 +67,23 @@ services:
     depends_on:
       - redis
       - postgres
-    volumes:
-      - ./backend:/usr/src/app:ro
-      - ./dev-secrets:/usr/src/app/dev-secrets:rw
+    volumes: *volumes
     tmpfs:
       - /tmp
+    environment: *environment
+  # TODO replace celery with a more sensible solution
+  # until then, tickets_v2 has its own worker
+  worker:
+    build: backend
+    init: true
+    command:
+      - python
+      - manage.py
+      - tickets_v2_worker
+    network_mode: service:router
+    depends_on:
+      - postgres
+    volumes: *volumes
     environment: *environment
   frontend:
     build:

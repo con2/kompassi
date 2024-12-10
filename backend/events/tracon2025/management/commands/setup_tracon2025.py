@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -39,6 +40,8 @@ from tickets_v2.optimized_server.models.enums import PaymentProvider
 
 from ...models import Night, Poison, SignupExtra
 
+logger = logging.getLogger("kompassi")
+
 
 class Setup:
     def __init__(self):
@@ -48,7 +51,7 @@ class Setup:
         self._ordering += 10
         return self._ordering
 
-    def setup(self, test=False, dev_tickets: bool = False):
+    def setup(self, test: bool = False, dev_tickets: bool = False):
         self.test = test
         self.tz = tzlocal()
         self.dev_tickets = dev_tickets
@@ -508,15 +511,17 @@ class Setup:
             survey.save(self.event)
 
     def setup_tickets_v2(self):
+        if self.dev_tickets:
+            logger.warning("--dev-tickets mode active! Tickets have zero price and no payment provider is configured.")
+
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
         meta, _ = TicketsV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
-                provider=PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.NONE if self.dev_tickets else PaymentProvider.PAYTRAIL.value,
             ),
         )
-        print("hop")
 
         meta.ensure_partitions()
 
@@ -552,7 +557,7 @@ class Setup:
             event=self.event,
             title="Tracon (2025) - Perjantailippu",
             defaults=dict(
-                price=Decimal("25.00"),
+                price=Decimal("0.00") if self.dev_tickets else Decimal("25.00"),
                 available_from=available_from,
                 available_until=available_until,
             ),
@@ -561,7 +566,7 @@ class Setup:
             event=self.event,
             title="Tracon (2025) - Lauantailippu",
             defaults=dict(
-                price=Decimal("40.00"),
+                price=Decimal("0.00") if self.dev_tickets else Decimal("40.00"),
                 available_from=available_from,
                 available_until=available_until,
             ),
@@ -570,7 +575,7 @@ class Setup:
             event=self.event,
             title="Tracon (2025) - Sunnuntailippu",
             defaults=dict(
-                price=Decimal("35.00"),
+                price=Decimal("0.00") if self.dev_tickets else Decimal("35.00"),
                 available_from=available_from,
                 available_until=available_until,
             ),
@@ -580,7 +585,7 @@ class Setup:
             event=self.event,
             title="Tracon (2025) - Viikonloppulippu",
             defaults=dict(
-                price=Decimal("50.00"),
+                price=Decimal("0.00") if self.dev_tickets else Decimal("50.00"),
                 available_from=available_from,
                 available_until=available_until,
             ),
