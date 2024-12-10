@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods, require_safe
 
@@ -24,7 +25,8 @@ def core_email_verification_view(request, code):
     person = request.user.person
 
     try:
-        person.verify_email(code)
+        with transaction.atomic():
+            person.verify_email(code)
     except EmailVerificationError as e:
         reason = e.args[0]
         error_message = EMAIL_VERIFICATION_ERROR_MESSAGES.get(reason, EMAIL_VERIFICATION_ERROR_MESSAGES["default"])

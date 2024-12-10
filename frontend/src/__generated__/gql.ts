@@ -59,6 +59,9 @@ const documents = {
     "\n  mutation RevokeKeyPair($id: String!) {\n    revokeKeyPair(id: $id) {\n      id\n    }\n  }\n": types.RevokeKeyPairDocument,
     "\n  fragment ProfileEncryptionKeys on KeyPairType {\n    id\n    createdAt\n  }\n": types.ProfileEncryptionKeysFragmentDoc,
     "\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n": types.ProfileEncryptionKeysDocument,
+    "\n  query ProfileOrderDetail($eventSlug: String!, $orderId: String!) {\n    profile {\n      tickets {\n        order(eventSlug: $eventSlug, id: $orderId) {\n          id\n          formattedOrderNumber\n          createdAt\n          totalPrice\n          status\n          electronicTicketsLink\n          products {\n            title\n            quantity\n            price\n          }\n\n          event {\n            slug\n            name\n          }\n        }\n      }\n    }\n  }\n": types.ProfileOrderDetailDocument,
+    "\n  fragment ProfileOrder on ProfileOrderType {\n    id\n    formattedOrderNumber\n    createdAt\n    totalPrice\n    status\n    electronicTicketsLink\n\n    event {\n      slug\n      name\n    }\n  }\n": types.ProfileOrderFragmentDoc,
+    "\n  query ProfileOrders {\n    profile {\n      tickets {\n        orders {\n          ...ProfileOrder\n        }\n\n        haveUnlinkedOrders\n      }\n    }\n  }\n": types.ProfileOrdersDocument,
     "\n  query ProfileSurveyResponsePage($locale: String!, $responseId: String!) {\n    profile {\n      forms {\n        response(id: $responseId) {\n          id\n          createdAt\n          values\n\n          dimensions {\n            ...DimensionBadge\n          }\n\n          form {\n            slug\n            title\n            language\n            fields\n            layout\n            event {\n              slug\n              name\n            }\n            survey {\n              anonymity\n            }\n          }\n        }\n      }\n    }\n  }\n": types.ProfileSurveyResponsePageDocument,
     "\n  fragment ProfileResponsesTableRow on ProfileResponseType {\n    id\n    createdAt\n    dimensions(keyDimensionsOnly: true) {\n      dimension {\n        slug\n        title(lang: $locale)\n      }\n\n      value {\n        slug\n        title(lang: $locale)\n        color\n      }\n    }\n    form {\n      slug\n      title\n      event {\n        slug\n        name\n      }\n    }\n  }\n": types.ProfileResponsesTableRowFragmentDoc,
     "\n  query OwnFormResponses($locale: String!) {\n    profile {\n      forms {\n        responses {\n          ...ProfileResponsesTableRow\n        }\n      }\n    }\n  }\n": types.OwnFormResponsesDocument,
@@ -263,6 +266,18 @@ export function graphql(source: "\n  fragment ProfileEncryptionKeys on KeyPairTy
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProfileOrderDetail($eventSlug: String!, $orderId: String!) {\n    profile {\n      tickets {\n        order(eventSlug: $eventSlug, id: $orderId) {\n          id\n          formattedOrderNumber\n          createdAt\n          totalPrice\n          status\n          electronicTicketsLink\n          products {\n            title\n            quantity\n            price\n          }\n\n          event {\n            slug\n            name\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProfileOrderDetail($eventSlug: String!, $orderId: String!) {\n    profile {\n      tickets {\n        order(eventSlug: $eventSlug, id: $orderId) {\n          id\n          formattedOrderNumber\n          createdAt\n          totalPrice\n          status\n          electronicTicketsLink\n          products {\n            title\n            quantity\n            price\n          }\n\n          event {\n            slug\n            name\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ProfileOrder on ProfileOrderType {\n    id\n    formattedOrderNumber\n    createdAt\n    totalPrice\n    status\n    electronicTicketsLink\n\n    event {\n      slug\n      name\n    }\n  }\n"): (typeof documents)["\n  fragment ProfileOrder on ProfileOrderType {\n    id\n    formattedOrderNumber\n    createdAt\n    totalPrice\n    status\n    electronicTicketsLink\n\n    event {\n      slug\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProfileOrders {\n    profile {\n      tickets {\n        orders {\n          ...ProfileOrder\n        }\n\n        haveUnlinkedOrders\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProfileOrders {\n    profile {\n      tickets {\n        orders {\n          ...ProfileOrder\n        }\n\n        haveUnlinkedOrders\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -26,7 +26,6 @@ from .payments_organization_meta import META_DEFAULTS
 
 if TYPE_CHECKING:
     from tickets.models.order import Order
-    from tickets_v2.models.order import Order as OrderV2
 
 logger = logging.getLogger("kompassi")
 
@@ -162,36 +161,6 @@ class CheckoutPayment(models.Model):
             price_cents=order.price_cents,
             items=items,
             customer=customer,
-        )
-
-    @classmethod
-    def from_order_v2(cls, order: OrderV2):
-        if order.event.start_time is None:
-            raise ValueError(f"Event {order.event} has no start time")
-
-        items = [
-            {
-                "unitPrice": product.price_cents,
-                "units": quantity,
-                "vatPercentage": 0,  # TODO make configurable
-                "productCode": str(product.id),
-                "deliveryDate": order.event.start_time.date().isoformat(),
-            }
-            for (product, quantity) in order.products
-            if quantity > 0
-        ]
-
-        return cls(
-            event=order.event,
-            reference=order.reference_number,
-            price_cents=order.price_cents,
-            items=items,
-            customer={
-                "email": order.email,
-                "firstName": order.first_name,
-                "lastName": order.last_name,
-                "phone": order.phone,
-            },
         )
 
     @classmethod

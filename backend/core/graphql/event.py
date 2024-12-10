@@ -6,12 +6,34 @@ from forms.graphql.meta import FormsEventMetaType
 from forms.models.meta import FormsEventMetaPlaceholder
 from graphql_api.utils import resolve_local_datetime_field
 from program_v2.graphql.meta import ProgramV2EventMetaType
+from tickets_v2.graphql.meta import TicketsV2EventMetaType
 
 
-class FullEventType(DjangoObjectType):
+class LimitedEventType(DjangoObjectType):
     class Meta:
         model = Event
-        fields = ("slug", "name", "start_time", "end_time", "timezone_name")
+        fields = (
+            "slug",
+            "name",
+            "start_time",
+            "end_time",
+            "timezone_name",
+        )
+
+    resolve_start_time = resolve_local_datetime_field("start_time")
+    resolve_end_time = resolve_local_datetime_field("end_time")
+
+
+class FullEventType(LimitedEventType):
+    class Meta:
+        model = Event
+        fields = (
+            "slug",
+            "name",
+            "start_time",
+            "end_time",
+            "timezone_name",
+        )
 
     program = graphene.Field(ProgramV2EventMetaType)
 
@@ -25,5 +47,8 @@ class FullEventType(DjangoObjectType):
     def resolve_forms(event: Event, info):
         return FormsEventMetaPlaceholder(event)
 
-    resolve_start_time = resolve_local_datetime_field("start_time")
-    resolve_end_time = resolve_local_datetime_field("end_time")
+    tickets = graphene.Field(TicketsV2EventMetaType)
+
+    @staticmethod
+    def resolve_tickets(event: Event, info):
+        return event.tickets_v2_event_meta

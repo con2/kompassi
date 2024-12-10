@@ -1,5 +1,5 @@
 import { payOrder } from "./actions";
-import { getOrder } from "./service";
+import { getOrder } from "../../../../../services/orders";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
@@ -27,7 +27,7 @@ export default async function OrderPage({ params }: Props) {
   const { order, event } = await getOrder(eventSlug, orderId);
   const translations = getTranslations(locale);
   const t = translations.Tickets;
-  const { title, message } = t.orderState[order.status];
+  const { title, message } = t.orderStatus[order.status];
 
   return (
     <ViewContainer>

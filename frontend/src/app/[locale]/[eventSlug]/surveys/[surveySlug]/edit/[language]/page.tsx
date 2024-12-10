@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import ModalButton from "../../dimensions/ModalButton";
+import ModalButton from "../../../../../../../components/ModalButton";
 import SurveyEditorView from "../SurveyEditorView";
 import { deleteSurveyLanguage, updateSurveyLanguage } from "./actions";
 import { graphql } from "@/__generated__";

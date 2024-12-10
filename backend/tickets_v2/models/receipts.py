@@ -22,9 +22,11 @@ from event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from tickets.lippukala_integration import Queue as LippukalaQueue
 
+from ..optimized_server.models.enums import PaymentStatus
 from ..optimized_server.utils.formatting import format_money, format_order_number
 from ..utils.event_partitions import EventPartitionsMixin
 from .order import Order
+from .payment_stamp import PaymentStamp
 from .product import Product
 
 
@@ -140,15 +142,11 @@ class LocalizedOrderPrinter(OrderPrinter):
                     f"Order time: {order.created_on.strftime('%Y-%m-%d %H:%M')}",
                 ]
 
-    # quality of life
-    def print_order(self, order: LippukalaOrder):
-        self.process_order(order)
-        return self.finish()
-
 
 class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     """
-    Represents an item of work to be done by the receipt worker.
+    Responsible for sending email receipts and generating eticket PDFs.
+    Also as such represents an item of work to be done by the receipt worker.
     It results in a receipt being sent to the customer, with or without e-tickets.
     Should contain all the information it needs to do its job (save for easily cacheable stuff).
     """
@@ -172,6 +170,45 @@ class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     query: ClassVar[str] = (Path(__file__).parent / "sql" / "get_pending_receipts.sql").read_text()
     batch_size: ClassVar[int] = 100
     product_cache: ClassVar[dict[int, dict[int, Product]]] = {}
+
+    @classmethod
+    def from_order(cls, order: Order):
+        """
+        Construct a Receipt from a Django ORM Order instance.
+        Note that this shouldn't be used when mailing orders during the Hunger Games;
+        the performance optimized version uses a hand-tuned query.
+
+        However, this is useful when sending receipts to customers after the Hunger Games,
+        for example when the clerk is resending a receipt or the customer is viewing it
+        in their account.
+
+        Returns None if the order is not paid.
+        """
+        # Check that the order is paid
+        try:
+            paid_stamp = PaymentStamp.objects.filter(
+                event_id=order.event_id,
+                order_id=order.id,
+                status=PaymentStatus.PAID,
+            ).latest("id")
+        except PaymentStamp.DoesNotExist:
+            return None
+
+        return cls(
+            order_id=order.id,
+            event_id=order.event_id,
+            event_name=order.event.name,
+            event_slug=order.event.slug,
+            correlation_id=paid_stamp.correlation_id,
+            language=order.language,
+            first_name=order.first_name,
+            last_name=order.last_name,
+            email=order.email,
+            phone=order.phone,
+            product_data=order.product_data,
+            order_number=order.order_number,
+            total_price=order.cached_price,
+        )
 
     @pydantic.field_validator("language", mode="before")
     @staticmethod
@@ -318,12 +355,19 @@ class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
 
         return lippukala_order
 
+    def get_etickets_pdf(self) -> bytes | None:
+        lippukala_order = self.get_lippukala_order()
+        if not lippukala_order:
+            return None
+
+        printer = LocalizedOrderPrinter(self.language)
+        printer.process_order(lippukala_order)
+        return printer.finish()
+
     def send_receipt(self, from_email: str = FROM_EMAIL, mail_domain: str = MAIL_DOMAIN):
-        if lippukala_order := self.get_lippukala_order():
-            etickets_pdf = LocalizedOrderPrinter(self.language).print_order(lippukala_order)
+        if etickets_pdf := self.get_etickets_pdf():
             subject = ETICKET_SUBJECT[self.language]
         else:
-            etickets_pdf = None
             subject = RECEIPT_SUBJECT[self.language]
 
         body = render_to_string(f"tickets_v2_receipt_{self.language}.eml", self.model_dump(mode="python"))

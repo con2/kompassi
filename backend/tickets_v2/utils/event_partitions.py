@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any
+from typing import Any, ClassVar
 
 from django.db import connection
 
@@ -13,6 +13,8 @@ logger = logging.getLogger("kompassi")
 
 class EventPartitionsMixin:
     _meta: Any
+
+    intrapartition_id_column: ClassVar[str] = "id"
 
     @classmethod
     def partition_exists(cls, event: Event) -> bool:
@@ -67,7 +69,7 @@ class EventPartitionsMixin:
             cursor.execute(
                 f"""
                 alter table {partition_name}
-                alter column id
+                alter column {cls.intrapartition_id_column}
                 set statistics 10000
                 """
             )
