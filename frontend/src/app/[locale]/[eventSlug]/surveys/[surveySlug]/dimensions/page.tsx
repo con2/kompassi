@@ -1,5 +1,7 @@
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
+
+import ModalButton from "../../../../../../components/ModalButton";
 import SurveyEditorView from "../edit/SurveyEditorView";
 import {
   createDimension,
@@ -10,7 +12,6 @@ import {
   updateDimensionValue,
 } from "./actions";
 import DimensionForm from "./DimensionForm";
-import ModalButton from "../../../../../../components/ModalButton";
 import ValueForm from "./ValueForm";
 import { graphql } from "@/__generated__";
 import {

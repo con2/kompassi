@@ -1,5 +1,5 @@
-import { payOrder } from "./actions";
 import { getOrder } from "../../../../../services/orders";
+import { payOrder } from "./actions";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
