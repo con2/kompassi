@@ -373,7 +373,7 @@ const translations: Translations = {
         </>
       );
     },
-    profileOrdersView: {
+    profile: {
       title: "Biljettbeställningar",
       description:
         "Här kan du se dina biljetter som du har köpt i 2025 och senare. Du kan betala för obetalda beställningar och ladda ner elektroniska biljetter här.",
@@ -412,6 +412,52 @@ const translations: Translations = {
         downloadTickets: {
           title: "Ladda ner biljetter",
         },
+      },
+    },
+    admin: {
+      tabs: {
+        orders: "Beställningar",
+        products: "Produkter",
+        quotas: "Kvoter",
+        reports: "Rapporter",
+        ticketControl: "Biljettkontroll",
+      },
+      products: {
+        title: "Produkter",
+        forEvent: (eventName: string) => <>för {eventName}</>,
+        attributes: {
+          title: "Rubrik",
+          description: "Beskrivning",
+          price: "Pris",
+          isAvailable: {
+            title: "Tillgänglighet",
+            untilFurtherNotice: "Tillgänglig tills vidare",
+            untilTime: (formattedTime: String) =>
+              `Tillgänglig till ${formattedTime}`,
+            openingAt: UNSURE(
+              (formattedTime: String) =>
+                `Kommer att bli tillgänglig vid ${formattedTime}`,
+            ),
+            notAvailable: "Inte tillgänglig",
+          },
+          availableFrom: "Tillgänglig från",
+          availableUntil: "Tillgänglig till",
+          countPaid: "Betalda",
+          countReserved: {
+            title: "Sålda",
+            description:
+              "Inkluderar betalda beställningar och beställningar som har bekräftats men inte ännu betalats.",
+          },
+          countAvailable: "Kvar",
+          countTotal: "Totalt",
+          actions: "Funktioner",
+          totalReserved: "Totalt sålda",
+          totalPaid: "Totalt betalda",
+        },
+      },
+      quotas: {
+        title: "Kvoter",
+        forEvent: (eventName: string) => <>for {eventName}</>,
       },
     },
   },

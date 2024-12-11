@@ -356,7 +356,7 @@ const translations = {
         </>
       );
     },
-    profileOrdersView: {
+    profile: {
       title: "Ticket orders",
       description:
         "Here you can see your ticket orders made in 2025 and later. You can pay for unpaid orders and download your electronic tickets here.",
@@ -394,6 +394,50 @@ const translations = {
         downloadTickets: {
           title: "Download tickets",
         },
+      },
+    },
+    admin: {
+      tabs: {
+        orders: "Orders",
+        products: "Products",
+        quotas: "Quotas",
+        reports: "Reports",
+        ticketControl: "Ticket control",
+      },
+      products: {
+        title: "Products",
+        forEvent: (eventName: string) => <>for {eventName}</>,
+        attributes: {
+          title: "Title",
+          description: "Description",
+          price: "Price",
+          isAvailable: {
+            title: "Availability schedule",
+            untilFurtherNotice: "Available until further notice",
+            untilTime: (formattedTime: String) =>
+              `Available until ${formattedTime}`,
+            openingAt: (formattedTime: String) =>
+              `Will become available at ${formattedTime}`,
+            notAvailable: "Not available",
+          },
+          availableFrom: "Available from",
+          availableUntil: "Available until",
+          countPaid: "Paid",
+          countReserved: {
+            title: "Sold",
+            description:
+              "In addition to paid orders, includes those orders that have been confirmed but not yet paid.",
+          },
+          countAvailable: "Remaining",
+          countTotal: "Total",
+          actions: "Actions",
+          totalReserved: "Total sold",
+          totalPaid: "Total paid",
+        },
+      },
+      quotas: {
+        title: "Quotas",
+        forEvent: (eventName: string) => <>for {eventName}</>,
       },
     },
   },

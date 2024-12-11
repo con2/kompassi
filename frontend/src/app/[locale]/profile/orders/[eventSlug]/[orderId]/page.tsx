@@ -101,7 +101,7 @@ export default async function ProfileOrderPage({ params }: Props) {
       {order.status == PaymentStatus.Pending && order.electronicTicketsLink && (
         <div className="d-grid gap-2 mb-4">
           <Link className="btn btn-primary" href={order.electronicTicketsLink}>
-            {t.profileOrdersView.actions.downloadTickets.title}
+            {t.profile.actions.downloadTickets.title}
           </Link>
         </div>
       )}

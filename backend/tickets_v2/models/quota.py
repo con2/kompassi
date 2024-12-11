@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, ClassVar
 
-from django.db import models, transaction
+import pydantic
+from django.db import connection, models, transaction
+from django.http import HttpRequest
 
 from core.models.event import Event
 from tickets_v2.optimized_server.utils.uuid7 import uuid7
@@ -13,6 +16,49 @@ if TYPE_CHECKING:
 
 batch_size = 400
 logger = logging.getLogger("kompassi")
+
+
+class QuotaCounters(pydantic.BaseModel):
+    count_paid: int
+    count_reserved: int
+    count_available: int
+
+    @pydantic.computed_field
+    @property
+    def count_total(self) -> int:
+        return self.count_reserved + self.count_available
+
+    query: ClassVar[str] = (Path(__file__).parent / "sql" / "get_quota_counters.sql").read_text()
+
+    @staticmethod
+    def get_for_event(event_id: int, request: HttpRequest | None) -> dict[int, QuotaCounters]:
+        """
+        Returns dict of quota_id -> (count_reserved, count_available) for the event.
+        Cached per request.
+        """
+        # event_id -> product_id -> (count_reserved, count_available)
+        cache: dict[int, dict[int, QuotaCounters]] | None = getattr(request, "_tickets_v2_quota_counters", None)
+        if cache is None:
+            cache = {}
+            if request is not None:
+                request._tickets_v2_quota_counters = cache  # type: ignore
+
+        if event_cache := cache.get(event_id):
+            return event_cache
+
+        with connection.cursor() as cursor:
+            cursor.execute(QuotaCounters.query, dict(event_id=event_id))
+            counters = {
+                quota_id: QuotaCounters(
+                    count_paid=count_paid,
+                    count_reserved=count_reserved,
+                    count_available=count_available,
+                )
+                for quota_id, count_paid, count_reserved, count_available in cursor
+            }
+
+        cache[event_id] = counters
+        return counters
 
 
 class Quota(models.Model):
@@ -26,6 +72,7 @@ class Quota(models.Model):
     id: int
     pk: int
     products: models.QuerySet[Product]
+    event_id: int
 
     def __str__(self):
         return f"{self.event}: {self.name}"
@@ -35,10 +82,6 @@ class Quota(models.Model):
         from .ticket import Ticket
 
         return Ticket.objects.filter(event=self.event, quota=self)
-
-    @property
-    def is_available(self):
-        return self.tickets.filter(order_id__isnull=True).exists()
 
     def set_quota(self, quota: int):
         with transaction.atomic():
@@ -77,3 +120,6 @@ class Quota(models.Model):
             ),
             batch_size=batch_size,
         )
+
+    def get_counters(self, request: HttpRequest) -> QuotaCounters:
+        return QuotaCounters.get_for_event(self.event_id, request)[self.id]

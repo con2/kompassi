@@ -28,6 +28,7 @@ from
   join quota_availability qa on qa.quota_id = pq.quota_id
 where
   p.event_id = %(event_id)s
-  and available_from <= now()
-  and available_until > now()
+  and p.superseded_by_id is null
+  and p.available_from <= now()
+  and (p.available_until is null or p.available_until > now())
 group by 1, 2, 3, 4;

@@ -37,6 +37,18 @@
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
+### A note about the copyright of Tracon ry
+
+Regarding the following copyright statement above:
+
+```
+    Copyright © 2024 Tracon ry
+```
+
+The work of Santtu Pajukanta during December 2024 was paid for by Tracon and executed through his employer, Polar Squad Oy. Intellectual property rights to the work produced by Santtu Pajukanta during December 2024 belongs to Tracon ry as stipulated in the contract between Tracon ry and Polar Squad Oy.
+
+Santtu Pajukanta personally retains intellectual property rights to works produced outside December 2024, and the copyright of works produced by other contributors is retained by the respective contributors.
+
 ## Moe (mobile programme schedule)
 
     The MIT License (MIT)

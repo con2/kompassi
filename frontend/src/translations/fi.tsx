@@ -354,7 +354,7 @@ const translations: Translations = {
         </>
       );
     },
-    profileOrdersView: {
+    profile: {
       title: "Lipputilaukset",
       description:
         "Näet tässä lipputilauksesi, jotka on tehty vuonna 2025 tai myöhemmin. Voit myös maksaa maksamattomat tilauksesi ja ladata sähköiset lippusi täältä.",
@@ -392,6 +392,50 @@ const translations: Translations = {
         downloadTickets: {
           title: "Lataa liput",
         },
+      },
+    },
+    admin: {
+      tabs: {
+        orders: "Tilaukset",
+        products: "Tuotteet",
+        quotas: "Kiintiöt",
+        reports: "Raportit",
+        ticketControl: "Lipuntarkastus",
+      },
+      products: {
+        title: "Tuotteet",
+        forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
+        attributes: {
+          title: "Otsikko",
+          description: "Kuvaus",
+          price: "Hinta",
+          isAvailable: {
+            title: "Saatavuuden ajastus",
+            untilFurtherNotice: "Saatavilla toistaiseksi",
+            untilTime: (formattedTime: String) =>
+              `Saatavilla ${formattedTime} asti`,
+            openingAt: (formattedTime: String) =>
+              `Tulee saataville ${formattedTime}`,
+            notAvailable: "Ei saatavilla",
+          },
+          availableFrom: "Tulee saataville",
+          availableUntil: "Poistuu saatavilta",
+          countPaid: "Maksettu",
+          countReserved: {
+            title: "Myyty",
+            description:
+              "Tähän lasketaan maksettujen tilausten lisäksi vahvistetut tilaukset joita ei ole vielä maksettu.",
+          },
+          countAvailable: "Jäljellä",
+          countTotal: "Yhteensä",
+          actions: "Toiminnot",
+          totalReserved: "Myyty yhteensä",
+          totalPaid: "Maksettu yhteensä",
+        },
+      },
+      quotas: {
+        title: "Kiintiöt",
+        forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
       },
     },
   },

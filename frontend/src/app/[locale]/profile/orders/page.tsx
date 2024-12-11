@@ -55,7 +55,7 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets.profileOrdersView;
+  const t = translations.Tickets.profile;
 
   return {
     title: getPageTitle({ viewTitle: t.title, translations }),
@@ -67,7 +67,7 @@ export const revalidate = 0;
 export default async function OwnResponsesPage({ params }: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets.profileOrdersView;
+  const t = translations.Tickets.profile;
   const staT = translations.Tickets.orderStatus;
   const session = await auth();
 

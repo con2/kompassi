@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from django.db import models
 
@@ -7,12 +10,17 @@ from core.models.person import Person
 
 from ..optimized_server.models.enums import PaymentProvider
 
+if TYPE_CHECKING:
+    pass
+
 
 class TicketsV2EventMeta(EventMetaBase):
     provider = models.SmallIntegerField(
         choices=[(x.value, x.name) for x in PaymentProvider],
         default=PaymentProvider.NONE,
     )
+
+    use_cbac = True
 
     def ensure_partitions(self):
         from .order import Order, OrderOwner
@@ -25,6 +33,10 @@ class TicketsV2EventMeta(EventMetaBase):
         Ticket.ensure_partition(self.event)
         PaymentStamp.ensure_partition(self.event)
         ReceiptStamp.ensure_partition(self.event)
+
+    @property
+    def scope(self):
+        return self.event.scope
 
 
 @dataclass

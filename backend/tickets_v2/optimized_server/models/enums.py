@@ -21,4 +21,5 @@ class PaymentStatus(IntEnum):
     UNKNOWN = 0
     PENDING = 1
     PAID = 2
-    REFUNDED = 3
+    CANCELLED = 3
+    REFUNDED = 4
