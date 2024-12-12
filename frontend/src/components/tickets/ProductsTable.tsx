@@ -1,3 +1,4 @@
+import { Column, DataTable } from "../DataTable";
 import formatMoney from "@/helpers/formatMoney";
 import type { Translations } from "@/translations/en";
 
@@ -14,38 +15,47 @@ interface Order {
 
 interface Props {
   order: Order;
-  messages: Translations["Tickets"]["productsTable"];
+  messages: Translations["Tickets"];
 }
 
 export default function ProductsTable({ order, messages: t }: Props) {
+  const columns: Column<Product>[] = [
+    {
+      slug: "product",
+      title: t.Product.attributes.product,
+      getCellContents: (row) => <strong>{row.title}</strong>,
+      className: "col-8",
+    },
+    {
+      slug: "quantity",
+      title: t.Product.attributes.quantity.title,
+      getCellContents: (row) => (
+        <>
+          {row.quantity}&nbsp;{t.Product.attributes.quantity.unit}
+        </>
+      ),
+      getHeaderElement: (children) => <th className="text-end">{children}</th>,
+      className: "text-end fs-3",
+    },
+    {
+      slug: "price",
+      title: t.Product.attributes.unitPrice,
+      getCellContents: (row) => <>{formatMoney(row.price)}</>,
+      getHeaderElement: (children) => <th className="text-end">{children}</th>,
+      className: "text-end fs-3",
+    },
+  ];
+
   return (
-    <table className="table table-striped mt-4 mb-5">
-      <thead>
-        <tr className="row">
-          <th className="col-8">{t.product}</th>
-          <th className="col text-end">{t.quantity.title}</th>
-          <th className="col text-end">{t.unitPrice}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {order.products.map((product, idx) => (
-          <tr key={idx} className="row">
-            <td className="col-8">
-              <strong>{product.title}</strong>
-            </td>
-            <td className="col text-end">
-              <span className="fs-3">
-                {product.quantity}&nbsp;{t.quantity.unit}
-              </span>
-            </td>
-            <td className="col fs-4 text-end">{formatMoney(product.price)}</td>
-          </tr>
-        ))}
-      </tbody>
+    <DataTable
+      className="table table-striped"
+      rows={order.products}
+      columns={columns}
+    >
       <tfoot>
-        <tr className="row">
+        <tr>
           <td className="col-8">
-            <strong>{t.total}</strong>
+            <strong>{t.Order.attributes.totalPrice}</strong>
           </td>
           <td className="col text-end"></td>
           <td className="col fs-4 text-end">
@@ -53,6 +63,6 @@ export default function ProductsTable({ order, messages: t }: Props) {
           </td>
         </tr>
       </tfoot>
-    </table>
+    </DataTable>
   );
 }

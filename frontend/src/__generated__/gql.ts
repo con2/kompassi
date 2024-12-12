@@ -17,6 +17,8 @@ const documents = {
     "\n  mutation InitFileUploadMutation($input: InitFileUploadInput!) {\n    initFileUpload(input: $input) {\n      uploadUrl\n      fileUrl\n    }\n  }\n": types.InitFileUploadMutationDocument,
     "\n  query SurveyPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    profile {\n      displayName\n      email\n    }\n\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          loginRequired\n          anonymity\n          maxResponsesPerUser\n          countResponsesByCurrentUser\n\n          form(lang: $locale) {\n            title\n            description\n            fields\n            layout\n          }\n        }\n      }\n    }\n  }\n": types.SurveyPageQueryDocument,
     "\n  query SurveyThankYouPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          form(lang: $locale) {\n            title\n            thankYouMessage\n          }\n        }\n      }\n    }\n  }\n": types.SurveyThankYouPageQueryDocument,
+    "\n  fragment OrderList on FullOrderType {\n    id\n    formattedOrderNumber\n    displayName\n    createdAt\n    totalPrice\n    status\n  }\n": types.OrderListFragmentDoc,
+    "\n  query OrderList($eventSlug: String!, $filters: [DimensionFilterInput!]) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        orders(filters: $filters) {\n          ...OrderList\n        }\n      }\n    }\n  }\n": types.OrderListDocument,
     "\n  fragment ProductList on FullProductType {\n    id\n    title\n    description\n    price\n    isAvailable\n    availableFrom\n    availableUntil\n    countPaid\n    countReserved\n    countAvailable\n  }\n": types.ProductListFragmentDoc,
     "\n  query ProductList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        products {\n          ...ProductList\n        }\n      }\n    }\n  }\n": types.ProductListDocument,
     "\n  mutation MarkScheduleItemAsFavorite($input: FavoriteScheduleItemInput!) {\n    markScheduleItemAsFavorite(input: $input) {\n      success\n    }\n  }\n": types.MarkScheduleItemAsFavoriteDocument,
@@ -64,6 +66,7 @@ const documents = {
     "\n  fragment ProfileEncryptionKeys on KeyPairType {\n    id\n    createdAt\n  }\n": types.ProfileEncryptionKeysFragmentDoc,
     "\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n": types.ProfileEncryptionKeysDocument,
     "\n  query ProfileOrderDetail($eventSlug: String!, $orderId: String!) {\n    profile {\n      tickets {\n        order(eventSlug: $eventSlug, id: $orderId) {\n          id\n          formattedOrderNumber\n          createdAt\n          totalPrice\n          status\n          electronicTicketsLink\n          products {\n            title\n            quantity\n            price\n          }\n\n          event {\n            slug\n            name\n          }\n        }\n      }\n    }\n  }\n": types.ProfileOrderDetailDocument,
+    "\n  mutation ConfirmEmail($input: ConfirmEmailInput!) {\n    confirmEmail(input: $input) {\n      user {\n        email\n      }\n    }\n  }\n": types.ConfirmEmailDocument,
     "\n  fragment ProfileOrder on ProfileOrderType {\n    id\n    formattedOrderNumber\n    createdAt\n    totalPrice\n    status\n    electronicTicketsLink\n\n    event {\n      slug\n      name\n    }\n  }\n": types.ProfileOrderFragmentDoc,
     "\n  query ProfileOrders {\n    profile {\n      tickets {\n        orders {\n          ...ProfileOrder\n        }\n\n        haveUnlinkedOrders\n      }\n    }\n  }\n": types.ProfileOrdersDocument,
     "\n  query ProfileSurveyResponsePage($locale: String!, $responseId: String!) {\n    profile {\n      forms {\n        response(id: $responseId) {\n          id\n          createdAt\n          values\n\n          dimensions {\n            ...DimensionBadge\n          }\n\n          form {\n            slug\n            title\n            language\n            fields\n            layout\n            event {\n              slug\n              name\n            }\n            survey {\n              anonymity\n            }\n          }\n        }\n      }\n    }\n  }\n": types.ProfileSurveyResponsePageDocument,
@@ -102,6 +105,14 @@ export function graphql(source: "\n  query SurveyPageQuery(\n    $eventSlug: Str
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query SurveyThankYouPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          form(lang: $locale) {\n            title\n            thankYouMessage\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query SurveyThankYouPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          form(lang: $locale) {\n            title\n            thankYouMessage\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment OrderList on FullOrderType {\n    id\n    formattedOrderNumber\n    displayName\n    createdAt\n    totalPrice\n    status\n  }\n"): (typeof documents)["\n  fragment OrderList on FullOrderType {\n    id\n    formattedOrderNumber\n    displayName\n    createdAt\n    totalPrice\n    status\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query OrderList($eventSlug: String!, $filters: [DimensionFilterInput!]) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        orders(filters: $filters) {\n          ...OrderList\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query OrderList($eventSlug: String!, $filters: [DimensionFilterInput!]) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        orders(filters: $filters) {\n          ...OrderList\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -290,6 +301,10 @@ export function graphql(source: "\n  query ProfileEncryptionKeys {\n    profile 
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ProfileOrderDetail($eventSlug: String!, $orderId: String!) {\n    profile {\n      tickets {\n        order(eventSlug: $eventSlug, id: $orderId) {\n          id\n          formattedOrderNumber\n          createdAt\n          totalPrice\n          status\n          electronicTicketsLink\n          products {\n            title\n            quantity\n            price\n          }\n\n          event {\n            slug\n            name\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProfileOrderDetail($eventSlug: String!, $orderId: String!) {\n    profile {\n      tickets {\n        order(eventSlug: $eventSlug, id: $orderId) {\n          id\n          formattedOrderNumber\n          createdAt\n          totalPrice\n          status\n          electronicTicketsLink\n          products {\n            title\n            quantity\n            price\n          }\n\n          event {\n            slug\n            name\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ConfirmEmail($input: ConfirmEmailInput!) {\n    confirmEmail(input: $input) {\n      user {\n        email\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation ConfirmEmail($input: ConfirmEmailInput!) {\n    confirmEmail(input: $input) {\n      user {\n        email\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

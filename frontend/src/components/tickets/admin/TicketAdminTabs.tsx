@@ -25,7 +25,7 @@ export default function TicketAdminTabs(props: Props) {
     {
       slug: "orders",
       title: t.tabs.orders,
-      href: `/${eventSlug}/tickets-admin/orders`,
+      href: `/${eventSlug}/orders-admin`,
     },
     {
       slug: "ticketControl",

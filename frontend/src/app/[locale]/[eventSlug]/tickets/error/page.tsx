@@ -16,7 +16,7 @@ interface Props {
 
 function getErrorMessage(error: any, translations: Translations) {
   const errorMessages: Record<string, { title: string; message: string }> =
-    translations.Tickets.errors;
+    translations.Tickets.Order.errors;
 
   return errorMessages[error] ?? errorMessages.UNKNOWN_ERROR;
 }

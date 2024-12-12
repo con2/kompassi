@@ -3,8 +3,8 @@ from django.conf import settings
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_query_cbac_required
-from core.graphql.common import DimensionFilterInput
 from core.utils import normalize_whitespace
+from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 
 from ..models.form import Form
 from ..models.survey import Survey

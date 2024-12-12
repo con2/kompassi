@@ -101,7 +101,7 @@ const translations = {
       "Kompassi v2 is a work in progress. This is not the final front page, but rather a demo of the table component.",
   },
   UserMenu: {
-    tickets: "Tickets",
+    tickets: "Ticket orders",
     responses: "Survey responses",
     keys: "Encryption keys",
     signIn: "Sign in",
@@ -250,27 +250,77 @@ const translations = {
     title: "Purchase tickets",
     forEvent: (eventName: string) => <>for {eventName}</>,
     returnToTicketsPage: "Return to the tickets page",
-    noProducts: {
-      title: "No products available",
-      message: "There are no products available for purchase at the moment.",
-    },
-    productsTable: {
-      product: "Product",
-      unitPrice: "Unit price",
-      quantity: {
-        title: "Quantity",
-        unit: "pcs",
+    Product: {
+      listTitle: "Products",
+      forEvent: (eventName: string) => <>for {eventName}</>,
+      noProducts: {
+        title: "No products available",
+        message: "There are no products available for purchase at the moment.",
       },
-      total: "Total",
+      attributes: {
+        product: "Product",
+        unitPrice: "Unit price",
+        quantity: {
+          title: "Quantity",
+          unit: "pcs",
+        },
+        total: "Total",
+        description: "Description",
+        isAvailable: {
+          title: "Availability schedule",
+          untilFurtherNotice: "Available until further notice",
+          untilTime: (formattedTime: String) =>
+            `Available until ${formattedTime}`,
+          openingAt: (formattedTime: String) =>
+            `Will become available at ${formattedTime}`,
+          notAvailable: "Not available",
+        },
+        availableFrom: "Available from",
+        availableUntil: "Available until",
+        countPaid: "Paid",
+        countReserved: {
+          title: "Sold",
+          description:
+            "In addition to paid orders, includes those orders that have been confirmed but not yet paid.",
+        },
+        countAvailable: "Remaining",
+        countTotal: "Total",
+        actions: "Actions",
+        totalReserved: "Total sold",
+        totalPaid: "Total paid",
+      },
     },
-    contactForm: {
-      title: "Contact information",
-      fields: {
+    Quota: {
+      listTitle: "Quotas",
+      singleTitle: "Quota",
+      forEvent: (eventName: string) => <>for {eventName}</>,
+    },
+    Order: {
+      listTitle: "Orders",
+      singleTitle: (orderNumber: string) => <>Order {orderNumber}</>,
+      forEvent: (eventName: string) => <>for {eventName}</>,
+      contactForm: {
+        title: "Contact information",
+      },
+      attributes: {
+        orderNumber: "Order #",
+        createdAt: "Order date",
+        eventName: "Event",
+        totalPrice: "Total price",
+        actions: "Actions",
+        totalOrders: (numOrders: number) => (
+          <>
+            Total {numOrders} order{numOrders === 1 ? "" : "s"}.
+          </>
+        ),
         firstName: {
           title: "First name",
         },
         lastName: {
           title: "Last name",
+        },
+        displayName: {
+          title: "Customer name",
         },
         email: {
           title: "Email",
@@ -280,103 +330,102 @@ const translations = {
         phone: {
           title: "Phone number",
         },
+        acceptTermsAndConditions: {
+          title: "Terms and conditions accepted",
+          checkboxLabel(url: string) {
+            return (
+              <>
+                I accept the{" "}
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  terms and conditions
+                </a>{" "}
+                (required).
+              </>
+            );
+          },
+        },
+        status: {
+          title: "Status",
+          choices: {
+            UNKNOWN: {
+              title: "Unknown order status",
+              shortTitle: "Unknown",
+              message:
+                "The status of your order is unknown. Please contact the event organizer for more information.",
+            },
+            PENDING: {
+              title: "Your order is awaiting payment",
+              shortTitle: "Awaiting payment",
+              message:
+                "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
+            },
+            PAID: {
+              title: "Your order is complete!",
+              shortTitle: "Paid",
+              message:
+                "Your order has been paid. You will receive a confirmation email shortly. If there are electronic tickets, they will be attached to the email.",
+            },
+            CANCELLED: {
+              title: "Your order has been cancelled",
+              shortTitle: "Cancelled",
+              message:
+                "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+            },
+            REFUNDED: {
+              title: "Your order has been refunded",
+              shortTitle: "Refunded",
+              message:
+                "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+            },
+          },
+        },
       },
-    },
-    orderPage: {
-      title: (orderNumber: string) => <>Order {orderNumber}</>,
-      payButtonText: "Pay",
-    },
-    orderStatus: {
-      UNKNOWN: {
-        title: "Unknown order status",
-        shortTitle: "Unknown",
-        message:
-          "The status of your order is unknown. Please contact the event organizer for more information.",
+      errors: {
+        NOT_ENOUGH_TICKETS: {
+          title: "Not enough tickets",
+          message:
+            "One or more of the products you tried to purchase are no longer available in the quantity you requested.",
+        },
+        INVALID_ORDER: {
+          title: "Invalid order",
+          message:
+            "The details you entered on the order page were not accepted. Please check your order and try again.",
+        },
+        UNKNOWN_ERROR: {
+          title: "Error processing order",
+          message:
+            "An error occurred while processing your order. Please try again later.",
+        },
+        ORDER_NOT_FOUND: {
+          title: "Order not found",
+          message:
+            "The order you are trying to view does not exist or is not associated with your user account.",
+          actions: {
+            returnToOrderList: "Return to list of orders",
+            returnToTicketsPage: "Return to the tickets page",
+          },
+        },
       },
-      PENDING: {
-        title: "Your order is awaiting payment",
-        shortTitle: "Awaiting payment",
-        message:
-          "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
-      },
-      PAID: {
-        title: "Your order is complete!",
-        shortTitle: "Paid",
-        message:
-          "Your order has been paid. You will receive a confirmation email shortly. If there are electronic tickets, they will be attached to the email.",
-      },
-      CANCELLED: {
-        title: "Your order has been cancelled",
-        shortTitle: "Cancelled",
-        message:
-          "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
-      },
-      REFUNDED: {
-        title: "Your order has been refunded",
-        shortTitle: "Refunded",
-        message:
-          "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
-      },
-    },
-    errors: {
-      NOT_ENOUGH_TICKETS: {
-        title: "Not enough tickets",
-        message:
-          "One or more of the products you tried to purchase are no longer available in the quantity you requested.",
-      },
-      INVALID_ORDER: {
-        title: "Invalid order",
-        message:
-          "The details you entered on the order page were not accepted. Please check your order and try again.",
-      },
-      UNKNOWN_ERROR: {
-        title: "Error processing order",
-        message:
-          "An error occurred while processing your order. Please try again later.",
-      },
-      ORDER_NOT_FOUND: {
-        title: "Order not found",
-        message:
-          "The order you are trying to view does not exist or is not associated with your user account.",
-        actions: {
-          returnToOrderList: "Return to list of orders",
-          returnToTicketsPage: "Return to the tickets page",
+      actions: {
+        pay: {
+          title: "Pay",
+        },
+        purchase: {
+          title: "Purchase",
+        },
+        downloadTickets: {
+          title: "Download tickets",
         },
       },
     },
-    purchaseButtonText: "Purchase",
-    acceptTermsAndConditions(url: string) {
-      return (
-        <>
-          I accept the{" "}
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            terms and conditions
-          </a>{" "}
-          (required).
-        </>
-      );
-    },
     profile: {
       title: "Ticket orders",
-      description:
+      message:
         "Here you can see your ticket orders made in 2025 and later. You can pay for unpaid orders and download your electronic tickets here.",
       haveUnlinkedOrders: {
         title: "Confirm your email address to see more orders",
         message:
           "There are ticket orders associated with your email address that are not linked to your user account. Confirm your email address to see these orders.",
-      },
-      attributes: {
-        orderNumber: "Order number",
-        createdAt: "Order date",
-        eventName: "Event",
-        totalPrice: "Total",
-        actions: "Actions",
-        status: "Status",
-        totalOrders: (numOrders: number) => (
-          <>
-            Total {numOrders} order{numOrders === 1 ? "" : "s"}.
-          </>
-        ),
       },
       actions: {
         confirmEmail: {
@@ -388,13 +437,9 @@ const translations = {
             cancel: "Cancel",
           },
         },
-        pay: {
-          title: "Pay",
-        },
-        downloadTickets: {
-          title: "Download tickets",
-        },
       },
+      noOrders:
+        "There are no orders associated with your user account to show.",
     },
     admin: {
       tabs: {
@@ -403,41 +448,6 @@ const translations = {
         quotas: "Quotas",
         reports: "Reports",
         ticketControl: "Ticket control",
-      },
-      products: {
-        title: "Products",
-        forEvent: (eventName: string) => <>for {eventName}</>,
-        attributes: {
-          title: "Title",
-          description: "Description",
-          price: "Price",
-          isAvailable: {
-            title: "Availability schedule",
-            untilFurtherNotice: "Available until further notice",
-            untilTime: (formattedTime: String) =>
-              `Available until ${formattedTime}`,
-            openingAt: (formattedTime: String) =>
-              `Will become available at ${formattedTime}`,
-            notAvailable: "Not available",
-          },
-          availableFrom: "Available from",
-          availableUntil: "Available until",
-          countPaid: "Paid",
-          countReserved: {
-            title: "Sold",
-            description:
-              "In addition to paid orders, includes those orders that have been confirmed but not yet paid.",
-          },
-          countAvailable: "Remaining",
-          countTotal: "Total",
-          actions: "Actions",
-          totalReserved: "Total sold",
-          totalPaid: "Total paid",
-        },
-      },
-      quotas: {
-        title: "Quotas",
-        forEvent: (eventName: string) => <>for {eventName}</>,
       },
     },
   },

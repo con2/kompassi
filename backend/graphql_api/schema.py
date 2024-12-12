@@ -1,6 +1,7 @@
 import graphene
 
-from core.graphql.event import FullEventType
+from core.graphql.event_full import FullEventType
+from core.graphql.mutations.confirm_email import ConfirmEmail
 from core.graphql.profile import ProfileType
 from core.models import Event, Person
 from forms.graphql.mutations.create_survey import CreateSurvey
@@ -100,6 +101,8 @@ class Mutation(graphene.ObjectType):
 
     generate_key_pair = GenerateKeyPair.Field()
     revoke_key_pair = RevokeKeyPair.Field()
+
+    confirm_email = ConfirmEmail.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

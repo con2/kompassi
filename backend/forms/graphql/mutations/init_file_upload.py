@@ -38,6 +38,6 @@ class InitFileUpload(graphene.Mutation):
         presigned_url = presign_put(filename, file_type)
         object_url = f"{S3_ENDPOINT_URL}/{BUCKET_NAME}/{filename}"
         return InitFileUploadResponse(
-            upload_url=presigned_url,
-            file_url=object_url,
-        )  # type: ignore
+            upload_url=presigned_url,  # type: ignore
+            file_url=object_url,  # type: ignore
+        )

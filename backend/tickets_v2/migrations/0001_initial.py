@@ -224,7 +224,13 @@ class Migration(migrations.Migration):
                         (
                             "status",
                             models.SmallIntegerField(
-                                choices=[(0, "UNKNOWN"), (1, "PENDING"), (2, "PAID"), (3, "REFUNDED")]
+                                choices=[
+                                    (0, "UNKNOWN"),
+                                    (1, "PENDING"),
+                                    (2, "PAID"),
+                                    (3, "CANCELLED"),
+                                    (4, "REFUNDED"),
+                                ],
                             ),
                         ),
                         (
@@ -237,6 +243,58 @@ class Migration(migrations.Migration):
                             "event",
                             models.ForeignKey(
                                 on_delete=django.db.models.deletion.RESTRICT, related_name="+", to="core.event"
+                            ),
+                        ),
+                    ],
+                    bases=(
+                        tickets_v2.utils.event_partitions.EventPartitionsMixin,
+                        event_log_v2.utils.monthly_partitions.UUID7Mixin,
+                        models.Model,
+                    ),
+                ),
+                migrations.CreateModel(
+                    name="ReceiptStamp",
+                    fields=[
+                        (
+                            "id",
+                            models.UUIDField(
+                                default=tickets_v2.optimized_server.utils.uuid7.uuid7,
+                                editable=False,
+                                primary_key=True,
+                                serialize=False,
+                            ),
+                        ),
+                        (
+                            "order_id",
+                            models.UUIDField(
+                                blank=True,
+                                null=True,
+                            ),
+                        ),
+                        (
+                            "correlation_id",
+                            models.UUIDField(
+                                help_text="The correlation ID ties together the receipt stamps related to the same receipt attempt. Usually you would use the correlation ID of the payment stamp that you used to determine this order is paid."
+                            ),
+                        ),
+                        (
+                            "type",
+                            models.SmallIntegerField(
+                                choices=[(1, "ORDER_CONFIRMATION"), (2, "CANCELLATION")],
+                            ),
+                        ),
+                        (
+                            "status",
+                            models.SmallIntegerField(
+                                choices=[(1, "PROCESSING"), (2, "SUCCESS"), (3, "FAILURE")],
+                            ),
+                        ),
+                        (
+                            "event",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.RESTRICT,
+                                related_name="+",
+                                to="core.event",
                             ),
                         ),
                     ],

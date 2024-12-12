@@ -7,7 +7,7 @@ from django.db import models
 from django.http import QueryDict
 from django.utils.timezone import now
 
-from core.graphql.common import DimensionFilterInput
+from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from forms.utils.process_form_data import FALSY_VALUES
 
 from .models.program import Program

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import cache, cached_property
+from typing import Annotated
 
 
 # TODO enumify
@@ -28,6 +29,15 @@ SUPPORTED_LANGUAGES = [
 SUPPORTED_LANGUAGE_CODES = [lang.code for lang in SUPPORTED_LANGUAGES]
 
 
+SupportedLanguageCode = Annotated[str, "SupportedLanguageCode"]
+
+
+def to_supported_language(code: str) -> SupportedLanguageCode:
+    if code not in SUPPORTED_LANGUAGE_CODES:
+        return DEFAULT_LANGUAGE
+    return code
+
+
 # NOTE: This differs from settings.LANGUAGES in that these are offered in v2, settings.LANGUAGES in v1
 @cache
 def get_language_choices():
@@ -35,4 +45,4 @@ def get_language_choices():
 
 
 # NOTE: sync with kompassi.settings.LANGUAGE_CODE
-DEFAULT_LANGUAGE: str = "en"
+DEFAULT_LANGUAGE: SupportedLanguageCode = "en"

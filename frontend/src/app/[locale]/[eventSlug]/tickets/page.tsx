@@ -33,7 +33,9 @@ export const revalidate = 1;
 export default async function TicketsPage({ params }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets;
+  const t = translations.Tickets.Order;
+  const producT = translations.Tickets.Product;
+  const tickeT = translations.Tickets;
   const { event, products } = await getProducts(eventSlug);
 
   const fields: Field[] = [
@@ -41,24 +43,24 @@ export default async function TicketsPage({ params }: Props) {
       slug: "firstName",
       type: "SingleLineText",
       required: true,
-      ...t.contactForm.fields.firstName,
+      ...t.attributes.firstName,
     },
     {
       slug: "lastName",
       type: "SingleLineText",
       required: true,
-      ...t.contactForm.fields.lastName,
+      ...t.attributes.lastName,
     },
     {
       slug: "email",
       type: "SingleLineText",
       required: true,
-      ...t.contactForm.fields.email,
+      ...t.attributes.email,
     },
     {
       slug: "phone",
       type: "SingleLineText",
-      ...t.contactForm.fields.phone,
+      ...t.attributes.phone,
     },
   ];
 
@@ -66,10 +68,10 @@ export default async function TicketsPage({ params }: Props) {
     return (
       <ViewContainer>
         <ViewHeading>
-          {t.noProducts.title}
-          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+          {producT.noProducts.title}
+          <ViewHeading.Sub>{producT.forEvent(event.name)}</ViewHeading.Sub>
         </ViewHeading>
-        <p>{t.noProducts.message}</p>
+        <p>{producT.noProducts.message}</p>
       </ViewContainer>
     );
   }
@@ -77,17 +79,17 @@ export default async function TicketsPage({ params }: Props) {
   return (
     <ViewContainer>
       <ViewHeading>
-        {t.title}
-        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+        {tickeT.title}
+        <ViewHeading.Sub>{tickeT.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
 
       <form action={createOrder.bind(null, locale, eventSlug)}>
         <table className="table table-striped mt-4 mb-5">
           <thead>
             <tr className="row">
-              <th className="col-8">{t.productsTable.product}</th>
-              <th className="col">{t.productsTable.unitPrice}</th>
-              <th className="col">{t.productsTable.quantity.title}</th>
+              <th className="col-8">{producT.attributes.product}</th>
+              <th className="col">{producT.attributes.unitPrice}</th>
+              <th className="col">{producT.attributes.quantity.title}</th>
             </tr>
           </thead>
           <tbody>
@@ -105,7 +107,7 @@ export default async function TicketsPage({ params }: Props) {
                     htmlFor={`quantity-${product.id}`}
                     className="visually-hidden"
                   >
-                    {t.productsTable.quantity.title}
+                    {producT.attributes.quantity.title}
                   </label>
                   <input
                     type="number"
@@ -127,7 +129,7 @@ export default async function TicketsPage({ params }: Props) {
 
         <div className="d-grid gap-2 mb-4">
           <button className="btn btn-primary btn-lg" type="submit">
-            {t.purchaseButtonText}
+            {t.actions.purchase.title}
           </button>
         </div>
       </form>

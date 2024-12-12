@@ -1,10 +1,13 @@
 import logging
 from random import choice
+from typing import Any
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+
+from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
 from .constants import EMAIL_LENGTH
 
@@ -20,6 +23,10 @@ ONE_TIME_CODE_STATE_CHOICES = [
 
 
 class OneTimeCodeMixin:
+    code: Any
+    name_and_email: Any
+    save: Any
+
     @property
     def is_used(self):
         return self.used_at is not None
@@ -60,7 +67,7 @@ class OneTimeCodeMixin:
         if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import send_email
 
-            send_email.delay(**opts)
+            send_email.delay(**opts)  # type: ignore
         else:
             from django.core.mail import EmailMessage
 
@@ -92,6 +99,11 @@ class OneTimeCode(models.Model, OneTimeCodeMixin):
         default="valid",
         choices=ONE_TIME_CODE_STATE_CHOICES,
     )
+    language = models.CharField(
+        max_length=2,
+        default=DEFAULT_LANGUAGE,
+        choices=get_language_choices(),
+    )
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -110,7 +122,7 @@ class OneTimeCode(models.Model, OneTimeCodeMixin):
         ]
 
 
-class OneTimeCodeLite(models.Model, OneTimeCodeMixin):
+class OneTimeCodeLite(OneTimeCodeMixin, models.Model):
     """
     An OneTimeCode that is not tied to a Person.
     """

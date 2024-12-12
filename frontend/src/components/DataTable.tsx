@@ -12,6 +12,7 @@ export interface Column<Row> {
 }
 
 interface DataTableProps<Row> {
+  className?: string;
   rows: Row[];
   columns: Column<Row>[];
   getTotalMessage?: (total: number) => ReactNode;
@@ -69,10 +70,11 @@ export function DataTable<Row>(props: DataTableProps<Row>) {
   }));
 
   const totalMessage = getTotalMessage?.(props.rows.length);
+  const className = props.className ?? "table table-striped";
 
   return (
     <>
-      <table className="table table-striped table-bordered">
+      <table className={className}>
         <thead>
           <tr>
             {columns.map((column) => (

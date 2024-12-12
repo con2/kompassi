@@ -263,204 +263,211 @@ const translations: Translations = {
     title: "Evenemang",
   },
 
-  Tickets: {
-    title: "Köp biljetter",
-    forEvent: (eventName: string) => <>till {eventName}</>,
-    returnToTicketsPage: "Tillbaka till biljettsidan",
-    noProducts: UNSURE({
-      title: "Inga produkter tillgängliga",
-      message: "Det finns inga produkter tillgängliga för köp för tillfället.",
-    }),
-    productsTable: {
-      product: "Produkt",
-      unitPrice: "Pris per enhet",
-      quantity: {
-        title: "Antal",
-        unit: "st",
-      },
-      total: "Totalt",
-    },
-    contactForm: UNSURE({
-      title: "Kontaktinformation",
-      fields: {
-        firstName: {
-          title: "Förnamn",
-        },
-        lastName: {
-          title: "Efternamn",
-        },
-        email: {
-          title: "E-post",
-          helpText:
-            "Kontrollera e-postadressen noggrant! Dina biljetter skickas till denna adress.",
-        },
-        phone: {
-          title: "Telefonnummer",
-        },
-      },
-    }),
-    orderPage: {
-      title: (orderNumber: string) => <>Beställning {orderNumber}</>,
-      payButtonText: "Betala",
-    },
-    orderStatus: UNTRANSLATED({
-      UNKNOWN: {
-        title: "Unknown order status",
-        shortTitle: "Unknown",
-        message:
-          "The status of your order is unknown. Please contact the event organizer for more information.",
-      },
-      PENDING: {
-        title: "Your order is awaiting payment",
-        shortTitle: "Awaiting payment",
-        message:
-          "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
-      },
-      PAID: {
-        title: "Your order is complete!",
-        shortTitle: "Paid",
-        message:
-          "Your order has been paid. You will receive a confirmation email shortly. If there are electronic tickets, they will be attached to the email.",
-      },
-      CANCELLED: {
-        title: "Your order has been cancelled",
-        shortTitle: "Cancelled",
-        message:
-          "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
-      },
-      REFUNDED: {
-        title: "Your order has been refunded",
-        shortTitle: "Refunded",
-        message:
-          "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
-      },
-    }),
-    errors: UNTRANSLATED({
-      NOT_ENOUGH_TICKETS: {
-        title: "Not enough tickets",
-        message:
-          "One or more of the products you tried to purchase are no longer available in the quantity you requested.",
-      },
-      INVALID_ORDER: {
-        title: "Invalid order",
-        message:
-          "The details you entered on the order page were not accepted. Please check your order and try again.",
-      },
-      UNKNOWN_ERROR: {
-        title: "Error processing order",
-        message:
-          "An error occurred while processing your order. Please try again later.",
-      },
-      ORDER_NOT_FOUND: {
-        title: "Order not found",
-        message:
-          "The order you are trying to view does not exist or is not associated with your user account.",
-        actions: {
-          returnToOrderList: "Return to list of orders",
-          returnToTicketsPage: "Return to the tickets page",
-        },
-      },
-    }),
-    purchaseButtonText: "Köp",
-    acceptTermsAndConditions(url: string) {
-      return (
-        <>
-          Jag accepterar{" "}
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            Villkor
-          </a>{" "}
-          (nödvändig).
-        </>
-      );
-    },
-    profile: {
-      title: "Biljettbeställningar",
-      description:
-        "Här kan du se dina biljetter som du har köpt i 2025 och senare. Du kan betala för obetalda beställningar och ladda ner elektroniska biljetter här.",
-      haveUnlinkedOrders: {
-        title: "Bekräfta din e-postadress för att se fler beställningar",
-        message:
-          "Det finns biljetter som är kopplade till din e-postadress som inte är kopplade till ditt användarkonto. Bekräfta din e-postadress för att se dessa beställningar.",
+  Tickets: UNTRANSLATED({
+    title: "Purchase tickets",
+    forEvent: (eventName: string) => <>for {eventName}</>,
+    returnToTicketsPage: "Return to the tickets page",
+    Product: {
+      listTitle: "Products",
+      forEvent: (eventName: string) => <>for {eventName}</>,
+      noProducts: {
+        title: "No products available",
+        message: "There are no products available for purchase at the moment.",
       },
       attributes: {
-        orderNumber: "Beställningsnummer",
-        createdAt: "Beställningstid",
-        eventName: "Evenemang",
-        totalPrice: "Totalt",
-        actions: "Funktioner",
-        status: "Status",
-        totalOrders: (count: number) => (
+        product: "Product",
+        unitPrice: "Unit price",
+        quantity: {
+          title: "Quantity",
+          unit: "pcs",
+        },
+        total: "Total",
+        description: "Description",
+        isAvailable: {
+          title: "Availability schedule",
+          untilFurtherNotice: "Available until further notice",
+          untilTime: (formattedTime: String) =>
+            `Available until ${formattedTime}`,
+          openingAt: (formattedTime: String) =>
+            `Will become available at ${formattedTime}`,
+          notAvailable: "Not available",
+        },
+        availableFrom: "Available from",
+        availableUntil: "Available until",
+        countPaid: "Paid",
+        countReserved: {
+          title: "Sold",
+          description:
+            "In addition to paid orders, includes those orders that have been confirmed but not yet paid.",
+        },
+        countAvailable: "Remaining",
+        countTotal: "Total",
+        actions: "Actions",
+        totalReserved: "Total sold",
+        totalPaid: "Total paid",
+      },
+    },
+    Quota: {
+      listTitle: "Quotas",
+      singleTitle: "Quota",
+      forEvent: (eventName: string) => <>for {eventName}</>,
+    },
+    Order: {
+      listTitle: "Orders",
+      singleTitle: (orderNumber: string) => <>Order {orderNumber}</>,
+      forEvent: (eventName: string) => <>for {eventName}</>,
+      contactForm: {
+        title: "Contact information",
+      },
+      attributes: {
+        orderNumber: "Order #",
+        createdAt: "Order date",
+        eventName: "Event",
+        totalPrice: "Total price",
+        actions: "Actions",
+        totalOrders: (numOrders: number) => (
           <>
-            Totalt {count} beställning{count === 1 ? "" : "ar"}.
+            Total {numOrders} order{numOrders === 1 ? "" : "s"}.
           </>
         ),
+        firstName: {
+          title: "First name",
+        },
+        lastName: {
+          title: "Last name",
+        },
+        displayName: {
+          title: "Customer name",
+        },
+        email: {
+          title: "Email",
+          helpText:
+            "Check the email address carefully! Your tickets will be sent to this address.",
+        },
+        phone: {
+          title: "Phone number",
+        },
+        acceptTermsAndConditions: {
+          title: "Terms and conditions accepted",
+          checkboxLabel(url: string) {
+            return (
+              <>
+                I accept the{" "}
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  terms and conditions
+                </a>{" "}
+                (required).
+              </>
+            );
+          },
+        },
+        status: {
+          title: "Status",
+          choices: {
+            UNKNOWN: {
+              title: "Unknown order status",
+              shortTitle: "Unknown",
+              message:
+                "The status of your order is unknown. Please contact the event organizer for more information.",
+            },
+            PENDING: {
+              title: "Your order is awaiting payment",
+              shortTitle: "Awaiting payment",
+              message:
+                "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
+            },
+            PAID: {
+              title: "Your order is complete!",
+              shortTitle: "Paid",
+              message:
+                "Your order has been paid. You will receive a confirmation email shortly. If there are electronic tickets, they will be attached to the email.",
+            },
+            CANCELLED: {
+              title: "Your order has been cancelled",
+              shortTitle: "Cancelled",
+              message:
+                "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+            },
+            REFUNDED: {
+              title: "Your order has been refunded",
+              shortTitle: "Refunded",
+              message:
+                "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+            },
+          },
+        },
+      },
+      errors: {
+        NOT_ENOUGH_TICKETS: {
+          title: "Not enough tickets",
+          message:
+            "One or more of the products you tried to purchase are no longer available in the quantity you requested.",
+        },
+        INVALID_ORDER: {
+          title: "Invalid order",
+          message:
+            "The details you entered on the order page were not accepted. Please check your order and try again.",
+        },
+        UNKNOWN_ERROR: {
+          title: "Error processing order",
+          message:
+            "An error occurred while processing your order. Please try again later.",
+        },
+        ORDER_NOT_FOUND: {
+          title: "Order not found",
+          message:
+            "The order you are trying to view does not exist or is not associated with your user account.",
+          actions: {
+            returnToOrderList: "Return to list of orders",
+            returnToTicketsPage: "Return to the tickets page",
+          },
+        },
+      },
+      actions: {
+        pay: {
+          title: "Pay",
+        },
+        purchase: {
+          title: "Purchase",
+        },
+        downloadTickets: {
+          title: "Download tickets",
+        },
+      },
+    },
+    profile: {
+      title: "Ticket orders",
+      message:
+        "Here you can see your ticket orders made in 2025 and later. You can pay for unpaid orders and download your electronic tickets here.",
+      haveUnlinkedOrders: {
+        title: "Confirm your email address to see more orders",
+        message:
+          "There are ticket orders associated with your email address that are not linked to your user account. Confirm your email address to see these orders.",
       },
       actions: {
         confirmEmail: {
-          title: "Bekräfta din e-postadress",
-          description: UNSURE(
-            "Ett e-postmeddelande kommer att skickas till e-postaddressen som har registrerats med din konto. Följ instruktionerna i e-postmeddelandet för att bekräfta din e-postadress och se fler beställningar.",
-          ),
+          title: "Confirm email address",
+          description:
+            "An email will be sent to the email address of your user account. Follow the instructions in the email to confirm your email address and see the rest of your orders.",
           modalActions: {
-            submit: "Skicka e-postbekräftelse",
-            cancel: "Avbryt",
+            submit: "Send confirmation message",
+            cancel: "Cancel",
           },
         },
-        pay: {
-          title: "Betala",
-        },
-        downloadTickets: {
-          title: "Ladda ner biljetter",
-        },
       },
+      noOrders:
+        "There are no orders associated with your user account to show.",
     },
     admin: {
       tabs: {
-        orders: "Beställningar",
-        products: "Produkter",
-        quotas: "Kvoter",
-        reports: "Rapporter",
-        ticketControl: "Biljettkontroll",
-      },
-      products: {
-        title: "Produkter",
-        forEvent: (eventName: string) => <>för {eventName}</>,
-        attributes: {
-          title: "Rubrik",
-          description: "Beskrivning",
-          price: "Pris",
-          isAvailable: {
-            title: "Tillgänglighet",
-            untilFurtherNotice: "Tillgänglig tills vidare",
-            untilTime: (formattedTime: String) =>
-              `Tillgänglig till ${formattedTime}`,
-            openingAt: UNSURE(
-              (formattedTime: String) =>
-                `Kommer att bli tillgänglig vid ${formattedTime}`,
-            ),
-            notAvailable: "Inte tillgänglig",
-          },
-          availableFrom: "Tillgänglig från",
-          availableUntil: "Tillgänglig till",
-          countPaid: "Betalda",
-          countReserved: {
-            title: "Sålda",
-            description:
-              "Inkluderar betalda beställningar och beställningar som har bekräftats men inte ännu betalats.",
-          },
-          countAvailable: "Kvar",
-          countTotal: "Totalt",
-          actions: "Funktioner",
-          totalReserved: "Totalt sålda",
-          totalPaid: "Totalt betalda",
-        },
-      },
-      quotas: {
-        title: "Kvoter",
-        forEvent: (eventName: string) => <>for {eventName}</>,
+        orders: "Orders",
+        products: "Products",
+        quotas: "Quotas",
+        reports: "Reports",
+        ticketControl: "Ticket control",
       },
     },
-  },
+  }),
 
   Program: UNSURE({
     listTitle: "Program",

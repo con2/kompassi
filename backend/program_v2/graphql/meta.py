@@ -5,9 +5,9 @@ from django.http import HttpRequest
 from django.urls import reverse
 from graphene_django import DjangoObjectType
 
-from core.graphql.common import DimensionFilterInput
 from core.models import Event
 from core.utils.text_utils import normalize_whitespace
+from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from graphql_api.language import DEFAULT_LANGUAGE
 
 from ..filters import ProgramFilters

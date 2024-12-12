@@ -37,11 +37,28 @@ class Migration(migrations.Migration):
                 migrations.CreateModel(
                     name="OrderOwner",
                     fields=[
-                        ("order_id", models.UUIDField(primary_key=True, serialize=False)),
-                        ("event", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="core.event")),
+                        (
+                            "order_id",
+                            models.UUIDField(
+                                primary_key=True,
+                                serialize=False,
+                            ),
+                        ),
+                        (
+                            "event",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.CASCADE,
+                                related_name="+",
+                                to="core.event",
+                            ),
+                        ),
                         (
                             "user",
-                            models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.CASCADE,
+                                related_name="+",
+                                to=settings.AUTH_USER_MODEL,
+                            ),
                         ),
                     ],
                 ),

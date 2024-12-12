@@ -1,27 +1,20 @@
 import graphene
 from django.http import HttpRequest
 from django.urls import reverse
-from graphene_django import DjangoObjectType
-from graphene_pydantic import PydanticObjectType
 
+from core.graphql.event_limited import LimitedEventType
 from core.utils import normalize_whitespace
-from graphql_api.utils import resolve_local_datetime_field
 
 from ..models.order import Order
 from ..models.receipts import Receipt
 from ..optimized_server.models.enums import PaymentStatus
-from ..optimized_server.models.order import OrderProduct
-from ..optimized_server.utils.formatting import format_order_number
+from .order_limited import LimitedOrderType
+from .order_product import OrderProductType
 
 PaymentStatusType = graphene.Enum.from_enum(PaymentStatus)
 
 
-class OrderProductType(PydanticObjectType):
-    class Meta:
-        model = OrderProduct
-
-
-class ProfileOrderType(DjangoObjectType):
+class FullOrderType(LimitedOrderType):
     class Meta:
         model = Order
         fields = (
@@ -35,26 +28,7 @@ class ProfileOrderType(DjangoObjectType):
             "phone",
         )
 
-    created_at = graphene.NonNull(graphene.DateTime)
-    resolve_created_at = resolve_local_datetime_field("timestamp")
-
-    @staticmethod
-    def resolve_formatted_order_number(order: Order, info):
-        return format_order_number(order.order_number)
-
-    formatted_order_number = graphene.NonNull(graphene.String)
-
-    @staticmethod
-    def resolve_total_price(order: Order, info):
-        return order.cached_price
-
-    total_price = graphene.NonNull(graphene.Decimal)
-
-    @staticmethod
-    def resolve_status(order: Order, info):
-        return order.status
-
-    status = graphene.NonNull(PaymentStatusType)
+    event = graphene.NonNull(LimitedEventType)
 
     @staticmethod
     def resolve_electronic_tickets_link(order, info):
@@ -82,13 +56,6 @@ class ProfileOrderType(DjangoObjectType):
         graphene.String,
         description=normalize_whitespace(resolve_electronic_tickets_link.__doc__ or ""),
     )
-
-    @staticmethod
-    def resolve_products(order: Order, info):
-        """
-        Contents of the order (also known as order products or order rows).
-        """
-        return order.products
 
     products = graphene.NonNull(
         graphene.List(graphene.NonNull(OrderProductType)),

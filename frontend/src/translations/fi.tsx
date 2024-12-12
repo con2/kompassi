@@ -101,7 +101,7 @@ const translations: Translations = {
       "Kompassi v2 on työn alla. Tämä ei ole vielä valmis etusivu, vaan taulukkokomponentin demo.",
   },
   UserMenu: {
-    tickets: "Liput",
+    tickets: "Lipputilaukset",
     responses: "Kyselyvastaukset",
     keys: "Salausavaimet",
     signIn: "Kirjaudu sisään",
@@ -248,151 +248,195 @@ const translations: Translations = {
     title: "Osta lippuja",
     forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
     returnToTicketsPage: "Palaa lippusivulle",
-    noProducts: {
-      title: "Ei tuotteita saatavilla",
-      message: "Yhtään tuotetta ei ole tällä hetkellä tilattavissa.",
-    },
-    productsTable: {
-      product: "Tuote",
-      unitPrice: "Kappalehinta",
-      quantity: {
-        title: "Lukumäärä",
-        unit: "kpl",
+    Product: {
+      listTitle: "Tuotteet",
+      forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
+      noProducts: {
+        title: "Ei tuotteita saatavilla",
+        message: "Yhtään tuotetta ei ole tällä hetkellä saatavilla.",
       },
-      total: "Yhteensä",
+      attributes: {
+        product: "Tuote",
+        unitPrice: "Yksikköhinta",
+        quantity: {
+          title: "Lukumäärä",
+          unit: "kpl",
+        },
+        total: "Yhteensä",
+        description: "Kuvaus",
+        isAvailable: {
+          title: "Saatavuusaika",
+          untilFurtherNotice: "Saatavilla toistaiseksi",
+          untilTime: (formattedTime: String) =>
+            `Saatavilla ${formattedTime} asti`,
+          openingAt: (formattedTime: String) =>
+            `Tulossa saataville ${formattedTime}`,
+          notAvailable: "Ei saatavilla",
+        },
+        availableFrom: "Tulee myyntiin",
+        availableUntil: "Poistuu myynnistä",
+        countPaid: "Maksettu",
+        countReserved: {
+          title: "Myyty",
+          description:
+            "Tässä näytetään maksettujen tilausten lisäksi vahvistetut tilaukset, joita ei ole vielä maksettu.",
+        },
+        countAvailable: "Jäljellä",
+        countTotal: "Yhteensä",
+        actions: "Toiminnot",
+        totalReserved: "Myyty yhteensä",
+        totalPaid: "Maksettu yhteensä",
+      },
     },
-    contactForm: {
-      title: "Yhteystiedot",
-      fields: {
+    Quota: {
+      listTitle: "Kiintiöt",
+      singleTitle: "Kiintiöt",
+      forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
+    },
+    Order: {
+      listTitle: "Tilaukset",
+      singleTitle: (orderNumber: string) => <>Tilaus {orderNumber}</>,
+      forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
+      contactForm: {
+        title: "Yhteystiedot",
+      },
+      attributes: {
+        orderNumber: "Tilausnro.",
+        createdAt: "Tilausaika",
+        eventName: "Tapahtuma",
+        totalPrice: "Kokonaishinta",
+        actions: "Toiminnot",
+        totalOrders: (numOrders: number) => (
+          <>
+            Yhteensä {numOrders} tilaus{numOrders === 1 ? "" : "ta"}.
+          </>
+        ),
         firstName: {
           title: "Etunimi",
         },
         lastName: {
           title: "Sukunimi",
         },
+        displayName: {
+          title: "Asiakkaan nimi",
+        },
         email: {
           title: "Sähköposti",
           helpText:
-            "Tarkista sähköpostiosoite huolellisesti! Liput lähetetään tähän osoitteeseen.",
+            "Tarkista sähköpostiosoite huolellisesti! Sähköiset liput lähetetään tähän osoitteeseen.",
         },
         phone: {
-          title: "Puhelinnumero",
+          title: "Puhelin",
         },
-      },
-    },
-    orderPage: {
-      title: (orderNumber: string) => <>Tilaus {orderNumber}</>,
-      payButtonText: "Maksa",
-    },
-    orderStatus: {
-      UNKNOWN: {
-        title: "Tilauksen tila tuntematon",
-        shortTitle: "Tuntematon",
-        message:
-          "Tilauksesi tila on tuntematon. Ole hyvä ja ota yhteyttä tapahtuman järjestäjään.",
-      },
-      PENDING: {
-        title: "Tilauksesi odottaa maksua",
-        shortTitle: "Odottaa maksua",
-        message:
-          "Tilaus on vahvistettu ja tuotteet on varattu sinulle, mutta emme ole vielä saaneet maksuasi. Käytä alla olevaa painiketta maksaaksesi tilauksesi mahdollisimman pian. Maksamattomat tilaukset perutaan.",
-      },
-      PAID: {
-        title: "Tilauksesi on valmis!",
-        shortTitle: "Maksettu",
-        message:
-          "Tilaus on maksettu. Saat pian sähköpostivahvistuksen. Jos tilauksessa on sähköisiä lippuja, ne toimitetaan sähköpostin liitteenä.",
-      },
-      CANCELLED: {
-        title: "Tilauksesi on peruttu",
-        shortTitle: "Peruutettu",
-        message:
-          "Tilaus on peruttu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
-      },
-      REFUNDED: {
-        title: "Tilauksesi maksu on palautettu",
-        shortTitle: "Palautettu",
-        message:
-          "Tilauksen maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity.",
-      },
-    },
-    errors: {
-      NOT_ENOUGH_TICKETS: {
-        title: "Lippuja ei ole riittävästi",
-        message:
-          "Yhtä tai useampaa tuotetta ei ole saatavissa sitä määrää jonka yritit tilata.",
-      },
-      INVALID_ORDER: {
-        title: "Virhe tilauksen tiedoissa",
-        message:
-          "Antamasi tilaustiedot eivät kelpaa. Tarkista tilaus ja yritä uudelleen.",
-      },
-      UNKNOWN_ERROR: {
-        title: "Virhe tilauksen käsittelyssä",
-        message:
-          "Tilauksesi käsittelyssä tapahtui virhe. Ole hyvä ja yritä uudelleen.",
-      },
-      ORDER_NOT_FOUND: {
-        title: "Tilausta ei löydy",
-        message:
-          "Tilausta ei ole olemassa tai sitä ei ole liitetty käyttäjätiliisi.",
-        actions: {
-          returnToOrderList: "Takaisin tilauslistaan",
-          returnToTicketsPage: "Takaisin lippukauppaan",
-        },
-      },
-    },
-    purchaseButtonText: "Osta",
-    acceptTermsAndConditions(url: string) {
-      return (
-        <>
-          Hyväksyn{" "}
-          <a href={url} target="_blank" rel="noopener noreferrer">
-            lipunmyynnin ehdot
-          </a>{" "}
-          (pakollinen).
-        </>
-      );
-    },
-    profile: {
-      title: "Lipputilaukset",
-      description:
-        "Näet tässä lipputilauksesi, jotka on tehty vuonna 2025 tai myöhemmin. Voit myös maksaa maksamattomat tilauksesi ja ladata sähköiset lippusi täältä.",
-      haveUnlinkedOrders: {
-        title: "Confirm your email address to see more orders",
-        message:
-          "There are ticket orders associated with your email address that are not linked to your user account. Confirm your email address to see these orders.",
-      },
-      attributes: {
-        orderNumber: "Tilausnumero",
-        createdAt: "Tilauspäivä",
-        eventName: "Tapahtuma",
-        totalPrice: "Yhteensä",
-        actions: "Toiminnot",
-        status: "Tila",
-        totalOrders: (count: number) => (
-          <>
-            Yhteensä {count} tilaus{count === 1 ? "" : "ta"}.
-          </>
-        ),
-      },
-      actions: {
-        confirmEmail: {
-          title: "Vahvista sähköpostiosoitteesi",
-          description:
-            "Käyttäjätunnukseesi liitettyyn sähköpostiosoitteeseen lähetetään sähköpostiviesti, jossa olevasta linkistä voit vahvistaa sähköpostiosoitteesi ja nähdä loput tilauksesi.",
-          modalActions: {
-            submit: "Lähetä vahvistusviesti",
-            cancel: "Peruuta",
+        acceptTermsAndConditions: {
+          title: "Palveluehdot hyväksytty",
+          checkboxLabel(url: string) {
+            return (
+              <>
+                Hyväksyn{" "}
+                <a href={url} target="_blank" rel="noopener noreferrer">
+                  palveluehdot
+                </a>{" "}
+                (pakollinen).
+              </>
+            );
           },
         },
+        status: {
+          title: "Tila",
+          choices: {
+            UNKNOWN: {
+              title: "Tilauksen tila on tuntematon",
+              shortTitle: "Tuntematon",
+              message:
+                "Tilauksesi tila on tuntematon. Yritä hetken kuluttua uudelleen ja ota tarvittaessa yhteyttä tapahtuman järjestäjään.",
+            },
+            PENDING: {
+              title: "Tilaus odottaa maksua",
+              shortTitle: "Odottaa maksua",
+              message:
+                "Tilauksesi on vahvistettu ja tuotteet on varattu sinulle, mutta emme ole vielä vastaanottaneet maksuasi. Käytä alla olevaa painiketta maksaaksesi tilauksesi mahdollisimman pian. Maksamattomat tilaukset perutaan.",
+            },
+            PAID: {
+              title: "Tilaus on valmis!",
+              shortTitle: "Maksettu",
+              message:
+                "Tilauksesi on valmis ja olemme saaneet maksusi. Saat pian sähköpostiisi tilausvahvistuksen. Jos tilauksessasi on sähköisiä lippuja, ne toimitetaan tilausvahvistuksen liitteenä.",
+            },
+            CANCELLED: {
+              title: "Tilaus on peruttu",
+              shortTitle: "Peruttu",
+              message:
+                "Tilauksesi on peruutettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
+            },
+            REFUNDED: {
+              title: "Tilauksen maksu on palautettu",
+              shortTitle: "Palautettu",
+              message:
+                "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
+            },
+          },
+        },
+      },
+      errors: {
+        NOT_ENOUGH_TICKETS: {
+          title: "Lippuja ei ole riittävästi",
+          message:
+            "Yhtä tai useampaa tuotetta ei ole saatavissa sitä määrää jonka yritit tilata.",
+        },
+        INVALID_ORDER: {
+          title: "Virhe tilauksen tiedoissa",
+          message:
+            "Antamasi tilaustiedot eivät kelpaa. Tarkista tilaus ja yritä uudelleen.",
+        },
+        UNKNOWN_ERROR: {
+          title: "Virhe tilauksen käsittelyssä",
+          message:
+            "Tilauksesi käsittelyssä tapahtui virhe. Ole hyvä ja yritä uudelleen.",
+        },
+        ORDER_NOT_FOUND: {
+          title: "Tilausta ei löydy",
+          message:
+            "Tilausta ei ole olemassa tai sitä ei ole liitetty käyttäjätiliisi.",
+          actions: {
+            returnToOrderList: "Takaisin tilauslistaan",
+            returnToTicketsPage: "Takaisin lippukauppaan",
+          },
+        },
+      },
+      actions: {
         pay: {
           title: "Maksa",
+        },
+        purchase: {
+          title: "Osta",
         },
         downloadTickets: {
           title: "Lataa liput",
         },
       },
+    },
+    profile: {
+      title: "Lipputilaukset",
+      message:
+        "Näet tässä lipputilauksesi, jotka on tehty vuonna 2025 tai myöhemmin. Voit myös maksaa maksamattomat tilauksesi ja ladata sähköiset lippusi täältä.",
+      haveUnlinkedOrders: {
+        title: "Vahvista sähköpostiosoitteesi nähdäksesi lisää tilauksia",
+        message:
+          "Sähköpostiosoitteellasi löytyy lisää tilauksia, joita ei ole liitetty käyttäjätunnukseesi. Vahvista sähköpostiosoitteesi nähdäksesi nämä tilaukset.",
+      },
+      actions: {
+        confirmEmail: {
+          title: "Vahvista sähköpostiosoitteesi",
+          description:
+            "Käyttäjätunnukseesi liitettyyn sähköpostiosoitteeseen lähetetään vahvistusviesti. Seuraa sähköpostissa olevia ohjeita vahvistaaksesi sähköpostiosoitteesi ja nähdäksesi loput tilauksesi.",
+          modalActions: {
+            submit: "Lähetä vahvistusviesti",
+            cancel: "Peruuta",
+          },
+        },
+      },
+      noOrders: "Käyttäjätunnukseesi ei ole liitetty yhtään lipputilausta.",
     },
     admin: {
       tabs: {
@@ -401,41 +445,6 @@ const translations: Translations = {
         quotas: "Kiintiöt",
         reports: "Raportit",
         ticketControl: "Lipuntarkastus",
-      },
-      products: {
-        title: "Tuotteet",
-        forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
-        attributes: {
-          title: "Otsikko",
-          description: "Kuvaus",
-          price: "Hinta",
-          isAvailable: {
-            title: "Saatavuuden ajastus",
-            untilFurtherNotice: "Saatavilla toistaiseksi",
-            untilTime: (formattedTime: String) =>
-              `Saatavilla ${formattedTime} asti`,
-            openingAt: (formattedTime: String) =>
-              `Tulee saataville ${formattedTime}`,
-            notAvailable: "Ei saatavilla",
-          },
-          availableFrom: "Tulee saataville",
-          availableUntil: "Poistuu saatavilta",
-          countPaid: "Maksettu",
-          countReserved: {
-            title: "Myyty",
-            description:
-              "Tähän lasketaan maksettujen tilausten lisäksi vahvistetut tilaukset joita ei ole vielä maksettu.",
-          },
-          countAvailable: "Jäljellä",
-          countTotal: "Yhteensä",
-          actions: "Toiminnot",
-          totalReserved: "Myyty yhteensä",
-          totalPaid: "Maksettu yhteensä",
-        },
-      },
-      quotas: {
-        title: "Kiintiöt",
-        forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
       },
     },
   },

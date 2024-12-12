@@ -12,9 +12,12 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
+from django.http import HttpRequest
 from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+
+from graphql_api.language import DEFAULT_LANGUAGE, SupportedLanguageCode
 
 from ..utils import calculate_age, format_phone_number, phone_number_validator, pick_attrs
 from .constants import (
@@ -349,20 +352,33 @@ class Person(models.Model):
         code.save()
         code.send(request)
 
-    def setup_email_verification(self, request):
+    def setup_email_verification(
+        self,
+        request: HttpRequest,
+        language: SupportedLanguageCode = DEFAULT_LANGUAGE,
+    ):
         from .email_verification_token import EmailVerificationToken
 
         self.email_verified_at = None
         self.save()
 
-        self.setup_code(request, EmailVerificationToken)
+        self.setup_code(request, EmailVerificationToken, language=language)
 
-    def setup_password_reset(self, request):
+    def setup_password_reset(
+        self,
+        request: HttpRequest,
+        language: SupportedLanguageCode = DEFAULT_LANGUAGE,
+    ):
         from core.utils import get_ip
 
         from .password_reset_token import PasswordResetToken
 
-        self.setup_code(request, PasswordResetToken, ip_address=get_ip(request) or "")
+        self.setup_code(
+            request,
+            PasswordResetToken,
+            language=language,
+            ip_address=get_ip(request),
+        )
 
     def verify_email(self, code: str | None):
         """

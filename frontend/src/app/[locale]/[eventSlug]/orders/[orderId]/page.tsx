@@ -1,4 +1,5 @@
 import { payOrder } from "./actions";
+import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
@@ -27,61 +28,25 @@ export default async function OrderPage({ params }: Props) {
   const { order, event } = await getOrder(eventSlug, orderId);
   const translations = getTranslations(locale);
   const t = translations.Tickets;
-  const { title, message } = t.orderStatus[order.status];
+  const { title, message } = t.Order.attributes.status.choices[order.status];
 
   return (
     <ViewContainer>
       <ViewHeading>
-        {t.orderPage.title(formatOrderNumber(order.orderNumber))}
+        {t.Order.singleTitle(formatOrderNumber(order.orderNumber))}
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
 
       <h2 className="mt-4">{title}</h2>
       <p>{message}</p>
 
-      <table className="table table-striped mt-4 mb-5">
-        <thead>
-          <tr className="row">
-            <th className="col-8">{t.productsTable.product}</th>
-            <th className="col text-end">{t.productsTable.quantity.title}</th>
-            <th className="col text-end">{t.productsTable.unitPrice}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {order.products.map((product, idx) => (
-            <tr key={idx} className="row">
-              <td className="col-8">
-                <strong>{product.title}</strong>
-              </td>
-              <td className="col text-end">
-                <span className="fs-3">
-                  {product.quantity}&nbsp;{t.productsTable.quantity.unit}
-                </span>
-              </td>
-              <td className="col fs-4 text-end">
-                {formatMoney(product.price)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-        <tfoot>
-          <tr className="row">
-            <td className="col-8">
-              <strong>{t.productsTable.total}</strong>
-            </td>
-            <td className="col text-end"></td>
-            <td className="col fs-4 text-end">
-              <strong>{formatMoney(order.totalPrice)}</strong>
-            </td>
-          </tr>
-        </tfoot>
-      </table>
+      <ProductsTable order={order} messages={t} />
 
       {order.status == "PENDING" && (
         <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
           <div className="d-grid gap-2 mb-4">
             <button className="btn btn-primary btn-lg" type="submit">
-              {t.orderPage.payButtonText}
+              {t.Order.actions.pay.title}
             </button>
           </div>
         </form>

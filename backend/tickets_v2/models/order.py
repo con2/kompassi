@@ -131,6 +131,10 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
             ).aggregate(models.Max("status"))["status__max"]
         )
 
+    @property
+    def display_name(self) -> str:
+        return f"{self.first_name} {self.last_name}"
+
 
 class OrderOwner(EventPartitionsMixin, models.Model):
     """

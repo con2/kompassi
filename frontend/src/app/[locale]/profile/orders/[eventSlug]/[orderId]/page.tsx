@@ -51,7 +51,7 @@ export const revalidate = 0;
 export default async function ProfileOrderPage({ params }: Props) {
   const { locale, eventSlug, orderId } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets;
+  const t = translations.Tickets.Order;
   const session = await auth();
 
   // TODO encap
@@ -74,25 +74,25 @@ export default async function ProfileOrderPage({ params }: Props) {
   }
 
   const order = data.profile.tickets.order;
-  const { title, message } = t.orderStatus[order.status];
+  const { title, message } = t.attributes.status.choices[order.status];
 
   return (
     <ViewContainer>
       <ViewHeading>
-        {t.orderPage.title(order.formattedOrderNumber)}
+        {t.singleTitle(order.formattedOrderNumber)}
         <ViewHeading.Sub>{t.forEvent(order.event.name)}</ViewHeading.Sub>
       </ViewHeading>
 
       <h2 className="mt-4">{title}</h2>
       <p>{message}</p>
 
-      <ProductsTable order={order} messages={t.productsTable} />
+      <ProductsTable order={order} messages={translations.Tickets} />
 
       {order.status === PaymentStatus.Paid && (
         <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
           <div className="d-grid gap-2 mb-4">
             <button className="btn btn-primary btn-lg" type="submit">
-              {t.orderPage.payButtonText}
+              {t.actions.pay.title}
             </button>
           </div>
         </form>
@@ -101,7 +101,7 @@ export default async function ProfileOrderPage({ params }: Props) {
       {order.status == PaymentStatus.Pending && order.electronicTicketsLink && (
         <div className="d-grid gap-2 mb-4">
           <Link className="btn btn-primary" href={order.electronicTicketsLink}>
-            {t.profile.actions.downloadTickets.title}
+            {t.actions.downloadTickets.title}
           </Link>
         </div>
       )}

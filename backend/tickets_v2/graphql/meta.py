@@ -4,12 +4,14 @@ from graphene_django import DjangoObjectType
 
 from access.cbac import graphql_query_cbac_required
 from core.utils.text_utils import normalize_whitespace
+from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 
 from ..models.meta import TicketsV2EventMeta, TicketsV2ProfileMeta
-from ..models.order import OrderOwner
+from ..models.order import Order, OrderOwner
 from ..models.product import Product
 from ..models.quota import Quota
-from .order import ProfileOrderType
+from .order_full import FullOrderType
+from .order_profile import ProfileOrderType
 from .product_full import FullProductType
 from .quota_full import FullQuotaType
 
@@ -48,6 +50,25 @@ class TicketsV2EventMetaType(DjangoObjectType):
         return Quota.objects.filter(event=meta.event)
 
     quotas = graphene.NonNull(graphene.List(graphene.NonNull(FullQuotaType)))
+
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_orders(
+        meta: TicketsV2EventMeta,
+        info,
+        filters: list[DimensionFilterInput] | None = None,
+    ):
+        """
+        Returns orders made to this event.
+        Admin oriented view; customers will access order information through `profile.tickets`.
+        """
+        return Order.objects.filter(event=meta.event)
+
+    orders = graphene.NonNull(
+        graphene.List(graphene.NonNull(FullOrderType)),
+        filters=graphene.List(DimensionFilterInput),
+        description=normalize_whitespace(resolve_orders.__doc__ or ""),
+    )
 
 
 class TicketsV2ProfileMetaType(graphene.ObjectType):

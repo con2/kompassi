@@ -55,20 +55,20 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets.profile;
+  const t = translations.Tickets;
 
   return {
-    title: getPageTitle({ viewTitle: t.title, translations }),
+    title: getPageTitle({ viewTitle: t.profile.title, translations }),
   };
 }
 
 export const revalidate = 0;
 
-export default async function OwnResponsesPage({ params }: Props) {
+export default async function ProfileOrdersPage({ params }: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets.profile;
-  const staT = translations.Tickets.orderStatus;
+  const t = translations.Tickets.Order;
+  const profileT = translations.Tickets.profile;
   const session = await auth();
 
   // TODO encap
@@ -82,6 +82,7 @@ export default async function OwnResponsesPage({ params }: Props) {
     {
       slug: "orderNumber",
       title: t.attributes.orderNumber,
+      className: "col-1",
       getCellContents: (order) => (
         <Link
           className="link-subtle"
@@ -115,8 +116,9 @@ export default async function OwnResponsesPage({ params }: Props) {
     },
     {
       slug: "status",
-      title: t.attributes.status,
-      getCellContents: (order) => staT[order.status].shortTitle,
+      title: t.attributes.status.title,
+      getCellContents: (order) =>
+        t.attributes.status.choices[order.status].shortTitle,
     },
     {
       slug: "actions",
@@ -150,30 +152,37 @@ export default async function OwnResponsesPage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <ViewHeading>{t.title}</ViewHeading>
-      <p>{t.description}</p>
-      <DataTable
-        rows={orders}
-        columns={columns}
-        getTotalMessage={t.attributes.totalOrders}
-      />
+      <ViewHeading>{profileT.title}</ViewHeading>
+      <p>{profileT.message}</p>
       {haveUnlinkedOrders && (
-        <div className="card">
+        <div className="card mb-4">
           <div className="card-body">
-            <h5 className="card-title">{t.haveUnlinkedOrders.title}</h5>
-            <p className="card-text">{t.haveUnlinkedOrders.message}</p>
+            <h5 className="card-title">{profileT.haveUnlinkedOrders.title}</h5>
+            <p className="card-text">{profileT.haveUnlinkedOrders.message}</p>
             <ModalButton
               className="btn btn-primary"
-              label={t.actions.confirmEmail.title + "…"}
-              title={t.actions.confirmEmail.title}
-              messages={t.actions.confirmEmail.modalActions}
+              label={profileT.actions.confirmEmail.title + "…"}
+              title={profileT.actions.confirmEmail.title}
+              messages={profileT.actions.confirmEmail.modalActions}
               action={confirmEmail.bind(null, locale)}
             >
-              {t.actions.confirmEmail.description}
+              {profileT.actions.confirmEmail.description}
             </ModalButton>
           </div>
         </div>
       )}
+      {orders.length > 0 && (
+        <DataTable rows={orders} columns={columns}>
+          <tfoot>
+            <tr>
+              <td colSpan={columns.length}>
+                {t.attributes.totalOrders(orders.length)}
+              </td>
+            </tr>
+          </tfoot>
+        </DataTable>
+      )}
+      {orders.length === 0 && !haveUnlinkedOrders && <p>{profileT.noOrders}</p>}
     </ViewContainer>
   );
 }

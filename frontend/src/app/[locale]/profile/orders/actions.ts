@@ -1,10 +1,25 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { graphql } from "@/__generated__";
+import { getClient } from "@/apolloClient";
 import * as OrderService from "@/services/orders";
 
+const confirmEmailMutation = graphql(`
+  mutation ConfirmEmail($input: ConfirmEmailInput!) {
+    confirmEmail(input: $input) {
+      user {
+        email
+      }
+    }
+  }
+`);
+
 export async function confirmEmail(locale: string) {
-  console.log("confirmEmail", locale);
+  await getClient().mutate({
+    mutation: confirmEmailMutation,
+    variables: { input: { locale } },
+  });
 }
 
 // TODO Redirect to profile order page instead of unauthenticated order page

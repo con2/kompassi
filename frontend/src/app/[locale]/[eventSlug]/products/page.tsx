@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.Tickets.admin;
+  const t = translations.Tickets.Product;
 
   // while dimension filters are not needed to form the title,
   // we would like to do only one query per request
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: Props) {
 
   const title = getPageTitle({
     event: data.event,
-    viewTitle: t.products.title,
+    viewTitle: t.listTitle,
     translations,
   });
 
@@ -94,7 +94,7 @@ export const revalidate = 0;
 export default async function ProductsPage({ params }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets.admin.products;
+  const t = translations.Tickets.Product;
   const session = await auth();
 
   // TODO encap
@@ -117,7 +117,7 @@ export default async function ProductsPage({ params }: Props) {
   const columns: Column<ProductListFragment>[] = [
     {
       slug: "title",
-      title: t.attributes.title,
+      title: t.attributes.product,
       getCellContents: (product) => (
         <Link
           className="link-subtle"
@@ -187,7 +187,7 @@ export default async function ProductsPage({ params }: Props) {
     },
     {
       slug: "price",
-      title: t.attributes.price,
+      title: t.attributes.unitPrice,
       getCellContents: (product) => formatMoney(product.price),
       className: "text-end align-middle col-2",
     },
@@ -213,7 +213,7 @@ export default async function ProductsPage({ params }: Props) {
   return (
     <ViewContainer>
       <ViewHeading>
-        {t.title}
+        {t.listTitle}
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
 
