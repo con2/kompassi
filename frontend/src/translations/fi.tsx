@@ -345,7 +345,7 @@ const translations: Translations = {
         status: {
           title: "Tila",
           choices: {
-            UNKNOWN: {
+            NOT_STARTED: {
               title: "Tilauksen tila on tuntematon",
               shortTitle: "Tuntematon",
               message:
@@ -356,6 +356,12 @@ const translations: Translations = {
               shortTitle: "Odottaa maksua",
               message:
                 "Tilauksesi on vahvistettu ja tuotteet on varattu sinulle, mutta emme ole vielä vastaanottaneet maksuasi. Käytä alla olevaa painiketta maksaaksesi tilauksesi mahdollisimman pian. Maksamattomat tilaukset perutaan.",
+            },
+            FAILED: {
+              title: "Maksu epäonnistui",
+              shortTitle: "Maksu epäonnistui",
+              message:
+                "Tilauksen maksu epäonnistui tai keskeytettiin. Ole hyvä ja yritä uudelleen. Maksamattomat tilaukset perutaan.",
             },
             PAID: {
               title: "Tilaus on valmis!",

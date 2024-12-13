@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from decimal import Decimal
-from enum import IntEnum
 from functools import cached_property
 from pathlib import Path
 from typing import ClassVar, Self
@@ -22,27 +21,11 @@ from event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from tickets.lippukala_integration import Queue as LippukalaQueue
 
-from ..optimized_server.models.enums import PaymentStatus
+from ..optimized_server.models.enums import ReceiptStatus, ReceiptType
 from ..optimized_server.utils.formatting import format_money, format_order_number
 from ..utils.event_partitions import EventPartitionsMixin
 from .order import Order
-from .payment_stamp import PaymentStamp
 from .product import Product
-
-
-class ReceiptStampType(IntEnum):
-    ORDER_CONFIRMATION = 1
-    CANCELLATION = 2
-
-
-class ReceiptStatus(IntEnum):
-    PROCESSING = 1
-    SUCCESS = 2
-    FAILURE = 3
-
-    # could add:
-    # BOUNCE = 4
-
 
 # TODO missing Swedish (message template too)
 ETICKET_TEXT = dict(
@@ -64,7 +47,7 @@ LIPPUKALA_PREFIX = LippukalaQueue.ONE_QUEUE
 ETICKET_FILENAME = "e-ticket.pdf"
 
 
-class ReceiptStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
+class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
     """
     Receipt stamps are created for paid orders to indicate various stages of
     receipt and electronic ticket delivery. The table is strictly insert only;
@@ -99,8 +82,18 @@ class ReceiptStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
         ),
     )
 
+    batch_id = models.UUIDField(
+        null=True,
+        blank=True,
+        help_text=(
+            "The ID of the batch this receipt was sent processed in. "
+            "This is an UUIDv7 that is generated when the batch is created. "
+            "If the receipt is stuck in PROCESSING and the batch ID is old, then the batch has probably failed and needs to be retried."
+        ),
+    )
+
     type = models.SmallIntegerField(
-        choices=[(t.value, t.name) for t in ReceiptStampType],
+        choices=[(t.value, t.name) for t in ReceiptType],
     )
     status = models.SmallIntegerField(
         choices=[(s.value, s.name) for s in ReceiptStatus],
@@ -143,7 +136,7 @@ class LocalizedOrderPrinter(OrderPrinter):
                 ]
 
 
-class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
+class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     """
     Responsible for sending email receipts and generating eticket PDFs.
     Also as such represents an item of work to be done by the receipt worker.
@@ -151,9 +144,9 @@ class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     Should contain all the information it needs to do its job (save for easily cacheable stuff).
     """
 
+    receipt_id: UUID = pydantic.Field(default_factory=uuid7)
     order_id: UUID
     event_id: int
-    # TODO event_cache?
     event_name: str
     event_slug: str
     correlation_id: UUID
@@ -167,48 +160,9 @@ class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     total_price: Decimal
 
     # NOTE: fields and their order must match fields returned by the query
-    query: ClassVar[str] = (Path(__file__).parent / "sql" / "get_pending_receipts.sql").read_text()
+    query: ClassVar[str] = (Path(__file__).parent / "sql" / "claim_pending_receipts.sql").read_text()
     batch_size: ClassVar[int] = 100
     product_cache: ClassVar[dict[int, dict[int, Product]]] = {}
-
-    @classmethod
-    def from_order(cls, order: Order):
-        """
-        Construct a Receipt from a Django ORM Order instance.
-        Note that this shouldn't be used when mailing orders during the Hunger Games;
-        the performance optimized version uses a hand-tuned query.
-
-        However, this is useful when sending receipts to customers after the Hunger Games,
-        for example when the clerk is resending a receipt or the customer is viewing it
-        in their account.
-
-        Returns None if the order is not paid.
-        """
-        # Check that the order is paid
-        try:
-            paid_stamp = PaymentStamp.objects.filter(
-                event_id=order.event_id,
-                order_id=order.id,
-                status=PaymentStatus.PAID,
-            ).latest("id")
-        except PaymentStamp.DoesNotExist:
-            return None
-
-        return cls(
-            order_id=order.id,
-            event_id=order.event_id,
-            event_name=order.event.name,
-            event_slug=order.event.slug,
-            correlation_id=paid_stamp.correlation_id,
-            language=order.language,
-            first_name=order.first_name,
-            last_name=order.last_name,
-            email=order.email,
-            phone=order.phone,
-            product_data=order.product_data,
-            order_number=order.order_number,
-            total_price=order.cached_price,
-        )
 
     @pydantic.field_validator("language", mode="before")
     @staticmethod
@@ -293,7 +247,7 @@ class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
         return ETICKET_TEXT[self.language].format(event_name=self.event_name)
 
     @classmethod
-    def get_pending_receipts(cls, batch_size: int = batch_size) -> tuple[list[Self], bool]:
+    def claim_pending_receipts(cls, event_id: int, batch_size: int = batch_size) -> tuple[list[Self], bool]:
         """
         Iterate this to find orders for which a receipt needs to be sent.
         You'll get a batch of `ReceiptPending.batch_size` orders at a time, and
@@ -301,7 +255,14 @@ class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
         (ie. a subsequent call to this method will return more orders).
         """
         with connection.cursor() as cursor:
-            cursor.execute(cls.query, [batch_size + 1])
+            cursor.execute(
+                cls.query,
+                dict(
+                    batch_id=uuid7(),
+                    batch_size=batch_size + 1,
+                    event_id=event_id,
+                ),
+            )
             results = [
                 cls(**dict(zip(cls.model_fields, row, strict=True)))  # type: ignore
                 for row in cursor

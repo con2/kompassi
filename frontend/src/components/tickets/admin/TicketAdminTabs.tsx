@@ -31,6 +31,7 @@ export default function TicketAdminTabs(props: Props) {
       slug: "ticketControl",
       title: t.tabs.ticketControl,
       href: `${kompassiBaseUrl}/events/${eventSlug}/ticket-control`,
+      disabled: true,
     },
   ];
 

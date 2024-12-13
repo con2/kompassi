@@ -22,7 +22,7 @@ export async function getProducts(
     return response.json();
   } else {
     throw new Error(`Unexpected status code ${response.status}`, {
-      cause: response,
+      cause: await response.json(),
     });
   }
 }

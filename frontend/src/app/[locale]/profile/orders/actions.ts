@@ -28,7 +28,7 @@ export async function payOrder(
   eventSlug: string,
   orderId: string,
 ) {
-  const response = await OrderService.payOrder(locale, eventSlug, orderId);
+  const response = await OrderService.payOrder(eventSlug, orderId);
   revalidatePath(`/${locale}/${eventSlug}/orders/${orderId}`);
   return void redirect(response.paymentRedirect);
 }

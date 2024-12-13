@@ -10,6 +10,15 @@ import event_log_v2.utils.monthly_partitions
 import tickets_v2.optimized_server.utils.uuid7
 import tickets_v2.utils.event_partitions
 
+PAYMENT_STATUS_CHOICES = [
+    (0, "NOT_STARTED"),
+    (1, "PENDING"),
+    (2, "FAILED"),
+    (3, "PAID"),
+    (4, "CANCELLED"),
+    (5, "REFUNDED"),
+]
+
 
 class Migration(migrations.Migration):
     initial = True
@@ -36,7 +45,7 @@ class Migration(migrations.Migration):
                 ),
                 ("admin_group", models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="auth.group")),
                 (
-                    "provider",
+                    "provider_id",
                     models.SmallIntegerField(
                         choices=[(0, "NONE"), (1, "PAYTRAIL"), (2, "STRIPE")],
                         default=0,
@@ -86,12 +95,18 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.RunSQL(
-            sql=Path(__file__).with_name("0001_initial_partitioned_tables.sql").read_text(),
+            sql=Path(__file__).with_name("0001_initial.sql").read_text(),
             reverse_sql="""
-            drop table if exists tickets_v2_ticket cascade;
-            drop table if exists tickets_v2_paymentstamp cascade;
-            drop table if exists tickets_v2_receiptstamp cascade;
-            drop table if exists tickets_v2_order cascade;
+                drop table if exists tickets_v2_receipt cascade;
+                drop table if exists tickets_v2_paymentstamp cascade;
+                drop table if exists tickets_v2_ticket cascade;
+                drop table if exists tickets_v2_order cascade;
+
+                drop domain if exists tickets_v2_paymentprovider;
+                drop domain if exists tickets_v2_paymentstamptype;
+                drop domain if exists tickets_v2_paymentstatus;
+                drop domain if exists tickets_v2_receipttype;
+                drop domain if exists tickets_v2_receiptstatus;
             """,
             state_operations=[
                 migrations.CreateModel(
@@ -115,14 +130,6 @@ class Migration(migrations.Migration):
                             ),
                         ),
                         (
-                            "cached_price",
-                            models.DecimalField(
-                                decimal_places=2,
-                                default=Decimal("0"),
-                                max_digits=10,
-                            ),
-                        ),
-                        (
                             "order_number",
                             models.IntegerField(
                                 help_text=(
@@ -131,6 +138,32 @@ class Migration(migrations.Migration):
                                     "the customer reading the order number aloud to an event rep. "
                                     "Prefer id (UUID) for everything else (eg. URLs)."
                                 )
+                            ),
+                        ),
+                        (
+                            "owner",
+                            models.ForeignKey(
+                                settings.AUTH_USER_MODEL,
+                                on_delete=models.SET_NULL,
+                                null=True,
+                                blank=True,
+                                related_name="+",
+                            ),
+                        ),
+                        (
+                            "cached_status",
+                            models.SmallIntegerField(
+                                choices=PAYMENT_STATUS_CHOICES,
+                                default=0,
+                                help_text="Payment status of the order. Updated by a trigger on PaymentStamp.",
+                            ),
+                        ),
+                        (
+                            "cached_price",
+                            models.DecimalField(
+                                decimal_places=2,
+                                default=Decimal("0"),
+                                max_digits=10,
                             ),
                         ),
                         (
@@ -209,34 +242,33 @@ class Migration(migrations.Migration):
                                 help_text="The correlation ID ties together the payment stamps related to the same payment attempt. For Paytrail, this is what they call 'stamp'."
                             ),
                         ),
-                        ("provider", models.SmallIntegerField(choices=[(0, "NONE"), (1, "PAYTRAIL"), (2, "STRIPE")])),
+                        (
+                            "provider_id",
+                            models.SmallIntegerField(choices=[(0, "NONE"), (1, "PAYTRAIL"), (2, "STRIPE")]),
+                        ),
                         (
                             "type",
                             models.SmallIntegerField(
                                 choices=[
+                                    (0, "ZERO_PRICE"),
                                     (1, "CREATE_PAYMENT_REQUEST"),
-                                    (2, "CREATE_PAYMENT_RESPONSE"),
-                                    (3, "PAYMENT_REDIRECT"),
-                                    (4, "PAYMENT_CALLBACK"),
+                                    (2, "CREATE_PAYMENT_SUCCESS"),
+                                    (3, "CREATE_PAYMENT_SUCCESS"),
+                                    (4, "PAYMENT_REDIRECT"),
+                                    (5, "PAYMENT_CALLBACK"),
                                 ]
                             ),
                         ),
                         (
                             "status",
                             models.SmallIntegerField(
-                                choices=[
-                                    (0, "UNKNOWN"),
-                                    (1, "PENDING"),
-                                    (2, "PAID"),
-                                    (3, "CANCELLED"),
-                                    (4, "REFUNDED"),
-                                ],
+                                choices=PAYMENT_STATUS_CHOICES,
                             ),
                         ),
                         (
                             "data",
                             models.JSONField(
-                                help_text="What we sent to or received from the payment provider. Sensitive details such as API credentials, PII etc. may be redacted. Also fields lifted to relational fields need not be repeated here."
+                                help_text="What we sent to or received from the payment provider_id. Sensitive details such as API credentials, PII etc. may be redacted. Also fields lifted to relational fields need not be repeated here."
                             ),
                         ),
                         (
@@ -253,7 +285,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 migrations.CreateModel(
-                    name="ReceiptStamp",
+                    name="Receipt",
                     fields=[
                         (
                             "id",
@@ -262,6 +294,14 @@ class Migration(migrations.Migration):
                                 editable=False,
                                 primary_key=True,
                                 serialize=False,
+                            ),
+                        ),
+                        (
+                            "event",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.RESTRICT,
+                                related_name="+",
+                                to="core.event",
                             ),
                         ),
                         (
@@ -278,23 +318,35 @@ class Migration(migrations.Migration):
                             ),
                         ),
                         (
+                            "batch_id",
+                            models.UUIDField(
+                                null=True,
+                                blank=True,
+                                help_text=(
+                                    "The ID of the batch this receipt was sent processed in. "
+                                    "This is an UUIDv7 that is generated when the batch is created. "
+                                    "If the receipt is stuck in PROCESSING and the batch ID is old, then the batch has probably failed and needs to be retried."
+                                ),
+                            ),
+                        ),
+                        (
                             "type",
                             models.SmallIntegerField(
-                                choices=[(1, "ORDER_CONFIRMATION"), (2, "CANCELLATION")],
+                                choices=[
+                                    (1, "ORDER_CONFIRMATION"),
+                                    (2, "CANCELLATION"),
+                                ],
                             ),
                         ),
                         (
                             "status",
                             models.SmallIntegerField(
-                                choices=[(1, "PROCESSING"), (2, "SUCCESS"), (3, "FAILURE")],
-                            ),
-                        ),
-                        (
-                            "event",
-                            models.ForeignKey(
-                                on_delete=django.db.models.deletion.RESTRICT,
-                                related_name="+",
-                                to="core.event",
+                                choices=[
+                                    (0, "REQUESTED"),
+                                    (1, "PROCESSING"),
+                                    (2, "SUCCESS"),
+                                    (3, "FAILURE"),
+                                ],
                             ),
                         ),
                     ],

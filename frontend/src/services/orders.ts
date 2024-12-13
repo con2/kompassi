@@ -38,27 +38,18 @@ interface PayOrderResponse {
 }
 
 export async function payOrder(
-  locale: string,
   eventSlug: string,
   orderId: string,
 ): Promise<PayOrderResponse> {
-  const request: PayOrderRequest = {
-    language: locale,
-  };
   const response = await fetch(
     `${ticketsBaseUrl}/api/tickets-v2/${eventSlug}/orders/${orderId}/payment/`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(request),
-    },
+    { method: "POST" },
   );
 
   if (!response.ok) {
+    const { detail } = await response.json();
     throw new Error(`Unexpected status code ${response.status}`, {
-      cause: response,
+      cause: detail,
     });
   }
 

@@ -386,7 +386,7 @@ class Person(models.Model):
         Note that a verified email may also be verified again. This is useful for claiming new orders
         made while not logged in.
         """
-        from tickets_v2.models.order import OrderOwner
+        from tickets_v2.models.order import Order
 
         from .email_verification_token import EmailVerificationError, EmailVerificationToken
 
@@ -419,7 +419,12 @@ class Person(models.Model):
         EmailVerificationToken.objects.filter(person=self, state="valid").update(state="revoked")
 
         # Claim all unclaimed orders with this email address
-        OrderOwner.claim_orders(self.user)
+        Order.objects.filter(
+            owner=None,
+            email=self.email,
+        ).update(
+            owner=self,
+        )
 
     @property
     def age_now(self):

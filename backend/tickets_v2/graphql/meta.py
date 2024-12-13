@@ -7,7 +7,7 @@ from core.utils.text_utils import normalize_whitespace
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 
 from ..models.meta import TicketsV2EventMeta, TicketsV2ProfileMeta
-from ..models.order import Order, OrderOwner
+from ..models.order import Order
 from ..models.product import Product
 from ..models.quota import Quota
 from .order_full import FullOrderType
@@ -19,7 +19,7 @@ from .quota_full import FullQuotaType
 class TicketsV2EventMetaType(DjangoObjectType):
     class Meta:
         model = TicketsV2EventMeta
-        fields = ("provider",)
+        fields = ("provider_id",)
 
     @graphql_query_cbac_required
     @staticmethod
@@ -70,6 +70,21 @@ class TicketsV2EventMetaType(DjangoObjectType):
         description=normalize_whitespace(resolve_orders.__doc__ or ""),
     )
 
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_order(meta: TicketsV2EventMeta, info, id: str):
+        """
+        Returns an order made to this event.
+        Admin oriented view; customers will access order information through `profile.tickets`.
+        """
+        return Order.objects.filter(event=meta.event, id=id).first()
+
+    order = graphene.Field(
+        FullOrderType,
+        id=graphene.String(required=True),
+        description=normalize_whitespace(resolve_orders.__doc__ or ""),
+    )
+
 
 class TicketsV2ProfileMetaType(graphene.ObjectType):
     @staticmethod
@@ -81,7 +96,8 @@ class TicketsV2ProfileMetaType(graphene.ObjectType):
         """
         if info.context.user != meta.person.user:
             raise SuspiciousOperation("User mismatch")
-        return OrderOwner.get_user_orders(meta.person.user_id)
+
+        return Order.objects.filter(owner=meta.person.user)
 
     orders = graphene.NonNull(
         graphene.List(graphene.NonNull(ProfileOrderType)),
@@ -97,7 +113,12 @@ class TicketsV2ProfileMetaType(graphene.ObjectType):
         """
         if info.context.user != meta.person.user:
             raise SuspiciousOperation("User mismatch")
-        return OrderOwner.get_user_order(event_slug, order_id, info.context.user.id)
+
+        return Order.objects.filter(
+            event__slug=event_slug,
+            id=order_id,
+            owner=meta.person.user,
+        )
 
     order = graphene.Field(
         ProfileOrderType,
@@ -113,7 +134,11 @@ class TicketsV2ProfileMetaType(graphene.ObjectType):
         """
         if info.context.user != meta.person.user:
             raise SuspiciousOperation("User mismatch")
-        return OrderOwner.have_unclaimed_orders(info.context.user)
+
+        return Order.objects.filter(
+            owner=None,
+            email=meta.person.email,
+        ).exists()
 
     have_unlinked_orders = graphene.NonNull(
         graphene.Boolean,

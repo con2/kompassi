@@ -11,13 +11,12 @@ from psycopg import AsyncConnection
 from tickets_v2.optimized_server.utils.uuid7 import uuid7
 
 from .enums import PaymentProvider, PaymentStampType, PaymentStatus
-from .event import Event
 
 
 class PaymentStamp(pydantic.BaseModel):
     event_id: int
     order_id: UUID
-    provider: PaymentProvider
+    provider_id: PaymentProvider
     type: PaymentStampType
     status: PaymentStatus
     correlation_id: UUID
@@ -33,7 +32,7 @@ class PaymentStamp(pydantic.BaseModel):
                     uuid7(),
                     self.event_id,
                     self.order_id,
-                    self.provider.value,
+                    self.provider_id.value,
                     self.type.value,
                     self.status.value,
                     self.correlation_id,
@@ -53,7 +52,7 @@ class PaymentStamp(pydantic.BaseModel):
                         uuid7(),
                         stamp.event_id,
                         stamp.order_id,
-                        stamp.provider.value,
+                        stamp.provider_id.value,
                         stamp.type.value,
                         stamp.status.value,
                         stamp.correlation_id,
@@ -66,13 +65,14 @@ class PaymentStamp(pydantic.BaseModel):
     @classmethod
     def for_zero_price_order(
         cls,
-        event: Event,
+        event_id: int,
         order_id: UUID,
+        provider_id: PaymentProvider,
     ) -> PaymentStamp:
         return cls(
-            event_id=event.id,
+            event_id=event_id,
             order_id=order_id,
-            provider=event.provider,
+            provider_id=provider_id,
             type=PaymentStampType.ZERO_PRICE,
             status=PaymentStatus.PAID,
             correlation_id=uuid7(),

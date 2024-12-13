@@ -7,14 +7,12 @@ from starlette.requests import Request
 from starlette.responses import PlainTextResponse, RedirectResponse
 
 from .db import DB, lifespan
-from .excs import InvalidProducts, NotEnoughTickets
-from .models.api import PayOrderRequest
-from .models.enums import PaymentProvider, PaymentStampType
+from .excs import InvalidProducts, NotEnoughTickets, ProviderCannot
+from .models.enums import PaymentStampType
 from .models.event import Event
 from .models.order import CreateOrderRequest, Order, OrderWithCustomer
-from .models.payment_stamp import PaymentStamp
 from .models.product import Product
-from .services.paytrail import CreatePaymentRequest, PaymentCallback
+from .providers.paytrail import PaymentCallback
 
 app = FastAPI(lifespan=lifespan)
 logger = logging.getLogger(__name__)
@@ -72,41 +70,34 @@ async def get_products(event: _Event, db: DB):
 
 @app.post("/api/tickets-v2/{event_slug}/orders/")
 async def create_order(event: _Event, order: CreateOrderRequest, db: DB):
+    provider = event.provider
+
     try:
         async with db.transaction():
             result = await order.save(db, event.id)
+            request, request_stamp = provider.prepare_for_new_order(order, result)
+            await request_stamp.save(db)
     except NotEnoughTickets as e:
         raise HTTPException(409, "NOT_ENOUGH_TICKETS") from e
-    except InvalidProducts as e:
+    except (InvalidProducts, ProviderCannot) as e:
         raise HTTPException(400, "INVALID_ORDER") from e
 
-    payment_redirect = ""
-    stamps = []
+    if request is None:
+        return {
+            "orderId": result.order_id,
+            "status": request_stamp.status.name,
+            "paymentRedirect": "",
+        }
 
-    if result.total_price > 0:
-        match event.provider:
-            case PaymentProvider.NONE:
-                logger.error("New order %s has non-zero price with no payment provider", result.order_id)
-                raise HTTPException(400, "INVALID_ORDER")
-            case PaymentProvider.PAYTRAIL:
-                request = CreatePaymentRequest.from_create_order_request(event, order, result)
-                response, stamps = await request.send(event, result.order_id)
-                payment_redirect = response.href
-            case _:
-                logger.error("Payment provider not implemented: %s", event.provider)
-                raise HTTPException(400, "INVALID_ORDER")
-    elif result.total_price == 0:
-        stamps.append(PaymentStamp.for_zero_price_order(event, result.order_id))
-    else:
-        logger.error("New order %s has negative price", result.order_id)
-        raise HTTPException(400, "INVALID_ORDER")
+    response, response_stamp = await request.send()
 
     async with db.transaction():
-        await PaymentStamp.save_many(db, stamps)
+        await response_stamp.save(db)
 
     return {
         "orderId": result.order_id,
-        "paymentRedirect": payment_redirect,
+        "status": response_stamp.status.name,
+        "paymentRedirect": response.payment_redirect if response else "",
     }
 
 
@@ -124,38 +115,27 @@ async def get_order(event: _Event, order: _Order):
 async def pay(
     event: _Event,
     order: _OrderWithCustomer,
-    pay_order_request: PayOrderRequest,
     db: DB,
 ):
-    payment_redirect = ""
-    stamps = []
+    provider = event.provider
 
-    if order.total_price <= 0:
-        logger.error("Asked to pay for existing order %s with nonpositive price", order.id)
-        raise HTTPException(status_code=400, detail="INVALID_ORDER")
-
-    match event.provider:
-        case PaymentProvider.PAYTRAIL:
-            request = CreatePaymentRequest.from_order(event, order, pay_order_request.language)
-            response, stamps = await request.send(event, order.id)
-            payment_redirect = response.href
-        case PaymentProvider.NONE:
-            logger.error("Asked to pay for existing order %s with nonzero price but no payment provider", order.id)
-            raise HTTPException(status_code=400, detail="INVALID_ORDER")
-        case _:
-            logger.error("Payment provider not implemented: %s (order %s)", event.provider, order.id)
-            raise HTTPException(400, "INVALID_ORDER")
+    try:
+        create_payment_request, request_stamp = provider.prepare_for_existing_order(order)
+    except ProviderCannot as e:
+        raise HTTPException(400, "INVALID_ORDER") from e
 
     async with db.transaction():
-        await PaymentStamp.save_many(db, stamps)
+        await request_stamp.save(db)
 
-    if not payment_redirect:
-        logger.error("Payment method did not return a redirect URL for order %s", order.id)
-        raise HTTPException(status_code=400, detail="INVALID_ORDER")
+    response, response_stamp = await create_payment_request.send()
+
+    async with db.transaction():
+        await response_stamp.save(db)
 
     return {
         "orderId": order.id,
-        "paymentRedirect": payment_redirect,
+        "status": response_stamp.status.name,
+        "paymentRedirect": response.payment_redirect if response else "",
     }
 
 

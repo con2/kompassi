@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class TicketsV2EventMeta(EventMetaBase):
-    provider = models.SmallIntegerField(
+    provider_id = models.SmallIntegerField(
         choices=[(x.value, x.name) for x in PaymentProvider],
         default=PaymentProvider.NONE,
     )
@@ -23,16 +23,15 @@ class TicketsV2EventMeta(EventMetaBase):
     use_cbac = True
 
     def ensure_partitions(self):
-        from .order import Order, OrderOwner
+        from .order import Order
         from .payment_stamp import PaymentStamp
-        from .receipts import ReceiptStamp
+        from .receipt import Receipt
         from .ticket import Ticket
 
         Order.ensure_partition(self.event)
-        OrderOwner.ensure_partition(self.event)
         Ticket.ensure_partition(self.event)
         PaymentStamp.ensure_partition(self.event)
-        ReceiptStamp.ensure_partition(self.event)
+        Receipt.ensure_partition(self.event)
 
     @property
     def scope(self):

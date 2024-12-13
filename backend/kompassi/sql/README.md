@@ -10,7 +10,7 @@ To refresh the schema snapshot, run `migrate` (NOTE: not `setup`) on an empty da
 
     # WARNING! This nukes your current development database
     docker compose down -v
-    docker compose run --rm web python manage.py migrate
+    docker compose run --rm backend python manage.py migrate
     docker compose exec postgres pg_dump -Ox -U kompassi > kompassi/sql/00-schema.sql
 
     # Then test it before committing

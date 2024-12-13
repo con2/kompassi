@@ -119,6 +119,7 @@ class Order(pydantic.BaseModel, populate_by_name=True):
         serialization_alias="totalPrice",
         validation_alias="totalPrice",
     )
+    language: str
     products: list[OrderProduct]
 
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_order.sql").read_bytes()
@@ -142,12 +143,13 @@ class Order(pydantic.BaseModel, populate_by_name=True):
 
             order_products = []
             total_price = Decimal(0)
-            status = PaymentStatus.UNKNOWN
+            status = PaymentStatus.NOT_STARTED
             order_number = 0
+            language_ = ""
 
-            async for total_, order_number_, title, price, quantity, status_ in cursor:
+            async for total_, order_number_, language_, title, price, quantity, status_ in cursor:
                 order_products.append(OrderProduct(title=title, price=price, quantity=quantity))
-                total_price, order_number, status = total_, order_number_, status_
+                total_price, order_number, language, status = total_, order_number_, language_, status_
 
             if not order_products:
                 return None
@@ -155,6 +157,7 @@ class Order(pydantic.BaseModel, populate_by_name=True):
             return cls(
                 id=order_id,
                 total_price=total_price,
+                language=language,
                 status=status,
                 order_number=order_number,
                 products=order_products,
@@ -184,7 +187,8 @@ class OrderWithCustomer(Order):
 
             order_products = []
             total_price = Decimal(0)
-            status = PaymentStatus.UNKNOWN
+            language = ""
+            status = PaymentStatus.NOT_STARTED
             order_number = 0
             first_name = ""
             last_name = ""
@@ -195,6 +199,7 @@ class OrderWithCustomer(Order):
             async for (
                 total_,
                 order_number_,
+                language_,
                 title,
                 price,
                 quantity,
@@ -205,7 +210,7 @@ class OrderWithCustomer(Order):
                 phone_,
             ) in cursor:
                 order_products.append(OrderProduct(title=title, price=price, quantity=quantity))
-                total_price, order_number, status = total_, order_number_, status_
+                total_price, order_number, language, status = total_, order_number_, language_, status_
                 first_name, last_name, email, phone = first_name_, last_name_, email_, phone_
 
             if not order_products:
@@ -214,6 +219,7 @@ class OrderWithCustomer(Order):
             return cls(
                 id=order_id,
                 total_price=total_price,
+                language=language,
                 status=status,
                 order_number=order_number,
                 products=order_products,

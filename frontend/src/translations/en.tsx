@@ -347,7 +347,7 @@ const translations = {
         status: {
           title: "Status",
           choices: {
-            UNKNOWN: {
+            NOT_STARTED: {
               title: "Unknown order status",
               shortTitle: "Unknown",
               message:
@@ -358,6 +358,12 @@ const translations = {
               shortTitle: "Awaiting payment",
               message:
                 "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
+            },
+            FAILED: {
+              title: "Payment failed",
+              shortTitle: "Payment failed",
+              message:
+                "The payment for your order failed or was cancelled. Please try again. Unpaid orders will be eventually cancelled.",
             },
             PAID: {
               title: "Your order is complete!",

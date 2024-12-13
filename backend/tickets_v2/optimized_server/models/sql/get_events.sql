@@ -2,7 +2,7 @@ select
   e.id,
   e.slug,
   e.name,
-  m.provider,
+  m.provider_id,
   coalesce(p.checkout_merchant, '') as paytrail_merchant,
   coalesce(p.checkout_password, '') as paytrail_password
 from

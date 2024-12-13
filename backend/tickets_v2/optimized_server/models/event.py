@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from asyncio import Future, ensure_future
+from functools import cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
 
@@ -18,7 +19,7 @@ class Event(pydantic.BaseModel):
     name: str
 
     # TODO consider multiple payment providers per event in the future
-    provider: PaymentProvider
+    provider_id: PaymentProvider
 
     paytrail_merchant: str
     paytrail_password: str
@@ -57,12 +58,12 @@ class Event(pydantic.BaseModel):
             await cursor.execute(cls.query)
 
             cls.cache.clear()
-            async for id, slug, name, provider, pt_merc, pt_pwd in cursor:
+            async for id, slug, name, provider_id, pt_merc, pt_pwd in cursor:
                 cls.cache[slug] = cls.cache[id] = cls(
                     id=id,
                     slug=slug,
                     name=name,
-                    provider=provider,
+                    provider_id=provider_id,
                     paytrail_merchant=pt_merc,
                     paytrail_password=pt_pwd,
                 )
@@ -71,3 +72,16 @@ class Event(pydantic.BaseModel):
 
     def model_dump(self, *args, **kwargs) -> Any:
         raise NotImplementedError("contains secrets, please don't")
+
+    @cached_property
+    def provider(self):
+        from ..providers.null import NullProvider
+        from ..providers.paytrail import PaytrailProvider
+
+        match self.provider_id:
+            case PaymentProvider.NONE:
+                return NullProvider(self)
+            case PaymentProvider.PAYTRAIL:
+                return PaytrailProvider(self)
+            case _:
+                raise NotImplementedError(f"Unknown payment provider: {self.provider_id}")

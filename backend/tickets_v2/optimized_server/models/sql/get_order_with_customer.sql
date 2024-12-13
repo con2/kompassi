@@ -1,6 +1,7 @@
 select
   o.cached_price as total,
   o.order_number as order_number,
+  o.language as language,
   p2.title,
   p2.price,
   p2.quantity,

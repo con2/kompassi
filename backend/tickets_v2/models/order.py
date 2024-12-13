@@ -2,14 +2,13 @@ from __future__ import annotations
 
 from decimal import Decimal
 from functools import cached_property
-from pathlib import Path
-from typing import ClassVar
-from uuid import UUID
+from typing import Self
 
 from django.contrib.auth.models import User
-from django.db import connection, models
+from django.db import models
 
 from core.models.event import Event
+from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from event_log_v2.utils.monthly_partitions import UUID7Mixin
 from graphql_api.language import SUPPORTED_LANGUAGES
 from tickets.utils import append_reference_number_checksum
@@ -47,12 +46,6 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
         related_name="+",
     )
 
-    cached_price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        default=Decimal(0),
-    )
-
     order_number = models.IntegerField(
         help_text=(
             "Order number used in contexts where UUID cannot be used. "
@@ -62,14 +55,35 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
         )
     )
 
-    product_data = models.JSONField(
-        default=dict,
-        help_text="product id -> quantity",
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+
+    cached_status = models.SmallIntegerField(
+        choices=[(status.value, status.name) for status in PaymentStatus],
+        default=PaymentStatus.NOT_STARTED,
+        help_text="Payment status of the order. Updated by a trigger on PaymentStamp.",
+    )
+
+    cached_price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=Decimal(0),
+        help_text="Total price of the order in euros. Calculated by create_order.sql from product_data.",
     )
 
     language = models.CharField(
         max_length=2,
         choices=[(lang.code, lang.name_django) for lang in SUPPORTED_LANGUAGES],
+    )
+
+    product_data = models.JSONField(
+        default=dict,
+        help_text="product id -> quantity",
     )
 
     # NOTE: lengths validated in server code, see optimized_server/models/customer.py
@@ -97,14 +111,15 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
     @cached_property
     def products(self) -> list[OrderProduct]:
         products_by_id = {product.id: product for product in Product.objects.filter(event=self.event)}
+        print(products_by_id)
         return [
             OrderProduct(
-                title=products_by_id[product_id].title,
-                price=products_by_id[product_id].price,
+                title=product.title,
+                price=product.price,
                 quantity=quantity,
             )
             for (product_id, quantity) in self.product_data.items()
-            if quantity > 0
+            if (product := products_by_id[int(product_id)]) and quantity > 0
         ]
 
     @property
@@ -135,85 +150,21 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
     def display_name(self) -> str:
         return f"{self.first_name} {self.last_name}"
 
-
-class OrderOwner(EventPartitionsMixin, models.Model):
-    """
-    Indicates the owner of an order.
-    All unclaimed orders with a matching email address are claimed when the email address is confirmed.
-    Separate table to keep Order insert only and as fast as possible to read.
-
-    Partitioned by event_id.
-    Primary key is (event_id, order_id).
-    Migrations managed manually.
-    """
-
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="+")
-    order_id = models.UUIDField(primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="+")
-
-    event_id: int
-    have_unclaimed_orders_query: ClassVar[str] = (Path(__file__).parent / "sql/have_unclaimed_orders.sql").read_text()
-    claim_orders_query: ClassVar[str] = (Path(__file__).parent / "sql/claim_orders.sql").read_text()
-    get_user_order_query: ClassVar[str] = (Path(__file__).parent / "sql/get_user_order.sql").read_text()
-    get_user_orders_query: ClassVar[str] = (Path(__file__).parent / "sql/get_user_orders.sql").read_text()
-
-    # the mixin will set statistics 10000 on this column
-    intrapartition_id_column: ClassVar[str] = "order_id"
-
     @classmethod
-    def have_unclaimed_orders(cls, user: User):
-        """
-        Returns true if the user has unlinked orders made with the same email address.
-        These orders can be linked to the user account by verifying the email address again.
-        """
-        with connection.cursor() as cursor:
-            cursor.execute(cls.have_unclaimed_orders_query, (user.email,))
-            return bool(cursor.fetchone())
+    def filter_orders(
+        cls,
+        orders: models.QuerySet[Self],
+        filters: list[DimensionFilterInput] | None,
+    ) -> models.QuerySet[Self]:
+        if not filters:
+            return orders
 
-    @classmethod
-    def claim_orders(cls, user: User):
-        """
-        Called when a user confirms their email address.
-        Claims all unclaimed orders with a matching email address.
-        """
-        with connection.cursor() as cursor:
-            cursor.execute(
-                cls.claim_orders_query,
-                dict(
-                    user_id=user.id,  # type: ignore
-                    email=user.email,
-                ),
-            )
+        for filter in filters:
+            values = filter.values
+            match filter.dimension:
+                case "status":
+                    orders = orders.annotate(status=cls.status).filter(status__in=values)
+                case "product":
+                    pass
 
-    @classmethod
-    def get_user_order(cls, event_slug: str, order_id: UUID | str, user_id: int) -> Order:
-        """
-        Returns an order of the current user.
-        Note that unlinked orders made with the same email address are not returned.
-        They need to be linked first (ie. their email confirmed again).
-        """
-        try:
-            return Order.objects.raw(
-                cls.get_user_order_query,
-                dict(
-                    event_slug=event_slug,
-                    order_id=order_id,
-                    user_id=user_id,
-                ),
-            )[0]
-        except IndexError as e:
-            raise Order.DoesNotExist() from e
-
-    @classmethod
-    def get_user_orders(cls, user_id: int) -> models.RawQuerySet[Order]:
-        """
-        Returns the orders of the current user.
-        Note that unlinked orders made with the same email address are not returned.
-        They need to be linked first (ie. their email confirmed again).
-        """
-        return Order.objects.raw(
-            cls.get_user_orders_query,
-            dict(
-                user_id=user_id,
-            ),
-        )
+        return orders

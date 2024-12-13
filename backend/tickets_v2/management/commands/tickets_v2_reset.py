@@ -27,7 +27,7 @@ class Command(BaseCommand):
                         tickets_v2_quota,
                         tickets_v2_product,
                         tickets_v2_paymentstamp,
-                        tickets_v2_receiptstamp,
+                        tickets_v2_receipt,
                         tickets_v2_ticketsv2eventmeta
                     restart identity
                     cascade
