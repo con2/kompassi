@@ -8,3 +8,7 @@ class UnsaneSituation(AssertionError):
 
 class NotEnoughTickets(ValueError):
     pass
+
+
+class ProviderCannot(ValueError):
+    pass

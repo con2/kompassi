@@ -10,11 +10,13 @@ import classes from "./DimensionFilters.module.css";
 import type { Dimension, DimensionValue } from "./models";
 
 interface PropsWithoutProgramFilters {
+  className?: string;
   dimensions: Dimension[];
   programFilters?: false;
 }
 
 interface PropsWithProgramFilters {
+  className?: string;
   dimensions: Dimension[];
   programFilters: true;
   isLoggedIn: boolean;
@@ -72,8 +74,11 @@ export function DimensionFilters(props: Props) {
     [searchParams, replace],
   );
 
+  const className =
+    props.className ?? "row row-cols-md-auto g-3 align-items-center mb-4";
+
   return (
-    <form className="row row-cols-md-auto g-3 align-items-center mb-4">
+    <form className={className}>
       {dimensions.map((dimension) => {
         const dimensionTitle = dimension.title ?? dimension.slug;
         const nothing: DimensionValue = {

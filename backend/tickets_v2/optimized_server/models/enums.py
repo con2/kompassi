@@ -11,15 +11,32 @@ class PaymentStampType(IntEnum):
     ZERO_PRICE = 0
 
     CREATE_PAYMENT_REQUEST = 1
-    CREATE_PAYMENT_RESPONSE = 2
+    CREATE_PAYMENT_SUCCESS = 2
+    CREATE_PAYMENT_FAILURE = 3
 
-    PAYMENT_REDIRECT = 3
-    PAYMENT_CALLBACK = 4
+    PAYMENT_REDIRECT = 4
+    PAYMENT_CALLBACK = 5
 
 
 class PaymentStatus(IntEnum):
-    UNKNOWN = 0
+    NOT_STARTED = 0
     PENDING = 1
-    PAID = 2
-    CANCELLED = 3
-    REFUNDED = 4
+    FAILED = 2
+    PAID = 3
+    CANCELLED = 4
+    REFUNDED = 5
+
+
+class ReceiptType(IntEnum):
+    ORDER_CONFIRMATION = 1
+    CANCELLATION = 2
+
+
+class ReceiptStatus(IntEnum):
+    REQUESTED = 0
+    PROCESSING = 1
+    SUCCESS = 2
+    FAILURE = 3
+
+    # could add:
+    # BOUNCE = 4

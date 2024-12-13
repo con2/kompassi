@@ -3,9 +3,10 @@ from __future__ import annotations
 import json
 import logging
 from collections.abc import Mapping
+from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import Enum
-from typing import Literal, Self
+from typing import Any, ClassVar, Literal, Self
 from uuid import UUID, uuid4
 
 import aiohttp
@@ -15,6 +16,7 @@ from fastapi import HTTPException
 from tickets_v2.optimized_server.utils.uuid7 import uuid7
 
 from ..config import TICKETS_BASE_URL
+from ..excs import ProviderCannot
 from ..models.customer import Customer
 from ..models.enums import PaymentProvider, PaymentStampType, PaymentStatus
 from ..models.event import Event
@@ -22,13 +24,13 @@ from ..models.order import CreateOrderRequest, CreateOrderResult, Order, OrderWi
 from ..models.payment_stamp import PaymentStamp
 from ..utils.paytrail_hmac import calculate_hmac
 
-PAYTRAIL_API_URL = "https://services.paytrail.com/payments"
+PAYTRAIL_API_URL = "https://providers.paytrail.com/payments"
 # PAYTRAIL_API_URL = "https://api.checkout.fi/payments"
 logger = logging.getLogger(__name__)
 
 
 def get_params(event: Event, method="POST", t=None):
-    if event.provider != PaymentProvider.PAYTRAIL:
+    if event.provider_id != PaymentProvider.PAYTRAIL:
         raise ValueError(f"Event {event.slug} is not using Paytrail")
 
     if t is None:
@@ -56,7 +58,7 @@ class CallbackUrls(pydantic.BaseModel):
     cancel: str
 
     @classmethod
-    def get_redirect_urls_for_order_id(cls, event_slug: str, order_id: UUID) -> CallbackUrls:
+    def get_redirects_for_order(cls, event_slug: str, order_id: UUID) -> CallbackUrls:
         url = f"{TICKETS_BASE_URL}/api/tickets-v2/{event_slug}/orders/{order_id}/redirect/"
         return cls(
             success=url,
@@ -64,7 +66,10 @@ class CallbackUrls(pydantic.BaseModel):
         )
 
     @classmethod
-    def get_callback_urls_for_order_id(cls, event_slug: str, order_id: UUID) -> CallbackUrls:
+    def get_callbacks_for_order(cls, event_slug: str, order_id: UUID) -> CallbackUrls | None:
+        if "localhost" not in TICKETS_BASE_URL:
+            return None
+
         url = f"{TICKETS_BASE_URL}/api/tickets-v2/{event_slug}/orders/{order_id}/callback/"
         return cls(
             success=url,
@@ -74,12 +79,14 @@ class CallbackUrls(pydantic.BaseModel):
 
 class CreatePaymentResponse(pydantic.BaseModel):
     transaction_id: str = pydantic.Field(validation_alias="transactionId")
-    href: str
+    payment_redirect: str = pydantic.Field(validation_alias="href")
     reference: str
 
 
 class CreatePaymentRequest(pydantic.BaseModel):
     """
+    Represents the body of a valid Create Payment Request for Paytrail.
+
     Docs: https://docs.paytrail.com/#/
     Examples: https://docs.paytrail.com/#/examples?id=create
     """
@@ -89,7 +96,6 @@ class CreatePaymentRequest(pydantic.BaseModel):
     amount_cents: int = pydantic.Field(serialization_alias="amount")
     currency: Literal["EUR"] = "EUR"
     language: str
-    items: list[Item]
     customer: Customer
     redirect_urls: CallbackUrls = pydantic.Field(serialization_alias="redirectUrls")
     callback_urls: CallbackUrls | None = pydantic.Field(serialization_alias="callbackUrls")
@@ -105,20 +111,9 @@ class CreatePaymentRequest(pydantic.BaseModel):
             reference=result.reference,
             amount_cents=int(result.total_price * 100),
             language=request.language.upper(),
-            items=[
-                Item(
-                    unit_price_cents=int(result.total_price * 100),
-                    units=1,
-                    product_code=str(result.order_id),
-                )
-            ],
             customer=request.customer,
-            redirect_urls=CallbackUrls.get_redirect_urls_for_order_id(event.slug, result.order_id),
-            callback_urls=(
-                CallbackUrls.get_callback_urls_for_order_id(event.slug, result.order_id)
-                if "localhost" not in TICKETS_BASE_URL
-                else None
-            ),
+            redirect_urls=CallbackUrls.get_redirects_for_order(event.slug, result.order_id),
+            callback_urls=CallbackUrls.get_callbacks_for_order(event.slug, result.order_id),
         )
 
     @classmethod
@@ -126,35 +121,21 @@ class CreatePaymentRequest(pydantic.BaseModel):
         cls,
         event: Event,
         order: OrderWithCustomer,
-        language: str,
     ) -> CreatePaymentRequest:
         return cls(
             reference=order.reference,
             amount_cents=int(order.total_price * 100),
-            language=language.upper(),
-            items=[
-                Item(
-                    unit_price_cents=int(order.total_price * 100),
-                    units=1,
-                    product_code=str(order.id),
-                )
-            ],
+            language=order.language.upper(),
             customer=order.customer,
-            redirect_urls=CallbackUrls.get_redirect_urls_for_order_id(event.slug, order.id),
-            callback_urls=(
-                CallbackUrls.get_callback_urls_for_order_id(event.slug, order.id)
-                if "localhost" not in TICKETS_BASE_URL
-                else None
-            ),
+            redirect_urls=CallbackUrls.get_redirects_for_order(event.slug, order.id),
+            callback_urls=CallbackUrls.get_callbacks_for_order(event.slug, order.id),
         )
 
-    async def send(
+    def prepare(
         self,
         event: Event,
         order_id: UUID,
-        url: str = PAYTRAIL_API_URL,
-    ) -> tuple[CreatePaymentResponse, list[PaymentStamp]]:
-        stamps = []
+    ) -> tuple[PreparedCreatePaymentRequest, PaymentStamp]:
         data = self.model_dump(mode="json", by_alias=True, exclude_none=True)
         body = json.dumps(data)
         headers = get_params(event, method="POST")
@@ -167,46 +148,92 @@ class CreatePaymentRequest(pydantic.BaseModel):
         if "callbackUrls" in data:
             del data["callbackUrls"]
 
-        stamps.append(
-            PaymentStamp(
-                event_id=event.id,
-                order_id=order_id,
-                provider=PaymentProvider.PAYTRAIL,
-                type=PaymentStampType.CREATE_PAYMENT_REQUEST,
-                status=PaymentStatus.PENDING,
-                correlation_id=self.stamp,
-                data=data,
-            )
+        request_stamp = PaymentStamp(
+            event_id=event.id,
+            order_id=order_id,
+            provider_id=PaymentProvider.PAYTRAIL,
+            type=PaymentStampType.CREATE_PAYMENT_SUCCESS,
+            status=PaymentStatus.PENDING,
+            correlation_id=self.stamp,
+            data=data,
         )
 
-        # TODO connection pool?
-        # TODO if there is an error with Paytrail, should we still save the stamps?
-        async with aiohttp.ClientSession() as session, session.post(url, data=body, headers=headers) as response:
+        return PreparedCreatePaymentRequest(
+            body=body,
+            headers=headers,
+            request_stamp=request_stamp,
+        ), request_stamp
+
+
+class PreparedCreatePaymentRequest(pydantic.BaseModel):
+    """
+    The Create Payment Request is performed in three parts:
+
+    1. In same transaction as the order creation:
+        - Instantiate a CreatePaymentRequest
+        - Call .prepare() on it
+        - Store the .payment_stamp in the database
+    2. Outside transaction (important!)
+        - Call .send() on the PreparedCreatePaymentRequest
+    3. In another transaction
+        - Store the .payment_stamp of the CreatePaymentResult in the database
+
+    This ensures we get the payment stamp stored even if the payment fails,
+    minimizes amount of waiting inside transaction and
+    and minimizes number of transactions involved.
+    """
+
+    body: str
+    headers: dict[str, str]
+    request_stamp: PaymentStamp
+
+    def _build_response_stamp(
+        self,
+        type: PaymentStampType,
+        data: dict[str, Any],
+    ):
+        return PaymentStamp(
+            event_id=self.request_stamp.event_id,
+            order_id=self.request_stamp.order_id,
+            provider_id=PaymentProvider.PAYTRAIL,
+            type=type,
+            status=PaymentStatus.PENDING,
+            correlation_id=self.request_stamp.correlation_id,
+            data=data,
+        )
+
+    async def send(
+        self,
+        url: str = PAYTRAIL_API_URL,
+    ) -> tuple[CreatePaymentResponse | None, PaymentStamp]:
+        async with (
+            aiohttp.ClientSession() as session,
+            session.post(
+                url,
+                data=self.body,
+                headers=self.headers,
+            ) as response,
+        ):
             try:
                 response.raise_for_status()
             except aiohttp.ClientResponseError:
-                logger.error("Error response from Paytrail:\n%s", await response.text())
-                raise
-                # TODO save error in payment stamp and _commit the transaction_?
-                # now if we error here, payment stamp won't get recorded
+                error = await response.text()
+                logger.error("Error response from Paytrail:\n%s", error)
+                return None, self._build_response_stamp(
+                    PaymentStampType.CREATE_PAYMENT_FAILURE,
+                    data={"error": error},
+                )
+
             data = await response.json()
 
         result = CreatePaymentResponse.model_validate(data)
-
-        stamps.append(
-            PaymentStamp(
-                event_id=event.id,
-                order_id=order_id,
-                provider=PaymentProvider.PAYTRAIL,
-                type=PaymentStampType.CREATE_PAYMENT_RESPONSE,
-                status=PaymentStatus.PENDING,
-                correlation_id=self.stamp,
-                # use parsed version because response is huge
-                data=result.model_dump(mode="json", by_alias=True),
-            )
+        stamp = self._build_response_stamp(
+            PaymentStampType.CREATE_PAYMENT_SUCCESS,
+            # use parsed version to strip uninteresting fields (whole result is huge)
+            data=result.model_dump(mode="json"),
         )
 
-        return result, stamps
+        return result, stamp
 
 
 class PaytrailStatus(str, Enum):
@@ -264,9 +291,9 @@ class PaymentCallback(pydantic.BaseModel, populate_by_name=True):
         validation_alias="checkout-status",
     )
 
-    provider: str = pydantic.Field(
-        serialization_alias="checkout-provider",
-        validation_alias="checkout-provider",
+    provider_id: str = pydantic.Field(
+        serialization_alias="checkout-provider_id",
+        validation_alias="checkout-provider_id",
     )
 
     signature: str = pydantic.Field(
@@ -300,9 +327,54 @@ class PaymentCallback(pydantic.BaseModel, populate_by_name=True):
         return PaymentStamp(
             event_id=event.id,
             order_id=order.id,
-            provider=PaymentProvider.PAYTRAIL,
+            provider_id=PaymentProvider.PAYTRAIL,
             type=type,
             status=self.status.to_payment_status(),
             correlation_id=self.stamp,
             data=self.model_dump(mode="json", by_alias=True),
+        )
+
+
+@dataclass
+class PaytrailProvider:
+    event: Event
+
+    provider_id: ClassVar[PaymentProvider] = PaymentProvider.PAYTRAIL
+
+    def prepare_for_new_order(
+        self,
+        order: CreateOrderRequest,
+        result: CreateOrderResult,
+    ) -> tuple[PreparedCreatePaymentRequest | None, PaymentStamp]:
+        if result.total_price == 0:
+            return None, PaymentStamp.for_zero_price_order(
+                self.event.id,
+                result.order_id,
+                self.provider_id,
+            )
+        elif result.total_price < 0:
+            raise ProviderCannot("Paytrail provider cowardly refusing negative price order")
+
+        return CreatePaymentRequest.from_create_order_request(
+            self.event,
+            order,
+            result,
+        ).prepare(
+            self.event,
+            result.order_id,
+        )
+
+    def prepare_for_existing_order(
+        self,
+        order: OrderWithCustomer,
+    ) -> tuple[PreparedCreatePaymentRequest, PaymentStamp]:
+        if order.total_price <= 0:
+            raise ProviderCannot("Paytrail provider cowardly refusing existing nonpositive price order")
+
+        return CreatePaymentRequest.from_order(
+            self.event,
+            order,
+        ).prepare(
+            self.event,
+            order.id,
         )

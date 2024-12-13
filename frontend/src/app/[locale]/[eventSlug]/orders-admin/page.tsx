@@ -2,10 +2,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
-import { OrderListFragment, QuotaListFragment } from "@/__generated__/graphql";
+import {
+  OrderListFragment,
+  PaymentStatus,
+  ProductChoiceFragment,
+  QuotaListFragment,
+} from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
+import { buildDimensionFilters } from "@/components/dimensions/helpers";
+import { Dimension } from "@/components/dimensions/models";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
@@ -14,6 +22,7 @@ import ViewHeading from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { Translations } from "@/translations/en";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
@@ -21,9 +30,17 @@ graphql(`
     id
     formattedOrderNumber
     displayName
+    email
     createdAt
     totalPrice
     status
+  }
+`);
+
+graphql(`
+  fragment ProductChoice on FullProductType {
+    id
+    title
   }
 `);
 
@@ -34,6 +51,10 @@ const query = graphql(`
       slug
 
       tickets {
+        products {
+          ...ProductChoice
+        }
+
         orders(filters: $filters) {
           ...OrderList
         }
@@ -47,12 +68,36 @@ interface Props {
     locale: string;
     eventSlug: string;
   };
+  searchParams: Record<string, string>;
 }
 
-export async function generateMetadata({ params }: Props) {
+function getDimensions(
+  messages: Translations["Tickets"],
+  products: ProductChoiceFragment[],
+): Dimension[] {
+  const t = messages.Order;
+  const producT = messages.Product;
+
+  return [
+    {
+      slug: "status",
+      title: t.attributes.status.title,
+      values: Object.entries(t.attributes.status.choices)
+        .filter(([slug, _]) => slug != "UNKNOWN")
+        .map(([slug, { shortTitle }]) => ({ slug, title: shortTitle })),
+    },
+    {
+      slug: "product",
+      title: producT.attributes.product,
+      values: products.map(({ id, title }) => ({ slug: id, title })),
+    },
+  ];
+}
+
+export async function generateMetadata({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets;
+  const t = translations.Tickets.Order;
 
   // TODO encap
   const session = await auth();
@@ -60,9 +105,10 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
+  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug },
+    variables: { eventSlug, filters },
   });
 
   if (!data.event?.tickets) {
@@ -71,7 +117,7 @@ export async function generateMetadata({ params }: Props) {
 
   const title = getPageTitle({
     event: data.event,
-    viewTitle: t.Order.listTitle,
+    viewTitle: t.listTitle,
     translations,
   });
 
@@ -82,7 +128,7 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function OrdersPage({ params }: Props) {
+export default async function OrdersPage({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Order;
@@ -94,9 +140,10 @@ export default async function OrdersPage({ params }: Props) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
+  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug },
+    variables: { eventSlug, filters },
   });
 
   if (!data.event?.tickets) {
@@ -105,6 +152,9 @@ export default async function OrdersPage({ params }: Props) {
 
   const event = data.event;
   const orders = data.event.tickets.orders;
+  const products = data.event.tickets.products;
+
+  const dimensions = getDimensions(translations.Tickets, products);
 
   const columns: Column<OrderListFragment>[] = [
     {
@@ -123,6 +173,10 @@ export default async function OrdersPage({ params }: Props) {
     {
       slug: "displayName",
       title: t.attributes.displayName.title,
+    },
+    {
+      slug: "email",
+      title: t.attributes.email.title,
     },
     {
       slug: "createdAt",
@@ -161,6 +215,11 @@ export default async function OrdersPage({ params }: Props) {
         eventSlug={eventSlug}
         active="orders"
         translations={translations}
+      />
+
+      <DimensionFilters
+        dimensions={dimensions}
+        className="row row-cols-md-auto g-3 align-items-center mt-1 mb-2"
       />
 
       <DataTable rows={orders} columns={columns} />

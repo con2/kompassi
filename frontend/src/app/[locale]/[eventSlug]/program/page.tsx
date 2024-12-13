@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { markScheduleItemAsFavorite, unmarkAsFavorite } from "./actions";
 import { FavoriteContextProvider } from "./FavoriteContext";
 import ProgramCard from "./ProgramCard";
-import ProgramTabs from "./ProgramTabs";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";

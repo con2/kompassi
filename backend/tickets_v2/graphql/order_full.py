@@ -6,7 +6,7 @@ from core.graphql.event_limited import LimitedEventType
 from core.utils import normalize_whitespace
 
 from ..models.order import Order
-from ..models.receipts import Receipt
+from ..models.receipt import PendingReceipt
 from ..optimized_server.models.enums import PaymentStatus
 from .order_limited import LimitedOrderType
 from .order_product import OrderProductType
@@ -37,7 +37,7 @@ class FullOrderType(LimitedOrderType):
         They need to be the owner of the order (or an admin) to access that link.
         Returns null if the order does not contain electronic tickets.
         """
-        receipt = Receipt.from_order(order)
+        receipt = PendingReceipt.from_order(order)
         if not (receipt and receipt.have_etickets):
             return None
 

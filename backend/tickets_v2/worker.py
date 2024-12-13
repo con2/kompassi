@@ -12,7 +12,7 @@ import logging
 from django.db import transaction
 from psycopg import connect
 
-from .models.receipts import Receipt, ReceiptStamp, ReceiptStampType, ReceiptStatus
+from .models.receipt import PendingReceipt, Receipt, ReceiptStatus, ReceiptType
 from .optimized_server.db import get_conninfo
 
 logger = logging.getLogger("kompassi")
@@ -27,13 +27,13 @@ def tick():
         # TODO If we ever add multiple workers, we need to make sure that each worker gets a different set of orders.
         # This could be via SELECT … FOR UPDATE SKIP LOCKED on the orders table, or via a parent process distributing work.
         # TODO If we had uuid_generate_v7() in the database, this could be done in an INSERT … SELECT.
-        items, have_more_work = Receipt.get_pending_receipts()
-        ReceiptStamp.objects.bulk_create(
-            ReceiptStamp(
+        items, have_more_work = PendingReceipt.get_pending_receipts()
+        Receipt.objects.bulk_create(
+            Receipt(
                 order_id=item.order_id,
                 event_id=item.event_id,
                 correlation_id=item.correlation_id,
-                type=ReceiptStampType.ORDER_CONFIRMATION,
+                type=ReceiptType.ORDER_CONFIRMATION,
                 status=ReceiptStatus.PROCESSING,
             )
             for item in items
@@ -53,19 +53,19 @@ def tick():
             item.send_receipt()
         except RuntimeError as e:
             logger.error("Failed to send receipt for order %s", item.order_id, exc_info=e)
-            ReceiptStamp(
+            Receipt(
                 order_id=item.order_id,
                 event_id=item.event_id,
                 correlation_id=item.correlation_id,
-                type=ReceiptStampType.ORDER_CONFIRMATION,
+                type=ReceiptType.ORDER_CONFIRMATION,
                 status=ReceiptStatus.FAILURE,
             ).save()
         else:
-            ReceiptStamp(
+            Receipt(
                 order_id=item.order_id,
                 event_id=item.event_id,
                 correlation_id=item.correlation_id,
-                type=ReceiptStampType.ORDER_CONFIRMATION,
+                type=ReceiptType.ORDER_CONFIRMATION,
                 status=ReceiptStatus.SUCCESS,
             ).save()
 
@@ -80,8 +80,8 @@ def run():
         logger.info("Connected to database")
 
         with conn.cursor() as cursor:
-            cursor.execute("listen tickets_v2_paymentstamp")
-        logger.info("Listening for notifications on tickets_v2_paymentstamp")
+            cursor.execute("listen tickets_v2_receipt")
+        logger.info("Listening for notifications on tickets_v2_receipt")
 
         while True:
             # process all work that is currently available

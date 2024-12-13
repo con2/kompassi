@@ -1,27 +1,14 @@
-with qualifying_orders as (
+with order_products as (
   select
-    o.id,
-    o.product_data,
-    max(ps.status) as status -- PaymentStatus: REFUNDED > CANCELLED > PAID > PENDING
-  from
-    tickets_v2_order o
-    join tickets_v2_paymentstamp ps on (ps.order_id = o.id)
-  where
-    o.event_id = %(event_id)s and
-    ps.event_id = %(event_id)s
-  group by 1, 2
-  having
-    max(ps.status) <= 2 -- PaymentStatus.PENDING or PAID
-),
-
-order_products as (
-  select
-    qo.status,
+    o.status,
     cast(op_json.key as int) as product_id,
     cast(op_json.value as int) as quantity
   from
-    qualifying_orders qo
+    tickets_v2_order o
     join jsonb_each(qo.product_data) op_json on true
+  where
+    o.event_id = %(event_id)s and
+    e.cached_status < 4 -- PaymentStatus.CANCELLED
 )
 
 select

@@ -47,7 +47,7 @@ class PaymentStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
         ),
     )
 
-    provider = models.SmallIntegerField(
+    provider_id = models.SmallIntegerField(
         choices=[(p.value, p.name) for p in PaymentProvider],
     )
     type = models.SmallIntegerField(
@@ -59,7 +59,7 @@ class PaymentStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
 
     data = models.JSONField(
         help_text=(
-            "What we sent to or received from the payment provider. "
+            "What we sent to or received from the payment provider_id. "
             "Sensitive details such as API credentials, PII etc. may be redacted. "
             "Also fields lifted to relational fields need not be repeated here."
         )

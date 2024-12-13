@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 from decimal import Decimal
-from enum import IntEnum
 from functools import cached_property
 from pathlib import Path
 from typing import ClassVar, Self
@@ -22,27 +21,12 @@ from event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from tickets.lippukala_integration import Queue as LippukalaQueue
 
-from ..optimized_server.models.enums import PaymentStatus
+from ..optimized_server.models.enums import PaymentStatus, ReceiptStatus, ReceiptType
 from ..optimized_server.utils.formatting import format_money, format_order_number
 from ..utils.event_partitions import EventPartitionsMixin
 from .order import Order
 from .payment_stamp import PaymentStamp
 from .product import Product
-
-
-class ReceiptStampType(IntEnum):
-    ORDER_CONFIRMATION = 1
-    CANCELLATION = 2
-
-
-class ReceiptStatus(IntEnum):
-    PROCESSING = 1
-    SUCCESS = 2
-    FAILURE = 3
-
-    # could add:
-    # BOUNCE = 4
-
 
 # TODO missing Swedish (message template too)
 ETICKET_TEXT = dict(
@@ -64,7 +48,7 @@ LIPPUKALA_PREFIX = LippukalaQueue.ONE_QUEUE
 ETICKET_FILENAME = "e-ticket.pdf"
 
 
-class ReceiptStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
+class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
     """
     Receipt stamps are created for paid orders to indicate various stages of
     receipt and electronic ticket delivery. The table is strictly insert only;
@@ -99,8 +83,18 @@ class ReceiptStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
         ),
     )
 
+    batch_id = models.UUIDField(
+        null=True,
+        blank=True,
+        help_text=(
+            "The ID of the batch this receipt was sent processed in. "
+            "This is an UUIDv7 that is generated when the batch is created. "
+            "If the receipt is stuck in PROCESSING and the batch ID is old, then the batch has probably failed and needs to be retried."
+        ),
+    )
+
     type = models.SmallIntegerField(
-        choices=[(t.value, t.name) for t in ReceiptStampType],
+        choices=[(t.value, t.name) for t in ReceiptType],
     )
     status = models.SmallIntegerField(
         choices=[(s.value, s.name) for s in ReceiptStatus],
@@ -143,7 +137,7 @@ class LocalizedOrderPrinter(OrderPrinter):
                 ]
 
 
-class Receipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
+class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     """
     Responsible for sending email receipts and generating eticket PDFs.
     Also as such represents an item of work to be done by the receipt worker.

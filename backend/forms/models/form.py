@@ -35,7 +35,11 @@ class Form(models.Model):
     title = models.CharField(max_length=255, default="")
     description = models.TextField(blank=True, default="")
     thank_you_message = models.TextField(blank=True, default="")
-    language = models.CharField(max_length=2, default=DEFAULT_LANGUAGE, choices=get_language_choices())
+    language = models.CharField(
+        max_length=2,
+        default=DEFAULT_LANGUAGE,
+        choices=get_language_choices(),
+    )
     layout = models.CharField(
         verbose_name=_("Layout"),
         choices=LAYOUT_CHOICES,

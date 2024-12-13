@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 
 from ..models.order import Order, OrderOwner
-from ..models.receipts import Receipt
+from ..models.receipt import PendingReceipt
 
 
 @login_required
@@ -17,7 +17,7 @@ def etickets_view(request: HttpRequest, event_slug: str, order_id: str) -> HttpR
     except Order.DoesNotExist:
         return HttpResponse("Order not found or not accessible by you", status=400)
 
-    receipt = Receipt.from_order(order)
+    receipt = PendingReceipt.from_order(order)
     if not receipt:
         return HttpResponse("Order is not paid", status=400)
 
