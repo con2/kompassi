@@ -1,18 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
 
-from ..models.order import Order, OrderOwner
+from ..models.order import Order
 from ..models.receipt import PendingReceipt
 
 
 @login_required
 def etickets_view(request: HttpRequest, event_slug: str, order_id: str) -> HttpResponse:
-    # TODO admin access to tickets
     try:
-        order = OrderOwner.get_user_order(
-            event_slug=event_slug,
-            order_id=order_id,
-            user_id=request.user.id,  # type: ignore
+        order = Order.objects.get(
+            event__slug=event_slug,
+            id=order_id,
+            owner=request.user,
         )
     except Order.DoesNotExist:
         return HttpResponse("Order not found or not accessible by you", status=400)

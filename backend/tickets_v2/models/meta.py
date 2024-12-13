@@ -23,13 +23,12 @@ class TicketsV2EventMeta(EventMetaBase):
     use_cbac = True
 
     def ensure_partitions(self):
-        from .order import Order, OrderOwner
+        from .order import Order
         from .payment_stamp import PaymentStamp
         from .receipt import Receipt
         from .ticket import Ticket
 
         Order.ensure_partition(self.event)
-        OrderOwner.ensure_partition(self.event)
         Ticket.ensure_partition(self.event)
         PaymentStamp.ensure_partition(self.event)
         Receipt.ensure_partition(self.event)

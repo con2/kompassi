@@ -12,9 +12,6 @@ from .enums import PaymentProvider
 if TYPE_CHECKING:
     from psycopg import AsyncConnection
 
-    from ..providers.null import NullProvider
-    from ..providers.paytrail import PaytrailProvider
-
 
 class Event(pydantic.BaseModel):
     id: int
@@ -78,6 +75,9 @@ class Event(pydantic.BaseModel):
 
     @cached_property
     def provider(self):
+        from ..providers.null import NullProvider
+        from ..providers.paytrail import PaytrailProvider
+
         match self.provider_id:
             case PaymentProvider.NONE:
                 return NullProvider(self)

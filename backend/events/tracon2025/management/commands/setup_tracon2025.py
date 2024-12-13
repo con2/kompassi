@@ -519,7 +519,7 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
-                provider=PaymentProvider.NONE if self.dev_tickets else PaymentProvider.PAYTRAIL.value,
+                provider_id=PaymentProvider.NONE if self.dev_tickets else PaymentProvider.PAYTRAIL.value,
             ),
         )
 

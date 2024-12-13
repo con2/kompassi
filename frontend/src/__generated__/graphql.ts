@@ -862,10 +862,10 @@ export type OrderProductType = {
 export enum PaymentStatus {
   Cancelled = 'CANCELLED',
   Failed = 'FAILED',
+  NotStarted = 'NOT_STARTED',
   Paid = 'PAID',
   Pending = 'PENDING',
-  Refunded = 'REFUNDED',
-  Unknown = 'UNKNOWN'
+  Refunded = 'REFUNDED'
 }
 
 export type ProfileOrderType = {

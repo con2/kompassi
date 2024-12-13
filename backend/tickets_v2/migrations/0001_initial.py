@@ -95,7 +95,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.RunSQL(
-            sql=Path(__file__).with_name("0001_initial_partitioned_tables.sql").read_text(),
+            sql=Path(__file__).with_name("0001_initial.sql").read_text(),
             reverse_sql="""
                 drop table if exists tickets_v2_receipt cascade;
                 drop table if exists tickets_v2_paymentstamp cascade;
@@ -279,7 +279,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 migrations.CreateModel(
-                    name="ReceiptStamp",
+                    name="Receipt",
                     fields=[
                         (
                             "id",
@@ -288,6 +288,14 @@ class Migration(migrations.Migration):
                                 editable=False,
                                 primary_key=True,
                                 serialize=False,
+                            ),
+                        ),
+                        (
+                            "event",
+                            models.ForeignKey(
+                                on_delete=django.db.models.deletion.RESTRICT,
+                                related_name="+",
+                                to="core.event",
                             ),
                         ),
                         (
@@ -304,23 +312,35 @@ class Migration(migrations.Migration):
                             ),
                         ),
                         (
+                            "batch_id",
+                            models.UUIDField(
+                                null=True,
+                                blank=True,
+                                help_text=(
+                                    "The ID of the batch this receipt was sent processed in. "
+                                    "This is an UUIDv7 that is generated when the batch is created. "
+                                    "If the receipt is stuck in PROCESSING and the batch ID is old, then the batch has probably failed and needs to be retried."
+                                ),
+                            ),
+                        ),
+                        (
                             "type",
                             models.SmallIntegerField(
-                                choices=[(1, "ORDER_CONFIRMATION"), (2, "CANCELLATION")],
+                                choices=[
+                                    (1, "ORDER_CONFIRMATION"),
+                                    (2, "CANCELLATION"),
+                                ],
                             ),
                         ),
                         (
                             "status",
                             models.SmallIntegerField(
-                                choices=[(1, "PROCESSING"), (2, "SUCCESS"), (3, "FAILURE")],
-                            ),
-                        ),
-                        (
-                            "event",
-                            models.ForeignKey(
-                                on_delete=django.db.models.deletion.RESTRICT,
-                                related_name="+",
-                                to="core.event",
+                                choices=[
+                                    (0, "REQUESTED"),
+                                    (1, "PROCESSING"),
+                                    (2, "SUCCESS"),
+                                    (3, "FAILURE"),
+                                ],
                             ),
                         ),
                     ],

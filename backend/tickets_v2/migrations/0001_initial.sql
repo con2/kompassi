@@ -66,17 +66,18 @@ create index tickets_v2_paymentstamp_id_idx on tickets_v2_paymentstamp (id);
 create index tickets_v2_paymentstamp_order_id_idx on tickets_v2_paymentstamp (order_id);
 
 create or replace function tickets_v2_paymentstamp_update_order() returns trigger as $$
-begin
-  update
-    tickets_v2_order
-  set
-    cached_status = new.status
-  where
-    event_id = new.event_id and
-    id = new.order_id and
-    cached_status < new.status;
-  return null;
-end;
+  begin
+    update
+      tickets_v2_order
+    set
+      cached_status = new.status
+    where
+      event_id = new.event_id and
+      id = new.order_id and
+      cached_status < new.status;
+    return null;
+  end;
+$$ language plpgsql;
 
 create trigger update_order
 after insert on tickets_v2_paymentstamp
@@ -102,10 +103,10 @@ create index tickets_v2_receipt_id_idx on tickets_v2_receipt (id);
 create index tickets_v2_receipt_order_id_idx on tickets_v2_receipt (order_id);
 
 create or replace function tickets_v2_receipt_notify_requested() returns trigger as $$
-begin
-  notify tickets_v2_receipt;
-  return null;
-end;
+  begin
+    perform pg_notify('tickets_v2_receipt', cast(new.event_id as text));
+    return null;
+  end;
 $$ language plpgsql;
 
 create or replace trigger notify_requested
