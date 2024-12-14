@@ -1,13 +1,13 @@
+import Link from "next/link";
 import { ReactNode } from "react";
 
-import OrderHeader from "@/components/tickets/OrderHeader";
 import { payOrder } from "./actions";
+import Section from "@/components/Section";
+import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";
 import { getOrder } from "@/services/orders";
 import { getTranslations } from "@/translations";
-import Section from "@/components/Section";
-import Link from "next/link";
 
 interface Props {
   params: {
