@@ -5,6 +5,7 @@ from decimal import Decimal
 from functools import cached_property
 from pathlib import Path
 from typing import ClassVar, Self
+from urllib.parse import urlparse
 from uuid import UUID
 
 import pydantic
@@ -42,6 +43,8 @@ RECEIPT_SUBJECT = dict(
 )
 
 FROM_EMAIL: str = settings.DEFAULT_FROM_EMAIL
+KOMPASSI_V2_BASE_URL: str = settings.KOMPASSI_V2_BASE_URL
+SHOP_HOSTNAME = urlparse(KOMPASSI_V2_BASE_URL).hostname  # 'v2.kompassi.eu'
 MAIL_DOMAIN = FROM_EMAIL.split("@", 1)[1].rstrip(">")
 LIPPUKALA_PREFIX = LippukalaQueue.ONE_QUEUE
 ETICKET_FILENAME = "e-ticket.pdf"
@@ -118,9 +121,14 @@ class LocalizedOrderPrinter(OrderPrinter):
     TODO Upstream this
     """
 
-    def __init__(self, language: str):
+    event_name: str
+    event_slug: str
+
+    def __init__(self, language: str, event_name: str, event_slug: str):
         super().__init__(print_logo_path=None)
         self.language = language
+        self.event_name = event_name
+        self.event_slug = event_slug
 
     def get_heading_texts(self, order: LippukalaOrder, n_orders: int) -> list[str | None]:
         match self.language:
@@ -128,11 +136,15 @@ class LocalizedOrderPrinter(OrderPrinter):
                 return [
                     (f"Tilausnumero: {order.reference_number}" if order.reference_number else None),
                     f"Tilausaika: {order.created_on.strftime('%d.%m.%Y klo %H:%M')}",
+                    f"Kauppa: {KOMPASSI_V2_BASE_URL}/{self.event_slug}/tickets",
+                    f"Tapahtuma: {self.event_name}",
                 ]
             case _:
                 return [
                     (f"Order number: {order.reference_number}" if order.reference_number else None),
                     f"Order time: {order.created_on.strftime('%Y-%m-%d %H:%M')}",
+                    f"Shop: {KOMPASSI_V2_BASE_URL}/{self.event_slug}/tickets",
+                    f"Event: {self.event_name}",
                 ]
 
 
@@ -320,7 +332,7 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
         if not lippukala_order:
             return None
 
-        printer = LocalizedOrderPrinter(self.language)
+        printer = LocalizedOrderPrinter(self.language, self.event_name, self.event_slug)
         printer.process_order(lippukala_order)
         return printer.finish()
 
