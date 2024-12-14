@@ -165,7 +165,9 @@ export default async function OrdersPage({ params, searchParams }: Props) {
       getCellContents: (order) => (
         <Link
           className="link-subtle"
-          href={`/${event.slug}/orders-admin/${order.id}${queryString ? `?${queryString}` : ""}`}
+          href={`/${event.slug}/orders-admin/${order.id}${
+            queryString ? `?${queryString}` : ""
+          }`}
         >
           {order.formattedOrderNumber}
         </Link>

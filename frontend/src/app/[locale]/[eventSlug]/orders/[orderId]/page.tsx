@@ -53,6 +53,7 @@ export default async function OrderPage({ params }: Props) {
           </form>
         </Section>
       )}
+
       <p>{t.Order.profileMessage(ProfileLink)}</p>
     </ViewContainer>
   );
