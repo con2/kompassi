@@ -28,26 +28,24 @@ block content
 
     if event.enrollment_event_meta
       include enrollment_event_box
-      hr
 
     if event.labour_event_meta
       include labour_event_box
-      hr
 
     if event.programme_event_meta
       include programme_event_box
-      hr
 
     if event.tickets_event_meta
       include tickets_event_box
-      hr
 
-    include forms_event_box
+    if event.tickets_v2_event_meta
+      include tickets_v2_event_box
+
+    if event.forms_event_meta
+      include forms_event_box
 
     if event.badges_event_meta
       include badges_event_box
-      hr
 
     if event.intra_event_meta
       include intra_event_box
-      hr

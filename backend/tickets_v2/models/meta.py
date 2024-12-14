@@ -37,6 +37,22 @@ class TicketsV2EventMeta(EventMetaBase):
     def scope(self):
         return self.event.scope
 
+    def get_available_products(self):
+        from core.utils.time_utils import get_objects_within_period
+
+        from .product import Product
+
+        return get_objects_within_period(
+            Product,
+            start_field_name="available_from",
+            end_field_name="available_until",
+            event_id=self.event_id,
+        )
+
+    @property
+    def have_available_products(self):
+        return self.get_available_products().exists()
+
 
 @dataclass
 class TicketsV2ProfileMeta:

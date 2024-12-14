@@ -13,6 +13,9 @@ class EventMetaBase(models.Model, GroupManagementMixin):
 
     use_cbac = False
 
+    event_id: int
+    admin_group_id: int
+
     class Meta:
         abstract = True
 

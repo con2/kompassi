@@ -15,6 +15,7 @@ APP_NAMES = dict(
     badges=_("Badges"),
     intra=_("Intra"),
     forms=_("Surveys"),
+    tickets_v2=_("Tickets v2"),
 )
 
 

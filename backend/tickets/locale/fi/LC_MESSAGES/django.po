@@ -361,3 +361,6 @@ msgstr "Tämän tapahtuman lipunmyynti ei ole vielä alkanut."
 
 msgid "Download event sales statistics as CSV"
 msgstr "Lataa tapahtuman myyntitilastot CSV-tiedostona"
+
+msgid "You have ticket admin privileges for this event"
+msgstr "Sinulla on lipunmyyntivastaavan oikeudet tähän tapahtumaan"
