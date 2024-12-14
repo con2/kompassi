@@ -1,3 +1,4 @@
+import { ReactNode, JSX } from "react";
 import type { Translations } from "./en";
 
 const translations: Translations = {
@@ -295,16 +296,30 @@ const translations: Translations = {
     },
     Order: {
       listTitle: "Tilaukset",
-      singleTitle: (orderNumber: string) => <>Tilaus {orderNumber}</>,
+      singleTitle: (orderNumber: string, paymentStatus: string) => (
+        <>
+          Tilaus {orderNumber} ({paymentStatus})
+        </>
+      ),
       forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
       contactForm: {
         title: "Yhteystiedot",
       },
+      profileMessage: (
+        ProfileLink: ({ children }: { children: ReactNode }) => JSX.Element,
+      ) => (
+        <>
+          Jos sinulla on käyttäjätunnus samalla sähköpostiosoitteella, jolla
+          teit tämän tilauksen, voit tarkastella tilauksiasi ja ladata sähköiset
+          liput myös <ProfileLink>profiilistasi</ProfileLink>.
+        </>
+      ),
       attributes: {
-        orderNumber: "Tilausnro.",
+        orderNumberAbbr: "Tilausnro.",
+        orderNumberFull: "Tilausnumero",
         createdAt: "Tilausaika",
         eventName: "Tapahtuma",
-        totalPrice: "Kokonaishinta",
+        totalPrice: "Yhteensä",
         actions: "Toiminnot",
         totalOrders: (numOrders: number) => (
           <>
@@ -340,6 +355,14 @@ const translations: Translations = {
                 (pakollinen).
               </>
             );
+          },
+        },
+        provider: {
+          title: "Maksunvälittäjä",
+          choices: {
+            NONE: "Ei mitään (maksuton tilaus)",
+            PAYTRAIL: "Paytrail",
+            STRIPE: "Stripe",
           },
         },
         status: {
@@ -422,10 +445,51 @@ const translations: Translations = {
         },
       },
     },
+    PaymentStamp: {
+      listTitle: "Maksutiedot",
+      attributes: {
+        createdAt: "Aikaleima",
+        correlationId: "Tapahtumatunniste",
+        type: {
+          title: "Tyyppi",
+          choices: {
+            ZERO_PRICE: "Nollahinta",
+            CREATE_PAYMENT_REQUEST: "Maksun luonti – Pyyntö",
+            CREATE_PAYMENT_SUCCESS: "Maksun luonti – Onnistui",
+            CREATE_PAYMENT_FAILURE: "Maksun luonti – Epäonnistui",
+            PAYMENT_REDIRECT: "Uudelleenohjaus maksusta",
+            PAYMENT_CALLBACK: "Jälki-ilmoitus maksusta",
+          },
+        },
+      },
+    },
+    Receipt: {
+      listTitle: "Kuitit",
+      attributes: {
+        id: "Tapahtumatunniste",
+        createdAt: "Aikaleima",
+        type: {
+          title: "Tyyppi",
+          choices: {
+            ORDER_CONFIRMATION: "Tilausvahvistus",
+            CANCELLATION: "Peruutusilmoitus",
+          },
+        },
+        status: {
+          title: "Tila",
+          choices: {
+            REQUESTED: "Pyydetty",
+            PROCESSING: "Käsitellään",
+            FAILURE: "Epäonnistui",
+            SUCCESS: "Lähetetty",
+          },
+        },
+      },
+    },
     profile: {
       title: "Lipputilaukset",
       message:
-        "Näet tässä lipputilauksesi, jotka on tehty vuonna 2025 tai myöhemmin. Voit myös maksaa maksamattomat tilauksesi ja ladata sähköiset lippusi täältä.",
+        "Näet tässä lipputilauksesi, jotka on tehty vuonna 2025 tai myöhemmin. Voit myös maksaa maksamattomat tilauksesi ja ladata sähköiset lippusi täällä.",
       haveUnlinkedOrders: {
         title: "Vahvista sähköpostiosoitteesi nähdäksesi lisää tilauksia",
         message:
@@ -445,6 +509,7 @@ const translations: Translations = {
       noOrders: "Käyttäjätunnukseesi ei ole liitetty yhtään lipputilausta.",
     },
     admin: {
+      title: "Lippukaupan hallinta",
       tabs: {
         orders: "Tilaukset",
         products: "Tuotteet",

@@ -1,8 +1,11 @@
+import { PaymentStatus } from "@/__generated__/graphql";
 import { ticketsBaseUrl } from "@/config";
 
 export interface Order {
   orderNumber: number;
-  status: "PENDING" | "PAID" | "CANCELLED";
+  formattedOrderNumber: string;
+  status: PaymentStatus;
+  createdAt: string;
   totalPrice: string;
   products: {
     title: string;

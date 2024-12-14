@@ -1,5 +1,6 @@
 // Translators: Kirsi Västi, Calle Tengman, Santtu Pajukanta
 
+import { ReactNode, JSX } from "react";
 import type { Translations } from "./en";
 
 /// Mark untranslated English strings with this
@@ -314,13 +315,27 @@ const translations: Translations = {
     },
     Order: {
       listTitle: "Orders",
-      singleTitle: (orderNumber: string) => <>Order {orderNumber}</>,
+      singleTitle: (orderNumber: string, paymentStatus: string) => (
+        <>
+          Beställning {orderNumber} ({paymentStatus})
+        </>
+      ),
       forEvent: (eventName: string) => <>for {eventName}</>,
       contactForm: {
         title: "Contact information",
       },
+      profileMessage: (
+        ProfileLink: ({ children }: { children: ReactNode }) => JSX.Element,
+      ) => (
+        <>
+          If you have a user account with the email address you used to place
+          this order, you can also view your order and download electronic
+          tickets from your <ProfileLink>profile</ProfileLink>.
+        </>
+      ),
       attributes: {
-        orderNumber: "Order #",
+        orderNumberAbbr: "Best.nr.",
+        orderNumberFull: "Beställningsnummer",
         createdAt: "Order date",
         eventName: "Event",
         totalPrice: "Total price",
@@ -359,6 +374,14 @@ const translations: Translations = {
                 (required).
               </>
             );
+          },
+        },
+        provider: {
+          title: "Betalningsmetod",
+          choices: {
+            NONE: "Ingen (gratis)",
+            PAYTRAIL: "Paytrail",
+            STRIPE: "Stripe",
           },
         },
         status: {
@@ -441,6 +464,47 @@ const translations: Translations = {
         },
       },
     },
+    PaymentStamp: UNTRANSLATED({
+      listTitle: "Payment stamps",
+      attributes: {
+        createdAt: "Timestamp",
+        correlationId: "Correlation ID",
+        type: {
+          title: "Type",
+          choices: {
+            ZERO_PRICE: "Zero price",
+            CREATE_PAYMENT_REQUEST: "Create payment – Request",
+            CREATE_PAYMENT_SUCCESS: "Create payment – Success",
+            CREATE_PAYMENT_FAILURE: "Create payment – Failed",
+            PAYMENT_REDIRECT: "Payment redirect",
+            PAYMENT_CALLBACK: "Payment callback",
+          },
+        },
+      },
+    }),
+    Receipt: UNTRANSLATED({
+      listTitle: "Receipts",
+      attributes: {
+        id: "Correlation ID",
+        createdAt: "Sent at",
+        type: {
+          title: "Type",
+          choices: {
+            ORDER_CONFIRMATION: "Order confirmation",
+            CANCELLATION: "Order cancellation",
+          },
+        },
+        status: {
+          title: "Status",
+          choices: {
+            REQUESTED: "Requested",
+            PROCESSING: "Processing",
+            FAILURE: "Failed",
+            SUCCESS: "Sent",
+          },
+        },
+      },
+    }),
     profile: {
       title: "Ticket orders",
       message:
@@ -465,6 +529,7 @@ const translations: Translations = {
         "There are no orders associated with your user account to show.",
     },
     admin: {
+      title: "Biljettbutikens admin",
       tabs: {
         orders: "Orders",
         products: "Products",

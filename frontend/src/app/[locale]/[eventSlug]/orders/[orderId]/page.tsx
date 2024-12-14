@@ -1,10 +1,13 @@
+import { ReactNode } from "react";
+
+import OrderHeader from "@/components/tickets/OrderHeader";
 import { payOrder } from "./actions";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
-import formatMoney from "@/helpers/formatMoney";
 import { getOrder } from "@/services/orders";
 import { getTranslations } from "@/translations";
+import Section from "@/components/Section";
+import Link from "next/link";
 
 interface Props {
   params: {
@@ -28,29 +31,29 @@ export default async function OrderPage({ params }: Props) {
   const { order, event } = await getOrder(eventSlug, orderId);
   const translations = getTranslations(locale);
   const t = translations.Tickets;
-  const { title, message } = t.Order.attributes.status.choices[order.status];
+
+  function ProfileLink({ children }: { children: ReactNode }) {
+    return <Link href={`/${locale}/profile/orders`}>{children}</Link>;
+  }
 
   return (
     <ViewContainer>
-      <ViewHeading>
-        {t.Order.singleTitle(formatOrderNumber(order.orderNumber))}
-        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
-
-      <h2 className="mt-4">{title}</h2>
-      <p>{message}</p>
+      <OrderHeader order={order} messages={t} locale={locale} event={event} />
 
       <ProductsTable order={order} messages={t} />
 
       {order.status == "PENDING" && (
-        <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
-          <div className="d-grid gap-2 mb-4">
-            <button className="btn btn-primary btn-lg" type="submit">
-              {t.Order.actions.pay.title}
-            </button>
-          </div>
-        </form>
+        <Section>
+          <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
+            <div className="d-grid gap-2">
+              <button className="btn btn-primary btn-lg" type="submit">
+                {t.Order.actions.pay.title}
+              </button>
+            </div>
+          </form>
+        </Section>
       )}
+      <p>{t.Order.profileMessage(ProfileLink)}</p>
     </ViewContainer>
   );
 }

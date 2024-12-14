@@ -1,3 +1,5 @@
+import { ReactNode, JSX } from "react";
+
 const translations = {
   Common: {
     ok: "OK",
@@ -297,13 +299,27 @@ const translations = {
     },
     Order: {
       listTitle: "Orders",
-      singleTitle: (orderNumber: string) => <>Order {orderNumber}</>,
+      singleTitle: (orderNumber: string, paymentStatus: string) => (
+        <>
+          Order {orderNumber} ({paymentStatus})
+        </>
+      ),
       forEvent: (eventName: string) => <>for {eventName}</>,
       contactForm: {
         title: "Contact information",
       },
+      profileMessage: (
+        ProfileLink: ({ children }: { children: ReactNode }) => JSX.Element,
+      ) => (
+        <>
+          If you have a user account with the email address you used to place
+          this order, you can also view your orders and download electronic
+          tickets from your <ProfileLink>profile</ProfileLink>.
+        </>
+      ),
       attributes: {
-        orderNumber: "Order #",
+        orderNumberAbbr: "Order #",
+        orderNumberFull: "Order number",
         createdAt: "Order date",
         eventName: "Event",
         totalPrice: "Total price",
@@ -393,28 +409,6 @@ const translations = {
             },
           },
         },
-        paymentStamps: {
-          title: "Payment stamps",
-        },
-        receipts: {
-          title: "Receipts",
-          attributes: {
-            createdAt: "Created at",
-            email: "Email",
-            type: "Type",
-            status: "Status",
-          },
-          types: {
-            ORDER_CONFIRMATION: "Order confirmation",
-            CANCELLATION: "Order cancellation",
-          },
-          statuses: {
-            REQUESTED: "Requested",
-            PROCESSING: "Processing",
-            FAILURE: "Failed",
-            SUCCESS: "Success",
-          },
-        },
       },
       errors: {
         NOT_ENOUGH_TICKETS: {
@@ -490,7 +484,7 @@ const translations = {
             REQUESTED: "Requested",
             PROCESSING: "Processing",
             FAILURE: "Failed",
-            SUCCESS: "Success",
+            SUCCESS: "Sent",
           },
         },
       },
@@ -519,6 +513,7 @@ const translations = {
         "There are no orders associated with your user account to show.",
     },
     admin: {
+      title: "Ticket shop admin",
       tabs: {
         orders: "Orders",
         products: "Products",

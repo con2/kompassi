@@ -1,6 +1,8 @@
+import { ReactNode } from "react";
+
 interface Props {
-  title: string;
-  children?: React.ReactNode;
+  title?: ReactNode;
+  children?: ReactNode;
   className?: string;
 }
 
@@ -9,7 +11,7 @@ export default function Section({ title, children, className }: Props) {
 
   return (
     <section className={className}>
-      <h2 className="mb-2">{title}</h2>
+      {title && <h2 className="mb-2">{title}</h2>}
       {children}
     </section>
   );

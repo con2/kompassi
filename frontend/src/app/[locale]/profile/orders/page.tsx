@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import { payOrder } from "../../[eventSlug]/orders/[orderId]/actions";
-import { confirmEmail } from "./actions";
 import { graphql } from "@/__generated__";
 import { PaymentStatus, ProfileOrderFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -15,6 +13,8 @@ import ViewHeading from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { payOrder } from "../../[eventSlug]/orders/[orderId]/actions";
+import { confirmEmail } from "./actions";
 
 graphql(`
   fragment ProfileOrder on ProfileOrderType {
@@ -81,8 +81,8 @@ export default async function ProfileOrdersPage({ params }: Props) {
   const columns: Column<ProfileOrderFragment>[] = [
     {
       slug: "orderNumber",
-      title: t.attributes.orderNumber,
-      className: "col-1",
+      title: t.attributes.orderNumberAbbr,
+      className: "col-1 align-middle",
       getCellContents: (order) => (
         <Link
           className="link-subtle"

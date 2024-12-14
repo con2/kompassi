@@ -148,7 +148,7 @@ export default async function QuotasPage({ params }: Props) {
   return (
     <ViewContainer>
       <ViewHeading>
-        {quoT.listTitle}
+        {translations.Tickets.admin.title}
         <ViewHeading.Sub>{quoT.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
 

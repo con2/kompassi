@@ -155,16 +155,17 @@ export default async function OrdersPage({ params, searchParams }: Props) {
   const products = data.event.tickets.products;
 
   const dimensions = getDimensions(translations.Tickets, products);
+  const queryString = new URLSearchParams(searchParams).toString();
 
   const columns: Column<OrderListFragment>[] = [
     {
       slug: "orderNumber",
-      title: t.attributes.orderNumber,
+      title: t.attributes.orderNumberAbbr,
       className: "col-1",
       getCellContents: (order) => (
         <Link
           className="link-subtle"
-          href={`/${event.slug}/orders-admin/${order.id}`}
+          href={`/${event.slug}/orders-admin/${order.id}${queryString ? `?${queryString}` : ""}`}
         >
           {order.formattedOrderNumber}
         </Link>
@@ -207,7 +208,7 @@ export default async function OrdersPage({ params, searchParams }: Props) {
   return (
     <ViewContainer>
       <ViewHeading>
-        {t.listTitle}
+        {translations.Tickets.admin.title}
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
 
@@ -215,6 +216,7 @@ export default async function OrdersPage({ params, searchParams }: Props) {
         eventSlug={eventSlug}
         active="orders"
         translations={translations}
+        queryString={queryString}
       />
 
       <DimensionFilters

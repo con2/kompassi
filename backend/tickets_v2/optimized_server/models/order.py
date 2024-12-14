@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import ClassVar
@@ -15,7 +16,7 @@ from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from ...optimized_server.utils.uuid7 import uuid7, uuid7_to_datetime
 from ..config import KOMPASSI_V2_BASE_URL
 from ..excs import InvalidProducts, UnsaneSituation
-from ..utils.formatting import order_number_to_reference
+from ..utils.formatting import format_order_number, order_number_to_reference
 from .customer import Customer
 from .enums import PaymentStatus
 from .ticket import reserve_tickets
@@ -123,6 +124,16 @@ class Order(pydantic.BaseModel, populate_by_name=True):
     products: list[OrderProduct]
 
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_order.sql").read_bytes()
+
+    @pydantic.computed_field(alias="formattedOrderNumber")
+    @property
+    def formatted_order_number(self) -> str:
+        return format_order_number(self.order_number)
+
+    @pydantic.computed_field(alias="createdAt")
+    @property
+    def created_at(self) -> datetime:
+        return uuid7_to_datetime(self.id)
 
     @pydantic.field_serializer("status")
     def serialize_status(self, value: PaymentStatus):

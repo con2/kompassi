@@ -6,6 +6,7 @@ import { PaymentStatus } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import SignInRequired from "@/components/SignInRequired";
+import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -59,7 +60,10 @@ export default async function ProfileOrderPage({ params }: Props) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
-  const { data } = await getClient().query({ query });
+  const { data } = await getClient().query({
+    query,
+    variables: { eventSlug, orderId },
+  });
   if (!data.profile?.tickets?.order) {
     const error = t.errors.ORDER_NOT_FOUND;
     return (
@@ -74,21 +78,20 @@ export default async function ProfileOrderPage({ params }: Props) {
   }
 
   const order = data.profile.tickets.order;
-  const { title, message } = t.attributes.status.choices[order.status];
 
   return (
     <ViewContainer>
-      <ViewHeading>
-        {t.singleTitle(order.formattedOrderNumber)}
-        <ViewHeading.Sub>{t.forEvent(order.event.name)}</ViewHeading.Sub>
-      </ViewHeading>
-
-      <h2 className="mt-4">{title}</h2>
-      <p>{message}</p>
+      <OrderHeader
+        order={order}
+        messages={translations.Tickets}
+        locale={locale}
+        session={session}
+        event={order.event}
+      />
 
       <ProductsTable order={order} messages={translations.Tickets} />
 
-      {order.status === PaymentStatus.Paid && (
+      {order.status === PaymentStatus.Pending && (
         <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
           <div className="d-grid gap-2 mb-4">
             <button className="btn btn-primary btn-lg" type="submit">
@@ -98,7 +101,7 @@ export default async function ProfileOrderPage({ params }: Props) {
         </form>
       )}
 
-      {order.status == PaymentStatus.Pending && order.electronicTicketsLink && (
+      {order.status === PaymentStatus.Paid && order.electronicTicketsLink && (
         <div className="d-grid gap-2 mb-4">
           <Link className="btn btn-primary" href={order.electronicTicketsLink}>
             {t.actions.downloadTickets.title}

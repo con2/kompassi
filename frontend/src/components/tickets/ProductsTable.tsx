@@ -51,7 +51,7 @@ export default function ProductsTable({
     },
   ];
 
-  className = "table table-striped " + (className ?? "");
+  className = "table table-striped " + (className ?? "mb-5");
 
   return (
     <DataTable className={className} rows={order.products} columns={columns}>

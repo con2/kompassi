@@ -105,7 +105,7 @@ class TicketsV2ProfileMetaType(graphene.ObjectType):
     )
 
     @staticmethod
-    def resolve_order(meta: TicketsV2ProfileMeta, info, event_slug: str, order_id: str):
+    def resolve_order(meta: TicketsV2ProfileMeta, info, event_slug: str, id: str):
         """
         Returns an order of the current user.
         Note that unlinked orders made with the same email address are not returned.
@@ -116,9 +116,9 @@ class TicketsV2ProfileMetaType(graphene.ObjectType):
 
         return Order.objects.filter(
             event__slug=event_slug,
-            id=order_id,
+            id=id,
             owner=meta.person.user,
-        )
+        ).first()
 
     order = graphene.Field(
         ProfileOrderType,

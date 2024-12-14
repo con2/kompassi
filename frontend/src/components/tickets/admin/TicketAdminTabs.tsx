@@ -6,10 +6,15 @@ interface Props {
   eventSlug: string;
   active: "dashboard" | "orders" | "products" | "quotas" | "ticketControl";
   translations: Translations;
+  queryString?: string;
 }
 
-export default function TicketAdminTabs(props: Props) {
-  const { eventSlug, translations, active } = props;
+export default function TicketAdminTabs({
+  eventSlug,
+  translations,
+  active,
+  queryString,
+}: Props) {
   const t = translations.Tickets.admin;
   const tabs: Tab[] = [
     {
@@ -25,7 +30,7 @@ export default function TicketAdminTabs(props: Props) {
     {
       slug: "orders",
       title: t.tabs.orders,
-      href: `/${eventSlug}/orders-admin`,
+      href: `/${eventSlug}/orders-admin${queryString ? `?${queryString}` : ""}`,
     },
     {
       slug: "ticketControl",

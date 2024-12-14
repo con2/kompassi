@@ -213,7 +213,7 @@ export default async function ProductsPage({ params }: Props) {
   return (
     <ViewContainer>
       <ViewHeading>
-        {t.listTitle}
+        {translations.Tickets.admin.title}
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
 
