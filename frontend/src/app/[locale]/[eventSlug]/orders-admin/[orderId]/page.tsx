@@ -135,7 +135,7 @@ export default async function ProfileOrderPage({ params }: Props) {
       slug: "type",
       title: sTamp.attributes.type.title,
       getCellContents: (stamp) => sTamp.attributes.type.choices[stamp.type],
-      className: "col-3",
+      className: "col-2",
     },
     {
       slug: "status",
@@ -148,7 +148,7 @@ export default async function ProfileOrderPage({ params }: Props) {
       slug: "provider",
       title: t.attributes.provider.title,
       getCellContents: (stamp) => t.attributes.provider.choices[stamp.provider],
-      className: "col-2",
+      className: "col-3",
     },
   ];
 
@@ -176,7 +176,7 @@ export default async function ProfileOrderPage({ params }: Props) {
       title: receipT.attributes.type.title,
       getCellContents: (receipt) =>
         receipT.attributes.type.choices[receipt.type],
-      className: "col-3",
+      className: "col-2",
     },
     {
       slug: "status",
