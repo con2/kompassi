@@ -1,14 +1,41 @@
 import Link from "next/link";
 
 import { graphql } from "@/__generated__";
-import { PaymentStatus } from "@/__generated__/graphql";
+import {
+  AdminOrderPaymentStampFragment,
+  AdminOrderReceiptFragment,
+} from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
+import { Column, DataTable } from "@/components/DataTable";
+import FormattedDateTime from "@/components/FormattedDateTime";
+import Section from "@/components/Section";
 import SignInRequired from "@/components/SignInRequired";
+import ContactForm from "@/components/tickets/ContactForm";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
+
+graphql(`
+  fragment AdminOrderPaymentStamp on LimitedPaymentStampType {
+    createdAt
+    correlationId
+    provider
+    type
+    status
+  }
+`);
+
+graphql(`
+  fragment AdminOrderReceipt on LimitedReceiptType {
+    correlationId
+    createdAt
+    email
+    type
+    status
+  }
+`);
 
 const query = graphql(`
   query AdminOrderDetail($eventSlug: String!, $orderId: String!) {
@@ -33,6 +60,12 @@ const query = graphql(`
             quantity
             price
           }
+          paymentStamps {
+            ...AdminOrderPaymentStamp
+          }
+          receipts {
+            ...AdminOrderReceipt
+          }
         }
       }
     }
@@ -53,6 +86,8 @@ export default async function ProfileOrderPage({ params }: Props) {
   const { locale, eventSlug, orderId } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Order;
+  const sTamp = translations.Tickets.PaymentStamp;
+  const receipT = translations.Tickets.Receipt;
   const session = await auth();
 
   // TODO encap
@@ -77,9 +112,90 @@ export default async function ProfileOrderPage({ params }: Props) {
     );
   }
 
+  const paymentStampColumns: Column<AdminOrderPaymentStampFragment>[] = [
+    {
+      slug: "createdAt",
+      title: sTamp.attributes.createdAt,
+      getCellContents: (stamp) => (
+        <FormattedDateTime
+          value={stamp.createdAt}
+          locale={locale}
+          scope={event}
+          session={session}
+        />
+      ),
+      className: "col-2",
+    },
+    {
+      slug: "correlationId",
+      title: sTamp.attributes.correlationId,
+      className: "col-3",
+    },
+    {
+      slug: "type",
+      title: sTamp.attributes.type.title,
+      getCellContents: (stamp) => sTamp.attributes.type.choices[stamp.type],
+      className: "col-3",
+    },
+    {
+      slug: "status",
+      title: t.attributes.status.title,
+      getCellContents: (stamp) =>
+        t.attributes.status.choices[stamp.status].shortTitle,
+      className: "col-2",
+    },
+    {
+      slug: "provider",
+      title: t.attributes.provider.title,
+      getCellContents: (stamp) => t.attributes.provider.choices[stamp.provider],
+      className: "col-2",
+    },
+  ];
+
+  const receiptColumns: Column<AdminOrderReceiptFragment>[] = [
+    {
+      slug: "createdAt",
+      title: sTamp.attributes.createdAt,
+      getCellContents: (receipt) => (
+        <FormattedDateTime
+          value={receipt.createdAt}
+          locale={locale}
+          scope={event}
+          session={session}
+        />
+      ),
+      className: "col-2",
+    },
+    {
+      slug: "correlationId",
+      title: sTamp.attributes.correlationId,
+      className: "col-3",
+    },
+    {
+      slug: "type",
+      title: receipT.attributes.type.title,
+      getCellContents: (receipt) =>
+        receipT.attributes.type.choices[receipt.type],
+      className: "col-3",
+    },
+    {
+      slug: "status",
+      title: receipT.attributes.status.title,
+      getCellContents: (receipt) =>
+        receipT.attributes.status.choices[receipt.status],
+      className: "col-2",
+    },
+    {
+      slug: "email",
+      title: t.attributes.email.title,
+      className: "col-3",
+    },
+  ];
+
   const event = data.event;
   const order = data.event.tickets.order;
-  const { title, message } = t.attributes.status.choices[order.status];
+  const { shortTitle: paymentStatus } =
+    t.attributes.status.choices[order.status];
 
   return (
     <ViewContainer>
@@ -88,17 +204,25 @@ export default async function ProfileOrderPage({ params }: Props) {
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
 
-      <h2 className="mt-4">{title}</h2>
+      <Section title={paymentStatus}>
+        <ProductsTable
+          order={order}
+          messages={translations.Tickets}
+          className="mb-4"
+        />
+      </Section>
 
-      <ProductsTable order={order} messages={translations.Tickets} />
+      <Section title={t.contactForm.title}>
+        <ContactForm messages={translations} values={order} isAdmin />
+      </Section>
 
-      {order.status == PaymentStatus.Pending && order.electronicTicketsLink && (
-        <div className="d-grid gap-2 mb-4">
-          <Link className="btn btn-primary" href={order.electronicTicketsLink}>
-            {t.actions.downloadTickets.title}
-          </Link>
-        </div>
-      )}
+      <Section title={t.attributes.paymentStamps.title}>
+        <DataTable columns={paymentStampColumns} rows={order.paymentStamps} />
+      </Section>
+
+      <Section title={t.attributes.receipts.title}>
+        <DataTable columns={receiptColumns} rows={order.receipts} />
+      </Section>
     </ViewContainer>
   );
 }

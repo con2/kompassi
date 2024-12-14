@@ -74,3 +74,11 @@ class PaymentStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
         Direct the query to the correct partition.
         """
         return Order.objects.get(event=self.event, id=self.order_id)
+
+    @property
+    def timezone(self):
+        return self.event.timezone
+
+    @property
+    def provider(self):
+        return PaymentProvider(self.provider_id)

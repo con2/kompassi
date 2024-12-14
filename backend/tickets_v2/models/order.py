@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 from functools import cached_property
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -17,6 +17,10 @@ from ..optimized_server.models.order import OrderProduct
 from ..optimized_server.utils.uuid7 import uuid7
 from ..utils.event_partitions import EventPartitionsMixin
 from .product import Product
+
+if TYPE_CHECKING:
+    from .payment_stamp import PaymentStamp
+    from .receipt import Receipt
 
 
 class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
@@ -110,7 +114,6 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
     @cached_property
     def products(self) -> list[OrderProduct]:
         products_by_id = {product.id: product for product in Product.objects.filter(event=self.event)}
-        print(products_by_id)
         return [
             OrderProduct(
                 title=product.title,
@@ -120,17 +123,6 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
             for (product_id, quantity) in self.product_data.items()
             if (product := products_by_id[int(product_id)]) and quantity > 0
         ]
-
-    @property
-    def status(self) -> PaymentStatus:
-        from .payment_stamp import PaymentStamp
-
-        return PaymentStatus(
-            PaymentStamp.objects.filter(
-                event_id=self.event_id,
-                order_id=self.id,
-            ).aggregate(models.Max("status"))["status__max"]
-        )
 
     @property
     def display_name(self) -> str:
@@ -154,3 +146,21 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
                     pass
 
         return orders
+
+    @property
+    def payment_stamps(self) -> models.QuerySet[PaymentStamp]:
+        from .payment_stamp import PaymentStamp
+
+        return PaymentStamp.objects.filter(
+            event_id=self.event_id,
+            order_id=self.id,
+        )
+
+    @property
+    def receipts(self) -> models.QuerySet[Receipt]:
+        from .receipt import Receipt
+
+        return Receipt.objects.filter(
+            event_id=self.event_id,
+            order_id=self.id,
+        )

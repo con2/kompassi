@@ -89,20 +89,27 @@ execute function tickets_v2_paymentstamp_update_order();
 create or replace function tickets_v2_paymentstamp_create_receipt() returns trigger as $$
   begin
     insert into tickets_v2_receipt (
-      id,
       event_id,
+      id,
       order_id,
       correlation_id,
       type,
-      status
-    ) values (
-      new.correlation_id, -- this ensures that we only create one receipt per payment
+      status,
+      email
+    )
+    select
       new.event_id,
+      new.correlation_id, -- this ensures that we only create one receipt per payment
       new.order_id,
       new.correlation_id,
       1, -- ReceiptType.ORDER_CONFIRMATION
-      0  -- ReceiptStatus.REQUESTED
-    )
+      0,  -- ReceiptStatus.REQUESTED
+      o.email
+    from
+      tickets_v2_order o
+    where
+      o.event_id = new.event_id and
+      o.id = new.order_id
     on conflict (event_id, id) do nothing;
 
     return null;
@@ -123,6 +130,7 @@ create table tickets_v2_receipt (
   batch_id uuid,
   type tickets_v2_receipttype not null,
   status tickets_v2_receiptstatus not null default 0,
+  email text not null default '',
 
   primary key (event_id, id),
   foreign key (event_id) references core_event (id),

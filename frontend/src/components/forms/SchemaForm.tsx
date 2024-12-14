@@ -11,6 +11,7 @@ interface SchemaFormProps {
   messages: Translations["SchemaForm"];
   headingLevel?: HeadingLevel;
   readOnly?: boolean;
+  className?: string;
 }
 
 export function SchemaForm(props: SchemaFormProps) {
@@ -21,9 +22,10 @@ export function SchemaForm(props: SchemaFormProps) {
     messages,
     headingLevel,
     readOnly,
+    className = "",
   } = props;
   return (
-    <>
+    <div className={className}>
       {fields.map((field, index) => {
         let slug = field.slug;
         if (!slug) {
@@ -47,6 +49,6 @@ export function SchemaForm(props: SchemaFormProps) {
           </SchemaFormField>
         );
       })}
-    </>
+    </div>
   );
 }

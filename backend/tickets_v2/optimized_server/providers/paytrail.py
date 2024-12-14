@@ -152,7 +152,7 @@ class CreatePaymentRequest(pydantic.BaseModel):
             event_id=event.id,
             order_id=order_id,
             provider_id=PaymentProvider.PAYTRAIL,
-            type=PaymentStampType.CREATE_PAYMENT_SUCCESS,
+            type=PaymentStampType.CREATE_PAYMENT_REQUEST,
             status=PaymentStatus.PENDING,
             correlation_id=self.stamp,
             data=data,

@@ -163,6 +163,7 @@ class Migration(migrations.Migration):
                             models.DecimalField(
                                 decimal_places=2,
                                 default=Decimal("0"),
+                                help_text="Total price of the order in euros. Calculated by create_order.sql from product_data.",
                                 max_digits=10,
                             ),
                         ),
@@ -235,7 +236,13 @@ class Migration(migrations.Migration):
                                 serialize=False,
                             ),
                         ),
-                        ("order_id", models.UUIDField(blank=True, null=True)),
+                        (
+                            "order_id",
+                            models.UUIDField(
+                                blank=True,
+                                null=True,
+                            ),
+                        ),
                         (
                             "correlation_id",
                             models.UUIDField(
@@ -244,7 +251,13 @@ class Migration(migrations.Migration):
                         ),
                         (
                             "provider_id",
-                            models.SmallIntegerField(choices=[(0, "NONE"), (1, "PAYTRAIL"), (2, "STRIPE")]),
+                            models.SmallIntegerField(
+                                choices=[
+                                    (0, "NONE"),
+                                    (1, "PAYTRAIL"),
+                                    (2, "STRIPE"),
+                                ],
+                            ),
                         ),
                         (
                             "type",
@@ -253,10 +266,10 @@ class Migration(migrations.Migration):
                                     (0, "ZERO_PRICE"),
                                     (1, "CREATE_PAYMENT_REQUEST"),
                                     (2, "CREATE_PAYMENT_SUCCESS"),
-                                    (3, "CREATE_PAYMENT_SUCCESS"),
+                                    (3, "CREATE_PAYMENT_FAILURE"),
                                     (4, "PAYMENT_REDIRECT"),
                                     (5, "PAYMENT_CALLBACK"),
-                                ]
+                                ],
                             ),
                         ),
                         (
@@ -344,9 +357,18 @@ class Migration(migrations.Migration):
                                 choices=[
                                     (0, "REQUESTED"),
                                     (1, "PROCESSING"),
-                                    (2, "SUCCESS"),
-                                    (3, "FAILURE"),
+                                    (2, "FAILURE"),
+                                    (3, "SUCCESS"),
                                 ],
+                            ),
+                        ),
+                        (
+                            "email",
+                            models.EmailField(
+                                blank=True,
+                                default="",
+                                help_text="The email address to which the receipt was sent.",
+                                max_length=254,
                             ),
                         ),
                     ],

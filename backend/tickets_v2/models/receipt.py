@@ -98,8 +98,15 @@ class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
     type = models.SmallIntegerField(
         choices=[(t.value, t.name) for t in ReceiptType],
     )
+
     status = models.SmallIntegerField(
         choices=[(s.value, s.name) for s in ReceiptStatus],
+    )
+
+    email = models.EmailField(
+        blank=True,
+        default="",
+        help_text="The email address to which the receipt was sent.",
     )
 
     event_id: int
@@ -111,6 +118,10 @@ class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
         Direct the query to the correct partition.
         """
         return Order.objects.get(event=self.event, id=self.order_id)
+
+    @property
+    def timezone(self):
+        return self.event.timezone
 
 
 class LocalizedOrderPrinter(OrderPrinter):

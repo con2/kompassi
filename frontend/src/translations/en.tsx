@@ -344,6 +344,14 @@ const translations = {
             );
           },
         },
+        provider: {
+          title: "Payment provider",
+          choices: {
+            NONE: "None (free order)",
+            PAYTRAIL: "Paytrail",
+            STRIPE: "Stripe",
+          },
+        },
         status: {
           title: "Status",
           choices: {
@@ -385,6 +393,28 @@ const translations = {
             },
           },
         },
+        paymentStamps: {
+          title: "Payment stamps",
+        },
+        receipts: {
+          title: "Receipts",
+          attributes: {
+            createdAt: "Created at",
+            email: "Email",
+            type: "Type",
+            status: "Status",
+          },
+          types: {
+            ORDER_CONFIRMATION: "Order confirmation",
+            CANCELLATION: "Order cancellation",
+          },
+          statuses: {
+            REQUESTED: "Requested",
+            PROCESSING: "Processing",
+            FAILURE: "Failed",
+            SUCCESS: "Success",
+          },
+        },
       },
       errors: {
         NOT_ENOUGH_TICKETS: {
@@ -421,6 +451,47 @@ const translations = {
         },
         downloadTickets: {
           title: "Download tickets",
+        },
+      },
+    },
+    PaymentStamp: {
+      listTitle: "Payment stamps",
+      attributes: {
+        createdAt: "Timestamp",
+        correlationId: "Correlation ID",
+        type: {
+          title: "Type",
+          choices: {
+            ZERO_PRICE: "Zero price",
+            CREATE_PAYMENT_REQUEST: "Create payment – Request",
+            CREATE_PAYMENT_SUCCESS: "Create payment – Success",
+            CREATE_PAYMENT_FAILURE: "Create payment – Failed",
+            PAYMENT_REDIRECT: "Payment redirect",
+            PAYMENT_CALLBACK: "Payment callback",
+          },
+        },
+      },
+    },
+    Receipt: {
+      listTitle: "Receipts",
+      attributes: {
+        id: "Correlation ID",
+        createdAt: "Sent at",
+        type: {
+          title: "Type",
+          choices: {
+            ORDER_CONFIRMATION: "Order confirmation",
+            CANCELLATION: "Order cancellation",
+          },
+        },
+        status: {
+          title: "Status",
+          choices: {
+            REQUESTED: "Requested",
+            PROCESSING: "Processing",
+            FAILURE: "Failed",
+            SUCCESS: "Success",
+          },
         },
       },
     },

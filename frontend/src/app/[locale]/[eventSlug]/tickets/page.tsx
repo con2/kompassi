@@ -1,7 +1,6 @@
 import { createOrder } from "./actions";
 import { getProducts } from "./service";
-import { Field } from "@/components/forms/models";
-import { SchemaForm } from "@/components/forms/SchemaForm";
+import ContactForm from "@/components/tickets/ContactForm";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
@@ -38,32 +37,6 @@ export default async function TicketsPage({ params }: Props) {
   const tickeT = translations.Tickets;
   const { event, products } = await getProducts(eventSlug);
 
-  const fields: Field[] = [
-    {
-      slug: "firstName",
-      type: "SingleLineText",
-      required: true,
-      ...t.attributes.firstName,
-    },
-    {
-      slug: "lastName",
-      type: "SingleLineText",
-      required: true,
-      ...t.attributes.lastName,
-    },
-    {
-      slug: "email",
-      type: "SingleLineText",
-      required: true,
-      ...t.attributes.email,
-    },
-    {
-      slug: "phone",
-      type: "SingleLineText",
-      ...t.attributes.phone,
-    },
-  ];
-
   if (products.length === 0) {
     return (
       <ViewContainer>
@@ -84,7 +57,7 @@ export default async function TicketsPage({ params }: Props) {
       </ViewHeading>
 
       <form action={createOrder.bind(null, locale, eventSlug)}>
-        <table className="table table-striped mt-4 mb-5">
+        <table className="table table-striped mt-4 mb-4">
           <thead>
             <tr className="row">
               <th className="col-8">{producT.attributes.product}</th>
@@ -122,10 +95,8 @@ export default async function TicketsPage({ params }: Props) {
           </tbody>
         </table>
 
-        <div className="mb-5">
-          <h2>{t.contactForm.title}</h2>
-          <SchemaForm fields={fields} messages={translations.SchemaForm} />
-        </div>
+        <h2 className="mb-4">{t.contactForm.title}</h2>
+        <ContactForm messages={translations} />
 
         <div className="d-grid gap-2 mb-4">
           <button className="btn btn-primary btn-lg" type="submit">

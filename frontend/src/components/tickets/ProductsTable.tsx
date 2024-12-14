@@ -16,9 +16,14 @@ interface Order {
 interface Props {
   order: Order;
   messages: Translations["Tickets"];
+  className?: string;
 }
 
-export default function ProductsTable({ order, messages: t }: Props) {
+export default function ProductsTable({
+  order,
+  messages: t,
+  className,
+}: Props) {
   const columns: Column<Product>[] = [
     {
       slug: "product",
@@ -46,12 +51,10 @@ export default function ProductsTable({ order, messages: t }: Props) {
     },
   ];
 
+  className = "table table-striped " + (className ?? "");
+
   return (
-    <DataTable
-      className="table table-striped"
-      rows={order.products}
-      columns={columns}
-    >
+    <DataTable className={className} rows={order.products} columns={columns}>
       <tfoot>
         <tr>
           <td className="col-8">

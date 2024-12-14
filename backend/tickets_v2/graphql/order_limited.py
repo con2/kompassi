@@ -41,7 +41,7 @@ class LimitedOrderType(DjangoObjectType):
 
     @staticmethod
     def resolve_status(order: Order, info):
-        return order.status
+        return order.cached_status
 
     status = graphene.NonNull(PaymentStatusType)
 
