@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('programme', '0133_alter_alternativeprogrammeform_slug_and_more'),
+        ("programme", "0133_alter_alternativeprogrammeform_slug_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='programme',
-            name='language',
-            field=models.CharField(choices=[('en', 'English'), ('fi', 'Finnish'), ('sv', 'Swedish')], default='fi', help_text='What is the primary language of your programme?', max_length=2, verbose_name='Language'),
+            model_name="programme",
+            name="language",
+            field=models.CharField(
+                choices=[("en", "English"), ("fi", "Finnish"), ("sv", "Swedish")],
+                default="fi",
+                help_text="What is the primary language of your programme?",
+                max_length=2,
+                verbose_name="Language",
+            ),
         ),
     ]

@@ -4,20 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('core', '0042_alter_event_slug_alter_organization_slug'),
+        ("core", "0042_alter_event_slug_alter_organization_slug"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='emailverificationtoken',
-            name='language',
-            field=models.CharField(choices=[('en', 'English'), ('fi', 'Finnish'), ('sv', 'Swedish')], default='en', max_length=2),
+            model_name="emailverificationtoken",
+            name="language",
+            field=models.CharField(
+                choices=[("en", "English"), ("fi", "Finnish"), ("sv", "Swedish")], default="en", max_length=2
+            ),
         ),
         migrations.AddField(
-            model_name='passwordresettoken',
-            name='language',
-            field=models.CharField(choices=[('en', 'English'), ('fi', 'Finnish'), ('sv', 'Swedish')], default='en', max_length=2),
+            model_name="passwordresettoken",
+            name="language",
+            field=models.CharField(
+                choices=[("en", "English"), ("fi", "Finnish"), ("sv", "Swedish")], default="en", max_length=2
+            ),
         ),
     ]
