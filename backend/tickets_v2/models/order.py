@@ -11,7 +11,6 @@ from core.models.event import Event
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from event_log_v2.utils.monthly_partitions import UUID7Mixin
 from graphql_api.language import SUPPORTED_LANGUAGES
-from tickets.utils import append_reference_number_checksum
 
 from ..optimized_server.models.enums import PaymentStatus
 from ..optimized_server.models.order import OrderProduct
@@ -121,19 +120,6 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
             for (product_id, quantity) in self.product_data.items()
             if (product := products_by_id[int(product_id)]) and quantity > 0
         ]
-
-    @property
-    def reference_number_base(self):
-        return str(self.id.int % 10**19)
-
-    # TODO persist
-    @property
-    def reference_number(self):
-        return append_reference_number_checksum(self.reference_number_base)
-
-    @property
-    def formatted_reference_number(self):
-        return "".join((i if (n + 1) % 5 else i + " ") for (n, i) in enumerate(self.reference_number[::-1]))[::-1]
 
     @property
     def status(self) -> PaymentStatus:

@@ -149,7 +149,6 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
     event_id: int
     event_name: str
     event_slug: str
-    correlation_id: UUID
     language: str
     first_name: str
     last_name: str
@@ -359,3 +358,20 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
             message.attach(ETICKET_FILENAME, etickets_pdf, "application/pdf")
 
         message.send(fail_silently=True)
+
+    @classmethod
+    def from_order(cls, order: Order) -> Self:
+        return cls(
+            order_id=order.id,
+            event_id=order.event_id,
+            event_name=order.event.name,
+            event_slug=order.event.slug,
+            language=order.language,
+            first_name=order.first_name,
+            last_name=order.last_name,
+            email=order.email,
+            phone=order.phone,
+            product_data=order.product_data,
+            order_number=order.order_number,
+            total_price=order.cached_price,
+        )

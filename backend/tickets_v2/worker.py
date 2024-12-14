@@ -37,6 +37,7 @@ def tick(event_id: int):
     # NOTE: if we ever add multiple workers, need to have KeyboardInterrupt write ReceiptStatus.FAILURE for unprocessed items
 
     # Process the orders
+    # TODO on interrupt, mark the rest as FAILED
     while items:
         item = items.pop()
         try:

@@ -24,8 +24,7 @@ claimed_receipts as (
     r.id = qr.id
   returning
     r.id,
-    r.order_id,
-    r.correlation_id
+    r.order_id
 )
 
 select
@@ -35,7 +34,6 @@ select
   e.id as event_id,
   e.name as event_name,
   e.slug as event_slug,
-  cr.correlation_id as correlation_id,
   o.language,
   o.first_name,
   o.last_name,
