@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Any
+
 from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.contrib.auth.models import AbstractUser
@@ -42,15 +46,15 @@ class TeamMemberForm(forms.ModelForm):
             ]:
                 del self.fields[field_name]
 
-        self.fields["team"].queryset = Team.objects.filter(event=event)
-        self.fields["person"].queryset = Person.objects.filter(
+        self.fields["team"].queryset = Team.objects.filter(event=event)  # type: ignore
+        self.fields["person"].queryset = Person.objects.filter(  # type: ignore
             user__groups=event.intra_event_meta.organizer_group,
         )
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-        layout_parts = [
+        layout_parts: list[Any] = [
             "team",
             "person",
         ]
@@ -123,6 +127,11 @@ class PrivilegesForm(forms.Form):
         label=_("Tickets admin"),
         help_text=_("The Tickets admin can view, cancel and modify ticket orders and exchange electronic tickets."),
     )
+    tickets_v2 = forms.BooleanField(
+        required=False,
+        label=_("Tickets v2 admin"),
+        help_text=_("The Tickets admin can view, cancel and modify ticket orders and exchange electronic tickets."),
+    )
     badges = forms.BooleanField(
         required=False,
         label=_("Badges admin"),
@@ -165,7 +174,7 @@ class PrivilegesForm(forms.Form):
         self.helper.layout = Layout(Fieldset(_("Privileges"), *layout_fields))
 
     @classmethod
-    def save(cls, forms: list["PrivilegesForm"]):
+    def save(cls, forms: list[PrivilegesForm]):
         from .tasks import privileges_form_save
 
         if not forms:
@@ -180,7 +189,9 @@ class PrivilegesForm(forms.Form):
         for user, is_member_by_app in data:
             for app_label in event.intra_event_meta.get_active_apps():
                 ensure_user_is_member_of_group(
-                    user, event.get_app_event_meta(app_label).admin_group, is_member_by_app[app_label]
+                    user,
+                    event.get_app_event_meta(app_label).admin_group,
+                    is_member_by_app[app_label],
                 )
 
         CBACEntry.ensure_admin_group_privileges_for_event(event)

@@ -12,10 +12,10 @@ APP_NAMES = dict(
     labour=_("Volunteers"),
     programme=_("Programme"),
     tickets=_("Tickets"),
+    tickets_v2=_("Tickets v2"),
     badges=_("Badges"),
     intra=_("Intra"),
     forms=_("Surveys"),
-    tickets_v2=_("Tickets v2"),
 )
 
 
