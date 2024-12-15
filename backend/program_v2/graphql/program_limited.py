@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
-from graphql_api.utils import resolve_local_datetime_field, resolve_localized_field
+from graphql_api.utils import resolve_local_datetime_field, resolve_localized_field, resolve_localized_field_getattr
 
 from ..models import Program
 from ..models.annotations import ANNOTATIONS
@@ -22,6 +22,12 @@ class LimitedProgramType(DjangoObjectType):
     some fields that may be expensive to compute such as `dimensions`; however,
     `cachedDimensions` is still provided.
     """
+
+    title = graphene.NonNull(graphene.String, lang=graphene.String())
+    resolve_title = resolve_localized_field_getattr("title")
+
+    description = graphene.NonNull(graphene.String, lang=graphene.String())
+    resolve_description = resolve_localized_field_getattr("description")
 
     cached_dimensions = graphene.Field(GenericScalar)
 
@@ -137,9 +143,7 @@ class LimitedProgramType(DjangoObjectType):
     class Meta:
         model = Program
         fields = (
-            "title",
             "slug",
-            "description",
             "cached_dimensions",
             "cached_earliest_start_time",
             "cached_latest_end_time",

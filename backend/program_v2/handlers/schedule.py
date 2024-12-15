@@ -14,4 +14,4 @@ def program_post_save(sender, instance: ScheduleItem, **kwargs):
     if kwargs.get("update_fields", {}):
         return
 
-    instance.program.refresh_cached_times()
+    instance.program.refresh_cached_fields_from_schedule_items()

@@ -2,7 +2,12 @@ import graphene
 from graphene_django import DjangoObjectType
 
 from core.utils.text_utils import normalize_whitespace
-from graphql_api.utils import resolve_local_datetime_field, resolve_localized_field, resolve_unix_seconds_field
+from graphql_api.language import DEFAULT_LANGUAGE
+from graphql_api.utils import (
+    resolve_local_datetime_field,
+    resolve_localized_field,
+    resolve_localized_field_getattr,
+)
 
 from ..models import ScheduleItem
 
@@ -12,7 +17,6 @@ class LimitedScheduleItemType(DjangoObjectType):
         model = ScheduleItem
         fields = (
             "slug",
-            "subtitle",
             "start_time",
             "created_at",
             "updated_at",
@@ -29,12 +33,6 @@ class LimitedScheduleItemType(DjangoObjectType):
     end_time = graphene.NonNull(graphene.DateTime)
     resolve_end_time = resolve_local_datetime_field("cached_end_time")
 
-    start_time_unix_seconds = graphene.NonNull(graphene.Int)
-    resolve_start_time_unix_seconds = resolve_unix_seconds_field("start_time")
-
-    end_time_unix_seconds = graphene.NonNull(graphene.Int)
-    resolve_end_time_unix_seconds = resolve_unix_seconds_field("end_time)")
-
     resolve_location = resolve_localized_field("cached_location")
     location = graphene.String(lang=graphene.String())
 
@@ -42,14 +40,20 @@ class LimitedScheduleItemType(DjangoObjectType):
     resolve_updated_at = resolve_local_datetime_field("updated_at")
 
     @staticmethod
-    def resolve_title(parent: ScheduleItem, info):
+    def resolve_title(schedule_item: ScheduleItem, info, lang: str = DEFAULT_LANGUAGE):
         """
         Returns the title of the program, with subtitle if it exists,
         in the format "Program title – Schedule item subtitle".
         """
-        return parent.title
+        return schedule_item.get_title(lang)
 
     title = graphene.NonNull(
         graphene.String,
         description=normalize_whitespace(resolve_title.__doc__ or ""),
     )
+
+    subtitle = graphene.NonNull(
+        graphene.String,
+        description="Subtitle of the schedule item.",
+    )
+    resolve_subtitle = resolve_localized_field_getattr("subtitle")

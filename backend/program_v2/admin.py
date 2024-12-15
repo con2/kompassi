@@ -12,7 +12,7 @@ class ScheduleItemInline(admin.TabularInline):
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
     model = Program
-    list_display = ("title", "slug", "event")
+    list_display = ("title_fi", "title_en", "slug", "event")
     list_filter = ("event",)
     exclude = ("favorited_by",)
     autocomplete_fields = ("event",)

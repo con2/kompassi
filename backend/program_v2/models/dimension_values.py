@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Iterable, Mapping
-from typing import Self
+from typing import Any, Self
 
 from django.db import models
 
@@ -10,42 +10,16 @@ from core.models import Event
 from dimensions.models.dimension_value import DimensionValue
 
 from .program import Program
+from .schedule import ScheduleItem
 
 logger = logging.getLogger("kompassi")
 
 
-class ProgramDimensionValue(models.Model):
-    id: int
+class DimensionValueMixin:
+    objects: Any
+    value: Any  # fk to DimensionValue
 
-    program = models.ForeignKey(
-        Program,
-        on_delete=models.CASCADE,
-        related_name="dimensions",
-    )
-    value = models.ForeignKey(
-        DimensionValue,
-        on_delete=models.CASCADE,
-        related_name="+",
-    )
-
-    def __str__(self):
-        return f"{self.value.dimension}={self.value}"
-
-    @property
-    def event(self) -> Event:
-        event = self.value.dimension.universe.scope.event
-
-        if event is None:
-            raise ValueError(f"Event not found for ProgramDimensionValue {self}")
-
-        return event
-
-    class Meta:
-        unique_together = ("program", "value")
-
-        # NOTE: only implements the `manual` ordering for now
-        # See https://con2.slack.com/archives/C3ZGNGY48/p1718446605681339
-        ordering = ("value__dimension__order", "value__order")
+    def __init__(self, *args, **kwargs): ...
 
     @classmethod
     def build_upsert_cache(cls, event: Event) -> dict[str, dict[str, DimensionValue]]:
@@ -104,3 +78,44 @@ class ProgramDimensionValue(models.Model):
             update_fields=("value",),  # HACK but we don't get the ids if ignore_conflicts=True
             batch_size=batch_size,
         )
+
+
+class ProgramDimensionValue(DimensionValueMixin, models.Model):
+    id: int
+
+    program = models.ForeignKey(
+        Program,
+        on_delete=models.CASCADE,
+        related_name="dimensions",
+    )
+    value = models.ForeignKey(
+        DimensionValue,
+        on_delete=models.CASCADE,
+        related_name="+",
+    )
+
+    def __str__(self):
+        return f"{self.value.dimension}={self.value}"
+
+    class Meta:
+        unique_together = ("program", "value")
+        ordering = ("value__dimension__order", "value__order")
+
+
+class ScheduleItemDimensionValue(DimensionValueMixin, models.Model):
+    id: int
+
+    schedule_item = models.ForeignKey(
+        ScheduleItem,
+        on_delete=models.CASCADE,
+        related_name="dimensions",
+    )
+    value = models.ForeignKey(
+        DimensionValue,
+        on_delete=models.CASCADE,
+        related_name="+",
+    )
+
+    class Meta:
+        unique_together = ("schedule_item", "value")
+        ordering = ("value__dimension__order", "value__order")

@@ -6,8 +6,8 @@ import requests
 from core.models.event import Event
 
 from ..models.dimension_dto import DimensionDTO, DimensionValueDTO
+from ..models.dimension_values import ProgramDimensionValue
 from ..models.program import Program
-from ..models.program_dimension_value import ProgramDimensionValue
 from ..models.schedule import ScheduleItem
 
 logger = logging.getLogger("kompassi")
@@ -99,8 +99,8 @@ def import_graphql(
             Program(
                 event=event,
                 slug=program_data["slug"],
-                title=program_data["title"],
-                description=program_data["description"],
+                title_fi=program_data["title"],
+                description_fi=program_data["description"],
                 annotations=program_data["annotations"],
             )
             for program_data in data["data"]["event"]["program"]["programs"]
@@ -117,7 +117,7 @@ def import_graphql(
             ScheduleItem(
                 program=program,
                 slug=schedule_item["slug"],
-                subtitle=schedule_item["subtitle"],
+                subtitle_fi=schedule_item["subtitle"],
                 start_time=schedule_item["startTime"],
                 length=timedelta(minutes=schedule_item["lengthMinutes"]),
             ).with_generated_fields()
@@ -134,7 +134,7 @@ def import_graphql(
         for item in ProgramDimensionValue.build_upsertables(
             program,
             program_data["cachedDimensions"],
-            *upsert_cache,
+            upsert_cache,
         )
     ]
     pdvs = ProgramDimensionValue.bulk_upsert(pdv_upsert)
@@ -143,4 +143,4 @@ def import_graphql(
     pdv_ids = {pdv.id for pdv in pdvs}
     ProgramDimensionValue.objects.filter(program__in=programs).exclude(id__in=pdv_ids).delete()
 
-    Program.refresh_cached_fields_qs(event.programs.all())
+    Program.refresh_cached_dimensions_qs(event.programs.all())

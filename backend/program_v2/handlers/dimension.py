@@ -5,8 +5,8 @@ from django.dispatch import receiver
 from dimensions.models.dimension import Dimension
 from dimensions.models.dimension_value import DimensionValue
 
+from ..models.dimension_values import ProgramDimensionValue
 from ..models.program import Program
-from ..models.program_dimension_value import ProgramDimensionValue
 
 
 @receiver(post_delete, sender=Dimension)

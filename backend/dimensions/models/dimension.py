@@ -144,7 +144,7 @@ class Dimension(models.Model):
     @property
     def can_remove(self) -> bool:
         from forms.models.response_dimension_value import ResponseDimensionValue
-        from program_v2.models.program_dimension_value import ProgramDimensionValue
+        from program_v2.models.dimension_values import ProgramDimensionValue
 
         match self.universe.app:
             case "forms":

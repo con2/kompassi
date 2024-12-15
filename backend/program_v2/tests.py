@@ -16,7 +16,7 @@ def test_program_filters():
     t1 = datetime.now(UTC)
     updated_after_t1 = ProgramFilters.from_query_dict({"updated_after": [t1.isoformat()]})
 
-    p1 = Program(event=event, title="Program 1")
+    p1 = Program(event=event, title_en="Program 1")
     p1.save()
 
     s1 = ScheduleItem(program=p1, start_time=datetime.now(UTC), length=timedelta(hours=1)).with_generated_fields()

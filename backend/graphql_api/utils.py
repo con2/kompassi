@@ -51,11 +51,3 @@ def resolve_local_datetime_field(field_name: str):
         return dt.astimezone(parent.timezone)
 
     return _resolve
-
-
-def resolve_unix_seconds_field(field_name: str):
-    def _resolve(parent, info) -> int:
-        dt = getattr(parent, field_name)
-        return int(dt.timestamp())
-
-    return _resolve

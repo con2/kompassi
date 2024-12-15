@@ -13,14 +13,12 @@ from django.utils.timezone import now
 
 from core.models import Event
 from core.utils import validate_slug
-from core.utils.locale_utils import getattr_message_in_language
-from graphql_api.language import SUPPORTED_LANGUAGES
 
 if TYPE_CHECKING:
     from programme.models.programme import Programme
 
+    from .dimension_values import ProgramDimensionValue
     from .meta import ProgramV2EventMeta
-    from .program_dimension_value import ProgramDimensionValue
     from .schedule import ScheduleItem
 
 
@@ -31,9 +29,18 @@ class Program(models.Model):
     id: int
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="programs")
-    title = models.CharField(max_length=1023)
+
+    # NOTE SUPPORTED_LANGUAGES
+    title_fi = models.TextField(blank=True, default="")
+    title_en = models.TextField(blank=True, default="")
+    title_sv = models.TextField(blank=True, default="")
+
     slug = models.CharField(max_length=1023, validators=[validate_slug])
-    description = models.TextField(blank=True)
+
+    # NOTE SUPPORTED_LANGUAGES
+    description_fi = models.TextField(blank=True)
+    description_en = models.TextField(blank=True)
+    description_sv = models.TextField(blank=True)
     annotations = models.JSONField(blank=True, default=dict)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
@@ -74,148 +81,87 @@ class Program(models.Model):
         unique_together = ("event", "slug")
 
     def __str__(self):
-        return str(self.title)
-
-    def refresh_cached_fields(self):
-        self.refresh_cached_dimensions()
-        self.refresh_cached_times()
-
-    @classmethod
-    def refresh_cached_fields_qs(cls, queryset: models.QuerySet[Self]):
-        cls.refresh_cached_dimensions_qs(queryset)
-        cls.refresh_cached_times_qs(queryset)
+        return str(self.title_fi)
 
     def _build_dimensions(self):
-        """
-        Used to populate cached_dimensions
-        """
-        # TODO should all event dimensions always be present, or only those with values?
         dimensions = {dimension.slug: [] for dimension in self.event.program_universe.dimensions.all()}
         for pdv in self.dimensions.all():
             dimensions[pdv.value.dimension.slug].append(pdv.value.slug)
         return dimensions
 
-    def _build_location(self):
-        localized_locations: dict[str, set[str]] = {}
-
-        if location_dimension := self.meta.location_dimension:
-            for pdv in self.dimensions.filter(value__dimension=location_dimension).distinct():
-                for lang in SUPPORTED_LANGUAGES:
-                    title = getattr_message_in_language(pdv.value, "title", lang.code)
-                    if not title:
-                        # placate typechecker
-                        continue
-
-                    localized_locations.setdefault(lang.code, set()).add(title)
-
-        # if both "foo" and "foo, bar" are present, only "foo, bar" is included
-        for locations in localized_locations.values():
-            for location in list(locations):
-                for other_location in list(locations):
-                    if location != other_location and location in other_location and location in locations:
-                        locations.remove(location)
-
-        return {lang: ", ".join(locations) for lang, locations in localized_locations.items() if locations}
-
     def _get_color(self):
         """
         Gets a color for the program from its dimension values.
         TODO deterministic behaviour when multiple colors are present (ordering for dimensions/values?)
+        TODO move to scheduleItem?
         """
         first_pdv_with_color = self.dimensions.exclude(value__color="").first()
         return first_pdv_with_color.value.color if first_pdv_with_color else ""
 
-    def refresh_cached_dimensions(self):
-        from .schedule import ScheduleItem
+    def _build_location(self):
+        return ", ".join(set(self.schedule_items.all().values_list("cached_location", flat=True)))
 
+    def with_generated_fields(self):
         self.cached_dimensions = self._build_dimensions()
         self.cached_location = self._build_location()
         self.cached_color = self._get_color()
-        self.save(update_fields=["cached_dimensions", "cached_location", "cached_color", "updated_at"])
-        self.schedule_items.update(cached_location=self.cached_location)
 
-        bulk_update_schedule_items = []
-        for schedule_item in self.schedule_items.filter(program=self).select_for_update(of=("self",)):
-            schedule_item.cached_location = self.cached_location
-            bulk_update_schedule_items.append(schedule_item)
-        ScheduleItem.objects.bulk_update(bulk_update_schedule_items, ["cached_location"])
-
-    program_batch_size = 100
-    schedule_item_batch_size = 100
-
-    @classmethod
-    def refresh_cached_dimensions_qs(cls, queryset: models.QuerySet[Self]):
-        from .schedule import ScheduleItem
-
-        with transaction.atomic():
-            bulk_update_programs = []
-            for program in queryset.select_for_update(of=("self",)).only(
-                "id",
-                "cached_dimensions",
-                "cached_location",
-                "cached_color",
-            ):
-                program.cached_dimensions = program._build_dimensions()
-                program.cached_location = program._build_location()
-                program.cached_color = program._get_color()
-                bulk_update_programs.append(program)
-            num_programs_updated = cls.objects.bulk_update(
-                bulk_update_programs,
-                ["cached_dimensions", "cached_location", "cached_color"],
-                batch_size=cls.program_batch_size,
-            )
-            logger.info("Refreshed cached dimensions for %s programs", num_programs_updated)
-
-            bulk_update_schedule_items = []
-            for schedule_item in (
-                ScheduleItem.objects.filter(program__in=queryset)
-                .select_for_update(of=("self",))
-                .select_related("program")
-                .only("program__cached_location")
-            ):
-                schedule_item.cached_location = schedule_item.program.cached_location
-                bulk_update_schedule_items.append(schedule_item)
-            num_schedule_items_updated = ScheduleItem.objects.bulk_update(
-                bulk_update_schedule_items,
-                ["cached_location"],
-                batch_size=cls.schedule_item_batch_size,
-            )
-            logger.info("Refreshed cached locations for %s schedule items", num_schedule_items_updated)
-
-    def refresh_cached_times(self):
-        """
-        Used to populate cached_earliest_start_time and cached_latest_end_time
-        """
         earliest_start_time = self.schedule_items.order_by("start_time").first()
         latest_end_time = self.schedule_items.order_by("cached_end_time").last()
 
         self.cached_earliest_start_time = earliest_start_time.start_time if earliest_start_time else None
         self.cached_latest_end_time = latest_end_time.cached_end_time if latest_end_time else None
 
-        self.save(update_fields=["cached_earliest_start_time", "cached_latest_end_time", "updated_at"])
+        return self
+
+    batch_size = 100
+    cached_fields_from_dimensions = [
+        "cached_dimensions",
+        "cached_color",
+        "updated_at",
+    ]
+    cached_fields_from_schedule_items = [
+        "cached_earliest_start_time",
+        "cached_latest_end_time",
+        "updated_at",
+    ]
+    fields_needed_by_generated_fields = [
+        "id",
+        "cached_dimensions",
+        "cached_color",
+        "cached_earliest_start_time",
+        "cached_latest_end_time",
+    ]
+
+    def refresh_cached_dimensions(self):
+        self.with_generated_fields().save(update_fields=self.cached_fields_from_dimensions)
 
     @classmethod
-    def refresh_cached_times_qs(cls, queryset: models.QuerySet[Self]):
+    def refresh_cached_dimensions_qs(cls, queryset: models.QuerySet[Self]):
+        """
+        NOTE: Schedule items' cached dimensions depend on these.
+        The caller is responsible for also calling ScheduleItem.refresh_cached_dimensions_qs.
+        """
         with transaction.atomic():
-            bulk_update = []
-            for program in queryset.select_for_update(of=("self",)).only(
-                "id",
-                "cached_earliest_start_time",
-                "cached_latest_end_time",
-            ):
-                earliest_start_time = program.schedule_items.order_by("start_time").first()
-                latest_end_time = program.schedule_items.order_by("cached_end_time").last()
-
-                program.cached_earliest_start_time = earliest_start_time.start_time if earliest_start_time else None
-                program.cached_latest_end_time = latest_end_time.cached_end_time if latest_end_time else None
-
-                bulk_update.append(program)
-            num_updated = cls.objects.bulk_update(
-                bulk_update,
-                ["cached_earliest_start_time", "cached_latest_end_time"],
-                batch_size=cls.program_batch_size,
+            num_programs_updated = cls.objects.bulk_update(
+                [
+                    program.with_generated_fields()
+                    for program in queryset.select_for_update(of=("self",)).only(
+                        *cls.fields_needed_by_generated_fields,
+                    )
+                ],
+                cls.cached_fields_from_dimensions,
+                batch_size=cls.batch_size,
             )
-            logger.info("Refreshed cached times for %s programs", num_updated)
+            logger.info("Refreshed cached dimensions for %s programs", num_programs_updated)
+
+    def refresh_cached_fields_from_schedule_items(self):
+        """
+        Used to populate cached_earliest_start_time and cached_latest_end_time.
+        Called when schedule items are changed.
+        """
+
+        self.with_generated_fields().save(update_fields=self.cached_fields_from_schedule_items)
 
     @classmethod
     def import_program_from_v1(

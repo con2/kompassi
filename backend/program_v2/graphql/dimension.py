@@ -6,7 +6,7 @@ from dimensions.models.dimension_value import DimensionValue
 from graphql_api.language import DEFAULT_LANGUAGE
 from graphql_api.utils import resolve_localized_field_getattr
 
-from ..models.program_dimension_value import ProgramDimensionValue
+from ..models.dimension_values import ProgramDimensionValue
 
 # class ValueOrdering(graphene.Enum):
 #     DEFAULT = "default"

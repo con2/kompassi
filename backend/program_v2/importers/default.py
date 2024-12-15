@@ -25,8 +25,8 @@ from ..consts import (
 )
 from ..models.annotations import ANNOTATIONS
 from ..models.dimension_dto import DimensionDTO, DimensionValueDTO
+from ..models.dimension_values import ProgramDimensionValue
 from ..models.program import Program
-from ..models.program_dimension_value import ProgramDimensionValue
 from ..models.schedule import ScheduleItem
 
 logger = logging.getLogger("kompassi")
@@ -197,8 +197,8 @@ class DefaultImporter:
         return Program(
             event=programme.category.event,
             slug=programme.slug,
-            title=programme.title,
-            description=programme.description,
+            title_fi=programme.title,
+            description_fi=programme.description,
             annotations=self.get_program_annotations(programme),
         )
 
