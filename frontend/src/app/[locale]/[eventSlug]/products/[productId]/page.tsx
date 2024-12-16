@@ -40,6 +40,9 @@ graphql(`
     maxPerOrder
     availableFrom
     availableUntil
+    quotas {
+      id
+    }
 
     oldVersions {
       ...AdminProductOldVersion
@@ -54,6 +57,12 @@ const query = graphql(`
       slug
 
       tickets {
+        quotas {
+          id
+          name
+          countTotal
+        }
+
         product(id: $productId) {
           ...AdminProductDetail
         }
@@ -100,6 +109,9 @@ export default async function AdminProductDetailPage({ params }: Props) {
 
   const event = data.event;
   const product = data.event.tickets.product;
+  const quotas = data.event.tickets.quotas;
+
+  const selectedQuotas = product.quotas.map((quota) => "quota-" + quota.id);
 
   const fields: Field[] = [
     {
@@ -130,6 +142,15 @@ export default async function AdminProductDetailPage({ params }: Props) {
       ...t.attributes.maxPerOrder,
     },
     {
+      slug: "quotas",
+      type: "MultiSelect",
+      choices: quotas.map((quota) => ({
+        slug: "quota-" + quota.id,
+        title: `${quota.name} (${quota.countTotal} ${t.attributes.quantity.unit})`,
+      })),
+      ...t.attributes.quotas,
+    },
+    {
       slug: "scheduleHeading",
       title: t.attributes.isAvailable.title,
       type: "StaticText",
@@ -145,6 +166,11 @@ export default async function AdminProductDetailPage({ params }: Props) {
       ...t.attributes.availableUntil,
     },
   ];
+
+  const values = {
+    ...product,
+    quotas: selectedQuotas,
+  };
 
   const revisions: Revision[] = [
     { ...product, isCurrent: true },
@@ -230,7 +256,7 @@ export default async function AdminProductDetailPage({ params }: Props) {
           >
             <SchemaForm
               fields={fields}
-              values={product}
+              values={values}
               messages={translations.SchemaForm}
               headingLevel="h5"
             />

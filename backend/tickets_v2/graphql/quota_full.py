@@ -15,3 +15,7 @@ class FullQuotaType(LimitedQuotaType):
             "name",
             "products",
         )
+
+    @staticmethod
+    def resolve_products(quota: Quota, info):
+        return quota.products.all()

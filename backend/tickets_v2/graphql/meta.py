@@ -66,6 +66,21 @@ class TicketsV2EventMetaType(DjangoObjectType):
 
     @graphql_query_cbac_required
     @staticmethod
+    def resolve_quota(meta: TicketsV2EventMeta, info, id: int):
+        """
+        Returns a quota defined for this event.
+        Admin oriented view; customers will access product information through /api/tickets-v2.
+        """
+        return Quota.objects.filter(event=meta.event, id=id).first()
+
+    quota = graphene.NonNull(
+        FullQuotaType,
+        description=normalize_whitespace(resolve_quota.__doc__ or ""),
+        id=graphene.Int(required=True),
+    )
+
+    @graphql_query_cbac_required
+    @staticmethod
     def resolve_orders(
         meta: TicketsV2EventMeta,
         info,

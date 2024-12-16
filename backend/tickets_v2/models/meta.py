@@ -8,7 +8,7 @@ from django.db import models
 from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
 
-from ..optimized_server.models.enums import PaymentProvider
+from ..optimized_server.models.enums import PaymentProvider, PaymentStatus
 
 if TYPE_CHECKING:
     pass
@@ -52,6 +52,48 @@ class TicketsV2EventMeta(EventMetaBase):
     @property
     def have_available_products(self):
         return self.get_available_products().exists()
+
+    def reticket(self):
+        """
+        After changing quotas of a product, this method can be used to
+        assign tickets to orders having that product.
+
+        Must be called in a transaction.
+        """
+        from .order import Order
+        from .product import Product
+        from .quota import Quota, QuotaCounters
+        from .ticket import Ticket
+
+        quota_counters = QuotaCounters.get_for_event(self.event_id, None)
+        products_by_id = {product.id: product for product in Product.objects.filter(event=self.event)}
+
+        Ticket.objects.filter(event=self.event_id).delete()
+
+        for quota in Quota.objects.filter(event=self.event_id):
+            quota.set_quota(quota_counters[quota.id].count_total)
+
+        for order in Order.objects.filter(
+            event=self.event_id,
+            cached_status__lte=PaymentStatus.PAID.value,
+        ):
+            for product_id, quantity in order.product_data.items():
+                if (product := products_by_id[int(product_id)]) and quantity > 0:
+                    for quota in product.quotas.all():
+                        tickets = (
+                            Ticket.objects.filter(
+                                event=self.event_id,
+                                quota=quota,
+                                order_id=None,
+                            )
+                            .select_for_update()
+                            .order_by("id")[:quantity]
+                        )
+
+                        if tickets.count() < quantity:
+                            raise ValueError(f"Not enough tickets in quota {quota}")
+
+                        tickets.update(order=order)
 
 
 @dataclass

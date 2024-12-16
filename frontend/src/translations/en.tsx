@@ -320,9 +320,15 @@ const translations = {
         revisions: {
           title: "Revisions of this product",
           description:
-            "If a product is edited after being sold, a new revision will be created that will replace the product in the shop. Setting the availability schedule will not create a new revision.",
+            "If a product is edited after being sold, a new revision will be created that will replace the product in the shop. Setting the availability schedule or quotas will not create a new revision.",
           current: "Current",
         },
+        quotas: {
+          title: "Quotas",
+          helpText:
+            "Quotas determine how many pieces of a product may be sold. A product may use multiple quotas; the quota that has the least stock determines the availability of the product. You can edit and create new quotas on the Quotas tab.",
+        },
+        selectedQuotas: "Selected quotas",
       },
     },
     Quota: {
@@ -331,6 +337,22 @@ const translations = {
       forEvent: (eventName: string) => <>for {eventName}</>,
       actions: {
         newQuota: "New quota",
+        editQuota: "Edit quota",
+        saveQuota: "Save quota",
+      },
+      attributes: {
+        name: "Name",
+        countTotal: {
+          title: "Quota",
+          helpText: (countReserved: number) =>
+            `How many units of products using this quota may at most be sold. There are currently ${countReserved} units sold; the quota cannot be adjusted lower than that.`,
+        },
+        totalReserved: "Total sold",
+        products: {
+          title: "Products using this quota",
+          helpText:
+            "A product may use multiple quotas; the quota that has the least stock determines the availability of the product.",
+        },
       },
     },
     Order: {

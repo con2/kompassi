@@ -29,6 +29,7 @@ const translations: Translations = {
       edit: "Ändra",
       delete: "Radera",
       create: "Skapa",
+      close: "Stäng",
     },
     boolean: {
       true: "Ja",
@@ -275,8 +276,17 @@ const translations: Translations = {
         title: "No products available",
         message: "There are no products available for purchase at the moment.",
       },
+      actions: {
+        editProduct: "Edit product",
+        newProduct: "New product",
+        saveProduct: "Save product",
+        unpublishAllProducts: "Unpublish all products",
+        viewOldVersion: "View",
+      },
       attributes: {
         product: "Product",
+        title: "Title",
+        createdAt: "Created at",
         unitPrice: "Unit price",
         quantity: {
           title: "Quantity",
@@ -293,8 +303,25 @@ const translations: Translations = {
             `Will become available at ${formattedTime}`,
           notAvailable: "Not available",
         },
-        availableFrom: "Available from",
-        availableUntil: "Available until",
+        maxPerOrder: {
+          title: "Maximum amount per order",
+          helpText: "No more than this amount will be sold in one order.",
+        },
+        eticketsPerProduct: {
+          title: "Number of electronic tickets per product",
+          helpText:
+            "The number of electronic ticket codes that will be generated for each instance of the product sold. If set to 0, no electronic tickets will be generated.",
+        },
+        availableFrom: {
+          title: "Available from",
+          helpText:
+            "In order for the product to become available, this field must be set and the time set herein must have passed.",
+        },
+        availableUntil: {
+          title: "Available until",
+          helpText:
+            "If set, the product will no longer be available after this time.",
+        },
         countPaid: "Paid",
         countReserved: {
           title: "Sold",
@@ -306,12 +333,43 @@ const translations: Translations = {
         actions: "Actions",
         totalReserved: "Total sold",
         totalPaid: "Total paid",
+        revisions: {
+          title: "Revisions of this product",
+          description:
+            "If a product is edited after being sold, a new revision will be created that will replace the product in the shop. Setting the availability schedule or quotas will not create a new revision.",
+          current: "Current",
+        },
+        quotas: {
+          title: "Quotas",
+          helpText:
+            "Quotas determine how many pieces of a product may be sold. A product may use multiple quotas; the quota that has the least stock determines the availability of the product. You can edit and create new quotas on the Quotas tab.",
+        },
+        selectedQuotas: "Selected quotas",
       },
     },
     Quota: {
       listTitle: "Quotas",
       singleTitle: "Quota",
       forEvent: (eventName: string) => <>for {eventName}</>,
+      actions: {
+        newQuota: "New quota",
+        editQuota: "Edit quota",
+        saveQuota: "Save quota",
+      },
+      attributes: {
+        name: "Name",
+        countTotal: {
+          title: "Quota",
+          helpText: (countReserved: number) =>
+            `How many units of products using this quota may at most be sold. There are currently ${countReserved} units sold; the quota cannot be adjusted lower than that.`,
+        },
+        totalReserved: "Total sold",
+        products: {
+          title: "Products using this quota",
+          helpText:
+            "A product may use multiple quotas; the quota that has the least stock determines the availability of the product.",
+        },
+      },
     },
     Order: {
       listTitle: "Beställningar",
@@ -463,6 +521,7 @@ const translations: Translations = {
         downloadTickets: {
           title: "Download tickets",
         },
+        newOrder: "Ny beställning",
       },
     },
     PaymentStamp: UNTRANSLATED({
@@ -532,11 +591,11 @@ const translations: Translations = {
     admin: {
       title: "Biljettbutikens admin",
       tabs: {
-        orders: "Orders",
-        products: "Products",
-        quotas: "Quotas",
-        reports: "Reports",
-        ticketControl: "Ticket control",
+        orders: "Beställningar",
+        products: "Produkter",
+        quotas: "Kvoter",
+        reports: "Rapporter",
+        ticketControl: "Biljettkontroll",
       },
     },
   }),

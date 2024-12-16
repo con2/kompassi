@@ -15,6 +15,7 @@ const translations: Translations = {
       edit: "Muokkaa",
       delete: "Poista",
       create: "Uusi",
+      close: "Sulje",
     },
     boolean: {
       true: "Kyllä",
@@ -256,8 +257,17 @@ const translations: Translations = {
         title: "Ei tuotteita saatavilla",
         message: "Yhtään tuotetta ei ole tällä hetkellä saatavilla.",
       },
+      actions: {
+        editProduct: "Muokkaa tuotetta",
+        newProduct: "Uusi tuote",
+        saveProduct: "Tallenna tuote",
+        unpublishAllProducts: "Vedä kaikki tuotteet pois myynnistä",
+        viewOldVersion: "Näytä",
+      },
       attributes: {
         product: "Tuote",
+        title: "Otsikko",
+        createdAt: "Luotu",
         unitPrice: "Yksikköhinta",
         quantity: {
           title: "Lukumäärä",
@@ -274,8 +284,26 @@ const translations: Translations = {
             `Tulossa saataville ${formattedTime}`,
           notAvailable: "Ei saatavilla",
         },
-        availableFrom: "Tulee myyntiin",
-        availableUntil: "Poistuu myynnistä",
+        maxPerOrder: {
+          title: "Maksimimäärä tilausta kohden",
+          helpText:
+            "Maksimimäärä tätä tuotetta jonka asiakas voi yhdellä tilauksella ostaa..",
+        },
+        eticketsPerProduct: {
+          title: "Sähköisten lippujen määrä kappaletta kohden",
+          helpText:
+            "Jokaista myytyä kappaletta kohden luodaan näin monta sähköistä lippua. Jos tämä on asetettu nollaan, tuotteelle ei luoda sähköisiä lippuja.",
+        },
+        availableFrom: {
+          title: "Tulee myyntiin",
+          helpText:
+            "Tuote tulee myyntiin kun tämä aika on ohitettu. Jos tätä ei ole asetettu, tuote ei näy kaupassa.",
+        },
+        availableUntil: {
+          title: "Poistuu myynnistä",
+          helpText:
+            "Jos tämä on asetettu, tuote poistuu myynnistä kun tämä aika on ohitettu.",
+        },
         countPaid: "Maksettu",
         countReserved: {
           title: "Myyty",
@@ -287,12 +315,43 @@ const translations: Translations = {
         actions: "Toiminnot",
         totalReserved: "Myyty yhteensä",
         totalPaid: "Maksettu yhteensä",
+        revisions: {
+          title: "Tuotteen versiot",
+          description:
+            "Jos tuotetta muokataan sen jälkeen kun sitä on myyty, siitä luodaan automaattisesti uusi versio joka korvaa vanhan lippukaupassa. Tuotteen saatavuusaikataulun tai kiintiöiden muuttaminen ei luo uutta versiota.",
+          current: "Tämänhetkinen",
+        },
+        quotas: {
+          title: "Kiintiöt",
+          helpText:
+            "Kiintiöt määrittelevät montako kappaletta tuotetta voidaan myydä. Tuote voi käyttää useampaa kiintiötä; tällöin tuotteen saatavuuden määrittelee kiintiö jota on vähiten jäljellä. Voit muokata ja luoda uusia kiintiöitä Kiintiöt-välilehdellä.",
+        },
+        selectedQuotas: "Valitut kiintiöt",
       },
     },
     Quota: {
       listTitle: "Kiintiöt",
       singleTitle: "Kiintiöt",
       forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
+      actions: {
+        newQuota: "Uusi kiintiö",
+        editQuota: "Muokkaa kiintiötä",
+        saveQuota: "Tallenna kiintiö",
+      },
+      attributes: {
+        name: "Nimi",
+        countTotal: {
+          title: "Kiintiön suuruus",
+          helpText: (countReserved: number) =>
+            `Montako kappaletta tätä kiintiötä käyttäviä tuotteita voidaan yhteensä enintään myydä. Tästä kiintiöstä on myyty tällä hetkellä ${countReserved} yksikköä; kiintiötä ei voi asettaa tätä alemmaksi.`,
+        },
+        totalReserved: "Myyty yhteensä",
+        products: {
+          title: "Kiintiötä käyttävät tuotteet",
+          helpText:
+            "Tuote voi käyttää useampaa kiintiötä; tällöin tuotteen saatavuuden määrittelee kiintiö jota on vähiten jäljellä.",
+        },
+      },
     },
     Order: {
       listTitle: "Tilaukset",
@@ -444,6 +503,7 @@ const translations: Translations = {
         downloadTickets: {
           title: "Lataa liput",
         },
+        newOrder: "Uusi tilaus",
       },
     },
     PaymentStamp: {
