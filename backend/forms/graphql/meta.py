@@ -31,9 +31,9 @@ class FormsEventMetaType(graphene.ObjectType):
 
     @staticmethod
     def resolve_survey(meta: FormsEventMeta, info, slug: str):
-        survey = Survey.objects.get(event=meta.event, slug=slug)
+        survey = Survey.objects.filter(event=meta.event, slug=slug).first()
 
-        if not survey.is_active:
+        if survey and not survey.is_active:
             graphql_check_instance(survey, info, "self")
 
         return survey
