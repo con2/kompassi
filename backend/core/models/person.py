@@ -423,7 +423,7 @@ class Person(models.Model):
             owner=None,
             email=self.email,
         ).update(
-            owner=self,
+            owner=self.user,
         )
 
     @property
