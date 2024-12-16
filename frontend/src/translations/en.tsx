@@ -299,11 +299,8 @@ const translations = {
     },
     Order: {
       listTitle: "Orders",
-      singleTitle: (orderNumber: string, paymentStatus: string) => (
-        <>
-          Order {orderNumber} ({paymentStatus})
-        </>
-      ),
+      singleTitle: (orderNumber: string, paymentStatus: string) =>
+        `Order ${orderNumber} (${paymentStatus})`,
       forEvent: (eventName: string) => <>for {eventName}</>,
       contactForm: {
         title: "Contact information",

@@ -314,12 +314,9 @@ const translations: Translations = {
       forEvent: (eventName: string) => <>for {eventName}</>,
     },
     Order: {
-      listTitle: "Orders",
-      singleTitle: (orderNumber: string, paymentStatus: string) => (
-        <>
-          Beställning {orderNumber} ({paymentStatus})
-        </>
-      ),
+      listTitle: "Beställningar",
+      singleTitle: (orderNumber: string, paymentStatus: string) =>
+        `Beställning ${orderNumber} (${paymentStatus})`,
       forEvent: (eventName: string) => <>for {eventName}</>,
       contactForm: {
         title: "Contact information",

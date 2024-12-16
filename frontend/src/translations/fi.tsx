@@ -296,11 +296,8 @@ const translations: Translations = {
     },
     Order: {
       listTitle: "Tilaukset",
-      singleTitle: (orderNumber: string, paymentStatus: string) => (
-        <>
-          Tilaus {orderNumber} ({paymentStatus})
-        </>
-      ),
+      singleTitle: (orderNumber: string, paymentStatus: string) =>
+        `Tilaus ${orderNumber} (${paymentStatus})`,
       forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
       contactForm: {
         title: "Yhteystiedot",

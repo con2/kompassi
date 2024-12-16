@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { notFound } from "next/navigation";
 import { payOrder } from "../../actions";
 import { graphql } from "@/__generated__";
 import { PaymentStatus } from "@/__generated__/graphql";
@@ -10,6 +11,7 @@ import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
@@ -44,6 +46,32 @@ interface Props {
     locale: string;
     eventSlug: string;
     orderId: string;
+  };
+}
+
+export async function generateMetadata({ params }: Props) {
+  const { locale, eventSlug, orderId } = params;
+  const translations = getTranslations(locale);
+  const t = translations.Tickets.Order;
+
+  const { data } = await getClient().query({
+    query,
+    variables: { eventSlug, orderId },
+  });
+
+  if (!data.profile?.tickets?.order) {
+    notFound();
+  }
+
+  const order = data.profile.tickets.order;
+  const paymentStatus = t.attributes.status.choices[order.status].shortTitle;
+  const title = getPageTitle({
+    subject: t.singleTitle(order.formattedOrderNumber, paymentStatus),
+    translations,
+  });
+
+  return {
+    title,
   };
 }
 
