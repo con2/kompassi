@@ -23,7 +23,7 @@ graphql(`
     createdAt
     totalPrice
     status
-    electronicTicketsLink
+    eticketsLink
 
     event {
       slug
@@ -125,15 +125,11 @@ export default async function ProfileOrdersPage({ params }: Props) {
       title: t.attributes.actions,
       getCellContents: (order) => (
         <>
-          {order.status === PaymentStatus.Paid &&
-            order.electronicTicketsLink && (
-              <Link
-                className="btn btn-sm btn-primary"
-                href={order.electronicTicketsLink}
-              >
-                {t.actions.downloadTickets.title}
-              </Link>
-            )}
+          {order.status === PaymentStatus.Paid && order.eticketsLink && (
+            <Link className="btn btn-sm btn-primary" href={order.eticketsLink}>
+              {t.actions.downloadTickets.title}
+            </Link>
+          )}
           {order.status === PaymentStatus.Pending && (
             <button
               className="btn btn-sm btn-primary"

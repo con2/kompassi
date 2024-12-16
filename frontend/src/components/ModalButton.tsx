@@ -54,18 +54,29 @@ export default function ModalButton({
             <Modal.Title>{title}</Modal.Title>
           </Modal.Header>
 
-          <form action={action} onSubmit={close}>
-            <Modal.Body>{children}</Modal.Body>
+          {action ? (
+            <form action={action} onSubmit={close}>
+              <Modal.Body>{children}</Modal.Body>
 
-            <Modal.Footer>
-              <Button variant="secondary" onClick={close}>
-                {messages.cancel}
-              </Button>
-              <Button variant={submitButtonVariant} type="submit">
-                {messages.submit}
-              </Button>
-            </Modal.Footer>
-          </form>
+              <Modal.Footer>
+                <Button variant="secondary" onClick={close}>
+                  {messages.cancel}
+                </Button>
+                <Button variant={submitButtonVariant} type="submit">
+                  {messages.submit}
+                </Button>
+              </Modal.Footer>
+            </form>
+          ) : (
+            <>
+              <Modal.Body>{children}</Modal.Body>
+              <Modal.Footer>
+                <Button variant="primary" onClick={close}>
+                  {messages.cancel}
+                </Button>
+              </Modal.Footer>
+            </>
+          )}
         </Modal>
       )}
     </>

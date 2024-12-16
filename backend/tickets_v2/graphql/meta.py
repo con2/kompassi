@@ -23,19 +23,32 @@ class TicketsV2EventMetaType(DjangoObjectType):
 
     @graphql_query_cbac_required
     @staticmethod
-    def resolve_products(
-        meta: TicketsV2EventMeta,
-        info,
-        superseded_by: int | None = None,
-    ):
+    def resolve_products(meta: TicketsV2EventMeta, info):
         """
         Returns products defined for this event.
         Admin oriented view; customers will access product information through /api/tickets-v2.
-        If `superseded_by` is provided, only old versions of that product are returned.
         """
-        return Product.objects.filter(event=meta.event, superseded_by=superseded_by)
+        return Product.objects.filter(event=meta.event, superseded_by=None)
 
-    products = graphene.NonNull(graphene.List(graphene.NonNull(FullProductType)))
+    products = graphene.NonNull(
+        graphene.List(graphene.NonNull(FullProductType)),
+        description=normalize_whitespace(resolve_products.__doc__ or ""),
+    )
+
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_product(meta: TicketsV2EventMeta, info, id: int):
+        """
+        Returns a product defined for this event.
+        Admin oriented view; customers will access product information through /api/tickets-v2.
+        """
+        return Product.objects.filter(event=meta.event, id=id).first()
+
+    product = graphene.NonNull(
+        FullProductType,
+        description=normalize_whitespace(resolve_product.__doc__ or ""),
+        id=graphene.Int(required=True),
+    )
 
     @graphql_query_cbac_required
     @staticmethod

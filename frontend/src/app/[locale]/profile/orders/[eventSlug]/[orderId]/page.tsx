@@ -24,7 +24,7 @@ const query = graphql(`
           createdAt
           totalPrice
           status
-          electronicTicketsLink
+          eticketsLink
           products {
             title
             quantity
@@ -129,9 +129,9 @@ export default async function ProfileOrderPage({ params }: Props) {
         </form>
       )}
 
-      {order.status === PaymentStatus.Paid && order.electronicTicketsLink && (
+      {order.status === PaymentStatus.Paid && order.eticketsLink && (
         <div className="d-grid gap-2 mb-4">
-          <Link className="btn btn-primary" href={order.electronicTicketsLink}>
+          <Link className="btn btn-primary" href={order.eticketsLink}>
             {t.actions.downloadTickets.title}
           </Link>
         </div>

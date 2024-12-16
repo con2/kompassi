@@ -11,7 +11,10 @@ import { formatDateTime } from "@/components/FormattedDateTime";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -212,10 +215,20 @@ export default async function ProductsPage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <ViewHeading>
-        {translations.Tickets.admin.title}
-        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
+      <ViewHeadingActionsWrapper>
+        <ViewHeading>
+          {translations.Tickets.admin.title}
+          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+        </ViewHeading>
+        <ViewHeadingActions>
+          <a
+            href={`/${eventSlug}/products/new`}
+            className="btn btn-outline-primary"
+          >
+            {t.actions.newProduct}…
+          </a>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <TicketAdminTabs
         eventSlug={eventSlug}

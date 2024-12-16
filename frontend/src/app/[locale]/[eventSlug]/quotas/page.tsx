@@ -9,7 +9,10 @@ import { Column, DataTable } from "@/components/DataTable";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -83,8 +86,8 @@ export const revalidate = 0;
 export default async function QuotasPage({ params }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets.Product;
-  const quoT = translations.Tickets.Quota;
+  const producT = translations.Tickets.Product;
+  const t = translations.Tickets.Quota;
 
   // TODO encap
   const session = await auth();
@@ -108,7 +111,7 @@ export default async function QuotasPage({ params }: Props) {
   const columns: Column<QuotaListFragment>[] = [
     {
       slug: "title",
-      title: quoT.singleTitle,
+      title: t.singleTitle,
       getCellContents: (quota) => (
         <Link
           className="link-subtle"
@@ -120,37 +123,47 @@ export default async function QuotasPage({ params }: Props) {
     },
     {
       slug: "countPaid",
-      title: t.attributes.countPaid,
+      title: producT.attributes.countPaid,
       className: "text-end align-middle col-1",
     },
     {
       slug: "countReserved",
-      title: t.attributes.countReserved.title,
+      title: producT.attributes.countReserved.title,
       className: "text-end align-middle col-1",
       getHeaderContents: () => (
-        <abbr title={t.attributes.countReserved.description}>
-          {t.attributes.countReserved.title}
+        <abbr title={producT.attributes.countReserved.description}>
+          {producT.attributes.countReserved.title}
         </abbr>
       ),
     },
     {
       slug: "countAvailable",
-      title: t.attributes.countAvailable,
+      title: producT.attributes.countAvailable,
       className: "text-end align-middle col-1",
     },
     {
       slug: "countTotal",
-      title: t.attributes.countTotal,
+      title: producT.attributes.countTotal,
       className: "text-end align-middle col-2",
     },
   ];
 
   return (
     <ViewContainer>
-      <ViewHeading>
-        {translations.Tickets.admin.title}
-        <ViewHeading.Sub>{quoT.forEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
+      <ViewHeadingActionsWrapper>
+        <ViewHeading>
+          {translations.Tickets.admin.title}
+          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+        </ViewHeading>
+        <ViewHeadingActions>
+          <a
+            href={`/${eventSlug}/quotas/new`}
+            className="btn btn-outline-primary"
+          >
+            {t.actions.newQuota}…
+          </a>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <TicketAdminTabs
         eventSlug={eventSlug}

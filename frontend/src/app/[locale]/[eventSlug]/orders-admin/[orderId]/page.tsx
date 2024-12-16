@@ -54,7 +54,7 @@ const query = graphql(`
           createdAt
           totalPrice
           status
-          electronicTicketsLink
+          eticketsLink
           firstName
           lastName
           email

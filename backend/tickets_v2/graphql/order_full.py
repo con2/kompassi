@@ -35,7 +35,7 @@ class FullOrderType(LimitedOrderType):
     event = graphene.NonNull(LimitedEventType)
 
     @staticmethod
-    def resolve_electronic_tickets_link(order, info):
+    def resolve_etickets_link(order, info):
         """
         Returns a link at which the user can view their electronic tickets.
         They need to be the owner of the order (or an admin) to access that link.
@@ -55,14 +55,14 @@ class FullOrderType(LimitedOrderType):
             )
         )
 
-    electronic_tickets_link = graphene.Field(
+    etickets_link = graphene.Field(
         graphene.String,
-        description=normalize_whitespace(resolve_electronic_tickets_link.__doc__ or ""),
+        description=normalize_whitespace(resolve_etickets_link.__doc__ or ""),
     )
 
     products = graphene.NonNull(
         graphene.List(graphene.NonNull(OrderProductType)),
-        description=normalize_whitespace(resolve_electronic_tickets_link.__doc__ or ""),
+        description=normalize_whitespace(resolve_etickets_link.__doc__ or ""),
     )
 
     payment_stamps = graphene.NonNull(

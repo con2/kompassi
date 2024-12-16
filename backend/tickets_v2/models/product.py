@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import ClassVar, Literal
+from typing import ClassVar
 
 import pydantic
 from django.db import connection, models
@@ -67,7 +67,9 @@ class Product(models.Model):
     title = models.TextField()
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+
     max_per_order = models.PositiveSmallIntegerField(default=5)
+    etickets_per_product = models.PositiveSmallIntegerField(default=1)
 
     superseded_by = models.ForeignKey(
         "self",
@@ -76,9 +78,10 @@ class Product(models.Model):
         on_delete=models.RESTRICT,
     )
 
-    # NOTE: Must both be set to be available
     available_from = models.DateTimeField(null=True, blank=True)
     available_until = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
 
     quotas = models.ManyToManyField(
         Quota,
@@ -87,7 +90,6 @@ class Product(models.Model):
 
     # TODO make into a field to allow for zero or multiple e-tickets per product
     # NOTE grep for it when you do
-    electronic_tickets_per_product: Literal[1] = 1
     event_id: int
     superseded_by_id: int | None
 
@@ -104,6 +106,10 @@ class Product(models.Model):
             and t >= self.available_from
             and (self.available_until is None or t < self.available_until)
         )
+
+    @property
+    def timezone(self):
+        return self.event.timezone
 
     def get_counters(self, request: HttpRequest | None) -> ProductCounters:
         return ProductCounters.get_for_event(self.event_id, request)[self.id]

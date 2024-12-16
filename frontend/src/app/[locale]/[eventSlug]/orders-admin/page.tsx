@@ -18,7 +18,10 @@ import FormattedDateTime from "@/components/FormattedDateTime";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -209,10 +212,17 @@ export default async function OrdersPage({ params, searchParams }: Props) {
 
   return (
     <ViewContainer>
-      <ViewHeading>
-        {translations.Tickets.admin.title}
-        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
+      <ViewHeadingActionsWrapper>
+        <ViewHeading>
+          {translations.Tickets.admin.title}
+          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+        </ViewHeading>
+        <ViewHeadingActions>
+          <a href={`/${eventSlug}/tickets`} className="btn btn-outline-primary">
+            {t.actions.newOrder}…
+          </a>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <TicketAdminTabs
         eventSlug={eventSlug}

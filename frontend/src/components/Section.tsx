@@ -11,7 +11,7 @@ export default function Section({ title, children, className }: Props) {
 
   return (
     <section className={className}>
-      {title && <h2 className="mb-2">{title}</h2>}
+      {title && <h3 className="mb-2">{title}</h3>}
       {children}
     </section>
   );

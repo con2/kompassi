@@ -232,8 +232,7 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
                 "title",
                 "description",
                 "price",
-                # not a real field… yet
-                # "electronic_tickets_per_product",
+                "etickets_per_product",
             )
         }
 
@@ -256,8 +255,8 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
         return [
             product
             for product, quantity in self.products
-            for _ in range(quantity * product.electronic_tickets_per_product)
-            if product.electronic_tickets_per_product > 0
+            for _ in range(quantity * product.etickets_per_product)
+            if product.etickets_per_product > 0
         ]
 
     @pydantic.computed_field

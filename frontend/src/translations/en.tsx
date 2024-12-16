@@ -1,4 +1,4 @@
-import { ReactNode, JSX } from "react";
+import { JSX, ReactNode } from "react";
 
 const translations = {
   Common: {
@@ -14,6 +14,7 @@ const translations = {
       edit: "Edit",
       delete: "Delete",
       create: "Create",
+      close: "Close",
     },
     boolean: {
       true: "Yes",
@@ -259,8 +260,17 @@ const translations = {
         title: "No products available",
         message: "There are no products available for purchase at the moment.",
       },
+      actions: {
+        editProduct: "Edit product",
+        newProduct: "New product",
+        saveProduct: "Save product",
+        unpublishAllProducts: "Unpublish all products",
+        viewOldVersion: "View",
+      },
       attributes: {
         product: "Product",
+        title: "Title",
+        createdAt: "Created at",
         unitPrice: "Unit price",
         quantity: {
           title: "Quantity",
@@ -277,8 +287,25 @@ const translations = {
             `Will become available at ${formattedTime}`,
           notAvailable: "Not available",
         },
-        availableFrom: "Available from",
-        availableUntil: "Available until",
+        maxPerOrder: {
+          title: "Maximum amount per order",
+          helpText: "No more than this amount will be sold in one order.",
+        },
+        eticketsPerProduct: {
+          title: "Number of electronic tickets per product",
+          helpText:
+            "The number of electronic ticket codes that will be generated for each instance of the product sold. If set to 0, no electronic tickets will be generated.",
+        },
+        availableFrom: {
+          title: "Available from",
+          helpText:
+            "In order for the product to become available, this field must be set and the time set herein must have passed.",
+        },
+        availableUntil: {
+          title: "Available until",
+          helpText:
+            "If set, the product will no longer be available after this time.",
+        },
         countPaid: "Paid",
         countReserved: {
           title: "Sold",
@@ -290,12 +317,21 @@ const translations = {
         actions: "Actions",
         totalReserved: "Total sold",
         totalPaid: "Total paid",
+        revisions: {
+          title: "Revisions of this product",
+          description:
+            "If a product is edited after being sold, a new revision will be created that will replace the product in the shop. Setting the availability schedule will not create a new revision.",
+          current: "Current",
+        },
       },
     },
     Quota: {
       listTitle: "Quotas",
       singleTitle: "Quota",
       forEvent: (eventName: string) => <>for {eventName}</>,
+      actions: {
+        newQuota: "New quota",
+      },
     },
     Order: {
       listTitle: "Orders",
@@ -447,6 +483,7 @@ const translations = {
         downloadTickets: {
           title: "Download tickets",
         },
+        newOrder: "New order",
       },
     },
     PaymentStamp: {

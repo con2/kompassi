@@ -20,6 +20,9 @@ class FullProductType(LimitedProductType):
             "price",
             "available_from",
             "available_until",
+            "max_per_order",
+            "etickets_per_product",
+            "created_at",
             "quotas",
         )
 
@@ -78,4 +81,13 @@ class FullProductType(LimitedProductType):
     is_available = graphene.NonNull(
         graphene.Boolean,
         description=normalize_whitespace(resolve_is_available.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_old_versions(product: Product, info):
+        return Product.objects.filter(event=product.event, superseded_by=product).select_related("event")
+
+    old_versions = graphene.NonNull(
+        graphene.List(graphene.NonNull(LimitedProductType)),
+        description="Old versions of this product.",
     )
