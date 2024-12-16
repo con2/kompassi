@@ -418,6 +418,10 @@ const translations: Translations = {
           message:
             "Antamasi tilaustiedot eivät kelpaa. Tarkista tilaus ja yritä uudelleen.",
         },
+        NO_PRODUCTS_SELECTED: {
+          title: "Et valinnut yhtään tuotetta",
+          message: "Valitse vähintään yksi tuote.",
+        },
         UNKNOWN_ERROR: {
           title: "Virhe tilauksen käsittelyssä",
           message:

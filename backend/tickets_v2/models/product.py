@@ -67,6 +67,7 @@ class Product(models.Model):
     title = models.TextField()
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    max_per_order = models.PositiveSmallIntegerField(default=5)
 
     superseded_by = models.ForeignKey(
         "self",

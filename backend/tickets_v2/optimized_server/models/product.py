@@ -10,11 +10,12 @@ if TYPE_CHECKING:
     from psycopg import AsyncConnection
 
 
-class Product(pydantic.BaseModel):
+class Product(pydantic.BaseModel, populate_by_name=True):
     id: int
     title: str
     description: str
     price: Decimal
+    max_per_order: int = pydantic.Field(serialization_alias="maxPerOrder")
     available: bool | None
 
     list_query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "list_products.sql").read_bytes()
@@ -26,13 +27,14 @@ class Product(pydantic.BaseModel):
 
             products = []
             async for row in cursor:
-                id, title, description, price, available = row
+                id, title, description, price, max_per_order, available = row
                 products.append(
                     cls(
                         id=id,
                         title=title,
                         description=description,
                         price=price,
+                        max_per_order=max_per_order,
                         available=available,
                     )
                 )

@@ -1,4 +1,5 @@
 import { createOrder } from "./actions";
+import ProductsForm from "./ProductsForm";
 import { getProducts } from "./service";
 import ContactForm from "@/components/tickets/ContactForm";
 import ViewContainer from "@/components/ViewContainer";
@@ -56,7 +57,10 @@ export default async function TicketsPage({ params }: Props) {
         <ViewHeading.Sub>{tickeT.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
 
-      <form action={createOrder.bind(null, locale, eventSlug)}>
+      <ProductsForm
+        onSubmit={createOrder.bind(null, locale, eventSlug)}
+        messages={{ noProductsSelectedError: t.errors.NO_PRODUCTS_SELECTED }}
+      >
         <table className="table table-striped mt-4 mb-4">
           <thead>
             <tr className="row">
@@ -87,7 +91,9 @@ export default async function TicketsPage({ params }: Props) {
                     className="form-control"
                     id={`quantity-${product.id}`}
                     name={`quantity-${product.id}`}
+                    min={0}
                     defaultValue={0}
+                    max={product.maxPerOrder}
                   />
                 </td>
               </tr>
@@ -103,7 +109,7 @@ export default async function TicketsPage({ params }: Props) {
             {t.actions.purchase.title}
           </button>
         </div>
-      </form>
+      </ProductsForm>
     </ViewContainer>
   );
 }

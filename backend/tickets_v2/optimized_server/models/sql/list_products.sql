@@ -21,6 +21,7 @@ select
   p.title,
   p.description,
   p.price,
+  p.max_per_order,
   bool_and(qa.available) as available
 from
   tickets_v2_product p

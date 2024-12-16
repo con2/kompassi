@@ -437,6 +437,10 @@ const translations: Translations = {
           message:
             "The details you entered on the order page were not accepted. Please check your order and try again.",
         },
+        NO_PRODUCTS_SELECTED: {
+          title: "No products selected",
+          message: "Please select at least one product to purchase.",
+        },
         UNKNOWN_ERROR: {
           title: "Error processing order",
           message:

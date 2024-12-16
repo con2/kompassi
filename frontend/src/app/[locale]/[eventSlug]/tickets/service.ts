@@ -1,16 +1,19 @@
 import { ticketsBaseUrl } from "@/config";
 
+export interface Product {
+  id: number;
+  title: string;
+  description: string;
+  price: string;
+  maxPerOrder: number;
+  available?: boolean;
+}
+
 export interface GetProductsResponse {
   event: {
     name: string;
   };
-  products: {
-    id: number;
-    title: string;
-    description: string;
-    price: string;
-    available?: boolean;
-  }[];
+  products: Product[];
 }
 
 export async function getProducts(
