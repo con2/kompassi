@@ -64,7 +64,7 @@ async def get_products(event: _Event, db: DB):
         "event": {
             "name": event.name,
         },
-        "products": [product.model_dump() for product in products],
+        "products": [product.model_dump(by_alias=True) for product in products],
     }
 
 

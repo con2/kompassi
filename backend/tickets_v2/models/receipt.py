@@ -353,7 +353,10 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
         else:
             subject = RECEIPT_SUBJECT[self.language]
 
-        body = render_to_string(f"tickets_v2_receipt_{self.language}.eml", self.model_dump(mode="python"))
+        body = render_to_string(
+            f"tickets_v2_receipt_{self.language}.eml",
+            self.model_dump(mode="python", by_alias=False),
+        )
         subject = f"{self.event_name}: {subject} ({self.formatted_order_number})"
 
         # NOTE doesn't check this internal alias exists (perf), too bad if it doesn't

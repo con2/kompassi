@@ -78,8 +78,14 @@ class CallbackUrls(pydantic.BaseModel):
 
 
 class CreatePaymentResponse(pydantic.BaseModel):
-    transaction_id: str = pydantic.Field(validation_alias="transactionId")
-    payment_redirect: str = pydantic.Field(validation_alias="href")
+    transaction_id: str = pydantic.Field(
+        validation_alias="transactionId",
+        serialization_alias="transactionId",
+    )
+    payment_redirect: str = pydantic.Field(
+        validation_alias="href",
+        serialization_alias="href",
+    )
     reference: str
 
 
@@ -236,7 +242,7 @@ class PreparedCreatePaymentRequest(pydantic.BaseModel):
         stamp = self._build_response_stamp(
             PaymentStampType.CREATE_PAYMENT_SUCCESS,
             # use parsed version to strip uninteresting fields (whole result is huge)
-            data=result.model_dump(mode="json"),
+            data=result.model_dump(mode="json", by_alias=True),
         )
 
         return result, stamp
