@@ -124,7 +124,7 @@ export function DimensionFilters(props: Props) {
         const selectedSlug = searchParams.get(dimension.slug) ?? "";
 
         return (
-          <div className="col" key={dimension.slug}>
+          <div className="col-12" key={dimension.slug}>
             <label className="visually-hidden" htmlFor={inputId}>
               {dimension.title}
             </label>
@@ -145,7 +145,7 @@ export function DimensionFilters(props: Props) {
         );
       })}
       {search && (
-        <div className="col">
+        <div className="col-12">
           <input
             className={`form-control form-control-sm border-secondary-subtle ${classes.searchTerm}`}
             defaultValue={searchTerm}
@@ -158,7 +158,7 @@ export function DimensionFilters(props: Props) {
         </div>
       )}
       {programFilters && (
-        <ButtonGroup className="col ms-auto">
+        <ButtonGroup className="col-12 ms-auto">
           {props.isLoggedIn && (
             <ToggleButton
               variant="outline-primary"
