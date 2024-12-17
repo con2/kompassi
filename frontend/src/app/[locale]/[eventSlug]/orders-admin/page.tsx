@@ -86,8 +86,11 @@ function getDimensions(
       slug: "status",
       title: t.attributes.status.title,
       values: Object.entries(t.attributes.status.choices)
-        .filter(([slug, _]) => slug != "UNKNOWN")
-        .map(([slug, { shortTitle }]) => ({ slug, title: shortTitle })),
+        .filter(([slug]) => slug !== PaymentStatus.NotStarted)
+        .map(([slug, { shortTitle }]) => ({
+          slug: slug.toLowerCase(),
+          title: shortTitle,
+        })),
     },
     {
       slug: "product",

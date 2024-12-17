@@ -141,9 +141,11 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
             values = filter.values
             match filter.dimension:
                 case "status":
-                    orders = orders.annotate(status=cls.status).filter(status__in=values)
+                    # resolve status name -> int value
+                    values = [PaymentStatus[value.upper()].value for value in values]
+                    orders = orders.filter(cached_status__in=values)
                 case "product":
-                    pass
+                    orders = orders.filter(product_data__has_keys=values)
 
         return orders
 

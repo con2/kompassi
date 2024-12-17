@@ -90,7 +90,7 @@ class TicketsV2EventMetaType(DjangoObjectType):
         Returns orders made to this event.
         Admin oriented view; customers will access order information through `profile.tickets`.
         """
-        return Order.objects.filter(event=meta.event)
+        return Order.filter_orders(Order.objects.filter(event=meta.event), filters)
 
     orders = graphene.NonNull(
         graphene.List(graphene.NonNull(FullOrderType)),

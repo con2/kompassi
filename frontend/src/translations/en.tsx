@@ -427,10 +427,10 @@ const translations = {
           title: "Status",
           choices: {
             NOT_STARTED: {
-              title: "Unknown order status",
-              shortTitle: "Unknown",
+              title: "Your order is awaiting payment",
+              shortTitle: "Not started",
               message:
-                "The status of your order is unknown. Please contact the event organizer for more information.",
+                "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
             },
             PENDING: {
               title: "Your order is awaiting payment",
