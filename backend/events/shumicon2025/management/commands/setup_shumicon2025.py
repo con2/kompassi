@@ -21,7 +21,7 @@ class Setup:
         self.setup_labour()
         self.setup_badges()
         # self.setup_tickets()
-        self.setup_programme()
+        # self.setup_programme()
         self.setup_intra()
         # self.setup_access()
         # self.setup_kaatoilmo()
@@ -62,7 +62,6 @@ class Setup:
     def setup_labour(self):
         from django.contrib.contenttypes.models import ContentType
 
-        from core.utils import slugify
         from labour.models import (
             AlternativeSignupForm,
             JobCategory,
@@ -80,7 +79,7 @@ class Setup:
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
             work_begins=datetime(2025, 5, 23, 10, 0, tzinfo=self.tz),
-            work_ends=self.event.end_time.replace(hour=20, minute=0, tzinfo=self.tz),
+            work_ends=self.event.end_time.replace(hour=20, minute=0, tzinfo=self.tz),  # type: ignore
             admin_group=labour_admin_group,
             contact_email="Shumicon <tyovoima@shumicon.fi>",
         )
@@ -118,7 +117,7 @@ class Setup:
         vastaava = PersonnelClass.objects.get(event=self.event, slug="vastaava")
 
         # if not JobCategory.objects.filter(event=self.event).exists():
-        for jc_data in [
+        for slug, name, description, pcs in [
             ("vastaava", "Vastaava", "Tapahtuman järjestelytoimikunnan jäsen", [vastaava]),
             (
                 "cosplay",
@@ -199,12 +198,6 @@ class Setup:
                 [tyovoima],
             ),
         ]:
-            if len(jc_data) == 3:
-                name, description, pcs = jc_data
-                slug = slugify(name)
-            elif len(jc_data) == 4:
-                slug, name, description, pcs = jc_data
-
             job_category, created = JobCategory.objects.get_or_create(
                 event=self.event,
                 slug=slug,
@@ -307,8 +300,8 @@ class Setup:
         if self.test:
             t = now()
             defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),
-                ticket_sales_ends=t + timedelta(days=60),
+                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
+                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -341,7 +334,7 @@ class Setup:
             product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
-                product.limit_groups.set(limit_groups)
+                product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
 
     def setup_badges(self):
@@ -426,12 +419,12 @@ class Setup:
 
         for start_time, end_time in [
             (
-                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),
-                self.event.start_time.replace(hour=20, minute=0, tzinfo=self.tz),
+                self.event.start_time.replace(hour=10, minute=0, tzinfo=self.tz),  # type: ignore
+                self.event.start_time.replace(hour=20, minute=0, tzinfo=self.tz),  # type: ignore
             ),
             (
-                self.event.end_time.replace(hour=10, minute=0, tzinfo=self.tz),
-                self.event.end_time.replace(hour=20, minute=0, tzinfo=self.tz),
+                self.event.end_time.replace(hour=10, minute=0, tzinfo=self.tz),  # type: ignore
+                self.event.end_time.replace(hour=20, minute=0, tzinfo=self.tz),  # type: ignore
             ),
         ]:
             TimeBlock.objects.get_or_create(
