@@ -506,6 +506,7 @@ const translations = {
           title: "Download tickets",
         },
         newOrder: "New order",
+        search: "Search orders",
       },
     },
     PaymentStamp: {

@@ -48,7 +48,11 @@ graphql(`
 `);
 
 const query = graphql(`
-  query OrderList($eventSlug: String!, $filters: [DimensionFilterInput!]) {
+  query OrderList(
+    $eventSlug: String!
+    $filters: [DimensionFilterInput!]
+    $searchTerm: String
+  ) {
     event(slug: $eventSlug) {
       name
       slug
@@ -58,7 +62,7 @@ const query = graphql(`
           ...ProductChoice
         }
 
-        orders(filters: $filters) {
+        orders(filters: $filters, search: $searchTerm) {
           ...OrderList
         }
       }
@@ -138,7 +142,6 @@ export default async function OrdersPage({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Order;
-  const producT = translations.Tickets.Product;
 
   // TODO encap
   const session = await auth();
@@ -147,9 +150,10 @@ export default async function OrdersPage({ params, searchParams }: Props) {
   }
 
   const filters = buildDimensionFilters(searchParams);
+  const searchTerm = searchParams.search ?? "";
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, filters },
+    variables: { eventSlug, filters, searchTerm },
   });
 
   if (!data.event?.tickets) {
@@ -237,6 +241,10 @@ export default async function OrdersPage({ params, searchParams }: Props) {
       <DimensionFilters
         dimensions={dimensions}
         className="row row-cols-md-auto g-3 align-items-center mt-1 mb-2"
+        messages={{
+          searchPlaceholder: t.actions.search,
+        }}
+        search
       />
 
       <DataTable rows={orders} columns={columns} />

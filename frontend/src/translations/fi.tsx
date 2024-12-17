@@ -504,6 +504,7 @@ const translations: Translations = {
           title: "Lataa liput",
         },
         newOrder: "Uusi tilaus",
+        search: "Hae tilauksia",
       },
     },
     PaymentStamp: {

@@ -85,16 +85,22 @@ class TicketsV2EventMetaType(DjangoObjectType):
         meta: TicketsV2EventMeta,
         info,
         filters: list[DimensionFilterInput] | None = None,
+        search: str = "",
     ):
         """
         Returns orders made to this event.
         Admin oriented view; customers will access order information through `profile.tickets`.
         """
-        return Order.filter_orders(Order.objects.filter(event=meta.event), filters)
+        return Order.filter_orders(
+            Order.objects.filter(event=meta.event),
+            filters=filters,
+            search=search,
+        )
 
     orders = graphene.NonNull(
         graphene.List(graphene.NonNull(FullOrderType)),
         filters=graphene.List(DimensionFilterInput),
+        search=graphene.String(),
         description=normalize_whitespace(resolve_orders.__doc__ or ""),
     )
 

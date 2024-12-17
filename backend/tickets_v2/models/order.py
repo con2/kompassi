@@ -5,6 +5,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
 from django.contrib.auth.models import User
+from django.contrib.postgres.search import SearchVector
 from django.db import models
 
 from core.models.event import Event
@@ -132,20 +133,34 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
     def filter_orders(
         cls,
         orders: models.QuerySet[Self],
-        filters: list[DimensionFilterInput] | None,
+        filters: list[DimensionFilterInput] | None = None,
+        search: str = "",
     ) -> models.QuerySet[Self]:
-        if not filters:
-            return orders
+        if filters:
+            for filter in filters:
+                values = filter.values
+                match filter.dimension:
+                    case "status":
+                        # resolve status name -> int value
+                        values = [PaymentStatus[value.upper()].value for value in values]
+                        orders = orders.filter(cached_status__in=values)
+                    case "product":
+                        orders = orders.filter(product_data__has_keys=values)
 
-        for filter in filters:
-            values = filter.values
-            match filter.dimension:
-                case "status":
-                    # resolve status name -> int value
-                    values = [PaymentStatus[value.upper()].value for value in values]
-                    orders = orders.filter(cached_status__in=values)
-                case "product":
-                    orders = orders.filter(product_data__has_keys=values)
+        if search:
+            # in case search is a formatted order number
+            search = search.lstrip("#").lstrip("0")
+
+            orders = orders.annotate(
+                search=SearchVector(
+                    "first_name",
+                    "last_name",
+                    "email",
+                    "phone",
+                    "order_number",
+                    config="finnish",
+                )
+            ).filter(search=search)
 
         return orders
 

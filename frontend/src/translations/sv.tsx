@@ -522,6 +522,7 @@ const translations: Translations = {
           title: "Download tickets",
         },
         newOrder: "Ny beställning",
+        search: "Sök beställningar",
       },
     },
     PaymentStamp: UNTRANSLATED({
