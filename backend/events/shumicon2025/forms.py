@@ -68,7 +68,8 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         kwargs.pop("event")
         admin = kwargs.pop("admin")
 
-        assert not admin
+        if admin:
+            raise NotImplementedError("admin=True")
 
         super().__init__(*args, **kwargs)
 
@@ -245,7 +246,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ]:
                 self.fields[field_name].required = True
 
-        self.fields["category"].queryset = Category.objects.filter(event=event, public=True)
+        self.fields["category"].queryset = Category.objects.filter(event=event, public=True)  # type: ignore
 
         self.fields["description"].help_text = (
             "Tämä kuvaus julkaistaan web-ohjelmakartassa sekä mahdollisessa ohjelmalehdessä. Kuvauksen "
@@ -259,7 +260,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "room_requirements"
         ].help_text = "Miten suurta yleisöä odotat ohjelmallesi? Minkä tyyppistä tilaa toivot ohjelmallesi? Minkälaisia kalusteita tarvitset ohjelmaasi varten? (Luentosaleissa löytyy paikat puhujille ja penkit yleisölle, näitä ei tarvitse tässä listata.)"
 
-        self.fields["stream_permission"].choices = [
+        self.fields["stream_permission"].choices = [  # type: ignore
             (k, t) for (k, t) in self.fields["stream_permission"].choices if k != "please"
         ]
 
