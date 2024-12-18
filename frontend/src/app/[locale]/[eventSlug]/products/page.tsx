@@ -141,9 +141,9 @@ export default async function ProductsPage({ params }: Props) {
         // Change untilTime(t: String): String to UntilTime(props: { children: ReactNode }): ReactNode
         // and init as <….UntilTime><FormattedDateTime … /></UntilTime>?
         if (product.isAvailable) {
-          if (product.availableFrom) {
+          if (product.availableUntil) {
             message = t.attributes.isAvailable.untilTime(
-              formatDateTime(product.availableFrom, locale),
+              formatDateTime(product.availableUntil, locale),
             );
           } else {
             message = t.attributes.isAvailable.untilFurtherNotice;
