@@ -5,8 +5,9 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
 from django.contrib.auth.models import User
-from django.contrib.postgres.search import SearchVector
 from django.db import models
+from django.db.models import Value
+from django.db.models.functions import Concat, Lower
 
 from core.models.event import Event
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
@@ -151,16 +152,21 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
             # in case search is a formatted order number
             search = search.lstrip("#").lstrip("0")
 
+            # none of these fields is allowed to be null, so coalesce is not needed
             orders = orders.annotate(
-                search=SearchVector(
-                    "first_name",
-                    "last_name",
-                    "email",
-                    "phone",
-                    "order_number",
-                    config="finnish",
-                )
-            ).filter(search=search)
+                search=Lower(
+                    Concat(
+                        "first_name",
+                        Value(" "),
+                        "last_name",
+                        Value(" "),
+                        "email",
+                        Value(" "),
+                        "order_number",
+                        output_field=models.TextField(),
+                    )
+                ),
+            ).filter(search__contains=search.lower())
 
         return orders
 
