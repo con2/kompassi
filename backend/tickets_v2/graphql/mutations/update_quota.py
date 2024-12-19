@@ -2,7 +2,6 @@ from typing import Self
 
 import graphene
 from django import forms as django_forms
-from django.forms.models import model_to_dict
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
@@ -52,11 +51,7 @@ class UpdateQuota(graphene.Mutation):
         if not form.is_valid():
             raise django_forms.ValidationError(form.errors)  # type: ignore
 
-        # TODO
-        new_values = form.cleaned_data
-        old_values = model_to_dict(quota)
-
-        print("new_values", new_values)
-        print("old_values", old_values)
+        form.save()
+        quota.set_quota(form.cleaned_data["quota"])
 
         return UpdateQuota(quota=quota)  # type: ignore

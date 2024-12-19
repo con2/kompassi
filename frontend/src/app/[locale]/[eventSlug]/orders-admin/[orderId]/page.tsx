@@ -9,7 +9,7 @@ import {
   cancelAndRefund,
   cancelWithoutRefunding,
   resendConfirmation,
-  updateContactInformation,
+  updateOrder,
 } from "./actions";
 import { graphql } from "@/__generated__";
 import {
@@ -349,14 +349,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
       <Card className="mb-4">
         <CardBody>
           <CardTitle>{t.contactForm.title}</CardTitle>
-          <form
-            action={updateContactInformation.bind(
-              null,
-              locale,
-              eventSlug,
-              order.id,
-            )}
-          >
+          <form action={updateOrder.bind(null, locale, eventSlug, order.id)}>
             <ContactForm messages={translations} values={order} isAdmin />
             <SubmitButton>{t.actions.saveContactInformation}</SubmitButton>
           </form>

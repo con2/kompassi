@@ -18,6 +18,7 @@ from ..optimized_server.models.enums import PaymentStatus
 from ..optimized_server.models.order import OrderProduct
 from ..optimized_server.utils.uuid7 import uuid7
 from ..utils.event_partitions import EventPartitionsMixin
+from .meta import TicketsV2EventMeta
 from .product import Product
 
 if TYPE_CHECKING:
@@ -187,3 +188,39 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
             event_id=self.event_id,
             order_id=self.id,
         )
+
+    @cached_property
+    def meta(self) -> TicketsV2EventMeta:
+        return TicketsV2EventMeta.objects.get(event_id=self.event_id)
+
+    @property
+    def scope(self):
+        return self.event.scope
+
+    def cancel(self) -> PaymentStamp:
+        from .payment_stamp import PaymentStamp
+
+        if self.cached_status >= PaymentStatus.CANCELLED:
+            raise ValueError("Order is already cancelled")
+
+        cancelled_stamp = PaymentStamp.cancellation_for_order(self)
+        cancelled_stamp.save()
+        return cancelled_stamp
+
+    def refund(self) -> PaymentStamp:
+        if self.cached_status == PaymentStatus.REFUNDED:
+            raise ValueError("Order is already refunded")
+
+        paid_stamp = self.payment_stamps.filter(cached_status=PaymentStatus.PAID).order_by("-id").first()
+        if not paid_stamp:
+            raise ValueError("Cannot refund an order that has not been paid")
+
+        provider = self.meta.provider
+
+        prepared_refund_request = provider.prepare_refund(paid_stamp)
+        prepared_refund_request.request_stamp.save()
+
+        _response, response_stamp = prepared_refund_request.send()
+        response_stamp.save()
+
+        return response_stamp

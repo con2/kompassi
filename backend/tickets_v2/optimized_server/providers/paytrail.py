@@ -29,15 +29,12 @@ PAYTRAIL_API_URL = "https://services.paytrail.com/payments"
 logger = logging.getLogger(__name__)
 
 
-def get_params(event: Event, method="POST", t=None):
-    if event.provider_id != PaymentProvider.PAYTRAIL:
-        raise ValueError(f"Event {event.slug} is not using Paytrail")
-
+def get_params(paytrail_merchant: str, method="POST", t=None):
     if t is None:
         t = datetime.now(UTC)
 
     return {
-        "checkout-account": event.paytrail_merchant,
+        "checkout-account": paytrail_merchant,
         "checkout-algorithm": "sha256",
         "checkout-method": method,
         "checkout-nonce": str(uuid4()),
@@ -144,7 +141,7 @@ class CreatePaymentRequest(pydantic.BaseModel):
     ) -> tuple[PreparedCreatePaymentRequest, PaymentStamp]:
         data = self.model_dump(mode="json", by_alias=True, exclude_none=True)
         body = json.dumps(data)
-        headers = get_params(event, method="POST")
+        headers = get_params(event.paytrail_merchant, method="POST")
         headers["signature"] = calculate_hmac(event.paytrail_password, headers, body)
         headers["content-type"] = "application/json; charset=utf-8"
 
@@ -351,6 +348,12 @@ class PaymentCallback(pydantic.BaseModel, populate_by_name=True):
 
 @dataclass
 class PaytrailProvider:
+    """
+    Implements creating payments for Paytrail.
+
+    Note that refunds are implemented on the Django side.
+    """
+
     event: Event
 
     provider_id: ClassVar[PaymentProvider] = PaymentProvider.PAYTRAIL

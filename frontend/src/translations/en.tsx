@@ -418,7 +418,7 @@ const translations = {
         provider: {
           title: "Payment provider",
           choices: {
-            NONE: "None (free order)",
+            NONE: "None",
             PAYTRAIL: "Paytrail",
             STRIPE: "Stripe",
           },
@@ -455,6 +455,18 @@ const translations = {
               shortTitle: "Cancelled",
               message:
                 "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+            },
+            REFUND_REQUESTED: {
+              title: "Your order has been refunded",
+              shortTitle: "Refund requested",
+              message:
+                "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+            },
+            REFUND_FAILED: {
+              title: "Your order has been refunded",
+              shortTitle: "Refund failed",
+              message:
+                "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
             },
             REFUNDED: {
               title: "Your order has been refunded",
@@ -589,6 +601,10 @@ const translations = {
             CREATE_PAYMENT_FAILURE: "Create payment – Failed",
             PAYMENT_REDIRECT: "Payment redirect",
             PAYMENT_CALLBACK: "Payment callback",
+            CANCEL_WITHOUT_REFUND: "Cancel without refund",
+            CREATE_REFUND_REQUEST: "Create refund – Request",
+            CREATE_REFUND_SUCCESS: "Create refund – OK",
+            CREATE_REFUND_FAILURE: "Create refund – Failed",
           },
         },
       },
@@ -601,8 +617,9 @@ const translations = {
         type: {
           title: "Type",
           choices: {
-            ORDER_CONFIRMATION: "Order confirmation",
-            CANCELLATION: "Order cancellation",
+            PAID: "Order confirmation",
+            CANCELLED: "Order cancellation",
+            REFUNDED: "Order refund",
           },
         },
         status: {

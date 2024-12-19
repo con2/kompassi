@@ -1,9 +1,9 @@
 -- enums in tickets_v2.optimized_server.models.enums
 -- TODO should these be made proper postgres enums instead?
 create domain tickets_v2_paymentprovider as smallint constraint value_check check (value >= 0 and value <= 2);
-create domain tickets_v2_paymentstamptype as smallint constraint value_check check (value >= 0 and value <= 5);
-create domain tickets_v2_paymentstatus as smallint constraint value_check check (value >= 0 and value <= 5);
-create domain tickets_v2_receipttype as smallint constraint value_check check (value >= 1 and value <= 2);
+create domain tickets_v2_paymentstamptype as smallint constraint value_check check (value >= 0 and value <= 9);
+create domain tickets_v2_paymentstatus as smallint constraint value_check check (value >= 0 and value <= 7);
+create domain tickets_v2_receipttype as smallint constraint value_check check (value in (3, 4, 7));
 create domain tickets_v2_receiptstatus as smallint constraint value_check check (value >= 0 and value <= 3);
 
 create table tickets_v2_order (
@@ -102,7 +102,7 @@ create or replace function tickets_v2_paymentstamp_create_receipt() returns trig
       new.correlation_id, -- this ensures that we only create one receipt per payment
       new.order_id,
       new.correlation_id,
-      1, -- ReceiptType.ORDER_CONFIRMATION
+      new.status, -- PaymentStatus.PAID, CANCELLED, REFUNDED
       0,  -- ReceiptStatus.REQUESTED
       o.email
     from
@@ -119,7 +119,7 @@ $$ language plpgsql;
 create trigger trigger_90_create_receipt
 after insert on tickets_v2_paymentstamp
 for each row
-when (new.status = 3) -- PaymentStatus.PAID
+when (new.status in (3, 4, 7)) -- PaymentStatus.PAID, CANCELLED, REFUNDED
 execute function tickets_v2_paymentstamp_create_receipt();
 
 create table tickets_v2_receipt (

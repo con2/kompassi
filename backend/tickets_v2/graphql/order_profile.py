@@ -43,7 +43,7 @@ class ProfileOrderType(LimitedOrderType):
         They need to be the owner of the order (or an admin) to access that link.
         Returns null if the order does not contain electronic tickets.
         """
-        if not PendingReceipt.from_order(order).have_etickets:
+        if not ((receipt := PendingReceipt.from_order(order)) and receipt.have_etickets):
             return None
 
         request: HttpRequest = info.context

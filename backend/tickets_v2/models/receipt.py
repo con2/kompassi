@@ -22,7 +22,7 @@ from event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from tickets.lippukala_integration import Queue as LippukalaQueue
 
-from ..optimized_server.models.enums import ReceiptStatus, ReceiptType
+from ..optimized_server.models.enums import PaymentStatus, ReceiptStatus, ReceiptType
 from ..optimized_server.utils.formatting import format_money, format_order_number
 from ..utils.event_partitions import EventPartitionsMixin
 from .order import Order
@@ -40,6 +40,10 @@ ETICKET_SUBJECT = dict(
 RECEIPT_SUBJECT = dict(
     fi="Tilausvahvistus",
     en="Order confirmation",
+)
+CANCELLED_SUBJECT = dict(
+    fi="Tilaus peruutettu",
+    en="Order cancelled",
 )
 
 FROM_EMAIL: str = settings.DEFAULT_FROM_EMAIL
@@ -168,6 +172,7 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
     """
 
     receipt_id: UUID = pydantic.Field(default_factory=uuid7)
+    receipt_type: ReceiptType
     order_id: UUID
     event_id: int
     event_name: str
@@ -338,6 +343,9 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
         return lippukala_order
 
     def get_etickets_pdf(self) -> bytes | None:
+        if self.receipt_type != ReceiptType.PAID:
+            return None
+
         lippukala_order = self.get_lippukala_order()
         if not lippukala_order:
             return None
@@ -347,15 +355,20 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
         return printer.finish()
 
     def send_receipt(self, from_email: str = FROM_EMAIL, mail_domain: str = MAIL_DOMAIN):
-        if etickets_pdf := self.get_etickets_pdf():
-            subject = ETICKET_SUBJECT[self.language]
-        else:
-            subject = RECEIPT_SUBJECT[self.language]
+        match self.receipt_type:
+            case ReceiptType.PAID:
+                template_name = f"tickets_v2_receipt_{self.language}.eml"
+                if etickets_pdf := self.get_etickets_pdf():
+                    subject = ETICKET_SUBJECT[self.language]
+                else:
+                    subject = RECEIPT_SUBJECT[self.language]
+            case ReceiptType.CANCELLED | ReceiptType.REFUNDED:
+                etickets_pdf = None
+                subject = CANCELLED_SUBJECT[self.language]
+                template_name = f"tickets_v2_cancelled_{self.language}.eml"
 
-        body = render_to_string(
-            f"tickets_v2_receipt_{self.language}.eml",
-            self.model_dump(mode="python", by_alias=False),
-        )
+        vars = self.model_dump(mode="python", by_alias=False)
+        body = render_to_string(template_name, vars)
         subject = f"{self.event_name}: {subject} ({self.formatted_order_number})"
 
         # NOTE doesn't check this internal alias exists (perf), too bad if it doesn't
@@ -385,9 +398,13 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
         message.send(fail_silently=True)
 
     @classmethod
-    def from_order(cls, order: Order) -> Self:
+    def from_order(cls, order: Order) -> Self | None:
+        if order.cached_status != PaymentStatus.PAID:
+            return None
+
         return cls(
             order_id=order.id,
+            receipt_type=PaymentStatus(order.cached_status).to_receipt_type(),
             event_id=order.event_id,
             event_name=order.event.name,
             event_slug=order.event.slug,

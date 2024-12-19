@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
+from functools import cached_property
 
 from django.db import models
 
@@ -96,6 +97,19 @@ class TicketsV2EventMeta(EventMetaBase):
         for quota_id, counters in quota_counters.items():
             quota = Quota.objects.get(id=quota_id)
             quota.set_quota(counters.count_total)
+
+    @cached_property
+    def provider(self):
+        from ..providers.null import NullProvider
+        from ..providers.paytrail import PaytrailProvider
+
+        match self.provider_id:
+            case PaymentProvider.NONE:
+                return NullProvider(self.event)
+            case PaymentProvider.PAYTRAIL:
+                return PaytrailProvider(self.event)
+            case _:
+                raise NotImplementedError(f"Unsupported provider_id: {self.provider_id}")
 
 
 @dataclass

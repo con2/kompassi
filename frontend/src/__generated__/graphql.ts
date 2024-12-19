@@ -69,6 +69,16 @@ export type AnnotationSchemoidTypeTitleArgs = {
   lang?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CancelOrder = {
+  __typename?: 'CancelOrder';
+  order?: Maybe<LimitedOrderType>;
+};
+
+export type CancelOrderInput = {
+  eventSlug: Scalars['String']['input'];
+  orderId: Scalars['String']['input'];
+};
+
 export type ConfirmEmail = {
   __typename?: 'ConfirmEmail';
   user?: Maybe<LimitedUserType>;
@@ -367,7 +377,7 @@ export type FullOrderType = {
   createdAt: Scalars['DateTime']['output'];
   displayName: Scalars['String']['output'];
   email: Scalars['String']['output'];
-  /** Returns a link at which the user can view their electronic tickets. They need to be the owner of the order (or an admin) to access that link. Returns null if the order does not contain electronic tickets. */
+  /** Returns a link at which the admin can view their electronic tickets. Returns null if the order does not contain electronic tickets. */
   eticketsLink?: Maybe<Scalars['String']['output']>;
   event: LimitedEventType;
   firstName: Scalars['String']['output'];
@@ -380,7 +390,7 @@ export type FullOrderType = {
   /** Payment stamps related to this order. */
   paymentStamps: Array<LimitedPaymentStampType>;
   phone: Scalars['String']['output'];
-  /** Returns a link at which the user can view their electronic tickets. They need to be the owner of the order (or an admin) to access that link. Returns null if the order does not contain electronic tickets. */
+  /** Returns a link at which the admin can view their electronic tickets. Returns null if the order does not contain electronic tickets. */
   products: Array<OrderProductType>;
   /** Receipts related to this order. */
   receipts: Array<LimitedReceiptType>;
@@ -570,6 +580,23 @@ export type LimitedEventType = {
   name: Scalars['String']['output'];
   /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
   slug: Scalars['String']['output'];
+};
+
+export type LimitedOrderType = {
+  __typename?: 'LimitedOrderType';
+  createdAt: Scalars['DateTime']['output'];
+  displayName: Scalars['String']['output'];
+  email: Scalars['String']['output'];
+  firstName: Scalars['String']['output'];
+  formattedOrderNumber: Scalars['String']['output'];
+  id: Scalars['UUID']['output'];
+  language: TicketsV2OrderLanguageChoices;
+  lastName: Scalars['String']['output'];
+  /** Order number used in contexts where UUID cannot be used. Such places include generating reference numbers and the customer reading the order number aloud to an event rep. Prefer id (UUID) for everything else (eg. URLs). */
+  orderNumber: Scalars['Int']['output'];
+  phone: Scalars['String']['output'];
+  status: PaymentStatus;
+  totalPrice: Scalars['Decimal']['output'];
 };
 
 export type LimitedPaymentStampType = {
@@ -787,6 +814,7 @@ export type MarkScheduleItemAsFavorite = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  cancelOrder?: Maybe<CancelOrder>;
   confirmEmail?: Maybe<ConfirmEmail>;
   createProduct?: Maybe<CreateProduct>;
   createProgramFeedback?: Maybe<CreateProgramFeedback>;
@@ -807,6 +835,8 @@ export type Mutation = {
   markScheduleItemAsFavorite?: Maybe<MarkScheduleItemAsFavorite>;
   putSurveyDimension?: Maybe<PutSurveyDimension>;
   putSurveyDimensionValue?: Maybe<PutSurveyDimensionValue>;
+  refundOrder?: Maybe<RefundOrder>;
+  resendOrderConfirmation?: Maybe<ResendOrderConfirmation>;
   revokeKeyPair?: Maybe<RevokeKeyPair>;
   subscribeToSurveyResponses?: Maybe<SubscribeToSurveyResponses>;
   /** Deprecated. Use UnmarkScheduleItemAsFavorite instead. */
@@ -815,10 +845,16 @@ export type Mutation = {
   unsubscribeFromSurveyResponses?: Maybe<UnsubscribeFromSurveyResponses>;
   updateForm?: Maybe<UpdateForm>;
   updateFormFields?: Maybe<UpdateFormFields>;
+  updateOrder?: Maybe<UpdateOrder>;
   updateProduct?: Maybe<UpdateProduct>;
   updateQuota?: Maybe<UpdateQuota>;
   updateResponseDimensions?: Maybe<UpdateResponseDimensions>;
   updateSurvey?: Maybe<UpdateSurvey>;
+};
+
+
+export type MutationCancelOrderArgs = {
+  input: CancelOrderInput;
 };
 
 
@@ -917,6 +953,16 @@ export type MutationPutSurveyDimensionValueArgs = {
 };
 
 
+export type MutationRefundOrderArgs = {
+  input: RefundOrderInput;
+};
+
+
+export type MutationResendOrderConfirmationArgs = {
+  input: ResendOrderConfirmationInput;
+};
+
+
 export type MutationRevokeKeyPairArgs = {
   id: Scalars['String']['input'];
 };
@@ -949,6 +995,11 @@ export type MutationUpdateFormArgs = {
 
 export type MutationUpdateFormFieldsArgs = {
   input: UpdateFormFieldsInput;
+};
+
+
+export type MutationUpdateOrderArgs = {
+  input: UpdateOrderInput;
 };
 
 
@@ -987,9 +1038,13 @@ export enum PaymentProvider {
 
 /** An enumeration. */
 export enum PaymentStampType {
+  CancelWithoutRefund = 'CANCEL_WITHOUT_REFUND',
   CreatePaymentFailure = 'CREATE_PAYMENT_FAILURE',
   CreatePaymentRequest = 'CREATE_PAYMENT_REQUEST',
   CreatePaymentSuccess = 'CREATE_PAYMENT_SUCCESS',
+  CreateRefundFailure = 'CREATE_REFUND_FAILURE',
+  CreateRefundRequest = 'CREATE_REFUND_REQUEST',
+  CreateRefundSuccess = 'CREATE_REFUND_SUCCESS',
   PaymentCallback = 'PAYMENT_CALLBACK',
   PaymentRedirect = 'PAYMENT_REDIRECT',
   ZeroPrice = 'ZERO_PRICE'
@@ -1002,7 +1057,9 @@ export enum PaymentStatus {
   NotStarted = 'NOT_STARTED',
   Paid = 'PAID',
   Pending = 'PENDING',
-  Refunded = 'REFUNDED'
+  Refunded = 'REFUNDED',
+  RefundFailed = 'REFUND_FAILED',
+  RefundRequested = 'REFUND_REQUESTED'
 }
 
 export type ProfileOrderType = {
@@ -1251,9 +1308,31 @@ export enum ReceiptStatus {
 
 /** An enumeration. */
 export enum ReceiptType {
-  Cancellation = 'CANCELLATION',
-  OrderConfirmation = 'ORDER_CONFIRMATION'
+  Cancelled = 'CANCELLED',
+  Paid = 'PAID',
+  Refunded = 'REFUNDED'
 }
+
+export type RefundOrder = {
+  __typename?: 'RefundOrder';
+  order?: Maybe<LimitedOrderType>;
+};
+
+export type RefundOrderInput = {
+  eventSlug: Scalars['String']['input'];
+  orderId: Scalars['String']['input'];
+};
+
+export type ResendOrderConfirmation = {
+  __typename?: 'ResendOrderConfirmation';
+  order?: Maybe<LimitedOrderType>;
+  receipt?: Maybe<LimitedReceiptType>;
+};
+
+export type ResendOrderConfirmationInput = {
+  eventSlug: Scalars['String']['input'];
+  orderId: Scalars['String']['input'];
+};
 
 export type ResponseDimensionValueType = {
   __typename?: 'ResponseDimensionValueType';
@@ -1508,6 +1587,17 @@ export type UpdateFormInput = {
   surveySlug: Scalars['String']['input'];
 };
 
+export type UpdateOrder = {
+  __typename?: 'UpdateOrder';
+  order?: Maybe<LimitedOrderType>;
+};
+
+export type UpdateOrderInput = {
+  eventSlug: Scalars['String']['input'];
+  formData: Scalars['GenericScalar']['input'];
+  orderId: Scalars['String']['input'];
+};
+
 export type UpdateProduct = {
   __typename?: 'UpdateProduct';
   product?: Maybe<LimitedProductType>;
@@ -1584,6 +1674,34 @@ export type SurveyThankYouPageQueryQueryVariables = Exact<{
 
 
 export type SurveyThankYouPageQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'SurveyType', form?: { __typename?: 'FormType', title: string, thankYouMessage: string } | null } | null } | null } | null };
+
+export type ResendOrderConfirmationMutationVariables = Exact<{
+  input: ResendOrderConfirmationInput;
+}>;
+
+
+export type ResendOrderConfirmationMutation = { __typename?: 'Mutation', resendOrderConfirmation?: { __typename?: 'ResendOrderConfirmation', order?: { __typename?: 'LimitedOrderType', id: string } | null } | null };
+
+export type UpdateOrderMutationVariables = Exact<{
+  input: UpdateOrderInput;
+}>;
+
+
+export type UpdateOrderMutation = { __typename?: 'Mutation', updateOrder?: { __typename?: 'UpdateOrder', order?: { __typename?: 'LimitedOrderType', id: string } | null } | null };
+
+export type RefundOrderMutationVariables = Exact<{
+  input: RefundOrderInput;
+}>;
+
+
+export type RefundOrderMutation = { __typename?: 'Mutation', refundOrder?: { __typename?: 'RefundOrder', order?: { __typename?: 'LimitedOrderType', id: string } | null } | null };
+
+export type CancelOrderMutationVariables = Exact<{
+  input: CancelOrderInput;
+}>;
+
+
+export type CancelOrderMutation = { __typename?: 'Mutation', cancelOrder?: { __typename?: 'CancelOrder', order?: { __typename?: 'LimitedOrderType', id: string } | null } | null };
 
 export type AdminOrderPaymentStampFragment = { __typename?: 'LimitedPaymentStampType', createdAt: string, correlationId: string, provider: PaymentProvider, type: PaymentStampType, status: PaymentStatus };
 
@@ -1988,6 +2106,10 @@ export const CreateSurveyResponseDocument = {"kind":"Document","definitions":[{"
 export const InitFileUploadMutationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"InitFileUploadMutation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"InitFileUploadInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"initFileUpload"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"uploadUrl"}},{"kind":"Field","name":{"kind":"Name","value":"fileUrl"}}]}}]}}]} as unknown as DocumentNode<InitFileUploadMutationMutation, InitFileUploadMutationMutationVariables>;
 export const SurveyPageQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SurveyPageQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"forms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"survey"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginRequired"}},{"kind":"Field","name":{"kind":"Name","value":"anonymity"}},{"kind":"Field","name":{"kind":"Name","value":"maxResponsesPerUser"}},{"kind":"Field","name":{"kind":"Name","value":"countResponsesByCurrentUser"}},{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fields"}},{"kind":"Field","name":{"kind":"Name","value":"layout"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SurveyPageQueryQuery, SurveyPageQueryQueryVariables>;
 export const SurveyThankYouPageQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SurveyThankYouPageQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"forms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"survey"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"thankYouMessage"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SurveyThankYouPageQueryQuery, SurveyThankYouPageQueryQueryVariables>;
+export const ResendOrderConfirmationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ResendOrderConfirmation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ResendOrderConfirmationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resendOrderConfirmation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<ResendOrderConfirmationMutation, ResendOrderConfirmationMutationVariables>;
+export const UpdateOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateOrderMutation, UpdateOrderMutationVariables>;
+export const RefundOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"RefundOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"RefundOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"refundOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<RefundOrderMutation, RefundOrderMutationVariables>;
+export const CancelOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CancelOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<CancelOrderMutation, CancelOrderMutationVariables>;
 export const AdminOrderDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AdminOrderDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"formattedOrderNumber"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"eticketsLink"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}},{"kind":"Field","name":{"kind":"Name","value":"paymentStamps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderPaymentStamp"}}]}},{"kind":"Field","name":{"kind":"Name","value":"receipts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderReceipt"}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderPaymentStamp"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedPaymentStampType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderReceipt"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedReceiptType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<AdminOrderDetailQuery, AdminOrderDetailQueryVariables>;
 export const OrderListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"OrderList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DimensionFilterInput"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProductChoice"}}]}},{"kind":"Field","name":{"kind":"Name","value":"orders"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"OrderList"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductChoice"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"OrderList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullOrderType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"formattedOrderNumber"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<OrderListQuery, OrderListQueryVariables>;
 export const UpdateProductDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateProduct"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateProductInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateProduct"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"product"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateProductMutation, UpdateProductMutationVariables>;

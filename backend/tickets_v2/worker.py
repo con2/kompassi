@@ -15,6 +15,7 @@ from psycopg import connect
 from .models.meta import TicketsV2EventMeta
 from .models.receipt import PendingReceipt, Receipt
 from .optimized_server.db import get_conninfo
+from .optimized_server.models.enums import ReceiptStatus
 
 logger = logging.getLogger("kompassi")
 NOTIFY_TIMEOUT_SECONDS = 300  # this is how often the worker will execute no matter what
@@ -34,8 +35,6 @@ def tick(event_id: int):
 
     logger.info("Sending receipts for %s orders.", len(items))
 
-    # NOTE: if we ever add multiple workers, need to have KeyboardInterrupt write ReceiptStatus.FAILURE for unprocessed items
-
     # Process the orders
     # TODO on interrupt, mark the rest as FAILED
     while items:
@@ -43,8 +42,10 @@ def tick(event_id: int):
         try:
             item.send_receipt()
         except Exception as e:
-            logger.exception("Failed to send receipt for order %s: %s", item.order_id, e)
-            Receipt.objects.filter()
+            logger.exception("Failed to send receipt for order %s: %s", item.order_id, exc_info=e)
+            Receipt.objects.filter(event_id=item.event_id, id=item.receipt_id).update(status=ReceiptStatus.FAILURE)
+        else:
+            Receipt.objects.filter(event_id=item.event_id, id=item.receipt_id).update(status=ReceiptStatus.SUCCESS)
 
     logger.debug("Done sending receipts for event %s.", event_id)
 

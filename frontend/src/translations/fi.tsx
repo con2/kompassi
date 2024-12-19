@@ -454,9 +454,21 @@ const translations: Translations = {
               message:
                 "Tilauksesi on peruutettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
+            REFUND_REQUESTED: {
+              title: "Tilauksen maksu on palautettu",
+              shortTitle: "Refund requested",
+              message:
+                "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
+            },
+            REFUND_FAILED: {
+              title: "Tilauksen maksu on palautettu",
+              shortTitle: "Refund failed",
+              message:
+                "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
+            },
             REFUNDED: {
               title: "Tilauksen maksu on palautettu",
-              shortTitle: "Palautettu",
+              shortTitle: "Refunded",
               message:
                 "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
@@ -588,6 +600,10 @@ const translations: Translations = {
             CREATE_PAYMENT_FAILURE: "Maksun luonti – Epäonnistui",
             PAYMENT_REDIRECT: "Uudelleenohjaus maksusta",
             PAYMENT_CALLBACK: "Jälki-ilmoitus maksusta",
+            CANCEL_WITHOUT_REFUND: "Peruttu palauttamatta maksua",
+            CREATE_REFUND_REQUEST: "Palautuksen luonti – Pyyntö",
+            CREATE_REFUND_SUCCESS: "Palautuksen luonti – Onnistui",
+            CREATE_REFUND_FAILURE: "Palautuksen luonti – Epäonnistui",
           },
         },
       },
@@ -600,8 +616,9 @@ const translations: Translations = {
         type: {
           title: "Tyyppi",
           choices: {
-            ORDER_CONFIRMATION: "Tilausvahvistus",
-            CANCELLATION: "Peruutusilmoitus",
+            PAID: "Tilausvahvistus",
+            CANCELLED: "Peruutusilmoitus",
+            REFUNDED: "Palautusilmoitus",
           },
         },
         status: {

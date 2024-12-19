@@ -82,3 +82,18 @@ class PaymentStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
     @property
     def provider(self):
         return PaymentProvider(self.provider_id)
+
+    @classmethod
+    def cancellation_for_order(cls, order: Order):
+        """
+        Return an unsaved PaymentStamp for cancelling an order without refund.
+        """
+        return cls(
+            event=order.event,
+            order_id=order.id,
+            correlation_id=uuid7(),
+            provider_id=PaymentProvider.NONE,
+            type=PaymentStampType.CANCEL_WITHOUT_REFUND,
+            status=PaymentStatus.CANCELLED,
+            data={},
+        )

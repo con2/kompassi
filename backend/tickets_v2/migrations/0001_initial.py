@@ -16,7 +16,9 @@ PAYMENT_STATUS_CHOICES = [
     (2, "FAILED"),
     (3, "PAID"),
     (4, "CANCELLED"),
-    (5, "REFUNDED"),
+    (5, "REFUND_REQUESTED"),
+    (6, "REFUND_FAILED"),
+    (7, "REFUNDED"),
 ]
 
 
@@ -74,23 +76,26 @@ class Migration(migrations.Migration):
             name="Product",
             fields=[
                 ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("title", models.TextField()),
-                ("description", models.TextField()),
-                ("price", models.DecimalField(decimal_places=2, max_digits=10)),
-                ("available_from", models.DateTimeField(blank=True, null=True)),
-                ("available_until", models.DateTimeField(blank=True, null=True)),
                 (
                     "event",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.RESTRICT, related_name="products", to="core.event"
                     ),
                 ),
+                ("max_per_order", models.PositiveSmallIntegerField(default=5)),
+                ("etickets_per_product", models.PositiveSmallIntegerField(default=1)),
                 (
                     "superseded_by",
                     models.ForeignKey(
                         blank=True, null=True, on_delete=django.db.models.deletion.RESTRICT, to="tickets_v2.product"
                     ),
                 ),
+                ("available_from", models.DateTimeField(blank=True, null=True)),
+                ("available_until", models.DateTimeField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("price", models.DecimalField(decimal_places=2, max_digits=10)),
+                ("title", models.TextField()),
+                ("description", models.TextField()),
                 ("quotas", models.ManyToManyField(related_name="products", to="tickets_v2.quota")),
             ],
         ),

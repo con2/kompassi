@@ -24,12 +24,14 @@ claimed_receipts as (
     r.id = qr.id
   returning
     r.id,
-    r.order_id
+    r.order_id,
+    r.type
 )
 
 select
   -- NOTE: fields returned must match the ReceiptPending class
   cr.id as receipt_id,
+  cr.type as receipt_type,
   cr.order_id as order_id,
   e.id as event_id,
   e.name as event_name,

@@ -443,10 +443,10 @@ const translations: Translations = {
           title: "Status",
           choices: {
             NOT_STARTED: {
-              title: "Unknown order status",
-              shortTitle: "Unknown",
+              title: "Your order is awaiting payment",
+              shortTitle: "Not started",
               message:
-                "The status of your order is unknown. Please contact the event organizer for more information.",
+                "Your order has been confirmed and the products have been reserved to you, but we have not yet received your payment. Please use the button below to pay for your order as soon as possible. Unpaid orders will be eventually cancelled.",
             },
             PENDING: {
               title: "Your order is awaiting payment",
@@ -471,6 +471,18 @@ const translations: Translations = {
               shortTitle: "Cancelled",
               message:
                 "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+            },
+            REFUND_REQUESTED: {
+              title: "Your order has been refunded",
+              shortTitle: "Refund requested",
+              message:
+                "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
+            },
+            REFUND_FAILED: {
+              title: "Your order has been refunded",
+              shortTitle: "Refund failed",
+              message:
+                "Your order has been refunded. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
             },
             REFUNDED: {
               title: "Your order has been refunded",
@@ -601,10 +613,14 @@ const translations: Translations = {
           choices: {
             ZERO_PRICE: "Zero price",
             CREATE_PAYMENT_REQUEST: "Create payment – Request",
-            CREATE_PAYMENT_SUCCESS: "Create payment – Success",
+            CREATE_PAYMENT_SUCCESS: "Create payment – OK",
             CREATE_PAYMENT_FAILURE: "Create payment – Failed",
             PAYMENT_REDIRECT: "Payment redirect",
             PAYMENT_CALLBACK: "Payment callback",
+            CANCEL_WITHOUT_REFUND: "Cancel without refund",
+            CREATE_REFUND_REQUEST: "Create refund – Request",
+            CREATE_REFUND_SUCCESS: "Create refund – OK",
+            CREATE_REFUND_FAILURE: "Create refund – Failed",
           },
         },
       },
@@ -617,8 +633,9 @@ const translations: Translations = {
         type: {
           title: "Type",
           choices: {
-            ORDER_CONFIRMATION: "Order confirmation",
-            CANCELLATION: "Order cancellation",
+            PAID: "Order confirmation",
+            CANCELLED: "Order cancellation",
+            REFUNDED: "Order refund",
           },
         },
         status: {
