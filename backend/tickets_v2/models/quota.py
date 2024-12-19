@@ -83,6 +83,10 @@ class Quota(models.Model):
 
         return Ticket.objects.filter(event=self.event, quota=self)
 
+    @property
+    def scope(self):
+        return self.event.scope
+
     def set_quota(self, quota: int):
         num_current_tickets = self.tickets.count()
         adjustment = quota - num_current_tickets
@@ -93,9 +97,14 @@ class Quota(models.Model):
             self.create_tickets(adjustment)
 
     def delete_tickets(self, num_tickets_to_delete: int):
+        from .ticket import Ticket
+
         logger.info(f"Deleting {num_tickets_to_delete} tickets from {self}")
         tickets_to_delete = self.tickets.filter(order_id__isnull=True).select_for_update()[:num_tickets_to_delete]
-        _, deleted_by_model = tickets_to_delete.delete()
+        _, deleted_by_model = Ticket.objects.filter(
+            event_id=self.event_id,
+            id__in=tickets_to_delete.values_list("id", flat=True),
+        ).delete()
         num_tickets_deleted = deleted_by_model.get("tickets_v2.Ticket", 0)
         if num_tickets_deleted != num_tickets_to_delete:
             raise ValueError(

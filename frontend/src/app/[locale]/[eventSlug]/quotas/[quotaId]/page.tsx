@@ -36,7 +36,7 @@ const query = graphql(`
           id
           name
           countReserved
-          countTotal
+          quota: countTotal
 
           products {
             ...QuotaProduct
@@ -91,7 +91,7 @@ export default async function AdminQuotaDetailPage({ params }: Props) {
       type: "SingleLineText",
     },
     {
-      slug: "countTotal",
+      slug: "quota",
       type: "NumberField",
       title: t.attributes.countTotal.title,
       minValue: quota.countReserved,
