@@ -18,4 +18,4 @@ class FullQuotaType(LimitedQuotaType):
 
     @staticmethod
     def resolve_products(quota: Quota, info):
-        return quota.products.all()
+        return quota.products.filter(superseded_by=None)

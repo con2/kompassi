@@ -93,6 +93,9 @@ class Product(models.Model):
     event_id: int
     superseded_by_id: int | None
 
+    def __str__(self):
+        return f"{self.title} ({self.event})"
+
     @property
     def price_cents(self) -> int:
         return int(self.price * 100)
@@ -111,5 +114,10 @@ class Product(models.Model):
     def timezone(self):
         return self.event.timezone
 
+    @property
+    def scope(self):
+        return self.event.scope
+
     def get_counters(self, request: HttpRequest | None) -> ProductCounters:
-        return ProductCounters.get_for_event(self.event_id, request)[self.id]
+        effective_product_id = self.superseded_by_id or self.id
+        return ProductCounters.get_for_event(self.event_id, request)[effective_product_id]

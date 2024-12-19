@@ -13,7 +13,7 @@ interface Props {
   messages: Translations["Modal"];
   disabled?: boolean;
   className?: string;
-  submitButtonVariant?: "primary" | "danger";
+  submitButtonVariant?: "primary" | "danger" | "success";
 }
 
 /// Renders a button that opens a modal. Pass modal contents as children
@@ -59,7 +59,7 @@ export default function ModalButton({
               <Modal.Body>{children}</Modal.Body>
 
               <Modal.Footer>
-                <Button variant="secondary" onClick={close}>
+                <Button variant="outline-secondary" onClick={close}>
                   {messages.cancel}
                 </Button>
                 <Button variant={submitButtonVariant} type="submit">

@@ -28,6 +28,12 @@ from program_v2.graphql.mutations.favorites import (
     UnmarkScheduleItemAsFavorite,
 )
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
+from tickets_v2.graphql.mutations.create_product import CreateProduct
+from tickets_v2.graphql.mutations.create_quota import CreateQuota
+from tickets_v2.graphql.mutations.delete_product import DeleteProduct
+from tickets_v2.graphql.mutations.delete_quota import DeleteQuota
+from tickets_v2.graphql.mutations.update_product import UpdateProduct
+from tickets_v2.graphql.mutations.update_quota import UpdateQuota
 
 from .language import DEFAULT_LANGUAGE, Language
 
@@ -69,6 +75,10 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
+    # Core
+    confirm_email = ConfirmEmail.Field()
+
+    # Forms
     create_survey = CreateSurvey.Field()
     update_survey = UpdateSurvey.Field()
     delete_survey = DeleteSurvey.Field()
@@ -89,6 +99,10 @@ class Mutation(graphene.ObjectType):
 
     init_file_upload = InitFileUpload.Field()
 
+    generate_key_pair = GenerateKeyPair.Field()
+    revoke_key_pair = RevokeKeyPair.Field()
+
+    # Program v2
     mark_program_as_favorite = MarkProgramAsFavorite.Field()
     unmark_program_as_favorite = UnmarkProgramAsFavorite.Field()
     mark_schedule_item_as_favorite = MarkScheduleItemAsFavorite.Field()
@@ -99,10 +113,14 @@ class Mutation(graphene.ObjectType):
     subscribe_to_survey_responses = SubscribeToSurveyResponses.Field()
     unsubscribe_from_survey_responses = UnsubscribeFromSurveyResponses.Field()
 
-    generate_key_pair = GenerateKeyPair.Field()
-    revoke_key_pair = RevokeKeyPair.Field()
+    # Tickets v2
+    create_product = CreateProduct.Field()
+    update_product = UpdateProduct.Field()
+    delete_product = DeleteProduct.Field()
 
-    confirm_email = ConfirmEmail.Field()
+    create_quota = CreateQuota.Field()
+    update_quota = UpdateQuota.Field()
+    delete_quota = DeleteQuota.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

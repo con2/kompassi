@@ -496,17 +496,83 @@ const translations = {
         },
       },
       actions: {
-        pay: {
-          title: "Pay",
-        },
-        purchase: {
-          title: "Purchase",
-        },
-        downloadTickets: {
-          title: "Download tickets",
-        },
+        purchase: "Confirm order and proceed to payment",
+        pay: "Proceed to payment",
+        viewTickets: "View e-tickets",
         newOrder: "New order",
         search: "Search orders",
+        saveContactInformation: "Save contact information",
+        resendOrderConfirmation: {
+          title: "Resend order confirmation",
+          message: (emailAddress: string) => (
+            <>
+              <p>
+                Are you sure you want to resend the order confirmation email
+                (incl. electronic tickets, if any) to the customer?
+              </p>
+              <p>
+                The confirmation email will be sent to the following address:{" "}
+                <strong>{emailAddress}</strong>
+              </p>
+              <p>
+                <strong>NOTE:</strong> If you are changing the email address,
+                please make sure to remember to save contact information before
+                resending the confirmation.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Resend",
+            cancel: "Close without resending",
+          },
+        },
+        cancelAndRefund: {
+          title: "Cancel and refund",
+          message: (
+            <>
+              <p>This will</p>
+              <ol>
+                <li>mark the order as cancelled,</li>
+                <li>invalidate any electronic tickets,</li>
+                <li>send a cancellation notice to the customer, and</li>
+                <li>request the payment processor to refund the payment.</li>
+              </ol>
+              <p>
+                <strong>NOTE:</strong> The refund may fail if there are not
+                sufficient funds deposited with the payment processor. In this
+                case, you need to transfer funds and complete the refund via the
+                merchant panel of the payment processor.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Cancel order and attempt refund",
+            cancel: "Close without cancelling",
+          },
+        },
+        cancelWithoutRefunding: {
+          title: "Cancel without refunding",
+          message: (
+            <>
+              <p>This will</p>
+              <ol>
+                <li>mark the order as cancelled,</li>
+                <li>invalidate any electronic tickets, and</li>
+                <li>send a cancellation notice to the customer.</li>
+              </ol>
+              <p>
+                <strong>NOTE:</strong> No automatic refund will be made. If the
+                payment needs to be refunded in part or in full, you will need
+                to do this via the merchant panel of the payment processor, or
+                use the &quot;Cancel and refund&quot; function.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Cancel order without refunding",
+            cancel: "Close without cancelling",
+          },
+        },
       },
     },
     PaymentStamp: {
@@ -519,7 +585,7 @@ const translations = {
           choices: {
             ZERO_PRICE: "Zero price",
             CREATE_PAYMENT_REQUEST: "Create payment – Request",
-            CREATE_PAYMENT_SUCCESS: "Create payment – Success",
+            CREATE_PAYMENT_SUCCESS: "Create payment – OK",
             CREATE_PAYMENT_FAILURE: "Create payment – Failed",
             PAYMENT_REDIRECT: "Payment redirect",
             PAYMENT_CALLBACK: "Payment callback",

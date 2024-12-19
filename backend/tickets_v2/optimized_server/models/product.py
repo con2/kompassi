@@ -15,7 +15,10 @@ class Product(pydantic.BaseModel, populate_by_name=True):
     title: str
     description: str
     price: Decimal
-    max_per_order: int = pydantic.Field(serialization_alias="maxPerOrder")
+    max_per_order: int = pydantic.Field(
+        validation_alias="maxPerOrder",
+        serialization_alias="maxPerOrder",
+    )
     available: bool | None
 
     list_query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "list_products.sql").read_bytes()

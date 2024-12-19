@@ -28,10 +28,10 @@ class FieldType(str, Enum):
 
 class Choice(pydantic.BaseModel):
     slug: str
-    title: str
+    title: str = ""
 
 
-class Field(pydantic.BaseModel):
+class Field(pydantic.BaseModel, populate_by_name=True):
     """
     This Pydantic model should roughly correspond to BaseField in
     src/components/SchemaForm/models.ts of the v2 frontend. Note that
@@ -39,24 +39,61 @@ class Field(pydantic.BaseModel):
     provided for convenience.
     """
 
-    type: FieldType = pydantic.Field(alias="type", repr=False)
-    slug: str = pydantic.Field(alias="slug")
-    title: str | None = pydantic.Field(default=None, alias="title", repr=False)
-    summary_title: str | None = pydantic.Field(default=None, alias="summaryTitle", repr=False)
-    help_text: str | None = pydantic.Field(default=None, alias="helpText", repr=False)
-    required: bool | None = pydantic.Field(default=None, alias="required", repr=False)
-    read_only: bool | None = pydantic.Field(default=None, alias="readOnly", repr=False)
+    type: FieldType = pydantic.Field(repr=False)
+    slug: str = pydantic.Field()
+    title: str | None = pydantic.Field(default=None, repr=False)
+    summary_title: str | None = pydantic.Field(
+        default=None,
+        validation_alias="summaryTitle",
+        serialization_alias="summaryTitle",
+        repr=False,
+    )
+    help_text: str | None = pydantic.Field(
+        default=None,
+        validation_alias="helpText",
+        serialization_alias="helpText",
+        repr=False,
+    )
+    required: bool | None = pydantic.Field(
+        default=None,
+        validation_alias="required",
+        serialization_alias="required",
+        repr=False,
+    )
+    read_only: bool | None = pydantic.Field(
+        default=None,
+        validation_alias="readOnly",
+        serialization_alias="readOnly",
+        repr=False,
+    )
+
     # TODO silly union of all field types. refactor this into proper (GraphQL?) types
     # htmlType only makes sense for SingleLineText
     # choices only makes sense for SingleSelect, Multiselect, RadioMatrix
     # multiple only makes sense for FileUpload
     # decimal_places only makes sense for NumberField, DecimalField
-    html_type: str | None = pydantic.Field(default=None, alias="htmlType", repr=False)
-    choices: list[Choice] | None = pydantic.Field(default=None, alias="choices", repr=False)
-    questions: list[Choice] | None = pydantic.Field(default=None, alias="questions", repr=False)
-    multiple: bool | None = pydantic.Field(default=None, alias="multiple", repr=False)
-    decimal_places: int | None = pydantic.Field(default=None, alias="decimalPlaces", repr=False)
-    encrypt_to: list[str] | None = pydantic.Field(default=None, alias="encryptTo", repr=False)
+    html_type: str | None = pydantic.Field(
+        default=None,
+        validation_alias="htmlType",
+        serialization_alias="htmlType",
+        repr=False,
+    )
+
+    choices: list[Choice] | None = pydantic.Field(default=None, repr=False)
+    questions: list[Choice] | None = pydantic.Field(default=None, repr=False)
+    multiple: bool | None = pydantic.Field(default=None, repr=False)
+    decimal_places: int | None = pydantic.Field(
+        default=None,
+        validation_alias="decimalPlaces",
+        serialization_alias="decimalPlaces",
+        repr=False,
+    )
+    encrypt_to: list[str] | None = pydantic.Field(
+        default=None,
+        validation_alias="encryptTo",
+        serialization_alias="encryptTo",
+        repr=False,
+    )
 
     @classmethod
     def from_dimension(
@@ -70,6 +107,3 @@ class Field(pydantic.BaseModel):
             type=type,
             choices=dimension.as_choices(language=language),
         )
-
-    class Config:
-        populate_by_field_name = True

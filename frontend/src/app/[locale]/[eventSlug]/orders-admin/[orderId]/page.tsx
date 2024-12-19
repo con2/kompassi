@@ -1,24 +1,35 @@
 import Link from "next/link";
 
+import { notFound } from "next/navigation";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
+import CardTitle from "react-bootstrap/CardTitle";
+import {
+  cancelAndRefund,
+  cancelWithoutRefunding,
+  resendConfirmation,
+  updateContactInformation,
+} from "./actions";
 import { graphql } from "@/__generated__";
 import {
   AdminOrderPaymentStampFragment,
   AdminOrderReceiptFragment,
   PaymentStatus,
-  ReceiptType,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import FormattedDateTime from "@/components/FormattedDateTime";
+import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
-import Section from "@/components/Section";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ContactForm from "@/components/tickets/ContactForm";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
@@ -87,6 +98,42 @@ interface Props {
 
 export const revalidate = 0;
 
+export async function generateMetadata({ params }: Props) {
+  const { locale, eventSlug, orderId } = params;
+  const translations = getTranslations(locale);
+  const t = translations.Tickets.Order;
+
+  // TODO encap
+  const session = await auth();
+  if (!session) {
+    return translations.SignInRequired.metadata;
+  }
+
+  const { data } = await getClient().query({
+    query,
+    variables: { eventSlug, orderId },
+  });
+
+  if (!data.event?.tickets?.order) {
+    notFound();
+  }
+
+  const event = data.event;
+  const order = data.event.tickets.order;
+  const { shortTitle: paymentStatus } =
+    t.attributes.status.choices[order.status];
+
+  const title = getPageTitle({
+    event,
+    subject: t.singleTitle(order.formattedOrderNumber, paymentStatus),
+    translations,
+  });
+
+  return {
+    title,
+  };
+}
+
 export default async function AdminOrderPage({ params, searchParams }: Props) {
   const { locale, eventSlug, orderId } = params;
   const translations = getTranslations(locale);
@@ -134,7 +181,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     {
       slug: "correlationId",
       title: sTamp.attributes.correlationId,
-      className: "col-3 align-middle",
+      className: "col-3 align-middle small",
     },
     {
       slug: "type",
@@ -155,39 +202,6 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
       getCellContents: (stamp) => t.attributes.provider.choices[stamp.provider],
       className: "col-2 align-middle",
     },
-    {
-      slug: "actions",
-      title: t.attributes.actions,
-      className: "col-1 align-middle",
-      getCellContents: (stamp) => (
-        <>
-          {stamp.status == PaymentStatus.Paid && (
-            <ModalButton
-              title="Refund"
-              className="btn btn-sm btn-danger"
-              submitButtonVariant="danger"
-              messages={{
-                submit: "Refund",
-                cancel: "Close without refunding",
-              }}
-            >
-              <p>This will</p>
-              <ol>
-                <li>mark the order as cancelled,</li>
-                <li>invalidate any electronic tickets, and</li>
-                <li>request the payment processor to refund the payment.</li>
-              </ol>
-              <p>
-                <strong>NOTE:</strong> The refund may fail if there are not
-                sufficient funds deposited with the payment processor. In this
-                case, you need to transfer funds and complete the refund via the
-                merchant panel of the payment processor.
-              </p>
-            </ModalButton>
-          )}
-        </>
-      ),
-    },
   ];
 
   const receiptColumns: Column<AdminOrderReceiptFragment>[] = [
@@ -207,7 +221,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     {
       slug: "correlationId",
       title: sTamp.attributes.correlationId,
-      className: "col-3 align-middle",
+      className: "col-3 align-middle small",
     },
     {
       slug: "type",
@@ -228,31 +242,6 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
       title: t.attributes.email.title,
       className: "col-2 align-middle",
     },
-    {
-      slug: "actions",
-      title: t.attributes.actions,
-      className: "col-1 align-middle",
-      getCellContents: (receipt) => (
-        <>
-          {false && receipt.type == ReceiptType.OrderConfirmation && (
-            <ModalButton
-              title="Resend"
-              className="btn btn-sm btn-primary"
-              submitButtonVariant="primary"
-              messages={{
-                submit: "Resend",
-                cancel: "Close without resending",
-              }}
-            >
-              <p>
-                Are you sure you want to resend the order confirmation email
-                (incl. electronic tickets, if any) to the customer?
-              </p>
-            </ModalButton>
-          )}
-        </>
-      ),
-    },
   ];
 
   const event = data.event;
@@ -261,7 +250,10 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     t.attributes.status.choices[order.status];
 
   const queryString = new URLSearchParams(searchParams).toString();
-  console.log({ searchParams });
+  const showCancelWithoutRefundingButton =
+    order.status === PaymentStatus.Pending ||
+    order.status === PaymentStatus.Failed ||
+    order.status === PaymentStatus.Paid;
 
   return (
     <ViewContainer>
@@ -277,24 +269,113 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
         queryString={queryString}
       />
 
-      <Section
-        title={t.singleTitle(order.formattedOrderNumber, paymentStatus)}
-        className="mt-4 mb-4"
-      >
-        <ProductsTable order={order} messages={translations.Tickets} />
-      </Section>
+      <Card className="mb-4">
+        <CardBody>
+          <CardTitle>
+            {t.singleTitle(order.formattedOrderNumber, paymentStatus)}
+          </CardTitle>
+          <ProductsTable
+            order={order}
+            messages={translations.Tickets}
+            className="mb-3"
+          />
+          <ButtonGroup className="mt-2">
+            {order.eticketsLink && (
+              <a
+                href={order.eticketsLink}
+                target="_blank"
+                rel="noopener noreferer"
+                className="btn btn-primary"
+              >
+                {t.actions.viewTickets}…
+              </a>
+            )}
+            {order.status === PaymentStatus.Paid && (
+              <>
+                <ModalButton
+                  title={t.actions.resendOrderConfirmation.title}
+                  className="btn btn-success"
+                  submitButtonVariant="success"
+                  messages={t.actions.resendOrderConfirmation.modalActions}
+                  action={resendConfirmation.bind(
+                    null,
+                    locale,
+                    eventSlug,
+                    order.id,
+                  )}
+                >
+                  <p>
+                    {t.actions.resendOrderConfirmation.message(order.email)}
+                  </p>
+                </ModalButton>
+                <ModalButton
+                  title={t.actions.cancelAndRefund.title}
+                  className="btn btn-danger"
+                  submitButtonVariant="danger"
+                  messages={t.actions.cancelAndRefund.modalActions}
+                  action={cancelAndRefund.bind(
+                    null,
+                    locale,
+                    eventSlug,
+                    order.id,
+                  )}
+                >
+                  {t.actions.cancelAndRefund.message}
+                </ModalButton>
+              </>
+            )}
+            {showCancelWithoutRefundingButton && (
+              <>
+                <ModalButton
+                  title={t.actions.cancelWithoutRefunding.title}
+                  className="btn btn-danger"
+                  submitButtonVariant="danger"
+                  messages={t.actions.cancelWithoutRefunding.modalActions}
+                  action={cancelWithoutRefunding.bind(
+                    null,
+                    locale,
+                    eventSlug,
+                    order.id,
+                  )}
+                >
+                  {t.actions.cancelWithoutRefunding.message}
+                </ModalButton>
+              </>
+            )}
+          </ButtonGroup>
+        </CardBody>
+      </Card>
 
-      <Section title={t.contactForm.title}>
-        <ContactForm messages={translations} values={order} isAdmin />
-      </Section>
+      <Card className="mb-4">
+        <CardBody>
+          <CardTitle>{t.contactForm.title}</CardTitle>
+          <form
+            action={updateContactInformation.bind(
+              null,
+              locale,
+              eventSlug,
+              order.id,
+            )}
+          >
+            <ContactForm messages={translations} values={order} isAdmin />
+            <SubmitButton>{t.actions.saveContactInformation}</SubmitButton>
+          </form>
+        </CardBody>
+      </Card>
 
-      <Section title={sTamp.listTitle}>
-        <DataTable columns={paymentStampColumns} rows={order.paymentStamps} />
-      </Section>
+      <Card className="mb-4">
+        <CardBody>
+          <CardTitle>{sTamp.listTitle}</CardTitle>
+          <DataTable columns={paymentStampColumns} rows={order.paymentStamps} />
+        </CardBody>
+      </Card>
 
-      <Section title={receipT.listTitle}>
-        <DataTable columns={receiptColumns} rows={order.receipts} />
-      </Section>
+      <Card className="mb-4">
+        <CardBody>
+          <CardTitle>{receipT.listTitle}</CardTitle>
+          <DataTable columns={receiptColumns} rows={order.receipts} />
+        </CardBody>
+      </Card>
     </ViewContainer>
   );
 }

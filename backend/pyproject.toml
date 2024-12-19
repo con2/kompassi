@@ -65,3 +65,11 @@ extend-ignore = [
 "kompassi/wsgi.py" = [
     "E402",  # vscode for some reason strips this off as a noqa
 ]
+
+[tool.pytest.ini_options]
+addopts = "--verbose --reuse-db -m 'not integration_test'"
+DJANGO_SETTINGS_MODULE = "kompassi.settings"
+python_files = "tests.py test_*.py *_tests.py"
+markers = [
+    "integration_test",
+]

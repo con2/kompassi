@@ -1,4 +1,5 @@
 import graphene
+from django.db import models
 from django.http import HttpRequest
 from graphene_django import DjangoObjectType
 
@@ -6,6 +7,7 @@ from core.utils.text_utils import normalize_whitespace
 from graphql_api.utils import resolve_local_datetime_field
 
 from ..models.product import Product
+from ..models.quota import Quota
 
 
 class LimitedProductType(DjangoObjectType):
@@ -58,11 +60,15 @@ class LimitedProductType(DjangoObjectType):
         """
         Computes the amount of available units of this product.
         Other versions of this product are grouped together.
+        Null if the product has no quotas.
         """
         request: HttpRequest = info.context
-        return min(quota.get_counters(request).count_available for quota in product.quotas.all())
+        quotas: models.QuerySet[Quota] = product.quotas.all()
+        return min(
+            (quota.get_counters(request).count_available for quota in quotas),
+            default=None,
+        )
 
-    count_available = graphene.NonNull(
-        graphene.Int,
+    count_available = graphene.Int(
         description=normalize_whitespace(resolve_count_available.__doc__ or ""),
     )

@@ -25,7 +25,7 @@ class Customer(pydantic.BaseModel, frozen=True, populate_by_name=True):
     phone: str | None = pydantic.Field(
         validation_alias="phone",
         serialization_alias="phone",
-        default=None,
+        default="",
         max_length=50,
     )
 

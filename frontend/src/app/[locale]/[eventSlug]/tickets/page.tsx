@@ -106,7 +106,7 @@ export default async function TicketsPage({ params }: Props) {
 
         <div className="d-grid gap-2 mb-4">
           <button className="btn btn-primary btn-lg" type="submit">
-            {t.actions.purchase.title}
+            {t.actions.purchase}
           </button>
         </div>
       </ProductsForm>

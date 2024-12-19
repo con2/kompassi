@@ -264,7 +264,8 @@ class PaytrailStatus(str, Enum):
                 # TODO do we need to add this to PaymentStatus?
                 return PaymentStatus.PENDING
             case PaytrailStatus.FAIL:
-                return PaymentStatus.PENDING
+                # user cancelled or payment failed
+                return PaymentStatus.FAILED
 
 
 class PaymentCallback(pydantic.BaseModel, populate_by_name=True):
@@ -306,6 +307,7 @@ class PaymentCallback(pydantic.BaseModel, populate_by_name=True):
     provider_name: str = pydantic.Field(
         serialization_alias="checkout-provider",
         validation_alias="checkout-provider",
+        description="Paytrail sub-provider name, eg. 'op', 'mobilepay', 'creditcard' etc.",
     )
 
     signature: str = pydantic.Field(

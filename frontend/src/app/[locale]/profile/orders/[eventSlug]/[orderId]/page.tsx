@@ -123,7 +123,7 @@ export default async function ProfileOrderPage({ params }: Props) {
         <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
           <div className="d-grid gap-2 mb-4">
             <button className="btn btn-primary btn-lg" type="submit">
-              {t.actions.pay.title}
+              {t.actions.pay}
             </button>
           </div>
         </form>
@@ -132,7 +132,7 @@ export default async function ProfileOrderPage({ params }: Props) {
       {order.status === PaymentStatus.Paid && order.eticketsLink && (
         <div className="d-grid gap-2 mb-4">
           <Link className="btn btn-primary" href={order.eticketsLink}>
-            {t.actions.downloadTickets.title}
+            {t.actions.viewTickets}
           </Link>
         </div>
       )}

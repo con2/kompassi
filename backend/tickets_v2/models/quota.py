@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
 import pydantic
-from django.db import connection, models, transaction
+from django.db import connection, models
 from django.http import HttpRequest
 
 from core.models.event import Event
@@ -84,14 +84,13 @@ class Quota(models.Model):
         return Ticket.objects.filter(event=self.event, quota=self)
 
     def set_quota(self, quota: int):
-        with transaction.atomic():
-            num_current_tickets = self.tickets.count()
-            adjustment = quota - num_current_tickets
+        num_current_tickets = self.tickets.count()
+        adjustment = quota - num_current_tickets
 
-            if adjustment < 0:
-                self.delete_tickets(-adjustment)
-            elif adjustment > 0:
-                self.create_tickets(adjustment)
+        if adjustment < 0:
+            self.delete_tickets(-adjustment)
+        elif adjustment > 0:
+            self.create_tickets(adjustment)
 
     def delete_tickets(self, num_tickets_to_delete: int):
         logger.info(f"Deleting {num_tickets_to_delete} tickets from {self}")

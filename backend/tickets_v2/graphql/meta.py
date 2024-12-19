@@ -37,17 +37,17 @@ class TicketsV2EventMetaType(DjangoObjectType):
 
     @graphql_query_cbac_required
     @staticmethod
-    def resolve_product(meta: TicketsV2EventMeta, info, id: int):
+    def resolve_product(meta: TicketsV2EventMeta, info, id: str):
         """
         Returns a product defined for this event.
         Admin oriented view; customers will access product information through /api/tickets-v2.
         """
-        return Product.objects.filter(event=meta.event, id=id).first()
+        return Product.objects.filter(event=meta.event, id=id).select_related("event", "superseded_by").first()
 
     product = graphene.NonNull(
         FullProductType,
         description=normalize_whitespace(resolve_product.__doc__ or ""),
-        id=graphene.Int(required=True),
+        id=graphene.String(required=True),
     )
 
     @graphql_query_cbac_required

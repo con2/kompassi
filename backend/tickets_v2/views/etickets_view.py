@@ -1,5 +1,11 @@
+from uuid import UUID
+
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse
+from django.shortcuts import get_object_or_404
+
+from access.cbac import is_graphql_allowed
+from core.models.event import Event
 
 from ..models.order import Order
 from ..models.receipt import PendingReceipt
@@ -7,12 +13,31 @@ from ..models.receipt import PendingReceipt
 
 @login_required
 def etickets_view(request: HttpRequest, event_slug: str, order_id: str) -> HttpResponse:
+    event = get_object_or_404(Event, slug=event_slug)
+
     try:
-        order = Order.objects.get(
-            event__slug=event_slug,
-            id=order_id,
-            owner=request.user,
-        )
+        UUID(order_id)
+    except ValueError:
+        return HttpResponse("Invalid order ID", status=400)
+
+    queryset = Order.objects.filter(
+        event=event,
+        id=order_id,
+    )
+
+    if not is_graphql_allowed(
+        request.user,
+        scope=event.scope,
+        operation="query",
+        app="tickets_v2",
+        model="Order",
+        field="etickets_pdf",
+        id=order_id,
+    ):
+        queryset = queryset.filter(owner=request.user)
+
+    try:
+        order = queryset.get()
     except Order.DoesNotExist:
         return HttpResponse("Order not found or not accessible by you", status=400)
 

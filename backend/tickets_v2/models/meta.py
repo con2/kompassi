@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
 
 from django.db import models
 
@@ -10,8 +10,7 @@ from core.models.person import Person
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStatus
 
-if TYPE_CHECKING:
-    pass
+logger = logging.getLogger("kompassi")
 
 
 class TicketsV2EventMeta(EventMetaBase):
@@ -65,35 +64,38 @@ class TicketsV2EventMeta(EventMetaBase):
         from .quota import Quota, QuotaCounters
         from .ticket import Ticket
 
+        logger.info("Reticketing event %s", self.event)
+
         quota_counters = QuotaCounters.get_for_event(self.event_id, None)
-        products_by_id = {product.id: product for product in Product.objects.filter(event=self.event)}
-
-        Ticket.objects.filter(event=self.event_id).delete()
-
-        for quota in Quota.objects.filter(event=self.event_id):
-            quota.set_quota(quota_counters[quota.id].count_total)
-
-        for order in Order.objects.filter(
+        products_by_id = {
+            str(product.id): product.superseded_by if product.superseded_by else product
+            for product in Product.objects.filter(event=self.event).prefetch_related("quotas")
+        }
+        orders = Order.objects.filter(
             event=self.event_id,
             cached_status__lte=PaymentStatus.PAID.value,
-        ):
-            for product_id, quantity in order.product_data.items():
-                if (product := products_by_id[int(product_id)]) and quantity > 0:
-                    for quota in product.quotas.all():
-                        tickets = (
-                            Ticket.objects.filter(
-                                event=self.event_id,
-                                quota=quota,
-                                order_id=None,
-                            )
-                            .select_for_update()
-                            .order_by("id")[:quantity]
-                        )
+        )
 
-                        if tickets.count() < quantity:
-                            raise ValueError(f"Not enough tickets in quota {quota}")
+        # May the Transaction be with us.
+        Ticket.objects.filter(event=self.event_id).delete()
+        Ticket.objects.bulk_create(
+            (
+                Ticket(
+                    event_id=self.event_id,
+                    quota=quota,
+                    order_id=order.id,
+                )
+                for order in orders
+                for product_id, quantity in order.product_data.items()
+                for quota in products_by_id[product_id].quotas.all()
+                for _ in range(quantity)
+            ),
+            batch_size=400,
+        )
 
-                        tickets.update(order=order)
+        for quota_id, counters in quota_counters.items():
+            quota = Quota.objects.get(id=quota_id)
+            quota.set_quota(counters.count_total)
 
 
 @dataclass

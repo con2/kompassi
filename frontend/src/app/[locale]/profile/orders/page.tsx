@@ -127,7 +127,7 @@ export default async function ProfileOrdersPage({ params }: Props) {
         <>
           {order.status === PaymentStatus.Paid && order.eticketsLink && (
             <Link className="btn btn-sm btn-primary" href={order.eticketsLink}>
-              {t.actions.downloadTickets.title}
+              {t.actions.viewTickets}
             </Link>
           )}
           {order.status === PaymentStatus.Pending && (
@@ -135,7 +135,7 @@ export default async function ProfileOrdersPage({ params }: Props) {
               className="btn btn-sm btn-primary"
               onClick={payOrder.bind(null, order.event.slug, order.id, locale)}
             >
-              {t.actions.pay.title}
+              {t.actions.pay}
             </button>
           )}
         </>

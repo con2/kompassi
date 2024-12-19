@@ -23,6 +23,7 @@ media/
 *.local.yaml
 *.key
 *.crt
+.pytest_cache
 
 # google api credentials for solmukohta2024 only, remove when not needed anymore
 credentials.json

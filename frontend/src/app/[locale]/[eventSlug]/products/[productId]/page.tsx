@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { updateProduct } from "./actions";
 import { graphql } from "@/__generated__";
 import {
@@ -18,6 +18,7 @@ import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
+import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
@@ -44,6 +45,10 @@ graphql(`
       id
     }
 
+    supersededBy {
+      id
+    }
+
     oldVersions {
       ...AdminProductOldVersion
     }
@@ -51,7 +56,7 @@ graphql(`
 `);
 
 const query = graphql(`
-  query AdminProductDetailPage($eventSlug: String!, $productId: Int!) {
+  query AdminProductDetailPage($eventSlug: String!, $productId: String!) {
     event(slug: $eventSlug) {
       name
       slug
@@ -85,15 +90,54 @@ interface Props {
 
 export const revalidate = 0;
 
-export default async function AdminProductDetailPage({ params }: Props) {
-  const { locale, eventSlug } = params;
+export async function generateMetadata({ params }: Props) {
+  const { locale, eventSlug, productId } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Product;
-  const session = await auth();
-
-  const productId = parseInt(params.productId, 10);
 
   // TODO encap
+  const session = await auth();
+  if (!session) {
+    return translations.SignInRequired.metadata;
+  }
+
+  const { data } = await getClient().query({
+    query,
+    variables: { eventSlug, productId },
+  });
+
+  if (!data.event?.tickets?.product) {
+    notFound();
+  }
+
+  const event = data.event;
+  const product = data.event.tickets.product;
+
+  if (product.supersededBy?.id) {
+    return void redirect(
+      `/${locale}/${eventSlug}/products/${product.supersededBy.id}`,
+    );
+  }
+
+  const title = getPageTitle({
+    event,
+    viewTitle: t.listTitle,
+    subject: product.title,
+    translations,
+  });
+
+  return {
+    title,
+  };
+}
+
+export default async function AdminProductDetailPage({ params }: Props) {
+  const { locale, eventSlug, productId } = params;
+  const translations = getTranslations(locale);
+  const t = translations.Tickets.Product;
+
+  // TODO encap
+  const session = await auth();
   if (!session) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
@@ -111,7 +155,13 @@ export default async function AdminProductDetailPage({ params }: Props) {
   const product = data.event.tickets.product;
   const quotas = data.event.tickets.quotas;
 
-  const selectedQuotas = product.quotas.map((quota) => "quota-" + quota.id);
+  if (product.supersededBy?.id) {
+    return void redirect(
+      `/${locale}/${eventSlug}/products/${product.supersededBy.id}`,
+    );
+  }
+
+  const selectedQuotas = product.quotas.map((quota) => "" + quota.id);
 
   const fields: Field[] = [
     {
@@ -145,7 +195,7 @@ export default async function AdminProductDetailPage({ params }: Props) {
       slug: "quotas",
       type: "MultiSelect",
       choices: quotas.map((quota) => ({
-        slug: "quota-" + quota.id,
+        slug: "" + quota.id,
         title: `${quota.name} (${quota.countTotal} ${t.attributes.quantity.unit})`,
       })),
       ...t.attributes.quotas,

@@ -494,17 +494,84 @@ const translations: Translations = {
         },
       },
       actions: {
-        pay: {
-          title: "Maksa",
-        },
-        purchase: {
-          title: "Osta",
-        },
-        downloadTickets: {
-          title: "Lataa liput",
-        },
+        purchase: "Vahvista tilaus ja siirry maksamaan",
+        pay: "Siirry maksamaan",
+        viewTickets: "Näytä e-liput",
         newOrder: "Uusi tilaus",
         search: "Hae tilauksia",
+        saveContactInformation: "Tallenna yhteystiedot",
+        resendOrderConfirmation: {
+          title: "Lähetä tilausvahvistus uudelleen",
+          message: (emailAddress: string) => (
+            <>
+              <p>
+                Haluatko varmasti lähettää tilausvahvistuksen (sis. mahdolliset
+                e-liput) uudelleen?
+              </p>
+              <p>
+                Tilausvahvistus lähetetään tähän osoitteeseen:{" "}
+                <strong>{emailAddress}</strong>
+              </p>
+              <p>
+                <strong>HUOM:</strong> Jos olet muuttamassa tilauksen
+                sähköpostiosoitetta, muistathan tallentaa muutokset ennen kuin
+                lähetät tilausvahvistuksen uudelleen.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Lähetä",
+            cancel: "Sulje lähettämättä",
+          },
+        },
+        cancelAndRefund: {
+          title: "Peruuta ja palauta maksu",
+          message: (
+            <>
+              <p>Tämä toiminto tekee seuraavat toimenpiteet:</p>
+              <ol>
+                <li>merkitsee tilauksen perutuksi,</li>
+                <li>mitätöi mahdolliset e-liput,</li>
+                <li>lähettää asiakkaalle peruutusilmoituksen, ja</li>
+                <li>tekee maksunvälittäjälle pyynnön maksun palautuksesta.</li>
+              </ol>
+              <p>
+                <strong>HUOM:</strong> Maksun palautus voi epäonnistua, jos
+                maksunvälittäjän hallussa ei ole riittävästi myyjän varoja.
+                Tällöin on maksun palauttamiseksi siirrettävä rahaa
+                maksunvälittäjälle ja rahojen siirrettyä tehtävä palautus
+                loppuun maksunvälittäjän hallintapaneelissa.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Peruuta tilaus ja palauta maksu",
+            cancel: "Sulje peruuttamatta tilausta",
+          },
+        },
+        cancelWithoutRefunding: {
+          title: "Peruuta palauttamatta maksua",
+          message: (
+            <>
+              <p>Tämä toiminto tekee seuraavat toimenpiteet:</p>
+              <ol>
+                <li>merkitsee tilauksen perutuksi,</li>
+                <li>mitätöi mahdolliset e-liput, ja</li>
+                <li>lähettää asiakkaalle peruutusilmoituksen.</li>
+              </ol>
+              <p>
+                <strong>HUOM:</strong> Maksua ei palauteta automaattisesti. Jos
+                maksu tulee palauttaa kokonaan tai osittain, se on tehtävä
+                maksunvälittäjän hallintapaneelista tai{" "}
+                <em>Peruuta ja palauta maksu</em> -toiminnolla.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Peruuta tilaus palauttamatta maksua",
+            cancel: "Sulje peruuttamatta tilausta",
+          },
+        },
       },
     },
     PaymentStamp: {

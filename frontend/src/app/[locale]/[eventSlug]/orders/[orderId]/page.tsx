@@ -47,7 +47,7 @@ export default async function OrderPage({ params }: Props) {
           <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
             <div className="d-grid gap-2">
               <button className="btn btn-primary btn-lg" type="submit">
-                {t.Order.actions.pay.title}
+                {t.Order.actions.pay}
               </button>
             </div>
           </form>

@@ -78,9 +78,32 @@ export type ConfirmEmailInput = {
   locale: Scalars['String']['input'];
 };
 
+export type CreateProduct = {
+  __typename?: 'CreateProduct';
+  product?: Maybe<LimitedProductType>;
+};
+
+export type CreateProductInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: Scalars['String']['input'];
+  price?: InputMaybe<Scalars['Decimal']['input']>;
+  title: Scalars['String']['input'];
+};
+
 export type CreateProgramFeedback = {
   __typename?: 'CreateProgramFeedback';
   success: Scalars['Boolean']['output'];
+};
+
+export type CreateQuota = {
+  __typename?: 'CreateQuota';
+  quota?: Maybe<LimitedQuotaType>;
+};
+
+export type CreateQuotaInput = {
+  eventSlug: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  quota: Scalars['Int']['input'];
 };
 
 export type CreateSurvey = {
@@ -115,6 +138,26 @@ export type CreateSurveyResponseInput = {
   formData: Scalars['GenericScalar']['input'];
   locale?: InputMaybe<Scalars['String']['input']>;
   surveySlug: Scalars['String']['input'];
+};
+
+export type DeleteProduct = {
+  __typename?: 'DeleteProduct';
+  product?: Maybe<LimitedProductType>;
+};
+
+export type DeleteProductInput = {
+  eventSlug: Scalars['String']['input'];
+  productId: Scalars['Int']['input'];
+};
+
+export type DeleteQuota = {
+  __typename?: 'DeleteQuota';
+  quota?: Maybe<LimitedQuotaType>;
+};
+
+export type DeleteQuotaInput = {
+  eventSlug: Scalars['String']['input'];
+  quotaId: Scalars['Int']['input'];
 };
 
 export type DeleteSurvey = {
@@ -349,8 +392,8 @@ export type FullProductType = {
   __typename?: 'FullProductType';
   availableFrom?: Maybe<Scalars['DateTime']['output']>;
   availableUntil?: Maybe<Scalars['DateTime']['output']>;
-  /** Computes the amount of available units of this product. Other versions of this product are grouped together. */
-  countAvailable: Scalars['Int']['output'];
+  /** Computes the amount of available units of this product. Other versions of this product are grouped together. Null if the product has no quotas. */
+  countAvailable?: Maybe<Scalars['Int']['output']>;
   /** Computes the amount of paid units of this product. Other versions of this product are grouped together. */
   countPaid: Scalars['Int']['output'];
   /** Computes the amount of reserved units of this product. Other versions of this product are grouped together. */
@@ -366,6 +409,8 @@ export type FullProductType = {
   oldVersions: Array<LimitedProductType>;
   price: Scalars['Decimal']['output'];
   quotas: Array<LimitedQuotaType>;
+  /** The product superseding this product, if any. */
+  supersededBy?: Maybe<LimitedProductType>;
   title: Scalars['String']['output'];
 };
 
@@ -541,8 +586,8 @@ export type LimitedProductType = {
   __typename?: 'LimitedProductType';
   availableFrom?: Maybe<Scalars['DateTime']['output']>;
   availableUntil?: Maybe<Scalars['DateTime']['output']>;
-  /** Computes the amount of available units of this product. Other versions of this product are grouped together. */
-  countAvailable: Scalars['Int']['output'];
+  /** Computes the amount of available units of this product. Other versions of this product are grouped together. Null if the product has no quotas. */
+  countAvailable?: Maybe<Scalars['Int']['output']>;
   /** Computes the amount of paid units of this product. Other versions of this product are grouped together. */
   countPaid: Scalars['Int']['output'];
   /** Computes the amount of reserved units of this product. Other versions of this product are grouped together. */
@@ -743,10 +788,14 @@ export type MarkScheduleItemAsFavorite = {
 export type Mutation = {
   __typename?: 'Mutation';
   confirmEmail?: Maybe<ConfirmEmail>;
+  createProduct?: Maybe<CreateProduct>;
   createProgramFeedback?: Maybe<CreateProgramFeedback>;
+  createQuota?: Maybe<CreateQuota>;
   createSurvey?: Maybe<CreateSurvey>;
   createSurveyLanguage?: Maybe<CreateSurveyLanguage>;
   createSurveyResponse?: Maybe<CreateSurveyResponse>;
+  deleteProduct?: Maybe<DeleteProduct>;
+  deleteQuota?: Maybe<DeleteQuota>;
   deleteSurvey?: Maybe<DeleteSurvey>;
   deleteSurveyDimension?: Maybe<DeleteSurveyDimension>;
   deleteSurveyDimensionValue?: Maybe<DeleteSurveyDimensionValue>;
@@ -766,6 +815,8 @@ export type Mutation = {
   unsubscribeFromSurveyResponses?: Maybe<UnsubscribeFromSurveyResponses>;
   updateForm?: Maybe<UpdateForm>;
   updateFormFields?: Maybe<UpdateFormFields>;
+  updateProduct?: Maybe<UpdateProduct>;
+  updateQuota?: Maybe<UpdateQuota>;
   updateResponseDimensions?: Maybe<UpdateResponseDimensions>;
   updateSurvey?: Maybe<UpdateSurvey>;
 };
@@ -776,8 +827,18 @@ export type MutationConfirmEmailArgs = {
 };
 
 
+export type MutationCreateProductArgs = {
+  input: CreateProductInput;
+};
+
+
 export type MutationCreateProgramFeedbackArgs = {
   input: ProgramFeedbackInput;
+};
+
+
+export type MutationCreateQuotaArgs = {
+  input: CreateQuotaInput;
 };
 
 
@@ -793,6 +854,16 @@ export type MutationCreateSurveyLanguageArgs = {
 
 export type MutationCreateSurveyResponseArgs = {
   input: CreateSurveyResponseInput;
+};
+
+
+export type MutationDeleteProductArgs = {
+  input: DeleteProductInput;
+};
+
+
+export type MutationDeleteQuotaArgs = {
+  input: DeleteQuotaInput;
 };
 
 
@@ -878,6 +949,16 @@ export type MutationUpdateFormArgs = {
 
 export type MutationUpdateFormFieldsArgs = {
   input: UpdateFormFieldsInput;
+};
+
+
+export type MutationUpdateProductArgs = {
+  input: UpdateProductInput;
+};
+
+
+export type MutationUpdateQuotaArgs = {
+  input: UpdateQuotaInput;
 };
 
 
@@ -1344,7 +1425,7 @@ export type TicketsV2EventMetaTypeOrdersArgs = {
 
 
 export type TicketsV2EventMetaTypeProductArgs = {
-  id: Scalars['Int']['input'];
+  id: Scalars['String']['input'];
 };
 
 
@@ -1427,6 +1508,28 @@ export type UpdateFormInput = {
   surveySlug: Scalars['String']['input'];
 };
 
+export type UpdateProduct = {
+  __typename?: 'UpdateProduct';
+  product?: Maybe<LimitedProductType>;
+};
+
+export type UpdateProductInput = {
+  eventSlug: Scalars['String']['input'];
+  formData: Scalars['GenericScalar']['input'];
+  productId: Scalars['String']['input'];
+};
+
+export type UpdateQuota = {
+  __typename?: 'UpdateQuota';
+  quota?: Maybe<LimitedQuotaType>;
+};
+
+export type UpdateQuotaInput = {
+  eventSlug: Scalars['String']['input'];
+  formData: Scalars['GenericScalar']['input'];
+  quotaId: Scalars['String']['input'];
+};
+
 export type UpdateResponseDimensions = {
   __typename?: 'UpdateResponseDimensions';
   response?: Maybe<FullResponseType>;
@@ -1507,26 +1610,33 @@ export type OrderListQueryVariables = Exact<{
 
 export type OrderListQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', products: Array<{ __typename?: 'FullProductType', id: string, title: string }>, orders: Array<{ __typename?: 'FullOrderType', id: string, formattedOrderNumber: string, displayName: string, email: string, createdAt: string, totalPrice: any, status: PaymentStatus }> } | null } | null };
 
-export type AdminProductOldVersionFragment = { __typename?: 'LimitedProductType', createdAt: string, title: string, description: string, price: any };
-
-export type AdminProductDetailFragment = { __typename?: 'FullProductType', id: string, createdAt: string, title: string, description: string, price: any, eticketsPerProduct: number, maxPerOrder: number, availableFrom?: string | null, availableUntil?: string | null, quotas: Array<{ __typename?: 'LimitedQuotaType', id: string }>, oldVersions: Array<{ __typename?: 'LimitedProductType', createdAt: string, title: string, description: string, price: any }> };
-
-export type AdminProductDetailPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  productId: Scalars['Int']['input'];
+export type UpdateProductMutationVariables = Exact<{
+  input: UpdateProductInput;
 }>;
 
 
-export type AdminProductDetailPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', quotas: Array<{ __typename?: 'FullQuotaType', id: string, name: string, countTotal: number }>, product: { __typename?: 'FullProductType', id: string, createdAt: string, title: string, description: string, price: any, eticketsPerProduct: number, maxPerOrder: number, availableFrom?: string | null, availableUntil?: string | null, quotas: Array<{ __typename?: 'LimitedQuotaType', id: string }>, oldVersions: Array<{ __typename?: 'LimitedProductType', createdAt: string, title: string, description: string, price: any }> } } | null } | null };
+export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct?: { __typename?: 'UpdateProduct', product?: { __typename?: 'LimitedProductType', id: string } | null } | null };
 
-export type ProductListFragment = { __typename?: 'FullProductType', id: string, title: string, description: string, price: any, isAvailable: boolean, availableFrom?: string | null, availableUntil?: string | null, countPaid: number, countReserved: number, countAvailable: number };
+export type AdminProductOldVersionFragment = { __typename?: 'LimitedProductType', createdAt: string, title: string, description: string, price: any };
+
+export type AdminProductDetailFragment = { __typename?: 'FullProductType', id: string, createdAt: string, title: string, description: string, price: any, eticketsPerProduct: number, maxPerOrder: number, availableFrom?: string | null, availableUntil?: string | null, quotas: Array<{ __typename?: 'LimitedQuotaType', id: string }>, supersededBy?: { __typename?: 'LimitedProductType', id: string } | null, oldVersions: Array<{ __typename?: 'LimitedProductType', createdAt: string, title: string, description: string, price: any }> };
+
+export type AdminProductDetailPageQueryVariables = Exact<{
+  eventSlug: Scalars['String']['input'];
+  productId: Scalars['String']['input'];
+}>;
+
+
+export type AdminProductDetailPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', quotas: Array<{ __typename?: 'FullQuotaType', id: string, name: string, countTotal: number }>, product: { __typename?: 'FullProductType', id: string, createdAt: string, title: string, description: string, price: any, eticketsPerProduct: number, maxPerOrder: number, availableFrom?: string | null, availableUntil?: string | null, quotas: Array<{ __typename?: 'LimitedQuotaType', id: string }>, supersededBy?: { __typename?: 'LimitedProductType', id: string } | null, oldVersions: Array<{ __typename?: 'LimitedProductType', createdAt: string, title: string, description: string, price: any }> } } | null } | null };
+
+export type ProductListFragment = { __typename?: 'FullProductType', id: string, title: string, description: string, price: any, isAvailable: boolean, availableFrom?: string | null, availableUntil?: string | null, countPaid: number, countReserved: number, countAvailable?: number | null };
 
 export type ProductListQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
 }>;
 
 
-export type ProductListQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', products: Array<{ __typename?: 'FullProductType', id: string, title: string, description: string, price: any, isAvailable: boolean, availableFrom?: string | null, availableUntil?: string | null, countPaid: number, countReserved: number, countAvailable: number }> } | null } | null };
+export type ProductListQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', products: Array<{ __typename?: 'FullProductType', id: string, title: string, description: string, price: any, isAvailable: boolean, availableFrom?: string | null, availableUntil?: string | null, countPaid: number, countReserved: number, countAvailable?: number | null }> } | null } | null };
 
 export type MarkScheduleItemAsFavoriteMutationVariables = Exact<{
   input: FavoriteScheduleItemInput;
@@ -1856,7 +1966,7 @@ export const AdminOrderReceiptFragmentDoc = {"kind":"Document","definitions":[{"
 export const OrderListFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"OrderList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullOrderType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"formattedOrderNumber"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<OrderListFragment, unknown>;
 export const ProductChoiceFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductChoice"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}}]} as unknown as DocumentNode<ProductChoiceFragment, unknown>;
 export const AdminProductOldVersionFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminProductOldVersion"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}}]} as unknown as DocumentNode<AdminProductOldVersionFragment, unknown>;
-export const AdminProductDetailFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminProductDetail"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"eticketsPerProduct"}},{"kind":"Field","name":{"kind":"Name","value":"maxPerOrder"}},{"kind":"Field","name":{"kind":"Name","value":"availableFrom"}},{"kind":"Field","name":{"kind":"Name","value":"availableUntil"}},{"kind":"Field","name":{"kind":"Name","value":"quotas"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"oldVersions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminProductOldVersion"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminProductOldVersion"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}}]} as unknown as DocumentNode<AdminProductDetailFragment, unknown>;
+export const AdminProductDetailFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminProductDetail"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"eticketsPerProduct"}},{"kind":"Field","name":{"kind":"Name","value":"maxPerOrder"}},{"kind":"Field","name":{"kind":"Name","value":"availableFrom"}},{"kind":"Field","name":{"kind":"Name","value":"availableUntil"}},{"kind":"Field","name":{"kind":"Name","value":"quotas"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supersededBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"oldVersions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminProductOldVersion"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminProductOldVersion"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}}]} as unknown as DocumentNode<AdminProductDetailFragment, unknown>;
 export const ProductListFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"isAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"availableFrom"}},{"kind":"Field","name":{"kind":"Name","value":"availableUntil"}},{"kind":"Field","name":{"kind":"Name","value":"countPaid"}},{"kind":"Field","name":{"kind":"Name","value":"countReserved"}},{"kind":"Field","name":{"kind":"Name","value":"countAvailable"}}]}}]} as unknown as DocumentNode<ProductListFragment, unknown>;
 export const ScheduleProgramFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScheduleProgram"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedProgramType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"cachedDimensions"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]} as unknown as DocumentNode<ScheduleProgramFragment, unknown>;
 export const ScheduleItemListFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScheduleItemList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullScheduleItemType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"subtitle"}},{"kind":"Field","name":{"kind":"Name","value":"startTime"}},{"kind":"Field","name":{"kind":"Name","value":"endTime"}},{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ScheduleProgram"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ScheduleProgram"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedProgramType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"cachedDimensions"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]} as unknown as DocumentNode<ScheduleItemListFragment, unknown>;
@@ -1880,7 +1990,8 @@ export const SurveyPageQueryDocument = {"kind":"Document","definitions":[{"kind"
 export const SurveyThankYouPageQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SurveyThankYouPageQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"forms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"survey"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"thankYouMessage"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SurveyThankYouPageQueryQuery, SurveyThankYouPageQueryQueryVariables>;
 export const AdminOrderDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AdminOrderDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"formattedOrderNumber"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"eticketsLink"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}},{"kind":"Field","name":{"kind":"Name","value":"paymentStamps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderPaymentStamp"}}]}},{"kind":"Field","name":{"kind":"Name","value":"receipts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderReceipt"}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderPaymentStamp"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedPaymentStampType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderReceipt"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedReceiptType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<AdminOrderDetailQuery, AdminOrderDetailQueryVariables>;
 export const OrderListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"OrderList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DimensionFilterInput"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProductChoice"}}]}},{"kind":"Field","name":{"kind":"Name","value":"orders"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"searchTerm"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"OrderList"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductChoice"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"OrderList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullOrderType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"formattedOrderNumber"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<OrderListQuery, OrderListQueryVariables>;
-export const AdminProductDetailPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AdminProductDetailPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"productId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"quotas"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"countTotal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"product"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"productId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminProductDetail"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminProductOldVersion"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminProductDetail"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"eticketsPerProduct"}},{"kind":"Field","name":{"kind":"Name","value":"maxPerOrder"}},{"kind":"Field","name":{"kind":"Name","value":"availableFrom"}},{"kind":"Field","name":{"kind":"Name","value":"availableUntil"}},{"kind":"Field","name":{"kind":"Name","value":"quotas"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"oldVersions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminProductOldVersion"}}]}}]}}]} as unknown as DocumentNode<AdminProductDetailPageQuery, AdminProductDetailPageQueryVariables>;
+export const UpdateProductDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateProduct"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateProductInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateProduct"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"product"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateProductMutation, UpdateProductMutationVariables>;
+export const AdminProductDetailPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AdminProductDetailPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"productId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"quotas"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"countTotal"}}]}},{"kind":"Field","name":{"kind":"Name","value":"product"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"productId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminProductDetail"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminProductOldVersion"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminProductDetail"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"eticketsPerProduct"}},{"kind":"Field","name":{"kind":"Name","value":"maxPerOrder"}},{"kind":"Field","name":{"kind":"Name","value":"availableFrom"}},{"kind":"Field","name":{"kind":"Name","value":"availableUntil"}},{"kind":"Field","name":{"kind":"Name","value":"quotas"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"supersededBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"oldVersions"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminProductOldVersion"}}]}}]}}]} as unknown as DocumentNode<AdminProductDetailPageQuery, AdminProductDetailPageQueryVariables>;
 export const ProductListDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ProductList"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProductList"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"isAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"availableFrom"}},{"kind":"Field","name":{"kind":"Name","value":"availableUntil"}},{"kind":"Field","name":{"kind":"Name","value":"countPaid"}},{"kind":"Field","name":{"kind":"Name","value":"countReserved"}},{"kind":"Field","name":{"kind":"Name","value":"countAvailable"}}]}}]} as unknown as DocumentNode<ProductListQuery, ProductListQueryVariables>;
 export const MarkScheduleItemAsFavoriteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MarkScheduleItemAsFavorite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FavoriteScheduleItemInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markScheduleItemAsFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<MarkScheduleItemAsFavoriteMutation, MarkScheduleItemAsFavoriteMutationVariables>;
 export const UnmarkScheduleItemAsFavoriteDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UnmarkScheduleItemAsFavorite"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"FavoriteScheduleItemInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"unmarkScheduleItemAsFavorite"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"success"}}]}}]}}]} as unknown as DocumentNode<UnmarkScheduleItemAsFavoriteMutation, UnmarkScheduleItemAsFavoriteMutationVariables>;

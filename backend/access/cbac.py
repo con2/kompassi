@@ -15,7 +15,7 @@ from .exceptions import CBACPermissionDenied
 from .models.cbac_entry import CBACEntry, Claims
 
 logger = logging.getLogger("kompassi")
-Operation = Literal["query"] | Literal["mutation"]
+Operation = Literal["query", "create", "update", "delete", "put", "mutation"]
 
 
 def get_default_claims(request, **overrides: str):
@@ -111,7 +111,7 @@ def is_graphql_allowed_for_model(
     user,
     *,
     instance: HasScope,
-    operation: Literal["query"] | Literal["mutation"],
+    operation: Operation,
     field: str,
     **extra: str,
 ):
@@ -158,7 +158,12 @@ def graphql_check_model(
 
 
 # TODO(#324) rethink
-def graphql_check_instance(instance, info: ResolveInfo | HttpRequest, field: str, operation: Operation = "query"):
+def graphql_check_instance(
+    instance,
+    info: ResolveInfo | HttpRequest,
+    field: str,
+    operation: Operation = "query",
+):
     """
     Check that the user has access to a single object. Pass "self" as the field
     for operations targeting the entire model instance.

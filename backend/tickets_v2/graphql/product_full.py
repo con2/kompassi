@@ -23,6 +23,7 @@ class FullProductType(LimitedProductType):
             "etickets_per_product",
             "created_at",
             "quotas",
+            "superseded_by",
         )
 
     @staticmethod
@@ -52,3 +53,8 @@ class FullProductType(LimitedProductType):
     @staticmethod
     def resolve_quotas(product: Product, info):
         return product.quotas.all()
+
+    superseded_by = graphene.Field(
+        LimitedProductType,
+        description="The product superseding this product, if any.",
+    )
