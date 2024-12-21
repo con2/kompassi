@@ -85,7 +85,7 @@ class PreparedCreateRefundRequest:
 
         stamp = self._build_response_stamp(
             type=PaymentStampType.CREATE_REFUND_SUCCESS,
-            status=PaymentStatus.REFUNDED,
+            status=PaymentStatus.REFUND_REQUESTED,
             data=result.model_dump(mode="json", by_alias=True),
         )
 
