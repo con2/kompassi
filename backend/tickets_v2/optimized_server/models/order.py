@@ -16,7 +16,7 @@ from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from ...optimized_server.utils.uuid7 import uuid7, uuid7_to_datetime
 from ..config import KOMPASSI_V2_BASE_URL
 from ..excs import InvalidProducts, UnsaneSituation
-from ..utils.formatting import format_order_number, order_number_to_reference
+from ..utils.formatting import format_money, format_order_number, order_number_to_reference
 from .customer import Customer
 from .enums import PaymentStatus
 from .ticket import reserve_tickets
@@ -107,6 +107,10 @@ class OrderProduct(pydantic.BaseModel):
     title: str
     price: Decimal
     quantity: int
+
+    @property
+    def formatted_price(self) -> str:
+        return format_money(self.price)
 
 
 class Order(pydantic.BaseModel, populate_by_name=True):

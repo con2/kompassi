@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-export const revalidate = 1;
+export const revalidate = 0;
 
 export default async function TicketsPage({ params }: Props) {
   const { locale, eventSlug } = params;
@@ -38,7 +38,10 @@ export default async function TicketsPage({ params }: Props) {
   const tickeT = translations.Tickets;
   const { event, products } = await getProducts(eventSlug);
 
-  if (products.length === 0) {
+  if (
+    products.length === 0 ||
+    products.every((product) => !product.available)
+  ) {
     return (
       <ViewContainer>
         <ViewHeading>
@@ -70,34 +73,43 @@ export default async function TicketsPage({ params }: Props) {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="row">
-                <td className="col-8">
-                  <p>
-                    <strong>{product.title}</strong>
-                  </p>
-                  {product.description}
-                </td>
-                <td className="col fs-4">{formatMoney(product.price)}</td>
-                <td className="col">
-                  <label
-                    htmlFor={`quantity-${product.id}`}
-                    className="visually-hidden"
-                  >
-                    {producT.attributes.quantity.title}
-                  </label>
-                  <input
-                    type="number"
-                    className="form-control"
-                    id={`quantity-${product.id}`}
-                    name={`quantity-${product.id}`}
-                    min={0}
-                    defaultValue={0}
-                    max={product.maxPerOrder}
-                  />
-                </td>
-              </tr>
-            ))}
+            {products.map((product) => {
+              const className = product.available ? "" : "text-muted";
+              return (
+                <tr key={product.id} className="row">
+                  <td className={`col-8 ${className}`}>
+                    <p>
+                      <strong>{product.title}</strong>
+                    </p>
+                    {product.description}
+                  </td>
+                  <td className={`col fs-4 ${className}`}>
+                    {formatMoney(product.price)}
+                  </td>
+                  <td className={`col fs-4 ${className}`}>
+                    <label
+                      htmlFor={`quantity-${product.id}`}
+                      className="visually-hidden"
+                    >
+                      {producT.attributes.quantity.title}
+                    </label>
+                    {product.available ? (
+                      <input
+                        type="number"
+                        className="form-control"
+                        id={`quantity-${product.id}`}
+                        name={`quantity-${product.id}`}
+                        min={0}
+                        defaultValue={0}
+                        max={product.maxPerOrder}
+                      />
+                    ) : (
+                      producT.attributes.soldOut
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 

@@ -32,4 +32,4 @@ where
   and p.superseded_by_id is null
   and p.available_from <= now()
   and (p.available_until is null or p.available_until > now())
-group by 1, 2, 3, 4;
+group by 1, 2, 3, 4, 5;

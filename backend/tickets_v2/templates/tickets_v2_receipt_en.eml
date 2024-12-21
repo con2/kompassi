@@ -5,8 +5,8 @@ Your order number is {{ formatted_order_number }}.
 
 We confirm the following products have been paid for:
 
-{% for product, quantity in products %}{{ quantity }} pcs  {{ product.title }}
-    {{ quantity }} x {{ product.formatted_price }}
+{% for op in products %}{{ op.quantity }} pcs  {{ op.title }}
+    {{ op.quantity }} x {{ op.formatted_price }}
 {% endfor %}
 Total: {{ formatted_total_price }} (VAT 0%){% if have_etickets %}
 

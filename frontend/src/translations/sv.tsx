@@ -345,6 +345,7 @@ const translations: Translations = {
             "Quotas determine how many pieces of a product may be sold. A product may use multiple quotas; the quota that has the least stock determines the availability of the product. You can edit and create new quotas on the Quotas tab.",
         },
         selectedQuotas: "Selected quotas",
+        soldOut: "Utsålt",
       },
     },
     Quota: {

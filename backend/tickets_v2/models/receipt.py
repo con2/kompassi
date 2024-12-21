@@ -23,6 +23,7 @@ from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from tickets.lippukala_integration import Queue as LippukalaQueue
 
 from ..optimized_server.models.enums import PaymentStatus, ReceiptStatus, ReceiptType
+from ..optimized_server.models.order import OrderProduct
 from ..optimized_server.utils.formatting import format_money, format_order_number
 from ..utils.event_partitions import EventPartitionsMixin
 from .order import Order
@@ -245,23 +246,30 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
 
     @pydantic.computed_field
     @cached_property
-    def products(self) -> list[tuple[Product, int]]:
+    def products(self) -> list[OrderProduct]:
         return [
-            (
-                self._get_product(self.event_id, product_id),
-                quantity,
+            OrderProduct(
+                title=product.title,
+                price=product.price,
+                quantity=quantity,
             )
             for product_id, quantity in self.product_data.items()
-            if quantity > 0
+            if quantity > 0 and (product := self._get_product(self.event_id, product_id))
         ]
 
     @cached_property
     def etickets(self) -> list[Product]:
+        """
+        Returns the Product for each instance of an eticket in the order.
+        Each product may specify zero to any number of etickets per product
+        (eg. Valentine's Day pair ticket).
+        """
         return [
             product
-            for product, quantity in self.products
-            for _ in range(quantity * product.etickets_per_product)
-            if product.etickets_per_product > 0
+            for product_id, quantity in self.product_data.items()
+            if (product := self._get_product(self.event_id, product_id))
+            for _ in range(product.etickets_per_product)
+            for _ in range(quantity)
         ]
 
     @pydantic.computed_field

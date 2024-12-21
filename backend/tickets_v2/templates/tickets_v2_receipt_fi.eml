@@ -5,8 +5,8 @@ Tilauksesi numero on {{ formatted_order_number }}.
 
 Vahvistamme maksetuiksi seuraavat lipputuotteet:
 
-{% for product, quantity in products %}{{ quantity }} kpl  {{ product.title }}
-    {{ quantity }} x {{ product.formatted_price }}
+{% for op in products %}{{ op.quantity }} kpl  {{ op.title }}
+    {{ op.quantity }} x {{ op.formatted_price }}
 {% endfor %}
 Yhteensä: {{ formatted_total_price }} (ALV 0%){% if have_etickets %}
 
@@ -21,7 +21,7 @@ Antamasi yhteystiedot:
 
 {{ first_name }} {{ last_name }}{% if phone %}
 {{ phone }}{% endif %}
-{{ order.customer.email }}
+{{ email }}
 
 Jos yllä olevissa tiedoissa on virheitä, otathan välittömästi yhteyttä
 lipunmyyntiin vastaamalla tähän viestiin.

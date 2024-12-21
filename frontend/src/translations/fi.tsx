@@ -327,6 +327,7 @@ const translations: Translations = {
             "Kiintiöt määrittelevät montako kappaletta tuotetta voidaan myydä. Tuote voi käyttää useampaa kiintiötä; tällöin tuotteen saatavuuden määrittelee kiintiö jota on vähiten jäljellä. Voit muokata ja luoda uusia kiintiöitä Kiintiöt-välilehdellä.",
         },
         selectedQuotas: "Valitut kiintiöt",
+        soldOut: "Loppuunmyyty",
       },
     },
     Quota: {

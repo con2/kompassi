@@ -8,6 +8,12 @@ def format_money(euros: Decimal) -> str:
     >>> format_money(Decimal('123.45'))
     '123,45 €'
     """
+    if isinstance(euros, int):
+        raise AssertionError(
+            "Suspect integer input may be passed in cents where euros are expected. "
+            "Cast to Decimal to convince `format_money` input is euros."
+        )
+
     return f"{euros:0.2f} €".replace(".", ",")
 
 
