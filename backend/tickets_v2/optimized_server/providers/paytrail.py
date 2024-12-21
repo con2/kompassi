@@ -55,19 +55,30 @@ class CallbackUrls(pydantic.BaseModel):
     cancel: str
 
     @classmethod
-    def get_redirects_for_order(cls, event_slug: str, order_id: UUID) -> CallbackUrls:
-        url = f"{TICKETS_BASE_URL}/api/tickets-v2/{event_slug}/orders/{order_id}/redirect/"
+    def for_payment_redirect(cls, event_slug: str, order_id: UUID) -> CallbackUrls:
+        url = f"{TICKETS_BASE_URL}/api/tickets-v2/{event_slug}/orders/{order_id}/payment-redirect/"
         return cls(
             success=url,
             cancel=url,
         )
 
     @classmethod
-    def get_callbacks_for_order(cls, event_slug: str, order_id: UUID) -> CallbackUrls | None:
+    def for_payment_callback(cls, event_slug: str, order_id: UUID) -> CallbackUrls | None:
         if "localhost" in TICKETS_BASE_URL:
             return None
 
-        url = f"{TICKETS_BASE_URL}/api/tickets-v2/{event_slug}/orders/{order_id}/callback/"
+        url = f"{TICKETS_BASE_URL}/api/tickets-v2/{event_slug}/orders/{order_id}/payment-callback/"
+        return cls(
+            success=url,
+            cancel=url,
+        )
+
+    @classmethod
+    def for_refund_callback(cls, event_slug: str, order_id: UUID) -> CallbackUrls:
+        # if "localhost" in TICKETS_BASE_URL:
+        #     raise SystemError("Refund callbacks not supported in localhost")
+
+        url = f"{TICKETS_BASE_URL}/api/tickets-v2/{event_slug}/orders/{order_id}/refund-callback/"
         return cls(
             success=url,
             cancel=url,
@@ -115,8 +126,8 @@ class CreatePaymentRequest(pydantic.BaseModel):
             amount_cents=int(result.total_price * 100),
             language=request.language.upper(),
             customer=request.customer,
-            redirect_urls=CallbackUrls.get_redirects_for_order(event.slug, result.order_id),
-            callback_urls=CallbackUrls.get_callbacks_for_order(event.slug, result.order_id),
+            redirect_urls=CallbackUrls.for_payment_redirect(event.slug, result.order_id),
+            callback_urls=CallbackUrls.for_payment_callback(event.slug, result.order_id),
         )
 
     @classmethod
@@ -130,8 +141,8 @@ class CreatePaymentRequest(pydantic.BaseModel):
             amount_cents=int(order.total_price * 100),
             language=order.language.upper(),
             customer=order.customer,
-            redirect_urls=CallbackUrls.get_redirects_for_order(event.slug, order.id),
-            callback_urls=CallbackUrls.get_callbacks_for_order(event.slug, order.id),
+            redirect_urls=CallbackUrls.for_payment_redirect(event.slug, order.id),
+            callback_urls=CallbackUrls.for_payment_callback(event.slug, order.id),
         )
 
     def prepare(
@@ -147,9 +158,9 @@ class CreatePaymentRequest(pydantic.BaseModel):
 
         # sensitive and uninteresting fields not to be stored in payment stamp
         del data["customer"]
-        # del data["redirectUrls"]
-        # if "callbackUrls" in data:
-        #     del data["callbackUrls"]
+        del data["redirectUrls"]
+        if "callbackUrls" in data:
+            del data["callbackUrls"]
 
         request_stamp = PaymentStamp(
             event_id=event.id,
@@ -264,6 +275,18 @@ class PaytrailStatus(str, Enum):
                 # user cancelled or payment failed
                 return PaymentStatus.FAILED
 
+    def to_refund_status(self):
+        match self:
+            case PaytrailStatus.OK:
+                return PaymentStatus.REFUNDED
+            case PaytrailStatus.PENDING:
+                return PaymentStatus.REFUND_REQUESTED
+            case PaytrailStatus.DELAYED:
+                # TODO do we need to add this to PaymentStatus?
+                return PaymentStatus.REFUND_REQUESTED
+            case PaytrailStatus.FAIL:
+                return PaymentStatus.REFUND_FAILED
+
 
 class PaymentCallback(pydantic.BaseModel, populate_by_name=True):
     account: str = pydantic.Field(
@@ -330,17 +353,26 @@ class PaymentCallback(pydantic.BaseModel, populate_by_name=True):
         self,
         event: Event,
         order: Order,
-        type: Literal[PaymentStampType.PAYMENT_REDIRECT, PaymentStampType.PAYMENT_CALLBACK],
+        type: Literal[
+            PaymentStampType.PAYMENT_REDIRECT,
+            PaymentStampType.PAYMENT_CALLBACK,
+            PaymentStampType.REFUND_CALLBACK,
+        ],
     ):
         if event.paytrail_merchant != self.account:
             raise HTTPException(status_code=400, detail="ACCOUNT_MISMATCH")
+
+        if type == PaymentStampType.REFUND_CALLBACK:
+            status = self.status.to_refund_status()
+        else:
+            status = self.status.to_payment_status()
 
         return PaymentStamp(
             event_id=event.id,
             order_id=order.id,
             provider_id=PaymentProvider.PAYTRAIL,
             type=type,
-            status=self.status.to_payment_status(),
+            status=status,
             correlation_id=self.stamp,
             data=self.model_dump(mode="json", by_alias=True),
         )

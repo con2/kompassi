@@ -211,7 +211,7 @@ class Order(EventPartitionsMixin, UUID7Mixin, models.Model):
         if self.cached_status == PaymentStatus.REFUNDED:
             raise ValueError("Order is already refunded")
 
-        paid_stamp = self.payment_stamps.filter(cached_status=PaymentStatus.PAID).order_by("-id").first()
+        paid_stamp = self.payment_stamps.filter(status=PaymentStatus.PAID).order_by("-id").first()
         if not paid_stamp:
             raise ValueError("Cannot refund an order that has not been paid")
 

@@ -23,6 +23,8 @@ class PaymentStampType(IntEnum):
     CREATE_REFUND_SUCCESS = 8
     CREATE_REFUND_FAILURE = 9
 
+    REFUND_CALLBACK = 10
+
 
 class PaymentStatus(IntEnum):
     NOT_STARTED = 0

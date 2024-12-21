@@ -21,7 +21,7 @@ const documents = {
     "\n  mutation UpdateOrder($input: UpdateOrderInput!) {\n    updateOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.UpdateOrderDocument,
     "\n  mutation RefundOrder($input: RefundOrderInput!) {\n    refundOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.RefundOrderDocument,
     "\n  mutation CancelOrder($input: CancelOrderInput!) {\n    cancelOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.CancelOrderDocument,
-    "\n  fragment AdminOrderPaymentStamp on LimitedPaymentStampType {\n    createdAt\n    correlationId\n    provider\n    type\n    status\n  }\n": types.AdminOrderPaymentStampFragmentDoc,
+    "\n  fragment AdminOrderPaymentStamp on LimitedPaymentStampType {\n    id\n    createdAt\n    correlationId\n    provider\n    type\n    status\n    data\n  }\n": types.AdminOrderPaymentStampFragmentDoc,
     "\n  fragment AdminOrderReceipt on LimitedReceiptType {\n    correlationId\n    createdAt\n    email\n    type\n    status\n  }\n": types.AdminOrderReceiptFragmentDoc,
     "\n  query AdminOrderDetail($eventSlug: String!, $orderId: String!) {\n    event(slug: $eventSlug) {\n      slug\n      name\n\n      tickets {\n        order(id: $orderId) {\n          id\n          formattedOrderNumber\n          createdAt\n          totalPrice\n          status\n          eticketsLink\n          firstName\n          lastName\n          email\n          phone\n          products {\n            title\n            quantity\n            price\n          }\n          paymentStamps {\n            ...AdminOrderPaymentStamp\n          }\n          receipts {\n            ...AdminOrderReceipt\n          }\n        }\n      }\n    }\n  }\n": types.AdminOrderDetailDocument,
     "\n  fragment OrderList on FullOrderType {\n    id\n    formattedOrderNumber\n    displayName\n    email\n    createdAt\n    totalPrice\n    status\n  }\n": types.OrderListFragmentDoc,
@@ -139,7 +139,7 @@ export function graphql(source: "\n  mutation CancelOrder($input: CancelOrderInp
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment AdminOrderPaymentStamp on LimitedPaymentStampType {\n    createdAt\n    correlationId\n    provider\n    type\n    status\n  }\n"): (typeof documents)["\n  fragment AdminOrderPaymentStamp on LimitedPaymentStampType {\n    createdAt\n    correlationId\n    provider\n    type\n    status\n  }\n"];
+export function graphql(source: "\n  fragment AdminOrderPaymentStamp on LimitedPaymentStampType {\n    id\n    createdAt\n    correlationId\n    provider\n    type\n    status\n    data\n  }\n"): (typeof documents)["\n  fragment AdminOrderPaymentStamp on LimitedPaymentStampType {\n    id\n    createdAt\n    correlationId\n    provider\n    type\n    status\n    data\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

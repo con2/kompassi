@@ -6,8 +6,8 @@ import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardTitle from "react-bootstrap/CardTitle";
 import {
-  cancelAndRefund,
-  cancelWithoutRefunding,
+  refundOrder,
+  cancelOrder,
   resendConfirmation,
   updateOrder,
 } from "./actions";
@@ -34,11 +34,13 @@ import { getTranslations } from "@/translations";
 
 graphql(`
   fragment AdminOrderPaymentStamp on LimitedPaymentStampType {
+    id
     createdAt
     correlationId
     provider
     type
     status
+    data
   }
 `);
 
@@ -168,20 +170,35 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     {
       slug: "createdAt",
       title: sTamp.attributes.createdAt,
-      getCellContents: (stamp) => (
-        <FormattedDateTime
-          value={stamp.createdAt}
-          locale={locale}
-          scope={event}
-          session={session}
-        />
-      ),
+      getCellContents: (stamp) => {
+        const { __typename, ...interestingFields } = stamp;
+        return (
+          <ModalButton
+            title={sTamp.attributes.type.choices[stamp.type]}
+            label={
+              <FormattedDateTime
+                value={stamp.createdAt}
+                locale={locale}
+                scope={event}
+                session={session}
+              />
+            }
+            className="btn btn-link m-0 p-0"
+            submitButtonVariant="danger"
+            messages={sTamp.actions.view.modalActions}
+          >
+            {sTamp.actions.view.message}
+            <pre>{JSON.stringify(interestingFields, null, 2)}</pre>
+          </ModalButton>
+        );
+      },
       className: "col-2 align-middle",
     },
     {
       slug: "correlationId",
       title: sTamp.attributes.correlationId,
-      className: "col-3 align-middle small",
+      className: "col-3 align-middle",
+      getCellContents: (stamp) => <small>{stamp.correlationId}</small>,
     },
     {
       slug: "type",
@@ -221,7 +238,8 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     {
       slug: "correlationId",
       title: sTamp.attributes.correlationId,
-      className: "col-3 align-middle small",
+      className: "col-3 align-middle",
+      getCellContents: (receipt) => <small>{receipt.correlationId}</small>,
     },
     {
       slug: "type",
@@ -304,23 +322,17 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
                     order.id,
                   )}
                 >
-                  <p>
-                    {t.actions.resendOrderConfirmation.message(order.email)}
-                  </p>
+                  {t.actions.resendOrderConfirmation.message(order.email)}
                 </ModalButton>
                 <ModalButton
                   title={t.actions.cancelAndRefund.title}
                   className="btn btn-danger"
                   submitButtonVariant="danger"
                   messages={t.actions.cancelAndRefund.modalActions}
-                  action={cancelAndRefund.bind(
-                    null,
-                    locale,
-                    eventSlug,
-                    order.id,
-                  )}
+                  action={refundOrder.bind(null, locale, eventSlug, order.id)}
                 >
                   {t.actions.cancelAndRefund.message}
+                  {t.actions.refundCommon.refundMayFail}
                 </ModalButton>
               </>
             )}
@@ -331,14 +343,37 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
                   className="btn btn-danger"
                   submitButtonVariant="danger"
                   messages={t.actions.cancelWithoutRefunding.modalActions}
-                  action={cancelWithoutRefunding.bind(
-                    null,
-                    locale,
-                    eventSlug,
-                    order.id,
-                  )}
+                  action={cancelOrder.bind(null, locale, eventSlug, order.id)}
                 >
                   {t.actions.cancelWithoutRefunding.message}
+                </ModalButton>
+              </>
+            )}
+            {order.status === PaymentStatus.Cancelled && (
+              <>
+                <ModalButton
+                  title={t.actions.refundCancelledOrder.title}
+                  className="btn btn-danger"
+                  submitButtonVariant="danger"
+                  messages={t.actions.refundCancelledOrder.modalActions}
+                  action={refundOrder.bind(null, locale, eventSlug, order.id)}
+                >
+                  {t.actions.refundCancelledOrder.message}
+                  {t.actions.refundCommon.refundMayFail}
+                </ModalButton>
+              </>
+            )}
+            {order.status === PaymentStatus.RefundFailed && (
+              <>
+                <ModalButton
+                  title={t.actions.retryRefund.title}
+                  className="btn btn-danger"
+                  submitButtonVariant="danger"
+                  messages={t.actions.retryRefund.modalActions}
+                  action={refundOrder.bind(null, locale, eventSlug, order.id)}
+                >
+                  {t.actions.retryRefund.message}
+                  {t.actions.refundCommon.refundMayFail}
                 </ModalButton>
               </>
             )}

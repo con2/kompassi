@@ -543,35 +543,42 @@ const translations = {
           title: "Cancel and refund",
           message: (
             <>
-              <p>This will</p>
+              <p>Are you sure you want to</p>
               <ol>
                 <li>mark the order as cancelled,</li>
                 <li>invalidate any electronic tickets,</li>
                 <li>send a cancellation notice to the customer, and</li>
-                <li>request the payment processor to refund the payment.</li>
+                <li>request the payment processor to refund the payment?</li>
               </ol>
-              <p>
-                <strong>NOTE:</strong> The refund may fail if there are not
-                sufficient funds deposited with the payment processor. In this
-                case, you need to transfer funds and complete the refund via the
-                merchant panel of the payment processor.
-              </p>
             </>
           ),
           modalActions: {
-            submit: "Cancel order and attempt refund",
+            submit: "Cancel order and request refund",
             cancel: "Close without cancelling",
+          },
+        },
+        refundCancelledOrder: {
+          title: "Refund",
+          message: (
+            <p>
+              Are you sure you want request the payment processor to refund the
+              payment?
+            </p>
+          ),
+          modalActions: {
+            submit: "Request refund",
+            cancel: "Close without refunding",
           },
         },
         cancelWithoutRefunding: {
           title: "Cancel without refunding",
           message: (
             <>
-              <p>This will</p>
+              <p>Are you sure you want to</p>
               <ol>
                 <li>mark the order as cancelled,</li>
                 <li>invalidate any electronic tickets, and</li>
-                <li>send a cancellation notice to the customer.</li>
+                <li>send a cancellation notice to the customer?</li>
               </ol>
               <p>
                 <strong>NOTE:</strong> No automatic refund will be made. If the
@@ -585,6 +592,29 @@ const translations = {
             submit: "Cancel order without refunding",
             cancel: "Close without cancelling",
           },
+        },
+        retryRefund: {
+          title: "Retry refund",
+          message: (
+            <p>
+              Are you sure you want to make a new request the payment processor
+              to refund the payment?
+            </p>
+          ),
+          modalActions: {
+            submit: "Retry refund",
+            cancel: "Close without refunding",
+          },
+        },
+        refundCommon: {
+          refundMayFail: (
+            <>
+              <strong>NOTE:</strong> The refund may fail if there are not
+              sufficient funds deposited with the payment processor. In this
+              case, you need to transfer funds and retry the refund at a later
+              date, or complete the refund via other means.
+            </>
+          ),
         },
       },
     },
@@ -606,6 +636,23 @@ const translations = {
             CREATE_REFUND_REQUEST: "Create refund – Request",
             CREATE_REFUND_SUCCESS: "Create refund – OK",
             CREATE_REFUND_FAILURE: "Create refund – Failed",
+            REFUND_CALLBACK: "Refund callback",
+          },
+        },
+      },
+      actions: {
+        view: {
+          title: "View payment stamp",
+          message: (
+            <p>
+              Payment stamps contain technical information about the payment
+              process. This may be used to troubleshoot failed payments with the
+              payment processor.
+            </p>
+          ),
+          modalActions: {
+            cancel: "Close",
+            submit: "There is no submit button :)",
           },
         },
       },

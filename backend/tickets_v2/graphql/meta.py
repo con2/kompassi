@@ -95,7 +95,7 @@ class TicketsV2EventMetaType(DjangoObjectType):
             Order.objects.filter(event=meta.event),
             filters=filters,
             search=search,
-        )
+        ).order_by("-id")
 
     orders = graphene.NonNull(
         graphene.List(graphene.NonNull(FullOrderType)),

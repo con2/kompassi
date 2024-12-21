@@ -78,7 +78,7 @@ const refundOrderMutation = graphql(`
   }
 `);
 
-export async function cancelAndRefund(
+export async function refundOrder(
   locale: string,
   eventSlug: string,
   orderId: string,
@@ -106,7 +106,7 @@ const cancelOrderMutation = graphql(`
   }
 `);
 
-export async function cancelWithoutRefunding(
+export async function cancelOrder(
   locale: string,
   eventSlug: string,
   orderId: string,

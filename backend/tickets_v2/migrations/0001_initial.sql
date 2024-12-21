@@ -1,7 +1,7 @@
 -- enums in tickets_v2.optimized_server.models.enums
 -- TODO should these be made proper postgres enums instead?
 create domain tickets_v2_paymentprovider as smallint constraint value_check check (value >= 0 and value <= 2);
-create domain tickets_v2_paymentstamptype as smallint constraint value_check check (value >= 0 and value <= 9);
+create domain tickets_v2_paymentstamptype as smallint constraint value_check check (value >= 0 and value <= 10);
 create domain tickets_v2_paymentstatus as smallint constraint value_check check (value >= 0 and value <= 7);
 create domain tickets_v2_receipttype as smallint constraint value_check check (value in (3, 4, 7));
 create domain tickets_v2_receiptstatus as smallint constraint value_check check (value >= 0 and value <= 3);

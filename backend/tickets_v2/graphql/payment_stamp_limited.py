@@ -1,4 +1,5 @@
 import graphene
+from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
 from graphql_api.utils import resolve_local_datetime_field
@@ -10,7 +11,7 @@ from ..optimized_server.models.enums import PaymentProvider, PaymentStampType, P
 class LimitedPaymentStampType(DjangoObjectType):
     class Meta:
         model = PaymentStamp
-        fields = ("correlation_id", "provider", "status")
+        fields = ("id", "correlation_id", "provider", "status", "data")
 
     created_at = graphene.NonNull(graphene.DateTime)
     resolve_created_at = resolve_local_datetime_field("timestamp")
@@ -23,3 +24,5 @@ class LimitedPaymentStampType(DjangoObjectType):
 
     status = graphene.NonNull(graphene.Enum.from_enum(PaymentStatus))
     type = graphene.NonNull(graphene.Enum.from_enum(PaymentStampType))
+
+    data = graphene.NonNull(GenericScalar)

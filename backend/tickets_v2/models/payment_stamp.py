@@ -97,3 +97,20 @@ class PaymentStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
             status=PaymentStatus.CANCELLED,
             data={},
         )
+
+    def as_paytrail_payment_callback(self):
+        """
+        If this payment stamp is a Paytrail payment callback or redirect, return its parsed payload.
+        Otherwise raise ValueError.
+        """
+        from ..optimized_server.providers.paytrail import PaymentCallback
+
+        if self.provider == PaymentProvider.PAYTRAIL and self.type in (
+            PaymentStampType.PAYMENT_REDIRECT,
+            PaymentStampType.PAYMENT_CALLBACK,
+        ):
+            pass
+        else:
+            raise ValueError("Not a Paytrail payment callback")
+
+        return PaymentCallback.model_validate(self.data)

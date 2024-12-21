@@ -100,14 +100,14 @@ class TicketsV2EventMeta(EventMetaBase):
 
     @cached_property
     def provider(self):
-        from ..providers.null import NullProvider
-        from ..providers.paytrail import PaytrailProvider
+        from ..providers.null import NULL_PROVIDER
+        from ..providers.paytrail import PAYTRAIL_PROVIDER
 
         match self.provider_id:
             case PaymentProvider.NONE:
-                return NullProvider(self.event)
+                return NULL_PROVIDER
             case PaymentProvider.PAYTRAIL:
-                return PaytrailProvider(self.event)
+                return PAYTRAIL_PROVIDER
             case _:
                 raise NotImplementedError(f"Unsupported provider_id: {self.provider_id}")
 

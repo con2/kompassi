@@ -146,7 +146,7 @@ def valid_callback(event: _Event, request: Request) -> PaymentCallback:
 _Callback = Annotated[PaymentCallback, Depends(valid_callback)]
 
 
-@app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/redirect/")
+@app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/payment-redirect/")
 async def paytrail_redirect(
     event: _Event,
     order: _Order,
@@ -162,7 +162,7 @@ async def paytrail_redirect(
     return RedirectResponse(order.get_url(event.slug), 303)
 
 
-@app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/callback/")
+@app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/payment-callback/")
 async def paytrail_callback(
     event: _Event,
     order: _Order,
@@ -173,6 +173,22 @@ async def paytrail_callback(
         event,
         order,
         PaymentStampType.PAYMENT_CALLBACK,
+    ).save(db)
+
+    return PlainTextResponse("")
+
+
+@app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/refund-callback/")
+async def paytrail_refund_callback(
+    event: _Event,
+    order: _Order,
+    paytrail_callback: _Callback,
+    db: DB,
+):
+    await paytrail_callback.to_payment_stamp(
+        event,
+        order,
+        PaymentStampType.REFUND_CALLBACK,
     ).save(db)
 
     return PlainTextResponse("")

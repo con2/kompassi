@@ -5,8 +5,6 @@ from uuid import UUID
 import pydantic
 import requests
 
-from core.models.event import Event
-
 from ..models.payment_stamp import PaymentStamp
 from ..optimized_server.models.enums import PaymentProvider, PaymentStampType, PaymentStatus
 from ..optimized_server.providers.paytrail import PAYTRAIL_API_URL, CallbackUrls, PaytrailStatus, get_params
@@ -14,7 +12,7 @@ from ..optimized_server.utils.paytrail_hmac import calculate_hmac
 from ..optimized_server.utils.uuid7 import uuid7
 
 
-class CreateRefundRequest(pydantic.BaseModel):
+class CreateRefundRequest(pydantic.BaseModel, populate_by_name=True):
     amount_cents: int = pydantic.Field(
         validation_alias="amount",
         serialization_alias="amount",
@@ -30,7 +28,7 @@ class CreateRefundRequest(pydantic.BaseModel):
     )
 
 
-class CreateRefundResponse(pydantic.BaseModel):
+class CreateRefundResponse(pydantic.BaseModel, populate_by_name=True):
     transaction_id: str = pydantic.Field(
         validation_alias="transactionId",
         serialization_alias="transactionId",
@@ -44,7 +42,8 @@ class CreateRefundResponse(pydantic.BaseModel):
     status: PaytrailStatus
 
 
-class PreparedCreateRefundRequest(pydantic.BaseModel):
+@dataclass
+class PreparedCreateRefundRequest:
     url: str
     body: str
     headers: dict[str, str]
@@ -62,7 +61,7 @@ class PreparedCreateRefundRequest(pydantic.BaseModel):
             correlation_id=self.request_stamp.correlation_id,
             provider_id=PaymentProvider.PAYTRAIL,
             type=type,
-            status=PaymentStatus.REFUND_REQUESTED,
+            status=status,
             data=data,
         )
 
@@ -93,15 +92,12 @@ class PreparedCreateRefundRequest(pydantic.BaseModel):
         return result, stamp
 
 
-@dataclass
 class PaytrailProvider:
     """
     Implements payment refunds for Paytrail.
 
     Note that creating payments is implemented on the optimized server (FastAPI) side.
     """
-
-    event: Event
 
     def prepare_refund(self, payment_stamp: PaymentStamp) -> PreparedCreateRefundRequest:
         """
@@ -125,12 +121,20 @@ class PaytrailProvider:
         if payments_meta is None:
             raise ValueError(f"Organization {event.organization} is not configured for payments")
 
+        if payment_stamp.status != PaymentStatus.PAID:
+            raise ValueError(
+                "The payment stamp to refund must be a callback or redirect of a successful payment",
+                payment_stamp,
+            )
+
+        payment_callback = payment_stamp.as_paytrail_payment_callback()
+
         paytrail_password = payments_meta.checkout_password
         paytrail_merchant = payments_meta.checkout_merchant
-        transaction_id = payment_stamp.data["transactionId"]
+        transaction_id = payment_callback.transaction_id
         correlation_id = uuid7()
 
-        callback_urls = CallbackUrls.get_callbacks_for_order(order.event.slug, order.id)
+        callback_urls = CallbackUrls.for_refund_callback(order.event.slug, order.id)
         if callback_urls is None:
             raise ValueError("Cannot refund order without callback URLs")
 
@@ -148,16 +152,17 @@ class PaytrailProvider:
         headers["content-type"] = "application/json; charset=utf-8"
 
         del data["callbackUrls"]
-        data["transactionId"] = transaction_id
+        data["__transactionId"] = transaction_id
 
         url = f"{PAYTRAIL_API_URL}/payments/{transaction_id}/refund"
+        print(url, "url")
 
         request_stamp = PaymentStamp(
             event=order.event,
             order_id=order.id,
             correlation_id=correlation_id,
-            provider_id=PaymentProvider.NONE,
-            type=PaymentStampType.CREATE_REFUND_FAILURE,
+            provider_id=PaymentProvider.PAYTRAIL,
+            type=PaymentStampType.CREATE_REFUND_REQUEST,
             status=PaymentStatus.REFUND_REQUESTED,
             data=data,
         )
@@ -168,3 +173,7 @@ class PaytrailProvider:
             headers=headers,
             request_stamp=request_stamp,
         )
+
+
+# singleton instance
+PAYTRAIL_PROVIDER = PaytrailProvider()

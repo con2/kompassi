@@ -457,19 +457,19 @@ const translations: Translations = {
             },
             REFUND_REQUESTED: {
               title: "Tilauksen maksu on palautettu",
-              shortTitle: "Refund requested",
+              shortTitle: "Palautusta pyydetty",
               message:
                 "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
             REFUND_FAILED: {
               title: "Tilauksen maksu on palautettu",
-              shortTitle: "Refund failed",
+              shortTitle: "Palautus epäonnistui",
               message:
                 "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
             REFUNDED: {
               title: "Tilauksen maksu on palautettu",
-              shortTitle: "Refunded",
+              shortTitle: "Palautettu",
               message:
                 "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
@@ -548,18 +548,23 @@ const translations: Translations = {
                 <li>lähettää asiakkaalle peruutusilmoituksen, ja</li>
                 <li>tekee maksunvälittäjälle pyynnön maksun palautuksesta.</li>
               </ol>
-              <p>
-                <strong>HUOM:</strong> Maksun palautus voi epäonnistua, jos
-                maksunvälittäjän hallussa ei ole riittävästi myyjän varoja.
-                Tällöin on maksun palauttamiseksi siirrettävä rahaa
-                maksunvälittäjälle ja rahojen siirrettyä tehtävä palautus
-                loppuun maksunvälittäjän hallintapaneelissa.
-              </p>
             </>
           ),
           modalActions: {
             submit: "Peruuta tilaus ja palauta maksu",
             cancel: "Sulje peruuttamatta tilausta",
+          },
+        },
+        refundCancelledOrder: {
+          title: "Palauta maksu",
+          message: (
+            <p>
+              Haluatko varmasti pyytää maksunvälittäjää palauttamaan maksun?
+            </p>
+          ),
+          modalActions: {
+            submit: "Pyydä palautusta",
+            cancel: "Sulje palauttamatta maksua",
           },
         },
         cancelWithoutRefunding: {
@@ -581,9 +586,32 @@ const translations: Translations = {
             </>
           ),
           modalActions: {
-            submit: "Peruuta tilaus palauttamatta maksua",
+            submit: "Peruuta tilaus",
             cancel: "Sulje peruuttamatta tilausta",
           },
+        },
+        retryRefund: {
+          title: "Yritä palautusta uudelleen",
+          message: (
+            <p>
+              Haluatko varmasti tehdä maksunvälittäjälle uuden
+              maksunpalautuspyynnön?
+            </p>
+          ),
+          modalActions: {
+            submit: "Yritä uudelleen",
+            cancel: "Sulje palauttamatta maksua",
+          },
+        },
+        refundCommon: {
+          refundMayFail: (
+            <p>
+              <strong>HUOM:</strong> Maksun palautus voi epäonnistua, jos
+              maksunvälittäjän hallussa ei ole riittävästi myyjän varoja.
+              Tällöin tulee siirtää varoja maksunvälittäjälle ja yrittää
+              uudelleen, tai hoitaa palautus loppuun muulla tavoin.
+            </p>
+          ),
         },
       },
     },
@@ -605,6 +633,23 @@ const translations: Translations = {
             CREATE_REFUND_REQUEST: "Palautuksen luonti – Pyyntö",
             CREATE_REFUND_SUCCESS: "Palautuksen luonti – Onnistui",
             CREATE_REFUND_FAILURE: "Palautuksen luonti – Epäonnistui",
+            REFUND_CALLBACK: "Jälki-ilmoitus palautuksesta",
+          },
+        },
+      },
+      actions: {
+        view: {
+          title: "Näytä maksutiedot",
+          message: (
+            <p>
+              Maksutiedoista löytyy teknisiä tietoja maksuprosessista.
+              Maksutiedoista voi olla hyötyä, kun epäonnistuneita maksuja
+              selvitellään maksunvälittäjän kanssa.
+            </p>
+          ),
+          modalActions: {
+            cancel: "Sulje",
+            submit: "Lähetä-nappia ei ole :)",
           },
         },
       },
