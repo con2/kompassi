@@ -154,8 +154,7 @@ class PaytrailProvider:
         del data["callbackUrls"]
         data["__transactionId"] = transaction_id
 
-        url = f"{PAYTRAIL_API_URL}/payments/{transaction_id}/refund"
-        print(url, "url")
+        url = f"{PAYTRAIL_API_URL}/{transaction_id}/refund"
 
         request_stamp = PaymentStamp(
             event=order.event,
