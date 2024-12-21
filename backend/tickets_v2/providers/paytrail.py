@@ -148,6 +148,7 @@ class PaytrailProvider:
         data = request.model_dump(mode="json", by_alias=True)
         body = json.dumps(data)
         headers = get_params(paytrail_merchant, method="POST")
+        headers["checkout-transaction-id"] = transaction_id
         headers["signature"] = calculate_hmac(paytrail_password, headers, body)
         headers["content-type"] = "application/json; charset=utf-8"
 
