@@ -1,14 +1,14 @@
-Dear recipient,
+{% load tickets_v2_tags %}Dear recipient,
 
 Thank you for your order at the {{ event_name }} online shop!
-Your order number is {{ formatted_order_number }}.
+Your order number is {{ order_number|format_order_number }}.
 
 We confirm the following products have been paid for:
 
 {% for op in products %}{{ op.quantity }} pcs  {{ op.title }}
-    {{ op.quantity }} x {{ op.formatted_price }}
+    {{ op.quantity }} x {{ op.price|format_money }}
 {% endfor %}
-Total: {{ formatted_total_price }} (VAT 0%){% if have_etickets %}
+Total: {{ total_price|format_money }} (VAT 0%){% if have_etickets %}
 
 Please find attached your electronic tickets. The electronic ticket will be
 exchanged for a wristband at the ticket exchange when you arrive at the event.

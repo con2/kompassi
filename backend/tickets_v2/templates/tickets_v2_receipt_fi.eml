@@ -1,14 +1,14 @@
-Hyvä vastaanottaja,
+{% load tickets_v2_tags %}Hyvä vastaanottaja,
 
 Kiitos tilauksestasi {{ event_name }} -tapahtuman verkkokaupassa!
-Tilauksesi numero on {{ formatted_order_number }}.
+Tilauksesi numero on {{ order_number|format_order_number }}.
 
 Vahvistamme maksetuiksi seuraavat lipputuotteet:
 
 {% for op in products %}{{ op.quantity }} kpl  {{ op.title }}
-    {{ op.quantity }} x {{ op.formatted_price }}
+    {{ op.quantity }} x {{ op.price|format_money }}
 {% endfor %}
-Yhteensä: {{ formatted_total_price }} (ALV 0%){% if have_etickets %}
+Yhteensä: {{ total_price|format_money }} (ALV 0%){% if have_etickets %}
 
 Löydät tilaamasi sähköiset liput liitetiedostosta. Sähköinen lippu
 vaihdetaan rannekkeeseen lipunvaihtopisteessä saapuessasi tapahtumaan. Voit

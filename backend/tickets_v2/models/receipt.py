@@ -24,7 +24,7 @@ from tickets.lippukala_integration import Queue as LippukalaQueue
 
 from ..optimized_server.models.enums import PaymentStatus, ReceiptStatus, ReceiptType
 from ..optimized_server.models.order import OrderProduct
-from ..optimized_server.utils.formatting import format_money, format_order_number
+from ..optimized_server.utils.formatting import format_order_number
 from ..utils.event_partitions import EventPartitionsMixin
 from .order import Order
 from .product import Product
@@ -212,15 +212,9 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
 
         return value
 
-    @pydantic.computed_field
     @cached_property
     def formatted_order_number(self) -> str:
         return format_order_number(self.order_number)
-
-    @pydantic.computed_field
-    @cached_property
-    def formatted_total_price(self) -> str:
-        return format_money(self.total_price)
 
     @classmethod
     def _get_product(cls, event_id: int, product_id: int):
@@ -362,23 +356,34 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
         printer.process_order(lippukala_order)
         return printer.finish()
 
-    def send_receipt(self, from_email: str = FROM_EMAIL, mail_domain: str = MAIL_DOMAIN):
+    @property
+    def body(self) -> str:
         match self.receipt_type:
             case ReceiptType.PAID:
                 template_name = f"tickets_v2_receipt_{self.language}.eml"
-                if etickets_pdf := self.get_etickets_pdf():
-                    subject = ETICKET_SUBJECT[self.language]
-                else:
-                    subject = RECEIPT_SUBJECT[self.language]
             case ReceiptType.CANCELLED | ReceiptType.REFUNDED:
-                etickets_pdf = None
-                subject = CANCELLED_SUBJECT[self.language]
                 template_name = f"tickets_v2_cancelled_{self.language}.eml"
+            case _:
+                raise ValueError("Unknown receipt type")
 
         vars = self.model_dump(mode="python", by_alias=False)
-        body = render_to_string(template_name, vars)
-        subject = f"{self.event_name}: {subject} ({self.formatted_order_number})"
+        return render_to_string(template_name, vars)
 
+    @property
+    def subject(self) -> str:
+        match self.receipt_type:
+            case ReceiptType.PAID if self.have_etickets:
+                subject = ETICKET_SUBJECT[self.language]
+            case ReceiptType.PAID:
+                subject = RECEIPT_SUBJECT[self.language]
+            case ReceiptType.CANCELLED | ReceiptType.REFUNDED:
+                subject = CANCELLED_SUBJECT[self.language]
+            case _:
+                raise ValueError("Unknown receipt type")
+
+        return f"{self.event_name}: {subject} ({self.formatted_order_number})"
+
+    def send_receipt(self, from_email: str = FROM_EMAIL, mail_domain: str = MAIL_DOMAIN):
         # NOTE doesn't check this internal alias exists (perf), too bad if it doesn't
         reply_to_email = (f"{self.event_slug}-tickets@{mail_domain}",)
         to_email = (f"{self.first_name} {self.last_name} <{self.email}>",)
@@ -393,14 +398,14 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
         #         print("Wrote attachment to", path)
 
         message = EmailMessage(
-            subject=subject,
-            body=body,
+            subject=self.subject,
+            body=self.body,
             from_email=from_email,
             reply_to=reply_to_email,
             to=to_email,
         )
 
-        if etickets_pdf:
+        if etickets_pdf := self.get_etickets_pdf():
             message.attach(ETICKET_FILENAME, etickets_pdf, "application/pdf")
 
         message.send(fail_silently=True)
