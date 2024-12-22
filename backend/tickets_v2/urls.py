@@ -1,6 +1,7 @@
-from django.urls import path
+from django.urls import path, re_path
 
 from .views.etickets_view import etickets_view
+from .views.pos_view import pos_view
 
 app_name = "tickets_v2"
 urlpatterns = [
@@ -9,15 +10,9 @@ urlpatterns = [
         etickets_view,
         name="etickets_view",
     ),
-    # NOTE: These are served by optimized_server
-    # path(
-    #     "api/tickets-v2/events/<slug:event_slug>/products/",
-    #     get_products,
-    #     name="tickets_v2_get_products",
-    # ),
-    # path(
-    #     "api/tickets-v2/events/<slug:event_slug>/orders/",
-    #     create_order,
-    #     name="tickets_v2_create_order",
-    # ),
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/pos/?$",
+        pos_view,
+        name="pos_view",
+    ),
 ]

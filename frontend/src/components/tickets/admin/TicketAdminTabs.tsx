@@ -35,8 +35,19 @@ export default function TicketAdminTabs({
     {
       slug: "ticketControl",
       title: t.tabs.ticketControl,
-      href: `${kompassiBaseUrl}/events/${eventSlug}/ticket-control`,
-      disabled: true,
+      href: `${kompassiBaseUrl}/events/${eventSlug}/pos`,
+      getTabHeader() {
+        return (
+          <a
+            className="nav-link"
+            href={this.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {this.title}…
+          </a>
+        );
+      },
     },
   ];
 

@@ -99,14 +99,6 @@ class OrderMixin:
     def have_etickets(self) -> bool:
         return bool(self.etickets)
 
-    @property
-    def lippukala_order(self):
-        """
-        Returns the Lippukala order if it exists, or None.
-        Use `get_or_create_lippukala_order` to have it created if it doesn't exist.
-        """
-        return LippukalaOrder.objects.filter(reference_number=self.formatted_order_number).first()
-
 
 class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
     """
@@ -274,6 +266,16 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
     @property
     def scope(self):
         return self.event.scope
+
+    @property
+    def lippukala_order(self):
+        """
+        Returns the Lippukala order if it exists, or None.
+        Use `get_or_create_lippukala_order` to have it created if it doesn't exist.
+        """
+        return LippukalaOrder.objects.filter(
+            reference_number=str(self.id),  # type: ignore
+        ).first()
 
     def get_etickets_link(self, request: HttpRequest):
         if self.cached_status == PaymentStatus.PAID and self.have_etickets:

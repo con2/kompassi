@@ -18,7 +18,7 @@ from lippukala.models import Order as LippukalaOrder
 from lippukala.printing import OrderPrinter
 
 from core.models.event import Event
-from event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7
+from event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7, uuid7_to_datetime
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from tickets.lippukala_integration import Queue as LippukalaQueue
 
@@ -127,41 +127,6 @@ class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
         return self.event.timezone
 
 
-class LocalizedOrderPrinter(OrderPrinter):
-    """
-    Overrides some texts of the default lippukala.printing.OrderPrinter
-    to better support non-Finnish-speaking customers.
-
-    TODO Upstream this
-    """
-
-    event: Event
-
-    def __init__(self, language: str, event: Event):
-        super().__init__(print_logo_path=None)
-        self.language = language
-        self.event = event
-
-    def get_heading_texts(self, order: LippukalaOrder, n_orders: int) -> list[str | None]:
-        timestamp = order.created_on.astimezone(self.event.timezone)
-
-        match self.language:
-            case "fi":
-                return [
-                    (f"Tilausnumero: {order.reference_number}" if order.reference_number else None),
-                    f"Tilausaika: {timestamp.strftime('%d.%m.%Y klo %H:%M')}",
-                    f"Sivusto: {KOMPASSI_V2_BASE_URL}",
-                    f"Tapahtuma: {self.event.name}",
-                ]
-            case _:
-                return [
-                    (f"Order number: {order.reference_number}" if order.reference_number else None),
-                    f"Order time: {timestamp.strftime('%Y-%m-%d %H:%M')}",
-                    f"Site: {KOMPASSI_V2_BASE_URL}",
-                    f"Event: {self.event.name}",
-                ]
-
-
 EVENT_CACHE: dict[int, Event] = {}
 
 
@@ -189,6 +154,10 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
     # NOTE: fields and their order must match fields returned by the query
     query: ClassVar[str] = (Path(__file__).parent / "sql" / "claim_pending_receipts.sql").read_text()
     batch_size: ClassVar[int] = 100
+
+    @property
+    def order_date(self):
+        return uuid7_to_datetime(self.order_id)
 
     @pydantic.field_validator("language", mode="before")
     @staticmethod
@@ -283,8 +252,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
 
         eticket_text = ETICKET_TEXT[self.language].format(event_name=self.event.name)
         lippukala_order, created = LippukalaOrder.objects.get_or_create(
-            # order number makes more sense to customer and event personnel than (bank) reference number
-            reference_number=self.formatted_order_number,
+            reference_number=str(self.order_id),
             defaults=dict(
                 event=self.event.slug,
                 address_text=f"{self.first_name} {self.last_name}\n{self.email}",
@@ -313,7 +281,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
         if not lippukala_order:
             return None
 
-        printer = LocalizedOrderPrinter(self.language, self.event)
+        printer = LocalizedOrderPrinter(self)
         printer.process_order(lippukala_order)
         return printer.finish()
 
@@ -400,3 +368,37 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             order_number=order.order_number,
             total_price=order.cached_price,
         )
+
+
+class LocalizedOrderPrinter(OrderPrinter):
+    """
+    Overrides some texts of the default lippukala.printing.OrderPrinter
+    to better support non-Finnish-speaking customers.
+
+    NOTE: Only process one order at a time.
+    """
+
+    receipt: PendingReceipt
+
+    def __init__(self, receipt: PendingReceipt):
+        super().__init__(print_logo_path=None)
+        self.receipt = receipt
+
+    def get_heading_texts(self, order: LippukalaOrder, n_orders: int) -> list[str | None]:
+        timestamp = self.receipt.order_date.astimezone(self.receipt.event.timezone)
+
+        match self.receipt.language:
+            case "fi":
+                return [
+                    f"Tilausnumero: {self.receipt.formatted_order_number}",
+                    f"Tilausaika: {timestamp.strftime('%d.%m.%Y klo %H:%M')}",
+                    f"Sivusto: {KOMPASSI_V2_BASE_URL}",
+                    f"Tapahtuma: {self.receipt.event.name}",
+                ]
+            case _:
+                return [
+                    f"Order number: {self.receipt.formatted_order_number}",
+                    f"Order time: {timestamp.strftime('%Y-%m-%d %H:%M')}",
+                    f"Site: {KOMPASSI_V2_BASE_URL}",
+                    f"Event: {self.receipt.event.name}",
+                ]
