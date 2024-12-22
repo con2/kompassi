@@ -83,21 +83,6 @@ class PaymentStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
     def provider(self):
         return PaymentProvider(self.provider_id)
 
-    @classmethod
-    def cancellation_for_order(cls, order: Order):
-        """
-        Return an unsaved PaymentStamp for cancelling an order without refund.
-        """
-        return cls(
-            event=order.event,
-            order_id=order.id,
-            correlation_id=uuid7(),
-            provider_id=PaymentProvider.NONE,
-            type=PaymentStampType.CANCEL_WITHOUT_REFUND,
-            status=PaymentStatus.CANCELLED,
-            data={},
-        )
-
     def as_paytrail_payment_callback(self):
         """
         If this payment stamp is a Paytrail payment callback or redirect, return its parsed payload.

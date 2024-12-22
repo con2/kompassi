@@ -19,6 +19,7 @@ class OrderForm(django_forms.ModelForm):
     @classmethod
     def from_form_data(cls, order: Order, form_data: dict[str, str]) -> Self:
         form_data = camel_case_keys_to_snake_case(form_data)
+        print(form_data)
         return cls(form_data, instance=order)
 
 
@@ -49,6 +50,9 @@ class UpdateOrder(graphene.Mutation):
         if not form.is_valid():
             raise django_forms.ValidationError(form.errors)  # type: ignore
 
-        form.save()
+        # XXX for some reason, form.save(commit=True) tries to save all fields, not only those changed by the form
+        # this in turn fails on django.db.utils.ProgrammingError: column "order_number" can only be updated to DEFAULT
+        form.save(commit=False)
+        order.save(update_fields=["first_name", "last_name", "email", "phone"])
 
         return UpdateOrder(order=order)  # type: ignore

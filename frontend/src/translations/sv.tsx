@@ -622,6 +622,25 @@ const translations: Translations = {
             cancel: "Close without refunding",
           },
         },
+        refundManually: {
+          title: "Refund manually",
+          message: (
+            <>
+              <p>
+                Are you sure you want to mark this order as manually refunded?
+              </p>
+              <p>
+                <strong>NOTE:</strong> No further automatic refund will be
+                attempted. It is entirely up to you to make sure the customer
+                gets their money back.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Mark as manually refunded",
+            cancel: "Close without marking",
+          },
+        },
         refundCommon: {
           refundMayFail: (
             <>
@@ -653,6 +672,7 @@ const translations: Translations = {
             CREATE_REFUND_SUCCESS: "Create refund – OK",
             CREATE_REFUND_FAILURE: "Create refund – Failed",
             REFUND_CALLBACK: "Refund callback",
+            MANUAL_REFUND: "Manual refund",
           },
         },
       },

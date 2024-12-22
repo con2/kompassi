@@ -1047,6 +1047,7 @@ export enum PaymentStampType {
   CreateRefundFailure = 'CREATE_REFUND_FAILURE',
   CreateRefundRequest = 'CREATE_REFUND_REQUEST',
   CreateRefundSuccess = 'CREATE_REFUND_SUCCESS',
+  ManualRefund = 'MANUAL_REFUND',
   PaymentCallback = 'PAYMENT_CALLBACK',
   PaymentRedirect = 'PAYMENT_REDIRECT',
   RefundCallback = 'REFUND_CALLBACK',
@@ -1324,7 +1325,14 @@ export type RefundOrder = {
 export type RefundOrderInput = {
   eventSlug: Scalars['String']['input'];
   orderId: Scalars['String']['input'];
+  refundType: RefundType;
 };
+
+/** An enumeration. */
+export enum RefundType {
+  Manual = 'MANUAL',
+  Provider = 'PROVIDER'
+}
 
 export type ResendOrderConfirmation = {
   __typename?: 'ResendOrderConfirmation';

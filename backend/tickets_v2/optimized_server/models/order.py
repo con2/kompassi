@@ -175,12 +175,8 @@ class Order(pydantic.BaseModel, populate_by_name=True):
             )
 
     @property
-    def timestamp(self):
-        return uuid7_to_datetime(self.id)
-
-    @property
     def reference(self):
-        return order_number_to_reference(self.timestamp, self.order_number)
+        return order_number_to_reference(self.created_at, self.order_number)
 
     def get_url(self, event_slug: str):
         return f"{KOMPASSI_V2_BASE_URL}/{event_slug}/orders/{self.id}/"

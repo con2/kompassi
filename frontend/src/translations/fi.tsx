@@ -417,7 +417,7 @@ const translations: Translations = {
         provider: {
           title: "Maksunvälittäjä",
           choices: {
-            NONE: "Ei mitään (maksuton tilaus)",
+            NONE: "Ei mitään",
             PAYTRAIL: "Paytrail",
             STRIPE: "Stripe",
           },
@@ -603,6 +603,26 @@ const translations: Translations = {
             cancel: "Sulje palauttamatta maksua",
           },
         },
+        refundManually: {
+          title: "Merkitse manuaalisesti palautetuksi",
+          message: (
+            <>
+              <p>
+                Haluatko varmasti merkitä tämän tilauksen manuaalisesti
+                palautetuksi?
+              </p>
+              <p>
+                <strong>HUOM:</strong> Tämän jälkeen maksua ei enää yritetä
+                palauttaa automaattisesti. Olet vastuussa siitä, että palautus
+                tulee asianmukaisesti hoidetuksi.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Mark as manually refunded",
+            cancel: "Close without marking",
+          },
+        },
         refundCommon: {
           refundMayFail: (
             <p>
@@ -634,6 +654,7 @@ const translations: Translations = {
             CREATE_REFUND_SUCCESS: "Palautuksen luonti – Onnistui",
             CREATE_REFUND_FAILURE: "Palautuksen luonti – Epäonnistui",
             REFUND_CALLBACK: "Jälki-ilmoitus palautuksesta",
+            MANUAL_REFUND: "Manuaalinen palautus",
           },
         },
       },

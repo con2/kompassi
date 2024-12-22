@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { notFound } from "next/navigation";
+import { Fragment, ReactNode } from "react";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
@@ -16,6 +17,7 @@ import {
   AdminOrderPaymentStampFragment,
   AdminOrderReceiptFragment,
   PaymentStatus,
+  RefundType,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -273,6 +275,146 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     order.status === PaymentStatus.Failed ||
     order.status === PaymentStatus.Paid;
 
+  const actions = [
+    {
+      slug: "viewTickets",
+      isShown: !!order.eticketsLink,
+      getElement: () => (
+        <a
+          href={order.eticketsLink ?? ""}
+          target="_blank"
+          rel="noopener noreferer"
+          className="btn btn-primary"
+        >
+          {t.actions.viewTickets}…
+        </a>
+      ),
+    },
+    {
+      slug: "resendOrderConfirmation",
+      isShown: order.status === PaymentStatus.Paid,
+      getElement: () => (
+        <ModalButton
+          title={t.actions.resendOrderConfirmation.title}
+          className="btn btn-success"
+          submitButtonVariant="success"
+          messages={t.actions.resendOrderConfirmation.modalActions}
+          action={resendConfirmation.bind(null, locale, eventSlug, order.id)}
+        >
+          {t.actions.resendOrderConfirmation.message(order.email)}
+        </ModalButton>
+      ),
+    },
+    {
+      slug: "cancelWithoutRefunding",
+      isShown:
+        order.status === PaymentStatus.NotStarted ||
+        order.status === PaymentStatus.Pending ||
+        order.status === PaymentStatus.Failed ||
+        order.status === PaymentStatus.Paid,
+      getElement: () => (
+        <ModalButton
+          title={t.actions.cancelWithoutRefunding.title}
+          className="btn btn-danger"
+          submitButtonVariant="danger"
+          messages={t.actions.cancelWithoutRefunding.modalActions}
+          action={cancelOrder.bind(null, locale, eventSlug, order.id)}
+        >
+          {t.actions.cancelWithoutRefunding.message}
+        </ModalButton>
+      ),
+    },
+    {
+      slug: "cancelAndRefund",
+      isShown: order.status === PaymentStatus.Paid,
+      getElement: () => (
+        <ModalButton
+          title={t.actions.cancelAndRefund.title}
+          className="btn btn-danger"
+          submitButtonVariant="danger"
+          messages={t.actions.cancelAndRefund.modalActions}
+          action={refundOrder.bind(
+            null,
+            locale,
+            eventSlug,
+            order.id,
+            RefundType.Provider,
+          )}
+        >
+          {t.actions.cancelAndRefund.message}
+          {t.actions.refundCommon.refundMayFail}
+        </ModalButton>
+      ),
+    },
+    {
+      slug: "refundCancelledOrder",
+      isShown: order.status === PaymentStatus.Cancelled,
+      getElement: () => (
+        <ModalButton
+          title={t.actions.refundCancelledOrder.title}
+          className="btn btn-danger"
+          submitButtonVariant="danger"
+          messages={t.actions.refundCancelledOrder.modalActions}
+          action={refundOrder.bind(
+            null,
+            locale,
+            eventSlug,
+            order.id,
+            RefundType.Provider,
+          )}
+        >
+          {t.actions.refundCancelledOrder.message}
+          {t.actions.refundCommon.refundMayFail}
+        </ModalButton>
+      ),
+    },
+    {
+      slug: "retryRefund",
+      isShown: order.status === PaymentStatus.RefundFailed,
+      getElement: () => (
+        <ModalButton
+          title={t.actions.retryRefund.title}
+          className="btn btn-danger"
+          submitButtonVariant="danger"
+          messages={t.actions.retryRefund.modalActions}
+          action={refundOrder.bind(
+            null,
+            locale,
+            eventSlug,
+            order.id,
+            RefundType.Provider,
+          )}
+        >
+          {t.actions.retryRefund.message}
+          {t.actions.refundCommon.refundMayFail}
+        </ModalButton>
+      ),
+    },
+    {
+      slug: "refundManually",
+      isShown:
+        order.status === PaymentStatus.Cancelled ||
+        order.status === PaymentStatus.RefundFailed,
+      getElement: () => (
+        <ModalButton
+          title={t.actions.refundManually.title}
+          className="btn btn-danger"
+          submitButtonVariant="danger"
+          messages={t.actions.refundManually.modalActions}
+          action={refundOrder.bind(
+            null,
+            locale,
+            eventSlug,
+            order.id,
+            RefundType.Manual,
+          )}
+        >
+          {t.actions.refundManually.message}
+        </ModalButton>
+      ),
+    },
+  ];
+
   return (
     <ViewContainer>
       <ViewHeading>
@@ -298,85 +440,11 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
             className="mb-3"
           />
           <ButtonGroup className="mt-2">
-            {order.eticketsLink && (
-              <a
-                href={order.eticketsLink}
-                target="_blank"
-                rel="noopener noreferer"
-                className="btn btn-primary"
-              >
-                {t.actions.viewTickets}…
-              </a>
-            )}
-            {order.status === PaymentStatus.Paid && (
-              <>
-                <ModalButton
-                  title={t.actions.resendOrderConfirmation.title}
-                  className="btn btn-success"
-                  submitButtonVariant="success"
-                  messages={t.actions.resendOrderConfirmation.modalActions}
-                  action={resendConfirmation.bind(
-                    null,
-                    locale,
-                    eventSlug,
-                    order.id,
-                  )}
-                >
-                  {t.actions.resendOrderConfirmation.message(order.email)}
-                </ModalButton>
-                <ModalButton
-                  title={t.actions.cancelAndRefund.title}
-                  className="btn btn-danger"
-                  submitButtonVariant="danger"
-                  messages={t.actions.cancelAndRefund.modalActions}
-                  action={refundOrder.bind(null, locale, eventSlug, order.id)}
-                >
-                  {t.actions.cancelAndRefund.message}
-                  {t.actions.refundCommon.refundMayFail}
-                </ModalButton>
-              </>
-            )}
-            {showCancelWithoutRefundingButton && (
-              <>
-                <ModalButton
-                  title={t.actions.cancelWithoutRefunding.title}
-                  className="btn btn-danger"
-                  submitButtonVariant="danger"
-                  messages={t.actions.cancelWithoutRefunding.modalActions}
-                  action={cancelOrder.bind(null, locale, eventSlug, order.id)}
-                >
-                  {t.actions.cancelWithoutRefunding.message}
-                </ModalButton>
-              </>
-            )}
-            {order.status === PaymentStatus.Cancelled && (
-              <>
-                <ModalButton
-                  title={t.actions.refundCancelledOrder.title}
-                  className="btn btn-danger"
-                  submitButtonVariant="danger"
-                  messages={t.actions.refundCancelledOrder.modalActions}
-                  action={refundOrder.bind(null, locale, eventSlug, order.id)}
-                >
-                  {t.actions.refundCancelledOrder.message}
-                  {t.actions.refundCommon.refundMayFail}
-                </ModalButton>
-              </>
-            )}
-            {order.status === PaymentStatus.RefundFailed && (
-              <>
-                <ModalButton
-                  title={t.actions.retryRefund.title}
-                  className="btn btn-danger"
-                  submitButtonVariant="danger"
-                  messages={t.actions.retryRefund.modalActions}
-                  action={refundOrder.bind(null, locale, eventSlug, order.id)}
-                >
-                  {t.actions.retryRefund.message}
-                  {t.actions.refundCommon.refundMayFail}
-                </ModalButton>
-              </>
-            )}
+            {actions
+              .filter((action) => action.isShown)
+              .map((action) => (
+                <Fragment key={action.slug}>{action.getElement()}</Fragment>
+              ))}
           </ButtonGroup>
         </CardBody>
       </Card>

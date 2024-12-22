@@ -152,7 +152,7 @@ class PaytrailProvider:
         headers["signature"] = calculate_hmac(paytrail_password, headers, body)
         headers["content-type"] = "application/json; charset=utf-8"
 
-        del data["callbackUrls"]
+        data.pop("callbackUrls")
         data["__transactionId"] = transaction_id
 
         url = f"{PAYTRAIL_API_URL}/{transaction_id}/refund"

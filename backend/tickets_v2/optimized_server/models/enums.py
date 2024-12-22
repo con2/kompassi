@@ -1,4 +1,4 @@
-from enum import IntEnum
+from enum import Enum, IntEnum
 
 
 class PaymentProvider(IntEnum):
@@ -24,6 +24,7 @@ class PaymentStampType(IntEnum):
     CREATE_REFUND_FAILURE = 9
 
     REFUND_CALLBACK = 10
+    MANUAL_REFUND = 11
 
 
 class PaymentStatus(IntEnum):
@@ -66,3 +67,8 @@ class ReceiptStatus(IntEnum):
 
     # could add:
     # BOUNCE = 4
+
+
+class RefundType(str, Enum):
+    MANUAL = "MANUAL"
+    PROVIDER = "PROVIDER"

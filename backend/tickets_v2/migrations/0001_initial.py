@@ -189,7 +189,7 @@ class Migration(migrations.Migration):
                         ("first_name", models.TextField()),
                         ("last_name", models.TextField()),
                         ("email", models.EmailField()),
-                        ("phone", models.TextField()),
+                        ("phone", models.TextField(blank=True, default="")),
                     ],
                     bases=(
                         tickets_v2.utils.event_partitions.EventPartitionsMixin,

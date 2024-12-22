@@ -97,10 +97,6 @@ class Product(models.Model):
         return f"{self.title} ({self.event})"
 
     @property
-    def price_cents(self) -> int:
-        return int(self.price * 100)
-
-    @property
     def is_available(self) -> bool:
         t = now()
         return (

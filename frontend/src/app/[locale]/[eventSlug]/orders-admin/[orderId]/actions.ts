@@ -7,6 +7,7 @@ import {
   RefundOrderInput,
   ResendOrderConfirmationInput,
   UpdateOrderInput,
+  RefundType,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 
@@ -57,7 +58,7 @@ export async function updateOrder(
   const input: UpdateOrderInput = {
     eventSlug,
     orderId,
-    formData,
+    formData: Object.fromEntries(formData),
   };
 
   await getClient().mutate({
@@ -82,10 +83,12 @@ export async function refundOrder(
   locale: string,
   eventSlug: string,
   orderId: string,
+  refundType: RefundType,
 ) {
   const input: RefundOrderInput = {
     eventSlug,
     orderId,
+    refundType,
   };
 
   await getClient().mutate({

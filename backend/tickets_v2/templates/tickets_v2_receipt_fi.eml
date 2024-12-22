@@ -26,9 +26,4 @@ Antamasi yhteystiedot:
 Jos yllä olevissa tiedoissa on virheitä, otathan välittömästi yhteyttä
 lipunmyyntiin vastaamalla tähän viestiin.
 
-Ystävällisin terveisin
---
-{{ event_name }} -tapahtuman puolesta
-Kompassi-tapahtumanhallintajärjestelmä
-
-Yleishyödyllisenä yhteisönä myyjä ei ole arvonlisäverovelvollinen.
+{% include "tickets_v2_footer_fi.eml" %}

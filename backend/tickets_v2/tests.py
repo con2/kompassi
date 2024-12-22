@@ -141,8 +141,6 @@ class TicketsV2Client:
         signature = calculate_hmac(PAYTRAIL_TEST_SECRET, query)
         query["signature"] = signature
 
-        print("query", query)
-
         # can't use _get because body is not JSON
         response = requests.get(
             self._get_url("orders", order_id, mode),

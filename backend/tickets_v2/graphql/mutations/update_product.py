@@ -38,7 +38,6 @@ class ProductForm(django_forms.ModelForm):
     @classmethod
     def from_form_data(cls, product: Product, form_data: dict[str, str]) -> Self:
         form_data = camel_case_keys_to_snake_case(form_data)
-        print("form_data", form_data)
         return cls(form_data, instance=product)
 
 

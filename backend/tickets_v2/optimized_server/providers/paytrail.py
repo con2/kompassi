@@ -13,8 +13,7 @@ import aiohttp
 import pydantic
 from fastapi import HTTPException
 
-from tickets_v2.optimized_server.utils.uuid7 import uuid7
-
+from ...optimized_server.utils.uuid7 import uuid7
 from ..config import TICKETS_BASE_URL
 from ..excs import ProviderCannot
 from ..models.customer import Customer
@@ -25,6 +24,8 @@ from ..models.payment_stamp import PaymentStamp
 from ..utils.paytrail_hmac import calculate_hmac
 
 PAYTRAIL_API_URL = "https://services.paytrail.com/payments"
+PAYTRAIL_SUPPORTED_LANGUAGE_CODES = {"FI", "SV", "EN"}
+PAYTRAIL_DEFAULT_LANGUAGE = "FI"
 # PAYTRAIL_API_URL = "https://api.checkout.fi/payments"
 logger = logging.getLogger(__name__)
 
@@ -41,13 +42,6 @@ def get_params(paytrail_merchant: str, method="POST", t=None):
         "checkout-timestamp": t.isoformat(timespec="milliseconds").replace("+00:00", "Z"),
         "platform-name": "kompassi",
     }
-
-
-class Item(pydantic.BaseModel):
-    unit_price_cents: int = pydantic.Field(serialization_alias="unitPrice")
-    units: int
-    vat_percentage: Literal[0] = pydantic.Field(serialization_alias="vatPercentage", default=0)
-    product_code: str = pydantic.Field(serialization_alias="productCode")
 
 
 class CallbackUrls(pydantic.BaseModel):
@@ -114,6 +108,16 @@ class CreatePaymentRequest(pydantic.BaseModel):
     redirect_urls: CallbackUrls = pydantic.Field(serialization_alias="redirectUrls")
     callback_urls: CallbackUrls | None = pydantic.Field(serialization_alias="callbackUrls")
 
+    @pydantic.field_validator("language", mode="before")
+    @staticmethod
+    def validate_language(value: str):
+        value = value.upper()
+
+        if value not in PAYTRAIL_SUPPORTED_LANGUAGE_CODES:
+            return PAYTRAIL_DEFAULT_LANGUAGE
+
+        return value
+
     @classmethod
     def from_create_order_request(
         cls,
@@ -124,7 +128,7 @@ class CreatePaymentRequest(pydantic.BaseModel):
         return cls(
             reference=result.reference,
             amount_cents=int(result.total_price * 100),
-            language=request.language.upper(),
+            language=request.language,
             customer=request.customer,
             redirect_urls=CallbackUrls.for_payment_redirect(event.slug, result.order_id),
             callback_urls=CallbackUrls.for_payment_callback(event.slug, result.order_id),
@@ -139,7 +143,7 @@ class CreatePaymentRequest(pydantic.BaseModel):
         return cls(
             reference=order.reference,
             amount_cents=int(order.total_price * 100),
-            language=order.language.upper(),
+            language=order.language,
             customer=order.customer,
             redirect_urls=CallbackUrls.for_payment_redirect(event.slug, order.id),
             callback_urls=CallbackUrls.for_payment_callback(event.slug, order.id),
@@ -157,10 +161,9 @@ class CreatePaymentRequest(pydantic.BaseModel):
         headers["content-type"] = "application/json; charset=utf-8"
 
         # sensitive and uninteresting fields not to be stored in payment stamp
-        del data["customer"]
-        del data["redirectUrls"]
-        if "callbackUrls" in data:
-            del data["callbackUrls"]
+        data.pop("customer")
+        data.pop("redirectUrls")
+        data.pop("callbackUrls", None)
 
         request_stamp = PaymentStamp(
             event_id=event.id,

@@ -21,11 +21,6 @@ export async function updateProduct(
   productId: string,
   formData: FormData,
 ) {
-  console.log({
-    eventSlug,
-    productId,
-    formData,
-  });
   const result = await getClient().mutate({
     mutation,
     variables: {

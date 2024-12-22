@@ -42,7 +42,7 @@ def tick(event_id: int):
         try:
             item.send_receipt()
         except Exception as e:
-            logger.exception("Failed to send receipt for order %s: %s", item.order_id, exc_info=e)
+            logger.exception("Failed to send receipt for order %s", item.order_id, exc_info=e)
             Receipt.objects.filter(event_id=item.event_id, id=item.receipt_id).update(status=ReceiptStatus.FAILURE)
         else:
             Receipt.objects.filter(event_id=item.event_id, id=item.receipt_id).update(status=ReceiptStatus.SUCCESS)

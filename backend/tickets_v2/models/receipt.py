@@ -23,10 +23,8 @@ from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from tickets.lippukala_integration import Queue as LippukalaQueue
 
 from ..optimized_server.models.enums import PaymentStatus, ReceiptStatus, ReceiptType
-from ..optimized_server.models.order import OrderProduct
-from ..optimized_server.utils.formatting import format_order_number
 from ..utils.event_partitions import EventPartitionsMixin
-from .order import Order
+from .order import Order, OrderMixin
 from .product import Product
 
 # TODO missing Swedish (message template too)
@@ -164,7 +162,7 @@ class LocalizedOrderPrinter(OrderPrinter):
                 ]
 
 
-class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
+class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     """
     Responsible for sending email receipts and generating eticket PDFs.
     Also as such represents an item of work to be done by the receipt worker.
@@ -190,17 +188,18 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
     # NOTE: fields and their order must match fields returned by the query
     query: ClassVar[str] = (Path(__file__).parent / "sql" / "claim_pending_receipts.sql").read_text()
     batch_size: ClassVar[int] = 100
-    product_cache: ClassVar[dict[int, dict[int, Product]]] = {}
 
     @pydantic.field_validator("language", mode="before")
     @staticmethod
     def validate_language(value: str):
-        if value not in SUPPORTED_LANGUAGE_CODES:
-            return DEFAULT_LANGUAGE
+        value = value.lower()
 
         # TODO Missing Swedish message template
         if value == "sv":
             return "en"
+
+        if value not in SUPPORTED_LANGUAGE_CODES:
+            return DEFAULT_LANGUAGE
 
         return value
 
@@ -211,65 +210,6 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
             return json.loads(value)
 
         return value
-
-    @cached_property
-    def formatted_order_number(self) -> str:
-        return format_order_number(self.order_number)
-
-    @classmethod
-    def _get_product(cls, event_id: int, product_id: int):
-        """
-        Products are immutable once sold, so it's safe to cache them forever (or for the lifetime of the process).
-        If a product is changed after a single instance is sold, a new product version is created that supersedes the old one.
-        If a super admin mutates a product from taka-admin, they should restart the worker to clear the cache.
-        """
-        if found := cls.product_cache.get(event_id, {}).get(product_id):
-            return found
-
-        cls.product_cache[event_id] = {
-            p.id: p
-            for p in Product.objects.filter(event_id=event_id).only(
-                "title",
-                "description",
-                "price",
-                "etickets_per_product",
-            )
-        }
-
-        return cls.product_cache[event_id][product_id]
-
-    @pydantic.computed_field
-    @cached_property
-    def products(self) -> list[OrderProduct]:
-        return [
-            OrderProduct(
-                title=product.title,
-                price=product.price,
-                quantity=quantity,
-            )
-            for product_id, quantity in self.product_data.items()
-            if quantity > 0 and (product := self._get_product(self.event_id, product_id))
-        ]
-
-    @cached_property
-    def etickets(self) -> list[Product]:
-        """
-        Returns the Product for each instance of an eticket in the order.
-        Each product may specify zero to any number of etickets per product
-        (eg. Valentine's Day pair ticket).
-        """
-        return [
-            product
-            for product_id, quantity in self.product_data.items()
-            if (product := self._get_product(self.event_id, product_id))
-            for _ in range(product.etickets_per_product)
-            for _ in range(quantity)
-        ]
-
-    @pydantic.computed_field
-    @cached_property
-    def have_etickets(self) -> bool:
-        return bool(self.etickets)
 
     def eticket_text(self) -> str:
         return ETICKET_TEXT[self.language].format(event_name=self.event_name)
@@ -317,7 +257,7 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
 
         return code
 
-    def get_lippukala_order(self) -> LippukalaOrder | None:
+    def get_or_create_lippukala_order(self) -> LippukalaOrder | None:
         if not self.have_etickets:
             return None
 
@@ -348,7 +288,7 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
         if self.receipt_type != ReceiptType.PAID:
             return None
 
-        lippukala_order = self.get_lippukala_order()
+        lippukala_order = self.get_or_create_lippukala_order()
         if not lippukala_order:
             return None
 
@@ -362,11 +302,22 @@ class PendingReceipt(pydantic.BaseModel, arbitrary_types_allowed=True, frozen=Tr
             case ReceiptType.PAID:
                 template_name = f"tickets_v2_receipt_{self.language}.eml"
             case ReceiptType.CANCELLED | ReceiptType.REFUNDED:
-                template_name = f"tickets_v2_cancelled_{self.language}.eml"
+                template_name = f"tickets_v2_cancel_{self.language}.eml"
             case _:
                 raise ValueError("Unknown receipt type")
 
-        vars = self.model_dump(mode="python", by_alias=False)
+        vars = dict(
+            event_name=self.event_name,
+            order_number=self.order_number,
+            products=self.products,
+            total_price=self.total_price,
+            have_etickets=self.have_etickets,
+            is_refund=self.receipt_type == ReceiptType.REFUNDED,
+            first_name=self.first_name,
+            last_name=self.last_name,
+            email=self.email,
+            phone=self.phone,
+        )
         return render_to_string(template_name, vars)
 
     @property
