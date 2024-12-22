@@ -3,8 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
 import {
-  CancelOrderInput,
-  RefundOrderInput,
+  CancelAndRefundOrderInput,
   ResendOrderConfirmationInput,
   UpdateOrderInput,
   RefundType,
@@ -70,8 +69,8 @@ export async function updateOrder(
 }
 
 const refundOrderMutation = graphql(`
-  mutation RefundOrder($input: RefundOrderInput!) {
-    refundOrder(input: $input) {
+  mutation CancelAndRefundOrder($input: CancelAndRefundOrderInput!) {
+    cancelAndRefundOrder(input: $input) {
       order {
         id
       }
@@ -79,13 +78,13 @@ const refundOrderMutation = graphql(`
   }
 `);
 
-export async function refundOrder(
+export async function cancelAndRefundOrder(
   locale: string,
   eventSlug: string,
   orderId: string,
   refundType: RefundType,
 ) {
-  const input: RefundOrderInput = {
+  const input: CancelAndRefundOrderInput = {
     eventSlug,
     orderId,
     refundType,
@@ -93,34 +92,6 @@ export async function refundOrder(
 
   await getClient().mutate({
     mutation: refundOrderMutation,
-    variables: { input },
-  });
-
-  revalidatePath(`/${locale}/${eventSlug}/orders-admin/${orderId}`);
-}
-
-const cancelOrderMutation = graphql(`
-  mutation CancelOrder($input: CancelOrderInput!) {
-    cancelOrder(input: $input) {
-      order {
-        id
-      }
-    }
-  }
-`);
-
-export async function cancelOrder(
-  locale: string,
-  eventSlug: string,
-  orderId: string,
-) {
-  const input: CancelOrderInput = {
-    eventSlug,
-    orderId,
-  };
-
-  await getClient().mutate({
-    mutation: cancelOrderMutation,
     variables: { input },
   });
 

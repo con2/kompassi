@@ -1,14 +1,13 @@
 import Link from "next/link";
 
 import { notFound } from "next/navigation";
-import { Fragment, ReactNode } from "react";
+import { Fragment } from "react";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardTitle from "react-bootstrap/CardTitle";
 import {
-  refundOrder,
-  cancelOrder,
+  cancelAndRefundOrder,
   resendConfirmation,
   updateOrder,
 } from "./actions";
@@ -318,7 +317,13 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
           className="btn btn-danger"
           submitButtonVariant="danger"
           messages={t.actions.cancelWithoutRefunding.modalActions}
-          action={cancelOrder.bind(null, locale, eventSlug, order.id)}
+          action={cancelAndRefundOrder.bind(
+            null,
+            locale,
+            eventSlug,
+            order.id,
+            RefundType.None,
+          )}
         >
           {t.actions.cancelWithoutRefunding.message}
         </ModalButton>
@@ -333,7 +338,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
           className="btn btn-danger"
           submitButtonVariant="danger"
           messages={t.actions.cancelAndRefund.modalActions}
-          action={refundOrder.bind(
+          action={cancelAndRefundOrder.bind(
             null,
             locale,
             eventSlug,
@@ -355,7 +360,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
           className="btn btn-danger"
           submitButtonVariant="danger"
           messages={t.actions.refundCancelledOrder.modalActions}
-          action={refundOrder.bind(
+          action={cancelAndRefundOrder.bind(
             null,
             locale,
             eventSlug,
@@ -377,7 +382,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
           className="btn btn-danger"
           submitButtonVariant="danger"
           messages={t.actions.retryRefund.modalActions}
-          action={refundOrder.bind(
+          action={cancelAndRefundOrder.bind(
             null,
             locale,
             eventSlug,
@@ -401,7 +406,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
           className="btn btn-danger"
           submitButtonVariant="danger"
           messages={t.actions.refundManually.modalActions}
-          action={refundOrder.bind(
+          action={cancelAndRefundOrder.bind(
             null,
             locale,
             eventSlug,

@@ -87,6 +87,7 @@ class TicketsV2EventMeta(EventMetaBase):
                     order_id=order.id,
                 )
                 for order in orders
+                if order.cached_status == PaymentStatus.PAID
                 for product_id, quantity in order.product_data.items()
                 for quota in products_by_id[product_id].quotas.all()
                 for _ in range(quantity)

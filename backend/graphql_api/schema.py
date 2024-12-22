@@ -28,12 +28,11 @@ from program_v2.graphql.mutations.favorites import (
     UnmarkScheduleItemAsFavorite,
 )
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
-from tickets_v2.graphql.mutations.cancel_order import CancelOrder
+from tickets_v2.graphql.mutations.cancel_and_refund_order import CancelAndRefundOrder
 from tickets_v2.graphql.mutations.create_product import CreateProduct
 from tickets_v2.graphql.mutations.create_quota import CreateQuota
 from tickets_v2.graphql.mutations.delete_product import DeleteProduct
 from tickets_v2.graphql.mutations.delete_quota import DeleteQuota
-from tickets_v2.graphql.mutations.refund_order import RefundOrder
 from tickets_v2.graphql.mutations.resend_order_confirmation import ResendOrderConfirmation
 from tickets_v2.graphql.mutations.update_order import UpdateOrder
 from tickets_v2.graphql.mutations.update_product import UpdateProduct
@@ -128,8 +127,7 @@ class Mutation(graphene.ObjectType):
 
     update_order = UpdateOrder.Field()
     resend_order_confirmation = ResendOrderConfirmation.Field()
-    cancel_order = CancelOrder.Field()
-    refund_order = RefundOrder.Field()
+    cancel_and_refund_order = CancelAndRefundOrder.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

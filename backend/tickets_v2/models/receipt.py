@@ -135,31 +135,34 @@ class LocalizedOrderPrinter(OrderPrinter):
     TODO Upstream this
     """
 
-    event_name: str
-    event_slug: str
+    event: Event
 
-    def __init__(self, language: str, event_name: str, event_slug: str):
+    def __init__(self, language: str, event: Event):
         super().__init__(print_logo_path=None)
         self.language = language
-        self.event_name = event_name
-        self.event_slug = event_slug
+        self.event = event
 
     def get_heading_texts(self, order: LippukalaOrder, n_orders: int) -> list[str | None]:
+        timestamp = order.created_on.astimezone(self.event.timezone)
+
         match self.language:
             case "fi":
                 return [
                     (f"Tilausnumero: {order.reference_number}" if order.reference_number else None),
-                    f"Tilausaika: {order.created_on.strftime('%d.%m.%Y klo %H:%M')}",
-                    f"Kauppa: {KOMPASSI_V2_BASE_URL}/{self.event_slug}/tickets",
-                    f"Tapahtuma: {self.event_name}",
+                    f"Tilausaika: {timestamp.strftime('%d.%m.%Y klo %H:%M')}",
+                    f"Sivusto: {KOMPASSI_V2_BASE_URL}",
+                    f"Tapahtuma: {self.event.name}",
                 ]
             case _:
                 return [
                     (f"Order number: {order.reference_number}" if order.reference_number else None),
-                    f"Order time: {order.created_on.strftime('%Y-%m-%d %H:%M')}",
-                    f"Shop: {KOMPASSI_V2_BASE_URL}/{self.event_slug}/tickets",
-                    f"Event: {self.event_name}",
+                    f"Order time: {timestamp.strftime('%Y-%m-%d %H:%M')}",
+                    f"Site: {KOMPASSI_V2_BASE_URL}",
+                    f"Event: {self.event.name}",
                 ]
+
+
+EVENT_CACHE: dict[int, Event] = {}
 
 
 class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
@@ -174,8 +177,6 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
     receipt_type: ReceiptType
     order_id: UUID
     event_id: int
-    event_name: str
-    event_slug: str
     language: str
     first_name: str
     last_name: str
@@ -211,8 +212,27 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
 
         return value
 
-    def eticket_text(self) -> str:
-        return ETICKET_TEXT[self.language].format(event_name=self.event_name)
+    @classmethod
+    def _get_event(cls, event_id: int):
+        if found := EVENT_CACHE.get(event_id):
+            return found
+
+        EVENT_CACHE.update(
+            {
+                event.id: event
+                for event in Event.objects.filter(ticketsv2eventmeta__isnull=False).only(
+                    "name",
+                    "slug",
+                    "timezone_name",
+                )
+            }
+        )
+
+        return EVENT_CACHE[event_id]
+
+    @cached_property
+    def event(self) -> Event:
+        return self._get_event(self.event_id)
 
     @classmethod
     def claim_pending_receipts(cls, event_id: int, batch_size: int = batch_size) -> tuple[list[Self], bool]:
@@ -261,13 +281,14 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
         if not self.have_etickets:
             return None
 
+        eticket_text = ETICKET_TEXT[self.language].format(event_name=self.event.name)
         lippukala_order, created = LippukalaOrder.objects.get_or_create(
             # order number makes more sense to customer and event personnel than (bank) reference number
             reference_number=self.formatted_order_number,
             defaults=dict(
-                event=self.event_slug,
+                event=self.event.slug,
                 address_text=f"{self.first_name} {self.last_name}\n{self.email}",
-                free_text=self.eticket_text,
+                free_text=eticket_text,
             ),
         )
 
@@ -292,7 +313,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
         if not lippukala_order:
             return None
 
-        printer = LocalizedOrderPrinter(self.language, self.event_name, self.event_slug)
+        printer = LocalizedOrderPrinter(self.language, self.event)
         printer.process_order(lippukala_order)
         return printer.finish()
 
@@ -307,7 +328,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
                 raise ValueError("Unknown receipt type")
 
         vars = dict(
-            event_name=self.event_name,
+            event_name=self.event.name,
             order_number=self.order_number,
             products=self.products,
             total_price=self.total_price,
@@ -332,11 +353,11 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             case _:
                 raise ValueError("Unknown receipt type")
 
-        return f"{self.event_name}: {subject} ({self.formatted_order_number})"
+        return f"{self.event.name}: {subject} ({self.formatted_order_number})"
 
     def send_receipt(self, from_email: str = FROM_EMAIL, mail_domain: str = MAIL_DOMAIN):
         # NOTE doesn't check this internal alias exists (perf), too bad if it doesn't
-        reply_to_email = (f"{self.event_slug}-tickets@{mail_domain}",)
+        reply_to_email = (f"{self.event.slug}-tickets@{mail_domain}",)
         to_email = (f"{self.first_name} {self.last_name} <{self.email}>",)
 
         # uncomment to see the receipts on terminal & write etickets to file
@@ -362,16 +383,14 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
         message.send(fail_silently=True)
 
     @classmethod
-    def from_order(cls, order: Order) -> Self | None:
-        if order.cached_status != PaymentStatus.PAID:
-            return None
+    def from_order(cls, order: Order) -> Self:
+        if order.cached_status < PaymentStatus.PAID:
+            raise ValueError("No receipt for unpaid orders")
 
         return cls(
             order_id=order.id,
             receipt_type=PaymentStatus(order.cached_status).to_receipt_type(),
             event_id=order.event_id,
-            event_name=order.event.name,
-            event_slug=order.event.slug,
             language=order.language,
             first_name=order.first_name,
             last_name=order.last_name,

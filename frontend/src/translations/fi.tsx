@@ -450,8 +450,8 @@ const translations: Translations = {
                 "Tilauksesi on valmis ja olemme saaneet maksusi. Saat pian sähköpostiisi tilausvahvistuksen. Jos tilauksessasi on sähköisiä lippuja, ne toimitetaan tilausvahvistuksen liitteenä.",
             },
             CANCELLED: {
-              title: "Tilaus on peruttu",
-              shortTitle: "Peruttu",
+              title: "Tilaus on peruutettu",
+              shortTitle: "Peruutettu",
               message:
                 "Tilauksesi on peruutettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
@@ -459,19 +459,19 @@ const translations: Translations = {
               title: "Tilauksen maksu on palautettu",
               shortTitle: "Palautusta pyydetty",
               message:
-                "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
+                "Tilauksesi on peruutettu ja maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
             REFUND_FAILED: {
               title: "Tilauksen maksu on palautettu",
               shortTitle: "Palautus epäonnistui",
               message:
-                "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
+                "Tilauksesi on peruutettu ja maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
             REFUNDED: {
               title: "Tilauksen maksu on palautettu",
               shortTitle: "Palautettu",
               message:
-                "Tilauksesi maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
+                "Tilauksesi on peruutettu ja maksu on palautettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
           },
         },

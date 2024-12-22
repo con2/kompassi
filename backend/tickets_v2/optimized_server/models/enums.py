@@ -70,5 +70,6 @@ class ReceiptStatus(IntEnum):
 
 
 class RefundType(str, Enum):
+    NONE = "NONE"
     MANUAL = "MANUAL"
     PROVIDER = "PROVIDER"

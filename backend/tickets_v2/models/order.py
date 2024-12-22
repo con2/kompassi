@@ -5,9 +5,12 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Value
 from django.db.models.functions import Concat, Lower
+from django.http import HttpRequest
+from django.urls import reverse
+from lippukala.models.code import Code as LippukalaCode
 from lippukala.models.order import Order as LippukalaOrder
 
 from core.models.event import Event
@@ -32,17 +35,24 @@ PRODUCT_CACHE: dict[int, dict[int, Product]] = {}
 
 
 class OrderMixin:
+    """
+    Common functionality used by Order and PendingReceipt.
+    """
+
     @cached_property
     def formatted_order_number(self) -> str:
         return format_order_number(self.order_number)  # type: ignore
 
     @classmethod
-    def _get_product(cls, event_id: int, product_id: int):
+    def _get_product(cls, event_id: int | str, product_id: int | str) -> Product:
         """
         Products are immutable once sold, so it's safe to cache them forever (or for the lifetime of the process).
         If a product is changed after a single instance is sold, a new product version is created that supersedes the old one.
         If a super admin mutates a product from taka-admin, they should restart the worker to clear the cache.
         """
+        event_id = int(event_id)
+        product_id = int(product_id)
+
         if found := PRODUCT_CACHE.get(event_id, {}).get(product_id):
             return found
 
@@ -265,37 +275,48 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
     def scope(self):
         return self.event.scope
 
-    def cancel(self) -> PaymentStamp:
-        from .payment_stamp import PaymentStamp
+    def get_etickets_link(self, request: HttpRequest):
+        if self.cached_status == PaymentStatus.PAID and self.have_etickets:
+            pass
+        else:
+            return None
 
-        if self.cached_status >= PaymentStatus.CANCELLED:
-            raise ValueError("Order is already cancelled")
-
-        cancelled_stamp = PaymentStamp(
-            event=self.event,
-            order_id=self.id,
-            correlation_id=uuid7(),
-            provider_id=PaymentProvider.NONE,
-            type=PaymentStampType.CANCEL_WITHOUT_REFUND,
-            status=PaymentStatus.CANCELLED,
-            data={},
+        return request.build_absolute_uri(
+            reverse(
+                "tickets_v2:etickets_view",
+                kwargs=dict(
+                    event_slug=self.event.slug,
+                    order_id=self.id,
+                ),
+            )
         )
-        cancelled_stamp.save()
-        return cancelled_stamp
 
-    def refund(self, refund_type: RefundType) -> PaymentStamp:
+    def cancel_and_refund(self, refund_type: RefundType):
+        from lippukala.consts import MANUAL_INTERVENTION_REQUIRED
+
         from .payment_stamp import PaymentStamp
-
-        if self.cached_status == PaymentStatus.REFUNDED:
-            raise ValueError("Order is already refunded")
-
-        paid_stamp = self.payment_stamps.filter(status=PaymentStatus.PAID).order_by("-id").first()
-        if not paid_stamp:
-            raise ValueError("Cannot refund an order that has not been paid")
 
         match refund_type:
+            case RefundType.NONE:
+                if self.cached_status == PaymentStatus.CANCELLED:
+                    raise ValueError("Order is already refunded")
+
+                prepared_request = None
+                request_stamp = PaymentStamp(
+                    event=self.event,
+                    order_id=self.id,
+                    correlation_id=uuid7(),
+                    provider_id=PaymentProvider.NONE,
+                    type=PaymentStampType.CANCEL_WITHOUT_REFUND,
+                    status=PaymentStatus.CANCELLED,
+                    data={},
+                )
             case RefundType.MANUAL:
-                refund_stamp = PaymentStamp(
+                if self.cached_status == PaymentStatus.REFUNDED:
+                    raise ValueError("Order is already refunded")
+
+                prepared_request = None
+                request_stamp = PaymentStamp(
                     event=self.event,
                     order_id=self.id,
                     correlation_id=uuid7(),
@@ -305,16 +326,37 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                     data={},
                 )
             case RefundType.PROVIDER:
+                if self.cached_status == PaymentStatus.REFUNDED:
+                    raise ValueError("Order is already refunded")
+
+                paid_stamp = self.payment_stamps.filter(status=PaymentStatus.PAID).order_by("-id").first()
+                if not paid_stamp:
+                    raise ValueError("Cannot refund an order that has not been paid")
+
                 # FIXME Paytrail API usage occurs within transaction
                 # Disable ATOMIC_REQUESTS and manage transactions in GraphQL manually
                 # 1. Save request stamp, commit
                 # 2. Talk to Paytrail outside of transaction
                 # 3. Save response stamp, commit
-                prepared_refund_request = self.meta.provider.prepare_refund(paid_stamp)
-                prepared_refund_request.request_stamp.save()
-                _response, refund_stamp = prepared_refund_request.send()
+                prepared_request = self.meta.provider.prepare_refund(paid_stamp)
+                request_stamp = prepared_request.request_stamp
             case _:
                 raise ValueError(f"Unsupported refund type: {refund_type}")
 
-        refund_stamp.save()
-        return refund_stamp
+        with transaction.atomic():
+            request_stamp.save()
+
+            # Release tickets consumed from quotas
+            self.tickets.update(order_id=None)
+
+            # Invalidate electronic tickets
+            if lippukala_order := self.lippukala_order:
+                LippukalaCode.objects.filter(order=lippukala_order).update(status=MANUAL_INTERVENTION_REQUIRED)
+
+        response_stamp = None
+        if prepared_request:
+            _response, response_stamp = prepared_request.send()
+
+        if response_stamp:
+            with transaction.atomic():
+                response_stamp.save()

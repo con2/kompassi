@@ -33,9 +33,7 @@ select
   cr.id as receipt_id,
   cr.type as receipt_type,
   cr.order_id as order_id,
-  e.id as event_id,
-  e.name as event_name,
-  e.slug as event_slug,
+  o.event_id as event_id,
   o.language,
   o.first_name,
   o.last_name,
@@ -47,6 +45,5 @@ select
 from
   claimed_receipts cr
   join tickets_v2_order o on (cr.order_id = o.id)
-  join core_event e on (o.event_id = e.id)
 where
   o.event_id = %(event_id)s;
