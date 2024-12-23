@@ -262,22 +262,42 @@ const translations = {
       },
       actions: {
         editProduct: "Edit product",
-        newProduct: "New product",
+        newProduct: {
+          title: "New product",
+          modalActions: {
+            submit: "Create product",
+            cancel: "Cancel",
+          },
+        },
         saveProduct: "Save product",
         unpublishAllProducts: "Unpublish all products",
-        viewOldVersion: "View",
+        viewOldVersion: {
+          title: "Old version of product",
+          label: "View old version of product",
+          modalActions: {
+            submit: "",
+            cancel: "Close",
+          },
+        },
       },
       attributes: {
         product: "Product",
         title: "Title",
         createdAt: "Created at",
-        unitPrice: "Unit price",
+        unitPrice: {
+          title: "Unit price",
+          helpText: "Price per unit in euros.",
+        },
         quantity: {
           title: "Quantity",
           unit: "pcs",
         },
         total: "Total",
-        description: "Description",
+        description: {
+          title: "Description",
+          helpText:
+            "Title and description will be shown to the customer on the ticket purchase page.",
+        },
         isAvailable: {
           title: "Availability schedule",
           untilFurtherNotice: "Available until further notice",
@@ -337,7 +357,13 @@ const translations = {
       singleTitle: "Quota",
       forEvent: (eventName: string) => <>for {eventName}</>,
       actions: {
-        newQuota: "New quota",
+        newQuota: {
+          title: "New quota",
+          modalActions: {
+            submit: "Create quota",
+            cancel: "Cancel",
+          },
+        },
         editQuota: "Edit quota",
         saveQuota: "Save quota",
       },
@@ -345,6 +371,8 @@ const translations = {
         name: "Name",
         countTotal: {
           title: "Quota",
+          helpTextNew:
+            "How many units of products using this quota may at most be sold.",
           helpText: (countReserved: number) =>
             `How many units of products using this quota may at most be sold. There are currently ${countReserved} units sold; the quota cannot be adjusted lower than that.`,
         },

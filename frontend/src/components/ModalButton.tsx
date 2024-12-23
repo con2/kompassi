@@ -8,6 +8,7 @@ import type { Translations } from "@/translations/en";
 interface Props {
   title: string;
   label?: ReactNode;
+  labelTitle?: string;
   children?: ReactNode;
   action?(formData: FormData): void;
   messages: Translations["Modal"];
@@ -20,6 +21,7 @@ interface Props {
 export default function ModalButton({
   title,
   label,
+  labelTitle,
   children,
   action,
   messages,
@@ -43,7 +45,7 @@ export default function ModalButton({
         type="button"
         className={className}
         onClick={open}
-        title={label ? title : undefined}
+        title={labelTitle ?? title}
         disabled={disabled}
       >
         {label ?? `${title}…`}

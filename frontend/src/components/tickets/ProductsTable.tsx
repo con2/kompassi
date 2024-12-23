@@ -54,7 +54,7 @@ export default function ProductsTable({
     },
     {
       slug: "price",
-      title: t.Product.attributes.unitPrice,
+      title: t.Product.attributes.unitPrice.title,
       getCellContents: (row) => <>{formatMoney(row.price)}</>,
       getHeaderElement: (children) => <th className="text-end">{children}</th>,
       className: compact ? "text-end" : "text-end fs-3",

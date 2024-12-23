@@ -115,7 +115,7 @@ export default async function AdminQuotaDetailPage({ params }: Props) {
     },
     {
       slug: "price",
-      title: producT.attributes.unitPrice,
+      title: producT.attributes.unitPrice.title,
       getCellContents: (product) => formatMoney(product.price),
       className: "col-1 align-middle",
     },

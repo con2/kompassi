@@ -27,6 +27,8 @@ graphql(`
     title
     description
     price
+    eticketsPerProduct
+    maxPerOrder
   }
 `);
 
@@ -163,7 +165,7 @@ export default async function AdminProductDetailPage({ params }: Props) {
 
   const selectedQuotas = product.quotas.map((quota) => "" + quota.id);
 
-  const fields: Field[] = [
+  const baseFields: Field[] = [
     {
       slug: "title",
       title: t.attributes.title,
@@ -171,15 +173,15 @@ export default async function AdminProductDetailPage({ params }: Props) {
     },
     {
       slug: "description",
-      title: t.attributes.description,
       type: "MultiLineText",
       rows: 3,
+      ...t.attributes.description,
     },
     {
       slug: "price",
-      title: t.attributes.unitPrice,
       type: "DecimalField",
       decimalPlaces: 2,
+      ...t.attributes.unitPrice,
     },
     {
       slug: "eticketsPerProduct",
@@ -191,6 +193,9 @@ export default async function AdminProductDetailPage({ params }: Props) {
       type: "NumberField",
       ...t.attributes.maxPerOrder,
     },
+  ];
+
+  const fields: Field[] = baseFields.concat([
     {
       slug: "quotas",
       type: "MultiSelect",
@@ -215,7 +220,7 @@ export default async function AdminProductDetailPage({ params }: Props) {
       type: "DateTimeField",
       ...t.attributes.availableUntil,
     },
-  ];
+  ]);
 
   const values = {
     ...product,
@@ -240,16 +245,39 @@ export default async function AdminProductDetailPage({ params }: Props) {
       className: "col-2 align-middle",
       getCellContents: (product) => (
         <>
-          <FormattedDateTime
-            value={product.createdAt}
-            locale={locale}
-            scope={event}
-            session={session}
-          />
-          {product.isCurrent && (
-            <span className="badge bg-primary ms-2">
-              {t.attributes.revisions.current}
-            </span>
+          {product.isCurrent ? (
+            <>
+              <FormattedDateTime
+                value={product.createdAt}
+                locale={locale}
+                scope={event}
+                session={session}
+              />
+              <span className="badge bg-primary ms-2">
+                {t.attributes.revisions.current}
+              </span>
+            </>
+          ) : (
+            <ModalButton
+              title={t.actions.viewOldVersion.title}
+              label={
+                <FormattedDateTime
+                  value={product.createdAt}
+                  locale={locale}
+                  scope={event}
+                  session={session}
+                />
+              }
+              labelTitle={t.actions.viewOldVersion.label}
+              messages={t.actions.viewOldVersion.modalActions}
+            >
+              <SchemaForm
+                fields={baseFields}
+                values={product}
+                messages={translations.SchemaForm}
+                readOnly
+              />
+            </ModalButton>
           )}
         </>
       ),
@@ -261,26 +289,8 @@ export default async function AdminProductDetailPage({ params }: Props) {
     },
     {
       slug: "price",
-      title: t.attributes.unitPrice,
+      title: t.attributes.unitPrice.title,
       getCellContents: (product) => formatMoney(product.price),
-      className: "col-1 align-middle",
-    },
-    {
-      slug: "actions",
-      title: t.attributes.actions,
-      getCellContents: (product) => (
-        <>
-          {!product.isCurrent && (
-            <ModalButton
-              title={t.actions.viewOldVersion}
-              messages={{
-                submit: "",
-                cancel: translations.Common.standardActions.close,
-              }}
-            ></ModalButton>
-          )}
-        </>
-      ),
       className: "col-1 align-middle",
     },
   ];

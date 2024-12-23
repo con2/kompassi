@@ -2,12 +2,16 @@ import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { createProduct } from "./actions";
 import { graphql } from "@/__generated__";
 import { ProductListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import { formatDateTime } from "@/components/FormattedDateTime";
+import { Field } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
+import ModalButton from "@/components/ModalButton";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
@@ -117,6 +121,26 @@ export default async function ProductsPage({ params }: Props) {
   const event = data.event;
   const products = data.event.tickets.products;
 
+  const newProductFields: Field[] = [
+    {
+      slug: "title",
+      title: t.attributes.title,
+      type: "SingleLineText",
+    },
+    {
+      slug: "description",
+      type: "MultiLineText",
+      rows: 3,
+      ...t.attributes.description,
+    },
+    {
+      slug: "price",
+      type: "DecimalField",
+      decimalPlaces: 2,
+      ...t.attributes.unitPrice,
+    },
+  ];
+
   const columns: Column<ProductListFragment>[] = [
     {
       slug: "title",
@@ -190,7 +214,7 @@ export default async function ProductsPage({ params }: Props) {
     },
     {
       slug: "price",
-      title: t.attributes.unitPrice,
+      title: t.attributes.unitPrice.title,
       getCellContents: (product) => formatMoney(product.price),
       className: "text-end align-middle col-2",
     },
@@ -221,12 +245,17 @@ export default async function ProductsPage({ params }: Props) {
           <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
         </ViewHeading>
         <ViewHeadingActions>
-          <a
-            href={`/${eventSlug}/products/new`}
+          <ModalButton
+            title={t.actions.newProduct.title}
+            messages={t.actions.newProduct.modalActions}
+            action={createProduct.bind(null, locale, eventSlug)}
             className="btn btn-outline-primary"
           >
-            {t.actions.newProduct}…
-          </a>
+            <SchemaForm
+              fields={newProductFields}
+              messages={translations.SchemaForm}
+            />
+          </ModalButton>
         </ViewHeadingActions>
       </ViewHeadingActionsWrapper>
 

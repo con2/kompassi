@@ -68,7 +68,7 @@ export default async function TicketsPage({ params }: Props) {
           <thead>
             <tr className="row">
               <th className="col-8">{producT.attributes.product}</th>
-              <th className="col">{producT.attributes.unitPrice}</th>
+              <th className="col">{producT.attributes.unitPrice.title}</th>
               <th className="col">{producT.attributes.quantity.title}</th>
             </tr>
           </thead>

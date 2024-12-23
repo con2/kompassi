@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { createQuota } from "./actions";
 import { graphql } from "@/__generated__";
 import { QuotaListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import { Field } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
+import ModalButton from "@/components/ModalButton";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
@@ -107,7 +111,6 @@ export default async function QuotasPage({ params }: Props) {
   const event = data.event;
   const quotas = data.event.tickets.quotas;
 
-  // we cheat and use the translations from the products page so as to not have to repeat them :)
   const columns: Column<QuotaListFragment>[] = [
     {
       slug: "title",
@@ -148,6 +151,20 @@ export default async function QuotasPage({ params }: Props) {
     },
   ];
 
+  const newQuotaFields: Field[] = [
+    {
+      slug: "name",
+      title: t.attributes.name,
+      type: "SingleLineText",
+    },
+    {
+      slug: "quota",
+      title: t.attributes.countTotal.title,
+      helpText: t.attributes.countTotal.helpTextNew,
+      type: "NumberField",
+    },
+  ];
+
   return (
     <ViewContainer>
       <ViewHeadingActionsWrapper>
@@ -156,12 +173,17 @@ export default async function QuotasPage({ params }: Props) {
           <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
         </ViewHeading>
         <ViewHeadingActions>
-          <a
-            href={`/${eventSlug}/quotas/new`}
+          <ModalButton
+            title={t.actions.newQuota.title}
+            messages={t.actions.newQuota.modalActions}
+            action={createQuota.bind(null, locale, eventSlug)}
             className="btn btn-outline-primary"
           >
-            {t.actions.newQuota}…
-          </a>
+            <SchemaForm
+              fields={newQuotaFields}
+              messages={translations.SchemaForm}
+            />
+          </ModalButton>
         </ViewHeadingActions>
       </ViewHeadingActionsWrapper>
 

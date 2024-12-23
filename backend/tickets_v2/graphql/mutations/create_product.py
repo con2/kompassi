@@ -1,4 +1,6 @@
 import graphene
+from django import forms as django_forms
+from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_model
 from core.models import Event
@@ -9,9 +11,17 @@ from ..product_limited import LimitedProductType
 
 class CreateProductInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
-    title = graphene.String(required=True)
-    description = graphene.String()
-    price = graphene.Decimal()
+    form_data = GenericScalar(required=True)
+
+
+class CreateProductForm(django_forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = [
+            "title",
+            "description",
+            "price",
+        ]
 
 
 class CreateProduct(graphene.Mutation):
@@ -28,12 +38,13 @@ class CreateProduct(graphene.Mutation):
     ):
         event = Event.objects.get(slug=input.event_slug)
         graphql_check_model(Product, event.scope, info, "create")
-        product = Product(
-            event=event,
-            title=input.title,
-            description=input.description,
-            price=input.price,
-        )
-        product.full_clean()  # Validate fields
+
+        form = CreateProductForm(data=input.form_data)  # type: ignore
+        if not form.is_valid():
+            raise ValueError(form.errors)
+
+        product = form.save(commit=False)
+        product.event = event
         product.save()
+
         return CreateProduct(product=product)  # type: ignore

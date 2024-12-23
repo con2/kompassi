@@ -278,22 +278,42 @@ const translations: Translations = {
       },
       actions: {
         editProduct: "Edit product",
-        newProduct: "New product",
+        newProduct: {
+          title: "New product",
+          modalActions: {
+            submit: "Create product",
+            cancel: "Cancel",
+          },
+        },
         saveProduct: "Save product",
         unpublishAllProducts: "Unpublish all products",
-        viewOldVersion: "View",
+        viewOldVersion: {
+          title: "Old version of product",
+          label: "View old version of product",
+          modalActions: {
+            submit: "",
+            cancel: "Close",
+          },
+        },
       },
       attributes: {
         product: "Product",
         title: "Title",
         createdAt: "Created at",
-        unitPrice: "Unit price",
+        unitPrice: {
+          title: "Unit price",
+          helpText: "Price per unit in euros.",
+        },
         quantity: {
           title: "Quantity",
           unit: "pcs",
         },
         total: "Total",
-        description: "Description",
+        description: {
+          title: "Description",
+          helpText:
+            "Title and description will be shown to the customer on the ticket purchase page.",
+        },
         isAvailable: {
           title: "Availability schedule",
           untilFurtherNotice: "Available until further notice",
@@ -349,26 +369,34 @@ const translations: Translations = {
       },
     },
     Quota: {
-      listTitle: "Quotas",
-      singleTitle: "Quota",
-      forEvent: (eventName: string) => <>for {eventName}</>,
+      listTitle: "Kiintiöt",
+      singleTitle: "Kiintiöt",
+      forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
       actions: {
-        newQuota: "New quota",
-        editQuota: "Edit quota",
-        saveQuota: "Save quota",
+        newQuota: {
+          title: "Uusi kiintiö",
+          modalActions: {
+            submit: "Luo kiintiö",
+            cancel: "Peruuta",
+          },
+        },
+        editQuota: "Muokkaa kiintiötä",
+        saveQuota: "Tallenna kiintiö",
       },
       attributes: {
-        name: "Name",
+        name: "Nimi",
         countTotal: {
-          title: "Quota",
+          title: "Kiintiön suuruus",
+          helpTextNew:
+            "Montako kappaletta tätä kiintiötä käyttäviä tuotteita voidaan yhteensä enintään myydä.",
           helpText: (countReserved: number) =>
-            `How many units of products using this quota may at most be sold. There are currently ${countReserved} units sold; the quota cannot be adjusted lower than that.`,
+            `Montako kappaletta tätä kiintiötä käyttäviä tuotteita voidaan yhteensä enintään myydä. Tästä kiintiöstä on myyty tällä hetkellä ${countReserved} yksikköä; kiintiötä ei voi asettaa tätä alemmaksi.`,
         },
-        totalReserved: "Total sold",
+        totalReserved: "Myyty yhteensä",
         products: {
-          title: "Products using this quota",
+          title: "Kiintiötä käyttävät tuotteet",
           helpText:
-            "A product may use multiple quotas; the quota that has the least stock determines the availability of the product.",
+            "Tuote voi käyttää useampaa kiintiötä; tällöin tuotteen saatavuuden määrittelee kiintiö jota on vähiten jäljellä.",
         },
       },
     },

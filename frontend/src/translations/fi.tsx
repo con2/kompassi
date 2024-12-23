@@ -259,22 +259,42 @@ const translations: Translations = {
       },
       actions: {
         editProduct: "Muokkaa tuotetta",
-        newProduct: "Uusi tuote",
+        newProduct: {
+          title: "Uusi tuote",
+          modalActions: {
+            submit: "Luo tuetc",
+            cancel: "Peruuta",
+          },
+        },
         saveProduct: "Tallenna tuote",
-        unpublishAllProducts: "Vedä kaikki tuotteet pois myynnistä",
-        viewOldVersion: "Näytä",
+        unpublishAllProducts: "Piilota kaikki tuotteet",
+        viewOldVersion: {
+          title: "Tuotteen vanha versio",
+          label: "Näytä vanha versio tuotteesta",
+          modalActions: {
+            submit: "",
+            cancel: "Sulje",
+          },
+        },
       },
       attributes: {
         product: "Tuote",
         title: "Otsikko",
         createdAt: "Luotu",
-        unitPrice: "Yksikköhinta",
+        unitPrice: {
+          title: "Kappalehinta",
+          helpText: "Kappalehinta euroissa.",
+        },
         quantity: {
           title: "Lukumäärä",
           unit: "kpl",
         },
         total: "Yhteensä",
-        description: "Kuvaus",
+        description: {
+          title: "Description",
+          helpText:
+            "Title and description will be shown to the customer on the ticket purchase page.",
+        },
         isAvailable: {
           title: "Saatavuusaika",
           untilFurtherNotice: "Saatavilla toistaiseksi",
@@ -335,7 +355,13 @@ const translations: Translations = {
       singleTitle: "Kiintiöt",
       forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
       actions: {
-        newQuota: "Uusi kiintiö",
+        newQuota: {
+          title: "Uusi kiintiö",
+          modalActions: {
+            submit: "Luo kiintiö",
+            cancel: "Peruuta",
+          },
+        },
         editQuota: "Muokkaa kiintiötä",
         saveQuota: "Tallenna kiintiö",
       },
@@ -343,6 +369,8 @@ const translations: Translations = {
         name: "Nimi",
         countTotal: {
           title: "Kiintiön suuruus",
+          helpTextNew:
+            "Montako kappaletta tätä kiintiötä käyttäviä tuotteita voidaan yhteensä enintään myydä.",
           helpText: (countReserved: number) =>
             `Montako kappaletta tätä kiintiötä käyttäviä tuotteita voidaan yhteensä enintään myydä. Tästä kiintiöstä on myyty tällä hetkellä ${countReserved} yksikköä; kiintiötä ei voi asettaa tätä alemmaksi.`,
         },

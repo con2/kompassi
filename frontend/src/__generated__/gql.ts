@@ -28,9 +28,10 @@ const documents = {
     "\n  fragment ProductChoice on FullProductType {\n    id\n    title\n  }\n": types.ProductChoiceFragmentDoc,
     "\n  query OrderList(\n    $eventSlug: String!\n    $filters: [DimensionFilterInput!]\n    $searchTerm: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        products {\n          ...ProductChoice\n        }\n\n        orders(filters: $filters, search: $searchTerm) {\n          ...OrderList\n        }\n      }\n    }\n  }\n": types.OrderListDocument,
     "\n  mutation UpdateProduct($input: UpdateProductInput!) {\n    updateProduct(input: $input) {\n      product {\n        id\n      }\n    }\n  }\n": types.UpdateProductDocument,
-    "\n  fragment AdminProductOldVersion on LimitedProductType {\n    createdAt\n    title\n    description\n    price\n  }\n": types.AdminProductOldVersionFragmentDoc,
+    "\n  fragment AdminProductOldVersion on LimitedProductType {\n    createdAt\n    title\n    description\n    price\n    eticketsPerProduct\n    maxPerOrder\n  }\n": types.AdminProductOldVersionFragmentDoc,
     "\n  fragment AdminProductDetail on FullProductType {\n    id\n    createdAt\n    title\n    description\n    price\n    eticketsPerProduct\n    maxPerOrder\n    availableFrom\n    availableUntil\n    quotas {\n      id\n    }\n\n    supersededBy {\n      id\n    }\n\n    oldVersions {\n      ...AdminProductOldVersion\n    }\n  }\n": types.AdminProductDetailFragmentDoc,
     "\n  query AdminProductDetailPage($eventSlug: String!, $productId: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          id\n          name\n          countTotal\n        }\n\n        product(id: $productId) {\n          ...AdminProductDetail\n        }\n      }\n    }\n  }\n": types.AdminProductDetailPageDocument,
+    "\n  mutation CreateProduct($input: CreateProductInput!) {\n    createProduct(input: $input) {\n      product {\n        id\n      }\n    }\n  }\n": types.CreateProductDocument,
     "\n  fragment ProductList on FullProductType {\n    id\n    title\n    description\n    price\n    isAvailable\n    availableFrom\n    availableUntil\n    countPaid\n    countReserved\n    countAvailable\n  }\n": types.ProductListFragmentDoc,
     "\n  query ProductList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        products {\n          ...ProductList\n        }\n      }\n    }\n  }\n": types.ProductListDocument,
     "\n  mutation MarkScheduleItemAsFavorite($input: FavoriteScheduleItemInput!) {\n    markScheduleItemAsFavorite(input: $input) {\n      success\n    }\n  }\n": types.MarkScheduleItemAsFavoriteDocument,
@@ -45,6 +46,7 @@ const documents = {
     "\n  mutation UpdateQuota($input: UpdateQuotaInput!) {\n    updateQuota(input: $input) {\n      quota {\n        id\n      }\n    }\n  }\n": types.UpdateQuotaDocument,
     "\n  fragment QuotaProduct on LimitedProductType {\n    id\n    title\n    price\n    countReserved\n  }\n": types.QuotaProductFragmentDoc,
     "\n  query AdminQuotaDetailPage($eventSlug: String!, $quotaId: Int!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quota(id: $quotaId) {\n          id\n          name\n          countReserved\n          quota: countTotal\n\n          products {\n            ...QuotaProduct\n          }\n        }\n      }\n    }\n  }\n": types.AdminQuotaDetailPageDocument,
+    "\n  mutation CreateQuota($input: CreateQuotaInput!) {\n    createQuota(input: $input) {\n      quota {\n        id\n      }\n    }\n  }\n": types.CreateQuotaDocument,
     "\n  fragment QuotaList on FullQuotaType {\n    id\n    title: name\n    countPaid\n    countReserved\n    countAvailable\n    countTotal\n  }\n": types.QuotaListFragmentDoc,
     "\n  query QuotaList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          ...QuotaList\n        }\n      }\n    }\n  }\n": types.QuotaListDocument,
     "\n  mutation PutSurveyDimension($input: PutSurveyDimensionInput!) {\n    putSurveyDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n": types.PutSurveyDimensionDocument,
@@ -167,7 +169,7 @@ export function graphql(source: "\n  mutation UpdateProduct($input: UpdateProduc
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment AdminProductOldVersion on LimitedProductType {\n    createdAt\n    title\n    description\n    price\n  }\n"): (typeof documents)["\n  fragment AdminProductOldVersion on LimitedProductType {\n    createdAt\n    title\n    description\n    price\n  }\n"];
+export function graphql(source: "\n  fragment AdminProductOldVersion on LimitedProductType {\n    createdAt\n    title\n    description\n    price\n    eticketsPerProduct\n    maxPerOrder\n  }\n"): (typeof documents)["\n  fragment AdminProductOldVersion on LimitedProductType {\n    createdAt\n    title\n    description\n    price\n    eticketsPerProduct\n    maxPerOrder\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -176,6 +178,10 @@ export function graphql(source: "\n  fragment AdminProductDetail on FullProductT
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query AdminProductDetailPage($eventSlug: String!, $productId: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          id\n          name\n          countTotal\n        }\n\n        product(id: $productId) {\n          ...AdminProductDetail\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query AdminProductDetailPage($eventSlug: String!, $productId: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          id\n          name\n          countTotal\n        }\n\n        product(id: $productId) {\n          ...AdminProductDetail\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateProduct($input: CreateProductInput!) {\n    createProduct(input: $input) {\n      product {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateProduct($input: CreateProductInput!) {\n    createProduct(input: $input) {\n      product {\n        id\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -232,6 +238,10 @@ export function graphql(source: "\n  fragment QuotaProduct on LimitedProductType
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query AdminQuotaDetailPage($eventSlug: String!, $quotaId: Int!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quota(id: $quotaId) {\n          id\n          name\n          countReserved\n          quota: countTotal\n\n          products {\n            ...QuotaProduct\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query AdminQuotaDetailPage($eventSlug: String!, $quotaId: Int!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quota(id: $quotaId) {\n          id\n          name\n          countReserved\n          quota: countTotal\n\n          products {\n            ...QuotaProduct\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateQuota($input: CreateQuotaInput!) {\n    createQuota(input: $input) {\n      quota {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateQuota($input: CreateQuotaInput!) {\n    createQuota(input: $input) {\n      quota {\n        id\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
