@@ -699,6 +699,24 @@ const translations: Translations = {
         },
       },
     },
+    Code: {
+      listTitle: "E-lippukoodit",
+      attributes: {
+        code: "Koodi",
+        literateCode: "Kissakoodi",
+        usedOn: "Käytetty",
+        productText: "Tuote",
+        status: {
+          title: "Tila",
+          choices: {
+            UNUSED: "Käyttämätön",
+            USED: "Käytetty",
+            MANUAL_INTERVENTION_REQUIRED: "Mitätöity",
+            BEYOND_LOGIC: "Perätilassa",
+          },
+        },
+      },
+    },
     profile: {
       title: "Lipputilaukset",
       message:

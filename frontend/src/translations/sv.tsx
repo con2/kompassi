@@ -717,6 +717,24 @@ const translations: Translations = {
         },
       },
     }),
+    Code: {
+      listTitle: "Electronic ticket codes",
+      attributes: {
+        code: "Code",
+        literateCode: "Literate code",
+        usedOn: "Used on",
+        productText: "Product",
+        status: {
+          title: "Status",
+          choices: {
+            UNUSED: "Unused",
+            USED: "Used",
+            MANUAL_INTERVENTION_REQUIRED: "Revoked",
+            BEYOND_LOGIC: "Beyond logic",
+          },
+        },
+      },
+    },
     profile: {
       title: "Ticket orders",
       message:
