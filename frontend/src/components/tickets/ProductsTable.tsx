@@ -17,19 +17,29 @@ interface Props {
   order: Order;
   messages: Translations["Tickets"];
   className?: string;
+  compact?: boolean;
 }
 
 export default function ProductsTable({
   order,
   messages: t,
   className,
+  compact,
 }: Props) {
   const columns: Column<Product>[] = [
     {
       slug: "product",
       title: t.Product.attributes.product,
-      getCellContents: (row) => <strong>{row.title}</strong>,
-      className: "col-8",
+      getCellElement(_row, children) {
+        return (
+          <th scope="row" className={this.className}>
+            {children}
+          </th>
+        );
+      },
+      getCellContents: (row) => row.title,
+      className: "col-8 align-middle",
+      scope: "row",
     },
     {
       slug: "quantity",
@@ -40,14 +50,14 @@ export default function ProductsTable({
         </>
       ),
       getHeaderElement: (children) => <th className="text-end">{children}</th>,
-      className: "text-end fs-3",
+      className: compact ? "text-end" : "text-end fs-3",
     },
     {
       slug: "price",
       title: t.Product.attributes.unitPrice,
       getCellContents: (row) => <>{formatMoney(row.price)}</>,
       getHeaderElement: (children) => <th className="text-end">{children}</th>,
-      className: "text-end fs-3",
+      className: compact ? "text-end" : "text-end fs-3",
     },
   ];
 
@@ -61,7 +71,7 @@ export default function ProductsTable({
             <strong>{t.Order.attributes.totalPrice}</strong>
           </td>
           <td className="col text-end"></td>
-          <td className="col fs-4 text-end">
+          <td className={compact ? "col text-end" : "col text-end fs-4"}>
             <strong>{formatMoney(order.totalPrice)}</strong>
           </td>
         </tr>

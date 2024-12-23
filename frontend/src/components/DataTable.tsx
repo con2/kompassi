@@ -27,11 +27,19 @@ function defaultCellElement<Row>(
   _row: Row,
   children?: ReactNode,
 ) {
-  return (
-    <td scope={this.scope} className={this.className}>
-      {children}
-    </td>
-  );
+  if (this.scope === "row") {
+    return (
+      <th scope={this.scope} className={this.className}>
+        {children}
+      </th>
+    );
+  } else {
+    return (
+      <td scope={this.scope} className={this.className}>
+        {children}
+      </td>
+    );
+  }
 }
 
 function defaultCellContents<Row>(this: Column<Row>, row: Row) {

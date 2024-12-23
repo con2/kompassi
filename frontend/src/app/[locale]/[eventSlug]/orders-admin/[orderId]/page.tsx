@@ -2,6 +2,10 @@ import Link from "next/link";
 
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
+import Accordion from "react-bootstrap/Accordion";
+import AccordionBody from "react-bootstrap/AccordionBody";
+import AccordionHeader from "react-bootstrap/AccordionHeader";
+import AccordionItem from "react-bootstrap/AccordionItem";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
@@ -13,8 +17,10 @@ import {
 } from "./actions";
 import { graphql } from "@/__generated__";
 import {
+  AdminOrderCodeFragment,
   AdminOrderPaymentStampFragment,
   AdminOrderReceiptFragment,
+  CodeStatus,
   PaymentStatus,
   RefundType,
 } from "@/__generated__/graphql";
@@ -55,6 +61,16 @@ graphql(`
   }
 `);
 
+graphql(`
+  fragment AdminOrderCode on LimitedCodeType {
+    code
+    literateCode
+    status
+    usedOn
+    productText
+  }
+`);
+
 const query = graphql(`
   query AdminOrderDetail($eventSlug: String!, $orderId: String!) {
     event(slug: $eventSlug) {
@@ -83,6 +99,9 @@ const query = graphql(`
           }
           receipts {
             ...AdminOrderReceipt
+          }
+          codes {
+            ...AdminOrderCode
           }
         }
       }
@@ -143,6 +162,8 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
   const t = translations.Tickets.Order;
   const sTamp = translations.Tickets.PaymentStamp;
   const receipT = translations.Tickets.Receipt;
+  const producT = translations.Tickets.Product;
+  const codeT = translations.Tickets.Code;
   const session = await auth();
 
   // TODO encap
@@ -184,7 +205,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
                 session={session}
               />
             }
-            className="btn btn-link m-0 p-0"
+            className="btn btn-link link-subtle m-0 p-0"
             submitButtonVariant="danger"
             messages={sTamp.actions.view.modalActions}
           >
@@ -263,16 +284,54 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     },
   ];
 
+  const codeColumns: Column<AdminOrderCodeFragment>[] = [
+    {
+      slug: "productText",
+      title: codeT.attributes.productText,
+      className: "col-3 align-middle",
+      scope: "row",
+    },
+    {
+      slug: "code",
+      title: codeT.attributes.code,
+      className: "col align-middle",
+    },
+    {
+      slug: "literateCode",
+      title: codeT.attributes.literateCode,
+      className: "col-3 align-middle",
+      // getCellContents: (code) => <small>{code.literateCode}</small>,
+    },
+    {
+      slug: "status",
+      title: codeT.attributes.status.title,
+      className: "col align-middle",
+      getCellContents(code) {
+        if (code.status == CodeStatus.Used) {
+          return (
+            <>
+              {codeT.attributes.status.choices[code.status]}{" "}
+              <FormattedDateTime
+                value={code.usedOn}
+                locale={locale}
+                scope={event}
+                session={session}
+              />
+            </>
+          );
+        } else {
+          return <>{codeT.attributes.status.choices[code.status]}</>;
+        }
+      },
+    },
+  ];
+
   const event = data.event;
   const order = data.event.tickets.order;
   const { shortTitle: paymentStatus } =
     t.attributes.status.choices[order.status];
 
   const queryString = new URLSearchParams(searchParams).toString();
-  const showCancelWithoutRefundingButton =
-    order.status === PaymentStatus.Pending ||
-    order.status === PaymentStatus.Failed ||
-    order.status === PaymentStatus.Paid;
 
   const actions = [
     {
@@ -420,6 +479,8 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     },
   ];
 
+  const visibleActions = actions.filter((action) => action.isShown);
+
   return (
     <ViewContainer>
       <ViewHeading>
@@ -434,49 +495,68 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
         queryString={queryString}
       />
 
-      <Card className="mb-4">
-        <CardBody>
-          <CardTitle>
-            {t.singleTitle(order.formattedOrderNumber, paymentStatus)}
-          </CardTitle>
-          <ProductsTable
-            order={order}
-            messages={translations.Tickets}
-            className="mb-3"
-          />
-          <ButtonGroup className="mt-2">
-            {actions
-              .filter((action) => action.isShown)
-              .map((action) => (
+      <div className="d-flex">
+        <h3 className="mt-3 mb-3">
+          {t.singleTitle(order.formattedOrderNumber, paymentStatus)}
+        </h3>
+
+        {!!visibleActions.length && (
+          <div className="mt-3 mb-3 ms-auto">
+            <ButtonGroup>
+              {visibleActions.map((action) => (
                 <Fragment key={action.slug}>{action.getElement()}</Fragment>
               ))}
-          </ButtonGroup>
-        </CardBody>
-      </Card>
+            </ButtonGroup>
+          </div>
+        )}
+      </div>
 
-      <Card className="mb-4">
-        <CardBody>
-          <CardTitle>{t.contactForm.title}</CardTitle>
-          <form action={updateOrder.bind(null, locale, eventSlug, order.id)}>
-            <ContactForm messages={translations} values={order} isAdmin />
-            <SubmitButton>{t.actions.saveContactInformation}</SubmitButton>
-          </form>
-        </CardBody>
-      </Card>
+      <Accordion defaultActiveKey="products">
+        <AccordionItem eventKey="products">
+          <AccordionHeader>{producT.listTitle}</AccordionHeader>
+          <AccordionBody>
+            <ProductsTable
+              order={order}
+              messages={translations.Tickets}
+              compact
+              className="m-0"
+            />
+          </AccordionBody>
+        </AccordionItem>
+        <AccordionItem eventKey="contact">
+          <AccordionHeader>{t.contactForm.title}</AccordionHeader>
+          <AccordionBody>
+            <form action={updateOrder.bind(null, locale, eventSlug, order.id)}>
+              <ContactForm messages={translations} values={order} isAdmin />
+              <SubmitButton>{t.actions.saveContactInformation}</SubmitButton>
+            </form>
+          </AccordionBody>
+        </AccordionItem>
 
-      <Card className="mb-4">
-        <CardBody>
-          <CardTitle>{sTamp.listTitle}</CardTitle>
-          <DataTable columns={paymentStampColumns} rows={order.paymentStamps} />
-        </CardBody>
-      </Card>
+        <AccordionItem eventKey="codes">
+          <AccordionHeader>{codeT.listTitle}</AccordionHeader>
+          <AccordionBody>
+            <DataTable columns={codeColumns} rows={order.codes} />
+          </AccordionBody>
+        </AccordionItem>
 
-      <Card className="mb-4">
-        <CardBody>
-          <CardTitle>{receipT.listTitle}</CardTitle>
-          <DataTable columns={receiptColumns} rows={order.receipts} />
-        </CardBody>
-      </Card>
+        <AccordionItem eventKey="paymentStamps">
+          <AccordionHeader>{sTamp.listTitle}</AccordionHeader>
+          <AccordionBody>
+            <DataTable
+              columns={paymentStampColumns}
+              rows={order.paymentStamps}
+            />
+          </AccordionBody>
+        </AccordionItem>
+
+        <AccordionItem eventKey="receipts">
+          <AccordionHeader>{receipT.listTitle}</AccordionHeader>
+          <AccordionBody>
+            <DataTable columns={receiptColumns} rows={order.receipts} />
+          </AccordionBody>
+        </AccordionItem>
+      </Accordion>
     </ViewContainer>
   );
 }

@@ -3,7 +3,7 @@ interface Props {
 }
 
 export default function ViewHeading({ children }: Props) {
-  return <h1 className="mb-3 mt-2">{children}</h1>;
+  return <h1 className="mb-3">{children}</h1>;
 }
 
 ViewHeading.Sub = function Sub({ children }: Props) {
@@ -17,7 +17,7 @@ ViewHeading.Sub = function Sub({ children }: Props) {
 
 export function ViewHeadingActionsWrapper({ children }: Props) {
   return (
-    <div className="d-flex justify-content-between align-items-center">
+    <div className={`d-flex justify-content-between align-items-center`}>
       {children}
     </div>
   );

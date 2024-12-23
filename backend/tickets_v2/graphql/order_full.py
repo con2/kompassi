@@ -5,6 +5,7 @@ from core.utils import normalize_whitespace
 
 from ..models.order import Order
 from ..optimized_server.models.enums import PaymentStatus
+from .code_limited import LimitedCodeType
 from .order_limited import LimitedOrderType
 from .order_product import OrderProductType
 from .payment_stamp_limited import LimitedPaymentStampType
@@ -58,3 +59,12 @@ class FullOrderType(LimitedOrderType):
         graphene.List(graphene.NonNull(LimitedReceiptType)),
         description="Receipts related to this order.",
     )
+
+    codes = graphene.NonNull(
+        graphene.List(graphene.NonNull(LimitedCodeType)),
+        description="Electronic ticket codes related to this order.",
+    )
+
+    @staticmethod
+    def resolve_codes(order: Order, info):
+        return order.lippukala_codes.all()

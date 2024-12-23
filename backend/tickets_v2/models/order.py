@@ -277,6 +277,14 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             reference_number=str(self.id),  # type: ignore
         ).first()
 
+    @property
+    def lippukala_codes(self):
+        return (
+            LippukalaCode.objects.filter(order=lippukala_order)
+            if (lippukala_order := self.lippukala_order)
+            else LippukalaCode.objects.none()
+        )
+
     def get_etickets_link(self, request: HttpRequest):
         if self.cached_status == PaymentStatus.PAID and self.have_etickets:
             pass
@@ -294,7 +302,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         )
 
     def cancel_and_refund(self, refund_type: RefundType):
-        from lippukala.consts import MANUAL_INTERVENTION_REQUIRED
+        from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, UNUSED
 
         from .payment_stamp import PaymentStamp
 
@@ -353,7 +361,12 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
 
             # Invalidate electronic tickets
             if lippukala_order := self.lippukala_order:
-                LippukalaCode.objects.filter(order=lippukala_order).update(status=MANUAL_INTERVENTION_REQUIRED)
+                LippukalaCode.objects.filter(
+                    order=lippukala_order,
+                    status=UNUSED,
+                ).update(
+                    status=MANUAL_INTERVENTION_REQUIRED,
+                )
 
         response_stamp = None
         if prepared_request:
