@@ -1,11 +1,11 @@
 import { createOrder } from "./actions";
 import ProductsForm from "./ProductsForm";
-import { getProducts } from "./service";
 import ContactForm from "@/components/tickets/ContactForm";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
+import { getProducts } from "@/services/tickets";
 import { getTranslations } from "@/translations";
 
 interface Props {

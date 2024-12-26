@@ -1,15 +1,14 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { parseFormData } from "./parseFormData";
-import * as TicketsService from "./service";
+import * as TicketService from "@/services/tickets";
 
 export async function createOrder(
   locale: string,
   eventSlug: string,
   formData: FormData,
 ) {
-  const order: TicketsService.CreateOrderRequest = parseFormData(
+  const order: TicketService.CreateOrderRequest = TicketService.parseFormData(
     formData,
     locale,
   );
@@ -22,7 +21,7 @@ export async function createOrder(
     );
   }
 
-  const response = await TicketsService.createOrder(eventSlug, order);
+  const response = await TicketService.createOrder(eventSlug, order);
 
   if (response.success) {
     return void redirect(

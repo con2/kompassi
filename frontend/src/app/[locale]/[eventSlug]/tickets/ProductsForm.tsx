@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
-import { getProductEntries, parseFormData } from "./parseFormData";
+import { getProductEntries } from "@/services/tickets";
 import type { Translations } from "@/translations/en";
 
 interface Props {

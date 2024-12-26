@@ -1,5 +1,6 @@
 import logging
-from typing import Annotated
+import os
+from typing import Annotated, Literal
 from uuid import UUID
 
 from fastapi import Depends, FastAPI, HTTPException, Path
@@ -19,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 EventSlug = Annotated[str, Path()]
 OrderId = Annotated[UUID, Path()]
+
+API_KEY = os.getenv("KOMPASSI_TICKETS_V2_API_KEY")
 
 
 async def _event(event_slug: EventSlug, db: DB) -> Event:
@@ -51,13 +54,27 @@ async def _order_with_customer(event: _Event, order_id: OrderId, db: DB) -> Orde
 _OrderWithCustomer = Annotated[OrderWithCustomer, Depends(_order_with_customer)]
 
 
+async def _api_key_verified(request: Request) -> Literal[True]:
+    api_key = request.headers.get("x-api-key")
+    if api_key is None or api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="UNAUTHORIZED")
+    return True
+
+
+_ApiKeyVerified = Annotated[Literal[True], Depends(_api_key_verified)]
+
+
 @app.get("/api/tickets-v2/status/")
 async def status():
     return {"status": "OK"}
 
 
 @app.get("/api/tickets-v2/{event_slug}/products/")
-async def get_products(event: _Event, db: DB):
+async def get_products(
+    event: _Event,
+    db: DB,
+    _api_key_verified: _ApiKeyVerified,
+):
     products = await Product.get_products(db, event.id)
 
     return {
@@ -69,7 +86,12 @@ async def get_products(event: _Event, db: DB):
 
 
 @app.post("/api/tickets-v2/{event_slug}/orders/")
-async def create_order(event: _Event, order: CreateOrderRequest, db: DB):
+async def create_order(
+    event: _Event,
+    order: CreateOrderRequest,
+    db: DB,
+    _api_key_verified: _ApiKeyVerified,
+):
     provider = event.provider
 
     try:
@@ -102,7 +124,11 @@ async def create_order(event: _Event, order: CreateOrderRequest, db: DB):
 
 
 @app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/")
-async def get_order(event: _Event, order: _Order):
+async def get_order(
+    event: _Event,
+    order: _Order,
+    _api_key_verified: _ApiKeyVerified,
+):
     return {
         "event": {
             "name": event.name,
@@ -116,6 +142,7 @@ async def pay(
     event: _Event,
     order: _OrderWithCustomer,
     db: DB,
+    _api_key_verified: _ApiKeyVerified,
 ):
     provider = event.provider
 
@@ -144,6 +171,10 @@ def valid_callback(event: _Event, request: Request) -> PaymentCallback:
 
 
 _Callback = Annotated[PaymentCallback, Depends(valid_callback)]
+
+
+# NOTE: The redirect view is accessed directly by the client browser, and the callback view is called by the provider.
+# Therefore they do not require the API key.
 
 
 @app.get("/api/tickets-v2/{event_slug}/orders/{order_id}/payment-redirect/")

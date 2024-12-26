@@ -45,6 +45,7 @@ services:
       KOMPASSI_BASE_URL: http://localhost:8000
       TICKETS_BASE_URL: http://localhost:7998
       KOMPASSI_V2_BASE_URL: http://localhost:3000
+      KOMPASSI_TICKETS_V2_API_KEY: secret
   uvicorn:
     build: backend
     init: true
@@ -76,6 +77,7 @@ services:
   worker:
     build: backend
     init: true
+    restart: unless-stopped
     command:
       - python
       - manage.py
@@ -100,6 +102,7 @@ services:
       NEXT_PUBLIC_TICKETS_BASE_URL: http://localhost:7998
       NEXTAUTH_URL: http://localhost:3000
       NEXTAUTH_SECRET: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+      KOMPASSI_TICKETS_V2_API_KEY: secret
   postgres:
     # image: postgres
     build: backend/kompassi/sql/

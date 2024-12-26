@@ -15,6 +15,7 @@ const secret = {
     KOMPASSI_OIDC_CLIENT_ID: b64(""),
     KOMPASSI_OIDC_CLIENT_SECRET: b64(""),
     NEXTAUTH_SECRET: b64(""),
+    KOMPASSI_TICKETS_V2_API_KEY: b64(""),
   },
 };
 

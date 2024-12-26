@@ -7,7 +7,7 @@ import Section from "@/components/Section";
 import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";
-import { getOrder } from "@/services/orders";
+import { getOrder } from "@/services/tickets";
 import { getTranslations } from "@/translations";
 
 interface Props {

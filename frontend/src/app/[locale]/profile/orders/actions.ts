@@ -3,7 +3,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import * as OrderService from "@/services/orders";
+import * as TicketService from "@/services/tickets";
 
 const confirmEmailMutation = graphql(`
   mutation ConfirmEmail($input: ConfirmEmailInput!) {
@@ -28,7 +28,7 @@ export async function payOrder(
   eventSlug: string,
   orderId: string,
 ) {
-  const response = await OrderService.payOrder(eventSlug, orderId);
+  const response = await TicketService.payOrder(eventSlug, orderId);
   revalidatePath(`/${locale}/${eventSlug}/orders/${orderId}`);
   return void redirect(response.paymentRedirect);
 }
