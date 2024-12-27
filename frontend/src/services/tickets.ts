@@ -5,8 +5,6 @@ const headers = {
   "x-api-key": ticketsApiKey,
 };
 
-console.log(process.env);
-
 const postHeaders = {
   "content-type": "application/json",
   "x-api-key": ticketsApiKey,

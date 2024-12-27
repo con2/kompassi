@@ -98,7 +98,7 @@ function getDimensions(
     },
     {
       slug: "product",
-      title: producT.attributes.product,
+      title: producT.clientAttributes.product,
       values: products.map(({ id, title }) => ({ slug: id, title })),
     },
   ];

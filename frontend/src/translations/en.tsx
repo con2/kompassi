@@ -280,7 +280,8 @@ const translations = {
           },
         },
       },
-      attributes: {
+      // json serializable values only under clientAttributes
+      clientAttributes: {
         product: "Product",
         title: "Title",
         createdAt: "Created at",
@@ -297,15 +298,6 @@ const translations = {
           title: "Description",
           helpText:
             "Title and description will be shown to the customer on the ticket purchase page.",
-        },
-        isAvailable: {
-          title: "Availability schedule",
-          untilFurtherNotice: "Available until further notice",
-          untilTime: (formattedTime: String) =>
-            `Available until ${formattedTime}`,
-          openingAt: (formattedTime: String) =>
-            `Will become available at ${formattedTime}`,
-          notAvailable: "Not available",
         },
         maxPerOrder: {
           title: "Maximum amount per order",
@@ -350,6 +342,18 @@ const translations = {
         },
         selectedQuotas: "Selected quotas",
         soldOut: "Sold out",
+        isAvailable: "Availability schedule",
+        dragToReorder: "Drag to reorder",
+      },
+      serverAttributes: {
+        isAvailable: {
+          untilFurtherNotice: "Available until further notice",
+          untilTime: (formattedTime: String) =>
+            `Available until ${formattedTime}`,
+          openingAt: (formattedTime: String) =>
+            `Will become available at ${formattedTime}`,
+          notAvailable: "Not available",
+        },
       },
     },
     Quota: {

@@ -102,7 +102,7 @@ export default async function AdminQuotaDetailPage({ params }: Props) {
   const productColumns: Column<QuotaProductFragment>[] = [
     {
       slug: "title",
-      title: producT.attributes.title,
+      title: producT.clientAttributes.title,
       className: "col-4 align-middle",
       getCellContents: (product) => (
         <Link
@@ -115,13 +115,13 @@ export default async function AdminQuotaDetailPage({ params }: Props) {
     },
     {
       slug: "price",
-      title: producT.attributes.unitPrice.title,
+      title: producT.clientAttributes.unitPrice.title,
       getCellContents: (product) => formatMoney(product.price),
       className: "col-1 align-middle",
     },
     {
       slug: "countReserved",
-      title: producT.attributes.countReserved.title,
+      title: producT.clientAttributes.countReserved.title,
       className: "text-end align-middle col-1",
     },
   ];

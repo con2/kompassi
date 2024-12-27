@@ -32,6 +32,7 @@ const documents = {
     "\n  fragment AdminProductDetail on FullProductType {\n    id\n    createdAt\n    title\n    description\n    price\n    eticketsPerProduct\n    maxPerOrder\n    availableFrom\n    availableUntil\n    quotas {\n      id\n    }\n\n    supersededBy {\n      id\n    }\n\n    oldVersions {\n      ...AdminProductOldVersion\n    }\n  }\n": types.AdminProductDetailFragmentDoc,
     "\n  query AdminProductDetailPage($eventSlug: String!, $productId: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          id\n          name\n          countTotal\n        }\n\n        product(id: $productId) {\n          ...AdminProductDetail\n        }\n      }\n    }\n  }\n": types.AdminProductDetailPageDocument,
     "\n  mutation CreateProduct($input: CreateProductInput!) {\n    createProduct(input: $input) {\n      product {\n        id\n      }\n    }\n  }\n": types.CreateProductDocument,
+    "\n  mutation ReorderProducts($input: ReorderProductsInput!) {\n    reorderProducts(input: $input) {\n      products {\n        id\n      }\n    }\n  }\n": types.ReorderProductsDocument,
     "\n  fragment ProductList on FullProductType {\n    id\n    title\n    description\n    price\n    isAvailable\n    availableFrom\n    availableUntil\n    countPaid\n    countReserved\n    countAvailable\n  }\n": types.ProductListFragmentDoc,
     "\n  query ProductList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        products {\n          ...ProductList\n        }\n      }\n    }\n  }\n": types.ProductListDocument,
     "\n  mutation MarkScheduleItemAsFavorite($input: FavoriteScheduleItemInput!) {\n    markScheduleItemAsFavorite(input: $input) {\n      success\n    }\n  }\n": types.MarkScheduleItemAsFavoriteDocument,
@@ -182,6 +183,10 @@ export function graphql(source: "\n  query AdminProductDetailPage($eventSlug: St
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation CreateProduct($input: CreateProductInput!) {\n    createProduct(input: $input) {\n      product {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateProduct($input: CreateProductInput!) {\n    createProduct(input: $input) {\n      product {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ReorderProducts($input: ReorderProductsInput!) {\n    reorderProducts(input: $input) {\n      products {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation ReorderProducts($input: ReorderProductsInput!) {\n    reorderProducts(input: $input) {\n      products {\n        id\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

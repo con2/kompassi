@@ -277,7 +277,7 @@ const translations: Translations = {
           },
         },
       },
-      attributes: {
+      clientAttributes: {
         product: "Tuote",
         title: "Otsikko",
         createdAt: "Luotu",
@@ -294,15 +294,6 @@ const translations: Translations = {
           title: "Description",
           helpText:
             "Title and description will be shown to the customer on the ticket purchase page.",
-        },
-        isAvailable: {
-          title: "Saatavuusaika",
-          untilFurtherNotice: "Saatavilla toistaiseksi",
-          untilTime: (formattedTime: String) =>
-            `Saatavilla ${formattedTime} asti`,
-          openingAt: (formattedTime: String) =>
-            `Tulossa saataville ${formattedTime}`,
-          notAvailable: "Ei saatavilla",
         },
         maxPerOrder: {
           title: "Maksimimäärä tilausta kohden",
@@ -348,6 +339,18 @@ const translations: Translations = {
         },
         selectedQuotas: "Valitut kiintiöt",
         soldOut: "Loppuunmyyty",
+        isAvailable: "Saatavuusaika",
+        dragToReorder: "Vedä ja pudota järjestääksesi tuotteita",
+      },
+      serverAttributes: {
+        isAvailable: {
+          untilFurtherNotice: "Saatavilla toistaiseksi",
+          untilTime: (formattedTime: String) =>
+            `Saatavilla ${formattedTime} asti`,
+          openingAt: (formattedTime: String) =>
+            `Tulossa saataville ${formattedTime}`,
+          notAvailable: "Ei saatavilla",
+        },
       },
     },
     Quota: {

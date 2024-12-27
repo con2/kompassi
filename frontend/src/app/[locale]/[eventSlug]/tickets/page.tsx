@@ -67,9 +67,11 @@ export default async function TicketsPage({ params }: Props) {
         <table className="table table-striped mt-4 mb-4">
           <thead>
             <tr className="row">
-              <th className="col-8">{producT.attributes.product}</th>
-              <th className="col">{producT.attributes.unitPrice.title}</th>
-              <th className="col">{producT.attributes.quantity.title}</th>
+              <th className="col-8">{producT.clientAttributes.product}</th>
+              <th className="col">
+                {producT.clientAttributes.unitPrice.title}
+              </th>
+              <th className="col">{producT.clientAttributes.quantity.title}</th>
             </tr>
           </thead>
           <tbody>
@@ -91,7 +93,7 @@ export default async function TicketsPage({ params }: Props) {
                       htmlFor={`quantity-${product.id}`}
                       className="visually-hidden"
                     >
-                      {producT.attributes.quantity.title}
+                      {producT.clientAttributes.quantity.title}
                     </label>
                     {product.available ? (
                       <input
@@ -104,7 +106,7 @@ export default async function TicketsPage({ params }: Props) {
                         max={product.maxPerOrder}
                       />
                     ) : (
-                      producT.attributes.soldOut
+                      producT.clientAttributes.soldOut
                     )}
                   </td>
                 </tr>

@@ -126,27 +126,27 @@ export default async function QuotasPage({ params }: Props) {
     },
     {
       slug: "countPaid",
-      title: producT.attributes.countPaid,
+      title: producT.clientAttributes.countPaid,
       className: "text-end align-middle col-1",
     },
     {
       slug: "countReserved",
-      title: producT.attributes.countReserved.title,
+      title: producT.clientAttributes.countReserved.title,
       className: "text-end align-middle col-1",
       getHeaderContents: () => (
-        <abbr title={producT.attributes.countReserved.description}>
-          {producT.attributes.countReserved.title}
+        <abbr title={producT.clientAttributes.countReserved.description}>
+          {producT.clientAttributes.countReserved.title}
         </abbr>
       ),
     },
     {
       slug: "countAvailable",
-      title: producT.attributes.countAvailable,
+      title: producT.clientAttributes.countAvailable,
       className: "text-end align-middle col-1",
     },
     {
       slug: "countTotal",
-      title: producT.attributes.countTotal,
+      title: producT.clientAttributes.countTotal,
       className: "text-end align-middle col-2",
     },
   ];

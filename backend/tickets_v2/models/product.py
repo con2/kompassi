@@ -64,6 +64,7 @@ class Product(models.Model):
         related_name="products",
     )
 
+    ordering = models.PositiveSmallIntegerField(default=0)
     max_per_order = models.PositiveSmallIntegerField(default=5)
     etickets_per_product = models.PositiveSmallIntegerField(default=1)
 

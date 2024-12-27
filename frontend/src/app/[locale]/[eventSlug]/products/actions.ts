@@ -35,3 +35,31 @@ export async function createProduct(
   const newProductId = result.data?.createProduct?.product?.id;
   redirect(`/${eventSlug}/products/${newProductId ?? ""}`);
 }
+
+const reorderProductsMutation = graphql(`
+  mutation ReorderProducts($input: ReorderProductsInput!) {
+    reorderProducts(input: $input) {
+      products {
+        id
+      }
+    }
+  }
+`);
+
+export async function reorderProducts(
+  locale: string,
+  eventSlug: string,
+  productIds: string[],
+) {
+  await getClient().mutate({
+    mutation: reorderProductsMutation,
+    variables: {
+      input: {
+        eventSlug,
+        productIds,
+      },
+    },
+  });
+
+  revalidatePath(`/${locale}/${eventSlug}/products`);
+}

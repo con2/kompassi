@@ -168,30 +168,30 @@ export default async function AdminProductDetailPage({ params }: Props) {
   const baseFields: Field[] = [
     {
       slug: "title",
-      title: t.attributes.title,
+      title: t.clientAttributes.title,
       type: "SingleLineText",
     },
     {
       slug: "description",
       type: "MultiLineText",
       rows: 3,
-      ...t.attributes.description,
+      ...t.clientAttributes.description,
     },
     {
       slug: "price",
       type: "DecimalField",
       decimalPlaces: 2,
-      ...t.attributes.unitPrice,
+      ...t.clientAttributes.unitPrice,
     },
     {
       slug: "eticketsPerProduct",
       type: "NumberField",
-      ...t.attributes.eticketsPerProduct,
+      ...t.clientAttributes.eticketsPerProduct,
     },
     {
       slug: "maxPerOrder",
       type: "NumberField",
-      ...t.attributes.maxPerOrder,
+      ...t.clientAttributes.maxPerOrder,
     },
   ];
 
@@ -201,24 +201,24 @@ export default async function AdminProductDetailPage({ params }: Props) {
       type: "MultiSelect",
       choices: quotas.map((quota) => ({
         slug: "" + quota.id,
-        title: `${quota.name} (${quota.countTotal} ${t.attributes.quantity.unit})`,
+        title: `${quota.name} (${quota.countTotal} ${t.clientAttributes.quantity.unit})`,
       })),
-      ...t.attributes.quotas,
+      ...t.clientAttributes.quotas,
     },
     {
       slug: "scheduleHeading",
-      title: t.attributes.isAvailable.title,
+      title: t.clientAttributes.isAvailable,
       type: "StaticText",
     },
     {
       slug: "availableFrom",
       type: "DateTimeField",
-      ...t.attributes.availableFrom,
+      ...t.clientAttributes.availableFrom,
     },
     {
       slug: "availableUntil",
       type: "DateTimeField",
-      ...t.attributes.availableUntil,
+      ...t.clientAttributes.availableUntil,
     },
   ]);
 
@@ -241,7 +241,7 @@ export default async function AdminProductDetailPage({ params }: Props) {
   const revisionsColumns: Column<Revision>[] = [
     {
       slug: "createdAt",
-      title: t.attributes.createdAt,
+      title: t.clientAttributes.createdAt,
       className: "col-2 align-middle",
       getCellContents: (product) => (
         <>
@@ -254,7 +254,7 @@ export default async function AdminProductDetailPage({ params }: Props) {
                 session={session}
               />
               <span className="badge bg-primary ms-2">
-                {t.attributes.revisions.current}
+                {t.clientAttributes.revisions.current}
               </span>
             </>
           ) : (
@@ -284,12 +284,12 @@ export default async function AdminProductDetailPage({ params }: Props) {
     },
     {
       slug: "title",
-      title: t.attributes.title,
+      title: t.clientAttributes.title,
       className: "col-4 align-middle",
     },
     {
       slug: "price",
-      title: t.attributes.unitPrice.title,
+      title: t.clientAttributes.unitPrice.title,
       getCellContents: (product) => formatMoney(product.price),
       className: "col-1 align-middle",
     },
@@ -327,8 +327,10 @@ export default async function AdminProductDetailPage({ params }: Props) {
 
       <div className="card mb-4">
         <div className="card-body">
-          <h5 className="card-title">{t.attributes.revisions.title}</h5>
-          <p className="card-text">{t.attributes.revisions.description}</p>
+          <h5 className="card-title">{t.clientAttributes.revisions.title}</h5>
+          <p className="card-text">
+            {t.clientAttributes.revisions.description}
+          </p>
           <DataTable columns={revisionsColumns} rows={revisions} />
         </div>
       </div>

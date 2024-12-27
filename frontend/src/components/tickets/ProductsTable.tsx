@@ -29,7 +29,7 @@ export default function ProductsTable({
   const columns: Column<Product>[] = [
     {
       slug: "product",
-      title: t.Product.attributes.product,
+      title: t.Product.clientAttributes.product,
       getCellElement(_row, children) {
         return (
           <th scope="row" className={this.className}>
@@ -43,10 +43,10 @@ export default function ProductsTable({
     },
     {
       slug: "quantity",
-      title: t.Product.attributes.quantity.title,
+      title: t.Product.clientAttributes.quantity.title,
       getCellContents: (row) => (
         <>
-          {row.quantity}&nbsp;{t.Product.attributes.quantity.unit}
+          {row.quantity}&nbsp;{t.Product.clientAttributes.quantity.unit}
         </>
       ),
       getHeaderElement: (children) => <th className="text-end">{children}</th>,
@@ -54,7 +54,7 @@ export default function ProductsTable({
     },
     {
       slug: "price",
-      title: t.Product.attributes.unitPrice.title,
+      title: t.Product.clientAttributes.unitPrice.title,
       getCellContents: (row) => <>{formatMoney(row.price)}</>,
       getHeaderElement: (children) => <th className="text-end">{children}</th>,
       className: compact ? "text-end" : "text-end fs-3",

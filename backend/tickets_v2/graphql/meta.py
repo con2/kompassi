@@ -28,7 +28,10 @@ class TicketsV2EventMetaType(DjangoObjectType):
         Returns products defined for this event.
         Admin oriented view; customers will access product information through /api/tickets-v2.
         """
-        return Product.objects.filter(event=meta.event, superseded_by=None)
+        return Product.objects.filter(
+            event=meta.event,
+            superseded_by=None,
+        ).order_by("ordering")
 
     products = graphene.NonNull(
         graphene.List(graphene.NonNull(FullProductType)),
@@ -42,7 +45,14 @@ class TicketsV2EventMetaType(DjangoObjectType):
         Returns a product defined for this event.
         Admin oriented view; customers will access product information through /api/tickets-v2.
         """
-        return Product.objects.filter(event=meta.event, id=id).select_related("event", "superseded_by").first()
+        return (
+            Product.objects.filter(
+                event=meta.event,
+                id=id,
+            )
+            .select_related("event", "superseded_by")
+            .first()
+        )
 
     product = graphene.NonNull(
         FullProductType,

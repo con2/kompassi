@@ -33,6 +33,7 @@ from tickets_v2.graphql.mutations.create_product import CreateProduct
 from tickets_v2.graphql.mutations.create_quota import CreateQuota
 from tickets_v2.graphql.mutations.delete_product import DeleteProduct
 from tickets_v2.graphql.mutations.delete_quota import DeleteQuota
+from tickets_v2.graphql.mutations.reorder_products import ReorderProducts
 from tickets_v2.graphql.mutations.resend_order_confirmation import ResendOrderConfirmation
 from tickets_v2.graphql.mutations.update_order import UpdateOrder
 from tickets_v2.graphql.mutations.update_product import UpdateProduct
@@ -120,6 +121,7 @@ class Mutation(graphene.ObjectType):
     create_product = CreateProduct.Field()
     update_product = UpdateProduct.Field()
     delete_product = DeleteProduct.Field()
+    reorder_products = ReorderProducts.Field()
 
     create_quota = CreateQuota.Field()
     update_quota = UpdateQuota.Field()

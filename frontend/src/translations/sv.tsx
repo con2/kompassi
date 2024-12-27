@@ -296,7 +296,7 @@ const translations: Translations = {
           },
         },
       },
-      attributes: {
+      clientAttributes: {
         product: "Product",
         title: "Title",
         createdAt: "Created at",
@@ -313,15 +313,6 @@ const translations: Translations = {
           title: "Description",
           helpText:
             "Title and description will be shown to the customer on the ticket purchase page.",
-        },
-        isAvailable: {
-          title: "Availability schedule",
-          untilFurtherNotice: "Available until further notice",
-          untilTime: (formattedTime: String) =>
-            `Available until ${formattedTime}`,
-          openingAt: (formattedTime: String) =>
-            `Will become available at ${formattedTime}`,
-          notAvailable: "Not available",
         },
         maxPerOrder: {
           title: "Maximum amount per order",
@@ -366,6 +357,18 @@ const translations: Translations = {
         },
         selectedQuotas: "Selected quotas",
         soldOut: "Utsålt",
+        isAvailable: "Availability schedule",
+        dragToReorder: "Drag to reorder",
+      },
+      serverAttributes: {
+        isAvailable: {
+          untilFurtherNotice: "Available until further notice",
+          untilTime: (formattedTime: String) =>
+            `Available until ${formattedTime}`,
+          openingAt: (formattedTime: String) =>
+            `Will become available at ${formattedTime}`,
+          notAvailable: "Not available",
+        },
       },
     },
     Quota: {

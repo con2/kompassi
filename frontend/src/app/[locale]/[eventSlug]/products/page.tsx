@@ -2,7 +2,8 @@ import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { createProduct } from "./actions";
+import { createProduct, reorderProducts } from "./actions";
+import ReorderableProductsTable from "./ReorderableProductsTable";
 import { graphql } from "@/__generated__";
 import { ProductListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -12,6 +13,7 @@ import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
+import { ReorderableDataTable } from "@/components/ReorderableDataTable";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
@@ -59,6 +61,10 @@ interface Props {
     locale: string;
     eventSlug: string;
   };
+}
+
+export interface PreparedProduct extends ProductListFragment {
+  availabilityMessage: string;
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -124,118 +130,63 @@ export default async function ProductsPage({ params }: Props) {
   const newProductFields: Field[] = [
     {
       slug: "title",
-      title: t.attributes.title,
+      title: t.clientAttributes.title,
       type: "SingleLineText",
     },
     {
       slug: "description",
       type: "MultiLineText",
       rows: 3,
-      ...t.attributes.description,
+      ...t.clientAttributes.description,
     },
     {
       slug: "price",
       type: "DecimalField",
       decimalPlaces: 2,
-      ...t.attributes.unitPrice,
+      ...t.clientAttributes.unitPrice,
     },
   ];
 
-  const columns: Column<ProductListFragment>[] = [
-    {
-      slug: "title",
-      title: t.attributes.product,
-      getCellContents: (product) => (
-        <Link
-          className="link-subtle"
-          href={`/${event.slug}/products/${product.id}`}
-        >
-          {product.title}
-        </Link>
-      ),
-    },
-    {
-      slug: "availability",
-      title: t.attributes.isAvailable.title,
-      getCellContents: (product) => {
-        let activityEmoji = product.isAvailable ? "✅" : "❌";
-        let message = "";
+  // Pre-render some fields for client component
+  const preparedProducts: PreparedProduct[] = products.map((product) => {
+    let activityEmoji = product.isAvailable ? "✅" : "❌";
+    let message = "";
 
-        // TODO(#436) proper handling of event & session time zones
-        // Change untilTime(t: String): String to UntilTime(props: { children: ReactNode }): ReactNode
-        // and init as <….UntilTime><FormattedDateTime … /></UntilTime>?
-        if (product.isAvailable) {
-          if (product.availableUntil) {
-            message = t.attributes.isAvailable.untilTime(
-              formatDateTime(product.availableUntil, locale),
-            );
-          } else {
-            message = t.attributes.isAvailable.untilFurtherNotice;
-          }
-        } else {
-          if (
-            product.availableFrom &&
-            Temporal.Instant.compare(
-              Temporal.Instant.from(product.availableFrom),
-              Temporal.Now.instant(),
-            ) > 0
-          ) {
-            activityEmoji = "⏳";
-            message = t.attributes.isAvailable.openingAt(
-              formatDateTime(product.availableFrom, locale),
-            );
-          } else {
-            message = t.attributes.isAvailable.notAvailable;
-          }
-        }
+    // TODO(#436) proper handling of event & session time zones
+    // Change untilTime(t: String): String to UntilTime(props: { children: ReactNode }): ReactNode
+    // and init as <….UntilTime><FormattedDateTime … /></UntilTime>?
+    if (product.isAvailable) {
+      if (product.availableUntil) {
+        message = t.serverAttributes.isAvailable.untilTime(
+          formatDateTime(product.availableUntil, locale),
+        );
+      } else {
+        message = t.serverAttributes.isAvailable.untilFurtherNotice;
+      }
+    } else {
+      if (
+        product.availableFrom &&
+        Temporal.Instant.compare(
+          Temporal.Instant.from(product.availableFrom),
+          Temporal.Now.instant(),
+        ) > 0
+      ) {
+        activityEmoji = "⏳";
+        message = t.serverAttributes.isAvailable.openingAt(
+          formatDateTime(product.availableFrom, locale),
+        );
+      } else {
+        message = t.serverAttributes.isAvailable.notAvailable;
+      }
+    }
 
-        return `${activityEmoji} ${message}`;
-      },
-    },
-    {
-      slug: "countPaid",
-      title: t.attributes.countPaid,
-      className: "text-end align-middle col-1",
-    },
-    {
-      slug: "countReserved",
-      title: t.attributes.countReserved.title,
-      getHeaderContents: () => (
-        <abbr title={t.attributes.countReserved.description}>
-          {t.attributes.countReserved.title}
-        </abbr>
-      ),
-      className: "text-end align-middle col-1",
-    },
-    {
-      slug: "countAvailable",
-      title: t.attributes.countAvailable,
-      className: "text-end align-middle col-1",
-    },
-    {
-      slug: "price",
-      title: t.attributes.unitPrice.title,
-      getCellContents: (product) => formatMoney(product.price),
-      className: "text-end align-middle col-2",
-    },
-  ];
+    const availabilityMessage = `${activityEmoji} ${message}`;
 
-  // TODO let the backend calculate these with decimals
-  const totalReserved = formatMoney(
-    "" +
-      products.reduce(
-        (acc, product) =>
-          acc + product.countReserved * parseFloat(product.price),
-        0,
-      ),
-  );
-  const totalPaid = formatMoney(
-    "" +
-      products.reduce(
-        (acc, product) => acc + product.countPaid * parseFloat(product.price),
-        0,
-      ),
-  );
+    return {
+      ...product,
+      availabilityMessage,
+    };
+  });
 
   return (
     <ViewContainer>
@@ -265,24 +216,12 @@ export default async function ProductsPage({ params }: Props) {
         translations={translations}
       />
 
-      <DataTable rows={products} columns={columns}>
-        <tfoot>
-          <tr>
-            <th colSpan={5} className="text-end align-middle" scope="row">
-              {t.attributes.totalPaid}
-            </th>
-            <th className="text-end align-middle col-2">{totalPaid}</th>
-          </tr>
-          <tr>
-            <th colSpan={5} className="text-end align-middle" scope="row">
-              <abbr title={t.attributes.countReserved.description}>
-                {t.attributes.totalReserved}
-              </abbr>
-            </th>
-            <th className="text-end align-middle col-2">{totalReserved}</th>
-          </tr>
-        </tfoot>
-      </DataTable>
+      <ReorderableProductsTable
+        event={event}
+        products={preparedProducts}
+        messages={t.clientAttributes}
+        onReorder={reorderProducts.bind(null, locale, eventSlug)}
+      />
     </ViewContainer>
   );
 }
