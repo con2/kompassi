@@ -4,25 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('tickets_v2', '0001_initial'),
+        ("tickets_v2", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='product',
-            name='ordering',
+            model_name="product",
+            name="ordering",
             field=models.PositiveSmallIntegerField(default=0),
         ),
         migrations.AlterField(
-            model_name='paymentstamp',
-            name='type',
-            field=models.SmallIntegerField(choices=[(0, 'ZERO_PRICE'), (1, 'CREATE_PAYMENT_REQUEST'), (2, 'CREATE_PAYMENT_SUCCESS'), (3, 'CREATE_PAYMENT_FAILURE'), (4, 'PAYMENT_REDIRECT'), (5, 'PAYMENT_CALLBACK'), (6, 'CANCEL_WITHOUT_REFUND'), (7, 'CREATE_REFUND_REQUEST'), (8, 'CREATE_REFUND_SUCCESS'), (9, 'CREATE_REFUND_FAILURE'), (10, 'REFUND_CALLBACK'), (11, 'MANUAL_REFUND')]),
+            model_name="paymentstamp",
+            name="type",
+            field=models.SmallIntegerField(
+                choices=[
+                    (0, "ZERO_PRICE"),
+                    (1, "CREATE_PAYMENT_REQUEST"),
+                    (2, "CREATE_PAYMENT_SUCCESS"),
+                    (3, "CREATE_PAYMENT_FAILURE"),
+                    (4, "PAYMENT_REDIRECT"),
+                    (5, "PAYMENT_CALLBACK"),
+                    (6, "CANCEL_WITHOUT_REFUND"),
+                    (7, "CREATE_REFUND_REQUEST"),
+                    (8, "CREATE_REFUND_SUCCESS"),
+                    (9, "CREATE_REFUND_FAILURE"),
+                    (10, "REFUND_CALLBACK"),
+                    (11, "MANUAL_REFUND"),
+                ]
+            ),
         ),
         migrations.AlterField(
-            model_name='receipt',
-            name='type',
-            field=models.SmallIntegerField(choices=[(3, 'PAID'), (4, 'CANCELLED'), (7, 'REFUNDED')]),
+            model_name="receipt",
+            name="type",
+            field=models.SmallIntegerField(choices=[(3, "PAID"), (4, "CANCELLED"), (7, "REFUNDED")]),
         ),
     ]
