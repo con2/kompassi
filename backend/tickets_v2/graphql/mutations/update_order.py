@@ -2,6 +2,7 @@ from typing import Self
 
 import graphene
 from django import forms as django_forms
+from django.db import transaction
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
@@ -35,6 +36,7 @@ class UpdateOrder(graphene.Mutation):
 
     order = graphene.Field(LimitedOrderType)
 
+    @transaction.atomic
     @staticmethod
     def mutate(
         root,

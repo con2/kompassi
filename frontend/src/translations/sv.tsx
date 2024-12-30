@@ -295,6 +295,21 @@ const translations: Translations = {
             cancel: "Close",
           },
         },
+        deleteProduct: {
+          title: "Delete product",
+          confirmation: (productName: string) => (
+            <>
+              Are you sure you want to delete the product{" "}
+              <strong>{productName}</strong>? This action cannot be undone.
+            </>
+          ),
+          modalActions: {
+            submit: "Delete",
+            cancel: "Cancel",
+          },
+          cannotDelete:
+            "This product cannot be deleted because it has been sold.",
+        },
       },
       clientAttributes: {
         product: "Product",
@@ -359,6 +374,11 @@ const translations: Translations = {
         soldOut: "Utsålt",
         isAvailable: "Availability schedule",
         dragToReorder: "Drag to reorder",
+        newProductQuota: {
+          title: "Quota",
+          helpText:
+            "You can create a quota with the name of the product by setting the quota here. If you want to skip creating a quota and set the quotas later, you can leave this blank. Note that a product needs to be associated with at least one quota in order to become available.",
+        },
       },
       serverAttributes: {
         isAvailable: {
@@ -385,6 +405,21 @@ const translations: Translations = {
         },
         editQuota: "Muokkaa kiintiötä",
         saveQuota: "Tallenna kiintiö",
+        deleteQuota: {
+          title: "Delete quota",
+          confirmation: (quotaName: string) => (
+            <>
+              Are you sure you want to delete the quota{" "}
+              <strong>{quotaName}</strong>? This action cannot be undone.
+            </>
+          ),
+          modalActions: {
+            submit: "Delete",
+            cancel: "Cancel",
+          },
+          cannotDelete:
+            "This quota cannot be deleted because it has been associated with products. To delete, first unassociate the quota from all products.",
+        },
       },
       attributes: {
         name: "Nimi",

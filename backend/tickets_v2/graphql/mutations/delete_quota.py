@@ -1,23 +1,24 @@
 import graphene
+from django.db import transaction
+from django.http import HttpRequest
 
-from access.cbac import graphql_check_instance
 from core.models import Event
 
 from ...models.quota import Quota
-from ..quota_limited import LimitedQuotaType
 
 
 class DeleteQuotaInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
-    quota_id = graphene.Int(required=True)
+    quota_id = graphene.String(required=True)
 
 
 class DeleteQuota(graphene.Mutation):
     class Arguments:
         input = DeleteQuotaInput(required=True)
 
-    quota = graphene.Field(LimitedQuotaType)
+    id = graphene.NonNull(graphene.String)
 
+    @transaction.atomic
     @staticmethod
     def mutate(
         root,
@@ -26,12 +27,11 @@ class DeleteQuota(graphene.Mutation):
     ):
         event = Event.objects.get(slug=input.event_slug)
         quota = Quota.objects.get(event=event, id=input.quota_id)
-        graphql_check_instance(quota, info, "self", "delete")
 
-        # TODO can_delete
-        if quota.products.exists():
-            raise ValueError("Cannot delete quota with products")
+        request: HttpRequest = info.context
+        if not quota.can_be_deleted_by(request):
+            raise ValueError("Cannot delete quota")
 
         quota.delete()
 
-        return DeleteQuota(quota=quota)  # type: ignore
+        return DeleteQuota(id=input.quota_id)  # type: ignore

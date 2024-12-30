@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { updateProduct } from "./actions";
+import { deleteProduct, updateProduct } from "./actions";
 import { graphql } from "@/__generated__";
 import {
   AdminProductDetailFragment,
@@ -16,7 +16,10 @@ import ModalButton from "@/components/ModalButton";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -43,6 +46,8 @@ graphql(`
     maxPerOrder
     availableFrom
     availableUntil
+    canDelete
+
     quotas {
       id
     }
@@ -297,10 +302,28 @@ export default async function AdminProductDetailPage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <ViewHeading>
-        {translations.Tickets.admin.title}
-        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
+      <ViewHeadingActionsWrapper>
+        <ViewHeading>
+          {translations.Tickets.admin.title}
+          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+        </ViewHeading>
+        <ViewHeadingActions>
+          <ModalButton
+            title={t.actions.deleteProduct.title}
+            messages={t.actions.deleteProduct.modalActions}
+            action={
+              product.canDelete
+                ? deleteProduct.bind(null, locale, eventSlug, productId)
+                : undefined
+            }
+            className="btn btn-outline-danger"
+          >
+            {product.canDelete
+              ? t.actions.deleteProduct.confirmation(product.title)
+              : t.actions.deleteProduct.cannotDelete}
+          </ModalButton>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <TicketAdminTabs
         eventSlug={eventSlug}

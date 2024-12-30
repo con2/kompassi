@@ -72,3 +72,17 @@ class LimitedProductType(DjangoObjectType):
     count_available = graphene.Int(
         description=normalize_whitespace(resolve_count_available.__doc__ or ""),
     )
+
+    @staticmethod
+    def resolve_can_delete(product: Product, info):
+        """
+        Returns true if the product can be deleted.
+        A product can be deleted if it has not been sold at all.
+        """
+        request: HttpRequest = info.context
+        return product.can_be_deleted_by(request)
+
+    can_delete = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_delete.__doc__ or ""),
+    )

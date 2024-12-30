@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updateQuota } from "./actions";
+import { deleteQuota, updateQuota } from "./actions";
 import { graphql } from "@/__generated__";
 import { QuotaProductFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -9,10 +9,14 @@ import { Column, DataTable } from "@/components/DataTable";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
+import ModalButton from "@/components/ModalButton";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
 import { getTranslations } from "@/translations";
 
@@ -37,6 +41,7 @@ const query = graphql(`
           name
           countReserved
           quota: countTotal
+          canDelete
 
           products {
             ...QuotaProduct
@@ -133,10 +138,28 @@ export default async function AdminQuotaDetailPage({ params }: Props) {
 
   return (
     <ViewContainer>
-      <ViewHeading>
-        {translations.Tickets.admin.title}
-        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
+      <ViewHeadingActionsWrapper>
+        <ViewHeading>
+          {translations.Tickets.admin.title}
+          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+        </ViewHeading>
+        <ViewHeadingActions>
+          <ModalButton
+            title={t.actions.deleteQuota.title}
+            messages={t.actions.deleteQuota.modalActions}
+            action={
+              quota.canDelete
+                ? deleteQuota.bind(null, locale, eventSlug, params.quotaId)
+                : undefined
+            }
+            className="btn btn-outline-danger"
+          >
+            {quota.canDelete
+              ? t.actions.deleteQuota.confirmation(quota.name)
+              : t.actions.deleteQuota.cannotDelete}
+          </ModalButton>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <TicketAdminTabs
         eventSlug={eventSlug}

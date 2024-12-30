@@ -1,5 +1,6 @@
 import graphene
 from django import forms as django_forms
+from django.db import transaction
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_model
@@ -28,6 +29,7 @@ class CreateQuota(graphene.Mutation):
 
     quota = graphene.Field(LimitedQuotaType)
 
+    @transaction.atomic
     @staticmethod
     def mutate(
         root,

@@ -1,4 +1,5 @@
 import graphene
+from django.db import transaction
 
 from access.cbac import graphql_check_model
 from core.models import Event
@@ -18,6 +19,7 @@ class ReorderProducts(graphene.Mutation):
 
     products = graphene.NonNull(graphene.List(graphene.NonNull(LimitedProductType)))
 
+    @transaction.atomic
     @staticmethod
     def mutate(
         root,

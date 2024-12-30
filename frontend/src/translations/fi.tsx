@@ -276,6 +276,21 @@ const translations: Translations = {
             cancel: "Sulje",
           },
         },
+        deleteProduct: {
+          title: "Poista tuote",
+          confirmation: (productName: string) => (
+            <>
+              Haluatko varmasti poistaa tuotteen <strong>{productName}</strong>?
+              Poistamista ei voi perua.
+            </>
+          ),
+          modalActions: {
+            submit: "Poista",
+            cancel: "Peruuta",
+          },
+          cannotDelete:
+            "Tätä tuotetta ei voi poistaa, koska siihen on tehty tilauksia.",
+        },
       },
       clientAttributes: {
         product: "Tuote",
@@ -341,6 +356,11 @@ const translations: Translations = {
         soldOut: "Loppuunmyyty",
         isAvailable: "Saatavuusaika",
         dragToReorder: "Vedä ja pudota järjestääksesi tuotteita",
+        newProductQuota: {
+          title: "Kiintiö",
+          helpText:
+            "Voit luoda tuotteelle samannimisen kiintiön asettamalla kiintiön suuruuden tässä. Jos mieluummin jätät kiintiön luomatta ja asetat tuotteen kiintiöt myöhemmin, voit jättää tämän kentän tyhjäksi. Huomaathan, että tuote täytyy liittää vähintään yhteen kiintiöön jotta se näkyy kaupassa.",
+        },
       },
       serverAttributes: {
         isAvailable: {
@@ -367,6 +387,21 @@ const translations: Translations = {
         },
         editQuota: "Muokkaa kiintiötä",
         saveQuota: "Tallenna kiintiö",
+        deleteQuota: {
+          title: "Poista kiintiö",
+          confirmation: (quotaName: string) => (
+            <>
+              Haluatko varmasti poistaa kiintiön <strong>{quotaName}</strong>?
+              Poistamista ei voi perua.
+            </>
+          ),
+          modalActions: {
+            submit: "Poista",
+            cancel: "Peruuta",
+          },
+          cannotDelete:
+            "Tätä kiintiötä ei voi poistaa, koska siihen on liitetty tuotteita. Jotta kiintiö voidaan poistaa, tulee kaikki siihen liitetyt tuotteet ensin irrottaa kiintiöstä.",
+        },
       },
       attributes: {
         name: "Nimi",

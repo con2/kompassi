@@ -46,7 +46,6 @@ DATABASES = {
             "sslmode": env("POSTGRES_SSLMODE", default="allow"),
         },
         "ENGINE": "django.db.backends.postgresql",
-        "ATOMIC_MUTATIONS": True,  # graphene_django
     },
 }
 

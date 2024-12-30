@@ -343,11 +343,6 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                 if not paid_stamp:
                     raise ValueError("Cannot refund an order that has not been paid")
 
-                # FIXME Paytrail API usage occurs within transaction
-                # Disable ATOMIC_REQUESTS and manage transactions in GraphQL manually
-                # 1. Save request stamp, commit
-                # 2. Talk to Paytrail outside of transaction
-                # 3. Save response stamp, commit
                 prepared_request = self.meta.provider.prepare_refund(paid_stamp)
                 request_stamp = prepared_request.request_stamp
             case _:

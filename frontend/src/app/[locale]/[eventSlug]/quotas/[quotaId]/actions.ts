@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const mutation = graphql(`
+const updateQuotaMutation = graphql(`
   mutation UpdateQuota($input: UpdateQuotaInput!) {
     updateQuota(input: $input) {
       quota {
@@ -27,9 +28,33 @@ export async function updateQuota(
   };
 
   await getClient().mutate({
-    mutation,
+    mutation: updateQuotaMutation,
     variables: { input },
   });
 
   revalidatePath(`/${locale}/${eventSlug}/quotas/${quotaId}`);
+}
+
+const deleteQuotaMutation = graphql(`
+  mutation DeleteQuota($input: DeleteQuotaInput!) {
+    deleteQuota(input: $input) {
+      id
+    }
+  }
+`);
+
+export async function deleteQuota(
+  locale: string,
+  eventSlug: string,
+  quotaId: string,
+) {
+  await getClient().mutate({
+    mutation: deleteQuotaMutation,
+    variables: {
+      input: { eventSlug, quotaId },
+    },
+  });
+
+  revalidatePath(`/${locale}/${eventSlug}/quotas`);
+  redirect(`/${eventSlug}/quotas`);
 }

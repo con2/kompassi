@@ -20,6 +20,8 @@ class CancelAndRefundOrder(graphene.Mutation):
 
     order = graphene.Field(LimitedOrderType)
 
+    # NOTE: cancel_and_refund manages its own transactions
+    # @transaction.atomic
     @staticmethod
     def mutate(
         root,
@@ -30,5 +32,7 @@ class CancelAndRefundOrder(graphene.Mutation):
         order = Order.objects.get(event=event, id=input.order_id)
         refund_type = RefundType(input.refund_type)
         graphql_check_instance(order, info, "self", "update")
+
         order.cancel_and_refund(refund_type)
+
         return CancelAndRefundOrder(order=order)  # type: ignore

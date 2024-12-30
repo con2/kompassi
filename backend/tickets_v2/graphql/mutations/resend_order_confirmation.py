@@ -1,4 +1,5 @@
 import graphene
+from django.db import transaction
 
 from access.cbac import graphql_check_instance
 from core.models.event import Event
@@ -21,6 +22,7 @@ class ResendOrderConfirmation(graphene.Mutation):
     order = graphene.Field(LimitedOrderType)
     receipt = graphene.Field(LimitedReceiptType)
 
+    @transaction.atomic
     @staticmethod
     def mutate(
         root,

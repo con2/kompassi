@@ -8,6 +8,7 @@ import pydantic
 from django.db import connection, models
 from django.http import HttpRequest
 
+from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
 from tickets_v2.optimized_server.utils.uuid7 import uuid7
 
@@ -131,3 +132,11 @@ class Quota(models.Model):
 
     def get_counters(self, request: HttpRequest) -> QuotaCounters:
         return QuotaCounters.get_for_event(self.event_id, request)[self.id]
+
+    def can_be_deleted_by(self, request: HttpRequest) -> bool:
+        return not self.products.exists() and is_graphql_allowed_for_model(
+            request.user,
+            instance=self,
+            operation="delete",
+            field="self",
+        )

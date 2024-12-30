@@ -2,6 +2,8 @@ import graphene
 from django.http import HttpRequest
 from graphene_django import DjangoObjectType
 
+from core.utils.text_utils import normalize_whitespace
+
 from ..models.quota import Quota
 
 
@@ -40,3 +42,17 @@ class LimitedQuotaType(DjangoObjectType):
         return quota.get_counters(request).count_total
 
     count_total = graphene.NonNull(graphene.Int)
+
+    @staticmethod
+    def resolve_can_delete(quota: Quota, info):
+        """
+        Returns true if the product can be deleted.
+        A product can be deleted if it has not been sold at all.
+        """
+        request: HttpRequest = info.context
+        return quota.can_be_deleted_by(request)
+
+    can_delete = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_delete.__doc__ or ""),
+    )

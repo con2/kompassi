@@ -3,7 +3,7 @@ from typing import Self
 
 import graphene
 from django import forms as django_forms
-from django.db import models
+from django.db import models, transaction
 from django.forms.models import model_to_dict
 from graphene.types.generic import GenericScalar
 
@@ -87,6 +87,7 @@ class UpdateProduct(graphene.Mutation):
 
     product = graphene.Field(LimitedProductType)
 
+    @transaction.atomic
     @staticmethod
     def mutate(
         root,

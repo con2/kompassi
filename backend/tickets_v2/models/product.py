@@ -8,6 +8,7 @@ from django.db import connection, models
 from django.http import HttpRequest
 from django.utils.timezone import now
 
+from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
 
 from .quota import Quota
@@ -118,3 +119,11 @@ class Product(models.Model):
     def get_counters(self, request: HttpRequest | None) -> ProductCounters:
         effective_product_id = self.superseded_by_id or self.id
         return ProductCounters.get_for_event(self.event_id, request)[effective_product_id]
+
+    def can_be_deleted_by(self, request: HttpRequest) -> bool:
+        return self.get_counters(request).count_reserved == 0 and is_graphql_allowed_for_model(
+            request.user,
+            instance=self,
+            operation="delete",
+            field="self",
+        )

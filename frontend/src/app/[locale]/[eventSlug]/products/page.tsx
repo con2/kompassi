@@ -1,5 +1,4 @@
 import { Temporal } from "@js-temporal/polyfill";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { createProduct, reorderProducts } from "./actions";
@@ -8,12 +7,10 @@ import { graphql } from "@/__generated__";
 import { ProductListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
-import { ReorderableDataTable } from "@/components/ReorderableDataTable";
 import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
@@ -21,7 +18,6 @@ import ViewHeading, {
   ViewHeadingActions,
   ViewHeadingActionsWrapper,
 } from "@/components/ViewHeading";
-import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -131,6 +127,7 @@ export default async function ProductsPage({ params }: Props) {
     {
       slug: "title",
       title: t.clientAttributes.title,
+      required: true,
       type: "SingleLineText",
     },
     {
@@ -142,8 +139,14 @@ export default async function ProductsPage({ params }: Props) {
     {
       slug: "price",
       type: "DecimalField",
+      required: true,
       decimalPlaces: 2,
       ...t.clientAttributes.unitPrice,
+    },
+    {
+      slug: "quota",
+      type: "NumberField",
+      ...t.clientAttributes.newProductQuota,
     },
   ];
 

@@ -1,24 +1,24 @@
 import graphene
+from django.db import transaction
 from django.http import HttpRequest
 
-from access.cbac import graphql_check_instance
 from core.models import Event
 
 from ...models.product import Product
-from ..product_limited import LimitedProductType
 
 
 class DeleteProductInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
-    product_id = graphene.Int(required=True)
+    product_id = graphene.String(required=True)
 
 
 class DeleteProduct(graphene.Mutation):
     class Arguments:
         input = DeleteProductInput(required=True)
 
-    product = graphene.Field(LimitedProductType)
+    id = graphene.NonNull(graphene.String)
 
+    @transaction.atomic
     @staticmethod
     def mutate(
         root,
@@ -27,13 +27,11 @@ class DeleteProduct(graphene.Mutation):
     ):
         event = Event.objects.get(slug=input.event_slug)
         product = Product.objects.get(event=event, id=input.product_id, superseded_by=None)
-        graphql_check_instance(product, info, "self", "delete")
 
-        # TODO can_delete
         request: HttpRequest = info.context
-        if product.get_counters(request).count_reserved > 0:
-            raise ValueError("Cannot delete a product of which even a single unit has been sold")
+        if not product.can_be_deleted_by(request):
+            raise ValueError("Cannot delete product")
 
         product.delete()
 
-        return DeleteProduct(product=product)  # type: ignore
+        return DeleteProduct(id=input.product_id)  # type: ignore

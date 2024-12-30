@@ -88,9 +88,9 @@ def is_graphql_allowed(
     operation: Operation,
     app: str,
     model: str,
-    field: str,
+    field: str = "self",
     **extra: str,
-):
+) -> bool:
     claims = make_graphql_claims(
         scope=scope,
         operation=operation,
@@ -100,26 +100,32 @@ def is_graphql_allowed(
         **extra,
     )
 
-    return CBACEntry.is_allowed(user, claims), claims
+    return CBACEntry.is_allowed(user, claims)
 
 
 class HasScope(Protocol):
     scope: Scope
 
 
+class HasImmutableScope(Protocol):
+    @property
+    def scope(self) -> Scope: ...
+
+
 def is_graphql_allowed_for_model(
     user,
     *,
-    instance: HasScope,
+    instance: HasScope | HasImmutableScope,
     operation: Operation,
-    field: str,
+    field: str = "self",
     **extra: str,
-):
+) -> bool:
     model_name = instance.__class__.__name__
     app = instance.__class__._meta.app_label  # type: ignore
+    slug = getattr(instance, "slug", None)
+    extra = dict(slug=slug) if slug is not None else {}
 
-    return is_graphql_allowed(
-        user,
+    claims = make_graphql_claims(
         scope=instance.scope,
         operation=operation,
         app=app,
@@ -128,6 +134,8 @@ def is_graphql_allowed_for_model(
         **extra,
     )
 
+    return CBACEntry.is_allowed(user, claims)
+
 
 # TODO(#324) rethink
 def graphql_check_model(
@@ -135,19 +143,20 @@ def graphql_check_model(
     scope: Scope,
     info: ResolveInfo | HttpRequest,
     operation: Operation = "query",
+    field: str = "self",
 ):
     request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
     app = model._meta.app_label
 
-    allowed, claims = is_graphql_allowed(
-        request.user,
+    claims = make_graphql_claims(
         scope=scope,
         operation=operation,
         app=app,
-        model=model.__name__,
-        field="self",
+        model=model,
+        field=field,
     )
-    if not allowed:
+
+    if not CBACEntry.is_allowed(request.user, claims):
         emit(
             "access.cbac.denied",
             request=request,
@@ -159,7 +168,7 @@ def graphql_check_model(
 
 # TODO(#324) rethink
 def graphql_check_instance(
-    instance,
+    instance: HasScope | HasImmutableScope,
     info: ResolveInfo | HttpRequest,
     field: str,
     operation: Operation = "query",
@@ -169,16 +178,21 @@ def graphql_check_instance(
     for operations targeting the entire model instance.
     """
     request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
-    extra = dict(slug=instance.slug) if hasattr(instance, "slug") else {}
+    model_name = instance.__class__.__name__
+    app = instance.__class__._meta.app_label  # type: ignore
+    slug = getattr(instance, "slug", None)
+    extra = dict(slug=slug) if slug is not None else {}
 
-    allowed, claims = is_graphql_allowed_for_model(
-        request.user,
-        instance=instance,
+    claims = make_graphql_claims(
+        scope=instance.scope,
         operation=operation,
+        app=app,
+        model=model_name,
         field=field,
         **extra,
     )
-    if not allowed:
+
+    if not CBACEntry.is_allowed(request.user, claims):
         emit(
             "access.cbac.denied",
             request=request,

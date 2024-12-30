@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const mutation = graphql(`
+const updateProductMutation = graphql(`
   mutation UpdateProduct($input: UpdateProductInput!) {
     updateProduct(input: $input) {
       product {
@@ -22,7 +22,7 @@ export async function updateProduct(
   formData: FormData,
 ) {
   const result = await getClient().mutate({
-    mutation,
+    mutation: updateProductMutation,
     variables: {
       input: {
         eventSlug,
@@ -40,4 +40,35 @@ export async function updateProduct(
   if (productId !== newProductId) {
     redirect(`/${locale}/${eventSlug}/products/${newProductId}`);
   }
+}
+
+const deleteProductMutation = graphql(`
+  mutation DeleteProduct($input: DeleteProductInput!) {
+    deleteProduct(input: $input) {
+      id
+    }
+  }
+`);
+
+export async function deleteProduct(
+  locale: string,
+  eventSlug: string,
+  productId: string,
+) {
+  try {
+    await getClient().mutate({
+      mutation: deleteProductMutation,
+      variables: {
+        input: {
+          eventSlug,
+          productId,
+        },
+      },
+    });
+  } catch (error: any) {
+    console.error(await error.response.json());
+  }
+
+  revalidatePath(`/${locale}/${eventSlug}/products`);
+  redirect(`/${eventSlug}/products`);
 }

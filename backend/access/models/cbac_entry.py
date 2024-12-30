@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
 from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.utils.timezone import now
@@ -57,7 +57,7 @@ class CBACEntry(models.Model):
     @classmethod
     def get_entries(
         cls,
-        user: AbstractUser,
+        user: AbstractBaseUser | AnonymousUser,
         claims: Claims | None = None,
         t: datetime | None = None,
         **extra_criteria,
@@ -81,11 +81,20 @@ class CBACEntry(models.Model):
         return queryset
 
     @classmethod
-    def is_allowed(cls, user: AbstractUser, claims: Claims, t: datetime | None = None):
+    def is_allowed(
+        cls,
+        user: AbstractBaseUser | AnonymousUser,
+        claims: Claims,
+        t: datetime | None = None,
+    ) -> bool:
         if not user.is_authenticated:
             return False
 
-        return cls.get_entries(user, claims, t=t).exists()
+        return cls.get_entries(
+            user,  # type: ignore
+            claims,
+            t=t,
+        ).exists()
 
     @classmethod
     def ensure_admin_group_privileges(cls, t: datetime | None = None):
