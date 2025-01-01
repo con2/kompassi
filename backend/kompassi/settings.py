@@ -207,6 +207,7 @@ INSTALLED_APPS = (
     "organizations.tracon_ry",
     "organizations.kotae_ry",
     "organizations.ropecon_ry",
+    "organizations.cosmocon_ry",
     # events
     "events.kuplii2018",
     "events.tracon2018",
