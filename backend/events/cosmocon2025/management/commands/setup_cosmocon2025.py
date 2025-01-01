@@ -17,6 +17,7 @@ def mkpath(*parts):
 class Setup:
     def __init__(self):
         self._ordering = 0
+        self.dev_tickets = False
 
     def get_ordering_number(self):
         self._ordering += 10
@@ -30,6 +31,7 @@ class Setup:
         # self.setup_programme()
         # self.setup_badges()
         # self.setup_tickets()
+        self.setup_tickets_v2()
         self.setup_intra()
         self.setup_forms()
 
@@ -185,6 +187,157 @@ class Setup:
         #     jv_job_category.required_qualifications.set([jv_kortti_qualification])
 
         labour_event_meta.create_groups()
+
+    def setup_tickets(self):
+        from tickets.models import LimitGroup, Product, TicketsEventMeta
+
+        (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
+
+        defaults = dict(
+            admin_group=tickets_admin_group,
+            reference_number_template="2025{:06d}",
+            contact_email="Cosmocon <info@cosmocon.fi>",
+            ticket_free_text="Tämä on sähköinen lippusi Cosmocon 2025 -tapahtumaan. Sähköinen lippu vaihdetaan\n"
+            "rannekkeeseen lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai\n"
+            "näyttää sen älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole\n"
+            "mahdollista, ota ylös kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva\n"
+            "Kissakoodi ja ilmoita se lipunvaihtopisteessä.\n\n"
+            "Tervetuloa Cosmoconiin!",
+            front_page_text="<h2>Tervetuloa ostamaan pääsylippuja Cosmocon 2025 -tapahtumaan!</h2>"
+            "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+            "<p>Lue lisää tapahtumasta <a href='https://cosmocon.fi'>Cosmocon 2025 -tapahtuman kotisivuilta</a>.</p>",
+        )
+
+        if self.test:
+            t = now()
+            defaults.update(
+                ticket_sales_starts=t - timedelta(days=60),
+                ticket_sales_ends=t + timedelta(days=60),
+            )
+
+        meta, _ = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+
+        def limit_group(description, limit):
+            limit_group, _ = LimitGroup.objects.get_or_create(
+                event=self.event,
+                description=description,
+                defaults=dict(limit=limit),
+            )
+            return limit_group
+
+        viikonloppulippu, _ = Product.objects.get_or_create(
+            event=self.event,
+            name="LA+SU-lippu",
+            defaults=dict(
+                description="LA+SU-lippu oikeuttaa sisäänpääsyyn molempina tapahtumapäivinä 8-9.2.2025. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
+                price_cents=1500,
+                electronic_ticket=True,
+                available=True,
+                ordering=10,
+            ),
+        )
+        if not viikonloppulippu.limit_groups.exists():
+            viikonloppulippu.limit_groups.set([limit_group("Viikonloppuliput", 275)])
+
+        lauantailippu, _ = Product.objects.get_or_create(
+            event=self.event,
+            name="LA-lippu",
+            defaults=dict(
+                description="LA-lippu oikeuttaa sisäänpääsyyn lauantaina 8.2.2025. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
+                price_cents=1000,
+                electronic_ticket=True,
+                available=True,
+                ordering=20,
+            ),
+        )
+        if not lauantailippu.limit_groups.exists():
+            lauantailippu.limit_groups.set([limit_group("Lauantailiput", 285)])
+
+        sunnuntailippu, _ = Product.objects.get_or_create(
+            event=self.event,
+            name="SU-lippu",
+            defaults=dict(
+                description="SU-lippu oikeuttaa sisäänpääsyyn sunnuntaina 9.2.2025. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
+                price_cents=800,
+                electronic_ticket=True,
+                available=True,
+                ordering=30,
+            ),
+        )
+        if not sunnuntailippu.limit_groups.exists():
+            sunnuntailippu.limit_groups.set([limit_group("Sunnuntailiput", 285)])
+
+    def setup_tickets_v2(self):
+        from decimal import Decimal
+
+        from tickets_v2.models.meta import TicketsV2EventMeta
+        from tickets_v2.models.quota import Quota
+        from tickets_v2.optimized_server.models.enums import PaymentProvider
+
+        (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
+        meta, _ = TicketsV2EventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                provider=PaymentProvider.PAYTRAIL.value,
+            ),
+        )
+        meta.ensure_partitions()
+
+        def get_or_create_quota(name, amount) -> Quota:
+            quota, created = Quota.objects.get_or_create(
+                event=self.event,
+                name=name,
+            )
+            quota.full_clean()
+            if created:
+                quota.set_quota(amount)
+            quota.full_clean()
+            return quota
+
+        two_day_ticket_quota: Quota = get_or_create_quota("LA+SU-liput", 275)
+        saturday_ticket_quota: Quota = get_or_create_quota("LA-liput", 285)
+        sunday_ticket_quota: Quota = get_or_create_quota("SU-liput", 285)
+
+        if self.test or self.dev_tickets:
+            available_from = now()
+            available_until = now() + timedelta(days=1)
+        else:
+            available_from = datetime(2024, 12, 5, 0, 0, tzinfo=self.tz)  # FIXME
+            available_until = datetime(2025, 2, 8, 0, 0, tzinfo=self.tz)
+
+        two_day_ticket_quota.products.get_or_create(
+            event=self.event,
+            title="Cosmocon (2025) - LA+SU",
+            defaults=dict(
+                price=Decimal("15.00"),
+                available_from=available_from,
+                available_until=available_until,
+            ),
+        )
+        two_day_ticket_quota.full_clean()
+
+        saturday_ticket_quota.products.get_or_create(
+            event=self.event,
+            title="Cosmocon (2025) - LA",
+            defaults=dict(
+                price=Decimal("10.00"),
+                available_from=available_from,
+                available_until=available_until,
+            ),
+        )
+        saturday_ticket_quota.full_clean()
+
+        sunday_ticket_quota.products.get_or_create(
+            event=self.event,
+            title="Cosmocon (2025) - SU",
+            defaults=dict(
+                price=Decimal("8.00"),
+                available_from=available_from,
+                available_until=available_until,
+            ),
+        )
+        sunday_ticket_quota.full_clean()
 
     def setup_intra(self):
         from intra.models import IntraEventMeta
