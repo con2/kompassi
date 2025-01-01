@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime, timedelta
 
@@ -8,6 +9,8 @@ from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from core.utils.pkg_resources_compat import resource_stream
+
+logger = logging.getLogger("kompassi")
 
 
 def mkpath(*parts):
@@ -268,6 +271,9 @@ class Setup:
             sunnuntailippu.limit_groups.set([limit_group("Sunnuntailiput", 285)])
 
     def setup_tickets_v2(self):
+        if self.dev_tickets:
+            logger.warning("--dev-tickets mode active! Tickets have zero price and no payment provider is configured.")
+
         from decimal import Decimal
 
         from tickets_v2.models.meta import TicketsV2EventMeta
@@ -279,7 +285,7 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
-                provider=PaymentProvider.PAYTRAIL.value,
+                provider_id=PaymentProvider.NONE if self.dev_tickets else PaymentProvider.PAYTRAIL.value,
             ),
         )
         meta.ensure_partitions()
@@ -310,7 +316,7 @@ class Setup:
             event=self.event,
             title="Cosmocon (2025) - LA+SU",
             defaults=dict(
-                price=Decimal("15.00"),
+                price=Decimal("0.00") if self.dev_tickets else Decimal("15.00"),
                 available_from=available_from,
                 available_until=available_until,
             ),
@@ -321,7 +327,7 @@ class Setup:
             event=self.event,
             title="Cosmocon (2025) - LA",
             defaults=dict(
-                price=Decimal("10.00"),
+                price=Decimal("0.00") if self.dev_tickets else Decimal("10.00"),
                 available_from=available_from,
                 available_until=available_until,
             ),
@@ -332,7 +338,7 @@ class Setup:
             event=self.event,
             title="Cosmocon (2025) - SU",
             defaults=dict(
-                price=Decimal("8.00"),
+                price=Decimal("0.00") if self.dev_tickets else Decimal("8.00"),
                 available_from=available_from,
                 available_until=available_until,
             ),
@@ -463,5 +469,8 @@ class Command(BaseCommand):
     args = ""
     help = "Setup Cosmocon2025 specific stuff"
 
+    def add_arguments(self, parser):
+        parser.add_argument("--dev-tickets", action="store_true", default=False)
+
     def handle(self, *args, **opts):
-        Setup().setup(test=settings.DEBUG)
+        Setup().setup(test=settings.DEBUG, dev_tickets=opts["dev_tickets"])
