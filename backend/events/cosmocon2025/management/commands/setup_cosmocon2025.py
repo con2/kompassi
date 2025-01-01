@@ -26,9 +26,10 @@ class Setup:
         self._ordering += 10
         return self._ordering
 
-    def setup(self, test=False):
+    def setup(self, test=False, dev_tickets: bool = False):
         self.test = test
         self.tz = tzlocal()
+        self.dev_tickets = dev_tickets
         self.setup_core()
         self.setup_labour()
         # self.setup_programme()
