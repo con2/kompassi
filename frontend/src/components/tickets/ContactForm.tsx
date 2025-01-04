@@ -10,7 +10,7 @@ interface Customer {
 }
 
 interface Props {
-  termsAndConditionsUrl: string;
+  termsAndConditionsUrl?: string;
   messages: {
     Tickets: Translations["Tickets"];
     SchemaForm: Translations["SchemaForm"];
@@ -23,7 +23,7 @@ interface Props {
 function getContactFormFields(
   t: Translations["Tickets"]["Order"],
   isAdmin: boolean,
-  termsAndConditionsUrl: string,
+  termsAndConditionsUrl?: string,
 ): Field[] {
   const fields: Field[] = [
     {
@@ -52,7 +52,7 @@ function getContactFormFields(
     },
   ];
 
-  if (termsAndConditionsUrl) {
+  if (termsAndConditionsUrl && !isAdmin) {
     fields.push({
       slug: "acceptTermsAndConditions",
       type: "SingleCheckbox",
