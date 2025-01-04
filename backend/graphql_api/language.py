@@ -46,3 +46,26 @@ def get_language_choices():
 
 # NOTE: sync with kompassi.settings.LANGUAGE_CODE
 DEFAULT_LANGUAGE: SupportedLanguageCode = "en"
+
+
+def getattr_message_in_language(obj, attr: str, lang: str) -> str:
+    """
+    A version of core.utils.locale_utils.getattr_message_in_language that doesn't rely
+    on Django.
+
+    Instead of using django.utils.translation.get_language for the default,
+    it uses a constant DEFAULT_LANGUAGE.
+
+    There is no default for `lang`. Supply either DEFAULT_LANGUAGE or get_language().
+    """
+    if lang is None:
+        lang = DEFAULT_LANGUAGE
+
+    if found := getattr(obj, f"{attr}_{lang}", ""):
+        return found
+
+    for language_code in SUPPORTED_LANGUAGE_CODES:
+        if found := getattr(obj, f"{attr}_{language_code}", ""):
+            return found
+
+    return ""

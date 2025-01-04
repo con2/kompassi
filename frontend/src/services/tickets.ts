@@ -22,14 +22,16 @@ export interface Product {
 export interface GetProductsResponse {
   event: {
     name: string;
+    termsAndConditionsUrl: string;
   };
   products: Product[];
 }
 
 export async function getProducts(
+  locale: string,
   eventSlug: string,
 ): Promise<GetProductsResponse> {
-  const url = `${ticketsBaseUrl}/api/tickets-v2/${eventSlug}/products/`;
+  const url = `${ticketsBaseUrl}/api/tickets-v2/${eventSlug}/products/?language=${locale}`;
   const response = await fetch(url, { headers });
   if (response.ok) {
     return response.json();

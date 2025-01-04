@@ -3,6 +3,9 @@ select
   e.slug,
   e.name,
   m.provider_id,
+  m.terms_and_conditions_url_en,
+  m.terms_and_conditions_url_fi,
+  m.terms_and_conditions_url_sv,
   coalesce(p.checkout_merchant, '') as paytrail_merchant,
   coalesce(p.checkout_password, '') as paytrail_password
 from

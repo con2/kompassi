@@ -21,6 +21,11 @@ class Event(pydantic.BaseModel):
     # TODO consider multiple payment providers per event in the future
     provider_id: PaymentProvider
 
+    # NOTE SUPPORTED_LANGUAGES
+    terms_and_conditions_url_en: str
+    terms_and_conditions_url_fi: str
+    terms_and_conditions_url_sv: str
+
     paytrail_merchant: str
     paytrail_password: str
 
@@ -58,15 +63,9 @@ class Event(pydantic.BaseModel):
             await cursor.execute(cls.query)
 
             cls.cache.clear()
-            async for id, slug, name, provider_id, pt_merc, pt_pwd in cursor:
-                cls.cache[slug] = cls.cache[id] = cls(
-                    id=id,
-                    slug=slug,
-                    name=name,
-                    provider_id=provider_id,
-                    paytrail_merchant=pt_merc,
-                    paytrail_password=pt_pwd,
-                )
+            async for row in cursor:
+                event = cls(**dict(zip(cls.model_fields, row, strict=True)))  # type: ignore
+                cls.cache[event.slug] = cls.cache[event.id] = event
 
         return cls.cache
 

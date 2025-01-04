@@ -13,8 +13,7 @@ from django.utils.timezone import now
 
 from core.models import Event
 from core.utils import validate_slug
-from core.utils.locale_utils import getattr_message_in_language
-from graphql_api.language import SUPPORTED_LANGUAGES
+from graphql_api.language import SUPPORTED_LANGUAGES, getattr_message_in_language
 
 if TYPE_CHECKING:
     from programme.models.programme import Programme

@@ -20,6 +20,11 @@ class TicketsV2EventMeta(EventMetaBase):
         default=PaymentProvider.NONE,
     )
 
+    # NOTE SUPPORTED_LANGUAGES
+    terms_and_conditions_url_en = models.TextField(default="")
+    terms_and_conditions_url_fi = models.TextField(default="")
+    terms_and_conditions_url_sv = models.TextField(default="")
+
     use_cbac = True
 
     def ensure_partitions(self):

@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets;
-  const { event } = await getProducts(eventSlug);
+  const { event } = await getProducts(locale, eventSlug);
 
   const title = getPageTitle({ translations, event, viewTitle: t.title });
 
@@ -36,7 +36,7 @@ export default async function TicketsPage({ params }: Props) {
   const t = translations.Tickets.Order;
   const producT = translations.Tickets.Product;
   const tickeT = translations.Tickets;
-  const { event, products } = await getProducts(eventSlug);
+  const { event, products } = await getProducts(locale, eventSlug);
 
   if (
     products.length === 0 ||
@@ -116,7 +116,10 @@ export default async function TicketsPage({ params }: Props) {
         </table>
 
         <h2 className="mb-4">{t.contactForm.title}</h2>
-        <ContactForm messages={translations} />
+        <ContactForm
+          messages={translations}
+          termsAndConditionsUrl={event.termsAndConditionsUrl}
+        />
 
         <div className="d-grid gap-2 mb-4">
           <button className="btn btn-primary btn-lg" type="submit">

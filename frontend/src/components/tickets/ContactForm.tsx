@@ -10,6 +10,7 @@ interface Customer {
 }
 
 interface Props {
+  termsAndConditionsUrl: string;
   messages: {
     Tickets: Translations["Tickets"];
     SchemaForm: Translations["SchemaForm"];
@@ -22,8 +23,9 @@ interface Props {
 function getContactFormFields(
   t: Translations["Tickets"]["Order"],
   isAdmin: boolean,
+  termsAndConditionsUrl: string,
 ): Field[] {
-  return [
+  const fields: Field[] = [
     {
       slug: "firstName",
       type: "SingleLineText",
@@ -49,6 +51,19 @@ function getContactFormFields(
       title: t.attributes.phone.title,
     },
   ];
+
+  if (termsAndConditionsUrl) {
+    fields.push({
+      slug: "acceptTermsAndConditions",
+      type: "SingleCheckbox",
+      required: true,
+      title: t.attributes.acceptTermsAndConditions.checkboxLabel(
+        termsAndConditionsUrl,
+      ),
+    });
+  }
+
+  return fields;
 }
 
 export default function ContactForm({
@@ -56,8 +71,13 @@ export default function ContactForm({
   isAdmin,
   values,
   className,
+  termsAndConditionsUrl,
 }: Props) {
-  const fields = getContactFormFields(messages.Tickets.Order, !!isAdmin);
+  const fields = getContactFormFields(
+    messages.Tickets.Order,
+    !!isAdmin,
+    termsAndConditionsUrl,
+  );
 
   return (
     <SchemaForm

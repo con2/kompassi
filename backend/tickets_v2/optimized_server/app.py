@@ -3,9 +3,11 @@ import os
 from typing import Annotated, Literal
 from uuid import UUID
 
-from fastapi import Depends, FastAPI, HTTPException, Path
+from fastapi import Depends, FastAPI, HTTPException, Path, Query
 from starlette.requests import Request
 from starlette.responses import PlainTextResponse, RedirectResponse
+
+from graphql_api.language import DEFAULT_LANGUAGE, getattr_message_in_language
 
 from .db import DB, lifespan
 from .excs import InvalidProducts, NotEnoughTickets, ProviderCannot
@@ -69,17 +71,22 @@ async def status():
     return {"status": "OK"}
 
 
+_Language = Annotated[str, Query()]
+
+
 @app.get("/api/tickets-v2/{event_slug}/products/")
 async def get_products(
     event: _Event,
     db: DB,
     _api_key_verified: _ApiKeyVerified,
+    language: _Language = DEFAULT_LANGUAGE,
 ):
     products = await Product.get_products(db, event.id)
 
     return {
         "event": {
             "name": event.name,
+            "termsAndConditionsUrl": getattr_message_in_language(event, "terms_and_conditions_url", language),
         },
         "products": [product.model_dump(by_alias=True) for product in products],
     }

@@ -53,21 +53,3 @@ def get_message_in_language(
             return found
 
     return next(iter(messages.values()), None)
-
-
-def getattr_message_in_language(obj, attr: str, lang: str | None = None) -> str:
-    """
-    Like get_message_in_language, except different languages are stored as separate
-    attributes on the object.
-    """
-    if lang is None:
-        lang = get_language()
-
-    if found := getattr(obj, f"{attr}_{lang}", ""):
-        return found
-
-    for language in SUPPORTED_LANGUAGES:
-        if found := getattr(obj, f"{attr}_{language.code}", ""):
-            return found
-
-    return ""

@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { FormsFormLayoutChoices } from "@/__generated__/graphql";
 
 export type FieldType =
@@ -52,7 +53,7 @@ export type HtmlType =
 interface BaseField {
   type: FieldType;
   slug: string;
-  title?: string;
+  title?: ReactNode;
   summaryTitle?: string;
   helpText?: string;
   required?: boolean;

@@ -1,9 +1,9 @@
 from datetime import datetime, tzinfo
 from typing import Protocol
 
-from core.utils.locale_utils import get_message_in_language, getattr_message_in_language
+from core.utils.locale_utils import get_message_in_language
 
-from .language import DEFAULT_LANGUAGE
+from .language import DEFAULT_LANGUAGE, getattr_message_in_language
 
 
 def resolve_localized_field(field_name: str):
@@ -32,7 +32,7 @@ def resolve_localized_field_getattr(field_name_prefix: str):
     """
 
     def _resolve(parent, info, lang: str | None = None) -> str:
-        return getattr_message_in_language(parent, field_name_prefix, lang)
+        return getattr_message_in_language(parent, field_name_prefix, lang or DEFAULT_LANGUAGE)
 
     return _resolve
 

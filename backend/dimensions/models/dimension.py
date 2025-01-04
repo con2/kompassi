@@ -7,9 +7,8 @@ from django.contrib import admin
 from django.db import models
 from django.utils.translation import get_language
 
-from core.utils.locale_utils import getattr_message_in_language
 from core.utils.model_utils import make_slug_field
-from graphql_api.language import SUPPORTED_LANGUAGE_CODES
+from graphql_api.language import SUPPORTED_LANGUAGE_CODES, getattr_message_in_language
 
 from .scope import Scope
 from .universe import Universe
@@ -131,7 +130,7 @@ class Dimension(models.Model):
 
     @admin.display(description="Title")
     def admin_get_title(self):
-        return getattr_message_in_language(self, "title")
+        return getattr_message_in_language(self, "title", get_language())
 
     @admin.display(description="Scope", ordering="universe__scope__slug")
     def admin_get_scope(self):
