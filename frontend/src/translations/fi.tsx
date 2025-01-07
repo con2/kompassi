@@ -262,7 +262,7 @@ const translations: Translations = {
         newProduct: {
           title: "Uusi tuote",
           modalActions: {
-            submit: "Luo tuetc",
+            submit: "Luo tuote",
             cancel: "Peruuta",
           },
         },
