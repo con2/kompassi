@@ -1,6 +1,14 @@
 select
   q.id as quota_id,
-  coalesce(sum(case when t.order_id is not null and o.cached_status = 2 then 1 else 0 end), 0) as count_paid,
+  coalesce(
+    sum(
+      case
+        when o.cached_status = 3 then 1 -- PaymentStatus.PAID
+        else 0
+      end
+    ),
+    0
+  ) as count_paid,
   coalesce(sum(case when t.order_id is not null then 1 else 0 end), 0) as count_reserved,
   coalesce(sum(case when t.order_id is null then 1 else 0 end), 0) as count_available
 from
