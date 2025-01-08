@@ -216,10 +216,6 @@ class Setup:
             ),
         )
 
-        # remove for frostbite2025
-        kaatoilmo.active_until = active_until
-        kaatoilmo.save()
-
         majoitus, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="tyovoimamajoitus",
@@ -235,10 +231,6 @@ class Setup:
                 active_until=active_until,
             ),
         )
-
-        # remove for frostbite2025
-        majoitus.active_until = active_until
-        majoitus.save()
 
     def setup_badges(self):
         from badges.models import BadgesEventMeta
