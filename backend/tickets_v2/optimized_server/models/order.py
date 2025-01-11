@@ -179,7 +179,7 @@ class Order(pydantic.BaseModel, populate_by_name=True):
         return order_number_to_reference(self.created_at, self.order_number)
 
     def get_url(self, event_slug: str):
-        return f"{KOMPASSI_V2_BASE_URL}/{event_slug}/orders/{self.id}/"
+        return f"{KOMPASSI_V2_BASE_URL}/{event_slug}/orders/{self.id}"
 
 
 class OrderWithCustomer(Order):
