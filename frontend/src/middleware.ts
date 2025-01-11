@@ -1,11 +1,7 @@
 import createMiddleware from "next-intl/middleware";
-import { supportedLanguages } from "./translations";
+import { routing } from "./i18n/routing";
 
-export default createMiddleware({
-  locales: supportedLanguages,
-  defaultLocale: "en",
-  localePrefix: "never",
-});
+export default createMiddleware(routing);
 
 export const config = {
   matcher: ["/((?!api|_next/static|_next/image|favicon.ico|healthz).*)"],
