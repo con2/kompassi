@@ -2,8 +2,28 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
+
+from access.models import GroupPrivilege, Privilege
+from badges.models import BadgesEventMeta
+from core.models import Event, Organization, Person, Venue
+from intra.models import IntraEventMeta, Team
+from labour.models import (
+    AlternativeSignupForm,
+    JobCategory,
+    LabourEventMeta,
+    PersonnelClass,
+    Qualification,
+    Survey,
+)
+from program_v2.importers.default import DefaultImporter
+from program_v2.models.dimension_dto import Dimension, DimensionDTO
+from program_v2.models.meta import ProgramV2EventMeta
+from programme.models.programme_event_meta import ProgrammeEventMeta
+
+from ...models import Poison, SignupExtra, SpecialDiet
 
 
 class Setup:
@@ -25,8 +45,6 @@ class Setup:
         self.setup_program_v2()
 
     def setup_core(self):
-        from core.models import Event, Organization, Venue
-
         self.venue, unused = Venue.objects.get_or_create(
             name="Lahden Sibeliustalo",
             defaults=dict(
@@ -56,20 +74,6 @@ class Setup:
         )
 
     def setup_labour(self):
-        from django.contrib.contenttypes.models import ContentType
-
-        from core.models import Event, Person
-        from labour.models import (
-            AlternativeSignupForm,
-            JobCategory,
-            LabourEventMeta,
-            PersonnelClass,
-            Qualification,
-            Survey,
-        )
-
-        from ...models import Poison, SignupExtra, SpecialDiet
-
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
@@ -222,8 +226,6 @@ class Setup:
         )
 
     def setup_badges(self):
-        from badges.models import BadgesEventMeta
-
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
@@ -234,19 +236,15 @@ class Setup:
         )
 
     def setup_access(self):
-        from access.models import GroupPrivilege, Privilege
-
         # Grant accepted workers and programme hosts access to Desucon Slack
         privilege = Privilege.objects.get(slug="desuslack")
         for group in [
             self.event.labour_event_meta.get_group("accepted"),
-            self.event.programme_event_meta.get_group("hosts"),
+            # self.event.programme_event_meta.get_group("hosts"),
         ]:
             GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
     def setup_intra(self):
-        from intra.models import IntraEventMeta, Team
-
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("vastaava")
         meta, unused = IntraEventMeta.objects.get_or_create(
@@ -270,10 +268,6 @@ class Setup:
             )
 
     def setup_program_v2(self):
-        from program_v2.importers.default import DefaultImporter
-        from program_v2.models.dimension_dto import Dimension, DimensionDTO
-        from program_v2.models.meta import ProgramV2EventMeta
-
         try:
             room_dimension = Dimension.objects.get(universe=self.event.program_universe, slug="room")
         except Dimension.DoesNotExist:
@@ -281,12 +275,15 @@ class Setup:
             dimensions = DimensionDTO.save_many(self.event, dimensions)
             room_dimension = next(d for d in dimensions if d.slug == "room")
 
+        # TODO(frostbite2026): Use ProgramV2EventMeta.get_or_create_groups instead
+        (admin_group,) = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins"])
+
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 location_dimension=room_dimension,
                 importer_name="default",
-                admin_group=self.event.programme_event_meta.admin_group,
+                admin_group=admin_group,
             ),
         )
 
