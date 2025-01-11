@@ -577,7 +577,7 @@ const translations = {
       },
       actions: {
         purchase: "Confirm order and proceed to payment",
-        pay: "Proceed to payment",
+        pay: "Pay for order",
         viewTickets: "View e-tickets",
         newOrder: "New order",
         search: "Search orders",

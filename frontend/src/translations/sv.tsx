@@ -592,7 +592,7 @@ const translations: Translations = {
       },
       actions: {
         purchase: "Confirm order and proceed to payment",
-        pay: "Proceed to payment",
+        pay: "Betala för beställningen",
         viewTickets: "View e-tickets",
         newOrder: "New order",
         search: "Search orders",

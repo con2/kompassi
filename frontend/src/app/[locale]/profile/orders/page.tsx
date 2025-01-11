@@ -3,7 +3,7 @@ import Link from "next/link";
 import { payOrder } from "../../[eventSlug]/orders/[orderId]/actions";
 import { confirmEmail } from "./actions";
 import { graphql } from "@/__generated__";
-import { PaymentStatus, ProfileOrderFragment } from "@/__generated__/graphql";
+import { ProfileOrderFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
@@ -24,6 +24,7 @@ graphql(`
     totalPrice
     status
     eticketsLink
+    canPay
 
     event {
       slug
@@ -125,18 +126,25 @@ export default async function ProfileOrdersPage({ params }: Props) {
       title: t.attributes.actions,
       getCellContents: (order) => (
         <>
-          {order.status === PaymentStatus.Paid && order.eticketsLink && (
-            <Link className="btn btn-sm btn-primary" href={order.eticketsLink}>
+          {order.eticketsLink && (
+            <Link
+              className="btn btn-sm btn-outline-primary w-100"
+              href={order.eticketsLink}
+            >
               {t.actions.viewTickets}
             </Link>
           )}
-          {order.status === PaymentStatus.Pending && (
-            <button
-              className="btn btn-sm btn-primary"
-              onClick={payOrder.bind(null, order.event.slug, order.id, locale)}
+          {order.canPay && (
+            <form
+              action={payOrder.bind(null, locale, order.event.slug, order.id)}
             >
-              {t.actions.pay}
-            </button>
+              <button
+                className="btn btn-sm btn-outline-primary w-100"
+                type="submit"
+              >
+                {t.actions.pay}
+              </button>
+            </form>
           )}
         </>
       ),
@@ -168,7 +176,7 @@ export default async function ProfileOrdersPage({ params }: Props) {
         </div>
       )}
       {orders.length > 0 && (
-        <DataTable rows={orders} columns={columns}>
+        <DataTable rows={orders} columns={columns} responsive="md">
           <tfoot>
             <tr>
               <td colSpan={columns.length}>

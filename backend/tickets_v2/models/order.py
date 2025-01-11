@@ -13,6 +13,7 @@ from django.urls import reverse
 from lippukala.models.code import Code as LippukalaCode
 from lippukala.models.order import Order as LippukalaOrder
 
+from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from event_log_v2.utils.monthly_partitions import UUID7Mixin
@@ -286,9 +287,10 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         )
 
     def get_etickets_link(self, request: HttpRequest):
-        if self.cached_status == PaymentStatus.PAID and self.have_etickets:
-            pass
-        else:
+        if self.cached_status != PaymentStatus.PAID:
+            return None
+
+        if not self.have_etickets:
             return None
 
         return request.build_absolute_uri(
@@ -301,6 +303,25 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             )
         )
 
+    def can_be_refunded_by(self, request: HttpRequest):
+        # TODO should this method do all the same checks that cancel_and_refund does?
+        return (
+            PaymentStatus(self.cached_status).is_refundable
+            and self.cached_price > 0
+            and is_graphql_allowed_for_model(
+                request.user,
+                instance=self,
+                operation="update",
+                field="self",
+            )
+        )
+
+    def can_be_paid_by(self, _request: HttpRequest | None = None):
+        return (
+            self.cached_status in (PaymentStatus.NOT_STARTED, PaymentStatus.PENDING, PaymentStatus.FAILED)
+            and self.cached_price > 0
+        )
+
     def cancel_and_refund(self, refund_type: RefundType):
         from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, UNUSED
 
@@ -309,7 +330,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         match refund_type:
             case RefundType.NONE:
                 if self.cached_status == PaymentStatus.CANCELLED:
-                    raise ValueError("Order is already refunded")
+                    raise ValueError("Order is already cancelled")
 
                 prepared_request = None
                 request_stamp = PaymentStamp(

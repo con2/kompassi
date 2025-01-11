@@ -7,9 +7,6 @@ import AccordionBody from "react-bootstrap/AccordionBody";
 import AccordionHeader from "react-bootstrap/AccordionHeader";
 import AccordionItem from "react-bootstrap/AccordionItem";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
-import Card from "react-bootstrap/Card";
-import CardBody from "react-bootstrap/CardBody";
-import CardTitle from "react-bootstrap/CardTitle";
 import {
   cancelAndRefundOrder,
   resendConfirmation,
@@ -89,6 +86,7 @@ const query = graphql(`
           lastName
           email
           phone
+          canRefund
           products {
             title
             quantity
@@ -390,7 +388,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     },
     {
       slug: "cancelAndRefund",
-      isShown: order.status === PaymentStatus.Paid,
+      isShown: order.canRefund && order.status === PaymentStatus.Paid,
       getElement: () => (
         <ModalButton
           title={t.actions.cancelAndRefund.title}
@@ -412,7 +410,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     },
     {
       slug: "refundCancelledOrder",
-      isShown: order.status === PaymentStatus.Cancelled,
+      isShown: order.canRefund && order.status === PaymentStatus.Cancelled,
       getElement: () => (
         <ModalButton
           title={t.actions.refundCancelledOrder.title}
@@ -434,7 +432,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     },
     {
       slug: "retryRefund",
-      isShown: order.status === PaymentStatus.RefundFailed,
+      isShown: order.canRefund && order.status === PaymentStatus.RefundFailed,
       getElement: () => (
         <ModalButton
           title={t.actions.retryRefund.title}
@@ -456,9 +454,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     },
     {
       slug: "refundManually",
-      isShown:
-        order.status === PaymentStatus.Cancelled ||
-        order.status === PaymentStatus.RefundFailed,
+      isShown: order.canRefund,
       getElement: () => (
         <ModalButton
           title={t.actions.refundManually.title}

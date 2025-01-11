@@ -1,6 +1,7 @@
-{% load tickets_v2_tags %}Hyvä vastaanottaja,
+{% load tickets_v2_tags %}Dear recipient,
 
-{{ event_name }} -verkkokaupassa tekemäsi tilaus numero {{ order_number|format_order_number }} on peruttu.
+Your order number {{ order_number|format_order_number }} made in the
+online shop of {{ event_name }} has been cancelled.
 
 Contents of the order:
 

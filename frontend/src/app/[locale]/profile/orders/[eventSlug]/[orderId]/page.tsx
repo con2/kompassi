@@ -25,6 +25,7 @@ const query = graphql(`
           totalPrice
           status
           eticketsLink
+          canPay
           products {
             title
             quantity
@@ -119,7 +120,7 @@ export default async function ProfileOrderPage({ params }: Props) {
 
       <ProductsTable order={order} messages={translations.Tickets} />
 
-      {order.status === PaymentStatus.Pending && (
+      {order.canPay && (
         <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
           <div className="d-grid gap-2 mb-4">
             <button className="btn btn-primary btn-lg" type="submit">
@@ -129,7 +130,7 @@ export default async function ProfileOrderPage({ params }: Props) {
         </form>
       )}
 
-      {order.status === PaymentStatus.Paid && order.eticketsLink && (
+      {order.eticketsLink && (
         <div className="d-grid gap-2 mb-4">
           <Link className="btn btn-primary" href={order.eticketsLink}>
             {t.actions.viewTickets}

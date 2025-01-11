@@ -7,8 +7,7 @@ with order_products as (
     tickets_v2_order o
     join jsonb_each(o.product_data) op_json on true
   where
-    o.event_id = %(event_id)s and
-    o.cached_status <= 3 -- PaymentStatus.PAID
+    o.event_id = %(event_id)s
 )
 
 select
@@ -22,7 +21,15 @@ select
       end
     ),
   0) as count_paid,
-  coalesce(sum(op.quantity), 0) as count_reserved
+  coalesce(
+    sum(
+      case
+        when op.status <= 3 then op.quantity -- PaymentStatus.PAID
+        else 0
+      end
+    ),
+  0) as count_reserved,
+  coalesce(sum(op.quantity), 0) as count_ever_reserved
 from
   tickets_v2_product p
   left join order_products op on (op.product_id = p.id)

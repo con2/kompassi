@@ -1,5 +1,7 @@
 import { ReactNode, Fragment } from "react";
 
+type Responsive = "sm" | "md" | "lg" | "xl" | boolean;
+
 export interface Column<Row> {
   slug: string;
   title: ReactNode;
@@ -11,13 +13,32 @@ export interface Column<Row> {
   scope?: string;
 }
 
+function ResponsiveWrapper({
+  responsive,
+  children,
+}: {
+  responsive?: Responsive;
+  children?: ReactNode;
+}) {
+  switch (responsive) {
+    case "sm":
+    case "md":
+    case "lg":
+    case "xl":
+      return <div className={`table-responsive-${responsive}`}>{children}</div>;
+    case true:
+      return <div className="table-responsive">{children}</div>;
+    default:
+      return <>{children}</>;
+  }
+}
+
 interface DataTableProps<Row> {
   className?: string;
   rows: Row[];
   columns: Column<Row>[];
   getTotalMessage?: (total: number) => ReactNode;
-
-  /// By default, first column (0) is designated scope="row". Set to -1 to disable.
+  responsive?: Responsive;
   children?: ReactNode;
 }
 
@@ -64,7 +85,7 @@ function defaultHeaderContents<Row>(this: Column<Row>) {
 }
 
 export function DataTable<Row>(props: DataTableProps<Row>) {
-  const { rows, getTotalMessage, children } = props;
+  const { rows, getTotalMessage, responsive, children } = props;
   const columns: Column<Row>[] = props.columns.map((column, index) => ({
     getCellElement: column.getCellElement ?? defaultCellElement,
     getCellContents: column.getCellContents ?? defaultCellContents,
@@ -78,7 +99,7 @@ export function DataTable<Row>(props: DataTableProps<Row>) {
   const className = props.className ?? "table table-striped";
 
   return (
-    <>
+    <ResponsiveWrapper responsive={responsive}>
       <table className={className}>
         <thead>
           <tr>
@@ -103,6 +124,6 @@ export function DataTable<Row>(props: DataTableProps<Row>) {
         {children}
       </table>
       {totalMessage && <p>{totalMessage}</p>}
-    </>
+    </ResponsiveWrapper>
   );
 }

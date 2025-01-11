@@ -52,6 +52,14 @@ class PaymentStatus(IntEnum):
             case _:
                 raise NotImplementedError(f"Unsupported status: {self}")
 
+    @property
+    def is_refundable(self):
+        match self:
+            case PaymentStatus.PAID | PaymentStatus.CANCELLED | PaymentStatus.REFUND_FAILED:
+                return True
+            case _:
+                return False
+
 
 class ReceiptType(IntEnum):
     PAID = PaymentStatus.PAID.value

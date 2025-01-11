@@ -1,4 +1,5 @@
 import graphene
+from django.http import HttpRequest
 from graphene_django import DjangoObjectType
 
 from graphql_api.utils import resolve_local_datetime_field
@@ -46,3 +47,10 @@ class LimitedOrderType(DjangoObjectType):
     status = graphene.NonNull(PaymentStatusType)
 
     display_name = graphene.NonNull(graphene.String)
+
+    @staticmethod
+    def resolve_can_pay(order: Order, info):
+        request: HttpRequest = info.context
+        return order.can_be_paid_by(request)
+
+    can_pay = graphene.NonNull(graphene.Boolean)

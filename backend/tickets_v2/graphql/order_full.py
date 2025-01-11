@@ -1,4 +1,5 @@
 import graphene
+from django.http import HttpRequest
 
 from core.graphql.event_limited import LimitedEventType
 from core.utils import normalize_whitespace
@@ -47,7 +48,7 @@ class FullOrderType(LimitedOrderType):
 
     products = graphene.NonNull(
         graphene.List(graphene.NonNull(OrderProductType)),
-        description=normalize_whitespace(resolve_etickets_link.__doc__ or ""),
+        description="Contents of the order (product x quantity).",
     )
 
     payment_stamps = graphene.NonNull(
@@ -60,11 +61,27 @@ class FullOrderType(LimitedOrderType):
         description="Receipts related to this order.",
     )
 
+    @staticmethod
+    def resolve_codes(order: Order, info):
+        """
+        Electronic ticket codes related to this order.
+        """
+        return order.lippukala_codes.all()
+
     codes = graphene.NonNull(
         graphene.List(graphene.NonNull(LimitedCodeType)),
-        description="Electronic ticket codes related to this order.",
+        description=normalize_whitespace(resolve_codes.__doc__ or ""),
     )
 
     @staticmethod
-    def resolve_codes(order: Order, info):
-        return order.lippukala_codes.all()
+    def resolve_can_refund(order: Order, info):
+        """
+        Returns whether the order can be refunded.
+        """
+        request: HttpRequest = info.context
+        return order.can_be_refunded_by(request)
+
+    can_refund = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_refund.__doc__ or ""),
+    )

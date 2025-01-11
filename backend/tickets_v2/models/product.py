@@ -16,8 +16,15 @@ from .quota import Quota
 
 class ProductCounters(pydantic.BaseModel):
     count_paid: int
-    count_reserved: int
-    # count_available: int
+    count_reserved: int = pydantic.Field(
+        description=(
+            "Total number of active reservations for this product including paid and unpaid orders, "
+            "excluding cancelled orders."
+        ),
+    )
+    count_ever_reserved: int = pydantic.Field(
+        description="Total number of reservations ever made for this product including cancelled orders.",
+    )
 
     amounts_sold_query: ClassVar[str] = (Path(__file__).parent / "sql" / "get_product_counters.sql").read_text()
 
@@ -47,9 +54,9 @@ class ProductCounters(pydantic.BaseModel):
                 product_id: ProductCounters(
                     count_paid=count_paid,
                     count_reserved=count_reserved,
-                    # count_available=min(quota_counters[quota_id].count_available for quota_id in quotas),
+                    count_ever_reserved=count_ever_reserved,
                 )
-                for product_id, count_paid, count_reserved in cursor
+                for product_id, count_paid, count_reserved, count_ever_reserved in cursor
             }
 
         cache[event_id] = result
@@ -121,7 +128,7 @@ class Product(models.Model):
         return ProductCounters.get_for_event(self.event_id, request)[effective_product_id]
 
     def can_be_deleted_by(self, request: HttpRequest) -> bool:
-        return self.get_counters(request).count_reserved == 0 and is_graphql_allowed_for_model(
+        return self.get_counters(request).count_ever_reserved == 0 and is_graphql_allowed_for_model(
             request.user,
             instance=self,
             operation="delete",

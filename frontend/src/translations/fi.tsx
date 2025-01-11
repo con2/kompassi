@@ -574,7 +574,7 @@ const translations: Translations = {
       },
       actions: {
         purchase: "Vahvista tilaus ja siirry maksamaan",
-        pay: "Siirry maksamaan",
+        pay: "Maksa tilaus",
         viewTickets: "Näytä e-liput",
         newOrder: "Uusi tilaus",
         search: "Hae tilauksia",
