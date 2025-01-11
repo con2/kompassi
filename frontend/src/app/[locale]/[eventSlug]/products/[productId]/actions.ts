@@ -38,7 +38,7 @@ export async function updateProduct(
   // id may have changed due to new revision
   const newProductId = result.data?.updateProduct?.product?.id;
   if (productId !== newProductId) {
-    redirect(`/${locale}/${eventSlug}/products/${newProductId}`);
+    redirect(`/${eventSlug}/products/${newProductId}`);
   }
 }
 

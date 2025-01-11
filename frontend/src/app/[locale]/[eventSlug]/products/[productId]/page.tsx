@@ -121,9 +121,7 @@ export async function generateMetadata({ params }: Props) {
   const product = data.event.tickets.product;
 
   if (product.supersededBy?.id) {
-    return void redirect(
-      `/${locale}/${eventSlug}/products/${product.supersededBy.id}`,
-    );
+    return void redirect(`/${eventSlug}/products/${product.supersededBy.id}`);
   }
 
   const title = getPageTitle({
@@ -163,9 +161,7 @@ export default async function AdminProductDetailPage({ params }: Props) {
   const quotas = data.event.tickets.quotas;
 
   if (product.supersededBy?.id) {
-    return void redirect(
-      `/${locale}/${eventSlug}/products/${product.supersededBy.id}`,
-    );
+    return void redirect(`/${eventSlug}/products/${product.supersededBy.id}`);
   }
 
   const selectedQuotas = product.quotas.map((quota) => "" + quota.id);

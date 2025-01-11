@@ -34,7 +34,7 @@ export default async function OrderPage({ params }: Props) {
   const t = translations.Tickets;
 
   function ProfileLink({ children }: { children: ReactNode }) {
-    return <Link href={`/${locale}/profile/orders`}>{children}</Link>;
+    return <Link href={`/profile/orders`}>{children}</Link>;
   }
 
   const showPayButton =
