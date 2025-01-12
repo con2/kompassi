@@ -101,6 +101,13 @@ class Setup:
             defaults=labour_event_meta_defaults,
         )
 
+        # TODO: remove for frostbite2026
+        if self.event.slug != "frostbite2025":
+            raise AssertionError(self.event.slug)
+        labour_event_meta.work_begins = labour_event_meta_defaults["work_begins"]  # type: ignore
+        labour_event_meta.work_ends = labour_event_meta_defaults["work_ends"]  # type: ignore
+        labour_event_meta.save()
+
         for pc_name, pc_slug, pc_app_label, pc_perks in [
             (
                 "Vastaava",
