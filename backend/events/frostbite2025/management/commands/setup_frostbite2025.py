@@ -101,24 +101,50 @@ class Setup:
             defaults=labour_event_meta_defaults,
         )
 
-        for pc_name, pc_slug, pc_app_label in [
-            ("Vastaava", "vastaava", "labour"),
-            ("Vuorovastaava", "vuorovastaava", "labour"),
-            ("Työvoima", "tyovoima", "labour"),
-            ("Ohjelmanjärjestäjä", "ohjelma", "programme"),
-            ("Ohjelmanjärjestäjä (2. lk)", "ohjelma-2lk", "programme"),
-            ("Guest of Honour", "goh", "programme"),
-            ("Media", "media", "badges"),
-            ("Myyjä", "myyja", "badges"),
-            ("Vieras", "vieras", "badges"),
+        for pc_name, pc_slug, pc_app_label, pc_perks in [
+            (
+                "Vastaava",
+                "vastaava",
+                "labour",
+                "3 ruokalippua, paita (tarkista paitakoko!), badge",
+            ),
+            (
+                "Vuorovastaava",
+                "vuorovastaava",
+                "labour",
+                "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+            ),
+            (
+                "Työvoima",
+                "tyovoima",
+                "labour",
+                "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+            ),
+            (
+                "Ohjelmanjärjestäjä",
+                "ohjelma",
+                "programme",
+                "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+            ),
+            (
+                "Ohjelmanjärjestäjä (2. lk)",
+                "ohjelma-2lk",
+                "programme",
+                "1 ruokalippu, badge. (Ei paitaa!) Kasauksen ruokalippu pe ennen klo 12.",
+            ),
+            ("Guest of Honour", "goh", "programme", "Badge"),
+            ("Media", "media", "badges", "Badge"),
+            ("Myyjä", "myyja", "badges", ""),
+            ("Vieras", "vieras", "badges", ""),
         ]:
-            personnel_class, created = PersonnelClass.objects.get_or_create(
+            personnel_class, created = PersonnelClass.objects.update_or_create(
                 event=self.event,
                 slug=pc_slug,
                 defaults=dict(
                     name=pc_name,
                     app_label=pc_app_label,
                     priority=self.get_ordering_number(),
+                    override_formatted_perks=pc_perks,
                 ),
             )
 
@@ -236,11 +262,12 @@ class Setup:
         from badges.models import BadgesEventMeta
 
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, unused = BadgesEventMeta.objects.get_or_create(
+        meta, unused = BadgesEventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
                 real_name_must_be_visible=True,
+                emperkelator_name="simple",
             ),
         )
 

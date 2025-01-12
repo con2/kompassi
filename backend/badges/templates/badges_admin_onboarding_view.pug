@@ -8,11 +8,8 @@ block content
     .panel-heading: strong {% trans "Onboarding" %}
     .panel-body
       .text-muted
-        if event.badges_event_meta.onboarding_instructions_markdown
-          | {{ event.badges_event_meta.onboarding_instructions_html|safe }}
-        else
-          p Merkitse henkilö saapuneeksi klikkaamalla taulukon riviä. Haku toimii välittömästi ilman rivinvaihdon tmv. painallusta ja hakee ainoastaan nimikentästä.
-          p Viemällä hiiren osoittimen henkilöstöluokan nimen päälle näet, mitä kyseisen henkilöstöluokan henkilölle annetaan, mikäli tämä tieto on syötetty.
+        p Merkitse henkilö saapuneeksi klikkaamalla taulukon riviä. Haku toimii välittömästi ilman rivinvaihdon tmv. painallusta ja hakee ainoastaan nimikentästä.
+        p Viemällä hiiren osoittimen henkilöstöluokan nimen päälle näet, mitä kyseisen henkilöstöluokan henkilölle annetaan, mikäli tämä tieto on syötetty.
       .form-group
         label(for='onboarding_search') {% trans "Search" %}
         input#onboarding_search.form-control(type='search')

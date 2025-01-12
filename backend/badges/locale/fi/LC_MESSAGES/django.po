@@ -288,3 +288,6 @@ msgstr "Odottaa erässä"
 
 msgid "Reports"
 msgstr "Raportit"
+
+msgid "Perks"
+msgstr "Edut"

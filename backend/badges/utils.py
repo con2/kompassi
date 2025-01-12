@@ -11,8 +11,9 @@ def default_badge_factory(event, person):
 
     If the key `personnel_class` in that dictionary is None, that person should not have a badge.
     """
+    from labour.models.personnel_class import PersonnelClass
 
-    personnel_classes = []
+    personnel_classes: list[tuple[PersonnelClass, str]] = []
 
     if event.labour_event_meta is not None:
         from labour.models import Signup

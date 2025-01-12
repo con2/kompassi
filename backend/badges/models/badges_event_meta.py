@@ -1,6 +1,5 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from markdown import markdown
 
 from core.models import EventMetaBase
 
@@ -30,21 +29,13 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         related_name="as_onboarding_access_group_for",
     )
 
-    onboarding_instructions_markdown = models.TextField(
-        verbose_name=_("onboarding instructions"),
-        help_text=_(
-            "These instructions will be shown at the top of the onboarding view. Markdown formatting available."
-        ),
-        blank=True,
-        default="",
-    )
-
     emperkelator_name = models.CharField(
         max_length=63,
         default="noop",
         verbose_name=_("Emperkelator"),
         choices=[
             ("noop", "Noop (no perks)"),
+            ("simple", "Simple (perks from personnel class)"),
             ("tracon2024", "Tracon (2024)"),
         ],
         help_text=_(
@@ -56,11 +47,14 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     @property
     def emperkelator(self):
         from ..emperkelators.noop import NoopEmperkelator
+        from ..emperkelators.simple import SimpleEmperkelator
         from ..emperkelators.tracon2024 import TraconEmperkelator
 
         match self.emperkelator_name:
             case "noop":
                 return NoopEmperkelator
+            case "simple":
+                return SimpleEmperkelator
             case "tracon2024":
                 return TraconEmperkelator
             case _:
@@ -89,10 +83,6 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         from .badge import Badge
 
         return Badge.objects.filter(personnel_class__event=self.event)
-
-    @property
-    def onboarding_instructions_html(self):
-        return markdown(self.onboarding_instructions_markdown) if self.onboarding_instructions_markdown else ""
 
     def is_user_allowed_onboarding_access(self, user):
         if self.is_user_admin(user):
