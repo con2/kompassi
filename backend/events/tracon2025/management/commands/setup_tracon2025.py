@@ -527,6 +527,9 @@ class Setup:
 
         meta.ensure_partitions()
 
+        if Quota.objects.filter(event=self.event).exists():
+            return
+
         friday_quota, created = Quota.objects.get_or_create(
             event=self.event,
             name="Perjantai",

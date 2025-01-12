@@ -292,6 +292,9 @@ class Setup:
         )
         meta.ensure_partitions()
 
+        if Quota.objects.filter(event=self.event).exists():
+            return
+
         def get_or_create_quota(name, amount) -> Quota:
             quota, created = Quota.objects.get_or_create(
                 event=self.event,
