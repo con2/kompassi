@@ -4,19 +4,28 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('badges', '0027_badge_perks_badgeseventmeta_emperkelator_name'),
+        ("badges", "0027_badge_perks_badgeseventmeta_emperkelator_name"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='badgeseventmeta',
-            name='onboarding_instructions_markdown',
+            model_name="badgeseventmeta",
+            name="onboarding_instructions_markdown",
         ),
         migrations.AlterField(
-            model_name='badgeseventmeta',
-            name='emperkelator_name',
-            field=models.CharField(choices=[('noop', 'Noop (no perks)'), ('simple', 'Simple (perks from personnel class)'), ('tracon2024', 'Tracon (2024)')], default='noop', help_text='The emperkelator defines the perks of a volunteer in the event based on their involvement with the event.', max_length=63, verbose_name='Emperkelator'),
+            model_name="badgeseventmeta",
+            name="emperkelator_name",
+            field=models.CharField(
+                choices=[
+                    ("noop", "Noop (no perks)"),
+                    ("simple", "Simple (perks from personnel class)"),
+                    ("tracon2024", "Tracon (2024)"),
+                ],
+                default="noop",
+                help_text="The emperkelator defines the perks of a volunteer in the event based on their involvement with the event.",
+                max_length=63,
+                verbose_name="Emperkelator",
+            ),
         ),
     ]
