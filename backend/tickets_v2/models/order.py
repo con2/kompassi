@@ -308,6 +308,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         return (
             PaymentStatus(self.cached_status).is_refundable
             and self.cached_price > 0
+            and self.payment_stamps.filter(status=PaymentStatus.PAID).exists()
             and is_graphql_allowed_for_model(
                 request.user,
                 instance=self,
