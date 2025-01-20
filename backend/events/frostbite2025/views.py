@@ -8,9 +8,9 @@ from .models import Poison
 
 
 @default_cbac_required
-def desucon2025_afterparty_summary_view(request, event_slug):
-    if event_slug != "desucon2025":
-        raise NotImplementedError("This view is only available for desucon2025")
+def frostbite2025_afterparty_summary_view(request, event_slug):
+    if event_slug != "frostbite2025":
+        raise NotImplementedError("This view is only available for frostbite2025")
 
     event = Event.objects.get(slug=event_slug)
 
@@ -29,4 +29,4 @@ def desucon2025_afterparty_summary_view(request, event_slug):
         poisons=poisons,
     )
 
-    return render(request, "desucon2025_afterparty_summary_view.pug", vars)
+    return render(request, "frostbite2025_afterparty_summary_view.pug", vars)

@@ -21,8 +21,6 @@ kompassi_apps = [
     "access",
     "desuprofile_integration",
     "membership",
-    "events.tracon2024",
-    "events.desucon2024",
     "enrollment",
     "intra",
     "feedback",
@@ -32,6 +30,7 @@ kompassi_apps = [
     "forms",
     "emprinten",
     "program_v2",
+    "events.frostbite2025",
 ]
 
 urlpatterns = [
