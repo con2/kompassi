@@ -2,7 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
 
-import { toggleSurveyResponseSubscription } from "./actions";
+import {
+  deleteSurveyResponses,
+  toggleSurveyResponseSubscription,
+} from "./actions";
 import ResponseTabs from "./ResponseTabs";
 import SubscriptionButton from "./SubscriptionButton";
 import { graphql } from "@/__generated__";
@@ -19,6 +22,7 @@ import {
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { validateFields } from "@/components/forms/models";
 import UploadedFileLink from "@/components/forms/UploadedFileLink";
+import ModalButton from "@/components/ModalButton";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -272,6 +276,32 @@ export default async function FormResponsesPage({
             <a className="btn btn-outline-primary" href={excelUrl}>
               {t.actions.downloadAsExcel}…
             </a>
+
+            {/* TODO */}
+            {false && (
+              <ModalButton
+                title={t.actions.deleteAllResponses.title}
+                messages={t.actions.deleteAllResponses.modalActions}
+                action={
+                  responses.length > 0
+                    ? deleteSurveyResponses.bind(
+                        null,
+                        locale,
+                        eventSlug,
+                        surveySlug,
+                        responses.map((response) => response.id),
+                      )
+                    : undefined
+                }
+                className="btn btn-outline-danger"
+              >
+                {responses.length > 0
+                  ? t.actions.deleteAllResponses.confirmation(
+                      survey.countResponses,
+                    )
+                  : t.actions.deleteAllResponses.noResponsesToDelete}
+              </ModalButton>
+            )}
           </div>
         </div>
       </div>

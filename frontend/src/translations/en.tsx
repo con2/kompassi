@@ -1019,8 +1019,22 @@ const translations = {
         success: "A link to the survey has been copied to clipboard.",
       },
       viewResponses: "Responses",
-      toggleSubscription: "Notify me about new responses",
+      toggleSubscription: "Notify for responses",
       submit: "Submit",
+      deleteAllResponses: {
+        title: "Delete responses",
+        confirmation: (countResponses: number) => (
+          <>
+            Are you sure you want to remove all{" "}
+            <strong>{countResponses}</strong> responses?
+          </>
+        ),
+        noResponsesToDelete: "No responses to delete.",
+        modalActions: {
+          submit: "Delete responses",
+          cancel: "Cancel without deleting",
+        },
+      },
       downloadAsExcel: "Download as Excel",
       returnToResponseList: "Return to the list of responses",
       returnToSurveyList: "Return to the list of surveys",

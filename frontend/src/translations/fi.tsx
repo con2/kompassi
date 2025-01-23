@@ -1017,9 +1017,23 @@ const translations: Translations = {
         success: "Linkki kyselyyn on kopioitu leikepöydälle.",
       },
       viewResponses: "Vastaukset",
-      toggleSubscription: "Ilmoita uusista vastauksista",
+      toggleSubscription: "Ilmoita vastauksista",
       submit: "Lähetä",
-      downloadAsExcel: "Lataa Excel-tiedostona",
+      deleteAllResponses: {
+        title: "Poista vastaukset",
+        confirmation: (countResponses: number) => (
+          <>
+            Haluatko varmasti poistaa kaikki <strong>{countResponses}</strong>{" "}
+            vastausta?
+          </>
+        ),
+        noResponsesToDelete: "Ei vastauksia poistettavaksi.",
+        modalActions: {
+          submit: "Poista vastaukset",
+          cancel: "Peruuta poistamatta",
+        },
+      },
+      downloadAsExcel: "Vie Exceliin",
       returnToResponseList: "Palaa vastauslistaukseen",
       returnToSurveyList: "Palaa kyselylistaukseen",
       returnToDimensionList: "Palaa dimensiolistaukseen",

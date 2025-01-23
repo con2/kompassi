@@ -11,6 +11,7 @@ from forms.graphql.mutations.delete_survey import DeleteSurvey
 from forms.graphql.mutations.delete_survey_dimension import DeleteSurveyDimension
 from forms.graphql.mutations.delete_survey_dimension_value import DeleteSurveyDimensionValue
 from forms.graphql.mutations.delete_survey_language import DeleteSurveyLanguage
+from forms.graphql.mutations.delete_survey_responses import DeleteSurveyResponses
 from forms.graphql.mutations.generate_key_pair import GenerateKeyPair
 from forms.graphql.mutations.init_file_upload import InitFileUpload
 from forms.graphql.mutations.put_survey_dimension import PutSurveyDimension
@@ -94,6 +95,7 @@ class Mutation(graphene.ObjectType):
 
     create_survey_response = CreateSurveyResponse.Field()
     update_response_dimensions = UpdateResponseDimensions.Field()
+    delete_survey_responses = DeleteSurveyResponses.Field()
 
     put_survey_dimension = PutSurveyDimension.Field()
     delete_survey_dimension = DeleteSurveyDimension.Field()

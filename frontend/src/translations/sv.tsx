@@ -1039,6 +1039,20 @@ const translations: Translations = {
       viewResponses: "Visa svar",
       toggleSubscription: "Meddela mig om nya svar",
       submit: "Skicka",
+      deleteAllResponses: {
+        title: "Radera svar",
+        confirmation: (countResponses: number) => (
+          <>
+            Är du säker på att du vill radera alla{" "}
+            <strong>{countResponses}</strong> svar?
+          </>
+        ),
+        noResponsesToDelete: "Inga svar att radera.",
+        modalActions: {
+          submit: "Radera svar",
+          cancel: "Avbryt utan att radera",
+        },
+      },
       downloadAsExcel: "Ladda ner som Excel",
       returnToResponseList: "Tillbaka till listan över svar",
       returnToSurveyList: "Tillbaka till listan över enkäter",

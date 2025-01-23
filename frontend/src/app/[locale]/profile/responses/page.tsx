@@ -11,7 +11,6 @@ import FormattedDateTime from "@/components/FormattedDateTime";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
-import { timezone } from "@/config";
 import { getTranslations } from "@/translations";
 
 graphql(`
