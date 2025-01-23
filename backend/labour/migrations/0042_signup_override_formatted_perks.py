@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('labour', '0041_alter_alternativesignupform_slug_alter_job_slug_and_more'),
+        ("labour", "0041_alter_alternativesignupform_slug_alter_job_slug_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='signup',
-            name='override_formatted_perks',
-            field=models.TextField(blank=True, default='', help_text='Voit tässä ylikirjoittaa, mitä tälle henkilölle näytetään sisäänkirjausnäkymän Edut-sarakkeessa.', verbose_name='Aseta edut käsin'),
+            model_name="signup",
+            name="override_formatted_perks",
+            field=models.TextField(
+                blank=True,
+                default="",
+                help_text="Voit tässä ylikirjoittaa, mitä tälle henkilölle näytetään sisäänkirjausnäkymän Edut-sarakkeessa.",
+                verbose_name="Aseta edut käsin",
+            ),
         ),
     ]
