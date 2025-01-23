@@ -126,7 +126,8 @@ class OverrideWorkingHoursForm(forms.ModelForm):
 
     class Meta:
         model = Signup
-        fields = ("override_working_hours",)
+        fields = ("override_working_hours", "override_formatted_perks")
+        widgets = dict(override_formatted_perks=forms.Textarea(attrs=dict(rows=3)))
 
 
 class EmptySignupExtraForm(AlternativeFormMixin, forms.ModelForm):

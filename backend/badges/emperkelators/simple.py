@@ -6,6 +6,7 @@ from badges.utils import default_badge_factory
 from core.models.event import Event
 from core.models.person import Person
 from labour.models.personnel_class import PersonnelClass
+from labour.models.signup import Signup
 
 
 class SimpleEmperkelator(pydantic.BaseModel):
@@ -31,5 +32,9 @@ class SimpleEmperkelator(pydantic.BaseModel):
 
         if not personnel_class:
             return cls(override_formatted_perks="")
+
+        signup = Signup.objects.filter(event=event, person=person).first()
+        if signup and signup.override_formatted_perks:
+            return cls(override_formatted_perks=signup.override_formatted_perks)
 
         return cls(override_formatted_perks=personnel_class.override_formatted_perks)

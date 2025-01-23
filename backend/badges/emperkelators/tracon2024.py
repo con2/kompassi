@@ -101,18 +101,21 @@ class TraconEmperkelator(BaseModel):
         extra_swag = cls(extra_swag=True)
 
         signup = Signup.objects.filter(event=event, person=person).first()
-        if signup and (personnel_class := signup.personnel_class):
-            pc_perks = cls.model_validate(personnel_class.perks)
-            perks.imbibe(pc_perks)
-            hours = signup.working_hours
+        if signup:
+            if signup.override_formatted_perks:
+                return cls(override_formatted_perks=signup.override_formatted_perks)
+            elif personnel_class := signup.personnel_class:
+                pc_perks = cls.model_validate(personnel_class.perks)
+                perks.imbibe(pc_perks)
+                hours = signup.working_hours
 
-            if hours >= THIRD_MEAL_MIN_HOURS:
-                perks.imbibe(extra_meal_token)
-            if hours >= FOURTH_MEAL_MIN_HOURS:
-                perks.imbibe(extra_meal_token)
+                if hours >= THIRD_MEAL_MIN_HOURS:
+                    perks.imbibe(extra_meal_token)
+                if hours >= FOURTH_MEAL_MIN_HOURS:
+                    perks.imbibe(extra_meal_token)
 
-            if hours >= EXTRA_SWAG_MIN_HOURS:
-                perks.imbibe(extra_swag)
+                if hours >= EXTRA_SWAG_MIN_HOURS:
+                    perks.imbibe(extra_swag)
 
         for programme_role in ProgrammeRole.objects.filter(programme__category__event=event, person=person):
             programme_perks = cls.model_validate(programme_role.perks)

@@ -317,6 +317,13 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         ),
     )
 
+    override_formatted_perks = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="Aseta edut käsin",
+        help_text="Voit tässä ylikirjoittaa, mitä tälle henkilölle näytetään sisäänkirjausnäkymän Edut-sarakkeessa.",
+    )
+
     is_accepted = time_bool_property("time_accepted")
     is_confirmation_requested = time_bool_property("time_confirmation_requested")
     is_finished = time_bool_property("time_finished")
