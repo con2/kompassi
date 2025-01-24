@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from core.models import Person
 from core.tabs import Tab
 from core.utils import initialize_form
+from event_log_v2.utils.emit import emit
 
 from ..forms import AdminPersonForm
 from ..helpers import labour_admin_required
@@ -63,6 +64,8 @@ def admin_signup_view(request, vars, event, person_id):
 
             signup.apply_state()
             messages.success(request, "Tiedot tallennettiin.")
+
+            emit("labour.signup.updated", person=signup.person.pk, request=request)
 
             if "save-return" in request.POST:
                 return redirect("labour:admin_signups_view", event.slug)

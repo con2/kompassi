@@ -60,7 +60,7 @@ class Command(BaseCommand):
 
             try:
                 badge = Badge.objects.get(personnel_class__event=event, person=signup_extra.person)
-            except Badge.DoesNotExist:
+            except (Badge.DoesNotExist, Badge.MultipleObjectsReturned):
                 pass
             else:
                 if bad_shirt_type := TITLE_MAPPING.get(badge.job_title):
