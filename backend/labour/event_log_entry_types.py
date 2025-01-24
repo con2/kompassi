@@ -8,7 +8,7 @@ registry.register(
 
 registry.register(
     name="labour.signup.updated",
-    message="{person} updated their application for volunteer work in {event}",
+    message="The volunteer work application for {person} in {event} was updated by {actor}",
 )
 
 registry.register(

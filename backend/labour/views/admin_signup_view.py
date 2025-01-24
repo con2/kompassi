@@ -24,6 +24,7 @@ from .view_helpers import initialize_signup_forms
 def admin_signup_view(request, vars, event, person_id):
     person = get_object_or_404(Person, pk=int(person_id))
     signup = get_object_or_404(Signup, person=person, event=event)
+    signup_extra = signup.signup_extra
 
     old_state_flags = signup._state_flags
 
@@ -51,6 +52,8 @@ def admin_signup_view(request, vars, event, person_id):
                 signup.state = state_name
                 break
 
+        old_shirt_size = getattr(signup_extra, "shirt_size", None)
+
         if (
             signup_form.is_valid()
             and signup_extra_form.is_valid()
@@ -62,10 +65,18 @@ def admin_signup_view(request, vars, event, person_id):
             signup_admin_form.save()
             override_working_hours_form.save()
 
+            new_shirt_size = getattr(signup_extra, "shirt_size", None)
+
             signup.apply_state()
             messages.success(request, "Tiedot tallennettiin.")
 
-            emit("labour.signup.updated", person=signup.person.pk, request=request)
+            emit(
+                "labour.signup.updated",
+                person=signup.person.pk,
+                request=request,
+                old_shirt_size=old_shirt_size,
+                new_shirt_size=new_shirt_size,
+            )
 
             if "save-return" in request.POST:
                 return redirect("labour:admin_signups_view", event.slug)
