@@ -3,6 +3,7 @@ import logging
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.http import HttpRequest
+from django.shortcuts import get_object_or_404
 
 from core.utils import get_ip
 
@@ -40,16 +41,25 @@ def log_creations(model, **extra_kwargs_for_emit):
 
 
 def attrs_from_request(request: HttpRequest):
+    from core.models import Event
+
     # from core.middleware
-    event = getattr(request, "event", None)
-    organization = getattr(request, "organization", None)
+    event_slug: str | None = None
+    organization_slug: str | None = None
+
+    if resolver_match := request.resolver_match:
+        if event_slug := resolver_match.kwargs.get("event_slug"):
+            event = get_object_or_404(Event.objects.select_related("organization"), slug=event_slug)
+            organization_slug = event.organization.slug
+        else:
+            organization_slug = resolver_match.kwargs.get("organization_slug")
 
     return dict(
         actor=request.user if request.user.is_authenticated else None,
         context=request.build_absolute_uri(request.get_full_path()),
         ip_address=get_ip(request),
-        event=event.slug if event else None,
-        organization=organization.slug if organization else None,
+        event=event_slug,
+        organization=organization_slug,
     )
 
 
