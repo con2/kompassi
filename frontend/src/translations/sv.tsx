@@ -1019,6 +1019,10 @@ const translations: Translations = {
         helpText:
           "Om detta väljs, kräver det att du loggar in för att svara på enkäten.",
       },
+      protectResponses: {
+        title: "Skydda svar",
+        helpText: UNSURE("Om detta väljs, kan svar inte raderas."),
+      },
       maxResponsesPerUser: {
         title: "Maximalt antal svar per användaren",
         helpText:
@@ -1039,29 +1043,33 @@ const translations: Translations = {
       viewResponses: "Visa svar",
       toggleSubscription: "Meddela mig om nya svar",
       submit: "Skicka",
-      deleteVisibleResponses: {
+      deleteVisibleResponses: UNSURE({
         title: "Radera svar",
-        confirmation: (countResponses: number) =>
-          UNSURE(
-            <>
-              Är du säker på att du vill radera de{" "}
-              <strong>{countResponses}</strong> svaren som syns?
-            </>,
-          ),
+        confirmation: (countResponses: number) => (
+          <>
+            Är du säker på att du vill radera de{" "}
+            <strong>{countResponses}</strong> svaren som syns?
+          </>
+        ),
         noResponsesToDelete: "Inga svar att radera.",
+        responsesProtected: UNTRANSLATED(
+          "The responses to this survey are protected. To remove, disable response protection from query settings first.",
+        ),
+        cannotDelete: "De här svaren kan inte raderas.",
         modalActions: {
           submit: "Radera svar",
           cancel: "Avbryt utan att radera",
         },
-      },
-      deleteResponse: {
+      }),
+      deleteResponse: UNSURE({
         title: "Radera svaret",
         confirmation: "Är du säker på att du vill radera det här svaret?",
+        cannotDelete: "Det här svaret kan inte raderas.",
         modalActions: {
           submit: "Radera svaret",
           cancel: "Avbryt utan att radera",
         },
-      },
+      }),
       downloadAsExcel: "Ladda ner som Excel",
       returnToResponseList: "Tillbaka till listan över svar",
       returnToSurveyList: "Tillbaka till listan över enkäter",

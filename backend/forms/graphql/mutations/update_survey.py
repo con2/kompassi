@@ -8,13 +8,13 @@ from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
 
 from ...models.survey import Survey
-from ..survey import SurveyType
+from ..survey_full import SurveyType
 
 
 class SurveyForm(django_forms.ModelForm):
     class Meta:
         model = Survey
-        fields = ("login_required", "max_responses_per_user", "active_from", "active_until")
+        fields = ("login_required", "max_responses_per_user", "active_from", "active_until", "protect_responses")
 
     @classmethod
     def from_form_data(cls, survey: Survey, form_data: dict[str, str]) -> Self:

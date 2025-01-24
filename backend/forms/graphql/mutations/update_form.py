@@ -9,7 +9,7 @@ from core.utils.form_utils import camel_case_keys_to_snake_case
 
 from ...models.form import Form
 from ...models.survey import Survey
-from ..survey import SurveyType
+from ..survey_full import SurveyType
 
 
 class FormForm(django_forms.ModelForm):

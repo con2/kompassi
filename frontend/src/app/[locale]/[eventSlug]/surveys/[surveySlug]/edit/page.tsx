@@ -23,6 +23,7 @@ graphql(`
     activeFrom
     activeUntil
     canRemove
+    protectResponses
 
     languages {
       title
@@ -118,6 +119,11 @@ export default async function EditSurveyPage({ params }: Props) {
       slug: "loginRequired",
       type: "SingleCheckbox",
       ...t.attributes.loginRequired,
+    },
+    {
+      slug: "protectResponses",
+      type: "SingleCheckbox",
+      ...t.attributes.protectResponses,
     },
     {
       slug: "maxResponsesPerUser",

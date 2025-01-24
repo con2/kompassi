@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 
 import {
   deleteSurveyResponses,
@@ -80,6 +80,8 @@ const query = graphql(`
           }
 
           countResponses
+          canRemoveResponses
+          protectResponses
 
           responses(filters: $filters) {
             ...SurveyResponse
@@ -249,6 +251,20 @@ export default async function FormResponsesPage({
     (survey) => survey.slug === surveySlug,
   );
 
+  let cannotRemoveResponsesReason: string | ReactNode | null = null;
+  if (!survey.canRemoveResponses) {
+    if (survey.protectResponses) {
+      cannotRemoveResponsesReason =
+        t.actions.deleteVisibleResponses.responsesProtected;
+    } else if (responses.length < 1) {
+      cannotRemoveResponsesReason =
+        t.actions.deleteVisibleResponses.noResponsesToDelete;
+    } else {
+      cannotRemoveResponsesReason =
+        t.actions.deleteVisibleResponses.cannotDelete;
+    }
+  }
+
   return (
     <ViewContainer>
       <Link className="link-subtle" href={`/${eventSlug}/surveys`}>
@@ -281,7 +297,7 @@ export default async function FormResponsesPage({
               title={t.actions.deleteVisibleResponses.title}
               messages={t.actions.deleteVisibleResponses.modalActions}
               action={
-                responses.length > 0
+                survey.canRemoveResponses
                   ? deleteSurveyResponses.bind(
                       null,
                       locale,
@@ -294,11 +310,11 @@ export default async function FormResponsesPage({
               }
               className="btn btn-outline-danger"
             >
-              {responses.length > 0
+              {survey.canRemoveResponses
                 ? t.actions.deleteVisibleResponses.confirmation(
                     responses.length,
                   )
-                : t.actions.deleteVisibleResponses.noResponsesToDelete}
+                : cannotRemoveResponsesReason}
             </ModalButton>
           </div>
         </div>

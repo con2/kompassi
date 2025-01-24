@@ -9,7 +9,7 @@ from ..models.meta import FormsEventMeta, FormsProfileMeta
 from ..models.response import Response
 from ..models.survey import Survey
 from .response import ProfileResponseType
-from .survey import SurveyType
+from .survey_full import SurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 

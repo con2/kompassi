@@ -9,8 +9,10 @@ import yaml
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
+from access.cbac import is_graphql_allowed_for_model
 from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, log_get_or_create
 from core.utils.pkg_resources_compat import resource_stream
@@ -111,6 +113,11 @@ class Survey(models.Model):
         blank=True,
     )
 
+    protect_responses = models.BooleanField(
+        default=False,
+        help_text=_("If enabled, responses cannot be deleted from the UI without disabling this first."),
+    )
+
     @property
     def dimensions(self) -> models.QuerySet[Dimension]:
         return self.universe.dimensions.all()
@@ -186,10 +193,27 @@ class Survey(models.Model):
 
         return Response.objects.filter(form__in=self.languages.all()).order_by("created_at")
 
-    @property
-    def can_remove(self):
-        # TODO(#432) Revisit criteria for can_remove
-        return not self.languages.exists()
+    def can_be_deleted_by(self, request: HttpRequest):
+        return (
+            is_graphql_allowed_for_model(
+                request.user,
+                instance=self,
+                operation="delete",
+                field="self",
+            )
+            and not self.languages.exists()
+        )
+
+    def can_responses_be_deleted_by(self, request: HttpRequest):
+        return (
+            is_graphql_allowed_for_model(
+                request.user,
+                instance=self,
+                operation="delete",
+                field="responses",
+            )
+            and not self.protect_responses
+        )
 
     def get_next_sequence_number(self):
         return (self.responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1

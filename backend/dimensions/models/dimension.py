@@ -5,8 +5,10 @@ from typing import TYPE_CHECKING
 
 from django.contrib import admin
 from django.db import models
+from django.http import HttpRequest
 from django.utils.translation import get_language
 
+from access.cbac import is_graphql_allowed_for_model
 from core.utils.model_utils import make_slug_field
 from graphql_api.language import SUPPORTED_LANGUAGE_CODES, getattr_message_in_language
 
@@ -141,17 +143,29 @@ class Dimension(models.Model):
         return self.universe.slug if self.universe else None
 
     @property
-    def can_remove(self) -> bool:
+    def is_in_use(self) -> bool:
         from forms.models.response_dimension_value import ResponseDimensionValue
         from program_v2.models.program_dimension_value import ProgramDimensionValue
 
         match self.universe.app:
             case "forms":
-                return not ResponseDimensionValue.objects.filter(value__dimension=self).exists()
+                return ResponseDimensionValue.objects.filter(value__dimension=self).exists()
             case "program_v2":
-                return not ProgramDimensionValue.objects.filter(value__dimension=self).exists()
+                return ProgramDimensionValue.objects.filter(value__dimension=self).exists()
             case _:
                 raise NotImplementedError(self.universe.app)
+
+    def can_be_deleted_by(self, request: HttpRequest) -> bool:
+        return (
+            is_graphql_allowed_for_model(
+                request.user,
+                instance=self,
+                operation="delete",
+                field="self",
+                app=self.universe.app,
+            )
+            and not self.is_in_use
+        )
 
     class Meta:
         ordering = ("universe", "order", "slug")

@@ -1001,6 +1001,11 @@ const translations = {
         helpText:
           "If checked, the survey can only be filled in by signed-in users.",
       },
+      protectResponses: {
+        title: "Protect responses",
+        helpText:
+          "If checked, responses to this survey cannot be removed. Use this to protect responses from accidential removal.",
+      },
       maxResponsesPerUser: {
         title: "Maximum number of responses per user",
         helpText:
@@ -1030,6 +1035,9 @@ const translations = {
             visible?
           </>
         ),
+        responsesProtected:
+          "The responses to this survey are protected. To remove, disable response protection from query settings first.",
+        cannotDelete: "Cannot delete responses.",
         noResponsesToDelete: "No responses to delete.",
         modalActions: {
           submit: "Delete responses",
@@ -1039,6 +1047,7 @@ const translations = {
       deleteResponse: {
         title: "Delete response",
         confirmation: "Are you sure you want to delete this response?",
+        cannotDelete: "This response cannot be deleted.",
         modalActions: {
           submit: "Delete response",
           cancel: "Cancel without deleting",

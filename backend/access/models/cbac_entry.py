@@ -90,11 +90,15 @@ class CBACEntry(models.Model):
         if not user.is_authenticated:
             return False
 
-        return cls.get_entries(
+        result = cls.get_entries(
             user,  # type: ignore
             claims,
             t=t,
         ).exists()
+
+        logger.debug("CBACEntry.is_allowed %s %r", result, claims)
+
+        return result
 
     @classmethod
     def ensure_admin_group_privileges(cls, t: datetime | None = None):

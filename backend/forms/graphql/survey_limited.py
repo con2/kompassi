@@ -29,4 +29,5 @@ class LimitedSurveyType(DjangoObjectType):
             "login_required",
             "anonymity",
             "max_responses_per_user",
+            "protect_responses",
         )

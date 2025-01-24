@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ReactNode } from "react";
 import { deleteSurveyResponses } from "../actions";
 import { updateResponseDimensions } from "./actions";
 import { graphql } from "@/__generated__";
@@ -35,6 +36,8 @@ const query = graphql(`
           title(lang: $locale)
           slug
           anonymity
+          canRemoveResponses
+          protectResponses
           dimensions {
             title(lang: $locale)
             slug
@@ -125,7 +128,8 @@ export default async function SurveyResponsePage({ params }: Props) {
 
   const t = translations.Survey;
 
-  const { anonymity } = data.event.forms.survey;
+  const { anonymity, canRemoveResponses, protectResponses } =
+    data.event.forms.survey;
   const { sequenceNumber, createdAt, language, form } =
     data.event.forms.survey.response;
   const { fields, layout } = form;
@@ -177,6 +181,15 @@ export default async function SurveyResponsePage({ params }: Props) {
   const { fields: dimensionFields, values: dimensionValues } =
     buildDimensionForm(dimensions, response.cachedDimensions);
 
+  let cannotRemoveReason: string | ReactNode | null = null;
+  if (!canRemoveResponses) {
+    if (protectResponses) {
+      cannotRemoveReason = t.actions.deleteVisibleResponses.responsesProtected;
+    } else {
+      cannotRemoveReason = t.actions.deleteResponse.cannotDelete;
+    }
+  }
+
   return (
     <ViewContainer>
       <Link
@@ -195,17 +208,23 @@ export default async function SurveyResponsePage({ params }: Props) {
           <ModalButton
             title={t.actions.deleteResponse.title}
             messages={t.actions.deleteResponse.modalActions}
-            action={deleteSurveyResponses.bind(
-              null,
-              locale,
-              eventSlug,
-              surveySlug,
-              [response.id],
-              {},
-            )}
+            action={
+              canRemoveResponses
+                ? deleteSurveyResponses.bind(
+                    null,
+                    locale,
+                    eventSlug,
+                    surveySlug,
+                    [response.id],
+                    {},
+                  )
+                : undefined
+            }
             className="btn btn-outline-danger"
           >
-            {t.actions.deleteResponse.confirmation}
+            {canRemoveResponses
+              ? t.actions.deleteResponse.confirmation
+              : cannotRemoveReason}
           </ModalButton>
         </ViewHeadingActions>
       </ViewHeadingActionsWrapper>

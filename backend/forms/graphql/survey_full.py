@@ -1,5 +1,6 @@
 import graphene
 from django.conf import settings
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_query_cbac_required
@@ -11,8 +12,8 @@ from ..models.survey import Survey
 from ..utils.summarize_responses import summarize_responses
 from .dimension import SurveyDimensionType
 from .form import FormType
-from .limited_survey import LimitedSurveyType
 from .response import FullResponseType, LimitedResponseType
+from .survey_limited import LimitedSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
@@ -182,17 +183,33 @@ class SurveyType(LimitedSurveyType):
         # TODO supported_languages order instead of alphabetical?
         return parent.languages.order_by("language")
 
+    # TODO unify can_remove/can_delete naming across all apps
     @staticmethod
     def resolve_can_remove(survey: Survey, info):
         """
         Surveys that have language versions cannot be removed.
         Having language versions is also a prerequisite for a survey to have responses.
         """
-        return survey.can_remove
+        request: HttpRequest = info.context
+        return survey.can_be_deleted_by(request)
 
     can_remove = graphene.NonNull(
         graphene.Boolean,
         description=normalize_whitespace(resolve_can_remove.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_can_remove_responses(survey: Survey, info):
+        """
+        Checks that the user has permission to remove responses to this survey.
+        This requires proper CBAC permission and that `survey.protect_responses` is false.
+        """
+        request: HttpRequest = info.context
+        return survey.can_responses_be_deleted_by(request)
+
+    can_remove_responses = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_remove_responses.__doc__ or ""),
     )
 
     class Meta:
@@ -206,4 +223,5 @@ class SurveyType(LimitedSurveyType):
             "login_required",
             "anonymity",
             "max_responses_per_user",
+            "protect_responses",
         )

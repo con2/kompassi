@@ -7,7 +7,7 @@ from core.graphql.limited_event import LimitedEventType
 from core.utils.text_utils import normalize_whitespace
 
 from ..models.form import Form
-from .limited_survey import LimitedSurveyType
+from .survey_limited import LimitedSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 

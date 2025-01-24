@@ -3,7 +3,9 @@ from __future__ import annotations
 import logging
 
 from django.db import models
+from django.http import HttpRequest
 
+from access.cbac import is_graphql_allowed_for_model
 from core.utils.model_utils import make_slug_field
 
 from .dimension import Dimension
@@ -49,17 +51,29 @@ class DimensionValue(models.Model):
         return self.dimension.scope
 
     @property
-    def can_remove(self) -> bool:
+    def is_in_use(self) -> bool:
         from forms.models.response_dimension_value import ResponseDimensionValue
         from program_v2.models.program_dimension_value import ProgramDimensionValue
 
         match self.universe.app:
             case "forms":
-                return not ResponseDimensionValue.objects.filter(value=self).exists()
+                return ResponseDimensionValue.objects.filter(value=self).exists()
             case "program_v2":
-                return not ProgramDimensionValue.objects.filter(value=self).exists()
+                return ProgramDimensionValue.objects.filter(value=self).exists()
             case _:
                 raise NotImplementedError(self.universe.app)
+
+    def can_be_deleted_by(self, request: HttpRequest) -> bool:
+        return (
+            is_graphql_allowed_for_model(
+                request.user,
+                instance=self,
+                operation="delete",
+                field="self",
+                app=self.universe.app,
+            )
+            and not self.is_in_use
+        )
 
     class Meta:
         # the ordering will often be overridden by Dimension.value_ordering

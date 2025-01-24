@@ -4,7 +4,7 @@ from access.cbac import graphql_check_model
 from core.models import Event
 
 from ...models.survey import Survey
-from ..survey import SurveyType
+from ..survey_full import SurveyType
 
 
 class CreateSurveyInput(graphene.InputObjectType):

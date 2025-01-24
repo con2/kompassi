@@ -118,10 +118,12 @@ def is_graphql_allowed_for_model(
     instance: HasScope | HasImmutableScope,
     operation: Operation,
     field: str = "self",
+    app: str = "",
     **extra: str,
 ) -> bool:
     model_name = instance.__class__.__name__
-    app = instance.__class__._meta.app_label  # type: ignore
+    if not app:
+        app = instance.__class__._meta.app_label  # type: ignore
     slug = getattr(instance, "slug", None)
     extra = dict(slug=slug) if slug is not None else {}
 

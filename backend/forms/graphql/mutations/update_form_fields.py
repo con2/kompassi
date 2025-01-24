@@ -6,7 +6,7 @@ from access.cbac import graphql_check_instance
 
 from ...models.field import Field
 from ...models.survey import Survey
-from ..survey import SurveyType
+from ..survey_full import SurveyType
 
 
 class UpdateFormFieldsInput(graphene.InputObjectType):

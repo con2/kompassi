@@ -999,6 +999,11 @@ const translations: Translations = {
         helpText:
           "Jos tämä on valittuna, kyselyyn vastaaminen vaatii sisäänkirjautumisen.",
       },
+      protectResponses: {
+        title: "Suojaa vastaukset",
+        helpText:
+          "Jos tämä on valittuna, kyselyn vastauksia ei voi poistaa. Voit käyttää tätä suojaamaan kyselyn vastauksia tahattomalta poistolta.",
+      },
       maxResponsesPerUser: {
         title: "Käyttäjän vastausten maksimimäärä",
         helpText:
@@ -1027,6 +1032,9 @@ const translations: Translations = {
             <strong>{countResponses}</strong> vastausta?
           </>
         ),
+        responsesProtected:
+          "Tämän kyselyn vastaukset on suojattu. Jos haluat poistaa vastauksia, kytke ensin vastausten suojaus pois kyselyn asetuksista.",
+        cannotDelete: "Vastauksia ei voi poistaa.",
         noResponsesToDelete: "Ei vastauksia poistettavaksi.",
         modalActions: {
           submit: "Poista vastaukset",
@@ -1036,6 +1044,7 @@ const translations: Translations = {
       deleteResponse: {
         title: "Poista vastaus",
         confirmation: "Haluatko varmasti poistaa tämän vastauksen?",
+        cannotDelete: "Tätä vastausta ei voi poistaa.",
         modalActions: {
           submit: "Poista vastaus",
           cancel: "Peruuta poistamatta",
