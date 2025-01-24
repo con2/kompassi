@@ -226,7 +226,6 @@ export type DeleteSurveyResponses = {
 };
 
 export type DeleteSurveyResponsesInput = {
-  all?: InputMaybe<Scalars['Boolean']['input']>;
   eventSlug: Scalars['String']['input'];
   responseIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   surveySlug: Scalars['String']['input'];

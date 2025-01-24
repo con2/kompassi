@@ -50,6 +50,7 @@ export async function deleteSurveyResponses(
   eventSlug: string,
   surveySlug: string,
   responseIds: string[],
+  searchParams: Record<string, string>,
 ): Promise<void> {
   await getClient().mutate({
     mutation: deleteSurveyResponsesMutation,
@@ -62,5 +63,11 @@ export async function deleteSurveyResponses(
     },
   });
   revalidatePath(`/${locale}/${eventSlug}/surveys/${surveySlug}/responses`);
-  redirect(`/${eventSlug}/surveys/${surveySlug}/responses`);
+
+  const queryString =
+    Object.entries(searchParams).length > 0
+      ? "?" + new URLSearchParams(searchParams).toString()
+      : "";
+
+  redirect(`/${eventSlug}/surveys/${surveySlug}/responses${queryString}`);
 }

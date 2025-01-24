@@ -1019,17 +1019,25 @@ const translations: Translations = {
       viewResponses: "Vastaukset",
       toggleSubscription: "Ilmoita vastauksista",
       submit: "Lähetä",
-      deleteAllResponses: {
+      deleteVisibleResponses: {
         title: "Poista vastaukset",
         confirmation: (countResponses: number) => (
           <>
-            Haluatko varmasti poistaa kaikki <strong>{countResponses}</strong>{" "}
-            vastausta?
+            Haluatko varmasti poistaa parhaillaan näkyvissä olevat{" "}
+            <strong>{countResponses}</strong> vastausta?
           </>
         ),
         noResponsesToDelete: "Ei vastauksia poistettavaksi.",
         modalActions: {
           submit: "Poista vastaukset",
+          cancel: "Peruuta poistamatta",
+        },
+      },
+      deleteResponse: {
+        title: "Poista vastaus",
+        confirmation: "Haluatko varmasti poistaa tämän vastauksen?",
+        modalActions: {
+          submit: "Poista vastaus",
           cancel: "Peruuta poistamatta",
         },
       },

@@ -1039,17 +1039,26 @@ const translations: Translations = {
       viewResponses: "Visa svar",
       toggleSubscription: "Meddela mig om nya svar",
       submit: "Skicka",
-      deleteAllResponses: {
+      deleteVisibleResponses: {
         title: "Radera svar",
-        confirmation: (countResponses: number) => (
-          <>
-            Är du säker på att du vill radera alla{" "}
-            <strong>{countResponses}</strong> svar?
-          </>
-        ),
+        confirmation: (countResponses: number) =>
+          UNSURE(
+            <>
+              Är du säker på att du vill radera de{" "}
+              <strong>{countResponses}</strong> svaren som syns?
+            </>,
+          ),
         noResponsesToDelete: "Inga svar att radera.",
         modalActions: {
           submit: "Radera svar",
+          cancel: "Avbryt utan att radera",
+        },
+      },
+      deleteResponse: {
+        title: "Radera svaret",
+        confirmation: "Är du säker på att du vill radera det här svaret?",
+        modalActions: {
+          submit: "Radera svaret",
           cancel: "Avbryt utan att radera",
         },
       },

@@ -277,31 +277,29 @@ export default async function FormResponsesPage({
               {t.actions.downloadAsExcel}…
             </a>
 
-            {/* TODO */}
-            {false && (
-              <ModalButton
-                title={t.actions.deleteAllResponses.title}
-                messages={t.actions.deleteAllResponses.modalActions}
-                action={
-                  responses.length > 0
-                    ? deleteSurveyResponses.bind(
-                        null,
-                        locale,
-                        eventSlug,
-                        surveySlug,
-                        responses.map((response) => response.id),
-                      )
-                    : undefined
-                }
-                className="btn btn-outline-danger"
-              >
-                {responses.length > 0
-                  ? t.actions.deleteAllResponses.confirmation(
-                      survey.countResponses,
+            <ModalButton
+              title={t.actions.deleteVisibleResponses.title}
+              messages={t.actions.deleteVisibleResponses.modalActions}
+              action={
+                responses.length > 0
+                  ? deleteSurveyResponses.bind(
+                      null,
+                      locale,
+                      eventSlug,
+                      surveySlug,
+                      responses.map((response) => response.id),
+                      searchParams,
                     )
-                  : t.actions.deleteAllResponses.noResponsesToDelete}
-              </ModalButton>
-            )}
+                  : undefined
+              }
+              className="btn btn-outline-danger"
+            >
+              {responses.length > 0
+                ? t.actions.deleteVisibleResponses.confirmation(
+                    responses.length,
+                  )
+                : t.actions.deleteVisibleResponses.noResponsesToDelete}
+            </ModalButton>
           </div>
         </div>
       </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { deleteSurveyResponses } from "../actions";
 import { updateResponseDimensions } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
@@ -11,9 +12,13 @@ import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, Layout, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
+import ModalButton from "@/components/ModalButton";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
@@ -181,10 +186,29 @@ export default async function SurveyResponsePage({ params }: Props) {
         &lt; {t.actions.returnToResponseList}
       </Link>
 
-      <ViewHeading>
-        {t.responseDetailTitle}
-        <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
-      </ViewHeading>
+      <ViewHeadingActionsWrapper>
+        <ViewHeading>
+          {t.responseDetailTitle}
+          <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
+        </ViewHeading>
+        <ViewHeadingActions>
+          <ModalButton
+            title={t.actions.deleteResponse.title}
+            messages={t.actions.deleteResponse.modalActions}
+            action={deleteSurveyResponses.bind(
+              null,
+              locale,
+              eventSlug,
+              surveySlug,
+              [response.id],
+              {},
+            )}
+            className="btn btn-outline-danger"
+          >
+            {t.actions.deleteResponse.confirmation}
+          </ModalButton>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <div className="row mb-5">
         {!!dimensions?.length && (

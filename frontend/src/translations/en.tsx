@@ -1021,17 +1021,26 @@ const translations = {
       viewResponses: "Responses",
       toggleSubscription: "Notify for responses",
       submit: "Submit",
-      deleteAllResponses: {
+      deleteVisibleResponses: {
         title: "Delete responses",
         confirmation: (countResponses: number) => (
           <>
-            Are you sure you want to remove all{" "}
-            <strong>{countResponses}</strong> responses?
+            Are you sure you want to remove the{" "}
+            <strong>{countResponses}</strong> responses that are currently
+            visible?
           </>
         ),
         noResponsesToDelete: "No responses to delete.",
         modalActions: {
           submit: "Delete responses",
+          cancel: "Cancel without deleting",
+        },
+      },
+      deleteResponse: {
+        title: "Delete response",
+        confirmation: "Are you sure you want to delete this response?",
+        modalActions: {
+          submit: "Delete response",
           cancel: "Cancel without deleting",
         },
       },
