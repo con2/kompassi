@@ -17,6 +17,9 @@ const documents = {
     "\n  mutation InitFileUploadMutation($input: InitFileUploadInput!) {\n    initFileUpload(input: $input) {\n      uploadUrl\n      fileUrl\n    }\n  }\n": types.InitFileUploadMutationDocument,
     "\n  query SurveyPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    profile {\n      displayName\n      email\n    }\n\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          loginRequired\n          anonymity\n          maxResponsesPerUser\n          countResponsesByCurrentUser\n\n          form(lang: $locale) {\n            title\n            description\n            fields\n            layout\n          }\n        }\n      }\n    }\n  }\n": types.SurveyPageQueryDocument,
     "\n  query SurveyThankYouPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          form(lang: $locale) {\n            title\n            thankYouMessage\n          }\n        }\n      }\n    }\n  }\n": types.SurveyThankYouPageQueryDocument,
+    "\n  mutation CreateOfferForm($input: CreateSurveyInput!) {\n    createOfferForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.CreateOfferFormDocument,
+    "\n  fragment OfferForm on SurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n    countResponses\n\n    languages {\n      language\n    }\n  }\n": types.OfferFormFragmentDoc,
+    "\n  query OfferFormsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys(includeInactive: true, app: PROGRAM_V2) {\n          ...OfferForm\n        }\n      }\n    }\n  }\n": types.OfferFormsPageDocument,
     "\n  mutation ResendOrderConfirmation($input: ResendOrderConfirmationInput!) {\n    resendOrderConfirmation(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.ResendOrderConfirmationDocument,
     "\n  mutation UpdateOrder($input: UpdateOrderInput!) {\n    updateOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.UpdateOrderDocument,
     "\n  mutation CancelAndRefundOrder($input: CancelAndRefundOrderInput!) {\n    cancelAndRefundOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.CancelAndRefundOrderDocument,
@@ -126,6 +129,18 @@ export function graphql(source: "\n  query SurveyPageQuery(\n    $eventSlug: Str
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query SurveyThankYouPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          form(lang: $locale) {\n            title\n            thankYouMessage\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query SurveyThankYouPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          form(lang: $locale) {\n            title\n            thankYouMessage\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateOfferForm($input: CreateSurveyInput!) {\n    createOfferForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateOfferForm($input: CreateSurveyInput!) {\n    createOfferForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment OfferForm on SurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n    countResponses\n\n    languages {\n      language\n    }\n  }\n"): (typeof documents)["\n  fragment OfferForm on SurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n    countResponses\n\n    languages {\n      language\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query OfferFormsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys(includeInactive: true, app: PROGRAM_V2) {\n          ...OfferForm\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query OfferFormsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys(includeInactive: true, app: PROGRAM_V2) {\n          ...OfferForm\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

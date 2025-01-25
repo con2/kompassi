@@ -35,10 +35,22 @@ ANONYMITY_CHOICES = [
     ("name_and_email", _("Name and email shown to survey owner if responded logged-in")),
 ]
 
+APP_CHOICES = [
+    ("forms", "Forms V2"),
+    ("program_v2", "Program V2"),
+]
+
 
 class Survey(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
+
+    app = models.CharField(
+        choices=APP_CHOICES,
+        max_length=max(len(k) for (k, _) in APP_CHOICES),
+        default=APP_CHOICES[0][0],
+        help_text="Which app manages this survey?",
+    )
 
     login_required = models.BooleanField(
         default=False,
@@ -129,14 +141,19 @@ class Survey(models.Model):
         """
         return self.event.scope
 
-    # TODO should this be a fkey?
     @cached_property
     def universe(self) -> Universe:
-        return Universe.objects.get_or_create(
-            scope=self.scope,
-            slug=self.slug,
-            app="forms",
-        )[0]
+        match self.app:
+            case "forms":
+                return Universe.objects.get_or_create(
+                    scope=self.scope,
+                    slug=self.slug,
+                    app="forms",
+                )[0]
+            case "program_v2":
+                return self.event.program_universe
+            case _:
+                raise NotImplementedError(self.app)
 
     @property
     def is_active(self):

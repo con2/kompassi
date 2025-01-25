@@ -1,3 +1,5 @@
+from enum import Enum
+
 import graphene
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
@@ -14,16 +16,36 @@ from .survey_full import SurveyType
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
+class SurveyApp(str, Enum):
+    FORMS = "forms"
+    PROGRAM_V2 = "program_v2"
+
+
+SurveyAppType = graphene.Enum.from_enum(SurveyApp)
+
+
 class FormsEventMetaType(graphene.ObjectType):
-    surveys = graphene.List(graphene.NonNull(SurveyType), include_inactive=graphene.Boolean())
+    surveys = graphene.List(
+        graphene.NonNull(SurveyType),
+        include_inactive=graphene.Boolean(),
+        app=graphene.Argument(SurveyAppType),
+    )
 
     @staticmethod
-    def resolve_surveys(meta: FormsEventMeta, info, include_inactive: bool = False):
+    def resolve_surveys(
+        meta: FormsEventMeta,
+        info,
+        include_inactive: bool = False,
+        app: SurveyApp = SurveyApp.FORMS,
+    ):
         if include_inactive:
             graphql_check_model(Survey, meta.event.scope, info)
             qs = Survey.objects.filter(event=meta.event)
         else:
             qs = get_objects_within_period(Survey, event=meta.event)
+
+        if app:
+            qs = qs.filter(app=app)
 
         return qs
 

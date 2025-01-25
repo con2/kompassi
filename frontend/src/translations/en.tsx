@@ -837,6 +837,7 @@ const translations = {
 
   Program: {
     listTitle: "Program",
+    adminListTitle: "Program items",
     singleTitle: "Program item",
     inEvent: (eventName: string) => <>in {eventName}</>,
     attributes: {
@@ -850,6 +851,8 @@ const translations = {
       addTheseToCalendar: "Add these program items to your calendar",
       addThisToCalendar: "Add this program item to your calendar",
       signUpForThisProgram: "Sign up for this program item",
+      preview: "Preview program",
+      preferences: "Preferences",
     },
     favorites: {
       markAsFavorite: "Mark as favorite",
@@ -893,13 +896,48 @@ const translations = {
         description: "Your feedback has been recorded.",
       },
     },
+
+    OfferForm: {
+      singleTitle: "Program offer form",
+      listTitle: "Program offer forms",
+      tableFooter: (numForms: number) =>
+        `${numForms} offer form${numForms === 1 ? "" : "s"}.`,
+      actions: {
+        viewOffers: "View offers",
+        createOfferForm: {
+          title: "Create program offer form",
+          modalActions: {
+            submit: "Create",
+            cancel: "Cancel",
+          },
+        },
+      },
+    },
+
+    Offer: {
+      singleTitle: "Program offer",
+      listTitle: "Program offers",
+    },
+
+    ProgramHost: {
+      singleTitle: "Program host",
+      listTitle: "Program hosts",
+    },
+
+    admin: {
+      title: "Program admin",
+    },
+  },
+
+  Dimension: {
+    listTitle: "Dimensions",
   },
 
   Survey: {
     listTitle: "Surveys",
     singleTitle: "Survey",
     forEvent: (eventName: string) => <>for {eventName}</>,
-    surveyTableFooter: (count: number) => (
+    tableFooter: (count: number) => (
       <>
         {count} survey{count === 1 ? "" : "s"}.
       </>

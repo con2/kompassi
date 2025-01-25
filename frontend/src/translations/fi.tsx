@@ -835,6 +835,7 @@ const translations: Translations = {
   Program: {
     listTitle: "Ohjelma",
     singleTitle: "Ohjelmanumero",
+    adminListTitle: "Ohjelmanumerot",
     inEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
     attributes: {
       title: "Otsikko",
@@ -847,6 +848,8 @@ const translations: Translations = {
       addTheseToCalendar: "Lisää nämä ohjelmanumerot kalenteriin",
       addThisToCalendar: "Lisää tämä ohjelmanumero kalenteriin",
       signUpForThisProgram: "Ilmoittaudu tähän ohjelmanumeroon",
+      preview: "Ohjelmaoppaan esikatselu",
+      preferences: "Asetukset",
     },
     favorites: {
       markAsFavorite: "Merkitse suosikiksi",
@@ -890,13 +893,48 @@ const translations: Translations = {
         description: "Palautteesi on tallennettu.",
       },
     },
+
+    OfferForm: {
+      singleTitle: "Ohjelmalomake",
+      listTitle: "Ohjelmalomakkeet",
+      tableFooter: (numForms: number) =>
+        `${numForms} ohjelmalomake${numForms === 1 ? "" : "tta"}.`,
+      actions: {
+        viewOffers: "Tarjoukset",
+        createOfferForm: {
+          title: "Luo ohjelmalomake",
+          modalActions: {
+            submit: "Luo",
+            cancel: "Peruuta",
+          },
+        },
+      },
+    },
+
+    Offer: {
+      singleTitle: "Ohjelmatarjous",
+      listTitle: "Ohjelmatarjoukset",
+    },
+
+    ProgramHost: {
+      singleTitle: "Ohjelmanpitäjä",
+      listTitle: "Ohjelmanpitäjät",
+    },
+
+    admin: {
+      title: "Ohjelmanhallinta",
+    },
+  },
+
+  Dimension: {
+    listTitle: "Dimensiot",
   },
 
   Survey: {
     listTitle: "Kyselyt",
     singleTitle: "Kysely",
     forEvent: (eventName: string) => <>tapahtumalle {eventName}</>,
-    surveyTableFooter: (count: number) => (
+    tableFooter: (count: number) => (
       <>
         {count} kysely{count === 1 ? "" : "ä"}.
       </>

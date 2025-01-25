@@ -838,6 +838,7 @@ const translations: Translations = {
 
   Program: UNSURE({
     listTitle: "Program",
+    adminListTitle: UNTRANSLATED("Program items"),
     singleTitle: "Program",
     inEvent: (eventName: string) => <>i {eventName}</>,
     attributes: {
@@ -851,6 +852,8 @@ const translations: Translations = {
       addTheseToCalendar: "Lägg till dessa program i kalendern",
       addThisToCalendar: "Lägg till detta program i kalendern",
       signUpForThisProgram: "Anmäl dig till detta program",
+      preview: UNTRANSLATED("Preview program"),
+      preferences: UNTRANSLATED("Preferences"),
     },
     favorites: {
       markAsFavorite: "Markera som favorit",
@@ -895,7 +898,42 @@ const translations: Translations = {
         description: "Din feedback har registrerats.",
       },
     }),
+
+    OfferForm: UNTRANSLATED({
+      singleTitle: "Program offer form",
+      listTitle: "Program offer forms",
+      tableFooter: (numForms: number) =>
+        `${numForms} offer form${numForms === 1 ? "" : "s"}.`,
+      actions: {
+        viewOffers: "View offers",
+        createOfferForm: {
+          title: "Create program offer form",
+          modalActions: {
+            submit: "Create",
+            cancel: "Cancel",
+          },
+        },
+      },
+    }),
+
+    Offer: UNTRANSLATED({
+      singleTitle: "Program offer",
+      listTitle: "Program offers",
+    }),
+
+    ProgramHost: UNTRANSLATED({
+      singleTitle: "Program host",
+      listTitle: "Program hosts",
+    }),
+
+    admin: {
+      title: "Program admin",
+    },
   }),
+
+  Dimension: {
+    listTitle: "Dimensioner",
+  },
 
   NewProgramView: {
     title: "Erbjud ett program",
@@ -915,7 +953,7 @@ const translations: Translations = {
     listTitle: "Enkäter",
     singleTitle: "Enkät",
     forEvent: (eventName: string) => <>för {eventName}</>,
-    surveyTableFooter: (count: number) => (
+    tableFooter: (count: number) => (
       <>
         {count} enkät{count === 1 ? "" : "er"}.
       </>

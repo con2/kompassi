@@ -22,6 +22,7 @@ from forms.graphql.mutations.update_form import UpdateForm
 from forms.graphql.mutations.update_form_fields import UpdateFormFields
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
+from program_v2.graphql.mutations.create_offer_form import CreateOfferForm
 from program_v2.graphql.mutations.favorites import (
     MarkProgramAsFavorite,
     MarkScheduleItemAsFavorite,
@@ -118,6 +119,8 @@ class Mutation(graphene.ObjectType):
 
     subscribe_to_survey_responses = SubscribeToSurveyResponses.Field()
     unsubscribe_from_survey_responses = UnsubscribeFromSurveyResponses.Field()
+
+    create_offer_form = CreateOfferForm.Field()
 
     # Tickets v2
     create_product = CreateProduct.Field()
