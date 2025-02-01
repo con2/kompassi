@@ -4,7 +4,7 @@ aiodns==3.2.0
     # via aiohttp
 aiohappyeyeballs==2.4.4
     # via aiohttp
-aiohttp==3.11.10
+aiohttp==3.11.11
     # via -r requirements.in
 aiosignal==1.3.2
     # via aiohttp
@@ -12,7 +12,7 @@ amqp==5.3.1
     # via kombu
 annotated-types==0.7.0
     # via pydantic
-anyio==4.7.0
+anyio==4.8.0
     # via
     #   httpx
     #   starlette
@@ -26,7 +26,7 @@ asgiref==3.8.1
     #   django-stubs
 asttokens==3.0.0
     # via stack-data
-attrs==24.3.0
+attrs==25.1.0
     # via
     #   aiohttp
     #   ics
@@ -42,9 +42,9 @@ binapy==0.8.0
     # via jwskate
 bleach==6.2.0
     # via -r requirements.in
-boto3==1.35.82
+boto3==1.36.11
     # via -r requirements.in
-botocore==1.35.82
+botocore==1.36.11
     # via
     #   boto3
     #   s3transfer
@@ -54,7 +54,7 @@ brotli==1.1.0
     #   fonttools
 celery==5.4.0
     # via -r requirements.in
-certifi==2024.12.14
+certifi==2025.1.31
     # via
     #   httpcore
     #   httpx
@@ -69,11 +69,11 @@ cfgv==3.4.0
     # via pre-commit
 chardet==5.2.0
     # via reportlab
-charset-normalizer==3.4.0
+charset-normalizer==3.4.1
     # via
     #   pypugjs
     #   requests
-click==8.1.7
+click==8.1.8
     # via
     #   celery
     #   click-didyoumean
@@ -103,7 +103,7 @@ decorator==5.1.1
     #   ipython
 distlib==0.3.9
     # via virtualenv
-django==5.0.10
+django==5.1.5
     # via
     #   -r requirements.in
     #   crispy-bootstrap3
@@ -130,7 +130,7 @@ django-crispy-forms==2.3
     #   crispy-bootstrap3
 django-csp==3.8
     # via -r requirements.in
-django-environ==0.11.2
+django-environ==0.12.0
     # via -r requirements.in
 django-ipware==7.0.1
     # via -r requirements.in
@@ -142,9 +142,9 @@ django-redis==5.4.0
     # via -r requirements.in
 django-storages==1.14.4
     # via -r requirements.in
-django-stubs==5.1.1
+django-stubs==5.1.2
     # via -r requirements.in
-django-stubs-ext==5.1.1
+django-stubs-ext==5.1.2
     # via django-stubs
 dnspython==2.7.0
     # via email-validator
@@ -152,17 +152,17 @@ email-validator==2.2.0
     # via
     #   fastapi
     #   pydantic
-executing==2.1.0
+executing==2.2.0
     # via stack-data
-fastapi==0.115.6
+fastapi==0.115.8
     # via -r requirements.in
 fastapi-cli==0.0.7
     # via fastapi
-filelock==3.16.1
+filelock==3.17.0
     # via virtualenv
 flake8==7.1.1
     # via -r requirements.in
-fonttools==4.55.3
+fonttools==4.55.8
     # via weasyprint
 frozenlist==1.5.0
     # via
@@ -176,7 +176,7 @@ graphene-django==3.2.2
     # via -r requirements.in
 graphene-pydantic==0.6.1
     # via -r requirements.in
-graphql-core==3.2.5
+graphql-core==3.2.6
     # via
     #   graphene
     #   graphene-django
@@ -199,7 +199,7 @@ httpx==0.28.1
     # via fastapi
 ics==0.7.2
     # via -r requirements.in
-identify==2.6.3
+identify==2.6.6
     # via pre-commit
 idna==3.10
     # via
@@ -212,15 +212,15 @@ iniconfig==2.0.0
     # via pytest
 ipdb==0.13.13
     # via -r requirements.in
-ipython==8.30.0
+ipython==8.32.0
     # via
     #   -r requirements.in
     #   ipdb
-isort==5.13.2
+isort==6.0.0
     # via -r requirements.in
 jedi==0.19.2
     # via ipython
-jinja2==3.1.4
+jinja2==3.1.5
     # via
     #   -r requirements.in
     #   fastapi
@@ -278,9 +278,9 @@ passlib==1.7.4
     # via -r requirements.in
 pexpect==4.9.0
     # via ipython
-phonenumberslite==8.13.52
+phonenumberslite==8.13.54
     # via -r requirements.in
-pillow==11.0.0
+pillow==11.1.0
     # via
     #   -r requirements.in
     #   reportlab
@@ -289,11 +289,11 @@ platformdirs==4.3.6
     # via virtualenv
 pluggy==1.5.0
     # via pytest
-pre-commit==4.0.1
+pre-commit==4.1.0
     # via -r requirements.in
 promise==2.3
     # via graphene-django
-prompt-toolkit==3.0.48
+prompt-toolkit==3.0.50
     # via
     #   click-repl
     #   ipython
@@ -301,9 +301,9 @@ propcache==0.2.1
     # via
     #   aiohttp
     #   yarl
-psycopg==3.2.3
+psycopg==3.2.4
     # via -r requirements.in
-psycopg-c==3.2.3
+psycopg-c==3.2.4
     # via psycopg
 psycopg-pool==3.2.4
     # via psycopg
@@ -317,28 +317,28 @@ pycodestyle==2.12.1
     # via flake8
 pycparser==2.22
     # via cffi
-pydantic==2.10.3
+pydantic==2.10.6
     # via
     #   -r requirements.in
     #   fastapi
     #   graphene-pydantic
-pydantic-core==2.27.1
+pydantic-core==2.27.2
     # via pydantic
 pydyf==0.11.0
     # via weasyprint
 pyflakes==3.2.0
     # via flake8
-pygments==2.18.0
+pygments==2.19.1
     # via
     #   ipython
     #   rich
 pynacl==1.5.0
     # via paramiko
-pyphen==0.17.0
+pyphen==0.17.2
     # via weasyprint
 pypugjs==5.11.0
     # via -r requirements.in
-pyright==1.1.390
+pyright==1.1.393
     # via -r requirements.in
 pytest==8.3.4
     # via pytest-django
@@ -361,7 +361,7 @@ python-multipart==0.0.20
     # via fastapi
 python-stdnum==1.20
     # via django-localflavor
-pytz==2024.2
+pytz==2025.1
     # via vobject
 pyyaml==6.0.2
     # via
@@ -370,7 +370,7 @@ pyyaml==6.0.2
     #   uvicorn
 redis==5.2.1
     # via django-redis
-referencing==0.35.1
+referencing==0.36.2
     # via
     #   jsonschema
     #   jsonschema-specifications
@@ -391,15 +391,15 @@ rich==13.9.4
     # via
     #   rich-toolkit
     #   typer
-rich-toolkit==0.12.0
+rich-toolkit==0.13.2
     # via fastapi-cli
 rpds-py==0.22.3
     # via
     #   jsonschema
     #   referencing
-ruff==0.8.3
+ruff==0.9.4
     # via -r requirements.in
-s3transfer==0.10.4
+s3transfer==0.11.2
     # via boto3
 shellingham==1.5.4
     # via typer
@@ -416,11 +416,11 @@ sqlparse==0.5.3
     # via django
 stack-data==0.6.3
     # via ipython
-starlette==0.41.3
+starlette==0.45.3
     # via fastapi
 tabulate==0.9.0
     # via -r requirements.in
-tatsu==5.12.2
+tatsu==5.13.1
     # via ics
 text-unidecode==1.3
     # via graphene-django
@@ -438,7 +438,7 @@ typer==0.15.1
     # via fastapi-cli
 types-python-dateutil==2.9.0.20241206
     # via arrow
-types-pyyaml==6.0.12.20240917
+types-pyyaml==6.0.12.20241230
     # via django-stubs
 typing-extensions==4.12.2
     # via
@@ -455,13 +455,13 @@ typing-extensions==4.12.2
     #   pyright
     #   rich-toolkit
     #   typer
-tzdata==2024.2
+tzdata==2025.1
     # via
     #   celery
     #   kombu
 unicodecsv==0.14.1
     # via -r requirements.in
-urllib3==2.2.3
+urllib3==2.3.0
     # via
     #   botocore
     #   requests
@@ -477,15 +477,15 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-virtualenv==20.28.0
+virtualenv==20.29.1
     # via pre-commit
 vobject==0.9.9
     # via -r requirements.in
-watchfiles==1.0.3
+watchfiles==1.0.4
     # via uvicorn
 wcwidth==0.2.13
     # via prompt-toolkit
-weasyprint==63.1
+weasyprint==64.0
     # via -r requirements.in
 webencodings==0.5.1
     # via
@@ -493,9 +493,9 @@ webencodings==0.5.1
     #   cssselect2
     #   tinycss2
     #   tinyhtml5
-websockets==14.1
+websockets==14.2
     # via uvicorn
-xlsxwriter==3.2.0
+xlsxwriter==3.2.2
     # via -r requirements.in
 xlwt==1.3.0
     # via lippukala

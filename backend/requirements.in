@@ -17,7 +17,7 @@ django-oauth-toolkit
 django-redis
 django-storages
 django-stubs
-Django<5.1
+Django
 fastapi[standard]
 flake8
 graphene-django
