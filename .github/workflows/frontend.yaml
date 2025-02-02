@@ -40,7 +40,6 @@ jobs:
           curl -Lo bin/kubectl https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
-
       - uses: docker/setup-buildx-action@v3
       - id: build
         name: skaffold build
@@ -52,7 +51,7 @@ jobs:
           skaffold build --file-output build.json
         working-directory: frontend
       - name: Store build.json artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: build-json
           path: frontend/build.json
@@ -64,7 +63,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: build-json
       - uses: actions/setup-node@v4
@@ -122,7 +121,6 @@ jobs:
           curl -Lo bin/kubectl https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
-
       - run: npm ci
         working-directory: frontend
       - run: npx ts-node manifest.ts
