@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu
+    runs-on: ubuntu-latest
     env:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
