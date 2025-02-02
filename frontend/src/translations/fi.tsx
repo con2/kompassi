@@ -1047,6 +1047,13 @@ const translations: Translations = {
         helpText:
           "Yksittäisen käyttäjän vastausten maksimimäärä tähän kyselyyn. Jos arvoksi on asetettu 0, määrää ei rajoiteta. Huomaathan, että tämä vaikuttaa ainoastaan sisäänkirjautuneisiin käyttäjiin. Jotta rajoitus toimisi, kyselyyn vastaaminen tulee olla rajoitettu sisäänkirjautuneille käyttäjille.",
       },
+      alsoAvailableInThisLanguage: (
+        LanguageLink: ({ children }: { children: ReactNode }) => JSX.Element,
+      ) => (
+        <>
+          Tämä lomake on saatavilla myös <LanguageLink>suomeksi</LanguageLink>.
+        </>
+      ),
     },
     actions: {
       createSurvey: "Luo kysely",

@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Fragment, ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardTitle from "react-bootstrap/CardTitle";
@@ -15,7 +17,17 @@ import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { kompassiBaseUrl } from "@/config";
-import { getTranslations } from "@/translations";
+import {
+  getTranslations,
+  isSupportedLanguage,
+  SupportedLanguage,
+} from "@/translations";
+import { Translations } from "@/translations/en";
+
+// NOTE SUPPORTED_LANGUAGES
+import en from "@/translations/en";
+import fi from "@/translations/fi";
+import sv from "@/translations/sv";
 
 const query = graphql(`
   query SurveyPageQuery(
@@ -44,11 +56,26 @@ const query = graphql(`
             fields
             layout
           }
+
+          languages {
+            language
+          }
         }
       }
     }
   }
 `);
+
+// NOTE SUPPORTED_LANGUAGES
+// XXX ugly
+const alsoAvailableIn: Record<
+  SupportedLanguage,
+  Translations["Survey"]["attributes"]["alsoAvailableInThisLanguage"]
+> = {
+  en: en.Survey.attributes.alsoAvailableInThisLanguage,
+  fi: fi.Survey.attributes.alsoAvailableInThisLanguage,
+  sv: sv.Survey.attributes.alsoAvailableInThisLanguage,
+};
 
 interface SurveyPageProps {
   params: {
@@ -144,12 +171,40 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
   }
   const profileLink = `${kompassiBaseUrl}/profile`;
 
+  const otherLanguages: SupportedLanguage[] = survey.languages
+    .map((languageObj) => languageObj.language.toLowerCase())
+    .filter((language) => language != locale)
+    .filter(isSupportedLanguage);
+
   return (
     <ViewContainer>
       <ViewHeading>
         {title}
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
+      {otherLanguages.length > 0 && (
+        <div className="alert alert-primary">
+          {otherLanguages.map((language) => {
+            function LanguageLink({ children }: { children: ReactNode }) {
+              return (
+                <Link
+                  prefetch={false}
+                  href={`/${language}/${eventSlug}/${surveySlug}`}
+                  lang={language}
+                >
+                  {children}
+                </Link>
+              );
+            }
+
+            return (
+              <div key={language} lang={language}>
+                {alsoAvailableIn[language](LanguageLink)}{" "}
+              </div>
+            );
+          })}
+        </div>
+      )}
       <ParagraphsDangerousHtml html={description} />
       {isSharedProfileFieldsShown && (
         <Card className="mb-4">

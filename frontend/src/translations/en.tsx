@@ -1049,6 +1049,13 @@ const translations = {
         helpText:
           "The maximum number of responses a single user can submit to this survey. If set to 0, there is no limit. Note that this only applies to signed-in users. To enforce the limit, select Sign-in required as well.",
       },
+      alsoAvailableInThisLanguage: (
+        LanguageLink: ({ children }: { children: ReactNode }) => JSX.Element,
+      ) => (
+        <>
+          This form is also available <LanguageLink>in English</LanguageLink>.
+        </>
+      ),
     },
     actions: {
       createSurvey: "Create survey",

@@ -1066,6 +1066,14 @@ const translations: Translations = {
         helpText:
           "Det maximala antalet svar från en enskild användare på denna enkät. Om värdet är satt till 0 är beloppet inte begränsat. Observera att detta endast påverkar inloggade användare. För att begränsningen ska fungera måste svaret på enkäten begränsas till inloggade användare.",
       },
+      alsoAvailableInThisLanguage: (
+        LanguageLink: ({ children }: { children: ReactNode }) => JSX.Element,
+      ) => (
+        <>
+          Den här blanketten kan också fyllas i{" "}
+          <LanguageLink>på svenska</LanguageLink>.
+        </>
+      ),
     },
     actions: {
       createSurvey: "Skapa en enkät",
