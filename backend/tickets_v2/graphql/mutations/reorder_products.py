@@ -28,7 +28,7 @@ class ReorderProducts(graphene.Mutation):
     ):
         print("product_ids", input.product_ids)
         event = Event.objects.get(slug=input.event_slug)
-        graphql_check_model(Product, event.scope, info, "update")
+        graphql_check_model(Product, event.scope, info, operation="update")
 
         if len(input.product_ids) != len(set(input.product_ids)):  # type: ignore
             raise ValueError("Duplicates in product IDs")

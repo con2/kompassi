@@ -1,4 +1,4 @@
-from collections.abc import Collection, Sequence
+from collections.abc import Iterable, Sequence
 from typing import Any, BinaryIO
 
 from django.db import models
@@ -54,14 +54,14 @@ def get_response_cells(field: Field, values: dict[str, Any]) -> list[Any]:
 
 
 def write_responses_as_excel(
-    dimensions: Collection[Dimension],
+    dimensions: Iterable[Dimension],
     fields: Sequence[Field],
     responses: models.QuerySet[Response],
     output_stream: BinaryIO | HttpResponse,
 ):
     from core.excel_export import XlsxWriter
 
-    # No meaningful way to include FileUpload fields for now.
+    # TODO(#556) No meaningful way to include FileUpload fields for now.
     fields = [field for field in fields if field.type != FieldType.FILE_UPLOAD]
 
     output = XlsxWriter(output_stream)

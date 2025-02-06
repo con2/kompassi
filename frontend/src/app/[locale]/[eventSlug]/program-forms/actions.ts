@@ -23,6 +23,6 @@ export async function createOfferForm(eventSlug: string, formData: FormData) {
     variables: { input: { eventSlug, surveySlug } },
   });
 
-  revalidatePath(`/${eventSlug}/offer-forms`);
-  redirect(`/${eventSlug}/offer-forms/${surveySlug}/edit`);
+  revalidatePath(`/${eventSlug}/program-forms`);
+  redirect(`/${eventSlug}/program-forms/${surveySlug}/edit`);
 }

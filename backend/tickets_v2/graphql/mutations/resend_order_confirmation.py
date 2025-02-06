@@ -33,7 +33,7 @@ class ResendOrderConfirmation(graphene.Mutation):
         receipt = Receipt.objects.filter(event=event, order_id=input.order_id).latest("id")
         order = receipt.order
 
-        graphql_check_instance(order, info, "self", "update")
+        graphql_check_instance(order, info, operation="update")
 
         receipt = Receipt(
             event_id=receipt.event_id,

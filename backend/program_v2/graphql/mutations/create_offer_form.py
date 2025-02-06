@@ -20,7 +20,7 @@ class CreateOfferForm(graphene.Mutation):
         input: CreateSurveyInput,
     ):
         event = Event.objects.get(slug=input.event_slug)
-        graphql_check_model(Survey, event.scope, info, "mutation")
+        graphql_check_model(Survey, event.scope, info, operation="create", app="program_v2")
         survey = Survey(
             event=event,
             slug=input.survey_slug,

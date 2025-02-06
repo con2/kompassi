@@ -897,17 +897,46 @@ const translations = {
       },
     },
 
-    OfferForm: {
-      singleTitle: "Program offer form",
-      listTitle: "Program offer forms",
+    ProgramForm: {
+      singleTitle: "Program form",
+      listTitle: "Program forms",
       tableFooter: (numForms: number) =>
-        `${numForms} offer form${numForms === 1 ? "" : "s"}.`,
+        `${numForms} form${numForms === 1 ? "" : "s"}.`,
+      attributes: {
+        slug: {
+          title: "Slug",
+          helpText: (
+            <>
+              Machine-readable name of the program form. Must be unique within
+              the event. Cannot be changed after creation. Can contain lower
+              case letters, numbers and dashes (-). Will be part of the URL:{" "}
+              <code>/event-slug/form-slug</code> (eg.{" "}
+              <code>/tracon2025/offer-program</code>).
+            </>
+          ),
+        },
+      },
       actions: {
         viewOffers: "View offers",
         createOfferForm: {
-          title: "Create program offer form",
+          title: "Create program form",
           modalActions: {
             submit: "Create",
+            cancel: "Cancel",
+          },
+        },
+        deleteProgramForm: {
+          title: "Remove program form",
+          cannotRemove:
+            "A program form that has program offers cannot be removed.",
+          confirmation: (surveyTitle: string) => (
+            <>
+              Are you sure you want to remove the program form{" "}
+              <strong>{surveyTitle}</strong>?
+            </>
+          ),
+          modalActions: {
+            submit: "Remove",
             cancel: "Cancel",
           },
         },
@@ -978,7 +1007,7 @@ const translations = {
       slug: {
         title: "Slug",
         helpText:
-          "Machine-readable name of the survey. Must be unique within the event. Cannot be changed after creation.",
+          "Machine-readable name of the survey. Must be unique within the event. Cannot be changed after creation. Can contain lower case letters, numbers and dashes (-).",
       },
       title: "Title",
       isActive: {
@@ -1153,7 +1182,7 @@ const translations = {
     tabs: {
       summary: "Summary",
       responses: "Responses",
-      properties: "Survey properties",
+      properties: "Properties",
       addLanguage: "Add language",
       texts: (languageName: string) => `Texts (${languageName})`,
       fields: (languageName: string) => `Fields (${languageName})`,

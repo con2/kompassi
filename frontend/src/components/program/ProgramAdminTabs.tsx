@@ -1,9 +1,9 @@
 import Tabs, { Tab } from "@/components/ServerTabs";
 import { Translations } from "@/translations/en";
 
-interface Props {
+export interface ProgramAdminTabsProps {
   eventSlug: string;
-  active: "offerForms" | "offers" | "dimensions";
+  active: "programForms" | "offers" | "dimensions";
   translations: Translations;
   queryString?: string;
 }
@@ -13,15 +13,15 @@ export default function ProgramAdminTabs({
   translations,
   active,
   queryString,
-}: Props) {
+}: ProgramAdminTabsProps) {
   const t = translations.Program;
   queryString = queryString ? "?" + queryString : "";
 
   const tabs: Tab[] = [
     {
-      slug: "offerForms",
-      title: t.OfferForm.listTitle,
-      href: `/${eventSlug}/offer-forms`,
+      slug: "programForms",
+      title: t.ProgramForm.listTitle,
+      href: `/${eventSlug}/program-forms`,
     },
     {
       slug: "offers",

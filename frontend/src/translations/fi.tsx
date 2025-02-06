@@ -894,17 +894,46 @@ const translations: Translations = {
       },
     },
 
-    OfferForm: {
+    ProgramForm: {
       singleTitle: "Ohjelmalomake",
       listTitle: "Ohjelmalomakkeet",
       tableFooter: (numForms: number) =>
         `${numForms} ohjelmalomake${numForms === 1 ? "" : "tta"}.`,
+      attributes: {
+        slug: {
+          title: "Tekninen nimi",
+          helpText: (
+            <>
+              Ohjelmalomakkeen tekninen nimi. Täytyy olla uniikki tapahtuman
+              sisällä. Ei voi muuttaa luomisen jälkeen. Voi sisältää pieniä
+              kirjaimia, numeroita ja väliviivoja (-). Tulee osaksi osoitetta:{" "}
+              <code>/event-slug/form-slug</code> (esim.{" "}
+              <code>/tracon2025/offer-program</code>).
+            </>
+          ),
+        },
+      },
       actions: {
         viewOffers: "Tarjoukset",
         createOfferForm: {
           title: "Luo ohjelmalomake",
           modalActions: {
             submit: "Luo",
+            cancel: "Peruuta",
+          },
+        },
+        deleteProgramForm: {
+          title: "Poista ohjelmalomake",
+          cannotRemove:
+            "Ohjelmalomaketta ei voi poistaa, koska sillä on tehty ohjelmatarjouksia.",
+          confirmation: (surveyTitle: string) => (
+            <>
+              Haluatko varmasti poistaa ohjelmalomakkeen{" "}
+              <strong>{surveyTitle}</strong>?
+            </>
+          ),
+          modalActions: {
+            submit: "Poista",
             cancel: "Peruuta",
           },
         },

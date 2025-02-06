@@ -1,6 +1,6 @@
 import graphene
+from django.http import HttpRequest
 
-from access.cbac import graphql_check_instance
 from dimensions.models.dimension_value import DimensionValue
 
 from ...models.survey import Survey
@@ -25,12 +25,15 @@ class DeleteSurveyDimensionValue(graphene.Mutation):
         info,
         input: DeleteSurveyDimensionValueInput,
     ):
+        request: HttpRequest = info.context
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-        graphql_check_instance(survey, info, "dimensions", "mutation")
-
-        value = DimensionValue.objects.get(dimension__slug=input.dimension_slug, slug=input.value_slug)
-        if not value.can_remove:
-            raise Exception("Cannot remove dimension value that is in use")
+        value = DimensionValue.objects.get(
+            dimension__universe=survey.universe,
+            dimension__slug=input.dimension_slug,
+            slug=input.value_slug,
+        )
+        if not value.can_be_deleted_by(request):
+            raise Exception("Cannot remove dimension value")
 
         value.delete()
 

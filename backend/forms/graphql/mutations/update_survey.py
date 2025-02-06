@@ -43,8 +43,7 @@ class UpdateSurvey(graphene.Mutation):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
         form_data: dict[str, str] = input.form_data  # type: ignore
 
-        # TODO(#324) rethink
-        graphql_check_instance(survey, info, "self", "mutation")
+        graphql_check_instance(survey, info, operation="update")
 
         form = SurveyForm.from_form_data(survey, form_data)
         if not form.is_valid():

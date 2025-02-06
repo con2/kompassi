@@ -37,7 +37,7 @@ class UpdateFormFields(graphene.Mutation):
         fields = Fields.model_validate(dict(fields=input.fields))
 
         # TODO(#324) rethink
-        graphql_check_instance(survey, info, "languages", "mutation")
+        graphql_check_instance(survey, info, field="languages", operation="update")
 
         form.fields = [field.model_dump(mode="json", by_alias=True) for field in fields.fields]
         form.save(update_fields=["fields"])

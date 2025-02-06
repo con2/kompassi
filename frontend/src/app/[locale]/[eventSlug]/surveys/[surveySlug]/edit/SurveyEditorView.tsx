@@ -3,10 +3,10 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
-import ModalButton from "../../../../../../components/ModalButton";
 import { deleteSurvey } from "./actions";
 import { Survey } from "./models";
 import SurveyEditorTabs from "./SurveyEditorTabs";
+import ModalButton from "@/components/ModalButton";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {
   ViewHeadingActions,
@@ -68,6 +68,7 @@ export default function SurveyEditorView({
         survey={survey}
         translations={translations}
         active={activeTab}
+        mode="surveys"
       />
       <Card className="mb-2">
         <CardBody>{children}</CardBody>

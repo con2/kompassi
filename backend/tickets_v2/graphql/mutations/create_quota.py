@@ -37,7 +37,7 @@ class CreateQuota(graphene.Mutation):
         input: CreateQuotaInput,
     ):
         event = Event.objects.get(slug=input.event_slug)
-        graphql_check_model(Quota, event.scope, info, "create")
+        graphql_check_model(Quota, event.scope, info, operation="create")
 
         form = CreateQuotaForm(data=input.form_data)  # type: ignore
         if not form.is_valid():

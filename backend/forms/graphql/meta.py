@@ -49,14 +49,28 @@ class FormsEventMetaType(graphene.ObjectType):
 
         return qs
 
-    survey = graphene.Field(SurveyType, slug=graphene.String(required=True))
+    survey = graphene.Field(
+        SurveyType,
+        slug=graphene.String(required=True),
+        app=graphene.Argument(SurveyAppType),
+    )
 
     @staticmethod
-    def resolve_survey(meta: FormsEventMeta, info, slug: str):
-        survey = Survey.objects.filter(event=meta.event, slug=slug).first()
+    def resolve_survey(
+        meta: FormsEventMeta,
+        info,
+        slug: str,
+        app: SurveyApp = SurveyApp.FORMS,
+    ):
+        qs = Survey.objects.filter(event=meta.event, slug=slug)
+
+        if app:
+            qs = qs.filter(app=app)
+
+        survey = qs.first()
 
         if survey and not survey.is_active:
-            graphql_check_instance(survey, info, "self")
+            graphql_check_instance(survey, info)
 
         return survey
 

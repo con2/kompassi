@@ -42,14 +42,22 @@ export default function SchemaFormField({
   children,
   headingLevel,
 }: SchemaFormFieldProps) {
-  const { type, helpText } = field;
+  const { type } = field;
   const title = field.required ? `${field.title}*` : field.title;
+
+  // FIXME(SECURITY): cannot ParagraphsDangerousHtml user content like this, use Markdown or something
+  const helpText =
+    typeof field.helpText === "string" ? (
+      <ParagraphsDangerousHtml html={field.helpText} />
+    ) : (
+      field.helpText
+    );
 
   if (type === "StaticText") {
     return (
       <>
         {title && <Heading level={headingLevel}>{title}</Heading>}
-        {helpText && <ParagraphsDangerousHtml html={helpText} />}
+        {helpText}
         {children}
       </>
     );
@@ -102,12 +110,7 @@ export default function SchemaFormField({
             <div className="mb-4">
               <Label field={field} layout={layout} />
               {children}
-              {helpText && (
-                <div
-                  className="form-text"
-                  dangerouslySetInnerHTML={{ __html: helpText }}
-                />
-              )}
+              {helpText && <div className="form-text">{helpText}</div>}
             </div>
           );
       }

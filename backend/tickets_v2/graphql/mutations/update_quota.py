@@ -47,7 +47,7 @@ class UpdateQuota(graphene.Mutation):
         quota = Quota.objects.get(event__slug=input.event_slug, id=input.quota_id)
         form_data: dict[str, str] = input.form_data  # type: ignore
 
-        graphql_check_instance(quota, info, "self", "update")
+        graphql_check_instance(quota, info, operation="update")
 
         form = QuotaForm.from_form_data(quota, form_data)
         if not form.is_valid():

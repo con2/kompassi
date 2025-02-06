@@ -1,7 +1,7 @@
 // Translators: Kirsi Västi, Calle Tengman, Santtu Pajukanta
 
 import { ReactNode, JSX } from "react";
-import type { Translations } from "./en";
+import en, { Translations } from "./en";
 
 /// Mark untranslated English strings with this
 /// Eg.
@@ -899,32 +899,9 @@ const translations: Translations = {
       },
     }),
 
-    OfferForm: UNTRANSLATED({
-      singleTitle: "Program offer form",
-      listTitle: "Program offer forms",
-      tableFooter: (numForms: number) =>
-        `${numForms} offer form${numForms === 1 ? "" : "s"}.`,
-      actions: {
-        viewOffers: "View offers",
-        createOfferForm: {
-          title: "Create program offer form",
-          modalActions: {
-            submit: "Create",
-            cancel: "Cancel",
-          },
-        },
-      },
-    }),
-
-    Offer: UNTRANSLATED({
-      singleTitle: "Program offer",
-      listTitle: "Program offers",
-    }),
-
-    ProgramHost: UNTRANSLATED({
-      singleTitle: "Program host",
-      listTitle: "Program hosts",
-    }),
+    ProgramForm: UNTRANSLATED(en.Program.ProgramForm),
+    Offer: UNTRANSLATED(en.Program.Offer),
+    ProgramHost: UNTRANSLATED(en.Program.ProgramHost),
 
     admin: {
       title: "Program admin",

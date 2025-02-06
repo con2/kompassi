@@ -25,7 +25,7 @@ def forms_survey_excel_export_view(
         filename = f"{survey.slug}_responses_{timestamp}.xlsx"
 
     # TODO(#324): Failed check causes 500 now, turn it to 403 (middleware?)
-    graphql_check_instance(survey, request, "responses", "query")
+    graphql_check_instance(survey, request, field="responses", operation="query")
 
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'

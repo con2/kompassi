@@ -104,7 +104,7 @@ class UpdateProduct(graphene.Mutation):
                 superseded_by=None,
             )
         )
-        graphql_check_instance(product, info, "self", "update")
+        graphql_check_instance(product, info, operation="update")
 
         meta = product.event.tickets_v2_event_meta
         if meta is None:

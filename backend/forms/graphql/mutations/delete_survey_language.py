@@ -26,7 +26,7 @@ class DeleteSurveyLanguage(graphene.Mutation):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
 
         # TODO(#324) rethink
-        graphql_check_instance(survey, info, "self", "mutation")
+        graphql_check_instance(survey, info, operation="delete")
 
         form = survey.languages.get(language=input.language)
         if not form.can_remove:

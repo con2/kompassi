@@ -31,7 +31,7 @@ class CancelAndRefundOrder(graphene.Mutation):
         event = Event.objects.get(slug=input.event_slug)
         order = Order.objects.get(event=event, id=input.order_id)
         refund_type = RefundType(input.refund_type)
-        graphql_check_instance(order, info, "self", "update")
+        graphql_check_instance(order, info, operation="update")
 
         order.cancel_and_refund(refund_type)
 

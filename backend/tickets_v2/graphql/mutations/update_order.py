@@ -46,7 +46,7 @@ class UpdateOrder(graphene.Mutation):
         order = Order.objects.get(event__slug=input.event_slug, id=input.order_id)
         form_data: dict[str, str] = input.form_data  # type: ignore
 
-        graphql_check_instance(order, info, "self", "update")
+        graphql_check_instance(order, info, operation="update")
 
         form = OrderForm.from_form_data(order, form_data)
         if not form.is_valid():

@@ -43,7 +43,7 @@ class CreateProduct(graphene.Mutation):
         input: CreateProductInput,
     ):
         event = Event.objects.get(slug=input.event_slug)
-        graphql_check_model(Product, event.scope, info, "create")
+        graphql_check_model(Product, event.scope, info, operation="create")
 
         form = CreateProductForm(data=input.form_data)  # type: ignore
         if not form.is_valid():

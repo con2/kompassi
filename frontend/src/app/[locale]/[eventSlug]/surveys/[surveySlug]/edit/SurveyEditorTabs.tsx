@@ -1,8 +1,8 @@
-import ModalButton from "../../../../../../components/ModalButton";
 import { createSurveyLanguage } from "./actions";
 import { Survey } from "./models";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
+import ModalButton from "@/components/ModalButton";
 import ServerTabs, { Tab } from "@/components/ServerTabs";
 import { Translations } from "@/translations/en";
 
@@ -11,6 +11,7 @@ interface Props {
   eventSlug: string;
   survey: Survey;
   active: string;
+  mode: "surveys" | "program-forms";
 }
 
 export default function SurveyEditorTabs({
@@ -18,24 +19,28 @@ export default function SurveyEditorTabs({
   eventSlug,
   survey,
   active,
+  mode,
 }: Props) {
   const t = translations.Survey;
   const supportedLanguages: Record<string, string> =
     translations.LanguageSwitcher.supportedLanguages;
 
-  const url = `/${eventSlug}/surveys/${survey.slug}`;
+  const url = `/${eventSlug}/${mode}/${survey.slug}`;
   const tabs: Tab[] = [
     {
       slug: "properties",
       title: t.tabs.properties,
       href: `${url}/edit`,
     },
-    {
+  ];
+
+  if (mode === "surveys") {
+    tabs.push({
       slug: "dimensions",
       title: t.attributes.dimensions,
       href: `${url}/dimensions`,
-    },
-  ];
+    });
+  }
 
   for (const languageVersion of survey.languages) {
     // graphql enums are upper case :(

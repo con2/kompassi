@@ -14,6 +14,7 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
 from access.cbac import is_graphql_allowed_for_model
+from dimensions.models.scope import Scope
 from graphql_api.language import SUPPORTED_LANGUAGES
 from graphql_api.utils import get_message_in_language
 
@@ -63,8 +64,12 @@ class Response(models.Model):
     dimensions: models.QuerySet[ResponseDimensionValue]
 
     @property
-    def survey(self) -> Survey | None:
+    def survey(self) -> Survey:
         return self.form.survey
+
+    @property
+    def scope(self) -> Scope:
+        return self.survey.scope
 
     def _build_cached_dimensions(self) -> dict[str, list[str]]:
         """
@@ -255,7 +260,10 @@ class Response(models.Model):
         if fields is None:
             fields = self.form.validated_fields
 
-        return process_form_data(fields, self.form_data)
+        return process_form_data(
+            fields,  # type: ignore
+            self.form_data,
+        )
 
     def notify_subscribers(self):
         if self.survey is None:

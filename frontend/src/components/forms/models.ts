@@ -55,7 +55,7 @@ interface BaseField {
   slug: string;
   title?: ReactNode;
   summaryTitle?: string;
-  helpText?: string;
+  helpText?: ReactNode;
   required?: boolean;
   readOnly?: boolean;
   htmlType?: HtmlType;

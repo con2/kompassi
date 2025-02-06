@@ -18,7 +18,7 @@ class SubscribeToSurveyResponses(graphene.Mutation):
 
     def mutate(self, info, input):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-        graphql_check_instance(survey, info, "responses", "mutation")
+        graphql_check_instance(survey, info, field="subscribers", operation="create")
 
         survey.subscribers.add(info.context.user)
 
@@ -33,7 +33,7 @@ class UnsubscribeFromSurveyResponses(graphene.Mutation):
 
     def mutate(self, info, input):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-        graphql_check_instance(survey, info, "responses", "mutation")
+        graphql_check_instance(survey, info, field="subscribers", operation="delete")
 
         survey.subscribers.remove(info.context.user)
 

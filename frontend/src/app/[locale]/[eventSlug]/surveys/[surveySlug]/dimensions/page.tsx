@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
 
-import ModalButton from "../../../../../../components/ModalButton";
 import SurveyEditorView from "../edit/SurveyEditorView";
 import {
   createDimension,
@@ -21,6 +20,7 @@ import {
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { makeColorTranslucent } from "@/components/dimensions/helpers";
+import ModalButton from "@/components/ModalButton";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";

@@ -14,6 +14,7 @@ import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ProgramAdminTabs from "@/components/program/ProgramAdminTabs";
+import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {
@@ -41,8 +42,9 @@ graphql(`
 `);
 
 const query = graphql(`
-  query OfferFormsPage($eventSlug: String!, $locale: String) {
+  query ProgramFormsPage($eventSlug: String!, $locale: String) {
     event(slug: $eventSlug) {
+      slug
       name
 
       forms {
@@ -72,7 +74,7 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.Program.OfferForm;
+  const t = translations.Program.ProgramForm;
 
   const { data } = await getClient().query({
     query,
@@ -96,7 +98,10 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function OfferFormsPage({ params, searchParams }: Props) {
+export default async function ProgramFormsPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const session = await auth();
@@ -116,7 +121,7 @@ export default async function OfferFormsPage({ params, searchParams }: Props) {
   }
 
   const surveyT = translations.Survey;
-  const t = translations.Program.OfferForm;
+  const t = translations.Program.ProgramForm;
 
   const columns: Column<OfferFormFragment>[] = [
     {
@@ -183,7 +188,7 @@ export default async function OfferFormsPage({ params, searchParams }: Props) {
       title: surveyT.attributes.actions,
       getCellContents: (offerForm) => {
         const fillInUrl = `/${eventSlug}/${offerForm.slug}`;
-        const adminUrl = `/${eventSlug}/offer-forms/${offerForm.slug}`;
+        const adminUrl = `/${eventSlug}/program-forms/${offerForm.slug}`;
         const absoluteUrl = `${publicUrl}${fillInUrl}`;
         return (
           <>
@@ -223,52 +228,46 @@ export default async function OfferFormsPage({ params, searchParams }: Props) {
     },
   ];
 
-  const offerForms = data.event.forms.surveys;
+  const ProgramForms = data.event.forms.surveys;
 
   const createOfferFormFields: Field[] = [
     {
       slug: "slug",
       type: "SingleLineText",
       required: true,
-      ...surveyT.attributes.slug,
+      ...t.attributes.slug,
     },
   ];
 
   return (
-    <ViewContainer>
-      <ViewHeadingActionsWrapper>
-        <ViewHeading>
-          {translations.Program.admin.title}
-          <ViewHeading.Sub>{surveyT.forEvent(data.event.name)}</ViewHeading.Sub>
-        </ViewHeading>
-        <ViewHeadingActions>
-          <ModalButton
-            className="btn btn-outline-primary"
-            label={t.actions.createOfferForm.title + "…"}
-            title={t.actions.createOfferForm.title}
-            messages={t.actions.createOfferForm.modalActions}
-            action={createOfferForm.bind(null, eventSlug)}
-          >
-            <SchemaForm
-              fields={createOfferFormFields}
-              messages={translations.SchemaForm}
-            />
-          </ModalButton>
-        </ViewHeadingActions>
-      </ViewHeadingActionsWrapper>
-      <ProgramAdminTabs
-        eventSlug={eventSlug}
-        translations={translations}
-        active="offerForms"
-        queryString={""}
-      />
-      <DataTable rows={offerForms} columns={columns}>
+    <ProgramAdminView
+      translations={translations}
+      event={data.event}
+      active="programForms"
+      actions={
+        <ModalButton
+          className="btn btn-outline-primary"
+          label={t.actions.createOfferForm.title + "…"}
+          title={t.actions.createOfferForm.title}
+          messages={t.actions.createOfferForm.modalActions}
+          action={createOfferForm.bind(null, eventSlug)}
+        >
+          <SchemaForm
+            fields={createOfferFormFields}
+            messages={translations.SchemaForm}
+          />
+        </ModalButton>
+      }
+    >
+      <DataTable rows={ProgramForms} columns={columns}>
         <tfoot>
           <tr>
-            <td colSpan={columns.length}>{t.tableFooter(offerForms.length)}</td>
+            <td colSpan={columns.length}>
+              {t.tableFooter(ProgramForms.length)}
+            </td>
           </tr>
         </tfoot>
       </DataTable>
-    </ViewContainer>
+    </ProgramAdminView>
   );
 }

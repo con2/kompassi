@@ -41,8 +41,7 @@ class UpdateResponseDimensions(graphene.Mutation):
         response = survey.responses.get(id=input.response_id)
         dimensions = list(survey.dimensions.all())
 
-        # TODO bastardization of graphql_check_access, rethink
-        graphql_check_instance(survey, info, "response", "mutation")
+        graphql_check_instance(response, info, field="dimensions", operation="update")
 
         fields_single = [Field.from_dimension(dimension, FieldType.SINGLE_SELECT) for dimension in dimensions]
         fields_multi = [Field.from_dimension(dimension, FieldType.MULTI_SELECT) for dimension in dimensions]

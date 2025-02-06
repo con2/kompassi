@@ -26,7 +26,7 @@ class CreateSurveyLanguage(graphene.Mutation):
         input: CreateSurveyLanguageInput,
     ):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-        graphql_check_instance(survey, info, "languages", "mutation")
+        graphql_check_instance(survey, info, field="languages", operation="create")
 
         if input.copy_from:
             form = survey.languages.get(language=input.copy_from)

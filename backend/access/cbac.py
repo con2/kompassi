@@ -15,7 +15,7 @@ from .exceptions import CBACPermissionDenied
 from .models.cbac_entry import CBACEntry, Claims
 
 logger = logging.getLogger("kompassi")
-Operation = Literal["query", "create", "update", "delete", "put", "mutation"]
+Operation = Literal["query", "create", "update", "delete", "put"]
 
 
 def get_default_claims(request, **overrides: str):
@@ -139,16 +139,18 @@ def is_graphql_allowed_for_model(
     return CBACEntry.is_allowed(user, claims)
 
 
-# TODO(#324) rethink
 def graphql_check_model(
     model,
     scope: Scope,
     info: ResolveInfo | HttpRequest,
-    operation: Operation = "query",
+    *,
     field: str = "self",
+    operation: Operation = "query",
+    app: str = "",
 ):
     request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
-    app = model._meta.app_label
+    if not app:
+        app = model._meta.app_label
 
     claims = make_graphql_claims(
         scope=scope,
@@ -168,12 +170,13 @@ def graphql_check_model(
         raise CBACPermissionDenied(claims)
 
 
-# TODO(#324) rethink
 def graphql_check_instance(
     instance: HasScope | HasImmutableScope,
     info: ResolveInfo | HttpRequest,
-    field: str,
+    *,
+    field: str = "self",
     operation: Operation = "query",
+    app: str = "",
 ):
     """
     Check that the user has access to a single object. Pass "self" as the field
@@ -181,7 +184,8 @@ def graphql_check_instance(
     """
     request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
     model_name = instance.__class__.__name__
-    app = instance.__class__._meta.app_label  # type: ignore
+    if not app:
+        app = instance.__class__._meta.app_label  # type: ignore
     slug = getattr(instance, "slug", None)
     extra = dict(slug=slug) if slug is not None else {}
 
