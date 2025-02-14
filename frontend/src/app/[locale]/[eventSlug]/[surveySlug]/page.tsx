@@ -44,13 +44,14 @@ const query = graphql(`
       name
 
       forms {
-        survey(slug: $surveySlug) {
+        survey(slug: $surveySlug, app: null) {
           loginRequired
           anonymity
           maxResponsesPerUser
           countResponsesByCurrentUser
 
           form(lang: $locale) {
+            language
             title
             description
             fields
@@ -109,21 +110,18 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     variables: { eventSlug, surveySlug, locale },
   });
   const { event } = data;
-  if (!event) {
-    notFound();
-  }
-  const survey = event.forms?.survey;
-  if (!survey) {
+  if (!event?.forms?.survey?.form) {
     notFound();
   }
   const {
-    form,
+    languages,
     loginRequired,
     anonymity,
     maxResponsesPerUser,
     countResponsesByCurrentUser,
-  } = survey;
-  const { title, description, layout, fields } = form!;
+  } = event.forms.survey;
+  const { title, description, layout, fields, language } =
+    event.forms.survey.form;
   const anonymityMessages = t.attributes.anonymity.secondPerson;
 
   if (loginRequired) {
@@ -171,9 +169,9 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
   }
   const profileLink = `${kompassiBaseUrl}/profile`;
 
-  const otherLanguages: SupportedLanguage[] = survey.languages
+  const otherLanguages: SupportedLanguage[] = languages
     .map((languageObj) => languageObj.language.toLowerCase())
-    .filter((language) => language != locale)
+    .filter((lang) => lang != language.toLowerCase())
     .filter(isSupportedLanguage);
 
   return (
@@ -184,13 +182,13 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
       </ViewHeading>
       {otherLanguages.length > 0 && (
         <div className="alert alert-primary">
-          {otherLanguages.map((language) => {
+          {otherLanguages.map((lang) => {
             function LanguageLink({ children }: { children: ReactNode }) {
               return (
                 <Link
                   prefetch={false}
-                  href={`/${language}/${eventSlug}/${surveySlug}`}
-                  lang={language}
+                  href={`/${lang}/${eventSlug}/${surveySlug}`}
+                  lang={lang}
                 >
                   {children}
                 </Link>
@@ -198,8 +196,8 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
             }
 
             return (
-              <div key={language} lang={language}>
-                {alsoAvailableIn[language](LanguageLink)}{" "}
+              <div key={lang} lang={lang}>
+                {alsoAvailableIn[lang](LanguageLink)}{" "}
               </div>
             );
           })}

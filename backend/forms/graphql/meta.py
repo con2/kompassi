@@ -60,7 +60,7 @@ class FormsEventMetaType(graphene.ObjectType):
         meta: FormsEventMeta,
         info,
         slug: str,
-        app: SurveyApp = SurveyApp.FORMS,
+        app: SurveyApp | None = None,
     ):
         qs = Survey.objects.filter(event=meta.event, slug=slug)
 

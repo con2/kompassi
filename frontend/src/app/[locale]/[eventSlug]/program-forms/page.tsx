@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import ModalButton from "../../../../components/ModalButton";
-import { createOfferForm } from "./actions";
+import { createProgramForm } from "./actions";
 import { graphql } from "@/__generated__";
 import { OfferFormFragment, SurveyFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -250,7 +250,7 @@ export default async function ProgramFormsPage({
           label={t.actions.createOfferForm.title + "…"}
           title={t.actions.createOfferForm.title}
           messages={t.actions.createOfferForm.modalActions}
-          action={createOfferForm.bind(null, eventSlug)}
+          action={createProgramForm.bind(null, eventSlug)}
         >
           <SchemaForm
             fields={createOfferFormFields}

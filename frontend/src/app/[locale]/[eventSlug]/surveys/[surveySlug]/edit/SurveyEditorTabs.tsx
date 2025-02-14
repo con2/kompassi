@@ -1,3 +1,4 @@
+import { createProgramFormLanguage } from "../../../program-forms/[surveySlug]/edit/actions";
 import { createSurveyLanguage } from "./actions";
 import { Survey } from "./models";
 import { Field } from "@/components/forms/models";
@@ -106,6 +107,10 @@ export default function SurveyEditorTabs({
     addLanguageValues.copyFrom = survey.languages[0].language.toLowerCase();
   }
 
+  const addLanguageAction = (
+    mode === "program-forms" ? createProgramFormLanguage : createSurveyLanguage
+  ).bind(null, eventSlug, survey.slug);
+
   tabs.push({
     slug: "addLanguage",
     title: t.tabs.addLanguage,
@@ -116,7 +121,7 @@ export default function SurveyEditorTabs({
           title={t.tabs.addLanguage}
           label={`➕ ${t.tabs.addLanguage}…`}
           messages={t.addLanguageModal.actions}
-          action={createSurveyLanguage.bind(null, eventSlug, survey.slug)}
+          action={addLanguageAction}
           disabled={potentialLanguages.length === 0}
         >
           <SchemaForm

@@ -7,7 +7,7 @@ from forms.graphql.survey_full import SurveyType
 from forms.models.survey import Survey
 
 
-class CreateOfferForm(graphene.Mutation):
+class CreateProgramForm(graphene.Mutation):
     class Arguments:
         input = CreateSurveyInput(required=True)
 
@@ -20,7 +20,15 @@ class CreateOfferForm(graphene.Mutation):
         input: CreateSurveyInput,
     ):
         event = Event.objects.get(slug=input.event_slug)
-        graphql_check_model(Survey, event.scope, info, operation="create", app="program_v2")
+
+        graphql_check_model(
+            Survey,
+            event.scope,
+            info,
+            operation="create",
+            app="program_v2",
+        )
+
         survey = Survey(
             event=event,
             slug=input.survey_slug,
@@ -28,4 +36,4 @@ class CreateOfferForm(graphene.Mutation):
         )
         survey.full_clean()
         survey.save()
-        return CreateOfferForm(survey=survey)  # type: ignore
+        return CreateProgramForm(survey=survey)  # type: ignore

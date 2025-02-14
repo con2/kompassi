@@ -5,9 +5,9 @@ import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const createOfferFormMutation = graphql(`
-  mutation CreateOfferForm($input: CreateSurveyInput!) {
-    createOfferForm(input: $input) {
+const createProgramFormMutation = graphql(`
+  mutation CreateProgramForm($input: CreateSurveyInput!) {
+    createProgramForm(input: $input) {
       survey {
         slug
       }
@@ -15,11 +15,11 @@ const createOfferFormMutation = graphql(`
   }
 `);
 
-export async function createOfferForm(eventSlug: string, formData: FormData) {
+export async function createProgramForm(eventSlug: string, formData: FormData) {
   const surveySlug = formData.get("slug")!.toString();
 
   await getClient().mutate({
-    mutation: createOfferFormMutation,
+    mutation: createProgramFormMutation,
     variables: { input: { eventSlug, surveySlug } },
   });
 

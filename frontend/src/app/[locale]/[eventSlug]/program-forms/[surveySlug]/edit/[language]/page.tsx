@@ -2,7 +2,10 @@ import { notFound } from "next/navigation";
 
 import ModalButton from "../../../../../../../components/ModalButton";
 import ProgramFormEditorView from "../ProgramFormEditorView";
-import { deleteSurveyLanguage, updateSurveyLanguage } from "./actions";
+import {
+  deleteProgramFormLanguage,
+  updateProgramFormLanguage,
+} from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -153,7 +156,7 @@ export default async function EditProgramFormLanguagePage({ params }: Props) {
       activeTab={activeTab}
     >
       <form
-        action={updateSurveyLanguage.bind(
+        action={updateProgramFormLanguage.bind(
           null,
           eventSlug,
           surveySlug,
@@ -171,7 +174,7 @@ export default async function EditProgramFormLanguagePage({ params }: Props) {
             className="btn btn-outline-danger ms-auto"
             title={t.deleteLanguageModal.title}
             messages={t.deleteLanguageModal.modalActions}
-            action={deleteSurveyLanguage.bind(
+            action={deleteProgramFormLanguage.bind(
               null,
               eventSlug,
               survey.slug,

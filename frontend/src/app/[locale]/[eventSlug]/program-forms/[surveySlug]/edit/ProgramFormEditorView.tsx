@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import SurveyEditorTabs from "../../../surveys/[surveySlug]/edit/SurveyEditorTabs";
-import { deleteSurvey } from "./actions";
+import { deleteProgramForm } from "./actions";
 import { Survey } from "./models";
 import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
@@ -40,7 +40,7 @@ export default function ProgramFormEditorView({
           messages={t.actions.deleteProgramForm.modalActions}
           className="btn btn-outline-danger"
           submitButtonVariant="danger"
-          action={deleteSurvey.bind(null, event.slug, survey.slug)}
+          action={deleteProgramForm.bind(null, event.slug, survey.slug)}
           disabled={!survey.canRemove}
           // TODO disabledMessage={t.actions.deleteSurvey.cannotRemove}
         >

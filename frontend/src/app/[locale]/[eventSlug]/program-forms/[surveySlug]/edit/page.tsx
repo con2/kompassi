@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import { updateSurvey } from "./actions";
+import { updateProgramForm } from "./actions";
 import ProgramFormEditorView from "./ProgramFormEditorView";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
@@ -39,7 +39,7 @@ const query = graphql(`
       slug
 
       forms {
-        survey(slug: $surveySlug) {
+        survey(slug: $surveySlug, app: PROGRAM_V2) {
           ...EditProgramForm
         }
       }
@@ -130,7 +130,7 @@ export default async function EditSurveyPage({ params }: Props) {
       survey={survey}
       activeTab="properties"
     >
-      <form action={updateSurvey.bind(null, eventSlug, surveySlug)}>
+      <form action={updateProgramForm.bind(null, eventSlug, surveySlug)}>
         <SchemaForm
           fields={fields}
           values={survey}

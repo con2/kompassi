@@ -45,7 +45,7 @@ const query = graphql(`
       name
 
       forms {
-        survey(slug: $surveySlug) {
+        survey(slug: $surveySlug, app: FORMS) {
           ...EditFormLanguagePage
         }
       }

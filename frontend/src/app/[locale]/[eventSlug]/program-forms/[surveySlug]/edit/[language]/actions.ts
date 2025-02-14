@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
-const updateFormMutation = graphql(`
-  mutation UpdateFormMutation($input: UpdateFormInput!) {
+const updateProgramFormLanguageMutation = graphql(`
+  mutation UpdateProgramFormLanguage($input: UpdateFormInput!) {
     updateForm(input: $input) {
       survey {
         slug
@@ -15,14 +15,14 @@ const updateFormMutation = graphql(`
   }
 `);
 
-export async function updateSurveyLanguage(
+export async function updateProgramFormLanguage(
   eventSlug: string,
   surveySlug: string,
   language: string,
   formData: FormData,
 ) {
   await getClient().mutate({
-    mutation: updateFormMutation,
+    mutation: updateProgramFormLanguageMutation,
     variables: {
       input: {
         eventSlug,
@@ -32,24 +32,24 @@ export async function updateSurveyLanguage(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/surveys`);
+  revalidatePath(`/${eventSlug}/program-forms`);
 }
 
-const deleteSurveyLanguageMutation = graphql(`
-  mutation DeleteSurveyLanguage($input: DeleteSurveyLanguageInput!) {
+const deleteProgramFormLanguageMutation = graphql(`
+  mutation DeleteProgramFormLanguage($input: DeleteSurveyLanguageInput!) {
     deleteSurveyLanguage(input: $input) {
       language
     }
   }
 `);
 
-export async function deleteSurveyLanguage(
+export async function deleteProgramFormLanguage(
   eventSlug: string,
   surveySlug: string,
   language: string,
 ) {
   await getClient().mutate({
-    mutation: deleteSurveyLanguageMutation,
+    mutation: deleteProgramFormLanguageMutation,
     variables: {
       input: {
         eventSlug,
@@ -58,6 +58,6 @@ export async function deleteSurveyLanguage(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/surveys`);
-  redirect(`/${eventSlug}/surveys/${surveySlug}/edit`);
+  revalidatePath(`/${eventSlug}/program-forms`);
+  redirect(`/${eventSlug}/program-forms/${surveySlug}/edit`);
 }

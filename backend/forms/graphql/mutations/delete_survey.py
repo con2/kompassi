@@ -21,7 +21,10 @@ class DeleteSurvey(graphene.Mutation):
         info,
         input: DeleteSurveyInput,
     ):
-        survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
+        survey = Survey.objects.get(
+            event__slug=input.event_slug,
+            slug=input.survey_slug,
+        )
 
         request: HttpRequest = info.context
         if not survey.can_be_deleted_by(request):

@@ -22,7 +22,7 @@ from forms.graphql.mutations.update_form import UpdateForm
 from forms.graphql.mutations.update_form_fields import UpdateFormFields
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
-from program_v2.graphql.mutations.create_offer_form import CreateOfferForm
+from program_v2.graphql.mutations.create_program_form import CreateProgramForm
 from program_v2.graphql.mutations.favorites import (
     MarkProgramAsFavorite,
     MarkScheduleItemAsFavorite,
@@ -30,6 +30,7 @@ from program_v2.graphql.mutations.favorites import (
     UnmarkScheduleItemAsFavorite,
 )
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
+from program_v2.graphql.mutations.update_program_form import UpdateProgramForm
 from tickets_v2.graphql.mutations.cancel_and_refund_order import CancelAndRefundOrder
 from tickets_v2.graphql.mutations.create_product import CreateProduct
 from tickets_v2.graphql.mutations.create_quota import CreateQuota
@@ -120,7 +121,8 @@ class Mutation(graphene.ObjectType):
     subscribe_to_survey_responses = SubscribeToSurveyResponses.Field()
     unsubscribe_from_survey_responses = UnsubscribeFromSurveyResponses.Field()
 
-    create_offer_form = CreateOfferForm.Field()
+    create_program_form = CreateProgramForm.Field()
+    update_program_form = UpdateProgramForm.Field()
 
     # Tickets v2
     create_product = CreateProduct.Field()

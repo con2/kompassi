@@ -2,24 +2,20 @@ from typing import Self
 
 import graphene
 from django import forms as django_forms
-from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
+from forms.graphql.mutations.update_survey import UpdateSurveyInput
+from forms.graphql.survey_full import SurveyType
+from forms.models.survey import Survey
 
-from ...models.survey import Survey
-from ..survey_full import SurveyType
 
-
-class SurveyForm(django_forms.ModelForm):
+class ProgramFormForm(django_forms.ModelForm):
     class Meta:
         model = Survey
         fields = (
-            "login_required",
-            "max_responses_per_user",
             "active_from",
             "active_until",
-            "protect_responses",
         )
 
     @classmethod
@@ -28,13 +24,7 @@ class SurveyForm(django_forms.ModelForm):
         return cls(form_data, instance=survey)
 
 
-class UpdateSurveyInput(graphene.InputObjectType):
-    event_slug = graphene.String(required=True)
-    survey_slug = graphene.String(required=True)
-    form_data = GenericScalar(required=True)
-
-
-class UpdateSurvey(graphene.Mutation):
+class UpdateProgramForm(graphene.Mutation):
     class Arguments:
         input = UpdateSurveyInput(required=True)
 
@@ -49,16 +39,21 @@ class UpdateSurvey(graphene.Mutation):
         survey = Survey.objects.get(
             event__slug=input.event_slug,
             slug=input.survey_slug,
-            app="forms",
+            app="program_v2",
         )
         form_data: dict[str, str] = input.form_data  # type: ignore
 
-        graphql_check_instance(survey, info, operation="update")
+        graphql_check_instance(
+            survey,
+            info,
+            app="program_v2",
+            operation="update",
+        )
 
-        form = SurveyForm.from_form_data(survey, form_data)
+        form = ProgramFormForm.from_form_data(survey, form_data)
         if not form.is_valid():
             raise django_forms.ValidationError(form.errors)  # type: ignore
 
         form.save()
 
-        return UpdateSurvey(survey=survey)  # type: ignore
+        return UpdateProgramForm(survey=survey)  # type: ignore

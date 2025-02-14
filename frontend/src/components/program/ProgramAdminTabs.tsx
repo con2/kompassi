@@ -3,7 +3,13 @@ import { Translations } from "@/translations/en";
 
 export interface ProgramAdminTabsProps {
   eventSlug: string;
-  active: "programForms" | "offers" | "dimensions";
+  active:
+    | "programForms"
+    | "offers"
+    | "programItems"
+    | "programHosts"
+    | "dimensions"
+    | "preferences";
   translations: Translations;
   queryString?: string;
 }
@@ -27,44 +33,50 @@ export default function ProgramAdminTabs({
       slug: "offers",
       title: t.Offer.listTitle,
       href: `/${eventSlug}/program-offers${queryString}`,
+      disabled: true,
     },
     {
       slug: "programItems",
       title: t.adminListTitle,
       href: `/${eventSlug}/program-admin${queryString}`,
+      disabled: true,
     },
     {
       slug: "programHosts",
       title: t.ProgramHost.listTitle,
       href: `/${eventSlug}/program-hosts${queryString}`,
+      disabled: true,
     },
     {
       slug: "dimensions",
       title: translations.Dimension.listTitle,
       href: `/${eventSlug}/program-dimensions`,
+      disabled: true,
     },
     {
       slug: "preview",
       title: t.actions.preview,
       href: `/${eventSlug}/program${queryString}`,
-      getTabHeader() {
-        // Program view has no admin controls, so treat it as external for now
-        return (
-          <a
-            className="nav-link"
-            href={this.href}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {this.title}…
-          </a>
-        );
-      },
+      disabled: true,
+      // getTabHeader() {
+      //   // Program view has no admin controls, so treat it as external for now
+      //   return (
+      //     <a
+      //       className="nav-link"
+      //       href={this.href}
+      //       target="_blank"
+      //       rel="noopener noreferrer"
+      //     >
+      //       {this.title}…
+      //     </a>
+      //   );
+      // },
     },
     {
       slug: "preferences",
       title: t.actions.preferences,
       href: `/${eventSlug}/program-preferences`,
+      disabled: true,
     },
   ];
 
