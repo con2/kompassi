@@ -38,6 +38,9 @@ class FormsEventMetaType(graphene.ObjectType):
         include_inactive: bool = False,
         app: SurveyApp = SurveyApp.FORMS,
     ):
+        """
+        Pass `app: null` to include forms of all apps (default: `FORMS`).
+        """
         if include_inactive:
             graphql_check_model(Survey, meta.event.scope, info)
             qs = Survey.objects.filter(event=meta.event)
@@ -62,6 +65,9 @@ class FormsEventMetaType(graphene.ObjectType):
         slug: str,
         app: SurveyApp | None = None,
     ):
+        """
+        Pass `app: null` to include forms of all apps (default: `FORMS`).
+        """
         qs = Survey.objects.filter(event=meta.event, slug=slug)
 
         if app:

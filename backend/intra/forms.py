@@ -122,6 +122,13 @@ class PrivilegesForm(forms.Form):
             "The Programme admin can approve or reject programme offers, modify the event programme schedule etc."
         ),
     )
+    program_v2 = forms.BooleanField(
+        required=False,
+        label=_("Program v2 admin"),
+        help_text=_(
+            "The Program admin can approve or reject program offers, modify the event program schedule etc. in Program V2."
+        ),
+    )
     tickets = forms.BooleanField(
         required=False,
         label=_("Tickets admin"),

@@ -11,6 +11,7 @@ from ..models.intra_event_meta import IntraEventMeta
 APP_NAMES = dict(
     labour=_("Volunteers"),
     programme=_("Programme"),
+    program_v2=_("Program v2"),
     tickets=_("Tickets"),
     tickets_v2=_("Tickets v2"),
     badges=_("Badges"),
@@ -25,7 +26,14 @@ def intra_admin_privileges_view(request, vars, event):
     users = meta.organizer_group.user_set.all().order_by("last_name", "first_name")
 
     privileges_forms = [
-        initialize_form(PrivilegesForm, request, event=event, user=user, prefix=f"u{user.id}") for user in users
+        initialize_form(
+            PrivilegesForm,
+            request,
+            event=event,
+            user=user,
+            prefix=f"u{user.id}",
+        )
+        for user in users
     ]
 
     if request.method == "POST":

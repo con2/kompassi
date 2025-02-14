@@ -255,3 +255,6 @@ msgstr "Badget"
 
 msgid "Tickets v2"
 msgstr "Liput v2"
+
+msgid "Program v2"
+msgstr "Ohjelma v2"
