@@ -1,5 +1,6 @@
 import graphene
 from django.conf import settings
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
@@ -47,7 +48,8 @@ class FormType(DjangoObjectType):
         """
         A form can be removed if it has no responses.
         """
-        return form.can_remove
+        request: HttpRequest = info.context
+        return form.can_be_deleted_by(request)
 
     can_remove = graphene.NonNull(
         graphene.Boolean,

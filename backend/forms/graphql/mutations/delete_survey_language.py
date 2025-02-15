@@ -1,6 +1,5 @@
 import graphene
-
-from access.cbac import graphql_check_instance
+from django.http import HttpRequest
 
 from ...models.survey import Survey
 
@@ -23,13 +22,11 @@ class DeleteSurveyLanguage(graphene.Mutation):
         info,
         input: DeleteSurveyLanguageInput,
     ):
+        request: HttpRequest = info.context
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
 
-        # TODO(#324) rethink
-        graphql_check_instance(survey, info, operation="delete")
-
         form = survey.languages.get(language=input.language)
-        if not form.can_remove:
+        if not form.can_be_deleted_by(request):
             raise Exception("Cannot delete survey language")
 
         form.delete()

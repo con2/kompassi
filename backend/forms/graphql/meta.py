@@ -1,5 +1,3 @@
-from enum import Enum
-
 import graphene
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
@@ -7,6 +5,7 @@ from django.core.exceptions import SuspiciousOperation
 from access.cbac import graphql_check_instance, graphql_check_model, is_graphql_allowed_for_model
 from core.utils import get_objects_within_period, normalize_whitespace
 
+from ..models.enums import SurveyApp
 from ..models.meta import FormsEventMeta, FormsProfileMeta
 from ..models.response import Response
 from ..models.survey import Survey
@@ -14,11 +13,6 @@ from .response import ProfileResponseType
 from .survey_full import SurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
-
-
-class SurveyApp(str, Enum):
-    FORMS = "forms"
-    PROGRAM_V2 = "program_v2"
 
 
 SurveyAppType = graphene.Enum.from_enum(SurveyApp)

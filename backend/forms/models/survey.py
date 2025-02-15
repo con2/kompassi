@@ -23,6 +23,7 @@ from dimensions.models.universe import Universe
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
 
 from ..utils.merge_form_fields import merge_fields
+from .enums import SurveyApp
 from .form import Form
 
 logger = logging.getLogger("kompassi")
@@ -35,10 +36,7 @@ ANONYMITY_CHOICES = [
     ("name_and_email", _("Name and email shown to survey owner if responded logged-in")),
 ]
 
-APP_CHOICES = [
-    ("forms", "Forms V2"),
-    ("program_v2", "Program V2"),
-]
+APP_CHOICES = [(app.value, app.value) for app in SurveyApp]
 
 
 class Survey(models.Model):
@@ -83,9 +81,7 @@ class Survey(models.Model):
         null=True,
         blank=True,
         verbose_name=_("active from"),
-        help_text=_(
-            "The form will be available from this date onwards. " "If not set, the form will not be available."
-        ),
+        help_text=_("The form will be available from this date onwards. If not set, the form will not be available."),
     )
 
     active_until = models.DateTimeField(
@@ -217,6 +213,7 @@ class Survey(models.Model):
                 instance=self,
                 operation="delete",
                 field="self",
+                app=self.app,
             )
             and not self.languages.exists()
         )
@@ -228,6 +225,7 @@ class Survey(models.Model):
                 instance=self,
                 operation="delete",
                 field="responses",
+                app=self.app,
             )
             and not self.protect_responses
         )

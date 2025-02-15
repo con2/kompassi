@@ -7,11 +7,12 @@ from typing import TYPE_CHECKING, Any, Self
 
 from django.conf import settings
 from django.db import models, transaction
+from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
+from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
-from dimensions.models.dimension import Dimension
 from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
 from .field import Field
@@ -65,10 +66,18 @@ class Form(models.Model):
     def __str__(self):
         return f"{self.event.slug if self.event else None}-{self.slug}"
 
-    @property
-    def can_remove(self):
-        # TODO(#432) Revisit criteria for can_remove
-        return not self.responses.exists()
+    def can_be_deleted_by(self, request: HttpRequest):
+        # TODO should we use Survey instead as a privileges root?
+        return (
+            is_graphql_allowed_for_model(
+                request.user,
+                instance=self,
+                operation="delete",
+                field="self",
+                app=self.survey.app,
+            )
+            and not self.responses.exists()
+        )
 
     @property
     def enriched_fields(self) -> list[dict[str, Any]]:
@@ -118,17 +127,14 @@ class Form(models.Model):
             if len(choices_from) != 1:
                 raise ValueError("choicesFrom must have exactly one key: value pair")
 
+            # TODO(#554) type=DimensionSingleSelect, DimensionMultiSelect, DimensionMatrix instead of choicesFrom: dimension: foo
             ((source_type, source),) = choices_from.items()
             if source_type == "dimension":
                 if survey := self.survey:
-                    try:
-                        dimension = survey.universe.dimensions.get(slug=source)
-                    except Dimension.DoesNotExist:
-                        logger.warning(f"Survey dimension {source} does not exist on survey {survey}")
-                    else:
-                        field["choices"] = [
-                            choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)
-                        ]
+                    dimension = survey.universe.dimensions.get(slug=source)
+                    field["choices"] = [
+                        choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)
+                    ]
                 else:
                     raise ValueError("A form that is not used as a survey or program offer form cannot use valuesFrom")
 
@@ -143,14 +149,12 @@ class Form(models.Model):
     def validated_fields(self):
         return [Field.model_validate(field_dict) for field_dict in self.enriched_fields]
 
+    # TODO make foreign key, do away with M2M
     @property
-    def survey(self) -> Survey | None:
-        from .survey import Survey
-
+    def survey(self) -> Survey:
         # there can only be one
-        try:
-            return self.event.surveys.get(languages=self)
-        except Survey.DoesNotExist:
-            return None
-        except Survey.MultipleObjectsReturned:
-            raise
+        return self.event.surveys.get(languages=self)
+
+    @property
+    def scope(self):
+        return self.survey.scope
