@@ -20,6 +20,8 @@ class IntraEventMeta(EventMetaBase):
         default=False,
     )
 
+    use_cbac = True
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event
