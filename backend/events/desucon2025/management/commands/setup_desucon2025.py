@@ -18,8 +18,6 @@ from labour.models import (
     Qualification,
     Survey,
 )
-from program_v2.importers.default import DefaultImporter
-from program_v2.models.dimension_dto import Dimension, DimensionDTO
 from program_v2.models.meta import ProgramV2EventMeta
 from programme.models.programme_event_meta import ProgrammeEventMeta
 
@@ -93,8 +91,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
@@ -295,21 +293,13 @@ class Setup:
             )
 
     def setup_program_v2(self):
-        try:
-            room_dimension = Dimension.objects.get(universe=self.event.program_universe, slug="room")
-        except Dimension.DoesNotExist:
-            dimensions = DefaultImporter(self.event).get_dimensions()
-            dimensions = DimensionDTO.save_many(self.event, dimensions)
-            room_dimension = next(d for d in dimensions if d.slug == "room")
-
         # TODO(frostbite2026): Use ProgramV2EventMeta.get_or_create_groups instead
         (admin_group,) = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins"])
 
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
-                location_dimension=room_dimension,
-                importer_name="default",
+                importer_name="",
                 admin_group=admin_group,
             ),
         )
