@@ -13,7 +13,7 @@ export default function SubmitButton({ layout, children }: SubmitButtonProps) {
   const { pending } = useFormStatus();
 
   switch (layout) {
-    case Layout.Horizontal:
+    case "horizontal":
       return (
         <div className="row mb-2">
           <div className="col-md-3"></div>

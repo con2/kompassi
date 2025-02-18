@@ -455,13 +455,6 @@ class Setup:
         with resource_stream("events.frostbite2024", "forms/number-field-test.yml") as f:
             data = yaml.safe_load(f)
 
-        form_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="number-field-test",
-            language="fi",
-            defaults=data,
-        )
-
         survey, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="number-field-test",
@@ -471,7 +464,12 @@ class Setup:
             ),
         )
 
-        survey.languages.set([form_fi])
+        Form.objects.get_or_create(
+            event=self.event,
+            survey=survey,
+            language="fi",
+            defaults=data,
+        )
 
 
 class Command(BaseCommand):

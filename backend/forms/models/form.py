@@ -8,45 +8,38 @@ from typing import TYPE_CHECKING, Any, Self
 from django.conf import settings
 from django.db import models, transaction
 from django.http import HttpRequest
-from django.utils.translation import gettext_lazy as _
 
 from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
-from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
 from .field import Field
+from .survey import Survey
 
 if TYPE_CHECKING:
     from .response import Response
-    from .survey import Survey
 
 
 logger = logging.getLogger("kompassi")
 
-LAYOUT_CHOICES = [
-    ("vertical", _("Vertical")),
-    ("horizontal", _("Horizontal")),
-]
-
 
 class Form(models.Model):
+    """
+    A Form is a language version of a Survey. (TODO rename?)
+    A Form cannot exist without a Survey.
+    """
+
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="forms")
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
-    title = models.CharField(max_length=255, default="")
-    description = models.TextField(blank=True, default="")
-    thank_you_message = models.TextField(blank=True, default="")
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="languages")
     language = models.CharField(
         max_length=2,
         default=DEFAULT_LANGUAGE,
         choices=get_language_choices(),
     )
-    layout = models.CharField(
-        verbose_name=_("Layout"),
-        choices=LAYOUT_CHOICES,
-        max_length=max(len(c) for (c, t) in LAYOUT_CHOICES),
-        default=LAYOUT_CHOICES[0][0],
-    )
+
+    title = models.CharField(max_length=255, default="")
+    description = models.TextField(blank=True, default="")
+    thank_you_message = models.TextField(blank=True, default="")
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -61,10 +54,10 @@ class Form(models.Model):
     responses: models.QuerySet[Response]
 
     class Meta:
-        unique_together = [("event", "slug")]
+        unique_together = [("event", "survey", "language")]
 
     def __str__(self):
-        return f"{self.event.slug if self.event else None}-{self.slug}"
+        return f"{self.event.slug if self.event else None}/{self.survey.slug}-{self.language}"
 
     def can_be_deleted_by(self, request: HttpRequest):
         # TODO should we use Survey instead as a privileges root?
@@ -148,12 +141,6 @@ class Form(models.Model):
     @cached_property
     def validated_fields(self):
         return [Field.model_validate(field_dict) for field_dict in self.enriched_fields]
-
-    # TODO make foreign key, do away with M2M
-    @property
-    def survey(self) -> Survey:
-        # there can only be one
-        return self.event.surveys.get(languages=self)
 
     @property
     def scope(self):

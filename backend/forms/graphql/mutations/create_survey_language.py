@@ -2,6 +2,7 @@ import graphene
 
 from access.cbac import graphql_check_instance
 
+from ...models.form import Form
 from ...models.survey import Survey
 from ..form import FormType
 
@@ -32,15 +33,13 @@ class CreateSurveyLanguage(graphene.Mutation):
             form = survey.languages.get(language=input.copy_from)
             form.pk = None
             form.language = input.language
-            form.slug = f"{survey.slug}-{input.language}"
             form.created_by = info.context.user
             form.save()
-            survey.languages.add(form)
         else:
-            form = survey.languages.create(
+            form = Form.objects.create(
                 event=survey.event,
+                survey=survey,
                 language=input.language,
-                slug=f"{survey.slug}-{input.language}",
                 created_by=info.context.user,
             )
 

@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 
 import { Heading, HeadingLevel } from "../helpers/Heading";
 import ParagraphsDangerousHtml from "../helpers/ParagraphsDangerousHtml";
-import { Field, Layout } from "./models";
+import { Field, Layout, defaultLayout } from "./models";
 
 function Label({ field, layout }: { field: Field; layout: Layout }) {
   const { type, title, required, slug } = field;
@@ -11,7 +11,7 @@ function Label({ field, layout }: { field: Field; layout: Layout }) {
       ? ["form-check-label"]
       : ["form-label", "fw-bold"];
 
-  if (layout === Layout.Horizontal && type !== "SingleCheckbox") {
+  if (layout === "horizontal" && type !== "SingleCheckbox") {
     classNames.push("col-md-3");
   }
 
@@ -24,7 +24,7 @@ function Label({ field, layout }: { field: Field; layout: Layout }) {
 }
 
 interface SchemaFormFieldProps {
-  layout: Layout;
+  layout?: Layout;
   field: Field;
   children?: ReactNode;
 
@@ -37,7 +37,7 @@ interface SchemaFormFieldProps {
  * form input including label, help text and error message.
  */
 export default function SchemaFormField({
-  layout,
+  layout = defaultLayout,
   field,
   children,
   headingLevel,
@@ -70,7 +70,7 @@ export default function SchemaFormField({
   switch (type) {
     case "SingleCheckbox":
       switch (layout) {
-        case Layout.Horizontal:
+        case "horizontal":
           return (
             <div className="row mb-4">
               <div className="col-md-3">{title}</div>
@@ -95,7 +95,7 @@ export default function SchemaFormField({
 
     default:
       switch (layout) {
-        case Layout.Horizontal:
+        case "horizontal":
           return (
             <div className="row mb-4">
               <Label field={field} layout={layout} />

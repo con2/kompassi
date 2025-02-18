@@ -7,14 +7,7 @@ import EditFieldModal from "./EditFieldModal";
 import FormEditorControls from "./FormEditorControls";
 import { addField, removeField, replaceField } from "./formEditorLogic";
 import { Modal, useModal } from "./LegacyModal";
-import {
-  FieldType,
-  emptyField,
-  nonValueFieldTypes,
-  Field,
-  Layout,
-  defaultLayout,
-} from "./models";
+import { FieldType, emptyField, Field, Layout, defaultLayout } from "./models";
 import newField from "./newField";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";

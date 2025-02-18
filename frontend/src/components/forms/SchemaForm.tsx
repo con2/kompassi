@@ -1,5 +1,5 @@
 import type { HeadingLevel } from "../helpers/Heading";
-import { Field, Layout } from "./models";
+import { defaultLayout, Field, Layout } from "./models";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
 import type { Translations } from "@/translations/en";
@@ -17,7 +17,7 @@ interface SchemaFormProps {
 export function SchemaForm(props: SchemaFormProps) {
   const {
     fields,
-    layout = Layout.Vertical,
+    layout = defaultLayout,
     values,
     messages,
     headingLevel,

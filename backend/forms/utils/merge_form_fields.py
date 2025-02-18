@@ -6,12 +6,15 @@ Note that fields present in only one language version are not guaranteed to be
 in any particular order.
 """
 
+from __future__ import annotations
+
 from collections.abc import Iterable, Sequence
 from functools import reduce
-from typing import Protocol, TypeVar
+from typing import TYPE_CHECKING, Protocol, TypeVar
 
-from ..models.field import Field
-from ..models.form import Form
+if TYPE_CHECKING:
+    from ..models.field import Field
+    from ..models.form import Form
 
 
 class HasSlug(Protocol):

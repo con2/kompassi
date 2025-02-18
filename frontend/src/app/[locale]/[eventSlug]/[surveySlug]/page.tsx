@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Fragment, ReactNode } from "react";
+import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardTitle from "react-bootstrap/CardTitle";
@@ -55,7 +55,6 @@ const query = graphql(`
             title
             description
             fields
-            layout
           }
 
           languages {
@@ -120,8 +119,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     maxResponsesPerUser,
     countResponsesByCurrentUser,
   } = event.forms.survey;
-  const { title, description, layout, fields, language } =
-    event.forms.survey.form;
+  const { title, description, fields, language } = event.forms.survey.form;
   const anonymityMessages = t.attributes.anonymity.secondPerson;
 
   if (loginRequired) {
@@ -219,12 +217,8 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
         </Card>
       )}
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
-        <SchemaForm
-          fields={fields}
-          layout={layout}
-          messages={translations.SchemaForm}
-        />
-        <SubmitButton layout={layout}>{t.actions.submit}</SubmitButton>
+        <SchemaForm fields={fields} messages={translations.SchemaForm} />
+        <SubmitButton>{t.actions.submit}</SubmitButton>
       </form>
       <p className="mt-3">
         <small>

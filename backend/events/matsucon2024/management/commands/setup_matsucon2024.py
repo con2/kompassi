@@ -415,27 +415,6 @@ class Setup:
         from forms.models.survey import Survey
 
         # Artist Alley application
-
-        with resource_stream("events.matsucon2024", "forms/artist-alley-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        artist_alley_application_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        with resource_stream("events.matsucon2024", "forms/artist-alley-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        artist_alley_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
         artist_alley_application, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="artist-alley-application",
@@ -446,7 +425,25 @@ class Setup:
             ),
         )
 
-        artist_alley_application.languages.set([artist_alley_application_fi, artist_alley_application_en])
+        with resource_stream("events.matsucon2024", "forms/artist-alley-application-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        artist_alley_application_en, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=artist_alley_application,
+            language="en",
+            defaults=data,
+        )
+
+        with resource_stream("events.matsucon2024", "forms/artist-alley-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        artist_alley_application_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=artist_alley_application,
+            language="fi",
+            defaults=data,
+        )
 
         with resource_stream("events.matsucon2024", "forms/artist-alley-application-dimensions.yml") as f:
             data = yaml.safe_load(f)
@@ -455,27 +452,6 @@ class Setup:
             DimensionDTO.model_validate(dimension).save(artist_alley_application)
 
         # Vendor application
-
-        with resource_stream("events.matsucon2024", "forms/vendor-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        vendor_application_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        with resource_stream("events.matsucon2024", "forms/vendor-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        vendor_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
         vendor_application, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="vendor-application",
@@ -493,7 +469,25 @@ class Setup:
             ),
         )
 
-        vendor_application.languages.set([vendor_application_fi, vendor_application_en])
+        with resource_stream("events.matsucon2024", "forms/vendor-application-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        vendor_application_en, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=vendor_application,
+            language="en",
+            defaults=data,
+        )
+
+        with resource_stream("events.matsucon2024", "forms/vendor-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        vendor_application_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=vendor_application,
+            language="fi",
+            defaults=data,
+        )
 
         with resource_stream("events.matsucon2024", "forms/vendor-application-dimensions.yml") as f:
             data = yaml.safe_load(f)

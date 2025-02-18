@@ -292,14 +292,12 @@ class Setup:
         with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        dance_judge_signup_fi, created = Form.objects.get_or_create(
+        Form.objects.get_or_create(
             event=self.event,
-            slug="dance-judge-signup-fi",
+            survey=dance_judge_signup_survey,
             language="fi",
             defaults=data,
         )
-
-        dance_judge_signup_survey.languages.set([dance_judge_signup_fi])
 
         # Cosplay judge signup form
 
@@ -321,14 +319,12 @@ class Setup:
         with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        cosplay_judge_signup_fi, created = Form.objects.get_or_create(
+        Form.objects.get_or_create(
             event=self.event,
-            slug="cosplay-judge-signup-fi",
+            survey=cosplay_judge_signup_survey,
             language="fi",
             defaults=data,
         )
-
-        cosplay_judge_signup_survey.languages.set([cosplay_judge_signup_fi])
 
         # CMV judge signup form
 
@@ -352,12 +348,10 @@ class Setup:
 
         cmv_judge_signup_fi, created = Form.objects.get_or_create(
             event=self.event,
-            slug="cmv-judge-signup-fi",
+            survey=cmv_judge_signup_survey,
             language="fi",
             defaults=data,
         )
-
-        cmv_judge_signup_survey.languages.set([cmv_judge_signup_fi])
 
     def setup_programme(self):
         from core.utils import full_hours_between

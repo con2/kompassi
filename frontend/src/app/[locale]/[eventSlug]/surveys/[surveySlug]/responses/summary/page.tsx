@@ -7,11 +7,7 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import {
-  Layout,
-  validateFields,
-  validateSummary,
-} from "@/components/forms/models";
+import { validateFields, validateSummary } from "@/components/forms/models";
 import SchemaFormField from "@/components/forms/SchemaFormField";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
@@ -146,11 +142,7 @@ export default async function SummaryPage({ params, searchParams }: Props) {
         {t.summaryOf(survey.countFilteredResponses, survey.countResponses)}
       </p>
       {fields.map((field) => (
-        <SchemaFormField
-          key={field.slug}
-          field={field}
-          layout={Layout.Vertical}
-        >
+        <SchemaFormField key={field.slug} field={field}>
           {summary[field.slug] && (
             <FieldSummaryComponent
               translations={translations}

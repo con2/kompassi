@@ -63,6 +63,5 @@ class FormType(DjangoObjectType):
             "title",
             "description",
             "thank_you_message",
-            "layout",
             "language",
         )

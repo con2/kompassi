@@ -1,6 +1,6 @@
 import colors from "./colors";
 import { ValueFieldsFragment } from "@/__generated__/graphql";
-import { Field, Layout } from "@/components/forms/models";
+import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import { supportedLanguages } from "@/translations";
 import type { Translations } from "@/translations/en";
@@ -70,7 +70,6 @@ export default function ValueForm({ messages, value }: Props) {
   return (
     <SchemaForm
       fields={fields}
-      layout={Layout.Vertical}
       messages={messages.SchemaForm}
       headingLevel={headingLevel}
       values={values}

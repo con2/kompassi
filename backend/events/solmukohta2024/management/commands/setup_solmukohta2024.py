@@ -1,13 +1,10 @@
 import os
 from datetime import datetime, timedelta
 
-import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-
-from core.utils.pkg_resources_compat import resource_stream
 
 
 def mkpath(*parts):
@@ -28,7 +25,6 @@ class Setup:
         self.setup_core()
         self.setup_programme()
         self.setup_tickets()
-        self.setup_forms()
         self.setup_program_v2()
 
     def setup_core(self):
@@ -519,65 +515,6 @@ class Setup:
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
-
-    def setup_forms(self):
-        from forms.models.dimension_dto import DimensionDTO
-        from forms.models.form import Form
-        from forms.models.survey import Survey
-
-        passenger_registration, _ = Survey.objects.update_or_create(
-            event=self.event,
-            slug="passenger-registration",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["official_last_name", "official_first_names"],
-            ),
-        )
-
-        with resource_stream("events.solmukohta2024", "forms/passenger-registration-dimensions.yaml") as f:
-            data = yaml.safe_load(f)
-
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(passenger_registration)
-
-        with resource_stream("events.solmukohta2024", "forms/passenger-registration-en.yaml") as f:
-            data = yaml.safe_load(f)
-
-        passenger_registration_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="passenger-registration-en",
-            language="en",
-            defaults=data,
-        )
-
-        passenger_registration.languages.set([passenger_registration_en])
-
-        hackathon_signup, _ = Survey.objects.update_or_create(
-            event=self.event,
-            slug="hackathon-signup",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["name"],
-            ),
-        )
-
-        with resource_stream("events.solmukohta2024", "forms/hackathon-signup-dimensions.yaml") as f:
-            data = yaml.safe_load(f)
-
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(hackathon_signup)
-
-        with resource_stream("events.solmukohta2024", "forms/hackathon-signup-en.yaml") as f:
-            data = yaml.safe_load(f)
-
-        hackathon_signup_en, created = Form.objects.update_or_create(
-            event=self.event,
-            slug="hackathon-signup-en",
-            language="en",
-            defaults=data,
-        )
-
-        hackathon_signup.languages.set([hackathon_signup_en])
 
 
 class Command(BaseCommand):

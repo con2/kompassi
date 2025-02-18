@@ -298,7 +298,7 @@ class Setup:
                 event=self.event,
                 slug=choice.slug,
                 defaults=dict(
-                    title=f"Aihe: {choice.title["fi"]}",
+                    title=f"Aihe: {choice.title['fi']}",
                     style="label-default",
                     v2_dimensions={"topic": [choice.slug]},
                     public=False,
@@ -310,7 +310,7 @@ class Setup:
                 event=self.event,
                 slug=choice.slug,
                 defaults=dict(
-                    title=f"Tyyppi: {choice.title["fi"]}",
+                    title=f"Tyyppi: {choice.title['fi']}",
                     style="label-default",
                     v2_dimensions={"type": [choice.slug]},
                     public=False,
@@ -582,26 +582,6 @@ class Setup:
             ),
         )
 
-        with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        form_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="larp-survey-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        with resource_stream("events.hitpoint2024", "forms/larp-survey-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        form_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="larp-survey-en",
-            language="en",
-            defaults=data,
-        )
-
         survey, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="larp-survey",
@@ -610,11 +590,29 @@ class Setup:
             ),
         )
 
+        with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        Form.objects.get_or_create(
+            event=self.event,
+            survey=survey,
+            language="fi",
+            defaults=data,
+        )
+
+        with resource_stream("events.hitpoint2024", "forms/larp-survey-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        Form.objects.get_or_create(
+            event=self.event,
+            survey=survey,
+            language="en",
+            defaults=data,
+        )
+
         if not survey.key_fields:
             survey.key_fields = ["participated_in_tracon_hitpoint"]
             survey.save()
-
-        survey.languages.set([form_fi, form_en])
 
     def setup_program_v2(self):
         from program_v2.importers.hitpoint2024 import HitpointImporter

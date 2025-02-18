@@ -30,7 +30,6 @@ graphql(`
       }
     }
     form {
-      slug
       title
       event {
         slug

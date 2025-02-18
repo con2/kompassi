@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
-import { FormsFormLayoutChoices } from "@/__generated__/graphql";
+
+export type Layout = "horizontal" | "vertical";
+export const defaultLayout: Layout = "vertical";
 
 export type FieldType =
   | "SingleLineText"
@@ -161,11 +163,6 @@ export type Value =
 /// Values of all fields in a form
 export type Values = Record<string, Value>;
 
-export type Layout = FormsFormLayoutChoices;
-export const Layout = FormsFormLayoutChoices;
-
-export const defaultLayout = Layout.Vertical;
-
 export type Field =
   | SingleLineText
   | MultiLineText
@@ -187,13 +184,12 @@ export interface FormSchema {
   title: string;
   slug: string;
   fields: Field[];
-  layout: Layout;
+  layout?: Layout;
 }
 
 export const dummyForm: FormSchema = {
   title: "Dummy form",
   slug: "dummy-form",
-  layout: Layout.Horizontal,
   fields: [
     {
       type: "SingleLineText",

@@ -27,11 +27,9 @@ const query = graphql(`
           }
 
           form {
-            slug
             title
             language
             fields
-            layout
             event {
               slug
               name
@@ -92,7 +90,7 @@ export default async function ProfileSurveyResponsePage({ params }: Props) {
   const response = data.profile.forms.response;
   const { createdAt, form } = response;
   const language = form.language;
-  const { fields, layout } = form;
+  const { fields } = form;
   const values: Record<string, any> = response.values ?? {};
 
   const anonymity = form.survey?.anonymity;
@@ -161,7 +159,6 @@ export default async function ProfileSurveyResponsePage({ params }: Props) {
           <SchemaForm
             fields={technicalFields}
             values={technicalValues}
-            layout={layout}
             messages={translations.SchemaForm}
             readOnly
           />
@@ -171,7 +168,6 @@ export default async function ProfileSurveyResponsePage({ params }: Props) {
       <SchemaForm
         fields={fields}
         values={values}
-        layout={layout}
         messages={translations.SchemaForm}
         readOnly
       />

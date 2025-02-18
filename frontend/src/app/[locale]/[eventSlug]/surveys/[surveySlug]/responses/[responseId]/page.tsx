@@ -60,7 +60,6 @@ const query = graphql(`
             values
             form {
               fields
-              layout
             }
             cachedDimensions
           }
@@ -132,7 +131,7 @@ export default async function SurveyResponsePage({ params }: Props) {
     data.event.forms.survey;
   const { sequenceNumber, createdAt, language, form } =
     data.event.forms.survey.response;
-  const { fields, layout } = form;
+  const { fields } = form;
 
   const response = data.event.forms.survey.response;
   const values: Record<string, any> = response.values ?? {};
@@ -266,7 +265,6 @@ export default async function SurveyResponsePage({ params }: Props) {
               <SchemaForm
                 fields={technicalFields}
                 values={technicalValues}
-                layout={Layout.Vertical}
                 messages={translations.SchemaForm}
                 readOnly
               />
@@ -278,7 +276,6 @@ export default async function SurveyResponsePage({ params }: Props) {
       <SchemaForm
         fields={fields}
         values={values}
-        layout={layout}
         messages={translations.SchemaForm}
         readOnly
       />

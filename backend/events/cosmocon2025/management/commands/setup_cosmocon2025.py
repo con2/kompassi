@@ -391,31 +391,6 @@ class Setup:
         )
 
         # Artist Alley application
-
-        ## Artist Alley application - FI
-
-        with resource_stream("events.cosmocon2025", "forms/artist-alley-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        artist_alley_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        ## Artist Alley application - EN
-
-        # with resource_stream("events.cosmocon2025", "forms/artist-alley-application-en.yml") as f:
-        #     data = yaml.safe_load(f)
-
-        # artist_alley_application_en, created = Form.objects.get_or_create(
-        #     event=self.event,
-        #     slug="artist-alley-application-en",
-        #     language="en",
-        #     defaults=data,
-        # )
-
         artist_alley_application, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="artist-alley-application",
@@ -428,8 +403,15 @@ class Setup:
             ),
         )
 
-        # artist_alley_application.languages.set([artist_alley_application_fi, artist_alley_application_en])
-        artist_alley_application.languages.set([artist_alley_application_fi])
+        with resource_stream("events.cosmocon2025", "forms/artist-alley-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        artist_alley_application_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=artist_alley_application,
+            language="fi",
+            defaults=data,
+        )
 
         with resource_stream("events.cosmocon2025", "forms/artist-alley-application-dimensions.yml") as f:
             artist_alley_dimensions = yaml.safe_load(f)
@@ -437,19 +419,6 @@ class Setup:
             DimensionDTO.model_validate(dimension).save(artist_alley_application)
 
         # Cosplay competition application
-
-        ## Cosplay competition application - FI
-
-        with resource_stream("events.cosmocon2025", "forms/cosplay-competition-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        cosplay_competition_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="cosplay-competition-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
         cosplay_competition_application, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="cosplay-competition-application",
@@ -462,7 +431,15 @@ class Setup:
             ),
         )
 
-        cosplay_competition_application.languages.set([cosplay_competition_application_fi])
+        with resource_stream("events.cosmocon2025", "forms/cosplay-competition-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        cosplay_competition_application_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=cosplay_competition_application,
+            language="fi",
+            defaults=data,
+        )
 
         with resource_stream("events.cosmocon2025", "forms/cosplay-competition-application-dimensions.yml") as f:
             cosplay_competition_dimensions = yaml.safe_load(f)

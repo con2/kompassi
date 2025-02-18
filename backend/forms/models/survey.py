@@ -4,6 +4,7 @@ import logging
 from collections.abc import Collection, Mapping
 from dataclasses import asdict, dataclass, field
 from functools import cached_property
+from typing import TYPE_CHECKING
 
 import yaml
 from django.conf import settings
@@ -24,7 +25,9 @@ from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
 
 from ..utils.merge_form_fields import merge_fields
 from .enums import SurveyApp
-from .form import Form
+
+if TYPE_CHECKING:
+    from .form import Form
 
 logger = logging.getLogger("kompassi")
 ANONYMITY_CHOICES = [
@@ -95,16 +98,6 @@ class Survey(models.Model):
         ),
     )
 
-    languages = models.ManyToManyField(
-        Form,
-        verbose_name=_("language versions"),
-        help_text=_(
-            "The form will be available in these languages. "
-            "Each language can have its own set of fields. "
-            "There must be exactly one form per supported language."
-        ),
-    )
-
     key_fields = ArrayField(
         models.CharField(max_length=255),
         blank=True,
@@ -125,6 +118,8 @@ class Survey(models.Model):
         default=False,
         help_text=_("If enabled, responses cannot be deleted from the UI without disabling this first."),
     )
+
+    languages: models.QuerySet[Form]
 
     @property
     def dimensions(self) -> models.QuerySet[Dimension]:
@@ -278,6 +273,7 @@ class SurveyDTO:
 
     def save(self, event: Event, overwrite=False) -> Survey:
         from .dimension_dto import DimensionDTO
+        from .form import Form
 
         defaults = asdict(self)  # type: ignore
         slug = defaults.pop("slug")
@@ -308,12 +304,11 @@ class SurveyDTO:
 
             form, created = Form.objects.update_or_create(
                 event=event,
+                survey=survey,
                 slug=form_slug,
                 language=language.code,
                 defaults=data,
             )
             log_get_or_create(logger, form, created)
-
-            survey.languages.add(form)
 
         return survey

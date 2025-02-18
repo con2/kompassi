@@ -9,9 +9,9 @@ from .models.survey import Survey
 @admin.register(Form)
 class FormAdmin(admin.ModelAdmin):
     model = Form
-    list_display = ("event", "slug", "title")
+    list_display = ("event", "survey", "language", "title")
     list_filter = ("event",)
-    search_fields = ("slug", "title")
+    search_fields = ("survey__slug", "title")
 
 
 class ResponseDimensionValueInline(admin.TabularInline):
@@ -43,11 +43,6 @@ class ResponseAdmin(admin.ModelAdmin):
         return False
 
 
-class SurveyFormInline(admin.TabularInline):
-    model = Survey.languages.through
-    extra = 1
-
-
 @admin.register(Survey)
 class SurveyAdmin(admin.ModelAdmin):
     model = Survey
@@ -63,4 +58,3 @@ class SurveyAdmin(admin.ModelAdmin):
         "active_until",
         "key_fields",
     )
-    inlines = (SurveyFormInline,)
