@@ -13,6 +13,7 @@ from .excel_export import get_header_cells, get_response_cells
 from .graphql.mutations.put_survey_dimension import PutSurveyDimension
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from .models.field import Choice, Field, FieldType
+from .models.form import Form
 from .models.response import Response
 from .models.survey import Survey
 from .utils.merge_form_fields import _merge_choices, _merge_fields
@@ -640,9 +641,9 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
         ]
     )
 
-    form = survey.languages.create(
+    form = Form.objects.create(
         event=event,
-        slug="test-survey-en",
+        survey=survey,
         language="en",
         fields=[
             dict(
