@@ -178,6 +178,8 @@ class Survey(models.Model):
         return merge_fields(languages)
 
     def get_form(self, requested_language: str) -> Form | None:
+        from .form import Form
+
         try:
             return self.languages.get(language=requested_language)
         except Form.DoesNotExist:

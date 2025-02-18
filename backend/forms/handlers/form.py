@@ -1,15 +1,7 @@
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from core.utils.model_utils import slugify
-
 from ..models.form import Form
-
-
-@receiver(pre_save, sender=Form)
-def form_pre_save(sender, instance: Form, **kwargs):
-    if instance.slug is None:
-        instance.slug = slugify(instance.title)
 
 
 @receiver(post_save, sender=Form)

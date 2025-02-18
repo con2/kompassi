@@ -66,6 +66,8 @@ class ProgramV2EventMeta(EventMetaBase):
         from ..importers.tracon2024 import TraconImporter
 
         match self.importer_name:
+            case "":
+                return None
             case "default":
                 return DefaultImporter
             case "noop":

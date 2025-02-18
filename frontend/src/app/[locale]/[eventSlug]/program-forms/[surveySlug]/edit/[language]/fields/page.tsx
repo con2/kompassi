@@ -123,7 +123,7 @@ export default async function EditProgramFormFieldsPage({ params }: Props) {
       translations={translations}
       event={data.event}
       survey={survey}
-      activeTab="properties"
+      activeTab={activeTab}
     >
       <FormEditorWrapper
         initialFields={form.fields}

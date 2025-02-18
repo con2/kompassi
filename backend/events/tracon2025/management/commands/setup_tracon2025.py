@@ -29,8 +29,6 @@ from labour.models.labour_event_meta import LabourEventMeta
 from labour.models.personnel_class import PersonnelClass
 from labour.models.qualifications import Qualification
 from labour.models.survey import Survey as LabourSurvey
-from program_v2.importers.tracon2024 import TraconImporter
-from program_v2.models.dimension_dto import Dimension, DimensionDTO
 from program_v2.models.meta import ProgramV2EventMeta
 from programme.models import Category, Programme, Room
 from tickets_v2.models.meta import TicketsV2EventMeta
@@ -62,6 +60,7 @@ class Setup:
         self.setup_access()
         self.setup_tickets_v2()
         self.setup_forms()
+        self.setup_program_v2()
         # self.setup_kaatoilmo()
 
     def setup_core(self):
@@ -319,19 +318,11 @@ class Setup:
         )
 
     def setup_program_v2(self):
-        try:
-            room_dimension = Dimension.objects.get(universe=self.event.program_universe, slug="room")
-        except Dimension.DoesNotExist:
-            dimensions = TraconImporter(self.event).get_dimensions()
-            dimensions = DimensionDTO.save_many(self.event, dimensions)
-            room_dimension = next(d for d in dimensions if d.slug == "room")
-
+        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
-                location_dimension=room_dimension,
-                importer_name="tracon2025",
-                admin_group=self.event.programme_event_meta.admin_group,
+                admin_group=admin_group,
             ),
         )
 

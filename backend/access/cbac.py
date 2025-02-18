@@ -156,7 +156,7 @@ def graphql_check_model(
         scope=scope,
         operation=operation,
         app=app,
-        model=model,
+        model=model.__name__,
         field=field,
     )
 
