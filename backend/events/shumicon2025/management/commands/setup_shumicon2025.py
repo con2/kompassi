@@ -5,6 +5,8 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
+from program_v2.models.meta import ProgramV2EventMeta
+
 
 class Setup:
     def __init__(self):
@@ -26,6 +28,7 @@ class Setup:
         # self.setup_access()
         # self.setup_kaatoilmo()
         # self.setup_sms()
+        self.setup_program_v2()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -513,8 +516,14 @@ class Setup:
             team.is_public = team.slug != "tracoff"
             team.save()
 
-    def handle(self, *args, **opts):
-        self.setup_core()
+    def setup_program_v2(self):
+        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
+        ProgramV2EventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
 
 
 class Command(BaseCommand):
