@@ -1127,7 +1127,11 @@ const translations = {
           cancel: "Cancel without deleting",
         },
       },
-      downloadAsExcel: "Download as Excel",
+      exportDropdown: {
+        dropdownHeader: "Export responses",
+        excel: "Download as Excel",
+        zip: "Download with attachments (zip)",
+      },
       returnToResponseList: "Return to the list of responses",
       returnToSurveyList: "Return to the list of surveys",
       returnToDimensionList: "Return to the list of dimensions",

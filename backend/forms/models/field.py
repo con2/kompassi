@@ -107,3 +107,10 @@ class Field(pydantic.BaseModel, populate_by_name=True):
             type=type,
             choices=dimension.as_choices(language=language),
         )
+
+    @property
+    def are_attachments_allowed(self) -> bool:
+        """
+        Returns True iff this field has the possibility of having attached files.
+        """
+        return self.type == FieldType.FILE_UPLOAD

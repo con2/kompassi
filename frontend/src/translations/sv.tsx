@@ -1095,7 +1095,11 @@ const translations: Translations = {
           cancel: "Avbryt utan att radera",
         },
       }),
-      downloadAsExcel: "Ladda ner som Excel",
+      exportDropdown: {
+        dropdownHeader: "Ladda ner svar",
+        excel: "Ladda ner som Excel",
+        zip: "Ladda ner med bilagor (zip)",
+      },
       returnToResponseList: "Tillbaka till listan över svar",
       returnToSurveyList: "Tillbaka till listan över enkäter",
       returnToDimensionList: "Tillbaka till dimensionslistan",

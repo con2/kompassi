@@ -96,8 +96,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
         else:
             pass

@@ -296,10 +296,8 @@ class SurveyDTO:
             DimensionDTO.save_many(survey, dimensions)
 
         for language in SUPPORTED_LANGUAGES:
-            form_slug = f"{slug}-{language.code}"
-
             try:
-                with resource_stream(f"events.{event.slug}", f"forms/{form_slug}.yml") as f:
+                with resource_stream(f"events.{event.slug}", f"forms/{slug}-{language.code}.yml") as f:
                     data = yaml.safe_load(f)
             except FileNotFoundError:
                 continue
@@ -307,7 +305,6 @@ class SurveyDTO:
             form, created = Form.objects.update_or_create(
                 event=event,
                 survey=survey,
-                slug=form_slug,
                 language=language.code,
                 defaults=data,
             )

@@ -1,15 +1,9 @@
-from base64 import urlsafe_b64encode
-from os import urandom
 from os.path import splitext
 
 import graphene
 
+from ...utils.filename_utils import generate_unique_id
 from ...utils.s3_presign import BUCKET_NAME, S3_ENDPOINT_URL, presign_put
-
-
-def generate_unique_id():
-    buffer = urandom(8)
-    return urlsafe_b64encode(buffer).decode("utf-8").rstrip("=")
 
 
 class InitFileUploadInput(graphene.InputObjectType):

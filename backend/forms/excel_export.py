@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Iterable, Sequence
 from typing import Any, BinaryIO
 
@@ -9,6 +10,10 @@ from dimensions.models.dimension import Dimension
 
 from .models.field import Field, FieldType
 from .models.response import Response
+from .utils.process_form_data import FieldWarning
+from .utils.s3_presign import satanize_presigned_url
+
+logger = logging.getLogger("kompassi")
 
 
 def get_header_cells(field: Field) -> list[str]:
@@ -32,7 +37,11 @@ def get_header_cells(field: Field) -> list[str]:
     return header_cells
 
 
-def get_response_cells(field: Field, values: dict[str, Any]) -> list[Any]:
+def get_response_cells(
+    field: Field,
+    values: dict[str, Any],
+    warnings: dict[str, list[FieldWarning]],
+) -> list[Any]:
     cells = []
 
     match field.type:
@@ -46,6 +55,18 @@ def get_response_cells(field: Field, values: dict[str, Any]) -> list[Any]:
         case FieldType.RADIO_MATRIX:
             questions = field.questions or []
             cells.extend(values.get(field.slug, {}).get(question.slug, "") for question in questions)
+
+        case _ if field.are_attachments_allowed:
+            if field_warnings := warnings.get(field.slug, []):
+                logger.warning(
+                    "get_response_cells refusing to operate on a FileUpload field %s with warnings: %s",
+                    field.slug,
+                    field_warnings,
+                )
+                cells.append("")
+            else:
+                presigned_urls: list[str] = values.get(field.slug, [])
+                cells.append("\n".join(satanize_presigned_url(presigned_url) for presigned_url in presigned_urls))
 
         case _:
             cells.append(values.get(field.slug, ""))
@@ -61,9 +82,6 @@ def write_responses_as_excel(
 ):
     from core.excel_export import XlsxWriter
 
-    # TODO(#556) No meaningful way to include FileUpload fields for now.
-    fields = [field for field in fields if field.type != FieldType.FILE_UPLOAD]
-
     output = XlsxWriter(output_stream)
 
     header_row = ["created_at", "language"]
@@ -72,14 +90,14 @@ def write_responses_as_excel(
     output.writerow(header_row)
 
     for response in responses:
-        values, _warnings = response.get_processed_form_data(fields)
+        values, warnings = response.get_processed_form_data(fields)
 
         response_row = [
             localtime(response.created_at).replace(tzinfo=None),
             response.form.language,
         ]
         response_row.extend(", ".join(response.cached_dimensions.get(dimension.slug, [])) for dimension in dimensions)
-        response_row.extend(cell for field in fields for cell in get_response_cells(field, values))
+        response_row.extend(cell for field in fields for cell in get_response_cells(field, values, warnings))
         output.writerow(response_row)
 
     output.close()

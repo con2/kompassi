@@ -139,7 +139,7 @@ class Form(models.Model):
         return field
 
     @cached_property
-    def validated_fields(self):
+    def validated_fields(self) -> list[Field]:
         return [Field.model_validate(field_dict) for field_dict in self.enriched_fields]
 
     @property

@@ -1124,7 +1124,11 @@ const translations: Translations = {
           cancel: "Peruuta poistamatta",
         },
       },
-      downloadAsExcel: "Vie Exceliin",
+      exportDropdown: {
+        dropdownHeader: "Lataa vastaukset",
+        excel: "Lataa Excel-tiedostona",
+        zip: "Lataa liitteineen (zip)",
+      },
       returnToResponseList: "Palaa vastauslistaukseen",
       returnToSurveyList: "Palaa kyselylistaukseen",
       returnToDimensionList: "Palaa dimensiolistaukseen",

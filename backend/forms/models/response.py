@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import uuid
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
@@ -18,6 +18,7 @@ from dimensions.models.scope import Scope
 from graphql_api.language import SUPPORTED_LANGUAGES
 from graphql_api.utils import get_message_in_language
 
+from .attachment import Attachment
 from .form import Form
 
 if TYPE_CHECKING:
@@ -70,6 +71,38 @@ class Response(models.Model):
     @property
     def scope(self) -> Scope:
         return self.survey.scope
+
+    def get_attachments(
+        self,
+        fields: Sequence[Field] | None = None,
+    ):
+        if fields is None:
+            form: Form = self.form
+            fields = form.validated_fields
+
+        return list(self._get_attachments(fields))
+
+    def _get_attachments(
+        self,
+        fields: Sequence[Field],
+    ) -> Iterable[Attachment]:
+        form: Form = self.form
+        values, warnings = self.get_processed_form_data(fields=fields)
+        for field in form.validated_fields:
+            if not field.are_attachments_allowed:
+                continue
+
+            if field_warnings := warnings.get(field.slug, []):
+                logger.warning(
+                    "Refusing to operate on attachments of field %s of responpse %s due to warnings: %s",
+                    field.slug,
+                    self.id,
+                    field_warnings,
+                )
+
+            urls: list[str] = values.get(field.slug, [])
+            for attachment_url in urls:
+                yield Attachment(presigned_url=attachment_url, field_slug=field.slug)
 
     def _build_cached_dimensions(self) -> dict[str, list[str]]:
         """

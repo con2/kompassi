@@ -15,17 +15,19 @@ def forms_survey_excel_export_view(
     survey_slug: str,
 ):
     timestamp = now().strftime("%Y%m%d%H%M%S")
-
-    if event_slug:
-        event = get_object_or_404(Event, slug=event_slug)
-        survey = get_object_or_404(Survey, event=event, slug=survey_slug)
-        filename = f"{event.slug}_{survey.slug}_responses_{timestamp}.xlsx"
-    else:
-        survey = get_object_or_404(Survey, event__isnull=True, slug=survey_slug)
-        filename = f"{survey.slug}_responses_{timestamp}.xlsx"
+    # TODO survey.scope instead of survey.event
+    event = get_object_or_404(Event, slug=event_slug)
+    survey = get_object_or_404(Survey, event=event, slug=survey_slug)
+    filename = f"{event.slug}_{survey.slug}_responses_{timestamp}.xlsx"
 
     # TODO(#324): Failed check causes 500 now, turn it to 403 (middleware?)
-    graphql_check_instance(survey, request, field="responses", operation="query")
+    graphql_check_instance(
+        survey,
+        request,
+        app=survey.app,
+        field="responses",
+        operation="query",
+    )
 
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'

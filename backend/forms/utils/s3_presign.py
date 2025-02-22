@@ -1,3 +1,5 @@
+from urllib.parse import unquote, urlparse
+
 import boto3
 from django.conf import settings
 
@@ -44,3 +46,11 @@ def presign_put(filename: str, file_type: str):
         },
         ExpiresIn=3600,
     )
+
+
+def satanize_presigned_url(presigned_url: str):
+    parsed = urlparse(presigned_url)
+    path = unquote(parsed.path.rstrip("/"))
+    if not path:
+        raise ValueError("presigned_url is sus:", repr(presigned_url))
+    return path.split("/")[-1]

@@ -6,6 +6,7 @@ import {
   deleteSurveyResponses,
   toggleSurveyResponseSubscription,
 } from "./actions";
+import { ResponseListActions } from "./ResponseListActions";
 import ResponseTabs from "./ResponseTabs";
 import SubscriptionButton from "./SubscriptionButton";
 import { graphql } from "@/__generated__";
@@ -60,9 +61,11 @@ const query = graphql(`
     }
     event(slug: $eventSlug) {
       name
+      slug
 
       forms {
         survey(slug: $surveySlug) {
+          slug
           title(lang: $locale)
           anonymity
 
@@ -157,6 +160,7 @@ export default async function FormResponsesPage({
     notFound();
   }
 
+  const event = data.event;
   const survey = data.event.forms.survey;
 
   const { anonymity } = survey;
@@ -243,7 +247,11 @@ export default async function FormResponsesPage({
       });
     });
 
-  const excelUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses.xlsx`;
+  const exportBaseUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses`;
+  const exportUrls = {
+    excel: `${exportBaseUrl}.xlsx`,
+    zip: `${exportBaseUrl}.zip`,
+  };
   const responses = survey.responses || [];
 
   const subscribedSurveys = data.profile?.forms?.surveys ?? [];
@@ -277,22 +285,23 @@ export default async function FormResponsesPage({
           <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
         </ViewHeading>
         <div className="ms-auto">
-          <div className="btn-group">
-            <SubscriptionButton
-              initialChecked={isSubscribed}
-              onChange={toggleSurveyResponseSubscription.bind(
-                null,
-                locale,
-                eventSlug,
-                surveySlug,
-              )}
-            >
-              {t.actions.toggleSubscription}
-            </SubscriptionButton>
-            <a className="btn btn-outline-primary" href={excelUrl}>
-              {t.actions.downloadAsExcel}…
-            </a>
-
+          <ResponseListActions
+            scope={event}
+            survey={survey}
+            isSubscribed={isSubscribed}
+            onToggleSubscription={toggleSurveyResponseSubscription.bind(
+              null,
+              locale,
+              eventSlug,
+              surveySlug,
+              !isSubscribed,
+            )}
+            exportUrls={exportUrls}
+            messages={{
+              toggleSubscription: t.actions.toggleSubscription,
+              exportDropdown: t.actions.exportDropdown,
+            }}
+          >
             <ModalButton
               title={t.actions.deleteVisibleResponses.title}
               messages={t.actions.deleteVisibleResponses.modalActions}
@@ -316,7 +325,7 @@ export default async function FormResponsesPage({
                   )
                 : cannotRemoveResponsesReason}
             </ModalButton>
-          </div>
+          </ResponseListActions>
         </div>
       </div>
 
