@@ -1,7 +1,8 @@
+from tempfile import TemporaryFile
 from zipfile import ZipFile
 
 import requests
-from django.http import HttpRequest, HttpResponse
+from django.http import FileResponse, HttpRequest
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 
@@ -37,13 +38,11 @@ def forms_survey_zip_export_view(
         operation="query",
     )
 
-    http_response = HttpResponse(content_type="application/zip")
-    http_response["Content-Disposition"] = f'attachment; filename="{zip_filename}"'
-
     fields = survey.get_combined_fields()
     session = requests.Session()
+    tempfile = TemporaryFile()
 
-    with ZipFile(http_response, "w") as zip:  # type: ignore
+    with ZipFile(tempfile, "w") as zip:  # type: ignore
         with zip.open(excel_filename, "w") as excel_file:
             write_responses_as_excel(
                 survey.dimensions.order_by("order"),
@@ -67,5 +66,10 @@ def forms_survey_zip_export_view(
 
                 with zip.open(attachment_filename, "w") as attachment_file:
                     attachment_file.write(attachment_bytes)
+
+    tempfile.seek(0)
+
+    http_response = FileResponse(tempfile, content_type="application/zip")
+    http_response["Content-Disposition"] = f'attachment; filename="{zip_filename}"'
 
     return http_response
