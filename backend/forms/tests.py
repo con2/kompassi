@@ -306,7 +306,7 @@ def test_process_form_data():
         "choice2",
     ]
 
-    response_row = [cell for field in fields for cell in get_response_cells(field, values)]
+    response_row = [cell for field in fields for cell in get_response_cells(field, values, warnings)]
     assert response_row == expected_response_row
 
 
