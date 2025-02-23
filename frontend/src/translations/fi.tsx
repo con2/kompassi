@@ -940,7 +940,7 @@ const translations: Translations = {
       },
     },
 
-    Offer: {
+    ProgramOffer: {
       singleTitle: "Ohjelmatarjous",
       listTitle: "Ohjelmatarjoukset",
     },

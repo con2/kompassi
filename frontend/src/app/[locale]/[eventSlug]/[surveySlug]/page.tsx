@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
 import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardTitle from "react-bootstrap/CardTitle";
+
 import { submit } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
@@ -22,7 +22,7 @@ import {
   isSupportedLanguage,
   SupportedLanguage,
 } from "@/translations";
-import { Translations } from "@/translations/en";
+import type { Translations } from "@/translations/en";
 
 // NOTE SUPPORTED_LANGUAGES
 import en from "@/translations/en";

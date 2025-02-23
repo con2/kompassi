@@ -943,7 +943,7 @@ const translations = {
       },
     },
 
-    Offer: {
+    ProgramOffer: {
       singleTitle: "Program offer",
       listTitle: "Program offers",
     },

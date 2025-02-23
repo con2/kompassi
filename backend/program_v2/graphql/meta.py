@@ -5,10 +5,12 @@ from django.http import HttpRequest
 from django.urls import reverse
 from graphene_django import DjangoObjectType
 
+from access.cbac import graphql_check_instance, graphql_check_model
 from core.models import Event
 from core.utils.text_utils import normalize_whitespace
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from forms.graphql.response import FullResponseType
+from forms.models.response import Response
 from graphql_api.language import DEFAULT_LANGUAGE
 
 from ..filters import ProgramFilters
@@ -26,9 +28,14 @@ from .schedule_item_full import FullScheduleItemType
 
 
 class ProgramV2EventMetaType(DjangoObjectType):
+    """
+    NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
+    Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
+    """
+
     class Meta:
         model = ProgramV2EventMeta
-        fields = ("skip_offer_form_selection", "location_dimension")
+        fields = ("location_dimension",)
 
     @staticmethod
     def resolve_programs(
@@ -151,6 +158,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         """
         Returns all responses to all program offer forms of this event.
         """
+        graphql_check_model(Response, meta.event.scope, info, app="program_v2")
         return meta.program_offers.all()
 
     program_offers = graphene.NonNull(
@@ -168,6 +176,24 @@ class ProgramV2EventMetaType(DjangoObjectType):
     count_program_offers = graphene.NonNull(
         graphene.Int,
         description=normalize_whitespace(resolve_count_program_offers.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_program_offer(meta: ProgramV2EventMeta, info, id: str):
+        """
+        Returns a single response program offer.
+        """
+        response = meta.program_offers.filter(id=id).first()
+
+        if response:
+            graphql_check_instance(response, info, app="program_v2")
+
+        return response
+
+    program_offer = graphene.Field(
+        FullResponseType,
+        id=graphene.String(required=True),
+        description=normalize_whitespace(resolve_program_offer.__doc__ or ""),
     )
 
 

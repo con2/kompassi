@@ -14,7 +14,9 @@ import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
-import ColoredDimensionTableCell from "@/components/dimensions/ColoredDimensionTableCell";
+import ColoredDimensionTableCell, {
+  buildKeyDimensionColumns,
+} from "@/components/dimensions/ColoredDimensionTableCell";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import {
   buildDimensionFilters,
@@ -228,24 +230,7 @@ export default async function FormResponsesPage({
     });
   });
 
-  dimensions
-    .filter((dimension) => dimension.isKeyDimension)
-    .forEach((keyDimension) => {
-      columns.push({
-        slug: `keyDimensions.${keyDimension.slug}`,
-        title: keyDimension.title ?? "",
-        getCellElement: (row, children) => (
-          <ColoredDimensionTableCell
-            cachedDimensions={row.cachedDimensions}
-            dimension={keyDimension}
-          >
-            {children}
-          </ColoredDimensionTableCell>
-        ),
-        getCellContents: (row) =>
-          getDimensionValueTitle(keyDimension, row.cachedDimensions),
-      });
-    });
+  columns.push(...buildKeyDimensionColumns(dimensions));
 
   const exportBaseUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses`;
   const exportUrls = {
@@ -253,6 +238,7 @@ export default async function FormResponsesPage({
     zip: `${exportBaseUrl}.zip`,
   };
   const responses = survey.responses || [];
+  responses[0].cachedDimensions;
 
   const subscribedSurveys = data.profile?.forms?.surveys ?? [];
   const isSubscribed = subscribedSurveys.some(

@@ -9,6 +9,7 @@ export interface Dimension {
   slug: string;
   title?: string | null;
   isMultiValue?: boolean;
+  isKeyDimension?: boolean;
   values: DimensionValue[];
 }
 

@@ -22,7 +22,6 @@ import ViewHeading, {
 import { publicUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
-// this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
   fragment Survey on SurveyType {
     slug
@@ -44,7 +43,7 @@ const query = graphql(`
       name
 
       forms {
-        surveys(includeInactive: true) {
+        surveys(includeInactive: true, app: FORMS) {
           ...Survey
         }
       }

@@ -22,27 +22,33 @@ class FormsEventMetaType(graphene.ObjectType):
     surveys = graphene.List(
         graphene.NonNull(SurveyType),
         include_inactive=graphene.Boolean(),
-        app=graphene.Argument(SurveyAppType),
+        app=graphene.NonNull(SurveyAppType),
     )
 
     @staticmethod
     def resolve_surveys(
         meta: FormsEventMeta,
         info,
+        app: SurveyApp,
         include_inactive: bool = False,
-        app: SurveyApp = SurveyApp.FORMS,
     ):
         """
-        Pass `app: null` to include surveys of all apps (default: `FORMS`).
+        By default only returns active surveys, ie. surveys with `activeFrom` in the past and
+        `activeUntil` either unset or in the future.
+
+        To get inactive surveys as well, pass `includeInactive: true` (authorization required).
+
+        NOTE: `app` does not currently accept `null` (for surveys of all apps)
+        because access control is performed app by app (`app` CBAC claim).
+        Until TODO(#324), you can as a workaround do something like
+        `surveys: surveys(app: FORMS), programForms: surveys(app: PROGRAM_V2)`.
         """
+        qs = Survey.objects.filter(event=meta.event, app=app.value)
+
         if include_inactive:
-            graphql_check_model(Survey, meta.event.scope, info)
-            qs = Survey.objects.filter(event=meta.event)
+            graphql_check_model(Survey, meta.event.scope, info, app=app.value)
         else:
             qs = get_objects_within_period(Survey, event=meta.event)
-
-        if app:
-            qs = qs.filter(app=app)
 
         return qs
 
@@ -70,7 +76,7 @@ class FormsEventMetaType(graphene.ObjectType):
         survey = qs.first()
 
         if survey and not survey.is_active:
-            graphql_check_instance(survey, info)
+            graphql_check_instance(survey, info, app=survey.app)
 
         return survey
 
@@ -93,7 +99,7 @@ class FormsProfileMetaType(graphene.ObjectType):
     )
 
     @staticmethod
-    def resolve_response(meta: FormsProfileMeta, info, id: int):
+    def resolve_response(meta: FormsProfileMeta, info, id: str):
         """
         Returns a single response submitted by the current user.
         """
@@ -120,6 +126,7 @@ class FormsProfileMetaType(graphene.ObjectType):
         if event_slug:
             surveys = surveys.filter(event__slug=event_slug)
 
+        # TODO(#324)
         return [
             survey
             for survey in surveys
@@ -128,6 +135,7 @@ class FormsProfileMetaType(graphene.ObjectType):
                 instance=survey,  # type: ignore
                 operation="query",
                 field="self",
+                app=survey.app,  # TODO(#574) check this
             )
         ]
 

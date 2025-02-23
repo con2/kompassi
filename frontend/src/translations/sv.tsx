@@ -900,7 +900,7 @@ const translations: Translations = {
     }),
 
     ProgramForm: UNTRANSLATED(en.Program.ProgramForm),
-    Offer: UNTRANSLATED(en.Program.Offer),
+    ProgramOffer: UNTRANSLATED(en.Program.ProgramOffer),
     ProgramHost: UNTRANSLATED(en.Program.ProgramHost),
 
     admin: {

@@ -7,6 +7,7 @@ import { ProgramOfferFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import { Dimension } from "@/components/dimensions/models";
@@ -15,8 +16,6 @@ import { Field } from "@/components/forms/models";
 import UploadedFileLink from "@/components/forms/UploadedFileLink";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -72,7 +71,7 @@ export async function generateMetadata({ params, searchParams }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.Program.Offer;
+  const t = translations.Program.ProgramOffer;
 
   // while dimension filters are not needed to form the title,
   // we would like to do only one query per request
@@ -106,7 +105,7 @@ export default async function FormResponsesPage({
 }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Program.Offer;
+  const t = translations.Program.ProgramOffer;
   const surveyT = translations.Survey;
   const programT = translations.Program;
   const session = await auth();
@@ -125,8 +124,6 @@ export default async function FormResponsesPage({
   if (!data.event?.program?.programOffers) {
     notFound();
   }
-
-  const event = data.event;
 
   const dimensions: Dimension[] = []; // TODO
   const keyFields: Field[] = [
@@ -197,26 +194,10 @@ export default async function FormResponsesPage({
     });
   });
 
-  // dimensions
-  //   .filter((dimension) => dimension.isKeyDimension)
-  //   .forEach((keyDimension) => {
-  //     columns.push({
-  //       slug: `keyDimensions.${keyDimension.slug}`,
-  //       title: keyDimension.title ?? "",
-  //       getCellElement: (row, children) => (
-  //         <ColoredDimensionTableCell
-  //           cachedDimensions={row.cachedDimensions}
-  //           dimension={keyDimension}
-  //         >
-  //           {children}
-  //         </ColoredDimensionTableCell>
-  //       ),
-  //       getCellContents: (row) =>
-  //         getDimensionValueTitle(keyDimension, row.cachedDimensions),
-  //     });
-  //   });
+  // TODO Key dimensions
+  // columns.push(...buildKeyDimensionColumns(dimensions));
 
-  const responses = data.event.program.programOffers || [];
+  const programOffers = data.event.program.programOffers || [];
 
   // TODO ProgramAdminView
   return (
@@ -226,12 +207,12 @@ export default async function FormResponsesPage({
       active="programOffers"
     >
       <DimensionFilters dimensions={dimensions} />
-      <DataTable rows={responses} columns={columns}>
+      <DataTable rows={programOffers} columns={columns}>
         <tfoot>
           <tr>
             <td colSpan={columns.length}>
               {surveyT.showingResponses(
-                responses.length,
+                programOffers.length,
                 data.event.program.countProgramOffers,
               )}
             </td>

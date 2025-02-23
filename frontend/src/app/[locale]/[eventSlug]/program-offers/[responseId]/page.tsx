@@ -1,68 +1,56 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ReactNode } from "react";
-import { deleteSurveyResponses } from "../actions";
-import { updateResponseDimensions } from "./actions";
+import { updateResponseDimensions } from "../../surveys/[surveySlug]/responses/[responseId]/actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { buildDimensionForm } from "@/components/dimensions/helpers";
+import { Dimension } from "@/components/dimensions/models";
 import { formatDateTime } from "@/components/FormattedDateTime";
-import { Field, Layout, validateFields } from "@/components/forms/models";
+import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
-import ModalButton from "@/components/ModalButton";
+import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
+import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
+graphql(`
+  fragment ProgramOfferDetail on FullResponseType {
+    id
+    sequenceNumber
+    createdAt
+    createdBy {
+      displayName
+      email
+    }
+    language
+    values
+    form {
+      fields
+      survey {
+        title(lang: $locale)
+        slug
+      }
+    }
+    cachedDimensions
+  }
+`);
+
 const query = graphql(`
-  query SurveyResponseDetail(
+  query ProgramOfferPage(
     $eventSlug: String!
-    $surveySlug: String!
     $responseId: String!
     $locale: String
   ) {
     event(slug: $eventSlug) {
       name
-      forms {
-        survey(slug: $surveySlug) {
-          title(lang: $locale)
-          slug
-          anonymity
-          canRemoveResponses
-          protectResponses
-          dimensions {
-            title(lang: $locale)
-            slug
-            isMultiValue
-            values {
-              title(lang: $locale)
-              slug
-              color
-            }
-          }
-          response(id: $responseId) {
-            id
-            sequenceNumber
-            createdAt
-            createdBy {
-              displayName
-              email
-            }
-            language
-            values
-            form {
-              fields
-            }
-            cachedDimensions
-          }
+      slug
+      program {
+        programOffer(id: $responseId) {
+          ...ProgramOfferDetail
         }
       }
     }
@@ -73,13 +61,17 @@ interface Props {
   params: {
     locale: string;
     eventSlug: string;
-    surveySlug: string;
     responseId: string;
   };
 }
 
+interface Values {
+  title?: string;
+  description?: string;
+}
+
 export async function generateMetadata({ params }: Props) {
-  const { locale, eventSlug, surveySlug, responseId } = params;
+  const { locale, eventSlug, responseId } = params;
   const translations = getTranslations(locale);
 
   // TODO encap
@@ -88,26 +80,35 @@ export async function generateMetadata({ params }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const t = translations.Survey;
+  const t = translations.Program.ProgramOffer;
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, surveySlug, locale, responseId },
+    variables: { eventSlug, locale, responseId },
   });
 
-  if (!data.event?.forms?.survey?.response) {
+  if (!data.event?.program?.programOffer) {
     notFound();
   }
 
+  const values: Values = data.event.program.programOffer.values as any;
+
+  const title = getPageTitle({
+    viewTitle: t.singleTitle,
+    subject: values.title || "",
+    event: data.event,
+    translations,
+  });
+
   return {
-    title: `${data.event.name}: ${data.event.forms.survey.title} (${t.responseDetailTitle}) – Kompassi`,
+    title,
   };
 }
 
 export const revalidate = 0;
 
-export default async function SurveyResponsePage({ params }: Props) {
-  const { locale, eventSlug, surveySlug, responseId } = params;
+export default async function ProgramOfferPage({ params }: Props) {
+  const { locale, eventSlug, responseId } = params;
   const translations = getTranslations(locale);
   const session = await auth();
 
@@ -118,23 +119,20 @@ export default async function SurveyResponsePage({ params }: Props) {
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, surveySlug, locale, responseId },
+    variables: { eventSlug, locale, responseId },
   });
 
-  if (!data.event?.forms?.survey?.response?.form) {
+  if (!data.event?.program?.programOffer) {
     notFound();
   }
 
   const t = translations.Survey;
 
-  const { anonymity, canRemoveResponses, protectResponses } =
-    data.event.forms.survey;
-  const { sequenceNumber, createdAt, language, form } =
-    data.event.forms.survey.response;
+  const { sequenceNumber, createdAt, form } = data.event.program.programOffer;
   const { fields } = form;
 
-  const response = data.event.forms.survey.response;
-  const values: Record<string, any> = response.values ?? {};
+  const programOffer = data.event.program.programOffer;
+  const values: Record<string, any> = programOffer.values ?? {};
 
   validateFields(fields);
 
@@ -152,19 +150,16 @@ export default async function SurveyResponsePage({ params }: Props) {
       type: "SingleLineText",
       title: t.attributes.createdAt,
     },
-  ];
-
-  if (anonymity === "NAME_AND_EMAIL") {
-    technicalFields.push({
+    {
       slug: "createdBy",
       type: "SingleLineText",
       title: t.attributes.createdBy,
-    });
-  }
+    },
+  ];
 
   // TODO(#438) use DateTimeField
   const formattedCreatedAt = createdAt ? formatDateTime(createdAt, locale) : "";
-  const createdBy = response.createdBy;
+  const createdBy = programOffer.createdBy;
   const formattedCreatedBy = createdBy
     ? `${createdBy.displayName} <${createdBy.email}>`
     : "-";
@@ -175,59 +170,21 @@ export default async function SurveyResponsePage({ params }: Props) {
     createdBy: formattedCreatedBy,
   };
 
-  const dimensions = data.event.forms.survey.dimensions ?? [];
+  // const dimensions = data.event.forms.survey.dimensions ?? [];
+  const dimensions: Dimension[] = [];
 
   const { fields: dimensionFields, values: dimensionValues } =
-    buildDimensionForm(dimensions, response.cachedDimensions);
+    buildDimensionForm(dimensions, programOffer.cachedDimensions);
 
-  let cannotRemoveReason: string | ReactNode | null = null;
-  if (!canRemoveResponses) {
-    if (protectResponses) {
-      cannotRemoveReason = t.actions.deleteVisibleResponses.responsesProtected;
-    } else {
-      cannotRemoveReason = t.actions.deleteResponse.cannotDelete;
-    }
-  }
+  // XXX specialized updateProgramOfferDimensions instead of generic updateResponseDimensions
+  const surveySlug = programOffer.form.survey!.slug;
 
   return (
-    <ViewContainer>
-      <Link
-        className="link-subtle"
-        href={`/${eventSlug}/surveys/${surveySlug}/responses`}
-      >
-        &lt; {t.actions.returnToResponseList}
-      </Link>
-
-      <ViewHeadingActionsWrapper>
-        <ViewHeading>
-          {t.responseDetailTitle}
-          <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
-        </ViewHeading>
-        <ViewHeadingActions>
-          <ModalButton
-            title={t.actions.deleteResponse.title}
-            messages={t.actions.deleteResponse.modalActions}
-            action={
-              canRemoveResponses
-                ? deleteSurveyResponses.bind(
-                    null,
-                    locale,
-                    eventSlug,
-                    surveySlug,
-                    [response.id],
-                    {},
-                  )
-                : undefined
-            }
-            className="btn btn-outline-danger"
-          >
-            {canRemoveResponses
-              ? t.actions.deleteResponse.confirmation
-              : cannotRemoveReason}
-          </ModalButton>
-        </ViewHeadingActions>
-      </ViewHeadingActionsWrapper>
-
+    <ProgramAdminView
+      translations={translations}
+      event={data.event}
+      active="programOffers"
+    >
       <div className="row mb-5">
         {!!dimensions?.length && (
           <div className="col-md-8">
@@ -279,6 +236,6 @@ export default async function SurveyResponsePage({ params }: Props) {
         messages={translations.SchemaForm}
         readOnly
       />
-    </ViewContainer>
+    </ProgramAdminView>
   );
 }
