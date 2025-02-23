@@ -7,6 +7,7 @@ from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
 from dimensions.models.dimension import Dimension
 from dimensions.models.universe import Universe
+from forms.models.response import Response
 
 IMPORTER_CHOICES = [
     ("default", "Default"),
@@ -93,6 +94,13 @@ class ProgramV2EventMeta(EventMetaBase):
             slug="default",
             app="program_v2",
         )[0]
+
+    @property
+    def program_offers(self):
+        return Response.objects.filter(
+            form__event=self.event,
+            form__survey__app="program_v2",
+        )
 
 
 @dataclass

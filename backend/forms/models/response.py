@@ -14,6 +14,7 @@ from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
 from access.cbac import is_graphql_allowed_for_model
+from core.models.event import Event
 from dimensions.models.scope import Scope
 from graphql_api.language import SUPPORTED_LANGUAGES
 from graphql_api.utils import get_message_in_language
@@ -71,6 +72,14 @@ class Response(models.Model):
     @property
     def scope(self) -> Scope:
         return self.survey.scope
+
+    @property
+    def event(self) -> Event:
+        return self.form.event
+
+    @property
+    def timezone(self):
+        return self.event.timezone
 
     def get_attachments(
         self,

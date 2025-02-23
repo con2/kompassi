@@ -8,6 +8,7 @@ from graphene_django import DjangoObjectType
 from core.models import Event
 from core.utils.text_utils import normalize_whitespace
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
+from forms.graphql.response import FullResponseType
 from graphql_api.language import DEFAULT_LANGUAGE
 
 from ..filters import ProgramFilters
@@ -142,6 +143,18 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     calendar_export_link = graphene.NonNull(
         graphene.String,
+        description=normalize_whitespace(resolve_calendar_export_link.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_program_offers(meta: ProgramV2EventMeta, info):
+        """
+        Returns all responses to all program offer forms of this event.
+        """
+        return meta.program_offers.all()
+
+    program_offers = graphene.NonNull(
+        graphene.List(graphene.NonNull(FullResponseType)),
         description=normalize_whitespace(resolve_calendar_export_link.__doc__ or ""),
     )
 

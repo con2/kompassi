@@ -14,6 +14,15 @@ DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
 class FormType(DjangoObjectType):
+    class Meta:
+        model = Form
+        fields = (
+            "title",
+            "description",
+            "thank_you_message",
+            "language",
+        )
+
     @staticmethod
     def resolve_fields(parent: Form, info, enrich: bool = True):
         if enrich:
@@ -55,13 +64,3 @@ class FormType(DjangoObjectType):
         graphene.Boolean,
         description=normalize_whitespace(resolve_can_remove.__doc__ or ""),
     )
-
-    class Meta:
-        model = Form
-        fields = (
-            "slug",
-            "title",
-            "description",
-            "thank_you_message",
-            "language",
-        )

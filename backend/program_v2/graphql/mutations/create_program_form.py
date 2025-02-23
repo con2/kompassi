@@ -33,6 +33,9 @@ class CreateProgramForm(graphene.Mutation):
             event=event,
             slug=input.survey_slug,
             app="program_v2",
+            login_required=True,
+            anonymity="name_and_email",
+            key_fields=["title"],
         )
         survey.full_clean()
         survey.save()

@@ -33,7 +33,6 @@ export default function ProgramAdminTabs({
       slug: "offers",
       title: t.Offer.listTitle,
       href: `/${eventSlug}/program-offers${queryString}`,
-      disabled: true,
     },
     {
       slug: "programItems",
