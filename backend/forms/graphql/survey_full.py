@@ -3,7 +3,7 @@ from django.conf import settings
 from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
-from access.cbac import graphql_query_cbac_required
+from access.cbac import graphql_check_instance
 from core.utils import normalize_whitespace
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 
@@ -70,7 +70,6 @@ class SurveyType(LimitedSurveyType):
         description=normalize_whitespace(resolve_fields.__doc__ or ""),
     )
 
-    @graphql_query_cbac_required
     @staticmethod
     def resolve_responses(
         survey: Survey,
@@ -81,6 +80,7 @@ class SurveyType(LimitedSurveyType):
         Returns the responses to this survey regardless of language version used.
         Authorization required.
         """
+        graphql_check_instance(survey, info, app=survey.app, field="responses")
         return DimensionFilterInput.filter(survey.responses.all(), filters)
 
     responses = graphene.List(
@@ -89,13 +89,13 @@ class SurveyType(LimitedSurveyType):
         description=normalize_whitespace(resolve_responses.__doc__ or ""),
     )
 
-    @graphql_query_cbac_required
     @staticmethod
     def resolve_response(survey: Survey, info, id: str):
         """
         Returns a single response to this survey regardless of language version used.
         Authorization required.
         """
+        graphql_check_instance(survey, info, app=survey.app, field="responses")
         return survey.responses.filter(id=id).first()
 
     response = graphene.Field(
@@ -118,7 +118,6 @@ class SurveyType(LimitedSurveyType):
         description=normalize_whitespace(resolve_count_responses_by_current_user.__doc__ or ""),
     )
 
-    @graphql_query_cbac_required
     @staticmethod
     def resolve_count_responses(
         survey: Survey,
@@ -129,6 +128,7 @@ class SurveyType(LimitedSurveyType):
         Returns the number of responses to this survey regardless of language version used.
         Authorization required.
         """
+        graphql_check_instance(survey, info, app=survey.app, field="responses")
         return DimensionFilterInput.filter(survey.responses.all(), filters).count()
 
     count_responses = graphene.Field(
@@ -137,7 +137,6 @@ class SurveyType(LimitedSurveyType):
         description=normalize_whitespace(resolve_count_responses.__doc__ or ""),
     )
 
-    @graphql_query_cbac_required
     @staticmethod
     def resolve_summary(
         survey: Survey,
@@ -150,6 +149,7 @@ class SurveyType(LimitedSurveyType):
         that language is used as the base for the combined fields. Order of fields
         not present in the base language is not guaranteed. Authorization required.
         """
+        graphql_check_instance(survey, info, app=survey.app, field="responses")
         responses = DimensionFilterInput.filter(survey.responses.all(), filters)
         fields = survey.get_combined_fields(lang)
         valuesies = [response.get_processed_form_data(fields)[0] for response in responses.only("form_data")]
