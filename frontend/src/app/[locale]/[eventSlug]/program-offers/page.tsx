@@ -13,6 +13,7 @@ import { Dimension } from "@/components/dimensions/models";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import UploadedFileLink from "@/components/forms/UploadedFileLink";
+import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -44,6 +45,7 @@ const query = graphql(`
       slug
       name
       program {
+        countProgramOffers
         programOffers {
           ...ProgramOffer
         }
@@ -159,6 +161,12 @@ export default async function FormResponsesPage({
       title: surveyT.attributes.createdBy,
       getCellContents: (row) => row.createdBy?.displayName || "",
     },
+    {
+      slug: "form",
+      title: programT.ProgramForm.singleTitle,
+      getCellContents: (row) =>
+        `${row.form.survey?.title || ""} (${row.form.language})`,
+    },
   ];
 
   keyFields.forEach((keyField) => {
@@ -212,22 +220,24 @@ export default async function FormResponsesPage({
 
   // TODO ProgramAdminView
   return (
-    <ViewContainer>
-      <ViewHeading>
-        {t.listTitle}
-        <ViewHeading.Sub>{surveyT.forEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
-
+    <ProgramAdminView
+      translations={translations}
+      event={data.event}
+      active="programOffers"
+    >
       <DimensionFilters dimensions={dimensions} />
       <DataTable rows={responses} columns={columns}>
         <tfoot>
           <tr>
             <td colSpan={columns.length}>
-              {surveyT.showingResponses(responses.length, 666 /* TODO */)}
+              {surveyT.showingResponses(
+                responses.length,
+                data.event.program.countProgramOffers,
+              )}
             </td>
           </tr>
         </tfoot>
       </DataTable>
-    </ViewContainer>
+    </ProgramAdminView>
   );
 }

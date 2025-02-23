@@ -5,7 +5,7 @@ export interface ProgramAdminTabsProps {
   eventSlug: string;
   active:
     | "programForms"
-    | "offers"
+    | "programOffers"
     | "programItems"
     | "programHosts"
     | "dimensions"
@@ -30,7 +30,7 @@ export default function ProgramAdminTabs({
       href: `/${eventSlug}/program-forms`,
     },
     {
-      slug: "offers",
+      slug: "programOffers",
       title: t.Offer.listTitle,
       href: `/${eventSlug}/program-offers${queryString}`,
     },

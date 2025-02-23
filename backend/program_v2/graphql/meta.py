@@ -155,7 +155,19 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     program_offers = graphene.NonNull(
         graphene.List(graphene.NonNull(FullResponseType)),
-        description=normalize_whitespace(resolve_calendar_export_link.__doc__ or ""),
+        description=normalize_whitespace(resolve_program_offers.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_count_program_offers(meta: ProgramV2EventMeta, info):
+        """
+        Returns the total number of program offers (not taking into account filters).
+        """
+        return meta.program_offers.count()
+
+    count_program_offers = graphene.NonNull(
+        graphene.Int,
+        description=normalize_whitespace(resolve_count_program_offers.__doc__ or ""),
     )
 
 
