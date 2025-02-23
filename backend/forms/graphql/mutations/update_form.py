@@ -52,7 +52,13 @@ class UpdateForm(graphene.Mutation):
         form = survey.languages.get(language=input.language)
         form_data: dict[str, str] = input.form_data  # type: ignore
 
-        graphql_check_instance(survey, info, field="languages", operation="update")
+        graphql_check_instance(
+            survey,
+            info,
+            app=survey.app,
+            field="languages",
+            operation="update",
+        )
 
         form_form = FormForm.from_form_data(form, form_data)
         if not form_form.is_valid():

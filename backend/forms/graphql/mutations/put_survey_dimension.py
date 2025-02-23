@@ -30,7 +30,13 @@ class PutSurveyDimension(graphene.Mutation):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
         form_data: dict[str, str] = input.form_data  # type: ignore
 
-        graphql_check_instance(survey, info, field="dimensions", operation="update")
+        graphql_check_instance(
+            survey,
+            info,
+            app=survey.app,
+            field="dimensions",
+            operation="update",
+        )
 
         if input.dimension_slug is None:
             if survey.dimensions.filter(slug=form_data["slug"]).exists():
