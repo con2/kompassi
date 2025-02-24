@@ -15,6 +15,7 @@ from programme.models.programme import Programme
 from programme.models.room import Room
 from programme.models.tag import Tag
 
+from ...dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from ..consts import (
     CATEGORY_DIMENSION_TITLE_LOCALIZED,
     DATE_DIMENSION_TITLE_LOCALIZED,
@@ -24,7 +25,6 @@ from ..consts import (
     WEEKDAYS_LOCALIZED,
 )
 from ..models.annotations import ANNOTATIONS
-from ..models.dimension_dto import DimensionDTO, DimensionValueDTO
 from ..models.program import Program
 from ..models.program_dimension_value import ProgramDimensionValue
 from ..models.schedule import ScheduleItem
