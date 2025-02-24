@@ -16,6 +16,7 @@ const putDimensionMutation = graphql(`
 `);
 
 export async function createDimension(
+  locale: string,
   eventSlug: string,
   surveySlug: string,
   formData: FormData,
@@ -30,12 +31,13 @@ export async function createDimension(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
 
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 export async function updateDimension(
+  locale: string,
   eventSlug: string,
   surveySlug: string,
   dimensionSlug: string,
@@ -52,9 +54,18 @@ export async function updateDimension(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
 
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
+}
+
+export async function reorderDimensions(
+  locale: string,
+  eventSlug: string,
+  surveySlug: string,
+  dimensionSlugs: string[],
+) {
+  console.log("reorderDimensions", eventSlug, surveySlug, dimensionSlugs);
 }
 
 const deleteDimensionMutation = graphql(`
@@ -66,6 +77,7 @@ const deleteDimensionMutation = graphql(`
 `);
 
 export async function deleteDimension(
+  locale: string,
   eventSlug: string,
   surveySlug: string,
   dimensionSlug: string,
@@ -80,7 +92,7 @@ export async function deleteDimension(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
 
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
@@ -96,6 +108,7 @@ const putDimensionValueMutation = graphql(`
 `);
 
 export async function createDimensionValue(
+  locale: string,
   eventSlug: string,
   surveySlug: string,
   dimensionSlug: string,
@@ -112,12 +125,13 @@ export async function createDimensionValue(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
 
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
 
 export async function updateDimensionValue(
+  locale: string,
   eventSlug: string,
   surveySlug: string,
   dimensionSlug: string,
@@ -136,7 +150,7 @@ export async function updateDimensionValue(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
 
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }
@@ -152,6 +166,7 @@ const deleteDimensionValueMutation = graphql(`
 `);
 
 export async function deleteDimensionValue(
+  locale: string,
   eventSlug: string,
   surveySlug: string,
   dimensionSlug: string,
@@ -168,7 +183,23 @@ export async function deleteDimensionValue(
       },
     },
   });
-  revalidatePath(`/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
 
   redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
+}
+
+export async function reorderDimensionValues(
+  locale: string,
+  eventSlug: string,
+  surveySlug: string,
+  dimensionSlug: string,
+  valueSlugs: string[],
+) {
+  console.log(
+    "reorderDimensionValues",
+    eventSlug,
+    surveySlug,
+    dimensionSlug,
+    valueSlugs,
+  );
 }

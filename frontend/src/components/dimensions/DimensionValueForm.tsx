@@ -16,7 +16,7 @@ interface Props {
 const headingLevel = "h5";
 
 /// Value form society. Value form life.
-export default function ValueForm({ messages, value }: Props) {
+export default function DimensionValueForm({ messages, value }: Props) {
   const t = messages.Survey.editValueModal;
   const fields: Field[] = [
     {
