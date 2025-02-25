@@ -9,6 +9,7 @@ from core.models import Event
 from programme.models.category import Category
 from programme.models.programme import Programme
 
+from ...dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from ..consts import (
     CATEGORY_DIMENSION_TITLE_LOCALIZED,
     DATE_DIMENSION_TITLE_LOCALIZED,
@@ -16,7 +17,6 @@ from ..consts import (
     ROOM_DIMENSION_TITLE_LOCALIZED,
 )
 from ..integrations.konsti import KONSTI_DIMENSION_DTO
-from ..models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from ..models.program import Program
 from ..models.schedule import ScheduleItem
 from .default import DefaultImporter

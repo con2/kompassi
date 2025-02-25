@@ -9,9 +9,9 @@ from django.utils.timezone import get_current_timezone
 from core.models import Event
 from programme.models.programme import Programme
 
+from ...dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from ..consts import DATE_DIMENSION_TITLE_LOCALIZED, ROOM_DIMENSION_TITLE_LOCALIZED
 from ..integrations.konsti import KONSTI_DIMENSION_DTO
-from ..models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from .default import DefaultImporter
 
 logger = logging.getLogger("kompassi")

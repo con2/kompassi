@@ -7,7 +7,7 @@ from typing import Any
 from django.utils.timezone import get_current_timezone
 
 from core.models import Event
-from program_v2.models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
+from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from program_v2.models.program import Program
 from program_v2.models.schedule import ScheduleItem
 from programme.models.programme import Programme
