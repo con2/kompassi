@@ -6,8 +6,8 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
 const putDimensionMutation = graphql(`
-  mutation PutSurveyDimension($input: PutSurveyDimensionInput!) {
-    putSurveyDimension(input: $input) {
+  mutation PutSurveyDimension($input: PutDimensionInput!) {
+    putDimension(input: $input) {
       dimension {
         slug
       }
@@ -17,29 +17,29 @@ const putDimensionMutation = graphql(`
 
 export async function createDimension(
   locale: string,
-  eventSlug: string,
-  surveySlug: string,
+  scopeSlug: string,
+  universeSlug: string,
   formData: FormData,
 ) {
   await getClient().mutate({
     mutation: putDimensionMutation,
     variables: {
       input: {
-        eventSlug,
-        surveySlug,
+        scopeSlug,
+        universeSlug,
         formData: Object.fromEntries(formData),
       },
     },
   });
-  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
 
-  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  redirect(`/${scopeSlug}/surveys/${universeSlug}/dimensions`);
 }
 
 export async function updateDimension(
   locale: string,
-  eventSlug: string,
-  surveySlug: string,
+  scopeSlug: string,
+  universeSlug: string,
   dimensionSlug: string,
   formData: FormData,
 ) {
@@ -47,30 +47,30 @@ export async function updateDimension(
     mutation: putDimensionMutation,
     variables: {
       input: {
-        eventSlug,
-        surveySlug,
+        scopeSlug,
+        universeSlug,
         dimensionSlug,
         formData: Object.fromEntries(formData),
       },
     },
   });
-  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
 
-  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  redirect(`/${scopeSlug}/surveys/${universeSlug}/dimensions`);
 }
 
 export async function reorderDimensions(
   locale: string,
-  eventSlug: string,
-  surveySlug: string,
+  scopeSlug: string,
+  universeSlug: string,
   dimensionSlugs: string[],
 ) {
-  console.log("reorderDimensions", eventSlug, surveySlug, dimensionSlugs);
+  console.log("reorderDimensions", scopeSlug, universeSlug, dimensionSlugs);
 }
 
 const deleteDimensionMutation = graphql(`
-  mutation DeleteSurveyDimension($input: DeleteSurveyDimensionInput!) {
-    deleteSurveyDimension(input: $input) {
+  mutation DeleteSurveyDimension($input: DeleteDimensionInput!) {
+    deleteDimension(input: $input) {
       slug
     }
   }
@@ -78,28 +78,28 @@ const deleteDimensionMutation = graphql(`
 
 export async function deleteDimension(
   locale: string,
-  eventSlug: string,
-  surveySlug: string,
+  scopeSlug: string,
+  universeSlug: string,
   dimensionSlug: string,
 ) {
   await getClient().mutate({
     mutation: deleteDimensionMutation,
     variables: {
       input: {
-        eventSlug,
-        surveySlug,
+        scopeSlug,
+        universeSlug,
         dimensionSlug,
       },
     },
   });
-  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
 
-  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  redirect(`/${scopeSlug}/surveys/${universeSlug}/dimensions`);
 }
 
 const putDimensionValueMutation = graphql(`
-  mutation PutSurveyDimensionValue($input: PutSurveyDimensionValueInput!) {
-    putSurveyDimensionValue(input: $input) {
+  mutation PutSurveyDimensionValue($input: PutDimensionValueInput!) {
+    putDimensionValue(input: $input) {
       value {
         slug
       }
@@ -109,8 +109,8 @@ const putDimensionValueMutation = graphql(`
 
 export async function createDimensionValue(
   locale: string,
-  eventSlug: string,
-  surveySlug: string,
+  scopeSlug: string,
+  universeSlug: string,
   dimensionSlug: string,
   formData: FormData,
 ) {
@@ -118,22 +118,22 @@ export async function createDimensionValue(
     mutation: putDimensionValueMutation,
     variables: {
       input: {
-        eventSlug,
-        surveySlug,
+        scopeSlug,
+        universeSlug,
         dimensionSlug,
         formData: Object.fromEntries(formData),
       },
     },
   });
-  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
 
-  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  redirect(`/${scopeSlug}/surveys/${universeSlug}/dimensions`);
 }
 
 export async function updateDimensionValue(
   locale: string,
-  eventSlug: string,
-  surveySlug: string,
+  scopeSlug: string,
+  universeSlug: string,
   dimensionSlug: string,
   valueSlug: string,
   formData: FormData,
@@ -142,24 +142,22 @@ export async function updateDimensionValue(
     mutation: putDimensionValueMutation,
     variables: {
       input: {
-        eventSlug,
-        surveySlug,
+        scopeSlug,
+        universeSlug,
         dimensionSlug,
         valueSlug,
         formData: Object.fromEntries(formData),
       },
     },
   });
-  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
 
-  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  redirect(`/${scopeSlug}/surveys/${universeSlug}/dimensions`);
 }
 
 const deleteDimensionValueMutation = graphql(`
-  mutation DeleteSurveyDimensionValue(
-    $input: DeleteSurveyDimensionValueInput!
-  ) {
-    deleteSurveyDimensionValue(input: $input) {
+  mutation DeleteSurveyDimensionValue($input: DeleteDimensionValueInput!) {
+    deleteDimensionValue(input: $input) {
       slug
     }
   }
@@ -167,8 +165,8 @@ const deleteDimensionValueMutation = graphql(`
 
 export async function deleteDimensionValue(
   locale: string,
-  eventSlug: string,
-  surveySlug: string,
+  scopeSlug: string,
+  universeSlug: string,
   dimensionSlug: string,
   valueSlug: string,
 ) {
@@ -176,29 +174,29 @@ export async function deleteDimensionValue(
     mutation: deleteDimensionValueMutation,
     variables: {
       input: {
-        eventSlug,
-        surveySlug,
+        scopeSlug,
+        universeSlug,
         dimensionSlug,
         valueSlug,
       },
     },
   });
-  revalidatePath(`/${locale}/${eventSlug}/${surveySlug}`);
+  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
 
-  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
+  redirect(`/${scopeSlug}/surveys/${universeSlug}/dimensions`);
 }
 
 export async function reorderDimensionValues(
   locale: string,
-  eventSlug: string,
-  surveySlug: string,
+  scopeSlug: string,
+  universeSlug: string,
   dimensionSlug: string,
   valueSlugs: string[],
 ) {
   console.log(
     "reorderDimensionValues",
-    eventSlug,
-    surveySlug,
+    scopeSlug,
+    universeSlug,
     dimensionSlug,
     valueSlugs,
   );

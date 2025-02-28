@@ -5,20 +5,13 @@ from typing import Self
 
 import pydantic
 
-from core.models import Event
-from dimensions.models.dimension import Dimension
-from dimensions.models.dimension_value import DimensionValue
-from dimensions.models.value_ordering import ValueOrdering
-
-from .program import Program
+from .dimension import Dimension
+from .dimension_value import DimensionValue
+from .dimension_value_dto import DimensionValueDTO
+from .universe import Universe
+from .value_ordering import ValueOrdering
 
 logger = logging.getLogger("kompassi")
-
-
-class DimensionValueDTO(pydantic.BaseModel):
-    slug: str
-    title: dict[str, str]
-    color: str = ""
 
 
 class DimensionDTO(pydantic.BaseModel):
@@ -26,23 +19,29 @@ class DimensionDTO(pydantic.BaseModel):
 
     slug: str = pydantic.Field(min_length=1)
     title: dict[str, str]
-    choices: list[DimensionValueDTO] | None = pydantic.Field(default=None)
+
+    is_public: bool = pydantic.Field(default=True)
+    is_key_dimension: bool = pydantic.Field(default=False)
+    is_multi_value: bool = pydantic.Field(default=False)
     is_list_filter: bool = pydantic.Field(default=True)
     is_shown_in_detail: bool = pydantic.Field(default=True)
     is_negative_selection: bool = pydantic.Field(default=False)
+
     value_ordering: ValueOrdering = pydantic.Field(default=ValueOrdering.TITLE)
+
+    choices: list[DimensionValueDTO] | None = pydantic.Field(default=None)
+
+    def save(self, universe: Universe):
+        return DimensionDTO.save_many(universe, [self], remove_others=False)[0]
 
     @classmethod
     def save_many(
         cls,
-        event: Event,
+        universe: Universe,
         dimension_dtos: list[Self],
         remove_others=False,
-        refresh_cached=True,
         dimension_value_batch_size=200,
     ) -> list[Dimension]:
-        universe = event.program_universe
-
         dimensions_upsert = (
             Dimension(
                 universe=universe,
@@ -51,6 +50,8 @@ class DimensionDTO(pydantic.BaseModel):
                 title_en=dimension_dto.title.get("en", ""),
                 title_fi=dimension_dto.title.get("fi", ""),
                 title_sv=dimension_dto.title.get("sv", ""),
+                is_key_dimension=dimension_dto.is_key_dimension,
+                is_multi_value=dimension_dto.is_multi_value,
                 is_list_filter=dimension_dto.is_list_filter,
                 is_shown_in_detail=dimension_dto.is_shown_in_detail,
                 is_negative_selection=dimension_dto.is_negative_selection,
@@ -121,8 +122,5 @@ class DimensionDTO(pydantic.BaseModel):
             dimensions_to_keep = [dim_dto.slug for dim_dto in dimension_dtos]
             num_deleted_dvs, _ = universe.dimensions.exclude(slug__in=dimensions_to_keep).delete()
             logger.info("Deleted %s stale dimensions", num_deleted_dvs)
-
-        if refresh_cached:
-            Program.refresh_cached_dimensions_qs(event.programs.all())
 
         return django_dimensions

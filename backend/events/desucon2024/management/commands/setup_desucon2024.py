@@ -77,7 +77,7 @@ class Setup:
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
-            labour_admin_group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
@@ -92,8 +92,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
@@ -446,15 +446,15 @@ class Setup:
             )
 
     def setup_program_v2(self):
+        from dimensions.models.dimension_dto import Dimension, DimensionDTO
         from program_v2.importers.default import DefaultImporter
-        from program_v2.models.dimension_dto import Dimension, DimensionDTO
         from program_v2.models.meta import ProgramV2EventMeta
 
         try:
             room_dimension = Dimension.objects.get(universe=self.event.program_universe, slug="room")
         except Dimension.DoesNotExist:
             dimensions = DefaultImporter(self.event).get_dimensions()
-            dimensions = DimensionDTO.save_many(self.event, dimensions)
+            dimensions = DimensionDTO.save_many(self.event.program_universe, dimensions)
             room_dimension = next(d for d in dimensions if d.slug == "room")
 
         ProgramV2EventMeta.objects.update_or_create(

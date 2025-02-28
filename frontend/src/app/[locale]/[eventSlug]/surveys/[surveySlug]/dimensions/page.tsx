@@ -20,7 +20,7 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment ValueFields on SurveyDimensionValueType {
+  fragment ValueFields on DimensionValueType {
     slug
     color
     isInitial
@@ -33,7 +33,7 @@ graphql(`
 `);
 
 graphql(`
-  fragment DimensionRowGroup on SurveyDimensionType {
+  fragment DimensionRowGroup on DimensionType {
     slug
     canRemove
     title(lang: $locale)

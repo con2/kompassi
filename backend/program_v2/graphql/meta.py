@@ -8,6 +8,7 @@ from graphene_django import DjangoObjectType
 from access.cbac import graphql_check_instance, graphql_check_model
 from core.models import Event
 from core.utils.text_utils import normalize_whitespace
+from dimensions.graphql.dimension import DimensionType
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from forms.graphql.response import FullResponseType
 from forms.models.response import Response
@@ -22,7 +23,6 @@ from ..models import (
 from ..models.annotations import ANNOTATIONS
 from ..models.meta import ProgramV2ProfileMeta
 from .annotations import AnnotationSchemoidType
-from .dimension import DimensionType
 from .program_full import FullProgramType
 from .schedule_item_full import FullScheduleItemType
 

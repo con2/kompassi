@@ -86,7 +86,7 @@ class Setup:
             from core.models import Person
 
             person, _ = Person.get_or_create_dummy()
-            labour_admin_group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
@@ -215,8 +215,8 @@ class Setup:
         if self.test:
             t = now()
             defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),
-                ticket_sales_ends=t + timedelta(days=60),
+                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
+                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
         meta, _ = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -376,7 +376,7 @@ class Setup:
         # )
 
     def setup_forms(self):
-        from forms.models.dimension_dto import DimensionDTO
+        from dimensions.models.dimension_dto import DimensionDTO
         from forms.models.form import Form
         from forms.models.meta import FormsEventMeta
         from forms.models.survey import Survey
@@ -416,7 +416,7 @@ class Setup:
         with resource_stream("events.cosmocon2025", "forms/artist-alley-application-dimensions.yml") as f:
             artist_alley_dimensions = yaml.safe_load(f)
         for dimension in artist_alley_dimensions:
-            DimensionDTO.model_validate(dimension).save(artist_alley_application)
+            DimensionDTO.model_validate(dimension).save(artist_alley_application.universe)
 
         # Cosplay competition application
         cosplay_competition_application, _ = Survey.objects.get_or_create(
@@ -444,7 +444,7 @@ class Setup:
         with resource_stream("events.cosmocon2025", "forms/cosplay-competition-application-dimensions.yml") as f:
             cosplay_competition_dimensions = yaml.safe_load(f)
         for dimension in cosplay_competition_dimensions:
-            DimensionDTO.model_validate(dimension).save(cosplay_competition_application)
+            DimensionDTO.model_validate(dimension).save(cosplay_competition_application.universe)
 
 
 class Command(BaseCommand):
