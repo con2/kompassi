@@ -5,12 +5,12 @@ import pytest
 import yaml
 
 from core.models import Event
+from dimensions.graphql.mutations.put_dimension import PutDimension
 from dimensions.models.dimension import Dimension
 from dimensions.models.dimension_value import DimensionValue
 from graphql_api.schema import schema
 
 from .excel_export import get_header_cells, get_response_cells
-from .graphql.mutations.put_survey_dimension import PutSurveyDimension
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from .models.field import Choice, Field, FieldType
 from .models.form import Form
@@ -356,7 +356,7 @@ def test_process_form_data_number_field():
         Field(slug="numberField", type=FieldType.NUMBER_FIELD),
         Field(slug="numberFieldRequiredMissing", type=FieldType.NUMBER_FIELD, required=True),
         Field(slug="numberFieldInvalidValue", type=FieldType.NUMBER_FIELD),
-        Field(slug="numberFieldWithDecimalPlaces", type=FieldType.NUMBER_FIELD, decimalPlaces=2),
+        Field(slug="numberFieldWithDecimalPlaces", type=FieldType.NUMBER_FIELD, decimalPlaces=2),  # type: ignore
     ]
 
     form_data = {
@@ -383,11 +383,11 @@ def test_process_form_data_number_field():
 def test_process_form_data_decimal_field():
     fields = [
         Field(slug="decimalField", type=FieldType.DECIMAL_FIELD),
-        Field(slug="decimalFieldWithDecimalPlaces", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),
+        Field(slug="decimalFieldWithDecimalPlaces", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),  # type: ignore
         Field(slug="decimalFieldRequiredMissing", type=FieldType.DECIMAL_FIELD, required=True),
         Field(slug="decimalFieldInvalidValue", type=FieldType.DECIMAL_FIELD),
-        Field(slug="decimalWithDifferingDecimalPlaces1", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),
-        Field(slug="decimalWithDifferingDecimalPlaces2", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),
+        Field(slug="decimalWithDifferingDecimalPlaces1", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),  # type: ignore
+        Field(slug="decimalWithDifferingDecimalPlaces2", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),  # type: ignore
     ]
 
     form_data = {
@@ -492,7 +492,7 @@ def test_summarize_responses():
         ),
         Field(
             type=FieldType.SINGLE_LINE_TEXT,
-            htmlType="number",
+            htmlType="number",  # type: ignore
             slug="numberField",
         ),
         Field(
@@ -695,7 +695,7 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
 
 
 @pytest.mark.django_db
-@mock.patch("forms.graphql.mutations.put_survey_dimension.graphql_check_instance", autospec=True)
+@mock.patch("dimensions.graphql.mutations.put_dimension.graphql_check_instance", autospec=True)
 def test_put_survey_dimension(_patched_graphql_check_instance):
     form_data = {
         "slug": "test-dimension",
@@ -711,12 +711,12 @@ def test_put_survey_dimension(_patched_graphql_check_instance):
         slug="test-survey",
     )
 
-    PutSurveyDimension.mutate(
+    PutDimension.mutate(
         None,
         MOCK_INFO,
         SimpleNamespace(
-            event_slug=event.slug,
-            survey_slug=survey.slug,
+            scope_slug=event.scope.slug,
+            universe_slug=survey.universe.slug,
             form_data=form_data,
             dimension_slug=None,
         ),  # type: ignore

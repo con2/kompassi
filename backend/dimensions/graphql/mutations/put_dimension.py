@@ -79,5 +79,7 @@ class PutDimension(graphene.Mutation):
             dimension = form.save(commit=False)
             dimension.universe = universe
             dimension.save()
+        else:
+            raise django_forms.ValidationError(form.errors)
 
         return PutDimension(dimension=dimension)  # type: ignore
