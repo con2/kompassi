@@ -6,6 +6,7 @@ from typing import Any
 from django.utils.timezone import get_current_timezone
 
 from core.models import Event
+from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from programme.models.category import Category
 from programme.models.programme import Programme
 
@@ -16,7 +17,6 @@ from ..consts import (
     ROOM_DIMENSION_TITLE_LOCALIZED,
 )
 from ..integrations.konsti import KONSTI_DIMENSION_DTO
-from ..models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from ..models.program import Program
 from ..models.schedule import ScheduleItem
 from .default import DefaultImporter

@@ -1,0 +1,7 @@
+import pydantic
+
+
+class DimensionValueDTO(pydantic.BaseModel):
+    slug: str
+    title: dict[str, str]
+    color: str = ""

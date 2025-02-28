@@ -3,19 +3,17 @@ from django.http import HttpRequest
 
 from dimensions.models.dimension_value import DimensionValue
 
-from ...models.survey import Survey
 
-
-class DeleteSurveyDimensionValueInput(graphene.InputObjectType):
-    event_slug = graphene.String(required=True)
-    survey_slug = graphene.String(required=True)
+class DeleteDimensionValueInput(graphene.InputObjectType):
+    scope_slug = graphene.String(required=True)
+    universe_slug = graphene.String(required=True)
     dimension_slug = graphene.String(required=True)
     value_slug = graphene.String(required=True)
 
 
-class DeleteSurveyDimensionValue(graphene.Mutation):
+class DeleteDimensionValue(graphene.Mutation):
     class Arguments:
-        input = DeleteSurveyDimensionValueInput(required=True)
+        input = DeleteDimensionValueInput(required=True)
 
     slug = graphene.Field(graphene.String)
 
@@ -23,18 +21,20 @@ class DeleteSurveyDimensionValue(graphene.Mutation):
     def mutate(
         root,
         info,
-        input: DeleteSurveyDimensionValueInput,
+        input: DeleteDimensionValueInput,
     ):
         request: HttpRequest = info.context
-        survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
+
         value = DimensionValue.objects.get(
-            dimension__universe=survey.universe,
+            dimension__universe__scope__slug=input.scope_slug,
+            dimension__universe__slug=input.universe_slug,
             dimension__slug=input.dimension_slug,
             slug=input.value_slug,
         )
+
         if not value.can_be_deleted_by(request):
             raise Exception("Cannot remove dimension value")
 
         value.delete()
 
-        return DeleteSurveyDimensionValue(slug=input.survey_slug)  # type: ignore
+        return DeleteDimensionValue(slug=input.value_slug)  # type: ignore

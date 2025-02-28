@@ -8,8 +8,8 @@ from core.utils.text_utils import normalize_whitespace
 from graphql_api.utils import resolve_local_datetime_field
 
 from ..models.response import Response
-from .dimension import ResponseDimensionValueType
 from .form import FormType
+from .response_dimension_value import ResponseDimensionValueType
 
 
 class LimitedResponseType(DjangoObjectType):

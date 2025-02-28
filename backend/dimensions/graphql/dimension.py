@@ -6,13 +6,14 @@ from dimensions.models.dimension import Dimension
 from graphql_api.language import DEFAULT_LANGUAGE
 from graphql_api.utils import resolve_localized_field_getattr
 
-from ..models.response_dimension_value import ResponseDimensionValue
-from .dimension_value import SurveyDimensionValueType
+from .dimension_value import DimensionValueType
 
 
-# NOTE: names may not clash with program_v2.DimensionType and program_v2.DimensionValueType
-# TODO unify these
-class SurveyDimensionType(DjangoObjectType):
+class DimensionType(DjangoObjectType):
+    class Meta:
+        model = Dimension
+        fields = ("slug", "values", "is_key_dimension", "is_multi_value", "is_list_filter")
+
     title = graphene.String(lang=graphene.String())
     resolve_title = resolve_localized_field_getattr("title")
 
@@ -36,22 +37,12 @@ class SurveyDimensionType(DjangoObjectType):
         return dimension.get_values(lang)
 
     values = graphene.NonNull(
-        graphene.List(graphene.NonNull(SurveyDimensionValueType)),
+        graphene.List(graphene.NonNull(DimensionValueType)),
         lang=graphene.String(),
     )
 
-    class Meta:
-        model = Dimension
-        fields = ("slug", "values", "is_key_dimension", "is_multi_value", "is_shown_to_subject")
-
-
-class ResponseDimensionValueType(DjangoObjectType):
-    class Meta:
-        model = ResponseDimensionValue
-        fields = ("value",)
-
-    dimension = graphene.NonNull(SurveyDimensionType)
-
     @staticmethod
-    def resolve_dimension(rdv: ResponseDimensionValue, info):
-        return rdv.value.dimension
+    def resolve_is_shown_to_subject(dimension: Dimension, info):
+        return dimension.is_public and dimension.is_key_dimension
+
+    is_shown_to_subject = graphene.NonNull(graphene.Boolean)

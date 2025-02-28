@@ -4,8 +4,8 @@ from datetime import timedelta
 import requests
 
 from core.models.event import Event
+from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 
-from ..models.dimension_dto import DimensionDTO, DimensionValueDTO
 from ..models.program import Program
 from ..models.program_dimension_value import ProgramDimensionValue
 from ..models.schedule import ScheduleItem
@@ -76,7 +76,7 @@ def import_graphql(
     data = response.json()
 
     dimensions = DimensionDTO.save_many(
-        event,
+        event.program_universe,
         [
             DimensionDTO(
                 slug=dimension_data["slug"],
@@ -134,7 +134,7 @@ def import_graphql(
         for item in ProgramDimensionValue.build_upsertables(
             program,
             program_data["cachedDimensions"],
-            *upsert_cache,
+            upsert_cache,
         )
     ]
     pdvs = ProgramDimensionValue.bulk_upsert(pdv_upsert)

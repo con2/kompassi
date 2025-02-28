@@ -20,6 +20,7 @@ from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, log_get_or_create
 from core.utils.pkg_resources_compat import resource_stream
 from dimensions.models.dimension import Dimension
+from dimensions.models.dimension_dto import DimensionDTO
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
@@ -321,7 +322,6 @@ class SurveyDTO:
     active_until: datetime | None = None
 
     def save(self, event: Event, overwrite=False) -> Survey:
-        from .dimension_dto import DimensionDTO
         from .form import Form
 
         defaults = asdict(self)  # type: ignore
@@ -340,7 +340,7 @@ class SurveyDTO:
             pass
         else:
             dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
-            DimensionDTO.save_many(survey, dimensions)
+            DimensionDTO.save_many(survey.universe, dimensions)
 
         for language in SUPPORTED_LANGUAGES:
             try:

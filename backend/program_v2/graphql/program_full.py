@@ -6,7 +6,7 @@ from core.utils.text_utils import normalize_whitespace
 from ..models import Program
 from ..models.annotations import ANNOTATIONS
 from .annotations import ProgramAnnotationType
-from .dimension import ProgramDimensionValueType
+from .program_dimension_value import ProgramDimensionValueType
 from .program_limited import LimitedProgramType
 from .schedule_item_limited import LimitedScheduleItemType
 

@@ -9,6 +9,7 @@ from django.utils.timezone import get_current_timezone
 
 from core.models import Event
 from dimensions.models.dimension import Dimension
+from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from dimensions.models.value_ordering import ValueOrdering
 from programme.models.category import Category
 from programme.models.programme import Programme
@@ -24,7 +25,6 @@ from ..consts import (
     WEEKDAYS_LOCALIZED,
 )
 from ..models.annotations import ANNOTATIONS
-from ..models.dimension_dto import DimensionDTO, DimensionValueDTO
 from ..models.program import Program
 from ..models.program_dimension_value import ProgramDimensionValue
 from ..models.schedule import ScheduleItem
@@ -252,7 +252,7 @@ class DefaultImporter:
             logger.info("Dimension clearing deleted %s", deleted or "nothing")
 
         dimension_dtos = self.get_dimensions()
-        dimensions = DimensionDTO.save_many(self.event, dimension_dtos, refresh_cached=False)
+        dimensions = DimensionDTO.save_many(self.event.program_universe, dimension_dtos)
         logger.info("Imported %d dimensions for %s", len(dimension_dtos), self.event.slug)
 
         if clear and meta:

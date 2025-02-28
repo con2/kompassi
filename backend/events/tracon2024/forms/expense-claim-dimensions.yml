@@ -3,7 +3,7 @@
     fi: Tapahtuma
     en: Event
   isKeyDimension: true
-  is_shown_to_subject: true
+  isPublic: true
   choices:
     - slug: tracon2024
       title:
@@ -23,7 +23,7 @@
     fi: Maksun tila
     en: Payment status
   isKeyDimension: true
-  is_shown_to_subject: true
+  isPublic: true
   choices:
     - slug: new
       color: blue

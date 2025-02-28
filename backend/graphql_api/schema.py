@@ -4,18 +4,18 @@ from core.graphql.event_full import FullEventType
 from core.graphql.mutations.confirm_email import ConfirmEmail
 from core.graphql.profile import ProfileType
 from core.models import Event, Person
+from dimensions.graphql.mutations.delete_dimension import DeleteDimension
+from dimensions.graphql.mutations.delete_dimension_value import DeleteDimensionValue
+from dimensions.graphql.mutations.put_dimension import PutDimension
+from dimensions.graphql.mutations.put_dimension_value import PutDimensionValue
 from forms.graphql.mutations.create_survey import CreateSurvey
 from forms.graphql.mutations.create_survey_language import CreateSurveyLanguage
 from forms.graphql.mutations.create_survey_response import CreateSurveyResponse
 from forms.graphql.mutations.delete_survey import DeleteSurvey
-from forms.graphql.mutations.delete_survey_dimension import DeleteSurveyDimension
-from forms.graphql.mutations.delete_survey_dimension_value import DeleteSurveyDimensionValue
 from forms.graphql.mutations.delete_survey_language import DeleteSurveyLanguage
 from forms.graphql.mutations.delete_survey_responses import DeleteSurveyResponses
 from forms.graphql.mutations.generate_key_pair import GenerateKeyPair
 from forms.graphql.mutations.init_file_upload import InitFileUpload
-from forms.graphql.mutations.put_survey_dimension import PutSurveyDimension
-from forms.graphql.mutations.put_survey_dimension_value import PutSurveyDimensionValue
 from forms.graphql.mutations.revoke_key_pair import RevokeKeyPair
 from forms.graphql.mutations.subscriptions import SubscribeToSurveyResponses, UnsubscribeFromSurveyResponses
 from forms.graphql.mutations.update_form import UpdateForm
@@ -99,16 +99,17 @@ class Mutation(graphene.ObjectType):
     update_response_dimensions = UpdateResponseDimensions.Field()
     delete_survey_responses = DeleteSurveyResponses.Field()
 
-    put_survey_dimension = PutSurveyDimension.Field()
-    delete_survey_dimension = DeleteSurveyDimension.Field()
-
-    put_survey_dimension_value = PutSurveyDimensionValue.Field()
-    delete_survey_dimension_value = DeleteSurveyDimensionValue.Field()
-
     init_file_upload = InitFileUpload.Field()
 
     generate_key_pair = GenerateKeyPair.Field()
     revoke_key_pair = RevokeKeyPair.Field()
+
+    # Dimensions
+    put_dimension = PutDimension.Field()
+    delete_dimension = DeleteDimension.Field()
+
+    put_dimension_value = PutDimensionValue.Field()
+    delete_dimension_value = DeleteDimensionValue.Field()
 
     # Program v2
     mark_program_as_favorite = MarkProgramAsFavorite.Field()

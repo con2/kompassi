@@ -50,7 +50,7 @@ class ProgramDimensionValue(models.Model):
     @classmethod
     def build_upsert_cache(cls, event: Event) -> dict[str, dict[str, DimensionValue]]:
         """
-        Builds a cache you can pass to PDV.build_upsertable(program, dimension_values, *cache) to speed up.
+        Builds a cache you can pass to PDV.build_upsertable(program, dimension_values, cache) to speed up.
         """
         # cache dimension slug -> value slug -> DimensionValue
         values_by_slug: dict[str, dict[str, DimensionValue]] = {}
