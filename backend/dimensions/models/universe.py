@@ -40,6 +40,9 @@ class Universe(models.Model):
 
     dimensions: models.QuerySet[Dimension]
 
+    class Meta:
+        unique_together = [("scope", "slug")]
+
     def __str__(self):
         return f"{self.scope}/{self.slug} ({self.app})"
 

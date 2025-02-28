@@ -230,7 +230,7 @@ class Event(models.Model):
 
         return Universe.objects.get_or_create(
             scope=self.scope,
-            slug="default",
+            slug="program",
             app="program_v2",
         )[0]
 
