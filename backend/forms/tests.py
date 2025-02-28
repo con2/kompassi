@@ -5,12 +5,12 @@ import pytest
 import yaml
 
 from core.models import Event
+from dimensions.graphql.mutations.put_dimension import PutDimension
 from dimensions.models.dimension import Dimension
 from dimensions.models.dimension_value import DimensionValue
 from graphql_api.schema import schema
 
 from .excel_export import get_header_cells, get_response_cells
-from .graphql.mutations.put_survey_dimension import PutSurveyDimension
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from .models.field import Choice, Field, FieldType
 from .models.form import Form
@@ -701,13 +701,14 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
 
 
 @pytest.mark.django_db
-@mock.patch("forms.graphql.mutations.put_survey_dimension.graphql_check_instance", autospec=True)
+@mock.patch("dimensions.graphql.mutations.put_dimension.graphql_check_instance", autospec=True)
 def test_put_survey_dimension(_patched_graphql_check_instance):
     form_data = {
-        "slug": "test-dimension",
-        "title.en": "Test dimension",
-        "title.sv": "Testdimension",
+        "slug": "test_dimension",
+        "title_en": "Test dimension",
+        "title_sv": "Testdimension",
         "isKeyDimension": "on",
+        "valueOrdering": "manual",
     }
 
     event, _created = Event.get_or_create_dummy()
@@ -717,20 +718,20 @@ def test_put_survey_dimension(_patched_graphql_check_instance):
         slug="test-survey",
     )
 
-    PutSurveyDimension.mutate(
+    PutDimension.mutate(
         None,
         MOCK_INFO,
         SimpleNamespace(
-            event_slug=event.slug,
-            survey_slug=survey.slug,
+            scope_slug=event.scope.slug,
+            universe_slug=survey.universe.slug,
             form_data=form_data,
             dimension_slug=None,
         ),  # type: ignore
     )
 
-    dimension = Dimension.objects.get(universe=survey.universe, slug="test-dimension")
+    dimension = Dimension.objects.get(universe=survey.universe, slug="test_dimension")
 
-    assert dimension.slug == "test-dimension"
+    assert dimension.slug == "test_dimension"
     assert dimension.title_en == "Test dimension"
     assert dimension.title_sv == "Testdimension"
     assert dimension.title_fi == ""
