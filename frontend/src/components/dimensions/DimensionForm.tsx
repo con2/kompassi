@@ -16,6 +16,7 @@ const headingLevel = "h5";
 
 export default function DimensionForm({ messages, dimension }: Props) {
   const t = messages.Survey.editDimensionModal;
+  // NOTE python_case for slugs!
   const fields: Field[] = [
     {
       type: "SingleLineText",
@@ -26,32 +27,32 @@ export default function DimensionForm({ messages, dimension }: Props) {
     },
     {
       type: "SingleCheckbox",
-      slug: "isKeyDimension",
+      slug: "is_key_dimension",
       title: t.attributes.isKeyDimension.title,
       helpText: t.attributes.isKeyDimension.helpText,
     },
     {
       type: "SingleCheckbox",
-      slug: "isMultiValue",
+      slug: "is_multi_value",
       title: t.attributes.isMultiValue.title,
       helpText: t.attributes.isMultiValue.helpText,
     },
     {
       type: "SingleCheckbox",
-      slug: "isShownToSubject",
+      slug: "is_shown_to_subject",
       title: t.attributes.isShownToSubject.title,
       helpText: t.attributes.isShownToSubject.helpText,
     },
     {
       type: "StaticText",
-      slug: "localizedTitleHeader",
+      slug: "header",
       ...t.attributes.localizedTitleHeader,
     },
     ...supportedLanguages.map(
       (locale) =>
         ({
           type: "SingleLineText",
-          slug: `title.${locale}`,
+          slug: `title_${locale}`,
           title: t.attributes.title[locale],
         }) as Field,
     ),
@@ -61,13 +62,11 @@ export default function DimensionForm({ messages, dimension }: Props) {
   let values: Record<string, unknown> = {};
   if (dimension) {
     values = {
-      slug: dimension.slug,
-      isKeyDimension: dimension.isKeyDimension,
-      isMultiValue: dimension.isMultiValue,
-      isShownToSubject: dimension.isShownToSubject,
-      // TODO hard-coded languages
-      "title.fi": dimension.titleFi,
-      "title.en": dimension.titleEn,
+      // NOTE SUPPORTED_LANGUAGES
+      title_fi: dimension.titleFi,
+      title_en: dimension.titleEn,
+      title_sv: dimension.titleSv,
+      ...dimension,
     };
   }
 

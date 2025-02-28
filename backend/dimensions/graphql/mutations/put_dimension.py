@@ -3,6 +3,7 @@ from django import forms as django_forms
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
+from core.utils.form_utils import camel_case_keys_to_snake_case
 
 from ...models.dimension import Dimension
 from ...models.universe import Universe
@@ -30,7 +31,7 @@ class DimensionForm(django_forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if self.instance is not None:
+        if self.instance.pk is not None:
             del self.fields["slug"]
 
 
@@ -53,7 +54,7 @@ class PutDimension(graphene.Mutation):
         info,
         input: PutDimensionInput,
     ):
-        form_data: dict[str, str] = input.form_data  # type: ignore
+        form_data = camel_case_keys_to_snake_case(input.form_data)  # type: ignore
 
         universe = Universe.objects.get(
             scope__slug=input.scope_slug,
@@ -79,5 +80,7 @@ class PutDimension(graphene.Mutation):
             dimension = form.save(commit=False)
             dimension.universe = universe
             dimension.save()
+        else:
+            raise django_forms.ValidationError(form.errors)
 
         return PutDimension(dimension=dimension)  # type: ignore

@@ -18,6 +18,7 @@ const headingLevel = "h5";
 /// Value form society. Value form life.
 export default function DimensionValueForm({ messages, value }: Props) {
   const t = messages.Survey.editValueModal;
+  // NOTE python_case for slugs!
   const fields: Field[] = [
     {
       type: "SingleLineText",
@@ -38,19 +39,19 @@ export default function DimensionValueForm({ messages, value }: Props) {
     },
     {
       type: "SingleCheckbox",
-      slug: "isInitial",
+      slug: "is_initial",
       ...t.attributes.isInitial,
     },
     {
       type: "StaticText",
-      slug: "localizedTitleHeader",
+      slug: "header",
       ...t.attributes.localizedTitleHeader,
     },
     ...supportedLanguages.map(
       (locale) =>
         ({
           type: "SingleLineText",
-          slug: `title.${locale}`,
+          slug: `title_${locale}`,
           title: t.attributes.title[locale],
         }) as Field,
     ),
@@ -60,9 +61,10 @@ export default function DimensionValueForm({ messages, value }: Props) {
   let values: Record<string, unknown> = {};
   if (value) {
     values = {
-      "title.fi": value.titleFi,
-      "title.en": value.titleEn,
-      "title.sv": value.titleSv,
+      // NOTE SUPPORTED_LANGUAGES
+      title_fi: value.titleFi,
+      title_en: value.titleEn,
+      title_sv: value.titleSv,
       ...value,
     };
   }
