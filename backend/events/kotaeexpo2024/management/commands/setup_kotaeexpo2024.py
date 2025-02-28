@@ -76,8 +76,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
         else:
             pass
@@ -268,7 +268,7 @@ class Setup:
             team.save()
 
     def setup_forms(self):
-        from forms.models.dimension_dto import DimensionDTO
+        from dimensions.models.dimension_dto import DimensionDTO
         from forms.models.form import Form
         from forms.models.survey import Survey
 
@@ -287,7 +287,7 @@ class Setup:
             data = yaml.safe_load(f)
 
         for dimension in data:
-            DimensionDTO.model_validate(dimension).save(dance_judge_signup_survey)
+            DimensionDTO.model_validate(dimension).save(dance_judge_signup_survey.universe)
 
         with resource_stream("events.kotaeexpo2024", "forms/dance-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
@@ -314,7 +314,7 @@ class Setup:
             data = yaml.safe_load(f)
 
         for dimension in data:
-            DimensionDTO.model_validate(dimension).save(cosplay_judge_signup_survey)
+            DimensionDTO.model_validate(dimension).save(cosplay_judge_signup_survey.universe)
 
         with resource_stream("events.kotaeexpo2024", "forms/cosplay-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
@@ -341,7 +341,7 @@ class Setup:
             data = yaml.safe_load(f)
 
         for dimension in data:
-            DimensionDTO.model_validate(dimension).save(cmv_judge_signup_survey)
+            DimensionDTO.model_validate(dimension).save(cmv_judge_signup_survey.universe)
 
         with resource_stream("events.kotaeexpo2024", "forms/cmv-judge-signup-fi.yml") as f:
             data = yaml.safe_load(f)
