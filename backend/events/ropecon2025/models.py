@@ -47,7 +47,7 @@ class SignupExtra(SignupExtraBase):
     want_certificate = models.BooleanField(
         default=False,
         verbose_name="Haluan todistuksen työskentelystäni Ropeconissa",
-        help_text=_("Work certificates will be sent to the email address provided after the event.")
+        help_text=_("Work certificates will be sent to the email address provided after the event."),
     )
 
     languages = models.ManyToManyField(Language, blank=True, verbose_name="Kielet")
@@ -64,19 +64,25 @@ class SignupExtra(SignupExtraBase):
     special_diet_other = models.TextField(
         blank=True,
         verbose_name="Muu erikoisruokavalio",
-        help_text=_("If you are on a special diet that is not listed above, you can add it here. The event organizers will take special dietary needs into consideration, but it may not be possible to cater to all of them."),
+        help_text=_(
+            "If you are on a special diet that is not listed above, you can add it here. The event organizers will take special dietary needs into consideration, but it may not be possible to cater to all of them."
+        ),
     )
 
     prior_experience = models.TextField(
         blank=True,
         verbose_name="Työkokemus",
-        help_text=_("If you have work, volunteer work or other experience you think might be useful in the work station you are applying for, you can provide the information here."),
+        help_text=_(
+            "If you have work, volunteer work or other experience you think might be useful in the work station you are applying for, you can provide the information here."
+        ),
     )
 
     shift_wishes = models.TextField(
         blank=True,
         verbose_name="Alustavat työvuorotoiveet",
-        help_text=_("If you already know that you will not be able to attend a certain time or want to participate in a programme, you can provide the information here. Note that depending on the workstation, shifts may also take place before and after the event opening hours (on Thursday, Friday morning and Sunday evening) as well as during the nighttime (between 10:00 PM and 6:00 AM). Final shift preference surveys will be sent out in the summer after the programme for Ropecon 2025 is published.")
+        help_text=_(
+            "If you already know that you will not be able to attend a certain time or want to participate in a programme, you can provide the information here. Note that depending on the workstation, shifts may also take place before and after the event opening hours (on Thursday, Friday morning and Sunday evening) as well as during the nighttime (between 10:00 PM and 6:00 AM). Final shift preference surveys will be sent out in the summer after the programme for Ropecon 2025 is published."
+        ),
     )
 
     free_text = models.TextField(

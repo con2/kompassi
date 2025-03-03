@@ -63,6 +63,7 @@ class SignupExtraForm(forms.ModelForm):
             languages=forms.CheckboxSelectMultiple,
         )
 
+
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
