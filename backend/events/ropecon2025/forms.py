@@ -20,7 +20,6 @@ class SignupExtraForm(forms.ModelForm):
             Fieldset(
                 _("Work certificate"),
                 "want_certificate",
-                "certificate_delivery_address",
             ),
             Fieldset(
                 _("Language skills"),
@@ -49,7 +48,6 @@ class SignupExtraForm(forms.ModelForm):
         fields = (
             "shift_type",
             "want_certificate",
-            "certificate_delivery_address",
             "languages",
             "other_languages",
             "special_diet",
@@ -64,18 +62,6 @@ class SignupExtraForm(forms.ModelForm):
             special_diet=forms.CheckboxSelectMultiple,
             languages=forms.CheckboxSelectMultiple,
         )
-
-    def clean_certificate_delivery_address(self):
-        want_certificate = self.cleaned_data["want_certificate"]
-        certificate_delivery_address = self.cleaned_data["certificate_delivery_address"]
-
-        if want_certificate and not certificate_delivery_address:
-            raise forms.ValidationError(
-                "Koska olet valinnut haluavasi työtodistuksen, on " "työtodistuksen toimitusosoite täytettävä."
-            )
-
-        return certificate_delivery_address
-
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
@@ -139,7 +125,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict(
             shift_type="kaikkikay",
             want_certificate=False,
-            certificate_delivery_address="",
             prior_experience="",
             free_text="Syötetty käyttäen coniitin ilmoittautumislomaketta",
             roster_publish_consent=True,
@@ -154,7 +139,7 @@ class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
         if admin:
             raise AssertionError("must not be admin")
 
-        return Q(event__slug="ropecon2025", name__in=["Boffaus", "Teehuone"])
+        return Q(event__slug="ropecon2025", name__in=["Boffaus"])
 
     def get_excluded_field_defaults(self):
         return dict(
@@ -172,7 +157,6 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
             Fieldset(
                 _("Work certificate"),
                 "want_certificate",
-                "certificate_delivery_address",
             ),
             Fieldset(
                 _("Language skills"),
@@ -198,7 +182,6 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
         fields = (
             "shift_type",
             "want_certificate",
-            "certificate_delivery_address",
             "languages",
             "other_languages",
             "special_diet",

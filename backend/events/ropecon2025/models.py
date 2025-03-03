@@ -33,7 +33,7 @@ class SignupExtra(SignupExtraBase):
     shift_type = models.CharField(
         max_length=15,
         verbose_name="Toivottu työvuoron pituus",
-        help_text="Haluatko tehdä yhden pitkän työvuoron vaiko monta lyhyempää vuoroa?",
+        help_text=_("Would you like to work one long shift or multiple shorter shifts?"),
         choices=SHIFT_TYPE_CHOICES,
     )
 
@@ -47,12 +47,7 @@ class SignupExtra(SignupExtraBase):
     want_certificate = models.BooleanField(
         default=False,
         verbose_name="Haluan todistuksen työskentelystäni Ropeconissa",
-    )
-
-    certificate_delivery_address = models.TextField(
-        blank=True,
-        verbose_name="Työtodistuksen toimitusosoite",
-        help_text="Todistukset toimitetaan ensisijaisesti sähköpostitse, mutta jos haluat todistuksesi paperilla kirjaa tähän postiosoite(katuosoite, postinumero ja toimipaikka), johon haluat todistuksen toimitettavan.",
+        help_text=_("Work certificates will be sent to the email address provided after the event.")
     )
 
     languages = models.ManyToManyField(Language, blank=True, verbose_name="Kielet")
@@ -69,31 +64,25 @@ class SignupExtra(SignupExtraBase):
     special_diet_other = models.TextField(
         blank=True,
         verbose_name="Muu erikoisruokavalio",
-        help_text="Jos noudatat erikoisruokavaliota, jota ei ole yllä olevassa listassa, "
-        "ilmoita se tässä. Tapahtuman järjestäjä pyrkii ottamaan erikoisruokavaliot "
-        "huomioon, mutta kaikkia erikoisruokavalioita ei välttämättä pystytä järjestämään.",
+        help_text=_("If you are on a special diet that is not listed above, you can add it here. The event organizers will take special dietary needs into consideration, but it may not be possible to cater to all of them."),
     )
 
     prior_experience = models.TextField(
         blank=True,
         verbose_name="Työkokemus",
-        help_text="Kerro tässä kentässä, jos sinulla on aiempaa kokemusta vastaavista "
-        "tehtävistä tai muuta sellaista työkokemusta, josta arvioit olevan hyötyä "
-        "hakemassasi tehtävässä.",
+        help_text=_("If you have work, volunteer work or other experience you think might be useful in the work station you are applying for, you can provide the information here."),
     )
 
     shift_wishes = models.TextField(
         blank=True,
         verbose_name="Alustavat työvuorotoiveet",
-        help_text="Jos tiedät nyt jo, ettet pääse paikalle johonkin tiettyyn aikaan tai haluat "
-        "osallistua johonkin tiettyyn ohjelmanumeroon, mainitse siitä tässä.",
+        help_text=_("If you already know that you will not be able to attend a certain time or want to participate in a programme, you can provide the information here. Note that depending on the workstation, shifts may also take place before and after the event opening hours (on Thursday, Friday morning and Sunday evening) as well as during the nighttime (between 10:00 PM and 6:00 AM). Final shift preference surveys will be sent out in the summer after the programme for Ropecon 2025 is published.")
     )
 
     free_text = models.TextField(
         blank=True,
         verbose_name="Vapaa alue",
-        help_text="Jos haluat sanoa hakemuksesi käsittelijöille jotain sellaista, jolle ei ole "
-        "omaa kenttää yllä, käytä tätä kenttää.",
+        help_text="If you want to share something to the application reviewers that doesn't have a dedicated field above, please use this field.",
     )
 
     roster_publish_consent = models.BooleanField(
