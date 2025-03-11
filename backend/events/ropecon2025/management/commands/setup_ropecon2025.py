@@ -3,10 +3,23 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
+from access.models import EmailAliasType, GroupEmailAliasGrant
+from badges.models import BadgesEventMeta
+from core.models import Event, Organization, Person, Venue
+from intra.models import IntraEventMeta, Team
+from labour.models import (
+    AlternativeSignupForm,
+    JobCategory,
+    LabourEventMeta,
+    PersonnelClass,
+)
 from program_v2.models.meta import ProgramV2EventMeta
+
+from ...models import Language, SignupExtra, SpecialDiet
 
 
 def mkpath(*parts):
@@ -32,8 +45,6 @@ class Setup:
         self.setup_program_v2()
 
     def setup_core(self):
-        from core.models import Event, Organization, Venue
-
         self.venue, unused = Venue.objects.get_or_create(
             name="Messukeskus",
             defaults=dict(
@@ -63,18 +74,6 @@ class Setup:
         )
 
     def setup_labour(self):
-        from django.contrib.contenttypes.models import ContentType
-
-        from core.models import Event, Person
-        from labour.models import (
-            AlternativeSignupForm,
-            JobCategory,
-            LabourEventMeta,
-            PersonnelClass,
-        )
-
-        from ...models import Language, SignupExtra, SpecialDiet
-
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
@@ -184,8 +183,6 @@ class Setup:
         )
 
     def setup_badges(self):
-        from badges.models import BadgesEventMeta
-
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
@@ -195,8 +192,6 @@ class Setup:
         )
 
     def setup_intra(self):
-        from intra.models import IntraEventMeta, Team
-
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("conitea")
         meta, unused = IntraEventMeta.objects.get_or_create(
@@ -229,8 +224,6 @@ class Setup:
             )
 
     def setup_access(self):
-        from access.models import EmailAliasType, GroupEmailAliasGrant
-
         cc_group = self.event.labour_event_meta.get_group("conitea")
 
         for metavar in [
