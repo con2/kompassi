@@ -232,6 +232,9 @@ class Program(models.Model):
             queryset = Programme.objects.filter(category__event=event)
 
         Importer = meta.importer_class
+        if not Importer:
+            raise TypeError(f"Event {event.slug} does not have an importer")
+
         importer = Importer(event=event)
 
         importer.import_dimensions(clear=clear, refresh_cached_dimensions=False)
@@ -266,3 +269,37 @@ class Program(models.Model):
             and self.cached_earliest_start_time
             and now() >= self.cached_earliest_start_time
         )
+
+    @transaction.atomic
+    def set_dimension_values(self, values_to_set: dict[str, list[str]]):
+        """
+        Changes only those dimension values that are present in dimension_values.
+        NOTE: Caller is responsible for calling .refresh_cached_dimensions[_qs].
+        """
+        from .program_dimension_value import ProgramDimensionValue
+
+        dimensions_by_slug, values_by_dimension_by_slug = self.meta.universe.preload_dimensions(values_to_set)
+
+        cached_dimensions = self.cached_dimensions
+        bulk_delete = self.dimensions.filter(value__dimension__slug__in=dimensions_by_slug.keys())
+        bulk_create: list[ProgramDimensionValue] = []
+
+        for dimension_slug, value_slugs in values_to_set.items():
+            bulk_delete = bulk_delete.exclude(
+                value__dimension__slug=dimension_slug,
+                value__slug__in=value_slugs,
+            )
+            values_by_slug = values_by_dimension_by_slug[dimension_slug]
+
+            for value_slug in value_slugs:
+                if value_slug not in cached_dimensions.get(dimension_slug, []):
+                    value = values_by_slug[value_slug]
+                    bulk_create.append(
+                        ProgramDimensionValue(
+                            program=self,
+                            value=value,
+                        )
+                    )
+
+        bulk_delete.delete()
+        ProgramDimensionValue.objects.bulk_create(bulk_create)

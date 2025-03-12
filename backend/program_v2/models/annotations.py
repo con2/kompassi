@@ -215,4 +215,12 @@ ANNOTATIONS = [
         is_shown_in_detail=False,
         from_v1_programme=lambda prog: prog.video_link,
     ),
+    AnnotationSchemoid(
+        slug="knutepunkt:tagline",
+        title=dict(
+            fi="Tagline",
+            en="Tag line",
+            sv="Tagline",
+        ),
+    ),
 ]

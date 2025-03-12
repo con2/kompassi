@@ -18,7 +18,6 @@ from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, log_get_or_create
 from core.utils.pkg_resources_compat import resource_stream
 from dimensions.models.dimension import Dimension
-from dimensions.models.dimension_value import DimensionValue
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
@@ -231,17 +230,7 @@ class Survey(models.Model):
         return (self.responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1
 
     def preload_dimensions(self, dimension_values: Mapping[str, Collection[str]] | None = None):
-        dimensions = self.dimensions.all().prefetch_related("values")
-        if dimension_values is not None:
-            dimensions = dimensions.filter(slug__in=dimension_values.keys())
-
-        dimensions_by_slug = {dimension.slug: dimension for dimension in dimensions}
-
-        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] = {}
-        for dimension in dimensions_by_slug.values():
-            values_by_dimension_by_slug[dimension.slug] = {value.slug: value for value in dimension.values.all()}
-
-        return dimensions_by_slug, values_by_dimension_by_slug
+        return self.universe.preload_dimensions(dimension_values)
 
     class Meta:
         unique_together = [("event", "slug")]
