@@ -1,3 +1,4 @@
+import graphene
 from graphene_django import DjangoObjectType
 
 from core.models import Event
@@ -12,8 +13,16 @@ class LimitedEventType(DjangoObjectType):
             "name",
             "start_time",
             "end_time",
-            "timezone_name",
         )
 
     resolve_start_time = resolve_local_datetime_field("start_time")
     resolve_end_time = resolve_local_datetime_field("end_time")
+
+    @staticmethod
+    def resolve_timezone(event: Event, info):
+        """
+        Eg. Europe/Helsinki.
+        """
+        return event.timezone_name
+
+    timezone = graphene.NonNull(graphene.String)

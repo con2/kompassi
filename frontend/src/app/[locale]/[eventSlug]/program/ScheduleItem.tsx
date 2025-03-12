@@ -1,14 +1,20 @@
-import { Event } from "./models";
+import { Temporal } from "@js-temporal/polyfill";
+import { Scope } from "./models";
 import { ScheduleItemListFragment } from "@/__generated__/graphql";
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
+import { timezone as defaultTimezone } from "@/config";
 
 interface Props {
   scheduleItem: ScheduleItemListFragment;
-  event: Event;
+  event: Scope;
   locale: string;
 }
 
-export default function ScheduleItem({ scheduleItem, locale, event }: Props) {
+export default function ScheduleItem({
+  scheduleItem,
+  locale,
+  event: event,
+}: Props) {
   return (
     <div>
       {scheduleItem.location && <span>{scheduleItem.location}, </span>}

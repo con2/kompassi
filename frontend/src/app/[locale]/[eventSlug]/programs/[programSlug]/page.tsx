@@ -51,6 +51,9 @@ const query = graphql(`
 
     event(slug: $eventSlug) {
       name
+      slug
+      timezone
+
       program {
         calendarExportLink
 

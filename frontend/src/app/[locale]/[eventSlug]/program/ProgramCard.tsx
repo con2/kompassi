@@ -5,7 +5,7 @@ import CardBody from "react-bootstrap/CardBody";
 import CardLink from "react-bootstrap/CardLink";
 import CardTitle from "react-bootstrap/CardTitle";
 import FavoriteButton from "./FavoriteButton";
-import { Event } from "./models";
+import { Event, Scope } from "./models";
 import ScheduleItem from "./ScheduleItem";
 import { getProgramColorBorder } from "./style";
 import {
@@ -14,7 +14,7 @@ import {
 } from "@/__generated__/graphql";
 
 interface Props {
-  event: Event;
+  event: Scope;
   program: ScheduleProgramFragment;
   scheduleItem: ScheduleItemListFragment;
   locale: string;

@@ -52,6 +52,9 @@ TRACK_TITLES = {
     6: "Designing the Story",
     7: "Social",
 }
+OMIT_PROGRAMS = {
+    UUID("48a29db9-4d21-4461-9c2c-15c39ee35a8a"),
+}
 
 
 class Location(pydantic.BaseModel):
@@ -74,9 +77,19 @@ class ProgramItem(pydantic.BaseModel):
     description: str = pydantic.Field(validation_alias="content", repr=False)
     location_id: UUID = pydantic.Field(validation_alias="locationId")
     is_cancelled: bool = pydantic.Field(validation_alias="isCancelled")
+    is_moved: bool = pydantic.Field(validation_alias="isMoved")
     raw_start_time: str = pydantic.Field(validation_alias="startTime")
     raw_end_time: str = pydantic.Field(validation_alias="endTime")
     event_id: UUID = pydantic.Field(validation_alias="eventId")
+
+    @property
+    def decorated_title(self):
+        if self.is_cancelled:
+            return f"❌ CANCELLED: {self.title}"
+        elif self.is_moved:
+            return f"⚠️ MOVED: {self.title}"
+        else:
+            return self.title
 
     @classmethod
     def get_all(cls):
@@ -102,7 +115,7 @@ class ProgramItem(pydantic.BaseModel):
 
 
 def import_knutepunkt(event_slug: str):
-    kp_programs = ProgramItem.get_all()
+    kp_programs = [program for program in ProgramItem.get_all() if program.id not in OMIT_PROGRAMS]
     locations_by_id = {location.id: location for location in Location.get_all()}
     program_type_ids = {kp_program.program_type_id for kp_program in kp_programs}
     track_ids = {kp_program.track_id for kp_program in kp_programs if kp_program.track_id}
@@ -125,16 +138,17 @@ def import_knutepunkt(event_slug: str):
     )
     log_get_or_create(logger, venue, created)
 
-    event, created = Event.objects.get_or_create(
+    event, created = Event.objects.update_or_create(
         slug=event_slug,
         defaults=dict(
             name="Knutepunkt 2025",
             organization=organization,
             venue=venue,
             start_time=datetime(2025, 3, 13, 15, 0, tzinfo=TZ),
-            end_time=datetime(2025, 3, 13, 15, 0, tzinfo=TZ),
+            end_time=datetime(2025, 3, 16, 15, 0, tzinfo=TZ),
             public=False,
             homepage_url="https://knutepunkt.org",
+            timezone_name="Europe/Oslo",
         ),
     )
     log_get_or_create(logger, event, created)
@@ -226,7 +240,7 @@ def import_knutepunkt(event_slug: str):
         Program(
             slug=str(kp_program.id),
             event=event,
-            title=kp_program.title,
+            title=kp_program.decorated_title,
             description=kp_program.description,
             annotations={"knutepunkt:tagline": kp_program.tagline},
         )

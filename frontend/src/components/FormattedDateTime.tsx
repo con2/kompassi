@@ -1,5 +1,5 @@
 import { Temporal } from "@js-temporal/polyfill";
-import { timezone } from "@/config";
+import { timezone as defaultTimezone } from "@/config";
 
 /// NOTE: scope and session are non-? but |undefined by design so that omitting them is a conscious decision
 interface Props {
@@ -21,6 +21,7 @@ export function formatDateTime(
   value: string,
   locale: string,
   options: Intl.DateTimeFormatOptions = defaultOptions,
+  timezone: Temporal.TimeZone | Temporal.TimeZoneProtocol = defaultTimezone,
 ) {
   return Temporal.Instant.from(value)
     .toZonedDateTimeISO(timezone)
