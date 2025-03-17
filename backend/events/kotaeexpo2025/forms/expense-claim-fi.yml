@@ -1,0 +1,58 @@
+title: Hae kulukorvausta
+description: |
+  Tällä lomakkeella voit hakea kulukorvausta Kotae ry:ltä tapahtumaan tai
+  yhdistystoimintaan liittyvästä kulusta. Täytä lomake huolellisesti ja liitä
+  mukaan kaikki pyydetyt liitteet.
+
+  Jos et ole kysynyt etukäteen lupaa kuluille tai jos sinulla on kysyttävää
+  kulukorvauksista, ota yhteyttä sähköpostitse osoitteella <em>talous ät kotae
+  piste fi</em> tai Discordissa <em>@Nimu</em> tai <em>@Aketzu</em>.
+
+fields:
+  - slug: title
+    type: SingleLineText
+    title: Otsikko
+    required: true
+    helpText: Kerro <strong>lyhyesti</strong>, mistä kulusta haet korvausta tai mitä lasku koskee.
+
+  - slug: description
+    type: MultiLineText
+    title: Kuvaus
+    helpText: |
+      Jos otsikko ei kerro kaikkea olennaista, voit antaa tässä lisätietoja.
+
+  - slug: amount
+    type: DecimalField
+    minValue: 0
+    decimalPlaces: 2
+    title: Summa
+    required: true
+    helpText: |
+      Kuinka paljon haet korvausta tai mikä on laskun summa? Kirjoita summa euroina.
+
+  - slug: recipient
+    type: SingleLineText
+    title: Saaja
+    required: true
+    helpText: |
+      Kenen tilille korvaus maksetaan? Kirjoita tähän etu- ja sukunimi tai yrityksen nimi.
+
+  - slug: recipient_iban
+    type: SingleLineText
+    title: Saajan tilinumero
+    required: true
+    helpText: |
+      Mille tilille korvaus maksetaan? Kirjoita IBAN-tilinumero muodossa FI12 3456 7890 1234 56.
+
+  - slug: attachments
+    type: FileUpload
+    title: Tositteet
+    required: true
+    multiple: true
+    helpText: |
+      Liitä mukaan kaikki kulukorvauksen kannalta tarpeelliset tositteet.
+      Tositteista tulee käydä ilmi kulun päivämäärä, summa, ALV-kanta ja maksun saaja.
+      Muussa valuutassa kuin euroissa tehdyistä maksuista tulee käydä ilmi myös valuuttakurssi tai
+      summa alkuperäisessä valuutassa.
+      Jos sinulla ei ole tositetta, kirjoita vapaamuotoinen selvitys kulusta ja
+      siitä, miksi tositetta ei ole saatavilla, ja allekirjoita se.
