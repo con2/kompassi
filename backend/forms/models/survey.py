@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from datetime import datetime
 import logging
 from collections.abc import Collection, Mapping
 from dataclasses import asdict, dataclass, field
+from datetime import datetime
 from functools import cached_property
 from typing import TYPE_CHECKING
 
