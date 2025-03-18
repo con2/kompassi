@@ -1,22 +1,34 @@
-FROM python:3.13 AS deps
-WORKDIR /tmp
-RUN mkdir /deps
-ADD requirements.txt ./
-RUN pip install -U pip setuptools wheel && \
-    pip wheel -r requirements.txt --no-cache-dir --wheel-dir /deps && \
-    rm -f /deps/setuptools-*.whl
+FROM ghcr.io/astral-sh/uv:python3.13-bookworm AS builder
 
-FROM python:3.13-slim
-WORKDIR /usr/src/app
-RUN groupadd -g 998 -r kompassi && useradd -r -g kompassi -u 998 kompassi && apt-get update && apt-get -y install libpq5 libpango-1.0-0 libharfbuzz0b libpangoft2-1.0-0 && rm -rf /var/lib/apt/lists
-ADD requirements.txt ./
-RUN --mount=type=bind,from=deps,source=/deps,target=/deps \
-    pip install --no-cache-dir --no-index --find-links /deps /deps/*.whl
-ADD . .
-RUN env DEBUG=1 python manage.py collectstatic --noinput && \
+WORKDIR /app
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+ENV PATH="/app/.venv/bin:$PATH"
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --frozen --no-install-project --no-dev
+
+RUN groupadd -g 998 -r kompassi && \
+    useradd -r -g kompassi -u 998 kompassi && \
+    apt-get update && \
+    apt-get -y install \
+        git \
+        libpq5 \
+        libpango-1.0-0 \
+        libharfbuzz0b \
+        libpangoft2-1.0-0 && \
+    rm -rf /var/lib/apt/lists
+
+ADD . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev && \
+    env DEBUG=1 python manage.py collectstatic --noinput && \
     env DEBUG=1 python manage.py kompassi_i18n -ac && \
     python -m compileall -q . && \
     chmod 755 manage.py scripts/*.sh
+
 USER kompassi
 
 # mount tmpfs at /tmp to silence "FontConfig: No writable cache directories" warnings

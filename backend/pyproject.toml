@@ -1,8 +1,78 @@
+[project]
+name = "kompassi"
+version = "2.0.0-pre1"
+description = "Event Management System"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+  "aiohttp[speedups]",
+  "Babel",
+  "bleach",
+  "boto3",
+  "celery",
+  "crispy-bootstrap3",
+  "django_csp",
+  "django-bootstrap3",
+  "django-cors-headers",
+  "django-crispy-forms",
+  "django-environ",
+  "django-ipware",
+  "django-localflavor",
+  "django-oauth-toolkit",
+  "django-redis",
+  "django-storages",
+  "django-stubs",
+  "Django",
+  "fastapi[standard]",
+  "flake8",
+  "graphene-django",
+  "graphene-pydantic",
+  "gunicorn",
+  "ics",
+  "ipdb",
+  "ipython",
+  "isort",
+  "jinja2",
+  "jsonschema",
+  "jwskate",
+  "lippukala",
+  "markdown",
+  "paikkala",
+  "paramiko",
+  "passlib",
+  "phonenumberslite",
+  "Pillow",
+  "pre-commit",
+  "psycopg[c,pool]",
+  "pydantic[email]",
+  "pypugjs",
+  "pyright",
+  "pytest-django",
+  "python-dateutil",
+  "PyYAML",
+  "regex",
+  "reportlab",
+  "requests-oauthlib",
+  "requests",
+  "ruff",
+  "tabulate",
+  "unicodecsv",
+  "uvicorn[standard]",
+  "vobject",
+  "weasyprint",
+  "XlsxWriter",
+  "zxcvbn",
+]
+
+[tool.uv.sources]
+lippukala = { git = "https://github.com/kcsry/lippukala", rev = "v2.0.0" }
+paikkala = { git = "https://github.com/kcsry/paikkala", rev = "v0.2.0" }
+
 [tool.black]
 line-length = 120
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 line-length = 120
 
 [tool.ruff.lint]
