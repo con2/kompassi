@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Collection, Mapping
 from dataclasses import asdict, dataclass, field
+from datetime import datetime
 from functools import cached_property
 from typing import TYPE_CHECKING
 
@@ -261,6 +262,8 @@ class SurveyDTO:
     max_responses_per_user: int = 0
     anonymity: str = "soft"
     key_fields: list[str] = field(default_factory=list)
+    active_from: datetime = None
+    active_until: datetime = None
 
     def save(self, event: Event, overwrite=False) -> Survey:
         from .dimension_dto import DimensionDTO

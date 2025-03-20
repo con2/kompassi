@@ -5,6 +5,9 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
+from forms.models.meta import FormsEventMeta
+from forms.models.survey import SurveyDTO
+
 
 class Setup:
     def __init__(self):
@@ -22,6 +25,7 @@ class Setup:
         self.setup_badges()
         self.setup_intra()
         self.setup_access()
+        self.setup_forms()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -263,6 +267,28 @@ class Setup:
         for team in Team.objects.filter(event=self.event):
             team.is_public = True
             team.save()
+
+    def setup_forms(self):
+        (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])
+
+        FormsEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
+
+        for survey in [
+            SurveyDTO(
+                slug="expense-claim",
+                key_fields=["title", "amount"],
+                login_required=True,
+                anonymity="name_and_email",
+                active_from=datetime(2025, 1, 1, 0, 0, tzinfo=self.tz),
+                active_until=datetime(2025, 12, 31, 23, 59, tzinfo=self.tz),
+            ),
+        ]:
+            survey.save(self.event)
 
 
 class Command(BaseCommand):
