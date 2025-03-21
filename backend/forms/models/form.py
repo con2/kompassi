@@ -6,6 +6,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Any, Self
 
 from django.conf import settings
+from django.contrib.auth.models import AbstractBaseUser
 from django.db import models, transaction
 from django.http import HttpRequest
 
@@ -145,3 +146,17 @@ class Form(models.Model):
     @property
     def scope(self):
         return self.survey.scope
+
+    def clone(self, survey: Survey, created_by: AbstractBaseUser | None = None):
+        form = Form(
+            event=survey.event,
+            survey=survey,
+            language=self.language,
+            title=self.title,
+            description=self.description,
+            thank_you_message=self.thank_you_message,
+            fields=self.fields,
+            created_by=created_by,
+        )
+        form.save()
+        return form

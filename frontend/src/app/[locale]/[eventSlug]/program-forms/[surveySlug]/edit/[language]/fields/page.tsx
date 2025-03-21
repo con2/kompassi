@@ -12,7 +12,7 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment EditProgramFormFields on SurveyType {
+  fragment EditProgramFormFields on FullSurveyType {
     slug
     title(lang: $locale)
     canRemove

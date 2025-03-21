@@ -283,7 +283,7 @@ class Setup:
                 slug="expense-claim",
                 key_fields=["title", "amount"],
                 login_required=True,
-                anonymity="name_and_email",
+                anonymity="NAME_AND_EMAIL",
                 active_from=datetime(2025, 1, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2025, 12, 31, 23, 59, tzinfo=self.tz),
             ),

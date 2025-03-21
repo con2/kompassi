@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 
+import getAnonymityDropdown from "../../getAnonymityDropdown";
 import { updateSurvey } from "./actions";
 import SurveyEditorView from "./SurveyEditorView";
 import { graphql } from "@/__generated__";
+import { Anonymity } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Field } from "@/components/forms/models";
@@ -13,7 +15,7 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment EditSurveyPage on SurveyType {
+  fragment EditSurveyPage on FullSurveyType {
     slug
     title(lang: $locale)
     loginRequired
@@ -115,15 +117,12 @@ export default async function EditSurveyPage({ params }: Props) {
   const survey = data?.event?.forms?.survey;
 
   const fields: Field[] = [
+    getAnonymityDropdown(t, true),
     {
       slug: "loginRequired",
       type: "SingleCheckbox",
+      readOnly: survey.anonymity === Anonymity.NameAndEmail,
       ...t.attributes.loginRequired,
-    },
-    {
-      slug: "protectResponses",
-      type: "SingleCheckbox",
-      ...t.attributes.protectResponses,
     },
     {
       slug: "maxResponsesPerUser",
@@ -139,6 +138,11 @@ export default async function EditSurveyPage({ params }: Props) {
       slug: "activeUntil",
       type: "DateTimeField",
       ...t.attributes.activeUntil,
+    },
+    {
+      slug: "protectResponses",
+      type: "SingleCheckbox",
+      ...t.attributes.protectResponses,
     },
   ];
 

@@ -13,7 +13,7 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment EditProgramForm on SurveyType {
+  fragment EditProgramForm on FullSurveyType {
     slug
     title(lang: $locale)
     activeFrom

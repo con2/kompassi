@@ -4,6 +4,7 @@ from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
+from core.graphql.event_limited import LimitedEventType
 from core.utils import normalize_whitespace
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 
@@ -18,7 +19,7 @@ from .survey_limited import LimitedSurveyType
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
-class SurveyType(LimitedSurveyType):
+class FullSurveyType(LimitedSurveyType):
     @staticmethod
     def resolve_form(
         parent: Survey,
@@ -212,6 +213,9 @@ class SurveyType(LimitedSurveyType):
         description=normalize_whitespace(resolve_can_remove_responses.__doc__ or ""),
     )
 
+    # TODO change to Scope
+    event = graphene.NonNull(LimitedEventType)
+
     class Meta:
         model = Survey
         fields = (
@@ -224,4 +228,5 @@ class SurveyType(LimitedSurveyType):
             "anonymity",
             "max_responses_per_user",
             "protect_responses",
+            "event",
         )

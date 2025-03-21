@@ -9,7 +9,7 @@ from core.utils.form_utils import camel_case_keys_to_snake_case
 
 from ...models.form import Form
 from ...models.survey import Survey
-from ..survey_full import SurveyType
+from ..survey_full import FullSurveyType
 
 
 class FormForm(django_forms.ModelForm):
@@ -40,7 +40,7 @@ class UpdateForm(graphene.Mutation):
     class Arguments:
         input = UpdateFormInput(required=True)
 
-    survey = graphene.Field(SurveyType)
+    survey = graphene.Field(FullSurveyType)
 
     @staticmethod
     def mutate(

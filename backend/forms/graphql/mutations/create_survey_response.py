@@ -51,7 +51,7 @@ class CreateSurveyResponse(graphene.Mutation):
             if survey.responses.filter(created_by=created_by).count() >= survey.max_responses_per_user:
                 raise Exception("Maximum number of responses reached")
 
-        if survey.anonymity == "hard":
+        if survey.anonymity == "HARD":
             created_by = None
             ip_address = ""
 

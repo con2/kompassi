@@ -55,7 +55,7 @@ class LimitedResponseType(DjangoObjectType):
         Returns the user who submitted the response. If response is to an anonymous survey,
         this information will not be available.
         """
-        if (survey := response.form.survey) and survey.anonymity in ("hard", "soft"):
+        if (survey := response.form.survey) and survey.anonymity in ("HARD", "SOFT"):
             return None
 
         return response.created_by

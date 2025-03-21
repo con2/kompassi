@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import ModalButton from "../../../../components/ModalButton";
 import { createSurvey } from "./actions";
+import getAnonymityDropdown from "./getAnonymityDropdown";
 import { graphql } from "@/__generated__";
 import { SurveyFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -23,7 +24,7 @@ import { publicUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment Survey on SurveyType {
+  fragment Survey on FullSurveyType {
     slug
     title(lang: $locale)
     isActive
@@ -39,6 +40,19 @@ graphql(`
 
 const query = graphql(`
   query Surveys($eventSlug: String!, $locale: String) {
+    profile {
+      forms {
+        surveys(relation: ACCESSIBLE) {
+          event {
+            slug
+            name
+          }
+          slug
+          title(lang: $locale)
+        }
+      }
+    }
+
     event(slug: $eventSlug) {
       name
 
@@ -219,6 +233,18 @@ export default async function SurveysPage({ params }: Props) {
       type: "SingleLineText",
       required: true,
       ...t.attributes.slug,
+    },
+    getAnonymityDropdown(t),
+    {
+      slug: "cloneFrom",
+      type: "SingleSelect",
+      presentation: "dropdown",
+      required: false,
+      choices: data.profile!.forms.surveys.map((survey) => ({
+        slug: `${survey.event.slug}/${survey.slug}`,
+        title: `${survey.event.name}: ${survey.title}`,
+      })),
+      ...t.attributes.cloneFrom,
     },
   ];
 

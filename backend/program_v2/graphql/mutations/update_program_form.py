@@ -6,8 +6,8 @@ from django import forms as django_forms
 from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
 from forms.graphql.mutations.update_survey import UpdateSurveyInput
-from forms.graphql.survey_full import SurveyType
-from forms.models.survey import Survey
+from forms.graphql.survey_full import FullSurveyType
+from forms.models.survey import Survey, SurveyApp
 
 
 class ProgramFormForm(django_forms.ModelForm):
@@ -28,7 +28,7 @@ class UpdateProgramForm(graphene.Mutation):
     class Arguments:
         input = UpdateSurveyInput(required=True)
 
-    survey = graphene.Field(SurveyType)
+    survey = graphene.Field(FullSurveyType)
 
     @staticmethod
     def mutate(
@@ -54,6 +54,8 @@ class UpdateProgramForm(graphene.Mutation):
         if not form.is_valid():
             raise django_forms.ValidationError(form.errors)  # type: ignore
 
-        form.save()
+        survey: Survey = form.save(commit=False)
+        survey = survey.with_mandatory_attributes_for_app(SurveyApp.PROGRAM_V2)
+        survey.save()
 
         return UpdateProgramForm(survey=survey)  # type: ignore

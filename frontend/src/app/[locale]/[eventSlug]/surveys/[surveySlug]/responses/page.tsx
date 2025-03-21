@@ -8,20 +8,14 @@ import {
 } from "./actions";
 import { ResponseListActions } from "./ResponseListActions";
 import ResponseTabs from "./ResponseTabs";
-import SubscriptionButton from "./SubscriptionButton";
 import { graphql } from "@/__generated__";
 import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
-import ColoredDimensionTableCell, {
-  buildKeyDimensionColumns,
-} from "@/components/dimensions/ColoredDimensionTableCell";
+import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
-import {
-  buildDimensionFilters,
-  getDimensionValueTitle,
-} from "@/components/dimensions/helpers";
+import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { validateFields } from "@/components/forms/models";
 import UploadedFileLink from "@/components/forms/UploadedFileLink";
@@ -56,7 +50,7 @@ const query = graphql(`
   ) {
     profile {
       forms {
-        surveys(eventSlug: $eventSlug) {
+        surveys(eventSlug: $eventSlug, relation: SUBSCRIBED) {
           slug
         }
       }
@@ -238,7 +232,6 @@ export default async function FormResponsesPage({
     zip: `${exportBaseUrl}.zip`,
   };
   const responses = survey.responses || [];
-  responses[0].cachedDimensions;
 
   const subscribedSurveys = data.profile?.forms?.surveys ?? [];
   const isSubscribed = subscribedSurveys.some(
@@ -324,10 +317,15 @@ export default async function FormResponsesPage({
         translations={translations}
       />
 
-      <p className="mt-3">
-        {t.showingResponses(responses.length, survey.countResponses)}
-      </p>
-      <DataTable rows={responses} columns={columns} />
+      <DataTable rows={responses} columns={columns}>
+        <tfoot>
+          <tr>
+            <td colSpan={columns.length}>
+              {t.showingResponses(responses.length, survey.countResponses)}
+            </td>
+          </tr>
+        </tfoot>
+      </DataTable>
 
       <p>
         <small>

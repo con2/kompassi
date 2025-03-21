@@ -482,7 +482,7 @@ class Setup:
         for survey in [
             SurveyDTO(
                 slug="kickoff-signup",
-                anonymity="name_and_email",
+                anonymity="NAME_AND_EMAIL",
                 max_responses_per_user=1,
                 login_required=True,
             ),
@@ -490,13 +490,13 @@ class Setup:
                 slug="expense-claim",
                 key_fields=["title", "amount"],
                 login_required=True,
-                anonymity="name_and_email",
+                anonymity="NAME_AND_EMAIL",
             ),
             SurveyDTO(
                 slug="car-usage",
                 key_fields=["title", "kilometers"],
                 login_required=True,
-                anonymity="name_and_email",
+                anonymity="NAME_AND_EMAIL",
             ),
         ]:
             survey.save(self.event)

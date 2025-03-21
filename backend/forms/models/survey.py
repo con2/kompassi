@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 import yaml
 from django.conf import settings
+from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.http import HttpRequest
@@ -30,14 +31,16 @@ if TYPE_CHECKING:
     from .form import Form
 
 logger = logging.getLogger("kompassi")
-ANONYMITY_CHOICES = [
+
+
+class Anonymity(models.TextChoices):
     # not linked to user account, IP address not recorded
-    ("hard", _("Hard anonymous")),
+    HARD = "HARD", _("Hard anonymous")
     # linked to user account but not shown to owner, IP address recorded
-    ("soft", _("Soft anonymous (linked to user account but not shown to survey owner)")),
+    SOFT = "SOFT", _("Soft anonymous (linked to user account but not shown to survey owner)")
     # linked to user account and shown to owner, IP address recorded
-    ("name_and_email", _("Name and email shown to survey owner if responded logged-in")),
-]
+    NAME_AND_EMAIL = "NAME_AND_EMAIL", _("Name and email shown to survey owner if responded logged-in")
+
 
 APP_CHOICES = [(app.value, app.value) for app in SurveyApp]
 
@@ -69,9 +72,9 @@ class Survey(models.Model):
     )
 
     anonymity = models.CharField(
-        max_length=max(len(key) for key, _ in ANONYMITY_CHOICES),
-        choices=ANONYMITY_CHOICES,
-        default="soft",
+        max_length=max(len(a.value) for a in Anonymity),
+        choices=Anonymity.choices,
+        default=Anonymity.SOFT.value,
         verbose_name=_("anonymity"),
         help_text=_(
             "Hard anonymous: responses are not linked to user accounts and IP addresses are not recorded. "
@@ -119,6 +122,10 @@ class Survey(models.Model):
         help_text=_("If enabled, responses cannot be deleted from the UI without disabling this first."),
     )
 
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
     languages: models.QuerySet[Form]
 
     @property
@@ -162,7 +169,7 @@ class Survey(models.Model):
 
     def get_combined_fields(self, base_language: str = DEFAULT_LANGUAGE):
         """
-        See ../graphql.py:SurveyType.resolve_combined_fields
+        See ../graphql.py:FullSurveyType.resolve_combined_fields
         for documentation.
         """
         # TODO as an optimization, store boolean field in survey model that indicates
@@ -239,6 +246,54 @@ class Survey(models.Model):
     def __str__(self):
         return f"{self.event.slug}/{self.slug}"
 
+    def with_mandatory_attributes_for_app(self, app: SurveyApp):
+        match app:
+            case SurveyApp.PROGRAM_V2:
+                self.app = "program_v2"
+                self.login_required = True
+                self.anonymity = Anonymity.NAME_AND_EMAIL
+                self.key_fields = ["title"]
+            case SurveyApp.FORMS:
+                self.app = "forms"
+                if self.anonymity == Anonymity.NAME_AND_EMAIL:
+                    self.login_required = True
+
+        return self
+
+    def clone(
+        self,
+        event: Event,
+        slug: str,
+        app: SurveyApp,
+        anonymity: Anonymity | None = None,
+        created_by: AbstractBaseUser | None = None,
+    ):
+        """
+        Clones this survey with its language versions and dimensions (but not responses).
+        Some fields are not copied over because they make no sense or might cause data leaks.
+        """
+        survey = Survey(
+            event=event,
+            slug=slug,
+            anonymity=self.anonymity if anonymity is None else anonymity,
+            login_required=self.login_required,
+            max_responses_per_user=self.max_responses_per_user,
+            key_fields=self.key_fields,
+            protect_responses=self.protect_responses,
+            created_by=created_by,
+        ).with_mandatory_attributes_for_app(app)
+
+        survey.save()
+
+        # TODO(#585)
+        # for dimension in self.dimensions.all():
+        #     dimension.clone(self.universe)
+
+        for form in self.languages.all():
+            form.clone(survey, created_by=created_by)
+
+        return survey
+
 
 @dataclass
 class SurveyDTO:
@@ -260,10 +315,10 @@ class SurveyDTO:
     slug: str
     login_required: bool = False
     max_responses_per_user: int = 0
-    anonymity: str = "soft"
+    anonymity: str = "SOFT"
     key_fields: list[str] = field(default_factory=list)
-    active_from: datetime = None
-    active_until: datetime = None
+    active_from: datetime | None = None
+    active_until: datetime | None = None
 
     def save(self, event: Event, overwrite=False) -> Survey:
         from .dimension_dto import DimensionDTO

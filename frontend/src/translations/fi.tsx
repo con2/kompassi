@@ -1045,6 +1045,18 @@ const translations: Translations = {
               "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Hänen nimensä ja sähköpostiosoitteensa jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan.",
           },
         },
+        admin: {
+          title: "Anonyymiys",
+          helpText: "HUOM! Et voi muuttaa tätä kyselyn luonnin jälkeen!",
+          choices: {
+            HARD: "Täysi anonyymiys: Vastauksia ei yhdistetä käyttäjäprofiiliin.",
+            SOFT: "Kevyt anonyymiys: Vastaaja näkee vastauksensa profiilistaan, mutta profiilia ei jaeta sinulle.",
+            NAME_AND_EMAIL:
+              "Nimi ja sähköpostiosoite vastaajan käyttäjäprofiilista jaetaan sinulle.",
+            FULL_PROFILE:
+              "Nimi, sähköpostiosoite, puhelinnumero ja syntymäaika vastaajan käyttäjäprofiilista jaetaan sinulle.",
+          },
+        },
       },
       dimensions: "Dimensiot",
       dimension: "Dimensio",
@@ -1083,6 +1095,11 @@ const translations: Translations = {
           Tämä lomake on saatavilla myös <LanguageLink>suomeksi</LanguageLink>.
         </>
       ),
+      cloneFrom: {
+        title: "Kopioi olemassaolevasta",
+        helpText:
+          "Jos tämä on valittuna, uusi kysely luodaan kopiona valitusta kyselystä. Dimensiot sekä kieliversiot teksteineen ja kentteineen kopioidaan, mutta vastauksia ei.",
+      },
     },
     actions: {
       createSurvey: "Luo kysely",

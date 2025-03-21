@@ -6,7 +6,7 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
 const createProgramFormMutation = graphql(`
-  mutation CreateProgramForm($input: CreateSurveyInput!) {
+  mutation CreateProgramForm($input: CreateProgramFormInput!) {
     createProgramForm(input: $input) {
       survey {
         slug

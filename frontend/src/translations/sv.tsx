@@ -1013,6 +1013,7 @@ const translations: Translations = {
               "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto. Deras namn och e-postadresser kommer att delas med dig. De kan återvända för att se eller redigera sina svar.",
           },
         },
+        admin: UNTRANSLATED(en.Survey.attributes.anonymity.admin),
       },
       dimensions: "Dimensionerna",
       dimension: "Dimension",
@@ -1053,6 +1054,7 @@ const translations: Translations = {
           </>
         ),
       ),
+      cloneFrom: UNTRANSLATED(en.Survey.attributes.cloneFrom),
     },
     actions: {
       createSurvey: "Skapa en enkät",

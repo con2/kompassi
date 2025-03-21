@@ -1,3 +1,5 @@
+from enum import Enum
+
 import graphene
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
@@ -10,7 +12,7 @@ from ..models.meta import FormsEventMeta, FormsProfileMeta
 from ..models.response import Response
 from ..models.survey import Survey
 from .response import ProfileResponseType
-from .survey_full import SurveyType
+from .survey_full import FullSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
@@ -18,9 +20,14 @@ DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 SurveyAppType = graphene.Enum.from_enum(SurveyApp)
 
 
+class SurveyRelation(Enum):
+    SUBSCRIBED = "SUBSCRIBED"
+    ACCESSIBLE = "ACCESSIBLE"
+
+
 class FormsEventMetaType(graphene.ObjectType):
     surveys = graphene.List(
-        graphene.NonNull(SurveyType),
+        graphene.NonNull(FullSurveyType),
         include_inactive=graphene.Boolean(),
         app=graphene.NonNull(SurveyAppType),
     )
@@ -53,7 +60,7 @@ class FormsEventMetaType(graphene.ObjectType):
         return qs
 
     survey = graphene.Field(
-        SurveyType,
+        FullSurveyType,
         slug=graphene.String(required=True),
         app=graphene.Argument(SurveyAppType),
     )
@@ -114,15 +121,23 @@ class FormsProfileMetaType(graphene.ObjectType):
     )
 
     @staticmethod
-    def resolve_surveys(meta: FormsProfileMeta, info, event_slug: str | None = None):
+    def resolve_surveys(
+        meta: FormsProfileMeta,
+        info,
+        event_slug: str | None = None,
+        relation: SurveyRelation = SurveyRelation.ACCESSIBLE,
+    ):
         """
-        Returns all surveys subscribed to by the current user.
+        Returns all surveys accessible by the current user.
+        To limit to surveys subscribed to, specify `relation: SUBSCRIBED`.
+        To limit by event, specify `eventSlug: $eventSlug`.
         """
         if info.context.user != meta.person.user:
             raise SuspiciousOperation("User mismatch")
 
-        surveys = Survey.objects.filter(subscribers=meta.person.user)
-
+        surveys = Survey.objects.all()
+        if relation == SurveyRelation.SUBSCRIBED:
+            surveys = surveys.filter(subscribers=meta.person.user)
         if event_slug:
             surveys = surveys.filter(event__slug=event_slug)
 
@@ -141,8 +156,9 @@ class FormsProfileMetaType(graphene.ObjectType):
 
     surveys = graphene.NonNull(
         graphene.List(
-            graphene.NonNull(SurveyType),
+            graphene.NonNull(FullSurveyType),
         ),
         event_slug=graphene.String(),
+        relation=graphene.Argument(graphene.Enum.from_enum(SurveyRelation)),
         description=normalize_whitespace(resolve_surveys.__doc__ or ""),
     )

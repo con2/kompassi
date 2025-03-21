@@ -121,6 +121,7 @@ function SchemaFormInput({
               ))}
             </select>
           );
+        case "radio":
         default:
           // radio button group
           return (

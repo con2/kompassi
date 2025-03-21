@@ -356,7 +356,14 @@ def test_process_form_data_number_field():
         Field(slug="numberField", type=FieldType.NUMBER_FIELD),
         Field(slug="numberFieldRequiredMissing", type=FieldType.NUMBER_FIELD, required=True),
         Field(slug="numberFieldInvalidValue", type=FieldType.NUMBER_FIELD),
-        Field(slug="numberFieldWithDecimalPlaces", type=FieldType.NUMBER_FIELD, decimalPlaces=2),
+        # XXX Not sure if this case should be supported at all. It won't be offered in UI.
+        # Difference is NumberField[decimalPlaces] is represented as float and serialized as JS number
+        # whereas DecimalField is represented as Decimal and serialized as string.
+        Field(
+            slug="numberFieldWithDecimalPlaces",
+            type=FieldType.NUMBER_FIELD,
+            decimal_places=2,
+        ),
     ]
 
     form_data = {
@@ -383,11 +390,11 @@ def test_process_form_data_number_field():
 def test_process_form_data_decimal_field():
     fields = [
         Field(slug="decimalField", type=FieldType.DECIMAL_FIELD),
-        Field(slug="decimalFieldWithDecimalPlaces", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),
+        Field(slug="decimalFieldWithDecimalPlaces", type=FieldType.DECIMAL_FIELD, decimal_places=2),
         Field(slug="decimalFieldRequiredMissing", type=FieldType.DECIMAL_FIELD, required=True),
         Field(slug="decimalFieldInvalidValue", type=FieldType.DECIMAL_FIELD),
-        Field(slug="decimalWithDifferingDecimalPlaces1", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),
-        Field(slug="decimalWithDifferingDecimalPlaces2", type=FieldType.DECIMAL_FIELD, decimalPlaces=2),
+        Field(slug="decimalWithDifferingDecimalPlaces1", type=FieldType.DECIMAL_FIELD, decimal_places=2),
+        Field(slug="decimalWithDifferingDecimalPlaces2", type=FieldType.DECIMAL_FIELD, decimal_places=2),
     ]
 
     form_data = {
@@ -491,8 +498,7 @@ def test_summarize_responses():
             slug="singleLineText",
         ),
         Field(
-            type=FieldType.SINGLE_LINE_TEXT,
-            htmlType="number",
+            type=FieldType.NUMBER_FIELD,
             slug="numberField",
         ),
         Field(

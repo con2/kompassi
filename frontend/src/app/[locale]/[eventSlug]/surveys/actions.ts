@@ -17,10 +17,14 @@ const createSurveyMutation = graphql(`
 
 export async function createSurvey(eventSlug: string, formData: FormData) {
   const surveySlug = formData.get("slug")!.toString();
+  const anonymity = formData.get("anonymity")!.toString();
+  const copyFrom = formData.get("copyFrom")?.toString() ?? null;
 
   await getClient().mutate({
     mutation: createSurveyMutation,
-    variables: { input: { eventSlug, surveySlug } },
+    variables: {
+      input: { eventSlug, surveySlug, anonymity: anonymity as any, copyFrom },
+    },
   });
 
   revalidatePath(`/${eventSlug}/surveys`);

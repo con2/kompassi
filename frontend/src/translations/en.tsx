@@ -1047,6 +1047,18 @@ const translations = {
               "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses.",
           },
         },
+        admin: {
+          title: "Anonymity",
+          helpText:
+            "NOTE: You cannot change this after the survey has been created!",
+          choices: {
+            HARD: "Hard anonymous: Responses will not be connected to users at all.",
+            SOFT: "Soft anonymous: Respondees can see their answers in profile but profile not shared with you.",
+            NAME_AND_EMAIL: "Name and email from user profile shared with you.",
+            FULL_PROFILE:
+              "Name, email, phone number and birth date from user profile shared with you.",
+          },
+        },
       },
       dimensions: "Dimensions",
       dimension: "Dimension",
@@ -1085,6 +1097,11 @@ const translations = {
           This form is also available <LanguageLink>in English</LanguageLink>.
         </>
       ),
+      cloneFrom: {
+        title: "Clone from",
+        helpText:
+          "If selected, the new form will be created as a copy of an existing one. Dimensions and language versions along with their fields and texts will be copied, but responses will not.",
+      },
     },
     actions: {
       createSurvey: "Create survey",

@@ -27,7 +27,7 @@ import { getTranslations } from "@/translations";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
-  fragment OfferForm on SurveyType {
+  fragment OfferForm on FullSurveyType {
     slug
     title(lang: $locale)
     isActive

@@ -5,13 +5,15 @@ See ../tests.py:test_summarize_responses for examples.
 
 from collections import Counter
 from enum import Enum
-from typing import Any, Literal
+from typing import Any, Literal, Self
 
 import pydantic
 
 from ..models.field import Field, FieldType
 
 # NOTE: Keep in sync with frontend/src/components/SchemaForm/models.ts
+
+Values = dict[str, Any]
 
 
 class SummaryType(str, Enum):
@@ -52,6 +54,29 @@ class SelectFieldSummary(BaseFieldSummary):
     type: Literal[SummaryType.SELECT] = SummaryType.SELECT
     summary: dict[str, int]
 
+    @classmethod
+    def from_valuesies(cls, field: Field, valuesies: list[Values], total_responses: int) -> Self:
+        field_summary = Counter()
+
+        for value in valuesies:
+            value = value.get(field.slug)
+            if value is None:
+                continue
+
+            # javascript object keys are always strings
+            value = str(value)
+
+            field_summary[value] += 1
+
+        count_responses = sum(field_summary.values())
+        count_missing_responses = total_responses - count_responses
+
+        return cls(
+            countResponses=count_responses,
+            countMissingResponses=count_missing_responses,
+            summary=dict(field_summary),
+        )
+
 
 class MatrixFieldSummary(BaseFieldSummary):
     type: Literal[SummaryType.MATRIX] = SummaryType.MATRIX
@@ -62,7 +87,7 @@ FieldSummary = TextFieldSummary | SingleCheckboxSummary | SelectFieldSummary | M
 Summary = dict[str, FieldSummary]
 
 
-def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) -> Summary:
+def summarize_responses(fields: list[Field], valuesies: list[Values]) -> Summary:
     summary: Summary = {}
 
     total_responses = len(valuesies)
@@ -72,32 +97,26 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
             case FieldType.STATIC_TEXT | FieldType.SPACER | FieldType.DIVIDER:
                 pass
 
-            # TODO: handle htmlType="number" for high cardinality fields
+            # TODO high cardinality number fields
+            # NOTE SingleLineText[htmlType="number"] is deprecated
             case FieldType.SINGLE_LINE_TEXT if field.html_type == "number":
-                field_summary = Counter()
+                summary[field.slug] = SelectFieldSummary.from_valuesies(
+                    field=field,
+                    valuesies=valuesies,
+                    total_responses=total_responses,
+                )
 
-                for value in valuesies:
-                    value = value.get(field.slug)
-                    if value is None:
-                        continue
-
-                    # javascript object keys are always strings
-                    value = str(value)
-
-                    field_summary[value] += 1
-
-                count_responses = sum(field_summary.values())
-                count_missing_responses = total_responses - count_responses
-
-                summary[field.slug] = SelectFieldSummary(
-                    countResponses=count_responses,
-                    countMissingResponses=count_missing_responses,
-                    summary=dict(field_summary),
+            case FieldType.NUMBER_FIELD:
+                summary[field.slug] = SelectFieldSummary.from_valuesies(
+                    field=field,
+                    valuesies=valuesies,
+                    total_responses=total_responses,
                 )
 
             # TODO(#436) Time zone handling
             case (
                 FieldType.SINGLE_LINE_TEXT
+                | FieldType.DECIMAL_FIELD
                 | FieldType.MULTI_LINE_TEXT
                 | FieldType.DATE_FIELD
                 | FieldType.TIME_FIELD

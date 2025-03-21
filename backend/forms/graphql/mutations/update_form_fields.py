@@ -6,7 +6,7 @@ from access.cbac import graphql_check_instance
 
 from ...models.field import Field
 from ...models.survey import Survey
-from ..survey_full import SurveyType
+from ..survey_full import FullSurveyType
 
 
 class UpdateFormFieldsInput(graphene.InputObjectType):
@@ -24,7 +24,7 @@ class UpdateFormFields(graphene.Mutation):
     class Arguments:
         input = UpdateFormFieldsInput(required=True)
 
-    survey = graphene.Field(SurveyType)
+    survey = graphene.Field(FullSurveyType)
 
     @staticmethod
     def mutate(
