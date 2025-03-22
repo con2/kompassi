@@ -1305,6 +1305,36 @@ const translations: Translations = {
           helpText:
             "Jos tämä on valittuna, tämän dimension arvoja voidaan näyttää käyttäjille jotka eivät ole ylläpitäjiä.",
         },
+        behaviourFlagsHeader: {
+          title: "Toiminta",
+          helpText:
+            "Nämä asetukset muokkaavat dimension toimintaa eri näkymissä. Voit useimmissa tapauksissa jättää nämä asetukset oletusarvoihinsa.",
+        },
+        isListFilter: {
+          title: "Luettelonäkymän suodatin",
+          helpText:
+            "Jos tämä on valittuna, tämä dimensio näytetään luettelonäkymissä luetteloa suodattavana alasvetovalikkona.",
+        },
+        isShownInDetail: {
+          title: "Näytetään yksityiskohtanäkymissä",
+          helpText:
+            "Jos tämä on valittuna, tämän dimension arvot näytetään yksittäistä kohdetta käsittelevissä yksityiskohtanäkymissä.",
+        },
+        isNegativeSelection: {
+          title: "Käänteinen valinta",
+          helpText:
+            "Jos tämä on valittuna, tämä dimensio näytetään suodattimena siten, että oletuksena kaikki dimension arvot ovat valittuna, ja käyttäjän oletetaan ruksaavan niistä pois ne joita hän ei halua. Huomaathan, että tämä on vain vihje käyttöliittymän toteutukselle ja kaikki käyttöliittymät eivät välttämättä tue tätä.",
+        },
+        valueOrdering: {
+          title: "Arvojen järjestys",
+          helpText:
+            "Määrittää, missä järjestyksessä tämän dimension arvot esitetään käyttöliittymässä.",
+          choices: {
+            MANUAL: "Manuaalinen (vedä ja pudota järjestääksesi)",
+            TITLE: "Otsikko (lokalisoitu)",
+            SLUG: "Tekninen nimi",
+          },
+        },
       },
     },
     editValueModal: {

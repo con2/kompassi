@@ -1210,80 +1210,8 @@ const translations: Translations = {
         cancel: "Avbryt",
       },
     },
-    editDimensionModal: {
-      editTitle: "Ändra dimensionen",
-      addTitle: "Lägg till dimensionen",
-      actions: {
-        submit: "Spara dimensionen",
-        cancel: "Avbryt",
-      },
-      attributes: {
-        slug: {
-          title: "Tekniskt namn",
-          // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Ett maskinläsbart, kort namn på en dimension. Det tekniska namnet kan inte ändras efter att dimensionen har skapats.",
-        },
-        localizedTitleHeader: {
-          title: "Lokaliserade titlar",
-          helpText:
-            "Du kan ge dimensionen en titel på olika språk. Titeln behöver inte anges på alla språk som stöds: om titeln inte anges på det valda språket används standardspråket istället, och om det inte heller är inställt, det tekniska namnet.",
-        },
-        title: {
-          fi: "Titeln på finska",
-          en: "Titeln på engelska",
-          sv: "Titeln på svenska",
-        },
-        isKeyDimension: {
-          title: "Nyckeldimension",
-          helpText: "Val för nyckeldimensionerna visas i svarslistan.",
-        },
-        isMultiValue: {
-          title: "Flera val",
-          helpText: "Om markerad kan flera värden väljas för denna dimension.",
-        },
-        isShownToSubject: {
-          title: "Visas för respondenten",
-          helpText:
-            "Om detta är valt kommer värdena för denna dimension att visas för respondenten i den individuella svarsvyn i deras profil. Om den här dimensionen dessutom är en nyckeldimension kommer den att visas i profilsvarslistan.",
-        },
-      },
-    },
-    editValueModal: {
-      editTitle: "Ändra val",
-      addTitle: "Lägg till val",
-      actions: {
-        submit: "Spara val",
-        cancel: "Avbryt",
-      },
-      attributes: {
-        slug: {
-          title: "Tekniskt namn",
-          // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Ett maskinläsbart, kort namn på en dimension. Det tekniska namnet kan inte ändras efter att dimensionen har skapats.",
-        },
-        color: UNSURE({
-          title: "Färg",
-          helpText:
-            "Färgen på värdet i svarslistan. Använd ljusa färger: de kommer att ljusas upp eller mörkas efter behov.",
-        }),
-        isInitial: UNTRANSLATED({
-          title: "Initial value",
-          helpText: "If set, this value will be applied to all new responses.",
-        }),
-        localizedTitleHeader: {
-          title: "Titel lokaliserad",
-          helpText:
-            "Du kan ge dimensionen en titel på olika språk. Titeln behöver inte anges på alla språk som stöds: om titeln inte anges på det valda språket används standardspråket istället, och om det inte heller är inställt, det tekniska namnet.",
-        },
-        title: {
-          fi: "Titeln på finska",
-          en: "Titeln på engelska",
-          sv: "Titeln på svenska",
-        },
-      },
-    },
+    editDimensionModal: UNTRANSLATED(en.Survey.editDimensionModal),
+    editValueModal: UNTRANSLATED(en.Survey.editValueModal),
     createSurveyModal: {
       title: "Skapa ny enkät",
       actions: {
