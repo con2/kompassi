@@ -5,7 +5,7 @@ def default_to_program(apps, schema_editor):
     Universe = apps.get_model("dimensions", "Universe")
     Universe.objects.filter(
         slug="default",
-        app="program_v",
+        app="program_v2",
     ).update(
         slug="program",
     )
