@@ -10,6 +10,7 @@ from django.utils.timezone import now
 from access.models import EmailAliasType, GroupEmailAliasGrant
 from badges.models import BadgesEventMeta
 from core.models import Event, Organization, Person, Venue
+from forms.models.meta import FormsEventMeta
 from intra.models import IntraEventMeta, Team
 from labour.models import (
     AlternativeSignupForm,
@@ -18,6 +19,7 @@ from labour.models import (
     PersonnelClass,
 )
 from program_v2.models.meta import ProgramV2EventMeta
+from tickets_v2.models.meta import TicketsV2EventMeta
 
 from ...models import Language, SignupExtra, SpecialDiet
 
@@ -43,6 +45,8 @@ class Setup:
         self.setup_badges()
         self.setup_access()
         self.setup_program_v2()
+        self.setup_tickets_v2()
+        self.setup_forms()
 
     def setup_core(self):
         self.venue, unused = Venue.objects.get_or_create(
@@ -242,6 +246,24 @@ class Setup:
     def setup_program_v2(self):
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
         ProgramV2EventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
+
+    def setup_forms(self):
+        (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])
+        FormsEventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
+
+    def setup_tickets_v2(self):
+        (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
+        TicketsV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
