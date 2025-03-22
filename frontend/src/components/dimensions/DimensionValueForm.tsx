@@ -18,7 +18,6 @@ const headingLevel = "h5";
 /// Value form society. Value form life.
 export default function DimensionValueForm({ messages, value }: Props) {
   const t = messages.Survey.editValueModal;
-  // NOTE python_case for slugs!
   const fields: Field[] = [
     {
       type: "SingleLineText",
@@ -39,7 +38,7 @@ export default function DimensionValueForm({ messages, value }: Props) {
     },
     {
       type: "SingleCheckbox",
-      slug: "is_initial",
+      slug: "isInitial",
       ...t.attributes.isInitial,
     },
     {

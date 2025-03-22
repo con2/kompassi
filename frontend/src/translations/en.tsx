@@ -1284,6 +1284,11 @@ const translations = {
           helpText:
             "The title of the dimension in different languages. The title need not be provided in all supported languages: if the title is missing in the selected language, it will fall back first to the default language and then to the technical name.",
         },
+        behaviourFlagsHeader: {
+          title: "Behaviour",
+          helpText:
+            "These settings change the way this dimension functions in various UI views. In most cases, you can leave these to their default values.",
+        },
         title: {
           fi: "Title in Finnish",
           en: "Title in English",
@@ -1299,10 +1304,34 @@ const translations = {
           helpText:
             "If checked, multiple values can be selected for this dimension.",
         },
-        isShownToSubject: {
-          title: "Shown to respondent",
+        isPublic: {
+          title: "Public",
           helpText:
-            "If checked, the values of this dimension are shown to the respondent in the single response view under their profile. Additionally, if this dimension is also a key dimension, it is shown in the responses list under their profile.",
+            "If checked, values of this dimension may be shown to non-admin users",
+        },
+        isListFilter: {
+          title: "List filter",
+          helpText:
+            "If checked, this dimension will be presented as a drop-down filter in list views.",
+        },
+        isShownInDetail: {
+          title: "Shown in detail views",
+          helpText:
+            "If checked, values of this dimension will be shown in single-item detail views.",
+        },
+        isNegativeSelection: {
+          title: "Negative selection",
+          helpText:
+            "If checked, suggests to UI that when filtering, by default all items of this dimension should be selected and the user will likely make selections by un-checking ones they do not want. Only makes sense with multi-value dimensions.",
+        },
+        valueOrdering: {
+          title: "Value ordering",
+          helpText: "In which order will the values be presented?",
+          choices: {
+            MANUAL: "Manual (drag to order)",
+            TITLE: "Title (localized)",
+            SLUG: "Technical name",
+          },
         },
       },
     },

@@ -708,7 +708,7 @@ def test_put_survey_dimension(_patched_graphql_check_instance):
         "title_en": "Test dimension",
         "title_sv": "Testdimension",
         "isKeyDimension": "on",
-        "valueOrdering": "manual",
+        "valueOrdering": "MANUAL",
     }
 
     event, _created = Event.get_or_create_dummy()

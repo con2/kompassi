@@ -19,4 +19,12 @@ class DimensionValueType(DjangoObjectType):
 
     class Meta:
         model = DimensionValue
-        fields = ("slug", "color", "is_initial")
+        fields = (
+            "slug",
+            "color",
+            "is_initial",
+            # NOTE SUPPORTED_LANGUAGES
+            "title_en",
+            "title_fi",
+            "title_sv",
+        )

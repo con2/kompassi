@@ -1300,10 +1300,10 @@ const translations: Translations = {
           helpText:
             "Jos tämä on valittuna, tähän dimensioon voidaan valita useita arvoja.",
         },
-        isShownToSubject: {
-          title: "Näytetään vastaajalle",
+        isPublic: {
+          title: "Julkinen",
           helpText:
-            "Jos tämä on valittuna, tämän dimension arvot näytetään vastaajalle yksittäisen vastauksen näkymässä hänen profiilissaan. Lisäksi, jos tämä dimensio on myös avaindimensio, se näytetään profiilin vastauslistassa.",
+            "Jos tämä on valittuna, tämän dimension arvoja voidaan näyttää käyttäjille jotka eivät ole ylläpitäjiä.",
         },
       },
     },

@@ -7,7 +7,7 @@ from core.utils.form_utils import camel_case_keys_to_snake_case
 
 from ...models.dimension import Dimension
 from ...models.universe import Universe
-from ..dimension import DimensionType
+from ..dimension import FullDimensionType
 
 
 class DimensionForm(django_forms.ModelForm):
@@ -46,7 +46,7 @@ class PutDimension(graphene.Mutation):
     class Arguments:
         input = PutDimensionInput(required=True)
 
-    dimension = graphene.Field(DimensionType)
+    dimension = graphene.Field(FullDimensionType)
 
     @staticmethod
     def mutate(

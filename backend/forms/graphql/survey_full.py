@@ -7,7 +7,7 @@ from access.cbac import graphql_check_instance
 from core.graphql.event_limited import LimitedEventType
 from core.utils import normalize_whitespace
 from dimensions.filters import DimensionFilters
-from dimensions.graphql.dimension import DimensionType
+from dimensions.graphql.dimension import FullDimensionType
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 
 from ..models.form import Form
@@ -176,7 +176,7 @@ class FullSurveyType(LimitedSurveyType):
         return qs
 
     dimensions = graphene.List(
-        graphene.NonNull(DimensionType),
+        graphene.NonNull(FullDimensionType),
         key_dimensions_only=graphene.Boolean(),
     )
 
