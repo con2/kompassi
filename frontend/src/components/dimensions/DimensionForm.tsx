@@ -17,6 +17,13 @@ const headingLevel = "h5";
 export default function DimensionForm({ messages, dimension }: Props) {
   const t = messages.Survey.editDimensionModal;
   // NOTE python_case for slugs!
+  // "is_public",
+  // "is_key_dimension",
+  // "is_multi_value",
+  // "is_list_filter",
+  // "is_shown_in_detail",
+  // "is_negative_selection",
+  // "value_ordering",
   const fields: Field[] = [
     {
       type: "SingleLineText",
@@ -26,26 +33,29 @@ export default function DimensionForm({ messages, dimension }: Props) {
       ...t.attributes.slug,
     },
     {
-      type: "SingleCheckbox",
-      slug: "is_key_dimension",
-      title: t.attributes.isKeyDimension.title,
-      helpText: t.attributes.isKeyDimension.helpText,
-    },
-    {
-      type: "SingleCheckbox",
-      slug: "is_multi_value",
-      title: t.attributes.isMultiValue.title,
-      helpText: t.attributes.isMultiValue.helpText,
-    },
-    {
-      type: "SingleCheckbox",
-      slug: "is_shown_to_subject",
-      title: t.attributes.isShownToSubject.title,
-      helpText: t.attributes.isShownToSubject.helpText,
+      type: "SingleSelect",
+      slug: "valueOrdering",
+      title: t.attributes.valueOrdering.title,
+      helpText: t.attributes.valueOrdering.helpText,
+      presentation: "dropdown",
+      choices: [
+        {
+          slug: "MANUAL",
+          title: t.attributes.valueOrdering.choices.MANUAL,
+        },
+        {
+          slug: "TITLE",
+          title: t.attributes.valueOrdering.choices.TITLE,
+        },
+        {
+          slug: "SLUG",
+          title: t.attributes.valueOrdering.choices.SLUG,
+        },
+      ],
     },
     {
       type: "StaticText",
-      slug: "header",
+      slug: "localizedTitleHeader",
       ...t.attributes.localizedTitleHeader,
     },
     ...supportedLanguages.map(
@@ -56,6 +66,41 @@ export default function DimensionForm({ messages, dimension }: Props) {
           title: t.attributes.title[locale],
         }) as Field,
     ),
+    {
+      type: "StaticText",
+      slug: "behaviourFlagsHeader",
+      ...t.attributes.behaviourFlagsHeader,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isPublic",
+      ...t.attributes.isPublic,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isKeyDimension",
+      ...t.attributes.isKeyDimension,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isMultiValue",
+      ...t.attributes.isMultiValue,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isListFilter",
+      ...t.attributes.isListFilter,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isShownInDetail",
+      ...t.attributes.isShownInDetail,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isNegativeSelection",
+      ...t.attributes.isNegativeSelection,
+    },
   ];
 
   // TODO ugly

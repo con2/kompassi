@@ -8,7 +8,7 @@ from graphene_django import DjangoObjectType
 from access.cbac import graphql_check_instance, graphql_check_model
 from core.models import Event
 from core.utils.text_utils import normalize_whitespace
-from dimensions.graphql.dimension import DimensionType
+from dimensions.graphql.dimension import FullDimensionType
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from forms.graphql.response import FullResponseType
 from forms.models.response import Response
@@ -128,7 +128,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         return dimensions.order_by("order")
 
     dimensions = graphene.NonNull(
-        graphene.List(graphene.NonNull(DimensionType)),
+        graphene.List(graphene.NonNull(FullDimensionType)),
         is_list_filter=graphene.Boolean(),
         is_shown_in_detail=graphene.Boolean(),
         description=normalize_whitespace(resolve_dimensions.__doc__ or ""),

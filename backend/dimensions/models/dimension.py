@@ -98,12 +98,15 @@ class Dimension(models.Model):
         if language not in SUPPORTED_LANGUAGE_CODES:
             language = get_language()
 
-        if self.value_ordering == ValueOrdering.TITLE:
-            return f"title_{language}"
-        elif self.value_ordering == ValueOrdering.MANUAL:
-            return "order"
-        else:
-            return "slug"
+        match self.value_ordering:
+            case ValueOrdering.TITLE:
+                return f"title_{language}"
+            case ValueOrdering.MANUAL:
+                return "order"
+            case ValueOrdering.SLUG:
+                return "slug"
+            case _:
+                raise NotImplementedError(self.value_ordering)
 
     def get_values(self, language: str | None = None):
         """

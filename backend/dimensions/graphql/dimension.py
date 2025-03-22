@@ -9,10 +9,24 @@ from graphql_api.utils import resolve_localized_field_getattr
 from .dimension_value import DimensionValueType
 
 
-class DimensionType(DjangoObjectType):
+class FullDimensionType(DjangoObjectType):
     class Meta:
         model = Dimension
-        fields = ("slug", "values", "is_key_dimension", "is_multi_value", "is_list_filter")
+        fields = (
+            "slug",
+            "values",
+            "is_public",
+            "is_key_dimension",
+            "is_multi_value",
+            "is_list_filter",
+            "is_shown_in_detail",
+            "is_negative_selection",
+            "value_ordering",
+            # NOTE SUPPORTED_LANGUAGES
+            "title_en",
+            "title_fi",
+            "title_sv",
+        )
 
     title = graphene.String(lang=graphene.String())
     resolve_title = resolve_localized_field_getattr("title")

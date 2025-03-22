@@ -1,7 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 
-from dimensions.graphql.dimension import DimensionType
+from dimensions.graphql.dimension import FullDimensionType
 
 from ..models.response_dimension_value import ResponseDimensionValue
 
@@ -11,7 +11,7 @@ class ResponseDimensionValueType(DjangoObjectType):
         model = ResponseDimensionValue
         fields = ("value",)
 
-    dimension = graphene.NonNull(DimensionType)
+    dimension = graphene.NonNull(FullDimensionType)
 
     @staticmethod
     def resolve_dimension(rdv: ResponseDimensionValue, info):
