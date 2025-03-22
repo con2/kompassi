@@ -82,7 +82,7 @@ class ProgramV2EventMeta(EventMetaBase):
     def universe(self) -> Universe:
         return Universe.objects.get_or_create(
             scope=self.event.scope,
-            slug="default",
+            slug="program",
             app="program_v2",
         )[0]
 

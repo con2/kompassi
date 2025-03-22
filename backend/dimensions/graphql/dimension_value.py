@@ -6,7 +6,7 @@ from dimensions.models.dimension_value import DimensionValue
 from graphql_api.utils import resolve_localized_field_getattr
 
 
-class SurveyDimensionValueType(DjangoObjectType):
+class DimensionValueType(DjangoObjectType):
     title = graphene.String(lang=graphene.String())
     resolve_title = resolve_localized_field_getattr("title")
 
@@ -19,4 +19,12 @@ class SurveyDimensionValueType(DjangoObjectType):
 
     class Meta:
         model = DimensionValue
-        fields = ("slug", "color", "is_initial")
+        fields = (
+            "slug",
+            "color",
+            "is_initial",
+            # NOTE SUPPORTED_LANGUAGES
+            "title_en",
+            "title_fi",
+            "title_sv",
+        )

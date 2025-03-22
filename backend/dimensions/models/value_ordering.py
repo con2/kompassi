@@ -4,6 +4,6 @@ from django.db import models
 
 
 class ValueOrdering(models.TextChoices):
-    MANUAL = "manual", "Manual"
-    SLUG = "slug", "Alphabetical (slug)"
-    TITLE = "title", "Alphabetical (localized title)"
+    MANUAL = "MANUAL", "Manual"
+    SLUG = "SLUG", "Alphabetical (slug)"
+    TITLE = "TITLE", "Alphabetical (localized title)"

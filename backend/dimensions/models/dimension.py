@@ -37,6 +37,10 @@ class Dimension(models.Model):
     universe = models.ForeignKey(Universe, on_delete=models.CASCADE, related_name="dimensions")
     order = models.SmallIntegerField(default=0)
 
+    is_public = models.BooleanField(
+        default=True,
+        help_text="Public dimensions are returned to non-admin users.",
+    )
     is_key_dimension = models.BooleanField(
         default=False,
         help_text="Key dimensions are shown lists of atoms.",
@@ -47,10 +51,6 @@ class Dimension(models.Model):
             "Multi-value dimensions allow multiple values to be selected. "
             "NOTE: In the database, all dimensions are multi-value, so this is just a UI hint."
         ),
-    )
-    is_shown_to_subject = models.BooleanField(
-        default=False,
-        help_text="If set, the subject will see the value of the dimension when atoms are listed in their profile.",
     )
     is_list_filter = models.BooleanField(
         default=True,
@@ -98,12 +98,15 @@ class Dimension(models.Model):
         if language not in SUPPORTED_LANGUAGE_CODES:
             language = get_language()
 
-        if self.value_ordering == ValueOrdering.TITLE:
-            return f"title_{language}"
-        elif self.value_ordering == ValueOrdering.MANUAL:
-            return "order"
-        else:
-            return "slug"
+        match self.value_ordering:
+            case ValueOrdering.TITLE:
+                return f"title_{language}"
+            case ValueOrdering.MANUAL:
+                return "order"
+            case ValueOrdering.SLUG:
+                return "slug"
+            case _:
+                raise NotImplementedError(self.value_ordering)
 
     def get_values(self, language: str | None = None):
         """
