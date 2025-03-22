@@ -12,9 +12,9 @@ from core.models.organization import Organization
 from core.models.venue import Venue
 from core.utils.log_utils import log_get_or_create
 from core.utils.model_utils import slugify
+from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from dimensions.models.value_ordering import ValueOrdering
 from graphql_api.language import SUPPORTED_LANGUAGE_CODES
-from program_v2.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from program_v2.models.meta import ProgramV2EventMeta
 
 from ..consts import (
@@ -154,7 +154,7 @@ def import_knutepunkt(event_slug: str):
     log_get_or_create(logger, event, created)
 
     (_, _, _, _, location_dimension) = DimensionDTO.save_many(
-        event,
+        event.program_universe,
         [
             DimensionDTO(
                 slug="date",
