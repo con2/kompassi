@@ -16,6 +16,14 @@ const headingLevel = "h5";
 
 export default function DimensionForm({ messages, dimension }: Props) {
   const t = messages.Survey.editDimensionModal;
+  // NOTE python_case for slugs!
+  // "is_public",
+  // "is_key_dimension",
+  // "is_multi_value",
+  // "is_list_filter",
+  // "is_shown_in_detail",
+  // "is_negative_selection",
+  // "value_ordering",
   const fields: Field[] = [
     {
       type: "SingleLineText",
@@ -25,22 +33,25 @@ export default function DimensionForm({ messages, dimension }: Props) {
       ...t.attributes.slug,
     },
     {
-      type: "SingleCheckbox",
-      slug: "isKeyDimension",
-      title: t.attributes.isKeyDimension.title,
-      helpText: t.attributes.isKeyDimension.helpText,
-    },
-    {
-      type: "SingleCheckbox",
-      slug: "isMultiValue",
-      title: t.attributes.isMultiValue.title,
-      helpText: t.attributes.isMultiValue.helpText,
-    },
-    {
-      type: "SingleCheckbox",
-      slug: "isShownToSubject",
-      title: t.attributes.isShownToSubject.title,
-      helpText: t.attributes.isShownToSubject.helpText,
+      type: "SingleSelect",
+      slug: "valueOrdering",
+      title: t.attributes.valueOrdering.title,
+      helpText: t.attributes.valueOrdering.helpText,
+      presentation: "dropdown",
+      choices: [
+        {
+          slug: "MANUAL",
+          title: t.attributes.valueOrdering.choices.MANUAL,
+        },
+        {
+          slug: "TITLE",
+          title: t.attributes.valueOrdering.choices.TITLE,
+        },
+        {
+          slug: "SLUG",
+          title: t.attributes.valueOrdering.choices.SLUG,
+        },
+      ],
     },
     {
       type: "StaticText",
@@ -51,23 +62,56 @@ export default function DimensionForm({ messages, dimension }: Props) {
       (locale) =>
         ({
           type: "SingleLineText",
-          slug: `title.${locale}`,
+          slug: `title_${locale}`,
           title: t.attributes.title[locale],
         }) as Field,
     ),
+    {
+      type: "StaticText",
+      slug: "behaviourFlagsHeader",
+      ...t.attributes.behaviourFlagsHeader,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isPublic",
+      ...t.attributes.isPublic,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isKeyDimension",
+      ...t.attributes.isKeyDimension,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isMultiValue",
+      ...t.attributes.isMultiValue,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isListFilter",
+      ...t.attributes.isListFilter,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isShownInDetail",
+      ...t.attributes.isShownInDetail,
+    },
+    {
+      type: "SingleCheckbox",
+      slug: "isNegativeSelection",
+      ...t.attributes.isNegativeSelection,
+    },
   ];
 
   // TODO ugly
   let values: Record<string, unknown> = {};
   if (dimension) {
     values = {
-      slug: dimension.slug,
-      isKeyDimension: dimension.isKeyDimension,
-      isMultiValue: dimension.isMultiValue,
-      isShownToSubject: dimension.isShownToSubject,
-      // TODO hard-coded languages
-      "title.fi": dimension.titleFi,
-      "title.en": dimension.titleEn,
+      // NOTE SUPPORTED_LANGUAGES
+      title_fi: dimension.titleFi,
+      title_en: dimension.titleEn,
+      title_sv: dimension.titleSv,
+      ...dimension,
     };
   }
 

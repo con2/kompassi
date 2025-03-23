@@ -20,29 +20,35 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment ValueFields on SurveyDimensionValueType {
+  fragment ValueFields on DimensionValueType {
     slug
     color
     isInitial
     canRemove
     title(lang: $locale)
-    titleFi: title(lang: "fi")
-    titleEn: title(lang: "en")
-    titleSv: title(lang: "sv")
+    # NOTE SUPPORTED_LANGUAGES
+    titleFi
+    titleEn
+    titleSv
   }
 `);
 
 graphql(`
-  fragment DimensionRowGroup on SurveyDimensionType {
+  fragment DimensionRowGroup on FullDimensionType {
     slug
     canRemove
     title(lang: $locale)
+    isPublic
     isKeyDimension
     isMultiValue
-    isShownToSubject
-    titleFi: title(lang: "fi")
-    titleEn: title(lang: "en")
-    titleSv: title(lang: "sv")
+    isListFilter
+    isShownInDetail
+    isNegativeSelection
+    valueOrdering
+    # NOTE SUPPORTED_LANGUAGES
+    titleFi
+    titleEn
+    titleSv
     values {
       ...ValueFields
     }
