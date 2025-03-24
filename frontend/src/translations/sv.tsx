@@ -970,8 +970,7 @@ const translations: Translations = {
     attributes: {
       slug: {
         title: "Tekniskt namn",
-        helpText:
-          "Ett maskinläsbart namn för frågan. Det tekniska namnet måste vara unikt för evenemanget. Det tekniska namnet kan inte ändras efter skapande.",
+        helpText: UNTRANSLATED(en.Survey.attributes.slug.helpText),
       },
       title: "Titel",
       isActive: {
