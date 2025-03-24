@@ -1006,8 +1006,15 @@ const translations = {
     attributes: {
       slug: {
         title: "Slug",
-        helpText:
-          "Machine-readable name of the survey. Must be unique within the event. Cannot be changed after creation. Can contain lower case letters, numbers and dashes (-).",
+        helpText: (
+          <>
+            Machine-readable name of the survey. Must be unique within the
+            event. Cannot be changed after creation. Can contain lower case
+            letters, numbers and dashes (-). Will be part of the URL:{" "}
+            <code>/event-slug/form-slug</code> (eg.{" "}
+            <code>/tracon2025/offer-program</code>).
+          </>
+        ),
       },
       title: "Title",
       isActive: {

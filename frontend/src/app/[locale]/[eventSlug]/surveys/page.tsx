@@ -236,7 +236,7 @@ export default async function SurveysPage({ params }: Props) {
     },
     getAnonymityDropdown(t),
     {
-      slug: "cloneFrom",
+      slug: "copyFrom",
       type: "SingleSelect",
       presentation: "dropdown",
       required: false,

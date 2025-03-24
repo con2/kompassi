@@ -1002,8 +1002,16 @@ const translations: Translations = {
     attributes: {
       slug: {
         title: "Tekninen nimi",
-        helpText:
-          "Koneellisesti luettava nimi kyselylle. Teknisen nimen täytyy olla uniikki tapahtuman sisällä. Teknistä nimeä ei voi muuttaa luomisen jälkeen.",
+        helpText: (
+          <>
+            Koneellisesti luettava nimi kyselylle. Teknisen nimen täytyy olla
+            uniikki tapahtuman sisällä. Ei voi muuttaa luomisen jälkeen.
+            Tekninen nimi voi sisältää pieniä kirjaimia, numeroita ja
+            väliviivoja. Tekninen nimi tulee osaksi osoitetta:{" "}
+            <code>/event-slug/form-slug</code> (esim.{" "}
+            <code>/tracon2025/offer-program</code>).
+          </>
+        ),
       },
       title: "Otsikko",
       isActive: {
