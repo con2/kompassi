@@ -74,6 +74,8 @@ kompassi_uvicorn_enabled: true
 ingress_letsencrypt_enabled: false
 ingress_letsencrypt_cluster_issuer: letsencrypt-prod
 
+ingress_class_name: nginx
+
 redis_managed: true
 redis_image: redis
 redis_hostname: redis

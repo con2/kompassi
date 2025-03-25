@@ -4,6 +4,7 @@ metadata:
   name: kompassi
   annotations: !Var ingress_annotations
 spec:
+  ingressClassName: !Var ingress_class_name
   tls: !Var ingress_tls
   rules: !Loop
     over: !Var ingress_public_hostnames

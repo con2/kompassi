@@ -53,6 +53,7 @@ const nodeServiceName = "node";
 const clusterIssuer = "letsencrypt-prod";
 const tlsSecretName = "ingress-letsencrypt";
 const port = 3000;
+const ingressClassName = "nginx";
 
 const { hostname, secretManaged, kompassiBaseUrl, tlsEnabled, ticketsApiUrl } =
   environmentConfiguration;
@@ -214,6 +215,7 @@ const ingress = {
     annotations: ingressAnnotations,
   },
   spec: {
+    ingressClassName,
     tls,
     rules: [
       {
