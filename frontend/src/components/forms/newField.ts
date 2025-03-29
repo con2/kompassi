@@ -15,13 +15,18 @@ export default function newField(
     case "NumberField":
     case "DecimalField":
     case "SingleCheckbox":
+    case "FileUpload":
+    case "DateField":
+    case "DateTimeField":
+    case "TimeField":
       return { type, slug, title: "" };
     case "SingleSelect":
     case "MultiSelect":
       return { type, slug, title: "", choices: [] };
     case "RadioMatrix":
       return { type, slug, title: "", choices: [], questions: [] };
+    default:
+      const exhaustiveCheck: never = type;
+      throw new Error(`Unknown field type ${exhaustiveCheck}`);
   }
-
-  throw new Error("Unknown field type");
 }
