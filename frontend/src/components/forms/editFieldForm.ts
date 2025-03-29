@@ -62,22 +62,23 @@ export function getFieldEditorFields(
   switch (fieldType) {
     case "SingleSelect":
     case "MultiSelect":
-      return baseFieldEditorFields.concat([choicesField, encryptTo]);
+      return baseFieldEditorFields.concat([choicesField]); // , encryptTo]);
     case "RadioMatrix":
       return baseFieldEditorFields.concat([
         questionsField,
         choicesField,
-        encryptTo,
+        // encryptTo,
       ]);
     case "Divider":
     case "Spacer":
       return [slugField];
     case "FileUpload":
     case "StaticText":
-      // TODO implement encryption for uploaded files
-      return baseFieldEditorFields;
     default:
-      return baseFieldEditorFields.concat([encryptTo]);
+      // TODO implement encryption
+      return baseFieldEditorFields;
+    // default:
+    //   return baseFieldEditorFields.concat([encryptTo]);
   }
 }
 
