@@ -4,6 +4,7 @@ from django.utils.timezone import now
 
 from access.cbac import graphql_check_instance
 from core.models import Event
+from dimensions.filters import DimensionFilters
 
 from ..excel_export import write_responses_as_excel
 from ..models.survey import Survey
@@ -32,10 +33,12 @@ def forms_survey_excel_export_view(
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
+    responses = DimensionFilters.from_query_dict(request.GET).filter(survey.responses.all())
+
     write_responses_as_excel(
         survey.dimensions.order_by("order"),
         survey.combined_fields,
-        survey.responses.order_by("created_at").only("form_data"),
+        responses.only("form_data").order_by("created_at"),
         response,
     )
 

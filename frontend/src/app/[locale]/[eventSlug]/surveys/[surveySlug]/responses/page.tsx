@@ -227,9 +227,10 @@ export default async function FormResponsesPage({
   columns.push(...buildKeyDimensionColumns(dimensions));
 
   const exportBaseUrl = `${kompassiBaseUrl}/events/${eventSlug}/surveys/${surveySlug}/responses`;
+  const queryString = new URLSearchParams(searchParams).toString();
   const exportUrls = {
-    excel: `${exportBaseUrl}.xlsx`,
-    zip: `${exportBaseUrl}.zip`,
+    excel: `${exportBaseUrl}.xlsx?${queryString}`,
+    zip: `${exportBaseUrl}.zip?${queryString}`,
   };
   const responses = survey.responses || [];
 

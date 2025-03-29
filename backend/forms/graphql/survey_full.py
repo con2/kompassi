@@ -6,6 +6,7 @@ from graphene.types.generic import GenericScalar
 from access.cbac import graphql_check_instance
 from core.graphql.event_limited import LimitedEventType
 from core.utils import normalize_whitespace
+from dimensions.filters import DimensionFilters
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 
 from ..models.form import Form
@@ -82,7 +83,7 @@ class FullSurveyType(LimitedSurveyType):
         Authorization required.
         """
         graphql_check_instance(survey, info, app=survey.app, field="responses")
-        return DimensionFilterInput.filter(survey.responses.all(), filters)
+        return DimensionFilters.from_graphql(filters).filter(survey.responses.all()).order_by("created_at")
 
     responses = graphene.List(
         graphene.NonNull(LimitedResponseType),
@@ -130,7 +131,7 @@ class FullSurveyType(LimitedSurveyType):
         Authorization required.
         """
         graphql_check_instance(survey, info, app=survey.app, field="responses")
-        return DimensionFilterInput.filter(survey.responses.all(), filters).count()
+        return DimensionFilters.from_graphql(filters).filter(survey.responses.all()).count()
 
     count_responses = graphene.Field(
         graphene.NonNull(graphene.Int),
@@ -151,7 +152,7 @@ class FullSurveyType(LimitedSurveyType):
         not present in the base language is not guaranteed. Authorization required.
         """
         graphql_check_instance(survey, info, app=survey.app, field="responses")
-        responses = DimensionFilterInput.filter(survey.responses.all(), filters)
+        responses = DimensionFilters.from_graphql(filters).filter(survey.responses.all()).order_by("created_at")
         fields = survey.get_combined_fields(lang)
         valuesies = [response.get_processed_form_data(fields)[0] for response in responses.only("form_data")]
         summary = summarize_responses(fields, valuesies)

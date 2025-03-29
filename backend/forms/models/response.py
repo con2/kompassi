@@ -36,6 +36,7 @@ logger = logging.getLogger("kompassi")
 
 
 class Response(models.Model):
+    # TODO UUID7
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="responses")
     form_data = JSONField()

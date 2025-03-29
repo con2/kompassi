@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 
 from access.cbac import graphql_check_instance
+from dimensions.filters import DimensionFilters
 from dimensions.models.scope import Scope
 
 from ..excel_export import write_responses_as_excel
@@ -38,6 +39,8 @@ def forms_survey_zip_export_view(
         operation="query",
     )
 
+    responses = DimensionFilters.from_query_dict(request.GET).filter(survey.responses.all())
+
     fields = survey.get_combined_fields()
     session = requests.Session()
     tempfile = TemporaryFile()
@@ -47,11 +50,11 @@ def forms_survey_zip_export_view(
             write_responses_as_excel(
                 survey.dimensions.order_by("order"),
                 survey.combined_fields,
-                survey.responses.order_by("created_at").only("form_data"),
+                responses.only("form_data").order_by("created_at"),
                 excel_file,  # type: ignore
             )
 
-        for form_response in survey.responses.all():
+        for form_response in responses:
             for attachment in form_response.get_attachments(fields):
                 attachment_bytes = attachment.download(session=session)
                 attachment_filename = truncate_filename(
