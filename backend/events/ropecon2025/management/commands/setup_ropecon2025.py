@@ -20,6 +20,7 @@ from labour.models import (
 )
 from program_v2.models.meta import ProgramV2EventMeta
 from tickets_v2.models.meta import TicketsV2EventMeta
+from tickets_v2.optimized_server.models.enums import PaymentProvider
 
 from ...models import Language, SignupExtra, SpecialDiet
 
@@ -263,12 +264,14 @@ class Setup:
 
     def setup_tickets_v2(self):
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
-        TicketsV2EventMeta.objects.update_or_create(
+        meta, _ = TicketsV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                provider_id=PaymentProvider.PAYTRAIL.value,
             ),
         )
+        meta.ensure_partitions()
 
 
 class Command(BaseCommand):
