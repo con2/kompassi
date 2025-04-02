@@ -48,6 +48,7 @@ class Setup:
         self.setup_program_v2()
         self.setup_tickets_v2()
         self.setup_forms()
+        self.delete_tickets_v1()
 
     def setup_core(self):
         self.venue, unused = Venue.objects.get_or_create(
@@ -272,6 +273,9 @@ class Setup:
             ),
         )
         meta.ensure_partitions()
+
+    def delete_tickets_v1(self):
+        self.event.tickets_event_meta.delete()
 
 
 class Command(BaseCommand):
