@@ -8,6 +8,7 @@ from django.http import QueryDict
 from django.utils.timezone import now
 
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
+from dimensions.filters import DimensionFilters
 from forms.utils.process_form_data import FALSY_VALUES
 
 from .models.program import Program
@@ -30,10 +31,10 @@ def parse_datetime(s: str) -> datetime:
 @dataclass
 class ProgramFilters:
     slugs: list[str] | None = None
-    dimensions: dict[str, list[str]] = field(default_factory=dict)
     favorites_only: bool = False
     hide_past: bool = False
     updated_after: datetime | None = None
+    dimension_filters: DimensionFilters = field(default_factory=DimensionFilters)
 
     @classmethod
     def from_query_dict(
@@ -62,7 +63,7 @@ class ProgramFilters:
 
         return cls(
             slugs=slugs,
-            dimensions=dict(filters),
+            dimension_filters=DimensionFilters(filters=filters),
             favorites_only=favorites_only,
             hide_past=hide_past,
             updated_after=updated_after,
@@ -76,14 +77,8 @@ class ProgramFilters:
         hide_past: bool = False,
         updated_after: datetime | None = None,
     ):
-        dimensions = (
-            {filter.dimension: ["*"] if filter.values is None else filter.values for filter in filters}
-            if filters
-            else {}
-        )
-
         return cls(
-            dimensions=dimensions,  # type: ignore
+            dimension_filters=DimensionFilters.from_graphql(filters),  # type: ignore
             favorites_only=favorites_only,
             hide_past=hide_past,
             updated_after=ensure_aware(updated_after) if updated_after else None,
@@ -104,15 +99,7 @@ class ProgramFilters:
             else:
                 programs = programs.none()
 
-        for dimension_slug, value_slugs in self.dimensions.items():
-            value_slugs = [slug for slugs in value_slugs for slug in slugs.split(",")]
-            if "*" in value_slugs:
-                programs = programs.filter(dimensions__value__dimension__slug=dimension_slug)
-            else:
-                programs = programs.filter(
-                    dimensions__value__dimension__slug=dimension_slug,
-                    dimensions__value__slug__in=value_slugs,
-                )
+        programs = self.dimension_filters.filter(programs)
 
         if self.hide_past:
             if t is None:
