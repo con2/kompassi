@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from functools import cached_property
 
 from django.db import models
+from django.conf import settings
 
 from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
@@ -57,6 +58,10 @@ class TicketsV2EventMeta(EventMetaBase):
     @property
     def have_available_products(self):
         return self.get_available_products().exists()
+
+    @property
+    def tickets_url(self):
+        return f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/tickets"
 
     def reticket(self):
         """
