@@ -275,7 +275,8 @@ class Setup:
         meta.ensure_partitions()
 
     def delete_tickets_v1(self):
-        self.event.tickets_event_meta.delete()
+        if self.event.tickets_event_meta is not None:
+            self.event.tickets_event_meta.delete()
 
 
 class Command(BaseCommand):
