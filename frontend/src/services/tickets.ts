@@ -155,7 +155,7 @@ export async function getOrder(
   orderId: string,
 ): Promise<GetOrderResponse> {
   const response = await fetch(
-    `${ticketsBaseUrl}/api/tickets-v2/${eventSlug}/orders/${orderId}`,
+    `${ticketsBaseUrl}/api/tickets-v2/${eventSlug}/orders/${orderId}/`,
     { headers },
   );
   return response.json();
