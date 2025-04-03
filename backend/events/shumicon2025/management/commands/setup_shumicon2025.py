@@ -2,10 +2,34 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
+from core.models import Event, Organization, Venue
+from core.utils import full_hours_between
+from intra.models import IntraEventMeta, Team
+from labour.models import (
+    AlternativeSignupForm,
+    JobCategory,
+    LabourEventMeta,
+    PersonnelClass,
+    Qualification,
+)
 from program_v2.models.meta import ProgramV2EventMeta
+from programme.models import (
+    AlternativeProgrammeForm,
+    Category,
+    ProgrammeEventMeta,
+    Role,
+    SpecialStartTime,
+    Tag,
+    TimeBlock,
+)
+from tickets_v2.models.meta import TicketsV2EventMeta
+from tickets_v2.optimized_server.models.enums import PaymentProvider
+
+from ...models import KnownLanguage, NativeLanguage, SignupExtra, SpecialDiet
 
 
 class Setup:
@@ -29,10 +53,9 @@ class Setup:
         # self.setup_kaatoilmo()
         # self.setup_sms()
         self.setup_program_v2()
+        self.setup_tickets_v2()
 
     def setup_core(self):
-        from core.models import Event, Organization, Venue
-
         self.organization, unused = Organization.objects.get_or_create(
             slug="paakaupunkiseudun-cosplay-ry",
             defaults=dict(
@@ -63,18 +86,6 @@ class Setup:
         )
 
     def setup_labour(self):
-        from django.contrib.contenttypes.models import ContentType
-
-        from labour.models import (
-            AlternativeSignupForm,
-            JobCategory,
-            LabourEventMeta,
-            PersonnelClass,
-            Qualification,
-        )
-
-        from ...models import KnownLanguage, NativeLanguage, SignupExtra, SpecialDiet
-
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
@@ -263,83 +274,6 @@ class Setup:
             ),
         )
 
-    def setup_tickets(self):
-        from tickets.models import LimitGroup, Product, TicketsEventMeta
-
-        tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
-
-        defaults = dict(
-            admin_group=tickets_admin_group,
-            pos_access_group=pos_access_group,
-            reference_number_template="2025{:06d}",
-            contact_email="Shumicon 2025 -lipunmyynti <lipunmyynti@shumicon.fi>",
-            ticket_free_text="Tämä on sähköinen lippusi Shumicon 2025 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
-            "lipunvaihtopisteessä saapuessasi tapahtumaan. Voit tulostaa tämän lipun tai näyttää sen\n"
-            "älypuhelimen tai tablettitietokoneen näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös\n"
-            "kunkin viivakoodin alla oleva neljästä tai viidestä sanasta koostuva Kissakoodi ja ilmoita se\n"
-            "lipunvaihtopisteessä.\n\n"
-            "Jos tapahtuma joudutaan perumaan, lippusi käy sellaisenaan seuraavassa Shumiconissa tai voit saada\n"
-            "hyvityksen ottamalla yhteyttä: lipunmyynti@shumicon.fi.\n\n"
-            "Tervetuloa Shumiconiin!\n\n"
-            "---\n\n"
-            "This is your electronic ticket to Shumicon 2025. The electronic ticket will be exchanged to a wrist band\n"
-            "at a ticket exchange desk on your arrival at the event. You can print this ticket or show it from the\n"
-            "screen of a smartphone or tablet. If neither is possible, please write down the four or five words from\n"
-            "beneath the bar code and show that at a ticket exchange desk.\n\n"
-            "In case the event has to be canceled your ticket will be valid for the next Shumicon or you can be\n"
-            "reimbursed for your ticket. For event cancellation related reimbursement please contact us at\n"
-            "lipunmyynti@shumicon.fi.\n\n"
-            "Welcome to Shumicon!",
-            front_page_text="<h2>Tervetuloa Shumiconin lippukauppaan! / Welcome to Shumicon's Ticket Store!</h2>"
-            "<p>Liput maksetaan oston yhteydessä Paytrailin kautta. Lippujen ostaminen vaatii suomalaiset verkkopankkitunnukset, luottokortin (Visa/Mastercard/American Express) tai MobilePayn. Pyydämme suosimaan maksamista verkkopankilla, mikäli mahdollista.</p>"
-            "<p>Maksetut liput toimitetaan e-lippuina sähköpostitse asiakkaan antamaan osoitteeseen. E-liput vaihdetaan rannekkeiksi tapahtumaan saavuttaessa.</p>"
-            "<p>Lisätietoja lipuista saat tapahtuman verkkosivuilta. <a href='https://shumicon.fi/lipunmyynti/'>Siirry takaisin tapahtuman verkkosivuille</a>.</p>"
-            "<p>---</p>"
-            "<p>The tickets are paid for at the moment of purchase via Paytrail. Purchasing a ticket requires a Finnish online banking service account, a credit card (Visa/Mastercard/American Express) or MobilePay. Paying via online banking is the most preferred option, if possible.</p>"
-            "<p>Paid tickets will be sent as e-tickets to the e-mail address provided by the customer. E-tickets will be exchanged to wristbands at the event venue.</p>"
-            "<p>More information about the tickets can be found on event website. <a href='https://shumicon.fi/lipunmyynti/'> Go back to the event's website</a>.</p>",
-        )
-
-        if self.test:
-            t = now()
-            defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
-                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
-            )
-
-        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
-
-        def limit_group(description, limit):
-            limit_group, unused = LimitGroup.objects.get_or_create(
-                event=self.event,
-                description=description,
-                defaults=dict(limit=limit),
-            )
-
-            return limit_group
-
-        for product_info in [
-            dict(
-                name="Shumicon 2025 viikonloppulippu / Weekend Ticket",
-                description="Sisältää pääsyn Shumicon 2025 -tapahtumaan koko viikonlopun ajan. / Includes the entrance to Shumicon 2025 for the weekend.",
-                limit_groups=[
-                    limit_group("Pääsyliput", 600),
-                ],
-                price_cents=1000,
-                electronic_ticket=True,
-                available=True,
-                ordering=self.get_ordering_number(),
-            ),
-        ]:
-            name = product_info.pop("name")
-            limit_groups = product_info.pop("limit_groups")
-
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
-
-            if not product.limit_groups.exists():
-                product.limit_groups.set(limit_groups)  # type: ignore
-                product.save()
-
     def setup_badges(self):
         from badges.models import BadgesEventMeta
 
@@ -353,18 +287,6 @@ class Setup:
         )
 
     def setup_programme(self):
-        from core.utils import full_hours_between
-        from labour.models import PersonnelClass
-        from programme.models import (
-            AlternativeProgrammeForm,
-            Category,
-            ProgrammeEventMeta,
-            Role,
-            SpecialStartTime,
-            Tag,
-            TimeBlock,
-        )
-
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
@@ -483,8 +405,6 @@ class Setup:
         self.event.programme_event_meta.create_groups()
 
     def setup_intra(self):
-        from intra.models import IntraEventMeta, Team
-
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("vastaava")
         meta, unused = IntraEventMeta.objects.get_or_create(
@@ -524,6 +444,17 @@ class Setup:
                 admin_group=admin_group,
             ),
         )
+
+    def setup_tickets_v2(self):
+        (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
+        meta, _ = TicketsV2EventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                provider_id=PaymentProvider.PAYTRAIL.value,
+            ),
+        )
+        meta.ensure_partitions()
 
 
 class Command(BaseCommand):
