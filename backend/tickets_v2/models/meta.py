@@ -4,8 +4,8 @@ import logging
 from dataclasses import dataclass
 from functools import cached_property
 
-from django.db import models
 from django.conf import settings
+from django.db import models
 
 from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
