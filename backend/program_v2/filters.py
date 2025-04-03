@@ -134,7 +134,9 @@ class ProgramFilters:
             else:
                 schedule_items = schedule_items.none()
 
-        for dimension_slug, value_slugs in self.dimensions.items():
+        # XXX have to implement DimensionFilters.filter ourselves due to indirect access
+        # perhaps this will be fixed when dimensions are pushed to ScheduleItem level?
+        for dimension_slug, value_slugs in self.dimension_filters.filters.items():
             value_slugs = [slug for slugs in value_slugs for slug in slugs.split(",")]
             if "*" in value_slugs:
                 schedule_items = schedule_items.filter(program__dimensions__value__dimension__slug=dimension_slug)
