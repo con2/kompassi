@@ -297,7 +297,7 @@ class Setup:
             defaults=dict(
                 title="Swag",
                 description=(
-                    "Tarjoamme työvoimatuotteeksi joko juomapullon tai paidan. Valitse tässä kumpi, "
+                    "Tarjoamme työvoimatuotteeksi joko kangaskassin tai paidan. Valitse tässä kumpi, "
                     "sekä paidan tapauksessa paitakokosi."
                 ),
                 form_class_path="events.tracon2025.forms:SwagSurvey",

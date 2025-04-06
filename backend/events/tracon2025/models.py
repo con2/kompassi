@@ -68,7 +68,7 @@ class SignupExtra(SignupExtraBase):
         max_length=15,
         verbose_name="Toivottu kokonaistyömäärä",
         help_text=(
-            "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti " "kymmenen tuntia."
+            "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti kymmenen tuntia."
         ),
         choices=TOTAL_WORK_CHOICES,
     )
@@ -81,28 +81,14 @@ class SignupExtra(SignupExtraBase):
         ),
     )
 
-    want_certificate = models.BooleanField(
-        default=False,
-        verbose_name="Haluan todistuksen työskentelystäni Traconissa",
-    )
-
-    certificate_delivery_address = models.TextField(
-        blank=True,
-        verbose_name="Työtodistuksen toimitusosoite",
-        help_text=(
-            "Jos haluat työtodistuksen, täytä tähän kenttään postiosoite (katuosoite, "
-            "postinumero ja postitoimipaikka) johon haluat todistuksen toimitettavan."
-        ),
-    )
-
     shirt_size = models.CharField(
         max_length=8,
         choices=SHIRT_SIZES,
         default="NO_SHIRT",
         verbose_name="Swag-valinta",
         help_text=(
-            "Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan tai juomapullon. "
-            "Valitse tässä haluatko paidan vai juomapullon, sekä paidan koko. "
+            "Ajoissa ilmoittautuneet vänkärit saavat maksuttoman työvoimapaidan tai kangaskassin. "
+            "Valitse tässä haluatko paidan vai kangaskassin, sekä paidan koko. "
             '<a href="/static/tracon2022/tracon2022_shirt_sizes.png" target="_blank" rel="noopener noreferrer">Kokotaulukko</a>'
         ),
     )

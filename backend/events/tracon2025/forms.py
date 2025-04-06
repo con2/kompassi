@@ -20,11 +20,6 @@ class SignupExtraForm(forms.ModelForm):
             "total_work",
             indented_without_label("overseer"),
             Fieldset(
-                "Työtodistus",
-                indented_without_label("want_certificate"),
-                "certificate_delivery_address",
-            ),
-            Fieldset(
                 "Lisätiedot",
                 "shirt_size",
                 "special_diet",
@@ -42,8 +37,6 @@ class SignupExtraForm(forms.ModelForm):
             "shift_type",
             "total_work",
             "overseer",
-            "want_certificate",
-            "certificate_delivery_address",
             "shirt_size",
             "special_diet",
             "special_diet_other",
@@ -57,17 +50,6 @@ class SignupExtraForm(forms.ModelForm):
             special_diet=forms.CheckboxSelectMultiple,
             lodging_needs=forms.CheckboxSelectMultiple,
         )
-
-    def clean_certificate_delivery_address(self):
-        want_certificate = self.cleaned_data["want_certificate"]
-        certificate_delivery_address = self.cleaned_data["certificate_delivery_address"]
-
-        if want_certificate and not certificate_delivery_address:
-            raise forms.ValidationError(
-                "Koska olet valinnut haluavasi työtodistuksen, on " "työtodistuksen toimitusosoite täytettävä."
-            )
-
-        return certificate_delivery_address
 
 
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
@@ -142,8 +124,6 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             shift_type="kaikkikay",
             total_work="yli10h",
             overseer=False,
-            want_certificate=False,
-            certificate_delivery_address="",
             prior_experience="",
             free_text="Syötetty käyttäen coniitin ilmoittautumislomaketta",
         )
