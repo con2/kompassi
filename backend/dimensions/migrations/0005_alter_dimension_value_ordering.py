@@ -1,11 +1,25 @@
 from django.db import migrations, models
-from django.db.models import F
-from django.db.models.functions import Upper
 
 
-def uppercase_value_ordering_choices(apps, schema_editor):
+def emsensiblen_value_ordering(s: str):
+    match s.upper():
+        case "1" | "MANUAL":
+            return "MANUAL"
+        case "2" | "SLUG":
+            return "SLUG"
+        case "3" | "TITLE":
+            return "TITLE"
+        case _:
+            return "SLUG"
+
+
+def wtfix_value_ordering(apps, schema_editor):
     Dimension = apps.get_model("dimensions", "Dimension")
-    Dimension.objects.all().update(value_ordering=Upper(F("value_ordering")))
+    bulk_update = []
+    for dimension in Dimension.objects.all():
+        dimension.value_ordering = emsensiblen_value_ordering(dimension.value_ordering)
+        bulk_update.append(dimension)
+    Dimension.objects.bulk_update(bulk_update, fields=["value_ordering"], batch_size=400)
 
 
 class Migration(migrations.Migration):
@@ -29,7 +43,7 @@ class Migration(migrations.Migration):
             ),
         ),
         migrations.RunPython(
-            uppercase_value_ordering_choices,
+            wtfix_value_ordering,
             reverse_code=migrations.RunPython.noop,
             elidable=True,
         ),
