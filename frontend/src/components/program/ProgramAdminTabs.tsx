@@ -38,7 +38,6 @@ export default function ProgramAdminTabs({
       slug: "programItems",
       title: t.adminListTitle,
       href: `/${eventSlug}/program-admin${queryString}`,
-      disabled: true,
     },
     {
       slug: "programHosts",

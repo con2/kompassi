@@ -36,6 +36,8 @@ const documents = {
     "\n  mutation ReorderProducts($input: ReorderProductsInput!) {\n    reorderProducts(input: $input) {\n      products {\n        id\n      }\n    }\n  }\n": types.ReorderProductsDocument,
     "\n  fragment ProductList on FullProductType {\n    id\n    title\n    description\n    price\n    isAvailable\n    availableFrom\n    availableUntil\n    countPaid\n    countReserved\n    countAvailable\n  }\n": types.ProductListFragmentDoc,
     "\n  query ProductList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        products {\n          ...ProductList\n        }\n      }\n    }\n  }\n": types.ProductListDocument,
+    "\n  fragment ProgramAdmin on FullProgramType {\n    slug\n    title\n  }\n": types.ProgramAdminFragmentDoc,
+    "\n  query ProgramAdminList($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      slug\n      name\n      program {\n        listFilters: dimensions(isListFilter: true) {\n          slug\n          title(lang: $locale)\n          isListFilter\n\n          values(lang: $locale) {\n            slug\n            title(lang: $locale)\n            color\n          }\n        }\n\n        programs {\n          ...ProgramAdmin\n        }\n      }\n    }\n  }\n": types.ProgramAdminListDocument,
     "\n  mutation UpdateProgramFormLanguage($input: UpdateFormInput!) {\n    updateForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateProgramFormLanguageDocument,
     "\n  mutation DeleteProgramFormLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n": types.DeleteProgramFormLanguageDocument,
     "\n  mutation UpdateFormFieldsMutation($input: UpdateFormFieldsInput!) {\n    updateFormFields(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateFormFieldsMutationDocument,
@@ -220,6 +222,14 @@ export function graphql(source: "\n  fragment ProductList on FullProductType {\n
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ProductList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        products {\n          ...ProductList\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProductList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        products {\n          ...ProductList\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ProgramAdmin on FullProgramType {\n    slug\n    title\n  }\n"): (typeof documents)["\n  fragment ProgramAdmin on FullProgramType {\n    slug\n    title\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProgramAdminList($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      slug\n      name\n      program {\n        listFilters: dimensions(isListFilter: true) {\n          slug\n          title(lang: $locale)\n          isListFilter\n\n          values(lang: $locale) {\n            slug\n            title(lang: $locale)\n            color\n          }\n        }\n\n        programs {\n          ...ProgramAdmin\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgramAdminList($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      slug\n      name\n      program {\n        listFilters: dimensions(isListFilter: true) {\n          slug\n          title(lang: $locale)\n          isListFilter\n\n          values(lang: $locale) {\n            slug\n            title(lang: $locale)\n            color\n          }\n        }\n\n        programs {\n          ...ProgramAdmin\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
