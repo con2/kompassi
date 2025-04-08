@@ -150,7 +150,7 @@ class ProfileResponseType(LimitedResponseType):
         The respondent will only see values of dimensions that are designated as
         being shown to the respondent.
         """
-        qs = response.dimensions.filter(value__dimension__is_shown_to_subject=True)
+        qs = response.dimensions.filter(value__dimension__is_public=True)
 
         if key_dimensions_only:
             qs = qs.filter(value__dimension__is_key_dimension=True)
