@@ -49,6 +49,9 @@ class ProgramV2EventMeta(EventMetaBase):
 
     use_cbac = True
 
+    def __str__(self):
+        return str(self.event)
+
     @property
     def importer_class(self):
         from ..importers.default import DefaultImporter

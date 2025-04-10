@@ -1,6 +1,16 @@
+"""
+NOTE: Generally V2 apps should not rely on taka-admin to do basic administrative tasks.
+This should be thought of an escape hatch and most admin functions provided in etuadmin.
+"""
+
+from django import forms
 from django.contrib import admin
 
-from .models import Program, ScheduleItem
+from dimensions.models.dimension import Dimension
+
+from .models.meta import ProgramV2EventMeta
+from .models.program import Program
+from .models.schedule import ScheduleItem
 
 
 class ScheduleItemInline(admin.TabularInline):
@@ -25,3 +35,25 @@ class ProgramAdmin(admin.ModelAdmin):
         "cached_location",
         "cached_color",
     )
+
+
+class ProgramV2EventMetaForm(forms.ModelForm):
+    class Meta:
+        model = ProgramV2EventMeta
+        fields = (
+            "location_dimension",
+            "is_accepting_feedback",
+        )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance.pk is not None:
+            self.fields["location_dimension"].queryset = Dimension.objects.filter(  # type: ignore
+                universe=self.instance.event.program_universe
+            )
+
+
+class InlineProgramV2EventMetaAdmin(admin.StackedInline):
+    model = ProgramV2EventMeta
+    form = ProgramV2EventMetaForm

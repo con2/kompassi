@@ -6,13 +6,7 @@ from .models import (
     Order,
     OrderProduct,
     Product,
-    TicketsEventMeta,
 )
-
-
-class InlineTicketsEventMetaAdmin(admin.StackedInline):
-    model = TicketsEventMeta
-    raw_id_fields = ("admin_group", "pos_access_group")
 
 
 @admin.register(Product)

@@ -19,14 +19,18 @@ class TicketsV2EventMeta(EventMetaBase):
     provider_id = models.SmallIntegerField(
         choices=[(x.value, x.name) for x in PaymentProvider],
         default=PaymentProvider.NONE,
+        verbose_name="Payment provider",
     )
 
     # NOTE SUPPORTED_LANGUAGES
-    terms_and_conditions_url_en = models.TextField(default="")
-    terms_and_conditions_url_fi = models.TextField(default="")
-    terms_and_conditions_url_sv = models.TextField(default="")
+    terms_and_conditions_url_en = models.TextField(default="", blank=True)
+    terms_and_conditions_url_fi = models.TextField(default="", blank=True)
+    terms_and_conditions_url_sv = models.TextField(default="", blank=True)
 
     use_cbac = True
+
+    def __str__(self):
+        return str(self.event)
 
     def ensure_partitions(self):
         from .order import Order

@@ -7,7 +7,6 @@ from .models import (
     AlternativeProgrammeForm,
     Category,
     Programme,
-    ProgrammeEventMeta,
     ProgrammeFeedback,
     Role,
     Room,
@@ -30,11 +29,6 @@ def deactivate_selected_items(modeladmin, request, queryset):
 @admin.action(description=_("Activate selected items"))
 def activate_selected_items(modeladmin, request, queryset):
     queryset.update(active=False)
-
-
-class InlineProgrammeEventMetaAdmin(admin.StackedInline):
-    model = ProgrammeEventMeta
-    raw_id_fields = ("admin_group",)
 
 
 class ProgrammeRoleInline(admin.TabularInline):
