@@ -35,4 +35,4 @@ class DeleteDimension(graphene.Mutation):
 
         dimension.delete()
 
-        return DeleteDimension(slug=input.survey_slug)  # type: ignore
+        return DeleteDimension(slug=input.dimension_slug)  # type: ignore

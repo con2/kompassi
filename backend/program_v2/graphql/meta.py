@@ -109,15 +109,27 @@ class ProgramV2EventMetaType(DjangoObjectType):
     def resolve_dimensions(
         meta: ProgramV2EventMeta,
         info,
+        # TODO unify naming
         is_list_filter: bool = False,
         is_shown_in_detail: bool = False,
+        public_only: bool = True,
+        key_dimensions_only: bool = False,
     ):
         """
         `is_list_filter` - only return dimensions that are shown in the list filter.
         `is_shown_in_detail` - only return dimensions that are shown in the detail view.
         If you supply both, you only get their intersection.
         """
-        dimensions = meta.universe.dimensions.all()
+        if public_only:
+            dimensions = meta.universe.dimensions.filter(is_public=True)
+        else:
+            graphql_check_instance(
+                meta.universe,  # type: ignore
+                info,
+                field="dimensions",
+                app="program_v2",
+            )
+            dimensions = meta.universe.dimensions.all()
 
         if is_list_filter:
             dimensions = dimensions.filter(is_list_filter=True)
@@ -125,12 +137,17 @@ class ProgramV2EventMetaType(DjangoObjectType):
         if is_shown_in_detail:
             dimensions = dimensions.filter(is_shown_in_detail=True)
 
+        if key_dimensions_only:
+            dimensions = dimensions.filter(is_key_dimension=True)
+
         return dimensions.order_by("order")
 
     dimensions = graphene.NonNull(
         graphene.List(graphene.NonNull(FullDimensionType)),
         is_list_filter=graphene.Boolean(),
         is_shown_in_detail=graphene.Boolean(),
+        public_only=graphene.Boolean(),
+        key_dimensions_only=graphene.Boolean(),
         description=normalize_whitespace(resolve_dimensions.__doc__ or ""),
     )
 

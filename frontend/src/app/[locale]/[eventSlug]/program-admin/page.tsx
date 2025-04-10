@@ -1,22 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Fragment } from "react";
 
 import { graphql } from "@/__generated__";
-import {
-  ProgramAdminFragment,
-  ProgramOfferFragment,
-} from "@/__generated__/graphql";
+import { ProgramAdminFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import { Dimension } from "@/components/dimensions/models";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import { Field } from "@/components/forms/models";
-import UploadedFileLink from "@/components/forms/UploadedFileLink";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -27,19 +19,23 @@ graphql(`
   fragment ProgramAdmin on FullProgramType {
     slug
     title
+    cachedDimensions
   }
 `);
 
 const query = graphql(`
-  query ProgramAdminList($eventSlug: String!, $locale: String) {
+  query ProgramAdminList(
+    $eventSlug: String!
+    $locale: String
+    $filters: [DimensionFilterInput!]
+  ) {
     event(slug: $eventSlug) {
       slug
       name
       program {
-        listFilters: dimensions(isListFilter: true) {
+        listFilters: dimensions(isListFilter: true, publicOnly: false) {
           slug
           title(lang: $locale)
-          isListFilter
 
           values(lang: $locale) {
             slug
@@ -48,7 +44,17 @@ const query = graphql(`
           }
         }
 
-        programs {
+        keyDimensions: dimensions(keyDimensionsOnly: true, publicOnly: false) {
+          slug
+          title(lang: $locale)
+
+          values(lang: $locale) {
+            slug
+            title(lang: $locale)
+          }
+        }
+
+        programs(filters: $filters) {
           ...ProgramAdmin
         }
       }
@@ -109,6 +115,7 @@ export default async function FormResponsesPage({
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;
+
   const session = await auth();
 
   // TODO encap
@@ -126,27 +133,35 @@ export default async function FormResponsesPage({
     notFound();
   }
 
+  const listFilters = data.event.program.listFilters;
+  const programs = data.event.program.programs;
+  const event = data.event;
+  const keyDimensions = data.event.program.keyDimensions;
+
   const columns: Column<ProgramAdminFragment>[] = [
     {
       slug: "title",
       title: t.attributes.title,
+      getCellContents: (program) => (
+        <Link href={`/${event.slug}/programs-admin/${program.slug}`}>
+          {program.title}
+        </Link>
+      ),
     },
   ];
 
-  const listFilters = data.event?.program.listFilters;
-  const programs = data.event?.program?.programs;
+  columns.push(...buildKeyDimensionColumns(keyDimensions));
 
-  // TODO Key dimensions
-  // columns.push(...buildKeyDimensionColumns(dimensions));
-
-  // TODO ProgramAdminView
   return (
     <ProgramAdminView
       translations={translations}
       event={data.event}
       active="programItems"
     >
-      <DimensionFilters dimensions={listFilters} />
+      <DimensionFilters
+        dimensions={listFilters}
+        className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1"
+      />
       <DataTable rows={programs} columns={columns}></DataTable>
     </ProgramAdminView>
   );

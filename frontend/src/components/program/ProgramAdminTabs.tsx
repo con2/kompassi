@@ -38,6 +38,7 @@ export default function ProgramAdminTabs({
       slug: "programItems",
       title: t.adminListTitle,
       href: `/${eventSlug}/program-admin${queryString}`,
+      disabled: true,
     },
     {
       slug: "programHosts",
@@ -49,7 +50,6 @@ export default function ProgramAdminTabs({
       slug: "dimensions",
       title: translations.Dimension.listTitle,
       href: `/${eventSlug}/program-dimensions`,
-      disabled: true,
     },
     {
       slug: "preview",

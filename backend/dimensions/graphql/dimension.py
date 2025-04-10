@@ -31,6 +31,7 @@ class FullDimensionType(DjangoObjectType):
     title = graphene.String(lang=graphene.String())
     resolve_title = resolve_localized_field_getattr("title")
 
+    # TODO Slow when called once for each dimension of Ropecon
     @staticmethod
     def resolve_can_remove(dimension: Dimension, info):
         request: HttpRequest = info.context

@@ -38,6 +38,7 @@ export default function DimensionForm({ messages, dimension }: Props) {
       title: t.attributes.valueOrdering.title,
       helpText: t.attributes.valueOrdering.helpText,
       presentation: "dropdown",
+      required: true,
       choices: [
         {
           slug: "MANUAL",
@@ -107,11 +108,18 @@ export default function DimensionForm({ messages, dimension }: Props) {
   let values: Record<string, unknown> = {};
   if (dimension) {
     values = {
+      ...dimension,
       // NOTE SUPPORTED_LANGUAGES
       title_fi: dimension.titleFi,
       title_en: dimension.titleEn,
       title_sv: dimension.titleSv,
-      ...dimension,
+    };
+  } else {
+    values = {
+      valueOrdering: "TITLE",
+      isPublic: true,
+      isListFilter: true,
+      isShownInDetail: true,
     };
   }
 
