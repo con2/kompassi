@@ -39,8 +39,8 @@ class Setup:
                 name_inessive="Matsuconissa",
                 homepage_url="http://matsucon.fi",
                 organization=self.organization,
-                start_time=datetime(2025, 8, 10, 10, 0, tzinfo=self.tz),
-                end_time=datetime(2025, 8, 11, 18, 0, tzinfo=self.tz),
+                start_time=datetime(2025, 8, 9, 10, 0, tzinfo=self.tz),
+                end_time=datetime(2025, 8, 10, 17, 0, tzinfo=self.tz),
                 venue=self.venue,
             ),
         )
