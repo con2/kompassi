@@ -20,4 +20,4 @@ jobs:
           cache-dependency-path: backend/requirements.txt
 
       - run: pip install -r backend/requirements.txt
-      - uses: pre-commit/action@v3.0.0
+      - uses: pre-commit/action@v3.0.1
