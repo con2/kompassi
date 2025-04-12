@@ -30,6 +30,7 @@ from program_v2.graphql.mutations.favorites import (
     UnmarkScheduleItemAsFavorite,
 )
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
+from program_v2.graphql.mutations.update_program import UpdateProgram
 from program_v2.graphql.mutations.update_program_form import UpdateProgramForm
 from tickets_v2.graphql.mutations.cancel_and_refund_order import CancelAndRefundOrder
 from tickets_v2.graphql.mutations.create_product import CreateProduct
@@ -124,6 +125,8 @@ class Mutation(graphene.ObjectType):
 
     create_program_form = CreateProgramForm.Field()
     update_program_form = UpdateProgramForm.Field()
+
+    update_program = UpdateProgram.Field()
 
     # Tickets v2
     create_product = CreateProduct.Field()

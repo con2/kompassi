@@ -141,7 +141,7 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
           values={program}
           messages={translations.SchemaForm}
         />
-        <SubmitButton disabled>{translations.Common.submit}</SubmitButton>
+        <SubmitButton>{translations.Common.submit}</SubmitButton>
       </form>
     </ProgramAdminDetailView>
   );

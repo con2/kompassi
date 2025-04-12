@@ -13,6 +13,7 @@ from django.utils.timezone import now
 
 from core.models import Event
 from core.utils import validate_slug
+from dimensions.models.scope import Scope
 from graphql_api.language import SUPPORTED_LANGUAGES, getattr_message_in_language
 
 if TYPE_CHECKING:
@@ -269,6 +270,10 @@ class Program(models.Model):
             and self.cached_earliest_start_time
             and now() >= self.cached_earliest_start_time
         )
+
+    @property
+    def scope(self) -> Scope:
+        return self.event.scope
 
     @transaction.atomic
     def set_dimension_values(self, values_to_set: dict[str, list[str]]):

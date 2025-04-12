@@ -20,27 +20,20 @@ export async function updateProgramBasicInfo(
   programSlug: string,
   formData: FormData,
 ) {
-  console.log("updateProgramBasicInfo", {
-    locale,
-    eventSlug,
-    programSlug,
-    formData: Object.fromEntries(formData),
+  const { data, errors } = await getClient().mutate({
+    mutation,
+    variables: {
+      input: {
+        eventSlug,
+        programSlug,
+        formData: Object.fromEntries(formData),
+      },
+    },
   });
+  if (errors) {
+    throw new Error(errors[0].message);
+  }
 
-  // const { data, errors } = await getClient().mutate({
-  //   mutation,
-  //   variables: {
-  //     input: {
-  //       eventSlug,
-  //       programSlug,
-  //       formData: Object.fromEntries(formData),
-  //     },
-  //   },
-  // });
-  // if (errors) {
-  //   throw new Error(errors[0].message);
-  // }
-
-  // revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}`);
-  // revalidatePath(`/${locale}/${eventSlug}/program-admin`);
+  revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}`);
+  revalidatePath(`/${locale}/${eventSlug}/program-admin`);
 }
