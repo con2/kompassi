@@ -108,11 +108,14 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function ProgramOfferPage({ params }: Props) {
+export default async function ProgramOfferPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale, eventSlug, responseId } = params;
   const translations = getTranslations(locale);
   const session = await auth();
-  const queryString = new URLSearchParams(window.location.search).toString();
+  const queryString = new URLSearchParams(searchParams).toString();
 
   // TODO encap
   if (!session) {
