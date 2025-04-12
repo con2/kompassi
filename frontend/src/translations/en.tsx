@@ -1071,15 +1071,14 @@ const translations = {
           },
         },
         admin: {
-          title: "Anonymity",
+          title: "Connecting responses to users",
           helpText:
             "NOTE: You cannot change this after the survey has been created!",
           choices: {
-            HARD: "Hard anonymous: Responses will not be connected to users at all.",
-            SOFT: "Soft anonymous: Respondees can see their answers in profile but profile not shared with you.",
-            NAME_AND_EMAIL: "Name and email from user profile shared with you.",
-            FULL_PROFILE:
-              "Name, email, phone number and birth date from user profile shared with you.",
+            HARD: "Hard anonymous",
+            SOFT: "Soft anonymous",
+            NAME_AND_EMAIL: "Name and email",
+            FULL_PROFILE: "Full profile",
           },
         },
       },

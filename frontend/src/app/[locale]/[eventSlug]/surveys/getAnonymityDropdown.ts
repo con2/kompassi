@@ -1,3 +1,4 @@
+import { Anonymity } from "@/__generated__/graphql";
 import { Field } from "@/components/forms/models";
 import type { Translations } from "@/translations/en";
 
@@ -5,25 +6,22 @@ export default function getAnonymityDropdown(
   t: Translations["Survey"],
   readOnly: boolean = false,
 ): Field {
+  const anonymityOptions: Anonymity[] = [
+    Anonymity.Hard,
+    Anonymity.Soft,
+    Anonymity.NameAndEmail,
+  ];
+
   return {
     slug: "anonymity",
     type: "SingleSelect",
+    // TODO: Long descriptions. Need a card-based radio button component.
     presentation: "dropdown",
     required: true,
-    choices: [
-      {
-        slug: "HARD",
-        title: t.attributes.anonymity.admin.choices.HARD,
-      },
-      {
-        slug: "SOFT",
-        title: t.attributes.anonymity.admin.choices.SOFT,
-      },
-      {
-        slug: "NAME_AND_EMAIL",
-        title: t.attributes.anonymity.admin.choices.NAME_AND_EMAIL,
-      },
-    ],
+    choices: anonymityOptions.map((option) => ({
+      slug: option,
+      title: `${t.attributes.anonymity.admin.choices[option]}: ${t.attributes.anonymity.thirdPerson.choices[option]}`,
+    })),
     title: t.attributes.anonymity.admin.title,
     helpText: t.attributes.anonymity.admin.helpText,
     readOnly,

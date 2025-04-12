@@ -1070,15 +1070,13 @@ const translations: Translations = {
           },
         },
         admin: {
-          title: "Anonyymiys",
+          title: "Vastausten yhdistäminen käyttäjään",
           helpText: "HUOM! Et voi muuttaa tätä kyselyn luonnin jälkeen!",
           choices: {
-            HARD: "Täysi anonyymiys: Vastauksia ei yhdistetä käyttäjäprofiiliin.",
-            SOFT: "Kevyt anonyymiys: Vastaaja näkee vastauksensa profiilistaan, mutta profiilia ei jaeta sinulle.",
-            NAME_AND_EMAIL:
-              "Nimi ja sähköpostiosoite vastaajan käyttäjäprofiilista jaetaan sinulle.",
-            FULL_PROFILE:
-              "Nimi, sähköpostiosoite, puhelinnumero ja syntymäaika vastaajan käyttäjäprofiilista jaetaan sinulle.",
+            HARD: "Täysin anonyymi",
+            SOFT: "Kevyesti anonyymi",
+            NAME_AND_EMAIL: "Nimi ja sähköpostiosoite",
+            FULL_PROFILE: "Koko profiili",
           },
         },
       },
