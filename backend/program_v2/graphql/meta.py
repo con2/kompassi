@@ -176,7 +176,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         Returns all responses to all program offer forms of this event.
         """
         graphql_check_model(Response, meta.event.scope, info, app="program_v2")
-        return meta.program_offers.all()
+        return meta.program_offers.all().order_by("created_at")
 
     program_offers = graphene.NonNull(
         graphene.List(graphene.NonNull(FullResponseType)),

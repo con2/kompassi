@@ -896,7 +896,7 @@ const translations: Translations = {
 
     adminDetailTabs: {
       basicInfo: "Perustiedot",
-      scheduleItems: "Aikataulumerkinnät",
+      scheduleItems: "Aikataulutus",
       programHosts: "Ohjelmanjärjestäjät",
       dimensions: "Dimensiot",
       annotations: "Lisätiedot",

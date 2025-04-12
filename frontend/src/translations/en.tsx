@@ -899,7 +899,7 @@ const translations = {
 
     adminDetailTabs: {
       basicInfo: "Basic info",
-      scheduleItems: "Schedule items",
+      scheduleItems: "Schedule",
       programHosts: "Program hosts",
       dimensions: "Dimensions",
       annotations: "Annotations",

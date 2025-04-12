@@ -1733,7 +1733,7 @@ export type UpdateProductInput = {
 
 export type UpdateProgram = {
   __typename?: 'UpdateProgram';
-  program?: Maybe<FullSurveyType>;
+  program?: Maybe<FullProgramType>;
 };
 
 export type UpdateProgramForm = {
@@ -1915,7 +1915,7 @@ export type UpdateProgramBasicInfoMutationVariables = Exact<{
 }>;
 
 
-export type UpdateProgramBasicInfoMutation = { __typename?: 'Mutation', updateProgram?: { __typename?: 'UpdateProgram', program?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type UpdateProgramBasicInfoMutation = { __typename?: 'Mutation', updateProgram?: { __typename?: 'UpdateProgram', program?: { __typename?: 'FullProgramType', slug: string } | null } | null };
 
 export type ProgramAdminDetailQueryQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
