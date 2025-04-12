@@ -19,6 +19,9 @@ graphql(`
   fragment ProgramAdmin on FullProgramType {
     slug
     title
+    scheduleItems {
+      startTime
+    }
     cachedDimensions
   }
 `);
@@ -115,6 +118,8 @@ export default async function FormResponsesPage({
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;
+  const scheduleT = translations.Program.ScheduleItem;
+  const queryString = new URLSearchParams(searchParams).toString();
 
   const session = await auth();
 
@@ -143,10 +148,16 @@ export default async function FormResponsesPage({
       slug: "title",
       title: t.attributes.title,
       getCellContents: (program) => (
-        <Link href={`/${event.slug}/programs-admin/${program.slug}`}>
+        <Link
+          href={`/${event.slug}/program-admin/${program.slug}?${queryString}`}
+        >
           {program.title}
         </Link>
       ),
+    },
+    {
+      slug: "startTime",
+      title: scheduleT.attributes.startTime,
     },
   ];
 
@@ -157,10 +168,11 @@ export default async function FormResponsesPage({
       translations={translations}
       event={data.event}
       active="programItems"
+      queryString={queryString}
     >
       <DimensionFilters
         dimensions={listFilters}
-        className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1"
+        className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1 xxx-this-is-horrible"
       />
       <DataTable rows={programs} columns={columns}></DataTable>
     </ProgramAdminView>

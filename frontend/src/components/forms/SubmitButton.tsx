@@ -7,9 +7,14 @@ import { Layout } from "./models";
 interface SubmitButtonProps {
   layout?: Layout;
   children?: ReactNode;
+  disabled?: boolean;
 }
 
-export default function SubmitButton({ layout, children }: SubmitButtonProps) {
+export default function SubmitButton({
+  layout,
+  children,
+  disabled,
+}: SubmitButtonProps) {
   const { pending } = useFormStatus();
 
   switch (layout) {
@@ -21,7 +26,7 @@ export default function SubmitButton({ layout, children }: SubmitButtonProps) {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={pending}
+              disabled={disabled || pending}
             >
               {children}
             </button>
@@ -30,7 +35,11 @@ export default function SubmitButton({ layout, children }: SubmitButtonProps) {
       );
     default:
       return (
-        <button type="submit" className="btn btn-primary" disabled={pending}>
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={disabled || pending}
+        >
           {children}
         </button>
       );

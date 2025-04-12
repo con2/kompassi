@@ -839,8 +839,8 @@ const translations: Translations = {
     inEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
     attributes: {
       title: "Otsikko",
-      placeAndTime: "Paikka ja aika",
       actions: "Toiminnot",
+      description: "Kuvaus",
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -892,6 +892,14 @@ const translations: Translations = {
         title: "Kiitos palautteestasi!",
         description: "Palautteesi on tallennettu.",
       },
+    },
+
+    adminDetailTabs: {
+      basicInfo: "Perustiedot",
+      scheduleItems: "Aikataulumerkinnät",
+      programHosts: "Ohjelmanjärjestäjät",
+      dimensions: "Dimensiot",
+      annotations: "Lisätiedot",
     },
 
     ProgramForm: {
@@ -948,6 +956,14 @@ const translations: Translations = {
     ProgramHost: {
       singleTitle: "Ohjelmanpitäjä",
       listTitle: "Ohjelmanpitäjät",
+    },
+
+    ScheduleItem: {
+      singleTitle: "Aikataulumerkintä",
+      listTitle: "Aikataulumerkinnät",
+      attributes: {
+        startTime: "Alkuaika",
+      },
     },
 
     admin: {

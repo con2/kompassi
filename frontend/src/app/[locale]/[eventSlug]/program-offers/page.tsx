@@ -35,6 +35,7 @@ graphql(`
       }
       language
     }
+    cachedDimensions
   }
 `);
 
@@ -44,6 +45,27 @@ const query = graphql(`
       slug
       name
       program {
+        listFilters: dimensions(isListFilter: true, publicOnly: false) {
+          slug
+          title(lang: $locale)
+
+          values(lang: $locale) {
+            slug
+            title(lang: $locale)
+            color
+          }
+        }
+
+        keyDimensions: dimensions(keyDimensionsOnly: true, publicOnly: false) {
+          slug
+          title(lang: $locale)
+
+          values(lang: $locale) {
+            slug
+            title(lang: $locale)
+          }
+        }
+
         countProgramOffers
         programOffers {
           ...ProgramOffer
@@ -99,13 +121,14 @@ export async function generateMetadata({ params, searchParams }: Props) {
 
 export const revalidate = 0;
 
-export default async function FormResponsesPage({
+export default async function ProgramOffersPage({
   params,
   searchParams,
 }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program.ProgramOffer;
+  const queryString = new URLSearchParams(searchParams).toString();
   const surveyT = translations.Survey;
   const programT = translations.Program;
   const session = await auth();
@@ -125,7 +148,6 @@ export default async function FormResponsesPage({
     notFound();
   }
 
-  const dimensions: Dimension[] = []; // TODO
   const keyFields: Field[] = [
     {
       slug: "title",
@@ -143,7 +165,7 @@ export default async function FormResponsesPage({
       slug: "createdAt",
       title: surveyT.attributes.createdAt,
       getCellContents: (row) => (
-        <Link href={`/${eventSlug}/program-offers/${row.id}`}>
+        <Link href={`/${eventSlug}/program-offers/${row.id}?${queryString}`}>
           <FormattedDateTime
             value={row.createdAt}
             locale={locale}
@@ -166,6 +188,7 @@ export default async function FormResponsesPage({
     },
   ];
 
+  // TODO encap (duplicated in SurveyResponsesPage)
   keyFields.forEach((keyField) => {
     columns.push({
       slug: `keyFields.${keyField.slug}`,
@@ -194,10 +217,11 @@ export default async function FormResponsesPage({
     });
   });
 
-  // TODO Key dimensions
-  // columns.push(...buildKeyDimensionColumns(dimensions));
+  const keyDimensions = data.event.program.keyDimensions;
+  columns.push(...buildKeyDimensionColumns(keyDimensions));
 
-  const programOffers = data.event.program.programOffers || [];
+  const programOffers = data.event.program.programOffers;
+  const listFilters = data.event.program.listFilters;
 
   // TODO ProgramAdminView
   return (
@@ -205,8 +229,12 @@ export default async function FormResponsesPage({
       translations={translations}
       event={data.event}
       active="programOffers"
+      queryString={queryString}
     >
-      <DimensionFilters dimensions={dimensions} />
+      <DimensionFilters
+        dimensions={listFilters}
+        className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1 xxx-this-is-horrible"
+      />
       <DataTable rows={programOffers} columns={columns}>
         <tfoot>
           <tr>

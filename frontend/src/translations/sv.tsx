@@ -843,8 +843,8 @@ const translations: Translations = {
     inEvent: (eventName: string) => <>i {eventName}</>,
     attributes: {
       title: "Rubrik",
-      placeAndTime: "Plats och tid",
       actions: "Funktioner",
+      description: "Beskrivning",
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -899,9 +899,11 @@ const translations: Translations = {
       },
     }),
 
+    adminDetailTabs: UNTRANSLATED(en.Program.adminDetailTabs),
     ProgramForm: UNTRANSLATED(en.Program.ProgramForm),
     ProgramOffer: UNTRANSLATED(en.Program.ProgramOffer),
     ProgramHost: UNTRANSLATED(en.Program.ProgramHost),
+    ScheduleItem: UNTRANSLATED(en.Program.ScheduleItem),
 
     admin: {
       title: "Program admin",

@@ -18,6 +18,7 @@ interface Props {
   actions?: ReactNode;
   active: ProgramAdminTabsProps["active"];
   children?: ReactNode;
+  queryString: string;
 }
 
 export default async function ProgramAdminView({
@@ -26,6 +27,7 @@ export default async function ProgramAdminView({
   actions,
   active,
   children,
+  queryString,
 }: Props) {
   const surveyT = translations.Survey;
   const t = translations.Program.ProgramForm;
@@ -43,7 +45,7 @@ export default async function ProgramAdminView({
         eventSlug={event.slug}
         translations={translations}
         active={active}
-        queryString={""}
+        queryString={queryString}
       />
       {children}
     </ViewContainer>

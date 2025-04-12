@@ -244,6 +244,7 @@ export default async function ProgramFormsPage({
       translations={translations}
       event={data.event}
       active="programForms"
+      queryString=""
       actions={
         <ModalButton
           className="btn btn-outline-primary"

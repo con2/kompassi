@@ -63,6 +63,7 @@ interface Props {
     eventSlug: string;
     responseId: string;
   };
+  searchParams: Record<string, string>;
 }
 
 interface Values {
@@ -111,6 +112,7 @@ export default async function ProgramOfferPage({ params }: Props) {
   const { locale, eventSlug, responseId } = params;
   const translations = getTranslations(locale);
   const session = await auth();
+  const queryString = new URLSearchParams(window.location.search).toString();
 
   // TODO encap
   if (!session) {
@@ -184,6 +186,7 @@ export default async function ProgramOfferPage({ params }: Props) {
       translations={translations}
       event={data.event}
       active="programOffers"
+      queryString={queryString}
     >
       <div className="row mb-5">
         {!!dimensions?.length && (

@@ -34,6 +34,7 @@ export default function ProgramFormEditorView({
       translations={translations}
       event={event}
       active="programForms"
+      queryString=""
       actions={
         <ModalButton
           title={t.actions.deleteProgramForm.title}

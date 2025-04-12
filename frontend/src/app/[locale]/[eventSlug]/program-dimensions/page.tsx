@@ -39,6 +39,7 @@ interface Props {
     locale: string;
     eventSlug: string;
   };
+  searchParams: Record<string, string>;
 }
 
 export const revalidate = 0;
@@ -80,9 +81,13 @@ export async function generateMetadata({ params }: Props) {
   return { title };
 }
 
-export default async function ProgramDimensionsPage({ params }: Props) {
+export default async function ProgramDimensionsPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
+  const queryString = new URLSearchParams(searchParams).toString();
 
   // TODO encap
   const session = await auth();
@@ -107,7 +112,8 @@ export default async function ProgramDimensionsPage({ params }: Props) {
     <ProgramAdminView
       translations={translations}
       event={data.event}
-      active="programItems"
+      active="dimensions"
+      queryString={queryString}
     >
       <DimensionEditor
         dimensions={dimensions}

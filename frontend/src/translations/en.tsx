@@ -842,8 +842,8 @@ const translations = {
     inEvent: (eventName: string) => <>in {eventName}</>,
     attributes: {
       title: "Title",
-      placeAndTime: "Location and time",
       actions: "Actions",
+      description: "Description",
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -895,6 +895,14 @@ const translations = {
         title: "Thank you for your feedback!",
         description: "Your feedback has been recorded.",
       },
+    },
+
+    adminDetailTabs: {
+      basicInfo: "Basic info",
+      scheduleItems: "Schedule items",
+      programHosts: "Program hosts",
+      dimensions: "Dimensions",
+      annotations: "Annotations",
     },
 
     ProgramForm: {
@@ -951,6 +959,14 @@ const translations = {
     ProgramHost: {
       singleTitle: "Program host",
       listTitle: "Program hosts",
+    },
+
+    ScheduleItem: {
+      singleTitle: "Schedule item",
+      listTitle: "Schedule items",
+      attributes: {
+        startTime: "Start time",
+      },
     },
 
     admin: {
