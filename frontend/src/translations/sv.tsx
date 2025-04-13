@@ -852,7 +852,7 @@ const translations: Translations = {
       addTheseToCalendar: "Lägg till dessa program i kalendern",
       addThisToCalendar: "Lägg till detta program i kalendern",
       signUpForThisProgram: "Anmäl dig till detta program",
-      preview: UNTRANSLATED("Preview program"),
+      preview: UNTRANSLATED("Preview schedule"),
       preferences: UNTRANSLATED("Preferences"),
     },
     favorites: {

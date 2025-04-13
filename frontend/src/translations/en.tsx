@@ -851,7 +851,7 @@ const translations = {
       addTheseToCalendar: "Add these program items to your calendar",
       addThisToCalendar: "Add this program item to your calendar",
       signUpForThisProgram: "Sign up for this program item",
-      preview: "Preview program",
+      preview: "Preview schedule",
       preferences: "Preferences",
     },
     favorites: {
@@ -954,6 +954,16 @@ const translations = {
     ProgramOffer: {
       singleTitle: "Program offer",
       listTitle: "Program offers",
+
+      actions: {
+        accept: {
+          title: "Accept program offer",
+          modalActions: {
+            submit: "Accept",
+            cancel: "Close without accepting",
+          },
+        },
+      },
     },
 
     ProgramHost: {

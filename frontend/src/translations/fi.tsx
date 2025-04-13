@@ -951,6 +951,16 @@ const translations: Translations = {
     ProgramOffer: {
       singleTitle: "Ohjelmatarjous",
       listTitle: "Ohjelmatarjoukset",
+
+      actions: {
+        accept: {
+          title: "Hyväksy ohjelmatarjous",
+          modalActions: {
+            submit: "Hyväksy",
+            cancel: "Sulje hyväksymättä",
+          },
+        },
+      },
     },
 
     ProgramHost: {

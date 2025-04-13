@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { updateResponseDimensions } from "../../surveys/[surveySlug]/responses/[responseId]/actions";
+import { acceptProgramOffer } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -12,6 +13,7 @@ import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
+import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -49,6 +51,16 @@ const query = graphql(`
       name
       slug
       program {
+        dimensions(publicOnly: false) {
+          slug
+          title(lang: $locale)
+
+          values(lang: $locale) {
+            slug
+            title(lang: $locale)
+          }
+        }
+
         programOffer(id: $responseId) {
           ...ProgramOfferDetail
         }
@@ -131,7 +143,9 @@ export default async function ProgramOfferPage({
     notFound();
   }
 
-  const t = translations.Survey;
+  const surveyT = translations.Survey;
+  const programT = translations.Program;
+  const t = translations.Program.ProgramOffer;
 
   const { sequenceNumber, createdAt, form } = data.event.program.programOffer;
   const { fields } = form;
@@ -147,18 +161,18 @@ export default async function ProgramOfferPage({
     {
       slug: "sequenceNumber",
       type: "SingleLineText",
-      title: t.attributes.sequenceNumber,
+      title: surveyT.attributes.sequenceNumber,
     },
     {
       slug: "createdAt",
       // TODO(#438) use DateTimeField
       type: "SingleLineText",
-      title: t.attributes.createdAt,
+      title: surveyT.attributes.createdAt,
     },
     {
       slug: "createdBy",
       type: "SingleLineText",
-      title: t.attributes.createdBy,
+      title: surveyT.attributes.createdBy,
     },
   ];
 
@@ -175,11 +189,35 @@ export default async function ProgramOfferPage({
     createdBy: formattedCreatedBy,
   };
 
-  // const dimensions = data.event.forms.survey.dimensions ?? [];
-  const dimensions: Dimension[] = [];
-
+  const dimensions: Dimension[] = data.event.program.dimensions;
   const { fields: dimensionFields, values: dimensionValues } =
     buildDimensionForm(dimensions, programOffer.cachedDimensions);
+
+  const acceptProgramOfferFields: Field[] = [
+    {
+      slug: "title",
+      title: programT.attributes.title,
+      type: "SingleLineText",
+    },
+    {
+      slug: "description",
+      title: programT.attributes.description,
+      type: "MultiLineText",
+      rows: 5,
+    },
+    {
+      slug: "dimensionsHeader",
+      type: "StaticText",
+      title: surveyT.attributes.dimensions,
+    },
+    ...dimensionFields,
+  ];
+
+  const acceptProgramOfferValues: Record<string, any> = {
+    title: values.title,
+    description: values.description,
+    ...dimensionValues,
+  };
 
   // XXX specialized updateProgramOfferDimensions instead of generic updateResponseDimensions
   const surveySlug = programOffer.form.survey!.slug;
@@ -190,13 +228,31 @@ export default async function ProgramOfferPage({
       event={data.event}
       active="programOffers"
       queryString={queryString}
+      actions={
+        <ModalButton
+          className="btn btn-outline-primary"
+          label={t.actions.accept.title + "…"}
+          title={t.actions.accept.title}
+          messages={t.actions.accept.modalActions}
+          action={acceptProgramOffer.bind(null, locale, eventSlug, responseId)}
+          disabled
+        >
+          <SchemaForm
+            fields={acceptProgramOfferFields}
+            values={acceptProgramOfferValues}
+            messages={translations.SchemaForm}
+          />
+        </ModalButton>
+      }
     >
-      <div className="row mb-5">
+      <div className="row mb-5 mt-3">
         {!!dimensions?.length && (
           <div className="col-md-8">
             <div className="card mb-3 h-100">
               <div className="card-body">
-                <h5 className="card-title mb-3">{t.attributes.dimensions}</h5>
+                <h5 className="card-title mb-3">
+                  {surveyT.attributes.dimensions}
+                </h5>
                 {/* TODO improve feedback of successful save */}
                 <AutoSubmitForm
                   action={updateResponseDimensions.bind(
@@ -212,7 +268,9 @@ export default async function ProgramOfferPage({
                     messages={translations.SchemaForm}
                   />
                   <noscript>
-                    <SubmitButton>{t.actions.saveDimensions}</SubmitButton>
+                    <SubmitButton>
+                      {surveyT.actions.saveDimensions}
+                    </SubmitButton>
                   </noscript>
                 </AutoSubmitForm>
               </div>
@@ -223,7 +281,7 @@ export default async function ProgramOfferPage({
           <div className="card mb-3 h-100">
             <div className="card-body">
               <h5 className="card-title mb-3">
-                {t.attributes.technicalDetails}
+                {surveyT.attributes.technicalDetails}
               </h5>
               <SchemaForm
                 fields={technicalFields}
