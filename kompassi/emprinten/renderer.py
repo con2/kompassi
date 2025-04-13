@@ -22,7 +22,13 @@ from .models import FileVersion, ProjectFile
 
 DEBUG = False
 
-FileWithData = tuple[str, dict[str, str | dict[str, typing.Any]] | None, bool]
+
+class FileWithData(typing.TypedDict):
+    file_name: str
+    data: dict[str, str | dict[str, typing.Any]] | None
+    success: bool
+
+
 DataRow = dict[str, str | dict[str, typing.Any]]
 DataSet = list[DataRow]
 Vfs = dict[str, FileVersion]
@@ -89,6 +95,15 @@ def render_pdf(
     return_archive: bool = False,
     handle_errors: bool = False,
 ) -> HttpResponseBase:
+    """
+    Render `data` row(s) with given `files` (templates and resources) into PDF's.
+    The result is either a `HttpResponse` (any kind of failure)
+    or a `FileResponse` (for both singular PDF and ZIP with multiple PDF's).
+
+    The `return_archive` controls whether the result is a PDF or a ZIP, both with one or more data rows.
+    If `handle_errors` is `True`, problems during template compilation will return
+    a success with error message per problematic row.
+    """
     main = find_main(files)
     if main is None:
         return HttpResponse("Main file not found", status=404)
@@ -135,14 +150,14 @@ def render_pdf(
         if return_archive:
             z_name = os.path.join(tmpdir, "result.zip")
             with zipfile.ZipFile(z_name, "w") as z:
-                for pdf_name, row, success in results:
-                    post_format = "{}" if success else RENDER_FAILURE_FILE_NAME_PATTERN
+                for result in results:
+                    post_format = "{}" if result["success"] else RENDER_FAILURE_FILE_NAME_PATTERN
                     arc_name = name_factory.make(
-                        {"row": row},
-                        fallback=os.path.basename(pdf_name),
+                        {"row": result["data"]},
+                        fallback=os.path.basename(result["file_name"]),
                         post_format=post_format,
                     )
-                    z.write(pdf_name, arcname=arc_name)
+                    z.write(result["file_name"], arcname=arc_name)
             if DEBUG:
                 ls_r(tmpdir)
             # FileResponse closes the open file by itself.
@@ -152,12 +167,12 @@ def render_pdf(
             return HttpResponse(status=401)
 
         if results:
-            pdf_name, row, success = results[0]
-            post_format = "{}" if success else RENDER_FAILURE_FILE_NAME_PATTERN
-            file_name = name_factory.make({"row": row}, fallback="result.pdf", post_format=post_format)
+            result = results[0]
+            post_format = "{}" if result["success"] else RENDER_FAILURE_FILE_NAME_PATTERN
+            file_name = name_factory.make({"row": result["data"]}, fallback="result.pdf", post_format=post_format)
             # FileResponse closes the open file by itself.
             return FileResponse(
-                open(pdf_name, "rb"),
+                open(result["file_name"], "rb"),
                 content_type="application/pdf",
                 filename=file_name,
             )
@@ -228,6 +243,11 @@ class _TemplateCompiler:
     def compile(
         self, main_file_name: str, src_dir: str, data: DataSet, title_pattern: str, *, split_output: bool
     ) -> list[FileWithData]:
+        """
+        Compile a dataset with Jinja HTML template from `main_file_name` into HTML(s).
+        `src_dir` should be an empty directory where the resulting HTML files will be saved.
+        `title_pattern` is compiled with Jinja and is used to fill the head `title` element.
+        """
         lookups = find_lookup_tables(self.vfs.values())
         tpl = self.env.get_template(main_file_name)
         _title_pattern = self.env.from_string(title_pattern)
@@ -244,7 +264,7 @@ class _TemplateCompiler:
                     of.write(html_header(title=title))
                     success = self._write_render_or_error(of, tpl, row_copy, idx, lookups)
                     of.write(html_footer())
-                sources.append((src_name, row_copy, success))
+                sources.append(FileWithData(file_name=src_name, data=row_copy, success=success))
         else:
             # Render title if we have any data, but supply the row only if it is singular.
             row_copy = dict(data[0]) if len(data) == 1 else None
@@ -258,7 +278,7 @@ class _TemplateCompiler:
                 for idx, row in enumerate(data, start=1):
                     success &= self._write_render_or_error(of, tpl, dict(row), idx, lookups)
                 of.write(html_footer())
-            sources.append((src_name, row_copy, success))
+            sources.append(FileWithData(file_name=src_name, data=row_copy, success=success))
         return sources
 
     def _write_render_or_error(self, of, tpl: jinja2.Template, row: dict, idx: int, lookups: dict) -> bool:
@@ -331,9 +351,9 @@ class _HtmlCompiler:
             for sheet_file in self.stylesheets
         ]
         results: list[FileWithData] = []
-        for source, row, template_success in sources:
+        for source in sources:
             pdf_html = weasyprint.HTML(
-                filename=source,
+                filename=source["file_name"],
                 base_url=LOCAL_FILE_URI_PREFIX,
                 url_fetcher=url_fetcher,
             )
@@ -344,9 +364,9 @@ class _HtmlCompiler:
             if pdf is None:
                 raise RuntimeError("Unexpectedly None result")
 
-            dst_base = os.path.splitext(os.path.basename(source))[0]
+            dst_base = os.path.splitext(os.path.basename(source["file_name"]))[0]
             dst_name = os.path.join(result_dir, dst_base + ".pdf")
-            results.append((dst_name, row, template_success))
+            results.append(FileWithData(file_name=dst_name, data=source["data"], success=source["success"]))
             with open(dst_name, "wb") as of:
                 of.write(pdf)
 
