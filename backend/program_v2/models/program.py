@@ -12,9 +12,12 @@ from django.urls import reverse
 from django.utils.timezone import now
 
 from core.models import Event
-from core.utils import validate_slug
+from core.utils.model_utils import slugify, validate_slug
 from dimensions.models.scope import Scope
+from forms.models.response import Response
 from graphql_api.language import SUPPORTED_LANGUAGES, getattr_message_in_language
+
+from .annotations import extract_annotations
 
 if TYPE_CHECKING:
     from programme.models.programme import Programme
@@ -308,3 +311,39 @@ class Program(models.Model):
 
         bulk_delete.delete()
         ProgramDimensionValue.objects.bulk_create(bulk_create)
+
+    @classmethod
+    def from_program_offer(
+        cls,
+        program_offer: Response,
+        slug: str = "",
+        title: str = "",
+    ) -> Self:
+        """
+        Return an unsaved Program instance from a program offer.
+        """
+        values, warnings = program_offer.get_processed_form_data()
+        if warnings:
+            logger.warning("Program offer %s had form data warnings: %s", program_offer.id, warnings)
+
+        annotations = extract_annotations(values)
+
+        if not title:
+            title = values.get("title", "")
+
+        if not slug:
+            slug = slugify(title)
+
+        program = cls(
+            event=program_offer.event,
+            slug=slug,
+            title=title,
+            description=values.get("description", ""),
+            annotations=annotations,
+            created_by=program_offer.created_by,
+        )
+
+        program.full_clean()
+        program.save()
+
+        return program

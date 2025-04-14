@@ -17,6 +17,7 @@ import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
+import slugify from "@/helpers/slugify";
 import { getTranslations } from "@/translations";
 
 graphql(`
@@ -195,15 +196,21 @@ export default async function ProgramOfferPage({
 
   const acceptProgramOfferFields: Field[] = [
     {
-      slug: "title",
-      title: programT.attributes.title,
-      type: "SingleLineText",
+      slug: "message",
+      type: "StaticText",
+      helpText: t.actions.accept.message,
     },
     {
-      slug: "description",
-      title: programT.attributes.description,
-      type: "MultiLineText",
-      rows: 5,
+      slug: "slug",
+      type: "SingleLineText",
+      required: true,
+      ...programT.attributes.slug,
+    },
+    {
+      slug: "title",
+      type: "SingleLineText",
+      required: true,
+      title: programT.attributes.title,
     },
     {
       slug: "dimensionsHeader",
@@ -214,6 +221,7 @@ export default async function ProgramOfferPage({
   ];
 
   const acceptProgramOfferValues: Record<string, any> = {
+    slug: slugify(values.title || ""),
     title: values.title,
     description: values.description,
     ...dimensionValues,
@@ -235,12 +243,12 @@ export default async function ProgramOfferPage({
           title={t.actions.accept.title}
           messages={t.actions.accept.modalActions}
           action={acceptProgramOffer.bind(null, locale, eventSlug, responseId)}
-          disabled
         >
           <SchemaForm
             fields={acceptProgramOfferFields}
             values={acceptProgramOfferValues}
             messages={translations.SchemaForm}
+            headingLevel="h4"
           />
         </ModalButton>
       }

@@ -268,7 +268,6 @@ export type DimensionValueType = {
   color: Scalars['String']['output'];
   /** Initial values are set on new atoms automatically. */
   isInitial: Scalars['Boolean']['output'];
-  /** The slug is a URL-friendly identifier. It may only contain lowercase letters, numbers, and hyphens. It may not be changed after creation. */
   slug: Scalars['String']['output'];
   title?: Maybe<Scalars['String']['output']>;
   titleEn: Scalars['String']['output'];
@@ -384,7 +383,6 @@ export type FullDimensionType = {
   /** Suggests to UI that this dimension should be shown in detail view. */
   isShownInDetail: Scalars['Boolean']['output'];
   isShownToSubject: Scalars['Boolean']['output'];
-  /** The slug is a URL-friendly identifier. It may only contain lowercase letters, numbers, and hyphens. It may not be changed after creation. */
   slug: Scalars['String']['output'];
   title?: Maybe<Scalars['String']['output']>;
   titleEn: Scalars['String']['output'];

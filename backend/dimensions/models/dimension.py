@@ -4,6 +4,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from django.contrib import admin
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.http import HttpRequest
 from django.utils.translation import get_language
@@ -23,6 +24,28 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger("kompassi")
+
+
+INVALID_DIMENSION_SLUGS = [
+    # clash with field names in Program
+    "slug",
+    "title",
+    "description",
+    "annotations",
+    # clash with query string parameters for ProgramFilters
+    "favorited",
+    "past",
+    "display",
+    "search",
+]
+
+
+def invalid_slugs_validator(value: str) -> None:
+    """
+    Validator for dimension slugs. Raises a ValidationError if the slug is invalid.
+    """
+    if value in INVALID_DIMENSION_SLUGS:
+        raise ValidationError(f"{value!r} is a reserved word that cannot be used as a dimension slug.")
 
 
 class Dimension(models.Model):
@@ -81,7 +104,7 @@ class Dimension(models.Model):
         ),
     )
 
-    slug = make_slug_field(unique=False, separator="_")
+    slug = make_slug_field(unique=False, separator="_", extra_validators=[invalid_slugs_validator])
 
     # NOTE SUPPORTED_LANGUAGES
     title_en = models.TextField(blank=True, default="")

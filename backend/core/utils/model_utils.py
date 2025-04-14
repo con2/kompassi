@@ -1,5 +1,6 @@
 import re
-from typing import Literal
+from collections.abc import Callable, Iterable
+from typing import Any, Literal
 
 import phonenumbers
 from django.conf import settings
@@ -36,19 +37,15 @@ def make_slug_field(
     unique=True,
     separator: Literal["-", "_"] = "-",
     verbose_name: str | None = None,
-    help_text: str | None = None,
+    help_text: str = "",
+    extra_validators: Iterable[Callable[[Any], None]] | None = None,
 ):
     if verbose_name is None:
-        verbose_name = _("Slug")
+        verbose_name = "Slug"
 
-    if help_text is None:
-        help_text = _(
-            "The slug is a URL-friendly identifier. "
-            "It may only contain lowercase letters, numbers, and hyphens. "
-            "It may not be changed after creation."
-        )
-
-    validators = [validate_slug] if separator == "-" else [validate_slug_underscore]
+    validators: list[Callable[[Any], None]] = [validate_slug] if separator == "-" else [validate_slug_underscore]
+    if extra_validators is not None:
+        validators.extend(extra_validators)
 
     return models.CharField(
         max_length=255,

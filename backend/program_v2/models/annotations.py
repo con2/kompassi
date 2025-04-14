@@ -4,8 +4,6 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-# from programme.models.programme import Programme
-
 
 class AnnotationDataType(Enum):
     STRING = "string"
@@ -224,3 +222,18 @@ ANNOTATIONS = [
         ),
     ),
 ]
+
+
+def extract_annotations(values: dict[str, Any], annotations=ANNOTATIONS) -> dict[str, Any]:
+    """
+    Extract known annotations from processed form data.
+
+    Args:
+        values: A dictionary of values to extract annotations from.
+        annotations: A list of AnnotationSchemoid objects to use for extraction.
+
+    Returns:
+        A dictionary containing the extracted annotations.
+    """
+    # TODO typecheck against ann.type
+    return {ann.slug: value for ann in annotations if (value := values.get(ann.slug)) is not None}

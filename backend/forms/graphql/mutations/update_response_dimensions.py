@@ -2,10 +2,9 @@ import graphene
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
+from dimensions.utils.process_dimensions_form import process_dimensions_form
 
-from ...models.field import Field, FieldType
 from ...models.survey import Survey
-from ...utils.process_form_data import process_form_data
 from ..response import FullResponseType
 
 
@@ -49,21 +48,7 @@ class UpdateResponseDimensions(graphene.Mutation):
             operation="update",
         )
 
-        fields_single = [Field.from_dimension(dimension, FieldType.SINGLE_SELECT) for dimension in dimensions]
-        fields_multi = [Field.from_dimension(dimension, FieldType.MULTI_SELECT) for dimension in dimensions]
-
-        values_single, warnings_single = process_form_data(fields_single, form_data)
-        if warnings_single:
-            raise ValueError(warnings_single)
-
-        values_multi, warnings_multi = process_form_data(fields_multi, form_data)
-        if warnings_multi:
-            raise ValueError(warnings_multi)
-
-        values: dict[str, list[str]] = {k: [v] for k, v in values_single.items() if v}
-        for k, v in values_multi.items():
-            values.setdefault(k, []).extend(v)
-
+        values = process_dimensions_form(dimensions, form_data)
         response.set_dimension_values(values)
 
         return UpdateResponseDimensions(response=response)  # type: ignore
