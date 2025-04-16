@@ -838,6 +838,11 @@ const translations: Translations = {
     adminListTitle: "Ohjelmanumerot",
     inEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
     attributes: {
+      slug: {
+        title: "Tekninen nimi",
+        helpText:
+          "Ohjelmanumeron tekninen nimi. Täytyy olla uniikki tapahtuman sisällä. Ei voi muuttaa luomisen jälkeen. Voi sisältää pieniä kirjaimia, numeroita ja väliviivoja (-). Tulee osaksi osoitetta: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (esim. <code>/tracon2025/programs/opening-ceremony</code>).",
+      },
       title: "Otsikko",
       actions: "Toiminnot",
       description: "Kuvaus",
@@ -955,6 +960,14 @@ const translations: Translations = {
       actions: {
         accept: {
           title: "Hyväksy ohjelmatarjous",
+          message: (
+            <>
+              Voit luoda ohjelmanumeron tästä ohjelmatarjouksesta tarkistamalla
+              alla olevat tiedot ja valitsemalla <em>Hyväksy</em>.
+              Ohjelmanumeron tietoja voi muokata myöhemmin teknistä nimeä lukuun
+              ottamatta.
+            </>
+          ),
           modalActions: {
             submit: "Hyväksy",
             cancel: "Sulje hyväksymättä",

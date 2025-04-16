@@ -841,6 +841,11 @@ const translations = {
     singleTitle: "Program item",
     inEvent: (eventName: string) => <>in {eventName}</>,
     attributes: {
+      slug: {
+        title: "Slug",
+        helpText:
+          "Machine-readable name of the program item. Must be unique within the event. Cannot be changed after creation. Can contain lower case letters, numbers and dashes (-). Will be part of the URL: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (eg. <code>/tracon2025/programs/opening-ceremony</code>).",
+      },
       title: "Title",
       actions: "Actions",
       description: "Description",
@@ -958,6 +963,14 @@ const translations = {
       actions: {
         accept: {
           title: "Accept program offer",
+          message: (
+            <>
+              To create a program item from this program offer, please review
+              the following information about the program offer and select{" "}
+              <em>Accept</em>. You can change this information later except for
+              the slug.
+            </>
+          ),
           modalActions: {
             submit: "Accept",
             cancel: "Close without accepting",

@@ -842,6 +842,10 @@ const translations: Translations = {
     singleTitle: "Program",
     inEvent: (eventName: string) => <>i {eventName}</>,
     attributes: {
+      slug: {
+        title: "Tekniskt namn",
+        helpText: UNTRANSLATED(en.Program.attributes.slug.helpText),
+      },
       title: "Rubrik",
       actions: "Funktioner",
       description: "Beskrivning",

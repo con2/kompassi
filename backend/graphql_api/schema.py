@@ -22,6 +22,7 @@ from forms.graphql.mutations.update_form import UpdateForm
 from forms.graphql.mutations.update_form_fields import UpdateFormFields
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
+from program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
 from program_v2.graphql.mutations.create_program_form import CreateProgramForm
 from program_v2.graphql.mutations.favorites import (
     MarkProgramAsFavorite,
@@ -126,6 +127,7 @@ class Mutation(graphene.ObjectType):
     create_program_form = CreateProgramForm.Field()
     update_program_form = UpdateProgramForm.Field()
 
+    accept_program_offer = AcceptProgramOffer.Field()
     update_program = UpdateProgram.Field()
 
     # Tickets v2

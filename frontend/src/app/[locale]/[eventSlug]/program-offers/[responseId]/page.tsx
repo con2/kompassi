@@ -17,6 +17,7 @@ import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
+import slugify from "@/helpers/slugify";
 import { getTranslations } from "@/translations";
 
 graphql(`
@@ -195,31 +196,37 @@ export default async function ProgramOfferPage({
 
   const acceptProgramOfferFields: Field[] = [
     {
-      slug: "title",
-      title: programT.attributes.title,
+      slug: "slug",
       type: "SingleLineText",
+      required: true,
+      ...programT.attributes.slug,
     },
     {
-      slug: "description",
-      title: programT.attributes.description,
-      type: "MultiLineText",
-      rows: 5,
+      slug: "title",
+      type: "SingleLineText",
+      required: true,
+      title: programT.attributes.title,
     },
-    {
-      slug: "dimensionsHeader",
-      type: "StaticText",
-      title: surveyT.attributes.dimensions,
-    },
-    ...dimensionFields,
   ];
 
+  if (dimensions.length > 0) {
+    acceptProgramOfferFields.push(
+      {
+        slug: "dimensionsHeader",
+        type: "StaticText",
+        title: surveyT.attributes.dimensions,
+      },
+      ...dimensionFields,
+    );
+  }
+
   const acceptProgramOfferValues: Record<string, any> = {
+    slug: slugify(values.title || ""),
     title: values.title,
     description: values.description,
     ...dimensionValues,
   };
 
-  // XXX specialized updateProgramOfferDimensions instead of generic updateResponseDimensions
   const surveySlug = programOffer.form.survey!.slug;
 
   return (
@@ -235,12 +242,13 @@ export default async function ProgramOfferPage({
           title={t.actions.accept.title}
           messages={t.actions.accept.modalActions}
           action={acceptProgramOffer.bind(null, locale, eventSlug, responseId)}
-          disabled
         >
+          <p>{t.actions.accept.message}</p>
           <SchemaForm
             fields={acceptProgramOfferFields}
             values={acceptProgramOfferValues}
             messages={translations.SchemaForm}
+            headingLevel="h4"
           />
         </ModalButton>
       }

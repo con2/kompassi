@@ -60,6 +60,7 @@ const documents = {
     "\n  mutation CreateProgramForm($input: CreateProgramFormInput!) {\n    createProgramForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.CreateProgramFormDocument,
     "\n  fragment OfferForm on FullSurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n    countResponses\n\n    languages {\n      language\n    }\n  }\n": types.OfferFormFragmentDoc,
     "\n  query ProgramFormsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      slug\n      name\n\n      forms {\n        surveys(includeInactive: true, app: PROGRAM_V2) {\n          ...OfferForm\n        }\n      }\n    }\n  }\n": types.ProgramFormsPageDocument,
+    "\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n": types.AcceptProgramOfferDocument,
     "\n  fragment ProgramOfferDetail on FullResponseType {\n    id\n    sequenceNumber\n    createdAt\n    createdBy {\n      displayName\n      email\n    }\n    language\n    values\n    form {\n      fields\n      survey {\n        title(lang: $locale)\n        slug\n      }\n    }\n    cachedDimensions\n  }\n": types.ProgramOfferDetailFragmentDoc,
     "\n  query ProgramOfferPage(\n    $eventSlug: String!\n    $responseId: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      program {\n        dimensions(publicOnly: false) {\n          slug\n          title(lang: $locale)\n\n          values(lang: $locale) {\n            slug\n            title(lang: $locale)\n          }\n        }\n\n        programOffer(id: $responseId) {\n          ...ProgramOfferDetail\n        }\n      }\n    }\n  }\n": types.ProgramOfferPageDocument,
     "\n  fragment ProgramOffer on FullResponseType {\n    id\n    createdAt\n    createdBy {\n      displayName\n    }\n    sequenceNumber\n    values(keyFieldsOnly: true)\n    form {\n      survey {\n        title(lang: $locale)\n      }\n      language\n    }\n    cachedDimensions\n  }\n": types.ProgramOfferFragmentDoc,
@@ -325,6 +326,10 @@ export function graphql(source: "\n  fragment OfferForm on FullSurveyType {\n   
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ProgramFormsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      slug\n      name\n\n      forms {\n        surveys(includeInactive: true, app: PROGRAM_V2) {\n          ...OfferForm\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgramFormsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      slug\n      name\n\n      forms {\n        surveys(includeInactive: true, app: PROGRAM_V2) {\n          ...OfferForm\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
