@@ -11,7 +11,7 @@ from ..models.enums import SurveyApp
 from ..models.meta import FormsEventMeta, FormsProfileMeta
 from ..models.response import Response
 from ..models.survey import Survey
-from .response import ProfileResponseType
+from .response_profile import ProfileResponseType
 from .survey_full import FullSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE

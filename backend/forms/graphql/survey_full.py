@@ -14,7 +14,8 @@ from ..models.form import Form
 from ..models.survey import Survey
 from ..utils.summarize_responses import summarize_responses
 from .form import FormType
-from .response import FullResponseType, LimitedResponseType
+from .response_full import FullResponseType
+from .response_limited import LimitedResponseType
 from .survey_limited import LimitedSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE

@@ -5,7 +5,7 @@ from access.cbac import graphql_check_instance
 from dimensions.utils.process_dimensions_form import process_dimensions_form
 
 from ...models.survey import Survey
-from ..response import FullResponseType
+from ..response_full import FullResponseType
 
 
 class UpdateResponseDimensionsInput(graphene.InputObjectType):

@@ -10,7 +10,7 @@ from core.models import Event
 from core.utils.text_utils import normalize_whitespace
 from dimensions.graphql.dimension import FullDimensionType
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
-from forms.graphql.response import FullResponseType
+from forms.graphql.response_full import FullResponseType
 from forms.models.response import Response
 from graphql_api.language import DEFAULT_LANGUAGE
 

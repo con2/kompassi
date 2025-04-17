@@ -6,7 +6,7 @@ from core.utils import get_ip
 
 from ...models.response import Response
 from ...models.survey import Survey
-from ..response import ProfileResponseType
+from ..response_profile import ProfileResponseType
 
 
 class CreateSurveyResponseInput(graphene.InputObjectType):
