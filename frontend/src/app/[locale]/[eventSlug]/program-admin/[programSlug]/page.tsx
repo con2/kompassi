@@ -1,4 +1,9 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+
+import { CardText, CardTitle } from "react-bootstrap";
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
 
 import { updateProgramBasicInfo } from "./actions";
 import ProgramAdminDetailView from "./ProgramAdminDetailView";
@@ -31,6 +36,11 @@ const query = graphql(`
           title
           description
           cachedHosts
+
+          programOffer {
+            id
+            values
+          }
 
           links(lang: $locale) {
             type
@@ -128,21 +138,44 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
       translations={translations}
       active={"basicInfo"}
     >
-      <form
-        action={updateProgramBasicInfo.bind(
-          null,
-          locale,
-          event.slug,
-          program.slug,
-        )}
-      >
-        <SchemaForm
-          fields={fields}
-          values={program}
-          messages={translations.SchemaForm}
-        />
-        <SubmitButton>{translations.Common.submit}</SubmitButton>
-      </form>
+      <Card>
+        <CardBody>
+          {" "}
+          <form
+            action={updateProgramBasicInfo.bind(
+              null,
+              locale,
+              event.slug,
+              program.slug,
+            )}
+          >
+            <SchemaForm
+              fields={fields}
+              values={program}
+              messages={translations.SchemaForm}
+            />
+            <SubmitButton>{translations.Common.submit}</SubmitButton>
+          </form>
+        </CardBody>
+      </Card>
+
+      {program.programOffer && (
+        <Card className="mt-4">
+          <CardBody>
+            <CardTitle>{t.attributes.programOffer.title}</CardTitle>
+            <CardText>{t.attributes.programOffer.message}</CardText>
+            <CardText>
+              <Link
+                className="link-subtle"
+                href={`/${event.slug}/program-offers/${program.programOffer.id}`}
+              >
+                {(program.programOffer.values as any).title ||
+                  program.programOffer.id}
+              </Link>
+            </CardText>
+          </CardBody>
+        </Card>
+      )}
     </ProgramAdminDetailView>
   );
 }

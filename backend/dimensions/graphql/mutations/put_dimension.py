@@ -73,6 +73,10 @@ class PutDimension(graphene.Mutation):
             # updating existing Dimension
             dimension = universe.dimensions.get(slug=input.dimension_slug)
             form = DimensionForm(form_data, instance=dimension)
+
+            # TODO dimension.can_be_edited_by
+            if dimension.is_technical:
+                raise ValueError("Cannot edit technical dimension")
         else:
             form = DimensionForm(form_data)
 

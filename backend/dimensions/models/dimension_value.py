@@ -25,6 +25,10 @@ class DimensionValue(models.Model):
         default=False,
         help_text="Initial values are set on new atoms automatically.",
     )
+    is_technical = models.BooleanField(
+        default=False,
+        help_text="Technical values cannot be edited in the UI. They are used for internal purposes and have some assumptions about them.",
+    )
 
     order = models.SmallIntegerField(
         default=0,
@@ -72,6 +76,7 @@ class DimensionValue(models.Model):
                 field="self",
                 app=self.universe.app,
             )
+            and not self.is_technical
             and not self.is_in_use
         )
 

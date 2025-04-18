@@ -1,7 +1,5 @@
 import Link from "next/link";
-import { Children, ReactNode } from "react";
-import Card from "react-bootstrap/Card";
-import CardBody from "react-bootstrap/CardBody";
+import { ReactNode } from "react";
 import ProgramAdminDetailTabs, {
   ProgramAdminTab,
 } from "./ProgramAdminDetailTabs";
@@ -39,7 +37,7 @@ export default function ProgramAdminDetailView({
   return (
     <ViewContainer>
       <Link className="link-subtle" href={`/${event.slug}/program-admin`}>
-        &lt; {t.actions.returnToProgramList(event.name)}
+        &lt; {t.actions.returnToProgramAdminList(event.name)}
       </Link>
 
       <ViewHeading>
@@ -54,9 +52,7 @@ export default function ProgramAdminDetailView({
         active={active}
       />
 
-      <Card>
-        <CardBody>{children}</CardBody>
-      </Card>
+      {children}
     </ViewContainer>
   );
 }

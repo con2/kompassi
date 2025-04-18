@@ -849,9 +849,22 @@ const translations: Translations = {
       title: "Rubrik",
       actions: "Funktioner",
       description: "Beskrivning",
+      state: {
+        title: "Status",
+        choices: {
+          new: "Ny",
+          accepted: "Godkänd",
+        },
+      },
+      programOffer: {
+        title: "Programerbjudande",
+        message: "Det här programmet har skapats från ett programerbjudande:",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>
+        `Tillbaka till programmet för ${eventName}`,
+      returnToProgramAdminList: (eventName: string) =>
         `Tillbaka till programmet för ${eventName}`,
       addTheseToCalendar: "Lägg till dessa program i kalendern",
       addThisToCalendar: "Lägg till detta program i kalendern",

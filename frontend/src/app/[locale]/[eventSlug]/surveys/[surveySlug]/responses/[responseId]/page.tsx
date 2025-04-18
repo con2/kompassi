@@ -8,7 +8,7 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
-import { buildDimensionForm } from "@/components/dimensions/helpers";
+import { buildDimensionValueSelectionForm } from "@/components/dimensions/helpers";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, Layout, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
@@ -178,7 +178,7 @@ export default async function SurveyResponsePage({ params }: Props) {
   const dimensions = data.event.forms.survey.dimensions ?? [];
 
   const { fields: dimensionFields, values: dimensionValues } =
-    buildDimensionForm(dimensions, response.cachedDimensions);
+    buildDimensionValueSelectionForm(dimensions, response.cachedDimensions);
 
   let cannotRemoveReason: string | ReactNode | null = null;
   if (!canRemoveResponses) {

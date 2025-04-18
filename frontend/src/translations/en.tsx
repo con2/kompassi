@@ -849,10 +849,24 @@ const translations = {
       title: "Title",
       actions: "Actions",
       description: "Description",
+      state: {
+        title: "State",
+        choices: {
+          new: "New",
+          accepted: "Accepted",
+        },
+      },
+      programOffer: {
+        title: "Program offer",
+        message:
+          "This program item was created based on the following program offer:",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>
         `Return to the program schedule of ${eventName}`,
+      returnToProgramAdminList: (eventName: string) =>
+        `Return to the list of program items of ${eventName}`,
       addTheseToCalendar: "Add these program items to your calendar",
       addThisToCalendar: "Add this program item to your calendar",
       signUpForThisProgram: "Sign up for this program item",
@@ -959,6 +973,53 @@ const translations = {
     ProgramOffer: {
       singleTitle: "Program offer",
       listTitle: "Program offers",
+
+      attributes: {
+        programs: {
+          title: "Program items",
+          message: (numPrograms: number) =>
+            numPrograms === 1 ? (
+              <>
+                The following program item has been created based on this
+                program offer:
+              </>
+            ) : (
+              <>
+                The following program items have been created from this offer:
+              </>
+            ),
+          acceptAgainWarning: (numPrograms: number) =>
+            numPrograms === 1 ? (
+              <>
+                The following program item has already been created based on
+                this program offer. You are free to accept the offer again, in
+                which case another program item will be created. (The link will
+                open in a new tab.)
+              </>
+            ) : (
+              <>
+                The following program items have already been created based on
+                this program offer. You are free to accept the offer again, in
+                which case another program item will be created. (These links
+                will open in a new tab.)
+              </>
+            ),
+          dimensionsWillNotBeUpdatedOnProgramItem: (numPrograms: number) =>
+            numPrograms === 1 ? (
+              <>
+                If you change the dimensions of this program offer, the changes
+                will not be reflected in the program item created from this
+                offer. You will need to edit the program item separately.
+              </>
+            ) : (
+              <>
+                If you change the dimensions of this program offer, the changes
+                will not be reflected in the program items created from this
+                offer. You will need to edit the program items separately.
+              </>
+            ),
+        },
+      },
 
       actions: {
         accept: {

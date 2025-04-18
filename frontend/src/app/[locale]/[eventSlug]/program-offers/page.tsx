@@ -7,9 +7,14 @@ import { ProgramOfferFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
-import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
+import ColoredDimensionTableCell, {
+  buildKeyDimensionColumns,
+} from "@/components/dimensions/ColoredDimensionTableCell";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
-import { buildDimensionFilters } from "@/components/dimensions/helpers";
+import {
+  buildDimensionFilters,
+  getDimensionValueTitle,
+} from "@/components/dimensions/helpers";
 import { Dimension } from "@/components/dimensions/models";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
@@ -36,38 +41,51 @@ graphql(`
       language
     }
     cachedDimensions
+    programs {
+      slug
+      title
+    }
   }
 `);
 
+graphql(`
+  fragment ProgramOfferDimension on FullDimensionType {
+    slug
+    title(lang: $locale)
+
+    values(lang: $locale) {
+      slug
+      title(lang: $locale)
+      color
+    }
+  }
+`);
+
+// TODO
 const query = graphql(`
-  query ProgramOffers($eventSlug: String!, $locale: String) {
+  query ProgramOffers(
+    $eventSlug: String!
+    $locale: String
+    $filters: [DimensionFilterInput!]
+  ) {
     event(slug: $eventSlug) {
       slug
       name
       program {
         listFilters: dimensions(isListFilter: true, publicOnly: false) {
-          slug
-          title(lang: $locale)
-
-          values(lang: $locale) {
-            slug
-            title(lang: $locale)
-            color
-          }
+          ...ProgramOfferDimension
         }
 
         keyDimensions: dimensions(keyDimensionsOnly: true, publicOnly: false) {
-          slug
-          title(lang: $locale)
+          ...ProgramOfferDimension
+        }
 
-          values(lang: $locale) {
-            slug
-            title(lang: $locale)
-          }
+        stateDimension {
+          ...ProgramOfferDimension
         }
 
         countProgramOffers
-        programOffers {
+        programOffers(filters: $filters) {
           ...ProgramOffer
         }
       }
@@ -148,6 +166,8 @@ export default async function ProgramOffersPage({
     notFound();
   }
 
+  const event = data.event;
+
   const keyFields: Field[] = [
     {
       slug: "title",
@@ -158,12 +178,8 @@ export default async function ProgramOffersPage({
 
   const columns: Column<ProgramOfferFragment>[] = [
     {
-      slug: "sequenceNumber",
-      title: "#",
-    },
-    {
       slug: "createdAt",
-      title: surveyT.attributes.createdAt,
+      title: <>{surveyT.attributes.createdAt} 🔼</>,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/program-offers/${row.id}?${queryString}`}>
           <FormattedDateTime
@@ -219,6 +235,64 @@ export default async function ProgramOffersPage({
 
   const keyDimensions = data.event.program.keyDimensions;
   columns.push(...buildKeyDimensionColumns(keyDimensions));
+
+  const stateDimension = data.event.program.stateDimension;
+  if (stateDimension) {
+    columns.push({
+      slug: "state",
+      title: stateDimension.title,
+      getCellElement: (row, children) => (
+        <ColoredDimensionTableCell
+          cachedDimensions={row.cachedDimensions}
+          dimension={stateDimension}
+        >
+          {children}
+        </ColoredDimensionTableCell>
+      ),
+      getCellContents: (row) => {
+        // It's a rare occurrence that multiple programs are created from a single offer,
+        // but as a quick workaround, if such is the case, make a link for each.
+        if (row.programs.length > 0) {
+          return row.programs.map((program) => (
+            <div key={program.slug}>
+              <Link
+                className="link-subtle"
+                href={`/${event.slug}/program-admin/${program.slug}`}
+                title={program.title}
+              >
+                {getDimensionValueTitle(stateDimension, row.cachedDimensions)}
+              </Link>
+            </div>
+          ));
+        } else {
+          return getDimensionValueTitle(stateDimension, row.cachedDimensions);
+        }
+      },
+    });
+  } else {
+    // TODO is this fallback necessary?
+    columns.push({
+      slug: "state",
+      title: programT.attributes.state.title,
+      getCellContents: (row) => {
+        if (row.programs.length > 0) {
+          return row.programs.map((program) => (
+            <div key={program.slug}>
+              <Link
+                className="link-subtle"
+                href={`/${event.slug}/program-admin/${program.slug}`}
+                title={program.title}
+              >
+                {programT.attributes.state.choices.accepted}
+              </Link>
+            </div>
+          ));
+        } else {
+          return programT.attributes.state.choices.new;
+        }
+      },
+    });
+  }
 
   const programOffers = data.event.program.programOffers;
   const listFilters = data.event.program.listFilters;

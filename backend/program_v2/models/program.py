@@ -68,6 +68,15 @@ class Program(models.Model):
     cached_location = models.JSONField(blank=True, default=dict)
     cached_color = models.CharField(max_length=15, blank=True, default="")
 
+    program_offer = models.ForeignKey(
+        Response,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="programs",
+        help_text="If this program was created from a program offer, this field will be set to the program offer.",
+    )
+
     # related fields
     dimensions: models.QuerySet[ProgramDimensionValue]
     schedule_items: models.QuerySet[ScheduleItem]
@@ -342,6 +351,7 @@ class Program(models.Model):
             annotations=annotations,
             created_by=program_offer.created_by,
             cached_dimensions={},
+            program_offer=program_offer,
         )
 
         program.full_clean()

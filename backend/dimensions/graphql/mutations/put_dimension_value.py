@@ -70,6 +70,10 @@ class PutDimensionValue(graphene.Mutation):
         if input.value_slug is not None:
             value = dimension.values.get(slug=input.value_slug)
             form = DimensionValueForm(form_data, instance=value)
+
+            # TODO value.can_be_edited_by
+            if value.is_technical:
+                raise ValueError("Cannot edit technical dimension")
         else:
             form = DimensionValueForm(form_data)
 

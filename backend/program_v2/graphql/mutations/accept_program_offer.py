@@ -78,6 +78,9 @@ class AcceptProgramOffer(graphene.Mutation):
             list(event.program_universe.dimensions.all()),
             form_data,
         )
+        dimension_values.update(
+            state=["accepted"],
+        )
         program_offer.set_dimension_values(dimension_values)
 
         program = Program.from_program_offer(

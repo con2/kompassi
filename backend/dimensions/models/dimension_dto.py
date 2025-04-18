@@ -26,6 +26,7 @@ class DimensionDTO(pydantic.BaseModel):
     is_list_filter: bool = pydantic.Field(default=True)
     is_shown_in_detail: bool = pydantic.Field(default=True)
     is_negative_selection: bool = pydantic.Field(default=False)
+    is_technical: bool = pydantic.Field(default=False)
 
     value_ordering: ValueOrdering = pydantic.Field(default=ValueOrdering.TITLE)
 
@@ -55,6 +56,7 @@ class DimensionDTO(pydantic.BaseModel):
                 is_list_filter=dimension_dto.is_list_filter,
                 is_shown_in_detail=dimension_dto.is_shown_in_detail,
                 is_negative_selection=dimension_dto.is_negative_selection,
+                is_technical=dimension_dto.is_technical,
                 value_ordering=dimension_dto.value_ordering,
                 order=order * 10,
             )
@@ -72,9 +74,12 @@ class DimensionDTO(pydantic.BaseModel):
                 "title_en",
                 "title_fi",
                 "title_sv",
+                "is_key_dimension",
+                "is_multi_value",
                 "is_list_filter",
                 "is_shown_in_detail",
                 "is_negative_selection",
+                "is_technical",
                 "value_ordering",
                 "order",
             ),
@@ -85,6 +90,7 @@ class DimensionDTO(pydantic.BaseModel):
             DimensionValue(
                 dimension=dim_dj,
                 slug=choice.slug,
+                is_technical=choice.is_technical,
                 # NOTE SUPPORTED_LANGUAGES
                 title_en=choice.title.get("en", ""),
                 title_fi=choice.title.get("fi", ""),
@@ -102,6 +108,7 @@ class DimensionDTO(pydantic.BaseModel):
                 unique_fields=("dimension", "slug"),
                 update_fields=(
                     # NOTE SUPPORTED_LANGUAGES
+                    "is_technical",
                     "title_en",
                     "title_fi",
                     "title_sv",

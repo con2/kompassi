@@ -80,14 +80,11 @@ class ProgramV2EventMeta(EventMetaBase):
     def is_auto_importing_from_v1(self):
         return self.importer_name != ""
 
-    # TODO should this be a fkey?
     @cached_property
     def universe(self) -> Universe:
-        return Universe.objects.get_or_create(
-            scope=self.event.scope,
-            slug="program",
-            app="program_v2",
-        )[0]
+        from program_v2.workflow import ProgramOfferWorkflow
+
+        return ProgramOfferWorkflow.get_program_universe(self.event)
 
     @property
     def program_offers(self):

@@ -86,6 +86,7 @@ export function DimensionEditor({
     dimension: DimensionRowGroupFragment;
   }) {
     const rowspan = dimension.values.length + 1;
+    const dimensionEditIcon = dimension.isTechnical ? "🔧" : "✏️";
     return (
       <>
         <td rowSpan={rowspan} scope="rowgroup">
@@ -105,12 +106,13 @@ export function DimensionEditor({
             title={t.actions.editDimension}
             label={
               <>
-                <span className="me-2">✏️</span>
+                <span className="me-2">{dimensionEditIcon}</span>
                 <code>{dimension.slug}</code>
               </>
             }
             messages={t.editDimensionModal.actions}
             action={onUpdateDimension.bind(null, dimension.slug)}
+            disabled={dimension.isTechnical}
           >
             <DimensionForm
               messages={{
@@ -167,6 +169,7 @@ export function DimensionEditor({
     dimension: DimensionRowGroupFragment;
   }) {
     const backgroundColor = value.color && makeColorTranslucent(value.color);
+    const valueEditIcon = value.isTechnical ? "🔧" : "✏️";
 
     return (
       <>
@@ -191,7 +194,7 @@ export function DimensionEditor({
             title={t.actions.editDimensionValue}
             label={
               <>
-                <span className="me-2">✏️</span>
+                <span className="me-2">{valueEditIcon}</span>
                 <code>{value.slug}</code>
               </>
             }
@@ -201,6 +204,7 @@ export function DimensionEditor({
               dimension.slug,
               value.slug,
             )}
+            disabled={value.isTechnical}
           >
             <DimensionValueForm
               messages={{

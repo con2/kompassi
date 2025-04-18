@@ -846,10 +846,24 @@ const translations: Translations = {
       title: "Otsikko",
       actions: "Toiminnot",
       description: "Kuvaus",
+      state: {
+        title: "Tila",
+        choices: {
+          new: "Uusi",
+          accepted: "Hyväksytty",
+        },
+      },
+      programOffer: {
+        title: "Ohjelmatarjous",
+        message:
+          "Tämä ohjelmanumero on luotu seuraavan ohjelmatarjouksen perusteella:",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>
         `Takaisin tapahtuman ${eventName} ohjelmaan`,
+      returnToProgramAdminList: (eventName: string) =>
+        `Takaisin tapahtuman ${eventName} ohjelmanumeroiden hallintaan`,
       addTheseToCalendar: "Lisää nämä ohjelmanumerot kalenteriin",
       addThisToCalendar: "Lisää tämä ohjelmanumero kalenteriin",
       signUpForThisProgram: "Ilmoittaudu tähän ohjelmanumeroon",
@@ -956,6 +970,53 @@ const translations: Translations = {
     ProgramOffer: {
       singleTitle: "Ohjelmatarjous",
       listTitle: "Ohjelmatarjoukset",
+
+      attributes: {
+        programs: {
+          title: "Ohjelmanumerot",
+          message: (numPrograms: number) =>
+            numPrograms === 1 ? (
+              <>
+                Seuraava ohjelmanumero on luotu tämän ohjelmatarjouksen
+                perusteella:
+              </>
+            ) : (
+              <>
+                Seuraavat ohjelmanumerot on luotu tämän ohjelmatarjouksen
+                perusteella:
+              </>
+            ),
+          acceptAgainWarning: (numPrograms: number) =>
+            numPrograms === 1 ? (
+              <>
+                Seuraava ohjelmanumero on jo luotu tämän ohjelmatarjouksen
+                perusteella. Voit hyväksyä ohjelmatarjouksen uudelleen, jolloin
+                luodaan uusi ohjelmanumero. (Tämä linkki avautuu uuteen
+                välilehteen.)
+              </>
+            ) : (
+              <>
+                Seuraavat ohjelmanumerot on jo luotu tämän ohjelmatarjouksen
+                perusteella. Voit hyväksyä ohjelmatarjouksen uudelleen, jolloin
+                luodaan uusi ohjelmanumero. (Nämä linkit avautuvat uuteen
+                välilehteen.)
+              </>
+            ),
+          dimensionsWillNotBeUpdatedOnProgramItem: (numPrograms: number) =>
+            numPrograms === 1 ? (
+              <>
+                Jos muutat tämän ohjelmatarjouksen dimensioita, muutokset eivät
+                päivity ohjelmanumeroon. Ohjelmanumero tulee päivittää erikseen.
+              </>
+            ) : (
+              <>
+                Jos muutat tämän ohjelmatarjouksen dimensioita, muutokset eivät
+                päivity ohjelmanumeroihin. Ohjelmanumerot tulee päivittää
+                erikseen.
+              </>
+            ),
+        },
+      },
 
       actions: {
         accept: {

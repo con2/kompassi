@@ -92,6 +92,13 @@ class Dimension(models.Model):
             "NOTE: Does not make sense without `is_multi_value`."
         ),
     )
+    is_technical = models.BooleanField(
+        default=False,
+        help_text=(
+            "Technical dimensions are not editable in the UI. "
+            "They are used for internal purposes have some assumptions about them (eg. their existence and that of certain values)."
+        ),
+    )
 
     value_ordering = models.CharField(
         choices=ValueOrdering.choices,
@@ -190,6 +197,7 @@ class Dimension(models.Model):
                 field="self",
                 app=self.universe.app,
             )
+            and not self.is_technical
             and not self.is_in_use
         )
 

@@ -246,6 +246,8 @@ class Setup:
             )
 
     def setup_program_v2(self):
+        from program_v2.workflow import ProgramOfferWorkflow
+
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
@@ -253,6 +255,10 @@ class Setup:
                 admin_group=admin_group,
             ),
         )
+
+        # TODO(ropecon2026): Remove (normally setup when program universe is first accessed)
+        # if not self.event.program_universe.dimensions.filter(slug="state").exists():
+        ProgramOfferWorkflow.backfill_default_dimensions(self.event)
 
     def setup_forms(self):
         (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])

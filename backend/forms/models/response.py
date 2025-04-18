@@ -25,6 +25,7 @@ from .form import Form
 if TYPE_CHECKING:
     from dimensions.models.dimension import Dimension
     from dimensions.models.dimension_value import DimensionValue
+    from program_v2.models.program import Program
 
     from ..utils.process_form_data import FieldWarning
     from .field import Field
@@ -65,6 +66,7 @@ class Response(models.Model):
 
     # related fields
     dimensions: models.QuerySet[ResponseDimensionValue]
+    programs: models.QuerySet[Program]
 
     @property
     def survey(self) -> Survey:

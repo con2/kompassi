@@ -21,6 +21,7 @@ class FullDimensionType(DjangoObjectType):
             "is_list_filter",
             "is_shown_in_detail",
             "is_negative_selection",
+            "is_technical",
             "value_ordering",
             # NOTE SUPPORTED_LANGUAGES
             "title_en",

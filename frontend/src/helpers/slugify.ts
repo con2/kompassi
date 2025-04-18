@@ -16,5 +16,9 @@ const charMap: Record<string, string> = {
 export default function slugify(ustr: string) {
   ustr = ustr.toLowerCase();
   ustr = Array.prototype.map.call(ustr, (c) => charMap[c] || c).join("");
-  return ustr.replace(/[^a-z0-9-]/g, "").replace(/-+/g, "-");
+  return ustr
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-") // collapse multiple dashes
+    .replace(/-$/, "") // remove trailing dash
+    .replace(/^-/, ""); // remove leading dash
 }

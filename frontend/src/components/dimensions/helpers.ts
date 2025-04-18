@@ -55,6 +55,7 @@ export function getDimensionValueTitle(
 export function buildDimensionField(
   dimension: Dimension,
   cachedDimensions: unknown,
+  technicalDimensions: "omit" | "readonly" | "editable" = "omit",
 ) {
   validateCachedDimensions(cachedDimensions);
 
@@ -69,6 +70,7 @@ export function buildDimensionField(
   }
 
   const value = type === "SingleSelect" ? valueList[0] ?? "" : valueList;
+  const readOnly = technicalDimensions === "readonly" && dimension.isTechnical;
 
   const field: SingleSelect | MultiSelect =
     type === "SingleSelect"
@@ -78,21 +80,28 @@ export function buildDimensionField(
           presentation: "dropdown",
           title: dimension.title ?? dimension.slug,
           choices: buildDimensionChoices(dimension),
+          readOnly,
         }
       : {
           slug: dimension.slug,
           type: "MultiSelect",
           title: dimension.title ?? dimension.slug,
           choices: buildDimensionChoices(dimension),
+          readOnly,
         };
 
   return { field, value };
 }
 
-export function buildDimensionForm(
+export function buildDimensionValueSelectionForm(
   dimensions: Dimension[],
   cachedDimensions: unknown,
+  technicalDimensions: "omit" | "readonly" | "editable" = "omit",
 ) {
+  if (technicalDimensions === "omit") {
+    dimensions = dimensions.filter((dimension) => !dimension.isTechnical);
+  }
+
   const fieldsValues = dimensions.map((dimension) =>
     buildDimensionField(dimension, cachedDimensions),
   );

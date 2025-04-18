@@ -226,13 +226,9 @@ class Event(models.Model):
         The Universe for Dimensions that are attached to program items.
         NOTE: Must return the same as ProgramV2EventMeta.universe.
         """
-        from dimensions.models.universe import Universe
+        from program_v2.workflow import ProgramOfferWorkflow
 
-        return Universe.objects.get_or_create(
-            scope=self.scope,
-            slug="program",
-            app="program_v2",
-        )[0]
+        return ProgramOfferWorkflow.get_program_universe(self)
 
     @classmethod
     def get_or_create_dummy(cls, name="Dummy event"):

@@ -9,6 +9,7 @@ from django.utils.timezone import now
 
 from dimensions.filters import DimensionFilters
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
+from forms.models.response import Response
 from forms.utils.process_form_data import FALSY_VALUES
 
 from .models.program import Program
@@ -163,3 +164,9 @@ class ProgramFilters:
             )
             .order_by("start_time")
         )
+
+    def filter_program_offers(
+        self,
+        program_offers: models.QuerySet[Response],
+    ):
+        return self.dimension_filters.filter(program_offers)

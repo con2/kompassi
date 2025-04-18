@@ -30,6 +30,7 @@ from .enums import SurveyApp
 
 if TYPE_CHECKING:
     from .form import Form
+    from .workflow import Workflow
 
 logger = logging.getLogger("kompassi")
 
@@ -153,6 +154,16 @@ class Survey(models.Model):
                 return self.event.program_universe
             case _:
                 raise NotImplementedError(self.app)
+
+    @cached_property
+    def workflow(self) -> Workflow:
+        """
+        Returns the workflow for this survey. The workflow is used to
+        automatically update dimensions and possibly do other things in the future.
+        """
+        from .workflow import Workflow
+
+        return Workflow.get_workflow(self)
 
     @property
     def is_active(self):

@@ -7,7 +7,7 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
-import { buildDimensionForm } from "@/components/dimensions/helpers";
+import { buildDimensionValueSelectionForm } from "@/components/dimensions/helpers";
 import { Dimension } from "@/components/dimensions/models";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
@@ -38,6 +38,10 @@ graphql(`
         slug
       }
     }
+    programs {
+      slug
+      title
+    }
     cachedDimensions
   }
 `);
@@ -55,6 +59,7 @@ const query = graphql(`
         dimensions(publicOnly: false) {
           slug
           title(lang: $locale)
+          isTechnical
 
           values(lang: $locale) {
             slug
@@ -160,11 +165,6 @@ export default async function ProgramOfferPage({
   // but it shall suffice until someone comes up with a Design Vision™
   const technicalFields: Field[] = [
     {
-      slug: "sequenceNumber",
-      type: "SingleLineText",
-      title: surveyT.attributes.sequenceNumber,
-    },
-    {
       slug: "createdAt",
       // TODO(#438) use DateTimeField
       type: "SingleLineText",
@@ -192,7 +192,17 @@ export default async function ProgramOfferPage({
 
   const dimensions: Dimension[] = data.event.program.dimensions;
   const { fields: dimensionFields, values: dimensionValues } =
-    buildDimensionForm(dimensions, programOffer.cachedDimensions);
+    buildDimensionValueSelectionForm(
+      dimensions,
+      programOffer.cachedDimensions,
+      "editable",
+    );
+  const { fields: acceptDimensionFields, values: acceptDimensionValues } =
+    buildDimensionValueSelectionForm(
+      dimensions,
+      programOffer.cachedDimensions,
+      "omit",
+    );
 
   const acceptProgramOfferFields: Field[] = [
     {
@@ -209,22 +219,24 @@ export default async function ProgramOfferPage({
     },
   ];
 
-  if (dimensions.length > 0) {
+  if (dimensions.filter((dimension) => !dimension.isTechnical).length > 0) {
     acceptProgramOfferFields.push(
       {
         slug: "dimensionsHeader",
         type: "StaticText",
         title: surveyT.attributes.dimensions,
       },
-      ...dimensionFields,
+      ...acceptDimensionFields,
     );
   }
 
+  const uniquenessInsurance =
+    programOffer.programs.length > 0 ? `-${programOffer.programs.length}` : "";
   const acceptProgramOfferValues: Record<string, any> = {
-    slug: slugify(values.title || ""),
+    slug: slugify(values.title || "") + uniquenessInsurance,
     title: values.title,
     description: values.description,
-    ...dimensionValues,
+    ...acceptDimensionValues,
   };
 
   const surveySlug = programOffer.form.survey!.slug;
@@ -243,6 +255,27 @@ export default async function ProgramOfferPage({
           messages={t.actions.accept.modalActions}
           action={acceptProgramOffer.bind(null, locale, eventSlug, responseId)}
         >
+          {programOffer.programs.length > 0 && (
+            <div className="alert alert-warning">
+              <p>
+                {t.attributes.programs.acceptAgainWarning(
+                  programOffer.programs.length,
+                )}
+              </p>
+              {programOffer.programs.map((program) => (
+                <div key={program.slug}>
+                  <Link
+                    className="link-subtle"
+                    href={`/${eventSlug}/program-admin/${program.slug}`}
+                    title={program.title}
+                    target="_blank"
+                  >
+                    {program.title}
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
           <p>{t.actions.accept.message}</p>
           <SchemaForm
             fields={acceptProgramOfferFields}
@@ -301,6 +334,28 @@ export default async function ProgramOfferPage({
           </div>
         </div>
       </div>
+
+      {programOffer.programs.length > 0 && (
+        <div className="alert alert-primary">
+          <p>{t.attributes.programs.message(programOffer.programs.length)}</p>
+          {programOffer.programs.map((program) => (
+            <div key={program.slug}>
+              <Link
+                className="link-subtle"
+                href={`/${eventSlug}/program-admin/${program.slug}`}
+                title={program.title}
+              >
+                {program.title}
+              </Link>
+            </div>
+          ))}
+          <p className="mt-3 mb-0">
+            {t.attributes.programs.dimensionsWillNotBeUpdatedOnProgramItem(
+              programOffer.programs.length,
+            )}
+          </p>
+        </div>
+      )}
 
       <SchemaForm
         fields={fields}

@@ -24,6 +24,7 @@ graphql(`
     slug
     color
     isInitial
+    isTechnical
     canRemove
     title(lang: $locale)
     # NOTE SUPPORTED_LANGUAGES
@@ -44,6 +45,7 @@ graphql(`
     isListFilter
     isShownInDetail
     isNegativeSelection
+    isTechnical
     valueOrdering
     # NOTE SUPPORTED_LANGUAGES
     titleFi

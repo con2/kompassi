@@ -171,15 +171,25 @@ class ProgramV2EventMetaType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_program_offers(meta: ProgramV2EventMeta, info):
+    def resolve_program_offers(
+        meta: ProgramV2EventMeta,
+        info,
+        filters: list[DimensionFilterInput] | None = None,
+    ):
         """
         Returns all responses to all program offer forms of this event.
         """
         graphql_check_model(Response, meta.event.scope, info, app="program_v2")
-        return meta.program_offers.all().order_by("created_at")
+        program_offers = meta.program_offers.all()
+
+        if filters:
+            program_offers = ProgramFilters.from_graphql(filters).filter_program_offers(program_offers)
+
+        return program_offers.order_by("-created_at")
 
     program_offers = graphene.NonNull(
         graphene.List(graphene.NonNull(FullResponseType)),
+        filters=graphene.List(DimensionFilterInput),
         description=normalize_whitespace(resolve_program_offers.__doc__ or ""),
     )
 
@@ -211,6 +221,19 @@ class ProgramV2EventMetaType(DjangoObjectType):
         FullResponseType,
         id=graphene.String(required=True),
         description=normalize_whitespace(resolve_program_offer.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_state_dimension(meta: ProgramV2EventMeta, info):
+        """
+        Returns the state dimension of the event, if there is one.
+        """
+        # TODO does it make sense to hard-code the name "state"?
+        return meta.universe.dimensions.filter(slug="state").first()
+
+    state_dimension = graphene.Field(
+        FullDimensionType,
+        description=normalize_whitespace(resolve_state_dimension.__doc__ or ""),
     )
 
 

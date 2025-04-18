@@ -2,6 +2,7 @@ import graphene
 from graphene.types.generic import GenericScalar
 
 from core.utils.text_utils import normalize_whitespace
+from forms.graphql.response_limited import LimitedResponseType
 
 from ..models import Program
 from ..models.annotations import ANNOTATIONS
@@ -77,6 +78,10 @@ class FullProgramType(LimitedProgramType):
 
     color = graphene.NonNull(graphene.String)
 
+    program_offer = graphene.Field(
+        LimitedResponseType,
+    )
+
     class Meta:
         model = Program
         fields = (
@@ -88,4 +93,5 @@ class FullProgramType(LimitedProgramType):
             "cached_latest_end_time",
             "created_at",
             "updated_at",
+            "program_offer",
         )
