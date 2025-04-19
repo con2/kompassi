@@ -7,6 +7,7 @@ from functools import cached_property
 from django.conf import settings
 from django.db import models
 
+from core.models.contact_email_mixin import ContactEmailMixin, contact_email_validator
 from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
 
@@ -15,7 +16,7 @@ from ..optimized_server.models.enums import PaymentProvider, PaymentStatus
 logger = logging.getLogger("kompassi")
 
 
-class TicketsV2EventMeta(EventMetaBase):
+class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
     provider_id = models.SmallIntegerField(
         choices=[(x.value, x.name) for x in PaymentProvider],
         default=PaymentProvider.NONE,
@@ -26,6 +27,13 @@ class TicketsV2EventMeta(EventMetaBase):
     terms_and_conditions_url_en = models.TextField(default="", blank=True)
     terms_and_conditions_url_fi = models.TextField(default="", blank=True)
     terms_and_conditions_url_sv = models.TextField(default="", blank=True)
+
+    contact_email = models.CharField(
+        max_length=255,
+        blank=True,
+        validators=[contact_email_validator],
+        help_text="Foo Bar <foo.bar@example.com>",
+    )
 
     use_cbac = True
 

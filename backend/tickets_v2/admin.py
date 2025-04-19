@@ -13,6 +13,7 @@ class TicketsV2EventMetaForm(forms.ModelForm):
     class Meta:
         model = TicketsV2EventMeta
         fields = (
+            "contact_email",
             "provider_id",
             # NOTE SUPPORTED_LANGUAGES
             "terms_and_conditions_url_en",

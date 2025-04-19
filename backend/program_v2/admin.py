@@ -43,6 +43,7 @@ class ProgramV2EventMetaForm(forms.ModelForm):
         fields = (
             "location_dimension",
             "is_accepting_feedback",
+            "contact_email",
         )
 
     def __init__(self, *args, **kwargs):

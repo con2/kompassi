@@ -4,6 +4,7 @@ from functools import cached_property
 from django.conf import settings
 from django.db import models
 
+from core.models.contact_email_mixin import ContactEmailMixin, contact_email_validator
 from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
 from dimensions.models.dimension import Dimension
@@ -16,7 +17,7 @@ IMPORTER_CHOICES = [
 ]
 
 
-class ProgramV2EventMeta(EventMetaBase):
+class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     location_dimension = models.ForeignKey(
         Dimension,
         on_delete=models.PROTECT,
@@ -46,6 +47,13 @@ class ProgramV2EventMeta(EventMetaBase):
         default=True,
         verbose_name="Is accepting feedback",
         help_text="If checked, feedback can be left for programs.",
+    )
+
+    contact_email = models.CharField(
+        max_length=255,
+        blank=True,
+        validators=[contact_email_validator],
+        help_text="Foo Bar <foo.bar@example.com>",
     )
 
     use_cbac = True
