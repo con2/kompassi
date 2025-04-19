@@ -285,7 +285,7 @@ class Event(models.Model):
     enrollment_event_meta = event_meta_property("enrollment")
     intra_event_meta = event_meta_property("intra")
 
-    @cached_property
+    @property
     def program_v2_event_meta(self) -> ProgramV2EventMeta | None:
         """
         for program_v2, app_label is program_v2 but prefix is programv2
@@ -293,19 +293,29 @@ class Event(models.Model):
         """
         from program_v2.models import ProgramV2EventMeta
 
-        try:
-            return ProgramV2EventMeta.objects.get(event=self)
-        except ProgramV2EventMeta.DoesNotExist:
-            return None
+        # NOTE: Do not cache None
+        meta = getattr(self, "_program_v2_event_meta", None)
+        if meta is None:
+            try:
+                self._program_v2_event_meta = meta = ProgramV2EventMeta.objects.get(event=self)
+            except ProgramV2EventMeta.DoesNotExist:
+                meta = None
 
-    @cached_property
+        return meta
+
+    @property
     def tickets_v2_event_meta(self) -> TicketsV2EventMeta | None:
         from tickets_v2.models import TicketsV2EventMeta
 
-        try:
-            return TicketsV2EventMeta.objects.get(event=self)
-        except TicketsV2EventMeta.DoesNotExist:
-            return None
+        # NOTE: Do not cache None
+        meta = getattr(self, "_tickets_v2_event_meta", None)
+        if meta is None:
+            try:
+                self._tickets_v2_event_meta = meta = TicketsV2EventMeta.objects.get(event=self)
+            except TicketsV2EventMeta.DoesNotExist:
+                meta = None
+
+        return meta
 
     def get_app_event_meta(self, app_label: str):
         return getattr(self, f"{app_label}_event_meta")

@@ -128,7 +128,11 @@ class Command(BaseCommand):
                         v1_meta.save(update_fields=["override_schedule_link"])
                     else:
                         # this event may have paulig already in the database so respect the existing data
-                        importer = v2_meta.importer_class(event)
+                        Importer = v2_meta.importer_class
+                        if Importer is None:
+                            raise TypeError(f"Importer class for {event.slug} is None.")
+                        importer = Importer(event)
+
                         importer.import_dimensions(
                             clear=opts["dangerously_clear"],
                             refresh_cached_dimensions=False,
