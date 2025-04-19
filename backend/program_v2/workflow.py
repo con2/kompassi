@@ -14,6 +14,63 @@ from .models.program import Program
 logger = logging.getLogger("kompassi")
 
 
+STATE_DIMENSION_DTO = DimensionDTO(
+    slug="state",
+    value_ordering=ValueOrdering.MANUAL,
+    is_public=False,
+    is_list_filter=True,
+    is_key_dimension=True,
+    is_technical=True,
+    title={
+        "fi": "Tila",
+        "en": "State",
+        "sv": "Status",
+    },
+    choices=[
+        DimensionValueDTO(
+            slug="new",
+            is_technical=True,
+            title={
+                "fi": "Uusi",
+                "en": "New",
+                "sv": "Nytt",
+            },
+            color="Blue",
+        ),
+        DimensionValueDTO(
+            slug="accepted",
+            is_technical=True,
+            title={
+                "fi": "Hyväksytty",
+                "en": "Accepted",
+                "sv": "Godkänt",
+            },
+            color="Green",
+        ),
+        DimensionValueDTO(
+            slug="rejected",
+            is_technical=True,
+            title={
+                "fi": "Hylätty",
+                "en": "Rejected",
+                "sv": "Avvisad",
+            },
+            color="Red",
+        ),
+        DimensionValueDTO(
+            slug="cancelled",
+            is_technical=True,
+            title={
+                "fi": "Peruutettu",
+                "en": "Cancelled",
+                "sv": "Avbruten",
+            },
+            color="Red",
+        ),
+    ],
+)
+
+
 class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
     """
     Workflow for program offers. This workflow is used to set the state of the program offer
@@ -90,62 +147,8 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         return DimensionDTO.save_many(
             universe,
             [
-                DimensionDTO(
-                    slug="state",
-                    value_ordering=ValueOrdering.MANUAL,
-                    is_public=False,
-                    is_list_filter=True,
-                    is_key_dimension=False,
-                    is_technical=True,
-                    title={
-                        "fi": "Tila",
-                        "en": "State",
-                        "sv": "Status",
-                    },
-                    choices=[
-                        DimensionValueDTO(
-                            slug="new",
-                            is_technical=True,
-                            title={
-                                "fi": "Uusi",
-                                "en": "New",
-                                "sv": "Nytt",
-                            },
-                            color="Blue",
-                        ),
-                        DimensionValueDTO(
-                            slug="accepted",
-                            is_technical=True,
-                            title={
-                                "fi": "Hyväksytty",
-                                "en": "Accepted",
-                                "sv": "Godkänt",
-                            },
-                            color="Green",
-                        ),
-                        DimensionValueDTO(
-                            slug="rejected",
-                            is_technical=True,
-                            title={
-                                "fi": "Hylätty",
-                                "en": "Rejected",
-                                "sv": "Avvisad",
-                            },
-                            color="Red",
-                        ),
-                        DimensionValueDTO(
-                            slug="cancelled",
-                            is_technical=True,
-                            title={
-                                "fi": "Peruutettu",
-                                "en": "Cancelled",
-                                "sv": "Avbruten",
-                            },
-                            color="Red",
-                        ),
-                    ],
-                ),
                 cls._get_form_dimension_dto(universe),
+                STATE_DIMENSION_DTO,
             ],
         )
 

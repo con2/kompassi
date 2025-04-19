@@ -36,6 +36,7 @@ const query = graphql(`
       slug
       name
       program {
+        # TODO fragmentify
         listFilters: dimensions(isListFilter: true, publicOnly: false) {
           slug
           title(lang: $locale)
@@ -50,10 +51,12 @@ const query = graphql(`
         keyDimensions: dimensions(keyDimensionsOnly: true, publicOnly: false) {
           slug
           title(lang: $locale)
+          isKeyDimension
 
           values(lang: $locale) {
             slug
             title(lang: $locale)
+            color
           }
         }
 
@@ -155,13 +158,11 @@ export default async function FormResponsesPage({
         </Link>
       ),
     },
-    {
-      slug: "startTime",
-      title: scheduleT.attributes.startTime,
-    },
   ];
 
+  console.log("keyDimensions", JSON.stringify(keyDimensions, null, 2));
   columns.push(...buildKeyDimensionColumns(keyDimensions));
+  console.log("columns", JSON.stringify(columns, null, 2));
 
   return (
     <ProgramAdminView

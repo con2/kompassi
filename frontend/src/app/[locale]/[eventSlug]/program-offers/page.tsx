@@ -230,8 +230,10 @@ export default async function ProgramOffersPage({
     });
   });
 
-  const keyDimensions = data.event.program.keyDimensions;
-  console.log({ keyDimensions });
+  // Yoink the state dimension from key dimensions (it gets special treatment)
+  const keyDimensions = data.event.program.keyDimensions.filter(
+    (keyDimension) => keyDimension.slug !== "state",
+  );
   columns.push(...buildKeyDimensionColumns(keyDimensions));
 
   const stateDimension = data.event.program.stateDimension;
