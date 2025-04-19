@@ -66,4 +66,5 @@ class CreateProgramForm(graphene.Mutation):
             survey.full_clean()  # Validate fields
             survey.save()
 
+        survey.workflow.handle_form_update()
         return CreateProgramForm(survey=survey)  # type: ignore

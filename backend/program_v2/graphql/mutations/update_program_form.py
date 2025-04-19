@@ -58,4 +58,5 @@ class UpdateProgramForm(graphene.Mutation):
         survey = survey.with_mandatory_attributes_for_app(SurveyApp.PROGRAM_V2)
         survey.save()
 
+        survey.workflow.handle_form_update()
         return UpdateProgramForm(survey=survey)  # type: ignore

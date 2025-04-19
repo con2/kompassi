@@ -49,4 +49,5 @@ class CreateSurveyLanguage(graphene.Mutation):
                 created_by=info.context.user,
             )
 
+        survey.workflow.handle_form_update()
         return CreateSurveyLanguage(form=form)  # type: ignore

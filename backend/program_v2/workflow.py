@@ -20,7 +20,6 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
     and possibly other automated actions in the future.
     """
 
-    slug: str = "program_offer"
     survey: Survey
 
     @classmethod
@@ -55,13 +54,36 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
             form__event=event,
             form__survey__app="program_v2",
         ):
-            values = ["accepted"] if program_offer.programs.exists() else ["new"]
-            program_offer.set_dimension_values({"state": values})
+            values = dict(
+                state=["accepted"] if program_offer.programs.exists() else ["new"],
+                form=[program_offer.survey.slug],
+            )
+            program_offer.set_dimension_values(values)
 
         for program in Program.objects.filter(event=event):
+            values = dict(
+                state=["accepted"],
+                form=[program.program_offer.survey.slug] if program.program_offer else [],
+            )
             program.set_dimension_values({"state": ["accepted"]})
 
         Program.refresh_cached_dimensions_qs(Program.objects.filter(event=event))
+
+    def handle_form_update(self):
+        universe = self.survey.universe
+        self._get_form_dimension_dto(universe).save(universe)
+
+    def handle_new_response(self, response: Response):
+        """
+        Called when a new response is created.
+        """
+        super().handle_new_response(response)
+
+        values = dict(
+            state=["accepted"] if response.programs.exists() else ["new"],
+            form=[response.survey.slug],
+        )
+        response.set_dimension_values(values)
 
     @classmethod
     def _setup_default_dimensions(cls, universe: Universe) -> Sequence[Dimension]:
@@ -122,6 +144,42 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
                             color="Red",
                         ),
                     ],
+                ),
+                cls._get_form_dimension_dto(universe),
+            ],
+        )
+
+    @classmethod
+    def _get_form_dimension_dto(cls, universe: Universe) -> DimensionDTO:
+        """
+        We make the form used to submit a program offer a dimension
+        in order to not have to build separate filters for it.
+        """
+        event = universe.scope.event
+        if not event:
+            raise ValueError("Event is not set for universe")
+
+        return DimensionDTO(
+            slug="form",
+            value_ordering=ValueOrdering.TITLE,
+            is_public=False,
+            is_list_filter=True,
+            is_key_dimension=True,
+            is_technical=True,
+            title={
+                "fi": "Ohjelmalomake",
+                "en": "Program form",
+                "sv": "Programblankett",
+            },
+            choices=[
+                DimensionValueDTO(
+                    slug=survey.slug,
+                    is_technical=True,
+                    title=survey.title_dict,
                 )
+                for survey in Survey.objects.filter(
+                    event=event,
+                    app="program_v2",
+                ).only("id", "slug")
             ],
         )

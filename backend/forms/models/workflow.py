@@ -1,5 +1,6 @@
 import pydantic
 
+from .response import Response
 from .survey import Survey, SurveyApp
 
 
@@ -18,7 +19,6 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     These may at some point be realized into the database.
     """
 
-    slug: str
     survey: Survey
 
     @property
@@ -33,4 +33,17 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
 
                 return ProgramOfferWorkflow(survey=survey)
             case _:
-                return cls(slug="default", survey=survey)
+                return cls(survey=survey)
+
+    def handle_form_update(self):
+        """
+        Called when a form of a survey using this workflow is created, deleted or updated.
+        Not called for form field updates.
+        """
+        pass
+
+    def handle_new_response(self, response: Response):
+        """
+        Called when a new response is created for a survey using this workflow.
+        """
+        response.notify_subscribers()

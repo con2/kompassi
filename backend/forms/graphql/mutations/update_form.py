@@ -66,4 +66,5 @@ class UpdateForm(graphene.Mutation):
 
         form_form.save()
 
+        survey.workflow.handle_form_update()
         return UpdateForm(survey=survey)  # type: ignore

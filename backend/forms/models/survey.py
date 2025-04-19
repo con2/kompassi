@@ -222,6 +222,13 @@ class Survey(models.Model):
 
         return Response.objects.filter(form__in=self.languages.all()).order_by("created_at")
 
+    @cached_property
+    def title_dict(self):
+        """
+        Returns a dict of language code -> title for this survey.
+        """
+        return {form.language: form.title for form in self.languages.all()}
+
     def can_be_deleted_by(self, request: HttpRequest):
         return (
             is_graphql_allowed_for_model(

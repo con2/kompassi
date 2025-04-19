@@ -74,9 +74,12 @@ class AcceptProgramOffer(graphene.Mutation):
         if warnings:
             raise ValueError(warnings)
 
-        dimension_values = process_dimensions_form(
-            list(event.program_universe.dimensions.all()),
-            form_data,
+        dimension_values = dict(program_offer.cached_dimensions)
+        dimension_values.update(
+            process_dimensions_form(
+                list(event.program_universe.dimensions.filter(is_technical=False)),
+                form_data,
+            )
         )
         dimension_values.update(
             state=["accepted"],

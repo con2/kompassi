@@ -52,11 +52,14 @@ graphql(`
   fragment ProgramOfferDimension on FullDimensionType {
     slug
     title(lang: $locale)
+    isKeyDimension
+    isTechnical
 
     values(lang: $locale) {
       slug
       title(lang: $locale)
       color
+      isTechnical
     }
   }
 `);
@@ -196,12 +199,6 @@ export default async function ProgramOffersPage({
       title: surveyT.attributes.createdBy,
       getCellContents: (row) => row.createdBy?.displayName || "",
     },
-    {
-      slug: "form",
-      title: programT.ProgramForm.singleTitle,
-      getCellContents: (row) =>
-        `${row.form.survey?.title || ""} (${row.form.language})`,
-    },
   ];
 
   // TODO encap (duplicated in SurveyResponsesPage)
@@ -234,6 +231,7 @@ export default async function ProgramOffersPage({
   });
 
   const keyDimensions = data.event.program.keyDimensions;
+  console.log({ keyDimensions });
   columns.push(...buildKeyDimensionColumns(keyDimensions));
 
   const stateDimension = data.event.program.stateDimension;

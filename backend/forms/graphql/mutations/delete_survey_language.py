@@ -31,4 +31,5 @@ class DeleteSurveyLanguage(graphene.Mutation):
 
         form.delete()
 
+        survey.workflow.handle_form_update()
         return DeleteSurveyLanguage(language=input.language)  # type: ignore

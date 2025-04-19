@@ -66,6 +66,5 @@ class CreateSurveyResponse(graphene.Mutation):
 
             response.lift_dimension_values()
 
-        response.notify_subscribers()
-
+        survey.workflow.handle_new_response(response)
         return CreateSurveyResponse(response=response)  # type: ignore

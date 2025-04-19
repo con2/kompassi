@@ -81,7 +81,7 @@ class DimensionDTO(pydantic.BaseModel):
                 "is_negative_selection",
                 "is_technical",
                 "value_ordering",
-                "order",
+                # "order",
             ),
         )
         logger.info("Saved %s dimensions", len(django_dimensions))
