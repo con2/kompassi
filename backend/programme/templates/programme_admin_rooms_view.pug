@@ -1,4 +1,4 @@
-extends core_admin_base
+extends programme_admin_base
 - load trans from i18n
 - load crispy from crispy_forms_tags
 block title
@@ -21,7 +21,7 @@ block admin_content
               td
                 .btn-group
                   if room.can_remove
-                    button.btn.btn-xs.btn-danger(type='submit', name='room_id', value='{{ room.id }}', title='{% trans "Remove" %}')
+                    button.btn.btn-xs.btn-danger(type='submit', disabled, name='room_id', value='{{ room.id }}', title='{% trans "Remove" %}')
                       i.fa.fa-1.fa-trash
                   else
                     button.btn.btn-xs.btn-danger(type='button', disabled, title='{% trans "This Room cannot be removed because it is either added to a schedule view or programmes have been added to it or both." %}')

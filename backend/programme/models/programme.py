@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import timedelta
 from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Any, Self
 
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
@@ -501,8 +501,7 @@ class Programme(models.Model, CsvExportMixin):
     is_english_ok = models.BooleanField(
         verbose_name=_("English OK"),
         help_text=_(
-            "Please tick this box if you are able, prepared and willing to host your programme in English if "
-            "necessary."
+            "Please tick this box if you are able, prepared and willing to host your programme in English if necessary."
         ),
         default=False,
     )
@@ -1406,7 +1405,7 @@ class Programme(models.Model, CsvExportMixin):
         default="",
         verbose_name=_("Author (if other than the GM)"),
         help_text=_(
-            "If the scenario has been written by someone else than the GM, we require that the author be " "disclosed."
+            "If the scenario has been written by someone else than the GM, we require that the author be disclosed."
         ),
     )
 
@@ -1458,6 +1457,8 @@ class Programme(models.Model, CsvExportMixin):
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_("Created at"))
     updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name=_("Updated at"))
+
+    invitation_set: models.QuerySet[Any]
 
     @property
     def event(self):
@@ -1511,16 +1512,7 @@ class Programme(models.Model, CsvExportMixin):
     def is_published(self):
         return self.state == "published"
 
-    @property
-    def is_open_for_feedback(self):
-        t = now()
-        return (
-            # Programme has started OR
-            (self.start_time is not None and t >= self.start_time)
-            or
-            # The event is over
-            (self.event.end_time is not None and t >= self.event.end_time)
-        )
+    is_open_for_feedback = False
 
     @property
     def show_signup_link(self):
@@ -2012,7 +2004,7 @@ class Programme(models.Model, CsvExportMixin):
 
         paikkala_program_kwargs = dict(
             event_name=self.event.name,
-            name=truncatechars(self.title, PaikkalaProgram._meta.get_field("name").max_length),
+            name=truncatechars(self.title, PaikkalaProgram._meta.get_field("name").max_length),  # type: ignore
             room=paikkala_room,
             require_user=True,
             reservation_start=self.start_time.replace(hour=9, minute=0, tzinfo=tz),  # type: ignore

@@ -1,7 +1,7 @@
 extends base
 - load trans from i18n
 block title
-  | Ohjelman hallinta
+  | Ohjelmanhallinta
 block content_full_width
   .container
     include core_messages
@@ -65,7 +65,6 @@ block content_full_width
             th {% trans "Role" %}
             th {% trans "Invited at" %}
             th {% trans "Invited by" %}
-            th
         tbody
           for invitation in pending_invitations
             tr
@@ -75,23 +74,10 @@ block content_full_width
               td= invitation.role
               td {{ invitation.created_at|date }}
               td {{ invitation.created_by.get_full_name }}
-              td
-                form(method='POST')
-                  {% csrf_token %}
-                  input(type='hidden', name='id', value='{{ invitation.id }}')
-                  .btn-group
-                    button.btn.btn-xs.btn-danger(type='submit', name='action', value='cancel-invitation', title='{% trans "Cancel invitation" %}')
-                      i.fa.fa-trash
-                    a.btn.btn-xs.btn-default(
-                      href='{% url "programme:accept_invitation_view" event.slug invitation.code %}'
-                      target='_blank'
-                      title='{% trans "Invitation link. If the invitation e-mail does not get through due to eg. Microsoft, you can give this link to the invitee over eg. an instant messenger." %}'
-                    )
-                      i.fa.fa-share-square-o
       .panel-footer.clearfix
         form(method='POST')
           {% csrf_token %}
           .btn-group.pull-right
-            button.btn.btn-danger(type='submit', name='action', value='cancel-all-invitations')
+            button.btn.btn-danger(type='submit', name='action', value='cancel-all-invitations', disabled="true")
               i.fa.fa-trash.kompassi-icon-space-right
               {% trans "Revoke all open invitations" %}

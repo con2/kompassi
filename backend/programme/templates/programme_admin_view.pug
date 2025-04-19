@@ -1,7 +1,7 @@
-extends core_admin_base
+extends programme_admin_base
 - load trans from i18n
 block title
-  | Ohjelman hallinta
+  | Ohjelmanhallinta
 block admin_content
   .panel.panel-default
     .panel-heading: strong Suodata ohjelmaa
@@ -121,4 +121,3 @@ block admin_content
             li: a(href='{% url "programme:admin_export_view" event.slug export_format.extension %}?{{ request.META.QUERY_STRING }}')
               i.fa.fa-cloud-download.kompassi-icon-space-right
               |{{ export_format.name }}
-        a.btn.btn-primary(href='{% url "programme:admin_create_view" event.slug %}') Uusi ohjelma

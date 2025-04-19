@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from functools import cached_property
 
+from django.conf import settings
 from django.db import models
 
 from core.models.event_meta_base import EventMetaBase
@@ -92,6 +93,10 @@ class ProgramV2EventMeta(EventMetaBase):
             form__event=self.event,
             form__survey__app="program_v2",
         )
+
+    @property
+    def schedule_url(self):
+        return f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/program"
 
 
 @dataclass

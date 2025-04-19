@@ -12,8 +12,6 @@
         th {% trans "E-mail address" %}
         th {% trans "Discord handle" %}
         th {% trans "Role" %}
-        th {% trans "Invites" %}
-        th
       tbody
         for programme_role in programme_roles
           tr
@@ -23,56 +21,18 @@
             td= programme_role.person.normalized_phone_number
             td= programme_role.person.email
             td= programme_role.person.discord_handle
-            td
-              a(href="", data-toggle="modal", data-target="#programme-admin-change-host-role-modal-{{ programme_role.pk }}")
-                |{{programme_role.role}}
-                i.fa.fa-pencil-square-o.kompassi-icon-space-left
-            td
-              a(href="", data-toggle="modal", data-target="#programme-admin-change-host-role-modal-{{ programme_role.pk }}")
-                |{{programme_role.formatted_extra_invites}}
-                i.fa.fa-pencil-square-o.kompassi-icon-space-left
-            td
-              button.btn.btn-xs.btn-danger(type='submit', name='action', value='remove-host:{{ programme_role.id }}', title='{% trans "Remove host" %}')
-                i.fa.fa-trash
-        for invitation in invitations
-          tr
-            td
-            td
-            td
-            td
-            td: em= invitation.email
-            td
-              a(href="", data-toggle="modal", data-target="#programme-admin-change-invitation-role-modal-{{ invitation.pk }}")
-                em= invitation.role
-                i.fa.fa-pencil-square-o.kompassi-icon-space-left
-            td
-              a(href="", data-toggle="modal", data-target="#programme-admin-change-invitation-role-modal-{{ invitation.pk }}")
-                |{{invitation.extra_invites}}
-                i.fa.fa-pencil-square-o.kompassi-icon-space-left
-            td
-              .btn-group
-                button.btn.btn-xs.btn-danger(type='submit', name='action', value='cancel-invitation:{{ invitation.id }}', title='{% trans "Cancel invitation" %}')
-                  i.fa.fa-trash
-                a.btn.btn-xs.btn-default(
-                  href='{% url "programme:accept_invitation_view" event.slug invitation.code %}'
-                  target='_blank'
-                  title='{% trans "Invitation link. If the invitation e-mail does not get through due to eg. Microsoft, you can give this link to the invitee over eg. an instant messenger." %}'
-                )
-                  i.fa.fa-share-square-o
+            td {{programme_role.role}}
         for freeform_organizer in freeform_organizers
           tr
             td(colspan="5")= freeform_organizer.text
             td: {% trans "Free-form organizer" %}
             td
-            td
-              button.btn.btn-xs.btn-danger(type='submit', name='action', value='remove-freeform-host:{{ freeform_organizer.id }}', title='{% trans "Remove free-form host" %}')
-                i.fa.fa-trash
     .panel-footer.clearfix
       .btn-group.pull-right
-        button.btn.btn-default(type='button', data-toggle='modal', data-target='#programme-admin-freeform-modal')
+        button.btn.btn-default(type='button', disabled="true")
           i.fa.fa-plus.kompassi-icon-space-right
           {% trans "Add free-form organizer" %}
-        button.btn.btn-success(type='button', data-toggle="modal", data-target='#programme-admin-host-modal')
+        button.btn.btn-success(type='button', disabled="true")
           i.fa.fa-plus.kompassi-icon-space-right
           {% trans "Invite host" %}
       .text-muted

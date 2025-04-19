@@ -1,6 +1,5 @@
 import logging
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -96,6 +95,11 @@ def core_password_view(request):
 
 
 def core_profile_menu_items(request):
+    from access.views import access_profile_menu_items
+    from labour.views import labour_profile_menu_items
+    from membership.views import membership_profile_menu_items
+    from programme.views.profile_menu_items import programme_profile_menu_items
+
     items = []
 
     if not request.user.is_authenticated:
@@ -124,30 +128,14 @@ def core_profile_menu_items(request):
             email_verification_text = _("E-mail address verification")
             items.append((email_verification_active, email_verification_url, email_verification_text))
 
-    if "labour" in settings.INSTALLED_APPS:
-        from labour.views import labour_profile_menu_items
+    items.extend(labour_profile_menu_items(request))
+    items.extend(programme_profile_menu_items(request))
+    items.extend(membership_profile_menu_items(request))
+    items.extend(access_profile_menu_items(request))
 
-        items.extend(labour_profile_menu_items(request))
-
-    if "programme" in settings.INSTALLED_APPS:
-        from programme.views import programme_profile_menu_items
-
-        items.extend(programme_profile_menu_items(request))
-
-    if "membership" in settings.INSTALLED_APPS:
-        from membership.views import membership_profile_menu_items
-
-        items.extend(membership_profile_menu_items(request))
-
-    if "access" in settings.INSTALLED_APPS:
-        from access.views import access_profile_menu_items
-
-        items.extend(access_profile_menu_items(request))
-
-    if "django.contrib.admin" in settings.INSTALLED_APPS and request.user.is_staff:
-        admin_url = "/admin/"  # XXX hardcoded
-        admin_active = False
-        admin_text = _("Site administration")
-        items.append((admin_active, admin_url, admin_text))
+    admin_url = "/admin/"  # XXX hardcoded
+    admin_active = False
+    admin_text = _("Site administration")
+    items.append((admin_active, admin_url, admin_text))
 
     return items

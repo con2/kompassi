@@ -3,18 +3,9 @@ h3 {% trans "Programme" %}
 
 if event.programme_event_meta.schedule_link
   h4 {% trans "The programme schedule for this event has been published" %}
-
-  if event.programme_event_meta.override_schedule_link
-    p: a(href='{{ event.programme_event_meta.schedule_link }}' target='_blank' rel='noopener noreferrer').btn.btn-primary {% trans "View programme schedule" %}…
-  else
-    p: a(href='{{ event.programme_event_meta.schedule_link }}').btn.btn-primary {% trans "View programme schedule" %}
+  p: a(href='{{ event.programme_event_meta.schedule_link }}').btn.btn-primary {% trans "View programme schedule" %}
 else
   h4 {% trans "The programme schedule for this event has not yet been published" %}
-
-if event.programme_event_meta.is_accepting_cold_offers
-  h4 {% trans "The event is accepting programme offers" %}
-
-  p: a.btn.btn-primary(href='{% url "programme:offer_view" event.slug %}') {% trans "Offer programme" %}
 
 if event.programme_event_meta.has_open_reservations
   h4 {% trans "The event has programme with reservations open" %}

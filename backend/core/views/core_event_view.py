@@ -8,7 +8,7 @@ from enrollment.views import enrollment_event_box_context
 from forms.views.forms_event_box_context import forms_event_box_context
 from intra.views import intra_event_box_context
 from labour.views import labour_event_box_context
-from programme.views import programme_event_box_context
+from programme.views.event_box_context import programme_event_box_context
 from tickets.views import tickets_event_box_context
 from tickets_v2.views.tickets_v2_event_box_context import tickets_v2_event_box_context
 

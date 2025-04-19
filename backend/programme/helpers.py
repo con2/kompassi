@@ -44,7 +44,7 @@ def programme_admin_required(view_func):
     def wrapper(request, event_slug, *args, **kwargs):
         from core.models import Event
 
-        from .views import programme_admin_menu_items
+        from .views.admin_menu_items import programme_admin_menu_items
 
         event = get_object_or_404(Event, slug=event_slug)
         meta = event.programme_event_meta
@@ -54,7 +54,9 @@ def programme_admin_required(view_func):
             return redirect("core_event_view", event.slug)
 
         vars = dict(
-            event=event, admin_menu_items=programme_admin_menu_items(request, event), admin_title="Ohjelman hallinta"
+            event=event,
+            admin_menu_items=programme_admin_menu_items(request, event),
+            admin_title="Ohjelman hallinta",
         )
 
         return view_func(request, vars, event, *args, **kwargs)

@@ -211,7 +211,7 @@ class ProgrammeFeedbackAdmin(admin.ModelAdmin):
                 fields=("is_visible", "hidden_at", "hidden_by"),
             ),
         ),
-    )
+    )  # type: ignore
 
     def has_add_permission(self, *args, **kwargs):
         return False

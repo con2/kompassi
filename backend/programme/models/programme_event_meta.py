@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from django.db import models
-from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
@@ -213,8 +212,8 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     def schedule_link(self):
         if self.override_schedule_link:
             return self.override_schedule_link
-        elif self.is_public:
-            return reverse("programme:schedule_view", args=(self.event.slug,))
+        elif meta := self.event.program_v2_event_meta:
+            return meta.schedule_url
         else:
             return ""
 
