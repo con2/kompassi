@@ -261,7 +261,6 @@ class Setup:
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
-                importer_name="noop",
                 admin_group=self.event.programme_event_meta.admin_group,
             ),
         )

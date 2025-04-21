@@ -20,8 +20,6 @@ from graphql_api.language import SUPPORTED_LANGUAGES, getattr_message_in_languag
 from .annotations import extract_annotations
 
 if TYPE_CHECKING:
-    from programme.models.programme import Programme
-
     from .meta import ProgramV2EventMeta
     from .program_dimension_value import ProgramDimensionValue
     from .schedule import ScheduleItem
@@ -110,15 +108,14 @@ class Program(models.Model):
     def _build_location(self):
         localized_locations: dict[str, set[str]] = {}
 
-        if location_dimension := self.meta.location_dimension:
-            for pdv in self.dimensions.filter(value__dimension=location_dimension).distinct():
-                for lang in SUPPORTED_LANGUAGES:
-                    title = getattr_message_in_language(pdv.value, "title", lang.code)
-                    if not title:
-                        # placate typechecker
-                        continue
+        for pdv in self.dimensions.filter(value__dimension__slug="room").distinct():
+            for lang in SUPPORTED_LANGUAGES:
+                title = getattr_message_in_language(pdv.value, "title", lang.code)
+                if not title:
+                    # placate typechecker
+                    continue
 
-                    localized_locations.setdefault(lang.code, set()).add(title)
+                localized_locations.setdefault(lang.code, set()).add(title)
 
         # if both "foo" and "foo, bar" are present, only "foo, bar" is included
         for locations in localized_locations.values():
@@ -229,30 +226,6 @@ class Program(models.Model):
             )
             logger.info("Refreshed cached times for %s programs", num_updated)
 
-    @classmethod
-    def import_program_from_v1(
-        cls,
-        event: Event,
-        queryset: models.QuerySet[Programme] | None = None,
-        clear: bool = False,
-    ):
-        from programme.models.programme import Programme
-
-        if (meta := event.program_v2_event_meta) is None:
-            raise ValueError(f"Event {event.slug} does not have program_v2_event_meta")
-
-        if queryset is None:
-            queryset = Programme.objects.filter(category__event=event)
-
-        Importer = meta.importer_class
-        if not Importer:
-            raise TypeError(f"Event {event.slug} does not have an importer")
-
-        importer = Importer(event=event)
-
-        importer.import_dimensions(clear=clear, refresh_cached_dimensions=False)
-        return importer.import_program(queryset, clear=clear)
-
     @cached_property
     def meta(self) -> ProgramV2EventMeta:
         if (meta := self.event.program_v2_event_meta) is None:
@@ -286,6 +259,9 @@ class Program(models.Model):
     @property
     def scope(self) -> Scope:
         return self.event.scope
+
+    # TODO Automatic dimensions
+    # TODO Automatic annotations
 
     @transaction.atomic
     def set_dimension_values(self, values_to_set: dict[str, list[str]]):

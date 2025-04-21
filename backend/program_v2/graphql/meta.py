@@ -35,7 +35,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     class Meta:
         model = ProgramV2EventMeta
-        fields = ("location_dimension",)
+        fields = ()
 
     @staticmethod
     def resolve_programs(

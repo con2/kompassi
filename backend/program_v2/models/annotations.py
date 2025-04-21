@@ -1,4 +1,3 @@
-from collections.abc import Callable
 from enum import Enum
 from typing import Any
 
@@ -18,8 +17,6 @@ class AnnotationSchemoid(BaseModel):
     type: AnnotationDataType = AnnotationDataType.STRING
     is_public: bool = True
     is_shown_in_detail: bool = True
-    # from_v1_programme: Callable[[Programme], Any] | None = None
-    from_v1_programme: Callable[[Any], Any] | None = None
 
 
 class ProgramAnnotation(BaseModel):
@@ -28,9 +25,6 @@ class ProgramAnnotation(BaseModel):
 
 
 # Before putting these into database (and as long as v1 import is a thing), we define them here in the code
-# NOTE: If the field in v1 has a default value,
-# it may be a good idea to put a guard clause in from_v1_programme
-# so that you don't expose dummy default values to the user
 ANNOTATIONS = [
     AnnotationSchemoid(
         slug="ropecon:gameSlogan",
@@ -44,7 +38,6 @@ ANNOTATIONS = [
             en='One short sentence that will let players know what the game has to offer. For example, "A traditional D&D dungeon crawl", or "Lovecraftian horror in Equestria".',
             sv="En kort mening som berättar för spelarna vad spelet erbjuder. Till exempel ”En traditionell D&D-dungeon crawl” eller ”Lovecraftsk skräck i Equestria”.",
         ),
-        from_v1_programme=lambda prog: prog.three_word_description,
     ),
     AnnotationSchemoid(
         slug="konsti:rpgSystem",
@@ -53,7 +46,6 @@ ANNOTATIONS = [
             en="RPG system",
             sv="Rollspelssystem",
         ),
-        from_v1_programme=lambda prog: prog.rpg_system,
     ),
     AnnotationSchemoid(
         slug="ropecon:otherAuthor",
@@ -62,7 +54,6 @@ ANNOTATIONS = [
             en="Author (if other than GM)",
             sv="Författare (om annan än spelledaren)",
         ),
-        from_v1_programme=lambda prog: prog.other_author,
     ),
     AnnotationSchemoid(
         slug="konsti:minAttendance",
@@ -72,13 +63,6 @@ ANNOTATIONS = [
             sv="Minsta antal deltagare",
         ),
         type=AnnotationDataType.NUMBER,
-        from_v1_programme=(
-            lambda prog: prog.min_players
-            if (form := prog.form_used)
-            and form.slug in ("roolipeli", "larp", "pelitiski", "rpg", "freeform")
-            and prog.min_players not in (None, 0, 1)
-            else None
-        ),
     ),
     AnnotationSchemoid(
         slug="konsti:maxAttendance",
@@ -88,7 +72,6 @@ ANNOTATIONS = [
             sv="Högsta antal deltagare",
         ),
         type=AnnotationDataType.NUMBER,
-        from_v1_programme=lambda prog: prog.max_players,
     ),
     AnnotationSchemoid(
         slug="konsti:isPlaceholder",
@@ -107,9 +90,6 @@ ANNOTATIONS = [
                 "this program exists but does not require signup."
             ),
         ),
-        from_v1_programme=(
-            lambda prog: True if any(tag.slug == "konsti-placeholder" for tag in prog.tags.all()) else None
-        ),
     ),
     AnnotationSchemoid(
         slug="ropecon:numCharacters",
@@ -117,9 +97,6 @@ ANNOTATIONS = [
             fi="Hahmojen määrä",
             en="Number of characters",
             sv="Antal karaktärer",
-        ),
-        from_v1_programme=(
-            lambda prog: prog.ropecon2018_characters if (form := prog.form_used) and form.slug == "larp" else None
         ),
     ),
     AnnotationSchemoid(
@@ -129,14 +106,6 @@ ANNOTATIONS = [
             en="Workshop fee",
             sv="Workshopavgift",
         ),
-        from_v1_programme=(
-            lambda prog: fee
-            if (form := prog.form_used)
-            and form.slug == "tyopaja"
-            and (fee := prog.ropecon2023_workshop_fee)
-            and fee != "0€"
-            else None
-        ),
     ),
     AnnotationSchemoid(
         slug="ropecon:contentWarnings",
@@ -145,7 +114,6 @@ ANNOTATIONS = [
             en="Content warnings",
             sv="Innehållsvarningar",
         ),
-        from_v1_programme=lambda prog: prog.ropecon2022_content_warnings,
     ),
     AnnotationSchemoid(
         slug="ropecon:accessibilityOther",
@@ -154,7 +122,6 @@ ANNOTATIONS = [
             en="Other accessibility information",
             sv="Övrig tillgänglighetsinformation",
         ),
-        from_v1_programme=lambda prog: prog.ropecon2023_other_accessibility_information,
     ),
     AnnotationSchemoid(
         slug="ropecon:isRevolvingDoor",
@@ -168,7 +135,6 @@ ANNOTATIONS = [
             en="Participants can join and leave the program item while it is running.",
             sv="Deltagare kan gå med i och lämna programmet medan det pågår.",
         ),
-        from_v1_programme=lambda prog: True if prog.is_revolving_door else None,
     ),
     AnnotationSchemoid(
         slug="internal:formattedHosts",
@@ -179,7 +145,6 @@ ANNOTATIONS = [
         ),
         is_public=False,
         is_shown_in_detail=False,
-        from_v1_programme=lambda prog: prog.formatted_hosts,
     ),
     AnnotationSchemoid(
         slug="internal:links:signup",
@@ -190,7 +155,6 @@ ANNOTATIONS = [
         ),
         is_public=False,
         is_shown_in_detail=False,
-        from_v1_programme=lambda prog: prog.signup_link,
     ),
     AnnotationSchemoid(
         slug="internal:links:tickets",
@@ -211,7 +175,6 @@ ANNOTATIONS = [
         ),
         is_public=False,
         is_shown_in_detail=False,
-        from_v1_programme=lambda prog: prog.video_link,
     ),
     AnnotationSchemoid(
         slug="knutepunkt:tagline",

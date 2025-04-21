@@ -6,8 +6,6 @@ This should be thought of an escape hatch and most admin functions provided in e
 from django import forms
 from django.contrib import admin
 
-from dimensions.models.dimension import Dimension
-
 from .models.meta import ProgramV2EventMeta
 from .models.program import Program
 from .models.schedule import ScheduleItem
@@ -41,18 +39,9 @@ class ProgramV2EventMetaForm(forms.ModelForm):
     class Meta:
         model = ProgramV2EventMeta
         fields = (
-            "location_dimension",
             "is_accepting_feedback",
             "contact_email",
         )
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if self.instance.pk is not None:
-            self.fields["location_dimension"].queryset = Dimension.objects.filter(  # type: ignore
-                universe=self.instance.event.program_universe
-            )
 
 
 class InlineProgramV2EventMetaAdmin(admin.StackedInline):

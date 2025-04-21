@@ -59,13 +59,4 @@ class Category(models.Model):
         if self.title and not self.slug:
             self.slug = slugify(self.title)
 
-        if (
-            self.slug
-            and not self.v2_dimensions
-            and self.event
-            and (meta := self.event.program_v2_event_meta)
-            and meta.importer_name == "default"
-        ):
-            self.v2_dimensions = {"category": [self.slug]}
-
         return super().save(*args, **kwargs)

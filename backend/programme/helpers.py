@@ -56,7 +56,7 @@ def programme_admin_required(view_func):
         vars = dict(
             event=event,
             admin_menu_items=programme_admin_menu_items(request, event),
-            admin_title="Ohjelman hallinta",
+            admin_title="Ohjelmanhallinta",
         )
 
         return view_func(request, vars, event, *args, **kwargs)

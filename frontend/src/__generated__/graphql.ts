@@ -495,7 +495,7 @@ export type FullProgramType = {
   __typename?: 'FullProgramType';
   /** Program annotation values with schema attached to them. Only public annotations are returned. NOTE: If querying a lot of program items, consider using cachedAnnotations instead for SPEED. */
   annotations: Array<ProgramAnnotationType>;
-  /** A mapping of program annotation slug to annotation value. Only public annotations are returned. TODO: Provide a way to supply is_public=False annotations to the GraphQL importer. Perhaps make the importer authenticate? */
+  /** A mapping of program annotation slug to annotation value. Only public annotations are returned. */
   cachedAnnotations: Scalars['GenericScalar']['output'];
   cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
   /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
@@ -802,7 +802,7 @@ export type LimitedProductType = {
  */
 export type LimitedProgramType = {
   __typename?: 'LimitedProgramType';
-  /** A mapping of program annotation slug to annotation value. Only public annotations are returned. TODO: Provide a way to supply is_public=False annotations to the GraphQL importer. Perhaps make the importer authenticate? */
+  /** A mapping of program annotation slug to annotation value. Only public annotations are returned. */
   cachedAnnotations: Scalars['GenericScalar']['output'];
   cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
   /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
@@ -1402,8 +1402,6 @@ export type ProgramV2EventMetaType = {
   countProgramOffers: Scalars['Int']['output'];
   /** `is_list_filter` - only return dimensions that are shown in the list filter. `is_shown_in_detail` - only return dimensions that are shown in the detail view. If you supply both, you only get their intersection. */
   dimensions: Array<FullDimensionType>;
-  /** If set, this dimension will be used as the location dimension for the event. This is used at least by the calendar export for the iCalendar location field. */
-  locationDimension?: Maybe<FullDimensionType>;
   program?: Maybe<FullProgramType>;
   /** Returns a single response program offer. */
   programOffer?: Maybe<FullResponseType>;

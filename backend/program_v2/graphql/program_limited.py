@@ -84,9 +84,6 @@ class LimitedProgramType(DjangoObjectType):
     def resolve_cached_annotations(program: Program, info, is_shown_in_detail: bool = False):
         """
         A mapping of program annotation slug to annotation value. Only public annotations are returned.
-
-        TODO: Provide a way to supply is_public=False annotations to the GraphQL importer.
-        Perhaps make the importer authenticate?
         """
         annotations = [annotation for annotation in ANNOTATIONS if annotation.is_public]
 

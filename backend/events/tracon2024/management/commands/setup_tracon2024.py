@@ -744,22 +744,11 @@ class Setup:
             room.save(update_fields=["v2_dimensions"])
 
     def setup_program_v2(self):
-        from dimensions.models.dimension_dto import Dimension, DimensionDTO
-        from program_v2.importers.tracon2024 import TraconImporter
         from program_v2.models.meta import ProgramV2EventMeta
-
-        try:
-            room_dimension = Dimension.objects.get(universe=self.event.program_universe, slug="room")
-        except Dimension.DoesNotExist:
-            dimensions = TraconImporter(self.event).get_dimensions()
-            dimensions = DimensionDTO.save_many(self.event.program_universe, dimensions)
-            room_dimension = next(d for d in dimensions if d.slug == "room")
 
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
-                location_dimension=room_dimension,
-                importer_name="tracon2024",
                 admin_group=self.event.programme_event_meta.admin_group,
             ),
         )

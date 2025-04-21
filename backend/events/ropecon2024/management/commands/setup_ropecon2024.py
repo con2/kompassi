@@ -83,7 +83,7 @@ class Setup:
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
-            labour_admin_group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
@@ -98,8 +98,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
@@ -722,8 +722,8 @@ class Setup:
         if self.test:
             t = now()
             defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),
-                ticket_sales_ends=t + timedelta(days=60),
+                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
+                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -931,7 +931,7 @@ class Setup:
             product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
-                product.limit_groups.set(limit_groups)
+                product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
 
     def setup_badges(self):
@@ -979,21 +979,11 @@ class Setup:
             )
 
     def setup_program_v2(self):
-        from dimensions.models.dimension import Dimension
-        from program_v2.importers.ropecon2024 import RopeconImporter
         from program_v2.models.meta import ProgramV2EventMeta
-
-        try:
-            room_dimension = Dimension.objects.get(universe=self.event.program_universe, slug="room")
-        except Dimension.DoesNotExist:
-            dimensions = RopeconImporter(self.event).import_dimensions()
-            room_dimension = next(d for d in dimensions if d.slug == "room")
 
         ProgramV2EventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
-                location_dimension=room_dimension,
-                importer_name="ropecon2024",
                 admin_group=self.event.programme_event_meta.admin_group,
             ),
         )

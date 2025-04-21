@@ -1784,7 +1784,6 @@ class Programme(models.Model, CsvExportMixin):
         programme_apply_state_async.delay(self.pk)  # type: ignore
 
     def _apply_state_async(self):
-        self.apply_state_export_to_v2()
         self.apply_state_group_membership()
         self.apply_state_send_messages()
 
@@ -1794,14 +1793,6 @@ class Programme(models.Model, CsvExportMixin):
     def apply_state_update_signup_extras(self):
         for signup_extra in self.signup_extras:
             signup_extra.apply_state()
-
-    def apply_state_export_to_v2(self):
-        if (meta := self.event.program_v2_event_meta) is None or not meta.is_auto_importing_from_v1:
-            return
-
-        from program_v2.models.program import Program
-
-        Program.import_program_from_v1(self.event, Programme.objects.filter(pk=self.pk))
 
     def apply_state_group_membership(self):
         from core.utils import ensure_user_group_membership

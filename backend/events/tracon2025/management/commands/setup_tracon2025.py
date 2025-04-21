@@ -8,7 +8,6 @@ from dateutil.tz import tzlocal
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
-from django.urls import reverse
 from django.utils.timezone import now
 
 from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
@@ -21,7 +20,6 @@ from core.models.venue import Venue
 from forms.models.meta import FormsEventMeta
 from forms.models.survey import SurveyDTO
 from intra.models import IntraEventMeta, Team
-from labour.models import Survey
 from labour.models.alternative_signup_forms import AlternativeSignupForm
 from labour.models.info_link import InfoLink
 from labour.models.job_category import JobCategory
@@ -30,13 +28,13 @@ from labour.models.personnel_class import PersonnelClass
 from labour.models.qualifications import Qualification
 from labour.models.survey import Survey as LabourSurvey
 from program_v2.models.meta import ProgramV2EventMeta
-from programme.models import Category, Programme, Room
+from program_v2.workflow import ProgramOfferWorkflow
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.models.product import Product
 from tickets_v2.models.quota import Quota
 from tickets_v2.optimized_server.models.enums import PaymentProvider
 
-from ...models import Night, Poison, SignupExtra
+from ...models import Night, SignupExtra
 
 logger = logging.getLogger("kompassi")
 
@@ -61,7 +59,6 @@ class Setup:
         self.setup_tickets_v2()
         self.setup_forms()
         self.setup_program_v2()
-        # self.setup_kaatoilmo()
 
     def setup_core(self):
         self.organization, unused = Organization.objects.get_or_create(
@@ -325,6 +322,7 @@ class Setup:
                 admin_group=admin_group,
             ),
         )
+        ProgramOfferWorkflow.backfill_default_dimensions(self.event)
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack
@@ -390,84 +388,6 @@ class Setup:
         for team in Team.objects.filter(event=self.event):
             team.is_public = team.slug != "tracoff"
             team.save()
-
-    def setup_kaatoilmo(self):
-        assert self.event.start_time
-        saturday = self.event.start_time + timedelta(days=1)
-
-        coaches = []
-        for coach_title, room_title, hour in [
-            ("Kaatobussin paikkavaraus, menomatka", "Kaatobussi meno", 14),
-            ("Kaatobussin paikkavaraus, paluumatka", "Kaatobussi paluu", 21),
-        ]:
-            coach, created = Programme.objects.get_or_create(
-                category=Category.objects.get(title="Muu ohjelma", event=self.event),
-                title=coach_title,
-                defaults=dict(
-                    room=Room.objects.get_or_create(event=self.event, name=room_title)[0],
-                    start_time=(saturday + timedelta(days=14)).replace(hour=hour, minute=0, second=0, tzinfo=self.tz),
-                    length=4 * 60,  # minutes
-                    is_using_paikkala=True,
-                    is_paikkala_public=False,
-                    is_paikkala_time_visible=False,
-                ),
-            )
-
-            coach.paikkalize(
-                max_tickets_per_user=1,
-                max_tickets_per_batch=1,
-                reservation_start=self.event.start_time,
-                numbered_seats=False,
-            )
-
-            coaches.append(coach)
-
-        outward_coach, return_coach = coaches
-
-        kaatoilmo_override_does_not_apply_message = (
-            "Valitettavasti et pysty ilmoittautumaan kaatoon käyttäen tätä lomaketta. Tämä "
-            "voi johtua siitä, että sinua ei ole kutsuttu kaatoon, tai teknisestä syystä. "
-            "Kaatoon osallistumaan ovat oikeutettuja kaatopäivänä 18 vuotta täyttäneet "
-            "coniitit, vuorovastaavat, vänkärit sekä badgelliset ohjelmanjärjestäjät. "
-            "Mikäli saat tämän viestin siitä huolimatta, että olet mielestäsi oikeutettu "
-            "osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen "
-            '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
-        )
-        outward_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, outward_coach.id))
-        return_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, return_coach.id))
-        kaatoilmo, unused = Survey.objects.get_or_create(
-            event=self.event,
-            slug="kaatoilmo",
-            defaults=dict(
-                title="Ilmoittautuminen kaatajaisiin",
-                description=(
-                    "Kiitokseksi työpanoksestasi tapahtumassa Tracon tarjoaa sinulle mahdollisuuden "
-                    "osallistua kaatajaisiin lauantaina 23. syyskuuta 2025 Tampereella. Kaatajaisiin osallistuminen edellyttää ilmoittautumista ja 18 vuoden ikää. "
-                    "</p><p>"
-                    "<strong>HUOM!</strong> Paikat kaatobusseihin varataan erikseen. Varaa paikkasi "
-                    f'<a href="{outward_coach_url}" target="_blank" rel="noopener noreferrer">menobussiin täältä</a> ja '
-                    f'<a href="{return_coach_url}" target="_blank" rel="noopener noreferrer">paluubussiin täältä</a>. '
-                    f'Näet bussivarauksesi <a href="{reverse("programme:profile_reservations_view")}" target="_blank" rel="noopener noreferrer">paikkalippusivulta</a>.'
-                ),
-                override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
-                form_class_path="events.tracon2025.forms:AfterpartyParticipationSurvey",
-                active_from=self.event.end_time,
-                active_until=datetime(2025, 9, 17, 23, 59, 59, tzinfo=self.tz),
-            ),
-        )
-
-        for poison_name in [
-            "Olut",
-            "Siideri, kuiva",
-            "Siideri, makea",
-            "Lonkero",
-            "Panimosima",
-            "Punaviini",
-            "Valkoviini",
-            "Cocktailit",
-            "Alkoholittomat juomat",
-        ]:
-            Poison.objects.get_or_create(name=poison_name)
 
     def setup_forms(self):
         (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])

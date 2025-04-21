@@ -299,7 +299,6 @@ class Setup:
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
-                importer_name="",
                 admin_group=admin_group,
             ),
         )
