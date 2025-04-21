@@ -140,18 +140,28 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
             form__event=event,
             form__survey__app="program_v2",
         ):
-            values = dict(
-                state=["accepted"] if program_offer.programs.exists() else ["new"],
-                form=[program_offer.survey.slug],
-            )
-            program_offer.set_dimension_values(values)
+            existing_values = program_offer.cached_dimensions
+            values_to_set = {}
+
+            if not existing_values.get("state", []):
+                values_to_set["state"] = ["accepted"] if program_offer.programs.exists() else ["new"]
+            if not existing_values.get("form", []):
+                values_to_set["form"] = [program_offer.survey.slug]
+
+            if values_to_set:
+                program_offer.set_dimension_values(values_to_set)
 
         for program in Program.objects.filter(event=event):
-            values = dict(
-                state=["accepted"],
-                form=[program.program_offer.survey.slug] if program.program_offer else [],
-            )
-            program.set_dimension_values({"state": ["accepted"]})
+            existing_values = program.cached_dimensions
+            values_to_set = {}
+
+            if not existing_values.get("state", []):
+                values_to_set["state"] = ["accepted"]
+            if not existing_values.get("form", []):
+                values_to_set["form"] = [program.program_offer.survey.slug] if program.program_offer else []
+
+            if values_to_set:
+                program.set_dimension_values(values_to_set)
 
         Program.refresh_cached_dimensions_qs(Program.objects.filter(event=event))
 
