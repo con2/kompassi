@@ -19,6 +19,7 @@ from labour.models import (
     PersonnelClass,
 )
 from program_v2.models.meta import ProgramV2EventMeta
+from program_v2.workflow import ProgramOfferWorkflow
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.optimized_server.models.enums import PaymentProvider
 
@@ -246,8 +247,6 @@ class Setup:
             )
 
     def setup_program_v2(self):
-        from program_v2.workflow import ProgramOfferWorkflow
-
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
@@ -256,8 +255,7 @@ class Setup:
             ),
         )
 
-        # TODO(ropecon2026): Remove (normally setup when program universe is first accessed)
-        # if not self.event.program_universe.dimensions.filter(slug="state").exists():
+        # TODO(2026): Remove (normally setup when program universe is first accessed)
         ProgramOfferWorkflow.backfill_default_dimensions(self.event)
 
     def setup_forms(self):

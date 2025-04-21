@@ -29,7 +29,6 @@ class Setup:
         self.setup_access()
         self.setup_badges()
         self.setup_forms()
-        self.setup_program_v2()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -583,16 +582,6 @@ class Setup:
         if not survey.key_fields:
             survey.key_fields = ["participated_in_tracon_hitpoint"]
             survey.save()
-
-    def setup_program_v2(self):
-        from program_v2.models.meta import ProgramV2EventMeta
-
-        ProgramV2EventMeta.objects.update_or_create(
-            event=self.event,
-            defaults=dict(
-                admin_group=self.event.programme_event_meta.admin_group,
-            ),
-        )
 
 
 class Command(BaseCommand):

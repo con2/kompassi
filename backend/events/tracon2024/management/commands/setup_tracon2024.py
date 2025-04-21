@@ -25,7 +25,6 @@ class Setup:
         self.setup_badges()
         self.setup_tickets()
         self.setup_programme()
-        self.setup_program_v2()
         self.setup_intra()
         self.setup_access()
         self.setup_kaatoilmo()
@@ -742,16 +741,6 @@ class Setup:
         for room in Room.objects.filter(event=self.event):
             room.v2_dimensions = {"room": [room.slug]}
             room.save(update_fields=["v2_dimensions"])
-
-    def setup_program_v2(self):
-        from program_v2.models.meta import ProgramV2EventMeta
-
-        ProgramV2EventMeta.objects.update_or_create(
-            event=self.event,
-            defaults=dict(
-                admin_group=self.event.programme_event_meta.admin_group,
-            ),
-        )
 
     def setup_access(self):
         from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege

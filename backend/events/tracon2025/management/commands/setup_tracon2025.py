@@ -322,6 +322,8 @@ class Setup:
                 admin_group=admin_group,
             ),
         )
+
+        # TODO(2026): Remove (normally setup when program universe is first accessed)
         ProgramOfferWorkflow.backfill_default_dimensions(self.event)
 
     def setup_access(self):

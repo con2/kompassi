@@ -18,8 +18,6 @@ from labour.models import (
     Qualification,
     Survey,
 )
-from program_v2.models.meta import ProgramV2EventMeta
-from programme.models.programme_event_meta import ProgrammeEventMeta
 
 from ...models import Poison, SignupExtra, SpecialDiet
 
@@ -40,7 +38,6 @@ class Setup:
         self.setup_access()
         self.setup_badges()
         self.setup_intra()
-        self.setup_program_v2()
 
     def setup_core(self):
         self.venue, unused = Venue.objects.get_or_create(
@@ -291,17 +288,6 @@ class Setup:
                 slug=team_slug,
                 defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
-
-    def setup_program_v2(self):
-        # TODO(frostbite2026): Use ProgramV2EventMeta.get_or_create_groups instead
-        (admin_group,) = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins"])
-
-        ProgramV2EventMeta.objects.update_or_create(
-            event=self.event,
-            defaults=dict(
-                admin_group=admin_group,
-            ),
-        )
 
 
 class Command(BaseCommand):
