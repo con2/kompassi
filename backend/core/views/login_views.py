@@ -37,7 +37,7 @@ def core_login_view(request):
 
             user = authenticate(username=username, password=password)
             if user:
-                response = do_login(request, user=user, password=password, next=next)
+                response = do_login(request, user=user, next=next)
                 messages.success(request, "Olet nyt kirjautunut sisään.")
                 return response
             else:
@@ -50,18 +50,17 @@ def core_login_view(request):
     return render(request, "core_login_view.pug", vars)
 
 
-def do_login(request, user, password=None, next="core_frontpage_view"):
+def do_login(request, user, next="core_frontpage_view", backend=None):
     """
     Performs Django login and required post-login steps.
-
-    `django.contrib.auth.authenticate` must be called first.
+    `django.contrib.auth.authenticate` must be called first or `backend` provided.
     """
 
     if user.groups.filter(name=settings.KOMPASSI_APPLICATION_USER_GROUP).exists():
         messages.error(request, "API-käyttäjätunnuksilla sisäänkirjautuminen on estetty.")
         return redirect("core_frontpage_view")
 
-    login(request, user)
+    login(request, user, backend=backend)
     remind_email_verification_if_needed(request, next)
 
     return redirect(next)

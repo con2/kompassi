@@ -51,7 +51,7 @@ def core_registration_view(request):
             person.apply_state_new_user(request, password)
 
             user = authenticate(username=username, password=password)
-            response = do_login(request, user=user, password=None, next=next)
+            response = do_login(request, user=user, next=next)
             messages.success(
                 request,
                 f"Käyttäjätunnuksesi on luotu. Tervetuloa {settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE}!",

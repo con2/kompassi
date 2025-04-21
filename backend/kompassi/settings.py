@@ -386,7 +386,6 @@ KOMPASSI_NEW_USER_GROUPS = ["users"]
 KOMPASSI_MAY_SEND_INFO_GROUP_NAME = "kompassi-maysendinfo"
 
 AUTHENTICATION_BACKENDS = (
-    "core.backends.PasswordlessLoginBackend",
     "django.contrib.auth.backends.ModelBackend",
     "oauth2_provider.backends.OAuth2Backend",
 )
