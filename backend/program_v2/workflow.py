@@ -1,5 +1,7 @@
 import logging
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
+from datetime import timedelta
+from typing import ClassVar
 
 from core.models.event import Event
 from dimensions.models.dimension import Dimension
@@ -8,6 +10,7 @@ from dimensions.models.universe import Universe
 from forms.models.response import Response
 from forms.models.survey import Survey
 from forms.models.workflow import Workflow
+from graphql_api.language import SUPPORTED_LANGUAGE_CODES
 
 from .models.program import Program
 
@@ -19,10 +22,18 @@ DATE_DIMENSION_TITLE_LOCALIZED = dict(
     sv="Dag",
 )
 
-ROOM_DIMENSION_TITLE_LOCALIZED = dict(
-    fi="Sali",
-    en="Room",
-    sv="Sal",
+ROOM_DIMENSION_DTO = DimensionDTO(
+    slug="room",
+    value_ordering=ValueOrdering.TITLE,
+    is_public=True,
+    is_list_filter=True,
+    is_key_dimension=False,
+    is_technical=True,  # but the values are not
+    title=dict(
+        fi="Sali",
+        en="Room",
+        sv="Sal",
+    ),
 )
 
 WEEKDAYS_LOCALIZED = dict(
@@ -165,6 +176,8 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         return DimensionDTO.save_many(
             universe,
             [
+                cls._get_date_dimension_dto(universe),
+                ROOM_DIMENSION_DTO,
                 cls._get_form_dimension_dto(universe),
                 STATE_DIMENSION_DTO,
             ],
@@ -203,4 +216,61 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
                     app="program_v2",
                 ).only("id", "slug")
             ],
+        )
+
+    date_cutoff_time: ClassVar[timedelta] = timedelta(hours=4)  # 04:00 local time
+
+    def _get_date_dimension_value(self, program: Program) -> list[str]:
+        """
+        Return the date dimension value for the programme.
+
+        The `date_cutoff_time` is used to determine at which time of the night the date changes.
+        Use this to make the wee hours of the night belong to the previous day.
+        """
+        tz = self.survey.event.timezone
+        return [
+            (sitem.start_time.astimezone(tz) - self.date_cutoff_time).date().isoformat()
+            for sitem in program.schedule_items.all()
+        ]
+
+    @classmethod
+    def _get_date_dimension_values(cls, universe: Universe) -> Iterable[DimensionValueDTO]:
+        """
+        Return a list of DimensionValueDTOs for the date dimension.
+        """
+        event: Event = universe.scope.event
+        tz = event.timezone
+
+        if not event.start_time:
+            raise ValueError(f"Event {event} has no start time")
+        if not event.end_time:
+            raise ValueError(f"Event {event} has no end time")
+
+        cur_date = event.start_time.astimezone(tz).date()
+        end_date = event.end_time.astimezone(tz).date()
+
+        while cur_date <= end_date:
+            yield DimensionValueDTO(
+                slug=cur_date.isoformat(),
+                title={
+                    lang_code: WEEKDAYS_LOCALIZED[lang_code][cur_date.weekday()]
+                    for lang_code in SUPPORTED_LANGUAGE_CODES
+                },
+                is_technical=True,
+            )
+            cur_date += timedelta(days=1)
+
+    @classmethod
+    def _get_date_dimension_dto(cls, universe: Universe) -> DimensionDTO:
+        """
+        Reusable date dimension for importers that define their own dimensions in `get_dimensions`.
+        """
+        return DimensionDTO(
+            slug="date",
+            title=DATE_DIMENSION_TITLE_LOCALIZED,
+            choices=list(cls._get_date_dimension_values(universe)),
+            value_ordering=ValueOrdering.SLUG,
+            is_public=True,
+            is_list_filter=True,
+            is_technical=True,
         )

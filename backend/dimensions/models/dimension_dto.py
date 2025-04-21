@@ -41,6 +41,7 @@ class DimensionDTO(pydantic.BaseModel):
         universe: Universe,
         dimension_dtos: list[Self],
         remove_others=False,
+        remove_other_values=False,
         dimension_value_batch_size=200,
     ) -> list[Dimension]:
         dimensions_upsert = (
@@ -120,14 +121,15 @@ class DimensionDTO(pydantic.BaseModel):
         )
         logger.info("Saved %s dimension values", num_dvs)
 
-        for dim_dto, dim_dj in zip(dimension_dtos, django_dimensions, strict=True):
-            values_to_keep = [choice.slug for choice in dim_dto.choices or []]
-            _, deleted = dim_dj.values.exclude(slug__in=values_to_keep).delete()
-            logger.info("Stale dimension value cleanup for %s deleted %s", dim_dto.slug, deleted or "nothing")
+        if remove_other_values:
+            for dim_dto, dim_dj in zip(dimension_dtos, django_dimensions, strict=True):
+                values_to_keep = [choice.slug for choice in dim_dto.choices or []]
+                _, deleted = dim_dj.values.exclude(slug__in=values_to_keep).delete()
+                logger.info("Stale dimension value cleanup for %s deleted %s", dim_dto.slug, deleted or "nothing")
 
         if remove_others:
             dimensions_to_keep = [dim_dto.slug for dim_dto in dimension_dtos]
-            num_deleted_dvs, _ = universe.dimensions.exclude(slug__in=dimensions_to_keep).delete()
-            logger.info("Deleted %s stale dimensions", num_deleted_dvs)
+            _, deleted = universe.dimensions.exclude(slug__in=dimensions_to_keep).delete()
+            logger.info("Stale dimension cleanup deleted %s", deleted)
 
         return django_dimensions
