@@ -91,9 +91,6 @@ class ProgramLink(graphene.ObjectType):
         """
         TODO should this be pushed into the Program model?
         TODO should this be cached? (probably not, as some links are time-sensitive)
-
-        params:
-            event - performance optimization to avoid O(n) queries
         """
         event = program.event
         meta = event.program_v2_event_meta
