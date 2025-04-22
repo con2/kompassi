@@ -41,6 +41,7 @@ class ProgramV2EventMetaForm(forms.ModelForm):
         fields = (
             "is_accepting_feedback",
             "contact_email",
+            "guide_v2_embedded_url",
         )
 
 
