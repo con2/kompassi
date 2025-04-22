@@ -11,7 +11,7 @@ logger = logging.getLogger("kompassi")
 
 def give_all_app_perms_to_group(app_label, group):
     for ctype in ContentType.objects.filter(app_label=app_label):
-        for perm in ctype.permission_set.all():
+        for perm in ctype.permission_set.all():  # type: ignore
             perm.group_set.add(group)  # type: ignore
 
 
@@ -55,14 +55,21 @@ def ensure_groups_exist(group_names):
     return [Group.objects.get_or_create(name=group_name)[0] for group_name in group_names]
 
 
-def get_code(path):
+REMAP_MODULES = {
+    "events.hitpoint2017": "zombies.hitpoint2017",
+}
+
+
+def get_code(path: str):
     """
-    Given "core.utils:get_code", imports the module "core.utils" and returns
+    Given "core.utils.misc_utils:get_code", imports the module "core.utils.misc_utils" and returns
     "get_code" from it.
     """
     from importlib import import_module
 
     module_name, member_name = path.split(":")
+    module_name = REMAP_MODULES.get(module_name, module_name)
+
     module = import_module(module_name)
     return getattr(module, member_name)
 
