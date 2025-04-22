@@ -22,7 +22,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         max_length=255,
         blank=True,
         validators=[contact_email_validator],
-        help_text="Foo Bar <foo.bar@example.com>",
+        help_text="Foo Bar &lt;foo.bar@example.com&gt;",
     )
 
     guide_v2_embedded_url = models.CharField(
