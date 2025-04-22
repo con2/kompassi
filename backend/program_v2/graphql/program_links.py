@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import Self
+
 import graphene
 from django.conf import settings
 from django.http import HttpRequest
@@ -22,6 +26,8 @@ class ProgramLinkType(graphene.Enum):
     FEEDBACK = "FEEDBACK"
     CALENDAR = "CALENDAR"
     OTHER = "OTHER"
+    GUIDE_V2_LIGHT = "GUIDE_V2_LIGHT"
+    GUIDE_V2_EMBEDDED = "GUIDE_V2_EMBEDDED"
 
 
 # This is an interim solution until Program V2 has an editing UI.
@@ -31,11 +37,13 @@ DEFAULT_LINK_TITLES = dict(
         ProgramLinkType.RESERVATION: "Reserve seats",
         ProgramLinkType.TICKETS: "Buy tickets",
         ProgramLinkType.RECORDING: "Watch recording",
-        ProgramLinkType.MATERIAL: "Katso esitysmateriaalit",
+        ProgramLinkType.MATERIAL: "View presentation materials",
         ProgramLinkType.REMOTE: "Participate remotely",
         ProgramLinkType.FEEDBACK: "Give feedback",
         ProgramLinkType.OTHER: "Link",
         ProgramLinkType.CALENDAR: "Add to calendar",
+        ProgramLinkType.GUIDE_V2_LIGHT: "This program in Kompassi",
+        ProgramLinkType.GUIDE_V2_EMBEDDED: "This program at the event website",
     },
     fi={
         ProgramLinkType.SIGNUP: "Ilmoittaudu",
@@ -47,6 +55,8 @@ DEFAULT_LINK_TITLES = dict(
         ProgramLinkType.FEEDBACK: "Anna palautetta",
         ProgramLinkType.OTHER: "Linkki",
         ProgramLinkType.CALENDAR: "Lisää kalenteriin",
+        ProgramLinkType.GUIDE_V2_LIGHT: "Tämä ohjelma Kompassissa",
+        ProgramLinkType.GUIDE_V2_EMBEDDED: "Tämä ohjelma tapahtuman web-sivuilla",
     },
     sv={
         ProgramLinkType.SIGNUP: "Anmäl dig",
@@ -58,6 +68,8 @@ DEFAULT_LINK_TITLES = dict(
         ProgramLinkType.FEEDBACK: "Ge feedback",
         ProgramLinkType.OTHER: "Länk",
         ProgramLinkType.CALENDAR: "Lägg till i kalendern",
+        ProgramLinkType.GUIDE_V2_LIGHT: "Detta program i programguiden",
+        ProgramLinkType.GUIDE_V2_EMBEDDED: "Detta program på evenemangets webbsida",
     },
 )
 
@@ -75,11 +87,21 @@ class ProgramLink(graphene.ObjectType):
         link_type: ProgramLinkType,
         language: str = DEFAULT_LANGUAGE,
         include_expired: bool = False,
-    ):
+    ) -> Self | None:
         """
         TODO should this be pushed into the Program model?
         TODO should this be cached? (probably not, as some links are time-sensitive)
+
+        params:
+            event - performance optimization to avoid O(n) queries
         """
+        event = program.event
+        meta = event.program_v2_event_meta
+
+        if meta is None:
+            # This should not happen, but appease the type checker
+            return None
+
         link_type_str = link_type.value  # type: ignore[attr-defined]
         title_specifier = ""
         link_annotation = f"internal:links:{link_type_str.lower()}"
@@ -106,13 +128,17 @@ class ProgramLink(graphene.ObjectType):
                 href = (
                     program.annotations.get(
                         link_annotation,
-                        settings.KOMPASSI_V2_BASE_URL
-                        + f"/events/{program.event.slug}/programs/{program.slug}/feedback",
+                        settings.KOMPASSI_V2_BASE_URL + f"/events/{event.slug}/programs/{program.slug}/feedback",
                     )
                     if program.is_accepting_feedback
                     else ""
                 )
-
+            case ProgramLinkType.GUIDE_V2_LIGHT:
+                href = settings.KOMPASSI_V2_BASE_URL + f"/{event.slug}/programs/{program.slug}"
+            case ProgramLinkType.GUIDE_V2_EMBEDDED:
+                href = program.annotations.get(link_annotation, "")
+                if not href and meta.guide_v2_embedded_url:
+                    href = meta.guide_v2_embedded_url + "#prog:" + program.slug
             case _:
                 href = program.annotations.get(link_annotation, "")
 

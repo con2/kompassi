@@ -25,6 +25,12 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         help_text="Foo Bar <foo.bar@example.com>",
     )
 
+    guide_v2_embedded_url = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="URL to the embedded guide. This is used to form program links.",
+    )
+
     use_cbac = True
 
     def __str__(self):

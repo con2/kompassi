@@ -1380,6 +1380,8 @@ export type ProgramLink = {
 export enum ProgramLinkType {
   Calendar = 'CALENDAR',
   Feedback = 'FEEDBACK',
+  GuideV2Embedded = 'GUIDE_V2_EMBEDDED',
+  GuideV2Light = 'GUIDE_V2_LIGHT',
   Material = 'MATERIAL',
   Other = 'OTHER',
   Recording = 'RECORDING',
