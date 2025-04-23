@@ -13,7 +13,7 @@ const charMap: Record<string, string> = {
   ü: "u",
 };
 
-export default function slugify(ustr: string) {
+export function slugifyDash(ustr: string) {
   ustr = ustr.toLowerCase();
   ustr = Array.prototype.map.call(ustr, (c) => charMap[c] || c).join("");
   return ustr
@@ -22,3 +22,9 @@ export default function slugify(ustr: string) {
     .replace(/-$/, "") // remove trailing dash
     .replace(/^-/, ""); // remove leading dash
 }
+
+export function slugifyUnderscore(ustr: string) {
+  return slugifyDash(ustr).replace(/-/g, "_");
+}
+
+export default slugifyDash;

@@ -35,7 +35,7 @@ class DimensionValue(models.Model):
         help_text="Only applies if `dimension.value_ordering` is `manual`.",
     )
 
-    slug = make_slug_field(unique=False, separator="_")
+    slug = make_slug_field(unique=False, separator="-")
     color = models.CharField(max_length=63, blank=True, default="")
 
     # NOTE SUPPORTED_LANGUAGES

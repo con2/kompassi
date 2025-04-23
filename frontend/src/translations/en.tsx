@@ -1374,9 +1374,15 @@ const translations = {
       attributes: {
         slug: {
           title: "Technical name",
-          // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Machine-readable dimension name. Cannot be changed after creation.",
+          helpText: (
+            <>
+              Machine-readable, short name for the dimension. Cannot be changed
+              after creation. Can contain lower case letters, numbers and dashes
+              (-). Will become part of query string parameters in the URL:{" "}
+              <code>dimension=value</code> (eg. <code>program-type=panel</code>
+              ).
+            </>
+          ),
         },
         localizedTitleHeader: {
           title: "Localized titles",
@@ -1445,8 +1451,15 @@ const translations = {
         slug: {
           title: "Technical name",
           // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Machine-readable name of the value. Cannot be changed after creation.",
+          helpText: (
+            <>
+              Machine-readable, short name for the dimension value. Cannot be
+              changed after creation. Can contain lower case letters, numbers
+              and dashes (-). Will become part of query string parameters in the
+              URL: <code>dimension=value</code> (eg.{" "}
+              <code>program-type=panel</code>).
+            </>
+          ),
         },
         color: {
           title: "Color",

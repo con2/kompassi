@@ -1376,8 +1376,15 @@ const translations: Translations = {
         slug: {
           title: "Tekninen nimi",
           // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Koneluettava, lyhyt nimi dimensiolle. Teknistä nimeä ei voi muuttaa dimension luomisen jälkeen.",
+          helpText: (
+            <>
+              Koneluettava, lyhyt nimi dimensiolle. Teknistä nimeä ei voi
+              muuttaa dimension luomisen jälkeen. Voi sisältää pieniä kirjaimia,
+              numeroita ja väliviivoja (-). Tulee osaksi osoitetta
+              suodatettaessa: <code>dimensio=arvo</code> (esim.{" "}
+              <code>program-type=panel</code>).
+            </>
+          ),
         },
         localizedTitleHeader: {
           title: "Otsikko lokalisoituna",
@@ -1446,8 +1453,15 @@ const translations: Translations = {
         slug: {
           title: "Tekninen nimi",
           // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Koneluettava, lyhyt nimi arvolle. Teknistä nimeä ei voi muuttaa dimension luomisen jälkeen.",
+          helpText: (
+            <>
+              Koneluettava, lyhyt nimi arvolle. Teknistä nimeä ei voi muuttaa
+              arvon luomisen jälkeen. Voi sisältää pieniä kirjaimia, numeroita
+              ja väliviivoja (-). Tulee osaksi osoitetta suodatettaessa:{" "}
+              <code>dimensio=arvo</code> (esim. <code>program-type=panel</code>
+              ).
+            </>
+          ),
         },
         color: {
           title: "Väri",

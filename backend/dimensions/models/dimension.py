@@ -111,7 +111,7 @@ class Dimension(models.Model):
         ),
     )
 
-    slug = make_slug_field(unique=False, separator="_", extra_validators=[invalid_slugs_validator])
+    slug = make_slug_field(unique=False, separator="-", extra_validators=[invalid_slugs_validator])
 
     # NOTE SUPPORTED_LANGUAGES
     title_en = models.TextField(blank=True, default="")
