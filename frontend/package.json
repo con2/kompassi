@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.9.0-alpha.3",
-    "@apollo/experimental-nextjs-app-support": "^0.7.0",
+    "@apollo/experimental-nextjs-app-support": "^0.12.2",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@js-temporal/polyfill": "^0.4.4",
     "bootstrap": "^5.3.5",
