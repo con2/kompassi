@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
-import { useState } from "react";
+
+import Nav from "react-bootstrap/Nav";
+import NavDropdown from "react-bootstrap/NavDropdown";
 
 import type { Translations } from "@/translations/en";
 
@@ -25,19 +27,6 @@ interface ProfileLink {
 type OpenMenu = "none" | "user" | "language";
 
 export default function NavigationMenus({ session, locale, messages }: Props) {
-  const [openMenu, setOpenMenu] = useState<OpenMenu>("none");
-
-  const isLanguageMenuOpen = openMenu === "language";
-  const isUserMenuOpen = openMenu === "user";
-
-  const toggleLanguageMenu = () => {
-    setOpenMenu((openMenu) => (openMenu === "language" ? "none" : "language"));
-  };
-
-  const toggleUserMenu = () => {
-    setOpenMenu((openMenu) => (openMenu === "user" ? "none" : "user"));
-  };
-
   const { switchTo: supportedLanguages } = messages.LanguageSwitcher;
   let pathname = usePathname();
 
@@ -65,83 +54,46 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
   ];
 
   return (
-    <div className="navbar-nav ms-auto">
-      <div className="nav-item dropdown" data-bs-theme="light">
-        <button
-          className="nav-link btn btn-link dropdown-toggle"
-          id="user-menu"
-          role="button"
-          aria-expanded={isLanguageMenuOpen}
-          onClick={toggleLanguageMenu}
-        >
-          {locale.toUpperCase()}
-        </button>
-        <ul
-          className={`dropdown-menu dropdown-menu-end ${
-            isLanguageMenuOpen ? "show" : ""
-          }`}
-          aria-labelledby="user-menu"
-        >
-          {Object.entries(supportedLanguages).map(([code, name]) => (
-            <li key={code}>
-              <Link
-                href={`/${code}${pathname}`}
-                className={`dropdown-item ${code === locale ? "active" : ""}`}
-                onClick={toggleLanguageMenu}
-                prefetch={false}
-              >
-                {name}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
+    <Nav className="navbar-nav ms-auto">
+      <NavDropdown
+        title={locale.toUpperCase()}
+        id="kompassi-locale-menu"
+        data-bs-theme="light"
+      >
+        {Object.entries(supportedLanguages).map(([code, name]) => (
+          <NavDropdown.Item
+            key={code}
+            as={Link}
+            href={`/${code}${pathname}`}
+            active={code === locale}
+            prefetch={false}
+          >
+            {name}
+          </NavDropdown.Item>
+        ))}
+      </NavDropdown>
       {session?.user ? (
-        <div className="nav-item dropdown" data-bs-theme="light">
-          <button
-            className="nav-link btn btn-link dropdown-toggle"
-            id="user-menu"
-            role="button"
-            aria-expanded={isUserMenuOpen}
-            onClick={toggleUserMenu}
-          >
-            {session.user.name}
-          </button>
-          <ul
-            className={`dropdown-menu dropdown-menu-end ${
-              isUserMenuOpen ? "show" : ""
-            }`}
-            aria-labelledby="user-menu"
-          >
-            {links.map(({ href, title }) => (
-              <li key={href}>
-                <Link
-                  className="dropdown-item"
-                  href={href}
-                  onClick={toggleUserMenu}
-                >
-                  {title}
-                </Link>
-              </li>
-            ))}
-            <li>
-              <hr className="dropdown-divider" />
-            </li>
-            <li>
-              <button className="dropdown-item" onClick={() => signOut()}>
-                {messages.UserMenu.signOut}
-              </button>
-            </li>
-          </ul>
-        </div>
-      ) : (
-        <button
-          onClick={() => signIn("kompassi")}
-          className="nav-link btn btn-link"
+        <NavDropdown
+          title={session.user.name}
+          id="kompassi-user-menu"
+          data-bs-theme="light"
+          align="end"
         >
+          {links.map(({ href, title }) => (
+            <NavDropdown.Item key={href} as={Link} href={href}>
+              {title}
+            </NavDropdown.Item>
+          ))}
+          <NavDropdown.Divider />
+          <NavDropdown.Item onClick={() => signOut()}>
+            {messages.UserMenu.signOut}
+          </NavDropdown.Item>
+        </NavDropdown>
+      ) : (
+        <Nav.Link onClick={() => signIn("kompassi")}>
           {messages.UserMenu.signIn}…
-        </button>
+        </Nav.Link>
       )}
-    </div>
+    </Nav>
   );
 }
