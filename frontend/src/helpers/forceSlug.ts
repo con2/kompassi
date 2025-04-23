@@ -10,10 +10,7 @@ export function forceSlug(
   const newFormData = { ...formData };
 
   for (const field of tryFields) {
-    if (
-      typeof newFormData[field] === "string" &&
-      newFormData[field].length > 0
-    ) {
+    if (typeof newFormData[field] === "string" && newFormData[field]) {
       const slug = slugify(newFormData[field]);
       newFormData.slug = slug;
       break;
