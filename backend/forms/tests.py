@@ -39,10 +39,6 @@ def test_process_form_data():
               slug: singleLineTextRequiredMissing
               title: A required field that is missing
               required: true
-            - type: SingleLineText
-              slug: singleLineTextHtmlNumber
-              title: A number field
-              htmlType: number
 
             # single checkbox fields
             - type: SingleCheckbox
@@ -134,7 +130,6 @@ def test_process_form_data():
         # single line text fields
         "singleLineText",
         "singleLineTextRequiredMissing",
-        "singleLineTextHtmlNumber",
         # single checkbox fields
         "thisIsFalse",
         "thisIsTrue",
@@ -170,7 +165,6 @@ def test_process_form_data():
     form_data = {
         # single line text fields
         "singleLineText": "Hello world",
-        "singleLineTextHtmlNumber": "123",
         # single checkbox fields
         "thisIsTrue": "on",
         # single select fields
@@ -195,7 +189,6 @@ def test_process_form_data():
         # single line text fields
         singleLineText="Hello world",
         singleLineTextRequiredMissing="",
-        singleLineTextHtmlNumber=123,
         # single checkbox fields
         thisIsTrue=True,
         thisIsFalse=False,
@@ -254,8 +247,6 @@ def test_process_form_data():
         "Hello world",
         # singleLineTextRequiredMissing
         "",
-        # singleLineTextHtmlNumber
-        123,
         # thisIsFalse
         False,
         # thisIsTrue
@@ -568,28 +559,28 @@ def test_summarize_responses():
 
     expected_summary = {
         "singleLineText": TextFieldSummary(
-            countResponses=2,
-            countMissingResponses=1,
+            count_responses=2,
+            count_missing_responses=1,
             summary=["Hello world", "Hello world"],
         ),
         "numberField": SelectFieldSummary(
-            countResponses=2,
-            countMissingResponses=1,
+            count_responses=2,
+            count_missing_responses=1,
             summary={"5": 1, "6": 1},
         ),
         "singleSelect": SelectFieldSummary(
-            countResponses=3,
-            countMissingResponses=0,
+            count_responses=3,
+            count_missing_responses=0,
             summary={"choice1": 1, "choice2": 1, "choice3": 0, "choice666": 1},
         ),
         "multiSelect": SelectFieldSummary(
-            countResponses=2,
-            countMissingResponses=1,
+            count_responses=2,
+            count_missing_responses=1,
             summary={"choice1": 1, "choice2": 0, "choice3": 1, "choice666": 1},
         ),
         "radioMatrix": MatrixFieldSummary(
-            countResponses=3,
-            countMissingResponses=0,
+            count_responses=3,
+            count_missing_responses=0,
             summary={
                 "foo": {"choice1": 1, "choice2": 1, "choice3": 0, "choice666": 1},
                 "bar": {"choice1": 0, "choice2": 2, "choice3": 0},
@@ -654,8 +645,8 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
         fields=[
             dict(
                 slug="test-dimension",
-                type="SingleSelect",
-                choicesFrom=dict(dimension="test-dimension"),
+                type="DimensionSingleSelect",
+                dimension="test-dimension",
             )
         ],
     )
@@ -704,7 +695,7 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
 @mock.patch("dimensions.graphql.mutations.put_dimension.graphql_check_instance", autospec=True)
 def test_put_survey_dimension(_patched_graphql_check_instance):
     form_data = {
-        "slug": "test_dimension",
+        "slug": "test-dimension",
         "title_en": "Test dimension",
         "title_sv": "Testdimension",
         "isKeyDimension": "on",
@@ -729,9 +720,9 @@ def test_put_survey_dimension(_patched_graphql_check_instance):
         ),  # type: ignore
     )
 
-    dimension = Dimension.objects.get(universe=survey.universe, slug="test_dimension")
+    dimension = Dimension.objects.get(universe=survey.universe, slug="test-dimension")
 
-    assert dimension.slug == "test_dimension"
+    assert dimension.slug == "test-dimension"
     assert dimension.title_en == "Test dimension"
     assert dimension.title_sv == "Testdimension"
     assert dimension.title_fi == ""

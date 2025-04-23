@@ -189,19 +189,9 @@ export default async function SurveysPage({ params }: Props) {
         const absoluteUrl = `${publicUrl}${fillInUrl}`;
         return (
           <>
-            {survey.isActive ? (
-              <Link href={fillInUrl} className="btn btn-sm btn-outline-primary">
-                {t.actions.fillIn.title}…
-              </Link>
-            ) : (
-              <button
-                disabled
-                className="btn btn-sm btn-outline-primary"
-                title={t.actions.fillIn.disabledTooltip}
-              >
-                {t.actions.fillIn.title}…
-              </button>
-            )}{" "}
+            <Link href={fillInUrl} className="btn btn-sm btn-outline-primary">
+              {t.actions.fillIn.title}…
+            </Link>{" "}
             <CopyButton
               className="btn btn-sm btn-outline-primary"
               data={absoluteUrl}

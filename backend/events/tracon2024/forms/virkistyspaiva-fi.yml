@@ -9,11 +9,10 @@ description: |
   Mikäli herää kysyttävää, otathan yhteyttä virkistykseen Slackissa <em>@Haisku</em> tai <em>@dennu</em>
 fields:
   - slug: participation
-    type: MultiSelect
+    type: DimensionMultiSelect
     title: Osallistun…
     required: true
-    choicesFrom:
-      dimension: participation
+    dimension: participation
     helpText: |
       Jos osallistut sekä ruokailuun että iltaohjelmaan, ruksaa molemmat.
 

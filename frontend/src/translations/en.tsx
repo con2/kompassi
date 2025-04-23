@@ -188,6 +188,10 @@ const translations = {
         helpText:
           'Each line should contain one question in the form of "slug: Question shown to the user".',
       },
+      dimension: {
+        title: "Dimension",
+        helpText: "Which dimension should the field get its choices from?",
+      },
       encryptTo: {
         title: "Encrypt to",
         helpText:
@@ -203,7 +207,9 @@ const translations = {
       Spacer: "Empty space",
       SingleCheckbox: "Single check box",
       SingleSelect: "Single select",
+      DimensionSingleSelect: "Single select (Dimension)",
       MultiSelect: "Multiple select",
+      DimensionMultiSelect: "Multiple select (Dimension)",
       RadioMatrix: "Radio button matrix",
       FileUpload: "File upload",
       NumberField: "Number",
@@ -211,6 +217,99 @@ const translations = {
       DateField: "Date",
       DateTimeField: "Date and time",
       TimeField: "Time",
+    },
+    advancedFieldTypes: {
+      SingleSelect: {
+        convertToDimension: {
+          title: "Convert to a dimension field",
+          modalActions: {
+            submit: "Proceed with conversion",
+            cancel: "Cancel without converting",
+          },
+          existingDimension: (
+            <>
+              <p>
+                Are you sure you want to convert this field to a dimension
+                field?
+              </p>
+              <p>
+                If you proceed, the following actions will be taken in{" "}
+                <strong>all language versions</strong> of this survey:
+              </p>
+              <ol>
+                <li>
+                  New choices, if any, will be added to the existing dimension
+                  of the same slug (technical name). Translations for them will
+                  be extracted from all existing language versions and combined
+                  by their slugs.
+                </li>
+                <li>
+                  This field will be replaced by a dimension selection field
+                  that will receive its choices from the aforementioned
+                  dimension. Other attributes of the field will be retained.
+                </li>
+                <li>
+                  Each response in which this field has been responded to will
+                  have the answers to this field set as dimension values on that
+                  response.
+                </li>
+              </ol>
+              <p>This cannot be undone.</p>
+            </>
+          ),
+          newDimension: (
+            <>
+              <p>
+                Are you sure you want to convert this field to a dimension
+                field?
+              </p>
+              <p>
+                If you proceed, the following actions will be taken in{" "}
+                <strong>all language versions</strong> of this survey:
+              </p>
+              <ol>
+                <li>
+                  A new dimension will be created with the same technical name
+                  (slug) as this field. Choices and their translations will be
+                  extracted from all existing language versions and combined by
+                  their slugs.
+                </li>
+                <li>
+                  This field will be replaced by a dimension selection field
+                  that will receive its choices from the aforementioned
+                  dimension. Other attributes of the field will be retained.
+                </li>
+                <li>
+                  Each response in which this field has been responded to will
+                  have the answers to this field set as dimension values on that
+                  response.
+                </li>
+              </ol>
+              <p>This cannot be undone.</p>
+            </>
+          ),
+        },
+      },
+      DimensionSingleSelect: {
+        description: (
+          <>
+            This field type displays a single selection field with a list of
+            choices that are defined by a dimension. When the respondent selects
+            a value for this field, that dimension value will be set on the
+            response.
+          </>
+        ),
+      },
+      DimensionMultiSelect: {
+        description: (
+          <>
+            This field type displays a multiple selection field with a list of
+            choices that are defined by a dimension. When the respondent selects
+            values for this field, those dimension values will be set on the
+            response.
+          </>
+        ),
+      },
     },
 
     removeFieldModal: {
@@ -1123,6 +1222,17 @@ const translations = {
         untilTime: (formattedTime: String) => `Open until ${formattedTime}`,
         openingAt: (formattedTime: String) => `Opening at ${formattedTime}`,
         closed: "Closed",
+        adminOverride: {
+          title: "This survey is not active",
+          message: (
+            <>
+              This survey is not currently open for responses. You can only see
+              this page due to your administrative privileges. Users without
+              admin privileges will only see a message that the survey is not
+              active.
+            </>
+          ),
+        },
       },
       activeFrom: {
         title: "Active from",

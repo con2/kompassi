@@ -44,11 +44,10 @@ fields:
     title: Esityksen tiedot
 
   - slug: program
-    type: SingleSelect
+    type: DimensionSingleSelect
     title: Haluaisitko esiintyä
     required: true
-    choicesFrom:
-      dimension: program
+    dimension: program
 
   - slug: performer-name
     type: SingleLineText

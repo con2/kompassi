@@ -402,12 +402,12 @@ class Setup:
         )
 
         for survey in [
-            SurveyDTO(
-                slug="kickoff-signup",
-                anonymity="NAME_AND_EMAIL",
-                max_responses_per_user=1,
-                login_required=True,
-            ),
+            # SurveyDTO(
+            #     slug="kickoff-signup",
+            #     anonymity="NAME_AND_EMAIL",
+            #     max_responses_per_user=1,
+            #     login_required=True,
+            # ),
             SurveyDTO(
                 slug="expense-claim",
                 key_fields=["title", "amount"],
@@ -421,7 +421,7 @@ class Setup:
                 anonymity="NAME_AND_EMAIL",
             ),
         ]:
-            survey.save(self.event)
+            survey.save(self.event, overwrite=True)
 
     def setup_tickets_v2(self):
         if self.dev_tickets:

@@ -187,6 +187,10 @@ const translations: Translations = {
         helpText:
           'Kullakin rivillä tulisi olla yksi kysymys muodossa "tekninen-nimi: Käyttäjälle näytettävä kysymys".',
       },
+      dimension: {
+        title: "Dimensio",
+        helpText: "Mistä dimensiosta tämä kenttä saa vastauksensa?",
+      },
       encryptTo: {
         title: "Salaa vastaukset",
         helpText:
@@ -202,7 +206,9 @@ const translations: Translations = {
       Spacer: "Tyhjä tila",
       SingleCheckbox: "Yksittäinen rasti ruutuun -kenttä",
       SingleSelect: "Valinta",
+      DimensionSingleSelect: "Valinta (dimensio)",
       MultiSelect: "Monivalinta",
+      DimensionMultiSelect: "Monivalinta (dimensio)",
       RadioMatrix: "Valintamatriisi",
       FileUpload: "Tiedoston lähetys",
       NumberField: "Numero",
@@ -210,6 +216,89 @@ const translations: Translations = {
       DateField: "Päivämäärä",
       DateTimeField: "Päivämäärä ja kellonaika",
       TimeField: "Kellonaika",
+    },
+    advancedFieldTypes: {
+      SingleSelect: {
+        convertToDimension: {
+          title: "Muuta dimensiokentäksi",
+          modalActions: {
+            submit: "Toteuta muutos",
+            cancel: "Sulje tekemättä muutosta",
+          },
+          existingDimension: (
+            <>
+              <p>Haluatko varmasti muuttaa tämän kentän dimensiokentäksi?</p>
+              <p>
+                Jos jatkat, seuraavat toimenpiteet toteutetaan tämän kyselyn{" "}
+                <strong>kaikissa kieliversioissa</strong>:
+              </p>
+              <ol>
+                <li>
+                  Mahdolliset puuttuvat vaihtoehdot lisätään olemassa olevaan
+                  dimensioon, jonka tekninen nimi on sama kuin tällä kentällä.
+                  Niiden käännökset otetaan kaikista olemassa olevista
+                  kieliversioista.
+                </li>
+                <li>
+                  Tämä kenttä korvataan kentällä, joka saa vaihtoehtonsa edellä
+                  mainitusta dimensioista. Kentän muut ominaisuudet pysyvät
+                  ennallaan.
+                </li>
+                <li>
+                  Kukin kyselyvastaus, jossa tähän kenttään on vastattu, saa
+                  tämän kentän vastaukset kyseisen dimension arvoiksi.
+                </li>
+              </ol>
+              <p>Tätä toimintoa ei voi perua.</p>
+            </>
+          ),
+          newDimension: (
+            <>
+              <p>Haluatko varmasti muuttaa tämän kentän dimensiokentäksi?</p>
+              <p>
+                Jos jatkat, seuraavat toimenpiteet toteutetaan tämän kyselyn{" "}
+                <strong>kaikissa kieliversioissa</strong>:
+              </p>
+              <ol>
+                <li>
+                  Kyselyyn luodaan uusi dimensio, jonka tekninen nimi on sama
+                  kuin tällä kentällä. Vaihtoehdot käännöksineen otetaan
+                  kaikista olemassa olevista kieliversioista ja yhdistetään
+                  niiden teknisten nimien perusteella.
+                </li>
+                <li>
+                  Tämä kenttä korvataan kentällä, joka saa vaihtoehtonsa edellä
+                  mainitusta dimensioista. Kentän muut ominaisuudet pysyvät
+                  ennallaan.
+                </li>
+                <li>
+                  Kukin kyselyvastaus, jossa tähän kenttään on vastattu, saa
+                  tämän kentän vastaukset kyseisen dimension arvoiksi.
+                </li>
+              </ol>
+              <p>Tätä toimintoa ei voi perua.</p>
+            </>
+          ),
+        },
+      },
+      DimensionSingleSelect: {
+        description: (
+          <>
+            Tämä kenttätyyppi näyttää valintakentän, jonka vaihtoehtoina ovat
+            dimension arvot. Kun vastaaja valitsee arvon tähän kenttään,
+            vastaukselle asetetaan kyseinen dimension arvo.
+          </>
+        ),
+      },
+      DimensionMultiSelect: {
+        description: (
+          <>
+            Tämä kenttätyyppi näyttää monivalintakentän, jonka vaihtoehtoina
+            ovat dimension arvot. Kun vastaaja valitsee arvoja tähän kenttään,
+            vastaukselle asetetaan kyseiset dimension arvot.
+          </>
+        ),
+      },
     },
 
     removeFieldModal: {
@@ -1120,6 +1209,17 @@ const translations: Translations = {
         untilTime: (formattedTime: String) => `Avoinna ${formattedTime} asti`,
         openingAt: (formattedTime: String) => `Avautuu ${formattedTime}`,
         closed: "Suljettu",
+        adminOverride: {
+          title: "Kysely ei ole käytössä",
+          message: (
+            <>
+              Tämä kysely ei tällä hetkellä ota vastaan vastauksia. Näet tämän
+              sivun vain, koska sinulla on ylläpitäjän oikeudet tähän kyselyyn.
+              Käyttäjät, joilla ei ole ylläpitäjän oikeuksia, näkevät ainoastaan
+              viestin joka ilmoittaa, että kysely ei ole käytössä.
+            </>
+          ),
+        },
       },
       activeFrom: {
         title: "Avautumisaika",

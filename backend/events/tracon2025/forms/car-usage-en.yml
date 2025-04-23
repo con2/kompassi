@@ -9,14 +9,13 @@ description: |
 
 fields:
   - slug: event
-    type: SingleSelect
+    type: DimensionSingleSelect
     title: Event
     required: true
     helpText: |
       Which event is the expense you are applying for reimbursement related to or submitting an invoice for?
       If the expense is not related to an event, select <em>Payment is not related to an event</em>.
-    choicesFrom:
-      dimension: event
+    dimension: event
 
   - slug: title
     type: SingleLineText

@@ -2,6 +2,7 @@ import graphene
 from django.db import transaction
 from graphene.types.generic import GenericScalar
 
+from access.cbac import graphql_check_instance
 from core.utils import get_ip
 
 from ...models.response import Response
@@ -31,14 +32,17 @@ class CreateSurveyResponse(graphene.Mutation):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
 
         if not survey.is_active:
-            raise Exception("Survey is not active")
+            graphql_check_instance(
+                survey,
+                info,
+                app=survey.app,
+                field="responses",
+                operation="create",
+            )
 
         form = survey.get_form(input.locale)  # type: ignore
         if not form:
             raise Exception("Form not found")
-
-        if not form.fields:
-            raise Exception("Form has no fields")
 
         # TODO(https://github.com/con2/kompassi/issues/365): shows the ip of v2 backend, not the client
         ip_address = get_ip(info.context)

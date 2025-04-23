@@ -18,7 +18,9 @@ export type FieldType =
   | "DecimalField"
   | "DateField"
   | "TimeField"
-  | "DateTimeField";
+  | "DateTimeField"
+  | "DimensionSingleSelect"
+  | "DimensionMultiSelect";
 
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
@@ -28,7 +30,9 @@ export const fieldTypes: FieldType[] = [
   "Divider",
   "Spacer",
   "SingleSelect",
+  "DimensionSingleSelect",
   "MultiSelect",
+  "DimensionMultiSelect",
   "RadioMatrix",
   "FileUpload",
   "NumberField",
@@ -36,6 +40,11 @@ export const fieldTypes: FieldType[] = [
   "DateField",
   "TimeField",
   "DateTimeField",
+];
+
+export const fieldTypesConvertibleToDimension: FieldType[] = [
+  "SingleSelect",
+  "MultiSelect",
 ];
 
 /** These field types represent static elements on the form and don't have values. */
@@ -137,7 +146,25 @@ export interface MultiSelect extends BaseField {
   choices: Choice[];
 }
 
-export type SelectField = SingleSelect | MultiSelect;
+export interface DimensionSingleSelect extends BaseField {
+  type: "DimensionSingleSelect";
+  dimension: string;
+  subsetValues?: string[];
+  choices: Choice[];
+  presentation?: SingleSelectPresentation;
+}
+
+export interface DimensionMultiSelect extends BaseField {
+  type: "DimensionMultiSelect";
+  dimension: string;
+  subsetValues?: string[];
+  choices: Choice[];
+}
+
+export interface MultiSelect extends BaseField {
+  type: "MultiSelect";
+  choices: Choice[];
+}
 
 /**
  * choices are columns, questions are rows
@@ -178,7 +205,9 @@ export type Field =
   | DecimalField
   | DateField
   | TimeField
-  | DateTimeField;
+  | DateTimeField
+  | DimensionSingleSelect
+  | DimensionMultiSelect;
 
 export interface FormSchema {
   title: string;

@@ -18,6 +18,7 @@ export default function formDataToValues(
 
       case "SingleLineText":
       case "MultiLineText":
+      case "SingleSelect":
         values[field.slug] = byFieldName[field.slug] as string;
         break;
 
@@ -30,7 +31,10 @@ export default function formDataToValues(
         break;
 
       default:
-        throw new Error(`Unsupported field type: ${field}`);
+        // NOTE: Not exhaustive by design.
+        // We don't need to implement this for all field types in the frontend.
+        // const exhaustiveCheck: never = field.type;
+        throw new Error(`Unknown field type ${field.type}`);
     }
   }
 

@@ -17,6 +17,10 @@ graphql(`
     title(lang: $locale)
     canRemove
 
+    dimensions {
+      ...DimensionRowGroup
+    }
+
     form(lang: $language) {
       title
       language
@@ -114,6 +118,7 @@ export default async function EditSurveyLanguagePage({ params }: Props) {
   const survey = data.event.forms.survey;
   const form = data.event.forms.survey.form;
   const activeTab = `fields-${language}`;
+  const dimensions = data.event.forms.survey.dimensions;
 
   validateFields(form.fields);
 
@@ -121,6 +126,7 @@ export default async function EditSurveyLanguagePage({ params }: Props) {
     <SurveyEditorView params={params} survey={survey} activeTab={activeTab}>
       <FormEditorWrapper
         initialFields={form.fields}
+        dimensions={dimensions}
         messages={{
           FormEditor: translations.FormEditor,
           SchemaForm: translations.SchemaForm,

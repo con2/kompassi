@@ -24,6 +24,8 @@ class FieldType(str, Enum):
     DATE_FIELD = "DateField"
     TIME_FIELD = "TimeField"
     DATE_TIME_FIELD = "DateField"
+    DIMENSION_SINGLE_SELECT = "DimensionSingleSelect"
+    DIMENSION_MULTI_SELECT = "DimensionMultiSelect"
 
 
 class Choice(pydantic.BaseModel):
@@ -68,17 +70,17 @@ class Field(pydantic.BaseModel, populate_by_name=True):
     )
 
     # TODO silly union of all field types. refactor this into proper (GraphQL?) types
-    # htmlType only makes sense for SingleLineText
+    # dimension and subsetValues only make sense for DimensionSingleSelect, DimensionMultiSelect
     # choices only makes sense for SingleSelect, Multiselect, RadioMatrix
     # multiple only makes sense for FileUpload
     # decimal_places only makes sense for NumberField, DecimalField
-    html_type: str | None = pydantic.Field(
+    dimension: str | None = pydantic.Field(default=None, repr=False)
+    subset_values: list[str] | None = pydantic.Field(
         default=None,
-        validation_alias="htmlType",
-        serialization_alias="htmlType",
+        validation_alias="subsetValues",
+        serialization_alias="subsetValues",
         repr=False,
     )
-
     choices: list[Choice] | None = pydantic.Field(default=None, repr=False)
     questions: list[Choice] | None = pydantic.Field(default=None, repr=False)
     multiple: bool | None = pydantic.Field(default=None, repr=False)
@@ -99,12 +101,13 @@ class Field(pydantic.BaseModel, populate_by_name=True):
     def from_dimension(
         cls,
         dimension: Dimension,
-        type: Literal[FieldType.SINGLE_SELECT] | Literal[FieldType.MULTI_SELECT],
+        type: Literal[FieldType.DIMENSION_SINGLE_SELECT] | Literal[FieldType.DIMENSION_MULTI_SELECT],
         language: str | None = None,
     ) -> Field:
         return cls(
             slug=dimension.slug,
             type=type,
+            dimension=dimension.slug,
             choices=dimension.as_choices(language=language),
         )
 
@@ -114,3 +117,10 @@ class Field(pydantic.BaseModel, populate_by_name=True):
         Returns True iff this field has the possibility of having attached files.
         """
         return self.type == FieldType.FILE_UPLOAD
+
+    @property
+    def is_dimension_field(self) -> bool:
+        """
+        Returns True iff this field is a dimension field.
+        """
+        return self.type in (FieldType.DIMENSION_SINGLE_SELECT, FieldType.DIMENSION_MULTI_SELECT)

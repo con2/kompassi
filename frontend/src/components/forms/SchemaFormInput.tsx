@@ -99,6 +99,7 @@ function SchemaFormInput({
         />
       );
     case "SingleSelect":
+    case "DimensionSingleSelect":
       let choices = field.choices ?? [];
 
       switch (field.presentation) {
@@ -147,6 +148,7 @@ function SchemaFormInput({
           );
       }
     case "MultiSelect":
+    case "DimensionMultiSelect":
       return (
         <>
           {field.choices?.map((choice) => {

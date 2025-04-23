@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import logging
 import uuid
-from collections.abc import Iterable, Sequence
+from collections import defaultdict
+from collections.abc import Collection, Iterable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
@@ -20,17 +21,15 @@ from graphql_api.language import SUPPORTED_LANGUAGES
 from graphql_api.utils import get_message_in_language
 
 from .attachment import Attachment
+from .field import Field, FieldType
 from .form import Form
+from .survey import Survey, SurveyApp
 
 if TYPE_CHECKING:
-    from dimensions.models.dimension import Dimension
-    from dimensions.models.dimension_value import DimensionValue
     from program_v2.models.program import Program
 
     from ..utils.process_form_data import FieldWarning
-    from .field import Field
     from .response_dimension_value import ResponseDimensionValue
-    from .survey import Survey
 
 
 logger = logging.getLogger("kompassi")
@@ -155,114 +154,133 @@ class Response(models.Model):
         """
         Lifts the values of dimensions from form data into proper dimension values.
         This makes sense only for responses that are related to a survey.
-
-        NOTE: Expected to be called only right after creation.
-        If you call this later, be sure to yeet the existing dimension values first,
-        or rework this method to use set_dimension_values that accounts for existing ones.
         """
-        from .response_dimension_value import ResponseDimensionValue
-
         survey = self.survey
         if survey is None:
             raise ValueError("Cannot lift dimension values for a response that is not related to a survey")
 
-        dimensions_by_slug, values_by_dimension_by_slug = survey.preload_dimensions()
-        bulk_create: list[ResponseDimensionValue] = []
+        dimensions_by_slug, values_by_dimension_by_slug = survey.universe.preload_dimensions()
 
         # only these fields have the potential of being dimension fields
         # TODO support single checkbox as dimension field?
-        # TODO use pydantic versions of fields? Must not be enriched (it removes choicesFrom)
-        fields = [
-            field
-            for field in self.form.fields
-            if field["slug"] in dimensions_by_slug
-            and field["type"] in ("SingleSelect", "MultiSelect")
-            and field.get("choicesFrom", {}).get("dimension", "") == field["slug"]
-        ]
-        fields_by_slug = {field["slug"]: field for field in fields}
-
         # get_processed_form_data expects enriched, validated form of fields
-        enriched_fields = [field for field in self.form.validated_fields if field.slug in fields_by_slug]
-        values, warnings = self.get_processed_form_data(enriched_fields)
+        fields: list[Field] = [
+            field for field in self.form.validated_fields if field.is_dimension_field and field.dimension
+        ]
+        values, warnings = self.get_processed_form_data(fields)
 
-        # we have all the dimensions and values preloaded, so it makes sense to build cached_dimensions here
-        cached_dimensions = {}
+        values_to_set: defaultdict[str, set[str]] = defaultdict(set)
 
-        def set_dimension_value(dimension: Dimension, value: DimensionValue):
-            bulk_create.append(
-                ResponseDimensionValue(
-                    response=self,
-                    value=value,
+        for field in fields:
+            if not field.dimension:
+                logger.warning(
+                    "Dimension field has no dimension: %s",
+                    dict(
+                        survey=survey.id,
+                        language=self.form.language,
+                        response=self.id,
+                        field=field.slug,
+                    ),
                 )
-            )
-            cached_dimensions.setdefault(dimension.slug, []).append(value.slug)
 
-        for dimension in dimensions_by_slug.values():
+            dimension = dimensions_by_slug.get(field.dimension)
+            if dimension is None:
+                logger.warning(
+                    "Dimension field refers to non-existing dimension: %s",
+                    dict(
+                        survey=survey.id,
+                        language=self.form.language,
+                        response=self.id,
+                        field=field.slug,
+                        dimension=field.dimension,
+                    ),
+                )
+                continue
             values_by_slug = values_by_dimension_by_slug[dimension.slug]
 
             # set initial values
             for value in values_by_slug.values():
                 if value.is_initial:
-                    set_dimension_value(dimension, value)
+                    values_to_set[dimension.slug].add(value.slug)
 
-            dimension_field = fields_by_slug.get(dimension.slug)
-            if not dimension_field:
-                # this dimension is not present as a field on the form
-                continue
-
-            if field_warnings := warnings.get(dimension.slug):
+            if field_warnings := warnings.get(field.slug):
                 # this dimension has validation warnings
                 logger.warning(
-                    f"Response {self.id}: Refusing to lift {dimension.slug} "
-                    f"that has validation warnings: {field_warnings}"
+                    "Cowardly refusing to lift dimension values from field with warnings: %s",
+                    dict(
+                        survey=survey.id,
+                        language=self.form.language,
+                        response=self.id,
+                        field=field.slug,
+                        dimension=dimension.slug,
+                        warnings=field_warnings,
+                    ),
                 )
                 continue
 
             value_slugs: list[str]
-            match dimension_field.get("type", "SingleSelect"):
-                case "MultiSelect":
-                    value_slugs = values.get(dimension.slug, [])
-                case "SingleSelect":
-                    value_slugs = [value_slug] if (value_slug := values.get(dimension.slug)) else []
+            match field.type:
+                case FieldType.DIMENSION_MULTI_SELECT:
+                    value_slugs = values.get(field.slug, [])
+                case FieldType.DIMENSION_SINGLE_SELECT:
+                    value_slugs = [value_slug] if (value_slug := values.get(field.slug)) else []
                 case _:
                     logger.warning(
-                        f"Response {self.id}: Unexpected field type {dimension_field['type']} "
-                        f"for dimension {dimension.slug}"
+                        "Unexpected field type for dimension field: %s",
+                        dict(
+                            survey=survey.id,
+                            language=self.form.language,
+                            response=self.id,
+                            field=field.slug,
+                            dimension=dimension.slug,
+                            field_type=field.type,
+                        ),
                     )
                     continue
 
             if not isinstance(value_slugs, list):
-                logger.warning(f"Response {self.id}: Expected list of slugs for dimension field {dimension.slug}")
+                logger.warning(
+                    "Expected list of value slugs for dimension field: %s",
+                    dict(
+                        survey=survey.id,
+                        language=self.form.language,
+                        response=self.id,
+                        field=field.slug,
+                        dimension=dimension.slug,
+                        field_type=field.type,
+                        value_slugs=value_slugs,
+                    ),
+                )
                 continue
 
             for value_slug in value_slugs:
                 value = values_by_slug.get(value_slug)
                 if value is None:
-                    logger.warning(f"Response {self.id}: Invalid value {value_slug} for dimension {dimension.slug}")
+                    logger.warning(
+                        "Response refers to a dimension value that doesn't exist: %s",
+                        dict(
+                            survey=survey.id,
+                            language=self.form.language,
+                            response=self.id,
+                            field=field.slug,
+                            dimension=dimension.slug,
+                            value_slug=value_slug,
+                        ),
+                    )
                     continue
 
-                set_dimension_value(dimension, value)
+                values_to_set[dimension.slug].add(value_slug)
 
-        # NOTE: if we allow dimensions having initial values to be presented as fields on the form,
-        # need to add ignore_conflicts=True here or rethink this somehow
-        ResponseDimensionValue.objects.bulk_create(bulk_create)
-
-        # mass delete and bulk create don't trigger signals (which is good)
-        self.cached_dimensions = cached_dimensions
-        self.save(update_fields=["cached_dimensions"])
+        self.set_dimension_values(values_to_set)
 
     @transaction.atomic
-    def set_dimension_values(self, values_to_set: dict[str, list[str]]):
+    def set_dimension_values(self, values_to_set: Mapping[str, Collection[str]]):
         """
         Changes only those dimension values that are present in dimension_values.
         """
         from .response_dimension_value import ResponseDimensionValue
 
-        survey = self.survey
-        if survey is None:
-            raise ValueError("Cannot set dimension values for a response that is not related to a survey")
-
-        dimensions_by_slug, values_by_dimension_by_slug = survey.preload_dimensions(values_to_set)
+        dimensions_by_slug, values_by_dimension_by_slug = self.survey.universe.preload_dimensions(values_to_set)
 
         cached_dimensions = self.cached_dimensions
         bulk_delete = self.dimensions.filter(value__dimension__slug__in=dimensions_by_slug.keys())
@@ -288,9 +306,8 @@ class Response(models.Model):
         bulk_delete.delete()
         ResponseDimensionValue.objects.bulk_create(bulk_create)
 
-        # mass delete and bulk create don't trigger signals (which is good)
-        self.cached_dimensions = dict(self.cached_dimensions, **values_to_set)
-        self.save(update_fields=["cached_dimensions"])
+        # TODO impose upon caller to call refresh_cached_dimensions(_qs) afterwards
+        self.refresh_cached_dimensions()
 
     def get_processed_form_data(
         self,
@@ -328,6 +345,16 @@ class Response(models.Model):
         "sv": "{survey_title} ({event_name}): Nytt svar",
     }
 
+    @property
+    def admin_url(self) -> str:
+        match SurveyApp(self.survey.app):
+            case SurveyApp.FORMS:
+                return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/surveys/{self.survey.slug}/responses/{self.id}"
+            case SurveyApp.PROGRAM_V2:
+                return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
+            case _:
+                raise ValueError(f"Unknown app type: {self.survey.app}")
+
     def _notify_subscribers(self):
         # TODO recipient language instead of session language
         language = get_language()
@@ -347,7 +374,7 @@ class Response(models.Model):
         vars = dict(
             survey_title=form.title,
             event_name=survey.event.name,
-            response_url=f"{settings.KOMPASSI_V2_BASE_URL}/{survey.event.slug}/surveys/{survey.slug}/responses/{self.id}",
+            response_url=self.admin_url,
             sender_email=settings.DEFAULT_FROM_EMAIL,
         )
 

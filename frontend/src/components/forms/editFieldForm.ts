@@ -1,3 +1,4 @@
+import { Dimension } from "../dimensions/models";
 import formDataToValues from "./formDataToValues";
 import { Choice, Field, FieldType, Values } from "./models";
 import type { Translations } from "@/translations/en";
@@ -5,6 +6,7 @@ import type { Translations } from "@/translations/en";
 export function getFieldEditorFields(
   fieldType: FieldType,
   messages: Translations["FormEditor"]["editFieldForm"],
+  dimensions: Dimension[],
 ): Field[] {
   const t = messages;
   const slugField: Field = {
@@ -29,13 +31,16 @@ export function getFieldEditorFields(
       rows: 3,
       ...t.helpText,
     },
+  ];
+
+  const editableFieldFields: Field[] = baseFieldEditorFields.concat([
     {
       type: "SingleCheckbox",
       slug: "required",
       required: false,
       ...t.required,
     },
-  ];
+  ]);
 
   const choicesField: Field = {
     type: "MultiLineText",
@@ -51,20 +56,35 @@ export function getFieldEditorFields(
     ...t.questions,
   };
 
-  const encryptTo: Field = {
-    type: "MultiLineText",
-    slug: "encryptTo",
-    required: false,
-    rows: 3,
-    ...t.encryptTo,
+  const dimensionField: Field = {
+    type: "SingleSelect",
+    slug: "dimension",
+    required: true,
+    presentation: "dropdown",
+    choices: dimensions.map(({ slug, title }) => ({
+      slug,
+      title: title || slug,
+    })),
+    ...t.dimension,
   };
+
+  // const encryptTo: Field = {
+  //   type: "MultiLineText",
+  //   slug: "encryptTo",
+  //   required: false,
+  //   rows: 3,
+  //   ...t.encryptTo,
+  // };
 
   switch (fieldType) {
     case "SingleSelect":
     case "MultiSelect":
-      return baseFieldEditorFields.concat([choicesField]); // , encryptTo]);
+      return editableFieldFields.concat([choicesField]); // , encryptTo]);
+    case "DimensionSingleSelect":
+    case "DimensionMultiSelect":
+      return editableFieldFields.concat([dimensionField]); // , encryptTo]);
     case "RadioMatrix":
-      return baseFieldEditorFields.concat([
+      return editableFieldFields.concat([
         questionsField,
         choicesField,
         // encryptTo,
@@ -72,18 +92,20 @@ export function getFieldEditorFields(
     case "Divider":
     case "Spacer":
       return [slugField];
-    case "FileUpload":
     case "StaticText":
+      return baseFieldEditorFields;
     default:
       // TODO implement encryption
-      return baseFieldEditorFields;
+      return editableFieldFields;
     // default:
     //   return baseFieldEditorFields.concat([encryptTo]);
   }
 }
 
 function formatChoices(choices: Choice[]): string {
-  return choices.map((choice) => `${choice.slug}: ${choice.title}`).join("\n");
+  return (
+    choices?.map((choice) => `${choice.slug}: ${choice.title}`).join("\n") ?? ""
+  );
 }
 
 export function fieldToValues(field: Field): Record<string, any> {

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from copy import deepcopy
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Self
 
@@ -79,6 +78,8 @@ class Form(models.Model):
         There is a chicken and egg problem with the enriched_fields property, mostly when
         Forms, Surveys and Dimensions are created programmatically (eg. in tests and setup scripts).
         If a `valueFrom` directive is used in a Field, the Form needs to belong to a Survey.
+
+        NOTE: You may not mutate this list.
         """
         if not self.cached_enriched_fields:
             self.refresh_enriched_fields()
@@ -113,29 +114,16 @@ class Form(models.Model):
         Some field types may contain server side directives that need to be resolved before
         turning the form specification over to the frontend.
         """
-        field = deepcopy(field)
 
-        if choices_from := field.get("choicesFrom"):
-            field["choices"] = []
-
-            if len(choices_from) != 1:
-                raise ValueError("choicesFrom must have exactly one key: value pair")
-
-            # TODO(#554) type=DimensionSingleSelect, DimensionMultiSelect, DimensionMatrix instead of choicesFrom: dimension: foo
-            ((source_type, source),) = choices_from.items()
-            if source_type == "dimension":
-                if survey := self.survey:
-                    dimension = survey.universe.dimensions.get(slug=source)
-                    field["choices"] = [
-                        choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)
-                    ]
-                else:
-                    raise ValueError("A form that is not used as a survey or program offer form cannot use valuesFrom")
-
-            else:
-                raise NotImplementedError(f"choicesFrom: {choices_from}")
-
-            del field["choicesFrom"]
+        # TODO(#643) subsetValues
+        if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect") and (
+            dimension_slug := field.get("dimension")
+        ):
+            dimension = self.survey.universe.dimensions.get(slug=dimension_slug)
+            field = dict(
+                field,
+                choices=[choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)],
+            )
 
         return field
 

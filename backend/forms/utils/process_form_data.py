@@ -225,7 +225,9 @@ FIELD_PROCESSORS: dict[FieldType, FieldProcessor] = {
     FieldType.DIVIDER: NullFieldProcessor(),
     FieldType.SPACER: NullFieldProcessor(),
     FieldType.SINGLE_SELECT: SingleSelectFieldProcessor(),
+    FieldType.DIMENSION_SINGLE_SELECT: SingleSelectFieldProcessor(),
     FieldType.MULTI_SELECT: MultiSelectFieldProcessor(),
+    FieldType.DIMENSION_MULTI_SELECT: MultiSelectFieldProcessor(),
     FieldType.RADIO_MATRIX: RadioMatrixFieldProcessor(),
     FieldType.FILE_UPLOAD: FileUploadFieldProcessor(),
     FieldType.NUMBER_FIELD: NumberFieldProcessor(),
@@ -248,10 +250,7 @@ def process_form_data(fields: Sequence[Field], form_data: dict[str, Any]):
     warnings: dict[str, list[FieldWarning]] = {}
 
     for field in fields:
-        if field.type == FieldType.SINGLE_LINE_TEXT:
-            processor = SINGLE_LINE_TEXT_PROCESSORS.get(field.html_type or "", FieldProcessor())
-        else:
-            processor = FIELD_PROCESSORS.get(field.type)
+        processor = FIELD_PROCESSORS.get(field.type)
 
         if processor is None:
             warnings[field.slug] = [FieldWarning.UNKNOWN_FIELD_TYPE]

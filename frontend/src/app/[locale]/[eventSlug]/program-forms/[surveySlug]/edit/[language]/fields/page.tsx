@@ -11,25 +11,6 @@ import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
-graphql(`
-  fragment EditProgramFormFields on FullSurveyType {
-    slug
-    title(lang: $locale)
-    canRemove
-
-    form(lang: $language) {
-      title
-      language
-      fields(enrich: false)
-      canRemove
-    }
-
-    languages {
-      language
-    }
-  }
-`);
-
 const query = graphql(`
   query EditProgramFormFieldsPage(
     $eventSlug: String!
@@ -43,7 +24,7 @@ const query = graphql(`
 
       forms {
         survey(slug: $surveySlug, app: PROGRAM_V2) {
-          ...EditProgramFormFields
+          ...EditSurveyFieldsPage
         }
       }
     }
@@ -115,6 +96,7 @@ export default async function EditProgramFormFieldsPage({ params }: Props) {
   const survey = data.event.forms.survey;
   const form = data.event.forms.survey.form;
   const activeTab = `fields-${language}`;
+  const dimensions = data.event.forms.survey.dimensions;
 
   validateFields(form.fields);
 
@@ -127,6 +109,7 @@ export default async function EditProgramFormFieldsPage({ params }: Props) {
     >
       <FormEditorWrapper
         initialFields={form.fields}
+        dimensions={dimensions}
         messages={{
           FormEditor: translations.FormEditor,
           SchemaForm: translations.SchemaForm,

@@ -2,11 +2,18 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
+from access.models import EmailAliasType, GroupEmailAliasGrant
+from badges.models import BadgesEventMeta
 from forms.models.meta import FormsEventMeta
 from forms.models.survey import SurveyDTO
+from intra.models import IntraEventMeta, Team
+from labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Survey
+
+from ...models import Accommodation, KnownLanguage, SignupExtra
 
 
 class Setup:
@@ -54,12 +61,6 @@ class Setup:
         )
 
     def setup_labour(self):
-        from django.contrib.contenttypes.models import ContentType
-
-        from labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Survey
-
-        from ...models import Accommodation, KnownLanguage, SignupExtra
-
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
@@ -75,8 +76,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
         else:
             pass
@@ -194,8 +195,6 @@ class Setup:
         )
 
     def setup_badges(self):
-        from badges.models import BadgesEventMeta
-
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
@@ -206,8 +205,6 @@ class Setup:
         )
 
     def setup_access(self):
-        from access.models import EmailAliasType, GroupEmailAliasGrant
-
         cc_group = self.event.labour_event_meta.get_group("vastaava")
 
         for metavar in [
@@ -224,8 +221,6 @@ class Setup:
             )
 
     def setup_intra(self):
-        from intra.models import IntraEventMeta, Team
-
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("vastaava")
         meta, unused = IntraEventMeta.objects.get_or_create(
@@ -288,7 +283,7 @@ class Setup:
                 active_until=datetime(2025, 12, 31, 23, 59, tzinfo=self.tz),
             ),
         ]:
-            survey.save(self.event)
+            survey.save(self.event, overwrite=True)
 
 
 class Command(BaseCommand):

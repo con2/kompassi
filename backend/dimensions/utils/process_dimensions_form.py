@@ -19,8 +19,8 @@ def process_dimensions_form(
     Returns:
         A dictionary containing the value slugs for each dimension present in dimensions.
     """
-    fields_single = [Field.from_dimension(dimension, FieldType.SINGLE_SELECT) for dimension in dimensions]
-    fields_multi = [Field.from_dimension(dimension, FieldType.MULTI_SELECT) for dimension in dimensions]
+    fields_single = [Field.from_dimension(dimension, FieldType.DIMENSION_SINGLE_SELECT) for dimension in dimensions]
+    fields_multi = [Field.from_dimension(dimension, FieldType.DIMENSION_MULTI_SELECT) for dimension in dimensions]
 
     values_single, warnings_single = process_form_data(fields_single, form_data)
     if warnings_single:

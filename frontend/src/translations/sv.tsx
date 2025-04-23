@@ -175,51 +175,19 @@ const translations: Translations = {
       },
     },
 
-    editFieldForm: {
-      slug: {
-        title: "Tekniskt namn",
-        helpText: UNSURE(
-          "Maskinläsbart fältnamn. Giltiga tecken: bokstäverna A-Za-z, siffrorna 0-9, understreck _. Får inte börja med en siffra. Måste vara densamma i alla språkversioner.",
-        ),
-      },
-      title: {
-        title: "Titel",
-        helpText:
-          "Människligt läsbar fältetikett. Om den inte är inställd, används fältnamn som standard.",
-      },
-      helpText: {
-        title: "Hjälptext",
-        helpText: "Visas under fältet.",
-      },
-      required: {
-        title: "Obligatoriskt",
-      },
-      choices: UNTRANSLATED({
-        title: "Choices",
-        helpText:
-          'Each line should contain one choice in the form of "slug: Choice shown to the user".',
-      }),
-      questions: UNTRANSLATED({
-        title: "Questions",
-        helpText:
-          'Each line should contain one question in the form of "slug: Question shown to the user".',
-      }),
-      encryptTo: UNTRANSLATED({
-        title: "Encrypt to",
-        helpText:
-          "If you want to encrypt the responses to this field, enter the user names of users who should be able to decrypt the responses (one per line). These users must have a key pair generated in their profile.",
-      }),
-    },
+    editFieldForm: UNTRANSLATED(en.FormEditor.editFieldForm),
 
     fieldTypes: {
       SingleLineText: "Textfält med en rad",
-      MultiLineText: " Textfält med flera rader",
+      MultiLineText: "Textfält med flera rader",
       Divider: "Separatorlinje",
       StaticText: "Statisk text",
       Spacer: "Tomt utrymme",
       SingleCheckbox: "Enkel kryssruta",
       SingleSelect: "Listrutan (ett val)",
+      DimensionSingleSelect: "Listrutan (ett val från en dimension)",
       MultiSelect: "Listrutan (flera val)",
+      DimensionMultiSelect: "Listrutan (flera val från en dimension)",
       RadioMatrix: "Urvalsmatris",
       FileUpload: "Skicka fil",
       NumberField: "Nummer",
@@ -228,6 +196,7 @@ const translations: Translations = {
       DateTimeField: "Datum och tid",
       TimeField: "Tid",
     },
+    advancedFieldTypes: UNTRANSLATED(en.FormEditor.advancedFieldTypes),
 
     removeFieldModal: {
       title: "Bekräfta borttagning av fält",
@@ -998,6 +967,9 @@ const translations: Translations = {
         untilTime: (formattedTime) => `Öppet till ${formattedTime}`,
         openingAt: (formattedTime) => `Öppnar vid ${formattedTime}`,
         closed: "Stängt",
+        adminOverride: UNTRANSLATED(
+          en.Survey.attributes.isActive.adminOverride,
+        ),
       },
       activeFrom: {
         title: "Öppet från",

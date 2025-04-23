@@ -176,9 +176,11 @@ class FullSurveyType(LimitedSurveyType):
 
         return qs
 
-    dimensions = graphene.List(
-        graphene.NonNull(FullDimensionType),
-        key_dimensions_only=graphene.Boolean(),
+    dimensions = graphene.NonNull(
+        graphene.List(
+            graphene.NonNull(FullDimensionType),
+            key_dimensions_only=graphene.Boolean(),
+        )
     )
 
     @staticmethod

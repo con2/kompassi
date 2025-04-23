@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
+
 import Modal from "react-bootstrap/Modal";
+import { Dimension } from "../dimensions/models";
 import {
   fieldToValues,
   formDataToField,
@@ -16,6 +18,7 @@ interface EditFieldModalProps {
   fieldToEdit: Field;
   onSubmit(field: Field): void;
   onClose(): void;
+  dimensions: Dimension[];
   messages: {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];
@@ -27,11 +30,13 @@ const EditFieldModal = ({
   onSubmit,
   onClose,
   messages,
+  dimensions,
 }: EditFieldModalProps) => {
   const t = messages.FormEditor.editFieldModal;
   const fields = getFieldEditorFields(
     fieldToEdit.type,
     messages.FormEditor.editFieldForm,
+    dimensions,
   );
 
   const handleSubmit = useCallback(

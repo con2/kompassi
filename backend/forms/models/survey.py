@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Collection, Mapping
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from functools import cached_property
@@ -129,6 +128,7 @@ class Survey(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     languages: models.QuerySet[Form]
+    id: int
 
     @property
     def dimensions(self) -> models.QuerySet[Dimension]:
@@ -255,9 +255,6 @@ class Survey(models.Model):
 
     def get_next_sequence_number(self):
         return (self.responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1
-
-    def preload_dimensions(self, dimension_values: Mapping[str, Collection[str]] | None = None):
-        return self.universe.preload_dimensions(dimension_values)
 
     class Meta:
         unique_together = [("event", "slug")]

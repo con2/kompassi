@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { Dimension } from "../dimensions/models";
 import FormEditor from "./FormEditor";
 import { Field } from "./models";
 import type { Translations } from "@/translations/en";
 
 interface Props {
   initialFields: Field[];
+  dimensions: Dimension[];
   messages: {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];
@@ -19,6 +21,7 @@ export default function FormEditorWrapper({
   initialFields,
   messages,
   onChange,
+  dimensions,
 }: Props) {
   const [fields, setFields] = useState(initialFields);
 
@@ -32,6 +35,11 @@ export default function FormEditorWrapper({
   );
 
   return (
-    <FormEditor value={fields} onChange={handleChange} messages={messages} />
+    <FormEditor
+      dimensions={dimensions}
+      value={fields}
+      onChange={handleChange}
+      messages={messages}
+    />
   );
 }

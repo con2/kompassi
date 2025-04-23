@@ -49,6 +49,7 @@ const query = graphql(`
           anonymity
           maxResponsesPerUser
           countResponsesByCurrentUser
+          isActive
 
           form(lang: $locale) {
             language
@@ -119,6 +120,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     maxResponsesPerUser,
     countResponsesByCurrentUser,
   } = event.forms.survey;
+  const { isActive } = event.forms.survey;
   const { title, description, fields, language } = event.forms.survey.form;
   const anonymityMessages = t.attributes.anonymity.secondPerson;
 
@@ -199,6 +201,12 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
               </div>
             );
           })}
+        </div>
+      )}
+      {!isActive && (
+        <div className="alert alert-warning">
+          <h5>{t.attributes.isActive.adminOverride.title}</h5>
+          <p className="mb-0">{t.attributes.isActive.adminOverride.message}</p>
         </div>
       )}
       <ParagraphsDangerousHtml html={description} />
