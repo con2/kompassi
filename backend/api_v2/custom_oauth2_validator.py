@@ -14,5 +14,5 @@ class CustomOAuth2Validator(OAuth2Validator):
             family_name=request.user.person.surname,
             given_name=request.user.person.first_name,
             groups=[group.name for group in request.user.groups.all()],
-            name=request.user.person.display_name,
+            name=request.user.person.full_name,
         )
