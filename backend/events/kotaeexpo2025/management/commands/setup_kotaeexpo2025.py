@@ -283,7 +283,7 @@ class Setup:
                 active_until=datetime(2025, 12, 31, 23, 59, tzinfo=self.tz),
             ),
         ]:
-            survey.save(self.event, overwrite=True)
+            survey.save(self.event)
 
 
 class Command(BaseCommand):

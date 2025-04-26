@@ -421,7 +421,7 @@ class Setup:
                 anonymity="NAME_AND_EMAIL",
             ),
         ]:
-            survey.save(self.event, overwrite=True)
+            survey.save(self.event)
 
     def setup_tickets_v2(self):
         if self.dev_tickets:
