@@ -14,13 +14,16 @@ interface Props {
     SchemaForm: Translations["SchemaForm"];
   };
   onChange(newFields: Field[]): Promise<void>;
+  onPromoteFieldToDimension(fieldSlug: string): Promise<void>;
 }
 
 /// Wraps FormEditor with a client component that holds the state and handles calling the server action.
+/// TODO Unify with FormEditor
 export default function FormEditorWrapper({
   initialFields,
   messages,
   onChange,
+  onPromoteFieldToDimension: onPromoteFieldToDimension,
   dimensions,
 }: Props) {
   const [fields, setFields] = useState(initialFields);
@@ -38,8 +41,9 @@ export default function FormEditorWrapper({
     <FormEditor
       dimensions={dimensions}
       value={fields}
-      onChange={handleChange}
       messages={messages}
+      onChange={handleChange}
+      onPromoteFieldToDimension={onPromoteFieldToDimension}
     />
   );
 }

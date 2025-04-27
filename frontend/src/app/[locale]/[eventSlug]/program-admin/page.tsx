@@ -160,9 +160,7 @@ export default async function FormResponsesPage({
     },
   ];
 
-  console.log("keyDimensions", JSON.stringify(keyDimensions, null, 2));
   columns.push(...buildKeyDimensionColumns(keyDimensions));
-  console.log("columns", JSON.stringify(columns, null, 2));
 
   return (
     <ProgramAdminView

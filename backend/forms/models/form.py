@@ -51,6 +51,7 @@ class Form(models.Model):
     cached_enriched_fields = models.JSONField(default=list)
 
     # related fields
+    id: int
     responses: models.QuerySet[Response]
 
     class Meta:
@@ -148,3 +149,23 @@ class Form(models.Model):
         )
         form.save()
         return form
+
+    def replace_field(self, field_slug: str, field: Field):
+        """
+        Replace a field in the form with a new field.
+
+        :param field_slug: The slug of the field to replace. Separate from field to allow replacing a field with one that has a different slug.
+        :param field: The new field to replace the old one with.
+        :raises KeyError: If the field with the given slug is not found in the form.
+
+        NOTE: You are responsible for calling .save(["fields", "cached_enriched_fields"]) after this.
+        """
+        for i, f in enumerate(self.validated_fields):
+            if f.slug == field_slug:
+                self.fields[i] = field.model_dump(mode="json", by_alias=True, exclude_unset=True, exclude_none=True)
+                break
+        else:
+            raise KeyError(f"Field {field.slug} not found in form {self}")
+
+        self.cached_enriched_fields = self._build_enriched_fields()
+        del self.validated_fields

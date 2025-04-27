@@ -21,7 +21,7 @@ interface FormEditorControlsProps {
   onAddField(fieldType: FieldType, aboveFieldName: string): void;
   onRemoveField(fieldName: string): void;
   onEditField(fieldName: string): void;
-  onConvertToDimension?(fieldName: string): void; // TODO(#377) pass this from parents, remove optional
+  onPromoteFieldToDimension(fieldName: string): void;
   dimensions?: Dimension[];
   messages: Translations["FormEditor"];
 }
@@ -33,16 +33,17 @@ const FormEditorControls = ({
   onChange,
   onRemoveField,
   onEditField,
-  onConvertToDimension,
+  onPromoteFieldToDimension,
   messages,
   dimensions = [],
 }: FormEditorControlsProps) => {
-  const converT = messages.advancedFieldTypes.SingleSelect.convertToDimension;
-  const canConvertToDimension =
-    !!onConvertToDimension &&
+  const converT =
+    messages.advancedFieldTypes.SingleSelect.promoteFieldToDimension;
+  const canPromoteFieldToDimension =
+    !!onPromoteFieldToDimension &&
     fieldTypesConvertibleToDimension.includes(field.type);
   const isNewDimension =
-    canConvertToDimension &&
+    canPromoteFieldToDimension &&
     dimensions.findIndex((d) => d.slug === field.slug) !== -1;
 
   return (
@@ -89,12 +90,12 @@ const FormEditorControls = ({
             {messages.removeField}…
           </Button>
         </ButtonGroup>
-        {canConvertToDimension && (
+        {canPromoteFieldToDimension && (
           <ModalButton
             className="btn btn-outline-secondary btn-sm"
             title={`${converT.title}: ${field.slug}`}
             messages={converT.modalActions}
-            action={onConvertToDimension.bind(null, field.slug)}
+            action={onPromoteFieldToDimension.bind(null, field.slug)}
           >
             {isNewDimension ? converT.newDimension : converT.existingDimension}
           </ModalButton>

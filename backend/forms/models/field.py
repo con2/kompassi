@@ -27,6 +27,30 @@ class FieldType(str, Enum):
     DIMENSION_SINGLE_SELECT = "DimensionSingleSelect"
     DIMENSION_MULTI_SELECT = "DimensionMultiSelect"
 
+    @property
+    def is_convertible_to_dimension(self) -> bool:
+        """
+        Returns True iff this field type can be converted to a dimension.
+        """
+        return self in (
+            FieldType.SINGLE_SELECT,
+            FieldType.MULTI_SELECT,
+        )
+
+    @property
+    def are_attachments_allowed(self) -> bool:
+        """
+        Returns True iff this field has the possibility of having attached files.
+        """
+        return self == FieldType.FILE_UPLOAD
+
+    @property
+    def is_dimension_field(self) -> bool:
+        """
+        Returns True iff this field is a dimension field.
+        """
+        return self in (FieldType.DIMENSION_SINGLE_SELECT, FieldType.DIMENSION_MULTI_SELECT)
+
 
 class Choice(pydantic.BaseModel):
     slug: str
@@ -41,7 +65,7 @@ class Field(pydantic.BaseModel, populate_by_name=True):
     provided for convenience.
     """
 
-    type: FieldType = pydantic.Field(repr=False)
+    type: FieldType = pydantic.Field()
     slug: str = pydantic.Field()
     title: str | None = pydantic.Field(default=None, repr=False)
     summary_title: str | None = pydantic.Field(
@@ -110,17 +134,3 @@ class Field(pydantic.BaseModel, populate_by_name=True):
             dimension=dimension.slug,
             choices=dimension.as_choices(language=language),
         )
-
-    @property
-    def are_attachments_allowed(self) -> bool:
-        """
-        Returns True iff this field has the possibility of having attached files.
-        """
-        return self.type == FieldType.FILE_UPLOAD
-
-    @property
-    def is_dimension_field(self) -> bool:
-        """
-        Returns True iff this field is a dimension field.
-        """
-        return self.type in (FieldType.DIMENSION_SINGLE_SELECT, FieldType.DIMENSION_MULTI_SELECT)

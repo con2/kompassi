@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Mapping
+from collections.abc import Collection
 from typing import TYPE_CHECKING
 
 from django.db import models
@@ -58,10 +58,21 @@ class Universe(models.Model):
             slug=self.slug,
         ).first()
 
-    def preload_dimensions(self, dimension_values: Mapping[str, Collection[str]] | None = None):
+    def preload_dimensions(
+        self,
+        dimension_slugs: Collection[str] | None = None,
+    ) -> tuple[dict[str, Dimension], dict[str, dict[str, DimensionValue]]]:
+        """
+        To avoid O(n) queries for each dimension and dimension value, many operations
+        preload all or selected dimensions and their values.
+
+        :param dimension_slugs: Slugs of dimensions to preload.
+        :param dimension_values: Slugs of dimension values per dimension to preload.
+            Useful when the cache is being used to eg. form a cached_dimensions.
+        """
         dimensions = self.dimensions.all().prefetch_related("values")
-        if dimension_values is not None:
-            dimensions = dimensions.filter(slug__in=dimension_values.keys())
+        if dimension_slugs is not None:
+            dimensions = dimensions.filter(slug__in=dimension_slugs)
 
         dimensions_by_slug = {dimension.slug: dimension for dimension in dimensions}
 

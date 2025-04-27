@@ -42,8 +42,20 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         """
         pass
 
-    def handle_new_response(self, response: Response):
+    def handle_new_response_phase1(self, response: Response):
         """
         Called when a new response is created for a survey using this workflow.
+        This is called during the transaction that creates the response.
+        Do not call external services or perform any actions that require the transaction to be committed.
+        """
+        response.set_initial_dimension_values()
+        response.lift_dimension_values()
+        response.refresh_cached_dimensions()
+
+    def handle_new_response_phase2(self, response: Response):
+        """
+        Called when a new response is created for a survey using this workflow.
+        This is called after the transaction that creates the response is committed.
+        This is the place to call external services or perform any actions that require the transaction to be committed.
         """
         response.notify_subscribers()

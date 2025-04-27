@@ -3,8 +3,8 @@ from __future__ import annotations
 import logging
 import uuid
 from collections import defaultdict
-from collections.abc import Collection, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any
+from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Literal
 
 from django.conf import settings
 from django.core.mail import send_mass_mail
@@ -16,6 +16,9 @@ from django.utils.translation import gettext_lazy as _
 
 from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
+from core.utils.model_utils import slugify, slugify_underscore
+from dimensions.models.dimension import Dimension
+from dimensions.models.dimension_value import DimensionValue
 from dimensions.models.scope import Scope
 from graphql_api.language import SUPPORTED_LANGUAGES
 from graphql_api.utils import get_message_in_language
@@ -100,7 +103,7 @@ class Response(models.Model):
         form: Form = self.form
         values, warnings = self.get_processed_form_data(fields=fields)
         for field in form.validated_fields:
-            if not field.are_attachments_allowed:
+            if not field.type.are_attachments_allowed:
                 continue
 
             if field_warnings := warnings.get(field.slug, []):
@@ -149,26 +152,63 @@ class Response(models.Model):
         self.cached_dimensions = self._build_cached_dimensions()
         self.save(update_fields=["cached_dimensions"])
 
-    @transaction.atomic
-    def lift_dimension_values(self):
+    def set_initial_dimension_values(
+        self,
+        dimensions_by_slug: dict[str, Dimension] | None = None,
+        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] | None = None,
+    ):
+        """
+        Sets the initial dimension values for this response.
+
+        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
+        afterwards to update the cached_dimensions field.
+
+        :param dimensions_by_slug: Cache from Universe.preload_dimensions()
+        :param values_by_dimension_by_slug: Cache from Universe.preload_dimensions()
+        """
+        if dimensions_by_slug is None or values_by_dimension_by_slug is None:
+            dimensions_by_slug, values_by_dimension_by_slug = self.survey.universe.preload_dimensions()
+
+        values_to_set = defaultdict(set)
+        for dimension_slug, values in values_by_dimension_by_slug.items():
+            for value in values.values():
+                if value.is_initial:
+                    values_to_set[dimension_slug].add(value.slug)
+
+        self.set_dimension_values(values_to_set, dimensions_by_slug, values_by_dimension_by_slug)
+
+    def lift_dimension_values(
+        self,
+        dimension_slugs: list[str] | None = None,
+        dimensions_by_slug: dict[str, Dimension] | None = None,
+        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] | None = None,
+    ):
         """
         Lifts the values of dimensions from form data into proper dimension values.
         This makes sense only for responses that are related to a survey.
+
+        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
+        afterwards to update the cached_dimensions field.
+
+        :param dimension_slugs: If provided, only these dimensions will be lifted.
+        :param dimensions_by_slug: Cache from Universe.preload_dimensions()
+        :param values_by_dimension_by_slug: Cache from Universe.preload_dimensions()
         """
         survey = self.survey
-        if survey is None:
-            raise ValueError("Cannot lift dimension values for a response that is not related to a survey")
 
-        dimensions_by_slug, values_by_dimension_by_slug = survey.universe.preload_dimensions()
+        if dimensions_by_slug is None or values_by_dimension_by_slug is None:
+            dimensions_by_slug, values_by_dimension_by_slug = survey.universe.preload_dimensions(dimension_slugs)
 
         # only these fields have the potential of being dimension fields
         # TODO support single checkbox as dimension field?
         # get_processed_form_data expects enriched, validated form of fields
-        fields: list[Field] = [
-            field for field in self.form.validated_fields if field.is_dimension_field and field.dimension
-        ]
-        values, warnings = self.get_processed_form_data(fields)
+        fields: list[Field] = [field for field in self.form.validated_fields if field.type.is_dimension_field]
 
+        if dimension_slugs is not None:
+            # filter out fields that are not in dimension_slugs
+            fields = [field for field in fields if field.dimension in dimension_slugs]
+
+        values, warnings = self.get_processed_form_data(fields)
         values_to_set: defaultdict[str, set[str]] = defaultdict(set)
 
         for field in fields:
@@ -182,6 +222,7 @@ class Response(models.Model):
                         field=field.slug,
                     ),
                 )
+                continue
 
             dimension = dimensions_by_slug.get(field.dimension)
             if dimension is None:
@@ -271,16 +312,32 @@ class Response(models.Model):
 
                 values_to_set[dimension.slug].add(value_slug)
 
-        self.set_dimension_values(values_to_set)
+        if values_to_set:
+            self.set_dimension_values(values_to_set, dimensions_by_slug, values_by_dimension_by_slug)
 
     @transaction.atomic
-    def set_dimension_values(self, values_to_set: Mapping[str, Collection[str]]):
+    def set_dimension_values(
+        self,
+        values_to_set: Mapping[str, Collection[str]],
+        dimensions_by_slug: dict[str, Dimension] | None = None,
+        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] | None = None,
+    ):
         """
         Changes only those dimension values that are present in dimension_values.
+
+        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
+        afterwards to update the cached_dimensions field.
+
+        :param values_to_set: Mapping of dimension slug to list of value slugs.
+        :param dimensions_by_slug: Cache from Universe.preload_dimensions()
+        :param values_by_dimension_by_slug: Cache from Universe.preload_dimensions()
         """
         from .response_dimension_value import ResponseDimensionValue
 
-        dimensions_by_slug, values_by_dimension_by_slug = self.survey.universe.preload_dimensions(values_to_set)
+        if dimensions_by_slug is None or values_by_dimension_by_slug is None:
+            dimensions_by_slug, values_by_dimension_by_slug = self.survey.universe.preload_dimensions(
+                dimension_slugs=values_to_set.keys(),
+            )
 
         cached_dimensions = self.cached_dimensions
         bulk_delete = self.dimensions.filter(value__dimension__slug__in=dimensions_by_slug.keys())
@@ -305,9 +362,6 @@ class Response(models.Model):
 
         bulk_delete.delete()
         ResponseDimensionValue.objects.bulk_create(bulk_create)
-
-        # TODO impose upon caller to call refresh_cached_dimensions(_qs) afterwards
-        self.refresh_cached_dimensions()
 
     def get_processed_form_data(
         self,
@@ -398,3 +452,35 @@ class Response(models.Model):
         ]
 
         send_mass_mail(mailbag)  # type: ignore
+
+    @staticmethod
+    def _reslugify_pair(
+        pair: tuple[str, Any],
+        field_slug: str,
+        slugifier: Callable[[str], str],
+    ) -> tuple[str, Any]:
+        key, value = pair
+        if not isinstance(value, str):
+            # FileUpload
+            return key, value
+
+        if key == field_slug:
+            # SingleSelect -> DimensionSingleSelect
+            return key, slugifier(value)
+        elif key.startswith(f"{field_slug}."):
+            # MultiSelect -> DimensionMultiSelect
+            _, subkey = key.split(".", 1)
+            subkey = slugifier(subkey)
+            return f"{key}.{subkey}", value
+
+        return key, value
+
+    def reslugify_field(self, field_slug: str, separator: Literal["-", "_"]):
+        """
+        When promoting a form field to dimension, we need to account for possible
+        differences in the slugification of the field and the dimension values.
+
+        NOTE: Caller is responsible for calling save(["form_data"]) afterwards.
+        """
+        slugifier = slugify if separator == "-" else slugify_underscore
+        self.form_data = dict(self._reslugify_pair(pair, field_slug, slugifier) for pair in self.form_data.items())

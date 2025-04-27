@@ -48,6 +48,7 @@ const documents = {
     "\n  mutation UpdateProgramFormLanguage($input: UpdateFormInput!) {\n    updateForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateProgramFormLanguageDocument,
     "\n  mutation DeleteProgramFormLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n": types.DeleteProgramFormLanguageDocument,
     "\n  mutation UpdateFormFieldsMutation($input: UpdateFormFieldsInput!) {\n    updateFormFields(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateFormFieldsMutationDocument,
+    "\n  mutation PromoteProgramFormFieldToDimension(\n    $input: PromoteFieldToDimensionInput!\n  ) {\n    promoteFieldToDimension(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.PromoteProgramFormFieldToDimensionDocument,
     "\n  query EditProgramFormFieldsPage(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      forms {\n        survey(slug: $surveySlug, app: PROGRAM_V2) {\n          ...EditSurveyFieldsPage\n        }\n      }\n    }\n  }\n": types.EditProgramFormFieldsPageDocument,
     "\n  fragment EditProgramFormLanguage on FullSurveyType {\n    slug\n    title(lang: $locale)\n    canRemove\n\n    form(lang: $language) {\n      title\n      language\n      description\n      thankYouMessage\n      fields\n      canRemove\n    }\n\n    languages {\n      language\n    }\n  }\n": types.EditProgramFormLanguageFragmentDoc,
     "\n  query EditProgramFormLanguagePage(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      forms {\n        survey(slug: $surveySlug, app: PROGRAM_V2) {\n          ...EditProgramFormLanguage\n        }\n      }\n    }\n  }\n": types.EditProgramFormLanguagePageDocument,
@@ -90,6 +91,7 @@ const documents = {
     "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n": types.DimensionsListDocument,
     "\n  mutation UpdateFormMutation($input: UpdateFormInput!) {\n    updateForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateFormMutationDocument,
     "\n  mutation DeleteSurveyLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n": types.DeleteSurveyLanguageDocument,
+    "\n  mutation PromoteSurveyFieldToDimension(\n    $input: PromoteFieldToDimensionInput!\n  ) {\n    promoteFieldToDimension(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.PromoteSurveyFieldToDimensionDocument,
     "\n  fragment EditSurveyFieldsPage on FullSurveyType {\n    slug\n    title(lang: $locale)\n    canRemove\n\n    dimensions {\n      ...DimensionRowGroup\n    }\n\n    form(lang: $language) {\n      title\n      language\n      fields(enrich: false)\n      canRemove\n    }\n\n    languages {\n      language\n    }\n  }\n": types.EditSurveyFieldsPageFragmentDoc,
     "\n  query EditSurveyFieldsPageQuery(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        survey(slug: $surveySlug) {\n          ...EditSurveyFieldsPage\n        }\n      }\n    }\n  }\n": types.EditSurveyFieldsPageQueryDocument,
     "\n  fragment EditFormLanguagePage on FullSurveyType {\n    slug\n    title(lang: $locale)\n    canRemove\n\n    form(lang: $language) {\n      title\n      language\n      description\n      thankYouMessage\n      fields\n      canRemove\n    }\n\n    languages {\n      language\n    }\n  }\n": types.EditFormLanguagePageFragmentDoc,
@@ -281,6 +283,10 @@ export function graphql(source: "\n  mutation UpdateFormFieldsMutation($input: U
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation PromoteProgramFormFieldToDimension(\n    $input: PromoteFieldToDimensionInput!\n  ) {\n    promoteFieldToDimension(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation PromoteProgramFormFieldToDimension(\n    $input: PromoteFieldToDimensionInput!\n  ) {\n    promoteFieldToDimension(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  query EditProgramFormFieldsPage(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      forms {\n        survey(slug: $surveySlug, app: PROGRAM_V2) {\n          ...EditSurveyFieldsPage\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query EditProgramFormFieldsPage(\n    $eventSlug: String!\n    $surveySlug: String!\n    $language: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      forms {\n        survey(slug: $surveySlug, app: PROGRAM_V2) {\n          ...EditSurveyFieldsPage\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -446,6 +452,10 @@ export function graphql(source: "\n  mutation UpdateFormMutation($input: UpdateF
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteSurveyLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteSurveyLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation PromoteSurveyFieldToDimension(\n    $input: PromoteFieldToDimensionInput!\n  ) {\n    promoteFieldToDimension(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation PromoteSurveyFieldToDimension(\n    $input: PromoteFieldToDimensionInput!\n  ) {\n    promoteFieldToDimension(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

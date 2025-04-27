@@ -169,17 +169,18 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         universe = self.survey.universe
         self._get_form_dimension_dto(universe).save(universe)
 
-    def handle_new_response(self, response: Response):
+    def handle_new_response_phase1(self, response: Response):
         """
         Called when a new response is created.
         """
-        super().handle_new_response(response)
+        super().handle_new_response_phase1(response)
 
         values = dict(
             state=["accepted"] if response.programs.exists() else ["new"],
             form=[response.survey.slug],
         )
         response.set_dimension_values(values)
+        response.refresh_cached_dimensions()
 
     @classmethod
     def _setup_default_dimensions(cls, universe: Universe) -> Sequence[Dimension]:

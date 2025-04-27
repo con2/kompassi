@@ -20,6 +20,7 @@ interface Props {
   value: Field[];
   layout?: Layout;
   onChange(fields: Field[]): void;
+  onPromoteFieldToDimension(fieldSlug: string): Promise<void>;
   messages: {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];
@@ -57,7 +58,13 @@ function injectChoices(field: Field, dimensions: Dimension[]): Field {
 
 /** Fully controlled form editor component. */
 export default function FormEditor(props: Props) {
-  const { value, onChange, messages, dimensions } = props;
+  const {
+    value,
+    onChange,
+    onPromoteFieldToDimension: onPromoteFieldToDimension,
+    messages,
+    dimensions,
+  } = props;
   const t = messages.FormEditor;
   const layout = props.layout ?? defaultLayout;
 
@@ -134,6 +141,7 @@ export default function FormEditor(props: Props) {
               onAddField={handleAddField}
               onRemoveField={handleRemoveField}
               onEditField={handleEditField}
+              onPromoteFieldToDimension={onPromoteFieldToDimension}
               messages={messages.FormEditor}
             />
           </div>

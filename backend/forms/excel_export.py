@@ -56,7 +56,7 @@ def get_response_cells(
             questions = field.questions or []
             cells.extend(values.get(field.slug, {}).get(question.slug, "") for question in questions)
 
-        case _ if field.are_attachments_allowed:
+        case _ if field.type.are_attachments_allowed:
             if field_warnings := warnings.get(field.slug, []):
                 logger.warning(
                     "get_response_cells refusing to operate on a FileUpload field %s with warnings: %s",

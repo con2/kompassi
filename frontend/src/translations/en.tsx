@@ -220,7 +220,7 @@ const translations = {
     },
     advancedFieldTypes: {
       SingleSelect: {
-        convertToDimension: {
+        promoteFieldToDimension: {
           title: "Convert to a dimension field",
           modalActions: {
             submit: "Proceed with conversion",

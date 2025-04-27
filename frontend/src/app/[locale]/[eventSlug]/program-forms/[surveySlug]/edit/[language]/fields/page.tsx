@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import ProgramFormEditorView from "../../ProgramFormEditorView";
-import { updateSurveyFields } from "./actions";
+import { promoteFieldToDimension, updateSurveyFields } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -119,6 +119,12 @@ export default async function EditProgramFormFieldsPage({ params }: Props) {
           eventSlug,
           surveySlug,
           language,
+        )}
+        onPromoteFieldToDimension={promoteFieldToDimension.bind(
+          null,
+          locale,
+          eventSlug,
+          surveySlug,
         )}
       />
     </ProgramFormEditorView>

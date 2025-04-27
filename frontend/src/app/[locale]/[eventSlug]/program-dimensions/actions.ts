@@ -65,6 +65,7 @@ export async function reorderDimensions(
   scopeSlug: string,
   dimensionSlugs: string[],
 ) {
+  // TODO(#565)
   console.log("reorderDimensions", scopeSlug, universeSlug, dimensionSlugs);
 }
 
@@ -188,5 +189,6 @@ export async function reorderDimensionValues(
   dimensionSlug: string,
   valueSlugs: string[],
 ) {
+  // TODO(#565)
   console.log("reorderDimensionValues", scopeSlug, dimensionSlug, valueSlugs);
 }

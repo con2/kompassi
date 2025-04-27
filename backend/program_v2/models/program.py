@@ -271,7 +271,7 @@ class Program(models.Model):
         """
         from .program_dimension_value import ProgramDimensionValue
 
-        dimensions_by_slug, values_by_dimension_by_slug = self.meta.universe.preload_dimensions(values_to_set)
+        dimensions_by_slug, values_by_dimension_by_slug = self.meta.universe.preload_dimensions(values_to_set.keys())
 
         cached_dimensions = self.cached_dimensions
         bulk_delete = self.dimensions.filter(value__dimension__slug__in=dimensions_by_slug.keys())

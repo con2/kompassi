@@ -219,7 +219,7 @@ const translations: Translations = {
     },
     advancedFieldTypes: {
       SingleSelect: {
-        convertToDimension: {
+        promoteFieldToDimension: {
           title: "Muuta dimensiokentäksi",
           modalActions: {
             submit: "Toteuta muutos",

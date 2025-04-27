@@ -43,6 +43,18 @@ class DimensionValue(models.Model):
     title_fi = models.TextField(blank=True, default="")
     title_sv = models.TextField(blank=True, default="")
 
+    @property
+    def title_dict(self) -> dict[str, str]:
+        """
+        Returns a dictionary of titles in all supported languages.
+        """
+        return {
+            # NOTE SUPPORTED_LANGUAGES
+            "en": self.title_en,
+            "fi": self.title_fi,
+            "sv": self.title_sv,
+        }
+
     def __str__(self):
         return self.slug
 

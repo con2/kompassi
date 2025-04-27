@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import SurveyEditorView from "../../SurveyEditorView";
-import { updateSurveyFields } from "./actions";
+import { promoteFieldToDimension, updateSurveyFields } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -136,6 +136,12 @@ export default async function EditSurveyLanguagePage({ params }: Props) {
           eventSlug,
           surveySlug,
           language,
+        )}
+        onPromoteFieldToDimension={promoteFieldToDimension.bind(
+          null,
+          locale,
+          eventSlug,
+          surveySlug,
         )}
       />
     </SurveyEditorView>

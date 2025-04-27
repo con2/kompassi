@@ -6,7 +6,7 @@ import yaml
 
 from core.models import Event
 from dimensions.graphql.mutations.put_dimension import PutDimension
-from dimensions.models.dimension import Dimension
+from dimensions.models.dimension import Dimension, ValueOrdering
 from dimensions.models.dimension_value import DimensionValue
 from graphql_api.schema import schema
 
@@ -16,7 +16,7 @@ from .models.field import Choice, Field, FieldType
 from .models.form import Form
 from .models.response import Response
 from .models.survey import Survey
-from .utils.merge_form_fields import _merge_choices, _merge_fields
+from .utils.merge_form_fields import _merge_fields, merge_choices
 from .utils.process_form_data import FieldWarning, process_form_data
 from .utils.s3_presign import BUCKET_NAME, S3_ENDPOINT_URL
 from .utils.summarize_responses import MatrixFieldSummary, SelectFieldSummary, TextFieldSummary, summarize_responses
@@ -432,7 +432,7 @@ def test_merge_choices():
         Choice(slug="baz", title="Baz"),
     ]
 
-    assert _merge_choices(lhs_choices, rhs_choices) == expected_merged_choices
+    assert merge_choices(lhs_choices, rhs_choices) == expected_merged_choices
 
 
 def test_merge_fields():
@@ -657,6 +657,7 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
     )
 
     response.lift_dimension_values()
+    response.refresh_cached_dimensions()
     response.refresh_from_db()
 
     assert response.cached_dimensions == {
@@ -760,3 +761,154 @@ def test_survey_without_forms(_patched_graphql_check_instance):
     )
 
     assert not result.errors
+
+
+@pytest.mark.django_db
+def test_promote_field_to_dimension():
+    event, _created = Event.get_or_create_dummy()
+
+    survey = Survey.objects.create(
+        event=event,
+        slug="test-survey",
+    )
+
+    form_en = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[
+            dict(
+                slug="q_foo",
+                type="SingleSelect",
+                title="Foo",
+                choices=[
+                    dict(
+                        slug="c_bar",
+                        title="Bar",
+                    ),
+                    dict(
+                        slug="c_baz",
+                        title="Baz",
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    form_fi = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="fi",
+        fields=[
+            dict(
+                slug="q_foo",
+                type="SingleSelect",
+                title="Foo mutta suomeksi",
+                choices=[
+                    dict(
+                        slug="c_bar",
+                        title="Baari",
+                    ),
+                    # missing baz
+                ],
+            ),
+        ],
+    )
+
+    response1 = Response.objects.create(
+        form=form_en,
+        form_data={
+            "q_foo": "c_baz",
+        },
+    )
+    response2 = Response.objects.create(
+        form=form_fi,
+        form_data={
+            "q_foo": "c_bar",
+        },
+    )
+    response3 = Response.objects.create(
+        form=form_fi,
+        form_data={},
+    )
+
+    # CASE 1: New dimension
+    survey.promote_field_to_dimension("q_foo")
+
+    dimension = survey.dimensions.get()
+    assert dimension.slug == "q-foo"
+    assert dimension.title_en == "Foo"
+    assert dimension.title_fi == "Foo mutta suomeksi"
+    assert dimension.title_sv == ""
+    assert ValueOrdering(dimension.value_ordering) == ValueOrdering.MANUAL
+
+    bar_value, baz_value = dimension.get_values("en")
+    assert bar_value.slug == "c-bar"
+    assert bar_value.title_en == "Bar"
+    assert bar_value.title_fi == "Baari"
+
+    assert baz_value.slug == "c-baz"
+    assert baz_value.title_en == "Baz"
+    assert baz_value.title_fi == ""
+
+    response1.refresh_from_db()
+    response2.refresh_from_db()
+    response3.refresh_from_db()
+
+    assert response1.cached_dimensions == {
+        "q-foo": ["c-baz"],
+    }
+    assert response2.cached_dimensions == {
+        "q-foo": ["c-bar"],
+    }
+    assert response3.cached_dimensions == {}
+
+    # CASE 2: Existing dimension
+    Form.objects.create(
+        event=event,
+        survey=survey,
+        language="sv",
+        fields=[
+            dict(
+                slug="q_foo",
+                type="SingleSelect",
+                title="Foo men på svenska",
+                choices=[
+                    # missing bar
+                    dict(
+                        slug="c_baz",
+                        title="Baz (också på svenska)",
+                    ),
+                    dict(
+                        slug="c_quux",
+                        title="Quux (som inte finns på andra språk)",
+                    ),
+                ],
+            ),
+        ],
+    )
+
+    survey.promote_field_to_dimension("q_foo")
+
+    dimension = survey.dimensions.get()
+    assert dimension.slug == "q-foo"
+    assert dimension.title_en == "Foo"
+    assert dimension.title_fi == "Foo mutta suomeksi"
+    assert dimension.title_sv == "Foo men på svenska"
+    assert ValueOrdering(dimension.value_ordering) == ValueOrdering.MANUAL
+
+    bar_value, baz_value, quux_value = dimension.get_values("en")
+    assert bar_value.slug == "c-bar"
+    assert bar_value.title_en == "Bar"
+    assert bar_value.title_fi == "Baari"
+    assert bar_value.title_sv == ""
+
+    assert baz_value.slug == "c-baz"
+    assert baz_value.title_en == "Baz"
+    assert baz_value.title_fi == ""
+    assert baz_value.title_sv == "Baz (också på svenska)"
+
+    assert quux_value.slug == "c-quux"
+    assert quux_value.title_en == ""
+    assert quux_value.title_fi == ""
+    assert quux_value.title_sv == "Quux (som inte finns på andra språk)"

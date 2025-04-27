@@ -50,5 +50,6 @@ class UpdateResponseDimensions(graphene.Mutation):
 
         values = process_dimensions_form(dimensions, form_data)
         response.set_dimension_values(values)
+        response.refresh_cached_dimensions()
 
         return UpdateResponseDimensions(response=response)  # type: ignore

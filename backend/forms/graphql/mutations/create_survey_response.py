@@ -67,8 +67,7 @@ class CreateSurveyResponse(graphene.Mutation):
                 ip_address=ip_address,
                 sequence_number=survey.get_next_sequence_number(),
             )
+            survey.workflow.handle_new_response_phase1(response)
 
-            response.lift_dimension_values()
-
-        survey.workflow.handle_new_response(response)
+        survey.workflow.handle_new_response_phase2(response)
         return CreateSurveyResponse(response=response)  # type: ignore
