@@ -14,6 +14,7 @@ from django.utils.timezone import now
 from core.models import Event
 from core.utils.model_utils import slugify, validate_slug
 from dimensions.models.scope import Scope
+from dimensions.utils.dimension_cache import DimensionCache
 from forms.models.response import Response
 from graphql_api.language import SUPPORTED_LANGUAGES, getattr_message_in_language
 
@@ -264,17 +265,15 @@ class Program(models.Model):
     # TODO Automatic annotations
 
     @transaction.atomic
-    def set_dimension_values(self, values_to_set: dict[str, list[str]]):
+    def set_dimension_values(self, values_to_set: dict[str, list[str]], cache: DimensionCache):
         """
         Changes only those dimension values that are present in dimension_values.
         NOTE: Caller is responsible for calling .refresh_cached_dimensions[_qs].
         """
         from .program_dimension_value import ProgramDimensionValue
 
-        dimensions_by_slug, values_by_dimension_by_slug = self.meta.universe.preload_dimensions(values_to_set.keys())
-
         cached_dimensions = self.cached_dimensions
-        bulk_delete = self.dimensions.filter(value__dimension__slug__in=dimensions_by_slug.keys())
+        bulk_delete = self.dimensions.filter(value__dimension__slug__in=values_to_set.keys())
         bulk_create: list[ProgramDimensionValue] = []
 
         for dimension_slug, value_slugs in values_to_set.items():
@@ -282,8 +281,8 @@ class Program(models.Model):
                 value__dimension__slug=dimension_slug,
                 value__slug__in=value_slugs,
             )
-            values_by_slug = values_by_dimension_by_slug[dimension_slug]
 
+            values_by_slug = cache.values_by_dimension[dimension_slug]
             for value_slug in value_slugs:
                 if value_slug not in cached_dimensions.get(dimension_slug, []):
                     value = values_by_slug[value_slug]

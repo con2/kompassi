@@ -48,8 +48,9 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         This is called during the transaction that creates the response.
         Do not call external services or perform any actions that require the transaction to be committed.
         """
-        response.set_initial_dimension_values()
-        response.lift_dimension_values()
+        cache = self.survey.universe.preload_dimensions()
+        response.set_initial_dimension_values(cache)
+        response.lift_dimension_values(cache=cache)
         response.refresh_cached_dimensions()
 
     def handle_new_response_phase2(self, response: Response):

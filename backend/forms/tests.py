@@ -657,8 +657,9 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
         form_data={"test-dimension": "test-dimension-value-1"},
     )
 
-    response.lift_dimension_values()
-    response.refresh_cached_dimensions()
+    survey.workflow.handle_new_response_phase1(response)
+    survey.workflow.handle_new_response_phase2(response)
+
     response.refresh_from_db()
 
     assert response.cached_dimensions == {

@@ -17,9 +17,8 @@ from django.utils.translation import gettext_lazy as _
 from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
 from core.utils.model_utils import slugify, slugify_underscore
-from dimensions.models.dimension import Dimension
-from dimensions.models.dimension_value import DimensionValue
 from dimensions.models.scope import Scope
+from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import SUPPORTED_LANGUAGES
 from graphql_api.utils import get_message_in_language
 
@@ -152,37 +151,22 @@ class Response(models.Model):
         self.cached_dimensions = self._build_cached_dimensions()
         self.save(update_fields=["cached_dimensions"])
 
-    def set_initial_dimension_values(
-        self,
-        dimensions_by_slug: dict[str, Dimension] | None = None,
-        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] | None = None,
-    ):
+    def set_initial_dimension_values(self, cache: DimensionCache):
         """
         Sets the initial dimension values for this response.
 
         NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
         afterwards to update the cached_dimensions field.
-
-        :param dimensions_by_slug: Cache from Universe.preload_dimensions()
-        :param values_by_dimension_by_slug: Cache from Universe.preload_dimensions()
         """
-        if dimensions_by_slug is None or values_by_dimension_by_slug is None:
-            dimensions_by_slug, values_by_dimension_by_slug = self.survey.universe.preload_dimensions()
-
         values_to_set = defaultdict(set)
-        for dimension_slug, values in values_by_dimension_by_slug.items():
+        for dimension_slug, values in cache.values_by_dimension.items():
             for value in values.values():
                 if value.is_initial:
                     values_to_set[dimension_slug].add(value.slug)
 
-        self.set_dimension_values(values_to_set, dimensions_by_slug, values_by_dimension_by_slug)
+        self.set_dimension_values(values_to_set, cache)
 
-    def lift_dimension_values(
-        self,
-        dimension_slugs: list[str] | None = None,
-        dimensions_by_slug: dict[str, Dimension] | None = None,
-        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] | None = None,
-    ):
+    def lift_dimension_values(self, *, dimension_slugs: list[str] | None = None, cache: DimensionCache):
         """
         Lifts the values of dimensions from form data into proper dimension values.
         This makes sense only for responses that are related to a survey.
@@ -191,13 +175,8 @@ class Response(models.Model):
         afterwards to update the cached_dimensions field.
 
         :param dimension_slugs: If provided, only these dimensions will be lifted.
-        :param dimensions_by_slug: Cache from Universe.preload_dimensions()
-        :param values_by_dimension_by_slug: Cache from Universe.preload_dimensions()
         """
         survey = self.survey
-
-        if dimensions_by_slug is None or values_by_dimension_by_slug is None:
-            dimensions_by_slug, values_by_dimension_by_slug = survey.universe.preload_dimensions(dimension_slugs)
 
         # only these fields have the potential of being dimension fields
         # TODO support single checkbox as dimension field?
@@ -224,7 +203,7 @@ class Response(models.Model):
                 )
                 continue
 
-            dimension = dimensions_by_slug.get(field.dimension)
+            dimension = cache.dimensions.get(field.dimension)
             if dimension is None:
                 logger.warning(
                     "Dimension field refers to non-existing dimension: %s",
@@ -237,10 +216,9 @@ class Response(models.Model):
                     ),
                 )
                 continue
-            values_by_slug = values_by_dimension_by_slug[dimension.slug]
 
             # set initial values
-            for value in values_by_slug.values():
+            for value in cache.values_by_dimension[dimension.slug].values():
                 if value.is_initial:
                     values_to_set[dimension.slug].add(value.slug)
 
@@ -295,7 +273,7 @@ class Response(models.Model):
                 continue
 
             for value_slug in value_slugs:
-                value = values_by_slug.get(value_slug)
+                value = cache.values_by_dimension[dimension.slug][value_slug]
                 if value is None:
                     logger.warning(
                         "Response refers to a dimension value that doesn't exist: %s",
@@ -313,15 +291,10 @@ class Response(models.Model):
                 values_to_set[dimension.slug].add(value_slug)
 
         if values_to_set:
-            self.set_dimension_values(values_to_set, dimensions_by_slug, values_by_dimension_by_slug)
+            self.set_dimension_values(values_to_set, cache)
 
     @transaction.atomic
-    def set_dimension_values(
-        self,
-        values_to_set: Mapping[str, Collection[str]],
-        dimensions_by_slug: dict[str, Dimension] | None = None,
-        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] | None = None,
-    ):
+    def set_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
         """
         Changes only those dimension values that are present in dimension_values.
 
@@ -329,18 +302,12 @@ class Response(models.Model):
         afterwards to update the cached_dimensions field.
 
         :param values_to_set: Mapping of dimension slug to list of value slugs.
-        :param dimensions_by_slug: Cache from Universe.preload_dimensions()
         :param values_by_dimension_by_slug: Cache from Universe.preload_dimensions()
         """
         from .response_dimension_value import ResponseDimensionValue
 
-        if dimensions_by_slug is None or values_by_dimension_by_slug is None:
-            dimensions_by_slug, values_by_dimension_by_slug = self.survey.universe.preload_dimensions(
-                dimension_slugs=values_to_set.keys(),
-            )
-
         cached_dimensions = self.cached_dimensions
-        bulk_delete = self.dimensions.filter(value__dimension__slug__in=dimensions_by_slug.keys())
+        bulk_delete = self.dimensions.filter(value__dimension__slug__in=values_to_set.keys())
         bulk_create: list[ResponseDimensionValue] = []
 
         for dimension_slug, value_slugs in values_to_set.items():
@@ -348,15 +315,13 @@ class Response(models.Model):
                 value__dimension__slug=dimension_slug,
                 value__slug__in=value_slugs,
             )
-            values_by_slug = values_by_dimension_by_slug[dimension_slug]
 
             for value_slug in value_slugs:
                 if value_slug not in cached_dimensions.get(dimension_slug, []):
-                    value = values_by_slug[value_slug]
                     bulk_create.append(
                         ResponseDimensionValue(
                             response=self,
-                            value=value,
+                            value=cache.values_by_dimension[dimension_slug][value_slug],
                         )
                     )
 

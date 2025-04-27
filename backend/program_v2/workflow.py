@@ -135,6 +135,7 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
 
         universe = cls.get_program_universe(event)
         cls._setup_default_dimensions(universe)
+        cache = universe.preload_dimensions(dimension_slugs=["state", "form"])
 
         for program_offer in Response.objects.filter(
             form__event=event,
@@ -149,7 +150,7 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
                 values_to_set["form"] = [program_offer.survey.slug]
 
             if values_to_set:
-                program_offer.set_dimension_values(values_to_set)
+                program_offer.set_dimension_values(values_to_set, cache)
 
         for program in Program.objects.filter(event=event):
             existing_values = program.cached_dimensions
@@ -161,7 +162,7 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
                 values_to_set["form"] = [program.program_offer.survey.slug] if program.program_offer else []
 
             if values_to_set:
-                program.set_dimension_values(values_to_set)
+                program.set_dimension_values(values_to_set, cache)
 
         Program.refresh_cached_dimensions_qs(Program.objects.filter(event=event))
 
@@ -179,7 +180,8 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
             state=["accepted"] if response.programs.exists() else ["new"],
             form=[response.survey.slug],
         )
-        response.set_dimension_values(values)
+        cache = self.survey.universe.preload_dimensions(dimension_slugs=values.keys())
+        response.set_dimension_values(values, cache)
         response.refresh_cached_dimensions()
 
     @classmethod

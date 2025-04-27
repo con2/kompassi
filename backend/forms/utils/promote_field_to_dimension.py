@@ -54,14 +54,10 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     dimension_slug = slugify(field_slug)
 
     # don't want to lose existing translations
-    dimensions_by_slug, values_by_dimension_by_slug = survey.universe.preload_dimensions([dimension_slug])
+    cache = survey.universe.preload_dimensions(dimension_slugs=[dimension_slug])
 
     def merge_choice_translations(choice_slug: str) -> dict[str, str]:
-        """
-        Merges translations for the given slug.
-        """
-        # get existing translations
-        value = values_by_dimension_by_slug.get(dimension_slug, {}).get(slugify(choice_slug))
+        value = cache.values_by_dimension.get(dimension_slug, {}).get(slugify(choice_slug))
         title_dict = dict(value.title_dict) if value else {}
 
         for language, field in field_in_languages.items():
@@ -81,7 +77,7 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     ]
 
     # gather translations for the dimension
-    dimension = dimensions_by_slug.get(dimension_slug)
+    dimension = cache.dimensions.get(dimension_slug)
     title_dict: dict[str, str] = dict(dimension.title_dict) if dimension else {}
     for language, field in field_in_languages.items():
         if field.title:
@@ -117,7 +113,7 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     Form.refresh_enriched_fields_qs(Form.objects.filter(id__in=[form.id for form in forms]))
 
     # reload cache
-    dimensions_by_slug, values_by_dimension_by_slug = survey.universe.preload_dimensions([dimension.slug])
+    cache = survey.universe.preload_dimensions(dimension_slugs=[dimension_slug])
 
     # lift values of the field to the dimension in responses
     bulk_update = []
@@ -126,8 +122,7 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
             response.reslugify_field(field_slug, "-")  # dimensions use dashes due to being parts of URLs
             response.lift_dimension_values(
                 dimension_slugs=[dimension.slug],
-                dimensions_by_slug=dimensions_by_slug,
-                values_by_dimension_by_slug=values_by_dimension_by_slug,
+                cache=cache,
             )
 
     Response.objects.bulk_update(bulk_update, ["form_data"])

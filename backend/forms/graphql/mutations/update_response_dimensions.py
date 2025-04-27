@@ -49,7 +49,8 @@ class UpdateResponseDimensions(graphene.Mutation):
         )
 
         values = process_dimensions_form(dimensions, form_data)
-        response.set_dimension_values(values)
+        cache = survey.universe.preload_dimensions(dimension_slugs=values.keys())
+        response.set_dimension_values(values, cache=cache)
         response.refresh_cached_dimensions()
 
         return UpdateResponseDimensions(response=response)  # type: ignore
