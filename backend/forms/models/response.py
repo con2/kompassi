@@ -417,6 +417,23 @@ class Response(models.Model):
 
         send_mass_mail(mailbag)  # type: ignore
 
+    def ensure_badges(self):
+        """
+        Invoke Survey to Badge (STB) for new responses.
+        See https://outline.con2.fi/doc/survey-to-badge-stb-mxK1UW6hAn
+        """
+        from badges.models.badge import Badge
+        from badges.models.survey_to_badge import SurveyToBadgeMapping
+
+        if not SurveyToBadgeMapping.objects.filter(survey=self.survey).exists():
+            return
+
+        user = self.created_by
+        if not user or not user.person:
+            return
+
+        Badge.ensure(self.survey.event, user.person)
+
     @staticmethod
     def _reslugify_pair(
         pair: tuple[str, Any],

@@ -1,9 +1,13 @@
+from core.models.event import Event
+from core.models.person import Person
+
+
 def get_priority(pair):
     personnel_class, job_title = pair
     return personnel_class.priority
 
 
-def default_badge_factory(event, person):
+def default_badge_factory(event: Event, person: Person):
     """
     Specifies badge options, such as badge template and job title, given an event and a person.
 
@@ -41,6 +45,16 @@ def default_badge_factory(event, person):
             .order_by("role__priority")
             .select_related("role")
         )
+
+    # Implement Survey to Badge (STB).
+    # See https://outline.con2.fi/doc/survey-to-badge-stb-mxK1UW6hAn
+    if event.forms_event_meta is not None:
+        from ..models.survey_to_badge import SurveyToBadgeMapping
+
+        for survey_mapping in SurveyToBadgeMapping.objects.filter(
+            survey__event=event,
+        ).select_related("personnel_class"):
+            personnel_classes.extend(survey_mapping.match(person))
 
     if personnel_classes:
         personnel_classes.sort(key=get_priority)

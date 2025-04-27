@@ -29,6 +29,8 @@ from ..utils.merge_form_fields import merge_fields
 from .enums import SurveyApp
 
 if TYPE_CHECKING:
+    from badges.models.survey_to_badge import SurveyToBadgeMapping
+
     from .form import Form
     from .workflow import Workflow
 
@@ -129,6 +131,7 @@ class Survey(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     languages: models.QuerySet[Form]
+    badge_mappings: models.QuerySet[SurveyToBadgeMapping]
     id: int
 
     @property

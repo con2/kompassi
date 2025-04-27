@@ -45,7 +45,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     def handle_new_response_phase1(self, response: Response):
         """
         Called when a new response is created for a survey using this workflow.
-        This is called during the transaction that creates the response.
+        Called during the transaction that creates the response.
         Do not call external services or perform any actions that require the transaction to be committed.
         """
         cache = self.survey.universe.preload_dimensions()
@@ -56,7 +56,16 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     def handle_new_response_phase2(self, response: Response):
         """
         Called when a new response is created for a survey using this workflow.
-        This is called after the transaction that creates the response is committed.
+        Called after the transaction that creates the response is committed.
         This is the place to call external services or perform any actions that require the transaction to be committed.
         """
         response.notify_subscribers()
+        response.ensure_badges()
+
+    def handle_response_dimension_update(self, response: Response):
+        """
+        Called when dimension values of a response are updated.
+        Called after the transaction that updates the response dimensions is committed.
+        Not called for newly created responses.
+        """
+        response.ensure_badges()

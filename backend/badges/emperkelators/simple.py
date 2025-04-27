@@ -2,7 +2,7 @@ from typing import Self
 
 import pydantic
 
-from badges.utils import default_badge_factory
+from badges.utils.default_badge_factory import default_badge_factory
 from core.models.event import Event
 from core.models.person import Person
 from labour.models.personnel_class import PersonnelClass

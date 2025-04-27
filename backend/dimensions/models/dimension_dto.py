@@ -92,6 +92,7 @@ class DimensionDTO(pydantic.BaseModel):
                 dimension=dim_dj,
                 slug=choice.slug,
                 is_technical=choice.is_technical,
+                is_initial=choice.is_initial,
                 # NOTE SUPPORTED_LANGUAGES
                 title_en=choice.title.get("en", ""),
                 title_fi=choice.title.get("fi", ""),
@@ -108,8 +109,9 @@ class DimensionDTO(pydantic.BaseModel):
                 update_conflicts=True,
                 unique_fields=("dimension", "slug"),
                 update_fields=(
-                    # NOTE SUPPORTED_LANGUAGES
                     "is_technical",
+                    "is_initial",
+                    # NOTE SUPPORTED_LANGUAGES
                     "title_en",
                     "title_fi",
                     "title_sv",

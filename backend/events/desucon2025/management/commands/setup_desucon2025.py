@@ -8,7 +8,10 @@ from django.utils.timezone import now
 
 from access.models import GroupPrivilege, Privilege
 from badges.models import BadgesEventMeta
+from badges.models.survey_to_badge import SurveyToBadgeMapping
 from core.models import Event, Organization, Person, Venue
+from forms.models.meta import FormsEventMeta
+from forms.models.survey import Survey
 from intra.models import IntraEventMeta, Team
 from labour.models import (
     AlternativeSignupForm,
@@ -16,7 +19,9 @@ from labour.models import (
     LabourEventMeta,
     PersonnelClass,
     Qualification,
-    Survey,
+)
+from labour.models import (
+    Survey as LabourSurvey,
 )
 
 from ...models import Poison, SignupExtra, SpecialDiet
@@ -38,6 +43,7 @@ class Setup:
         self.setup_access()
         self.setup_badges()
         self.setup_intra()
+        self.setup_forms()
 
     def setup_core(self):
         self.venue, unused = Venue.objects.get_or_create(
@@ -214,7 +220,7 @@ class Setup:
             ),
         )
 
-        Survey.objects.get_or_create(
+        LabourSurvey.objects.get_or_create(
             event=self.event,
             slug="kaatoilmo",
             defaults=dict(
@@ -230,7 +236,7 @@ class Setup:
             ),
         )
 
-        Survey.objects.get_or_create(
+        LabourSurvey.objects.get_or_create(
             event=self.event,
             slug="tyovoimamajoitus",
             defaults=dict(
@@ -287,6 +293,29 @@ class Setup:
                 event=self.event,
                 slug=team_slug,
                 defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
+            )
+
+    def setup_forms(self):
+        (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])
+
+        FormsEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
+
+        survey = Survey.objects.filter(event=self.event, slug="program-host-signup").first()
+        if survey:
+            ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
+
+            SurveyToBadgeMapping.objects.update_or_create(
+                survey=survey,
+                defaults=dict(
+                    personnel_class=ohjelma,
+                    required_dimensions={},
+                    job_title="Ohjelmanjärjestäjä",
+                ),
             )
 
 

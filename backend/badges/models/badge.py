@@ -14,7 +14,7 @@ from core.utils import time_bool_property
 from core.utils.pkg_resources_compat import resource_string
 
 from ..proxies.badge.privacy import BadgePrivacyAdapter
-from ..utils import default_badge_factory
+from ..utils.default_badge_factory import default_badge_factory
 from .badges_event_meta import BadgesEventMeta
 
 logger = logging.getLogger("kompassi")
