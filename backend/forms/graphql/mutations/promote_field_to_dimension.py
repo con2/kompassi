@@ -4,6 +4,7 @@ from django.db import transaction
 from access.cbac import graphql_check_instance
 
 from ...models.survey import Survey
+from ...utils.promote_field_to_dimension import promote_field_to_dimension
 from ..survey_full import FullSurveyType
 
 
@@ -43,6 +44,6 @@ class PromoteFieldToDimension(graphene.Mutation):
             operation="update",
         )
 
-        survey.promote_field_to_dimension(input.field_slug)  # type: ignore
+        promote_field_to_dimension(survey, input.field_slug)  # type: ignore
 
         return PromoteFieldToDimension(survey=survey)  # type: ignore

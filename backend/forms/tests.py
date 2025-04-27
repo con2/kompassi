@@ -18,6 +18,7 @@ from .models.response import Response
 from .models.survey import Survey
 from .utils.merge_form_fields import _merge_fields, merge_choices
 from .utils.process_form_data import FieldWarning, process_form_data
+from .utils.promote_field_to_dimension import promote_field_to_dimension
 from .utils.s3_presign import BUCKET_NAME, S3_ENDPOINT_URL
 from .utils.summarize_responses import MatrixFieldSummary, SelectFieldSummary, TextFieldSummary, summarize_responses
 
@@ -833,7 +834,7 @@ def test_promote_field_to_dimension():
     )
 
     # CASE 1: New dimension
-    survey.promote_field_to_dimension("q_foo")
+    promote_field_to_dimension(survey, "q_foo")
 
     dimension = survey.dimensions.get()
     assert dimension.slug == "q-foo"
@@ -888,7 +889,7 @@ def test_promote_field_to_dimension():
         ],
     )
 
-    survey.promote_field_to_dimension("q_foo")
+    promote_field_to_dimension(survey, "q_foo")
 
     dimension = survey.dimensions.get()
     assert dimension.slug == "q-foo"
