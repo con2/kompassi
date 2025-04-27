@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Collection, Mapping
 from datetime import tzinfo
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
@@ -265,14 +266,18 @@ class Program(models.Model):
     # TODO Automatic annotations
 
     @transaction.atomic
-    def set_dimension_values(self, values_to_set: dict[str, list[str]], cache: DimensionCache):
+    def set_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
         """
         Changes only those dimension values that are present in dimension_values.
-        NOTE: Caller is responsible for calling .refresh_cached_dimensions[_qs].
+
+        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
+        afterwards to update the cached_dimensions field.
+
+        :param values_to_set: Mapping of dimension slug to list of value slugs.
+        :param cache: Cache from Universe.preload_dimensions()
         """
         from .program_dimension_value import ProgramDimensionValue
 
-        cached_dimensions = self.cached_dimensions
         bulk_delete = self.dimensions.filter(value__dimension__slug__in=values_to_set.keys())
         bulk_create: list[ProgramDimensionValue] = []
 
@@ -282,14 +287,12 @@ class Program(models.Model):
                 value__slug__in=value_slugs,
             )
 
-            values_by_slug = cache.values_by_dimension[dimension_slug]
             for value_slug in value_slugs:
-                if value_slug not in cached_dimensions.get(dimension_slug, []):
-                    value = values_by_slug[value_slug]
+                if value_slug not in self.cached_dimensions.get(dimension_slug, []):
                     bulk_create.append(
                         ProgramDimensionValue(
                             program=self,
-                            value=value,
+                            value=cache.values_by_dimension[dimension_slug][value_slug],
                         )
                     )
 

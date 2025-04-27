@@ -302,11 +302,10 @@ class Response(models.Model):
         afterwards to update the cached_dimensions field.
 
         :param values_to_set: Mapping of dimension slug to list of value slugs.
-        :param values_by_dimension_by_slug: Cache from Universe.preload_dimensions()
+        :param cache: Cache from Universe.preload_dimensions()
         """
         from .response_dimension_value import ResponseDimensionValue
 
-        cached_dimensions = self.cached_dimensions
         bulk_delete = self.dimensions.filter(value__dimension__slug__in=values_to_set.keys())
         bulk_create: list[ResponseDimensionValue] = []
 
@@ -317,7 +316,7 @@ class Response(models.Model):
             )
 
             for value_slug in value_slugs:
-                if value_slug not in cached_dimensions.get(dimension_slug, []):
+                if value_slug not in self.cached_dimensions.get(dimension_slug, []):
                     bulk_create.append(
                         ResponseDimensionValue(
                             response=self,

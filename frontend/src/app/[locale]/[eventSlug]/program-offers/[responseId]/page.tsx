@@ -192,17 +192,7 @@ export default async function ProgramOfferPage({
 
   const dimensions: Dimension[] = data.event.program.dimensions;
   const { fields: dimensionFields, values: dimensionValues } =
-    buildDimensionValueSelectionForm(
-      dimensions,
-      programOffer.cachedDimensions,
-      "editable",
-    );
-  const { fields: acceptDimensionFields, values: acceptDimensionValues } =
-    buildDimensionValueSelectionForm(
-      dimensions,
-      programOffer.cachedDimensions,
-      "omit",
-    );
+    buildDimensionValueSelectionForm(dimensions, programOffer.cachedDimensions);
 
   const acceptProgramOfferFields: Field[] = [
     {
@@ -226,7 +216,7 @@ export default async function ProgramOfferPage({
         type: "StaticText",
         title: surveyT.attributes.dimensions,
       },
-      ...acceptDimensionFields,
+      ...dimensionFields,
     );
   }
 
@@ -236,7 +226,7 @@ export default async function ProgramOfferPage({
     slug: slugify(values.title || "") + uniquenessInsurance,
     title: values.title,
     description: values.description,
-    ...acceptDimensionValues,
+    ...dimensionValues,
   };
 
   const surveySlug = programOffer.form.survey!.slug;

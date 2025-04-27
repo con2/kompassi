@@ -74,6 +74,8 @@ class AcceptProgramOffer(graphene.Mutation):
         if warnings:
             raise ValueError(warnings)
 
+        cache = event.program_universe.preload_dimensions()
+
         dimension_values = dict(program_offer.cached_dimensions)
         dimension_values.update(
             process_dimensions_form(
@@ -84,7 +86,7 @@ class AcceptProgramOffer(graphene.Mutation):
         dimension_values.update(
             state=["accepted"],
         )
-        program_offer.set_dimension_values(dimension_values)
+        program_offer.set_dimension_values(dimension_values, cache=cache)
         program_offer.refresh_cached_dimensions()
 
         program = Program.from_program_offer(
@@ -92,7 +94,7 @@ class AcceptProgramOffer(graphene.Mutation):
             slug=values["slug"],
             title=values.get("title", ""),
         )
-        program.set_dimension_values(dimension_values)
+        program.set_dimension_values(dimension_values, cache=cache)
         program.refresh_cached_fields()
 
         return AcceptProgramOffer(program=program)  # type: ignore

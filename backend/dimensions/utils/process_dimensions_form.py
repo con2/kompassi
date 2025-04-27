@@ -1,3 +1,5 @@
+from collections.abc import Collection
+
 from forms.models.field import Field, FieldType
 from forms.utils.process_form_data import process_form_data
 
@@ -5,7 +7,7 @@ from ..models.dimension import Dimension
 
 
 def process_dimensions_form(
-    dimensions: list[Dimension],
+    dimensions: Collection[Dimension],
     form_data: dict[str, str],
 ) -> dict[str, list[str]]:
     """

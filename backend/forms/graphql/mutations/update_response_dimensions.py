@@ -38,7 +38,8 @@ class UpdateResponseDimensions(graphene.Mutation):
 
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
         response = survey.responses.get(id=input.response_id)
-        dimensions = list(survey.dimensions.all())
+
+        dimensions = list(survey.dimensions.filter(is_technical=False))
 
         graphql_check_instance(
             response,

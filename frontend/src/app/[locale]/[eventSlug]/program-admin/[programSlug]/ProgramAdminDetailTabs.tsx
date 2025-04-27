@@ -45,7 +45,6 @@ export default function ProgramAdminDetailTabs({
       slug: "dimensions",
       title: t.adminDetailTabs.dimensions,
       href: `/${eventSlug}/program-admin/${programSlug}/dimensions`,
-      disabled: true,
     },
     {
       slug: "annotations",
