@@ -16,7 +16,6 @@ class DimensionValueForm(django_forms.ModelForm):
         fields = (
             "slug",
             "color",
-            "is_initial",
             # NOTE SUPPORTED_LANGUAGES
             "title_en",
             "title_fi",

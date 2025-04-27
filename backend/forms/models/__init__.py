@@ -5,3 +5,4 @@ from .meta import FormsEventMeta, FormsProfileMeta
 from .response import Response
 from .response_dimension_value import ResponseDimensionValue
 from .survey import Survey
+from .survey_default_dimension_value import SurveyDefaultDimensionValue

@@ -399,11 +399,13 @@ def test_survey_to_badge():
         slug="status",
         title={"en": "Status"},
         choices=[
-            DimensionValueDTO(slug="new", title={"en": "New"}, is_initial=True),
+            DimensionValueDTO(slug="new", title={"en": "New"}),
             DimensionValueDTO(slug="accepted", title={"en": "Accepted"}),
             DimensionValueDTO(slug="cancelled", title={"en": "New"}),
         ],
     ).save(survey.universe)
+
+    survey.set_default_dimension_values({"status": ["new"]}, cache=survey.universe.preload_dimensions())
 
     form_en = Form.objects.create(
         event=event,

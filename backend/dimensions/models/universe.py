@@ -47,16 +47,16 @@ class Universe(models.Model):
         return f"{self.scope}/{self.slug} ({self.app})"
 
     @property
-    def survey(self):
-        if self.app != "forms":
-            return None
+    def surveys(self):
+        from forms.models.survey import Survey, SurveyApp
 
-        from forms.models.survey import Survey
-
-        return Survey.objects.filter(
-            event=self.scope.event,
-            slug=self.slug,
-        ).first()
+        match SurveyApp(self.app):
+            case SurveyApp.FORMS:
+                return Survey.objects.filter(event=self.scope.event, slug=self.slug, app="forms")
+            case SurveyApp.PROGRAM_V2:
+                return Survey.objects.filter(event=self.scope.event, app="program_v2")
+            case _:
+                raise ValueError(f"Unknown app type: {self.app}")
 
     def preload_dimensions(self, dimension_slugs: Collection[str] | None = None) -> DimensionCache:
         from ..utils.dimension_cache import DimensionCache

@@ -29,11 +29,17 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     def get_workflow(cls, survey: Survey):
         match SurveyApp(survey.app):
             case SurveyApp.PROGRAM_V2:
-                from program_v2.workflow import ProgramOfferWorkflow
+                from program_v2.workflow import ProgramWorkflow
 
-                return ProgramOfferWorkflow(survey=survey)
+                return ProgramWorkflow(survey=survey)
             case _:
                 return cls(survey=survey)
+
+    def handle_new_survey(self):
+        """
+        Called when a new form is created for a survey using this workflow.
+        """
+        pass
 
     def handle_form_update(self):
         """
@@ -49,9 +55,11 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         Do not call external services or perform any actions that require the transaction to be committed.
         """
         cache = self.survey.universe.preload_dimensions()
-        response.set_initial_dimension_values(cache)
+        response.set_dimension_values(self.survey.cached_default_dimensions, cache=cache)
         response.lift_dimension_values(cache=cache)
         response.refresh_cached_dimensions()
+
+        return cache
 
     def handle_new_response_phase2(self, response: Response):
         """

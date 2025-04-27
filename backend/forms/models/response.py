@@ -151,21 +151,6 @@ class Response(models.Model):
         self.cached_dimensions = self._build_cached_dimensions()
         self.save(update_fields=["cached_dimensions"])
 
-    def set_initial_dimension_values(self, cache: DimensionCache):
-        """
-        Sets the initial dimension values for this response.
-
-        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
-        afterwards to update the cached_dimensions field.
-        """
-        values_to_set = defaultdict(set)
-        for dimension_slug, values in cache.values_by_dimension.items():
-            for value in values.values():
-                if value.is_initial:
-                    values_to_set[dimension_slug].add(value.slug)
-
-        self.set_dimension_values(values_to_set, cache)
-
     def lift_dimension_values(self, *, dimension_slugs: list[str] | None = None, cache: DimensionCache):
         """
         Lifts the values of dimensions from form data into proper dimension values.
@@ -216,11 +201,6 @@ class Response(models.Model):
                     ),
                 )
                 continue
-
-            # set initial values
-            for value in cache.values_by_dimension[dimension.slug].values():
-                if value.is_initial:
-                    values_to_set[dimension.slug].add(value.slug)
 
             if field_warnings := warnings.get(field.slug):
                 # this dimension has validation warnings

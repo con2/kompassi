@@ -17,7 +17,7 @@ from labour.models import (
     Qualification,
 )
 from program_v2.models.meta import ProgramV2EventMeta
-from program_v2.workflow import ProgramOfferWorkflow
+from program_v2.workflow import ProgramWorkflow
 from programme.models import (
     AlternativeProgrammeForm,
     Category,
@@ -447,7 +447,7 @@ class Setup:
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
-        ProgramOfferWorkflow.backfill_default_dimensions(self.event)
+        ProgramWorkflow.backfill_default_dimensions(self.event)
 
     def setup_tickets_v2(self):
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])

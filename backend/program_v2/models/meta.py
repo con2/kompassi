@@ -38,9 +38,9 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
 
     @cached_property
     def universe(self) -> Universe:
-        from program_v2.workflow import ProgramOfferWorkflow
+        from program_v2.workflow import ProgramWorkflow
 
-        return ProgramOfferWorkflow.get_program_universe(self.event)
+        return ProgramWorkflow.get_program_universe(self.event)
 
     @property
     def program_offers(self):

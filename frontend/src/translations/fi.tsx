@@ -1568,11 +1568,6 @@ const translations: Translations = {
           helpText:
             "Arvon väri vastauslistassa. Käytä kirkkaita värejä: ne vaalenevat tai tummenevat tarvittaessa.",
         },
-        isInitial: {
-          title: "Alkuarvo",
-          helpText:
-            "Jos tämä on asetettu, tämä arvo asetetaan kaikille uusille vastauksille lähettämisen yhteydessä.",
-        },
         localizedTitleHeader: {
           title: "Otsikko lokalisoituna",
           helpText:

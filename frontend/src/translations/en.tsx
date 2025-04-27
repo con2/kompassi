@@ -1576,10 +1576,6 @@ const translations = {
           helpText:
             "Color of the value in the response list. Use bright colors: they will be lightened or darkened as needed.",
         },
-        isInitial: {
-          title: "Initial value",
-          helpText: "If set, this value will be applied to all new responses.",
-        },
         localizedTitleHeader: {
           title: "Localized titles",
           helpText:

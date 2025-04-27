@@ -95,7 +95,6 @@
   choices:
     - slug: new
       color: blue
-      isInitial: true
       title:
         fi: Uusi
         en: New

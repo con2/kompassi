@@ -67,5 +67,5 @@ export async function promoteFieldToDimension(
     },
   });
   revalidatePath(`/${locale}/${eventSlug}/surveys`);
-  redirect(`/${eventSlug}/surveys/${surveySlug}/edit/${locale}/fields`);
+  redirect(`/${eventSlug}/surveys/${surveySlug}/dimensions`);
 }

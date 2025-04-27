@@ -100,10 +100,9 @@ STATE_DIMENSION_DTO = DimensionDTO(
 )
 
 
-class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
+class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
     """
-    Workflow for program offers. This workflow is used to set the state of the program offer
-    and possibly other automated actions in the future.
+    Survey response workflow for the program offer to program item pipeline.
     """
 
     survey: Survey
@@ -125,9 +124,23 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         return universe
 
     @classmethod
+    def _get_default_dimension_values(cls, survey: Survey) -> dict[str, list[str]]:
+        return {
+            "state": ["new"],
+            "form": [survey.slug],
+        }
+
+    def handle_new_survey(self):
+        super().handle_new_survey()
+        self.survey.set_default_dimension_values(
+            self._get_default_dimension_values(self.survey),
+            self.survey.universe.preload_dimensions(),
+        )
+
+    @classmethod
     def backfill_default_dimensions(cls, event: Event) -> None:
         """
-        Backfills the default dimensions for the program offer workflow.
+        Backfills the default dimensions for the progr.am offer workflow.
         Use this method to migrate events that had Program V2 initialized
         before April 2025.
         """
@@ -135,7 +148,13 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
 
         universe = cls.get_program_universe(event)
         cls._setup_default_dimensions(universe)
-        cache = universe.preload_dimensions(dimension_slugs=["state", "form"])
+        cache = universe.preload_dimensions()
+
+        for survey in Survey.objects.filter(
+            event=event,
+            app="program_v2",
+        ):
+            survey.set_default_dimension_values(cls._get_default_dimension_values(survey), cache)
 
         for program_offer in Response.objects.filter(
             form__event=event,
@@ -167,22 +186,11 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         Program.refresh_cached_dimensions_qs(Program.objects.filter(event=event))
 
     def handle_form_update(self):
+        """
+        If form titles have changed, update them in the dimension.
+        """
         universe = self.survey.universe
         self._get_form_dimension_dto(universe).save(universe)
-
-    def handle_new_response_phase1(self, response: Response):
-        """
-        Called when a new response is created.
-        """
-        super().handle_new_response_phase1(response)
-
-        values = dict(
-            state=["accepted"] if response.programs.exists() else ["new"],
-            form=[response.survey.slug],
-        )
-        cache = self.survey.universe.preload_dimensions(dimension_slugs=values.keys())
-        response.set_dimension_values(values, cache)
-        response.refresh_cached_dimensions()
 
     @classmethod
     def _setup_default_dimensions(cls, universe: Universe) -> Sequence[Dimension]:

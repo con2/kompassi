@@ -18,13 +18,6 @@ logger = logging.getLogger("kompassi")
 class DimensionValue(models.Model):
     dimension = models.ForeignKey(Dimension, on_delete=models.CASCADE, related_name="values")
 
-    # Note that if we define a concept of default values, they should be pre-selected on forms and overridable by user.
-    # Contrast this to initial values that are instead set always and cannot be overridden by user.
-    # An initial value should probably not be set on a dimension that is presented as a form field.
-    is_initial = models.BooleanField(
-        default=False,
-        help_text="Initial values are set on new atoms automatically.",
-    )
     is_technical = models.BooleanField(
         default=False,
         help_text="Technical values cannot be edited in the UI. They are used for internal purposes and have some assumptions about them.",

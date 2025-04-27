@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import logging
+from collections.abc import Collection, Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from functools import cached_property
@@ -11,7 +12,7 @@ import yaml
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.postgres.fields import ArrayField
-from django.db import models
+from django.db import models, transaction
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
@@ -23,6 +24,7 @@ from dimensions.models.dimension import Dimension
 from dimensions.models.dimension_dto import DimensionDTO
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
+from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
 
 from ..utils.merge_form_fields import merge_fields
@@ -32,6 +34,7 @@ if TYPE_CHECKING:
     from badges.models.survey_to_badge import SurveyToBadgeMapping
 
     from .form import Form
+    from .survey_default_dimension_value import SurveyDefaultDimensionValue
     from .workflow import Workflow
 
 logger = logging.getLogger("kompassi")
@@ -126,12 +129,15 @@ class Survey(models.Model):
         help_text=_("If enabled, responses cannot be deleted from the UI without disabling this first."),
     )
 
+    cached_default_dimensions = models.JSONField(blank=True, default=dict)
+
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     languages: models.QuerySet[Form]
     badge_mappings: models.QuerySet[SurveyToBadgeMapping]
+    default_dimensions: models.QuerySet[SurveyDefaultDimensionValue]
     id: int
 
     @property
@@ -313,6 +319,53 @@ class Survey(models.Model):
             form.clone(survey, created_by=created_by)
 
         return survey
+
+    @transaction.atomic
+    def set_default_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
+        """
+        Changes only those dimension values that are present in dimension_values.
+        This allows to eg. retain a technical "state" dimension while setting other values.
+
+        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
+        afterwards to update the cached_dimensions field.
+
+        :param values_to_set: Mapping of dimension slug to list of value slugs.
+        :param cache: Cache from Universe.preload_dimensions()
+        """
+        from .survey_default_dimension_value import SurveyDefaultDimensionValue
+
+        bulk_delete = self.default_dimensions.filter(value__dimension__slug__in=values_to_set.keys())
+        bulk_create: list[SurveyDefaultDimensionValue] = []
+
+        for dimension_slug, value_slugs in values_to_set.items():
+            bulk_delete = bulk_delete.exclude(
+                value__dimension__slug=dimension_slug,
+                value__slug__in=value_slugs,
+            )
+
+            for value_slug in value_slugs:
+                if value_slug not in self.cached_default_dimensions.get(dimension_slug, []):
+                    bulk_create.append(
+                        SurveyDefaultDimensionValue(
+                            survey=self,
+                            value=cache.values_by_dimension[dimension_slug][value_slug],
+                        )
+                    )
+
+        bulk_delete.delete()
+        SurveyDefaultDimensionValue.objects.bulk_create(bulk_create)
+        self.refresh_cached_default_dimensions()
+
+    def _build_cached_default_dimensions(self) -> dict[str, list[str]]:
+        new_cached_dimensions = {}
+        for sddv in self.default_dimensions.all():
+            new_cached_dimensions.setdefault(sddv.value.dimension.slug, []).append(sddv.value.slug)
+
+        return new_cached_dimensions
+
+    def refresh_cached_default_dimensions(self):
+        self.cached_default_dimensions = self._build_cached_default_dimensions()
+        self.save(update_fields=["cached_default_dimensions"])
 
 
 @dataclass

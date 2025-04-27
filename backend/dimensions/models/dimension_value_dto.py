@@ -6,4 +6,3 @@ class DimensionValueDTO(pydantic.BaseModel):
     title: dict[str, str]
     color: str = ""
     is_technical: bool = False
-    is_initial: bool = False

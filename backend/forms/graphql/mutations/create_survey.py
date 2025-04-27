@@ -69,4 +69,7 @@ class CreateSurvey(graphene.Mutation):
             ).with_mandatory_attributes_for_app(SurveyApp.FORMS)
             survey.full_clean()  # Validate fields
             survey.save()
+
+        survey.workflow.handle_new_survey()
+
         return CreateSurvey(survey=survey)  # type: ignore

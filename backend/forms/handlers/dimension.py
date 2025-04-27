@@ -7,24 +7,27 @@ from dimensions.models.dimension_value import DimensionValue
 from ..models.form import Form
 from ..models.response import Response
 from ..models.response_dimension_value import ResponseDimensionValue
+from ..models.survey import Survey
+from ..models.survey_default_dimension_value import SurveyDefaultDimensionValue
 
 
 @receiver(post_delete, sender=Dimension)
 @receiver(post_delete, sender=DimensionValue)
 def dimension_post_delete(sender, instance: Dimension | DimensionValue, **kwargs):
     universe = instance.universe
-    if universe.app != "forms":
-        return
+    surveys = universe.surveys.all()
 
-    survey = universe.survey
-    if survey is None:
-        raise ValueError(f"Universe {universe} is has app=forms but no survey")
-
-    Response.refresh_cached_dimensions_qs(survey.responses.all())
-    Form.refresh_enriched_fields_qs(survey.languages.all())
+    Response.refresh_cached_dimensions_qs(Response.objects.filter(form__survey__in=surveys))
+    Form.refresh_enriched_fields_qs(Form.objects.filter(survey__in=surveys))
 
 
 @receiver([post_save, post_delete], sender=ResponseDimensionValue)
 def response_dimension_value_post_save(sender, instance: ResponseDimensionValue, **kwargs):
-    response = instance.response
+    response: Response = instance.response
     response.refresh_cached_dimensions()
+
+
+@receiver([post_save, post_delete], sender=SurveyDefaultDimensionValue)
+def survey_default_dimension_value_post_save(sender, instance: SurveyDefaultDimensionValue, **kwargs):
+    survey: Survey = instance.survey
+    survey.refresh_cached_default_dimensions()

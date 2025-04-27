@@ -37,11 +37,6 @@ export default function DimensionValueForm({ messages, value }: Props) {
       ...t.attributes.color,
     },
     {
-      type: "SingleCheckbox",
-      slug: "isInitial",
-      ...t.attributes.isInitial,
-    },
-    {
       type: "StaticText",
       slug: "header",
       ...t.attributes.localizedTitleHeader,
