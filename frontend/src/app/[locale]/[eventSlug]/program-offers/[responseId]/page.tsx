@@ -60,6 +60,7 @@ const query = graphql(`
           slug
           title(lang: $locale)
           isTechnical
+          isMultiValue
 
           values(lang: $locale) {
             slug

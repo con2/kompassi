@@ -10,7 +10,7 @@ import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { buildDimensionValueSelectionForm } from "@/components/dimensions/helpers";
 import { formatDateTime } from "@/components/FormattedDateTime";
-import { Field, Layout, validateFields } from "@/components/forms/models";
+import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
@@ -38,16 +38,20 @@ const query = graphql(`
           anonymity
           canRemoveResponses
           protectResponses
+
           dimensions {
             title(lang: $locale)
             slug
+            isTechnical
             isMultiValue
+
             values {
               title(lang: $locale)
               slug
               color
             }
           }
+
           response(id: $responseId) {
             id
             sequenceNumber
