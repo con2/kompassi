@@ -176,29 +176,24 @@ class Response(models.Model):
         values_to_set: defaultdict[str, set[str]] = defaultdict(set)
 
         for field in fields:
+            log_context = dict(
+                survey=survey.id,
+                language=self.form.language,
+                response=self.id,
+                field=field.slug,
+                dimension=field.dimension,
+                field_type=field.type,
+            )
+
             if not field.dimension:
-                logger.warning(
-                    "Dimension field has no dimension: %s",
-                    dict(
-                        survey=survey.id,
-                        language=self.form.language,
-                        response=self.id,
-                        field=field.slug,
-                    ),
-                )
+                logger.warning("Dimension field has no dimension: %s", log_context)
                 continue
 
             dimension = cache.dimensions.get(field.dimension)
             if dimension is None:
                 logger.warning(
                     "Dimension field refers to non-existing dimension: %s",
-                    dict(
-                        survey=survey.id,
-                        language=self.form.language,
-                        response=self.id,
-                        field=field.slug,
-                        dimension=field.dimension,
-                    ),
+                    dict(log_context),
                 )
                 continue
 
@@ -206,14 +201,7 @@ class Response(models.Model):
                 # this dimension has validation warnings
                 logger.warning(
                     "Cowardly refusing to lift dimension values from field with warnings: %s",
-                    dict(
-                        survey=survey.id,
-                        language=self.form.language,
-                        response=self.id,
-                        field=field.slug,
-                        dimension=dimension.slug,
-                        warnings=field_warnings,
-                    ),
+                    dict(log_context, warnings=field_warnings),
                 )
                 continue
 
@@ -224,31 +212,13 @@ class Response(models.Model):
                 case FieldType.DIMENSION_SINGLE_SELECT:
                     value_slugs = [value_slug] if (value_slug := values.get(field.slug)) else []
                 case _:
-                    logger.warning(
-                        "Unexpected field type for dimension field: %s",
-                        dict(
-                            survey=survey.id,
-                            language=self.form.language,
-                            response=self.id,
-                            field=field.slug,
-                            dimension=dimension.slug,
-                            field_type=field.type,
-                        ),
-                    )
+                    logger.warning("Unexpected field type for dimension field: %s", log_context)
                     continue
 
             if not isinstance(value_slugs, list):
                 logger.warning(
                     "Expected list of value slugs for dimension field: %s",
-                    dict(
-                        survey=survey.id,
-                        language=self.form.language,
-                        response=self.id,
-                        field=field.slug,
-                        dimension=dimension.slug,
-                        field_type=field.type,
-                        value_slugs=value_slugs,
-                    ),
+                    dict(log_context, value_slugs=value_slugs),
                 )
                 continue
 
@@ -257,14 +227,7 @@ class Response(models.Model):
                 if value is None:
                     logger.warning(
                         "Response refers to a dimension value that doesn't exist: %s",
-                        dict(
-                            survey=survey.id,
-                            language=self.form.language,
-                            response=self.id,
-                            field=field.slug,
-                            dimension=dimension.slug,
-                            value_slug=value_slug,
-                        ),
+                        dict(log_context, value_slug=value_slug),
                     )
                     continue
 
