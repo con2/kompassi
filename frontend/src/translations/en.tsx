@@ -1028,6 +1028,9 @@ const translations = {
       listTitle: "Program forms",
       tableFooter: (numForms: number) =>
         `${numForms} form${numForms === 1 ? "" : "s"}.`,
+      programFormForEvent: (eventName: string) => (
+        <>Program form for {eventName}</>
+      ),
       attributes: {
         slug: {
           title: "Slug",
@@ -1066,6 +1069,8 @@ const translations = {
             cancel: "Cancel",
           },
         },
+        returnToProgramFormList: (eventName: string) =>
+          `Return to the list of program forms of ${eventName}`,
       },
     },
 
@@ -1278,6 +1283,15 @@ const translations = {
       },
       dimensions: "Dimensions",
       dimension: "Dimension",
+      dimensionDefaults: {
+        title: "Dimension defaults",
+        description: (
+          <>
+            These dimension values will be set by default for new responses.
+            Values of technical dimensions cannot be changed.
+          </>
+        ),
+      },
       values: "Values",
       value: "Arvo",
       sequenceNumber: "Sequence number",
@@ -1412,6 +1426,7 @@ const translations = {
           cancel: "Cancel",
         },
       },
+      editDimensions: "Edit dimensions and values",
       editDimension: "Edit dimension",
       editDimensionValue: "Edit value",
       editSurvey: "Edit",

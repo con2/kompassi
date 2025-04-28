@@ -7,8 +7,13 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
-import { buildDimensionValueSelectionForm } from "@/components/dimensions/helpers";
-import { Dimension } from "@/components/dimensions/models";
+import DimensionValueSelectionForm, {
+  buildDimensionValueSelectionForm,
+} from "@/components/dimensions/DimensionValueSelectionForm";
+import {
+  Dimension,
+  validateCachedDimensions,
+} from "@/components/dimensions/models";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
@@ -191,6 +196,7 @@ export default async function ProgramOfferPage({
     createdBy: formattedCreatedBy,
   };
 
+  validateCachedDimensions(programOffer.cachedDimensions);
   const dimensions: Dimension[] = data.event.program.dimensions;
   const { fields: dimensionFields, values: dimensionValues } =
     buildDimensionValueSelectionForm(dimensions, programOffer.cachedDimensions);
@@ -286,25 +292,17 @@ export default async function ProgramOfferPage({
                   {surveyT.attributes.dimensions}
                 </h5>
                 {/* TODO improve feedback of successful save */}
-                <AutoSubmitForm
-                  action={updateResponseDimensions.bind(
+                <DimensionValueSelectionForm
+                  dimensions={dimensions}
+                  cachedDimensions={programOffer.cachedDimensions}
+                  translations={translations}
+                  onChange={updateResponseDimensions.bind(
                     null,
                     eventSlug,
                     surveySlug,
                     responseId,
                   )}
-                >
-                  <SchemaForm
-                    fields={dimensionFields}
-                    values={dimensionValues}
-                    messages={translations.SchemaForm}
-                  />
-                  <noscript>
-                    <SubmitButton>
-                      {surveyT.actions.saveDimensions}
-                    </SubmitButton>
-                  </noscript>
-                </AutoSubmitForm>
+                />
               </div>
             </div>
           </div>

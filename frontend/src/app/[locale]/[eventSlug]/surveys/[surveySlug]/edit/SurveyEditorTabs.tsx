@@ -43,6 +43,12 @@ export default function SurveyEditorTabs({
     });
   }
 
+  tabs.push({
+    slug: "dimensionDefaults",
+    title: t.attributes.dimensionDefaults.title,
+    href: `${url}/dimension-defaults`,
+  });
+
   for (const languageVersion of survey.languages) {
     // graphql enums are upper case :(
     const languageCode = languageVersion.language.toLowerCase();

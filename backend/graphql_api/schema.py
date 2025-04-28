@@ -23,6 +23,7 @@ from forms.graphql.mutations.update_form import UpdateForm
 from forms.graphql.mutations.update_form_fields import UpdateFormFields
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
+from forms.graphql.mutations.update_survey_default_dimensions import UpdateSurveyDefaultDimensions
 from program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
 from program_v2.graphql.mutations.create_program_form import CreateProgramForm
 from program_v2.graphql.mutations.favorites import (
@@ -93,6 +94,7 @@ class Mutation(graphene.ObjectType):
     create_survey = CreateSurvey.Field()
     update_survey = UpdateSurvey.Field()
     delete_survey = DeleteSurvey.Field()
+    update_survey_default_dimensions = UpdateSurveyDefaultDimensions.Field()
 
     create_survey_language = CreateSurveyLanguage.Field()
     update_form = UpdateForm.Field()

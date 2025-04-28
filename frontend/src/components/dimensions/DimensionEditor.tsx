@@ -257,7 +257,7 @@ export function DimensionEditor({
   );
 
   return (
-    <table className="table table-bordered">
+    <table className="table">
       <thead>
         <tr>
           <th colSpan={2}>{t.attributes.dimensions}</th>

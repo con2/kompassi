@@ -132,6 +132,7 @@ class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
 
     def handle_new_survey(self):
         super().handle_new_survey()
+        self._setup_default_dimensions(self.survey.universe)
         self.survey.set_default_dimension_values(
             self._get_default_dimension_values(self.survey),
             self.survey.universe.preload_dimensions(),

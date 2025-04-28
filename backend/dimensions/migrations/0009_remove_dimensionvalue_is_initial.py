@@ -6,6 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
     dependencies = [
         ("dimensions", "0008_alter_dimension_slug_alter_dimensionvalue_slug"),
+        ("forms", "0039_survey_cached_default_dimensions_and_more"),
     ]
 
     operations = [
