@@ -1013,6 +1013,9 @@ const translations: Translations = {
     ProgramForm: {
       singleTitle: "Ohjelmalomake",
       listTitle: "Ohjelmalomakkeet",
+      programFormForEvent: (eventName: string) => (
+        <>Ohjelmalomake tapahtumalle {eventName}</>
+      ),
       tableFooter: (numForms: number) =>
         `${numForms} ohjelmalomake${numForms === 1 ? "" : "tta"}.`,
       attributes: {
@@ -1053,6 +1056,8 @@ const translations: Translations = {
             cancel: "Peruuta",
           },
         },
+        returnToProgramFormList: (eventName: string) =>
+          `Takaisin tapahtuman ${eventName} ohjelmalomakkeiden listaan`,
       },
     },
 
@@ -1266,6 +1271,15 @@ const translations: Translations = {
       },
       dimensions: "Dimensiot",
       dimension: "Dimensio",
+      dimensionDefaults: {
+        title: "Oletusdimensiot",
+        description: (
+          <>
+            Nämä dimensioiden arvot asetetaan automaattisesti uusille
+            kyselyvastauksille. Teknisten dimensioiden arvoja ei voi muuttaa.
+          </>
+        ),
+      },
       values: "Arvot",
       value: "Arvo",
       sequenceNumber: "Järjestysnumero",
@@ -1398,6 +1412,7 @@ const translations: Translations = {
           cancel: "Peruuta",
         },
       },
+      editDimensions: "Muokkaa dimensioita ja arvoja",
       editDimension: "Muokkaa dimensiota",
       editDimensionValue: "Muokkaa arvoa",
       editSurvey: "Muokkaa",

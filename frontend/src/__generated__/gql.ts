@@ -47,6 +47,7 @@ const documents = {
     "\n  mutation PutProgramDimensionValue($input: PutDimensionValueInput!) {\n    putDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n": types.PutProgramDimensionValueDocument,
     "\n  mutation DeleteProgramDimensionValue($input: DeleteDimensionValueInput!) {\n    deleteDimensionValue(input: $input) {\n      slug\n    }\n  }\n": types.DeleteProgramDimensionValueDocument,
     "\n  query ProgramDimensionsList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        dimensions(publicOnly: false) {\n          ...DimensionRowGroup\n        }\n      }\n    }\n  }\n": types.ProgramDimensionsListDocument,
+    "\n  query DimensionDefaults(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n          cachedDefaultDimensions\n        }\n      }\n    }\n  }\n": types.DimensionDefaultsDocument,
     "\n  mutation UpdateProgramFormLanguage($input: UpdateFormInput!) {\n    updateForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateProgramFormLanguageDocument,
     "\n  mutation DeleteProgramFormLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n": types.DeleteProgramFormLanguageDocument,
     "\n  mutation UpdateFormFieldsMutation($input: UpdateFormFieldsInput!) {\n    updateFormFields(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateFormFieldsMutationDocument,
@@ -84,13 +85,13 @@ const documents = {
     "\n  mutation CreateQuota($input: CreateQuotaInput!) {\n    createQuota(input: $input) {\n      quota {\n        id\n      }\n    }\n  }\n": types.CreateQuotaDocument,
     "\n  fragment QuotaList on FullQuotaType {\n    id\n    title: name\n    countPaid\n    countReserved\n    countAvailable\n    countTotal\n  }\n": types.QuotaListFragmentDoc,
     "\n  query QuotaList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          ...QuotaList\n        }\n      }\n    }\n  }\n": types.QuotaListDocument,
+    "\n  fragment ValueFields on DimensionValueType {\n    slug\n    color\n    isTechnical\n    canRemove\n    title(lang: $locale)\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n  }\n": types.ValueFieldsFragmentDoc,
+    "\n  fragment DimensionRowGroup on FullDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isPublic\n    isKeyDimension\n    isMultiValue\n    isListFilter\n    isShownInDetail\n    isNegativeSelection\n    isTechnical\n    valueOrdering\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n    values {\n      ...ValueFields\n    }\n  }\n": types.DimensionRowGroupFragmentDoc,
+    "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n": types.DimensionsListDocument,
     "\n  mutation PutSurveyDimension($input: PutDimensionInput!) {\n    putDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n": types.PutSurveyDimensionDocument,
     "\n  mutation DeleteSurveyDimension($input: DeleteDimensionInput!) {\n    deleteDimension(input: $input) {\n      slug\n    }\n  }\n": types.DeleteSurveyDimensionDocument,
     "\n  mutation PutSurveyDimensionValue($input: PutDimensionValueInput!) {\n    putDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n": types.PutSurveyDimensionValueDocument,
     "\n  mutation DeleteSurveyDimensionValue($input: DeleteDimensionValueInput!) {\n    deleteDimensionValue(input: $input) {\n      slug\n    }\n  }\n": types.DeleteSurveyDimensionValueDocument,
-    "\n  fragment ValueFields on DimensionValueType {\n    slug\n    color\n    isTechnical\n    canRemove\n    title(lang: $locale)\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n  }\n": types.ValueFieldsFragmentDoc,
-    "\n  fragment DimensionRowGroup on FullDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isPublic\n    isKeyDimension\n    isMultiValue\n    isListFilter\n    isShownInDetail\n    isNegativeSelection\n    isTechnical\n    valueOrdering\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n    values {\n      ...ValueFields\n    }\n  }\n": types.DimensionRowGroupFragmentDoc,
-    "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n": types.DimensionsListDocument,
     "\n  mutation UpdateFormMutation($input: UpdateFormInput!) {\n    updateForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateFormMutationDocument,
     "\n  mutation DeleteSurveyLanguage($input: DeleteSurveyLanguageInput!) {\n    deleteSurveyLanguage(input: $input) {\n      language\n    }\n  }\n": types.DeleteSurveyLanguageDocument,
     "\n  mutation PromoteSurveyFieldToDimension(\n    $input: PromoteFieldToDimensionInput!\n  ) {\n    promoteFieldToDimension(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.PromoteSurveyFieldToDimensionDocument,
@@ -281,6 +282,10 @@ export function graphql(source: "\n  query ProgramDimensionsList($eventSlug: Str
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  query DimensionDefaults(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n          cachedDefaultDimensions\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query DimensionDefaults(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n          cachedDefaultDimensions\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation UpdateProgramFormLanguage($input: UpdateFormInput!) {\n    updateForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateProgramFormLanguage($input: UpdateFormInput!) {\n    updateForm(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -429,6 +434,18 @@ export function graphql(source: "\n  query QuotaList($eventSlug: String!) {\n   
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  fragment ValueFields on DimensionValueType {\n    slug\n    color\n    isTechnical\n    canRemove\n    title(lang: $locale)\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n  }\n"): (typeof documents)["\n  fragment ValueFields on DimensionValueType {\n    slug\n    color\n    isTechnical\n    canRemove\n    title(lang: $locale)\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment DimensionRowGroup on FullDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isPublic\n    isKeyDimension\n    isMultiValue\n    isListFilter\n    isShownInDetail\n    isNegativeSelection\n    isTechnical\n    valueOrdering\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n    values {\n      ...ValueFields\n    }\n  }\n"): (typeof documents)["\n  fragment DimensionRowGroup on FullDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isPublic\n    isKeyDimension\n    isMultiValue\n    isListFilter\n    isShownInDetail\n    isNegativeSelection\n    isTechnical\n    valueOrdering\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n    values {\n      ...ValueFields\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation PutSurveyDimension($input: PutDimensionInput!) {\n    putDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation PutSurveyDimension($input: PutDimensionInput!) {\n    putDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -442,18 +459,6 @@ export function graphql(source: "\n  mutation PutSurveyDimensionValue($input: Pu
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation DeleteSurveyDimensionValue($input: DeleteDimensionValueInput!) {\n    deleteDimensionValue(input: $input) {\n      slug\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteSurveyDimensionValue($input: DeleteDimensionValueInput!) {\n    deleteDimensionValue(input: $input) {\n      slug\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  fragment ValueFields on DimensionValueType {\n    slug\n    color\n    isTechnical\n    canRemove\n    title(lang: $locale)\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n  }\n"): (typeof documents)["\n  fragment ValueFields on DimensionValueType {\n    slug\n    color\n    isTechnical\n    canRemove\n    title(lang: $locale)\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  fragment DimensionRowGroup on FullDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isPublic\n    isKeyDimension\n    isMultiValue\n    isListFilter\n    isShownInDetail\n    isNegativeSelection\n    isTechnical\n    valueOrdering\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n    values {\n      ...ValueFields\n    }\n  }\n"): (typeof documents)["\n  fragment DimensionRowGroup on FullDimensionType {\n    slug\n    canRemove\n    title(lang: $locale)\n    isPublic\n    isKeyDimension\n    isMultiValue\n    isListFilter\n    isShownInDetail\n    isNegativeSelection\n    isTechnical\n    valueOrdering\n    # NOTE SUPPORTED_LANGUAGES\n    titleFi\n    titleEn\n    titleSv\n    values {\n      ...ValueFields\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(source: "\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query DimensionsList(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionRowGroup\n          }\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

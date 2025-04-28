@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import ModalButton from "../../../../components/ModalButton";
 import { createProgramForm } from "./actions";
 import { graphql } from "@/__generated__";
-import { OfferFormFragment, SurveyFragment } from "@/__generated__/graphql";
+import { OfferFormFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import CopyButton from "@/components/CopyButton";
@@ -13,14 +13,8 @@ import { Column, DataTable } from "@/components/DataTable";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import ProgramAdminTabs from "@/components/program/ProgramAdminTabs";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
 import { publicUrl } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
