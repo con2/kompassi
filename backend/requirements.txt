@@ -4,7 +4,7 @@ aiodns==3.2.0
     # via aiohttp
 aiohappyeyeballs==2.4.4
     # via aiohttp
-aiohttp==3.11.11
+aiohttp[speedups]==3.11.11
     # via -r requirements.in
 aiosignal==1.3.2
     # via aiohttp
@@ -26,6 +26,10 @@ asgiref==3.8.1
     #   django-stubs
 asttokens==3.0.0
     # via stack-data
+async-timeout==5.0.1
+    # via
+    #   aiohttp
+    #   redis
 attrs==25.1.0
     # via
     #   aiohttp
@@ -52,7 +56,7 @@ brotli==1.1.0
     # via
     #   aiohttp
     #   fonttools
-celery==5.4.0
+celery==5.5.1
     # via -r requirements.in
 certifi==2025.1.31
     # via
@@ -103,7 +107,7 @@ decorator==5.1.1
     #   ipython
 distlib==0.3.9
     # via virtualenv
-django==5.1.5
+django==4.2.20
     # via
     #   -r requirements.in
     #   crispy-bootstrap3
@@ -152,17 +156,22 @@ email-validator==2.2.0
     # via
     #   fastapi
     #   pydantic
+exceptiongroup==1.2.2
+    # via
+    #   anyio
+    #   ipython
+    #   pytest
 executing==2.2.0
     # via stack-data
-fastapi==0.115.8
+fastapi[standard]==0.115.8
     # via -r requirements.in
-fastapi-cli==0.0.7
+fastapi-cli[standard]==0.0.7
     # via fastapi
 filelock==3.17.0
     # via virtualenv
 flake8==7.1.1
     # via -r requirements.in
-fonttools==4.55.8
+fonttools[woff]==4.55.8
     # via weasyprint
 frozenlist==1.5.0
     # via
@@ -208,11 +217,13 @@ idna==3.10
     #   httpx
     #   requests
     #   yarl
+importlib-metadata==8.6.1
+    # via markdown
 iniconfig==2.0.0
     # via pytest
 ipdb==0.13.13
     # via -r requirements.in
-ipython==8.32.0
+ipython==8.18.1
     # via
     #   -r requirements.in
     #   ipdb
@@ -236,9 +247,9 @@ jwcrypto==1.5.6
     # via django-oauth-toolkit
 jwskate==0.11.1
     # via -r requirements.in
-kombu==5.4.2
+kombu==5.5.2
     # via celery
-lippukala @ git+https://github.com/kcsry/lippukala@fd6f55f499b12062887f6c78ff2c6749df8ba5cc
+lippukala @ git+https://github.com/kcsry/lippukala@v2.0.0
     # via -r requirements.in
 markdown==3.7
     # via -r requirements.in
@@ -268,7 +279,7 @@ packaging==24.2
     # via
     #   gunicorn
     #   pytest
-paikkala @ git+https://github.com/kcsry/paikkala@93b8b98c99f31d4dbc4bfa703afd77d8df7f66d8
+paikkala @ git+https://github.com/kcsry/paikkala@v0.2.0
     # via -r requirements.in
 paramiko==3.5.0
     # via -r requirements.in
@@ -301,7 +312,7 @@ propcache==0.2.1
     # via
     #   aiohttp
     #   yarl
-psycopg==3.2.4
+psycopg[c,pool]==3.2.4
     # via -r requirements.in
 psycopg-c==3.2.4
     # via psycopg
@@ -317,7 +328,7 @@ pycodestyle==2.12.1
     # via flake8
 pycparser==2.22
     # via cffi
-pydantic==2.10.6
+pydantic[email]==2.10.6
     # via
     #   -r requirements.in
     #   fastapi
@@ -420,7 +431,7 @@ starlette==0.45.3
     # via fastapi
 tabulate==0.9.0
     # via -r requirements.in
-tatsu==5.13.1
+tatsu==5.8.3
     # via ics
 text-unidecode==1.3
     # via graphene-django
@@ -430,6 +441,11 @@ tinycss2==1.4.0
     #   weasyprint
 tinyhtml5==2.0.0
     # via weasyprint
+tomli==2.2.1
+    # via
+    #   django-stubs
+    #   ipdb
+    #   pytest
 traitlets==5.14.3
     # via
     #   ipython
@@ -442,30 +458,39 @@ types-pyyaml==6.0.12.20241230
     # via django-stubs
 typing-extensions==4.12.2
     # via
+    #   anyio
+    #   asgiref
     #   binapy
     #   django-stubs
     #   django-stubs-ext
     #   fastapi
     #   graphene
+    #   graphql-core
+    #   ipython
     #   jwcrypto
     #   jwskate
+    #   kombu
+    #   multidict
+    #   psycopg
     #   psycopg-pool
     #   pydantic
     #   pydantic-core
     #   pyright
+    #   referencing
+    #   rich
     #   rich-toolkit
+    #   starlette
     #   typer
-tzdata==2025.1
-    # via
-    #   celery
-    #   kombu
+    #   uvicorn
+tzdata==2025.2
+    # via kombu
 unicodecsv==0.14.1
     # via -r requirements.in
-urllib3==2.3.0
+urllib3==1.26.20
     # via
     #   botocore
     #   requests
-uvicorn==0.34.0
+uvicorn[standard]==0.34.0
     # via
     #   -r requirements.in
     #   fastapi
@@ -501,6 +526,8 @@ xlwt==1.3.0
     # via lippukala
 yarl==1.18.3
     # via aiohttp
+zipp==3.21.0
+    # via importlib-metadata
 zopfli==0.2.3.post1
     # via fonttools
 zxcvbn==4.4.28
