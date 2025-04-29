@@ -6,7 +6,6 @@ import { acceptProgramOffer } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import AutoSubmitForm from "@/components/AutoSubmitForm";
 import DimensionValueSelectionForm, {
   buildDimensionValueSelectionForm,
 } from "@/components/dimensions/DimensionValueSelectionForm";
@@ -17,7 +16,6 @@ import {
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
