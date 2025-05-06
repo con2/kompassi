@@ -324,7 +324,7 @@ class Setup:
                 (
                     "visaohjelma",
                     "Ohjelmanjärjestäjä",
-                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                    "2 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
                 ),
                 (
                     "panelisti",
@@ -333,6 +333,11 @@ class Setup:
                 ),
                 (
                     "piirinvetaja",
+                    "Ohjelmanjärjestäjä",
+                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                ),
+                (
+                    "pajanpitaja",
                     "Ohjelmanjärjestäjä",
                     "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
                 ),
