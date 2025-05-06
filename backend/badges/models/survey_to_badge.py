@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from django.db import models
 
 if TYPE_CHECKING:
+    from forms.models.response import Response
     from labour.models.personnel_class import PersonnelClass
 
 
@@ -25,6 +26,11 @@ class SurveyToBadgeMapping(models.Model):
         related_name="badge_mappings",
     )
     job_title = models.CharField(max_length=255, blank=True, default="")
+    priority = models.IntegerField(default=0, help_text="smallest number is the highest priority")
+    annotations = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        ordering = ("survey", "priority")
 
     def __str__(self):
         return f"{self.survey} -> {self.personnel_class}"
@@ -46,13 +52,13 @@ class SurveyToBadgeMapping(models.Model):
             return self.job_title
         return self.personnel_class.name
 
-    def match(self, person) -> list[tuple[PersonnelClass, str]]:
+    def match(self, person) -> list[tuple[Response, PersonnelClass, str]]:
         if person.user is None:
             return []
 
-        matches = []
+        matches: list[tuple[Response, PersonnelClass, str]] = []
 
-        for response in self.survey.responses.filter(created_by=person.user):
+        for response in self.survey.responses.filter(created_by=person.user).order_by("-created_at"):
             present_pairs = {
                 (dimension_slug, value_slug)
                 for dimension_slug, value_slugs in response.cached_dimensions.items()
@@ -60,6 +66,6 @@ class SurveyToBadgeMapping(models.Model):
             }
 
             if self.required_pairs.issubset(present_pairs):
-                matches.append((self.personnel_class, self.some_job_title))
+                matches.append((response, self.personnel_class, self.some_job_title))
 
         return matches

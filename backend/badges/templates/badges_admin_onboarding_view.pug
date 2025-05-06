@@ -57,15 +57,9 @@ block content
 
             td.title= badge.job_title
             if shirt_type_field
-              if badge.signup_extra
-                td.shirt_type= badge.signup_extra.get_shirt_type_display
-              else
-                td.shirt_type
+              td.shirt_type= badge.shirt_type
             if shirt_size_field
-              if badge.signup_extra
-                td.shirt= badge.signup_extra.get_shirt_size_display
-              else
-                td.shirt
+              td.shirt_size= badge.shirt_size
             if is_perks_column_shown
               td.perks= badge.formatted_perks
 

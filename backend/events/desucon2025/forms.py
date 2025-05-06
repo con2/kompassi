@@ -21,7 +21,7 @@ class SignupExtraForm(forms.ModelForm):
             indented_without_label("night_work"),
             Fieldset(
                 "Lisätiedot",
-                "shirt_size",
+                # "shirt_size",
                 "special_diet",
                 "special_diet_other",
                 "prior_experience",
@@ -33,7 +33,7 @@ class SignupExtraForm(forms.ModelForm):
         model = SignupExtra
         fields = (
             "shift_type",
-            "shirt_size",
+            # "shirt_size",
             "special_diet",
             "special_diet_other",
             "night_work",
@@ -89,7 +89,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.layout = Layout(
             Fieldset(
                 "Lisätiedot",
-                "shirt_size",
+                # "shirt_size",
                 "special_diet",
                 "special_diet_other",
             ),
@@ -98,7 +98,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
-            "shirt_size",
+            # "shirt_size",
             "special_diet",
             "special_diet_other",
         )
@@ -120,7 +120,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
-            "shirt_size",
+            # "shirt_size",
             "special_diet",
             "special_diet_other",
         )
@@ -128,7 +128,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
-            "shirt_size",
+            # "shirt_size",
             "special_diet",
             "special_diet_other",
         )
@@ -167,7 +167,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
             indented_without_label("night_work"),
             Fieldset(
                 "Lisätiedot",
-                "shirt_size",
+                # "shirt_size",
                 "special_diet",
                 "special_diet_other",
                 "prior_experience",
@@ -179,7 +179,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
         model = SignupExtra
         fields = (
             "shift_type",
-            "shirt_size",
+            # "shirt_size",
             "special_diet",
             "special_diet_other",
             "night_work",

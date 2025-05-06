@@ -369,13 +369,13 @@ class Response(models.Model):
         from badges.models.survey_to_badge import SurveyToBadgeMapping
 
         if not SurveyToBadgeMapping.objects.filter(survey=self.survey).exists():
-            return
+            return None, False
 
         user = self.created_by
         if not user or not user.person:
-            return
+            return None, False
 
-        Badge.ensure(self.survey.event, user.person)
+        return Badge.ensure(self.survey.event, user.person)
 
     @staticmethod
     def _reslugify_pair(

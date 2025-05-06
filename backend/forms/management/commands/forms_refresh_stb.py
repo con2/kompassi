@@ -1,8 +1,13 @@
+import logging
+
 from django.core.management.base import BaseCommand
 
 from core.models.event import Event
+from core.utils.log_utils import log_get_or_create
 
 from ...models.response import Response
+
+logger = logging.getLogger("kompassi")
 
 
 class Command(BaseCommand):
@@ -22,7 +27,9 @@ class Command(BaseCommand):
             print(event.slug)
 
             for response in Response.objects.filter(form__event=event):
-                response.ensure_badges()
-                print(".", end="", flush=True)
+                badge, created = response.ensure_badges()
+                if badge:
+                    log_get_or_create(logger, badge, created)
+                    logger.info(badge.perks)
 
             print()

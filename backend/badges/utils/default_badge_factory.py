@@ -1,3 +1,5 @@
+from typing import Any
+
 from core.models.event import Event
 from core.models.person import Person
 
@@ -7,7 +9,7 @@ def get_priority(pair):
     return personnel_class.priority
 
 
-def default_badge_factory(event: Event, person: Person):
+def default_badge_factory(event: Event, person: Person) -> dict[str, Any]:
     """
     Specifies badge options, such as badge template and job title, given an event and a person.
 
@@ -51,10 +53,15 @@ def default_badge_factory(event: Event, person: Person):
     if event.forms_event_meta is not None:
         from ..models.survey_to_badge import SurveyToBadgeMapping
 
-        for survey_mapping in SurveyToBadgeMapping.objects.filter(
-            survey__event=event,
-        ).select_related("personnel_class"):
-            personnel_classes.extend(survey_mapping.match(person))
+        for survey_mapping in (
+            SurveyToBadgeMapping.objects.filter(
+                survey__event=event,
+            )
+            .select_related("personnel_class")
+            .order_by("priority")
+        ):
+            for _response, personnel_class, job_title in survey_mapping.match(person):
+                personnel_classes.append((personnel_class, job_title))
 
     if personnel_classes:
         personnel_classes.sort(key=get_priority)

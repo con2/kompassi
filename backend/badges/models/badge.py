@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from datetime import datetime
+from functools import cached_property
 
 from django.conf import settings
 from django.db import connection, models, transaction
@@ -423,3 +426,35 @@ class Badge(models.Model, CsvExportMixin):
             cursor.execute(ArrivalsRow.QUERY, [event_slug])
             # TODO backfill missing hours
             return [ArrivalsRow(*row) for row in cursor.fetchall()]
+
+    @cached_property
+    def _shirt_size(self):
+        if perks_shirt_size := self.perks.get("shirt_size"):
+            return perks_shirt_size
+        elif self.signup_extra and hasattr(self.signup_extra, "shirt_size"):
+            return self.signup_extra.get_shirt_size_display()
+        else:
+            return "Ei paitaa"
+
+    @property
+    def shirt_size(self):
+        if self._shirt_type == "Ei paitaa" or self._shirt_size == "Ei paitaa":
+            return ""
+
+        return self._shirt_size
+
+    @cached_property
+    def _shirt_type(self):
+        if perks_shirt_type := self.perks.get("shirt_type"):
+            return perks_shirt_type
+        elif self.signup_extra and hasattr(self.signup_extra, "shirt_type"):
+            return self.signup_extra.get_shirt_type_display()
+        else:
+            return "Ei paitaa"
+
+    @property
+    def shirt_type(self):
+        if self._shirt_size == "Ei paitaa":
+            return "Ei paitaa"
+
+        return self._shirt_type

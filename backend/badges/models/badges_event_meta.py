@@ -37,15 +37,16 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
             ("noop", "Noop (no perks)"),
             ("simple", "Simple (perks from personnel class)"),
             ("tracon2024", "Tracon (2024)"),
+            ("desucon2025", "Desucon (2025)"),
         ],
         help_text=_(
-            "The emperkelator defines the perks of a volunteer in the event "
-            "based on their involvement with the event."
+            "The emperkelator defines the perks of a volunteer in the event based on their involvement with the event."
         ),
     )
 
     @property
     def emperkelator(self):
+        from ..emperkelators.desucon2025 import DesumPerkelator
         from ..emperkelators.noop import NoopEmperkelator
         from ..emperkelators.simple import SimpleEmperkelator
         from ..emperkelators.tracon2024 import TraconEmperkelator
@@ -57,6 +58,8 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
                 return SimpleEmperkelator
             case "tracon2024":
                 return TraconEmperkelator
+            case "desucon2025":
+                return DesumPerkelator
             case _:
                 raise NotImplementedError(f"Unknown emperkelator: {self.emperkelator_name}")
 

@@ -126,13 +126,13 @@ class Setup:
                 "Ohjelmanjärjestäjä",
                 "ohjelma",
                 "programme",
-                "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                "Määräytyy ohjelmatyypin perusteella (SINUN EI PITÄISI NÄHDÄ TÄTÄ TEKSTIÄ!)",
             ),
             (
                 "Ohjelmanjärjestäjä (2. lk)",
                 "ohjelma-2lk",
                 "programme",
-                "1 ruokalippu, badge. (Ei paitaa!) Kasauksen ruokalippu pe ennen klo 12.",
+                "Määräytyy ohjelmatyypin perusteella (SINUN EI PITÄISI NÄHDÄ TÄTÄ TEKSTIÄ!)",
             ),
             ("Guest of Honour", "goh", "programme", "Badge"),
             ("Media", "media", "badges", "Badge"),
@@ -259,7 +259,7 @@ class Setup:
             defaults=dict(
                 admin_group=badge_admin_group,
                 real_name_must_be_visible=True,
-                emperkelator_name="simple",
+                emperkelator_name="desucon2025",
             ),
         )
 
@@ -309,14 +309,59 @@ class Setup:
         if survey:
             ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
 
-            SurveyToBadgeMapping.objects.update_or_create(
-                survey=survey,
-                defaults=dict(
-                    personnel_class=ohjelma,
-                    required_dimensions={},
-                    job_title="Ohjelmanjärjestäjä",
+            SurveyToBadgeMapping.objects.filter(required_dimensions={}).delete()
+            for value_slug, job_title, perks in [
+                (
+                    "ohjelmanpitaja",
+                    "Ohjelmanjärjestäjä",
+                    "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
                 ),
-            )
+                (
+                    "muu",
+                    "Ohjelmanjärjestäjä",
+                    "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                ),
+                (
+                    "visaohjelma",
+                    "Ohjelmanjärjestäjä",
+                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                ),
+                (
+                    "panelisti",
+                    "Ohjelmanjärjestäjä",
+                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                ),
+                (
+                    "piirinvetaja",
+                    "Ohjelmanjärjestäjä",
+                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                ),
+                (
+                    "esiintyja",
+                    "Esiintyjä",
+                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                ),
+                (
+                    "tuomari",
+                    "Tuomari",
+                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                ),
+                (
+                    "juontaja",
+                    "Juontaja",
+                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
+                ),
+            ]:
+                SurveyToBadgeMapping.objects.update_or_create(
+                    survey=survey,
+                    required_dimensions={"personnel-class": [value_slug]},
+                    personnel_class=ohjelma,
+                    defaults=dict(
+                        job_title=job_title,
+                        priority=self.get_ordering_number(),
+                        annotations={"desucon2025:formattedPerks": perks},
+                    ),
+                )
 
 
 class Command(BaseCommand):
