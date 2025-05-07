@@ -29,6 +29,7 @@ class ShirtType(Enum):
     DESURITY = "DESURITY", "Desurity"
     DESUTV = "DESUTV", "DesuTV"
 
+    value: str
     label: str
 
     def __new__(cls, value: str, label: str):
@@ -79,23 +80,7 @@ class DesumPerkelator(pydantic.BaseModel):
         shirt_type = ShirtType.STAFF
         shirt_size = "NO_SHIRT"
 
-        # HACK: We know in Desucon Signups (kuutit) confer at least the same or better perks than STB (ohjelma)
-        # So we do not consider STB perks if we have a Signup
-        if signup := badge.signup:
-            shirt_size = signup.signup_extra.shirt_size  # type: ignore
-            if signup.override_formatted_perks:
-                override_formatted_perks = signup.override_formatted_perks
-
-            if badge_shirt_type := JOB_TITLE_MAPPING.get(job_title):
-                shirt_type = badge_shirt_type
-                shirt_method = ShirtMethod.JOB_TITLE
-            else:
-                for jc_name, jc_shirt_type in JOB_CATEGORY_MAPPING.items():
-                    if signup.job_categories_accepted.filter(name=jc_name).exists():
-                        shirt_type = jc_shirt_type
-                        shirt_method = ShirtMethod.JOB_CATEGORY
-                        break
-        else:
+        if badge.personnel_class.slug == "ohjelma":
             for mapping in (
                 SurveyToBadgeMapping.objects.filter(survey__event=badge.event)
                 .select_related("personnel_class")
@@ -109,6 +94,20 @@ class DesumPerkelator(pydantic.BaseModel):
                     shirt_size = "NO_SHIRT" if "shirt_size" in warnings else values["shirt_size"]
                     override_formatted_perks = mapping.annotations.get("desucon2025:formattedPerks", "")
                     break
+        elif (signup := badge.signup) and signup.is_active:
+            shirt_size = signup.signup_extra.shirt_size  # type: ignore
+            if signup.override_formatted_perks:
+                override_formatted_perks = signup.override_formatted_perks
+
+            if badge_shirt_type := JOB_TITLE_MAPPING.get(job_title):
+                shirt_type = badge_shirt_type
+                shirt_method = ShirtMethod.JOB_TITLE
+            else:
+                for jc_name, jc_shirt_type in JOB_CATEGORY_MAPPING.items():
+                    if signup.job_categories_accepted.filter(name=jc_name).exists():
+                        shirt_type = jc_shirt_type
+                        shirt_method = ShirtMethod.JOB_CATEGORY
+                        break
 
         shirt_size = shirt_size or "NO_SHIRT"
         shirt_size = SHIRT_SIZE_BY_SLUG[shirt_size]
