@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from collections import Counter, defaultdict
 from enum import Enum
 from typing import TYPE_CHECKING, Self
 
 import pydantic
 
 from badges.models.survey_to_badge import SurveyToBadgeMapping
+from core.models.event import Event
 from events.desucon2025.models import SHIRT_SIZES
 
 if TYPE_CHECKING:
@@ -37,7 +39,7 @@ class ShirtType(Enum):
 
 
 # Set to True to freeze shirts (other perks still emperkelate normally)
-SHIRT_DEADLINE_PASSED = False
+SHIRT_DEADLINE_PASSED = True
 
 SHIRT_SIZE_BY_SLUG: dict[str, str] = dict(SHIRT_SIZES)
 
@@ -45,7 +47,7 @@ SHIRT_SIZE_BY_SLUG: dict[str, str] = dict(SHIRT_SIZES)
 JOB_TITLE_MAPPING = {
     "Valokuvaus, Kompassi ja Tampere-logistiikka": ShirtType.KUVAAJA,  # that's me!
     "Yövastaava": ShirtType.DESURITY,
-    "DesuTV- Vastaava": ShirtType.DESUTV,
+    "DesuTV-tuottaja": ShirtType.DESUTV,
     "Turvallisuusvastaava": ShirtType.DESURITY,
     "Turvallisuusvastaava II": ShirtType.DESURITY,
 }
@@ -124,3 +126,26 @@ class DesumPerkelator(pydantic.BaseModel):
             shirt_type=shirt_type,
             shirt_method=shirt_method,
         )
+
+    @classmethod
+    def get_shirt_sizes(cls, event: Event) -> list[tuple[str, str, int]]:
+        from ..models.badge import Badge
+
+        # shirt type -> shirt size -> count
+        type_to_size_to_count: defaultdict[str, Counter[str]] = defaultdict(Counter)
+
+        for perks_dict in Badge.objects.filter(
+            personnel_class__event=event,
+            revoked_at__isnull=True,
+        ).values_list("perks", flat=True):
+            perks = cls.model_validate(perks_dict)
+            type_to_size_to_count[perks.shirt_type][perks.shirt_size] += 1
+
+        result: list[tuple[str, str, int]] = []
+        for shirt_type in ShirtType:
+            for shirt_size_slug, shirt_size_display in SHIRT_SIZES:
+                count = type_to_size_to_count[shirt_type.value][shirt_size_display]
+                if count > 0 and shirt_size_slug != "NO_SHIRT":
+                    result.append((shirt_type.value, shirt_size_display, count))
+
+        return result
