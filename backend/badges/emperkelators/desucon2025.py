@@ -40,7 +40,7 @@ class ShirtType(Enum):
 
 
 # Set to True to freeze shirts (other perks still emperkelate normally)
-SHIRT_DEADLINE_PASSED = True
+SHIRT_DEADLINE_PASSED = False
 
 SHIRT_SIZE_BY_SLUG: dict[str, str] = dict(SHIRT_SIZES)
 
