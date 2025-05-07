@@ -265,7 +265,7 @@ class Badge(models.Model, CsvExportMixin):
         """
         Emperkelator = self.meta.emperkelator
         if self.person:
-            perks = Emperkelator.emperkelate(self.event, self.person)
+            perks = Emperkelator.emperkelate(self.event, self.person, self)
             perks_dict = perks.model_dump()
         else:
             perks_dict = self.personnel_class.perks

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from enum import IntEnum
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 from pydantic import BaseModel
 
@@ -7,6 +9,9 @@ from core.models.event import Event
 from core.models.person import Person
 from labour.models.signup import Signup
 from programme.models.programme_role import ProgrammeRole
+
+if TYPE_CHECKING:
+    from ..models.badge import Badge
 
 THIRD_MEAL_MIN_HOURS = 12
 FOURTH_MEAL_MIN_HOURS = 16
@@ -95,6 +100,7 @@ class TraconEmperkelator(BaseModel):
         cls,
         event: Event,
         person: Person,
+        existing_badge: Badge | None = None,
     ) -> Self:
         perks = cls()
         extra_meal_token = cls(meals=1)

@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 from enum import Enum
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 import pydantic
 
@@ -10,6 +12,9 @@ from core.models.person import Person
 from events.desucon2025.models import SHIRT_SIZES
 from labour.models.personnel_class import PersonnelClass
 from labour.models.signup import Signup
+
+if TYPE_CHECKING:
+    from ..models.badge import Badge
 
 
 class ShirtMethod(str, Enum):
@@ -36,11 +41,14 @@ class ShirtType(Enum):
         return obj
 
 
-SHIRT_SIZE_BY_SLUG = dict(SHIRT_SIZES)
+# Set to True to freeze shirts (other perks still emperkelate normally)
+SHIRT_DEADLINE_PASSED = False
+
+SHIRT_SIZE_BY_SLUG: dict[str, str] = dict(SHIRT_SIZES)
 
 # NOTE do not use for those who get badges via STB (generally you should use this only for organizers)
 JOB_TITLE_MAPPING = {
-    "Valokuvaus ja Kompassi": ShirtType.KUVAAJA,  # that's me!
+    "Valokuvaus, Kompassi ja Tampere-logistiikka": ShirtType.KUVAAJA,  # that's me!
     "Yövastaava": ShirtType.DESURITY,
     "DesuTV- Vastaava": ShirtType.DESUTV,
     "Turvallisuusvastaava": ShirtType.DESURITY,
@@ -68,6 +76,7 @@ class DesumPerkelator(pydantic.BaseModel):
         cls,
         event: Event,
         person: Person,
+        existing_badge: Badge | None = None,
     ) -> Self:
         badge_opts = default_badge_factory(event, person)
         personnel_class: PersonnelClass | None = badge_opts.get("personnel_class")  # type: ignore
@@ -113,10 +122,17 @@ class DesumPerkelator(pydantic.BaseModel):
 
         shirt_size = shirt_size or "NO_SHIRT"
         shirt_size = SHIRT_SIZE_BY_SLUG[shirt_size]
+        shirt_type = shirt_type.value
+
+        if SHIRT_DEADLINE_PASSED:
+            old_perks = cls.model_validate(existing_badge.perks) if existing_badge and existing_badge.perks else cls()
+            shirt_size = old_perks.shirt_size
+            shirt_type = old_perks.shirt_type
+            shirt_method = old_perks.shirt_method
 
         return cls(
             override_formatted_perks=override_formatted_perks,
             shirt_size=shirt_size,
-            shirt_type=shirt_type.value,
+            shirt_type=shirt_type,
             shirt_method=shirt_method,
         )
