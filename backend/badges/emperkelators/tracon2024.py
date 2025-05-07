@@ -5,9 +5,6 @@ from typing import TYPE_CHECKING, Self
 
 from pydantic import BaseModel
 
-from core.models.event import Event
-from core.models.person import Person
-from labour.models.signup import Signup
 from programme.models.programme_role import ProgrammeRole
 
 if TYPE_CHECKING:
@@ -96,17 +93,15 @@ class TraconEmperkelator(BaseModel):
         return f"{self.ticket_type}, {meals}, {swag}"
 
     @classmethod
-    def emperkelate(
-        cls,
-        event: Event,
-        person: Person,
-        existing_badge: Badge | None = None,
-    ) -> Self:
+    def emperkelate(cls, badge: Badge) -> Self:
+        if not badge.person:
+            return cls()
+
         perks = cls()
         extra_meal_token = cls(meals=1)
         extra_swag = cls(extra_swag=True)
 
-        signup = Signup.objects.filter(event=event, person=person).first()
+        signup = badge.signup
         if signup:
             if signup.override_formatted_perks:
                 return cls(override_formatted_perks=signup.override_formatted_perks)
@@ -123,7 +118,7 @@ class TraconEmperkelator(BaseModel):
                 if hours >= EXTRA_SWAG_MIN_HOURS:
                     perks.imbibe(extra_swag)
 
-        for programme_role in ProgrammeRole.objects.filter(programme__category__event=event, person=person):
+        for programme_role in ProgrammeRole.objects.filter(programme__category__event=badge.event, person=badge.person):
             programme_perks = cls.model_validate(programme_role.perks)
             perks.imbibe(programme_perks)
 

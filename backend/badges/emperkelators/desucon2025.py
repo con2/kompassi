@@ -6,12 +6,7 @@ from typing import TYPE_CHECKING, Self
 import pydantic
 
 from badges.models.survey_to_badge import SurveyToBadgeMapping
-from badges.utils.default_badge_factory import default_badge_factory
-from core.models.event import Event
-from core.models.person import Person
 from events.desucon2025.models import SHIRT_SIZES
-from labour.models.personnel_class import PersonnelClass
-from labour.models.signup import Signup
 
 if TYPE_CHECKING:
     from ..models.badge import Badge
@@ -72,26 +67,19 @@ class DesumPerkelator(pydantic.BaseModel):
         return self.override_formatted_perks
 
     @classmethod
-    def emperkelate(
-        cls,
-        event: Event,
-        person: Person,
-        existing_badge: Badge | None = None,
-    ) -> Self:
-        badge_opts = default_badge_factory(event, person)
-        personnel_class: PersonnelClass | None = badge_opts.get("personnel_class")  # type: ignore
-        if not personnel_class:
+    def emperkelate(cls, badge: Badge) -> Self:
+        if not badge.person:
             return cls()
 
-        override_formatted_perks = personnel_class.override_formatted_perks
-        job_title: str = badge_opts.get("job_title", "")
+        override_formatted_perks: str = badge.personnel_class.override_formatted_perks
+        job_title: str = badge.job_title
         shirt_method = ShirtMethod.DEFAULT
         shirt_type = ShirtType.STAFF
         shirt_size = "NO_SHIRT"
 
         # HACK: We know in Desucon Signups (kuutit) confer at least the same or better perks than STB (ohjelma)
         # So we do not consider STB perks if we have a Signup
-        if signup := Signup.objects.filter(event=event, person=person).first():
+        if signup := badge.signup:
             shirt_size = signup.signup_extra.shirt_size  # type: ignore
             if signup.override_formatted_perks:
                 override_formatted_perks = signup.override_formatted_perks
@@ -107,11 +95,11 @@ class DesumPerkelator(pydantic.BaseModel):
                         break
         else:
             for mapping in (
-                SurveyToBadgeMapping.objects.filter(survey__event=event)
+                SurveyToBadgeMapping.objects.filter(survey__event=badge.event)
                 .select_related("personnel_class")
                 .order_by("priority")
             ):
-                if matches := mapping.match(person):
+                if matches := mapping.match(badge.person):
                     shirt_type = ShirtType.STAFF
                     shirt_method = ShirtMethod.PROGRAM
                     response, personnel_class, job_title = matches[0]
@@ -125,7 +113,7 @@ class DesumPerkelator(pydantic.BaseModel):
         shirt_type = shirt_type.value
 
         if SHIRT_DEADLINE_PASSED:
-            old_perks = cls.model_validate(existing_badge.perks) if existing_badge and existing_badge.perks else cls()
+            old_perks = cls.model_validate(badge.perks) if badge and badge.perks else cls()
             shirt_size = old_perks.shirt_size
             shirt_type = old_perks.shirt_type
             shirt_method = old_perks.shirt_method

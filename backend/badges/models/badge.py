@@ -248,7 +248,7 @@ class Badge(models.Model, CsvExportMixin):
                 return None, False
 
             badge = cls(person=person, **new_badge_opts)
-            badge.save()
+            badge.save()  # calls reemperkelate
 
             return badge, True
 
@@ -265,7 +265,7 @@ class Badge(models.Model, CsvExportMixin):
         """
         Emperkelator = self.meta.emperkelator
         if self.person:
-            perks = Emperkelator.emperkelate(self.event, self.person, self)
+            perks = Emperkelator.emperkelate(self)
             perks_dict = perks.model_dump()
         else:
             perks_dict = self.personnel_class.perks
