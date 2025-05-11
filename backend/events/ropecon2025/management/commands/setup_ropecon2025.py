@@ -12,6 +12,7 @@ from badges.models import BadgesEventMeta
 from core.models import Event, Organization, Person, Venue
 from forms.models.meta import FormsEventMeta
 from intra.models import IntraEventMeta, Team
+from involvement.models import Registry
 from labour.models import (
     AlternativeSignupForm,
     JobCategory,
@@ -252,11 +253,15 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                default_registry=Registry.objects.get(
+                    scope=self.organization.scope,
+                    slug="volunteers",
+                ),
             ),
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
-        ProgramWorkflow.backfill_default_dimensions(self.event)
+        ProgramWorkflow.backfill(self.event)
 
     def setup_forms(self):
         (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])

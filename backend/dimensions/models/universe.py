@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 APP_CHOICES = [
     ("forms", "Surveys V2"),
     ("program_v2", "Program V2"),
+    ("involvement", "Involvement"),
 ]
 
 
@@ -57,6 +58,12 @@ class Universe(models.Model):
                 return Survey.objects.filter(event=self.scope.event, app="program_v2")
             case _:
                 raise ValueError(f"Unknown app type: {self.app}")
+
+    @property
+    def involvements(self):
+        from involvement.models.involvement import Involvement
+
+        return Involvement.objects.filter(event=self.scope.event)
 
     def preload_dimensions(self, dimension_slugs: Collection[str] | None = None) -> DimensionCache:
         from ..utils.dimension_cache import DimensionCache

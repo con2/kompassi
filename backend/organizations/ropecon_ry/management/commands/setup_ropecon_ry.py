@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 
 from access.models import AccessOrganizationMeta, EmailAliasDomain, EmailAliasType
 from core.models import Organization
+from involvement.models import Registry
 from payments.models.payments_organization_meta import META_DEFAULTS, PaymentsOrganizationMeta
 
 
@@ -13,6 +14,7 @@ class Setup:
         self.setup_core()
         self.setup_payments()
         self.setup_access()
+        self.setup_involvement()
 
     def setup_core(self):
         self.organization, unused = Organization.objects.get_or_create(
@@ -61,10 +63,20 @@ class Setup:
                 ),
             )
 
+    def setup_involvement(self):
+        Registry.objects.get_or_create(
+            scope=self.organization.scope,
+            slug="volunteers",
+            defaults=dict(
+                title_en="Volunteers of Ropecon ry",
+                title_fi="Ropecon ry:n vapaaehtoisrekisteri",
+            ),
+        )
+
 
 class Command(BaseCommand):
     args = ""
-    help = "Setup Tracon ry specific stuff"
+    help = "Setup Ropecon ry specific stuff"
 
     def handle(self, *args, **opts):
         Setup().setup()

@@ -178,6 +178,7 @@ INSTALLED_APPS = (
     # kompassi core apps
     "core",
     "dimensions",
+    "involvement",
     "programme",
     "program_v2",
     "labour",

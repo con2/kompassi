@@ -20,6 +20,7 @@ from core.models.venue import Venue
 from forms.models.meta import FormsEventMeta
 from forms.models.survey import SurveyDTO
 from intra.models import IntraEventMeta, Team
+from involvement.models.registry import Registry
 from labour.models.alternative_signup_forms import AlternativeSignupForm
 from labour.models.info_link import InfoLink
 from labour.models.job_category import JobCategory
@@ -320,11 +321,16 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                default_registry=Registry.objects.get(
+                    scope=self.event.organization.scope,
+                    slug="volunteers",
+                ),
             ),
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
-        ProgramWorkflow.backfill_default_dimensions(self.event)
+        ProgramWorkflow.backfill(self.event)
+        ProgramWorkflow.backfill_involvement(self.event)
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack

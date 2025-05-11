@@ -9,6 +9,7 @@ from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
 from dimensions.models.universe import Universe
 from forms.models.response import Response
+from involvement.models.registry import Registry
 
 
 class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
@@ -29,6 +30,13 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         max_length=255,
         blank=True,
         help_text="URL to the embedded guide. This is used to form program links.",
+    )
+
+    default_registry = models.ForeignKey(
+        Registry,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
     )
 
     use_cbac = True

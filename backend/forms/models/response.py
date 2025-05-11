@@ -273,15 +273,22 @@ class Response(models.Model):
     def get_processed_form_data(
         self,
         fields: Sequence[Field] | None = None,
+        field_slugs: Sequence[str] | None = None,
     ) -> tuple[dict[str, Any], dict[str, list[FieldWarning]]]:
         """
-        If you only need a subset of fields, pass them in as fields.
+        If you only need a subset of fields, pass them in as fields or field_slugs.
         Returns a tuple of (values, warnings).
         """
         from ..utils.process_form_data import process_form_data
 
         if fields is None:
             fields = self.form.validated_fields
+
+        if fields is None:
+            raise AssertionError("This should never happen (appease type checker)")
+
+        if field_slugs is not None:
+            fields = [field for field in fields if field.slug in field_slugs]
 
         return process_form_data(
             fields,  # type: ignore

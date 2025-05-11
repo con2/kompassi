@@ -26,6 +26,7 @@ from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
+from involvement.models.registry import Registry
 
 from ..utils.merge_form_fields import merge_fields
 from .enums import SurveyApp
@@ -53,7 +54,7 @@ APP_CHOICES = [(app.value, app.value) for app in SurveyApp]
 
 
 class Survey(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
+    event: models.ForeignKey[Event] = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     app = models.CharField(
@@ -127,6 +128,14 @@ class Survey(models.Model):
     protect_responses = models.BooleanField(
         default=False,
         help_text=_("If enabled, responses cannot be deleted from the UI without disabling this first."),
+    )
+
+    registry = models.ForeignKey(
+        Registry,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="surveys",
     )
 
     cached_default_dimensions = models.JSONField(blank=True, default=dict)
@@ -275,10 +284,15 @@ class Survey(models.Model):
     def with_mandatory_attributes_for_app(self, app: SurveyApp):
         match app:
             case SurveyApp.PROGRAM_V2:
+                meta = self.event.program_v2_event_meta
+                if meta is None:
+                    raise ValueError(f"Event {self.event} does not have a program v2 event meta")
+
                 self.app = "program_v2"
                 self.login_required = True
                 self.anonymity = Anonymity.NAME_AND_EMAIL
                 self.key_fields = ["title"]
+                self.registry = meta.default_registry
             case SurveyApp.FORMS:
                 self.app = "forms"
                 if self.anonymity == Anonymity.NAME_AND_EMAIL:
@@ -293,6 +307,7 @@ class Survey(models.Model):
         app: SurveyApp,
         anonymity: Anonymity | None = None,
         created_by: AbstractBaseUser | None = None,
+        registry: Registry | None = None,
     ):
         """
         Clones this survey with its language versions and dimensions (but not responses).
@@ -307,6 +322,7 @@ class Survey(models.Model):
             key_fields=self.key_fields,
             protect_responses=self.protect_responses,
             created_by=created_by,
+            registry=self.registry if registry is None else registry,
         ).with_mandatory_attributes_for_app(app)
 
         survey.save()

@@ -4,7 +4,7 @@ import logging
 from collections.abc import Collection, Mapping
 from datetime import tzinfo
 from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Any, Self
 
 from django.conf import settings
 from django.db import models, transaction
@@ -22,6 +22,8 @@ from graphql_api.language import SUPPORTED_LANGUAGES, getattr_message_in_languag
 from .annotations import extract_annotations
 
 if TYPE_CHECKING:
+    from involvement.models.involvement import Involvement
+
     from .meta import ProgramV2EventMeta
     from .program_dimension_value import ProgramDimensionValue
     from .schedule import ScheduleItem
@@ -77,8 +79,16 @@ class Program(models.Model):
         help_text="If this program was created from a program offer, this field will be set to the program offer.",
     )
 
+    # TODO(#665)
+    is_cancelled = False
+
+    @property
+    def is_active(self) -> bool:
+        return not self.is_cancelled
+
     # related fields
     dimensions: models.QuerySet[ProgramDimensionValue]
+    involvements: models.QuerySet[Involvement]
     schedule_items: models.QuerySet[ScheduleItem]
     event_id: int
 
@@ -305,6 +315,7 @@ class Program(models.Model):
         program_offer: Response,
         slug: str = "",
         title: str = "",
+        created_by: Any | None = None,  # User
     ) -> Self:
         """
         Return an unsaved Program instance from a program offer.
@@ -327,7 +338,7 @@ class Program(models.Model):
             title=title,
             description=values.get("description", ""),
             annotations=annotations,
-            created_by=program_offer.created_by,
+            created_by=created_by,
             cached_dimensions={},
             program_offer=program_offer,
         )

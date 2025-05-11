@@ -35,6 +35,10 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             case _:
                 return cls(survey=survey)
 
+    def is_response_active(self, response: Response) -> bool:
+        # The basic survey workflow does not have a concept of active/inactive responses.
+        return True
+
     def handle_new_survey(self):
         """
         Called when a new form is created for a survey using this workflow.
@@ -59,6 +63,8 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         response.lift_dimension_values(cache=cache)
         response.refresh_cached_dimensions()
 
+        self.ensure_involvement(response)
+
         return cache
 
     def handle_new_response_phase2(self, response: Response):
@@ -68,7 +74,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         This is the place to call external services or perform any actions that require the transaction to be committed.
         """
         response.notify_subscribers()
-        response.ensure_badges()
+        self.ensure_badges(response)
 
     def handle_response_dimension_update(self, response: Response):
         """
@@ -76,4 +82,36 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         Called after the transaction that updates the response dimensions is committed.
         Not called for newly created responses.
         """
-        response.ensure_badges()
+        self.ensure_involvement(response)
+        self.ensure_badges(response)
+
+    def ensure_involvement(self, response: Response):
+        """
+        If the response ought to result in Involvement, create it.
+        """
+        from involvement.models.involvement import Involvement
+
+        if not response.survey.registry:
+            return
+
+        Involvement.from_survey_response(
+            response=response,
+            cache=response.event.involvement_universe.preload_dimensions(),
+        )
+
+    def ensure_badges(self, response: Response):
+        """
+        Invoke Survey to Badge (STB) for new responses.
+        See https://outline.con2.fi/doc/survey-to-badge-stb-mxK1UW6hAn
+        """
+        from badges.models.badge import Badge
+        from badges.models.survey_to_badge import SurveyToBadgeMapping
+
+        if not SurveyToBadgeMapping.objects.filter(survey=response.survey).exists():
+            return None, False
+
+        user = response.created_by
+        if not user or not user.person:
+            return None, False
+
+        return Badge.ensure(response.survey.event, user.person)

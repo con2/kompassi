@@ -9,6 +9,7 @@ from django.utils.timezone import now
 from core.models import Event, Organization, Venue
 from core.utils import full_hours_between
 from intra.models import IntraEventMeta, Team
+from involvement.models.registry import Registry
 from labour.models import (
     AlternativeSignupForm,
     JobCategory,
@@ -439,15 +440,27 @@ class Setup:
 
     def setup_program_v2(self):
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
+
+        # TODO(Shumicon): Define your volunteer registry
+        registry, _created = Registry.objects.get_or_create(
+            scope=self.organization.scope,
+            slug="volunteers",
+            defaults=dict(
+                title_fi="Pääkaupunkiseudun Cosplay ry:n vapaaehtoisrekisteri",
+                title_en="Volunteers of Pääkaupunkiseudun Cosplay ry",
+            ),
+        )
+
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                default_registry=registry,
             ),
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
-        ProgramWorkflow.backfill_default_dimensions(self.event)
+        ProgramWorkflow.backfill(self.event)
 
     def setup_tickets_v2(self):
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])

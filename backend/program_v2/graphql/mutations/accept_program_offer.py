@@ -1,5 +1,6 @@
 import graphene
 from django.db import transaction
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance, graphql_check_model
@@ -8,6 +9,7 @@ from dimensions.utils.process_dimensions_form import process_dimensions_form
 from forms.models.field import Field, FieldType
 from forms.models.response import Response
 from forms.utils.process_form_data import process_form_data
+from involvement.models.involvement import Involvement
 
 from ...models.program import Program
 from ..program_full import FullProgramType
@@ -46,6 +48,7 @@ class AcceptProgramOffer(graphene.Mutation):
         """
         Turns a program offer into a program.
         """
+        request: HttpRequest = info.context
         form_data: dict[str, str] = input.form_data  # type: ignore
 
         program_offer = Response.objects.get(
@@ -93,8 +96,15 @@ class AcceptProgramOffer(graphene.Mutation):
             program_offer,
             slug=values["slug"],
             title=values.get("title", ""),
+            created_by=request.user,
         )
         program.set_dimension_values(dimension_values, cache=cache)
         program.refresh_cached_fields()
+
+        Involvement.from_accepted_program_offer(
+            program_offer,
+            program,
+            cache=event.involvement_universe.preload_dimensions(),
+        )
 
         return AcceptProgramOffer(program=program)  # type: ignore

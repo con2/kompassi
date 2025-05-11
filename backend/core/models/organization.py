@@ -90,6 +90,7 @@ class Organization(models.Model):
 
         return Scope.objects.get_or_create(
             organization=self,
+            event=None,
             defaults=dict(
                 slug=self.slug,
                 name=self.name,

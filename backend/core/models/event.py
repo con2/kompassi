@@ -230,6 +230,12 @@ class Event(models.Model):
 
         return ProgramWorkflow.get_program_universe(self)
 
+    @cached_property
+    def involvement_universe(self) -> Universe:
+        from involvement.models.involvement import Involvement
+
+        return Involvement.get_universe(self)
+
     @classmethod
     def get_or_create_dummy(cls, name="Dummy event"):
         # TODO not the best place for this, encap. see also admin command core_update_maysendinfo

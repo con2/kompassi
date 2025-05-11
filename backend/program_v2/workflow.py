@@ -11,6 +11,7 @@ from forms.models.response import Response
 from forms.models.survey import Survey
 from forms.models.workflow import Workflow
 from graphql_api.language import SUPPORTED_LANGUAGE_CODES
+from involvement.models.involvement import Involvement
 
 from .models.program import Program
 
@@ -139,9 +140,13 @@ class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
         )
 
     @classmethod
-    def backfill_default_dimensions(cls, event: Event) -> None:
+    def backfill(cls, event: Event):
+        cls.backfill_default_dimensions(event)
+        cls.backfill_involvement(event)
+
+    @classmethod
+    def backfill_default_dimensions(cls, event: Event):
         """
-        Backfills the default dimensions for the progr.am offer workflow.
         Use this method to migrate events that had Program V2 initialized
         before April 2025.
         """
@@ -185,6 +190,48 @@ class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
                 program.set_dimension_values(values_to_set, cache)
 
         Program.refresh_cached_dimensions_qs(Program.objects.filter(event=event))
+
+    @classmethod
+    def backfill_involvement(cls, event: Event):
+        """
+        Use this method to migrate events that had Program V2 initialized
+        before May 2025.
+        """
+        logger.info("Backfilling involvement for event %s", event.slug)
+
+        meta = event.program_v2_event_meta
+        if meta is None:
+            raise ValueError("Event has no program_v2_event_meta")
+
+        if not meta.default_registry:
+            raise ValueError("Event has no default registry for program_v2")
+
+        Survey.objects.filter(
+            event=event,
+            app="program_v2",
+            registry=None,
+        ).update(
+            registry=meta.default_registry,
+        )
+
+        cache = event.involvement_universe.preload_dimensions()
+
+        for program_offer in Response.objects.filter(
+            form__event=event,
+            form__survey__app="program_v2",
+        ):
+            program_offer.survey.workflow.ensure_involvement(program_offer, cache=cache)
+
+        for program in Program.objects.filter(event=event):
+            if program.program_offer:
+                Involvement.from_accepted_program_offer(
+                    program_offer=program.program_offer,
+                    program=program,
+                    cache=cache,
+                )
+
+            # TODO(#305) Handle other program hosts
+            # TODO(#664) Handle programs that are not created from program offers)
 
     def handle_form_update(self):
         """
@@ -296,3 +343,6 @@ class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
             is_list_filter=True,
             is_technical=True,
         )
+
+    def is_response_active(self, response: Response) -> bool:
+        return not bool(set(response.cached_dimensions.get("state", [])).intersection({"cancelled", "rejected"}))
