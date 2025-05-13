@@ -55,7 +55,7 @@ class UpdateResponseDimensions(graphene.Mutation):
 
         with transaction.atomic():
             response.set_dimension_values(values, cache=cache)
-            response.refresh_cached_dimensions()
+            response.refresh_cached_fields()
 
         survey.workflow.handle_response_dimension_update(response)
 

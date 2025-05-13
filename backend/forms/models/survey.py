@@ -383,6 +383,18 @@ class Survey(models.Model):
         self.cached_default_dimensions = self._build_cached_default_dimensions()
         self.save(update_fields=["cached_default_dimensions"])
 
+    @classmethod
+    def refresh_cached_default_dimensions_qs(
+        cls,
+        surveys: models.QuerySet[Survey],
+        batch_size: int = 100,
+    ):
+        bulk_update = []
+        for survey in surveys:
+            survey.cached_default_dimensions = survey._build_cached_default_dimensions()
+            bulk_update.append(survey)
+        Survey.objects.bulk_update(bulk_update, ["cached_default_dimensions"], batch_size=batch_size)
+
 
 @dataclass
 class SurveyDTO:

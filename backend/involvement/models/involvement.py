@@ -288,7 +288,6 @@ class Involvement(models.Model):
                 is_active=program.is_active,
             ),
         )
-        involvement.save()
 
         involvement.set_dimension_values(dict(app=[app.value]), cache=cache)
         involvement.refresh_cached_dimensions()

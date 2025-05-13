@@ -126,4 +126,4 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
             )
 
     Response.objects.bulk_update(bulk_update, ["form_data"])
-    Response.refresh_cached_dimensions_qs(Response.objects.filter(form__in=forms))
+    Response.refresh_cached_fields_qs(Response.objects.filter(form__in=forms))

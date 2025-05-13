@@ -64,6 +64,10 @@ class Response(models.Model):
         default=dict,
         help_text="dimension slug -> list of value slugs",
     )
+    cached_key_fields = models.JSONField(
+        default=dict,
+        help_text="key field slug -> value as in values",
+    )
 
     # related fields
     dimensions: models.QuerySet[ResponseDimensionValue]
@@ -117,6 +121,20 @@ class Response(models.Model):
             for attachment_url in urls:
                 yield Attachment(presigned_url=attachment_url, field_slug=field.slug)
 
+    def _build_cached_key_fields(self, fields: list[Field] | None = None) -> dict[str, Any]:
+        if fields is None:
+            fields = self.form.validated_fields
+
+        if fields is None:
+            raise AssertionError("This should never happen (appease type checker)")
+
+        values, warnings = self.get_processed_form_data(fields, field_slugs=self.survey.key_fields)
+        return {
+            field_slug: field_value
+            for field_slug, field_value in values.items()
+            if field_slug in self.survey.key_fields and field_slug not in warnings and field_value is not None
+        }
+
     def _build_cached_dimensions(self) -> dict[str, list[str]]:
         """
         Used by ..handlers/dimension.py to populate cached_dimensions
@@ -129,7 +147,11 @@ class Response(models.Model):
 
     @classmethod
     @transaction.atomic
-    def refresh_cached_dimensions_qs(cls, responses: models.QuerySet[Response]):
+    def refresh_cached_fields_qs(
+        cls,
+        responses: models.QuerySet[Response],
+        batch_size: int = 100,
+    ):
         bulk_update = []
         for response in (
             responses.select_for_update(of=("self",))
@@ -144,12 +166,14 @@ class Response(models.Model):
             )
         ):
             response.cached_dimensions = response._build_cached_dimensions()
+            response.cached_key_fields = response._build_cached_key_fields()
             bulk_update.append(response)
-        cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
+        cls.objects.bulk_update(bulk_update, ["cached_dimensions", "cached_key_fields"], batch_size=batch_size)
 
-    def refresh_cached_dimensions(self):
+    def refresh_cached_fields(self):
         self.cached_dimensions = self._build_cached_dimensions()
-        self.save(update_fields=["cached_dimensions"])
+        self.cached_key_fields = self._build_cached_key_fields()
+        self.save(update_fields=["cached_dimensions", "cached_key_fields"])
 
     def lift_dimension_values(self, *, dimension_slugs: list[str] | None = None, cache: DimensionCache):
         """
@@ -366,23 +390,6 @@ class Response(models.Model):
         ]
 
         send_mass_mail(mailbag)  # type: ignore
-
-    def ensure_badges(self):
-        """
-        Invoke Survey to Badge (STB) for new responses.
-        See https://outline.con2.fi/doc/survey-to-badge-stb-mxK1UW6hAn
-        """
-        from badges.models.badge import Badge
-        from badges.models.survey_to_badge import SurveyToBadgeMapping
-
-        if not SurveyToBadgeMapping.objects.filter(survey=self.survey).exists():
-            return None, False
-
-        user = self.created_by
-        if not user or not user.person:
-            return None, False
-
-        return Badge.ensure(self.survey.event, user.person)
 
     @staticmethod
     def _reslugify_pair(

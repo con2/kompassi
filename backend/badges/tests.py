@@ -436,7 +436,7 @@ def test_survey_to_badge():
 
     with transaction.atomic():
         response.set_dimension_values({"status": ["accepted"]}, cache=survey.universe.preload_dimensions())
-        response.refresh_cached_dimensions()
+        response.refresh_cached_fields()
     survey.workflow.handle_response_dimension_update(response)
 
     badge = Badge.objects.filter(person=person, personnel_class__event=event).get()

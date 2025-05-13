@@ -17,15 +17,11 @@ class LimitedResponseType(DjangoObjectType):
         info,
         key_fields_only: bool = False,
     ):
-        fields = response.form.validated_fields
-
         if key_fields_only:
-            survey = response.form.survey
-            key_fields = survey.key_fields if survey else []
-            fields = [field for field in fields if field.slug in key_fields]
-
-        # TODO discards warnings :(
-        return response.get_processed_form_data(fields)[0]
+            return response.cached_key_fields
+        else:
+            # TODO discards warnings :(
+            return response.get_processed_form_data()[0]
 
     values = graphene.Field(
         GenericScalar,

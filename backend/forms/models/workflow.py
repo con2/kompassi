@@ -1,5 +1,7 @@
 import pydantic
 
+from dimensions.utils.dimension_cache import DimensionCache
+
 from .response import Response
 from .survey import Survey, SurveyApp
 
@@ -61,9 +63,12 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         cache = self.survey.universe.preload_dimensions()
         response.set_dimension_values(self.survey.cached_default_dimensions, cache=cache)
         response.lift_dimension_values(cache=cache)
-        response.refresh_cached_dimensions()
+        response.refresh_cached_fields()
 
-        self.ensure_involvement(response)
+        self.ensure_involvement(
+            response,
+            cache=response.event.involvement_universe.preload_dimensions(),
+        )
 
         return cache
 
@@ -82,10 +87,13 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         Called after the transaction that updates the response dimensions is committed.
         Not called for newly created responses.
         """
-        self.ensure_involvement(response)
+        self.ensure_involvement(
+            response,
+            cache=response.event.involvement_universe.preload_dimensions(),
+        )
         self.ensure_badges(response)
 
-    def ensure_involvement(self, response: Response):
+    def ensure_involvement(self, response: Response, cache: DimensionCache):
         """
         If the response ought to result in Involvement, create it.
         """
@@ -96,7 +104,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
 
         Involvement.from_survey_response(
             response=response,
-            cache=response.event.involvement_universe.preload_dimensions(),
+            cache=cache,
         )
 
     def ensure_badges(self, response: Response):

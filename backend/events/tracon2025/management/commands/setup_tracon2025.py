@@ -330,7 +330,6 @@ class Setup:
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
         ProgramWorkflow.backfill(self.event)
-        ProgramWorkflow.backfill_involvement(self.event)
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack

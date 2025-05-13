@@ -90,7 +90,7 @@ class AcceptProgramOffer(graphene.Mutation):
             state=["accepted"],
         )
         program_offer.set_dimension_values(dimension_values, cache=cache)
-        program_offer.refresh_cached_dimensions()
+        program_offer.refresh_cached_fields()
 
         program = Program.from_program_offer(
             program_offer,

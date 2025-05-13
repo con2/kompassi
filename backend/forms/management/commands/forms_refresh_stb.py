@@ -27,7 +27,7 @@ class Command(BaseCommand):
             print(event.slug)
 
             for response in Response.objects.filter(form__event=event):
-                badge, created = response.ensure_badges()
+                badge, created = response.survey.workflow.ensure_badges(response)
                 if badge:
                     log_get_or_create(logger, badge, created)
                     logger.info(badge.perks)

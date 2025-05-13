@@ -82,7 +82,7 @@ class Command(BaseCommand):
                 (("access_create_internal_aliases",), dict()),
                 (("access_create_missing_cbac_entries",), dict()),
                 (("access_prune_expired_cbac_entries",), dict()),
-                (("forms_refresh_enriched_fields",), dict()),
+                (("forms_refresh_cached_fields",), dict()),
                 (("clearsessions",), dict()),
             )
         )
