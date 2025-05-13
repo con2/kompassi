@@ -180,7 +180,7 @@ class Response(models.Model):
         Lifts the values of dimensions from form data into proper dimension values.
         This makes sense only for responses that are related to a survey.
 
-        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
+        NOTE: Caller must call refresh_cached_fields() or refresh_cached_fields_qs()
         afterwards to update the cached_dimensions field.
 
         :param dimension_slugs: If provided, only these dimensions will be lifted.

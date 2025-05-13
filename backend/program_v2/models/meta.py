@@ -52,9 +52,24 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
 
     @property
     def program_offers(self):
-        return Response.objects.filter(
-            form__event=self.event,
-            form__survey__app="program_v2",
+        """
+        NOTE Optimized for frontend/src/app/[locale]/[eventSlug]/program-offers/page.tsx
+        """
+        return (
+            Response.objects.filter(
+                form__event=self.event,
+                form__survey__app="program_v2",
+            )
+            .select_related(
+                "form",
+                "form__event",
+                "form__survey",
+                "form__survey__event",
+                "created_by",
+            )
+            .prefetch_related(
+                "programs",
+            )
         )
 
     @property
