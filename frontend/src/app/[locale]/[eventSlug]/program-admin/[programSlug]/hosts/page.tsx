@@ -21,6 +21,7 @@ graphql(`
     nick
     email
     phoneNumber
+    discordHandle
   }
 `);
 
@@ -113,6 +114,10 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
       title: profileT.attributes.phoneNumber.title,
     },
     {
+      slug: "discordHandle",
+      title: profileT.attributes.discordHandle.title,
+    },
+    {
       slug: "actions",
       title: "",
       className: "text-end",
@@ -144,28 +149,33 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
       program={program}
       translations={translations}
       active={"programHosts"}
-      actions={
-        <ModalButton
-          className="btn btn-outline-primary"
-          label={t.actions.inviteProgramHost.title + "…"}
-          title={t.actions.inviteProgramHost.title}
-          messages={t.actions.inviteProgramHost.modalActions}
-          action={inviteProgramHost.bind(null, locale, eventSlug, programSlug)}
-          disabled
-        >
-          <p>{t.actions.inviteProgramHost.message}</p>
-          {/* <SchemaForm
-            fields={inviteProgramHostFields}
-            messages={translations.SchemaForm}
-          /> */}
-        </ModalButton>
-      }
     >
       <DataTable rows={programHosts} columns={columns}>
         <tfoot>
           <tr>
-            <td colSpan={columns.length}>
+            <td colSpan={columns.length - 1}>
               {t.attributes.count(programHosts.length)}
+            </td>
+            <td className="text-end">
+              <ModalButton
+                className="btn btn-outline-primary btn-sm"
+                label={t.actions.inviteProgramHost.title + "…"}
+                title={t.actions.inviteProgramHost.title}
+                messages={t.actions.inviteProgramHost.modalActions}
+                action={inviteProgramHost.bind(
+                  null,
+                  locale,
+                  eventSlug,
+                  programSlug,
+                )}
+                disabled
+              >
+                <p>{t.actions.inviteProgramHost.message}</p>
+                {/* <SchemaForm
+            fields={inviteProgramHostFields}
+            messages={translations.SchemaForm}
+          /> */}
+              </ModalButton>
             </td>
           </tr>
         </tfoot>

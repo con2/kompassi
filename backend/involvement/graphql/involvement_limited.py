@@ -45,3 +45,9 @@ class LimitedInvolvementType(graphene_django.DjangoObjectType):
         return involvement.person.nick
 
     nick = graphene.NonNull(graphene.String)
+
+    @staticmethod
+    def resolve_discord_handle(involvement: Involvement, info) -> str:
+        return involvement.person.discord_handle
+
+    discord_handle = graphene.NonNull(graphene.String)

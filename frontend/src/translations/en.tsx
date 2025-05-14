@@ -42,6 +42,9 @@ const translations = {
       email: {
         title: "Email",
       },
+      discordHandle: {
+        title: "Discord handle",
+      },
     },
     keysView: {
       title: "Encryption keys",

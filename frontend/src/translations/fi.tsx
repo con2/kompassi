@@ -27,8 +27,23 @@ const translations: Translations = {
       displayName: {
         title: "Nimi",
       },
+      firstName: {
+        title: "Etunimi",
+      },
+      lastName: {
+        title: "Sukunimi",
+      },
+      nick: {
+        title: "Nick",
+      },
+      phoneNumber: {
+        title: "Puhelinnumero",
+      },
       email: {
         title: "Sähköpostiosoite",
+      },
+      discordHandle: {
+        title: "Discord-tunnus",
       },
     },
     keysView: {
@@ -947,6 +962,9 @@ const translations: Translations = {
         message:
           "Tämä ohjelmanumero on luotu seuraavan ohjelmatarjouksen perusteella:",
       },
+      programHosts: {
+        title: "Ohjelmanjärjestäjät",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -1134,6 +1152,46 @@ const translations: Translations = {
     ProgramHost: {
       singleTitle: "Ohjelmanpitäjä",
       listTitle: "Ohjelmanpitäjät",
+      attributes: {
+        count: (numHosts: number) =>
+          numHosts === 1 ? (
+            <>Yksi ohjelmanjärjestäjä.</>
+          ) : (
+            <>{numHosts} ohjelmanjärjestäjää.</>
+          ),
+      },
+      actions: {
+        inviteProgramHost: {
+          title: "Kutsu ohjelmanjärjestäjä",
+          message: (
+            <>
+              Kutsu ohjelmanjärjestäjä syöttämällä hänen sähköpostiosoitteensa
+              alla olevaan kenttään. Hänelle lähetetään kutsulinkin sisältävä
+              sähköpostiviesti. Kutsun hyväksyminen edellyttää käyttäjätunnusta.
+            </>
+          ),
+          modalActions: {
+            submit: "Lähetä kutsu",
+            cancel: "Peruuta",
+          },
+        },
+        removeProgramHost: {
+          title: "Poista ohjelmanjärjestäjä",
+          label: "Poista",
+          message: (
+            <>
+              Haluatko varmasti poistaa ohjelmanjärjestäjän ohjelmanumerosta?
+              Poiston peruminen edellyttää kutsun lähettämistä uudelleen.
+              Ohjelmanjärjestäjälle ei lähetetä ilmoitusta siitä, että hänet on
+              poistettu ohjelmanumerosta.
+            </>
+          ),
+          modalActions: {
+            submit: "Poista ohjelmanjärjestäjä",
+            cancel: "Sulje poistamatta",
+          },
+        },
+      },
     },
 
     ScheduleItem: {

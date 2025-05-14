@@ -16,6 +16,7 @@ const mutation = graphql(`
 `);
 
 export async function updateProgramDimensions(
+  locale: string,
   eventSlug: string,
   programSlug: string,
   formData: FormData,
@@ -29,5 +30,7 @@ export async function updateProgramDimensions(
     mutation,
     variables: { input },
   });
-  revalidatePath(`/${eventSlug}/program-admin/${programSlug}/dimensions`);
+  revalidatePath(
+    `/${locale}/${eventSlug}/program-admin/${programSlug}/dimensions`,
+  );
 }

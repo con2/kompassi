@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import Card from "react-bootstrap/Card";
@@ -8,7 +9,9 @@ import { updateProgramDimensions } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
-import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
+import DimensionValueSelectionForm, {
+  buildDimensionValueSelectionForm,
+} from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
@@ -72,6 +75,7 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;
+  const surveyT = translations.Survey;
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, programSlug, locale },
@@ -99,18 +103,27 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
     >
       <Card>
         <CardBody>
-          <AutoSubmitForm
-            action={updateProgramDimensions.bind(null, eventSlug, programSlug)}
-          >
-            <SchemaForm
-              fields={fields}
-              values={values}
-              messages={translations.SchemaForm}
-            />
-            <noscript>
-              <SubmitButton>{translations.Common.submit}</SubmitButton>
-            </noscript>
-          </AutoSubmitForm>
+          <DimensionValueSelectionForm
+            dimensions={dimensions}
+            cachedDimensions={program.cachedDimensions}
+            onChange={updateProgramDimensions.bind(
+              null,
+              locale,
+              eventSlug,
+              programSlug,
+            )}
+            translations={translations}
+            technicalDimensions="readonly"
+          />
+          <p className="form-text mb-0">
+            <Link
+              className="link-subtle"
+              href={`/${locale}/${eventSlug}/program-dimensions`}
+              target="_blank"
+            >
+              {surveyT.actions.editDimensions}…
+            </Link>
+          </p>
         </CardBody>
       </Card>
     </ProgramAdminDetailView>

@@ -37,14 +37,7 @@ const translations: Translations = {
     },
   },
   Profile: {
-    attributes: {
-      displayName: {
-        title: "Namn",
-      },
-      email: {
-        title: "E-postadress",
-      },
-    },
+    attributes: UNTRANSLATED(en.Profile.attributes),
     keysView: UNTRANSLATED({
       title: "Encryption keys",
       description:
@@ -829,6 +822,7 @@ const translations: Translations = {
         title: "Programerbjudande",
         message: "Det här programmet har skapats från ett programerbjudande:",
       },
+      programHosts: UNTRANSLATED(en.Program.attributes.programHosts),
     },
     actions: {
       returnToProgramList: (eventName: string) =>
