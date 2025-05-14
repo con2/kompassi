@@ -4,7 +4,10 @@ import ProgramAdminDetailTabs, {
   ProgramAdminTab,
 } from "./ProgramAdminDetailTabs";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import type { Translations } from "@/translations/en";
 
 interface Event {
@@ -23,6 +26,7 @@ interface Props {
   translations: Translations;
   active: ProgramAdminTab;
   children?: ReactNode;
+  actions?: ReactNode;
 }
 
 export default function ProgramAdminDetailView({
@@ -31,6 +35,7 @@ export default function ProgramAdminDetailView({
   translations,
   active,
   children,
+  actions,
 }: Props) {
   const t = translations.Program;
 
@@ -40,10 +45,13 @@ export default function ProgramAdminDetailView({
         &lt; {t.actions.returnToProgramAdminList(event.name)}
       </Link>
 
-      <ViewHeading>
-        {program.title}
-        <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
+      <ViewHeadingActionsWrapper>
+        <ViewHeading>
+          {program.title}
+          <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
+        </ViewHeading>
+        <ViewHeadingActions>{actions}</ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <ProgramAdminDetailTabs
         eventSlug={event.slug}

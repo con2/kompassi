@@ -53,19 +53,19 @@ class Involvement(models.Model):
     This may mean eg. that they are volunteering, organizing program etc.
     """
 
-    universe = models.ForeignKey(
+    universe: models.ForeignKey[Universe] = models.ForeignKey(
         Universe,
         on_delete=models.CASCADE,
         related_name="involvements",
     )
 
-    person = models.ForeignKey(
+    person: models.ForeignKey[Person] = models.ForeignKey(
         Person,
         on_delete=models.CASCADE,
         related_name="involvements",
     )
 
-    registry = models.ForeignKey(
+    registry: models.ForeignKey[Registry] = models.ForeignKey(
         Registry,
         on_delete=models.CASCADE,
         related_name="involvements",

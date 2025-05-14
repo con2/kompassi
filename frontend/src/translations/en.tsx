@@ -1,3 +1,4 @@
+import { title } from "process";
 import { JSX, ReactNode } from "react";
 
 const translations = {
@@ -25,6 +26,18 @@ const translations = {
     attributes: {
       displayName: {
         title: "Name",
+      },
+      firstName: {
+        title: "First name",
+      },
+      lastName: {
+        title: "Last name",
+      },
+      nick: {
+        title: "Nickname",
+      },
+      phoneNumber: {
+        title: "Phone number",
       },
       email: {
         title: "Email",
@@ -960,6 +973,9 @@ const translations = {
         message:
           "This program item was created based on the following program offer:",
       },
+      programHosts: {
+        title: "Program hosts",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -1147,6 +1163,45 @@ const translations = {
     ProgramHost: {
       singleTitle: "Program host",
       listTitle: "Program hosts",
+      attributes: {
+        count: (numHosts: number) =>
+          numHosts === 1 ? (
+            <>One program host.</>
+          ) : (
+            <>{numHosts} program hosts.</>
+          ),
+      },
+      actions: {
+        inviteProgramHost: {
+          title: "Invite program host",
+          message: (
+            <>
+              To invite a program host, please enter their email address below.
+              An email will be sent to them with a link to accept the
+              invitation. They will need a user account to do so.
+            </>
+          ),
+          modalActions: {
+            submit: "Invite",
+            cancel: "Cancel",
+          },
+        },
+        removeProgramHost: {
+          title: "Remove program host",
+          label: "Remove",
+          message: (
+            <>
+              Are you sure you want to remove this program host from the program
+              item? To reverse this action, you will need to invite them again.
+              They will not be notified of this action.
+            </>
+          ),
+          modalActions: {
+            submit: "Remove program host",
+            cancel: "Close without removing",
+          },
+        },
+      },
     },
 
     ScheduleItem: {

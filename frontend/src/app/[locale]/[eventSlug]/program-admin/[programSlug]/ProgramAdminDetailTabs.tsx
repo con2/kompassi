@@ -39,7 +39,6 @@ export default function ProgramAdminDetailTabs({
       slug: "programHosts",
       title: t.adminDetailTabs.programHosts,
       href: `/${eventSlug}/program-admin/${programSlug}/hosts`,
-      disabled: true,
     },
     {
       slug: "dimensions",

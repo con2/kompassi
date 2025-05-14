@@ -3,6 +3,7 @@ from graphene.types.generic import GenericScalar
 
 from core.utils.text_utils import normalize_whitespace
 from forms.graphql.response_limited import LimitedResponseType
+from involvement.graphql.involvement_limited import LimitedInvolvementType
 
 from ..models import Program
 from ..models.annotations import ANNOTATIONS
@@ -81,6 +82,12 @@ class FullProgramType(LimitedProgramType):
     program_offer = graphene.Field(
         LimitedResponseType,
     )
+
+    @staticmethod
+    def resolve_program_hosts(program: Program, info):
+        return program.involvements.filter(is_active=True, program=program).select_related("person")
+
+    program_hosts = graphene.NonNull(graphene.List(graphene.NonNull(LimitedInvolvementType)))
 
     class Meta:
         model = Program
