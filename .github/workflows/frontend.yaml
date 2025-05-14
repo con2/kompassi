@@ -72,7 +72,7 @@ jobs:
           name: build-json
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
@@ -90,7 +90,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
       - run: npm ci
         working-directory: frontend
-      - run: npx ts-node manifest.ts
+      - run: npx tsx manifest.ts
         working-directory: frontend/kubernetes
         env:
           ENV: staging
@@ -109,7 +109,7 @@ jobs:
           name: build-json
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
@@ -127,7 +127,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
       - run: npm ci
         working-directory: frontend
-      - run: npx ts-node manifest.ts
+      - run: npx tsx manifest.ts
         working-directory: frontend/kubernetes
         env:
           ENV: production

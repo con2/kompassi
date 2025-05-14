@@ -14,7 +14,7 @@ Assuming you have an [ingress controller set up](https://outline.con2.fi/doc/ing
 
 For staging and production, deployment is done in two steps using Skaffold:
 
-    cd kubernetes && ENV=staging npx ts-node manifest.ts && cd -
+    cd kubernetes && ENV=staging npx tsx manifest.ts && cd -
     skaffold build --file-output build.json
     skaffold deploy -n kompassi2-staging -a build.json
 
