@@ -24,6 +24,15 @@ const translations: Translations = {
   },
   Profile: {
     attributes: {
+      displayName: "Nimi",
+      firstName: "Etunimi",
+      lastName: "Sukunimi",
+      nick: "Nick",
+      phoneNumber: "Puhelinnumero",
+      email: "Sähköpostiosoite",
+      discordHandle: "Discord-tunnus",
+    },
+    advancedAttributes: {
       displayName: {
         title: "Nimi",
       },

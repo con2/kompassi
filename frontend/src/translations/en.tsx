@@ -24,6 +24,15 @@ const translations = {
   },
   Profile: {
     attributes: {
+      displayName: "Name",
+      firstName: "First name",
+      lastName: "Last name",
+      nick: "Nickname",
+      phoneNumber: "Phone number",
+      email: "Email",
+      discordHandle: "Discord handle",
+    },
+    advancedAttributes: {
       displayName: {
         title: "Name",
       },

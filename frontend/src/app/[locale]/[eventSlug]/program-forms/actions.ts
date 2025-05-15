@@ -17,10 +17,11 @@ const createProgramFormMutation = graphql(`
 
 export async function createProgramForm(eventSlug: string, formData: FormData) {
   const surveySlug = formData.get("slug")!.toString();
+  const purpose = formData.get("purpose")!.toString();
 
   await getClient().mutate({
     mutation: createProgramFormMutation,
-    variables: { input: { eventSlug, surveySlug } },
+    variables: { input: { eventSlug, surveySlug, purpose } },
   });
 
   revalidatePath(`/${eventSlug}/program-forms`);

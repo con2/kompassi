@@ -94,32 +94,32 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
   const columns: Column<ProgramAdminDetailHostFragment>[] = [
     {
       slug: "lastName",
-      title: profileT.attributes.lastName.title,
+      title: profileT.advancedAttributes.lastName.title,
       getCellContents: (row) => row.person.lastName,
     },
     {
       slug: "firstName",
-      title: profileT.attributes.firstName.title,
+      title: profileT.advancedAttributes.firstName.title,
       getCellContents: (row) => row.person.firstName,
     },
     {
       slug: "nick",
-      title: profileT.attributes.nick.title,
+      title: profileT.advancedAttributes.nick.title,
       getCellContents: (row) => row.person.nick,
     },
     {
       slug: "email",
-      title: profileT.attributes.email.title,
+      title: profileT.advancedAttributes.email.title,
       getCellContents: (row) => row.person.email,
     },
     {
       slug: "phoneNumber",
-      title: profileT.attributes.phoneNumber.title,
+      title: profileT.advancedAttributes.phoneNumber.title,
       getCellContents: (row) => row.person.phoneNumber,
     },
     {
       slug: "discordHandle",
-      title: profileT.attributes.discordHandle.title,
+      title: profileT.advancedAttributes.discordHandle.title,
       getCellContents: (row) => row.person.discordHandle,
     },
     {

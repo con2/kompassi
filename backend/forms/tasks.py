@@ -8,4 +8,4 @@ def response_notify_subscribers(response_id: UUID):
     from .models.response import Response
 
     response = Response.objects.get(id=response_id)
-    response._notify_subscribers()
+    response.survey.workflow._notify_subscribers(response)

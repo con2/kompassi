@@ -9,7 +9,6 @@ from dimensions.utils.process_dimensions_form import process_dimensions_form
 from forms.models.field import Field, FieldType
 from forms.models.response import Response
 from forms.utils.process_form_data import process_form_data
-from involvement.models.involvement import Involvement
 
 from ...models.program import Program
 from ..program_full import FullProgramType
@@ -77,34 +76,16 @@ class AcceptProgramOffer(graphene.Mutation):
         if warnings:
             raise ValueError(warnings)
 
-        cache = event.program_universe.preload_dimensions()
-
-        dimension_values = dict(program_offer.cached_dimensions)
-        dimension_values.update(
-            process_dimensions_form(
-                list(event.program_universe.dimensions.filter(is_technical=False)),
-                form_data,
-            )
+        dimension_values = process_dimensions_form(
+            list(event.program_universe.dimensions.filter(is_technical=False)),
+            form_data,
         )
-        dimension_values.update(
-            state=["accepted"],
-        )
-        program_offer.set_dimension_values(dimension_values, cache=cache)
-        program_offer.refresh_cached_fields()
-
         program = Program.from_program_offer(
             program_offer,
-            slug=values["slug"],
+            slug=values.get("slug", ""),
             title=values.get("title", ""),
             created_by=request.user,
-        )
-        program.set_dimension_values(dimension_values, cache=cache)
-        program.refresh_cached_fields()
-
-        Involvement.from_accepted_program_offer(
-            program_offer,
-            program,
-            cache=event.involvement_universe.preload_dimensions(),
+            dimension_values=dimension_values,
         )
 
         return AcceptProgramOffer(program=program)  # type: ignore

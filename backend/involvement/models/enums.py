@@ -4,6 +4,7 @@ from enum import Enum
 
 
 class InvolvementApp(Enum):
+    # NOTE: use dashes in app names (URL slugs)
     FORMS = "forms", "Surveys V2"
     PROGRAM = "program", "Program V2"
 

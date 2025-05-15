@@ -316,10 +316,22 @@ class Program(models.Model):
         slug: str = "",
         title: str = "",
         created_by: Any | None = None,  # User
+        dimension_values: Mapping[str, Collection[str]] | None = None,
     ) -> Self:
         """
-        Return an unsaved Program instance from a program offer.
+        Accept a program offer and return the new Program instance.
         """
+        event = program_offer.event
+        cache = event.program_universe.preload_dimensions()
+
+        combined_dimension_values: Mapping[str, Collection[str]] = dict(program_offer.survey.cached_default_dimensions)
+        combined_dimension_values.update(program_offer.cached_dimensions)
+        if dimension_values is not None:
+            combined_dimension_values.update(dimension_values)
+        combined_dimension_values.update(
+            state=["accepted"],
+        )
+
         values, warnings = program_offer.get_processed_form_data()
         if warnings:
             logger.warning("Program offer %s had form data warnings: %s", program_offer.id, warnings)
@@ -342,8 +354,18 @@ class Program(models.Model):
             cached_dimensions={},
             program_offer=program_offer,
         )
-
         program.full_clean()
         program.save()
+        program.set_dimension_values(combined_dimension_values, cache=cache)
+        program.refresh_cached_fields()
+
+        program_offer.set_dimension_values(program.cached_dimensions, cache=cache)
+        program_offer.refresh_cached_fields()
+
+        Involvement.from_accepted_program_offer(
+            program_offer,
+            program,
+            cache=event.involvement_universe.preload_dimensions(),
+        )
 
         return program

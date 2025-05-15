@@ -1,10 +1,17 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
+from django.db import transaction
 
 from core.models.event import Event
+from core.models.person import Person
+from forms.models.enums import SurveyApp, SurveyPurpose
+from forms.models.form import Form
+from forms.models.response import Response
+from forms.models.survey import Survey
 
 from .filters import ProgramFilters
+from .models.meta import ProgramV2EventMeta
 from .models.program import Program
 from .models.schedule import ScheduleItem
 
@@ -30,3 +37,79 @@ def test_program_filters():
 
     assert updated_after_t1.filter_schedule_items(event.schedule_items.all()).count() == 1
     assert updated_after_t2.filter_schedule_items(event.schedule_items.all()).count() == 0
+
+
+@pytest.mark.django_db
+def test_program_hosts():
+    meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
+
+    offer_program = Survey(
+        event=event,
+        slug="offer-program",
+    ).with_mandatory_attributes_for_app(SurveyApp.PROGRAM_V2, SurveyPurpose.DEFAULT)
+    offer_program.save()
+    offer_program.workflow.handle_new_survey()
+
+    offer_program_en = Form(
+        event=event,
+        survey=offer_program,
+        language="en",
+        fields=[
+            dict(
+                slug="title",
+                title="Title",
+                type="SingleLineText",
+                required=True,
+            ),
+            dict(
+                slug="description",
+                title="Description",
+                type="MultiLineText",
+                required=True,
+            ),
+        ],
+    )
+    offer_program_en.save()
+    offer_program.workflow.handle_form_update()
+
+    accept_invitation = Survey(
+        event=event,
+        slug="accept-program-invitation",
+    ).with_mandatory_attributes_for_app(SurveyApp.PROGRAM_V2, SurveyPurpose.ACCEPT_INVITATION)
+    accept_invitation.save()
+    accept_invitation.workflow.handle_new_survey()
+
+    accept_invitation_en = Form(
+        event=event,
+        survey=accept_invitation,
+        language="en",
+        fields=[],
+    )
+    accept_invitation_en.save()
+    accept_invitation.workflow.handle_form_update()
+
+    person, _ = Person.get_or_create_dummy()
+    person2, _ = Person.get_or_create_dummy(another=True, superuser=False)
+
+    # Step 1: Offer program
+    with transaction.atomic():
+        response = Response.objects.create(
+            form=offer_program_en,
+            form_data={
+                "title": "Test program",
+                "description": "Test description",
+            },
+            created_by=person.user,
+            ip_address="127.0.0.1",
+            sequence_number=offer_program.get_next_sequence_number(),
+        )
+        offer_program.workflow.handle_new_response_phase1(response)
+    offer_program.workflow.handle_new_response_phase2(response)
+
+    (involvement,) = meta.program_offerers.all()
+    assert involvement.person == person
+    assert involvement.program is None
+    assert involvement.response == response
+
+    # Step 2: Accept program invitation

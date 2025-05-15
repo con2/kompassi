@@ -93,17 +93,17 @@ export default async function ProgramAdminDetailPage({
   const columns: Column<ProgramAdminHostFragment>[] = [
     {
       slug: "lastName",
-      title: profileT.attributes.lastName.title,
+      title: profileT.advancedAttributes.lastName.title,
       getCellContents: (row) => row.person.lastName,
     },
     {
       slug: "firstName",
-      title: profileT.attributes.firstName.title,
+      title: profileT.advancedAttributes.firstName.title,
       getCellContents: (row) => row.person.firstName,
     },
     {
       slug: "nick",
-      title: profileT.attributes.nick.title,
+      title: profileT.advancedAttributes.nick.title,
       getCellContents: (row) => row.person.nick,
     },
     {

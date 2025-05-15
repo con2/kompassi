@@ -67,6 +67,7 @@ class Command(BaseCommand):
             # must come before other setup_* commands because they may emit event log entries
             (("setup_event_log_v2",), dict()),
             (("setup_core",), dict()),
+            (("setup_involvement",), dict()),
             (("setup_labour_common_qualifications",), dict()),
             (("setup_api_v2",), dict()),
             (("setup_access",), dict()),

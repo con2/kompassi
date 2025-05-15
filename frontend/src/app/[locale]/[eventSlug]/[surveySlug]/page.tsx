@@ -158,12 +158,12 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
       {
         slug: "displayName",
         type: "SingleLineText",
-        title: translations.Profile.attributes.displayName.title,
+        title: translations.Profile.advancedAttributes.displayName.title,
       },
       {
         slug: "email",
         type: "SingleLineText",
-        title: translations.Profile.attributes.email.title,
+        title: translations.Profile.advancedAttributes.email.title,
       },
     ];
   }
