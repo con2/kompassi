@@ -43,7 +43,6 @@ export default function ProgramAdminTabs({
       slug: "programHosts",
       title: t.ProgramHost.listTitle,
       href: `/${eventSlug}/program-hosts${queryString}`,
-      disabled: true,
     },
     {
       slug: "dimensions",

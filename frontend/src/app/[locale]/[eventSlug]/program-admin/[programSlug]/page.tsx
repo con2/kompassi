@@ -6,12 +6,12 @@ import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 
 import { updateProgramBasicInfo } from "./actions";
-import ProgramAdminDetailView from "./ProgramAdminDetailView";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
+import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 

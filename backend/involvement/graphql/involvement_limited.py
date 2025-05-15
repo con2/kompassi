@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import graphene
 import graphene_django
 
+from core.graphql.person_limited import LimitedPersonType
 from involvement.models.involvement import Involvement
 
 
@@ -11,43 +14,7 @@ class LimitedInvolvementType(graphene_django.DjangoObjectType):
 
     class Meta:
         model = Involvement
-        fields = ("id", "is_active", "created_at", "updated_at")
+        fields = ("id", "is_active", "created_at", "updated_at", "person")
         description = "Limited program host type. Used for the program host field in the program list."
 
-    # TODO a cleaner way to delegate to Person?
-
-    @staticmethod
-    def resolve_first_name(involvement: Involvement, info) -> str:
-        return involvement.person.first_name
-
-    first_name = graphene.NonNull(graphene.String)
-
-    @staticmethod
-    def resolve_last_name(involvement: Involvement, info) -> str:
-        return involvement.person.surname
-
-    last_name = graphene.NonNull(graphene.String)
-
-    @staticmethod
-    def resolve_email(involvement: Involvement, info) -> str:
-        return involvement.person.email
-
-    email = graphene.NonNull(graphene.String)
-
-    @staticmethod
-    def resolve_phone_number(involvement: Involvement, info) -> str:
-        return involvement.person.normalized_phone_number
-
-    phone_number = graphene.NonNull(graphene.String)
-
-    @staticmethod
-    def resolve_nick(involvement: Involvement, info) -> str:
-        return involvement.person.nick
-
-    nick = graphene.NonNull(graphene.String)
-
-    @staticmethod
-    def resolve_discord_handle(involvement: Involvement, info) -> str:
-        return involvement.person.discord_handle
-
-    discord_handle = graphene.NonNull(graphene.String)
+    person = graphene.NonNull(LimitedPersonType)

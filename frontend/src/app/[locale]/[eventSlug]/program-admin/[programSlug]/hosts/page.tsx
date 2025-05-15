@@ -1,32 +1,31 @@
 import { notFound } from "next/navigation";
 
-import ProgramAdminDetailView from "../ProgramAdminDetailView";
 import { inviteProgramHost, removeProgramHost } from "./actions";
 import { graphql } from "@/__generated__";
 import { ProgramAdminDetailHostFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { Column, DataTable } from "@/components/DataTable";
 import ModalButton from "@/components/ModalButton";
+import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
-
-// TODO(Japsu) Deterministic order of dimensions & values
-// See https://con2.slack.com/archives/C3ZGNGY48/p1718446605681339
 
 graphql(`
   fragment ProgramAdminDetailHost on LimitedInvolvementType {
     id
-    firstName
-    lastName
-    nick
-    email
-    phoneNumber
-    discordHandle
+    person {
+      firstName
+      lastName
+      nick
+      email
+      phoneNumber
+      discordHandle
+    }
   }
 `);
 
 const query = graphql(`
-  query ProgramAdminDetailHostsQuery(
+  query ProgramAdminDetailHosts(
     $eventSlug: String!
     $programSlug: String! # $locale: String
   ) {
@@ -96,26 +95,32 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
     {
       slug: "lastName",
       title: profileT.attributes.lastName.title,
+      getCellContents: (row) => row.person.lastName,
     },
     {
       slug: "firstName",
       title: profileT.attributes.firstName.title,
+      getCellContents: (row) => row.person.firstName,
     },
     {
       slug: "nick",
       title: profileT.attributes.nick.title,
+      getCellContents: (row) => row.person.nick,
     },
     {
       slug: "email",
       title: profileT.attributes.email.title,
+      getCellContents: (row) => row.person.email,
     },
     {
       slug: "phoneNumber",
       title: profileT.attributes.phoneNumber.title,
+      getCellContents: (row) => row.person.phoneNumber,
     },
     {
       slug: "discordHandle",
       title: profileT.attributes.discordHandle.title,
+      getCellContents: (row) => row.person.discordHandle,
     },
     {
       slug: "actions",

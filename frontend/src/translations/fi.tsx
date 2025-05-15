@@ -963,7 +963,7 @@ const translations: Translations = {
           "Tämä ohjelmanumero on luotu seuraavan ohjelmatarjouksen perusteella:",
       },
       programHosts: {
-        title: "Ohjelmanjärjestäjät",
+        title: "Ohjelmanpitäjät",
       },
     },
     actions: {
@@ -998,7 +998,7 @@ const translations: Translations = {
         feedback: {
           title: "Palaute",
           helpText:
-            "Mitä pidit ohjelmanumerosta? Olethan rakentava ja empaattinen ohjelmanjärjestäjää kohtaan :) Palautteesi toimitetaan ohjelmanumeron järjestäjälle.",
+            "Mitä pidit ohjelmanumerosta? Olethan rakentava ja empaattinen ohjelmanpitäjää kohtaan :) Palautteesi toimitetaan ohjelmanumeron järjestäjälle.",
         },
         kissa: {
           title: "Mikä eläin sanoo miau?",
@@ -1023,7 +1023,7 @@ const translations: Translations = {
     adminDetailTabs: {
       basicInfo: "Perustiedot",
       scheduleItems: "Aikataulutus",
-      programHosts: "Ohjelmanjärjestäjät",
+      programHosts: "Ohjelmanpitäjät",
       dimensions: "Dimensiot",
       annotations: "Lisätiedot",
     },
@@ -1155,18 +1155,19 @@ const translations: Translations = {
       attributes: {
         count: (numHosts: number) =>
           numHosts === 1 ? (
-            <>Yksi ohjelmanjärjestäjä.</>
+            <>Yksi ohjelmanpitäjä.</>
           ) : (
-            <>{numHosts} ohjelmanjärjestäjää.</>
+            <>{numHosts} ohjelmanpitäjää.</>
           ),
+        programItems: "Ohjelmanumerot",
       },
       actions: {
         inviteProgramHost: {
-          title: "Kutsu ohjelmanjärjestäjä",
+          title: "Kutsu ohjelmanpitäjä",
           message: (
             <>
-              Kutsu ohjelmanjärjestäjä syöttämällä hänen sähköpostiosoitteensa
-              alla olevaan kenttään. Hänelle lähetetään kutsulinkin sisältävä
+              Kutsu ohjelmanpitäjä syöttämällä hänen sähköpostiosoitteensa alla
+              olevaan kenttään. Hänelle lähetetään kutsulinkin sisältävä
               sähköpostiviesti. Kutsun hyväksyminen edellyttää käyttäjätunnusta.
             </>
           ),
@@ -1176,18 +1177,18 @@ const translations: Translations = {
           },
         },
         removeProgramHost: {
-          title: "Poista ohjelmanjärjestäjä",
+          title: "Poista ohjelmanpitäjä",
           label: "Poista",
           message: (
             <>
-              Haluatko varmasti poistaa ohjelmanjärjestäjän ohjelmanumerosta?
+              Haluatko varmasti poistaa ohjelmanpitäjän ohjelmanumerosta?
               Poiston peruminen edellyttää kutsun lähettämistä uudelleen.
-              Ohjelmanjärjestäjälle ei lähetetä ilmoitusta siitä, että hänet on
+              Ohjelmanpitäjälle ei lähetetä ilmoitusta siitä, että hänet on
               poistettu ohjelmanumerosta.
             </>
           ),
           modalActions: {
-            submit: "Poista ohjelmanjärjestäjä",
+            submit: "Poista ohjelmanpitäjä",
             cancel: "Sulje poistamatta",
           },
         },

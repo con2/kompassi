@@ -24,6 +24,7 @@ from ..models.annotations import ANNOTATIONS
 from ..models.meta import ProgramV2ProfileMeta
 from .annotations import AnnotationSchemoidType
 from .program_full import FullProgramType
+from .program_host_full import FullProgramHostType, ProgramHost
 from .schedule_item_full import FullScheduleItemType
 
 
@@ -235,6 +236,18 @@ class ProgramV2EventMetaType(DjangoObjectType):
         FullDimensionType,
         description=normalize_whitespace(resolve_state_dimension.__doc__ or ""),
     )
+
+    @staticmethod
+    def resolve_program_hosts(
+        meta: ProgramV2EventMeta,
+        info,
+        # filters: list[DimensionFilterInput] | None = None,
+    ):
+        graphql_check_model(Event, meta.event.scope, info, app="program_v2", field="program_hosts")
+
+        return ProgramHost.from_event(meta)
+
+    program_hosts = graphene.NonNull(graphene.List(graphene.NonNull(FullProgramHostType)))
 
 
 class ProfileProgramInclude(graphene.Enum):

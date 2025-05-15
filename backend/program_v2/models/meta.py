@@ -5,10 +5,12 @@ from django.conf import settings
 from django.db import models
 
 from core.models.contact_email_mixin import ContactEmailMixin, contact_email_validator
+from core.models.event import Event
 from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
 from dimensions.models.universe import Universe
 from forms.models.response import Response
+from involvement.models.involvement import Involvement, InvolvementApp
 from involvement.models.registry import Registry
 
 
@@ -41,6 +43,8 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
 
     use_cbac = True
 
+    event: models.ForeignKey[Event]
+
     def __str__(self):
         return str(self.event)
 
@@ -69,6 +73,26 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
             )
             .prefetch_related(
                 "programs",
+            )
+        )
+
+    @property
+    def program_hosts(self):
+        return (
+            Involvement.objects.filter(
+                universe=self.event.involvement_universe,
+                is_active=True,
+                app_name=InvolvementApp.PROGRAM.value,
+                program__isnull=False,
+            )
+            .select_related(
+                "person",
+                "program",
+            )
+            .order_by(
+                "person__surname",
+                "person__first_name",
+                "program__cached_first_start_time",
             )
         )
 

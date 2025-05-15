@@ -4,17 +4,14 @@ import { notFound } from "next/navigation";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 
-import ProgramAdminDetailView from "../ProgramAdminDetailView";
 import { updateProgramDimensions } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import AutoSubmitForm from "@/components/AutoSubmitForm";
 import DimensionValueSelectionForm, {
   buildDimensionValueSelectionForm,
 } from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
-import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
+import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 

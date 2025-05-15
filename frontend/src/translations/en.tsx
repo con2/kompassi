@@ -1173,6 +1173,7 @@ const translations = {
           ) : (
             <>{numHosts} program hosts.</>
           ),
+        programItems: "Program items",
       },
       actions: {
         inviteProgramHost: {
