@@ -12,6 +12,7 @@ from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
+from forms.models.survey import SurveyPurpose
 
 from .enums import InvolvementApp
 
@@ -19,11 +20,11 @@ if TYPE_CHECKING:
     from forms.models.response import Response
     from program_v2.models.program import Program
 
+    from .invitation import Invitation
     from .involvement_dimension_value import InvolvementDimensionValue
 
 from .registry import Registry
 
-APP_CHOICES = [(app.value, app.label) for app in InvolvementApp]
 DIMENSIONS = [
     DimensionDTO(
         slug="app",
@@ -73,7 +74,7 @@ class Involvement(models.Model):
     )
 
     # turn these into subject_int_id and subject_uuid if there are very many
-    program: models.ForeignKey[Program] = models.ForeignKey(
+    program: models.ForeignKey[Program | None] = models.ForeignKey(
         "program_v2.Program",
         on_delete=models.CASCADE,
         related_name="involvements",
@@ -81,7 +82,7 @@ class Involvement(models.Model):
         blank=True,
         db_index=False,
     )
-    response: models.ForeignKey[Response] = models.ForeignKey(
+    response: models.ForeignKey[Response | None] = models.ForeignKey(
         "forms.Response",
         on_delete=models.CASCADE,
         related_name="involvements",
@@ -96,8 +97,8 @@ class Involvement(models.Model):
     is_active = models.BooleanField(default=True)
 
     app_name = models.CharField(
-        choices=APP_CHOICES,
-        max_length=max(len(k) for (k, _) in APP_CHOICES),
+        choices=[(app.value, app.label) for app in InvolvementApp],
+        max_length=max(len(app.value) for app in InvolvementApp),
     )
 
     cached_dimensions = models.JSONField(
@@ -291,5 +292,51 @@ class Involvement(models.Model):
 
         involvement.set_dimension_values(dict(app=[app.value]), cache=cache)
         involvement.refresh_cached_dimensions()
+
+        return involvement
+
+    @classmethod
+    def from_accepted_invitation(
+        cls,
+        invitation: Invitation,
+        response: Response,
+        cache: DimensionCache,
+    ):
+        """
+        Used to accept program host invitations.
+        In the future perhaps also other types of Invitations.
+        """
+        if cache.universe.app != "involvement":
+            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
+
+        if response.survey.purpose != SurveyPurpose.ACCEPT_INVITATION:
+            raise ValueError(f"Expected response to be an invitation response, got {response.survey.purpose!r}")
+
+        app = InvolvementApp.from_app_name(response.survey.app)
+
+        with transaction.atomic():
+            involvement, created = cls.objects.get_or_create(
+                universe=cache.universe,
+                person=response.created_by.person,
+                program=invitation.program,
+                app_name=app.value,
+                defaults=dict(
+                    response=response,
+                    registry=response.survey.registry,
+                    is_active=response.survey.workflow.is_response_active(response),
+                ),
+            )
+
+            if not created:
+                raise ValueError(
+                    f"Involvement already exists for person {response.created_by.person} and program {invitation.program}"
+                )
+
+            involvement.set_dimension_values(dict(app=[app.value]), cache=cache)
+            involvement.refresh_cached_dimensions()
+
+            invitation.used_at = response.created_at
+            invitation.involvement = involvement
+            invitation.save(update_fields=["used_at", "involvement"])
 
         return involvement

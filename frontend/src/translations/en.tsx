@@ -24,6 +24,15 @@ const translations = {
   },
   Profile: {
     attributes: {
+      displayName: "Name",
+      firstName: "First name",
+      lastName: "Last name",
+      nick: "Nickname",
+      phoneNumber: "Phone number",
+      email: "Email",
+      discordHandle: "Discord handle",
+    },
+    advancedAttributes: {
       displayName: {
         title: "Name",
       },
@@ -1317,6 +1326,8 @@ const translations = {
             SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your user profile will not be shared with the survey owner.",
             NAME_AND_EMAIL:
               "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses.",
+            FULL_PROFILE:
+              "If you answer this survey while logged in, it will be connected to your user account. Your full profile will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         thirdPerson: {
@@ -1326,6 +1337,8 @@ const translations = {
             SOFT: "If the user answer this survey while logged in, their response will be connected to their user account, so that they can return to view or edit their responses, but their identities will not be shared with you.",
             NAME_AND_EMAIL:
               "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses.",
+            FULL_PROFILE:
+              "If you answer this survey while logged in, it will be connected to your user account. Your full profile will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         admin: {

@@ -226,9 +226,9 @@ class Event(models.Model):
         The Universe for Dimensions that are attached to program items.
         NOTE: Must return the same as ProgramV2EventMeta.universe.
         """
-        from program_v2.workflow import ProgramWorkflow
+        from program_v2.workflows.program_offer import ProgramOfferWorkflow
 
-        return ProgramWorkflow.get_program_universe(self)
+        return ProgramOfferWorkflow.get_program_universe(self)
 
     @cached_property
     def involvement_universe(self) -> Universe:

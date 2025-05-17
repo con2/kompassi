@@ -1,4 +1,4 @@
-from functools import cached_property
+from functools import cache, cached_property
 
 from django.db import models
 
@@ -31,6 +31,16 @@ class Scope(models.Model):
 
     def __str__(self):
         return self.slug
+
+    @classmethod
+    @cache
+    def get_root_scope(cls):
+        return cls.objects.get_or_create(
+            slug="kompassi",
+            defaults=dict(
+                name="Kompassi",
+            ),
+        )[0]
 
     def save(self, *args, **kwargs):
         if self.organization is None and self.event is not None:

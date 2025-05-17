@@ -231,7 +231,30 @@ export default async function ProgramFormsPage({
       required: true,
       ...t.attributes.slug,
     },
+    {
+      slug: "purpose",
+      type: "SingleSelect",
+      presentation: "dropdown",
+      required: true,
+      title: "Käyttötarkoitus",
+      helpText:
+        "Ohjelmalomakkeita voidaan käyttää eri käyttötarkoituksiin, kuten ohjelmatarjousten keräämiseen tai ohjelmanpitäjäkutsujen hyväksymiseen. Valitse tässä luotavan lomakkeen käyttötarkoitus.",
+      choices: [
+        {
+          slug: "DEFAULT",
+          title: "Ohjelmatarjouksen lähettäminen",
+        },
+        {
+          slug: "ACCEPT_INVITATION",
+          title: "Ohjelmanpitäjäkutsun hyväksyminen",
+        },
+      ],
+    },
   ];
+
+  const createOfferFormDefaults = {
+    purpose: "DEFAULT",
+  };
 
   return (
     <ProgramAdminView
@@ -249,6 +272,7 @@ export default async function ProgramFormsPage({
         >
           <SchemaForm
             fields={createOfferFormFields}
+            values={createOfferFormDefaults}
             messages={translations.SchemaForm}
           />
         </ModalButton>
