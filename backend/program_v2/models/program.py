@@ -18,12 +18,11 @@ from dimensions.models.scope import Scope
 from dimensions.utils.dimension_cache import DimensionCache
 from forms.models.response import Response
 from graphql_api.language import SUPPORTED_LANGUAGES, getattr_message_in_language
+from involvement.models.involvement import Involvement
 
 from .annotations import extract_annotations
 
 if TYPE_CHECKING:
-    from involvement.models.involvement import Involvement
-
     from .meta import ProgramV2EventMeta
     from .program_dimension_value import ProgramDimensionValue
     from .schedule import ScheduleItem

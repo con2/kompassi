@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
+import { SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 
 const createProgramFormMutation = graphql(`
@@ -17,7 +18,7 @@ const createProgramFormMutation = graphql(`
 
 export async function createProgramForm(eventSlug: string, formData: FormData) {
   const surveySlug = formData.get("slug")!.toString();
-  const purpose = formData.get("purpose")!.toString();
+  const purpose = formData.get("purpose")!.toString() as SurveyPurpose;
 
   await getClient().mutate({
     mutation: createProgramFormMutation,

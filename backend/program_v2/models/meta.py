@@ -79,7 +79,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
             Response.objects.filter(
                 form__event=self.event,
                 form__survey__app="program_v2",
-                form__survey__role_slug="DEFAULT",
+                form__survey__purpose_slug="DEFAULT",
             )
             .select_related(
                 "form",

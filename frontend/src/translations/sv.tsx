@@ -927,6 +927,8 @@ const translations: Translations = {
             SOFT: "Om du svarar på den här enkäten medan du är inloggad kommer den att kopplas till ditt användarkonto, så att du kan återvända för att se eller redigera dina svar, men din identitet kommer inte att delas med enkätägaren.",
             NAME_AND_EMAIL:
               "Om du svarar på den här enkäten medan du är inloggad kommer den att kopplas till ditt användarkonto. Ditt namn och e-postadress kommer att delas med enkätägaren. Du kan återvända för att se eller redigera dina svar.",
+            FULL_PROFILE:
+              "Om du svarar på den här enkäten medan du är inloggad kommer den att kopplas till ditt användarkonto. Din fullständiga profilinformation kommer att delas med enkätägaren. Du kan återvända för att se eller redigera dina svar.",
           },
         },
         thirdPerson: {
@@ -936,6 +938,8 @@ const translations: Translations = {
             SOFT: "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto, så att de kan återvända för att se eller redigera sina svar, men deras identiteter kommer inte att delas med dig.",
             NAME_AND_EMAIL:
               "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto. Deras namn och e-postadresser kommer att delas med dig. De kan återvända för att se eller redigera sina svar.",
+            FULL_PROFILE:
+              "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto. Deras fullständiga profilinformation kommer att delas med dig. De kan återvända för att se eller redigera sina svar.",
           },
         },
         admin: UNTRANSLATED(en.Survey.attributes.anonymity.admin),
