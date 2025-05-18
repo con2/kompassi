@@ -95,7 +95,7 @@ class Setup:
             work_begins=(self.event.start_time - timedelta(days=2)).replace(hour=8, minute=0, tzinfo=self.tz),  # type: ignore
             work_ends=self.event.end_time.replace(hour=23, minute=0, tzinfo=self.tz),  # type: ignore
             admin_group=labour_admin_group,
-            contact_email="Ropecon 2025 vapaaehtoisvastaava <vapaaehtoiset@ropecon.fi>",
+            contact_email="Ropecon 2025 -vapaaehtoisvastaava <vapaaehtoiset@ropecon.fi>",
         )
 
         if self.test:
@@ -253,6 +253,7 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                contact_email="Ropecon 2025 -ohjelmatiimi <ohjelma@ropecon.fi>",
                 default_registry=Registry.objects.get(
                     scope=self.organization.scope,
                     slug="volunteers",
