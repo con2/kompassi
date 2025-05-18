@@ -33,6 +33,7 @@ class Invitation(UUID7Mixin, models.Model):
     The email contains a link to accept the invitation.
     Accepting the invitation also involves answering a Survey.
     When the invitation is accepted, an Involvement is created.
+    An Invitation can only be used once.
     """
 
     id = models.UUIDField(default=uuid7, primary_key=True, editable=False)

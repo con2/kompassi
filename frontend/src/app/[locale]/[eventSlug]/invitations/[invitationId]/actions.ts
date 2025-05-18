@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { processFormData } from "../../[surveySlug]/actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
@@ -19,12 +20,26 @@ const mutation = graphql(`
 export async function acceptInvitation(
   locale: string,
   eventSlug: string,
+  surveySlug: string,
   invitationId: string,
   formData: FormData,
 ) {
-  await getClient().mutate({
+  const client = getClient();
+  await client.mutate({
     mutation,
-    variables: { input: { locale, eventSlug, invitationId, formData } },
+    variables: {
+      input: {
+        locale,
+        eventSlug,
+        invitationId,
+        formData: await processFormData(
+          client,
+          eventSlug,
+          surveySlug,
+          formData,
+        ),
+      },
+    },
   });
   redirect(`/profile/program?message=invitation-accepted`);
 }

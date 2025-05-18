@@ -27,6 +27,7 @@ from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
 from involvement.models.enums import InvolvementType
+from involvement.models.profile_field_selector import ProfileFieldSelector
 from involvement.models.registry import Registry
 
 from ..utils.merge_form_fields import merge_fields
@@ -144,6 +145,13 @@ class Survey(models.Model):
     badge_mappings: models.QuerySet[SurveyToBadgeMapping]
     default_dimensions: models.QuerySet[SurveyDefaultDimensionValue]
     id: int
+
+    @cached_property
+    def profile_field_selector(self) -> ProfileFieldSelector:
+        """
+        Returns the profile field selector for this survey.
+        """
+        return ProfileFieldSelector.from_anonymity(self.anonymity)
 
     @property
     def purpose(self) -> SurveyPurpose:

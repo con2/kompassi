@@ -112,6 +112,26 @@ const translations: Translations = {
       },
     },
   },
+  TransferConsentForm: {
+    title: "Henkilötietojen luovutus",
+    message: (
+      <>
+        Kun täytät tämän lomakkeen, henkilötietojasi siirretään rekisteristä
+        toiseen seuraavasti. Lisäksi vastaanottajan rekisteriin liitetään ne
+        henkilötiedot, jotka annat tällä lomakkeella.
+      </>
+    ),
+    consentCheckBox:
+      "Annan suostumukseni henkilötietojeni luovutukseen ja käsittelyyn edellä kuvatulla tavalla.",
+    privacyPolicy: "Tietosuojaseloste",
+    privacyPolicyMissing: "Tietosuojaseloste puuttuu",
+    actions: {
+      editProfile:
+        "Jos huomaat profiilissasi virheitä, korjaathan ne profiilisivulla.",
+    },
+    sourceRegistry: "Henkilötietojen lähde",
+    targetRegistry: "Henkilötietojen vastaanottaja",
+  },
   Modal: {
     submit: "Submit",
     cancel: "Cancel",
@@ -1734,6 +1754,15 @@ const translations: Translations = {
       title: "Muokkaa kyselyä",
       actions: {
         submit: "Tallenna kentät",
+      },
+    },
+  },
+
+  Invitation: {
+    errors: {
+      alreadyUsed: {
+        title: "Kutsu on jo käytetty",
+        message: "Tämä kutsu on jo käytetty. Kutsun voi käyttää vain kerran.",
       },
     },
   },

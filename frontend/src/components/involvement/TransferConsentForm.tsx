@@ -1,63 +1,46 @@
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
-import CardHeader from "react-bootstrap/CardHeader";
-import CardText from "react-bootstrap/CardText";
 import CardTitle from "react-bootstrap/CardTitle";
 import { Field } from "../forms/models";
 import { SchemaForm } from "../forms/SchemaForm";
 import {
   Profile,
-  ProfileField,
   profileFields,
   ProfileFieldSelector,
   Registry,
 } from "./models";
 import type { Translations } from "@/translations/en";
 
-interface Messages {
-  TransferConsentForm: {
-    title: string; // Transfer of personal data
-    message: string; // When you fill in this form…
-    consentCheckBox: string; // I consent to the …
-    privacyPolicy: string; // Privacy policy
-    actions: {
-      editProfile: string; // If you notice any mistakes…
-    };
-    sourceRegistry: string; // Source of the data
-    targetRegistry: string; // Receiver of the data
-  };
-  Profile: {
-    attributes: Record<ProfileField, string>; // {firstName: "First name", lastName: "Last name", ...}
-  };
-  SchemaForm: Translations["SchemaForm"];
-}
-
-interface Props {
-  profileFieldSelector: ProfileFieldSelector;
-  profile: Profile;
-  sourceRegistry: Registry;
-  targetRegistry: Registry;
-  messages: Messages;
-}
-
-function RightArrow() {
+function TransferDirectionArrow() {
+  // XXX AI genenerated :) please do something to this
   return (
-    <svg
-      width="1em"
-      height="1em"
-      viewBox="0 0 16 16"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path
-        d="M4 8h8M8 4l4 4-4 4"
-        stroke="currentColor"
-        strokeWidth="2"
-        fill="none"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    <span className="mx-2 d-inline-block rotate-sm-90">
+      <svg
+        width="1em"
+        height="1em"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path
+          d="M4 8h8M8 4l4 4-4 4"
+          stroke="currentColor"
+          strokeWidth="2"
+          fill="none"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <style>
+        {`
+          @media (max-width: 767.98px) {
+            .rotate-sm-90 {
+              transform: rotate(90deg);
+            }
+          }
+        `}
+      </style>
+    </span>
   );
 }
 
@@ -68,27 +51,41 @@ function RegistryComponent({
 }: {
   registryType: string;
   registry: Registry;
-  messages: Messages;
+  messages: Translations;
 }) {
   const t = messages.TransferConsentForm;
   return (
-    <div className="flex-grow-1">
-      <CardText>
-        <div className="form-text">{registryType}:</div>
+    <Card className="flex-grow-1 m-3">
+      <CardBody>
+        <div className="form-text mb-2">{registryType}:</div>
         <div className="fw-bold">{registry.title}</div>
         <div className="fst-italic">{registry.organization.name}</div>
-        <div>
-          <a
-            href={registry.privacyPolicyUrl}
-            target="_blank"
-            rel="noopener noreferer"
-          >
-            {t.privacyPolicy}
-          </a>
-        </div>
-      </CardText>
-    </div>
+        {registry.policyUrl ? (
+          <div className="form-text mt-2">
+            <a
+              className="link-subtle"
+              href={registry.policyUrl}
+              target="_blank"
+              rel="noopener noreferer"
+            >
+              {t.privacyPolicy}
+            </a>
+          </div>
+        ) : (
+          <div className="form-text mt-2">{t.privacyPolicyMissing}</div>
+        )}
+      </CardBody>
+    </Card>
   );
+}
+
+interface Props {
+  profileFieldSelector: ProfileFieldSelector;
+  profile: Profile;
+  sourceRegistry: Registry;
+  targetRegistry: Registry;
+  translations: Translations;
+  className?: string;
 }
 
 export default function TransferConsentForm({
@@ -96,13 +93,14 @@ export default function TransferConsentForm({
   profile,
   sourceRegistry,
   targetRegistry,
-  messages,
+  translations: messages,
+  className = "mt-4 mb-4",
 }: Props) {
   const t = messages.TransferConsentForm;
 
   const consentFields: Field[] = [
     {
-      slug: "consent",
+      slug: "kompassi_transfer_consent",
       title: t.consentCheckBox,
       type: "SingleCheckbox",
       required: true,
@@ -110,39 +108,43 @@ export default function TransferConsentForm({
   ];
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t.title}</CardTitle>
-      </CardHeader>
+    <Card className={className}>
       <CardBody>
-        <CardText>{t.message}</CardText>
-        <div className="d-flex align-items-center">
+        <CardTitle>{t.title}</CardTitle>
+        <div className="card-text">{t.message}</div>
+        <div className="d-flex flex-column flex-md-row align-items-center">
           <RegistryComponent
             registryType={t.sourceRegistry}
             registry={sourceRegistry}
             messages={messages}
           />
-          <RightArrow />
+          <TransferDirectionArrow />
           <RegistryComponent
             registryType={t.targetRegistry}
             registry={targetRegistry}
             messages={messages}
           />
         </div>
-        {profileFields.map((field) => {
-          if (!profileFieldSelector[field]) {
-            return null;
-          }
-          return (
-            <div key={field} className="mb-1">
-              <div>
-                <strong>{messages.Profile.attributes[field]}</strong>
-              </div>
-              <div>{(profile as any)[field]}</div>
-            </div>
-          );
-        })}
+        <Card className="m-3">
+          <CardBody>
+            <div className="form-text mb-2">Luovutettavat tiedot:</div>
+            {profileFields.map((field) => {
+              if (!profileFieldSelector[field]) {
+                return null;
+              }
+              return (
+                <div key={field} className="mb-2">
+                  <div>
+                    <strong>{messages.Profile.attributes[field]}</strong>
+                  </div>
+                  <div>{(profile as any)[field]}</div>
+                </div>
+              );
+            })}
+          </CardBody>
+        </Card>
         <SchemaForm
+          className="mt-4"
           fields={consentFields}
           values={{}}
           messages={messages.SchemaForm}

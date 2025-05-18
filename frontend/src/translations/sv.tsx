@@ -37,6 +37,7 @@ const translations: Translations = {
     },
   },
   Profile: UNTRANSLATED(en.Profile),
+  TransferConsentForm: UNTRANSLATED(en.TransferConsentForm),
   // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
   Modal: {
     submit: "Skicka",
@@ -1106,6 +1107,7 @@ const translations: Translations = {
           countResponsesByCurrentUser === 1 ? "" : "en"
         } till denna undersökning. Det maximala antalet svar per användare är ${maxResponsesPerUser}.`,
     },
+    specialPurposeSurvey: UNTRANSLATED(en.Survey.specialPurposeSurvey),
     warnings: {
       choiceNotFound:
         "Valet hittades inte. Det kan ha tagits bort efter att detta svar skickades.",
@@ -1158,6 +1160,16 @@ const translations: Translations = {
       },
     },
   },
+
+  Invitation: UNSURE({
+    errors: {
+      alreadyUsed: {
+        title: "Inbjudan redan använd",
+        message:
+          "Denna inbjudan har redan använts. Den kan endast användas en gång.",
+      },
+    },
+  }),
 
   SignInRequired: {
     metadata: {

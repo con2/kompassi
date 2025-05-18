@@ -447,6 +447,7 @@ export type FullEventType = {
   __typename?: 'FullEventType';
   endTime?: Maybe<Scalars['DateTime']['output']>;
   forms?: Maybe<FormsEventMetaType>;
+  involvement?: Maybe<InvolvementEventMetaType>;
   name: Scalars['String']['output'];
   program?: Maybe<ProgramV2EventMetaType>;
   /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
@@ -466,7 +467,7 @@ export type FullInvitationType = {
   /** The language of the invitation. This is used to send the invitation in the correct language. */
   language: InvolvementInvitationLanguageChoices;
   program?: Maybe<LimitedProgramType>;
-  survey?: Maybe<LimitedSurveyType>;
+  survey?: Maybe<FullSurveyType>;
   usedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -699,9 +700,11 @@ export type FullSurveyType = {
   loginRequired: Scalars['Boolean']['output'];
   /** Maximum number of responses per user. 0 = unlimited. Note that if login_required is not set, this only takes effect for logged in users.Has no effect if the survey is hard anonymous. */
   maxResponsesPerUser: Scalars['Int']['output'];
+  profileFieldSelector: ProfileFieldSelectorType;
   /** If enabled, responses cannot be deleted from the UI without disabling this first. */
   protectResponses: Scalars['Boolean']['output'];
   purpose: SurveyPurpose;
+  registry?: Maybe<LimitedRegistryType>;
   response?: Maybe<FullResponseType>;
   /** Returns the responses to this survey regardless of language version used. Authorization required. */
   responses?: Maybe<Array<LimitedResponseType>>;
@@ -778,6 +781,16 @@ export type InviteProgramHostInput = {
   surveySlug: Scalars['String']['input'];
 };
 
+export type InvolvementEventMetaType = {
+  __typename?: 'InvolvementEventMetaType';
+  invitation?: Maybe<LimitedInvitationType>;
+};
+
+
+export type InvolvementEventMetaTypeInvitationArgs = {
+  invitationId: Scalars['String']['input'];
+};
+
 /** An enumeration. */
 export enum InvolvementInvitationLanguageChoices {
   /** English */
@@ -813,6 +826,16 @@ export type LimitedEventType = {
   slug: Scalars['String']['output'];
 };
 
+export type LimitedInvitationType = {
+  __typename?: 'LimitedInvitationType';
+  id: Scalars['UUID']['output'];
+  isUsed: Scalars['Boolean']['output'];
+  /** The language of the invitation. This is used to send the invitation in the correct language. */
+  language: InvolvementInvitationLanguageChoices;
+  /** When a user accepts this invitation, they will fill in this survey. */
+  survey: FullSurveyType;
+};
+
 /** Represent Involvement (and the Person involved) without a way to traverse back to Event. */
 export type LimitedInvolvementType = {
   __typename?: 'LimitedInvolvementType';
@@ -840,6 +863,14 @@ export type LimitedOrderType = {
   phone: Scalars['String']['output'];
   status: PaymentStatus;
   totalPrice: Scalars['Decimal']['output'];
+};
+
+export type LimitedOrganizationType = {
+  __typename?: 'LimitedOrganizationType';
+  name: Scalars['String']['output'];
+  /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
+  slug: Scalars['String']['output'];
+  timezone: Scalars['String']['output'];
 };
 
 export type LimitedPaymentStampType = {
@@ -982,6 +1013,26 @@ export type LimitedReceiptType = {
   type: ReceiptType;
 };
 
+export type LimitedRegistryType = {
+  __typename?: 'LimitedRegistryType';
+  createdAt: Scalars['DateTime']['output'];
+  organization: LimitedOrganizationType;
+  policyUrl: Scalars['String']['output'];
+  slug: Scalars['String']['output'];
+  title: Scalars['String']['output'];
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+
+export type LimitedRegistryTypePolicyUrlArgs = {
+  lang?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type LimitedRegistryTypeTitleArgs = {
+  lang?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type LimitedResponseType = {
   __typename?: 'LimitedResponseType';
   /** Returns the dimensions of the response as a dict of dimension slug -> list of dimension value slugs. If the response is not related to a survey, there will be no dimensions and an empty dict will always be returned. Using this field is more efficient than querying the dimensions field on the response, as the dimensions are cached on the response object. */
@@ -1046,9 +1097,11 @@ export type LimitedSurveyType = {
   loginRequired: Scalars['Boolean']['output'];
   /** Maximum number of responses per user. 0 = unlimited. Note that if login_required is not set, this only takes effect for logged in users.Has no effect if the survey is hard anonymous. */
   maxResponsesPerUser: Scalars['Int']['output'];
+  profileFieldSelector: ProfileFieldSelectorType;
   /** If enabled, responses cannot be deleted from the UI without disabling this first. */
   protectResponses: Scalars['Boolean']['output'];
   purpose: SurveyPurpose;
+  registry?: Maybe<LimitedRegistryType>;
   /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
   slug: Scalars['String']['output'];
   title?: Maybe<Scalars['String']['output']>;
@@ -1403,6 +1456,20 @@ export enum PaymentStatus {
   RefundRequested = 'REFUND_REQUESTED'
 }
 
+/**
+ * Used to determine which profile fields are transferred from registry to another.
+ * NOTE: Must match ProfileFieldSelector in frontend/src/components/involvement/models.ts.
+ */
+export type ProfileFieldSelectorType = {
+  __typename?: 'ProfileFieldSelectorType';
+  discordHandle: Scalars['Boolean']['output'];
+  email: Scalars['Boolean']['output'];
+  firstName: Scalars['Boolean']['output'];
+  lastName: Scalars['Boolean']['output'];
+  nick: Scalars['Boolean']['output'];
+  phoneNumber: Scalars['Boolean']['output'];
+};
+
 export type ProfileOrderType = {
   __typename?: 'ProfileOrderType';
   canPay: Scalars['Boolean']['output'];
@@ -1470,17 +1537,19 @@ export type ProfileResponseTypeValuesArgs = {
 
 export type ProfileType = {
   __typename?: 'ProfileType';
-  displayName?: Maybe<Scalars['String']['output']>;
+  /** Your Discord username (NOTE: not display name). Events may use this to give you roles based on your participation. */
+  discordHandle: Scalars['String']['output'];
+  displayName: Scalars['String']['output'];
   /** Email is the primary means of contact for event-related matters. */
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   /** Namespace for queries related to forms and the current user. */
   forms: FormsProfileMetaType;
   keypairs?: Maybe<Array<KeyPairType>>;
-  lastName?: Maybe<Scalars['String']['output']>;
+  lastName: Scalars['String']['output'];
   /** If you go by a nick name or handle that you want printed in your badge and programme details, enter it here. */
   nick: Scalars['String']['output'];
-  phoneNumber?: Maybe<Scalars['String']['output']>;
+  phoneNumber: Scalars['String']['output'];
   /** Namespace for queries related to programs and the current user. */
   program: ProgramV2ProfileMetaType;
   /** Namespace for queries related to tickets and the current user. */
@@ -1701,6 +1770,8 @@ export type Query = {
   __typename?: 'Query';
   event?: Maybe<FullEventType>;
   profile?: Maybe<ProfileType>;
+  /** Returns the registry that hosts the personal data of all users of Kompassi. */
+  userRegistry: LimitedRegistryType;
 };
 
 
@@ -2017,7 +2088,7 @@ export type SurveyPageQueryQueryVariables = Exact<{
 }>;
 
 
-export type SurveyPageQueryQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', displayName?: string | null, email: string } | null, event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', loginRequired: boolean, anonymity: Anonymity, maxResponsesPerUser: number, countResponsesByCurrentUser: number, isActive: boolean, purpose: SurveyPurpose, form?: { __typename?: 'FormType', language: FormsFormLanguageChoices, title: string, description: string, fields?: unknown | null } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> } | null } | null } | null };
+export type SurveyPageQueryQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', displayName: string, email: string } | null, event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', loginRequired: boolean, anonymity: Anonymity, maxResponsesPerUser: number, countResponsesByCurrentUser: number, isActive: boolean, purpose: SurveyPurpose, form?: { __typename?: 'FormType', language: FormsFormLanguageChoices, title: string, description: string, fields?: unknown | null } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> } | null } | null } | null };
 
 export type SurveyThankYouPageQueryQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -2034,6 +2105,21 @@ export type AcceptInvitationMutationVariables = Exact<{
 
 
 export type AcceptInvitationMutation = { __typename?: 'Mutation', acceptInvitation?: { __typename?: 'AcceptInvitation', involvement?: { __typename?: 'LimitedInvolvementType', program?: { __typename?: 'LimitedProgramType', slug: string } | null } | null } | null };
+
+export type FullProfileFragment = { __typename?: 'ProfileType', firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string };
+
+export type FullProfileFieldSelectorFragment = { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean };
+
+export type TransferConsentFormRegistryFragment = { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } };
+
+export type AcceptInvitationPageQueryVariables = Exact<{
+  eventSlug: Scalars['String']['input'];
+  invitationId: Scalars['String']['input'];
+  locale?: InputMaybe<Scalars['String']['input']>;
+}>;
+
+
+export type AcceptInvitationPageQuery = { __typename?: 'Query', profile?: { __typename?: 'ProfileType', firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, userRegistry: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } }, event?: { __typename?: 'FullEventType', name: string, involvement?: { __typename?: 'InvolvementEventMetaType', invitation?: { __typename?: 'LimitedInvitationType', isUsed: boolean, survey: { __typename?: 'FullSurveyType', slug: string, isActive: boolean, purpose: SurveyPurpose, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, registry?: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } } | null, form?: { __typename?: 'FormType', language: FormsFormLanguageChoices, title: string, description: string, fields?: unknown | null } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> } } | null } | null } | null };
 
 export type ResendOrderConfirmationMutationVariables = Exact<{
   input: ResendOrderConfirmationInput;
@@ -2758,6 +2844,9 @@ export type OwnFormResponsesQuery = { __typename?: 'Query', profile?: { __typena
 
 export type DimensionBadgeFragment = { __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } };
 
+export const FullProfileFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FullProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProfileType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"nick"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"discordHandle"}}]}}]} as unknown as DocumentNode<FullProfileFragment, unknown>;
+export const FullProfileFieldSelectorFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FullProfileFieldSelector"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProfileFieldSelectorType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"nick"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"discordHandle"}}]}}]} as unknown as DocumentNode<FullProfileFieldSelectorFragment, unknown>;
+export const TransferConsentFormRegistryFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransferConsentFormRegistry"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedRegistryType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organization"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"policyUrl"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}}]} as unknown as DocumentNode<TransferConsentFormRegistryFragment, unknown>;
 export const AdminOrderPaymentStampFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderPaymentStamp"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedPaymentStampType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]} as unknown as DocumentNode<AdminOrderPaymentStampFragment, unknown>;
 export const AdminOrderReceiptFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderReceipt"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedReceiptType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<AdminOrderReceiptFragment, unknown>;
 export const AdminOrderCodeFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderCode"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedCodeType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"literateCode"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"usedOn"}},{"kind":"Field","name":{"kind":"Name","value":"productText"}}]}}]} as unknown as DocumentNode<AdminOrderCodeFragment, unknown>;
@@ -2796,6 +2885,7 @@ export const InitFileUploadMutationDocument = {"kind":"Document","definitions":[
 export const SurveyPageQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SurveyPageQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}}]}},{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"forms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"survey"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}}},{"kind":"Argument","name":{"kind":"Name","value":"app"},"value":{"kind":"NullValue"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"loginRequired"}},{"kind":"Field","name":{"kind":"Name","value":"anonymity"}},{"kind":"Field","name":{"kind":"Name","value":"maxResponsesPerUser"}},{"kind":"Field","name":{"kind":"Name","value":"countResponsesByCurrentUser"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"purpose"}},{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"languages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SurveyPageQueryQuery, SurveyPageQueryQueryVariables>;
 export const SurveyThankYouPageQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SurveyThankYouPageQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"forms"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"survey"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"surveySlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"thankYouMessage"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SurveyThankYouPageQueryQuery, SurveyThankYouPageQueryQueryVariables>;
 export const AcceptInvitationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AcceptInvitation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"AcceptInvitationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"acceptInvitation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"involvement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"program"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}}]}}]}}]}}]}}]} as unknown as DocumentNode<AcceptInvitationMutation, AcceptInvitationMutationVariables>;
+export const AcceptInvitationPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AcceptInvitationPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"invitationId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"locale"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"profile"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FullProfile"}}]}},{"kind":"Field","name":{"kind":"Name","value":"userRegistry"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransferConsentFormRegistry"}}]}},{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"involvement"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"invitation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"invitationId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"invitationId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isUsed"}},{"kind":"Field","name":{"kind":"Name","value":"survey"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"purpose"}},{"kind":"Field","name":{"kind":"Name","value":"profileFieldSelector"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"FullProfileFieldSelector"}}]}},{"kind":"Field","name":{"kind":"Name","value":"registry"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"TransferConsentFormRegistry"}}]}},{"kind":"Field","name":{"kind":"Name","value":"form"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"fields"}}]}},{"kind":"Field","name":{"kind":"Name","value":"languages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"language"}}]}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FullProfile"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProfileType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"nick"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"discordHandle"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransferConsentFormRegistry"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedRegistryType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organization"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"policyUrl"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"FullProfileFieldSelector"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ProfileFieldSelectorType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"nick"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"discordHandle"}}]}}]} as unknown as DocumentNode<AcceptInvitationPageQuery, AcceptInvitationPageQueryVariables>;
 export const ResendOrderConfirmationDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"ResendOrderConfirmation"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ResendOrderConfirmationInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"resendOrderConfirmation"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<ResendOrderConfirmationMutation, ResendOrderConfirmationMutationVariables>;
 export const UpdateOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateOrderMutation, UpdateOrderMutationVariables>;
 export const CancelAndRefundOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelAndRefundOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CancelAndRefundOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelAndRefundOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<CancelAndRefundOrderMutation, CancelAndRefundOrderMutationVariables>;

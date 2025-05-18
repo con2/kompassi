@@ -46,5 +46,5 @@ export interface Registry {
   organization: Organization;
   slug: string;
   title: string;
-  privacyPolicyUrl: string;
+  policyUrl: string;
 }

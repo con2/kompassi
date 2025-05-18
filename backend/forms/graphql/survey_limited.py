@@ -2,6 +2,8 @@ import graphene
 from django.conf import settings
 from graphene_django import DjangoObjectType
 
+from involvement.graphql.profile_field_selector import ProfileFieldSelectorType
+
 from ..models.survey import Survey
 from .enums import AnonymiType, SurveyPurposeType
 
@@ -23,6 +25,7 @@ class LimitedSurveyType(DjangoObjectType):
 
     anonymity = graphene.NonNull(AnonymiType)
     purpose = graphene.NonNull(SurveyPurposeType)
+    profile_field_selector = graphene.NonNull(ProfileFieldSelectorType)
 
     class Meta:
         model = Survey
@@ -35,4 +38,6 @@ class LimitedSurveyType(DjangoObjectType):
             "max_responses_per_user",
             "protect_responses",
             "purpose",
+            "profile_field_selector",
+            "registry",
         )

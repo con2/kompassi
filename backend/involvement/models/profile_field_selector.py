@@ -4,6 +4,8 @@ from typing import Self
 
 import pydantic
 
+from forms.models.enums import Anonymity
+
 
 class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=True):
     """
@@ -44,3 +46,30 @@ class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=Tru
             phone_number=True,
             discord_handle=True,
         )
+
+    @classmethod
+    def from_anonymity(cls, anonymity: Anonymity) -> Self:
+        """
+        Convert legacy Anonymity choices to ProfileFieldSelector.
+        """
+        match anonymity:
+            case Anonymity.HARD:
+                return cls()
+            case Anonymity.SOFT:
+                return cls()
+            case Anonymity.NAME_AND_EMAIL:
+                return cls(
+                    first_name=True,
+                    last_name=True,
+                    nick=True,
+                    email=True,
+                )
+            case Anonymity.FULL_PROFILE:
+                return cls(
+                    first_name=True,
+                    last_name=True,
+                    nick=True,
+                    email=True,
+                    phone_number=True,
+                    discord_handle=True,
+                )

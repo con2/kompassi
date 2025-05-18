@@ -4,6 +4,7 @@ from core.graphql.event_full import FullEventType
 from core.graphql.mutations.confirm_email import ConfirmEmail
 from core.graphql.profile import ProfileType
 from core.models import Event, Person
+from core.utils import normalize_whitespace
 from dimensions.graphql.mutations.delete_dimension import DeleteDimension
 from dimensions.graphql.mutations.delete_dimension_value import DeleteDimensionValue
 from dimensions.graphql.mutations.put_dimension import PutDimension
@@ -25,6 +26,8 @@ from forms.graphql.mutations.update_response_dimensions import UpdateResponseDim
 from forms.graphql.mutations.update_survey import UpdateSurvey
 from forms.graphql.mutations.update_survey_default_dimensions import UpdateSurveyDefaultDimensions
 from involvement.graphql.mutations.accept_invitation import AcceptInvitation
+from involvement.graphql.registry_limited import LimitedRegistryType
+from involvement.models.registry import Registry
 from program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
 from program_v2.graphql.mutations.create_program_form import CreateProgramForm
 from program_v2.graphql.mutations.delete_program_host import DeleteProgramHost
@@ -87,6 +90,19 @@ class Query(graphene.ObjectType):
             return None
 
     profile = graphene.Field(ProfileType)
+
+    @staticmethod
+    def resolve_user_registry(root, info):
+        """
+        Returns the registry that hosts the personal data of
+        all users of Kompassi.
+        """
+        return Registry.get_user_registry()
+
+    user_registry = graphene.NonNull(
+        LimitedRegistryType,
+        description=normalize_whitespace(resolve_user_registry.__doc__ or ""),
+    )
 
 
 class Mutation(graphene.ObjectType):

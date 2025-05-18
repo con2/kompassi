@@ -156,16 +156,14 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         cls._setup_default_dimensions(universe)
         cache = universe.preload_dimensions()
 
-        for survey in Survey.objects.filter(
-            event=event,
-            app="program_v2",
-        ):
+        meta = event.program_v2_event_meta
+        if meta is None:
+            raise ValueError("Event has no program_v2_event_meta")
+
+        for survey in meta.program_offer_forms.all():
             survey.set_default_dimension_values(cls._get_default_dimension_values(survey), cache)
 
-        for program_offer in Response.objects.filter(
-            form__event=event,
-            form__survey__app="program_v2",
-        ):
+        for program_offer in meta.program_offers.all():
             existing_values = program_offer.cached_dimensions
             values_to_set = {}
 

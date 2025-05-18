@@ -114,6 +114,25 @@ const translations = {
       },
     },
   },
+  TransferConsentForm: {
+    title: "Transfer of personal data",
+    message: (
+      <>
+        When you fill in this form, your personal data will be transferred as
+        outlined below. Personal data you give on the form below will also be
+        processed by the receiver.
+      </>
+    ),
+    consentCheckBox: "I consent to the transfer of my personal data.",
+    privacyPolicy: "Privacy policy",
+    privacyPolicyMissing: "Missing privacy policy",
+    actions: {
+      editProfile:
+        "If you notice any mistakes, please correct them in your profile.",
+    },
+    sourceRegistry: "Source of personal data",
+    targetRegistry: "Receiver of personal data",
+  },
   // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
   Modal: {
     submit: "Submit",
@@ -1739,6 +1758,16 @@ const translations = {
       title: "Edit survey",
       actions: {
         submit: "Save fields",
+      },
+    },
+  },
+
+  Invitation: {
+    errors: {
+      alreadyUsed: {
+        title: "Invitation already used",
+        message:
+          "This invitation has already been used. It can only be used once.",
       },
     },
   },
