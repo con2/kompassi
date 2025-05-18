@@ -18,17 +18,23 @@ class EmailAliasDomain(models.Model):
         domain_name="example.com",
         has_internal_aliases: bool = True,
     ):
+        from access.models.internal_email_alias import InternalEmailAlias
         from core.models.organization import Organization
 
         organization, unused = Organization.get_or_create_dummy()
 
-        return cls.objects.get_or_create(
+        domain, created = cls.objects.get_or_create(
             domain_name=domain_name,
             defaults=dict(
                 organization=organization,
                 has_internal_aliases=has_internal_aliases,
             ),
         )
+
+        if has_internal_aliases:
+            InternalEmailAlias.ensure_internal_email_aliases()
+
+        return domain, created
 
     def __str__(self):
         return self.domain_name

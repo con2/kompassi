@@ -1,19 +1,22 @@
 import { notFound } from "next/navigation";
 
-import { inviteProgramHost, removeProgramHost } from "./actions";
+import { inviteProgramHost, deleteProgramHost } from "./actions";
 import { graphql } from "@/__generated__";
 import { ProgramAdminDetailHostFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { Column, DataTable } from "@/components/DataTable";
+import { Field } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
-import { getTranslations } from "@/translations";
+import { getTranslations, SupportedLanguage } from "@/translations";
 
 graphql(`
   fragment ProgramAdminDetailHost on LimitedInvolvementType {
     id
     person {
+      fullName
       firstName
       lastName
       nick
@@ -27,12 +30,24 @@ graphql(`
 const query = graphql(`
   query ProgramAdminDetailHosts(
     $eventSlug: String!
-    $programSlug: String! # $locale: String
+    $programSlug: String!
+    $locale: String
   ) {
     event(slug: $eventSlug) {
       name
       slug
       timezone
+
+      forms {
+        inviteForms: surveys(
+          includeInactive: true
+          app: PROGRAM_V2
+          purpose: INVITE
+        ) {
+          slug
+          title(lang: $locale)
+        }
+      }
 
       program {
         program(slug: $programSlug) {
@@ -57,6 +72,9 @@ interface Props {
 
 export const revalidate = 0;
 
+// must be in sync with the supported languages in Invitation.send in backend
+const supportedInviteLanguages: SupportedLanguage[] = ["fi", "en"];
+
 export async function generateMetadata({ params }: Props) {
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
@@ -76,7 +94,6 @@ export async function generateMetadata({ params }: Props) {
 export default async function ProgramAdminDetailPage({ params }: Props) {
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
-  const programT = translations.Program;
   const profileT = translations.Profile;
   const t = translations.Program.ProgramHost;
   const { data } = await getClient().query({
@@ -94,32 +111,32 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
   const columns: Column<ProgramAdminDetailHostFragment>[] = [
     {
       slug: "lastName",
-      title: profileT.attributes.lastName.title,
+      title: profileT.advancedAttributes.lastName.title,
       getCellContents: (row) => row.person.lastName,
     },
     {
       slug: "firstName",
-      title: profileT.attributes.firstName.title,
+      title: profileT.advancedAttributes.firstName.title,
       getCellContents: (row) => row.person.firstName,
     },
     {
       slug: "nick",
-      title: profileT.attributes.nick.title,
+      title: profileT.advancedAttributes.nick.title,
       getCellContents: (row) => row.person.nick,
     },
     {
       slug: "email",
-      title: profileT.attributes.email.title,
+      title: profileT.advancedAttributes.email.title,
       getCellContents: (row) => row.person.email,
     },
     {
       slug: "phoneNumber",
-      title: profileT.attributes.phoneNumber.title,
+      title: profileT.advancedAttributes.phoneNumber.title,
       getCellContents: (row) => row.person.phoneNumber,
     },
     {
       slug: "discordHandle",
-      title: profileT.attributes.discordHandle.title,
+      title: profileT.advancedAttributes.discordHandle.title,
       getCellContents: (row) => row.person.discordHandle,
     },
     {
@@ -133,8 +150,7 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
           title={t.actions.removeProgramHost.title}
           messages={t.actions.removeProgramHost.modalActions}
           submitButtonVariant="danger"
-          disabled
-          action={removeProgramHost.bind(
+          action={deleteProgramHost.bind(
             null,
             locale,
             eventSlug,
@@ -142,11 +158,52 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
             row.id,
           )}
         >
-          {t.actions.removeProgramHost.message}
+          {t.actions.removeProgramHost.message(
+            row.person.fullName,
+            program.title,
+          )}
         </ModalButton>
       ),
     },
   ];
+
+  const inviteProgramHostFields: Field[] = [
+    {
+      slug: "email",
+      type: "SingleLineText",
+      htmlType: "email",
+      required: true,
+      ...t.actions.inviteProgramHost.attributes.email,
+    },
+    {
+      slug: "surveySlug",
+      type: "SingleSelect",
+      presentation: "dropdown",
+      required: true,
+      choices:
+        data.event.forms?.inviteForms.map(({ slug, title }) => ({
+          slug,
+          title: `${slug}: ${title}`,
+        })) ?? [],
+      ...t.actions.inviteProgramHost.attributes.survey,
+    },
+    {
+      slug: "language",
+      type: "SingleSelect",
+      presentation: "dropdown",
+      required: true,
+      choices: supportedInviteLanguages.map((languageCode) => ({
+        slug: languageCode,
+        title: translations.LanguageSwitcher.supportedLanguages[languageCode],
+      })),
+      ...t.actions.inviteProgramHost.attributes.language,
+    },
+  ];
+
+  const inviteProgramHostDefaults = {
+    surveySlug: data.event.forms?.inviteForms[0]?.slug,
+    language: locale,
+  };
 
   return (
     <ProgramAdminDetailView
@@ -173,13 +230,13 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
                   eventSlug,
                   programSlug,
                 )}
-                disabled
               >
                 <p>{t.actions.inviteProgramHost.message}</p>
-                {/* <SchemaForm
-            fields={inviteProgramHostFields}
-            messages={translations.SchemaForm}
-          /> */}
+                <SchemaForm
+                  fields={inviteProgramHostFields}
+                  values={inviteProgramHostDefaults}
+                  messages={translations.SchemaForm}
+                />
               </ModalButton>
             </td>
           </tr>

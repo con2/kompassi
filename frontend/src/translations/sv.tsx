@@ -36,66 +36,7 @@ const translations: Translations = {
       false: "Nej",
     },
   },
-  Profile: {
-    attributes: UNTRANSLATED(en.Profile.attributes),
-    keysView: UNTRANSLATED({
-      title: "Encryption keys",
-      description:
-        "In some cases, confidential data is encrypted in Kompassi using asymmetric encryption. " +
-        "If you need to be the recipient of such confidential information, you need to have a key pair. " +
-        "You can generate one below. " +
-        "Generating a key pair requires your password as the private key will be encrypted with it. " +
-        "In the future, we will allow advanced users to use keys stored on their own devices only, " +
-        "so that the private key never leaves the device.",
-      resetPasswordWarning: (
-        <>
-          <strong>Warning!</strong> If you forget your password and resert it,
-          you will lose your encryption keys and will no longer be able to
-          access data encrypted to them.
-        </>
-      ),
-      attributes: {
-        id: {
-          title: "Key ID",
-        },
-        createdAt: {
-          title: "Created at",
-        },
-        actions: {
-          title: "Actions",
-        },
-        password: {
-          title: "Password",
-          helpText: "Enter your password to encrypt the private key.",
-        },
-      },
-      actions: {
-        generate: {
-          title: "Generate key pair",
-          enterPassword: "Enter your password to encrypt the private key.",
-          modalActions: {
-            submit: "Generate",
-            cancel: "Cancel",
-          },
-        },
-        revoke: {
-          title: "Revoke key pair",
-          confirmation: (formattedCreatedAt: string) => (
-            <>
-              Are you sure you want to revoke the key pair that was created on{" "}
-              <strong>{formattedCreatedAt}</strong>? Once revoked, information
-              that was encrypted with the private key will no longer be
-              accessible. This action cannot be undone.
-            </>
-          ),
-          modalActions: {
-            submit: "Revoke",
-            cancel: "Cancel",
-          },
-        },
-      },
-    }),
-  },
+  Profile: UNTRANSLATED(en.Profile),
   // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
   Modal: {
     submit: "Skicka",
@@ -986,6 +927,8 @@ const translations: Translations = {
             SOFT: "Om du svarar på den här enkäten medan du är inloggad kommer den att kopplas till ditt användarkonto, så att du kan återvända för att se eller redigera dina svar, men din identitet kommer inte att delas med enkätägaren.",
             NAME_AND_EMAIL:
               "Om du svarar på den här enkäten medan du är inloggad kommer den att kopplas till ditt användarkonto. Ditt namn och e-postadress kommer att delas med enkätägaren. Du kan återvända för att se eller redigera dina svar.",
+            FULL_PROFILE:
+              "Om du svarar på den här enkäten medan du är inloggad kommer den att kopplas till ditt användarkonto. Din fullständiga profilinformation kommer att delas med enkätägaren. Du kan återvända för att se eller redigera dina svar.",
           },
         },
         thirdPerson: {
@@ -995,6 +938,8 @@ const translations: Translations = {
             SOFT: "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto, så att de kan återvända för att se eller redigera sina svar, men deras identiteter kommer inte att delas med dig.",
             NAME_AND_EMAIL:
               "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto. Deras namn och e-postadresser kommer att delas med dig. De kan återvända för att se eller redigera sina svar.",
+            FULL_PROFILE:
+              "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto. Deras fullständiga profilinformation kommer att delas med dig. De kan återvända för att se eller redigera sina svar.",
           },
         },
         admin: UNTRANSLATED(en.Survey.attributes.anonymity.admin),

@@ -1,29 +1,69 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
+import { graphql } from "@/__generated__";
+import { getClient } from "@/apolloClient";
+
+const inviteProgramHostMutation = graphql(`
+  mutation InviteProgramHost($input: InviteProgramHostInput!) {
+    inviteProgramHost(input: $input) {
+      invitation {
+        id
+      }
+    }
+  }
+`);
+
 export async function inviteProgramHost(
   locale: string,
   eventSlug: string,
   programSlug: string,
   formData: FormData,
 ) {
-  console.log("inviteProgramHost", {
-    locale,
-    eventSlug,
-    programSlug,
-    email: "" + formData.get("email"),
+  const surveySlug = formData.get("surveySlug") as string;
+  const email = formData.get("email") as string;
+  const language = formData.get("language") as string;
+
+  await getClient().mutate({
+    mutation: inviteProgramHostMutation,
+    variables: {
+      input: {
+        eventSlug,
+        programSlug,
+        surveySlug,
+        email,
+        language,
+      },
+    },
   });
+  revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
 }
 
-export async function removeProgramHost(
+const deleteProgramHostMutation = graphql(`
+  mutation DeleteProgramHost($input: DeleteProgramHostInput!) {
+    deleteProgramHost(input: $input) {
+      program {
+        slug
+      }
+    }
+  }
+`);
+
+export async function deleteProgramHost(
   locale: string,
   eventSlug: string,
   programSlug: string,
   involvementId: string,
 ) {
-  console.log("removeProgramHost", {
-    locale,
-    eventSlug,
-    programSlug,
-    involvementId,
+  await getClient().mutate({
+    mutation: deleteProgramHostMutation,
+    variables: {
+      input: {
+        eventSlug,
+        programSlug,
+        involvementId,
+      },
+    },
   });
+  revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
 }

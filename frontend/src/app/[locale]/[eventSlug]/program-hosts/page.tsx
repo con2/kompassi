@@ -2,14 +2,12 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
-import {
-  ProgramAdminDetailHostFragment,
-  ProgramAdminHostFragment,
-} from "@/__generated__/graphql";
+import { ProgramAdminHostFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
+import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
-import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
+import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -49,7 +47,7 @@ interface Props {
     locale: string;
     eventSlug: string;
   };
-  queryParams: Record<string, string>;
+  searchParams: Record<string, string>;
 }
 
 export const revalidate = 0;
@@ -69,15 +67,21 @@ export async function generateMetadata({ params }: Props) {
   return { title };
 }
 
-export default async function ProgramAdminDetailPage({
+export default async function ProgramAdminHostsPage({
   params,
-  queryParams,
+  searchParams,
 }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const profileT = translations.Profile;
   const t = translations.Program.ProgramHost;
-  const queryString = new URLSearchParams(queryParams).toString();
+  const queryString = new URLSearchParams(searchParams).toString();
+  const session = await auth();
+
+  // TODO encap
+  if (!session) {
+    return <SignInRequired messages={translations.SignInRequired} />;
+  }
 
   const { data } = await getClient().query({
     query,
@@ -93,17 +97,17 @@ export default async function ProgramAdminDetailPage({
   const columns: Column<ProgramAdminHostFragment>[] = [
     {
       slug: "lastName",
-      title: profileT.attributes.lastName.title,
+      title: profileT.advancedAttributes.lastName.title,
       getCellContents: (row) => row.person.lastName,
     },
     {
       slug: "firstName",
-      title: profileT.attributes.firstName.title,
+      title: profileT.advancedAttributes.firstName.title,
       getCellContents: (row) => row.person.firstName,
     },
     {
       slug: "nick",
-      title: profileT.attributes.nick.title,
+      title: profileT.advancedAttributes.nick.title,
       getCellContents: (row) => row.person.nick,
     },
     {

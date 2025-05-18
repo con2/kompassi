@@ -50,6 +50,7 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         from ..emperkelators.noop import NoopEmperkelator
         from ..emperkelators.simple import SimpleEmperkelator
         from ..emperkelators.tracon2024 import TraconEmperkelator
+        from ..emperkelators.tracon2025 import Tracon2025Emperkelator
 
         match self.emperkelator_name:
             case "noop":
@@ -58,6 +59,8 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
                 return SimpleEmperkelator
             case "tracon2024":
                 return TraconEmperkelator
+            case "tracon2025":
+                return Tracon2025Emperkelator
             case "desucon2025":
                 return DesumPerkelator
             case _:

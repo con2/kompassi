@@ -13,12 +13,13 @@ from django.utils.timezone import now
 from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
 from badges.emperkelators.tracon2024 import TicketType, TraconEmperkelator
 from badges.models.badges_event_meta import BadgesEventMeta
+from badges.models.survey_to_badge import SurveyToBadgeMapping
 from core.models.event import Event
 from core.models.organization import Organization
 from core.models.person import Person
 from core.models.venue import Venue
 from forms.models.meta import FormsEventMeta
-from forms.models.survey import SurveyDTO
+from forms.models.survey import Survey, SurveyDTO
 from intra.models import IntraEventMeta, Team
 from involvement.models.registry import Registry
 from labour.models.alternative_signup_forms import AlternativeSignupForm
@@ -29,7 +30,7 @@ from labour.models.personnel_class import PersonnelClass
 from labour.models.qualifications import Qualification
 from labour.models.survey import Survey as LabourSurvey
 from program_v2.models.meta import ProgramV2EventMeta
-from program_v2.workflow import ProgramWorkflow
+from program_v2.workflows.program_offer import ProgramOfferWorkflow
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.models.product import Product
 from tickets_v2.models.quota import Quota
@@ -311,7 +312,7 @@ class Setup:
             defaults=dict(
                 admin_group=badge_admin_group,
                 real_name_must_be_visible=True,
-                emperkelator_name="tracon2024",
+                emperkelator_name="tracon2025",
             ),
         )
 
@@ -329,7 +330,7 @@ class Setup:
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
-        ProgramWorkflow.backfill(self.event)
+        ProgramOfferWorkflow.backfill(self.event)
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack
@@ -373,6 +374,7 @@ class Setup:
             ("aspa", "Asiakaspalvelu"),
             ("talous", "Talous"),
             ("tilat", "Tilat"),
+            ("puisto", "Puisto"),
             ("tyovoima", "Työvoima"),
             ("tekniikka", "Tekniikka"),
             ("turva", "Turva"),
@@ -427,6 +429,25 @@ class Setup:
             ),
         ]:
             survey.save(self.event)
+
+        survey = Survey.objects.filter(event=self.event, slug="artist-alley-application").first()
+        if survey:
+            personnel_class = PersonnelClass.objects.get(event=self.event, slug="taidekuja")
+            cache = survey.universe.preload_dimensions(["location", "lipputyyppi"])
+            for location in cache.values_by_dimension.get("location", {}).values():
+                for ticket_type in cache.values_by_dimension.get("lipputyyppi", {}).values():
+                    SurveyToBadgeMapping.objects.update_or_create(
+                        survey=survey,
+                        required_dimensions={
+                            "location": [location.slug],
+                            "lipputyyppi": [ticket_type.slug],
+                        },
+                        defaults=dict(
+                            personnel_class=personnel_class,
+                            job_title=location.title_fi,
+                            annotations={"tracon2025:formattedPerks": ticket_type.title_fi},
+                        ),
+                    )
 
     def setup_tickets_v2(self):
         if self.dev_tickets:

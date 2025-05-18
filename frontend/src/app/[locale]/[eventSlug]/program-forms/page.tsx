@@ -28,6 +28,7 @@ graphql(`
     activeFrom
     activeUntil
     countResponses
+    purpose
 
     languages {
       language
@@ -42,7 +43,11 @@ const query = graphql(`
       name
 
       forms {
-        surveys(includeInactive: true, app: PROGRAM_V2) {
+        surveys(
+          includeInactive: true
+          app: PROGRAM_V2
+          purpose: [DEFAULT, INVITE]
+        ) {
           ...OfferForm
         }
       }
@@ -126,6 +131,14 @@ export default async function ProgramFormsPage({
     {
       slug: "title",
       title: surveyT.attributes.title,
+    },
+    {
+      slug: "purpose",
+      title: t.attributes.purpose.shortTitle,
+      getCellContents: (survey) => {
+        const purpose = survey.purpose;
+        return t.attributes.purpose.choices[purpose].shortTitle;
+      },
     },
     {
       slug: "isActive",
@@ -231,7 +244,29 @@ export default async function ProgramFormsPage({
       required: true,
       ...t.attributes.slug,
     },
+    {
+      slug: "purpose",
+      type: "SingleSelect",
+      presentation: "dropdown",
+      required: true,
+      title: t.attributes.purpose.title,
+      helpText: t.attributes.purpose.helpText,
+      choices: [
+        {
+          slug: "DEFAULT",
+          title: t.attributes.purpose.choices.DEFAULT.title,
+        },
+        {
+          slug: "INVITE",
+          title: t.attributes.purpose.choices.INVITE.title,
+        },
+      ],
+    },
   ];
+
+  const createOfferFormDefaults = {
+    purpose: "DEFAULT",
+  };
 
   return (
     <ProgramAdminView
@@ -249,6 +284,7 @@ export default async function ProgramFormsPage({
         >
           <SchemaForm
             fields={createOfferFormFields}
+            values={createOfferFormDefaults}
             messages={translations.SchemaForm}
           />
         </ModalButton>

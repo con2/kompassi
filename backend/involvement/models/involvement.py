@@ -6,14 +6,17 @@ from typing import TYPE_CHECKING, Self
 
 from django.db import models, transaction
 
+from badges.models import Badge
 from core.models.event import Event
 from core.models.person import Person
 from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
+from forms.models.survey import SurveyPurpose
 
-from .enums import InvolvementApp
+from .enums import InvolvementApp, InvolvementType
+from .invitation import Invitation
 
 if TYPE_CHECKING:
     from forms.models.response import Response
@@ -23,12 +26,11 @@ if TYPE_CHECKING:
 
 from .registry import Registry
 
-APP_CHOICES = [(app.value, app.label) for app in InvolvementApp]
+# NOTE SUPPORTED_LANGUAGES
 DIMENSIONS = [
     DimensionDTO(
         slug="app",
         title=dict(
-            # NOTE SUPPORTED_LANGUAGES
             en="Application",
             fi="Sovellus",
             sv="Applikation",
@@ -37,11 +39,37 @@ DIMENSIONS = [
         choices=[
             DimensionValueDTO(
                 slug=app.value,
-                # TODO SUPPORTED_LANGUAGES
                 title=dict(en=app.label),
                 is_technical=True,
             )
             for app in InvolvementApp
+        ],
+    ),
+    DimensionDTO(
+        slug="type",
+        title=dict(
+            en="Type",
+            fi="Tyyppi",
+            sv="Typ",
+        ),
+        is_technical=True,
+        choices=[
+            DimensionValueDTO(
+                slug="program-offer",
+                title=dict(
+                    en="Program offer",
+                    fi="Ohjelmatarjous",
+                ),
+                is_technical=True,
+            ),
+            DimensionValueDTO(
+                slug="program-host",
+                title=dict(
+                    en="Program host",
+                    fi="Ohjelmanumero",
+                ),
+                is_technical=True,
+            ),
         ],
     ),
 ]
@@ -57,6 +85,7 @@ class Involvement(models.Model):
         Universe,
         on_delete=models.CASCADE,
         related_name="involvements",
+        db_index=False,
     )
 
     person: models.ForeignKey[Person] = models.ForeignKey(
@@ -72,22 +101,31 @@ class Involvement(models.Model):
         db_index=False,
     )
 
-    # turn these into subject_int_id and subject_uuid if there are very many
-    program: models.ForeignKey[Program] = models.ForeignKey(
-        "program_v2.Program",
-        on_delete=models.CASCADE,
+    invitation: models.ForeignKey[Invitation] | None = models.ForeignKey(
+        Invitation,
+        help_text="Invitation that was used to create this involvement, if any.",
+        on_delete=models.SET_NULL,
         related_name="involvements",
         null=True,
         blank=True,
         db_index=False,
     )
-    response: models.ForeignKey[Response] = models.ForeignKey(
+
+    program: models.ForeignKey[Program] | None = models.ForeignKey(
+        "program_v2.Program",
+        on_delete=models.CASCADE,
+        related_name="involvements",
+        null=True,
+        blank=True,
+        db_index=False,  # partial index in Meta.indexes
+    )
+    response: models.ForeignKey[Response] | None = models.ForeignKey(
         "forms.Response",
         on_delete=models.CASCADE,
         related_name="involvements",
         null=True,
         blank=True,
-        db_index=False,
+        db_index=False,  # partial index in Meta.indexes
     )
 
     created_at = models.DateTimeField(auto_now_add=True)
@@ -95,37 +133,33 @@ class Involvement(models.Model):
 
     is_active = models.BooleanField(default=True)
 
-    app_name = models.CharField(
-        choices=APP_CHOICES,
-        max_length=max(len(k) for (k, _) in APP_CHOICES),
-    )
-
     cached_dimensions = models.JSONField(
         default=dict,
         blank=True,
     )
 
     dimensions: models.QuerySet[InvolvementDimensionValue]
+    id: int
+    pk: int
 
     class Meta:
         indexes = [
-            models.Index(fields=["universe", "person", "app_name"]),
+            # covers most program_v2 queries
+            models.Index(fields=["universe", "person", "program", "response"]),
+            # get contents of a registry
+            # is this person in this registry?
             models.Index(fields=["registry", "person"]),
             models.Index(
-                fields=["program", "person"],
+                fields=["program"],
                 condition=models.Q(program__isnull=False),
                 name="involvement_program_idx",
             ),
             models.Index(
-                fields=["response", "person"],
+                fields=["response"],
                 condition=models.Q(response__isnull=False),
                 name="involvement_response_idx",
             ),
         ]
-
-    @property
-    def app(self) -> InvolvementApp:
-        return InvolvementApp(self.app_name)
 
     @cached_property
     def scope(self) -> Scope:
@@ -135,22 +169,33 @@ class Involvement(models.Model):
     def event(self) -> Event:
         return self.scope.event
 
+    # TODO Ephemeral dimensions
+    # Hoist app and type from dimensions to the Involvement table
+    # but make them behave like dimensions for purposes of filtering
+    @property
+    def app(self) -> InvolvementApp:
+        return InvolvementApp(self.cached_dimensions["app"][0])
+
+    @property
+    def type(self) -> InvolvementType:
+        return InvolvementType(self.cached_dimensions["type"][0])
+
     @property
     def description(self) -> str:
         """
         Returns a human-readable description of the involvement.
         """
-        if self.app == InvolvementApp.PROGRAM:
-            if self.program:
-                return f"Program item: {self.program.title}"
-            elif self.response:
-                values, warnings = self.response.get_processed_form_data(field_slugs=["title"])
-                title = values.get("title") if "title" not in warnings else None
+        match self.type:
+            case InvolvementType.PROGRAM_OFFER if self.response:
+                title = self.response.cached_key_fields.get("title", "")
                 return f"Program offer: {title}"
-        elif self.app == InvolvementApp.FORMS and self.response:
-            return f"Survey response: {self.response.survey.slug}"
-
-        return f"Unknown involvement belonging to the {self.app.label} app"
+            case InvolvementType.PROGRAM_HOST if self.program:
+                title = self.program.title
+                return f"Program host: {title}"
+            case InvolvementType.SURVEY_RESPONSE if self.response:
+                return f"Survey response: {self.response.survey.slug}"
+            case _:
+                return f"Invalid involvement of type {self.type!r}"
 
     @classmethod
     def setup_dimensions(cls, universe: Universe) -> None:
@@ -246,22 +291,29 @@ class Involvement(models.Model):
         if cache.universe.app != "involvement":
             raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
 
-        app = InvolvementApp.from_app_name(response.survey.app)
+        involvement_type = response.survey.involvement_type
+        if involvement_type is None:
+            raise ValueError(f"Survey {response.survey} does not have an involvement type")
+        app = involvement_type.app
 
         involvement, _created = cls.objects.update_or_create(
             universe=cache.universe,
             person=response.created_by.person,
             program=None,
             response=response,
-            app_name=app.value,
             defaults=dict(
                 registry=response.survey.registry,
                 is_active=response.survey.workflow.is_response_active(response),
             ),
         )
 
-        involvement.set_dimension_values(dict(app=[app.value]), cache=cache)
+        dimensions = dict(
+            app=[app.value],
+            type=[involvement_type.value],
+        )
+        involvement.set_dimension_values(dimensions, cache=cache)
         involvement.refresh_cached_dimensions()
+        involvement.refresh_dependents()
 
         return involvement
 
@@ -276,12 +328,13 @@ class Involvement(models.Model):
             raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
 
         app = InvolvementApp.PROGRAM
+        involvement_type = InvolvementType.PROGRAM_HOST
 
-        involvement, _created = cls.objects.get_or_create(
+        # NOTE update_or_create for backfill
+        involvement, _created = cls.objects.update_or_create(
             universe=cache.universe,
             person=program_offer.created_by.person,
             program=program,
-            app_name=app.value,
             defaults=dict(
                 response=program_offer,
                 registry=program_offer.survey.registry,
@@ -289,7 +342,69 @@ class Involvement(models.Model):
             ),
         )
 
-        involvement.set_dimension_values(dict(app=[app.value]), cache=cache)
+        dimensions = dict(
+            app=[app.value],
+            type=[involvement_type.value],  # TODO others
+        )
+        involvement.set_dimension_values(dimensions, cache=cache)
         involvement.refresh_cached_dimensions()
+        involvement.refresh_dependents()
 
         return involvement
+
+    @classmethod
+    def from_accepted_invitation(
+        cls,
+        invitation: Invitation,
+        response: Response,
+        cache: DimensionCache,
+    ):
+        """
+        Used to accept program host invitations.
+        In the future perhaps also other types of Invitations.
+        """
+        if cache.universe.app != "involvement":
+            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
+
+        if response.survey.purpose != SurveyPurpose.INVITE:
+            raise ValueError(f"Expected response to be an invitation response, got {response.survey.purpose!r}")
+
+        involvement_type = response.survey.involvement_type
+        if involvement_type is None:
+            raise ValueError(f"Survey {response.survey} does not have an involvement type")
+
+        app = involvement_type.app
+
+        involvement, created = cls.objects.get_or_create(
+            universe=cache.universe,
+            person=response.created_by.person,
+            program=invitation.program,
+            defaults=dict(
+                response=response,
+                registry=response.survey.registry,
+                is_active=response.survey.workflow.is_response_active(response),
+                invitation=invitation,
+            ),
+        )
+
+        if not created:
+            raise ValueError(
+                f"Involvement already exists for person {response.created_by.person} and program {invitation.program}"
+            )
+
+        dimensions = dict(
+            app=[app.value],
+            type=[involvement_type.value],
+        )
+        involvement.set_dimension_values(dimensions, cache=cache)
+        involvement.refresh_cached_dimensions()
+        involvement.refresh_dependents()
+
+        return involvement
+
+    def refresh_dependents(self):
+        if self.program:
+            self.program.refresh_cached_fields()
+
+        if self.event.badges_event_meta:
+            Badge.ensure(self.event, self.person)

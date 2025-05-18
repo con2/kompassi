@@ -24,6 +24,15 @@ const translations: Translations = {
   },
   Profile: {
     attributes: {
+      displayName: "Nimi",
+      firstName: "Etunimi",
+      lastName: "Sukunimi",
+      nick: "Nick",
+      phoneNumber: "Puhelinnumero",
+      email: "Sähköpostiosoite",
+      discordHandle: "Discord-tunnus",
+    },
+    advancedAttributes: {
       displayName: {
         title: "Nimi",
       },
@@ -1041,13 +1050,38 @@ const translations: Translations = {
           title: "Tekninen nimi",
           helpText: (
             <>
-              Ohjelmalomakkeen tekninen nimi. Täytyy olla uniikki tapahtuman
-              sisällä. Ei voi muuttaa luomisen jälkeen. Voi sisältää pieniä
-              kirjaimia, numeroita ja väliviivoja (-). Tulee osaksi osoitetta:{" "}
-              <code>/event-slug/form-slug</code> (esim.{" "}
-              <code>/tracon2025/offer-program</code>).
+              Keksi ohjelmalomakkeelle tekninen nimi, joka tulee osaksi
+              lomakkeen osoitetta:{" "}
+              <code>/tapahtuman-tekninen-nimi/lomakkeen-tekninen-nimi</code> .
+              Esimerkiksi osoitteessa <code>/tracon2025/offer-program</code>{" "}
+              lomakkeen tekninen nimi on <code>offer-program</code>. Teknisen
+              nimen tulee olla uniikki tapahtuman sisällä, ja sitä ei voi
+              muuttaa lomakkeen luomisen jälkeen. Tekninen nimi voi sisältää{" "}
+              <strong>pieniä</strong> kirjaimia, numeroita ja väliviivoja (-).
             </>
           ),
+        },
+        purpose: {
+          title: "Käyttötarkoitus",
+          shortTitle: "Tarkoitus",
+          helpText: (
+            <>
+              Ohjelmalomakkeita voidaan käyttää eri käyttötarkoituksiin, kuten
+              ohjelmatarjousten keräämiseen tai ohjelmanpitäjäkutsujen
+              hyväksymiseen. Lomakkeen käyttötarkoitusta ei voi muuttaa
+              lomakkeen luomisen jälkeen.
+            </>
+          ),
+          choices: {
+            DEFAULT: {
+              title: "Ohjelman tarjoaminen",
+              shortTitle: "Tarjous",
+            },
+            INVITE: {
+              title: "Ohjelmanpitäjäkutsun hyväksyminen",
+              shortTitle: "Kutsu",
+            },
+          },
         },
       },
       actions: {
@@ -1164,6 +1198,22 @@ const translations: Translations = {
       actions: {
         inviteProgramHost: {
           title: "Kutsu ohjelmanpitäjä",
+          attributes: {
+            email: {
+              title: "Sähköposti",
+              helpText:
+                "Tarkista sähköpostiosoite huolellisesti! Kutsu lähetetään tähän osoitteeseen.",
+            },
+            survey: {
+              title: "Ohjelmanpitäjälomake",
+              helpText:
+                "Kun vastaanottaja hyväksyy kutsun, häntä pyydetään täyttämään tämä lomake.",
+            },
+            language: {
+              title: "Kieli",
+              helpText: "Millä kielellä kutsu lähetetään?",
+            },
+          },
           message: (
             <>
               Kutsu ohjelmanpitäjä syöttämällä hänen sähköpostiosoitteensa alla
@@ -1179,12 +1229,18 @@ const translations: Translations = {
         removeProgramHost: {
           title: "Poista ohjelmanpitäjä",
           label: "Poista",
-          message: (
+          message: (programHost: string, programTitle: string) => (
             <>
-              Haluatko varmasti poistaa ohjelmanpitäjän ohjelmanumerosta?
-              Poiston peruminen edellyttää kutsun lähettämistä uudelleen.
-              Ohjelmanpitäjälle ei lähetetä ilmoitusta siitä, että hänet on
-              poistettu ohjelmanumerosta.
+              <p>
+                Haluatko varmasti poistaa ohjelmanpitäjän{" "}
+                <strong>{programHost}</strong> ohjelmanumerosta{" "}
+                <strong>{programTitle}</strong>?
+              </p>{" "}
+              <p>
+                Poiston peruminen edellyttää kutsun lähettämistä uudelleen.
+                Ohjelmanpitäjälle ei lähetetä ilmoitusta siitä, että hänet on
+                poistettu ohjelmanumerosta.
+              </p>
             </>
           ),
           modalActions: {
@@ -1306,6 +1362,8 @@ const translations: Translations = {
             SOFT: "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi, jotta voit palata katsomaan tai muokkaamaan vastauksiasi, mutta käyttäjäprofiiliasi ei jaeta kyselyn omistajan kanssa.",
             NAME_AND_EMAIL:
               "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Nimesi ja sähköpostiosoitteesi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
+            FULL_PROFILE:
+              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Koko käyttäjäprofiilisi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
           },
         },
         thirdPerson: {
@@ -1315,6 +1373,8 @@ const translations: Translations = {
             SOFT: "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä, jotta hän voi palata katsomaan tai muokkaamaan vastauksiaan, mutta hänen henkilöllisyyttään ei jaeta sinulle.",
             NAME_AND_EMAIL:
               "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Hänen nimensä ja sähköpostiosoitteensa jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan.",
+            FULL_PROFILE:
+              "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Koko käyttäjäprofiili jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan.",
           },
         },
         admin: {
@@ -1502,6 +1562,15 @@ const translations: Translations = {
         }. Voit vastata tähän kyselyyn enintään ${maxResponsesPerUser} ${
           maxResponsesPerUser === 1 ? "kerran" : "kertaa"
         }.`,
+    },
+    specialPurposeSurvey: {
+      title: "Kyselyyn ei voi vastata tätä kautta",
+      defaultMessage: (
+        <>
+          Tämän kyselyn käyttötarkoitusta on rajoitettu, eikä siihen voi vastata
+          tämän näkymän kautta.
+        </>
+      ),
     },
     warnings: {
       choiceNotFound:

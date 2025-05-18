@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
-from core.graphql.user import LimitedUserType
+from core.graphql.user_limited import LimitedUserType
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.utils import resolve_local_datetime_field
 

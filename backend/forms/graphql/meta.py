@@ -10,14 +10,12 @@ from core.utils import get_objects_within_period, normalize_whitespace
 from ..models.enums import SurveyApp
 from ..models.meta import FormsEventMeta, FormsProfileMeta
 from ..models.response import Response
-from ..models.survey import Survey
+from ..models.survey import Survey, SurveyPurpose
+from .enums import SurveyAppType, SurveyPurposeType
 from .response_profile import ProfileResponseType
 from .survey_full import FullSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
-
-
-SurveyAppType = graphene.Enum.from_enum(SurveyApp)
 
 
 class SurveyRelation(Enum):
@@ -26,10 +24,13 @@ class SurveyRelation(Enum):
 
 
 class FormsEventMetaType(graphene.ObjectType):
-    surveys = graphene.List(
-        graphene.NonNull(FullSurveyType),
+    surveys = graphene.NonNull(
+        graphene.List(
+            graphene.NonNull(FullSurveyType),
+        ),
         include_inactive=graphene.Boolean(),
         app=graphene.NonNull(SurveyAppType),
+        purpose=graphene.List(graphene.NonNull(SurveyPurposeType)),
     )
 
     @staticmethod
@@ -38,12 +39,16 @@ class FormsEventMetaType(graphene.ObjectType):
         info,
         app: SurveyApp,
         include_inactive: bool = False,
+        purpose: list[SurveyPurpose] | None = None,
     ):
         """
         By default only returns active surveys, ie. surveys with `activeFrom` in the past and
         `activeUntil` either unset or in the future.
 
         To get inactive surveys as well, pass `includeInactive: true` (authorization required).
+
+        By default only returns surveys with `purpose: DEFAULT`. To get special purpose surveys,
+        specify `purposes`.
 
         NOTE: `app` does not currently accept `null` (for surveys of all apps)
         because access control is performed app by app (`app` CBAC claim).
@@ -52,10 +57,15 @@ class FormsEventMetaType(graphene.ObjectType):
         """
         qs = Survey.objects.filter(event=meta.event, app=app.value)
 
+        if purpose:
+            qs = qs.filter(purpose_slug__in=[SurveyPurpose(p).value for p in purpose])
+        else:
+            qs = qs.filter(purpose_slug=SurveyPurpose.DEFAULT.value)
+
         if include_inactive:
             graphql_check_model(Survey, meta.event.scope, info, app=app.value)
         else:
-            qs = get_objects_within_period(Survey, event=meta.event)
+            qs = get_objects_within_period(qs)
 
         return qs
 
@@ -63,6 +73,7 @@ class FormsEventMetaType(graphene.ObjectType):
         FullSurveyType,
         slug=graphene.String(required=True),
         app=graphene.Argument(SurveyAppType),
+        purpose=graphene.Argument(SurveyPurposeType),
     )
 
     @staticmethod
@@ -71,6 +82,7 @@ class FormsEventMetaType(graphene.ObjectType):
         info,
         slug: str,
         app: SurveyApp | None = None,
+        purpose: SurveyPurpose | None = None,
     ):
         """
         Pass `app: null` to include surveys of all apps (default: `FORMS`).
@@ -79,6 +91,9 @@ class FormsEventMetaType(graphene.ObjectType):
 
         if app:
             qs = qs.filter(app=app)
+
+        if purpose:
+            qs = qs.filter(purpose_slug=SurveyPurpose(purpose).value)
 
         survey = qs.first()
 

@@ -1,0 +1,19 @@
+Dear recipient,
+
+The program coordinator has invited you as a program host for the following program item:
+
+Event: {{ event_name|safe }}
+Program item title: {{ program_title|safe }}
+
+To accept the invitation, please visit the following address in your browser and fill out the form you find there:
+
+{{ accept_url|safe }}
+
+You will need a Kompassi account to accept the invitation. If you do not have a Kompassi account yet, you can register for one.
+
+Please note that accepting this invitation is necessary in order to receive organizer benefits.
+
+Best regards,
+--
+On behalf of {{ event_name }}
+Kompassi Event Management System

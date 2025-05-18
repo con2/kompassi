@@ -19,6 +19,7 @@ graphql(`
     activeFrom
     activeUntil
     canRemove
+    purpose
 
     languages {
       title
@@ -91,7 +92,8 @@ export async function generateMetadata({ params }: Props) {
 export default async function EditSurveyPage({ params }: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Survey;
+  const t = translations.Program.ProgramForm;
+  const surveyT = translations.Survey;
   const session = await auth();
 
   // TODO encap
@@ -112,14 +114,32 @@ export default async function EditSurveyPage({ params }: Props) {
 
   const fields: Field[] = [
     {
+      slug: "purpose",
+      type: "SingleSelect",
+      presentation: "dropdown",
+      readOnly: true,
+      title: t.attributes.purpose.title,
+      helpText: t.attributes.purpose.helpText,
+      choices: [
+        {
+          slug: "DEFAULT",
+          title: t.attributes.purpose.choices.DEFAULT.title,
+        },
+        {
+          slug: "INVITE",
+          title: t.attributes.purpose.choices.INVITE.title,
+        },
+      ],
+    },
+    {
       slug: "activeFrom",
       type: "DateTimeField",
-      ...t.attributes.activeFrom,
+      ...surveyT.attributes.activeFrom,
     },
     {
       slug: "activeUntil",
       type: "DateTimeField",
-      ...t.attributes.activeUntil,
+      ...surveyT.attributes.activeUntil,
     },
   ];
 
@@ -136,7 +156,7 @@ export default async function EditSurveyPage({ params }: Props) {
           values={survey}
           messages={translations.SchemaForm}
         />
-        <SubmitButton>{t.actions.saveProperties}</SubmitButton>
+        <SubmitButton>{surveyT.actions.saveProperties}</SubmitButton>
       </form>
     </ProgramFormEditorView>
   );

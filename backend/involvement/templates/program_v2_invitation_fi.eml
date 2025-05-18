@@ -1,0 +1,19 @@
+Hyvä vastaanottaja,
+
+Ohjelmavastaava on kutsunut sinut ohjelmanumeron järjestäjäksi:
+
+Tapahtuma: {{ event_name|safe }}
+Ohjelmanumeron otsikko: {{ program_title|safe }}
+
+Hyväksy kutsu vierailemalla selaimella tässä osoitteessa ja täyttämällä sieltä löytyvä lomake:
+
+{{ accept_url|safe }}
+
+Kutsun hyväksymiseksi tarvitset Kompassi-tunnuksen. Mikäli sinulla ei vielä ole Kompassi-tunnusta, voit rekisteröidä itsellesi sellaisen.
+
+Huomaathan, että tämän kutsun hyväksyminen on välttämätöntä ohjelmanjärjestäjän etujen saamiseksi.
+
+Ystävällisin terveisin
+--
+{{ event_name|safe }} -tapahtuman puolesta
+Kompassi-tapahtumanhallintajärjestelmä

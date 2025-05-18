@@ -85,7 +85,10 @@ class FullProgramType(LimitedProgramType):
 
     @staticmethod
     def resolve_program_hosts(program: Program, info):
-        return program.involvements.filter(is_active=True, program=program).select_related("person")
+        return program.involvements.filter(
+            is_active=True,
+            program=program,
+        ).select_related("person")
 
     program_hosts = graphene.NonNull(graphene.List(graphene.NonNull(LimitedInvolvementType)))
 

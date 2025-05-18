@@ -1,4 +1,5 @@
 import { title } from "process";
+import Email from "next-auth/providers/email";
 import { JSX, ReactNode } from "react";
 
 const translations = {
@@ -24,6 +25,15 @@ const translations = {
   },
   Profile: {
     attributes: {
+      displayName: "Name",
+      firstName: "First name",
+      lastName: "Last name",
+      nick: "Nickname",
+      phoneNumber: "Phone number",
+      email: "Email",
+      discordHandle: "Discord handle",
+    },
+    advancedAttributes: {
       displayName: {
         title: "Name",
       },
@@ -1063,6 +1073,27 @@ const translations = {
             </>
           ),
         },
+        purpose: {
+          title: "Purpose",
+          shortTitle: "Purpose",
+          helpText: (
+            <>
+              Program forms can be used for different purposes, such as
+              collecting program offers or accepting program host invitations.
+              Cannot be changed after creation.
+            </>
+          ),
+          choices: {
+            DEFAULT: {
+              title: "Program offer",
+              shortTitle: "Offer",
+            },
+            INVITE: {
+              title: "Program host invite",
+              shortTitle: "Invite",
+            },
+          },
+        },
       },
       actions: {
         viewOffers: "View offers",
@@ -1178,6 +1209,22 @@ const translations = {
       actions: {
         inviteProgramHost: {
           title: "Invite program host",
+          attributes: {
+            email: {
+              title: "Email address",
+              helpText:
+                "Please check the email address carefully. The invitation will be sent to this address.",
+            },
+            survey: {
+              title: "Program host form",
+              helpText:
+                "When the receiver accepts the invitation, they will be asked to fill in this form.",
+            },
+            language: {
+              title: "Language",
+              helpText: "Which language should the invitation be sent in?",
+            },
+          },
           message: (
             <>
               To invite a program host, please enter their email address below.
@@ -1193,11 +1240,17 @@ const translations = {
         removeProgramHost: {
           title: "Remove program host",
           label: "Remove",
-          message: (
+          message: (programHost: string, programItem: string) => (
             <>
-              Are you sure you want to remove this program host from the program
-              item? To reverse this action, you will need to invite them again.
-              They will not be notified of this action.
+              <p>
+                Are you sure you want to remove the program host{" "}
+                <strong>{programHost}</strong> from the program item{" "}
+                <strong>{programItem}</strong>?
+              </p>{" "}
+              <p>
+                To reverse this action, you will need to invite them again. They
+                will not be notified of this action.
+              </p>
             </>
           ),
           modalActions: {
@@ -1317,6 +1370,8 @@ const translations = {
             SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your user profile will not be shared with the survey owner.",
             NAME_AND_EMAIL:
               "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses.",
+            FULL_PROFILE:
+              "If you answer this survey while logged in, it will be connected to your user account. Your full profile will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         thirdPerson: {
@@ -1326,6 +1381,8 @@ const translations = {
             SOFT: "If the user answer this survey while logged in, their response will be connected to their user account, so that they can return to view or edit their responses, but their identities will not be shared with you.",
             NAME_AND_EMAIL:
               "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses.",
+            FULL_PROFILE:
+              "If you answer this survey while logged in, it will be connected to your user account. Your full profile will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         admin: {
@@ -1512,6 +1569,15 @@ const translations = {
         `You have already submitted ${countResponsesByCurrentUser} response${
           countResponsesByCurrentUser === 1 ? "" : "s"
         } to this survey. The maximum number of responses per user is ${maxResponsesPerUser}.`,
+    },
+    specialPurposeSurvey: {
+      title: "Special purpose survey",
+      defaultMessage: (
+        <>
+          This survey is intended for a special purpose and cannot be filled in
+          through the public interface.
+        </>
+      ),
     },
     warnings: {
       choiceNotFound:

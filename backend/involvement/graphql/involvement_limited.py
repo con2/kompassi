@@ -5,6 +5,7 @@ import graphene_django
 
 from core.graphql.person_limited import LimitedPersonType
 from involvement.models.involvement import Involvement
+from program_v2.graphql.program_limited import LimitedProgramType
 
 
 class LimitedInvolvementType(graphene_django.DjangoObjectType):
@@ -14,7 +15,7 @@ class LimitedInvolvementType(graphene_django.DjangoObjectType):
 
     class Meta:
         model = Involvement
-        fields = ("id", "is_active", "created_at", "updated_at", "person")
-        description = "Limited program host type. Used for the program host field in the program list."
+        fields = ("id", "is_active", "created_at", "updated_at", "person", "program")
 
     person = graphene.NonNull(LimitedPersonType)
+    program = graphene.Field(LimitedProgramType)

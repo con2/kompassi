@@ -24,8 +24,10 @@ from forms.graphql.mutations.update_form_fields import UpdateFormFields
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
 from forms.graphql.mutations.update_survey_default_dimensions import UpdateSurveyDefaultDimensions
+from involvement.graphql.mutations.accept_invitation import AcceptInvitation
 from program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
 from program_v2.graphql.mutations.create_program_form import CreateProgramForm
+from program_v2.graphql.mutations.delete_program_host import DeleteProgramHost
 from program_v2.graphql.mutations.favorites import (
     MarkProgramAsFavorite,
     MarkScheduleItemAsFavorite,
@@ -33,6 +35,7 @@ from program_v2.graphql.mutations.favorites import (
     UnmarkScheduleItemAsFavorite,
 )
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
+from program_v2.graphql.mutations.invite_program_host import InviteProgramHost
 from program_v2.graphql.mutations.update_program import UpdateProgram
 from program_v2.graphql.mutations.update_program_dimensions import UpdateProgramDimensions
 from program_v2.graphql.mutations.update_program_form import UpdateProgramForm
@@ -118,6 +121,9 @@ class Mutation(graphene.ObjectType):
     put_dimension_value = PutDimensionValue.Field()
     delete_dimension_value = DeleteDimensionValue.Field()
 
+    # Involvement
+    accept_invitation = AcceptInvitation.Field()
+
     # Program v2
     mark_program_as_favorite = MarkProgramAsFavorite.Field()
     unmark_program_as_favorite = UnmarkProgramAsFavorite.Field()
@@ -135,6 +141,9 @@ class Mutation(graphene.ObjectType):
     accept_program_offer = AcceptProgramOffer.Field()
     update_program = UpdateProgram.Field()
     update_program_dimensions = UpdateProgramDimensions.Field()
+
+    invite_program_host = InviteProgramHost.Field()
+    delete_program_host = DeleteProgramHost.Field()
 
     # Tickets v2
     create_product = CreateProduct.Field()

@@ -23,10 +23,11 @@ const query = graphql(`
       slug
 
       forms {
-        survey(slug: $surveySlug) {
+        survey(slug: $surveySlug, app: PROGRAM_V2, purpose: DEFAULT) {
           slug
           title(lang: $locale)
           canRemove
+          purpose
           languages {
             language
           }

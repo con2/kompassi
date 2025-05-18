@@ -7,6 +7,7 @@ import CardTitle from "react-bootstrap/CardTitle";
 
 import { submit } from "./actions";
 import { graphql } from "@/__generated__";
+import { SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Field, validateFields } from "@/components/forms/models";
@@ -50,6 +51,7 @@ const query = graphql(`
           maxResponsesPerUser
           countResponsesByCurrentUser
           isActive
+          purpose
 
           form(lang: $locale) {
             language
@@ -119,6 +121,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     anonymity,
     maxResponsesPerUser,
     countResponsesByCurrentUser,
+    purpose,
   } = event.forms.survey;
   const { isActive } = event.forms.survey;
   const { title, description, fields, language } = event.forms.survey.form;
@@ -129,6 +132,15 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     if (!session) {
       return <SignInRequired messages={translations.SignInRequired} />;
     }
+  }
+
+  if (purpose !== SurveyPurpose.Default) {
+    return (
+      <ViewContainer>
+        <ViewHeading>{t.specialPurposeSurvey.title}</ViewHeading>
+        <p>{t.specialPurposeSurvey.defaultMessage}</p>
+      </ViewContainer>
+    );
   }
 
   if (maxResponsesPerUser && countResponsesByCurrentUser) {
@@ -158,12 +170,12 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
       {
         slug: "displayName",
         type: "SingleLineText",
-        title: translations.Profile.attributes.displayName.title,
+        title: translations.Profile.advancedAttributes.displayName.title,
       },
       {
         slug: "email",
         type: "SingleLineText",
-        title: translations.Profile.attributes.email.title,
+        title: translations.Profile.advancedAttributes.email.title,
       },
     ];
   }

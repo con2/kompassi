@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.http import HttpRequest
 
 from ...models.person import Person
-from ..user import LimitedUserType
+from ..user_limited import LimitedUserType
 
 
 class ConfirmEmailInput(graphene.InputObjectType):

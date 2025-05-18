@@ -13,7 +13,7 @@ class InvolvementAdmin(admin.ModelAdmin):
         "is_active",
     )
     list_display_links = ("event", "person")
-    list_filter = ("universe__scope__event", "app_name", "is_active")
+    list_filter = ("universe__scope__event", "is_active")
     search_fields = ("person__surname", "person__first_name")
     ordering = ("universe", "person__surname", "person__first_name")
 
