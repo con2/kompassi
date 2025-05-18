@@ -131,6 +131,7 @@ const translations: Translations = {
     },
     sourceRegistry: "Henkilötietojen lähde",
     targetRegistry: "Henkilötietojen vastaanottaja",
+    dataToBeTransferred: "Luovutettavat henkilötiedot",
   },
   Modal: {
     submit: "Submit",
@@ -150,6 +151,7 @@ const translations: Translations = {
     tickets: "Lipputilaukset",
     responses: "Kyselyvastaukset",
     keys: "Salausavaimet",
+    program: "Ohjelmanumerot ja -tarjoukset",
     signIn: "Kirjaudu sisään",
     signOut: "Kirjaudu ulos",
   },
@@ -970,12 +972,15 @@ const translations: Translations = {
     singleTitle: "Ohjelmanumero",
     adminListTitle: "Ohjelmanumerot",
     inEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
+    tableFooter: (numPrograms: number) =>
+      `${numPrograms} ohjelmanumero${numPrograms === 1 ? "" : "a"}.`,
     attributes: {
       slug: {
         title: "Tekninen nimi",
         helpText:
           "Ohjelmanumeron tekninen nimi. Täytyy olla uniikki tapahtuman sisällä. Ei voi muuttaa luomisen jälkeen. Voi sisältää pieniä kirjaimia, numeroita ja väliviivoja (-). Tulee osaksi osoitetta: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (esim. <code>/tracon2025/programs/opening-ceremony</code>).",
       },
+      event: "Tapahtuma",
       title: "Otsikko",
       actions: "Toiminnot",
       description: "Kuvaus",
@@ -1055,6 +1060,36 @@ const translations: Translations = {
       programHosts: "Ohjelmanpitäjät",
       dimensions: "Dimensiot",
       annotations: "Lisätiedot",
+    },
+
+    profile: {
+      title: "Ohjelmanumerot ja ohjelmatarjoukset",
+      programItems: {
+        listTitle: "Ohjelmanumerot joissa olet ohjelmanpitäjänä",
+        description: (
+          <>
+            Tässä näet ohjelmanumerot, joihin sinut on listattu
+            ohjelmanpitäjäksi ja jotka on hyväksytty tapahtuman ohjelmaan.
+          </>
+        ),
+        tableFooter: (count: number) =>
+          count === 1 ? <>Yksi ohjelmanumero.</> : <>{count} ohjelmanumeroa.</>,
+      },
+      programOffers: {
+        listTitle: "Avoimet ohjelmatarjoukset",
+        description: (
+          <>
+            Tässä näet tekemäsi ohjelmatarjoukset, joita ei ole vielä hyväksytty
+            tai hylätty.
+          </>
+        ),
+        tableFooter: (count: number) =>
+          count === 1 ? (
+            <>Yksi ohjelmatarjous.</>
+          ) : (
+            <>{count} ohjelmatarjousta.</>
+          ),
+      },
     },
 
     ProgramForm: {
@@ -1759,10 +1794,65 @@ const translations: Translations = {
   },
 
   Invitation: {
+    listTitle: "Avoimet kutsut",
+    listDescription: (
+      <>
+        Nämä henkilöt on kutsuttu ohjelmanpitäjiksi tähän ohjelmanumeroon, mutta
+        he eivät ole vielä hyväksyneet kutsua.
+      </>
+    ),
+    attributes: {
+      createdAt: "Lähetysaika",
+      email: "Sähköposti",
+      count: (numInvitations: number) =>
+        numInvitations === 1 ? (
+          <>Yksi avoin kutsu.</>
+        ) : (
+          <>{numInvitations} avointa kutsua.</>
+        ),
+    },
     errors: {
       alreadyUsed: {
         title: "Kutsu on jo käytetty",
         message: "Tämä kutsu on jo käytetty. Kutsun voi käyttää vain kerran.",
+      },
+    },
+    actions: {
+      revoke: {
+        title: "Peru kutsu",
+        label: "Peru",
+        message: (email: string) => (
+          <>
+            Haluatko varmasti perua osoitteeseen <strong>{email}</strong>{" "}
+            lähetetyn kutsun? Vastaanottajalle ei lähetetä ilmoitusta
+            peruutuksesta. Jos tulet toisiin ajatuksiin, on sinun lähetettävä
+            vastaanottajalle uusi kutsu.
+          </>
+        ),
+        modalActions: {
+          submit: "Peru kutsu",
+          cancel: "Sulje perumatta",
+        },
+      },
+      resend: {
+        title: "Kutsun uudelleenlähetys",
+        label: "Lähetä uudelleen",
+        message: (email: string) => (
+          <>
+            Haluatko lähettää osoitteeseen <strong>{email}</strong> lähetetyn
+            kutsun uudelleen? Vastaanottaja saa uuden sähköpostiviestin, joka on
+            sisällöltään sama kuin alkuperäinen kutsuviesti.
+          </>
+        ),
+        modalActions: {
+          submit: "Lähetä uudelleen",
+          cancel: "Sulje uudelleenlähettämättä",
+        },
+        success: (email: string) => (
+          <>
+            Kutsu osoitteeseen <strong>{email}</strong> lähetettiin uudelleen.
+          </>
+        ),
       },
     },
   },

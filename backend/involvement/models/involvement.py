@@ -375,7 +375,7 @@ class Involvement(models.Model):
 
         app = involvement_type.app
 
-        involvement, created = cls.objects.get_or_create(
+        involvement, created = cls.objects.update_or_create(
             universe=cache.universe,
             person=response.created_by.person,
             program=invitation.program,
@@ -386,11 +386,6 @@ class Involvement(models.Model):
                 invitation=invitation,
             ),
         )
-
-        if not created:
-            raise ValueError(
-                f"Involvement already exists for person {response.created_by.person} and program {invitation.program}"
-            )
 
         dimensions = dict(
             app=[app.value],

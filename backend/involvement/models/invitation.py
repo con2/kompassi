@@ -12,6 +12,7 @@ from django.template.loader import render_to_string
 from django.utils.timezone import now
 
 from core.models.event import Event
+from dimensions.models.scope import Scope
 from event_log_v2.utils.monthly_partitions import UUID7Mixin
 from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 from tickets_v2.optimized_server.utils.uuid7 import uuid7
@@ -89,18 +90,22 @@ class Invitation(UUID7Mixin, models.Model):
     def app(self) -> InvolvementApp:
         return self.involvement_type.app
 
-    @cached_property
+    @property
     def event(self) -> Event:
         return self.survey.event
 
-    @cached_property
+    @property
+    def scope(self) -> Scope:
+        return self.survey.scope
+
+    @property
     def meta(self) -> ProgramV2EventMeta:
         if self.app != InvolvementApp.PROGRAM:
             raise NotImplementedError(f"Invitation not implemented for app {self.app}")
 
         return self.program.meta
 
-    @cached_property
+    @property
     def timezone(self) -> tzinfo:
         return self.event.timezone
 

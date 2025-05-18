@@ -14,7 +14,7 @@ from forms.graphql.response_full import FullResponseType
 from forms.models.response import Response
 from graphql_api.language import DEFAULT_LANGUAGE
 
-from ..filters import ProgramFilters
+from ..filters import ProgramFilters, ProgramUserRelation
 from ..models import (
     Program,
     ProgramV2EventMeta,
@@ -43,7 +43,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         meta: ProgramV2EventMeta,
         info,
         filters: list[DimensionFilterInput] | None = None,
-        favorites_only: bool = False,
+        favorites_only: bool = False,  # TODO use user_relation instead
         hide_past: bool = False,
         updated_after: datetime | None = None,
     ):
@@ -51,7 +51,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         programs = Program.objects.filter(event=meta.event)
         return ProgramFilters.from_graphql(
             filters,
-            favorites_only=favorites_only,
+            user_relation=ProgramUserRelation.FAVORITED if favorites_only else None,
             hide_past=hide_past,
             updated_after=updated_after,
         ).filter_program(programs, user=request.user)
@@ -83,7 +83,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         request: HttpRequest = info.context
         return ProgramFilters.from_graphql(
             filters,
-            favorites_only=favorites_only,
+            user_relation=ProgramUserRelation.FAVORITED if favorites_only else None,
             hide_past=hide_past,
             updated_after=updated_after,
         ).filter_schedule_items(meta.event.schedule_items.all(), user=request.user)
@@ -250,10 +250,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
     program_hosts = graphene.NonNull(graphene.List(graphene.NonNull(FullProgramHostType)))
 
 
-class ProfileProgramInclude(graphene.Enum):
-    FAVORITED = "FAVORITED"
-    SIGNED_UP = "SIGNED_UP"
-    HOSTING = "HOSTING"
+ProgramUserRelationType = graphene.Enum.from_enum(ProgramUserRelation)
 
 
 class ProgramV2ProfileMetaType(graphene.ObjectType):
@@ -263,7 +260,7 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
         info,
         event_slug: str | None = None,
         filters: list[DimensionFilterInput] | None = None,
-        include: list[ProfileProgramInclude] | None = None,  # TODO
+        user_relation: ProgramUserRelation = ProgramUserRelation.FAVORITED,
         hide_past: bool = False,
     ):
         """
@@ -282,15 +279,18 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
 
         return ProgramFilters.from_graphql(
             filters,
-            favorites_only=True,
+            user_relation=user_relation,
             hide_past=hide_past,
-        ).filter_program(programs, user=request.user)
+        ).filter_program(
+            programs,
+            user=request.user,
+        )
 
     programs = graphene.List(
         graphene.NonNull(FullProgramType),
         event_slug=graphene.String(),
         filters=graphene.List(DimensionFilterInput),
-        include=graphene.List(ProfileProgramInclude),
+        user_relation=graphene.Argument(ProgramUserRelationType),
         hide_past=graphene.Boolean(),
         description=normalize_whitespace(resolve_programs.__doc__ or ""),
     )
@@ -301,7 +301,7 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
         info,
         event_slug: str | None = None,
         filters: list[DimensionFilterInput] | None = None,
-        include: list[ProfileProgramInclude] | None = None,  # TODO
+        user_relation: ProgramUserRelation = ProgramUserRelation.FAVORITED,
         hide_past: bool = False,
     ):
         """
@@ -320,15 +320,46 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
 
         return ProgramFilters.from_graphql(
             filters,
-            favorites_only=True,
+            user_relation=user_relation,
             hide_past=hide_past,
-        ).filter_schedule_items(schedule_items, user=request.user)
+        ).filter_schedule_items(
+            schedule_items,
+            user=request.user,
+        )
 
     schedule_items = graphene.List(
         graphene.NonNull(FullScheduleItemType),
         event_slug=graphene.String(),
         filters=graphene.List(DimensionFilterInput),
-        include=graphene.List(ProfileProgramInclude),
+        user_relation=graphene.Argument(ProgramUserRelationType),
         hide_past=graphene.Boolean(),
         description=normalize_whitespace(resolve_programs.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_program_offers(
+        meta: ProgramV2EventMeta,
+        info,
+        filters: list[DimensionFilterInput] | None = None,
+    ):
+        """
+        Returns all responses to all program offer forms of this event.
+        """
+        program_offers = meta.program_offers.all()
+
+        if filters:
+            program_offers = ProgramFilters.from_graphql(
+                filters,
+                user_relation=ProgramUserRelation.HOSTING,
+            ).filter_program_offers(
+                program_offers,
+                user=info.context.user,
+            )
+
+        return program_offers.order_by("-created_at")
+
+    program_offers = graphene.NonNull(
+        graphene.List(graphene.NonNull(FullResponseType)),
+        filters=graphene.List(DimensionFilterInput),
+        description=normalize_whitespace(resolve_program_offers.__doc__ or ""),
     )

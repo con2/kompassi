@@ -1,14 +1,27 @@
 import { notFound } from "next/navigation";
 
-import { inviteProgramHost, deleteProgramHost } from "./actions";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
+import {
+  inviteProgramHost,
+  deleteProgramHost,
+  revokeInvitation,
+  resendInvitation,
+} from "./actions";
 import { graphql } from "@/__generated__";
-import { ProgramAdminDetailHostFragment } from "@/__generated__/graphql";
+import {
+  ProgramAdminDetailHostFragment,
+  ProgramAdminDetailInvitationFragment,
+} from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
+import { auth } from "@/auth";
+import AlertNavigateOnClose from "@/components/AlertNavigateOnClose";
 import { Column, DataTable } from "@/components/DataTable";
+import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
+import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations, SupportedLanguage } from "@/translations";
 
@@ -24,6 +37,14 @@ graphql(`
       phoneNumber
       discordHandle
     }
+  }
+`);
+
+graphql(`
+  fragment ProgramAdminDetailInvitation on LimitedInvitationType {
+    id
+    email
+    createdAt
   }
 `);
 
@@ -56,6 +77,9 @@ const query = graphql(`
           programHosts {
             ...ProgramAdminDetailHost
           }
+          invitations {
+            ...ProgramAdminDetailInvitation
+          }
         }
       }
     }
@@ -67,6 +91,9 @@ interface Props {
     locale: string;
     eventSlug: string;
     programSlug: string;
+  };
+  searchParams: {
+    resent?: string;
   };
 }
 
@@ -91,11 +118,21 @@ export async function generateMetadata({ params }: Props) {
   return { title };
 }
 
-export default async function ProgramAdminDetailPage({ params }: Props) {
+export default async function ProgramAdminDetailPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const profileT = translations.Profile;
+  const inviT = translations.Invitation;
   const t = translations.Program.ProgramHost;
+
+  const session = await auth();
+  if (!session) {
+    return <SignInRequired messages={translations.SignInRequired} />;
+  }
+
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, programSlug, locale },
@@ -107,8 +144,9 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
   const event = data.event;
   const program = data.event.program.program;
   const programHosts = data.event.program.program.programHosts;
+  const invitations = data.event.program.program.invitations;
 
-  const columns: Column<ProgramAdminDetailHostFragment>[] = [
+  const programHostColumns: Column<ProgramAdminDetailHostFragment>[] = [
     {
       slug: "lastName",
       title: profileT.advancedAttributes.lastName.title,
@@ -167,6 +205,66 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
     },
   ];
 
+  const invitationColumns: Column<ProgramAdminDetailInvitationFragment>[] = [
+    {
+      slug: "createdAt",
+      title: inviT.attributes.createdAt,
+      getCellContents: (row) => (
+        <FormattedDateTime
+          locale={locale}
+          value={row.createdAt}
+          scope={event}
+          session={session}
+        />
+      ),
+    },
+    {
+      slug: "email",
+      title: inviT.attributes.email,
+    },
+    {
+      slug: "actions",
+      title: "",
+      className: "text-end",
+      getCellContents: (row) => (
+        <ButtonGroup>
+          <ModalButton
+            className="btn btn-outline-primary btn-sm"
+            label={inviT.actions.resend.label + "…"}
+            title={inviT.actions.resend.title}
+            messages={inviT.actions.resend.modalActions}
+            submitButtonVariant="primary"
+            action={resendInvitation.bind(
+              null,
+              locale,
+              eventSlug,
+              program.slug,
+              row.id,
+            )}
+          >
+            {inviT.actions.resend.message(row.email)}
+          </ModalButton>
+          <ModalButton
+            className="btn btn-outline-danger btn-sm"
+            label={inviT.actions.revoke.label + "…"}
+            title={inviT.actions.revoke.title}
+            messages={inviT.actions.revoke.modalActions}
+            submitButtonVariant="danger"
+            action={revokeInvitation.bind(
+              null,
+              locale,
+              eventSlug,
+              program.slug,
+              row.id,
+            )}
+          >
+            {inviT.actions.revoke.message(row.email)}
+          </ModalButton>
+        </ButtonGroup>
+      ),
+    },
+  ];
+
   const inviteProgramHostFields: Field[] = [
     {
       slug: "email",
@@ -205,6 +303,11 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
     language: locale,
   };
 
+  const resentEmail =
+    searchParams.resent &&
+    invitations.find((invitation) => invitation.id === searchParams.resent)
+      ?.email;
+
   return (
     <ProgramAdminDetailView
       event={event}
@@ -212,10 +315,10 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
       translations={translations}
       active={"programHosts"}
     >
-      <DataTable rows={programHosts} columns={columns}>
+      <DataTable rows={programHosts} columns={programHostColumns}>
         <tfoot>
           <tr>
-            <td colSpan={columns.length - 1}>
+            <td colSpan={programHostColumns.length - 1}>
               {t.attributes.count(programHosts.length)}
             </td>
             <td className="text-end">
@@ -242,6 +345,30 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
           </tr>
         </tfoot>
       </DataTable>
+
+      {invitations.length > 0 && (
+        <>
+          <h4 className="mt-5">{inviT.listTitle}</h4>
+          <p>{inviT.listDescription}</p>
+          {resentEmail && (
+            <AlertNavigateOnClose
+              variant="success"
+              href={`/${eventSlug}/program-admin/${programSlug}/hosts`}
+            >
+              {inviT.actions.resend.success(resentEmail)}
+            </AlertNavigateOnClose>
+          )}
+          <DataTable rows={invitations} columns={invitationColumns}>
+            <tfoot>
+              <tr>
+                <td colSpan={invitationColumns.length - 1}>
+                  {inviT.attributes.count(invitations.length)}
+                </td>
+              </tr>
+            </tfoot>
+          </DataTable>
+        </>
+      )}
     </ProgramAdminDetailView>
   );
 }

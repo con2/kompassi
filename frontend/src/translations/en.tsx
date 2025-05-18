@@ -132,6 +132,7 @@ const translations = {
     },
     sourceRegistry: "Source of personal data",
     targetRegistry: "Receiver of personal data",
+    dataToBeTransferred: "Personal data to be transferred",
   },
   // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
   Modal: {
@@ -152,6 +153,7 @@ const translations = {
     tickets: "Ticket orders",
     responses: "Survey responses",
     keys: "Encryption keys",
+    program: "Program items and offers",
     signIn: "Sign in",
     signOut: "Sign out",
   },
@@ -983,6 +985,8 @@ const translations = {
     listTitle: "Program",
     adminListTitle: "Program items",
     singleTitle: "Program item",
+    tableFooter: (numPrograms: number) =>
+      `${numPrograms} program item${numPrograms === 1 ? "" : "s"}.`,
     inEvent: (eventName: string) => <>in {eventName}</>,
     attributes: {
       slug: {
@@ -990,6 +994,7 @@ const translations = {
         helpText:
           "Machine-readable name of the program item. Must be unique within the event. Cannot be changed after creation. Can contain lower case letters, numbers and dashes (-). Will be part of the URL: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (eg. <code>/tracon2025/programs/opening-ceremony</code>).",
       },
+      event: "Event",
       title: "Title",
       actions: "Actions",
       description: "Description",
@@ -1069,6 +1074,36 @@ const translations = {
       programHosts: "Program hosts",
       dimensions: "Dimensions",
       annotations: "Annotations",
+    },
+
+    profile: {
+      title: "Program items and program offers",
+      programItems: {
+        listTitle: "Program items you are hosting",
+        description: (
+          <>
+            Here you can see program items in which you have been listed as a
+            program host and that have been accepted into the event program.
+          </>
+        ),
+        tableFooter: (numPrograms: number) =>
+          numPrograms === 1 ? (
+            <>One program item.</>
+          ) : (
+            <>{numPrograms} program items.</>
+          ),
+      },
+      programOffers: {
+        listTitle: "Open program offers",
+        description: (
+          <>
+            These program offers you have made have not yet been accepted or
+            rejected.
+          </>
+        ),
+        tableFooter: (count: number) =>
+          count === 1 ? <>One program offer.</> : <>{count} program offers.</>,
+      },
     },
 
     ProgramForm: {
@@ -1308,7 +1343,7 @@ const translations = {
     ),
     responseListTitle: "Responses",
     responseDetailTitle: "Response",
-    ownResponsesTitle: "My responses",
+    ownResponsesTitle: "Your survey responses",
     showingResponses: (filteredCount: number, totalCount: number) => (
       <>
         Displaying {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
@@ -1763,11 +1798,65 @@ const translations = {
   },
 
   Invitation: {
+    listTitle: "Open invitations",
+    listDescription: (
+      <>
+        These people have been invited as program hosts to this program item,
+        but they have not yet accepted the invitation.
+      </>
+    ),
+    attributes: {
+      createdAt: "Created at",
+      email: "Email address",
+      count: (numInvitations: number) =>
+        numInvitations === 1 ? (
+          <>One open invitation.</>
+        ) : (
+          <>{numInvitations} open invitations.</>
+        ),
+    },
     errors: {
       alreadyUsed: {
         title: "Invitation already used",
         message:
           "This invitation has already been used. It can only be used once.",
+      },
+    },
+    actions: {
+      revoke: {
+        title: "Revoke invitation",
+        label: "Revoke",
+        message: (email: string) => (
+          <>
+            Are you sure you want to revoke the invitation sent to{" "}
+            <strong>{email}</strong>? They will not be notified of this action.
+            To undo this action, you will need to invite the user again.
+          </>
+        ),
+        modalActions: {
+          submit: "Revoke invitation",
+          cancel: "Close without revoking",
+        },
+      },
+      resend: {
+        title: "Resend invitation",
+        label: "Resend",
+        message: (email: string) => (
+          <>
+            Do you want to resend the invitation sent to{" "}
+            <strong>{email}</strong>? They will receive a new email with the
+            same contents as the original invitation.
+          </>
+        ),
+        modalActions: {
+          submit: "Resend invitation",
+          cancel: "Close without resending",
+        },
+        success: (email: string) => (
+          <>
+            The invitation to <strong>{email}</strong> was successfully re-sent.
+          </>
+        ),
       },
     },
   },

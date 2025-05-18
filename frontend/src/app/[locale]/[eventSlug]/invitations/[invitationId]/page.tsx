@@ -188,15 +188,6 @@ export default async function SurveyPage({ params }: Props) {
       )}
 
       <ParagraphsDangerousHtml html={description} />
-
-      <TransferConsentForm
-        profileFieldSelector={survey.profileFieldSelector}
-        profile={profile}
-        sourceRegistry={userRegistry}
-        targetRegistry={targetRegistry}
-        translations={translations}
-      />
-
       <form
         action={acceptInvitation.bind(
           null,
@@ -206,6 +197,14 @@ export default async function SurveyPage({ params }: Props) {
           invitationId,
         )}
       >
+        <TransferConsentForm
+          profileFieldSelector={survey.profileFieldSelector}
+          profile={profile}
+          sourceRegistry={userRegistry}
+          targetRegistry={targetRegistry}
+          translations={translations}
+        />
+
         <SchemaForm fields={fields} messages={translations.SchemaForm} />
         <SubmitButton>{surveyT.actions.submit}</SubmitButton>
       </form>

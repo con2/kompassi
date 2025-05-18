@@ -26,6 +26,7 @@ const query = graphql(`
         survey(slug: $surveySlug) {
           slug
           title(lang: $locale)
+          purpose
           canRemove
           languages {
             language

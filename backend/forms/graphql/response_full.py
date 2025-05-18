@@ -13,7 +13,7 @@ class FullResponseType(LimitedResponseType):
     def resolve_form(parent: Response, info):
         return parent.form
 
-    form = graphene.Field(graphene.NonNull(FormType))
+    form = graphene.NonNull(FormType)
 
     @staticmethod
     def resolve_dimensions(parent: Response, info, key_dimensions_only: bool = False):
@@ -27,8 +27,8 @@ class FullResponseType(LimitedResponseType):
     dimensions = graphene.NonNull(
         graphene.List(
             graphene.NonNull(ResponseDimensionValueType),
-            key_dimensions_only=graphene.Boolean(),
-        )
+        ),
+        key_dimensions_only=graphene.Boolean(),
     )
 
     @staticmethod

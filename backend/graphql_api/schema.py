@@ -26,6 +26,8 @@ from forms.graphql.mutations.update_response_dimensions import UpdateResponseDim
 from forms.graphql.mutations.update_survey import UpdateSurvey
 from forms.graphql.mutations.update_survey_default_dimensions import UpdateSurveyDefaultDimensions
 from involvement.graphql.mutations.accept_invitation import AcceptInvitation
+from involvement.graphql.mutations.delete_invitation import DeleteInvitation
+from involvement.graphql.mutations.resend_invitation import ResendInvitation
 from involvement.graphql.registry_limited import LimitedRegistryType
 from involvement.models.registry import Registry
 from program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
@@ -139,6 +141,8 @@ class Mutation(graphene.ObjectType):
 
     # Involvement
     accept_invitation = AcceptInvitation.Field()
+    delete_invitation = DeleteInvitation.Field()
+    resend_invitation = ResendInvitation.Field()
 
     # Program v2
     mark_program_as_favorite = MarkProgramAsFavorite.Field()

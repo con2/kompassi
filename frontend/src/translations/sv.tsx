@@ -57,6 +57,7 @@ const translations: Translations = {
     tickets: "Biljetter",
     responses: "Enkätsvar",
     keys: UNSURE("Krypteringsnycklar"),
+    program: "Program",
     signIn: "Logga in",
     signOut: "Logga ut",
   },
@@ -744,12 +745,15 @@ const translations: Translations = {
     listTitle: "Program",
     adminListTitle: UNTRANSLATED("Program items"),
     singleTitle: "Program",
+    ownListTitle: "Mina program",
     inEvent: (eventName: string) => <>i {eventName}</>,
+    tableFooter: (numPrograms: number) => `${numPrograms} program.`,
     attributes: {
       slug: {
         title: "Tekniskt namn",
         helpText: UNTRANSLATED(en.Program.attributes.slug.helpText),
       },
+      event: "Evenemang",
       title: "Rubrik",
       actions: "Funktioner",
       description: "Beskrivning",
@@ -822,6 +826,7 @@ const translations: Translations = {
     }),
 
     adminDetailTabs: UNTRANSLATED(en.Program.adminDetailTabs),
+    profile: UNTRANSLATED(en.Program.profile),
     ProgramForm: UNTRANSLATED(en.Program.ProgramForm),
     ProgramOffer: UNTRANSLATED(en.Program.ProgramOffer),
     ProgramHost: UNTRANSLATED(en.Program.ProgramHost),
@@ -1161,15 +1166,7 @@ const translations: Translations = {
     },
   },
 
-  Invitation: UNSURE({
-    errors: {
-      alreadyUsed: {
-        title: "Inbjudan redan använd",
-        message:
-          "Denna inbjudan har redan använts. Den kan endast användas en gång.",
-      },
-    },
-  }),
+  Invitation: UNTRANSLATED(en.Invitation),
 
   SignInRequired: {
     metadata: {

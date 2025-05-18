@@ -412,3 +412,17 @@ class Program(models.Model):
         invitation.send()
 
         return invitation
+
+    @property
+    def invitations(self) -> models.QuerySet[Invitation]:
+        return (
+            Invitation.objects.filter(
+                program=self,
+                used_at__isnull=True,
+            )
+            .select_related(
+                "survey",
+                "program",
+            )
+            .order_by("created_at")
+        )

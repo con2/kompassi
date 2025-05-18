@@ -140,3 +140,26 @@ class ProgramV2ProfileMeta:
     """
 
     person: Person
+
+    @property
+    def program_offers(self):
+        if self.person.user is None:
+            return Response.objects.none()
+
+        return (
+            Response.objects.filter(
+                form__survey__app="program_v2",
+                form__survey__purpose_slug="DEFAULT",
+                created_by=self.person.user,
+            )
+            .select_related(
+                "form",
+                "form__event",
+                "form__survey",
+                "form__survey__event",
+                "created_by",
+            )
+            .prefetch_related(
+                "programs",
+            )
+        )

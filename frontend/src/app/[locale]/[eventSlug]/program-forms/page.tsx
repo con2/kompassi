@@ -2,10 +2,11 @@ import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ButtonGroup } from "react-bootstrap";
 import ModalButton from "../../../../components/ModalButton";
 import { createProgramForm } from "./actions";
 import { graphql } from "@/__generated__";
-import { OfferFormFragment } from "@/__generated__/graphql";
+import { OfferFormFragment, SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import CopyButton from "@/components/CopyButton";
@@ -193,43 +194,55 @@ export default async function ProgramFormsPage({
     {
       slug: "actions",
       title: surveyT.attributes.actions,
-      getCellContents: (offerForm) => {
-        const fillInUrl = `/${eventSlug}/${offerForm.slug}`;
-        const adminUrl = `/${eventSlug}/program-forms/${offerForm.slug}`;
+      getCellContents: (programForm) => {
+        const fillInUrl = `/${eventSlug}/${programForm.slug}`;
+        const adminUrl = `/${eventSlug}/program-forms/${programForm.slug}`;
         const absoluteUrl = `${publicUrl}${fillInUrl}`;
+        const editButton = (
+          <Link
+            href={`${adminUrl}/edit`}
+            className="btn btn-sm btn-outline-primary"
+          >
+            {surveyT.actions.editSurvey}…
+          </Link>
+        );
+
+        if (programForm.purpose !== SurveyPurpose.Default) {
+          return <ButtonGroup>{editButton}</ButtonGroup>;
+        }
+
         return (
-          <>
-            {offerForm.isActive ? (
-              <Link href={fillInUrl} className="btn btn-sm btn-outline-primary">
-                {surveyT.actions.fillIn.title}…
-              </Link>
-            ) : (
-              <button
-                disabled
-                className="btn btn-sm btn-outline-primary"
-                title={surveyT.actions.fillIn.disabledTooltip}
-              >
-                {surveyT.actions.fillIn.title}…
-              </button>
-            )}{" "}
+          <ButtonGroup>
+            {programForm.purpose === SurveyPurpose.Default &&
+              (programForm.isActive ? (
+                <Link
+                  href={fillInUrl}
+                  className="btn btn-sm btn-outline-primary"
+                >
+                  {surveyT.actions.fillIn.title}…
+                </Link>
+              ) : (
+                <button
+                  disabled
+                  className="btn btn-sm btn-outline-primary"
+                  title={surveyT.actions.fillIn.disabledTooltip}
+                >
+                  {surveyT.actions.fillIn.title}…
+                </button>
+              ))}
             <CopyButton
               className="btn btn-sm btn-outline-primary"
               data={absoluteUrl}
               messages={surveyT.actions.share}
-            />{" "}
+            />
+            {editButton}
             <Link
-              href={`${adminUrl}/edit`}
-              className="btn btn-sm btn-outline-primary"
-            >
-              {surveyT.actions.editSurvey}…
-            </Link>{" "}
-            <Link
-              href={`/${eventSlug}/program-offers/?form=${offerForm.slug}`}
+              href={`/${eventSlug}/program-offers/?form=${programForm.slug}`}
               className="btn btn-sm btn-outline-primary"
             >
               {t.actions.viewOffers}…
-            </Link>{" "}
-          </>
+            </Link>
+          </ButtonGroup>
         );
       },
     },

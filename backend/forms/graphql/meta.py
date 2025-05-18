@@ -67,7 +67,7 @@ class FormsEventMetaType(graphene.ObjectType):
         else:
             qs = get_objects_within_period(qs)
 
-        return qs
+        return qs.order_by("slug")
 
     survey = graphene.Field(
         FullSurveyType,

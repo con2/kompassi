@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
@@ -66,4 +67,63 @@ export async function deleteProgramHost(
     },
   });
   revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
+}
+
+const deleteInvitationMutation = graphql(`
+  mutation DeleteInvitation($input: DeleteInvitationInput!) {
+    deleteInvitation(input: $input) {
+      invitation {
+        id
+      }
+    }
+  }
+`);
+
+export async function revokeInvitation(
+  locale: string,
+  eventSlug: string,
+  programSlug: string,
+  invitationId: string,
+) {
+  await getClient().mutate({
+    mutation: deleteInvitationMutation,
+    variables: {
+      input: {
+        eventSlug,
+        invitationId,
+      },
+    },
+  });
+  revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
+}
+
+const resendInvitationMutation = graphql(`
+  mutation ResendInvitation($input: ResendInvitationInput!) {
+    resendInvitation(input: $input) {
+      invitation {
+        id
+      }
+    }
+  }
+`);
+
+export async function resendInvitation(
+  locale: string,
+  eventSlug: string,
+  programSlug: string,
+  invitationId: string,
+) {
+  await getClient().mutate({
+    mutation: resendInvitationMutation,
+    variables: {
+      input: {
+        eventSlug,
+        invitationId,
+      },
+    },
+  });
+  revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
+  redirect(
+    `/${eventSlug}/program-admin/${programSlug}/hosts?resent=${invitationId}`,
+  );
 }
