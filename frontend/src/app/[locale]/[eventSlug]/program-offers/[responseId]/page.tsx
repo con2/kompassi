@@ -39,6 +39,7 @@ graphql(`
       survey {
         title(lang: $locale)
         slug
+        cachedDefaultDimensions
       }
     }
     programs {
@@ -196,8 +197,13 @@ export default async function ProgramOfferPage({
 
   validateCachedDimensions(programOffer.cachedDimensions);
   const dimensions: Dimension[] = data.event.program.dimensions;
+  const defaultDimensions =
+    programOffer.form.survey.cachedDefaultDimensions ?? {};
   const { fields: dimensionFields, values: dimensionValues } =
-    buildDimensionValueSelectionForm(dimensions, programOffer.cachedDimensions);
+    buildDimensionValueSelectionForm(dimensions, {
+      ...defaultDimensions,
+      ...programOffer.cachedDimensions,
+    });
 
   const acceptProgramOfferFields: Field[] = [
     {
@@ -294,6 +300,7 @@ export default async function ProgramOfferPage({
                   dimensions={dimensions}
                   cachedDimensions={programOffer.cachedDimensions}
                   translations={translations}
+                  technicalDimensions="readonly"
                   onChange={updateResponseDimensions.bind(
                     null,
                     eventSlug,

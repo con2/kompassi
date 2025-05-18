@@ -8,7 +8,6 @@ from core.graphql.limited_event import LimitedEventType
 from core.utils.text_utils import normalize_whitespace
 
 from ..models.form import Form
-from .survey_limited import LimitedSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
@@ -21,6 +20,7 @@ class FormType(DjangoObjectType):
             "description",
             "thank_you_message",
             "language",
+            "survey",
         )
 
     @staticmethod
@@ -45,12 +45,6 @@ class FormType(DjangoObjectType):
         return parent.event
 
     event = graphene.Field(graphene.NonNull(LimitedEventType))
-
-    @staticmethod
-    def resolve_survey(parent: Form, info):
-        return parent.survey
-
-    survey = graphene.Field(LimitedSurveyType)
 
     @staticmethod
     def resolve_can_remove(form: Form, info):

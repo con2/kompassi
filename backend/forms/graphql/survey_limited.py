@@ -1,5 +1,6 @@
 import graphene
 from django.conf import settings
+from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
 from involvement.graphql.profile_field_selector import ProfileFieldSelectorType
@@ -40,4 +41,7 @@ class LimitedSurveyType(DjangoObjectType):
             "purpose",
             "profile_field_selector",
             "registry",
+            "cached_default_dimensions",
         )
+
+    cached_default_dimensions = graphene.NonNull(GenericScalar)
