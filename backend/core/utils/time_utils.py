@@ -3,6 +3,7 @@ from datetime import date, datetime, timedelta
 
 from babel.dates import format_skeleton
 from dateutil.tz import tzlocal
+from django.db import models
 from django.db.models import Q
 from django.template import defaultfilters
 from django.utils.timezone import now
@@ -55,7 +56,7 @@ def is_within_period(
 
 
 def get_objects_within_period(
-    Model,
+    qs,
     t=None,
     start_field_name="active_from",
     end_field_name="active_until",
@@ -71,6 +72,8 @@ def get_objects_within_period(
     If the activity period end is unset, the object will never expire, ie. will always be
     returned if its activity period start has passed.
     """
+    if not isinstance(qs, models.QuerySet):
+        qs = qs.objects.all()
 
     if t is None:
         t = now()
@@ -84,7 +87,7 @@ def get_objects_within_period(
 
     q &= Q(**extra_criteria)
 
-    return Model.objects.filter(q)
+    return qs.filter(q)
 
 
 def format_date_range(

@@ -25,6 +25,7 @@ graphql(`
     activeFrom
     activeUntil
     canRemove
+    purpose
     protectResponses
 
     languages {

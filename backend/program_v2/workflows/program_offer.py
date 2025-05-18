@@ -13,7 +13,7 @@ from forms.models.workflow import Workflow
 from graphql_api.language import SUPPORTED_LANGUAGE_CODES
 from involvement.models.involvement import Involvement
 
-from .models.program import Program
+from ..models.program import Program
 
 logger = logging.getLogger("kompassi")
 
@@ -101,7 +101,7 @@ STATE_DIMENSION_DTO = DimensionDTO(
 )
 
 
-class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
+class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
     """
     Survey response workflow for the program offer to program item pipeline.
     """
@@ -156,16 +156,14 @@ class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
         cls._setup_default_dimensions(universe)
         cache = universe.preload_dimensions()
 
-        for survey in Survey.objects.filter(
-            event=event,
-            app="program_v2",
-        ):
+        meta = event.program_v2_event_meta
+        if meta is None:
+            raise ValueError("Event has no program_v2_event_meta")
+
+        for survey in meta.program_offer_forms.all():
             survey.set_default_dimension_values(cls._get_default_dimension_values(survey), cache)
 
-        for program_offer in Response.objects.filter(
-            form__event=event,
-            form__survey__app="program_v2",
-        ):
+        for program_offer in meta.program_offers.all():
             existing_values = program_offer.cached_dimensions
             values_to_set = {}
 
@@ -214,7 +212,9 @@ class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
             registry=meta.default_registry,
         )
 
-        cache = event.involvement_universe.preload_dimensions()
+        universe = event.involvement_universe
+        Involvement.setup_dimensions(universe)
+        cache = universe.preload_dimensions()
 
         for program_offer in Response.objects.filter(
             form__event=event,
@@ -258,9 +258,13 @@ class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
         We make the form used to submit a program offer a dimension
         in order to not have to build separate filters for it.
         """
-        event = universe.scope.event
+        event: Event = universe.scope.event
         if not event:
             raise ValueError("Event is not set for universe")
+
+        meta = event.program_v2_event_meta
+        if meta is None:
+            raise ValueError("Event has no program_v2_event_meta")
 
         return DimensionDTO(
             slug="form",
@@ -280,10 +284,7 @@ class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
                     is_technical=True,
                     title=survey.title_dict,
                 )
-                for survey in Survey.objects.filter(
-                    event=event,
-                    app="program_v2",
-                ).only("id", "slug")
+                for survey in meta.program_offer_forms.only("id", "slug")
             ],
         )
 
@@ -346,3 +347,10 @@ class ProgramWorkflow(Workflow, arbitrary_types_allowed=True):
 
     def is_response_active(self, response: Response) -> bool:
         return not bool(set(response.cached_dimensions.get("state", [])).intersection({"cancelled", "rejected"}))
+
+    def ensure_survey_to_badge(self, response: Response):
+        """
+        The program offer workflow doesn't use STB.
+        Badges are managed via Involvement.
+        """
+        return None, False

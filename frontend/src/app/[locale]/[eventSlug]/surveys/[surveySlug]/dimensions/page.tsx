@@ -69,6 +69,7 @@ const query = graphql(`
           slug
           title(lang: $locale)
           canRemove
+          purpose
           languages {
             language
           }

@@ -18,7 +18,18 @@ graphql(`
 `);
 
 interface Props {
-  dimension: DimensionBadgeFragment;
+  dimension: {
+    dimension: {
+      slug: string;
+      title?: string | null;
+    };
+
+    value: {
+      slug: string;
+      title?: string | null;
+      color?: string | null;
+    };
+  };
 }
 
 export default function DimensionBadge({ dimension }: Props) {

@@ -1,5 +1,6 @@
 "use server";
 
+import { ApolloClient } from "@apollo/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -25,31 +26,12 @@ const initFileUploadMutation = graphql(`
   }
 `);
 
-const fromEntriesWithMultiValues = (entries: [string, string | string[]][]) => {
-  const map = new Map<string, string | string[]>();
-  for (const [key, value] of entries) {
-    const existing = map.get(key);
-    if (existing) {
-      if (Array.isArray(existing) && Array.isArray(value)) {
-        // FileUpload with multiple files
-        map.set(key, [...existing, ...value]);
-      } else {
-        throw new Error(`Duplicate key that is not a FileUpload: ${key}`);
-      }
-    } else {
-      map.set(key, value);
-    }
-  }
-  return Object.fromEntries(map);
-};
-
-export async function submit(
-  locale: string,
+export async function processFormData(
+  client: ApolloClient<any>,
   eventSlug: string,
   surveySlug: string,
   formData: FormData,
 ) {
-  const client = getClient();
   const uploadFile = async (file: File): Promise<string> => {
     const filename = `${eventSlug}/survey-response-files/${surveySlug}/${file.name}`;
     const input = { filename, fileType: file.type };
@@ -79,13 +61,39 @@ export async function submit(
       return [key, [fileUrl]];
     },
   );
-  const withFileUrls = await Promise.all(fileUploadPromises);
+  const entriesWithFileUrls = await Promise.all(fileUploadPromises);
 
+  // convert entries to object with the possibility of multiple file uploads per field
+  const map = new Map<string, string | string[]>();
+  for (const [key, value] of entriesWithFileUrls) {
+    const existing = map.get(key);
+    if (existing) {
+      if (Array.isArray(existing) && Array.isArray(value)) {
+        // FileUpload with multiple files
+        map.set(key, [...existing, ...value]);
+      } else {
+        throw new Error(`Duplicate key that is not a FileUpload: ${key}`);
+      }
+    } else {
+      map.set(key, value);
+    }
+  }
+
+  return Object.fromEntries(map);
+}
+
+export async function submit(
+  locale: string,
+  eventSlug: string,
+  surveySlug: string,
+  formData: FormData,
+) {
+  const client = getClient();
   const input = {
     locale,
     eventSlug,
     surveySlug,
-    formData: fromEntriesWithMultiValues(withFileUrls),
+    formData: await processFormData(client, eventSlug, surveySlug, formData),
   };
   await client.mutate({
     mutation: createSurveyResponseMutation,

@@ -215,6 +215,8 @@ class Badge(models.Model, CsvExportMixin):
         """
         Makes sure the person has a badge of the correct class and up-to-date information for a given event.
         """
+        if not event.badges_event_meta:
+            raise AssertionError("event has no badges_event_meta")
         if not person:
             raise AssertionError("person is not set")
 

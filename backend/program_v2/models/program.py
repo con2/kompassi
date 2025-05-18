@@ -17,13 +17,15 @@ from core.utils.model_utils import slugify, validate_slug
 from dimensions.models.scope import Scope
 from dimensions.utils.dimension_cache import DimensionCache
 from forms.models.response import Response
-from graphql_api.language import SUPPORTED_LANGUAGES, getattr_message_in_language
+from forms.models.survey import Survey
+from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, getattr_message_in_language
+from involvement.models.enums import InvolvementType
+from involvement.models.invitation import Invitation
+from involvement.models.involvement import Involvement
 
 from .annotations import extract_annotations
 
 if TYPE_CHECKING:
-    from involvement.models.involvement import Involvement
-
     from .meta import ProgramV2EventMeta
     from .program_dimension_value import ProgramDimensionValue
     from .schedule import ScheduleItem
@@ -316,10 +318,22 @@ class Program(models.Model):
         slug: str = "",
         title: str = "",
         created_by: Any | None = None,  # User
+        dimension_values: Mapping[str, Collection[str]] | None = None,
     ) -> Self:
         """
-        Return an unsaved Program instance from a program offer.
+        Accept a program offer and return the new Program instance.
         """
+        event = program_offer.event
+        cache = event.program_universe.preload_dimensions()
+
+        combined_dimension_values: Mapping[str, Collection[str]] = dict(program_offer.survey.cached_default_dimensions)
+        combined_dimension_values.update(program_offer.cached_dimensions)
+        if dimension_values is not None:
+            combined_dimension_values.update(dimension_values)
+        combined_dimension_values.update(
+            state=["accepted"],
+        )
+
         values, warnings = program_offer.get_processed_form_data()
         if warnings:
             logger.warning("Program offer %s had form data warnings: %s", program_offer.id, warnings)
@@ -342,8 +356,73 @@ class Program(models.Model):
             cached_dimensions={},
             program_offer=program_offer,
         )
-
         program.full_clean()
         program.save()
+        program.set_dimension_values(combined_dimension_values, cache=cache)
+        program.refresh_cached_fields()
+
+        program_offer.set_dimension_values(program.cached_dimensions, cache=cache)
+        program_offer.refresh_cached_fields()
+
+        Involvement.from_accepted_program_offer(
+            program_offer,
+            program,
+            cache=event.involvement_universe.preload_dimensions(),
+        )
 
         return program
+
+    @property
+    def program_hosts(self) -> models.QuerySet[Involvement]:
+        return (
+            Involvement.objects.filter(
+                program=self,
+                is_active=True,
+            )
+            .select_related(
+                "person",
+                "program",
+            )
+            .order_by(
+                "person__surname",
+                "person__first_name",
+                "program__cached_first_start_time",
+            )
+        )
+
+    def invite_program_host(
+        self,
+        email: str,
+        survey: Survey,
+        language: str = DEFAULT_LANGUAGE,
+        created_by: Any | None = None,  # User
+    ) -> Invitation:
+        if survey.involvement_type != InvolvementType.PROGRAM_HOST:
+            raise ValueError(f"Survey {survey} cannot be used to invite program hosts")
+
+        invitation = Invitation(
+            survey=survey,
+            program=self,
+            email=email,
+            created_by=created_by,
+            language=language,
+        )
+        invitation.full_clean()
+        invitation.save()
+        invitation.send()
+
+        return invitation
+
+    @property
+    def invitations(self) -> models.QuerySet[Invitation]:
+        return (
+            Invitation.objects.filter(
+                program=self,
+                used_at__isnull=True,
+            )
+            .select_related(
+                "survey",
+                "program",
+            )
+            .order_by("created_at")
+        )

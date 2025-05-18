@@ -1,8 +1,11 @@
 import graphene
 from graphene.types.generic import GenericScalar
 
+from access.cbac import graphql_check_instance
+from core.graphql.event_limited import LimitedEventType
 from core.utils.text_utils import normalize_whitespace
 from forms.graphql.response_limited import LimitedResponseType
+from involvement.graphql.invitation_limited import LimitedInvitationType
 from involvement.graphql.involvement_limited import LimitedInvolvementType
 
 from ..models import Program
@@ -53,6 +56,7 @@ class FullProgramType(LimitedProgramType):
         info,
         is_list_filter: bool = False,
         is_shown_in_detail: bool = False,
+        key_dimensions_only: bool = False,
     ):
         """
         `is_list_filter` - only return dimensions that are shown in the list filter.
@@ -67,17 +71,31 @@ class FullProgramType(LimitedProgramType):
         if is_shown_in_detail:
             pdvs = pdvs.filter(value__dimension__is_shown_in_detail=True)
 
+        if key_dimensions_only:
+            pdvs = pdvs.filter(value__dimension__is_key_dimension=True)
+
         return pdvs.distinct()
 
     dimensions = graphene.NonNull(
         graphene.List(graphene.NonNull(ProgramDimensionValueType)),
         is_list_filter=graphene.Boolean(),
         is_shown_in_detail=graphene.Boolean(),
+        key_dimensions_only=graphene.Boolean(),
         description=normalize_whitespace(resolve_dimensions.__doc__ or ""),
     )
     cached_dimensions = graphene.Field(GenericScalar)
 
     color = graphene.NonNull(graphene.String)
+
+    @staticmethod
+    def resolve_program_offer(program: Program, info):
+        graphql_check_instance(
+            program,
+            info,
+            field="program_offer",
+        )
+
+        return program.program_offer
 
     program_offer = graphene.Field(
         LimitedResponseType,
@@ -85,9 +103,32 @@ class FullProgramType(LimitedProgramType):
 
     @staticmethod
     def resolve_program_hosts(program: Program, info):
-        return program.involvements.filter(is_active=True, program=program).select_related("person")
+        graphql_check_instance(
+            program,
+            info,
+            field="program_hosts",
+        )
+
+        return program.involvements.filter(
+            is_active=True,
+            program=program,
+        ).select_related("person")
 
     program_hosts = graphene.NonNull(graphene.List(graphene.NonNull(LimitedInvolvementType)))
+
+    @staticmethod
+    def resolve_invitations(program: Program, info):
+        graphql_check_instance(
+            program,
+            info,
+            field="invitations",
+        )
+
+        return program.invitations.filter(used_at__isnull=True)
+
+    invitations = graphene.NonNull(graphene.List(graphene.NonNull(LimitedInvitationType)))
+
+    event = graphene.NonNull(LimitedEventType)
 
     class Meta:
         model = Program
@@ -101,4 +142,5 @@ class FullProgramType(LimitedProgramType):
             "created_at",
             "updated_at",
             "program_offer",
+            "event",
         )

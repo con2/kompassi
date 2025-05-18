@@ -1,4 +1,5 @@
 import { title } from "process";
+import Email from "next-auth/providers/email";
 import { JSX, ReactNode } from "react";
 
 const translations = {
@@ -24,6 +25,15 @@ const translations = {
   },
   Profile: {
     attributes: {
+      displayName: "Name",
+      firstName: "First name",
+      lastName: "Last name",
+      nick: "Nickname",
+      phoneNumber: "Phone number",
+      email: "Email",
+      discordHandle: "Discord handle",
+    },
+    advancedAttributes: {
       displayName: {
         title: "Name",
       },
@@ -104,6 +114,26 @@ const translations = {
       },
     },
   },
+  TransferConsentForm: {
+    title: "Transfer of personal data",
+    message: (
+      <>
+        When you fill in this form, your personal data will be transferred as
+        outlined below. Personal data you give on the form below will also be
+        processed by the receiver.
+      </>
+    ),
+    consentCheckBox: "I consent to the transfer of my personal data.",
+    privacyPolicy: "Privacy policy",
+    privacyPolicyMissing: "Missing privacy policy",
+    actions: {
+      editProfile:
+        "If you notice any mistakes, please correct them in your profile.",
+    },
+    sourceRegistry: "Source of personal data",
+    targetRegistry: "Receiver of personal data",
+    dataToBeTransferred: "Personal data to be transferred",
+  },
   // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
   Modal: {
     submit: "Submit",
@@ -123,6 +153,7 @@ const translations = {
     tickets: "Ticket orders",
     responses: "Survey responses",
     keys: "Encryption keys",
+    program: "Program items and offers",
     signIn: "Sign in",
     signOut: "Sign out",
   },
@@ -954,6 +985,8 @@ const translations = {
     listTitle: "Program",
     adminListTitle: "Program items",
     singleTitle: "Program item",
+    tableFooter: (numPrograms: number) =>
+      `${numPrograms} program item${numPrograms === 1 ? "" : "s"}.`,
     inEvent: (eventName: string) => <>in {eventName}</>,
     attributes: {
       slug: {
@@ -961,6 +994,7 @@ const translations = {
         helpText:
           "Machine-readable name of the program item. Must be unique within the event. Cannot be changed after creation. Can contain lower case letters, numbers and dashes (-). Will be part of the URL: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (eg. <code>/tracon2025/programs/opening-ceremony</code>).",
       },
+      event: "Event",
       title: "Title",
       actions: "Actions",
       description: "Description",
@@ -1042,6 +1076,36 @@ const translations = {
       annotations: "Annotations",
     },
 
+    profile: {
+      title: "Program items and program offers",
+      programItems: {
+        listTitle: "Program items you are hosting",
+        description: (
+          <>
+            Here you can see program items in which you have been listed as a
+            program host and that have been accepted into the event program.
+          </>
+        ),
+        tableFooter: (numPrograms: number) =>
+          numPrograms === 1 ? (
+            <>One program item.</>
+          ) : (
+            <>{numPrograms} program items.</>
+          ),
+      },
+      programOffers: {
+        listTitle: "Open program offers",
+        description: (
+          <>
+            These program offers you have made have not yet been accepted or
+            rejected.
+          </>
+        ),
+        tableFooter: (count: number) =>
+          count === 1 ? <>One program offer.</> : <>{count} program offers.</>,
+      },
+    },
+
     ProgramForm: {
       singleTitle: "Program form",
       listTitle: "Program forms",
@@ -1062,6 +1126,27 @@ const translations = {
               <code>/tracon2025/offer-program</code>).
             </>
           ),
+        },
+        purpose: {
+          title: "Purpose",
+          shortTitle: "Purpose",
+          helpText: (
+            <>
+              Program forms can be used for different purposes, such as
+              collecting program offers or accepting program host invitations.
+              Cannot be changed after creation.
+            </>
+          ),
+          choices: {
+            DEFAULT: {
+              title: "Program offer",
+              shortTitle: "Offer",
+            },
+            INVITE: {
+              title: "Program host invite",
+              shortTitle: "Invite",
+            },
+          },
         },
       },
       actions: {
@@ -1178,6 +1263,22 @@ const translations = {
       actions: {
         inviteProgramHost: {
           title: "Invite program host",
+          attributes: {
+            email: {
+              title: "Email address",
+              helpText:
+                "Please check the email address carefully. The invitation will be sent to this address.",
+            },
+            survey: {
+              title: "Program host form",
+              helpText:
+                "When the receiver accepts the invitation, they will be asked to fill in this form.",
+            },
+            language: {
+              title: "Language",
+              helpText: "Which language should the invitation be sent in?",
+            },
+          },
           message: (
             <>
               To invite a program host, please enter their email address below.
@@ -1193,11 +1294,17 @@ const translations = {
         removeProgramHost: {
           title: "Remove program host",
           label: "Remove",
-          message: (
+          message: (programHost: string, programItem: string) => (
             <>
-              Are you sure you want to remove this program host from the program
-              item? To reverse this action, you will need to invite them again.
-              They will not be notified of this action.
+              <p>
+                Are you sure you want to remove the program host{" "}
+                <strong>{programHost}</strong> from the program item{" "}
+                <strong>{programItem}</strong>?
+              </p>{" "}
+              <p>
+                To reverse this action, you will need to invite them again. They
+                will not be notified of this action.
+              </p>
             </>
           ),
           modalActions: {
@@ -1236,7 +1343,7 @@ const translations = {
     ),
     responseListTitle: "Responses",
     responseDetailTitle: "Response",
-    ownResponsesTitle: "My responses",
+    ownResponsesTitle: "Your survey responses",
     showingResponses: (filteredCount: number, totalCount: number) => (
       <>
         Displaying {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
@@ -1317,6 +1424,8 @@ const translations = {
             SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your user profile will not be shared with the survey owner.",
             NAME_AND_EMAIL:
               "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses.",
+            FULL_PROFILE:
+              "If you answer this survey while logged in, it will be connected to your user account. Your full profile will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         thirdPerson: {
@@ -1326,6 +1435,8 @@ const translations = {
             SOFT: "If the user answer this survey while logged in, their response will be connected to their user account, so that they can return to view or edit their responses, but their identities will not be shared with you.",
             NAME_AND_EMAIL:
               "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses.",
+            FULL_PROFILE:
+              "If you answer this survey while logged in, it will be connected to your user account. Your full profile will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         admin: {
@@ -1513,6 +1624,15 @@ const translations = {
           countResponsesByCurrentUser === 1 ? "" : "s"
         } to this survey. The maximum number of responses per user is ${maxResponsesPerUser}.`,
     },
+    specialPurposeSurvey: {
+      title: "Special purpose survey",
+      defaultMessage: (
+        <>
+          This survey is intended for a special purpose and cannot be filled in
+          through the public interface.
+        </>
+      ),
+    },
     warnings: {
       choiceNotFound:
         "Choice not found. It may have been removed after this response was submitted.",
@@ -1673,6 +1793,70 @@ const translations = {
       title: "Edit survey",
       actions: {
         submit: "Save fields",
+      },
+    },
+  },
+
+  Invitation: {
+    listTitle: "Open invitations",
+    listDescription: (
+      <>
+        These people have been invited as program hosts to this program item,
+        but they have not yet accepted the invitation.
+      </>
+    ),
+    attributes: {
+      createdAt: "Created at",
+      email: "Email address",
+      count: (numInvitations: number) =>
+        numInvitations === 1 ? (
+          <>One open invitation.</>
+        ) : (
+          <>{numInvitations} open invitations.</>
+        ),
+    },
+    errors: {
+      alreadyUsed: {
+        title: "Invitation already used",
+        message:
+          "This invitation has already been used. It can only be used once.",
+      },
+    },
+    actions: {
+      revoke: {
+        title: "Revoke invitation",
+        label: "Revoke",
+        message: (email: string) => (
+          <>
+            Are you sure you want to revoke the invitation sent to{" "}
+            <strong>{email}</strong>? They will not be notified of this action.
+            To undo this action, you will need to invite the user again.
+          </>
+        ),
+        modalActions: {
+          submit: "Revoke invitation",
+          cancel: "Close without revoking",
+        },
+      },
+      resend: {
+        title: "Resend invitation",
+        label: "Resend",
+        message: (email: string) => (
+          <>
+            Do you want to resend the invitation sent to{" "}
+            <strong>{email}</strong>? They will receive a new email with the
+            same contents as the original invitation.
+          </>
+        ),
+        modalActions: {
+          submit: "Resend invitation",
+          cancel: "Close without resending",
+        },
+        success: (email: string) => (
+          <>
+            The invitation to <strong>{email}</strong> was successfully re-sent.
+          </>
+        ),
       },
     },
   },

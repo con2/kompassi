@@ -7,20 +7,15 @@ from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 from typing import TYPE_CHECKING, Any, Literal
 
 from django.conf import settings
-from django.core.mail import send_mass_mail
 from django.db import models, transaction
 from django.db.models import JSONField
-from django.template.loader import render_to_string
-from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
-from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
 from core.utils.model_utils import slugify, slugify_underscore
 from dimensions.models.scope import Scope
 from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import SUPPORTED_LANGUAGES
-from graphql_api.utils import get_message_in_language
 
 from .attachment import Attachment
 from .field import Field, FieldType
@@ -319,14 +314,6 @@ class Response(models.Model):
             self.form_data,
         )
 
-    def notify_subscribers(self):
-        if self.survey is None:
-            return
-
-        from ..tasks import response_notify_subscribers
-
-        response_notify_subscribers.delay(self.id)  # type: ignore
-
     notification_templates = {
         language.code: f"survey_response_notification_email/{language.code}.eml" for language in SUPPORTED_LANGUAGES
     }
@@ -346,50 +333,6 @@ class Response(models.Model):
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
             case _:
                 raise ValueError(f"Unknown app type: {self.survey.app}")
-
-    def _notify_subscribers(self):
-        # TODO recipient language instead of session language
-        language = get_language()
-
-        if (survey := self.survey) is None:
-            raise TypeError("Cannot notify subscribers for a response that is not related to a survey")
-
-        if (form := survey.get_form(language)) is None:
-            raise TypeError("No form found in survey (this shouldn't happen)")
-
-        body_template_name = get_message_in_language(self.notification_templates, language)
-        subject_template = get_message_in_language(self.subject_templates, language)
-
-        if not body_template_name or not subject_template:
-            raise ValueError("Missing body or subject template for supported language", language)
-
-        vars = dict(
-            survey_title=form.title,
-            event_name=survey.event.name,
-            response_url=self.admin_url,
-            sender_email=settings.DEFAULT_FROM_EMAIL,
-        )
-
-        subject = subject_template.format(**vars)
-        body = render_to_string(body_template_name, vars)
-        mailbag = []
-
-        if settings.DEBUG:
-            logger.debug(subject)
-            logger.debug(body)
-
-        mailbag = [
-            (subject, body, settings.DEFAULT_FROM_EMAIL, [subscriber.email])
-            for subscriber in survey.subscribers.all()
-            if is_graphql_allowed_for_model(
-                subscriber,
-                instance=survey,
-                operation="query",
-                field="responses",
-            )
-        ]
-
-        send_mass_mail(mailbag)  # type: ignore
 
     @staticmethod
     def _reslugify_pair(

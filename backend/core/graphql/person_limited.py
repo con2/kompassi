@@ -27,3 +27,9 @@ class LimitedPersonType(graphene_django.DjangoObjectType):
         return person.normalized_phone_number
 
     phone_number = graphene.NonNull(graphene.String)
+
+    @staticmethod
+    def resolve_full_name(person: Person, info) -> str:
+        return person.full_name
+
+    full_name = graphene.NonNull(graphene.String)

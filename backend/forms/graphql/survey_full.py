@@ -239,4 +239,6 @@ class FullSurveyType(LimitedSurveyType):
             "protect_responses",
             "event",
             "cached_default_dimensions",
+            "profile_field_selector",
+            "registry",
         )

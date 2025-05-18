@@ -24,6 +24,15 @@ const translations: Translations = {
   },
   Profile: {
     attributes: {
+      displayName: "Nimi",
+      firstName: "Etunimi",
+      lastName: "Sukunimi",
+      nick: "Nick",
+      phoneNumber: "Puhelinnumero",
+      email: "Sähköpostiosoite",
+      discordHandle: "Discord-tunnus",
+    },
+    advancedAttributes: {
       displayName: {
         title: "Nimi",
       },
@@ -103,6 +112,27 @@ const translations: Translations = {
       },
     },
   },
+  TransferConsentForm: {
+    title: "Henkilötietojen luovutus",
+    message: (
+      <>
+        Kun täytät tämän lomakkeen, henkilötietojasi siirretään rekisteristä
+        toiseen seuraavasti. Lisäksi vastaanottajan rekisteriin liitetään ne
+        henkilötiedot, jotka annat tällä lomakkeella.
+      </>
+    ),
+    consentCheckBox:
+      "Annan suostumukseni henkilötietojeni luovutukseen ja käsittelyyn edellä kuvatulla tavalla.",
+    privacyPolicy: "Tietosuojaseloste",
+    privacyPolicyMissing: "Tietosuojaseloste puuttuu",
+    actions: {
+      editProfile:
+        "Jos huomaat profiilissasi virheitä, korjaathan ne profiilisivulla.",
+    },
+    sourceRegistry: "Henkilötietojen lähde",
+    targetRegistry: "Henkilötietojen vastaanottaja",
+    dataToBeTransferred: "Luovutettavat henkilötiedot",
+  },
   Modal: {
     submit: "Submit",
     cancel: "Cancel",
@@ -121,6 +151,7 @@ const translations: Translations = {
     tickets: "Lipputilaukset",
     responses: "Kyselyvastaukset",
     keys: "Salausavaimet",
+    program: "Ohjelmanumerot ja -tarjoukset",
     signIn: "Kirjaudu sisään",
     signOut: "Kirjaudu ulos",
   },
@@ -941,12 +972,15 @@ const translations: Translations = {
     singleTitle: "Ohjelmanumero",
     adminListTitle: "Ohjelmanumerot",
     inEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
+    tableFooter: (numPrograms: number) =>
+      `${numPrograms} ohjelmanumero${numPrograms === 1 ? "" : "a"}.`,
     attributes: {
       slug: {
         title: "Tekninen nimi",
         helpText:
           "Ohjelmanumeron tekninen nimi. Täytyy olla uniikki tapahtuman sisällä. Ei voi muuttaa luomisen jälkeen. Voi sisältää pieniä kirjaimia, numeroita ja väliviivoja (-). Tulee osaksi osoitetta: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (esim. <code>/tracon2025/programs/opening-ceremony</code>).",
       },
+      event: "Tapahtuma",
       title: "Otsikko",
       actions: "Toiminnot",
       description: "Kuvaus",
@@ -1028,6 +1062,36 @@ const translations: Translations = {
       annotations: "Lisätiedot",
     },
 
+    profile: {
+      title: "Ohjelmanumerot ja ohjelmatarjoukset",
+      programItems: {
+        listTitle: "Ohjelmanumerot joissa olet ohjelmanpitäjänä",
+        description: (
+          <>
+            Tässä näet ohjelmanumerot, joihin sinut on listattu
+            ohjelmanpitäjäksi ja jotka on hyväksytty tapahtuman ohjelmaan.
+          </>
+        ),
+        tableFooter: (count: number) =>
+          count === 1 ? <>Yksi ohjelmanumero.</> : <>{count} ohjelmanumeroa.</>,
+      },
+      programOffers: {
+        listTitle: "Avoimet ohjelmatarjoukset",
+        description: (
+          <>
+            Tässä näet tekemäsi ohjelmatarjoukset, joita ei ole vielä hyväksytty
+            tai hylätty.
+          </>
+        ),
+        tableFooter: (count: number) =>
+          count === 1 ? (
+            <>Yksi ohjelmatarjous.</>
+          ) : (
+            <>{count} ohjelmatarjousta.</>
+          ),
+      },
+    },
+
     ProgramForm: {
       singleTitle: "Ohjelmalomake",
       listTitle: "Ohjelmalomakkeet",
@@ -1041,13 +1105,38 @@ const translations: Translations = {
           title: "Tekninen nimi",
           helpText: (
             <>
-              Ohjelmalomakkeen tekninen nimi. Täytyy olla uniikki tapahtuman
-              sisällä. Ei voi muuttaa luomisen jälkeen. Voi sisältää pieniä
-              kirjaimia, numeroita ja väliviivoja (-). Tulee osaksi osoitetta:{" "}
-              <code>/event-slug/form-slug</code> (esim.{" "}
-              <code>/tracon2025/offer-program</code>).
+              Keksi ohjelmalomakkeelle tekninen nimi, joka tulee osaksi
+              lomakkeen osoitetta:{" "}
+              <code>/tapahtuman-tekninen-nimi/lomakkeen-tekninen-nimi</code> .
+              Esimerkiksi osoitteessa <code>/tracon2025/offer-program</code>{" "}
+              lomakkeen tekninen nimi on <code>offer-program</code>. Teknisen
+              nimen tulee olla uniikki tapahtuman sisällä, ja sitä ei voi
+              muuttaa lomakkeen luomisen jälkeen. Tekninen nimi voi sisältää{" "}
+              <strong>pieniä</strong> kirjaimia, numeroita ja väliviivoja (-).
             </>
           ),
+        },
+        purpose: {
+          title: "Käyttötarkoitus",
+          shortTitle: "Tarkoitus",
+          helpText: (
+            <>
+              Ohjelmalomakkeita voidaan käyttää eri käyttötarkoituksiin, kuten
+              ohjelmatarjousten keräämiseen tai ohjelmanpitäjäkutsujen
+              hyväksymiseen. Lomakkeen käyttötarkoitusta ei voi muuttaa
+              lomakkeen luomisen jälkeen.
+            </>
+          ),
+          choices: {
+            DEFAULT: {
+              title: "Ohjelman tarjoaminen",
+              shortTitle: "Tarjous",
+            },
+            INVITE: {
+              title: "Ohjelmanpitäjäkutsun hyväksyminen",
+              shortTitle: "Kutsu",
+            },
+          },
         },
       },
       actions: {
@@ -1164,6 +1253,22 @@ const translations: Translations = {
       actions: {
         inviteProgramHost: {
           title: "Kutsu ohjelmanpitäjä",
+          attributes: {
+            email: {
+              title: "Sähköposti",
+              helpText:
+                "Tarkista sähköpostiosoite huolellisesti! Kutsu lähetetään tähän osoitteeseen.",
+            },
+            survey: {
+              title: "Ohjelmanpitäjälomake",
+              helpText:
+                "Kun vastaanottaja hyväksyy kutsun, häntä pyydetään täyttämään tämä lomake.",
+            },
+            language: {
+              title: "Kieli",
+              helpText: "Millä kielellä kutsu lähetetään?",
+            },
+          },
           message: (
             <>
               Kutsu ohjelmanpitäjä syöttämällä hänen sähköpostiosoitteensa alla
@@ -1179,12 +1284,18 @@ const translations: Translations = {
         removeProgramHost: {
           title: "Poista ohjelmanpitäjä",
           label: "Poista",
-          message: (
+          message: (programHost: string, programTitle: string) => (
             <>
-              Haluatko varmasti poistaa ohjelmanpitäjän ohjelmanumerosta?
-              Poiston peruminen edellyttää kutsun lähettämistä uudelleen.
-              Ohjelmanpitäjälle ei lähetetä ilmoitusta siitä, että hänet on
-              poistettu ohjelmanumerosta.
+              <p>
+                Haluatko varmasti poistaa ohjelmanpitäjän{" "}
+                <strong>{programHost}</strong> ohjelmanumerosta{" "}
+                <strong>{programTitle}</strong>?
+              </p>{" "}
+              <p>
+                Poiston peruminen edellyttää kutsun lähettämistä uudelleen.
+                Ohjelmanpitäjälle ei lähetetä ilmoitusta siitä, että hänet on
+                poistettu ohjelmanumerosta.
+              </p>
             </>
           ),
           modalActions: {
@@ -1306,6 +1417,8 @@ const translations: Translations = {
             SOFT: "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi, jotta voit palata katsomaan tai muokkaamaan vastauksiasi, mutta käyttäjäprofiiliasi ei jaeta kyselyn omistajan kanssa.",
             NAME_AND_EMAIL:
               "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Nimesi ja sähköpostiosoitteesi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
+            FULL_PROFILE:
+              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Koko käyttäjäprofiilisi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
           },
         },
         thirdPerson: {
@@ -1315,6 +1428,8 @@ const translations: Translations = {
             SOFT: "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä, jotta hän voi palata katsomaan tai muokkaamaan vastauksiaan, mutta hänen henkilöllisyyttään ei jaeta sinulle.",
             NAME_AND_EMAIL:
               "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Hänen nimensä ja sähköpostiosoitteensa jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan.",
+            FULL_PROFILE:
+              "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Koko käyttäjäprofiili jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan.",
           },
         },
         admin: {
@@ -1503,6 +1618,15 @@ const translations: Translations = {
           maxResponsesPerUser === 1 ? "kerran" : "kertaa"
         }.`,
     },
+    specialPurposeSurvey: {
+      title: "Kyselyyn ei voi vastata tätä kautta",
+      defaultMessage: (
+        <>
+          Tämän kyselyn käyttötarkoitusta on rajoitettu, eikä siihen voi vastata
+          tämän näkymän kautta.
+        </>
+      ),
+    },
     warnings: {
       choiceNotFound:
         "Vaihtoehtoa ei löydy. Se on voitu poistaa tämän vastauksen lähettämisen jälkeen.",
@@ -1665,6 +1789,70 @@ const translations: Translations = {
       title: "Muokkaa kyselyä",
       actions: {
         submit: "Tallenna kentät",
+      },
+    },
+  },
+
+  Invitation: {
+    listTitle: "Avoimet kutsut",
+    listDescription: (
+      <>
+        Nämä henkilöt on kutsuttu ohjelmanpitäjiksi tähän ohjelmanumeroon, mutta
+        he eivät ole vielä hyväksyneet kutsua.
+      </>
+    ),
+    attributes: {
+      createdAt: "Lähetysaika",
+      email: "Sähköposti",
+      count: (numInvitations: number) =>
+        numInvitations === 1 ? (
+          <>Yksi avoin kutsu.</>
+        ) : (
+          <>{numInvitations} avointa kutsua.</>
+        ),
+    },
+    errors: {
+      alreadyUsed: {
+        title: "Kutsu on jo käytetty",
+        message: "Tämä kutsu on jo käytetty. Kutsun voi käyttää vain kerran.",
+      },
+    },
+    actions: {
+      revoke: {
+        title: "Peru kutsu",
+        label: "Peru",
+        message: (email: string) => (
+          <>
+            Haluatko varmasti perua osoitteeseen <strong>{email}</strong>{" "}
+            lähetetyn kutsun? Vastaanottajalle ei lähetetä ilmoitusta
+            peruutuksesta. Jos tulet toisiin ajatuksiin, on sinun lähetettävä
+            vastaanottajalle uusi kutsu.
+          </>
+        ),
+        modalActions: {
+          submit: "Peru kutsu",
+          cancel: "Sulje perumatta",
+        },
+      },
+      resend: {
+        title: "Kutsun uudelleenlähetys",
+        label: "Lähetä uudelleen",
+        message: (email: string) => (
+          <>
+            Haluatko lähettää osoitteeseen <strong>{email}</strong> lähetetyn
+            kutsun uudelleen? Vastaanottaja saa uuden sähköpostiviestin, joka on
+            sisällöltään sama kuin alkuperäinen kutsuviesti.
+          </>
+        ),
+        modalActions: {
+          submit: "Lähetä uudelleen",
+          cancel: "Sulje uudelleenlähettämättä",
+        },
+        success: (email: string) => (
+          <>
+            Kutsu osoitteeseen <strong>{email}</strong> lähetettiin uudelleen.
+          </>
+        ),
       },
     },
   },

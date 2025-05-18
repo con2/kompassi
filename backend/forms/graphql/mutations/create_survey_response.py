@@ -5,6 +5,7 @@ from graphene.types.generic import GenericScalar
 from access.cbac import graphql_check_instance
 from core.utils import get_ip
 
+from ...models.enums import SurveyPurpose
 from ...models.response import Response
 from ...models.survey import Survey
 from ..response_profile import ProfileResponseType
@@ -39,6 +40,9 @@ class CreateSurveyResponse(graphene.Mutation):
                 field="responses",
                 operation="create",
             )
+
+        if survey.purpose != SurveyPurpose.DEFAULT:
+            raise Exception("Special purpose surveys cannot be submitted via this endpoint")
 
         form = survey.get_form(input.locale)  # type: ignore
         if not form:

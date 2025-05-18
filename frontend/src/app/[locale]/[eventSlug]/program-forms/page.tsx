@@ -2,10 +2,11 @@ import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ButtonGroup } from "react-bootstrap";
 import ModalButton from "../../../../components/ModalButton";
 import { createProgramForm } from "./actions";
 import { graphql } from "@/__generated__";
-import { OfferFormFragment } from "@/__generated__/graphql";
+import { OfferFormFragment, SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import CopyButton from "@/components/CopyButton";
@@ -28,6 +29,7 @@ graphql(`
     activeFrom
     activeUntil
     countResponses
+    purpose
 
     languages {
       language
@@ -42,7 +44,11 @@ const query = graphql(`
       name
 
       forms {
-        surveys(includeInactive: true, app: PROGRAM_V2) {
+        surveys(
+          includeInactive: true
+          app: PROGRAM_V2
+          purpose: [DEFAULT, INVITE]
+        ) {
           ...OfferForm
         }
       }
@@ -128,6 +134,14 @@ export default async function ProgramFormsPage({
       title: surveyT.attributes.title,
     },
     {
+      slug: "purpose",
+      title: t.attributes.purpose.shortTitle,
+      getCellContents: (survey) => {
+        const purpose = survey.purpose;
+        return t.attributes.purpose.choices[purpose].shortTitle;
+      },
+    },
+    {
       slug: "isActive",
       title: surveyT.attributes.isActive.title,
       getCellContents: (survey) => {
@@ -180,43 +194,55 @@ export default async function ProgramFormsPage({
     {
       slug: "actions",
       title: surveyT.attributes.actions,
-      getCellContents: (offerForm) => {
-        const fillInUrl = `/${eventSlug}/${offerForm.slug}`;
-        const adminUrl = `/${eventSlug}/program-forms/${offerForm.slug}`;
+      getCellContents: (programForm) => {
+        const fillInUrl = `/${eventSlug}/${programForm.slug}`;
+        const adminUrl = `/${eventSlug}/program-forms/${programForm.slug}`;
         const absoluteUrl = `${publicUrl}${fillInUrl}`;
+        const editButton = (
+          <Link
+            href={`${adminUrl}/edit`}
+            className="btn btn-sm btn-outline-primary"
+          >
+            {surveyT.actions.editSurvey}…
+          </Link>
+        );
+
+        if (programForm.purpose !== SurveyPurpose.Default) {
+          return <ButtonGroup>{editButton}</ButtonGroup>;
+        }
+
         return (
-          <>
-            {offerForm.isActive ? (
-              <Link href={fillInUrl} className="btn btn-sm btn-outline-primary">
-                {surveyT.actions.fillIn.title}…
-              </Link>
-            ) : (
-              <button
-                disabled
-                className="btn btn-sm btn-outline-primary"
-                title={surveyT.actions.fillIn.disabledTooltip}
-              >
-                {surveyT.actions.fillIn.title}…
-              </button>
-            )}{" "}
+          <ButtonGroup>
+            {programForm.purpose === SurveyPurpose.Default &&
+              (programForm.isActive ? (
+                <Link
+                  href={fillInUrl}
+                  className="btn btn-sm btn-outline-primary"
+                >
+                  {surveyT.actions.fillIn.title}…
+                </Link>
+              ) : (
+                <button
+                  disabled
+                  className="btn btn-sm btn-outline-primary"
+                  title={surveyT.actions.fillIn.disabledTooltip}
+                >
+                  {surveyT.actions.fillIn.title}…
+                </button>
+              ))}
             <CopyButton
               className="btn btn-sm btn-outline-primary"
               data={absoluteUrl}
               messages={surveyT.actions.share}
-            />{" "}
+            />
+            {editButton}
             <Link
-              href={`${adminUrl}/edit`}
-              className="btn btn-sm btn-outline-primary"
-            >
-              {surveyT.actions.editSurvey}…
-            </Link>{" "}
-            <Link
-              href={`/${eventSlug}/program-offers/?form=${offerForm.slug}`}
+              href={`/${eventSlug}/program-offers/?form=${programForm.slug}`}
               className="btn btn-sm btn-outline-primary"
             >
               {t.actions.viewOffers}…
-            </Link>{" "}
-          </>
+            </Link>
+          </ButtonGroup>
         );
       },
     },
@@ -231,7 +257,29 @@ export default async function ProgramFormsPage({
       required: true,
       ...t.attributes.slug,
     },
+    {
+      slug: "purpose",
+      type: "SingleSelect",
+      presentation: "dropdown",
+      required: true,
+      title: t.attributes.purpose.title,
+      helpText: t.attributes.purpose.helpText,
+      choices: [
+        {
+          slug: "DEFAULT",
+          title: t.attributes.purpose.choices.DEFAULT.title,
+        },
+        {
+          slug: "INVITE",
+          title: t.attributes.purpose.choices.INVITE.title,
+        },
+      ],
+    },
   ];
+
+  const createOfferFormDefaults = {
+    purpose: "DEFAULT",
+  };
 
   return (
     <ProgramAdminView
@@ -249,6 +297,7 @@ export default async function ProgramFormsPage({
         >
           <SchemaForm
             fields={createOfferFormFields}
+            values={createOfferFormDefaults}
             messages={translations.SchemaForm}
           />
         </ModalButton>

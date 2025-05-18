@@ -2,11 +2,10 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
+import { Survey } from "../../../surveys/[surveySlug]/edit/models";
 import SurveyEditorTabs from "../../../surveys/[surveySlug]/edit/SurveyEditorTabs";
 import { deleteProgramForm } from "./actions";
-import { Survey } from "./models";
 import ModalButton from "@/components/ModalButton";
-import ProgramAdminView from "@/components/program/ProgramAdminView";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {
   ViewHeadingActions,

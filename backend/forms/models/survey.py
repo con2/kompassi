@@ -26,31 +26,22 @@ from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
+from involvement.models.enums import InvolvementType
+from involvement.models.profile_field_selector import ProfileFieldSelector
 from involvement.models.registry import Registry
 
 from ..utils.merge_form_fields import merge_fields
-from .enums import SurveyApp
+from .enums import Anonymity, SurveyApp, SurveyPurpose
 
 if TYPE_CHECKING:
     from badges.models.survey_to_badge import SurveyToBadgeMapping
 
     from .form import Form
+    from .survey import Survey
     from .survey_default_dimension_value import SurveyDefaultDimensionValue
     from .workflow import Workflow
 
 logger = logging.getLogger("kompassi")
-
-
-class Anonymity(models.TextChoices):
-    # not linked to user account, IP address not recorded
-    HARD = "HARD", _("Hard anonymous")
-    # linked to user account but not shown to owner, IP address recorded
-    SOFT = "SOFT", _("Soft anonymous (linked to user account but not shown to survey owner)")
-    # linked to user account and shown to owner, IP address recorded
-    NAME_AND_EMAIL = "NAME_AND_EMAIL", _("Name and email shown to survey owner if responded logged-in")
-
-
-APP_CHOICES = [(app.value, app.value) for app in SurveyApp]
 
 
 class Survey(models.Model):
@@ -58,10 +49,16 @@ class Survey(models.Model):
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     app = models.CharField(
-        choices=APP_CHOICES,
-        max_length=max(len(k) for (k, _) in APP_CHOICES),
-        default=APP_CHOICES[0][0],
+        choices=[(app.value, app.value) for app in SurveyApp],
+        max_length=max(len(app.value) for app in SurveyApp),
+        default=SurveyApp.FORMS.value,
         help_text="Which app manages this survey?",
+    )
+    purpose_slug = models.CharField(
+        choices=[(role.value, role.value) for role in SurveyPurpose],
+        max_length=max(len(role.value) for role in SurveyPurpose),
+        default=SurveyPurpose.DEFAULT.value,
+        help_text="Generic surveys and program offers are DEFAULT, program host invitations are ACCEPT_INVITATION.",
     )
 
     login_required = models.BooleanField(
@@ -148,6 +145,33 @@ class Survey(models.Model):
     badge_mappings: models.QuerySet[SurveyToBadgeMapping]
     default_dimensions: models.QuerySet[SurveyDefaultDimensionValue]
     id: int
+
+    @cached_property
+    def profile_field_selector(self) -> ProfileFieldSelector:
+        """
+        Returns the profile field selector for this survey.
+        """
+        return ProfileFieldSelector.from_anonymity(self.anonymity)
+
+    @property
+    def purpose(self) -> SurveyPurpose:
+        return SurveyPurpose(self.purpose_slug)
+
+    @property
+    def involvement_type(self) -> InvolvementType | None:
+        # there cannot be Involvement without Registry
+        if self.registry is None:
+            return None
+
+        match self.app, self.purpose:
+            case SurveyApp.PROGRAM_V2, SurveyPurpose.DEFAULT:
+                return InvolvementType.PROGRAM_OFFER
+            case SurveyApp.PROGRAM_V2, SurveyPurpose.INVITE:
+                return InvolvementType.PROGRAM_HOST
+            case SurveyApp.FORMS, _:
+                return InvolvementType.SURVEY_RESPONSE
+            case _:
+                raise NotImplementedError(f"{self.app=} {self.purpose=} is not implemented")
 
     @property
     def dimensions(self) -> models.QuerySet[Dimension]:
@@ -281,20 +305,26 @@ class Survey(models.Model):
     def __str__(self):
         return f"{self.event.slug}/{self.slug}"
 
-    def with_mandatory_attributes_for_app(self, app: SurveyApp):
+    def with_mandatory_attributes_for_app(self, app: SurveyApp, purpose: SurveyPurpose):
+        self.app = app.value
+        self.purpose_slug = purpose.value
+
         match app:
             case SurveyApp.PROGRAM_V2:
                 meta = self.event.program_v2_event_meta
                 if meta is None:
                     raise ValueError(f"Event {self.event} does not have a program v2 event meta")
 
-                self.app = "program_v2"
                 self.login_required = True
-                self.anonymity = Anonymity.NAME_AND_EMAIL
-                self.key_fields = ["title"]
+                self.anonymity = Anonymity.FULL_PROFILE
                 self.registry = meta.default_registry
+
+                if purpose == SurveyPurpose.DEFAULT:
+                    self.key_fields = ["title"]
             case SurveyApp.FORMS:
-                self.app = "forms"
+                if purpose == SurveyPurpose.INVITE:
+                    raise ValueError("ACCEPT_INVITATION is not a valid purpose for FORMS app")
+
                 if self.anonymity == Anonymity.NAME_AND_EMAIL:
                     self.login_required = True
 
@@ -305,6 +335,7 @@ class Survey(models.Model):
         event: Event,
         slug: str,
         app: SurveyApp,
+        purpose: SurveyPurpose,
         anonymity: Anonymity | None = None,
         created_by: AbstractBaseUser | None = None,
         registry: Registry | None = None,
@@ -323,7 +354,7 @@ class Survey(models.Model):
             protect_responses=self.protect_responses,
             created_by=created_by,
             registry=self.registry if registry is None else registry,
-        ).with_mandatory_attributes_for_app(app)
+        ).with_mandatory_attributes_for_app(app, purpose)
 
         survey.save()
 
