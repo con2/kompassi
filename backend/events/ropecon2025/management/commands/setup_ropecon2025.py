@@ -51,6 +51,7 @@ class Setup:
         self.setup_tickets_v2()
         self.setup_forms()
         self.delete_tickets_v1()
+        self.setup_etkot()
 
     def setup_core(self):
         self.venue, unused = Venue.objects.get_or_create(
@@ -287,6 +288,56 @@ class Setup:
     def delete_tickets_v1(self):
         if self.event.tickets_event_meta is not None:
             self.event.tickets_event_meta.delete()
+
+    def setup_etkot(self):
+        venue, unused = Venue.objects.get_or_create(
+            name="Helsinki",
+            defaults=dict(
+                name_inessive="Helsingissä",
+            ),
+        )
+
+        event, unused = Event.objects.get_or_create(
+            slug="ropecon2025etkot",
+            defaults=dict(
+                name="Ropecon 2025 etkot",
+                name_genitive="Ropecon 2025 etkot -tapahtuman",
+                name_illative="Ropecon 2025 etkot -tapahtumaan",
+                name_inessive="Ropecon 2025 etkot -tapahtumassa",
+                homepage_url="https://ropecon.fi/ropecon-etkoviikko/",
+                organization=self.organization,
+                start_time=datetime(2025, 7, 20, 12, 0, tzinfo=self.tz),
+                end_time=datetime(2025, 7, 25, 15, 30, tzinfo=self.tz),
+                venue=venue,
+                public=False,
+            ),
+        )
+
+        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(event, ["admins"])
+        ProgramV2EventMeta.objects.update_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
+
+        (admin_group,) = FormsEventMeta.get_or_create_groups(event, ["admins"])
+        FormsEventMeta.objects.update_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
+
+        (admin_group,) = TicketsV2EventMeta.get_or_create_groups(event, ["admins"])
+        meta, _ = TicketsV2EventMeta.objects.update_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=admin_group,
+                provider_id=PaymentProvider.PAYTRAIL.value,
+            ),
+        )
+        meta.ensure_partitions()
 
 
 class Command(BaseCommand):
