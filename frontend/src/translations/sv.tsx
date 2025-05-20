@@ -884,19 +884,6 @@ const translations: Translations = {
         Sammanfattning av {filteredCount} svar (totalt {totalCount}).
       </>
     ),
-    theseProfileFieldsWillBeShared: UNSURE(
-      "Då du skickar in denna enkät, kommer följande information att delas med enkätägaren:",
-    ),
-    correctInYourProfile: UNSURE((profileLink: string) => (
-      <>
-        Om dessa uppgifter inte är korrekta, vänligen korrigera dem i din{" "}
-        <a href={profileLink} target="_blank" rel="noopener noreferrer">
-          profil
-        </a>{" "}
-        (öppnas i ny flik).
-      </>
-    )),
-
     attributes: {
       slug: {
         title: "Tekniskt namn",

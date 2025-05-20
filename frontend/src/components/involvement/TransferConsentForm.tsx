@@ -9,6 +9,7 @@ import {
   ProfileFieldSelector,
   Registry,
 } from "./models";
+import { kompassiBaseUrl } from "@/config";
 import type { Translations } from "@/translations/en";
 
 function TransferDirectionArrow() {
@@ -141,6 +142,17 @@ export default function TransferConsentForm({
                 </div>
               );
             })}
+            <div className="form-text mt-2">
+              {t.actions.editProfile.message}{" "}
+              <a
+                href={`${kompassiBaseUrl}/profile`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link-subtle"
+              >
+                {t.actions.editProfile.link}…
+              </a>
+            </div>
           </CardBody>
         </Card>
         <SchemaForm

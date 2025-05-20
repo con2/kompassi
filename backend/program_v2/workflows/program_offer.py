@@ -7,6 +7,7 @@ from core.models.event import Event
 from dimensions.models.dimension import Dimension
 from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from dimensions.models.universe import Universe
+from forms.models.enums import Anonymity
 from forms.models.response import Response
 from forms.models.survey import Survey
 from forms.models.workflow import Workflow
@@ -143,6 +144,14 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
     def backfill(cls, event: Event):
         cls.backfill_default_dimensions(event)
         cls.backfill_involvement(event)
+
+        Survey.objects.filter(
+            event=event,
+            app="program_v2",
+            anonymity=Anonymity.NAME_AND_EMAIL.value,
+        ).update(
+            anonymity=Anonymity.FULL_PROFILE.value,
+        )
 
     @classmethod
     def backfill_default_dimensions(cls, event: Event):

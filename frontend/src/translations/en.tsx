@@ -127,8 +127,11 @@ const translations = {
     privacyPolicy: "Privacy policy",
     privacyPolicyMissing: "Missing privacy policy",
     actions: {
-      editProfile:
-        "If you notice any mistakes, please correct them in your profile.",
+      editProfile: {
+        message:
+          "If you notice any mistakes, please correct them in your profile.",
+        link: "Edit profile",
+      },
     },
     sourceRegistry: "Source of personal data",
     targetRegistry: "Receiver of personal data",
@@ -1361,17 +1364,6 @@ const translations = {
       <>
         Summary of {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
         (total {totalCount}).
-      </>
-    ),
-    theseProfileFieldsWillBeShared:
-      "When you submit this survey, the following information will be shared with the survey owner:",
-    correctInYourProfile: (profileLink: string) => (
-      <>
-        If these are not correct, please correct them in your{" "}
-        <a href={profileLink} target="_blank" rel="noopener noreferrer">
-          profile
-        </a>{" "}
-        (opens in a new tab).
       </>
     ),
     attributes: {

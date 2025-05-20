@@ -126,8 +126,11 @@ const translations: Translations = {
     privacyPolicy: "Tietosuojaseloste",
     privacyPolicyMissing: "Tietosuojaseloste puuttuu",
     actions: {
-      editProfile:
-        "Jos huomaat profiilissasi virheitä, korjaathan ne profiilisivulla.",
+      editProfile: {
+        message:
+          "Jos huomaat virheitä tai puutteita henkilötiedoissasi, korjaathan ne profiilissasi.",
+        link: "Muokkaa profiilia",
+      },
     },
     sourceRegistry: "Henkilötietojen lähde",
     targetRegistry: "Henkilötietojen vastaanottaja",
@@ -1351,17 +1354,6 @@ const translations: Translations = {
     summaryOf: (filteredCount: number, totalCount: number) => (
       <>
         Yhteenveto {filteredCount} vastauksesta (yhteensä {totalCount}).
-      </>
-    ),
-    theseProfileFieldsWillBeShared:
-      "Kun lähetät tämän kyselyn, seuraavat tiedot jaetaan kyselyn omistajan kanssa:",
-    correctInYourProfile: (profileLink: string) => (
-      <>
-        Jos tiedot eivät ole oikein, korjaa ne{" "}
-        <a href={profileLink} target="_blank" rel="noopener noreferrer">
-          profiilissasi
-        </a>{" "}
-        (avautuu uuteen välilehteen).
       </>
     ),
     attributes: {

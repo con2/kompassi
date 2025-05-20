@@ -1,9 +1,4 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ReactNode } from "react";
-import Card from "react-bootstrap/Card";
-import CardBody from "react-bootstrap/CardBody";
-import CardTitle from "react-bootstrap/CardTitle";
 
 import { submit } from "./actions";
 import { graphql } from "@/__generated__";
@@ -15,16 +10,12 @@ import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
+import TransferConsentForm from "@/components/involvement/TransferConsentForm";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { kompassiBaseUrl } from "@/config";
-import {
-  getTranslations,
-  isSupportedLanguage,
-  SupportedLanguage,
-} from "@/translations";
-import type { Translations } from "@/translations/en";
+import { getTranslations } from "@/translations";
 
 const query = graphql(`
   query SurveyPageQuery(
@@ -33,8 +24,11 @@ const query = graphql(`
     $locale: String
   ) {
     profile {
-      displayName
-      email
+      ...FullProfile
+    }
+
+    userRegistry {
+      ...TransferConsentFormRegistry
     }
 
     event(slug: $eventSlug) {
@@ -48,6 +42,14 @@ const query = graphql(`
           countResponsesByCurrentUser
           isActive
           purpose
+
+          profileFieldSelector {
+            ...FullProfileFieldSelector
+          }
+
+          registry {
+            ...TransferConsentFormRegistry
+          }
 
           form(lang: $locale) {
             language
@@ -96,8 +98,8 @@ export default async function SurveyPage({ params }: Props) {
     query,
     variables: { eventSlug, surveySlug, locale },
   });
-  const { event } = data;
-  if (!event?.forms?.survey?.form) {
+  const { event, profile, userRegistry } = data;
+  if (!event?.forms?.survey?.form || !profile) {
     notFound();
   }
   const {
@@ -107,6 +109,8 @@ export default async function SurveyPage({ params }: Props) {
     maxResponsesPerUser,
     countResponsesByCurrentUser,
     purpose,
+    profileFieldSelector,
+    registry: targetRegistry,
   } = event.forms.survey;
   const { isActive } = event.forms.survey;
   const { title, description, fields, language } = event.forms.survey.form;
@@ -146,28 +150,6 @@ export default async function SurveyPage({ params }: Props) {
 
   validateFields(fields);
 
-  const profile = data.profile ?? {};
-  let isSharedProfileFieldsShown = false;
-  let sharedProfileFields: Field[] = [];
-
-  // TODO(#402) Improved privacy choices, use profileFieldSelector
-  if (data.profile && anonymity == "NAME_AND_EMAIL") {
-    isSharedProfileFieldsShown = true;
-    sharedProfileFields = [
-      {
-        slug: "displayName",
-        type: "SingleLineText",
-        title: translations.Profile.advancedAttributes.displayName.title,
-      },
-      {
-        slug: "email",
-        type: "SingleLineText",
-        title: translations.Profile.advancedAttributes.email.title,
-      },
-    ];
-  }
-  const profileLink = `${kompassiBaseUrl}/profile`;
-
   return (
     <ViewContainer>
       <ViewHeading>
@@ -189,21 +171,16 @@ export default async function SurveyPage({ params }: Props) {
       )}
 
       <ParagraphsDangerousHtml html={description} />
-      {isSharedProfileFieldsShown && (
-        <Card className="mb-4">
-          <CardBody>
-            <CardTitle>{t.theseProfileFieldsWillBeShared}</CardTitle>
-            <p>{t.correctInYourProfile(profileLink)}</p>
-            <SchemaForm
-              fields={sharedProfileFields}
-              values={profile}
-              messages={translations.SchemaForm}
-              readOnly={true}
-            />
-          </CardBody>
-        </Card>
-      )}
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
+        {targetRegistry && (
+          <TransferConsentForm
+            profileFieldSelector={profileFieldSelector}
+            profile={profile}
+            sourceRegistry={userRegistry}
+            targetRegistry={targetRegistry}
+            translations={translations}
+          />
+        )}
         <SchemaForm fields={fields} messages={translations.SchemaForm} />
         <SubmitButton>{t.actions.submit}</SubmitButton>
       </form>
