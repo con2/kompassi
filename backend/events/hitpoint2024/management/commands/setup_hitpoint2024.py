@@ -562,7 +562,7 @@ class Setup:
         with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
             data = yaml.safe_load(f)
 
-        Form.objects.get_or_create(
+        Form.objects.update_or_create(
             event=self.event,
             survey=survey,
             language="fi",
@@ -572,7 +572,7 @@ class Setup:
         with resource_stream("events.hitpoint2024", "forms/larp-survey-en.yml") as f:
             data = yaml.safe_load(f)
 
-        Form.objects.get_or_create(
+        Form.objects.update_or_create(
             event=self.event,
             survey=survey,
             language="en",

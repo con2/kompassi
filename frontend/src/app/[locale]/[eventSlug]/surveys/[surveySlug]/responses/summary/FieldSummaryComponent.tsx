@@ -18,21 +18,14 @@ function getSummaryChoices(
   field: Field,
   translations: Translations,
 ) {
+  const { type } = field;
   const t = translations.Survey;
   let choices: Choice[] = [];
   let questions: Choice[] = [];
 
-  switch (field.type) {
-    case "SingleLineText":
-      if (field.htmlType === "number" && fieldSummary.type == "Select") {
-        choices = Object.keys(fieldSummary.summary).map((key) => ({
-          slug: key,
-          title: key,
-        }));
-      }
-      break;
-
+  switch (type) {
     case "SingleCheckbox":
+    case "DimensionSingleCheckbox":
       choices = [
         {
           slug: "checked",
@@ -46,7 +39,9 @@ function getSummaryChoices(
       break;
 
     case "SingleSelect":
+    case "DimensionSingleSelect":
     case "MultiSelect":
+    case "DimensionMultiSelect":
       choices = field.choices;
       break;
 
@@ -54,6 +49,33 @@ function getSummaryChoices(
       choices = field.choices;
       questions = field.questions;
       break;
+
+    case "NumberField":
+      if (fieldSummary.type === "Select") {
+        choices = Object.keys(fieldSummary.summary).map((key) => ({
+          slug: key,
+          title: key,
+        }));
+      }
+
+    case "SingleLineText":
+    case "Divider":
+    case "MultiLineText":
+    case "Spacer":
+    case "StaticText":
+    case "FileUpload":
+    case "DecimalField":
+    case "DateField":
+    case "TimeField":
+    case "DateTimeField":
+      // no choices
+      break;
+
+    default:
+      const exhaustiveCheck: never = type;
+      throw new Error(
+        `FieldSummaryComponent: Unknown field type ${exhaustiveCheck}`,
+      );
   }
 
   return { choices, questions };
@@ -74,14 +96,14 @@ export default function FieldSummaryComponent({
 }: Props) {
   const t = translations.Survey;
 
-  const { countResponses, countMissingResponses } = fieldSummary;
+  const { countResponses, countMissingResponses, type } = fieldSummary;
   const { choices, questions } = getSummaryChoices(
     fieldSummary,
     field,
     translations,
   );
 
-  switch (fieldSummary.type) {
+  switch (type) {
     // TODO handle htmlType="number"
     case "Text":
       // TODO fix padding
@@ -160,6 +182,9 @@ export default function FieldSummaryComponent({
       );
 
     default:
-      return undefined;
+      const exhaustiveCheck: never = type;
+      throw new Error(
+        `FieldSummaryComponent: Unknown field summary type ${exhaustiveCheck}`,
+      );
   }
 }

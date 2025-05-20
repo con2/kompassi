@@ -86,7 +86,7 @@ function SchemaFormInput({
         />
       );
     case "SingleCheckbox":
-      // FIXME: Required checkboxes fail in a funny way.
+    case "DimensionSingleCheckbox":
       return (
         <input
           className="form-check-input"
@@ -260,6 +260,9 @@ function SchemaFormInput({
           name={slug}
         />
       );
+    default:
+      const exhaustiveCheck: never = type;
+      throw new Error(`Unknown field type ${exhaustiveCheck}`);
   }
 }
 

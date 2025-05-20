@@ -17,8 +17,7 @@ fields:
   - slug: participated_in_tracon_hitpoint
     title: How many times have you participated in Tracon Hitpoint?
     helpText: "Tracon Hitpoint has been organized four times: in 2015, 2017, 2019 and 2024."
-    type: SingleLineText
-    htmlType: number
+    type: NumberField
     summaryTitle: Times participated
 
   - slug: larping

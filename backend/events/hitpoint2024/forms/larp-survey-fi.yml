@@ -17,8 +17,7 @@ fields:
   - slug: participated_in_tracon_hitpoint
     title: Montako kertaa olet osallistunut Tracon Hitpointiin?
     helpText: "Tracon Hitpoint on järjestetty neljä kertaa: vuosina 2015, 2017, 2019 ja 2024."
-    type: SingleLineText
-    htmlType: number
+    type: NumberField
     summaryTitle: Osallistumiskerrat
 
   - slug: larping
