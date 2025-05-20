@@ -1,5 +1,4 @@
 import graphene
-import graphene_django
 
 from core.graphql.user_limited import LimitedUserType
 from forms.graphql.survey_full import FullSurveyType
@@ -7,9 +6,10 @@ from graphql_api.utils import resolve_local_datetime_field
 from program_v2.graphql.program_limited import LimitedProgramType
 
 from ..models.invitation import Invitation
+from .invitation_limited import LimitedInvitationType
 
 
-class FullInvitationType(graphene_django.DjangoObjectType):
+class FullInvitationType(LimitedInvitationType):
     class Meta:
         model = Invitation
         fields = (

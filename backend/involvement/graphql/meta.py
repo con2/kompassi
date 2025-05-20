@@ -4,7 +4,7 @@ import graphene
 from django.http import HttpRequest
 
 from ..models.meta import InvolvementEventMeta
-from .invitation_limited import LimitedInvitationType
+from .invitation_full import FullInvitationType
 
 
 class InvolvementEventMetaType(graphene.ObjectType):
@@ -22,6 +22,6 @@ class InvolvementEventMetaType(graphene.ObjectType):
         return meta.invitations.get(id=invitation_id)
 
     invitation = graphene.Field(
-        LimitedInvitationType,
+        FullInvitationType,
         invitation_id=graphene.String(required=True),
     )

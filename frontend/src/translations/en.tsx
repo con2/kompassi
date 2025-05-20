@@ -1807,6 +1807,10 @@ const translations = {
         ) : (
           <>{numInvitations} open invitations.</>
         ),
+      program: {
+        title: "Program item",
+        editLater: "You can edit the program item later.",
+      },
     },
     errors: {
       alreadyUsed: {

@@ -1,5 +1,8 @@
 import { notFound } from "next/navigation";
 
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
+import CardTitle from "react-bootstrap/CardTitle";
 import { acceptInvitation } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
@@ -8,6 +11,7 @@ import { AlsoAvailableInLanguage } from "@/components/forms/AlsoAvailableInLangu
 import { validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
+import Linebreaks from "@/components/helpers/Linebreaks";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import TransferConsentForm from "@/components/involvement/TransferConsentForm";
 import SignInRequired from "@/components/SignInRequired";
@@ -69,6 +73,13 @@ const query = graphql(`
       involvement {
         invitation(invitationId: $invitationId) {
           isUsed
+
+          program {
+            slug
+            title
+            description
+          }
+
           survey {
             slug
             isActive
@@ -138,7 +149,7 @@ export default async function SurveyPage({ params }: Props) {
     notFound();
   }
 
-  const { survey, isUsed } = event.involvement.invitation;
+  const { survey, isUsed, program } = event.involvement.invitation;
   if (isUsed) {
     return (
       <ViewContainer>
@@ -188,6 +199,26 @@ export default async function SurveyPage({ params }: Props) {
       )}
 
       <ParagraphsDangerousHtml html={description} />
+
+      {program && (
+        <Card>
+          <CardBody>
+            <CardTitle>{t.attributes.program.title}</CardTitle>
+            {(["title", "description"] as const).map((field) => (
+              <div key={field} className="mt-2">
+                <div>
+                  <strong>{translations.Program.attributes[field]}</strong>
+                </div>
+                <Linebreaks text={program[field]} />
+              </div>
+            ))}
+            <div className="mt-2 form-text">
+              {t.attributes.program.editLater}
+            </div>
+          </CardBody>
+        </Card>
+      )}
+
       <form
         action={acceptInvitation.bind(
           null,

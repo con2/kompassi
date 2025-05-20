@@ -2,6 +2,7 @@ import graphene
 import graphene_django
 
 from access.cbac import graphql_check_instance
+from forms.graphql.survey_limited import LimitedSurveyType
 from graphql_api.utils import resolve_local_datetime_field
 
 from ..models.invitation import Invitation
@@ -15,6 +16,8 @@ class LimitedInvitationType(graphene_django.DjangoObjectType):
             "survey",
             "language",
         )
+
+    survey = graphene.Field(LimitedSurveyType)
 
     @staticmethod
     def resolve_is_used(invitation: Invitation, info) -> bool:

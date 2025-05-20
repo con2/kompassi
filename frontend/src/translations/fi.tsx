@@ -1803,6 +1803,10 @@ const translations: Translations = {
         ) : (
           <>{numInvitations} avointa kutsua.</>
         ),
+      program: {
+        title: "Ohjelmanumeron tiedot",
+        editLater: "Pääset muokkaamaan ohjelmanumeron tietoja myöhemmin.",
+      },
     },
     errors: {
       alreadyUsed: {
