@@ -20,12 +20,14 @@ export type FieldType =
   | "TimeField"
   | "DateTimeField"
   | "DimensionSingleSelect"
-  | "DimensionMultiSelect";
+  | "DimensionMultiSelect"
+  | "DimensionSingleCheckbox";
 
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
   "MultiLineText",
   "SingleCheckbox",
+  "DimensionSingleCheckbox",
   "StaticText",
   "Divider",
   "Spacer",
@@ -45,6 +47,7 @@ export const fieldTypes: FieldType[] = [
 export const fieldTypesConvertibleToDimension: FieldType[] = [
   "SingleSelect",
   "MultiSelect",
+  "SingleCheckbox",
 ];
 
 /** These field types represent static elements on the form and don't have values. */
@@ -128,6 +131,11 @@ export interface SingleCheckbox extends BaseField {
   type: "SingleCheckbox";
 }
 
+export interface DimensionSingleCheckbox extends BaseField {
+  type: "DimensionSingleCheckbox";
+  dimension: string;
+}
+
 export interface Choice {
   slug: string;
   title: string;
@@ -207,7 +215,8 @@ export type Field =
   | TimeField
   | DateTimeField
   | DimensionSingleSelect
-  | DimensionMultiSelect;
+  | DimensionMultiSelect
+  | DimensionSingleCheckbox;
 
 export interface FormSchema {
   title: string;

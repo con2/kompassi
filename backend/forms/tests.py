@@ -914,3 +914,123 @@ def test_promote_field_to_dimension():
     assert quux_value.title_en == ""
     assert quux_value.title_fi == ""
     assert quux_value.title_sv == "Quux (som inte finns på andra språk)"
+
+
+@pytest.mark.django_db
+def test_promote_single_checkbox():
+    event, _created = Event.get_or_create_dummy()
+
+    survey = Survey.objects.create(
+        event=event,
+        slug="test-survey",
+    )
+
+    form_en = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[
+            dict(
+                slug="q_foo",
+                type="SingleCheckbox",
+                title="Foo",
+            ),
+        ],
+    )
+
+    form_fi = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="fi",
+        fields=[
+            dict(
+                slug="q_foo",
+                type="SingleCheckbox",
+                title="Foo mutta suomeksi",
+            ),
+        ],
+    )
+
+    response1 = Response.objects.create(
+        form=form_en,
+        form_data={
+            "q_foo": "on",
+        },
+    )
+    response2 = Response.objects.create(
+        form=form_fi,
+        form_data={
+            "q_foo": "",  # in case some browser represents it as q_foo=
+        },
+    )
+    response3 = Response.objects.create(
+        form=form_fi,
+        form_data={},
+    )
+
+    # CASE 1: New dimension
+    promote_field_to_dimension(survey, "q_foo")
+
+    dimension = survey.dimensions.get()
+    assert dimension.slug == "q-foo"
+    assert dimension.title_en == "Foo"
+    assert dimension.title_fi == "Foo mutta suomeksi"
+    assert dimension.title_sv == ""
+    assert ValueOrdering(dimension.value_ordering) == ValueOrdering.MANUAL
+
+    true_value, false_value = dimension.get_values("en")
+    assert true_value.slug == "true"
+    assert true_value.title_en == "Yes"
+    assert true_value.title_fi == "Kyllä"
+
+    assert false_value.slug == "false"
+    assert false_value.title_en == "No"
+    assert false_value.title_fi == "Ei"
+
+    response1.refresh_from_db()
+    response2.refresh_from_db()
+    response3.refresh_from_db()
+
+    assert response1.cached_dimensions == {
+        "q-foo": ["true"],
+    }
+    assert response2.cached_dimensions == {
+        "q-foo": ["false"],
+    }
+    assert response3.cached_dimensions == {
+        # We cannot separate unchecked and missing for checkboxes
+        # because the form data is the same
+        "q-foo": ["false"],
+    }
+
+    # CASE 2: Existing dimension
+    Form.objects.create(
+        event=event,
+        survey=survey,
+        language="sv",
+        fields=[
+            dict(
+                slug="q_foo",
+                type="SingleCheckbox",
+                title="Foo men på svenska",
+            ),
+        ],
+    )
+
+    promote_field_to_dimension(survey, "q_foo")
+
+    dimension = survey.dimensions.get()
+    assert dimension.slug == "q-foo"
+    assert dimension.title_en == "Foo"
+    assert dimension.title_fi == "Foo mutta suomeksi"
+    assert dimension.title_sv == "Foo men på svenska"
+    assert ValueOrdering(dimension.value_ordering) == ValueOrdering.MANUAL
+
+    true_value, false_value = dimension.get_values("en")
+    assert true_value.slug == "true"
+    assert true_value.title_en == "Yes"
+    assert true_value.title_fi == "Kyllä"
+
+    assert false_value.slug == "false"
+    assert false_value.title_en == "No"
+    assert false_value.title_fi == "Ei"

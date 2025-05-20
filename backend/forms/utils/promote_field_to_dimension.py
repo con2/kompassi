@@ -5,11 +5,29 @@ from core.utils.model_utils import slugify
 from dimensions.models.dimension import ValueOrdering
 from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 
-from ..models.field import Field, FieldType
+from ..models.field import Choice, Field, FieldType
 from ..models.form import Form
 from ..models.response import Response
 from ..models.survey import Survey
+from ..utils.lift_dimension_values import lift_dimension_values
 from ..utils.merge_form_fields import merge_choices
+
+BOOLEAN_CHOICES = [
+    Choice(slug="true"),
+    Choice(slug="false"),
+]
+BOOLEAN_TRANSLATIONS = {
+    "true": {
+        "en": "Yes",
+        "fi": "Kyllä",
+        "sv": "Ja",
+    },
+    "false": {
+        "en": "No",
+        "fi": "Ei",
+        "sv": "Nej",
+    },
+}
 
 
 def promote_field_to_dimension(survey: Survey, field_slug: str):
@@ -36,6 +54,8 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     match original_field_type:
         case FieldType.SINGLE_SELECT:
             field_type = FieldType.DIMENSION_SINGLE_SELECT
+        case FieldType.SINGLE_CHECKBOX:
+            field_type = FieldType.DIMENSION_SINGLE_CHECKBOX
         case FieldType.MULTI_SELECT:
             field_type = FieldType.DIMENSION_MULTI_SELECT
         case _:
@@ -43,11 +63,15 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
 
     # use merge_choices for consistent ordering
     choices = (
-        reduce(
-            merge_choices,
-            [field.choices for field in field_in_languages.values()],
+        BOOLEAN_CHOICES
+        if original_field_type == FieldType.SINGLE_CHECKBOX
+        else (
+            reduce(
+                merge_choices,
+                [field.choices for field in field_in_languages.values()],
+            )
+            or []
         )
-        or []
     )
 
     # convert underscore to hyphen
@@ -71,7 +95,9 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     value_dtos = [
         DimensionValueDTO(
             slug=slugify(choice.slug),
-            title=merge_choice_translations(choice.slug),
+            title=BOOLEAN_TRANSLATIONS[choice.slug]
+            if original_field_type == FieldType.SINGLE_CHECKBOX
+            else merge_choice_translations(choice.slug),
         )
         for choice in choices
     ]
@@ -120,7 +146,8 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     for form in forms:
         for response in form.responses.all():
             response.reslugify_field(field_slug, "-")  # dimensions use dashes due to being parts of URLs
-            response.lift_dimension_values(
+            lift_dimension_values(
+                response,
                 dimension_slugs=[dimension.slug],
                 cache=cache,
             )

@@ -251,6 +251,7 @@ const translations: Translations = {
       StaticText: "Kiinteä teksti",
       Spacer: "Tyhjä tila",
       SingleCheckbox: "Yksittäinen rasti ruutuun -kenttä",
+      DimensionSingleCheckbox: "Yksittäinen rasti ruutuun -kenttä (dimensio)",
       SingleSelect: "Valinta",
       DimensionSingleSelect: "Valinta (dimensio)",
       MultiSelect: "Monivalinta",

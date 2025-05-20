@@ -221,6 +221,7 @@ FIELD_PROCESSORS: dict[FieldType, FieldProcessor] = {
     FieldType.SINGLE_LINE_TEXT: FieldProcessor(),
     FieldType.MULTI_LINE_TEXT: FieldProcessor(),
     FieldType.SINGLE_CHECKBOX: SingleCheckboxFieldProcessor(),
+    FieldType.DIMENSION_SINGLE_CHECKBOX: SingleCheckboxFieldProcessor(),
     FieldType.STATIC_TEXT: NullFieldProcessor(),
     FieldType.DIVIDER: NullFieldProcessor(),
     FieldType.SPACER: NullFieldProcessor(),

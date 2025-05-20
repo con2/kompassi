@@ -26,6 +26,7 @@ class FieldType(str, Enum):
     DATE_TIME_FIELD = "DateField"
     DIMENSION_SINGLE_SELECT = "DimensionSingleSelect"
     DIMENSION_MULTI_SELECT = "DimensionMultiSelect"
+    DIMENSION_SINGLE_CHECKBOX = "DimensionSingleCheckbox"
 
     @property
     def is_convertible_to_dimension(self) -> bool:
@@ -35,6 +36,7 @@ class FieldType(str, Enum):
         return self in (
             FieldType.SINGLE_SELECT,
             FieldType.MULTI_SELECT,
+            FieldType.SINGLE_CHECKBOX,
         )
 
     @property
@@ -49,7 +51,11 @@ class FieldType(str, Enum):
         """
         Returns True iff this field is a dimension field.
         """
-        return self in (FieldType.DIMENSION_SINGLE_SELECT, FieldType.DIMENSION_MULTI_SELECT)
+        return self in (
+            FieldType.DIMENSION_SINGLE_SELECT,
+            FieldType.DIMENSION_MULTI_SELECT,
+            FieldType.DIMENSION_SINGLE_CHECKBOX,
+        )
 
 
 class Choice(pydantic.BaseModel):

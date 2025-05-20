@@ -26,6 +26,8 @@ export default function newField(
     case "DimensionSingleSelect":
     case "DimensionMultiSelect":
       return { type, slug, title: "", choices: [], dimension: "" };
+    case "DimensionSingleCheckbox":
+      return { type, slug, title: "", dimension: "" };
     case "RadioMatrix":
       return { type, slug, title: "", choices: [], questions: [] };
     default:

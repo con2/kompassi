@@ -12,6 +12,7 @@ from access.cbac import is_graphql_allowed_for_model
 from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.utils import get_message_in_language
 
+from ..utils.lift_dimension_values import lift_dimension_values
 from .enums import SurveyPurpose
 from .response import Response
 from .survey import Survey, SurveyApp
@@ -68,7 +69,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         """
         cache = self.survey.universe.preload_dimensions()
         response.set_dimension_values(self.survey.cached_default_dimensions, cache=cache)
-        response.lift_dimension_values(cache=cache)
+        lift_dimension_values(response, cache=cache)
         response.refresh_cached_fields()
 
         self.ensure_involvement(

@@ -120,6 +120,7 @@ const translations: Translations = {
       StaticText: "Statisk text",
       Spacer: "Tomt utrymme",
       SingleCheckbox: "Enkel kryssruta",
+      DimensionSingleCheckbox: "Enkel kryssruta för en dimension",
       SingleSelect: "Listrutan (ett val)",
       DimensionSingleSelect: "Listrutan (ett val från en dimension)",
       MultiSelect: "Listrutan (flera val)",

@@ -253,6 +253,7 @@ const translations = {
       StaticText: "Static text",
       Spacer: "Empty space",
       SingleCheckbox: "Single check box",
+      DimensionSingleCheckbox: "Single check box (Dimension)",
       SingleSelect: "Single select",
       DimensionSingleSelect: "Single select (Dimension)",
       MultiSelect: "Multiple select",
