@@ -1101,6 +1101,14 @@ const translations: Translations = {
             <>{count} ohjelmatarjousta.</>
           ),
       },
+      empty: (
+        <>
+          Sinulla ei ole ohjelmanumeroita eikä ohjelmatarjouksia. Jos
+          ilmoittaudut ohjelmanpitäjäksi tapahtumaan, joka käyttää Kompassia
+          ohjelmansa hallintaan, löydät ohjelmatarjoukset ja ohjelmanumerot
+          täältä.
+        </>
+      ),
     },
 
     ProgramForm: {

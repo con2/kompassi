@@ -1115,6 +1115,13 @@ const translations = {
         tableFooter: (count: number) =>
           count === 1 ? <>One program offer.</> : <>{count} program offers.</>,
       },
+      empty: (
+        <>
+          You have no program items or program offers. If you sign up as a
+          program host in an event that uses Kompassi to manage its program, you
+          will find your program offers and program items here.
+        </>
+      ),
     },
 
     ProgramForm: {

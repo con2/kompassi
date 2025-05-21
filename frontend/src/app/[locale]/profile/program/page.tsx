@@ -209,6 +209,9 @@ export default async function ProfileProgramItemList({ params }: Props) {
           </DataTable>
         </>
       )}
+      {programItems.length === 0 && programOffers.length === 0 && (
+        <p>{t.profile.empty}</p>
+      )}
     </ViewContainer>
   );
 }
