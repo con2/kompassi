@@ -139,14 +139,24 @@ export default async function SurveyPage({ params }: Props) {
   const translations = getTranslations(locale);
   const surveyT = translations.Survey;
   const t = translations.Invitation;
+
+  const session = await auth();
+  if (!session) {
+    return <SignInRequired messages={translations.SignInRequired} />;
+  }
+
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, invitationId, locale },
   });
 
   const { event, profile } = data;
-  if (!event?.involvement?.invitation?.survey?.form || !profile) {
+  if (!event?.involvement?.invitation?.survey?.form) {
     notFound();
+  }
+
+  if (!profile) {
+    throw new Error("Null profile for signed-in user");
   }
 
   const { survey, isUsed, program } = event.involvement.invitation;
@@ -167,11 +177,6 @@ export default async function SurveyPage({ params }: Props) {
   const targetRegistry = survey.registry;
   if (!targetRegistry) {
     throw new Error("Survey used for accepting invitation has no registry");
-  }
-
-  const session = await auth();
-  if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
   }
 
   validateFields(fields);
