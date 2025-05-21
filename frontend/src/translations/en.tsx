@@ -1028,6 +1028,13 @@ const translations = {
       signUpForThisProgram: "Sign up for this program item",
       preview: "Preview schedule",
       preferences: "Preferences",
+      create: {
+        title: "Create program item",
+        modalActions: {
+          submit: "Create",
+          cancel: "Cancel",
+        },
+      },
     },
     favorites: {
       markAsFavorite: "Mark as favorite",

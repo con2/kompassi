@@ -781,6 +781,7 @@ const translations: Translations = {
       signUpForThisProgram: "Anmäl dig till detta program",
       preview: UNTRANSLATED("Preview schedule"),
       preferences: UNTRANSLATED("Preferences"),
+      create: UNTRANSLATED(en.Program.actions.create),
     },
     favorites: {
       markAsFavorite: "Markera som favorit",

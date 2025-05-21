@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { createProgram } from "./actions";
 import { graphql } from "@/__generated__";
 import { ProgramAdminFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -8,7 +9,11 @@ import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
+import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
+import { Field } from "@/components/forms/models";
+import { SchemaForm } from "@/components/forms/SchemaForm";
+import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -36,22 +41,13 @@ const query = graphql(`
       slug
       name
       program {
-        # TODO fragmentify
-        listFilters: dimensions(isListFilter: true, publicOnly: false) {
+        dimensions(publicOnly: false) {
           slug
           title(lang: $locale)
-
-          values(lang: $locale) {
-            slug
-            title(lang: $locale)
-            color
-          }
-        }
-
-        keyDimensions: dimensions(keyDimensionsOnly: true, publicOnly: false) {
-          slug
-          title(lang: $locale)
+          isTechnical
+          isMultiValue
           isKeyDimension
+          isListFilter
 
           values(lang: $locale) {
             slug
@@ -121,7 +117,7 @@ export default async function FormResponsesPage({
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;
-  const scheduleT = translations.Program.ScheduleItem;
+  const surveyT = translations.Survey;
   const queryString = new URLSearchParams(searchParams).toString();
 
   const session = await auth();
@@ -141,10 +137,13 @@ export default async function FormResponsesPage({
     notFound();
   }
 
-  const listFilters = data.event.program.listFilters;
+  const dimensions = data.event.program.dimensions;
+  const listFilters = dimensions.filter((dimension) => dimension.isListFilter);
   const programs = data.event.program.programs;
   const event = data.event;
-  const keyDimensions = data.event.program.keyDimensions;
+  const keyDimensions = dimensions.filter(
+    (dimension) => dimension.isKeyDimension,
+  );
 
   const columns: Column<ProgramAdminFragment>[] = [
     {
@@ -162,12 +161,65 @@ export default async function FormResponsesPage({
 
   columns.push(...buildKeyDimensionColumns(keyDimensions));
 
+  // Create program item form
+
+  const { fields: dimensionFields } = buildDimensionValueSelectionForm(
+    dimensions,
+    {},
+  );
+
+  const createProgramFields: Field[] = [
+    {
+      slug: "slug",
+      required: true,
+      type: "SingleLineText",
+      ...t.attributes.slug,
+    },
+    {
+      slug: "title",
+      title: t.attributes.title,
+      required: true,
+      type: "SingleLineText",
+    },
+    {
+      slug: "description",
+      title: t.attributes.description,
+      type: "MultiLineText",
+      rows: 5,
+    },
+  ];
+  if (dimensions.filter((dimension) => !dimension.isTechnical).length > 0) {
+    createProgramFields.push(
+      {
+        slug: "dimensionsHeader",
+        type: "StaticText",
+        title: surveyT.attributes.dimensions,
+      },
+      ...dimensionFields,
+    );
+  }
+
   return (
     <ProgramAdminView
       translations={translations}
       event={data.event}
       active="programItems"
       queryString={queryString}
+      actions={
+        <ModalButton
+          className="btn btn-outline-primary"
+          label={t.actions.create.title + "…"}
+          title={t.actions.create.title}
+          messages={t.actions.create.modalActions}
+          action={createProgram.bind(null, locale, eventSlug)}
+        >
+          <SchemaForm
+            fields={createProgramFields}
+            messages={translations.SchemaForm}
+            headingLevel="h4"
+          />
+        </ModalButton>
+      }
     >
       <DimensionFilters
         dimensions={listFilters}

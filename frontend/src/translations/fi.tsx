@@ -1014,6 +1014,13 @@ const translations: Translations = {
       signUpForThisProgram: "Ilmoittaudu tähän ohjelmanumeroon",
       preview: "Ohjelmaoppaan esikatselu",
       preferences: "Asetukset",
+      create: {
+        title: "Luo ohjelmanumero",
+        modalActions: {
+          submit: "Luo ohjelmanumero",
+          cancel: "Peruuta",
+        },
+      },
     },
     favorites: {
       markAsFavorite: "Merkitse suosikiksi",
