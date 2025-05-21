@@ -3,6 +3,7 @@ import warnings
 from email.utils import parseaddr
 
 import environ
+from csp.constants import NONE, SELF, UNSAFE_EVAL, UNSAFE_INLINE
 from django.contrib.messages import constants as messages
 from django.utils.translation import gettext_lazy as _
 
@@ -356,15 +357,18 @@ KOMPASSI_BASE_URL = env("KOMPASSI_BASE_URL", default="http://localhost:8000")
 KOMPASSI_V2_BASE_URL = env("KOMPASSI_V2_BASE_URL", default="http://localhost:3000")
 
 # TODO script-src unsafe-inline needed at least by feedback.js. unsafe-eval needed by Knockout (roster.js).
-# XXX style-src unsafe-inline is just basic plebbery and should be eradicated.
-CSP_DEFAULT_SRC = "'none'"
-CSP_SCRIPT_SRC = "'self' 'unsafe-inline' 'unsafe-eval'"
-CSP_CONNECT_SRC = "'self'"
-CSP_IMG_SRC = f"'self' {AWS_S3_ENDPOINT_URL}"
-CSP_STYLE_SRC = "'self' 'unsafe-inline'"
-CSP_FONT_SRC = "'self'"
-CSP_FORM_ACTION = f"'self' {KOMPASSI_V2_BASE_URL}"
-CSP_FRAME_ANCESTORS = "'none'"
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": [NONE],
+        "script-src": [SELF, UNSAFE_INLINE, UNSAFE_EVAL],  # XXX unsafe-inline should be eradicated.
+        "connect-src": [SELF],
+        "img-src": [SELF, AWS_S3_ENDPOINT_URL],
+        "style-src": [SELF, UNSAFE_INLINE],  # XXX unsafe-inline should be eradicated.
+        "font-src": [SELF],
+        "form-action": [SELF, KOMPASSI_V2_BASE_URL],
+        "frame-ancestors": [NONE],
+    }
+}
 X_FRAME_OPTIONS = "DENY"
 
 

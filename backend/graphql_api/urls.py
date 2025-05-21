@@ -7,5 +7,5 @@ from .schema import schema
 
 urlpatterns = [
     # TODO csp_exempt, csrf_exempt
-    path("graphql", csp_exempt(csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema)))),
+    path("graphql", csp_exempt()(csrf_exempt(GraphQLView.as_view(graphiql=True, schema=schema)))),
 ]

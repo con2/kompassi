@@ -14,7 +14,7 @@ from ..utils import groups_of_n
 
 
 @public_organization_required
-@csp_update(FORM_ACTION=CHECKOUT_PAYMENT_WALL_ORIGIN)
+@csp_update({"form-action": [CHECKOUT_PAYMENT_WALL_ORIGIN]})  # type: ignore
 def core_organization_view(request, organization):
     t = now()
 

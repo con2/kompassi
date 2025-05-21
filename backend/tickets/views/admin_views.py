@@ -1,7 +1,6 @@
 import datetime
 from collections import defaultdict
 
-from csp.decorators import csp_exempt
 from django.contrib import messages
 from django.core.paginator import EmptyPage, InvalidPage, Paginator
 from django.db.models import Sum
@@ -256,7 +255,6 @@ def tickets_admin_order_view(request, vars, event, order_id):
 
 @tickets_admin_required
 @require_safe
-@csp_exempt
 def tickets_admin_etickets_view(request, vars, event, order_id):
     order = get_object_or_404(Order, id=int(order_id), event=event)
 

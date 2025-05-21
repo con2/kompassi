@@ -1,13 +1,21 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
-from core.utils import SLUG_FIELD_PARAMS, get_code
+from core.utils.misc_utils import get_code
+from core.utils.model_utils import make_slug_field
+
+if TYPE_CHECKING:
+    from .slack_access import SlackAccess
 
 
 class Privilege(models.Model):
-    slug = models.CharField(**SLUG_FIELD_PARAMS)
+    slug = make_slug_field()
     title = models.CharField(max_length=256)
     description = models.TextField(blank=True)
     disclaimers = models.TextField(blank=True)
@@ -15,6 +23,10 @@ class Privilege(models.Model):
     url = models.CharField(max_length=255, blank=True)
 
     grant_code = models.CharField(max_length=256)
+
+    slack_access: models.ForeignKey[SlackAccess] | None
+    id: int
+    pk: int
 
     @classmethod
     def get_or_create_dummy(cls, slug="test-privilege"):
@@ -44,7 +56,7 @@ class Privilege(models.Model):
         if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import grant_privilege
 
-            grant_privilege.delay(self.pk, person.pk)
+            grant_privilege.delay(self.pk, person.pk)  # type: ignore
         else:
             self._grant(person)
 

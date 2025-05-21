@@ -29,6 +29,7 @@ from .constants import (
 )
 
 if TYPE_CHECKING:
+    from access.models.email_alias import EmailAlias
     from badges.models.badge import Badge
     from labour.models.qualifications import PersonQualification
 
@@ -138,6 +139,7 @@ class Person(models.Model):
 
     badges: models.QuerySet[Badge]
     qualifications: models.QuerySet[PersonQualification]  # XXX naming
+    email_aliases: models.QuerySet[EmailAlias]
     user_id: int
 
     class Meta:

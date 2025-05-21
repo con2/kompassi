@@ -17,7 +17,7 @@ from .login_views import do_login
 
 @sensitive_post_parameters("registration-password", "registration-password_again")
 @require_http_methods(["GET", "HEAD", "POST"])
-@csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
+@csp_update({"form-action": settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS})
 def core_registration_view(request):
     next = get_next(request)
 
