@@ -20,7 +20,7 @@ class FullResponseType(LimitedResponseType):
         qs = parent.dimensions.all()
 
         if key_dimensions_only:
-            qs = qs.filter(dimension__is_key_dimension=True)
+            qs = qs.filter(value__dimension__is_key_dimension=True)
 
         return qs
 
