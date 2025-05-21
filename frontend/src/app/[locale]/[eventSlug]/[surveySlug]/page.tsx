@@ -99,7 +99,7 @@ export default async function SurveyPage({ params }: Props) {
     variables: { eventSlug, surveySlug, locale },
   });
   const { event, profile, userRegistry } = data;
-  if (!event?.forms?.survey?.form || !profile) {
+  if (!event?.forms?.survey?.form) {
     notFound();
   }
   const {
@@ -172,7 +172,7 @@ export default async function SurveyPage({ params }: Props) {
 
       <ParagraphsDangerousHtml html={description} />
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
-        {targetRegistry && (
+        {targetRegistry && profile && (
           <TransferConsentForm
             profileFieldSelector={profileFieldSelector}
             profile={profile}
