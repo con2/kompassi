@@ -17,6 +17,18 @@ class AnnotationSchemoid(BaseModel):
     type: AnnotationDataType = AnnotationDataType.STRING
     is_public: bool = True
     is_shown_in_detail: bool = True
+    is_computed: bool = False
+
+    def validate(self, value: Any):
+        """
+        Raises ValueError if the value is not valid for the annotation type.
+        """
+        if self.type == AnnotationDataType.STRING and not isinstance(value, str):
+            raise ValueError(f"Value for {self.slug} must be a string.")
+        if self.type == AnnotationDataType.NUMBER and not isinstance(value, (int, float)):
+            raise ValueError(f"Value for {self.slug} must be a number.")
+        if self.type == AnnotationDataType.BOOLEAN and not isinstance(value, bool):
+            raise ValueError(f"Value for {self.slug} must be a boolean.")
 
 
 class ProgramAnnotation(BaseModel):
@@ -145,6 +157,30 @@ ANNOTATIONS = [
         ),
         is_public=False,
         is_shown_in_detail=False,
+        is_computed=True,
+    ),
+    AnnotationSchemoid(
+        slug="internal:defaultFormattedHosts",
+        title=dict(
+            fi="Ohjelmanpitäjäin oletusesitystapa",
+            en="Default way to present program hosts",
+        ),
+        is_public=False,
+        is_shown_in_detail=False,
+        is_computed=True,
+    ),
+    AnnotationSchemoid(
+        slug="internal:overrideFormattedHosts",
+        title=dict(
+            fi="Ylikirjoita ohjelmanpitäjäin esitystapa",
+            en="Override the way program hosts are presented",
+        ),
+        description=dict(
+            fi="Jos ohjelmanpitäjäin oletusesitystapa ei miellytä, voit ylikirjoittaa sen tässä. Jos jätät tämän tyhjäksi, käytetään oletusesitystapaa.",
+            en="If the default way to present program hosts is not to your liking, you can override it here. If you leave this empty, the default formatting will be used.",
+        ),
+        is_public=False,
+        is_shown_in_detail=False,
     ),
     AnnotationSchemoid(
         slug="internal:links:signup",
@@ -186,6 +222,26 @@ ANNOTATIONS = [
     ),
 ]
 
+ANNOTATIONS_BY_SLUG = {annotation.slug: annotation for annotation in ANNOTATIONS}
+
+
+def validate_annotations(annotations: dict[str, Any]) -> None:
+    """
+    Validate the given annotations against the known annotations.
+
+    Args:
+        annotations: A dictionary of annotations to validate.
+        annotations_list: A list of AnnotationSchemoid objects to validate against.
+
+    Raises:
+        ValueError: If any annotation is not valid.
+    """
+    for slug, value in annotations.items():
+        schemoid = ANNOTATIONS_BY_SLUG.get(slug)
+        if schemoid is None:
+            raise ValueError(f"Unknown annotation slug: {slug}")
+        schemoid.validate(value)
+
 
 def extract_annotations(values: dict[str, Any], annotations=ANNOTATIONS) -> dict[str, Any]:
     """
@@ -198,5 +254,6 @@ def extract_annotations(values: dict[str, Any], annotations=ANNOTATIONS) -> dict
     Returns:
         A dictionary containing the extracted annotations.
     """
-    # TODO typecheck against ann.type
-    return {ann.slug: value for ann in annotations if (value := values.get(ann.slug)) is not None}
+    annotations = {ann.slug: value for ann in annotations if (value := values.get(ann.slug)) is not None}
+    validate_annotations(annotations)
+    return annotations

@@ -2,8 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { annotationSlugs } from "./consts";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
+import { updateProgramAnnotationsFromFormData } from "@/components/annotations/service";
 
 const inviteProgramHostMutation = graphql(`
   mutation InviteProgramHost($input: InviteProgramHostInput!) {
@@ -126,4 +128,20 @@ export async function resendInvitation(
   redirect(
     `/${eventSlug}/program-admin/${programSlug}/hosts?resent=${invitationId}`,
   );
+}
+
+export async function overrideFormattedHosts(
+  locale: string,
+  eventSlug: string,
+  programSlug: string,
+  formData: FormData,
+) {
+  await updateProgramAnnotationsFromFormData(
+    eventSlug,
+    programSlug,
+    formData,
+    annotationSlugs,
+  );
+
+  revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
 }

@@ -39,6 +39,7 @@ extend-ignore = [
     "SIM108",  # ternary operators can be less readable
     "PERF401", # manual-list-comprehension
     "PLR2004",  # I will not, for the love of God, write AMOUNT_OF_MONTHS_IN_YEAR = 12
+    "UP038", # isinstance(foo, X | Y) rule is deprecated
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]

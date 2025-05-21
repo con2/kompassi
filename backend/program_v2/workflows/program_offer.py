@@ -153,6 +153,8 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
             anonymity=Anonymity.FULL_PROFILE.value,
         )
 
+        Program.refresh_cached_fields_qs(Program.objects.filter(event=event))
+
     @classmethod
     def backfill_default_dimensions(cls, event: Event):
         """

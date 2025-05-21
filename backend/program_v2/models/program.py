@@ -103,23 +103,22 @@ class Program(models.Model):
     def refresh_cached_fields(self):
         self.refresh_cached_dimensions()
         self.refresh_cached_times()
+        self.refresh_annotations()
 
     @classmethod
     def refresh_cached_fields_qs(cls, queryset: models.QuerySet[Self]):
         cls.refresh_cached_dimensions_qs(queryset)
         cls.refresh_cached_times_qs(queryset)
+        cls.refresh_annotations_qs(queryset)
 
-    def _build_dimensions(self):
-        """
-        Used to populate cached_dimensions
-        """
+    def _build_cached_dimensions(self):
         # TODO should all event dimensions always be present, or only those with values?
         dimensions = {dimension.slug: [] for dimension in self.event.program_universe.dimensions.all()}
         for pdv in self.dimensions.all():
             dimensions[pdv.value.dimension.slug].append(pdv.value.slug)
         return dimensions
 
-    def _build_location(self):
+    def _build_cached_location(self):
         localized_locations: dict[str, set[str]] = {}
 
         for pdv in self.dimensions.filter(value__dimension__slug="room").distinct():
@@ -151,8 +150,8 @@ class Program(models.Model):
     def refresh_cached_dimensions(self):
         from .schedule import ScheduleItem
 
-        self.cached_dimensions = self._build_dimensions()
-        self.cached_location = self._build_location()
+        self.cached_dimensions = self._build_cached_dimensions()
+        self.cached_location = self._build_cached_location()
         self.cached_color = self._get_color()
         self.save(update_fields=["cached_dimensions", "cached_location", "cached_color", "updated_at"])
         self.schedule_items.update(cached_location=self.cached_location)
@@ -178,8 +177,8 @@ class Program(models.Model):
                 "cached_location",
                 "cached_color",
             ):
-                program.cached_dimensions = program._build_dimensions()
-                program.cached_location = program._build_location()
+                program.cached_dimensions = program._build_cached_dimensions()
+                program.cached_location = program._build_cached_location()
                 program.cached_color = program._get_color()
                 bulk_update_programs.append(program)
             num_programs_updated = cls.objects.bulk_update(
@@ -239,6 +238,41 @@ class Program(models.Model):
                 batch_size=cls.program_batch_size,
             )
             logger.info("Refreshed cached times for %s programs", num_updated)
+
+    def _build_default_formatted_hosts(self) -> str:
+        return ", ".join(host.person.display_name for host in self.program_hosts.filter(is_active=True))
+
+    def _build_annotations(self, **kwargs) -> dict[str, Any]:
+        annotations = dict(self.annotations, **kwargs)
+
+        default_formatted_hosts = self._build_default_formatted_hosts()
+        formatted_hosts = annotations.get("internal:overrideFormattedHosts", default_formatted_hosts)
+        annotations.update(
+            {
+                "internal:defaultFormattedHosts": default_formatted_hosts,
+                "internal:formattedHosts": formatted_hosts,
+            }
+        )
+
+        return annotations
+
+    def refresh_annotations(self, **kwargs):
+        self.annotations = self._build_annotations(**kwargs)
+        self.save(update_fields=["annotations", "updated_at"])
+
+    @classmethod
+    def refresh_annotations_qs(cls, queryset: models.QuerySet[Self]):
+        with transaction.atomic():
+            bulk_update = []
+            for program in queryset.select_for_update(of=("self",)).only("id", "annotations"):
+                program.annotations = program._build_annotations()
+                bulk_update.append(program)
+            num_updated = queryset.bulk_update(
+                bulk_update,
+                ["annotations", "updated_at"],
+                batch_size=cls.program_batch_size,
+            )
+            logger.info("Refreshed cached annotations for %s programs", num_updated)
 
     @cached_property
     def meta(self) -> ProgramV2EventMeta:
@@ -386,7 +420,7 @@ class Program(models.Model):
             .order_by(
                 "person__surname",
                 "person__first_name",
-                "program__cached_first_start_time",
+                "program__cached_earliest_start_time",
             )
         )
 

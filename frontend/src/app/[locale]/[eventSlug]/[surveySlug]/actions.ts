@@ -26,7 +26,7 @@ const initFileUploadMutation = graphql(`
   }
 `);
 
-export async function processFormData(
+export async function uploadFiles(
   client: ApolloClient<any>,
   eventSlug: string,
   surveySlug: string,
@@ -93,7 +93,7 @@ export async function submit(
     locale,
     eventSlug,
     surveySlug,
-    formData: await processFormData(client, eventSlug, surveySlug, formData),
+    formData: await uploadFiles(client, eventSlug, surveySlug, formData),
   };
   await client.mutate({
     mutation: createSurveyResponseMutation,

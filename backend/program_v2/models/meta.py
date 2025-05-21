@@ -108,7 +108,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
             .order_by(
                 "person__surname",
                 "person__first_name",
-                "program__cached_first_start_time",
+                "program__cached_earliest_start_time",
             )
         )
 

@@ -1,12 +1,18 @@
 import { notFound } from "next/navigation";
 
 import ButtonGroup from "react-bootstrap/ButtonGroup";
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
+import CardTitle from "react-bootstrap/CardTitle";
+import { updateProgramBasicInfo } from "../actions";
 import {
   inviteProgramHost,
   deleteProgramHost,
   revokeInvitation,
   resendInvitation,
+  overrideFormattedHosts,
 } from "./actions";
+import { annotationSlugs } from "./consts";
 import { graphql } from "@/__generated__";
 import {
   ProgramAdminDetailHostFragment,
@@ -15,10 +21,13 @@ import {
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import AlertNavigateOnClose from "@/components/AlertNavigateOnClose";
+import AnnotationsForm from "@/components/annotations/AnnotationsForm";
+import { validateCachedAnnotations } from "@/components/annotations/models";
 import { Column, DataTable } from "@/components/DataTable";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
+import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import SignInRequired from "@/components/SignInRequired";
@@ -52,6 +61,7 @@ const query = graphql(`
   query ProgramAdminDetailHosts(
     $eventSlug: String!
     $programSlug: String!
+    $annotationSlugs: [String!]!
     $locale: String
   ) {
     event(slug: $eventSlug) {
@@ -71,9 +81,14 @@ const query = graphql(`
       }
 
       program {
+        annotations(slug: $annotationSlugs) {
+          ...AnnotationsFormAnnotation
+        }
         program(slug: $programSlug) {
           slug
           title
+          cachedAnnotations(slug: $annotationSlugs, publicOnly: false)
+
           programHosts {
             ...ProgramAdminDetailHost
           }
@@ -107,7 +122,7 @@ export async function generateMetadata({ params }: Props) {
   const translations = getTranslations(locale);
   const { data, errors } = await getClient().query({
     query,
-    variables: { eventSlug, programSlug, locale },
+    variables: { eventSlug, programSlug, locale, annotationSlugs },
   });
   const title = getPageTitle({
     translations,
@@ -126,6 +141,7 @@ export default async function ProgramAdminDetailPage({
   const translations = getTranslations(locale);
   const profileT = translations.Profile;
   const inviT = translations.Invitation;
+  const programT = translations.Program;
   const t = translations.Program.ProgramHost;
 
   const session = await auth();
@@ -135,7 +151,7 @@ export default async function ProgramAdminDetailPage({
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, programSlug, locale },
+    variables: { eventSlug, programSlug, locale, annotationSlugs },
   });
   if (!data.event?.program?.program) {
     notFound();
@@ -145,6 +161,7 @@ export default async function ProgramAdminDetailPage({
   const program = data.event.program.program;
   const programHosts = data.event.program.program.programHosts;
   const invitations = data.event.program.program.invitations;
+  const annotations = data.event.program.annotations;
 
   const programHostColumns: Column<ProgramAdminDetailHostFragment>[] = [
     {
@@ -308,6 +325,10 @@ export default async function ProgramAdminDetailPage({
     invitations.find((invitation) => invitation.id === searchParams.resent)
       ?.email;
 
+  validateCachedAnnotations(annotations, program.cachedAnnotations);
+  const [_defaultFormattedHostsAnnotation, overrideFormattedHostsAnnotation] =
+    annotations;
+
   return (
     <ProgramAdminDetailView
       event={event}
@@ -369,6 +390,27 @@ export default async function ProgramAdminDetailPage({
           </DataTable>
         </>
       )}
+
+      <Card className="mt-5">
+        <CardBody>
+          <CardTitle>{overrideFormattedHostsAnnotation.title}</CardTitle>
+          <form
+            action={overrideFormattedHosts.bind(
+              null,
+              locale,
+              event.slug,
+              program.slug,
+            )}
+          >
+            <AnnotationsForm
+              schema={annotations}
+              values={program.cachedAnnotations}
+              messages={translations.SchemaForm}
+            />
+            <SubmitButton>{translations.Common.submit}</SubmitButton>
+          </form>
+        </CardBody>
+      </Card>
     </ProgramAdminDetailView>
   );
 }

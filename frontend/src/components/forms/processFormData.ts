@@ -2,7 +2,7 @@ import { Field, Value, Values } from "./models";
 
 /// Implements subset of forms/utils/process_form_data.py:process_form_data
 /// just enough to do what we need to do with forms client-side.
-export default function formDataToValues(
+export default function processFormData(
   fields: Field[],
   formData: FormData,
 ): Values {
@@ -34,7 +34,7 @@ export default function formDataToValues(
         // NOTE: Not exhaustive by design.
         // We don't need to implement this for all field types in the frontend.
         // const exhaustiveCheck: never = field.type;
-        throw new Error(`Unknown field type ${field.type}`);
+        throw new Error(`Unsupported field type ${field.type}`);
     }
   }
 

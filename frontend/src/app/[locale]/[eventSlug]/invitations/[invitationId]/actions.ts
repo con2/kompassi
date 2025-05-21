@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { processFormData } from "../../[surveySlug]/actions";
+import { uploadFiles } from "../../[surveySlug]/actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
@@ -32,12 +32,7 @@ export async function acceptInvitation(
         locale,
         eventSlug,
         invitationId,
-        formData: await processFormData(
-          client,
-          eventSlug,
-          surveySlug,
-          formData,
-        ),
+        formData: await uploadFiles(client, eventSlug, surveySlug, formData),
       },
     },
   });

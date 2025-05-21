@@ -2,6 +2,7 @@ import graphene
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
+from access.cbac import graphql_check_instance
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
 from graphql_api.utils import resolve_local_datetime_field, resolve_localized_field
@@ -81,27 +82,47 @@ class LimitedProgramType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_cached_annotations(program: Program, info, is_shown_in_detail: bool = False):
+    def resolve_cached_annotations(
+        program: Program,
+        info,
+        is_shown_in_detail: bool = False,
+        public_only: bool = True,
+        slug: list[str] | None = None,
+    ):
         """
         A mapping of program annotation slug to annotation value. Only public annotations are returned.
         """
-        annotations = [annotation for annotation in ANNOTATIONS if annotation.is_public]
+        if public_only:
+            annotations = [annotation for annotation in ANNOTATIONS if annotation.is_public]
+        else:
+            graphql_check_instance(
+                program,
+                info,
+                field="annotations",
+            )
+            annotations = ANNOTATIONS
 
         if is_shown_in_detail:
             annotations = [annotation for annotation in annotations if annotation.is_shown_in_detail]
 
-        annotations_dict = {annotation.slug: annotation for annotation in annotations}
+        if slug:
+            annotations = [annotation for annotation in annotations if annotation.slug in slug]
 
         return {
-            k: v
-            for (k, v) in program.annotations.items()
-            if v not in (None, "") and (annotation := annotations_dict.get(k)) and annotation.is_public
+            annotation.slug: value
+            for annotation in annotations
+            if (value := program.annotations.get(annotation.slug, None)) not in (None, "")
         }
 
     cached_annotations = graphene.NonNull(
         GenericScalar,
         description=normalize_whitespace(resolve_cached_annotations.__doc__ or ""),
         is_shown_in_detail=graphene.Boolean(description="Only return annotations that are shown in the detail view."),
+        public_only=graphene.Boolean(description="Only return public annotations. Requires authorization if false."),
+        slug=graphene.List(
+            graphene.NonNull(graphene.String),
+            description="Only return annotations with the given slugs.",
+        ),
     )
 
     @staticmethod

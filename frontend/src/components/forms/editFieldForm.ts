@@ -1,6 +1,6 @@
 import { Dimension } from "../dimensions/models";
-import formDataToValues from "./formDataToValues";
 import { Choice, Field, FieldType, Values } from "./models";
+import processFormData from "./processFormData";
 import type { Translations } from "@/translations/en";
 
 export function getFieldEditorFields(
@@ -145,7 +145,7 @@ export function formDataToField(
   formData: FormData,
 ): Field {
   const values: Values = {
-    ...formDataToValues(fields, formData),
+    ...processFormData(fields, formData),
     encryptTo: ((formData.get("encryptTo") as string) || "").split("\n"),
   };
 

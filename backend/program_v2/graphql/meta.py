@@ -98,12 +98,23 @@ class ProgramV2EventMetaType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_annotations(meta: ProgramV2EventMeta, info, lang: str = DEFAULT_LANGUAGE):
-        return ANNOTATIONS
+    def resolve_annotations(
+        meta: ProgramV2EventMeta,
+        info,
+        lang: str = DEFAULT_LANGUAGE,
+        slug: list[str] | None = None,
+    ):
+        annotations = ANNOTATIONS
+
+        if slug is not None:
+            annotations = [annotation for annotation in annotations if annotation.slug in slug]
+
+        return annotations
 
     annotations = graphene.NonNull(
         graphene.List(graphene.NonNull(AnnotationSchemoidType)),
         lang=graphene.String(),
+        slug=graphene.List(graphene.NonNull(graphene.String)),
     )
 
     @staticmethod
