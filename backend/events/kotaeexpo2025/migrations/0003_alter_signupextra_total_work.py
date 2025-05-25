@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('kotaeexpo2025', '0002_alter_signupextra_email_alias'),
+        ("kotaeexpo2025", "0002_alter_signupextra_email_alias"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='signupextra',
-            name='total_work',
-            field=models.CharField(choices=[('8h', '8 tuntia - Täysvuoro'), ('yli10h', 'Yli 10 tuntia - Supervuoro!')], help_text='Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Huomaathan, ettei 4 tunnin työpanos oikeuta täysiin työvoimaetuihin. Tarkasta työvoimaedut Kotaen verkkosivuilta.', max_length=15, verbose_name='Toivottu kokonaistyömäärä'),
+            model_name="signupextra",
+            name="total_work",
+            field=models.CharField(
+                choices=[("8h", "8 tuntia - Täysvuoro"), ("yli10h", "Yli 10 tuntia - Supervuoro!")],
+                help_text="Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Huomaathan, ettei 4 tunnin työpanos oikeuta täysiin työvoimaetuihin. Tarkasta työvoimaedut Kotaen verkkosivuilta.",
+                max_length=15,
+                verbose_name="Toivottu kokonaistyömäärä",
+            ),
         ),
     ]

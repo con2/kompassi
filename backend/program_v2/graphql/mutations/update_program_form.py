@@ -55,7 +55,10 @@ class UpdateProgramForm(graphene.Mutation):
             raise django_forms.ValidationError(form.errors)  # type: ignore
 
         survey: Survey = form.save(commit=False)
-        survey = survey.with_mandatory_attributes_for_app(SurveyApp.PROGRAM_V2)
+        survey = survey.with_mandatory_attributes_for_app(
+            SurveyApp.PROGRAM_V2,
+            purpose=survey.purpose,
+        )
         survey.save()
 
         survey.workflow.handle_form_update()

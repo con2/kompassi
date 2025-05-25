@@ -1,3 +1,5 @@
+import { title } from "process";
+import Email from "next-auth/providers/email";
 import { JSX, ReactNode } from "react";
 
 const translations = {
@@ -23,11 +25,35 @@ const translations = {
   },
   Profile: {
     attributes: {
+      displayName: "Name",
+      firstName: "First name",
+      lastName: "Last name",
+      nick: "Nickname",
+      phoneNumber: "Phone number",
+      email: "Email",
+      discordHandle: "Discord handle",
+    },
+    advancedAttributes: {
       displayName: {
         title: "Name",
       },
+      firstName: {
+        title: "First name",
+      },
+      lastName: {
+        title: "Last name",
+      },
+      nick: {
+        title: "Nickname",
+      },
+      phoneNumber: {
+        title: "Phone number",
+      },
       email: {
         title: "Email",
+      },
+      discordHandle: {
+        title: "Discord handle",
       },
     },
     keysView: {
@@ -88,6 +114,29 @@ const translations = {
       },
     },
   },
+  TransferConsentForm: {
+    title: "Transfer of personal data",
+    message: (
+      <>
+        When you fill in this form, your personal data will be transferred as
+        outlined below. Personal data you give on the form below will also be
+        processed by the receiver.
+      </>
+    ),
+    consentCheckBox: "I consent to the transfer of my personal data.",
+    privacyPolicy: "Privacy policy",
+    privacyPolicyMissing: "Missing privacy policy",
+    actions: {
+      editProfile: {
+        message:
+          "If you notice any mistakes, please correct them in your profile.",
+        link: "Edit profile",
+      },
+    },
+    sourceRegistry: "Source of personal data",
+    targetRegistry: "Receiver of personal data",
+    dataToBeTransferred: "Personal data to be transferred",
+  },
   // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
   Modal: {
     submit: "Submit",
@@ -107,6 +156,7 @@ const translations = {
     tickets: "Ticket orders",
     responses: "Survey responses",
     keys: "Encryption keys",
+    program: "Program items and offers",
     signIn: "Sign in",
     signOut: "Sign out",
   },
@@ -188,6 +238,10 @@ const translations = {
         helpText:
           'Each line should contain one question in the form of "slug: Question shown to the user".',
       },
+      dimension: {
+        title: "Dimension",
+        helpText: "Which dimension should the field get its choices from?",
+      },
       encryptTo: {
         title: "Encrypt to",
         helpText:
@@ -202,8 +256,11 @@ const translations = {
       StaticText: "Static text",
       Spacer: "Empty space",
       SingleCheckbox: "Single check box",
+      DimensionSingleCheckbox: "Single check box (Dimension)",
       SingleSelect: "Single select",
+      DimensionSingleSelect: "Single select (Dimension)",
       MultiSelect: "Multiple select",
+      DimensionMultiSelect: "Multiple select (Dimension)",
       RadioMatrix: "Radio button matrix",
       FileUpload: "File upload",
       NumberField: "Number",
@@ -211,6 +268,99 @@ const translations = {
       DateField: "Date",
       DateTimeField: "Date and time",
       TimeField: "Time",
+    },
+    advancedFieldTypes: {
+      SingleSelect: {
+        promoteFieldToDimension: {
+          title: "Convert to a dimension field",
+          modalActions: {
+            submit: "Proceed with conversion",
+            cancel: "Cancel without converting",
+          },
+          existingDimension: (
+            <>
+              <p>
+                Are you sure you want to convert this field to a dimension
+                field?
+              </p>
+              <p>
+                If you proceed, the following actions will be taken in{" "}
+                <strong>all language versions</strong> of this survey:
+              </p>
+              <ol>
+                <li>
+                  New choices, if any, will be added to the existing dimension
+                  of the same slug (technical name). Translations for them will
+                  be extracted from all existing language versions and combined
+                  by their slugs.
+                </li>
+                <li>
+                  This field will be replaced by a dimension selection field
+                  that will receive its choices from the aforementioned
+                  dimension. Other attributes of the field will be retained.
+                </li>
+                <li>
+                  Each response in which this field has been responded to will
+                  have the answers to this field set as dimension values on that
+                  response.
+                </li>
+              </ol>
+              <p>This cannot be undone.</p>
+            </>
+          ),
+          newDimension: (
+            <>
+              <p>
+                Are you sure you want to convert this field to a dimension
+                field?
+              </p>
+              <p>
+                If you proceed, the following actions will be taken in{" "}
+                <strong>all language versions</strong> of this survey:
+              </p>
+              <ol>
+                <li>
+                  A new dimension will be created with the same technical name
+                  (slug) as this field. Choices and their translations will be
+                  extracted from all existing language versions and combined by
+                  their slugs.
+                </li>
+                <li>
+                  This field will be replaced by a dimension selection field
+                  that will receive its choices from the aforementioned
+                  dimension. Other attributes of the field will be retained.
+                </li>
+                <li>
+                  Each response in which this field has been responded to will
+                  have the answers to this field set as dimension values on that
+                  response.
+                </li>
+              </ol>
+              <p>This cannot be undone.</p>
+            </>
+          ),
+        },
+      },
+      DimensionSingleSelect: {
+        description: (
+          <>
+            This field type displays a single selection field with a list of
+            choices that are defined by a dimension. When the respondent selects
+            a value for this field, that dimension value will be set on the
+            response.
+          </>
+        ),
+      },
+      DimensionMultiSelect: {
+        description: (
+          <>
+            This field type displays a multiple selection field with a list of
+            choices that are defined by a dimension. When the respondent selects
+            values for this field, those dimension values will be set on the
+            response.
+          </>
+        ),
+      },
     },
 
     removeFieldModal: {
@@ -839,6 +989,8 @@ const translations = {
     listTitle: "Program",
     adminListTitle: "Program items",
     singleTitle: "Program item",
+    tableFooter: (numPrograms: number) =>
+      `${numPrograms} program item${numPrograms === 1 ? "" : "s"}.`,
     inEvent: (eventName: string) => <>in {eventName}</>,
     attributes: {
       slug: {
@@ -846,6 +998,7 @@ const translations = {
         helpText:
           "Machine-readable name of the program item. Must be unique within the event. Cannot be changed after creation. Can contain lower case letters, numbers and dashes (-). Will be part of the URL: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (eg. <code>/tracon2025/programs/opening-ceremony</code>).",
       },
+      event: "Event",
       title: "Title",
       actions: "Actions",
       description: "Description",
@@ -861,6 +1014,9 @@ const translations = {
         message:
           "This program item was created based on the following program offer:",
       },
+      programHosts: {
+        title: "Program hosts",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -872,6 +1028,13 @@ const translations = {
       signUpForThisProgram: "Sign up for this program item",
       preview: "Preview schedule",
       preferences: "Preferences",
+      create: {
+        title: "Create program item",
+        modalActions: {
+          submit: "Create",
+          cancel: "Cancel",
+        },
+      },
     },
     favorites: {
       markAsFavorite: "Mark as favorite",
@@ -924,11 +1087,51 @@ const translations = {
       annotations: "Annotations",
     },
 
+    profile: {
+      title: "Program items and program offers",
+      programItems: {
+        listTitle: "Program items you are hosting",
+        description: (
+          <>
+            Here you can see program items in which you have been listed as a
+            program host and that have been accepted into the event program.
+          </>
+        ),
+        tableFooter: (numPrograms: number) =>
+          numPrograms === 1 ? (
+            <>One program item.</>
+          ) : (
+            <>{numPrograms} program items.</>
+          ),
+      },
+      programOffers: {
+        listTitle: "Open program offers",
+        description: (
+          <>
+            These program offers you have made have not yet been accepted or
+            rejected.
+          </>
+        ),
+        tableFooter: (count: number) =>
+          count === 1 ? <>One program offer.</> : <>{count} program offers.</>,
+      },
+      empty: (
+        <>
+          You have no program items or program offers. If you sign up as a
+          program host in an event that uses Kompassi to manage its program, you
+          will find your program offers and program items here.
+        </>
+      ),
+    },
+
     ProgramForm: {
       singleTitle: "Program form",
       listTitle: "Program forms",
       tableFooter: (numForms: number) =>
         `${numForms} form${numForms === 1 ? "" : "s"}.`,
+      programFormForEvent: (eventName: string) => (
+        <>Program form for {eventName}</>
+      ),
       attributes: {
         slug: {
           title: "Slug",
@@ -941,6 +1144,27 @@ const translations = {
               <code>/tracon2025/offer-program</code>).
             </>
           ),
+        },
+        purpose: {
+          title: "Purpose",
+          shortTitle: "Purpose",
+          helpText: (
+            <>
+              Program forms can be used for different purposes, such as
+              collecting program offers or accepting program host invitations.
+              Cannot be changed after creation.
+            </>
+          ),
+          choices: {
+            DEFAULT: {
+              title: "Program offer",
+              shortTitle: "Offer",
+            },
+            INVITE: {
+              title: "Program host invite",
+              shortTitle: "Invite",
+            },
+          },
         },
       },
       actions: {
@@ -967,6 +1191,8 @@ const translations = {
             cancel: "Cancel",
           },
         },
+        returnToProgramFormList: (eventName: string) =>
+          `Return to the list of program forms of ${eventName}`,
       },
     },
 
@@ -1043,6 +1269,68 @@ const translations = {
     ProgramHost: {
       singleTitle: "Program host",
       listTitle: "Program hosts",
+      attributes: {
+        count: (numHosts: number) =>
+          numHosts === 1 ? (
+            <>One program host.</>
+          ) : (
+            <>{numHosts} program hosts.</>
+          ),
+        programItems: "Program items",
+      },
+      actions: {
+        inviteProgramHost: {
+          title: "Invite program host",
+          attributes: {
+            email: {
+              title: "Email address",
+              helpText:
+                "Please check the email address carefully. The invitation will be sent to this address.",
+            },
+            survey: {
+              title: "Program host form",
+              helpText:
+                "When the receiver accepts the invitation, they will be asked to fill in this form.",
+            },
+            language: {
+              title: "Language",
+              helpText: "Which language should the invitation be sent in?",
+            },
+          },
+          message: (
+            <>
+              To invite a program host, please enter their email address below.
+              An email will be sent to them with a link to accept the
+              invitation. They will need a user account to do so.
+            </>
+          ),
+          modalActions: {
+            submit: "Invite",
+            cancel: "Cancel",
+          },
+        },
+        removeProgramHost: {
+          title: "Remove program host",
+          label: "Remove",
+          message: (programHost: string, programItem: string) => (
+            <>
+              <p>
+                Are you sure you want to remove the program host{" "}
+                <strong>{programHost}</strong> from the program item{" "}
+                <strong>{programItem}</strong>?
+              </p>{" "}
+              <p>
+                To reverse this action, you will need to invite them again. They
+                will not be notified of this action.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Remove program host",
+            cancel: "Close without removing",
+          },
+        },
+      },
     },
 
     ScheduleItem: {
@@ -1073,7 +1361,7 @@ const translations = {
     ),
     responseListTitle: "Responses",
     responseDetailTitle: "Response",
-    ownResponsesTitle: "My responses",
+    ownResponsesTitle: "Your survey responses",
     showingResponses: (filteredCount: number, totalCount: number) => (
       <>
         Displaying {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
@@ -1090,17 +1378,6 @@ const translations = {
       <>
         Summary of {filteredCount} response{filteredCount === 1 ? "" : "s"}{" "}
         (total {totalCount}).
-      </>
-    ),
-    theseProfileFieldsWillBeShared:
-      "When you submit this survey, the following information will be shared with the survey owner:",
-    correctInYourProfile: (profileLink: string) => (
-      <>
-        If these are not correct, please correct them in your{" "}
-        <a href={profileLink} target="_blank" rel="noopener noreferrer">
-          profile
-        </a>{" "}
-        (opens in a new tab).
       </>
     ),
     attributes: {
@@ -1123,6 +1400,17 @@ const translations = {
         untilTime: (formattedTime: String) => `Open until ${formattedTime}`,
         openingAt: (formattedTime: String) => `Opening at ${formattedTime}`,
         closed: "Closed",
+        adminOverride: {
+          title: "This survey is not active",
+          message: (
+            <>
+              This survey is not currently open for responses. You can only see
+              this page due to your administrative privileges. Users without
+              admin privileges will only see a message that the survey is not
+              active.
+            </>
+          ),
+        },
       },
       activeFrom: {
         title: "Active from",
@@ -1143,6 +1431,8 @@ const translations = {
             SOFT: "If you answer this survey while logged in, it will be connected to your user account, so that you can return to view or edit your responses, but your user profile will not be shared with the survey owner.",
             NAME_AND_EMAIL:
               "If you answer this survey while logged in, it will be connected to your user account. Your name and email address will be shared with the survey owner. You can return to view or edit your responses.",
+            FULL_PROFILE:
+              "If you answer this survey while logged in, it will be connected to your user account. Your full profile will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         thirdPerson: {
@@ -1152,6 +1442,8 @@ const translations = {
             SOFT: "If the user answer this survey while logged in, their response will be connected to their user account, so that they can return to view or edit their responses, but their identities will not be shared with you.",
             NAME_AND_EMAIL:
               "If the user answers this survey while logged in, their response will be connected to their user account. Their names and email addresses will be shared with you. They can return to view or edit their responses.",
+            FULL_PROFILE:
+              "If you answer this survey while logged in, it will be connected to your user account. Your full profile will be shared with the survey owner. You can return to view or edit your responses.",
           },
         },
         admin: {
@@ -1168,6 +1460,15 @@ const translations = {
       },
       dimensions: "Dimensions",
       dimension: "Dimension",
+      dimensionDefaults: {
+        title: "Dimension defaults",
+        description: (
+          <>
+            These dimension values will be set by default for new responses.
+            Values of technical dimensions cannot be changed.
+          </>
+        ),
+      },
       values: "Values",
       value: "Arvo",
       sequenceNumber: "Sequence number",
@@ -1302,6 +1603,7 @@ const translations = {
           cancel: "Cancel",
         },
       },
+      editDimensions: "Edit dimensions and values",
       editDimension: "Edit dimension",
       editDimensionValue: "Edit value",
       editSurvey: "Edit",
@@ -1328,6 +1630,15 @@ const translations = {
         `You have already submitted ${countResponsesByCurrentUser} response${
           countResponsesByCurrentUser === 1 ? "" : "s"
         } to this survey. The maximum number of responses per user is ${maxResponsesPerUser}.`,
+    },
+    specialPurposeSurvey: {
+      title: "Special purpose survey",
+      defaultMessage: (
+        <>
+          This survey is intended for a special purpose and cannot be filled in
+          through the public interface.
+        </>
+      ),
     },
     warnings: {
       choiceNotFound:
@@ -1374,9 +1685,15 @@ const translations = {
       attributes: {
         slug: {
           title: "Technical name",
-          // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Machine-readable dimension name. Cannot be changed after creation.",
+          helpText: (
+            <>
+              Machine-readable, short name for the dimension. Cannot be changed
+              after creation. Can contain lower case letters, numbers and dashes
+              (-). Will become part of query string parameters in the URL:{" "}
+              <code>dimension=value</code> (eg. <code>program-type=panel</code>
+              ).
+            </>
+          ),
         },
         localizedTitleHeader: {
           title: "Localized titles",
@@ -1445,17 +1762,20 @@ const translations = {
         slug: {
           title: "Technical name",
           // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Machine-readable name of the value. Cannot be changed after creation.",
+          helpText: (
+            <>
+              Machine-readable, short name for the dimension value. Cannot be
+              changed after creation. Can contain lower case letters, numbers
+              and dashes (-). Will become part of query string parameters in the
+              URL: <code>dimension=value</code> (eg.{" "}
+              <code>program-type=panel</code>).
+            </>
+          ),
         },
         color: {
           title: "Color",
           helpText:
             "Color of the value in the response list. Use bright colors: they will be lightened or darkened as needed.",
-        },
-        isInitial: {
-          title: "Initial value",
-          helpText: "If set, this value will be applied to all new responses.",
         },
         localizedTitleHeader: {
           title: "Localized titles",
@@ -1480,6 +1800,74 @@ const translations = {
       title: "Edit survey",
       actions: {
         submit: "Save fields",
+      },
+    },
+  },
+
+  Invitation: {
+    listTitle: "Open invitations",
+    listDescription: (
+      <>
+        These people have been invited as program hosts to this program item,
+        but they have not yet accepted the invitation.
+      </>
+    ),
+    attributes: {
+      createdAt: "Created at",
+      email: "Email address",
+      count: (numInvitations: number) =>
+        numInvitations === 1 ? (
+          <>One open invitation.</>
+        ) : (
+          <>{numInvitations} open invitations.</>
+        ),
+      program: {
+        title: "Program item",
+        editLater: "You can edit the program item later.",
+      },
+    },
+    errors: {
+      alreadyUsed: {
+        title: "Invitation already used",
+        message:
+          "This invitation has already been used. It can only be used once.",
+      },
+    },
+    actions: {
+      revoke: {
+        title: "Revoke invitation",
+        label: "Revoke",
+        message: (email: string) => (
+          <>
+            Are you sure you want to revoke the invitation sent to{" "}
+            <strong>{email}</strong>? They will not be notified of this action.
+            To undo this action, you will need to invite the user again.
+          </>
+        ),
+        modalActions: {
+          submit: "Revoke invitation",
+          cancel: "Close without revoking",
+        },
+      },
+      resend: {
+        title: "Resend invitation",
+        label: "Resend",
+        message: (email: string) => (
+          <>
+            Do you want to resend the invitation sent to{" "}
+            <strong>{email}</strong>? They will receive a new email with the
+            same contents as the original invitation.
+          </>
+        ),
+        modalActions: {
+          submit: "Resend invitation",
+          cancel: "Close without resending",
+        },
+        success: (email: string) => (
+          <>
+            The invitation to <strong>{email}</strong> was successfully re-sent.
+          </>
+        ),
       },
     },
   },

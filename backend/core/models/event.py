@@ -22,6 +22,7 @@ if typing.TYPE_CHECKING:
     from dimensions.models.scope import Scope
     from dimensions.models.universe import Universe
     from forms.models.survey import Survey
+    from involvement.models.involvement import Involvement
     from labour.models.signup import Signup
     from program_v2.models import Program, ProgramV2EventMeta, ScheduleItem
     from tickets_v2.models import TicketsV2EventMeta
@@ -226,9 +227,21 @@ class Event(models.Model):
         The Universe for Dimensions that are attached to program items.
         NOTE: Must return the same as ProgramV2EventMeta.universe.
         """
-        from program_v2.workflow import ProgramOfferWorkflow
+        from program_v2.workflows.program_offer import ProgramOfferWorkflow
 
         return ProgramOfferWorkflow.get_program_universe(self)
+
+    @cached_property
+    def involvement_universe(self) -> Universe:
+        from involvement.models.involvement import Involvement
+
+        return Involvement.get_universe(self)
+
+    @property
+    def involvements(self) -> models.QuerySet[Involvement]:
+        from involvement.models.involvement import Involvement
+
+        return Involvement.objects.filter(universe=self.involvement_universe)
 
     @classmethod
     def get_or_create_dummy(cls, name="Dummy event"):

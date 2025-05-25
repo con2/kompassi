@@ -12,7 +12,7 @@ from ..models import Badge
 
 
 @require_http_methods(["GET", "HEAD", "POST"])
-@csp_update(SCRIPT_SRC=["cdn.jsdelivr.net"])
+@csp_update({"script-src": ["cdn.jsdelivr.net"]})  # type: ignore
 @badges_event_required
 def badges_admin_onboarding_view(request, event):
     meta = event.badges_event_meta

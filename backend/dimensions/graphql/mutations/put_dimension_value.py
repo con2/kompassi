@@ -16,7 +16,6 @@ class DimensionValueForm(django_forms.ModelForm):
         fields = (
             "slug",
             "color",
-            "is_initial",
             # NOTE SUPPORTED_LANGUAGES
             "title_en",
             "title_fi",
@@ -69,11 +68,12 @@ class PutDimensionValue(graphene.Mutation):
 
         if input.value_slug is not None:
             value = dimension.values.get(slug=input.value_slug)
-            form = DimensionValueForm(form_data, instance=value)
 
             # TODO value.can_be_edited_by
             if value.is_technical:
                 raise ValueError("Cannot edit technical dimension")
+
+            form = DimensionValueForm(form_data, instance=value)
         else:
             form = DimensionValueForm(form_data)
 
@@ -81,5 +81,7 @@ class PutDimensionValue(graphene.Mutation):
             value = form.save(commit=False)
             value.dimension = dimension
             value.save()
+        else:
+            raise django_forms.ValidationError(form.errors)
 
         return PutDimensionValue(value=value)  # type: ignore

@@ -2,35 +2,30 @@ from __future__ import annotations
 
 import logging
 import uuid
-from collections.abc import Iterable, Sequence
-from typing import TYPE_CHECKING, Any
+from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Literal
 
 from django.conf import settings
-from django.core.mail import send_mass_mail
 from django.db import models, transaction
 from django.db.models import JSONField
-from django.template.loader import render_to_string
-from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
-from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
+from core.utils.model_utils import slugify, slugify_underscore
 from dimensions.models.scope import Scope
+from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import SUPPORTED_LANGUAGES
-from graphql_api.utils import get_message_in_language
 
 from .attachment import Attachment
+from .field import Field
 from .form import Form
+from .survey import Survey, SurveyApp
 
 if TYPE_CHECKING:
-    from dimensions.models.dimension import Dimension
-    from dimensions.models.dimension_value import DimensionValue
     from program_v2.models.program import Program
 
     from ..utils.process_form_data import FieldWarning
-    from .field import Field
     from .response_dimension_value import ResponseDimensionValue
-    from .survey import Survey
 
 
 logger = logging.getLogger("kompassi")
@@ -62,6 +57,10 @@ class Response(models.Model):
     cached_dimensions = models.JSONField(
         default=dict,
         help_text="dimension slug -> list of value slugs",
+    )
+    cached_key_fields = models.JSONField(
+        default=dict,
+        help_text="key field slug -> value as in values",
     )
 
     # related fields
@@ -101,7 +100,7 @@ class Response(models.Model):
         form: Form = self.form
         values, warnings = self.get_processed_form_data(fields=fields)
         for field in form.validated_fields:
-            if not field.are_attachments_allowed:
+            if not field.type.are_attachments_allowed:
                 continue
 
             if field_warnings := warnings.get(field.slug, []):
@@ -116,6 +115,20 @@ class Response(models.Model):
             for attachment_url in urls:
                 yield Attachment(presigned_url=attachment_url, field_slug=field.slug)
 
+    def _build_cached_key_fields(self, fields: list[Field] | None = None) -> dict[str, Any]:
+        if fields is None:
+            fields = self.form.validated_fields
+
+        if fields is None:
+            raise AssertionError("This should never happen (appease type checker)")
+
+        values, warnings = self.get_processed_form_data(fields, field_slugs=self.survey.key_fields)
+        return {
+            field_slug: field_value
+            for field_slug, field_value in values.items()
+            if field_slug in self.survey.key_fields and field_slug not in warnings and field_value is not None
+        }
+
     def _build_cached_dimensions(self) -> dict[str, list[str]]:
         """
         Used by ..handlers/dimension.py to populate cached_dimensions
@@ -128,7 +141,11 @@ class Response(models.Model):
 
     @classmethod
     @transaction.atomic
-    def refresh_cached_dimensions_qs(cls, responses: models.QuerySet[Response]):
+    def refresh_cached_fields_qs(
+        cls,
+        responses: models.QuerySet[Response],
+        batch_size: int = 100,
+    ):
         bulk_update = []
         for response in (
             responses.select_for_update(of=("self",))
@@ -143,129 +160,29 @@ class Response(models.Model):
             )
         ):
             response.cached_dimensions = response._build_cached_dimensions()
+            response.cached_key_fields = response._build_cached_key_fields()
             bulk_update.append(response)
-        cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
+        cls.objects.bulk_update(bulk_update, ["cached_dimensions", "cached_key_fields"], batch_size=batch_size)
 
-    def refresh_cached_dimensions(self):
+    def refresh_cached_fields(self):
         self.cached_dimensions = self._build_cached_dimensions()
-        self.save(update_fields=["cached_dimensions"])
+        self.cached_key_fields = self._build_cached_key_fields()
+        self.save(update_fields=["cached_dimensions", "cached_key_fields"])
 
     @transaction.atomic
-    def lift_dimension_values(self):
-        """
-        Lifts the values of dimensions from form data into proper dimension values.
-        This makes sense only for responses that are related to a survey.
-
-        NOTE: Expected to be called only right after creation.
-        If you call this later, be sure to yeet the existing dimension values first,
-        or rework this method to use set_dimension_values that accounts for existing ones.
-        """
-        from .response_dimension_value import ResponseDimensionValue
-
-        survey = self.survey
-        if survey is None:
-            raise ValueError("Cannot lift dimension values for a response that is not related to a survey")
-
-        dimensions_by_slug, values_by_dimension_by_slug = survey.preload_dimensions()
-        bulk_create: list[ResponseDimensionValue] = []
-
-        # only these fields have the potential of being dimension fields
-        # TODO support single checkbox as dimension field?
-        # TODO use pydantic versions of fields? Must not be enriched (it removes choicesFrom)
-        fields = [
-            field
-            for field in self.form.fields
-            if field["slug"] in dimensions_by_slug
-            and field["type"] in ("SingleSelect", "MultiSelect")
-            and field.get("choicesFrom", {}).get("dimension", "") == field["slug"]
-        ]
-        fields_by_slug = {field["slug"]: field for field in fields}
-
-        # get_processed_form_data expects enriched, validated form of fields
-        enriched_fields = [field for field in self.form.validated_fields if field.slug in fields_by_slug]
-        values, warnings = self.get_processed_form_data(enriched_fields)
-
-        # we have all the dimensions and values preloaded, so it makes sense to build cached_dimensions here
-        cached_dimensions = {}
-
-        def set_dimension_value(dimension: Dimension, value: DimensionValue):
-            bulk_create.append(
-                ResponseDimensionValue(
-                    response=self,
-                    value=value,
-                )
-            )
-            cached_dimensions.setdefault(dimension.slug, []).append(value.slug)
-
-        for dimension in dimensions_by_slug.values():
-            values_by_slug = values_by_dimension_by_slug[dimension.slug]
-
-            # set initial values
-            for value in values_by_slug.values():
-                if value.is_initial:
-                    set_dimension_value(dimension, value)
-
-            dimension_field = fields_by_slug.get(dimension.slug)
-            if not dimension_field:
-                # this dimension is not present as a field on the form
-                continue
-
-            if field_warnings := warnings.get(dimension.slug):
-                # this dimension has validation warnings
-                logger.warning(
-                    f"Response {self.id}: Refusing to lift {dimension.slug} "
-                    f"that has validation warnings: {field_warnings}"
-                )
-                continue
-
-            value_slugs: list[str]
-            match dimension_field.get("type", "SingleSelect"):
-                case "MultiSelect":
-                    value_slugs = values.get(dimension.slug, [])
-                case "SingleSelect":
-                    value_slugs = [value_slug] if (value_slug := values.get(dimension.slug)) else []
-                case _:
-                    logger.warning(
-                        f"Response {self.id}: Unexpected field type {dimension_field['type']} "
-                        f"for dimension {dimension.slug}"
-                    )
-                    continue
-
-            if not isinstance(value_slugs, list):
-                logger.warning(f"Response {self.id}: Expected list of slugs for dimension field {dimension.slug}")
-                continue
-
-            for value_slug in value_slugs:
-                value = values_by_slug.get(value_slug)
-                if value is None:
-                    logger.warning(f"Response {self.id}: Invalid value {value_slug} for dimension {dimension.slug}")
-                    continue
-
-                set_dimension_value(dimension, value)
-
-        # NOTE: if we allow dimensions having initial values to be presented as fields on the form,
-        # need to add ignore_conflicts=True here or rethink this somehow
-        ResponseDimensionValue.objects.bulk_create(bulk_create)
-
-        # mass delete and bulk create don't trigger signals (which is good)
-        self.cached_dimensions = cached_dimensions
-        self.save(update_fields=["cached_dimensions"])
-
-    @transaction.atomic
-    def set_dimension_values(self, values_to_set: dict[str, list[str]]):
+    def set_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
         """
         Changes only those dimension values that are present in dimension_values.
+
+        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
+        afterwards to update the cached_dimensions field.
+
+        :param values_to_set: Mapping of dimension slug to list of value slugs.
+        :param cache: Cache from Universe.preload_dimensions()
         """
         from .response_dimension_value import ResponseDimensionValue
 
-        survey = self.survey
-        if survey is None:
-            raise ValueError("Cannot set dimension values for a response that is not related to a survey")
-
-        dimensions_by_slug, values_by_dimension_by_slug = survey.preload_dimensions(values_to_set)
-
-        cached_dimensions = self.cached_dimensions
-        bulk_delete = self.dimensions.filter(value__dimension__slug__in=dimensions_by_slug.keys())
+        bulk_delete = self.dimensions.filter(value__dimension__slug__in=values_to_set.keys())
         bulk_create: list[ResponseDimensionValue] = []
 
         for dimension_slug, value_slugs in values_to_set.items():
@@ -273,31 +190,26 @@ class Response(models.Model):
                 value__dimension__slug=dimension_slug,
                 value__slug__in=value_slugs,
             )
-            values_by_slug = values_by_dimension_by_slug[dimension_slug]
 
             for value_slug in value_slugs:
-                if value_slug not in cached_dimensions.get(dimension_slug, []):
-                    value = values_by_slug[value_slug]
+                if value_slug not in self.cached_dimensions.get(dimension_slug, []):
                     bulk_create.append(
                         ResponseDimensionValue(
                             response=self,
-                            value=value,
+                            value=cache.values_by_dimension[dimension_slug][value_slug],
                         )
                     )
 
         bulk_delete.delete()
         ResponseDimensionValue.objects.bulk_create(bulk_create)
 
-        # mass delete and bulk create don't trigger signals (which is good)
-        self.cached_dimensions = dict(self.cached_dimensions, **values_to_set)
-        self.save(update_fields=["cached_dimensions"])
-
     def get_processed_form_data(
         self,
         fields: Sequence[Field] | None = None,
+        field_slugs: Sequence[str] | None = None,
     ) -> tuple[dict[str, Any], dict[str, list[FieldWarning]]]:
         """
-        If you only need a subset of fields, pass them in as fields.
+        If you only need a subset of fields, pass them in as fields or field_slugs.
         Returns a tuple of (values, warnings).
         """
         from ..utils.process_form_data import process_form_data
@@ -305,18 +217,16 @@ class Response(models.Model):
         if fields is None:
             fields = self.form.validated_fields
 
+        if fields is None:
+            raise AssertionError("This should never happen (appease type checker)")
+
+        if field_slugs is not None:
+            fields = [field for field in fields if field.slug in field_slugs]
+
         return process_form_data(
             fields,  # type: ignore
             self.form_data,
         )
-
-    def notify_subscribers(self):
-        if self.survey is None:
-            return
-
-        from ..tasks import response_notify_subscribers
-
-        response_notify_subscribers.delay(self.id)  # type: ignore
 
     notification_templates = {
         language.code: f"survey_response_notification_email/{language.code}.eml" for language in SUPPORTED_LANGUAGES
@@ -328,46 +238,44 @@ class Response(models.Model):
         "sv": "{survey_title} ({event_name}): Nytt svar",
     }
 
-    def _notify_subscribers(self):
-        # TODO recipient language instead of session language
-        language = get_language()
+    @property
+    def admin_url(self) -> str:
+        match SurveyApp(self.survey.app):
+            case SurveyApp.FORMS:
+                return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/surveys/{self.survey.slug}/responses/{self.id}"
+            case SurveyApp.PROGRAM_V2:
+                return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
+            case _:
+                raise ValueError(f"Unknown app type: {self.survey.app}")
 
-        if (survey := self.survey) is None:
-            raise TypeError("Cannot notify subscribers for a response that is not related to a survey")
+    @staticmethod
+    def _reslugify_pair(
+        pair: tuple[str, Any],
+        field_slug: str,
+        slugifier: Callable[[str], str],
+    ) -> tuple[str, Any]:
+        key, value = pair
+        if not isinstance(value, str):
+            # FileUpload
+            return key, value
 
-        if (form := survey.get_form(language)) is None:
-            raise TypeError("No form found in survey (this shouldn't happen)")
+        if key == field_slug:
+            # SingleSelect -> DimensionSingleSelect
+            return key, slugifier(value)
+        elif key.startswith(f"{field_slug}."):
+            # MultiSelect -> DimensionMultiSelect
+            _, subkey = key.split(".", 1)
+            subkey = slugifier(subkey)
+            return f"{key}.{subkey}", value
 
-        body_template_name = get_message_in_language(self.notification_templates, language)
-        subject_template = get_message_in_language(self.subject_templates, language)
+        return key, value
 
-        if not body_template_name or not subject_template:
-            raise ValueError("Missing body or subject template for supported language", language)
+    def reslugify_field(self, field_slug: str, separator: Literal["-", "_"]):
+        """
+        When promoting a form field to dimension, we need to account for possible
+        differences in the slugification of the field and the dimension values.
 
-        vars = dict(
-            survey_title=form.title,
-            event_name=survey.event.name,
-            response_url=f"{settings.KOMPASSI_V2_BASE_URL}/{survey.event.slug}/surveys/{survey.slug}/responses/{self.id}",
-            sender_email=settings.DEFAULT_FROM_EMAIL,
-        )
-
-        subject = subject_template.format(**vars)
-        body = render_to_string(body_template_name, vars)
-        mailbag = []
-
-        if settings.DEBUG:
-            logger.debug(subject)
-            logger.debug(body)
-
-        mailbag = [
-            (subject, body, settings.DEFAULT_FROM_EMAIL, [subscriber.email])
-            for subscriber in survey.subscribers.all()
-            if is_graphql_allowed_for_model(
-                subscriber,
-                instance=survey,
-                operation="query",
-                field="responses",
-            )
-        ]
-
-        send_mass_mail(mailbag)  # type: ignore
+        NOTE: Caller is responsible for calling save(["form_data"]) afterwards.
+        """
+        slugifier = slugify if separator == "-" else slugify_underscore
+        self.form_data = dict(self._reslugify_pair(pair, field_slug, slugifier) for pair in self.form_data.items())

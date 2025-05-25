@@ -11,7 +11,10 @@ function Label({ field, layout }: { field: Field; layout: Layout }) {
       ? ["form-check-label"]
       : ["form-label", "fw-bold"];
 
-  if (layout === "horizontal" && type !== "SingleCheckbox") {
+  if (
+    layout === "horizontal" &&
+    !["SingleCheckbox", "DimensionSingleCheckbox"].includes(type)
+  ) {
     classNames.push("col-md-3");
   }
 

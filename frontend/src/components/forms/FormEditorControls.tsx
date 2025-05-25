@@ -5,12 +5,14 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import Stack from "react-bootstrap/Stack";
 
+import { Dimension } from "../dimensions/models";
+import ModalButton from "../ModalButton";
 import AddFieldDropdown from "./AddFieldDropdown";
 import { canMoveDown, canMoveUp, moveDown, moveUp } from "./formEditorLogic";
-import { Field, FieldType } from "./models";
+import { Field, FieldType, fieldTypesConvertibleToDimension } from "./models";
+import type { Translations } from "@/translations/en";
 
 import "./FormEditor.scss";
-import type { Translations } from "@/translations/en";
 
 interface FormEditorControlsProps {
   value: Field[];
@@ -19,6 +21,8 @@ interface FormEditorControlsProps {
   onAddField(fieldType: FieldType, aboveFieldName: string): void;
   onRemoveField(fieldName: string): void;
   onEditField(fieldName: string): void;
+  onPromoteFieldToDimension(fieldName: string): void;
+  dimensions?: Dimension[];
   messages: Translations["FormEditor"];
 }
 
@@ -29,8 +33,19 @@ const FormEditorControls = ({
   onChange,
   onRemoveField,
   onEditField,
+  onPromoteFieldToDimension,
   messages,
+  dimensions = [],
 }: FormEditorControlsProps) => {
+  const converT =
+    messages.advancedFieldTypes.SingleSelect.promoteFieldToDimension;
+  const canPromoteFieldToDimension =
+    !!onPromoteFieldToDimension &&
+    fieldTypesConvertibleToDimension.includes(field.type);
+  const isNewDimension =
+    canPromoteFieldToDimension &&
+    dimensions.findIndex((d) => d.slug === field.slug) !== -1;
+
   return (
     <ButtonToolbar className="mt-1">
       <Stack direction="horizontal" gap={2}>
@@ -75,6 +90,16 @@ const FormEditorControls = ({
             {messages.removeField}…
           </Button>
         </ButtonGroup>
+        {canPromoteFieldToDimension && (
+          <ModalButton
+            className="btn btn-outline-secondary btn-sm"
+            title={`${converT.title}: ${field.slug}`}
+            messages={converT.modalActions}
+            action={onPromoteFieldToDimension.bind(null, field.slug)}
+          >
+            {isNewDimension ? converT.newDimension : converT.existingDimension}
+          </ModalButton>
+        )}
       </Stack>
     </ButtonToolbar>
   );

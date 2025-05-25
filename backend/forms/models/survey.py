@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import dataclasses
 import logging
 from collections.abc import Collection, Mapping
-from dataclasses import asdict, dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from functools import cached_property
 from typing import TYPE_CHECKING
@@ -11,7 +12,7 @@ import yaml
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.postgres.fields import ArrayField
-from django.db import models
+from django.db import models, transaction
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 
@@ -23,39 +24,41 @@ from dimensions.models.dimension import Dimension
 from dimensions.models.dimension_dto import DimensionDTO
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
+from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
+from involvement.models.enums import InvolvementType
+from involvement.models.profile_field_selector import ProfileFieldSelector
+from involvement.models.registry import Registry
 
 from ..utils.merge_form_fields import merge_fields
-from .enums import SurveyApp
+from .enums import Anonymity, SurveyApp, SurveyPurpose
 
 if TYPE_CHECKING:
+    from badges.models.survey_to_badge import SurveyToBadgeMapping
+
     from .form import Form
+    from .survey import Survey
+    from .survey_default_dimension_value import SurveyDefaultDimensionValue
     from .workflow import Workflow
 
 logger = logging.getLogger("kompassi")
 
 
-class Anonymity(models.TextChoices):
-    # not linked to user account, IP address not recorded
-    HARD = "HARD", _("Hard anonymous")
-    # linked to user account but not shown to owner, IP address recorded
-    SOFT = "SOFT", _("Soft anonymous (linked to user account but not shown to survey owner)")
-    # linked to user account and shown to owner, IP address recorded
-    NAME_AND_EMAIL = "NAME_AND_EMAIL", _("Name and email shown to survey owner if responded logged-in")
-
-
-APP_CHOICES = [(app.value, app.value) for app in SurveyApp]
-
-
 class Survey(models.Model):
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
+    event: models.ForeignKey[Event] = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     app = models.CharField(
-        choices=APP_CHOICES,
-        max_length=max(len(k) for (k, _) in APP_CHOICES),
-        default=APP_CHOICES[0][0],
+        choices=[(app.value, app.value) for app in SurveyApp],
+        max_length=max(len(app.value) for app in SurveyApp),
+        default=SurveyApp.FORMS.value,
         help_text="Which app manages this survey?",
+    )
+    purpose_slug = models.CharField(
+        choices=[(role.value, role.value) for role in SurveyPurpose],
+        max_length=max(len(role.value) for role in SurveyPurpose),
+        default=SurveyPurpose.DEFAULT.value,
+        help_text="Generic surveys and program offers are DEFAULT, program host invitations are ACCEPT_INVITATION.",
     )
 
     login_required = models.BooleanField(
@@ -124,11 +127,51 @@ class Survey(models.Model):
         help_text=_("If enabled, responses cannot be deleted from the UI without disabling this first."),
     )
 
+    registry = models.ForeignKey(
+        Registry,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="surveys",
+    )
+
+    cached_default_dimensions = models.JSONField(blank=True, default=dict)
+
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     languages: models.QuerySet[Form]
+    badge_mappings: models.QuerySet[SurveyToBadgeMapping]
+    default_dimensions: models.QuerySet[SurveyDefaultDimensionValue]
+    id: int
+
+    @cached_property
+    def profile_field_selector(self) -> ProfileFieldSelector:
+        """
+        Returns the profile field selector for this survey.
+        """
+        return ProfileFieldSelector.from_anonymity(self.anonymity)
+
+    @property
+    def purpose(self) -> SurveyPurpose:
+        return SurveyPurpose(self.purpose_slug)
+
+    @property
+    def involvement_type(self) -> InvolvementType | None:
+        # there cannot be Involvement without Registry
+        if self.registry is None:
+            return None
+
+        match self.app, self.purpose:
+            case SurveyApp.PROGRAM_V2, SurveyPurpose.DEFAULT:
+                return InvolvementType.PROGRAM_OFFER
+            case SurveyApp.PROGRAM_V2, SurveyPurpose.INVITE:
+                return InvolvementType.PROGRAM_HOST
+            case SurveyApp.FORMS, _:
+                return InvolvementType.SURVEY_RESPONSE
+            case _:
+                raise NotImplementedError(f"{self.app=} {self.purpose=} is not implemented")
 
     @property
     def dimensions(self) -> models.QuerySet[Dimension]:
@@ -256,24 +299,32 @@ class Survey(models.Model):
     def get_next_sequence_number(self):
         return (self.responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1
 
-    def preload_dimensions(self, dimension_values: Mapping[str, Collection[str]] | None = None):
-        return self.universe.preload_dimensions(dimension_values)
-
     class Meta:
         unique_together = [("event", "slug")]
 
     def __str__(self):
         return f"{self.event.slug}/{self.slug}"
 
-    def with_mandatory_attributes_for_app(self, app: SurveyApp):
+    def with_mandatory_attributes_for_app(self, app: SurveyApp, purpose: SurveyPurpose):
+        self.app = app.value
+        self.purpose_slug = purpose.value
+
         match app:
             case SurveyApp.PROGRAM_V2:
-                self.app = "program_v2"
+                meta = self.event.program_v2_event_meta
+                if meta is None:
+                    raise ValueError(f"Event {self.event} does not have a program v2 event meta")
+
                 self.login_required = True
-                self.anonymity = Anonymity.NAME_AND_EMAIL
-                self.key_fields = ["title"]
+                self.anonymity = Anonymity.FULL_PROFILE
+                self.registry = meta.default_registry
+
+                if purpose == SurveyPurpose.DEFAULT:
+                    self.key_fields = ["title"]
             case SurveyApp.FORMS:
-                self.app = "forms"
+                if purpose == SurveyPurpose.INVITE:
+                    raise ValueError("ACCEPT_INVITATION is not a valid purpose for FORMS app")
+
                 if self.anonymity == Anonymity.NAME_AND_EMAIL:
                     self.login_required = True
 
@@ -284,8 +335,10 @@ class Survey(models.Model):
         event: Event,
         slug: str,
         app: SurveyApp,
+        purpose: SurveyPurpose,
         anonymity: Anonymity | None = None,
         created_by: AbstractBaseUser | None = None,
+        registry: Registry | None = None,
     ):
         """
         Clones this survey with its language versions and dimensions (but not responses).
@@ -300,7 +353,8 @@ class Survey(models.Model):
             key_fields=self.key_fields,
             protect_responses=self.protect_responses,
             created_by=created_by,
-        ).with_mandatory_attributes_for_app(app)
+            registry=self.registry if registry is None else registry,
+        ).with_mandatory_attributes_for_app(app, purpose)
 
         survey.save()
 
@@ -312,6 +366,65 @@ class Survey(models.Model):
             form.clone(survey, created_by=created_by)
 
         return survey
+
+    @transaction.atomic
+    def set_default_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
+        """
+        Changes only those dimension values that are present in dimension_values.
+        This allows to eg. retain a technical "state" dimension while setting other values.
+
+        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
+        afterwards to update the cached_dimensions field.
+
+        :param values_to_set: Mapping of dimension slug to list of value slugs.
+        :param cache: Cache from Universe.preload_dimensions()
+        """
+        from .survey_default_dimension_value import SurveyDefaultDimensionValue
+
+        bulk_delete = self.default_dimensions.filter(value__dimension__slug__in=values_to_set.keys())
+        bulk_create: list[SurveyDefaultDimensionValue] = []
+
+        for dimension_slug, value_slugs in values_to_set.items():
+            bulk_delete = bulk_delete.exclude(
+                value__dimension__slug=dimension_slug,
+                value__slug__in=value_slugs,
+            )
+
+            for value_slug in value_slugs:
+                if value_slug not in self.cached_default_dimensions.get(dimension_slug, []):
+                    bulk_create.append(
+                        SurveyDefaultDimensionValue(
+                            survey=self,
+                            value=cache.values_by_dimension[dimension_slug][value_slug],
+                        )
+                    )
+
+        bulk_delete.delete()
+        SurveyDefaultDimensionValue.objects.bulk_create(bulk_create)
+        self.refresh_cached_default_dimensions()
+
+    def _build_cached_default_dimensions(self) -> dict[str, list[str]]:
+        new_cached_dimensions = {}
+        for sddv in self.default_dimensions.all():
+            new_cached_dimensions.setdefault(sddv.value.dimension.slug, []).append(sddv.value.slug)
+
+        return new_cached_dimensions
+
+    def refresh_cached_default_dimensions(self):
+        self.cached_default_dimensions = self._build_cached_default_dimensions()
+        self.save(update_fields=["cached_default_dimensions"])
+
+    @classmethod
+    def refresh_cached_default_dimensions_qs(
+        cls,
+        surveys: models.QuerySet[Survey],
+        batch_size: int = 100,
+    ):
+        bulk_update = []
+        for survey in surveys:
+            survey.cached_default_dimensions = survey._build_cached_default_dimensions()
+            bulk_update.append(survey)
+        Survey.objects.bulk_update(bulk_update, ["cached_default_dimensions"], batch_size=batch_size)
 
 
 @dataclass
@@ -335,14 +448,14 @@ class SurveyDTO:
     login_required: bool = False
     max_responses_per_user: int = 0
     anonymity: str = "SOFT"
-    key_fields: list[str] = field(default_factory=list)
+    key_fields: list[str] = dataclasses.field(default_factory=list)
     active_from: datetime | None = None
     active_until: datetime | None = None
 
     def save(self, event: Event, overwrite=False) -> Survey:
         from .form import Form
 
-        defaults = asdict(self)  # type: ignore
+        defaults = dataclasses.asdict(self)  # type: ignore
         slug = defaults.pop("slug")
 
         if not overwrite and Survey.objects.filter(event=event, slug=slug).exists():

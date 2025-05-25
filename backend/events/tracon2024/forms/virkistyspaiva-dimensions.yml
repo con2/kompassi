@@ -18,7 +18,6 @@
     fi: Tila
   choices:
     - slug: in-effect
-      isInitial: true
       color: blue
       title:
         fi: Voimassa

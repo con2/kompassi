@@ -69,6 +69,7 @@ class PutDimension(graphene.Mutation):
             operation="update",
         )
 
+        # TODO update_or_create
         if input.dimension_slug is not None:
             # updating existing Dimension
             dimension = universe.dimensions.get(slug=input.dimension_slug)

@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Collection, Mapping
 from datetime import tzinfo
 from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING, Any, Self
 
 from django.conf import settings
 from django.db import models, transaction
@@ -14,8 +15,13 @@ from django.utils.timezone import now
 from core.models import Event
 from core.utils.model_utils import slugify, validate_slug
 from dimensions.models.scope import Scope
+from dimensions.utils.dimension_cache import DimensionCache
 from forms.models.response import Response
-from graphql_api.language import SUPPORTED_LANGUAGES, getattr_message_in_language
+from forms.models.survey import Survey
+from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES, getattr_message_in_language
+from involvement.models.enums import InvolvementType
+from involvement.models.invitation import Invitation
+from involvement.models.involvement import Involvement
 
 from .annotations import extract_annotations
 
@@ -75,8 +81,16 @@ class Program(models.Model):
         help_text="If this program was created from a program offer, this field will be set to the program offer.",
     )
 
+    # TODO(#665)
+    is_cancelled = False
+
+    @property
+    def is_active(self) -> bool:
+        return not self.is_cancelled
+
     # related fields
     dimensions: models.QuerySet[ProgramDimensionValue]
+    involvements: models.QuerySet[Involvement]
     schedule_items: models.QuerySet[ScheduleItem]
     event_id: int
 
@@ -89,23 +103,22 @@ class Program(models.Model):
     def refresh_cached_fields(self):
         self.refresh_cached_dimensions()
         self.refresh_cached_times()
+        self.refresh_annotations()
 
     @classmethod
     def refresh_cached_fields_qs(cls, queryset: models.QuerySet[Self]):
         cls.refresh_cached_dimensions_qs(queryset)
         cls.refresh_cached_times_qs(queryset)
+        cls.refresh_annotations_qs(queryset)
 
-    def _build_dimensions(self):
-        """
-        Used to populate cached_dimensions
-        """
+    def _build_cached_dimensions(self):
         # TODO should all event dimensions always be present, or only those with values?
         dimensions = {dimension.slug: [] for dimension in self.event.program_universe.dimensions.all()}
         for pdv in self.dimensions.all():
             dimensions[pdv.value.dimension.slug].append(pdv.value.slug)
         return dimensions
 
-    def _build_location(self):
+    def _build_cached_location(self):
         localized_locations: dict[str, set[str]] = {}
 
         for pdv in self.dimensions.filter(value__dimension__slug="room").distinct():
@@ -137,8 +150,8 @@ class Program(models.Model):
     def refresh_cached_dimensions(self):
         from .schedule import ScheduleItem
 
-        self.cached_dimensions = self._build_dimensions()
-        self.cached_location = self._build_location()
+        self.cached_dimensions = self._build_cached_dimensions()
+        self.cached_location = self._build_cached_location()
         self.cached_color = self._get_color()
         self.save(update_fields=["cached_dimensions", "cached_location", "cached_color", "updated_at"])
         self.schedule_items.update(cached_location=self.cached_location)
@@ -164,8 +177,8 @@ class Program(models.Model):
                 "cached_location",
                 "cached_color",
             ):
-                program.cached_dimensions = program._build_dimensions()
-                program.cached_location = program._build_location()
+                program.cached_dimensions = program._build_cached_dimensions()
+                program.cached_location = program._build_cached_location()
                 program.cached_color = program._get_color()
                 bulk_update_programs.append(program)
             num_programs_updated = cls.objects.bulk_update(
@@ -226,6 +239,41 @@ class Program(models.Model):
             )
             logger.info("Refreshed cached times for %s programs", num_updated)
 
+    def _build_default_formatted_hosts(self) -> str:
+        return ", ".join(host.person.display_name for host in self.program_hosts.filter(is_active=True))
+
+    def _build_annotations(self, **kwargs) -> dict[str, Any]:
+        annotations = dict(self.annotations, **kwargs)
+
+        default_formatted_hosts = self._build_default_formatted_hosts()
+        formatted_hosts = annotations.get("internal:overrideFormattedHosts", default_formatted_hosts)
+        annotations.update(
+            {
+                "internal:defaultFormattedHosts": default_formatted_hosts,
+                "internal:formattedHosts": formatted_hosts,
+            }
+        )
+
+        return annotations
+
+    def refresh_annotations(self, **kwargs):
+        self.annotations = self._build_annotations(**kwargs)
+        self.save(update_fields=["annotations", "updated_at"])
+
+    @classmethod
+    def refresh_annotations_qs(cls, queryset: models.QuerySet[Self]):
+        with transaction.atomic():
+            bulk_update = []
+            for program in queryset.select_for_update(of=("self",)).only("id", "annotations"):
+                program.annotations = program._build_annotations()
+                bulk_update.append(program)
+            num_updated = queryset.bulk_update(
+                bulk_update,
+                ["annotations", "updated_at"],
+                batch_size=cls.program_batch_size,
+            )
+            logger.info("Refreshed cached annotations for %s programs", num_updated)
+
     @cached_property
     def meta(self) -> ProgramV2EventMeta:
         if (meta := self.event.program_v2_event_meta) is None:
@@ -264,17 +312,19 @@ class Program(models.Model):
     # TODO Automatic annotations
 
     @transaction.atomic
-    def set_dimension_values(self, values_to_set: dict[str, list[str]]):
+    def set_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
         """
         Changes only those dimension values that are present in dimension_values.
-        NOTE: Caller is responsible for calling .refresh_cached_dimensions[_qs].
+
+        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
+        afterwards to update the cached_dimensions field.
+
+        :param values_to_set: Mapping of dimension slug to list of value slugs.
+        :param cache: Cache from Universe.preload_dimensions()
         """
         from .program_dimension_value import ProgramDimensionValue
 
-        dimensions_by_slug, values_by_dimension_by_slug = self.meta.universe.preload_dimensions(values_to_set)
-
-        cached_dimensions = self.cached_dimensions
-        bulk_delete = self.dimensions.filter(value__dimension__slug__in=dimensions_by_slug.keys())
+        bulk_delete = self.dimensions.filter(value__dimension__slug__in=values_to_set.keys())
         bulk_create: list[ProgramDimensionValue] = []
 
         for dimension_slug, value_slugs in values_to_set.items():
@@ -282,15 +332,13 @@ class Program(models.Model):
                 value__dimension__slug=dimension_slug,
                 value__slug__in=value_slugs,
             )
-            values_by_slug = values_by_dimension_by_slug[dimension_slug]
 
             for value_slug in value_slugs:
-                if value_slug not in cached_dimensions.get(dimension_slug, []):
-                    value = values_by_slug[value_slug]
+                if value_slug not in self.cached_dimensions.get(dimension_slug, []):
                     bulk_create.append(
                         ProgramDimensionValue(
                             program=self,
-                            value=value,
+                            value=cache.values_by_dimension[dimension_slug][value_slug],
                         )
                     )
 
@@ -303,10 +351,23 @@ class Program(models.Model):
         program_offer: Response,
         slug: str = "",
         title: str = "",
+        created_by: Any | None = None,  # User
+        dimension_values: Mapping[str, Collection[str]] | None = None,
     ) -> Self:
         """
-        Return an unsaved Program instance from a program offer.
+        Accept a program offer and return the new Program instance.
         """
+        event = program_offer.event
+        cache = event.program_universe.preload_dimensions()
+
+        combined_dimension_values: Mapping[str, Collection[str]] = dict(program_offer.survey.cached_default_dimensions)
+        combined_dimension_values.update(program_offer.cached_dimensions)
+        if dimension_values is not None:
+            combined_dimension_values.update(dimension_values)
+        combined_dimension_values.update(
+            state=["accepted"],
+        )
+
         values, warnings = program_offer.get_processed_form_data()
         if warnings:
             logger.warning("Program offer %s had form data warnings: %s", program_offer.id, warnings)
@@ -325,12 +386,77 @@ class Program(models.Model):
             title=title,
             description=values.get("description", ""),
             annotations=annotations,
-            created_by=program_offer.created_by,
+            created_by=created_by,
             cached_dimensions={},
             program_offer=program_offer,
         )
-
         program.full_clean()
         program.save()
+        program.set_dimension_values(combined_dimension_values, cache=cache)
+        program.refresh_cached_fields()
+
+        program_offer.set_dimension_values(program.cached_dimensions, cache=cache)
+        program_offer.refresh_cached_fields()
+
+        Involvement.from_accepted_program_offer(
+            program_offer,
+            program,
+            cache=event.involvement_universe.preload_dimensions(),
+        )
 
         return program
+
+    @property
+    def program_hosts(self) -> models.QuerySet[Involvement]:
+        return (
+            Involvement.objects.filter(
+                program=self,
+                is_active=True,
+            )
+            .select_related(
+                "person",
+                "program",
+            )
+            .order_by(
+                "person__surname",
+                "person__first_name",
+                "program__cached_earliest_start_time",
+            )
+        )
+
+    def invite_program_host(
+        self,
+        email: str,
+        survey: Survey,
+        language: str = DEFAULT_LANGUAGE,
+        created_by: Any | None = None,  # User
+    ) -> Invitation:
+        if survey.involvement_type != InvolvementType.PROGRAM_HOST:
+            raise ValueError(f"Survey {survey} cannot be used to invite program hosts")
+
+        invitation = Invitation(
+            survey=survey,
+            program=self,
+            email=email,
+            created_by=created_by,
+            language=language,
+        )
+        invitation.full_clean()
+        invitation.save()
+        invitation.send()
+
+        return invitation
+
+    @property
+    def invitations(self) -> models.QuerySet[Invitation]:
+        return (
+            Invitation.objects.filter(
+                program=self,
+                used_at__isnull=True,
+            )
+            .select_related(
+                "survey",
+                "program",
+            )
+            .order_by("created_at")
+        )

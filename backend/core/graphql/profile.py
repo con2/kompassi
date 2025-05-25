@@ -16,25 +16,25 @@ from tickets_v2.models.meta import TicketsV2ProfileMeta
 class ProfileType(DjangoObjectType):
     class Meta:
         model = Person
-        fields = ("first_name", "nick", "email")
+        fields = ("first_name", "nick", "email", "discord_handle")
 
     @staticmethod
     def resolve_last_name(person: Person, info):
         return person.surname
 
-    last_name = graphene.Field(graphene.String)
+    last_name = graphene.NonNull(graphene.String)
 
     @staticmethod
     def resolve_phone_number(person: Person, info):
         return person.normalized_phone_number
 
-    phone_number = graphene.Field(graphene.String)
+    phone_number = graphene.NonNull(graphene.String)
 
     @staticmethod
     def resolve_display_name(person: Person, info):
         return person.display_name
 
-    display_name = graphene.Field(graphene.String)
+    display_name = graphene.NonNull(graphene.String)
 
     @staticmethod
     def resolve_forms(person: Person, info):

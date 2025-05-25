@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from datetime import datetime
+from functools import cached_property
 
 from django.conf import settings
 from django.db import connection, models, transaction
@@ -14,7 +17,7 @@ from core.utils import time_bool_property
 from core.utils.pkg_resources_compat import resource_string
 
 from ..proxies.badge.privacy import BadgePrivacyAdapter
-from ..utils import default_badge_factory
+from ..utils.default_badge_factory import default_badge_factory
 from .badges_event_meta import BadgesEventMeta
 
 logger = logging.getLogger("kompassi")
@@ -212,6 +215,8 @@ class Badge(models.Model, CsvExportMixin):
         """
         Makes sure the person has a badge of the correct class and up-to-date information for a given event.
         """
+        if not event.badges_event_meta:
+            raise AssertionError("event has no badges_event_meta")
         if not person:
             raise AssertionError("person is not set")
 
@@ -245,7 +250,7 @@ class Badge(models.Model, CsvExportMixin):
                 return None, False
 
             badge = cls(person=person, **new_badge_opts)
-            badge.save()
+            badge.save()  # calls reemperkelate
 
             return badge, True
 
@@ -262,7 +267,7 @@ class Badge(models.Model, CsvExportMixin):
         """
         Emperkelator = self.meta.emperkelator
         if self.person:
-            perks = Emperkelator.emperkelate(self.event, self.person)
+            perks = Emperkelator.emperkelate(self)
             perks_dict = perks.model_dump()
         else:
             perks_dict = self.personnel_class.perks
@@ -423,3 +428,35 @@ class Badge(models.Model, CsvExportMixin):
             cursor.execute(ArrivalsRow.QUERY, [event_slug])
             # TODO backfill missing hours
             return [ArrivalsRow(*row) for row in cursor.fetchall()]
+
+    @cached_property
+    def _shirt_size(self):
+        if perks_shirt_size := self.perks.get("shirt_size"):
+            return perks_shirt_size
+        elif self.signup_extra and hasattr(self.signup_extra, "shirt_size"):
+            return self.signup_extra.get_shirt_size_display()
+        else:
+            return "Ei paitaa"
+
+    @property
+    def shirt_size(self):
+        if self._shirt_type == "Ei paitaa" or self._shirt_size == "Ei paitaa":
+            return ""
+
+        return self._shirt_size
+
+    @cached_property
+    def _shirt_type(self):
+        if perks_shirt_type := self.perks.get("shirt_type"):
+            return perks_shirt_type
+        elif self.signup_extra and hasattr(self.signup_extra, "shirt_type"):
+            return self.signup_extra.get_shirt_type_display()
+        else:
+            return "Ei paitaa"
+
+    @property
+    def shirt_type(self):
+        if self._shirt_size == "Ei paitaa":
+            return "Ei paitaa"
+
+        return self._shirt_type

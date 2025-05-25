@@ -108,8 +108,8 @@ class DimensionDTO(pydantic.BaseModel):
                 update_conflicts=True,
                 unique_fields=("dimension", "slug"),
                 update_fields=(
-                    # NOTE SUPPORTED_LANGUAGES
                     "is_technical",
+                    # NOTE SUPPORTED_LANGUAGES
                     "title_en",
                     "title_fi",
                     "title_sv",

@@ -11,7 +11,13 @@ from ..models.annotations import AnnotationSchemoid
 class AnnotationSchemoidType(PydanticObjectType):
     class Meta:
         model = AnnotationSchemoid
-        only_fields = ("slug", "type", "is_public", "is_shown_in_detail")
+        only_fields = (
+            "slug",
+            "type",
+            "is_public",
+            "is_shown_in_detail",
+            "is_computed",
+        )
 
     resolve_title = resolve_localized_field("title")
     title = graphene.NonNull(graphene.String, lang=graphene.String())

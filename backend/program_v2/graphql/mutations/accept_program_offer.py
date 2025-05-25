@@ -1,5 +1,6 @@
 import graphene
 from django.db import transaction
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance, graphql_check_model
@@ -46,6 +47,7 @@ class AcceptProgramOffer(graphene.Mutation):
         """
         Turns a program offer into a program.
         """
+        request: HttpRequest = info.context
         form_data: dict[str, str] = input.form_data  # type: ignore
 
         program_offer = Response.objects.get(
@@ -74,24 +76,16 @@ class AcceptProgramOffer(graphene.Mutation):
         if warnings:
             raise ValueError(warnings)
 
-        dimension_values = dict(program_offer.cached_dimensions)
-        dimension_values.update(
-            process_dimensions_form(
-                list(event.program_universe.dimensions.filter(is_technical=False)),
-                form_data,
-            )
+        dimension_values = process_dimensions_form(
+            list(event.program_universe.dimensions.filter(is_technical=False)),
+            form_data,
         )
-        dimension_values.update(
-            state=["accepted"],
-        )
-        program_offer.set_dimension_values(dimension_values)
-
         program = Program.from_program_offer(
             program_offer,
-            slug=values["slug"],
+            slug=values.get("slug", ""),
             title=values.get("title", ""),
+            created_by=request.user,
+            dimension_values=dimension_values,
         )
-        program.set_dimension_values(dimension_values)
-        program.refresh_cached_fields()
 
         return AcceptProgramOffer(program=program)  # type: ignore

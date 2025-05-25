@@ -24,11 +24,35 @@ const translations: Translations = {
   },
   Profile: {
     attributes: {
+      displayName: "Nimi",
+      firstName: "Etunimi",
+      lastName: "Sukunimi",
+      nick: "Nick",
+      phoneNumber: "Puhelinnumero",
+      email: "Sähköpostiosoite",
+      discordHandle: "Discord-tunnus",
+    },
+    advancedAttributes: {
       displayName: {
         title: "Nimi",
       },
+      firstName: {
+        title: "Etunimi",
+      },
+      lastName: {
+        title: "Sukunimi",
+      },
+      nick: {
+        title: "Nick",
+      },
+      phoneNumber: {
+        title: "Puhelinnumero",
+      },
       email: {
         title: "Sähköpostiosoite",
+      },
+      discordHandle: {
+        title: "Discord-tunnus",
       },
     },
     keysView: {
@@ -88,6 +112,30 @@ const translations: Translations = {
       },
     },
   },
+  TransferConsentForm: {
+    title: "Henkilötietojen luovutus",
+    message: (
+      <>
+        Kun täytät tämän lomakkeen, henkilötietojasi siirretään rekisteristä
+        toiseen seuraavasti. Lisäksi vastaanottajan rekisteriin liitetään ne
+        henkilötiedot, jotka annat tällä lomakkeella.
+      </>
+    ),
+    consentCheckBox:
+      "Annan suostumukseni henkilötietojeni luovutukseen ja käsittelyyn edellä kuvatulla tavalla.",
+    privacyPolicy: "Tietosuojaseloste",
+    privacyPolicyMissing: "Tietosuojaseloste puuttuu",
+    actions: {
+      editProfile: {
+        message:
+          "Jos huomaat virheitä tai puutteita henkilötiedoissasi, korjaathan ne profiilissasi.",
+        link: "Muokkaa profiilia",
+      },
+    },
+    sourceRegistry: "Henkilötietojen lähde",
+    targetRegistry: "Henkilötietojen vastaanottaja",
+    dataToBeTransferred: "Luovutettavat henkilötiedot",
+  },
   Modal: {
     submit: "Submit",
     cancel: "Cancel",
@@ -106,6 +154,7 @@ const translations: Translations = {
     tickets: "Lipputilaukset",
     responses: "Kyselyvastaukset",
     keys: "Salausavaimet",
+    program: "Ohjelmanumerot ja -tarjoukset",
     signIn: "Kirjaudu sisään",
     signOut: "Kirjaudu ulos",
   },
@@ -187,6 +236,10 @@ const translations: Translations = {
         helpText:
           'Kullakin rivillä tulisi olla yksi kysymys muodossa "tekninen-nimi: Käyttäjälle näytettävä kysymys".',
       },
+      dimension: {
+        title: "Dimensio",
+        helpText: "Mistä dimensiosta tämä kenttä saa vastauksensa?",
+      },
       encryptTo: {
         title: "Salaa vastaukset",
         helpText:
@@ -201,8 +254,11 @@ const translations: Translations = {
       StaticText: "Kiinteä teksti",
       Spacer: "Tyhjä tila",
       SingleCheckbox: "Yksittäinen rasti ruutuun -kenttä",
+      DimensionSingleCheckbox: "Yksittäinen rasti ruutuun -kenttä (dimensio)",
       SingleSelect: "Valinta",
+      DimensionSingleSelect: "Valinta (dimensio)",
       MultiSelect: "Monivalinta",
+      DimensionMultiSelect: "Monivalinta (dimensio)",
       RadioMatrix: "Valintamatriisi",
       FileUpload: "Tiedoston lähetys",
       NumberField: "Numero",
@@ -210,6 +266,89 @@ const translations: Translations = {
       DateField: "Päivämäärä",
       DateTimeField: "Päivämäärä ja kellonaika",
       TimeField: "Kellonaika",
+    },
+    advancedFieldTypes: {
+      SingleSelect: {
+        promoteFieldToDimension: {
+          title: "Muuta dimensiokentäksi",
+          modalActions: {
+            submit: "Toteuta muutos",
+            cancel: "Sulje tekemättä muutosta",
+          },
+          existingDimension: (
+            <>
+              <p>Haluatko varmasti muuttaa tämän kentän dimensiokentäksi?</p>
+              <p>
+                Jos jatkat, seuraavat toimenpiteet toteutetaan tämän kyselyn{" "}
+                <strong>kaikissa kieliversioissa</strong>:
+              </p>
+              <ol>
+                <li>
+                  Mahdolliset puuttuvat vaihtoehdot lisätään olemassa olevaan
+                  dimensioon, jonka tekninen nimi on sama kuin tällä kentällä.
+                  Niiden käännökset otetaan kaikista olemassa olevista
+                  kieliversioista.
+                </li>
+                <li>
+                  Tämä kenttä korvataan kentällä, joka saa vaihtoehtonsa edellä
+                  mainitusta dimensioista. Kentän muut ominaisuudet pysyvät
+                  ennallaan.
+                </li>
+                <li>
+                  Kukin kyselyvastaus, jossa tähän kenttään on vastattu, saa
+                  tämän kentän vastaukset kyseisen dimension arvoiksi.
+                </li>
+              </ol>
+              <p>Tätä toimintoa ei voi perua.</p>
+            </>
+          ),
+          newDimension: (
+            <>
+              <p>Haluatko varmasti muuttaa tämän kentän dimensiokentäksi?</p>
+              <p>
+                Jos jatkat, seuraavat toimenpiteet toteutetaan tämän kyselyn{" "}
+                <strong>kaikissa kieliversioissa</strong>:
+              </p>
+              <ol>
+                <li>
+                  Kyselyyn luodaan uusi dimensio, jonka tekninen nimi on sama
+                  kuin tällä kentällä. Vaihtoehdot käännöksineen otetaan
+                  kaikista olemassa olevista kieliversioista ja yhdistetään
+                  niiden teknisten nimien perusteella.
+                </li>
+                <li>
+                  Tämä kenttä korvataan kentällä, joka saa vaihtoehtonsa edellä
+                  mainitusta dimensioista. Kentän muut ominaisuudet pysyvät
+                  ennallaan.
+                </li>
+                <li>
+                  Kukin kyselyvastaus, jossa tähän kenttään on vastattu, saa
+                  tämän kentän vastaukset kyseisen dimension arvoiksi.
+                </li>
+              </ol>
+              <p>Tätä toimintoa ei voi perua.</p>
+            </>
+          ),
+        },
+      },
+      DimensionSingleSelect: {
+        description: (
+          <>
+            Tämä kenttätyyppi näyttää valintakentän, jonka vaihtoehtoina ovat
+            dimension arvot. Kun vastaaja valitsee arvon tähän kenttään,
+            vastaukselle asetetaan kyseinen dimension arvo.
+          </>
+        ),
+      },
+      DimensionMultiSelect: {
+        description: (
+          <>
+            Tämä kenttätyyppi näyttää monivalintakentän, jonka vaihtoehtoina
+            ovat dimension arvot. Kun vastaaja valitsee arvoja tähän kenttään,
+            vastaukselle asetetaan kyseiset dimension arvot.
+          </>
+        ),
+      },
     },
 
     removeFieldModal: {
@@ -837,12 +976,15 @@ const translations: Translations = {
     singleTitle: "Ohjelmanumero",
     adminListTitle: "Ohjelmanumerot",
     inEvent: (eventName: string) => <>tapahtumassa {eventName}</>,
+    tableFooter: (numPrograms: number) =>
+      `${numPrograms} ohjelmanumero${numPrograms === 1 ? "" : "a"}.`,
     attributes: {
       slug: {
         title: "Tekninen nimi",
         helpText:
           "Ohjelmanumeron tekninen nimi. Täytyy olla uniikki tapahtuman sisällä. Ei voi muuttaa luomisen jälkeen. Voi sisältää pieniä kirjaimia, numeroita ja väliviivoja (-). Tulee osaksi osoitetta: <code>/EVENT-SLUG/programs/PROGRAM-SLUG</code> (esim. <code>/tracon2025/programs/opening-ceremony</code>).",
       },
+      event: "Tapahtuma",
       title: "Otsikko",
       actions: "Toiminnot",
       description: "Kuvaus",
@@ -858,6 +1000,9 @@ const translations: Translations = {
         message:
           "Tämä ohjelmanumero on luotu seuraavan ohjelmatarjouksen perusteella:",
       },
+      programHosts: {
+        title: "Ohjelmanpitäjät",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -869,6 +1014,13 @@ const translations: Translations = {
       signUpForThisProgram: "Ilmoittaudu tähän ohjelmanumeroon",
       preview: "Ohjelmaoppaan esikatselu",
       preferences: "Asetukset",
+      create: {
+        title: "Luo ohjelmanumero",
+        modalActions: {
+          submit: "Luo ohjelmanumero",
+          cancel: "Peruuta",
+        },
+      },
     },
     favorites: {
       markAsFavorite: "Merkitse suosikiksi",
@@ -891,7 +1043,7 @@ const translations: Translations = {
         feedback: {
           title: "Palaute",
           helpText:
-            "Mitä pidit ohjelmanumerosta? Olethan rakentava ja empaattinen ohjelmanjärjestäjää kohtaan :) Palautteesi toimitetaan ohjelmanumeron järjestäjälle.",
+            "Mitä pidit ohjelmanumerosta? Olethan rakentava ja empaattinen ohjelmanpitäjää kohtaan :) Palautteesi toimitetaan ohjelmanumeron järjestäjälle.",
         },
         kissa: {
           title: "Mikä eläin sanoo miau?",
@@ -916,14 +1068,55 @@ const translations: Translations = {
     adminDetailTabs: {
       basicInfo: "Perustiedot",
       scheduleItems: "Aikataulutus",
-      programHosts: "Ohjelmanjärjestäjät",
+      programHosts: "Ohjelmanpitäjät",
       dimensions: "Dimensiot",
       annotations: "Lisätiedot",
+    },
+
+    profile: {
+      title: "Ohjelmanumerot ja ohjelmatarjoukset",
+      programItems: {
+        listTitle: "Ohjelmanumerot joissa olet ohjelmanpitäjänä",
+        description: (
+          <>
+            Tässä näet ohjelmanumerot, joihin sinut on listattu
+            ohjelmanpitäjäksi ja jotka on hyväksytty tapahtuman ohjelmaan.
+          </>
+        ),
+        tableFooter: (count: number) =>
+          count === 1 ? <>Yksi ohjelmanumero.</> : <>{count} ohjelmanumeroa.</>,
+      },
+      programOffers: {
+        listTitle: "Avoimet ohjelmatarjoukset",
+        description: (
+          <>
+            Tässä näet tekemäsi ohjelmatarjoukset, joita ei ole vielä hyväksytty
+            tai hylätty.
+          </>
+        ),
+        tableFooter: (count: number) =>
+          count === 1 ? (
+            <>Yksi ohjelmatarjous.</>
+          ) : (
+            <>{count} ohjelmatarjousta.</>
+          ),
+      },
+      empty: (
+        <>
+          Sinulla ei ole ohjelmanumeroita eikä ohjelmatarjouksia. Jos
+          ilmoittaudut ohjelmanpitäjäksi tapahtumaan, joka käyttää Kompassia
+          ohjelmansa hallintaan, löydät ohjelmatarjoukset ja ohjelmanumerot
+          täältä.
+        </>
+      ),
     },
 
     ProgramForm: {
       singleTitle: "Ohjelmalomake",
       listTitle: "Ohjelmalomakkeet",
+      programFormForEvent: (eventName: string) => (
+        <>Ohjelmalomake tapahtumalle {eventName}</>
+      ),
       tableFooter: (numForms: number) =>
         `${numForms} ohjelmalomake${numForms === 1 ? "" : "tta"}.`,
       attributes: {
@@ -931,13 +1124,38 @@ const translations: Translations = {
           title: "Tekninen nimi",
           helpText: (
             <>
-              Ohjelmalomakkeen tekninen nimi. Täytyy olla uniikki tapahtuman
-              sisällä. Ei voi muuttaa luomisen jälkeen. Voi sisältää pieniä
-              kirjaimia, numeroita ja väliviivoja (-). Tulee osaksi osoitetta:{" "}
-              <code>/event-slug/form-slug</code> (esim.{" "}
-              <code>/tracon2025/offer-program</code>).
+              Keksi ohjelmalomakkeelle tekninen nimi, joka tulee osaksi
+              lomakkeen osoitetta:{" "}
+              <code>/tapahtuman-tekninen-nimi/lomakkeen-tekninen-nimi</code> .
+              Esimerkiksi osoitteessa <code>/tracon2025/offer-program</code>{" "}
+              lomakkeen tekninen nimi on <code>offer-program</code>. Teknisen
+              nimen tulee olla uniikki tapahtuman sisällä, ja sitä ei voi
+              muuttaa lomakkeen luomisen jälkeen. Tekninen nimi voi sisältää{" "}
+              <strong>pieniä</strong> kirjaimia, numeroita ja väliviivoja (-).
             </>
           ),
+        },
+        purpose: {
+          title: "Käyttötarkoitus",
+          shortTitle: "Tarkoitus",
+          helpText: (
+            <>
+              Ohjelmalomakkeita voidaan käyttää eri käyttötarkoituksiin, kuten
+              ohjelmatarjousten keräämiseen tai ohjelmanpitäjäkutsujen
+              hyväksymiseen. Lomakkeen käyttötarkoitusta ei voi muuttaa
+              lomakkeen luomisen jälkeen.
+            </>
+          ),
+          choices: {
+            DEFAULT: {
+              title: "Ohjelman tarjoaminen",
+              shortTitle: "Tarjous",
+            },
+            INVITE: {
+              title: "Ohjelmanpitäjäkutsun hyväksyminen",
+              shortTitle: "Kutsu",
+            },
+          },
         },
       },
       actions: {
@@ -964,6 +1182,8 @@ const translations: Translations = {
             cancel: "Peruuta",
           },
         },
+        returnToProgramFormList: (eventName: string) =>
+          `Takaisin tapahtuman ${eventName} ohjelmalomakkeiden listaan`,
       },
     },
 
@@ -1040,6 +1260,69 @@ const translations: Translations = {
     ProgramHost: {
       singleTitle: "Ohjelmanpitäjä",
       listTitle: "Ohjelmanpitäjät",
+      attributes: {
+        count: (numHosts: number) =>
+          numHosts === 1 ? (
+            <>Yksi ohjelmanpitäjä.</>
+          ) : (
+            <>{numHosts} ohjelmanpitäjää.</>
+          ),
+        programItems: "Ohjelmanumerot",
+      },
+      actions: {
+        inviteProgramHost: {
+          title: "Kutsu ohjelmanpitäjä",
+          attributes: {
+            email: {
+              title: "Sähköposti",
+              helpText:
+                "Tarkista sähköpostiosoite huolellisesti! Kutsu lähetetään tähän osoitteeseen.",
+            },
+            survey: {
+              title: "Ohjelmanpitäjälomake",
+              helpText:
+                "Kun vastaanottaja hyväksyy kutsun, häntä pyydetään täyttämään tämä lomake.",
+            },
+            language: {
+              title: "Kieli",
+              helpText: "Millä kielellä kutsu lähetetään?",
+            },
+          },
+          message: (
+            <>
+              Kutsu ohjelmanpitäjä syöttämällä hänen sähköpostiosoitteensa alla
+              olevaan kenttään. Hänelle lähetetään kutsulinkin sisältävä
+              sähköpostiviesti. Kutsun hyväksyminen edellyttää käyttäjätunnusta.
+            </>
+          ),
+          modalActions: {
+            submit: "Lähetä kutsu",
+            cancel: "Peruuta",
+          },
+        },
+        removeProgramHost: {
+          title: "Poista ohjelmanpitäjä",
+          label: "Poista",
+          message: (programHost: string, programTitle: string) => (
+            <>
+              <p>
+                Haluatko varmasti poistaa ohjelmanpitäjän{" "}
+                <strong>{programHost}</strong> ohjelmanumerosta{" "}
+                <strong>{programTitle}</strong>?
+              </p>{" "}
+              <p>
+                Poiston peruminen edellyttää kutsun lähettämistä uudelleen.
+                Ohjelmanpitäjälle ei lähetetä ilmoitusta siitä, että hänet on
+                poistettu ohjelmanumerosta.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Poista ohjelmanpitäjä",
+            cancel: "Sulje poistamatta",
+          },
+        },
+      },
     },
 
     ScheduleItem: {
@@ -1088,17 +1371,6 @@ const translations: Translations = {
         Yhteenveto {filteredCount} vastauksesta (yhteensä {totalCount}).
       </>
     ),
-    theseProfileFieldsWillBeShared:
-      "Kun lähetät tämän kyselyn, seuraavat tiedot jaetaan kyselyn omistajan kanssa:",
-    correctInYourProfile: (profileLink: string) => (
-      <>
-        Jos tiedot eivät ole oikein, korjaa ne{" "}
-        <a href={profileLink} target="_blank" rel="noopener noreferrer">
-          profiilissasi
-        </a>{" "}
-        (avautuu uuteen välilehteen).
-      </>
-    ),
     attributes: {
       slug: {
         title: "Tekninen nimi",
@@ -1120,6 +1392,17 @@ const translations: Translations = {
         untilTime: (formattedTime: String) => `Avoinna ${formattedTime} asti`,
         openingAt: (formattedTime: String) => `Avautuu ${formattedTime}`,
         closed: "Suljettu",
+        adminOverride: {
+          title: "Kysely ei ole käytössä",
+          message: (
+            <>
+              Tämä kysely ei tällä hetkellä ota vastaan vastauksia. Näet tämän
+              sivun vain, koska sinulla on ylläpitäjän oikeudet tähän kyselyyn.
+              Käyttäjät, joilla ei ole ylläpitäjän oikeuksia, näkevät ainoastaan
+              viestin joka ilmoittaa, että kysely ei ole käytössä.
+            </>
+          ),
+        },
       },
       activeFrom: {
         title: "Avautumisaika",
@@ -1142,6 +1425,8 @@ const translations: Translations = {
             SOFT: "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi, jotta voit palata katsomaan tai muokkaamaan vastauksiasi, mutta käyttäjäprofiiliasi ei jaeta kyselyn omistajan kanssa.",
             NAME_AND_EMAIL:
               "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Nimesi ja sähköpostiosoitteesi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
+            FULL_PROFILE:
+              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Koko käyttäjäprofiilisi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
           },
         },
         thirdPerson: {
@@ -1151,6 +1436,8 @@ const translations: Translations = {
             SOFT: "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä, jotta hän voi palata katsomaan tai muokkaamaan vastauksiaan, mutta hänen henkilöllisyyttään ei jaeta sinulle.",
             NAME_AND_EMAIL:
               "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Hänen nimensä ja sähköpostiosoitteensa jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan.",
+            FULL_PROFILE:
+              "Jos käyttäjä vastaa tähän kyselyyn kirjautuneena, hänen vastauksensa yhdistetään hänen käyttäjätiliinsä. Koko käyttäjäprofiili jaetaan sinulle. Hän voi palata katsomaan tai muokkaamaan vastauksiaan.",
           },
         },
         admin: {
@@ -1166,6 +1453,15 @@ const translations: Translations = {
       },
       dimensions: "Dimensiot",
       dimension: "Dimensio",
+      dimensionDefaults: {
+        title: "Oletusdimensiot",
+        description: (
+          <>
+            Nämä dimensioiden arvot asetetaan automaattisesti uusille
+            kyselyvastauksille. Teknisten dimensioiden arvoja ei voi muuttaa.
+          </>
+        ),
+      },
       values: "Arvot",
       value: "Arvo",
       sequenceNumber: "Järjestysnumero",
@@ -1298,6 +1594,7 @@ const translations: Translations = {
           cancel: "Peruuta",
         },
       },
+      editDimensions: "Muokkaa dimensioita ja arvoja",
       editDimension: "Muokkaa dimensiota",
       editDimensionValue: "Muokkaa arvoa",
       editSurvey: "Muokkaa",
@@ -1328,6 +1625,15 @@ const translations: Translations = {
         }. Voit vastata tähän kyselyyn enintään ${maxResponsesPerUser} ${
           maxResponsesPerUser === 1 ? "kerran" : "kertaa"
         }.`,
+    },
+    specialPurposeSurvey: {
+      title: "Kyselyyn ei voi vastata tätä kautta",
+      defaultMessage: (
+        <>
+          Tämän kyselyn käyttötarkoitusta on rajoitettu, eikä siihen voi vastata
+          tämän näkymän kautta.
+        </>
+      ),
     },
     warnings: {
       choiceNotFound:
@@ -1376,8 +1682,15 @@ const translations: Translations = {
         slug: {
           title: "Tekninen nimi",
           // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Koneluettava, lyhyt nimi dimensiolle. Teknistä nimeä ei voi muuttaa dimension luomisen jälkeen.",
+          helpText: (
+            <>
+              Koneluettava, lyhyt nimi dimensiolle. Teknistä nimeä ei voi
+              muuttaa dimension luomisen jälkeen. Voi sisältää pieniä kirjaimia,
+              numeroita ja väliviivoja (-). Tulee osaksi osoitetta
+              suodatettaessa: <code>dimensio=arvo</code> (esim.{" "}
+              <code>program-type=panel</code>).
+            </>
+          ),
         },
         localizedTitleHeader: {
           title: "Otsikko lokalisoituna",
@@ -1446,18 +1759,20 @@ const translations: Translations = {
         slug: {
           title: "Tekninen nimi",
           // TODO add pattern for slug and document it in helpText
-          helpText:
-            "Koneluettava, lyhyt nimi arvolle. Teknistä nimeä ei voi muuttaa dimension luomisen jälkeen.",
+          helpText: (
+            <>
+              Koneluettava, lyhyt nimi arvolle. Teknistä nimeä ei voi muuttaa
+              arvon luomisen jälkeen. Voi sisältää pieniä kirjaimia, numeroita
+              ja väliviivoja (-). Tulee osaksi osoitetta suodatettaessa:{" "}
+              <code>dimensio=arvo</code> (esim. <code>program-type=panel</code>
+              ).
+            </>
+          ),
         },
         color: {
           title: "Väri",
           helpText:
             "Arvon väri vastauslistassa. Käytä kirkkaita värejä: ne vaalenevat tai tummenevat tarvittaessa.",
-        },
-        isInitial: {
-          title: "Alkuarvo",
-          helpText:
-            "Jos tämä on asetettu, tämä arvo asetetaan kaikille uusille vastauksille lähettämisen yhteydessä.",
         },
         localizedTitleHeader: {
           title: "Otsikko lokalisoituna",
@@ -1482,6 +1797,74 @@ const translations: Translations = {
       title: "Muokkaa kyselyä",
       actions: {
         submit: "Tallenna kentät",
+      },
+    },
+  },
+
+  Invitation: {
+    listTitle: "Avoimet kutsut",
+    listDescription: (
+      <>
+        Nämä henkilöt on kutsuttu ohjelmanpitäjiksi tähän ohjelmanumeroon, mutta
+        he eivät ole vielä hyväksyneet kutsua.
+      </>
+    ),
+    attributes: {
+      createdAt: "Lähetysaika",
+      email: "Sähköposti",
+      count: (numInvitations: number) =>
+        numInvitations === 1 ? (
+          <>Yksi avoin kutsu.</>
+        ) : (
+          <>{numInvitations} avointa kutsua.</>
+        ),
+      program: {
+        title: "Ohjelmanumeron tiedot",
+        editLater: "Pääset muokkaamaan ohjelmanumeron tietoja myöhemmin.",
+      },
+    },
+    errors: {
+      alreadyUsed: {
+        title: "Kutsu on jo käytetty",
+        message: "Tämä kutsu on jo käytetty. Kutsun voi käyttää vain kerran.",
+      },
+    },
+    actions: {
+      revoke: {
+        title: "Peru kutsu",
+        label: "Peru",
+        message: (email: string) => (
+          <>
+            Haluatko varmasti perua osoitteeseen <strong>{email}</strong>{" "}
+            lähetetyn kutsun? Vastaanottajalle ei lähetetä ilmoitusta
+            peruutuksesta. Jos tulet toisiin ajatuksiin, on sinun lähetettävä
+            vastaanottajalle uusi kutsu.
+          </>
+        ),
+        modalActions: {
+          submit: "Peru kutsu",
+          cancel: "Sulje perumatta",
+        },
+      },
+      resend: {
+        title: "Kutsun uudelleenlähetys",
+        label: "Lähetä uudelleen",
+        message: (email: string) => (
+          <>
+            Haluatko lähettää osoitteeseen <strong>{email}</strong> lähetetyn
+            kutsun uudelleen? Vastaanottaja saa uuden sähköpostiviestin, joka on
+            sisällöltään sama kuin alkuperäinen kutsuviesti.
+          </>
+        ),
+        modalActions: {
+          submit: "Lähetä uudelleen",
+          cancel: "Sulje uudelleenlähettämättä",
+        },
+        success: (email: string) => (
+          <>
+            Kutsu osoitteeseen <strong>{email}</strong> lähetettiin uudelleen.
+          </>
+        ),
       },
     },
   },

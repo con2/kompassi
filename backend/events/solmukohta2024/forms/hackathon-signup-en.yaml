@@ -32,12 +32,11 @@ fields:
 
   - slug: participation
     title: Participation
-    type: SingleSelect
+    type: DimensionSingleSelect
     required: true
     helpText: |
       Will you participate in the hackathon on site in Tampere, or online from elsewhere?
-    choicesFrom:
-      dimension: participation
+    dimension: participation
 
   - slug: stake
     title: What is your stake in KP/SK IT systems?

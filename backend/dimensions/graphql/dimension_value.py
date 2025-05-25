@@ -23,7 +23,6 @@ class DimensionValueType(DjangoObjectType):
         fields = (
             "slug",
             "color",
-            "is_initial",
             "is_technical",
             # NOTE SUPPORTED_LANGUAGES
             "title_en",

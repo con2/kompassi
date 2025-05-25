@@ -7,4 +7,7 @@ class ProgramV2AppConfig(AppConfig):
     verbose_name = _("Program management (v2)")
 
     def ready(self) -> None:
-        from . import handlers  # noqa: F401
+        from . import (
+            event_log_entry_types,  # noqa: F401
+            handlers,  # noqa: F401
+        )

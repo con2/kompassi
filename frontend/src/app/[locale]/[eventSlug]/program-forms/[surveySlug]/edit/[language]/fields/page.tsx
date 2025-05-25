@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import ProgramFormEditorView from "../../ProgramFormEditorView";
-import { updateSurveyFields } from "./actions";
+import { promoteFieldToDimension, updateSurveyFields } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -10,25 +10,6 @@ import { validateFields } from "@/components/forms/models";
 import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
-
-graphql(`
-  fragment EditProgramFormFields on FullSurveyType {
-    slug
-    title(lang: $locale)
-    canRemove
-
-    form(lang: $language) {
-      title
-      language
-      fields(enrich: false)
-      canRemove
-    }
-
-    languages {
-      language
-    }
-  }
-`);
 
 const query = graphql(`
   query EditProgramFormFieldsPage(
@@ -43,7 +24,7 @@ const query = graphql(`
 
       forms {
         survey(slug: $surveySlug, app: PROGRAM_V2) {
-          ...EditProgramFormFields
+          ...EditSurveyFieldsPage
         }
       }
     }
@@ -115,6 +96,7 @@ export default async function EditProgramFormFieldsPage({ params }: Props) {
   const survey = data.event.forms.survey;
   const form = data.event.forms.survey.form;
   const activeTab = `fields-${language}`;
+  const dimensions = data.event.forms.survey.dimensions;
 
   validateFields(form.fields);
 
@@ -127,6 +109,7 @@ export default async function EditProgramFormFieldsPage({ params }: Props) {
     >
       <FormEditorWrapper
         initialFields={form.fields}
+        dimensions={dimensions}
         messages={{
           FormEditor: translations.FormEditor,
           SchemaForm: translations.SchemaForm,
@@ -136,6 +119,12 @@ export default async function EditProgramFormFieldsPage({ params }: Props) {
           eventSlug,
           surveySlug,
           language,
+        )}
+        onPromoteFieldToDimension={promoteFieldToDimension.bind(
+          null,
+          locale,
+          eventSlug,
+          surveySlug,
         )}
       />
     </ProgramFormEditorView>

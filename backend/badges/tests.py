@@ -1,14 +1,24 @@
 import logging
 
 import pytest
+from django.db import transaction
 from django.test import TestCase
 
 from core.models import Person
+from dimensions.models.dimension_dto import DimensionDTO
+from dimensions.models.dimension_value_dto import DimensionValueDTO
+from forms.models.form import Form
+from forms.models.meta import FormsEventMeta
+from forms.models.response import Response
+from forms.models.survey import Survey
 from labour.models import JobCategory, LabourEventMeta, PersonnelClass, Signup
 from programme.models import Programme, ProgrammeEventMeta, ProgrammeRole, Role
 
 from .emperkelators.tracon2024 import TicketType, TraconEmperkelator
-from .models import Badge, BadgesEventMeta, Batch
+from .models.badge import Badge
+from .models.badges_event_meta import BadgesEventMeta
+from .models.batch import Batch
+from .models.survey_to_badge import SurveyToBadgeMapping
 
 logger = logging.getLogger("kompassi")
 
@@ -367,3 +377,68 @@ def test_tracon2024_perks():
     assert perks.swag
     assert not perks.extra_swag, "Two sources of normal swag should not an extra swag make"
     assert str(perks) == "Badge (internal), 4 ruokalippua, valittu työvoimatuote"
+
+
+@pytest.mark.django_db
+def test_survey_to_badge():
+    """
+    Test the SurveyToBadgeMapping model and its match method.
+    """
+    BadgesEventMeta.get_or_create_dummy()
+    FormsEventMeta.get_or_create_dummy()
+    personnel_class, _ = PersonnelClass.get_or_create_dummy()
+    event = personnel_class.event
+
+    survey = Survey.objects.create(
+        event=event,
+        slug="test-survey",
+        anonymity="NAME_AND_EMAIL",
+    )
+
+    DimensionDTO(
+        slug="status",
+        title={"en": "Status"},
+        choices=[
+            DimensionValueDTO(slug="new", title={"en": "New"}),
+            DimensionValueDTO(slug="accepted", title={"en": "Accepted"}),
+            DimensionValueDTO(slug="cancelled", title={"en": "New"}),
+        ],
+    ).save(survey.universe)
+
+    survey.set_default_dimension_values({"status": ["new"]}, cache=survey.universe.preload_dimensions())
+
+    form_en = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[],
+    )
+
+    SurveyToBadgeMapping.objects.create(
+        survey=survey,
+        personnel_class=personnel_class,
+        required_dimensions={"status": ["accepted"]},
+        job_title="Ohjelmanjärjestäjä",
+    )
+
+    person, _ = Person.get_or_create_dummy()
+
+    with transaction.atomic():
+        response = Response.objects.create(
+            form=form_en,
+            form_data={},
+            created_by=person.user,
+        )
+        survey.workflow.handle_new_response_phase1(response)
+    survey.workflow.handle_new_response_phase2(response)
+
+    assert not Badge.objects.filter(person=person, personnel_class__event=event).exists()
+
+    with transaction.atomic():
+        response.set_dimension_values({"status": ["accepted"]}, cache=survey.universe.preload_dimensions())
+        response.refresh_cached_fields()
+    survey.workflow.handle_response_dimension_update(response)
+
+    badge = Badge.objects.filter(person=person, personnel_class__event=event).get()
+    assert badge.personnel_class == personnel_class
+    assert badge.job_title == "Ohjelmanjärjestäjä"

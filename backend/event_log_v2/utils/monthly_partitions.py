@@ -38,6 +38,10 @@ class UUID7Mixin:
     def timestamp(self):
         return uuid7_to_datetime(self.pk)
 
+    @cached_property
+    def created_at(self):
+        return self.timestamp
+
     @property
     def date(self):
         return self.timestamp.date()

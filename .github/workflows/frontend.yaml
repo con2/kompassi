@@ -14,6 +14,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,12 +25,12 @@ jobs:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/login-action@v3
+      - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.GHCR_PASSWORD }}
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - id: cache-bin
         uses: actions/cache@v4
@@ -44,7 +48,7 @@ jobs:
       - id: build
         name: skaffold build
         run: |
-          # set SKAFFOLD_PUSH to false unless pushing to main
+          # only push to ghcr.io on push to main
           if ! [[ "$GITHUB_EVENT_NAME" == 'push' && "$GITHUB_REF" == 'refs/heads/main' ]]; then
             export SKAFFOLD_PUSH=false
           fi
@@ -68,7 +72,7 @@ jobs:
           name: build-json
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
@@ -86,7 +90,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
       - run: npm ci
         working-directory: frontend
-      - run: npx ts-node manifest.ts
+      - run: npx tsx manifest.ts
         working-directory: frontend/kubernetes
         env:
           ENV: staging
@@ -105,7 +109,7 @@ jobs:
           name: build-json
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
@@ -123,7 +127,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
       - run: npm ci
         working-directory: frontend
-      - run: npx ts-node manifest.ts
+      - run: npx tsx manifest.ts
         working-directory: frontend/kubernetes
         env:
           ENV: production

@@ -1,33 +1,21 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ReactNode } from "react";
-import Card from "react-bootstrap/Card";
-import CardBody from "react-bootstrap/CardBody";
-import CardTitle from "react-bootstrap/CardTitle";
 
 import { submit } from "./actions";
 import { graphql } from "@/__generated__";
+import { SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
+import { AlsoAvailableInLanguage } from "@/components/forms/AlsoAvailableInLanguage";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
+import TransferConsentForm from "@/components/involvement/TransferConsentForm";
 import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { kompassiBaseUrl } from "@/config";
-import {
-  getTranslations,
-  isSupportedLanguage,
-  SupportedLanguage,
-} from "@/translations";
-import type { Translations } from "@/translations/en";
-
-// NOTE SUPPORTED_LANGUAGES
-import en from "@/translations/en";
-import fi from "@/translations/fi";
-import sv from "@/translations/sv";
+import { getTranslations } from "@/translations";
 
 const query = graphql(`
   query SurveyPageQuery(
@@ -36,8 +24,11 @@ const query = graphql(`
     $locale: String
   ) {
     profile {
-      displayName
-      email
+      ...FullProfile
+    }
+
+    userRegistry {
+      ...TransferConsentFormRegistry
     }
 
     event(slug: $eventSlug) {
@@ -49,6 +40,16 @@ const query = graphql(`
           anonymity
           maxResponsesPerUser
           countResponsesByCurrentUser
+          isActive
+          purpose
+
+          profileFieldSelector {
+            ...FullProfileFieldSelector
+          }
+
+          registry {
+            ...TransferConsentFormRegistry
+          }
 
           form(lang: $locale) {
             language
@@ -66,18 +67,9 @@ const query = graphql(`
   }
 `);
 
-// NOTE SUPPORTED_LANGUAGES
-// XXX ugly
-const alsoAvailableIn: Record<
-  SupportedLanguage,
-  Translations["Survey"]["attributes"]["alsoAvailableInThisLanguage"]
-> = {
-  en: en.Survey.attributes.alsoAvailableInThisLanguage,
-  fi: fi.Survey.attributes.alsoAvailableInThisLanguage,
-  sv: sv.Survey.attributes.alsoAvailableInThisLanguage,
-};
+export const revalidate = 5;
 
-interface SurveyPageProps {
+interface Props {
   params: {
     locale: string;
     eventSlug: string;
@@ -85,9 +77,7 @@ interface SurveyPageProps {
   };
 }
 
-export const revalidate = 5;
-
-export async function generateMetadata({ params }: SurveyPageProps) {
+export async function generateMetadata({ params }: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const t = getTranslations(locale);
   const { data } = await getClient().query({
@@ -100,7 +90,7 @@ export async function generateMetadata({ params }: SurveyPageProps) {
   };
 }
 
-export default async function SurveyPage({ params }: SurveyPageProps) {
+export default async function SurveyPage({ params }: Props) {
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Survey;
@@ -108,7 +98,7 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     query,
     variables: { eventSlug, surveySlug, locale },
   });
-  const { event } = data;
+  const { event, profile, userRegistry } = data;
   if (!event?.forms?.survey?.form) {
     notFound();
   }
@@ -118,7 +108,11 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     anonymity,
     maxResponsesPerUser,
     countResponsesByCurrentUser,
+    purpose,
+    profileFieldSelector,
+    registry: targetRegistry,
   } = event.forms.survey;
+  const { isActive } = event.forms.survey;
   const { title, description, fields, language } = event.forms.survey.form;
   const anonymityMessages = t.attributes.anonymity.secondPerson;
 
@@ -127,6 +121,15 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
     if (!session) {
       return <SignInRequired messages={translations.SignInRequired} />;
     }
+  }
+
+  if (purpose !== SurveyPurpose.Default) {
+    return (
+      <ViewContainer>
+        <ViewHeading>{t.specialPurposeSurvey.title}</ViewHeading>
+        <p>{t.specialPurposeSurvey.defaultMessage}</p>
+      </ViewContainer>
+    );
   }
 
   if (maxResponsesPerUser && countResponsesByCurrentUser) {
@@ -147,76 +150,37 @@ export default async function SurveyPage({ params }: SurveyPageProps) {
 
   validateFields(fields);
 
-  const profile = data.profile ?? {};
-  let isSharedProfileFieldsShown = false;
-  let sharedProfileFields: Field[] = [];
-  if (data.profile && anonymity == "NAME_AND_EMAIL") {
-    isSharedProfileFieldsShown = true;
-    sharedProfileFields = [
-      {
-        slug: "displayName",
-        type: "SingleLineText",
-        title: translations.Profile.attributes.displayName.title,
-      },
-      {
-        slug: "email",
-        type: "SingleLineText",
-        title: translations.Profile.attributes.email.title,
-      },
-    ];
-  }
-  const profileLink = `${kompassiBaseUrl}/profile`;
-
-  const otherLanguages: SupportedLanguage[] = languages
-    .map((languageObj) => languageObj.language.toLowerCase())
-    .filter((lang) => lang != language.toLowerCase())
-    .filter(isSupportedLanguage);
-
   return (
     <ViewContainer>
       <ViewHeading>
         {title}
         <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
-      {otherLanguages.length > 0 && (
-        <div className="alert alert-primary">
-          {otherLanguages.map((lang) => {
-            function LanguageLink({ children }: { children: ReactNode }) {
-              return (
-                <Link
-                  prefetch={false}
-                  href={`/${lang}/${eventSlug}/${surveySlug}`}
-                  lang={lang}
-                >
-                  {children}
-                </Link>
-              );
-            }
 
-            return (
-              <div key={lang} lang={lang}>
-                {alsoAvailableIn[lang](LanguageLink)}{" "}
-              </div>
-            );
-          })}
+      <AlsoAvailableInLanguage
+        language={language}
+        languages={languages}
+        path={`/${eventSlug}/${surveySlug}`}
+      />
+
+      {!isActive && (
+        <div className="alert alert-warning">
+          <h5>{t.attributes.isActive.adminOverride.title}</h5>
+          <p className="mb-0">{t.attributes.isActive.adminOverride.message}</p>
         </div>
       )}
+
       <ParagraphsDangerousHtml html={description} />
-      {isSharedProfileFieldsShown && (
-        <Card className="mb-4">
-          <CardBody>
-            <CardTitle>{t.theseProfileFieldsWillBeShared}</CardTitle>
-            <p>{t.correctInYourProfile(profileLink)}</p>
-            <SchemaForm
-              fields={sharedProfileFields}
-              values={profile}
-              messages={translations.SchemaForm}
-              readOnly={true}
-            />
-          </CardBody>
-        </Card>
-      )}
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
+        {targetRegistry && profile && (
+          <TransferConsentForm
+            profileFieldSelector={profileFieldSelector}
+            profile={profile}
+            sourceRegistry={userRegistry}
+            targetRegistry={targetRegistry}
+            translations={translations}
+          />
+        )}
         <SchemaForm fields={fields} messages={translations.SchemaForm} />
         <SubmitButton>{t.actions.submit}</SubmitButton>
       </form>

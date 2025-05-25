@@ -11,14 +11,13 @@ description: |
 
 fields:
   - slug: event
-    type: SingleSelect
+    type: DimensionSingleSelect
     title: Tapahtuma
     required: true
     helpText: |
       Mihin tapahtumaan liittyvästä kulusta haet korvausta tai minkä laskun lähetät?
       Jos kulukorvaus ei liity tapahtumaan, valitse <em>Maksu ei liity tapahtumaan</em>.
-    choicesFrom:
-      dimension: event
+    dimension: event
 
   - slug: title
     type: SingleLineText

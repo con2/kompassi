@@ -23,7 +23,6 @@ graphql(`
   fragment ValueFields on DimensionValueType {
     slug
     color
-    isInitial
     isTechnical
     canRemove
     title(lang: $locale)
@@ -70,6 +69,7 @@ const query = graphql(`
           slug
           title(lang: $locale)
           canRemove
+          purpose
           languages {
             language
           }

@@ -12,6 +12,7 @@ from badges.models import BadgesEventMeta
 from core.models import Event, Organization, Person, Venue
 from forms.models.meta import FormsEventMeta
 from intra.models import IntraEventMeta, Team
+from involvement.models import Registry
 from labour.models import (
     AlternativeSignupForm,
     JobCategory,
@@ -19,7 +20,7 @@ from labour.models import (
     PersonnelClass,
 )
 from program_v2.models.meta import ProgramV2EventMeta
-from program_v2.workflow import ProgramOfferWorkflow
+from program_v2.workflows.program_offer import ProgramOfferWorkflow
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.optimized_server.models.enums import PaymentProvider
 
@@ -50,6 +51,7 @@ class Setup:
         self.setup_tickets_v2()
         self.setup_forms()
         self.delete_tickets_v1()
+        self.setup_etkot()
 
     def setup_core(self):
         self.venue, unused = Venue.objects.get_or_create(
@@ -94,7 +96,7 @@ class Setup:
             work_begins=(self.event.start_time - timedelta(days=2)).replace(hour=8, minute=0, tzinfo=self.tz),  # type: ignore
             work_ends=self.event.end_time.replace(hour=23, minute=0, tzinfo=self.tz),  # type: ignore
             admin_group=labour_admin_group,
-            contact_email="Ropecon 2025 vapaaehtoisvastaava <vapaaehtoiset@ropecon.fi>",
+            contact_email="Ropecon 2025 -vapaaehtoisvastaava <vapaaehtoiset@ropecon.fi>",
         )
 
         if self.test:
@@ -252,11 +254,16 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                contact_email="Ropecon 2025 -ohjelmatiimi <ohjelma@ropecon.fi>",
+                default_registry=Registry.objects.get(
+                    scope=self.organization.scope,
+                    slug="volunteers",
+                ),
             ),
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
-        ProgramOfferWorkflow.backfill_default_dimensions(self.event)
+        ProgramOfferWorkflow.backfill(self.event)
 
     def setup_forms(self):
         (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])
@@ -281,6 +288,56 @@ class Setup:
     def delete_tickets_v1(self):
         if self.event.tickets_event_meta is not None:
             self.event.tickets_event_meta.delete()
+
+    def setup_etkot(self):
+        venue, unused = Venue.objects.get_or_create(
+            name="Helsinki",
+            defaults=dict(
+                name_inessive="Helsingissä",
+            ),
+        )
+
+        event, unused = Event.objects.get_or_create(
+            slug="ropecon2025etkot",
+            defaults=dict(
+                name="Ropecon 2025 etkot",
+                name_genitive="Ropecon 2025 etkot -tapahtuman",
+                name_illative="Ropecon 2025 etkot -tapahtumaan",
+                name_inessive="Ropecon 2025 etkot -tapahtumassa",
+                homepage_url="https://ropecon.fi/ropecon-etkoviikko/",
+                organization=self.organization,
+                start_time=datetime(2025, 7, 20, 12, 0, tzinfo=self.tz),
+                end_time=datetime(2025, 7, 25, 15, 30, tzinfo=self.tz),
+                venue=venue,
+                public=False,
+            ),
+        )
+
+        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(event, ["admins"])
+        ProgramV2EventMeta.objects.update_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
+
+        (admin_group,) = FormsEventMeta.get_or_create_groups(event, ["admins"])
+        FormsEventMeta.objects.update_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
+
+        (admin_group,) = TicketsV2EventMeta.get_or_create_groups(event, ["admins"])
+        meta, _ = TicketsV2EventMeta.objects.update_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=admin_group,
+                provider_id=PaymentProvider.PAYTRAIL.value,
+            ),
+        )
+        meta.ensure_partitions()
 
 
 class Command(BaseCommand):

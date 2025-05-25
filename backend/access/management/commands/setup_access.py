@@ -42,11 +42,12 @@ class Command(BaseCommand):
             log_get_or_create(logger, slack_access, created)
 
         if settings.DEBUG:
-            mahti, _ = Person.get_or_create_dummy()
+            Person.get_or_create_dummy()
 
             # NOTE: claims={} effectively means "all privileges"
             entry, created = CBACEntry.objects.get_or_create(
-                user=mahti.user,
+                # ask Japsu why this is 1 and not a reference to the dummy user
+                user_id=1,
                 claims={},
                 defaults=dict(
                     valid_from=now(),

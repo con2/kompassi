@@ -1,5 +1,6 @@
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from enum import Enum
 from typing import Self
 
 from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
@@ -29,13 +30,19 @@ def parse_datetime(s: str) -> datetime:
     return ensure_aware(datetime.fromisoformat(s))
 
 
+class ProgramUserRelation(Enum):
+    FAVORITED = "FAVORITED"
+    # SIGNED_UP = "SIGNED_UP"
+    HOSTING = "HOSTING"
+
+
 @dataclass
 class ProgramFilters:
     slugs: list[str] | None = None
-    favorites_only: bool = False
     hide_past: bool = False
     updated_after: datetime | None = None
     dimension_filters: DimensionFilters = field(default_factory=DimensionFilters)
+    user_relation: ProgramUserRelation | None = None
 
     @classmethod
     def from_query_dict(
@@ -52,8 +59,12 @@ class ProgramFilters:
 
         # filter programs by slug (may be ?slug=a&slug=b or ?slug=a,b,c)
         slugs = filters.pop("slug", [])
-        favorites_only = any(v.lower() not in FALSY_VALUES for v in filters.pop("favorited", []))
         hide_past = all(v.lower() in FALSY_VALUES for v in filters.pop("past", []))
+
+        user_relations = [ProgramUserRelation(rel.upper()) for rel in filters.pop("relation", [])]
+        if len(user_relations) > 1:
+            raise ValueError("Only one user relation can be specified.")
+        user_relation = user_relations[0] if user_relations else None
 
         updated_after = (
             parse_datetime(updated_after_str)
@@ -65,7 +76,7 @@ class ProgramFilters:
         return cls(
             slugs=slugs,
             dimension_filters=DimensionFilters(filters=filters),
-            favorites_only=favorites_only,
+            user_relation=user_relation,
             hide_past=hide_past,
             updated_after=updated_after,
         )
@@ -74,13 +85,13 @@ class ProgramFilters:
     def from_graphql(
         cls,
         filters: list[DimensionFilterInput] | None,
-        favorites_only: bool = False,
         hide_past: bool = False,
+        user_relation: ProgramUserRelation | None = None,
         updated_after: datetime | None = None,
     ):
         return cls(
             dimension_filters=DimensionFilters.from_graphql(filters),  # type: ignore
-            favorites_only=favorites_only,
+            user_relation=user_relation,
             hide_past=hide_past,
             updated_after=ensure_aware(updated_after) if updated_after else None,
         )
@@ -94,11 +105,20 @@ class ProgramFilters:
         if self.slugs:
             programs = programs.filter(slug__in=self.slugs)
 
-        if self.favorites_only:
-            if user and user.is_authenticated:
-                programs = programs.filter(schedule_items__favorited_by=user)
+        if self.user_relation:
+            if user and user.is_authenticated and (person := user.person):  # type: ignore
+                match self.user_relation:
+                    case ProgramUserRelation.FAVORITED:
+                        programs = programs.filter(schedule_items__favorited_by=user)
+                    case ProgramUserRelation.HOSTING:
+                        programs = programs.filter(
+                            involvements__person=person,
+                            involvements__is_active=True,
+                        )
+                    case _:
+                        raise NotImplementedError(self.user_relation)
             else:
-                programs = programs.none()
+                return programs.none()
 
         programs = self.dimension_filters.filter(programs)
 
@@ -129,11 +149,20 @@ class ProgramFilters:
         if self.slugs:
             schedule_items = schedule_items.filter(slug__in=self.slugs)
 
-        if self.favorites_only:
-            if user and user.is_authenticated:
-                schedule_items = schedule_items.filter(favorited_by=user)
+        if self.user_relation:
+            if user and user.is_authenticated and (person := user.person):  # type: ignore
+                match self.user_relation:
+                    case ProgramUserRelation.FAVORITED:
+                        schedule_items = schedule_items.filter(favorited_by=user)
+                    case ProgramUserRelation.HOSTING:
+                        schedule_items = schedule_items.filter(
+                            program__involvements__person=person,
+                            program__involvements__is_active=True,
+                        )
+                    case _:
+                        raise NotImplementedError(self.user_relation)
             else:
-                schedule_items = schedule_items.none()
+                return schedule_items.none()
 
         # XXX have to implement DimensionFilters.filter ourselves due to indirect access
         # perhaps this will be fixed when dimensions are pushed to ScheduleItem level?
@@ -168,5 +197,21 @@ class ProgramFilters:
     def filter_program_offers(
         self,
         program_offers: models.QuerySet[Response],
+        user: AbstractBaseUser | AnonymousUser | None = None,
     ):
+        if self.slugs:
+            return program_offers.none()
+
+        if self.user_relation:
+            if user and user.is_authenticated:
+                match self.user_relation:
+                    case ProgramUserRelation.FAVORITED:
+                        program_offers = program_offers.none()
+                    case ProgramUserRelation.HOSTING:
+                        program_offers = program_offers.filter(created_by=user)
+                    case _:
+                        raise NotImplementedError(self.user_relation)
+            else:
+                return program_offers.none()
+
         return self.dimension_filters.filter(program_offers)

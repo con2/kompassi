@@ -67,6 +67,7 @@ class Command(BaseCommand):
             # must come before other setup_* commands because they may emit event log entries
             (("setup_event_log_v2",), dict()),
             (("setup_core",), dict()),
+            (("setup_involvement",), dict()),
             (("setup_labour_common_qualifications",), dict()),
             (("setup_api_v2",), dict()),
             (("setup_access",), dict()),
@@ -82,7 +83,7 @@ class Command(BaseCommand):
                 (("access_create_internal_aliases",), dict()),
                 (("access_create_missing_cbac_entries",), dict()),
                 (("access_prune_expired_cbac_entries",), dict()),
-                (("refresh_forms",), dict()),
+                (("forms_refresh_cached_fields",), dict()),
                 (("clearsessions",), dict()),
             )
         )

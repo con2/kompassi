@@ -29,6 +29,7 @@ from .constants import (
 )
 
 if TYPE_CHECKING:
+    from access.models.email_alias import EmailAlias
     from badges.models.badge import Badge
     from labour.models.qualifications import PersonQualification
 
@@ -138,6 +139,7 @@ class Person(models.Model):
 
     badges: models.QuerySet[Badge]
     qualifications: models.QuerySet[PersonQualification]  # XXX naming
+    email_aliases: models.QuerySet[EmailAlias]
     user_id: int
 
     class Meta:
@@ -241,14 +243,25 @@ class Person(models.Model):
             return self.first_name
 
     @classmethod
-    def get_or_create_dummy(cls, superuser=True):
+    def get_or_create_dummy(cls, superuser=True, another=False):
         User = get_user_model()
 
+        if another:
+            username = "another"
+            first_name = "Matti"
+            last_name = "Meikäläinen"
+            nick = "Masa666"
+        else:
+            username = "mahti"
+            first_name = "Markku"
+            last_name = "Mahtinen"
+            nick = "Mahti"
+
         user, unused = User.objects.get_or_create(
-            username="mahti",
+            username=username,
             defaults=dict(
-                first_name="Markku",
-                last_name="Mahtinen",
+                first_name=first_name,
+                last_name=last_name,
                 is_staff=superuser,
                 is_superuser=superuser,
             ),
@@ -263,9 +276,9 @@ class Person(models.Model):
             defaults=dict(
                 first_name=user.first_name,  # type: ignore
                 surname=user.last_name,  # type: ignore
-                nick="Mahti",
+                nick=nick,
                 birth_date=date(1984, 1, 1),
-                email="mahti@example.com",
+                email=f"{username}@example.com",
                 phone="+358 50 555 1234",
                 email_verified_at=now(),
             ),

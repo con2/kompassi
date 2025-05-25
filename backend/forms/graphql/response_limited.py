@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
-from core.graphql.user import LimitedUserType
+from core.graphql.user_limited import LimitedUserType
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.utils import resolve_local_datetime_field
 
@@ -17,24 +17,16 @@ class LimitedResponseType(DjangoObjectType):
         info,
         key_fields_only: bool = False,
     ):
-        fields = response.form.validated_fields
-
         if key_fields_only:
-            survey = response.form.survey
-            key_fields = survey.key_fields if survey else []
-            fields = [field for field in fields if field.slug in key_fields]
-
-        # TODO discards warnings :(
-        return response.get_processed_form_data(fields)[0]
+            return response.cached_key_fields
+        else:
+            # TODO discards warnings :(
+            return response.get_processed_form_data()[0]
 
     values = graphene.Field(
         GenericScalar,
         key_fields_only=graphene.Boolean(
-            description=(
-                "If the response is related to a survey, only return values of fields "
-                "marked key fields in the survey. Note that setting keyFieldsOnly for a "
-                "response not related to a survey will result in an empty dict."
-            ),
+            description="Only return values of fields marked key fields in the survey.",
         ),
     )
 

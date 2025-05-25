@@ -1,3 +1,5 @@
+from collections.abc import Collection
+
 from forms.models.field import Field, FieldType
 from forms.utils.process_form_data import process_form_data
 
@@ -5,7 +7,7 @@ from ..models.dimension import Dimension
 
 
 def process_dimensions_form(
-    dimensions: list[Dimension],
+    dimensions: Collection[Dimension],
     form_data: dict[str, str],
 ) -> dict[str, list[str]]:
     """
@@ -19,8 +21,8 @@ def process_dimensions_form(
     Returns:
         A dictionary containing the value slugs for each dimension present in dimensions.
     """
-    fields_single = [Field.from_dimension(dimension, FieldType.SINGLE_SELECT) for dimension in dimensions]
-    fields_multi = [Field.from_dimension(dimension, FieldType.MULTI_SELECT) for dimension in dimensions]
+    fields_single = [Field.from_dimension(dimension, FieldType.DIMENSION_SINGLE_SELECT) for dimension in dimensions]
+    fields_multi = [Field.from_dimension(dimension, FieldType.DIMENSION_MULTI_SELECT) for dimension in dimensions]
 
     values_single, warnings_single = process_form_data(fields_single, form_data)
     if warnings_single:

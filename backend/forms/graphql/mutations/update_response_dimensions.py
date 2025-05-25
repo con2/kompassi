@@ -1,4 +1,5 @@
 import graphene
+from django.db import transaction
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
@@ -38,7 +39,8 @@ class UpdateResponseDimensions(graphene.Mutation):
 
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
         response = survey.responses.get(id=input.response_id)
-        dimensions = list(survey.dimensions.all())
+
+        dimensions = list(survey.dimensions.filter(is_technical=False))
 
         graphql_check_instance(
             response,
@@ -49,6 +51,12 @@ class UpdateResponseDimensions(graphene.Mutation):
         )
 
         values = process_dimensions_form(dimensions, form_data)
-        response.set_dimension_values(values)
+        cache = survey.universe.preload_dimensions(dimension_slugs=values.keys())
+
+        with transaction.atomic():
+            response.set_dimension_values(values, cache=cache)
+            response.refresh_cached_fields()
+
+        survey.workflow.handle_response_dimension_update(response)
 
         return UpdateResponseDimensions(response=response)  # type: ignore

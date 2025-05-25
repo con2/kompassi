@@ -5,7 +5,6 @@
   choices:
     - slug: new
       color: blue
-      isInitial: true
       title:
         fi: Uusi
     - slug: accepted

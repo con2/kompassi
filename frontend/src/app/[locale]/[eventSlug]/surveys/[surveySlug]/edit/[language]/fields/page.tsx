@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 
 import SurveyEditorView from "../../SurveyEditorView";
-import { updateSurveyFields } from "./actions";
+import { promoteFieldToDimension, updateSurveyFields } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -16,6 +16,11 @@ graphql(`
     slug
     title(lang: $locale)
     canRemove
+    purpose
+
+    dimensions {
+      ...DimensionRowGroup
+    }
 
     form(lang: $language) {
       title
@@ -114,6 +119,7 @@ export default async function EditSurveyLanguagePage({ params }: Props) {
   const survey = data.event.forms.survey;
   const form = data.event.forms.survey.form;
   const activeTab = `fields-${language}`;
+  const dimensions = data.event.forms.survey.dimensions;
 
   validateFields(form.fields);
 
@@ -121,6 +127,7 @@ export default async function EditSurveyLanguagePage({ params }: Props) {
     <SurveyEditorView params={params} survey={survey} activeTab={activeTab}>
       <FormEditorWrapper
         initialFields={form.fields}
+        dimensions={dimensions}
         messages={{
           FormEditor: translations.FormEditor,
           SchemaForm: translations.SchemaForm,
@@ -130,6 +137,12 @@ export default async function EditSurveyLanguagePage({ params }: Props) {
           eventSlug,
           surveySlug,
           language,
+        )}
+        onPromoteFieldToDimension={promoteFieldToDimension.bind(
+          null,
+          locale,
+          eventSlug,
+          surveySlug,
         )}
       />
     </SurveyEditorView>

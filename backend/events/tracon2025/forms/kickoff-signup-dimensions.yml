@@ -10,14 +10,12 @@
         fi: Kick offiin
         sv: ""
       color: ""
-      is_initial: false
     - slug: pj
       title:
         en: Pikkujouluun
         fi: Pikkujouluun
         sv: ""
       color: ""
-      is_initial: false
   is_key_dimension: true
   is_multi_value: true
   isPublic: false
@@ -33,14 +31,13 @@
         fi: Voimassa
         sv: Voimassa
       color: aquamarine
-      is_initial: true
+
     - slug: cancelled
       title:
         en: Peruutettu
         fi: Peruutettu
         sv: Peruutettu
       color: crimson
-      is_initial: false
   is_key_dimension: true
   is_multi_value: false
   isPublic: true

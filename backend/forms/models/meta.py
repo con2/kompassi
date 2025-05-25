@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
+from typing import Self
 
 from core.models.event import Event
 from core.models.event_meta_base import EventMetaBase
@@ -14,6 +17,20 @@ class FormsEventMeta(EventMetaBase):
     """
 
     use_cbac = True
+
+    @classmethod
+    def get_or_create_dummy(cls, event: Event | None = None) -> tuple[Self, bool]:
+        if event is None:
+            event, _ = Event.get_or_create_dummy()
+
+        (admin_group,) = FormsEventMeta.get_or_create_groups(event, ["admins"])
+
+        return cls.objects.get_or_create(
+            event=event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
 
 
 @dataclass

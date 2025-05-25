@@ -273,7 +273,7 @@ class Setup:
             defaults=dict(
                 admin_group=badge_admin_group,
                 real_name_must_be_visible=True,
-                emperkelator_name="simple",
+                emperkelator_name="noop",
             ),
         )
 

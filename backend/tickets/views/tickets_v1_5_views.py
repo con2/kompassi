@@ -24,7 +24,7 @@ from ..helpers import (
 
 @tickets_event_required
 @require_http_methods(["GET", "HEAD", "POST"])
-@csp_update(FORM_ACTION=CHECKOUT_PAYMENT_WALL_ORIGIN)
+@csp_update({"form-action": [CHECKOUT_PAYMENT_WALL_ORIGIN]})  # type: ignore
 def tickets_view(request, event):
     order = get_order(request, event)
     if order.is_confirmed:
@@ -119,10 +119,7 @@ def tickets_confirmed_view(request, event, order):
                 if order.is_paid:
                     messages.error(
                         request,
-                        _(
-                            "The order is paid and cannot be canceled here. "
-                            "Please contact us if you need to cancel it."
-                        ),
+                        _("The order is paid and cannot be canceled here. Please contact us if you need to cancel it."),
                     )
                 else:
                     order.cancel(send_email=False)

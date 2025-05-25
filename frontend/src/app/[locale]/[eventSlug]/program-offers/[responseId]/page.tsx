@@ -6,13 +6,16 @@ import { acceptProgramOffer } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import AutoSubmitForm from "@/components/AutoSubmitForm";
-import { buildDimensionValueSelectionForm } from "@/components/dimensions/helpers";
-import { Dimension } from "@/components/dimensions/models";
+import DimensionValueSelectionForm, {
+  buildDimensionValueSelectionForm,
+} from "@/components/dimensions/DimensionValueSelectionForm";
+import {
+  Dimension,
+  validateCachedDimensions,
+} from "@/components/dimensions/models";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import SignInRequired from "@/components/SignInRequired";
@@ -36,6 +39,7 @@ graphql(`
       survey {
         title(lang: $locale)
         slug
+        cachedDefaultDimensions
       }
     }
     programs {
@@ -60,6 +64,7 @@ const query = graphql(`
           slug
           title(lang: $locale)
           isTechnical
+          isMultiValue
 
           values(lang: $locale) {
             slug
@@ -190,19 +195,15 @@ export default async function ProgramOfferPage({
     createdBy: formattedCreatedBy,
   };
 
+  validateCachedDimensions(programOffer.cachedDimensions);
   const dimensions: Dimension[] = data.event.program.dimensions;
+  const defaultDimensions =
+    programOffer.form.survey.cachedDefaultDimensions ?? {};
   const { fields: dimensionFields, values: dimensionValues } =
-    buildDimensionValueSelectionForm(
-      dimensions,
-      programOffer.cachedDimensions,
-      "editable",
-    );
-  const { fields: acceptDimensionFields, values: acceptDimensionValues } =
-    buildDimensionValueSelectionForm(
-      dimensions,
-      programOffer.cachedDimensions,
-      "omit",
-    );
+    buildDimensionValueSelectionForm(dimensions, {
+      ...defaultDimensions,
+      ...programOffer.cachedDimensions,
+    });
 
   const acceptProgramOfferFields: Field[] = [
     {
@@ -226,7 +227,7 @@ export default async function ProgramOfferPage({
         type: "StaticText",
         title: surveyT.attributes.dimensions,
       },
-      ...acceptDimensionFields,
+      ...dimensionFields,
     );
   }
 
@@ -236,7 +237,7 @@ export default async function ProgramOfferPage({
     slug: slugify(values.title || "") + uniquenessInsurance,
     title: values.title,
     description: values.description,
-    ...acceptDimensionValues,
+    ...dimensionValues,
   };
 
   const surveySlug = programOffer.form.survey!.slug;
@@ -295,25 +296,18 @@ export default async function ProgramOfferPage({
                   {surveyT.attributes.dimensions}
                 </h5>
                 {/* TODO improve feedback of successful save */}
-                <AutoSubmitForm
-                  action={updateResponseDimensions.bind(
+                <DimensionValueSelectionForm
+                  dimensions={dimensions}
+                  cachedDimensions={programOffer.cachedDimensions}
+                  translations={translations}
+                  technicalDimensions="readonly"
+                  onChange={updateResponseDimensions.bind(
                     null,
                     eventSlug,
                     surveySlug,
                     responseId,
                   )}
-                >
-                  <SchemaForm
-                    fields={dimensionFields}
-                    values={dimensionValues}
-                    messages={translations.SchemaForm}
-                  />
-                  <noscript>
-                    <SubmitButton>
-                      {surveyT.actions.saveDimensions}
-                    </SubmitButton>
-                  </noscript>
-                </AutoSubmitForm>
+                />
               </div>
             </div>
           </div>

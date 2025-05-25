@@ -4,6 +4,7 @@ from core.graphql.event_full import FullEventType
 from core.graphql.mutations.confirm_email import ConfirmEmail
 from core.graphql.profile import ProfileType
 from core.models import Event, Person
+from core.utils import normalize_whitespace
 from dimensions.graphql.mutations.delete_dimension import DeleteDimension
 from dimensions.graphql.mutations.delete_dimension_value import DeleteDimensionValue
 from dimensions.graphql.mutations.put_dimension import PutDimension
@@ -16,14 +17,23 @@ from forms.graphql.mutations.delete_survey_language import DeleteSurveyLanguage
 from forms.graphql.mutations.delete_survey_responses import DeleteSurveyResponses
 from forms.graphql.mutations.generate_key_pair import GenerateKeyPair
 from forms.graphql.mutations.init_file_upload import InitFileUpload
+from forms.graphql.mutations.promote_field_to_dimension import PromoteFieldToDimension
 from forms.graphql.mutations.revoke_key_pair import RevokeKeyPair
 from forms.graphql.mutations.subscriptions import SubscribeToSurveyResponses, UnsubscribeFromSurveyResponses
 from forms.graphql.mutations.update_form import UpdateForm
 from forms.graphql.mutations.update_form_fields import UpdateFormFields
 from forms.graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from forms.graphql.mutations.update_survey import UpdateSurvey
+from forms.graphql.mutations.update_survey_default_dimensions import UpdateSurveyDefaultDimensions
+from involvement.graphql.mutations.accept_invitation import AcceptInvitation
+from involvement.graphql.mutations.delete_invitation import DeleteInvitation
+from involvement.graphql.mutations.resend_invitation import ResendInvitation
+from involvement.graphql.registry_limited import LimitedRegistryType
+from involvement.models.registry import Registry
 from program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
+from program_v2.graphql.mutations.create_program import CreateProgram
 from program_v2.graphql.mutations.create_program_form import CreateProgramForm
+from program_v2.graphql.mutations.delete_program_host import DeleteProgramHost
 from program_v2.graphql.mutations.favorites import (
     MarkProgramAsFavorite,
     MarkScheduleItemAsFavorite,
@@ -31,7 +41,10 @@ from program_v2.graphql.mutations.favorites import (
     UnmarkScheduleItemAsFavorite,
 )
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
+from program_v2.graphql.mutations.invite_program_host import InviteProgramHost
 from program_v2.graphql.mutations.update_program import UpdateProgram
+from program_v2.graphql.mutations.update_program_annotations import UpdateProgramAnnotations
+from program_v2.graphql.mutations.update_program_dimensions import UpdateProgramDimensions
 from program_v2.graphql.mutations.update_program_form import UpdateProgramForm
 from tickets_v2.graphql.mutations.cancel_and_refund_order import CancelAndRefundOrder
 from tickets_v2.graphql.mutations.create_product import CreateProduct
@@ -82,6 +95,19 @@ class Query(graphene.ObjectType):
 
     profile = graphene.Field(ProfileType)
 
+    @staticmethod
+    def resolve_user_registry(root, info):
+        """
+        Returns the registry that hosts the personal data of
+        all users of Kompassi.
+        """
+        return Registry.get_user_registry()
+
+    user_registry = graphene.NonNull(
+        LimitedRegistryType,
+        description=normalize_whitespace(resolve_user_registry.__doc__ or ""),
+    )
+
 
 class Mutation(graphene.ObjectType):
     # Core
@@ -91,11 +117,13 @@ class Mutation(graphene.ObjectType):
     create_survey = CreateSurvey.Field()
     update_survey = UpdateSurvey.Field()
     delete_survey = DeleteSurvey.Field()
+    update_survey_default_dimensions = UpdateSurveyDefaultDimensions.Field()
 
     create_survey_language = CreateSurveyLanguage.Field()
     update_form = UpdateForm.Field()
     update_form_fields = UpdateFormFields.Field()
     delete_survey_language = DeleteSurveyLanguage.Field()
+    promote_field_to_dimension = PromoteFieldToDimension.Field()
 
     create_survey_response = CreateSurveyResponse.Field()
     update_response_dimensions = UpdateResponseDimensions.Field()
@@ -113,6 +141,11 @@ class Mutation(graphene.ObjectType):
     put_dimension_value = PutDimensionValue.Field()
     delete_dimension_value = DeleteDimensionValue.Field()
 
+    # Involvement
+    accept_invitation = AcceptInvitation.Field()
+    delete_invitation = DeleteInvitation.Field()
+    resend_invitation = ResendInvitation.Field()
+
     # Program v2
     mark_program_as_favorite = MarkProgramAsFavorite.Field()
     unmark_program_as_favorite = UnmarkProgramAsFavorite.Field()
@@ -127,8 +160,14 @@ class Mutation(graphene.ObjectType):
     create_program_form = CreateProgramForm.Field()
     update_program_form = UpdateProgramForm.Field()
 
+    create_program = CreateProgram.Field()
     accept_program_offer = AcceptProgramOffer.Field()
     update_program = UpdateProgram.Field()
+    update_program_annotations = UpdateProgramAnnotations.Field()
+    update_program_dimensions = UpdateProgramDimensions.Field()
+
+    invite_program_host = InviteProgramHost.Field()
+    delete_program_host = DeleteProgramHost.Field()
 
     # Tickets v2
     create_product = CreateProduct.Field()

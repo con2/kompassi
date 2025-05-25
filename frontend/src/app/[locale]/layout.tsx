@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import Navigation from "./Navigation";
+import Navigation from "../../components/navigation/Navigation";
 import { toSupportedLanguage } from "@/translations";
 
 import "./globals.scss";

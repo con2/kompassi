@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Collection, Mapping
+from collections.abc import Collection
 from typing import TYPE_CHECKING
 
 from django.db import models
@@ -10,12 +10,13 @@ from core.utils.model_utils import make_slug_field
 from .scope import Scope
 
 if TYPE_CHECKING:
+    from ..utils.dimension_cache import DimensionCache
     from .dimension import Dimension
-    from .dimension_value import DimensionValue
 
 APP_CHOICES = [
     ("forms", "Surveys V2"),
     ("program_v2", "Program V2"),
+    ("involvement", "Involvement"),
 ]
 
 
@@ -47,26 +48,24 @@ class Universe(models.Model):
         return f"{self.scope}/{self.slug} ({self.app})"
 
     @property
-    def survey(self):
-        if self.app != "forms":
-            return None
+    def surveys(self):
+        from forms.models.survey import Survey, SurveyApp
 
-        from forms.models.survey import Survey
+        match SurveyApp(self.app):
+            case SurveyApp.FORMS:
+                return Survey.objects.filter(event=self.scope.event, slug=self.slug, app="forms")
+            case SurveyApp.PROGRAM_V2:
+                return Survey.objects.filter(event=self.scope.event, app="program_v2")
+            case _:
+                raise ValueError(f"Unknown app type: {self.app}")
 
-        return Survey.objects.filter(
-            event=self.scope.event,
-            slug=self.slug,
-        ).first()
+    @property
+    def involvements(self):
+        from involvement.models.involvement import Involvement
 
-    def preload_dimensions(self, dimension_values: Mapping[str, Collection[str]] | None = None):
-        dimensions = self.dimensions.all().prefetch_related("values")
-        if dimension_values is not None:
-            dimensions = dimensions.filter(slug__in=dimension_values.keys())
+        return Involvement.objects.filter(event=self.scope.event)
 
-        dimensions_by_slug = {dimension.slug: dimension for dimension in dimensions}
+    def preload_dimensions(self, dimension_slugs: Collection[str] | None = None) -> DimensionCache:
+        from ..utils.dimension_cache import DimensionCache
 
-        values_by_dimension_by_slug: dict[str, dict[str, DimensionValue]] = {}
-        for dimension in dimensions_by_slug.values():
-            values_by_dimension_by_slug[dimension.slug] = {value.slug: value for value in dimension.values.all()}
-
-        return dimensions_by_slug, values_by_dimension_by_slug
+        return DimensionCache.from_universe(self, dimension_slugs=dimension_slugs)

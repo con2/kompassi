@@ -36,73 +36,8 @@ const translations: Translations = {
       false: "Nej",
     },
   },
-  Profile: {
-    attributes: {
-      displayName: {
-        title: "Namn",
-      },
-      email: {
-        title: "E-postadress",
-      },
-    },
-    keysView: UNTRANSLATED({
-      title: "Encryption keys",
-      description:
-        "In some cases, confidential data is encrypted in Kompassi using asymmetric encryption. " +
-        "If you need to be the recipient of such confidential information, you need to have a key pair. " +
-        "You can generate one below. " +
-        "Generating a key pair requires your password as the private key will be encrypted with it. " +
-        "In the future, we will allow advanced users to use keys stored on their own devices only, " +
-        "so that the private key never leaves the device.",
-      resetPasswordWarning: (
-        <>
-          <strong>Warning!</strong> If you forget your password and resert it,
-          you will lose your encryption keys and will no longer be able to
-          access data encrypted to them.
-        </>
-      ),
-      attributes: {
-        id: {
-          title: "Key ID",
-        },
-        createdAt: {
-          title: "Created at",
-        },
-        actions: {
-          title: "Actions",
-        },
-        password: {
-          title: "Password",
-          helpText: "Enter your password to encrypt the private key.",
-        },
-      },
-      actions: {
-        generate: {
-          title: "Generate key pair",
-          enterPassword: "Enter your password to encrypt the private key.",
-          modalActions: {
-            submit: "Generate",
-            cancel: "Cancel",
-          },
-        },
-        revoke: {
-          title: "Revoke key pair",
-          confirmation: (formattedCreatedAt: string) => (
-            <>
-              Are you sure you want to revoke the key pair that was created on{" "}
-              <strong>{formattedCreatedAt}</strong>? Once revoked, information
-              that was encrypted with the private key will no longer be
-              accessible. This action cannot be undone.
-            </>
-          ),
-          modalActions: {
-            submit: "Revoke",
-            cancel: "Cancel",
-          },
-        },
-      },
-    }),
-  },
+  Profile: UNTRANSLATED(en.Profile),
+  TransferConsentForm: UNTRANSLATED(en.TransferConsentForm),
   // Note that this also defines the type for the messages object that can be passed to the InterceptingRouteModal component
   Modal: {
     submit: "Skicka",
@@ -122,6 +57,7 @@ const translations: Translations = {
     tickets: "Biljetter",
     responses: "Enkätsvar",
     keys: UNSURE("Krypteringsnycklar"),
+    program: "Program",
     signIn: "Logga in",
     signOut: "Logga ut",
   },
@@ -175,51 +111,20 @@ const translations: Translations = {
       },
     },
 
-    editFieldForm: {
-      slug: {
-        title: "Tekniskt namn",
-        helpText: UNSURE(
-          "Maskinläsbart fältnamn. Giltiga tecken: bokstäverna A-Za-z, siffrorna 0-9, understreck _. Får inte börja med en siffra. Måste vara densamma i alla språkversioner.",
-        ),
-      },
-      title: {
-        title: "Titel",
-        helpText:
-          "Människligt läsbar fältetikett. Om den inte är inställd, används fältnamn som standard.",
-      },
-      helpText: {
-        title: "Hjälptext",
-        helpText: "Visas under fältet.",
-      },
-      required: {
-        title: "Obligatoriskt",
-      },
-      choices: UNTRANSLATED({
-        title: "Choices",
-        helpText:
-          'Each line should contain one choice in the form of "slug: Choice shown to the user".',
-      }),
-      questions: UNTRANSLATED({
-        title: "Questions",
-        helpText:
-          'Each line should contain one question in the form of "slug: Question shown to the user".',
-      }),
-      encryptTo: UNTRANSLATED({
-        title: "Encrypt to",
-        helpText:
-          "If you want to encrypt the responses to this field, enter the user names of users who should be able to decrypt the responses (one per line). These users must have a key pair generated in their profile.",
-      }),
-    },
+    editFieldForm: UNTRANSLATED(en.FormEditor.editFieldForm),
 
     fieldTypes: {
       SingleLineText: "Textfält med en rad",
-      MultiLineText: " Textfält med flera rader",
+      MultiLineText: "Textfält med flera rader",
       Divider: "Separatorlinje",
       StaticText: "Statisk text",
       Spacer: "Tomt utrymme",
       SingleCheckbox: "Enkel kryssruta",
+      DimensionSingleCheckbox: "Enkel kryssruta för en dimension",
       SingleSelect: "Listrutan (ett val)",
+      DimensionSingleSelect: "Listrutan (ett val från en dimension)",
       MultiSelect: "Listrutan (flera val)",
+      DimensionMultiSelect: "Listrutan (flera val från en dimension)",
       RadioMatrix: "Urvalsmatris",
       FileUpload: "Skicka fil",
       NumberField: "Nummer",
@@ -228,6 +133,7 @@ const translations: Translations = {
       DateTimeField: "Datum och tid",
       TimeField: "Tid",
     },
+    advancedFieldTypes: UNTRANSLATED(en.FormEditor.advancedFieldTypes),
 
     removeFieldModal: {
       title: "Bekräfta borttagning av fält",
@@ -840,12 +746,15 @@ const translations: Translations = {
     listTitle: "Program",
     adminListTitle: UNTRANSLATED("Program items"),
     singleTitle: "Program",
+    ownListTitle: "Mina program",
     inEvent: (eventName: string) => <>i {eventName}</>,
+    tableFooter: (numPrograms: number) => `${numPrograms} program.`,
     attributes: {
       slug: {
         title: "Tekniskt namn",
         helpText: UNTRANSLATED(en.Program.attributes.slug.helpText),
       },
+      event: "Evenemang",
       title: "Rubrik",
       actions: "Funktioner",
       description: "Beskrivning",
@@ -860,6 +769,7 @@ const translations: Translations = {
         title: "Programerbjudande",
         message: "Det här programmet har skapats från ett programerbjudande:",
       },
+      programHosts: UNTRANSLATED(en.Program.attributes.programHosts),
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -871,6 +781,7 @@ const translations: Translations = {
       signUpForThisProgram: "Anmäl dig till detta program",
       preview: UNTRANSLATED("Preview schedule"),
       preferences: UNTRANSLATED("Preferences"),
+      create: UNTRANSLATED(en.Program.actions.create),
     },
     favorites: {
       markAsFavorite: "Markera som favorit",
@@ -917,6 +828,7 @@ const translations: Translations = {
     }),
 
     adminDetailTabs: UNTRANSLATED(en.Program.adminDetailTabs),
+    profile: UNTRANSLATED(en.Program.profile),
     ProgramForm: UNTRANSLATED(en.Program.ProgramForm),
     ProgramOffer: UNTRANSLATED(en.Program.ProgramOffer),
     ProgramHost: UNTRANSLATED(en.Program.ProgramHost),
@@ -973,19 +885,6 @@ const translations: Translations = {
         Sammanfattning av {filteredCount} svar (totalt {totalCount}).
       </>
     ),
-    theseProfileFieldsWillBeShared: UNSURE(
-      "Då du skickar in denna enkät, kommer följande information att delas med enkätägaren:",
-    ),
-    correctInYourProfile: UNSURE((profileLink: string) => (
-      <>
-        Om dessa uppgifter inte är korrekta, vänligen korrigera dem i din{" "}
-        <a href={profileLink} target="_blank" rel="noopener noreferrer">
-          profil
-        </a>{" "}
-        (öppnas i ny flik).
-      </>
-    )),
-
     attributes: {
       slug: {
         title: "Tekniskt namn",
@@ -998,6 +897,9 @@ const translations: Translations = {
         untilTime: (formattedTime) => `Öppet till ${formattedTime}`,
         openingAt: (formattedTime) => `Öppnar vid ${formattedTime}`,
         closed: "Stängt",
+        adminOverride: UNTRANSLATED(
+          en.Survey.attributes.isActive.adminOverride,
+        ),
       },
       activeFrom: {
         title: "Öppet från",
@@ -1020,6 +922,8 @@ const translations: Translations = {
             SOFT: "Om du svarar på den här enkäten medan du är inloggad kommer den att kopplas till ditt användarkonto, så att du kan återvända för att se eller redigera dina svar, men din identitet kommer inte att delas med enkätägaren.",
             NAME_AND_EMAIL:
               "Om du svarar på den här enkäten medan du är inloggad kommer den att kopplas till ditt användarkonto. Ditt namn och e-postadress kommer att delas med enkätägaren. Du kan återvända för att se eller redigera dina svar.",
+            FULL_PROFILE:
+              "Om du svarar på den här enkäten medan du är inloggad kommer den att kopplas till ditt användarkonto. Din fullständiga profilinformation kommer att delas med enkätägaren. Du kan återvända för att se eller redigera dina svar.",
           },
         },
         thirdPerson: {
@@ -1029,12 +933,15 @@ const translations: Translations = {
             SOFT: "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto, så att de kan återvända för att se eller redigera sina svar, men deras identiteter kommer inte att delas med dig.",
             NAME_AND_EMAIL:
               "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto. Deras namn och e-postadresser kommer att delas med dig. De kan återvända för att se eller redigera sina svar.",
+            FULL_PROFILE:
+              "Om användaren svarar på den här enkäten medan hen är inloggad kommer deras svar att kopplas till deras användarkonto. Deras fullständiga profilinformation kommer att delas med dig. De kan återvända för att se eller redigera sina svar.",
           },
         },
         admin: UNTRANSLATED(en.Survey.attributes.anonymity.admin),
       },
       dimensions: "Dimensionerna",
       dimension: "Dimension",
+      dimensionDefaults: UNTRANSLATED(en.Survey.attributes.dimensionDefaults),
       values: "Värden",
       value: "Värde",
       sequenceNumber: "Sekvensnummer",
@@ -1166,6 +1073,7 @@ const translations: Translations = {
           cancel: "Avbryt",
         },
       },
+      editDimensions: "Ändra dimensioner och val",
       editDimension: "Ändra dimensionen",
       editDimensionValue: "Ändra val",
       editSurvey: "Ändra",
@@ -1193,6 +1101,7 @@ const translations: Translations = {
           countResponsesByCurrentUser === 1 ? "" : "en"
         } till denna undersökning. Det maximala antalet svar per användare är ${maxResponsesPerUser}.`,
     },
+    specialPurposeSurvey: UNTRANSLATED(en.Survey.specialPurposeSurvey),
     warnings: {
       choiceNotFound:
         "Valet hittades inte. Det kan ha tagits bort efter att detta svar skickades.",
@@ -1245,6 +1154,8 @@ const translations: Translations = {
       },
     },
   },
+
+  Invitation: UNTRANSLATED(en.Invitation),
 
   SignInRequired: {
     metadata: {

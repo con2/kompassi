@@ -14,7 +14,7 @@ from .email_verification_views import remind_email_verification_if_needed
 
 @sensitive_post_parameters("password")
 @require_http_methods(["GET", "POST"])
-@csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
+@csp_update({"form-action": settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS})
 def core_login_view(request):
     next = get_next(request, "core_frontpage_view")
     form = initialize_form(LoginForm, request, initial=dict(next=next))
@@ -67,7 +67,7 @@ def do_login(request, user, next="core_frontpage_view", backend=None):
 
 
 @require_http_methods(["GET", "HEAD", "POST"])
-@csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
+@csp_update({"form-action": settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS})
 def core_logout_view(request):
     next = get_next(request)
     logout(request)

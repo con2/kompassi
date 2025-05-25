@@ -4,6 +4,7 @@ from .models.form import Form
 from .models.response import Response
 from .models.response_dimension_value import ResponseDimensionValue
 from .models.survey import Survey
+from .models.survey_default_dimension_value import SurveyDefaultDimensionValue
 
 
 @admin.register(Form)
@@ -17,6 +18,7 @@ class FormAdmin(admin.ModelAdmin):
 class ResponseDimensionValueInline(admin.TabularInline):
     model = ResponseDimensionValue
     extra = 1
+    raw_id_fields = ("value",)
 
 
 @admin.register(Response)
@@ -43,9 +45,16 @@ class ResponseAdmin(admin.ModelAdmin):
         return False
 
 
+class SurveyDefaultDimensionValueInline(admin.TabularInline):
+    model = SurveyDefaultDimensionValue
+    extra = 1
+    raw_id_fields = ("value",)
+
+
 @admin.register(Survey)
 class SurveyAdmin(admin.ModelAdmin):
     model = Survey
+    inlines = (SurveyDefaultDimensionValueInline,)
     list_display = ("event", "slug", "admin_is_active")
     list_filter = ("event",)
     fields = (

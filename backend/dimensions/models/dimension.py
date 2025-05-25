@@ -111,12 +111,24 @@ class Dimension(models.Model):
         ),
     )
 
-    slug = make_slug_field(unique=False, separator="_", extra_validators=[invalid_slugs_validator])
+    slug = make_slug_field(unique=False, separator="-", extra_validators=[invalid_slugs_validator])
 
     # NOTE SUPPORTED_LANGUAGES
     title_en = models.TextField(blank=True, default="")
     title_fi = models.TextField(blank=True, default="")
     title_sv = models.TextField(blank=True, default="")
+
+    @property
+    def title_dict(self) -> dict[str, str]:
+        """
+        Returns a dictionary of titles in all supported languages.
+        """
+        return {
+            # NOTE SUPPORTED_LANGUAGES
+            "en": self.title_en,
+            "fi": self.title_fi,
+            "sv": self.title_sv,
+        }
 
     values: models.QuerySet[DimensionValue]
 
@@ -138,7 +150,7 @@ class Dimension(models.Model):
             case _:
                 raise NotImplementedError(self.value_ordering)
 
-    def get_values(self, language: str | None = None):
+    def get_values(self, language: str | None = None) -> models.QuerySet[DimensionValue]:
         """
         Use this method instead of self.values.all() when you want the values in the correct order.
         NOTE: If value_ordering is TITLE, you need to provide the language.

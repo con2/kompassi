@@ -45,7 +45,7 @@ class ContactEmailMixin:
         return alias.email_address
 
     @property
-    def cloaked_contact_email(self):
+    def cloaked_contact_email(self) -> str:
         match = self.match_contact_email()
         if match:
             return f"{match.group('name')} <{self.cloaked_plain_contact_email}>"

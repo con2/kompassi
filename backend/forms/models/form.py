@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from copy import deepcopy
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Self
 
@@ -52,6 +51,7 @@ class Form(models.Model):
     cached_enriched_fields = models.JSONField(default=list)
 
     # related fields
+    id: int
     responses: models.QuerySet[Response]
 
     class Meta:
@@ -79,6 +79,8 @@ class Form(models.Model):
         There is a chicken and egg problem with the enriched_fields property, mostly when
         Forms, Surveys and Dimensions are created programmatically (eg. in tests and setup scripts).
         If a `valueFrom` directive is used in a Field, the Form needs to belong to a Survey.
+
+        NOTE: You may not mutate this list.
         """
         if not self.cached_enriched_fields:
             self.refresh_enriched_fields()
@@ -113,29 +115,16 @@ class Form(models.Model):
         Some field types may contain server side directives that need to be resolved before
         turning the form specification over to the frontend.
         """
-        field = deepcopy(field)
 
-        if choices_from := field.get("choicesFrom"):
-            field["choices"] = []
-
-            if len(choices_from) != 1:
-                raise ValueError("choicesFrom must have exactly one key: value pair")
-
-            # TODO(#554) type=DimensionSingleSelect, DimensionMultiSelect, DimensionMatrix instead of choicesFrom: dimension: foo
-            ((source_type, source),) = choices_from.items()
-            if source_type == "dimension":
-                if survey := self.survey:
-                    dimension = survey.universe.dimensions.get(slug=source)
-                    field["choices"] = [
-                        choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)
-                    ]
-                else:
-                    raise ValueError("A form that is not used as a survey or program offer form cannot use valuesFrom")
-
-            else:
-                raise NotImplementedError(f"choicesFrom: {choices_from}")
-
-            del field["choicesFrom"]
+        # TODO(#643) subsetValues
+        if field.get("type") in ("DimensionSingleSelect", "DimensionMultiSelect") and (
+            dimension_slug := field.get("dimension")
+        ):
+            dimension = self.survey.universe.dimensions.get(slug=dimension_slug)
+            field = dict(
+                field,
+                choices=[choice.model_dump(by_alias=True) for choice in dimension.as_choices(self.language)],
+            )
 
         return field
 
@@ -160,3 +149,23 @@ class Form(models.Model):
         )
         form.save()
         return form
+
+    def replace_field(self, field_slug: str, field: Field):
+        """
+        Replace a field in the form with a new field.
+
+        :param field_slug: The slug of the field to replace. Separate from field to allow replacing a field with one that has a different slug.
+        :param field: The new field to replace the old one with.
+        :raises KeyError: If the field with the given slug is not found in the form.
+
+        NOTE: You are responsible for calling .save(["fields", "cached_enriched_fields"]) after this.
+        """
+        for i, f in enumerate(self.validated_fields):
+            if f.slug == field_slug:
+                self.fields[i] = field.model_dump(mode="json", by_alias=True, exclude_unset=True, exclude_none=True)
+                break
+        else:
+            raise KeyError(f"Field {field.slug} not found in form {self}")
+
+        self.cached_enriched_fields = self._build_enriched_fields()
+        del self.validated_fields

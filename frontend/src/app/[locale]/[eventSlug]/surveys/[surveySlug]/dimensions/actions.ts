@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
+import { forceSlug } from "@/helpers/forceSlug";
 
 const putDimensionMutation = graphql(`
   mutation PutSurveyDimension($input: PutDimensionInput!) {
@@ -27,7 +28,7 @@ export async function createDimension(
       input: {
         scopeSlug,
         universeSlug,
-        formData: Object.fromEntries(formData),
+        formData: forceSlug(Object.fromEntries(formData)),
       },
     },
   });
@@ -50,7 +51,7 @@ export async function updateDimension(
         scopeSlug,
         universeSlug,
         dimensionSlug,
-        formData: Object.fromEntries(formData),
+        formData: forceSlug(Object.fromEntries(formData)),
       },
     },
   });
@@ -65,6 +66,7 @@ export async function reorderDimensions(
   universeSlug: string,
   dimensionSlugs: string[],
 ) {
+  // TODO(#565)
   console.log("reorderDimensions", scopeSlug, universeSlug, dimensionSlugs);
 }
 
@@ -121,7 +123,7 @@ export async function createDimensionValue(
         scopeSlug,
         universeSlug,
         dimensionSlug,
-        formData: Object.fromEntries(formData),
+        formData: forceSlug(Object.fromEntries(formData)),
       },
     },
   });
@@ -146,7 +148,7 @@ export async function updateDimensionValue(
         universeSlug,
         dimensionSlug,
         valueSlug,
-        formData: Object.fromEntries(formData),
+        formData: forceSlug(Object.fromEntries(formData)),
       },
     },
   });
@@ -193,6 +195,7 @@ export async function reorderDimensionValues(
   dimensionSlug: string,
   valueSlugs: string[],
 ) {
+  // TODO(#565)
   console.log(
     "reorderDimensionValues",
     scopeSlug,
