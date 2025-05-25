@@ -7,6 +7,7 @@ from django.utils.timezone import now
 
 from forms.models.meta import FormsEventMeta
 from forms.models.survey import SurveyDTO
+from program_v2.models.meta import ProgramV2EventMeta
 
 
 class Setup:
@@ -26,6 +27,7 @@ class Setup:
         self.setup_intra()
         self.setup_access()
         self.setup_forms()
+        self.setup_program_v2()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -89,7 +91,7 @@ class Setup:
         for pc_name, pc_slug, pc_app_label in [
             ("Vastaava", "vastaava", "labour"),
             ("Vapaaehtoinen", "vapaaehtoinen", "labour"),
-            ("Ohjelmanjärjestäjä", "ohjelma", "programme"),
+            ("Ohjelmanjärjestäjä", "ohjelma", "program_v2"),
         ]:
             personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
@@ -290,6 +292,14 @@ class Setup:
         ]:
             survey.save(self.event)
 
+    def setup_program_v2(self):
+        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
+        ProgramV2EventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
 
 class Command(BaseCommand):
     args = ""
