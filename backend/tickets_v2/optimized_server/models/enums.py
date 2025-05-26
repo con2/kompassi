@@ -6,6 +6,8 @@ class PaymentProvider(IntEnum):
     PAYTRAIL = 1
     STRIPE = 2
 
+    MANUAL = 9999
+
 
 class PaymentStampType(IntEnum):
     ZERO_PRICE = 0

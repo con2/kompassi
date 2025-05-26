@@ -123,6 +123,7 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
 
     @cached_property
     def provider(self):
+        from ..providers.manual import MANUAL_PROVIDER
         from ..providers.null import NULL_PROVIDER
         from ..providers.paytrail import PAYTRAIL_PROVIDER
 
@@ -131,6 +132,8 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
                 return NULL_PROVIDER
             case PaymentProvider.PAYTRAIL:
                 return PAYTRAIL_PROVIDER
+            case PaymentProvider.MANUAL:
+                return MANUAL_PROVIDER
             case _:
                 raise NotImplementedError(f"Unsupported provider_id: {self.provider_id}")
 
