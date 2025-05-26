@@ -67,7 +67,10 @@ export function getProductEntries(
     .filter(([key]) => key.startsWith("quantity-"))
     .map(
       ([key, value]) =>
-        [key.replace("quantity-", ""), parseInt(value as string, 10)] as const,
+        [
+          key.replace("quantity-", ""),
+          !value ? 0 : parseInt(value as string, 10),
+        ] as const,
     )
     .filter(([_, quantity]) => quantity > 0);
 }
