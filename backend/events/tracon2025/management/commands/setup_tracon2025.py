@@ -465,6 +465,8 @@ class Setup:
                             en="Days",
                         ),
                         value_ordering=ValueOrdering.MANUAL,
+                        is_key_dimension=True,
+                        is_multi_value=True,
                         choices=[
                             DimensionValueDTO(slug="friday", title=dict(fi="perjantai", en="Friday")),
                             DimensionValueDTO(slug="saturday", title=dict(fi="lauantai", en="Saturday")),
@@ -478,6 +480,7 @@ class Setup:
                             en="Table number",
                         ),
                         value_ordering=ValueOrdering.MANUAL,
+                        is_key_dimension=True,
                         choices=[
                             DimensionValueDTO(
                                 slug=f"{location_character}{i}",
