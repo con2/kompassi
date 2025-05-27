@@ -64,6 +64,7 @@ class CreateSurvey(graphene.Mutation):
                 anonymity=anonymity,
                 app=app,
                 created_by=request.user,  # type: ignore
+                purpose=SurveyPurpose.DEFAULT,
             )
         else:
             survey = Survey(
