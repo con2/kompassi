@@ -11,11 +11,11 @@ from django.utils.translation import get_language
 
 from access.cbac import is_graphql_allowed_for_model
 from core.utils.model_utils import make_slug_field
-from graphql_api.language import SUPPORTED_LANGUAGE_CODES, getattr_message_in_language
+from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES, getattr_message_in_language
 
+from .enums import ValueOrdering
 from .scope import Scope
 from .universe import Universe
-from .value_ordering import ValueOrdering
 
 if TYPE_CHECKING:
     from forms.models.field import Choice
@@ -175,9 +175,12 @@ class Dimension(models.Model):
             for slug, *localized_titles in self.get_values(language).values_list("slug", *title_fields)
         ]
 
+    def get_title(self, lang: str = DEFAULT_LANGUAGE) -> str:
+        return getattr_message_in_language(self, "title", lang)
+
     @admin.display(description="Title")
     def admin_get_title(self):
-        return getattr_message_in_language(self, "title", get_language())
+        return self.get_title(get_language())
 
     @admin.display(description="Scope", ordering="universe__scope__slug")
     def admin_get_scope(self):

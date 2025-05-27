@@ -1,6 +1,6 @@
-from dataclasses import dataclass, field
 from typing import Self, TypeVar
 
+import pydantic
 from django.db import models
 from django.http import QueryDict
 
@@ -9,9 +9,8 @@ from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 T = TypeVar("T", bound=models.Model)
 
 
-@dataclass
-class DimensionFilters:
-    filters: dict[str, list[str]] = field(default_factory=dict)
+class DimensionFilters(pydantic.BaseModel):
+    filters: dict[str, list[str]] = pydantic.Field(default_factory=dict)
 
     @classmethod
     def from_query_dict(

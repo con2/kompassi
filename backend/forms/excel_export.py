@@ -9,6 +9,7 @@ from django.utils.timezone import localtime
 from dimensions.models.dimension import Dimension
 
 from .models.field import Field, FieldType
+from .models.projection import Projection
 from .models.response import Response
 from .utils.process_form_data import FieldWarning
 from .utils.s3_presign import satanize_presigned_url
@@ -99,5 +100,32 @@ def write_responses_as_excel(
         response_row.extend(", ".join(response.cached_dimensions.get(dimension.slug, [])) for dimension in dimensions)
         response_row.extend(cell for field in fields for cell in get_response_cells(field, values, warnings))
         output.writerow(response_row)
+
+    output.close()
+
+
+def write_projection_as_excel(
+    projection: Projection,
+    projected: list[dict[str, Any]],
+    output_stream: BinaryIO | HttpResponse,
+):
+    from core.excel_export import XlsxWriter
+
+    output = XlsxWriter(output_stream)
+
+    validated = projection.validated_fields
+
+    header_row = [splat.target_field for splat in validated.splats]
+    for field_name in validated.projected_dimensions:
+        header_row.append(field_name)
+        header_row.append(projection.get_formatted_field_name(field_name))
+    output.writerow(header_row)
+
+    for item in projected:
+        item_row = [item[splat.target_field] for splat in validated.splats]
+        for field_name in validated.projected_dimensions:
+            item_row.append(item[field_name])
+            item_row.append(item[projection.get_formatted_field_name(field_name)])
+        output.writerow(item_row)
 
     output.close()

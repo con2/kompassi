@@ -15,6 +15,7 @@ from .graphql.mutations.update_response_dimensions import UpdateResponseDimensio
 from .models.field import Choice, Field, FieldType
 from .models.form import Form
 from .models.response import Response
+from .models.splat import Splat
 from .models.survey import Survey
 from .utils.merge_form_fields import _merge_fields, merge_choices
 from .utils.process_form_data import FieldWarning, process_form_data
@@ -1034,3 +1035,36 @@ def test_promote_single_checkbox():
     assert false_value.slug == "false"
     assert false_value.title_en == "No"
     assert false_value.title_fi == "Ei"
+
+
+def test_splat():
+    schema_json = [
+        {
+            "targetField": "name",
+            "sourceFields": ["name1", "name2", "name3"],
+            "required": True,
+        },
+        {
+            "targetField": "email",
+            "sourceFields": ["email1", "email2", "email3"],
+            "required": False,
+        },
+    ]
+
+    schema = [Splat.model_validate(item) for item in schema_json]
+
+    values = {
+        "name1": "Alice",
+        "email1": "alice@example.com",
+        "name2": "Bob",
+        "email2": "",
+        "name3": "",
+        "email3": "carol@example.com",
+    }
+
+    actual = list(Splat.project(schema, values))
+    expected = [
+        {"name": "Alice", "email": "alice@example.com"},
+        {"name": "Bob", "email": ""},
+    ]
+    assert actual == expected

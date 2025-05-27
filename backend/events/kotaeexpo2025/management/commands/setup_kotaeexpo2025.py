@@ -11,6 +11,7 @@ from badges.models import BadgesEventMeta
 from forms.models.meta import FormsEventMeta
 from forms.models.survey import SurveyDTO
 from intra.models import IntraEventMeta, Team
+from involvement.models.registry import Registry
 from labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Survey
 from program_v2.models.meta import ProgramV2EventMeta
 from program_v2.workflows.program_offer import ProgramOfferWorkflow
@@ -290,10 +291,22 @@ class Setup:
 
     def setup_program_v2(self):
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
+
+        # TODO(Kotae Expo): Define your volunteer registry
+        registry, _created = Registry.objects.get_or_create(
+            scope=self.organization.scope,
+            slug="volunteers",
+            defaults=dict(
+                title_fi="Kotae ry:n vapaaehtoisrekisteri",
+                title_en="Volunteers of Kotae ry",
+            ),
+        )
+
         ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                default_registry=registry,
             ),
         )
 

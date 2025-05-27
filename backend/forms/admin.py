@@ -1,6 +1,7 @@
 from django.contrib import admin
 
 from .models.form import Form
+from .models.projection import Projection
 from .models.response import Response
 from .models.response_dimension_value import ResponseDimensionValue
 from .models.survey import Survey
@@ -67,3 +68,11 @@ class SurveyAdmin(admin.ModelAdmin):
         "active_until",
         "key_fields",
     )
+
+
+@admin.register(Projection)
+class ProjectionAdmin(admin.ModelAdmin):
+    model = Projection
+    list_display = ("scope", "slug", "is_public")
+    list_filter = ("scope",)
+    raw_id_fields = ("surveys",)

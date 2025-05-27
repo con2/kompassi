@@ -8,8 +8,8 @@ import pydantic
 from .dimension import Dimension
 from .dimension_value import DimensionValue
 from .dimension_value_dto import DimensionValueDTO
+from .enums import ValueOrdering
 from .universe import Universe
-from .value_ordering import ValueOrdering
 
 logger = logging.getLogger("kompassi")
 
@@ -32,8 +32,17 @@ class DimensionDTO(pydantic.BaseModel):
 
     choices: list[DimensionValueDTO] | None = pydantic.Field(default=None)
 
-    def save(self, universe: Universe):
-        return DimensionDTO.save_many(universe, [self], remove_others=False)[0]
+    def save(
+        self,
+        universe: Universe,
+        remove_other_values=False,
+    ):
+        return DimensionDTO.save_many(
+            universe=universe,
+            dimension_dtos=[self],
+            remove_others=False,
+            remove_other_values=remove_other_values,
+        )[0]
 
     @classmethod
     def save_many(

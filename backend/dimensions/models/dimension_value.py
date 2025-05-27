@@ -7,6 +7,7 @@ from django.http import HttpRequest
 
 from access.cbac import is_graphql_allowed_for_model
 from core.utils.model_utils import make_slug_field
+from graphql_api.language import DEFAULT_LANGUAGE, getattr_message_in_language
 
 from .dimension import Dimension
 from .scope import Scope
@@ -47,6 +48,9 @@ class DimensionValue(models.Model):
             "fi": self.title_fi,
             "sv": self.title_sv,
         }
+
+    def get_title(self, lang: str = DEFAULT_LANGUAGE) -> str:
+        return getattr_message_in_language(self, "title", lang)
 
     def __str__(self):
         return self.slug

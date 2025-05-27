@@ -18,7 +18,12 @@ from core.models.event import Event
 from core.models.organization import Organization
 from core.models.person import Person
 from core.models.venue import Venue
+from dimensions.models.dimension_dto import DimensionDTO
+from dimensions.models.dimension_value_dto import DimensionValueDTO
+from dimensions.models.enums import ValueOrdering
 from forms.models.meta import FormsEventMeta
+from forms.models.projection import Projection
+from forms.models.splat import Splat
 from forms.models.survey import Survey, SurveyDTO
 from intra.models import IntraEventMeta, Team
 from involvement.models.registry import Registry
@@ -448,6 +453,88 @@ class Setup:
                             annotations={"tracon2025:formattedPerks": ticket_type.title_fi},
                         ),
                     )
+
+            # fix order
+            DimensionDTO.save_many(
+                survey.universe,
+                [
+                    DimensionDTO(
+                        slug="days",
+                        title=dict(
+                            fi="Päivät",
+                            en="Days",
+                        ),
+                        value_ordering=ValueOrdering.MANUAL,
+                        choices=[
+                            DimensionValueDTO(slug="friday", title=dict(fi="perjantai", en="Friday")),
+                            DimensionValueDTO(slug="saturday", title=dict(fi="lauantai", en="Saturday")),
+                            DimensionValueDTO(slug="sunday", title=dict(fi="sunnuntai", en="Sunday")),
+                        ],
+                    ),
+                    DimensionDTO(
+                        slug="table-number",
+                        title=dict(
+                            fi="Pöytänumero",
+                            en="Table number",
+                        ),
+                        value_ordering=ValueOrdering.MANUAL,
+                        choices=[
+                            DimensionValueDTO(
+                                slug=f"{location_character}{i}",
+                                color=location_color,
+                                title=dict(
+                                    fi=f"{location_fi}, pöytä {i}",
+                                    en=f"{location_en}, table {i}",
+                                ),
+                            )
+                            for location_character, location_color, location_fi, location_en in [
+                                ("T", "SkyBlue", "Taidekuja", "Artist Alley"),
+                                ("P", "SpringGreen", "Taidepolku", "Art Trail"),
+                            ]
+                            for i in range(1, 41)
+                        ],
+                    ),
+                ],
+            )
+
+            splats = [
+                Splat(
+                    target_field="name",
+                    source_fields=["artist_name1", "artist_name2", "artist_name3"],
+                    required=True,
+                ),
+                Splat(
+                    target_field="website",
+                    source_fields=["artist_site1", "artist_site2", "artist_site3"],
+                    required=False,
+                ),
+                Splat(
+                    target_field="avatar",
+                    source_fields=["fixed_artist_avatar1", "fixed_artist_avatar2", "fixed_artist_avatar3"],
+                    required=False,
+                ),
+            ]
+
+            projection, _created = Projection.objects.update_or_create(
+                scope=survey.scope,
+                slug="artist-alley",
+                defaults=dict(
+                    is_public=True,
+                    # cache_seconds=0 if settings.DEBUG else 300,
+                    default_language_code="fi",
+                    splats=[splat.model_dump(mode="json", by_alias=True) for splat in splats],
+                    required_dimensions=dict(status=["accepted"]),
+                    filterable_dimensions=["days", "location"],
+                    projected_dimensions=dict(
+                        tableNumber="table-number",
+                        days="days",
+                        location="location",
+                    ),
+                    order_by=["tableNumber", "name"],
+                ),
+            )
+
+            projection.surveys.set([survey])
 
     def setup_tickets_v2(self):
         if self.dev_tickets:
