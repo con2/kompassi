@@ -75,6 +75,8 @@ const query = graphql(`
       slug
       name
       program {
+        programOffersExcelExportLink
+
         listFilters: dimensions(isListFilter: true, publicOnly: false) {
           ...ProgramOfferDimension
         }
@@ -296,6 +298,9 @@ export default async function ProgramOffersPage({
 
   const programOffers = data.event.program.programOffers;
   const listFilters = data.event.program.listFilters;
+  const excelExportLink = data.event.program.programOffersExcelExportLink
+    ? `${data.event.program.programOffersExcelExportLink}?${queryString}`
+    : null;
 
   // TODO ProgramAdminView
   return (
@@ -304,6 +309,13 @@ export default async function ProgramOffersPage({
       event={data.event}
       active="programOffers"
       queryString={queryString}
+      actions={
+        excelExportLink && (
+          <a href={excelExportLink} className="btn btn-outline-primary">
+            {surveyT.actions.exportDropdown.excel}
+          </a>
+        )
+      }
     >
       <DimensionFilters
         dimensions={listFilters}

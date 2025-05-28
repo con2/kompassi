@@ -168,9 +168,12 @@ class ProgramV2EventMetaType(DjangoObjectType):
         """
         Returns a link to the calendar export view for the event.
         The calendar export view accepts the following GET parameters, all optional:
+
         `favorited` - set to a truthy value to receive only favorites,
         `slug` - include only these programmes (can be multi-valued or separated by commas),
         `language` - the language to use when resolving dimensions.
+
+        Further GET parameters are used to filter by dimensions.
         """
         request: HttpRequest = info.context
         return request.build_absolute_uri(
@@ -180,6 +183,29 @@ class ProgramV2EventMetaType(DjangoObjectType):
     calendar_export_link = graphene.NonNull(
         graphene.String,
         description=normalize_whitespace(resolve_calendar_export_link.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_program_offers_excel_export_link(meta: ProgramV2EventMeta, info):
+        """
+        Returns a link to the the program offers Excel export view for the event.
+        The program offers Excel export view returns all or filtered program offers
+        in an Excel file, grouped into worksheets by the program form.
+
+        `favorited` - set to a truthy value to receive only favorites,
+        `slug` - include only these programmes (can be multi-valued or separated by commas),
+        `language` - the language to use when resolving dimensions.
+
+        Further GET parameters are used to filter by dimensions.
+        """
+        request: HttpRequest = info.context
+        return request.build_absolute_uri(
+            reverse("program_v2:program_offers_excel_export_view", kwargs={"event_slug": meta.event.slug})
+        )
+
+    program_offers_excel_export_link = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_program_offers_excel_export_link.__doc__ or ""),
     )
 
     @staticmethod
