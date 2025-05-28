@@ -236,6 +236,7 @@ class Projection(models.Model):
 
         item_dimensions: dict[str, Any] = {}
         for target_field_name, dimension_slug in validated.projected_dimensions.items():
+            formatted_field_name = self.get_formatted_field_name(target_field_name)
             dimension = cache.dimensions[dimension_slug]
             dimension_values = response.cached_dimensions.get(dimension_slug, [])
 
@@ -244,6 +245,7 @@ class Projection(models.Model):
             else:
                 if not dimension_values:
                     item_dimensions[target_field_name] = ""
+                    item_dimensions[formatted_field_name] = ""
                     continue
                 elif len(dimension_values) > 1:
                     logger.warning(
@@ -263,7 +265,6 @@ class Projection(models.Model):
             formatted_dimension_values = ", ".join(
                 cache.values_by_dimension[dimension_slug][value_slug].get_title(lang) for value_slug in dimension_values
             )
-            formatted_field_name = self.get_formatted_field_name(target_field_name)
             item_dimensions[formatted_field_name] = formatted_dimension_values
 
         for splat in validated.splats:
