@@ -1,16 +1,51 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from typing import Self
 
 import pydantic
 
+from core.models.person import Person
 from forms.models.enums import Anonymity
+
+
+class Profile(pydantic.BaseModel, populate_by_name=True, frozen=True):
+    """
+    Represents a user profile with fields that can be selected for transfer.
+    NOTE: Must match Profile in frontend/src/components/involvement/models.ts.
+    """
+
+    first_name: str = pydantic.Field(
+        default="",
+        validation_alias="firstName",
+        serialization_alias="firstName",
+    )
+    last_name: str = pydantic.Field(
+        default="",
+        validation_alias="lastName",
+        serialization_alias="lastName",
+    )
+    nick: str = pydantic.Field(default="")
+    email: str = pydantic.Field(default="")
+    phone_number: str = pydantic.Field(
+        default="",
+        validation_alias="phoneNumber",
+        serialization_alias="phoneNumber",
+    )
+    discord_handle: str = pydantic.Field(
+        default="",
+        validation_alias="discordHandle",
+        serialization_alias="discordHandle",
+    )
 
 
 class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=True):
     """
     Used to determine which profile fields are transferred from registry to another.
     NOTE: Must match ProfileFieldSelector in frontend/src/components/involvement/models.ts.
+
+    For "no fields selected", use the default constructor.
+    For "all fields selected", use `ProfileFieldSelector.all_fields()`.
     """
 
     first_name: bool = pydantic.Field(
@@ -35,6 +70,34 @@ class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=Tru
         validation_alias="discordHandle",
         serialization_alias="discordHandle",
     )
+
+    def __iter__(self) -> Iterator[str]:
+        """
+        Iterate over field names that are selected (True).
+        """
+        for field_name, is_included in super().__iter__():
+            if is_included:
+                yield field_name
+
+    def __bool__(self) -> bool:
+        """
+        Returns True iff any field is selected.
+        """
+        return any(self)
+
+    def select(self, person: Person) -> Profile:
+        """
+        Selects the fields from the given Person based on this selector.
+        Returns a Profile with only the selected fields populated.
+        """
+        return Profile(
+            first_name=person.first_name if self.first_name else "",
+            last_name=person.surname if self.last_name else "",
+            nick=person.nick if self.nick else "",
+            email=person.email if self.email else "",
+            phone_number=person.normalized_phone_number if self.phone_number else "",
+            discord_handle=person.discord_handle if self.discord_handle else "",
+        )
 
     @classmethod
     def all_fields(cls) -> Self:

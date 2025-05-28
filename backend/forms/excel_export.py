@@ -2,15 +2,16 @@ import logging
 from collections.abc import Iterable, Sequence
 from typing import Any, BinaryIO
 
-from django.db import models
 from django.http import HttpResponse
 from django.utils.timezone import localtime
 
+from core.excel_export import XlsxWriter
 from dimensions.models.dimension import Dimension
 
 from .models.field import Field, FieldType
 from .models.projection import Projection
 from .models.response import Response
+from .models.survey import Survey
 from .utils.process_form_data import FieldWarning
 from .utils.s3_presign import satanize_presigned_url
 
@@ -76,16 +77,23 @@ def get_response_cells(
 
 
 def write_responses_as_excel(
+    survey: Survey,
     dimensions: Iterable[Dimension],
     fields: Sequence[Field],
-    responses: models.QuerySet[Response],
-    output_stream: BinaryIO | HttpResponse,
+    responses: Iterable[Response],
+    output_stream: BinaryIO | HttpResponse | XlsxWriter,
 ):
-    from core.excel_export import XlsxWriter
+    if isinstance(output_stream, XlsxWriter):
+        output = output_stream
+    else:
+        output = XlsxWriter(output_stream)
 
-    output = XlsxWriter(output_stream)
+    header_row = ["response.created_at", "response.language"]
+    profile_field_selector = survey.profile_field_selector
 
-    header_row = ["created_at", "language"]
+    for profile_field_slug in profile_field_selector:
+        header_row.append(f"profile.{profile_field_slug}")
+
     header_row.extend(f"dimensions.{dimension.slug}" for dimension in dimensions)
     header_row.extend(cell for field in fields for cell in get_header_cells(field))
     output.writerow(header_row)
@@ -97,11 +105,21 @@ def write_responses_as_excel(
             localtime(response.created_at).replace(tzinfo=None),
             response.form.language,
         ]
+
+        if response.created_by and (person := response.created_by.person):
+            profile = profile_field_selector.select(person)
+            response_row.extend(getattr(profile, field_slug) for field_slug in survey.profile_field_selector)
+        else:
+            response_row.extend("" for _ in survey.profile_field_selector)
+
         response_row.extend(", ".join(response.cached_dimensions.get(dimension.slug, [])) for dimension in dimensions)
         response_row.extend(cell for field in fields for cell in get_response_cells(field, values, warnings))
         output.writerow(response_row)
 
-    output.close()
+    if output is not output_stream:
+        # If we created a new XlsxWriter instance, we need to close it.
+        # If the caller passed an existing XlsxWriter instance, we assume they will handle closing it.
+        output.close()
 
 
 def write_projection_as_excel(

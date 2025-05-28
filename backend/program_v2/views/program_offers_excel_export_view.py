@@ -5,6 +5,7 @@ from django.utils.timezone import now
 from access.cbac import graphql_check_instance
 from core.models import Event
 from dimensions.filters import DimensionFilters
+from event_log_v2.utils.emit import emit
 
 from ..excel_export import write_program_offers_as_excel
 
@@ -30,6 +31,8 @@ def program_offers_excel_export_view(
         field="program_offers",
         operation="query",
     )
+
+    emit("core.person.exported", request=request)
 
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'

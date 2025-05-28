@@ -9,6 +9,7 @@ from django.utils.timezone import now
 from access.cbac import graphql_check_instance
 from dimensions.filters import DimensionFilters
 from dimensions.models.scope import Scope
+from event_log_v2.utils.emit import emit
 
 from ..excel_export import write_responses_as_excel
 from ..models.survey import Survey
@@ -38,6 +39,9 @@ def forms_survey_zip_export_view(
         field="responses",
         operation="query",
     )
+
+    if survey.profile_field_selector:
+        emit("core.person.exported", request=request)
 
     responses = DimensionFilters.from_query_dict(request.GET).filter(survey.responses.all())
 
