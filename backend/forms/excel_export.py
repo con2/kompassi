@@ -24,7 +24,7 @@ def get_header_cells(field: Field) -> list[str]:
         case FieldType.STATIC_TEXT | FieldType.DIVIDER | FieldType.SPACER:
             pass
 
-        case FieldType.MULTI_SELECT:
+        case FieldType.MULTI_SELECT | FieldType.DIMENSION_MULTI_SELECT:
             choices = field.choices or []
             header_cells.extend(f"{field.slug}.{choice.slug}" for choice in choices)
 
@@ -49,7 +49,7 @@ def get_response_cells(
         case FieldType.STATIC_TEXT | FieldType.DIVIDER | FieldType.SPACER:
             pass
 
-        case FieldType.MULTI_SELECT:
+        case FieldType.MULTI_SELECT | FieldType.DIMENSION_MULTI_SELECT:
             choices = field.choices or []
             cells.extend(choice.slug in values.get(field.slug, []) for choice in choices)
 
