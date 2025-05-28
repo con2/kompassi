@@ -52,6 +52,7 @@ def forms_survey_zip_export_view(
     with ZipFile(tempfile, "w") as zip:  # type: ignore
         with zip.open(excel_filename, "w") as excel_file:
             write_responses_as_excel(
+                survey,
                 survey.dimensions.order_by("order"),
                 survey.combined_fields,
                 responses.only("form_data").order_by("created_at"),
