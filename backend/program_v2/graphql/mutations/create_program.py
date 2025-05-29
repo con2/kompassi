@@ -5,6 +5,7 @@ from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_model
 from core.models import Event
+from core.utils.model_utils import slugify
 from dimensions.utils.process_dimensions_form import process_dimensions_form
 
 from ...models.program import Program
@@ -41,6 +42,9 @@ class CreateProgram(graphene.Mutation):
 
         values: dict[str, str] = dict(input.form_data)  # type: ignore
         slug, title, description = values.pop("slug", ""), values.pop("title", ""), values.pop("description", "")
+
+        # They always try to use capital letters despite being told not to.
+        slug = slugify(slug)
 
         program = Program(
             event=event,

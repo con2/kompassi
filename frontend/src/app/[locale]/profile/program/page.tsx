@@ -9,7 +9,7 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
-import SignInRequired from "@/components/SignInRequired";
+import SignInRequired from "@/components/errors/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";

@@ -1,3 +1,6 @@
+// TODO Filter program hosts by dimensions
+// Should these be program dimensions or involvement dimensions? Probably program.
+
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,8 +9,8 @@ import { ProgramAdminHostFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import SignInRequired from "@/components/errors/SignInRequired";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
-import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -135,7 +138,7 @@ export default async function ProgramAdminHostsPage({
       event={event}
       translations={translations}
       active={"programHosts"}
-      queryString={queryString}
+      searchParams={searchParams}
     >
       <DataTable rows={programHosts} columns={columns}>
         <tfoot>

@@ -20,27 +20,31 @@ export async function createProgram(
   eventSlug: string,
   formData: FormData,
 ) {
-  const { data, errors } = await getClient().mutate({
-    mutation,
-    variables: {
-      input: {
-        eventSlug,
-        formData: Object.fromEntries(formData.entries()),
+  let slug: string;
+
+  try {
+    const { data, errors } = await getClient().mutate({
+      mutation,
+      variables: {
+        input: {
+          eventSlug,
+          formData: Object.fromEntries(formData.entries()),
+        },
       },
-    },
-  });
+    });
 
-  if (errors) {
-    throw new Error(errors[0].message);
+    if (errors || !data?.createProgram?.program) {
+      console.error("GraphQL error creating program:", errors);
+      return void redirect(`/${eventSlug}/program-admin?error=failedToCreate`);
+    }
+
+    slug = data.createProgram.program.slug;
+  } catch (error) {
+    console.error("Exception occurred creating program:", error);
+    return void redirect(`/${eventSlug}/program-admin?error=failedToCreate`);
   }
-
-  if (!data?.createProgram?.program) {
-    throw new Error("Program not created");
-  }
-
-  const { slug } = data.createProgram.program;
 
   revalidatePath(`/${locale}/${eventSlug}/program-admin`);
   revalidatePath(`/${locale}/${eventSlug}/program-admin/${slug}`);
-  redirect(`/${eventSlug}/program-admin/${slug}`);
+  return void redirect(`/${eventSlug}/program-admin/${slug}`);
 }

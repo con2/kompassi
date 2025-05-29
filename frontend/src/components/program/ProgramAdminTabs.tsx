@@ -11,17 +11,19 @@ export interface ProgramAdminTabsProps {
     | "dimensions"
     | "preferences";
   translations: Translations;
-  queryString?: string;
+  searchParams?: Record<string, string>;
 }
 
 export default function ProgramAdminTabs({
   eventSlug,
   translations,
   active,
-  queryString,
+  searchParams,
 }: ProgramAdminTabsProps) {
   const t = translations.Program;
-  queryString = queryString ? "?" + queryString : "";
+  const queryString = searchParams
+    ? "?" + new URLSearchParams(searchParams).toString()
+    : "";
 
   const tabs: Tab[] = [
     {

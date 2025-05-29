@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import Errors from "../errors/Errors";
 import ProgramAdminTabs, {
   ProgramAdminTabsProps,
 } from "@/components/program/ProgramAdminTabs";
@@ -17,8 +18,8 @@ interface Props {
   };
   actions?: ReactNode;
   active: ProgramAdminTabsProps["active"];
+  searchParams: Record<string, string>;
   children?: ReactNode;
-  queryString: string;
 }
 
 export default async function ProgramAdminView({
@@ -27,10 +28,10 @@ export default async function ProgramAdminView({
   actions,
   active,
   children,
-  queryString,
+  searchParams,
 }: Props) {
   const surveyT = translations.Survey;
-  const t = translations.Program.ProgramForm;
+  const { error, ...otherSearchParams } = searchParams || {};
 
   return (
     <ViewContainer>
@@ -41,11 +42,14 @@ export default async function ProgramAdminView({
         </ViewHeading>
         <ViewHeadingActions>{actions}</ViewHeadingActions>
       </ViewHeadingActionsWrapper>
+
+      <Errors error={error} messages={translations.Program.errors} />
+
       <ProgramAdminTabs
         eventSlug={event.slug}
         translations={translations}
         active={active}
-        queryString={queryString}
+        searchParams={otherSearchParams}
       />
       {children}
     </ViewContainer>

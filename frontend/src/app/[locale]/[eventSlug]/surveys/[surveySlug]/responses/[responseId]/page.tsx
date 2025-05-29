@@ -10,12 +10,12 @@ import { auth } from "@/auth";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
+import SignInRequired from "@/components/errors/SignInRequired";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
-import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {
   ViewHeadingActions,

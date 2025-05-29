@@ -1036,6 +1036,9 @@ const translations = {
         },
       },
     },
+    errors: {
+      failedToCreate: "Failed to create program item.",
+    },
     favorites: {
       markAsFavorite: "Mark as favorite",
       unmarkAsFavorite: "Unmark as favorite",

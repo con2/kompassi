@@ -11,11 +11,11 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import CopyButton from "@/components/CopyButton";
 import { Column, DataTable } from "@/components/DataTable";
+import SignInRequired from "@/components/errors/SignInRequired";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
-import SignInRequired from "@/components/SignInRequired";
 import { publicUrl } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -98,10 +98,7 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function ProgramFormsPage({
-  params,
-  searchParams,
-}: Props) {
+export default async function ProgramFormsPage({ params }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const session = await auth();
@@ -286,7 +283,7 @@ export default async function ProgramFormsPage({
       translations={translations}
       event={data.event}
       active="programForms"
-      queryString=""
+      searchParams={{}} // Program dimension filters do not apply to program forms
       actions={
         <ModalButton
           className="btn btn-outline-primary"

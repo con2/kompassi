@@ -6,11 +6,11 @@ import { QuotaProductFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import SignInRequired from "@/components/errors/SignInRequired";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
-import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {

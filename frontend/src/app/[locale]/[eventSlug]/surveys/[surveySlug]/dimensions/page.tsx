@@ -15,7 +15,7 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { DimensionEditor } from "@/components/dimensions/DimensionEditor";
-import SignInRequired from "@/components/SignInRequired";
+import SignInRequired from "@/components/errors/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 

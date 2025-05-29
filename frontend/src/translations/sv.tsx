@@ -783,6 +783,9 @@ const translations: Translations = {
       preferences: UNTRANSLATED("Preferences"),
       create: UNTRANSLATED(en.Program.actions.create),
     },
+    errors: {
+      failedToCreate: "Programmet kunde inte skapas.",
+    },
     favorites: {
       markAsFavorite: "Markera som favorit",
       unmarkAsFavorite: "Avmarkera som favorit",

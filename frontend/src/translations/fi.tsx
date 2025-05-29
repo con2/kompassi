@@ -1022,6 +1022,9 @@ const translations: Translations = {
         },
       },
     },
+    errors: {
+      failedToCreate: "Ohjelmanumeron luonti epäonnistui.",
+    },
     favorites: {
       markAsFavorite: "Merkitse suosikiksi",
       unmarkAsFavorite: "Poista suosikeista",

@@ -8,7 +8,7 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import DimensionValueSelectionForm from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
-import SignInRequired from "@/components/SignInRequired";
+import SignInRequired from "@/components/errors/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 

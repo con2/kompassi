@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 logger = logging.getLogger("kompassi")
 
 
+# Keep in sync with buildDimensionFilters in frontend/src/components/dimensions/helpers.ts
 INVALID_DIMENSION_SLUGS = [
     # clash with field names in Program
     "slug",
@@ -37,6 +38,7 @@ INVALID_DIMENSION_SLUGS = [
     "past",
     "display",
     "search",
+    "error",
 ]
 
 

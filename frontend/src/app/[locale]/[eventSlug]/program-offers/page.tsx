@@ -16,11 +16,11 @@ import {
   getDimensionValueTitle,
 } from "@/components/dimensions/helpers";
 import { Dimension } from "@/components/dimensions/models";
+import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import UploadedFileLink from "@/components/forms/UploadedFileLink";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
-import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -308,7 +308,7 @@ export default async function ProgramOffersPage({
       translations={translations}
       event={data.event}
       active="programOffers"
-      queryString={queryString}
+      searchParams={searchParams}
       actions={
         excelExportLink && (
           <a href={excelExportLink} className="btn btn-outline-primary">

@@ -6,7 +6,7 @@ import { graphql } from "@/__generated__";
 import { PaymentStatus } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/SignInRequired";
+import SignInRequired from "@/components/errors/SignInRequired";
 import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";

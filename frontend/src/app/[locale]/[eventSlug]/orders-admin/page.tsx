@@ -14,8 +14,8 @@ import { Column, DataTable } from "@/components/DataTable";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import { Dimension } from "@/components/dimensions/models";
+import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
-import SignInRequired from "@/components/SignInRequired";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {

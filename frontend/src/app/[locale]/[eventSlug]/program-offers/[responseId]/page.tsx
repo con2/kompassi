@@ -13,12 +13,12 @@ import {
   Dimension,
   validateCachedDimensions,
 } from "@/components/dimensions/models";
+import SignInRequired from "@/components/errors/SignInRequired";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
-import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import slugify from "@/helpers/slugify";
 import { getTranslations } from "@/translations";
@@ -138,7 +138,6 @@ export default async function ProgramOfferPage({
   const { locale, eventSlug, responseId } = params;
   const translations = getTranslations(locale);
   const session = await auth();
-  const queryString = new URLSearchParams(searchParams).toString();
 
   // TODO encap
   if (!session) {
@@ -247,7 +246,7 @@ export default async function ProgramOfferPage({
       translations={translations}
       event={data.event}
       active="programOffers"
-      queryString={queryString}
+      searchParams={searchParams}
       actions={
         <ModalButton
           className="btn btn-outline-primary"

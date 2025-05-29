@@ -11,10 +11,10 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import CopyButton from "@/components/CopyButton";
 import { Column, DataTable } from "@/components/DataTable";
+import SignInRequired from "@/components/errors/SignInRequired";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SignInRequired from "@/components/SignInRequired";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {
   ViewHeadingActions,

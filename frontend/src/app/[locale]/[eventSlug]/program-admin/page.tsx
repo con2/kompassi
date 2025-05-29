@@ -11,11 +11,12 @@ import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensi
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
+import Errors from "@/components/errors/Errors";
+import SignInRequired from "@/components/errors/SignInRequired";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
-import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -204,7 +205,7 @@ export default async function FormResponsesPage({
       translations={translations}
       event={data.event}
       active="programItems"
-      queryString={queryString}
+      searchParams={searchParams}
       actions={
         <ModalButton
           className="btn btn-outline-primary"

@@ -5,9 +5,9 @@ import { promoteFieldToDimension, updateSurveyFields } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
+import SignInRequired from "@/components/errors/SignInRequired";
 import FormEditorWrapper from "@/components/forms/FormEditorWrapper";
 import { validateFields } from "@/components/forms/models";
-import SignInRequired from "@/components/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
