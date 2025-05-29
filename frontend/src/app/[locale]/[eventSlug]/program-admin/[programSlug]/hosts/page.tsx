@@ -141,7 +141,6 @@ export default async function ProgramAdminDetailPage({
   const translations = getTranslations(locale);
   const profileT = translations.Profile;
   const inviT = translations.Invitation;
-  const programT = translations.Program;
   const t = translations.Program.ProgramHost;
 
   const session = await auth();

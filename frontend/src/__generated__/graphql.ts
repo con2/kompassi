@@ -1522,6 +1522,9 @@ export enum PaymentStatus {
 /**
  * Used to determine which profile fields are transferred from registry to another.
  * NOTE: Must match ProfileFieldSelector in frontend/src/components/involvement/models.ts.
+ *
+ * For "no fields selected", use the default constructor.
+ * For "all fields selected", use `ProfileFieldSelector.all_fields()`.
  */
 export type ProfileFieldSelectorType = {
   __typename?: 'ProfileFieldSelectorType';

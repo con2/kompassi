@@ -5,16 +5,18 @@ from enum import Enum
 
 class InvolvementApp(Enum):
     # NOTE: use dashes in app names (URL slugs)
-    FORMS = "forms", "Surveys V2"
-    PROGRAM = "program", "Program V2"
+    FORMS = "forms", "Surveys V2", "forms"
+    PROGRAM = "program", "Program V2", "program_v2"
 
     value: str
     label: str
+    app_name: str
 
-    def __new__(cls, value: str, label: str):
+    def __new__(cls, value: str, label: str, app_name: str):
         obj = object.__new__(cls)
         obj._value_ = value
         obj.label = label
+        obj.app_name = app_name
         return obj
 
     @classmethod

@@ -34,6 +34,7 @@ class LimitedInvitationType(graphene_django.DjangoObjectType):
             invitation,
             info,
             field="email",
+            app=invitation.app.app_name,
         )
 
         return invitation.email
