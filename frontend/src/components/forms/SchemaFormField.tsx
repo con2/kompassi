@@ -72,6 +72,7 @@ export default function SchemaFormField({
 
   switch (type) {
     case "SingleCheckbox":
+    case "DimensionSingleCheckbox":
       switch (layout) {
         case "horizontal":
           return (

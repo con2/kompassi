@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 import uuid
-from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any, Literal
+from collections.abc import Collection, Iterable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.db import models, transaction
@@ -11,7 +11,6 @@ from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
 
 from core.models.event import Event
-from core.utils.model_utils import slugify, slugify_underscore
 from dimensions.models.scope import Scope
 from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import SUPPORTED_LANGUAGES
@@ -247,35 +246,3 @@ class Response(models.Model):
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
             case _:
                 raise ValueError(f"Unknown app type: {self.survey.app}")
-
-    @staticmethod
-    def _reslugify_pair(
-        pair: tuple[str, Any],
-        field_slug: str,
-        slugifier: Callable[[str], str],
-    ) -> tuple[str, Any]:
-        key, value = pair
-        if not isinstance(value, str):
-            # FileUpload
-            return key, value
-
-        if key == field_slug:
-            # SingleSelect -> DimensionSingleSelect
-            return key, slugifier(value)
-        elif key.startswith(f"{field_slug}."):
-            # MultiSelect -> DimensionMultiSelect
-            _, subkey = key.split(".", 1)
-            subkey = slugifier(subkey)
-            return f"{key}.{subkey}", value
-
-        return key, value
-
-    def reslugify_field(self, field_slug: str, separator: Literal["-", "_"]):
-        """
-        When promoting a form field to dimension, we need to account for possible
-        differences in the slugification of the field and the dimension values.
-
-        NOTE: Caller is responsible for calling save(["form_data"]) afterwards.
-        """
-        slugifier = slugify if separator == "-" else slugify_underscore
-        self.form_data = dict(self._reslugify_pair(pair, field_slug, slugifier) for pair in self.form_data.items())

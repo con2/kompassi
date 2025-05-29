@@ -13,6 +13,8 @@ from collections.abc import Sequence
 from enum import Enum
 from typing import Any
 
+from core.utils.model_utils import slugify
+
 from ..models.field import Field, FieldType
 from .s3_presign import is_valid_s3_url, presign_get
 
@@ -137,6 +139,16 @@ class SingleSelectFieldProcessor(FieldProcessor):
         return warnings
 
 
+class DimensionSingleSelectFieldProcessor(SingleSelectFieldProcessor):
+    def extract_value(self, field: Field, form_data: dict[str, Any]) -> Any:
+        value = super().extract_value(field, form_data)
+
+        if value and isinstance(value, str):
+            return slugify(value)
+
+        return value
+
+
 class MultiSelectFieldProcessor(FieldProcessor):
     def extract_value(self, field: Field, form_data: dict[str, Any]):
         return [
@@ -161,6 +173,16 @@ class MultiSelectFieldProcessor(FieldProcessor):
             warnings.append(FieldWarning.INVALID_CHOICE)
 
         return warnings
+
+
+class DimensionMultiSelectFieldProcessor(MultiSelectFieldProcessor):
+    def extract_value(self, field: Field, form_data: dict[str, Any]):
+        value = super().extract_value(field, form_data)
+
+        if isinstance(value, list):
+            return [slugify(val) for val in value]
+
+        return value
 
 
 class RadioMatrixFieldProcessor(FieldProcessor):
@@ -226,9 +248,9 @@ FIELD_PROCESSORS: dict[FieldType, FieldProcessor] = {
     FieldType.DIVIDER: NullFieldProcessor(),
     FieldType.SPACER: NullFieldProcessor(),
     FieldType.SINGLE_SELECT: SingleSelectFieldProcessor(),
-    FieldType.DIMENSION_SINGLE_SELECT: SingleSelectFieldProcessor(),
+    FieldType.DIMENSION_SINGLE_SELECT: DimensionSingleSelectFieldProcessor(),
     FieldType.MULTI_SELECT: MultiSelectFieldProcessor(),
-    FieldType.DIMENSION_MULTI_SELECT: MultiSelectFieldProcessor(),
+    FieldType.DIMENSION_MULTI_SELECT: DimensionMultiSelectFieldProcessor(),
     FieldType.RADIO_MATRIX: RadioMatrixFieldProcessor(),
     FieldType.FILE_UPLOAD: FileUploadFieldProcessor(),
     FieldType.NUMBER_FIELD: NumberFieldProcessor(),

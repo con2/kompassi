@@ -145,7 +145,6 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     bulk_update = []
     for form in forms:
         for response in form.responses.all():
-            response.reslugify_field(field_slug, "-")  # dimensions use dashes due to being parts of URLs
             lift_dimension_values(
                 response,
                 dimension_slugs=[dimension.slug],

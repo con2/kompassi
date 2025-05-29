@@ -47,7 +47,8 @@ def lift_dimension_values(
 
     for field in fields:
         log_context = dict(
-            survey=survey.id,
+            scope=survey.scope.slug,
+            survey=survey.slug,
             language=response.form.language,
             response=response.id,
             field=field.slug,
@@ -107,3 +108,5 @@ def lift_dimension_values(
 
     if values_to_set:
         response.set_dimension_values(values_to_set, cache)
+
+    return values_to_set
