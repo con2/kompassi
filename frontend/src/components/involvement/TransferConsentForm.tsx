@@ -15,7 +15,7 @@ import type { Translations } from "@/translations/en";
 function TransferDirectionArrow() {
   // XXX AI genenerated :) please do something to this
   return (
-    <span className="mx-2 d-inline-block rotate-sm-90">
+    <span className="m-2 d-inline-block rotate-sm-90">
       <svg
         width="1em"
         height="1em"
@@ -56,7 +56,7 @@ function RegistryComponent({
 }) {
   const t = messages.TransferConsentForm;
   return (
-    <Card className="flex-grow-1 m-3">
+    <Card className="flex-grow-1 w-100 w-md-auto">
       <CardBody>
         <div className="form-text mb-2">{registryType}:</div>
         <div className="fw-bold">{registry.title}</div>
@@ -95,7 +95,7 @@ export default function TransferConsentForm({
   sourceRegistry,
   targetRegistry,
   translations: messages,
-  className = "mt-4 mb-4",
+  className = "mt-4 mb-4 p-2 pb-0",
 }: Props) {
   const t = messages.TransferConsentForm;
 
@@ -113,7 +113,7 @@ export default function TransferConsentForm({
       <CardBody>
         <CardTitle>{t.title}</CardTitle>
         <div className="card-text">{t.message}</div>
-        <div className="d-flex flex-column flex-md-row align-items-center">
+        <div className="d-flex flex-column flex-md-row align-items-center my-4">
           <RegistryComponent
             registryType={t.sourceRegistry}
             registry={sourceRegistry}
@@ -126,22 +126,24 @@ export default function TransferConsentForm({
             messages={messages}
           />
         </div>
-        <Card className="m-3">
+        <Card>
           <CardBody>
             <div className="form-text mb-2">Luovutettavat tiedot:</div>
-            {profileFields.map((field) => {
-              if (!profileFieldSelector[field]) {
-                return null;
-              }
-              return (
-                <div key={field} className="mb-2">
-                  <div>
-                    <strong>{messages.Profile.attributes[field]}</strong>
+            <div className="row">
+              {profileFields.map((field) => {
+                if (!profileFieldSelector[field]) {
+                  return null;
+                }
+                return (
+                  <div key={field} className="col-md-4 mb-2">
+                    <div>
+                      <strong>{messages.Profile.attributes[field]}</strong>
+                    </div>
+                    <div>{(profile as any)[field]}</div>
                   </div>
-                  <div>{(profile as any)[field]}</div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
             <div className="form-text mt-2">
               {t.actions.editProfile.message}{" "}
               <a

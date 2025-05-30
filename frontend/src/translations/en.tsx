@@ -123,7 +123,8 @@ const translations = {
         processed by the receiver.
       </>
     ),
-    consentCheckBox: "I consent to the transfer of my personal data.",
+    consentCheckBox:
+      "I accept the transfer and processing of my personal data as outlined above.",
     privacyPolicy: "Privacy policy",
     privacyPolicyMissing: "Missing privacy policy",
     actions: {

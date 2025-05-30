@@ -122,7 +122,7 @@ const translations: Translations = {
       </>
     ),
     consentCheckBox:
-      "Annan suostumukseni henkilötietojeni luovutukseen ja käsittelyyn edellä kuvatulla tavalla.",
+      "Hyväksyn henkilötietojeni luovutuksen ja käsittelyn yllä kuvatulla tavalla.",
     privacyPolicy: "Tietosuojaseloste",
     privacyPolicyMissing: "Tietosuojaseloste puuttuu",
     actions: {
