@@ -5,7 +5,6 @@ from django.contrib.auth.models import Group, User
 
 from access.admin import InlineAccessOrganizationMetaAdmin
 from badges.admin import InlineBadgesEventMetaAdmin
-from enrollment.admin import InlineEnrollmentEventMetaAdmin
 from intra.admin import InlineIntraEventMetaAdmin
 from labour.admin import InlineLabourEventMetaAdmin
 from membership.admin import InlineMembershipOrganizationMetaAdmin
@@ -65,7 +64,6 @@ class EventAdmin(admin.ModelAdmin):
         InlineProgramV2EventMetaAdmin,
         InlineTicketsV2EventMetaAdmin,
         InlineBadgesEventMetaAdmin,
-        InlineEnrollmentEventMetaAdmin,
         InlineIntraEventMetaAdmin,
     )
 
