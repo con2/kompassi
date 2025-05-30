@@ -281,6 +281,9 @@ class Setup:
             defaults=dict(
                 admin_group=admin_group,
                 provider_id=PaymentProvider.PAYTRAIL.value,
+                contact_email="Ropeconin lipunmyynti <lipunmyynti@ropecon.fi>",
+                terms_and_conditions_url_en="https://ropecon.fi/en/ticket-terms-conditions/",
+                terms_and_conditions_url_fi="https://ropecon.fi/lippuehdot-2025/",
             ),
         )
         meta.ensure_partitions()
@@ -290,6 +293,8 @@ class Setup:
             self.event.tickets_event_meta.delete()
 
     def setup_etkot(self):
+        ropecon = self.event
+
         venue, unused = Venue.objects.get_or_create(
             name="Helsinki",
             defaults=dict(
@@ -297,7 +302,7 @@ class Setup:
             ),
         )
 
-        event, unused = Event.objects.get_or_create(
+        etkot, unused = Event.objects.get_or_create(
             slug="ropecon2025etkot",
             defaults=dict(
                 name="Ropecon 2025 etkot",
@@ -313,28 +318,32 @@ class Setup:
             ),
         )
 
-        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(event, ["admins"])
+        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(etkot, ["admins"])
         ProgramV2EventMeta.objects.update_or_create(
-            event=event,
+            event=etkot,
             defaults=dict(
                 admin_group=admin_group,
+                contact_email=ropecon.program_v2_event_meta.contact_email,  # type: ignore
             ),
         )
 
-        (admin_group,) = FormsEventMeta.get_or_create_groups(event, ["admins"])
+        (admin_group,) = FormsEventMeta.get_or_create_groups(etkot, ["admins"])
         FormsEventMeta.objects.update_or_create(
-            event=event,
+            event=etkot,
             defaults=dict(
                 admin_group=admin_group,
             ),
         )
 
-        (admin_group,) = TicketsV2EventMeta.get_or_create_groups(event, ["admins"])
+        (admin_group,) = TicketsV2EventMeta.get_or_create_groups(etkot, ["admins"])
         meta, _ = TicketsV2EventMeta.objects.update_or_create(
-            event=event,
+            event=etkot,
             defaults=dict(
                 admin_group=admin_group,
                 provider_id=PaymentProvider.PAYTRAIL.value,
+                contact_email=ropecon.tickets_v2_event_meta.contact_email,  # type: ignore
+                terms_and_conditions_url_fi=ropecon.tickets_v2_event_meta.terms_and_conditions_url_fi,  # type: ignore
+                terms_and_conditions_url_en=ropecon.tickets_v2_event_meta.terms_and_conditions_url_en,  # type: ignore
             ),
         )
         meta.ensure_partitions()
