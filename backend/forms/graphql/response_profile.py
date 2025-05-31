@@ -27,10 +27,10 @@ class ProfileResponseType(LimitedResponseType):
         if key_dimensions_only:
             qs = qs.filter(value__dimension__is_key_dimension=True)
 
-        return qs
+        return qs.order_by("value__dimension__order", "value__order", "value__slug")
 
-    dimensions = graphene.List(
-        graphene.NonNull(ResponseDimensionValueType),
+    dimensions = graphene.NonNull(
+        graphene.List(graphene.NonNull(ResponseDimensionValueType)),
         key_dimensions_only=graphene.Boolean(),
     )
 
@@ -68,10 +68,22 @@ class ProfileResponseType(LimitedResponseType):
         key_dimensions_only=graphene.Boolean(),
     )
 
+    @staticmethod
+    def resolve_old_versions(response: Response, info):
+        return response.old_versions.all()
+
+    old_versions = graphene.NonNull(graphene.List(graphene.NonNull(LimitedResponseType)))
+
+    superseded_by = graphene.Field(
+        LimitedResponseType,
+        description="If this response is an old version, this field will point to the current version.",
+    )
+
     class Meta:
         model = Response
         fields = (
             "id",
             "form_data",
             "created_at",
+            "superseded_by",
         )

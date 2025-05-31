@@ -106,6 +106,17 @@ class Survey(models.Model):
         ),
     )
 
+    responses_editable_until = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("responses editable until"),
+        help_text=_(
+            "If set, responses to this survey can be edited by whomever sent them until this date, "
+            "provided that the response is not locked by a dimension value that is set to lock subjects. "
+            "If unset, responses cannnot be edited at all. "
+        ),
+    )
+
     key_fields = ArrayField(
         models.CharField(max_length=255),
         blank=True,
@@ -148,9 +159,6 @@ class Survey(models.Model):
 
     @cached_property
     def profile_field_selector(self) -> ProfileFieldSelector:
-        """
-        Returns the profile field selector for this survey.
-        """
         return ProfileFieldSelector.from_anonymity(self.anonymity)
 
     @property
@@ -260,10 +268,21 @@ class Survey(models.Model):
         return None
 
     @property
-    def responses(self):
+    def current_responses(self):
         from .response import Response
 
-        return Response.objects.filter(form__in=self.languages.all()).order_by("created_at")
+        return Response.objects.filter(
+            form__in=self.languages.all(),
+            superseded_by=None,
+        ).order_by("created_at")
+
+    @property
+    def all_responses(self):
+        from .response import Response
+
+        return Response.objects.filter(
+            form__in=self.languages.all(),
+        ).order_by("created_at")
 
     @cached_property
     def title_dict(self):
@@ -297,7 +316,7 @@ class Survey(models.Model):
         )
 
     def get_next_sequence_number(self):
-        return (self.responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1
+        return (self.current_responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1
 
     class Meta:
         unique_together = [("event", "slug")]
@@ -320,7 +339,10 @@ class Survey(models.Model):
                 self.registry = meta.default_registry
 
                 if purpose == SurveyPurpose.DEFAULT:
+                    # The program offer workflow uses a dimension to lock responses from editing.
+                    self.responses_editable_until = self.event.end_time
                     self.key_fields = ["title"]
+
             case SurveyApp.FORMS:
                 if purpose == SurveyPurpose.INVITE:
                     raise ValueError("ACCEPT_INVITATION is not a valid purpose for FORMS app")

@@ -46,8 +46,6 @@ class ProductCounters(pydantic.BaseModel):
         if event_cache := cache.get(event_id):
             return event_cache
 
-        # quota_counters = QuotaCounters.get_for_event(event_id, request)
-
         with connection.cursor() as cursor:
             cursor.execute(ProductCounters.amounts_sold_query, dict(event_id=event_id))
             result = {

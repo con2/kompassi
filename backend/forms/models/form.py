@@ -52,7 +52,7 @@ class Form(models.Model):
 
     # related fields
     id: int
-    responses: models.QuerySet[Response]
+    all_responses: models.QuerySet[Response]
 
     class Meta:
         unique_together = [("event", "survey", "language")]
@@ -70,7 +70,7 @@ class Form(models.Model):
                 field="self",
                 app=self.survey.app,
             )
-            and not self.responses.exists()
+            and not self.all_responses.exists()
         )
 
     @property

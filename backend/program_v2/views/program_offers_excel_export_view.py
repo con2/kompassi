@@ -37,7 +37,7 @@ def program_offers_excel_export_view(
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-    responses = DimensionFilters.from_query_dict(request.GET).filter(meta.program_offers.all())
+    responses = DimensionFilters.from_query_dict(request.GET).filter(meta.current_program_offers.all())
 
     write_program_offers_as_excel(
         meta.universe.dimensions.order_by("order"),

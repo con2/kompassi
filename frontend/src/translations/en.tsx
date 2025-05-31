@@ -123,8 +123,21 @@ const translations = {
         processed by the receiver.
       </>
     ),
+    messageAlreadyAccepted: (
+      <>
+        When you filled in this form, your personal data was transferred as
+        outlined below. Personal data you gave on the form was also processed by
+        the receiver.
+      </>
+    ),
     consentCheckBox:
       "I accept the transfer and processing of my personal data as outlined above.",
+    consentAlreadyGivenAt: (formattedDate: ReactNode) => (
+      <>
+        You have accepted the transfer and processing of your personal data as
+        outlined above on {formattedDate}.
+      </>
+    ),
     privacyPolicy: "Privacy policy",
     privacyPolicyMissing: "Missing privacy policy",
     actions: {
@@ -1121,9 +1134,15 @@ const translations = {
       },
       empty: (
         <>
-          You have no program items or program offers. If you sign up as a
+          You have no program items or open program offers. If you sign up as a
           program host in an event that uses Kompassi to manage its program, you
           will find your program offers and program items here.
+        </>
+      ),
+      allProgramOffers: (
+        <>
+          You can find all program offers you have made, including those that
+          have already been processed, here:
         </>
       ),
     },
@@ -1252,8 +1271,13 @@ const translations = {
       },
 
       actions: {
+        edit: {
+          title: "Edit program offer",
+          label: "Edit",
+        },
         accept: {
           title: "Accept program offer",
+          label: "Accept",
           message: (
             <>
               To create a program item from this program offer, please review
@@ -1266,6 +1290,36 @@ const translations = {
             submit: "Accept",
             cancel: "Close without accepting",
           },
+        },
+        cancel: {
+          title: "Reject or cancel program offer",
+          label: "Reject or cancel",
+          message: (
+            <>
+              <p>Do you want to reject or cancel the program offer?</p>
+              <p>
+                Mark the offer as <strong>cancelled</strong> if the program host
+                contacted you and asked to cancel their program offer.
+              </p>
+              <p>
+                Mark the offer as <strong>rejected</strong> if you chose not to
+                accept the program offer as part of the event program.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Proceed",
+            cancel: "Close without rejecting or cancelling",
+          },
+        },
+      },
+
+      OldVersionAlert: {
+        title: "Displaying an outdated version of the program offer",
+        message:
+          "This program offer has been edited. You are viewing an old version.",
+        actions: {
+          returnToCurrentVersion: "Return to the current version",
         },
       },
     },
@@ -1424,6 +1478,18 @@ const translations = {
         title: "Active until",
         helpText: "If set, the survey will close for responses at this time.",
       },
+      responsesEditableUntil: {
+        title: "Responses editable until",
+        helpText: (
+          <>
+            If set, users can edit their responses until this time. After this
+            time, responses will be locked and cannot be edited. If unset,
+            responses cannot be edited after submission. (You can also set
+            <em>Lock the subject from editing</em> on a dimension value to have
+            that dimension value lock responses it is applied to from editing.)
+          </>
+        ),
+      },
       countResponses: "Responses",
       languages: "Languages",
       actions: "Actions",
@@ -1545,6 +1611,39 @@ const translations = {
           submit: "Delete responses",
           cancel: "Cancel without deleting",
         },
+      },
+      editResponse: {
+        title: "Edit response",
+        label: "Edit",
+        cancel: "Cancel editing",
+        editingOwn: (formattedCreatedAt: ReactNode) => (
+          <>
+            You are editing a response that you submitted on{" "}
+            {formattedCreatedAt}. Your edits will only take effect when you
+            submit the form.
+          </>
+        ),
+        editingOthers: (
+          formattedCreatedAt: ReactNode,
+          createdBy: ReactNode,
+        ) => (
+          <>
+            You are editing a response that was submitted on{" "}
+            {formattedCreatedAt} by <strong>{createdBy}</strong>. Your edits
+            will only take effect when you submit the form.
+          </>
+        ),
+        cannotEdit: (
+          <>
+            <h1>Cannot edit response</h1>
+            <p>You cannot edit this response at this time.</p>
+          </>
+        ),
+        success: (surveyTitle: string) => (
+          <>
+            Your response to the survey <em>{surveyTitle}</em> has been updated.
+          </>
+        ),
       },
       deleteResponse: {
         title: "Delete response",
@@ -1786,6 +1885,11 @@ const translations = {
           helpText:
             "The title of the value in different languages. The title need not be provided in all supported languages: if the title is missing in the selected language, it will fall back first to the default language and then to the technical name.",
         },
+        isSubjectLocked: {
+          title: "Lock the subject from editing",
+          helpText:
+            "If set, subjects this value is assigned to can no longer be edited by whomever submitted them.",
+        },
         title: {
           fi: "Title in Finnish",
           en: "Title in English",
@@ -1804,6 +1908,19 @@ const translations = {
       title: "Edit survey",
       actions: {
         submit: "Save fields",
+      },
+    },
+
+    ResponseHistory: {
+      title: "Old versions",
+      message:
+        "This response has been edited. This is the most current version. You can view the old versions here.",
+    },
+    OldVersionAlert: {
+      title: "Displaying an outdated version of the response",
+      message: "This response has been edited. You are viewing an old version.",
+      actions: {
+        returnToCurrentVersion: "Return to the current version",
       },
     },
   },

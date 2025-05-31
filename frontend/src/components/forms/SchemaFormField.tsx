@@ -2,24 +2,17 @@ import { ReactNode } from "react";
 
 import { Heading, HeadingLevel } from "../helpers/Heading";
 import ParagraphsDangerousHtml from "../helpers/ParagraphsDangerousHtml";
-import { Field, Layout, defaultLayout } from "./models";
+import makeInputId from "./makeInputId";
+import { Field } from "./models";
 
-function Label({ field, layout }: { field: Field; layout: Layout }) {
+function Label({ field, idPrefix }: { field: Field; idPrefix: string }) {
   const { type, title, required, slug } = field;
-  const classNames =
-    type === "SingleCheckbox"
-      ? ["form-check-label"]
-      : ["form-label", "fw-bold"];
-
-  if (
-    layout === "horizontal" &&
-    !["SingleCheckbox", "DimensionSingleCheckbox"].includes(type)
-  ) {
-    classNames.push("col-md-3");
-  }
+  const inputId = makeInputId(idPrefix, field);
+  const className =
+    type === "SingleCheckbox" ? "form-check-label" : "form-label fw-bold";
 
   return (
-    <label className={classNames.join(" ")} htmlFor={slug}>
+    <label className={className} htmlFor={inputId}>
       {title}
       {required && "*"}
     </label>
@@ -27,9 +20,9 @@ function Label({ field, layout }: { field: Field; layout: Layout }) {
 }
 
 interface SchemaFormFieldProps {
-  layout?: Layout;
   field: Field;
   children?: ReactNode;
+  idPrefix?: string;
 
   /// used for StaticText.title
   headingLevel?: HeadingLevel;
@@ -40,10 +33,10 @@ interface SchemaFormFieldProps {
  * form input including label, help text and error message.
  */
 export default function SchemaFormField({
-  layout = defaultLayout,
   field,
   children,
   headingLevel,
+  idPrefix = "",
 }: SchemaFormFieldProps) {
   const { type } = field;
   const title = field.required ? `${field.title}*` : field.title;
@@ -73,50 +66,21 @@ export default function SchemaFormField({
   switch (type) {
     case "SingleCheckbox":
     case "DimensionSingleCheckbox":
-      switch (layout) {
-        case "horizontal":
-          return (
-            <div className="row mb-4">
-              <div className="col-md-3">{title}</div>
-              <div className="col-md-9">
-                <div className="form-check">
-                  {children}
-                  <Label field={field} layout={layout} />
-                  {helpText && <div className="form-text">{helpText}</div>}
-                </div>
-              </div>
-            </div>
-          );
-        default:
-          return (
-            <div className="form-check mb-4">
-              {children}
-              <Label field={field} layout={layout} />
-              {helpText && <div className="form-text">{helpText}</div>}
-            </div>
-          );
-      }
+      return (
+        <div className="form-check mb-4">
+          {children}
+          <Label field={field} idPrefix={idPrefix} />
+          {helpText && <div className="form-text">{helpText}</div>}
+        </div>
+      );
 
     default:
-      switch (layout) {
-        case "horizontal":
-          return (
-            <div className="row mb-4">
-              <Label field={field} layout={layout} />
-              <div className="col-md-9">
-                {children}
-                {helpText && <div className="form-text">{helpText}</div>}
-              </div>
-            </div>
-          );
-        default:
-          return (
-            <div className="mb-4">
-              <Label field={field} layout={layout} />
-              {children}
-              {helpText && <div className="form-text">{helpText}</div>}
-            </div>
-          );
-      }
+      return (
+        <div className="mb-4">
+          <Label field={field} idPrefix={idPrefix} />
+          {children}
+          {helpText && <div className="form-text">{helpText}</div>}
+        </div>
+      );
   }
 }

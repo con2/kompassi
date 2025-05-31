@@ -34,6 +34,7 @@ class LimitedSurveyType(DjangoObjectType):
             "slug",
             "active_from",
             "active_until",
+            "responses_editable_until",
             "login_required",
             "anonymity",
             "max_responses_per_user",

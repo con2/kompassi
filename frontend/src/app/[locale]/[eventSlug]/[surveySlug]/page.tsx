@@ -24,7 +24,7 @@ const query = graphql(`
     $locale: String
   ) {
     profile {
-      ...FullProfile
+      ...FullOwnProfile
     }
 
     userRegistry {
@@ -32,7 +32,9 @@ const query = graphql(`
     }
 
     event(slug: $eventSlug) {
+      slug
       name
+      timezone
 
       forms {
         survey(slug: $surveySlug, app: null) {
@@ -105,7 +107,6 @@ export default async function SurveyPage({ params }: Props) {
   const {
     languages,
     loginRequired,
-    anonymity,
     maxResponsesPerUser,
     countResponsesByCurrentUser,
     purpose,
@@ -114,7 +115,6 @@ export default async function SurveyPage({ params }: Props) {
   } = event.forms.survey;
   const { isActive } = event.forms.survey;
   const { title, description, fields, language } = event.forms.survey.form;
-  const anonymityMessages = t.attributes.anonymity.secondPerson;
 
   if (loginRequired) {
     const session = await auth();
@@ -179,17 +179,13 @@ export default async function SurveyPage({ params }: Props) {
             sourceRegistry={userRegistry}
             targetRegistry={targetRegistry}
             translations={translations}
+            scope={event}
+            locale={locale}
           />
         )}
         <SchemaForm fields={fields} messages={translations.SchemaForm} />
         <SubmitButton>{t.actions.submit}</SubmitButton>
       </form>
-      <p className="mt-3">
-        <small>
-          <strong>{anonymityMessages.title}: </strong>
-          {anonymityMessages.choices[anonymity]}
-        </small>
-      </p>
     </ViewContainer>
   );
 }

@@ -1,5 +1,4 @@
 import graphene
-from graphene_django import DjangoObjectType
 
 from core.models import Person
 from core.utils import normalize_whitespace
@@ -12,29 +11,13 @@ from program_v2.models.meta import ProgramV2ProfileMeta
 from tickets_v2.graphql.meta import TicketsV2ProfileMetaType
 from tickets_v2.models.meta import TicketsV2ProfileMeta
 
+from .profile_limited import LimitedProfileType
 
-class ProfileType(DjangoObjectType):
+
+class OwnProfileType(LimitedProfileType):
     class Meta:
         model = Person
-        fields = ("first_name", "nick", "email", "discord_handle")
-
-    @staticmethod
-    def resolve_last_name(person: Person, info):
-        return person.surname
-
-    last_name = graphene.NonNull(graphene.String)
-
-    @staticmethod
-    def resolve_phone_number(person: Person, info):
-        return person.normalized_phone_number
-
-    phone_number = graphene.NonNull(graphene.String)
-
-    @staticmethod
-    def resolve_display_name(person: Person, info):
-        return person.display_name
-
-    display_name = graphene.NonNull(graphene.String)
+        fields = ("id", "first_name", "nick", "email", "discord_handle")
 
     @staticmethod
     def resolve_forms(person: Person, info):

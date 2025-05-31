@@ -24,5 +24,5 @@ export function ViewHeadingActionsWrapper({ children }: Props) {
 }
 
 export function ViewHeadingActions({ children }: Props) {
-  return <div className="ms-auto">{children}</div>;
+  return <div className="ms-auto mb-3">{children}</div>;
 }

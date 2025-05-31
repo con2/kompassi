@@ -43,7 +43,7 @@ def forms_survey_zip_export_view(
     if survey.profile_field_selector:
         emit("core.person.exported", request=request)
 
-    responses = DimensionFilters.from_query_dict(request.GET).filter(survey.responses.all())
+    responses = DimensionFilters.from_query_dict(request.GET).filter(survey.current_responses.all())
 
     fields = survey.get_combined_fields()
     session = requests.Session()

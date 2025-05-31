@@ -34,7 +34,7 @@ def forms_survey_excel_export_view(
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-    responses = DimensionFilters.from_query_dict(request.GET).filter(survey.responses.all())
+    responses = DimensionFilters.from_query_dict(request.GET).filter(survey.current_responses.all())
 
     if survey.profile_field_selector:
         emit("core.person.exported", request=request)

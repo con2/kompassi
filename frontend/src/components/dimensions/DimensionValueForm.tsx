@@ -37,6 +37,11 @@ export default function DimensionValueForm({ messages, value }: Props) {
       ...t.attributes.color,
     },
     {
+      type: "SingleCheckbox",
+      slug: "isSubjectLocked",
+      ...t.attributes.isSubjectLocked,
+    },
+    {
       type: "StaticText",
       slug: "header",
       ...t.attributes.localizedTitleHeader,

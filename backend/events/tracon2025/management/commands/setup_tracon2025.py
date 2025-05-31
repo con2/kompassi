@@ -24,7 +24,7 @@ from dimensions.models.enums import ValueOrdering
 from forms.models.meta import FormsEventMeta
 from forms.models.projection import Projection
 from forms.models.splat import Splat
-from forms.models.survey import Survey, SurveyDTO
+from forms.models.survey import Survey
 from intra.models import IntraEventMeta, Team
 from involvement.models.registry import Registry
 from labour.models.alternative_signup_forms import AlternativeSignupForm
@@ -420,18 +420,18 @@ class Setup:
             #     max_responses_per_user=1,
             #     login_required=True,
             # ),
-            SurveyDTO(
-                slug="expense-claim",
-                key_fields=["title", "amount"],
-                login_required=True,
-                anonymity="NAME_AND_EMAIL",
-            ),
-            SurveyDTO(
-                slug="car-usage",
-                key_fields=["title", "kilometers"],
-                login_required=True,
-                anonymity="NAME_AND_EMAIL",
-            ),
+            # SurveyDTO(
+            #     slug="expense-claim",
+            #     key_fields=["title", "amount"],
+            #     login_required=True,
+            #     anonymity="NAME_AND_EMAIL",
+            # ),
+            # SurveyDTO(
+            #     slug="car-usage",
+            #     key_fields=["title", "kilometers"],
+            #     login_required=True,
+            #     anonymity="NAME_AND_EMAIL",
+            # ),
         ]:
             survey.save(self.event)
 

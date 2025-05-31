@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from functools import cached_property
+from typing import Any
 
 from django.conf import settings
 from django.db import models
@@ -71,7 +72,14 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         return ProgramOfferWorkflow.get_program_universe(self.event)
 
     @property
-    def program_offers(self):
+    def current_program_offers(self):
+        return self._get_program_offers(superseded_by=None)
+
+    @property
+    def all_program_offers(self):
+        return self._get_program_offers()
+
+    def _get_program_offers(self, **extra_criteria: Any) -> models.QuerySet[Response]:
         """
         NOTE Optimized for frontend/src/app/[locale]/[eventSlug]/program-offers/page.tsx
         """
@@ -80,6 +88,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
                 form__event=self.event,
                 form__survey__app="program_v2",
                 form__survey__purpose_slug="DEFAULT",
+                **extra_criteria,
             )
             .select_related(
                 "form",
@@ -142,7 +151,7 @@ class ProgramV2ProfileMeta:
     person: Person
 
     @property
-    def program_offers(self):
+    def current_program_offers(self):
         if self.person.user is None:
             return Response.objects.none()
 
@@ -151,6 +160,7 @@ class ProgramV2ProfileMeta:
                 form__survey__app="program_v2",
                 form__survey__purpose_slug="DEFAULT",
                 created_by=self.person.user,
+                superseded_by=None,
             )
             .select_related(
                 "form",

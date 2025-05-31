@@ -144,7 +144,7 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     # lift values of the field to the dimension in responses
     bulk_update = []
     for form in forms:
-        for response in form.responses.all():
+        for response in form.all_responses.all():  # NOTE also old versions!
             lift_dimension_values(
                 response,
                 dimension_slugs=[dimension.slug],
@@ -152,4 +152,9 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
             )
 
     Response.objects.bulk_update(bulk_update, ["form_data"])
-    Response.refresh_cached_fields_qs(Response.objects.filter(form__in=forms))
+    Response.refresh_cached_fields_qs(
+        Response.objects.filter(
+            form__in=forms,
+            superseded_by=None,
+        )
+    )

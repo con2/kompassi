@@ -43,6 +43,13 @@ class FullResponseType(LimitedResponseType):
         ),
     )
 
+    @staticmethod
+    def resolve_old_versions(response: Response, info):
+        return response.old_versions.all()
+
+    old_versions = graphene.NonNull(graphene.List(graphene.NonNull(LimitedResponseType)))
+    superseded_by = graphene.Field(LimitedResponseType)
+
     class Meta:
         model = Response
         fields = (
@@ -50,4 +57,5 @@ class FullResponseType(LimitedResponseType):
             "form_data",
             "created_at",
             "sequence_number",
+            "superseded_by",
         )

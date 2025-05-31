@@ -7,7 +7,6 @@ from access.cbac import graphql_check_instance, graphql_check_model
 from core.models.event import Event
 from dimensions.utils.process_dimensions_form import process_dimensions_form
 from forms.models.field import Field, FieldType
-from forms.models.response import Response
 from forms.utils.process_form_data import process_form_data
 
 from ...models.program import Program
@@ -49,13 +48,12 @@ class AcceptProgramOffer(graphene.Mutation):
         """
         request: HttpRequest = info.context
         form_data: dict[str, str] = input.form_data  # type: ignore
+        event = Event.objects.get(slug=input.event_slug)
+        meta = event.program_v2_event_meta
+        if not meta:
+            raise ValueError("Event is not a program event")
 
-        program_offer = Response.objects.get(
-            id=input.response_id,
-            form__event__slug=input.event_slug,
-            form__survey__app="program_v2",
-        )
-        event: Event = program_offer.form.event  # ugh
+        program_offer = meta.current_program_offers.get(id=input.response_id)
 
         # check that we are both allowed to read the program offer and create a program
         graphql_check_instance(

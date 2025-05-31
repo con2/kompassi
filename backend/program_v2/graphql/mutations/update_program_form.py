@@ -61,5 +61,8 @@ class UpdateProgramForm(graphene.Mutation):
         )
         survey.save()
 
+        print(survey)
+        print(survey.responses_editable_until)
+
         survey.workflow.handle_form_update()
         return UpdateProgramForm(survey=survey)  # type: ignore

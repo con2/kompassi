@@ -101,6 +101,7 @@ class DimensionDTO(pydantic.BaseModel):
                 dimension=dim_dj,
                 slug=choice.slug,
                 is_technical=choice.is_technical,
+                is_subject_locked=choice.is_subject_locked,
                 # NOTE SUPPORTED_LANGUAGES
                 title_en=choice.title.get("en", ""),
                 title_fi=choice.title.get("fi", ""),

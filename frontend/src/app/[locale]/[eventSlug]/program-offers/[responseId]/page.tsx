@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ButtonGroup } from "react-bootstrap";
 import { updateResponseDimensions } from "../../surveys/[surveySlug]/responses/[responseId]/actions";
 import { acceptProgramOffer } from "./actions";
 import { graphql } from "@/__generated__";
@@ -14,10 +15,12 @@ import {
   validateCachedDimensions,
 } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
-import { formatDateTime } from "@/components/FormattedDateTime";
+import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
+import { OldVersionAlert } from "@/components/forms/OldVersionAlert";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
+import { ProfileFields } from "@/components/profile/ProfileFields";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import slugify from "@/helpers/slugify";
@@ -30,7 +33,7 @@ graphql(`
     createdAt
     createdBy {
       displayName
-      email
+      ...FullSelectedProfile
     }
     language
     values
@@ -40,6 +43,9 @@ graphql(`
         title(lang: $locale)
         slug
         cachedDefaultDimensions
+        profileFieldSelector {
+          ...FullProfileFieldSelector
+        }
       }
     }
     programs {
@@ -47,6 +53,13 @@ graphql(`
       title
     }
     cachedDimensions
+    supersededBy {
+      ...ResponseRevision
+    }
+    oldVersions {
+      ...ResponseRevision
+    }
+    canEdit(mode: ADMIN)
   }
 `);
 
@@ -59,6 +72,8 @@ const query = graphql(`
     event(slug: $eventSlug) {
       name
       slug
+      timezone
+
       program {
         dimensions(publicOnly: false) {
           slug
@@ -157,42 +172,15 @@ export default async function ProgramOfferPage({
   const programT = translations.Program;
   const t = translations.Program.ProgramOffer;
 
-  const { sequenceNumber, createdAt, form } = data.event.program.programOffer;
-  const { fields } = form;
-
   const programOffer = data.event.program.programOffer;
+  const { event } = data;
+  const { createdAt, createdBy, form, supersededBy, oldVersions, canEdit } =
+    programOffer;
+  const { fields, survey: programForm } = form;
+
   const values: Record<string, any> = programOffer.values ?? {};
 
   validateFields(fields);
-
-  // TODO using synthetic form fields for presentation is a hack
-  // but it shall suffice until someone comes up with a Design Vision™
-  const technicalFields: Field[] = [
-    {
-      slug: "createdAt",
-      // TODO(#438) use DateTimeField
-      type: "SingleLineText",
-      title: surveyT.attributes.createdAt,
-    },
-    {
-      slug: "createdBy",
-      type: "SingleLineText",
-      title: surveyT.attributes.createdBy,
-    },
-  ];
-
-  // TODO(#438) use DateTimeField
-  const formattedCreatedAt = createdAt ? formatDateTime(createdAt, locale) : "";
-  const createdBy = programOffer.createdBy;
-  const formattedCreatedBy = createdBy
-    ? `${createdBy.displayName} <${createdBy.email}>`
-    : "-";
-
-  const technicalValues = {
-    sequenceNumber,
-    createdAt: formattedCreatedAt,
-    createdBy: formattedCreatedBy,
-  };
 
   validateCachedDimensions(programOffer.cachedDimensions);
   const dimensions: Dimension[] = data.event.program.dimensions;
@@ -240,6 +228,8 @@ export default async function ProgramOfferPage({
   };
 
   const surveySlug = programOffer.form.survey!.slug;
+  const canAccept = !supersededBy;
+  const dimensionsReadOnly = !!supersededBy;
 
   return (
     <ProgramAdminView
@@ -248,45 +238,86 @@ export default async function ProgramOfferPage({
       active="programOffers"
       searchParams={searchParams}
       actions={
-        <ModalButton
-          className="btn btn-outline-primary"
-          label={t.actions.accept.title + "…"}
-          title={t.actions.accept.title}
-          messages={t.actions.accept.modalActions}
-          action={acceptProgramOffer.bind(null, locale, eventSlug, responseId)}
-        >
-          {programOffer.programs.length > 0 && (
-            <div className="alert alert-warning">
-              <p>
-                {t.attributes.programs.acceptAgainWarning(
-                  programOffer.programs.length,
-                )}
-              </p>
-              {programOffer.programs.map((program) => (
-                <div key={program.slug}>
-                  <Link
-                    className="link-subtle"
-                    href={`/${eventSlug}/program-admin/${program.slug}`}
-                    title={program.title}
-                    target="_blank"
-                  >
-                    {program.title}
-                  </Link>
-                </div>
-              ))}
-            </div>
+        <ButtonGroup>
+          {canEdit && (
+            <Link
+              className="btn btn-outline-primary disabled"
+              href={`/${locale}/${eventSlug}/program-offers/${responseId}/edit`}
+              title={t.actions.edit.title}
+            >
+              {t.actions.edit.label}
+            </Link>
           )}
-          <p>{t.actions.accept.message}</p>
-          <SchemaForm
-            fields={acceptProgramOfferFields}
-            values={acceptProgramOfferValues}
-            messages={translations.SchemaForm}
-            headingLevel="h4"
-          />
-        </ModalButton>
+          {canAccept && (
+            <>
+              <ModalButton
+                className="btn btn-outline-success"
+                label={t.actions.accept.label + "…"}
+                title={t.actions.accept.title}
+                messages={t.actions.accept.modalActions}
+                action={acceptProgramOffer.bind(
+                  null,
+                  locale,
+                  eventSlug,
+                  responseId,
+                )}
+              >
+                {programOffer.programs.length > 0 && (
+                  <div className="alert alert-warning">
+                    <p>
+                      {t.attributes.programs.acceptAgainWarning(
+                        programOffer.programs.length,
+                      )}
+                    </p>
+                    {programOffer.programs.map((program) => (
+                      <div key={program.slug}>
+                        <Link
+                          className="link-subtle"
+                          href={`/${eventSlug}/program-admin/${program.slug}`}
+                          title={program.title}
+                          target="_blank"
+                        >
+                          {program.title}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <p>{t.actions.accept.message}</p>
+                <SchemaForm
+                  fields={acceptProgramOfferFields}
+                  values={acceptProgramOfferValues}
+                  messages={translations.SchemaForm}
+                  headingLevel="h4"
+                  idPrefix="accept-program-offer"
+                />
+              </ModalButton>
+
+              <ModalButton
+                className="btn btn-outline-danger"
+                label={t.actions.cancel.label + "…"}
+                title={t.actions.cancel.title}
+                messages={t.actions.cancel.modalActions}
+                disabled
+              >
+                <p>{t.actions.cancel.message}</p>
+              </ModalButton>
+            </>
+          )}
+        </ButtonGroup>
       }
     >
-      <div className="row mb-5 mt-3">
+      <h3 className="mt-4">{values.title ?? t.singleTitle}</h3>
+      {supersededBy ? (
+        <OldVersionAlert
+          supersededBy={supersededBy}
+          basePath={`/${eventSlug}/program-offers`}
+          messages={t.OldVersionAlert}
+          className="mt-4 mb-4"
+        />
+      ) : null}
+
+      <div className="row mb-5 mt-4">
         {!!dimensions?.length && (
           <div className="col-md-8">
             <div className="card mb-3 h-100">
@@ -300,6 +331,8 @@ export default async function ProgramOfferPage({
                   cachedDimensions={programOffer.cachedDimensions}
                   translations={translations}
                   technicalDimensions="readonly"
+                  readOnly={dimensionsReadOnly}
+                  idPrefix="response-dimensions"
                   onChange={updateResponseDimensions.bind(
                     null,
                     eventSlug,
@@ -317,12 +350,73 @@ export default async function ProgramOfferPage({
               <h5 className="card-title mb-3">
                 {surveyT.attributes.technicalDetails}
               </h5>
-              <SchemaForm
-                fields={technicalFields}
-                values={technicalValues}
-                messages={translations.SchemaForm}
-                readOnly
-              />
+
+              <div className="mb-4">
+                <label className="form-label fw-bold">
+                  {surveyT.attributes.createdAt}
+                </label>
+                <div>
+                  <FormattedDateTime
+                    value={createdAt}
+                    locale={locale}
+                    scope={event}
+                    session={session}
+                  />
+                </div>
+              </div>
+
+              {createdBy && (
+                <div className="mb-4">
+                  <label className="form-label fw-bold">
+                    {surveyT.attributes.createdBy}
+                  </label>
+                  <div>
+                    <ModalButton
+                      className="btn btn-link p-0 link-subtle"
+                      label={createdBy.displayName + "…"}
+                      title="View profile"
+                      messages={{
+                        submit: "This modal has no submit button :)",
+                        cancel: "Close",
+                      }}
+                    >
+                      <ProfileFields
+                        profileFieldSelector={programForm.profileFieldSelector}
+                        profile={createdBy}
+                        messages={translations.Profile}
+                      />
+                    </ModalButton>
+                  </div>
+                </div>
+              )}
+
+              {oldVersions.length > 0 && (
+                <div className="mb-4">
+                  <label className="form-label fw-bold">
+                    {surveyT.ResponseHistory.title}
+                  </label>
+                  <ul className="list-unstyled m-0">
+                    {oldVersions.map((version) => (
+                      <li key={version.id}>
+                        <Link
+                          href={`/${event.slug}/program-offers/${version.id}`}
+                          className="link-subtle"
+                        >
+                          <FormattedDateTime
+                            value={version.createdAt}
+                            locale={locale}
+                            scope={event}
+                            session={session}
+                          />
+                          {version.createdBy && (
+                            <> ({version.createdBy?.displayName})</>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>

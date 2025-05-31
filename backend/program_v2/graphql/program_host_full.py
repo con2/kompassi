@@ -5,7 +5,7 @@ from typing import Self
 
 import graphene
 
-from core.graphql.person_limited import LimitedPersonType
+from core.graphql.profile_limited import LimitedProfileType
 from core.models.person import Person
 from involvement.models.involvement import Involvement
 
@@ -21,7 +21,7 @@ class ProgramHost:
 
     @property
     def programs(self) -> list[Program]:
-        return [involvement.program for involvement in self.involvements]
+        return [involvement.program for involvement in self.involvements if involvement.program is not None]
 
     @classmethod
     def from_event(cls, meta: ProgramV2EventMeta) -> Iterable[Self]:
@@ -42,5 +42,5 @@ class FullProgramHostType(graphene.ObjectType):
     whereas FullProgramHostType groups all Programs for a Person in an Event.
     """
 
-    person = graphene.NonNull(LimitedPersonType)
+    person = graphene.NonNull(LimitedProfileType)
     programs = graphene.NonNull(graphene.List(graphene.NonNull(LimitedProgramType)))

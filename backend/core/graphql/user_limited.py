@@ -3,12 +3,18 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AbstractUser
 from graphene_django import DjangoObjectType
 
+from core.models.person import Person
 
-# TODO should we use Person instead?
+
 class LimitedUserType(DjangoObjectType):
+    """
+    Deprecated. Use ProfileType instead.
+    """
+
     @staticmethod
     def resolve_display_name(user: AbstractUser, info):
-        return user.get_full_name()
+        person: Person | None = user.person  # type: ignore
+        return person.full_name if person else user.get_full_name()
 
     display_name = graphene.Field(
         graphene.NonNull(graphene.String),

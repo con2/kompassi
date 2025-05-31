@@ -1,8 +1,5 @@
 import { ReactNode } from "react";
 
-export type Layout = "horizontal" | "vertical";
-export const defaultLayout: Layout = "vertical";
-
 export type FieldType =
   | "SingleLineText"
   | "MultiLineText"
@@ -222,7 +219,6 @@ export interface FormSchema {
   title: string;
   slug: string;
   fields: Field[];
-  layout?: Layout;
 }
 
 export const dummyForm: FormSchema = {

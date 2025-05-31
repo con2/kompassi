@@ -168,8 +168,7 @@ class Projection(models.Model):
         return dimension_filters.filter(
             Response.objects.filter(
                 form__survey__in=self.surveys.all(),
-                # TODO(#378)
-                # superseded_by__isnull=True,
+                superseded_by__isnull=True,
             ).select_related(
                 "form",
                 "form__survey",

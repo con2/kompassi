@@ -2,8 +2,7 @@ import AutoSubmitForm from "../AutoSubmitForm";
 import { Choice, MultiSelect, SingleSelect } from "../forms/models";
 import { SchemaForm } from "../forms/SchemaForm";
 import SubmitButton from "../forms/SubmitButton";
-import { Dimension, validateCachedDimensions } from "./models";
-import { DimensionRowGroupFragment } from "@/__generated__/graphql";
+import { Dimension } from "./models";
 import type { Translations } from "@/translations/en";
 
 export function buildDimensionChoices(
@@ -43,20 +42,26 @@ export function buildDimensionField(
   const value = type === "SingleSelect" ? valueList[0] ?? "" : valueList;
   const readOnly = technicalDimensions === "readonly" && dimension.isTechnical;
 
+  const titleParts = [dimension.title ?? dimension.slug];
+  if (readOnly) {
+    titleParts.push("🔒");
+  }
+  const title = titleParts.join(" ");
+
   const field: SingleSelect | MultiSelect =
     type === "SingleSelect"
       ? {
           slug: dimension.slug,
           type: "SingleSelect",
           presentation: "dropdown",
-          title: dimension.title ?? dimension.slug,
+          title: title,
           choices: buildDimensionChoices(dimension),
           readOnly,
         }
       : {
           slug: dimension.slug,
           type: "MultiSelect",
-          title: dimension.title ?? dimension.slug,
+          title: title,
           choices: buildDimensionChoices(dimension),
           readOnly,
         };
@@ -98,7 +103,9 @@ interface Props {
   cachedDimensions: Record<string, string[]>;
   onChange(formData: FormData): Promise<void>;
   translations: Translations;
+  readOnly?: boolean;
   technicalDimensions?: TechnicalDimensionsHandling;
+  idPrefix?: string;
 }
 
 /// A form to select values for dimensions.
@@ -107,7 +114,9 @@ export default function DimensionValueSelectionForm({
   cachedDimensions,
   onChange,
   translations,
+  readOnly = false,
   technicalDimensions = "omit",
+  idPrefix,
 }: Props) {
   const { fields, values } = buildDimensionValueSelectionForm(
     dimensions,
@@ -122,6 +131,8 @@ export default function DimensionValueSelectionForm({
         fields={fields}
         values={values}
         messages={translations.SchemaForm}
+        readOnly={readOnly}
+        idPrefix={idPrefix}
       />
       <noscript>
         <SubmitButton>{t.actions.saveDimensions}</SubmitButton>

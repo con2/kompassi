@@ -5,7 +5,9 @@ import logging
 import pydantic
 from django.conf import settings
 from django.core.mail import send_mass_mail
+from django.http import HttpRequest
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 from django.utils.translation import get_language
 
 from access.cbac import is_graphql_allowed_for_model
@@ -61,31 +63,53 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         """
         pass
 
-    def handle_new_response_phase1(self, response: Response):
+    def handle_new_response_phase1(
+        self,
+        response: Response,
+        old_version: Response | None = None,
+    ):
         """
         Called when a new response is created for a survey using this workflow.
         Called during the transaction that creates the response.
         Do not call external services or perform any actions that require the transaction to be committed.
         """
         cache = self.survey.universe.preload_dimensions()
-        response.set_dimension_values(self.survey.cached_default_dimensions, cache=cache)
+
+        if old_version:
+            response.set_dimension_values(
+                old_version.cached_dimensions,
+                cache=cache,
+            )
+        else:
+            response.set_dimension_values(self.survey.cached_default_dimensions, cache=cache)
+
         lift_dimension_values(response, cache=cache)
         response.refresh_cached_fields()
 
+        # Old versions need not be findable through dimensions.
+        if old_version:
+            old_version.dimensions.all().delete()
+            # triggers refresh_cached_dimensions for old_version, clearing cached_dimensions
+
         self.ensure_involvement(
             response,
+            old_version=old_version,
             cache=response.event.involvement_universe.preload_dimensions(),
         )
 
         return cache
 
-    def handle_new_response_phase2(self, response: Response):
+    def handle_new_response_phase2(
+        self,
+        response: Response,
+        old_version: Response | None = None,
+    ):
         """
         Called when a new response is created for a survey using this workflow.
         Called after the transaction that creates the response is committed.
         This is the place to call external services or perform any actions that require the transaction to be committed.
         """
-        self.notify_subscribers(response)
+        self.notify_subscribers(response, old_version=old_version)
         self.ensure_survey_to_badge(response)
 
     def handle_response_dimension_update(self, response: Response):
@@ -100,7 +124,13 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         )
         self.ensure_survey_to_badge(response)
 
-    def ensure_involvement(self, response: Response, cache: DimensionCache):
+    def ensure_involvement(
+        self,
+        response: Response,
+        *,
+        old_version: Response | None = None,
+        cache: DimensionCache,
+    ):
         """
         If the response ought to result in Involvement, create it.
         """
@@ -108,6 +138,13 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
 
         if not response.survey.registry:
             return
+
+        if old_version:
+            Involvement.objects.filter(
+                response=old_version,
+            ).update(
+                response=response,
+            )
 
         Involvement.from_survey_response(
             response=response,
@@ -133,12 +170,20 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
 
         return Badge.ensure(response.survey.event, user.person)
 
-    def notify_subscribers(self, response: Response):
+    def notify_subscribers(
+        self,
+        response: Response,
+        old_version: Response | None = None,
+    ):
         from ..tasks import response_notify_subscribers
 
-        response_notify_subscribers.delay(response.id)  # type: ignore
+        response_notify_subscribers.delay(response.id, old_version.id if old_version else None)  # type: ignore
 
-    def _notify_subscribers(self, response: Response):
+    def _notify_subscribers(
+        self,
+        response: Response,
+        old_version: Response | None,
+    ):
         # TODO recipient language instead of session language
         language = get_language()
 
@@ -148,8 +193,12 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         if (form := survey.get_form(language)) is None:
             raise TypeError("No form found in survey (this shouldn't happen)")
 
-        body_template_name = get_message_in_language(response.notification_templates, language)
-        subject_template = get_message_in_language(response.subject_templates, language)
+        if old_version:
+            body_template_name = get_message_in_language(response.edited_response_message_templates, language)
+            subject_template = get_message_in_language(response.edited_response_subject_templates, language)
+        else:
+            body_template_name = get_message_in_language(response.new_response_message_templates, language)
+            subject_template = get_message_in_language(response.new_response_subject_templates, language)
 
         if not body_template_name or not subject_template:
             raise ValueError("Missing body or subject template for supported language", language)
@@ -175,9 +224,47 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             if is_graphql_allowed_for_model(
                 subscriber,
                 instance=survey,
+                app=survey.app,
                 operation="query",
                 field="responses",
             )
         ]
 
+        if not mailbag:
+            return
+
         send_mass_mail(mailbag)  # type: ignore
+
+    def response_can_be_edited_by(self, response: Response, request: HttpRequest) -> bool:
+        """
+        Common criteria for editability of a response shared by all workflows.
+        """
+        if not request.user.is_authenticated:
+            return False
+
+        if not response.created_by:
+            return False
+
+        if response.created_by != request.user:
+            return False
+
+        if response.superseded_by is not None:
+            return False
+
+        if not (response.survey.responses_editable_until and now() < self.survey.responses_editable_until):
+            return False
+
+        return not response.dimensions.filter(value__is_subject_locked=True).exists()
+
+    def response_can_be_edited_by_admin(
+        self,
+        response: Response,
+        request: HttpRequest,
+    ) -> bool:
+        return is_graphql_allowed_for_model(
+            request.user,
+            instance=response.survey,
+            app=response.survey.app,
+            operation="update",
+            field="responses",
+        )

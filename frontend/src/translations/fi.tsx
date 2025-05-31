@@ -121,8 +121,21 @@ const translations: Translations = {
         henkilötiedot, jotka annat tällä lomakkeella.
       </>
     ),
+    messageAlreadyAccepted: (
+      <>
+        Kun täytit tämän lomakkeen, henkilötietojasi siirrettiin rekisteristä
+        toiseen seuraavasti. Lisäksi vastaanottajan rekisteriin liitettiin ne
+        henkilötiedot, jotka annoit tällä lomakkeella.
+      </>
+    ),
     consentCheckBox:
       "Hyväksyn henkilötietojeni luovutuksen ja käsittelyn yllä kuvatulla tavalla.",
+    consentAlreadyGivenAt: (formattedDate: ReactNode) => (
+      <>
+        Olet hyväksynyt henkilötietojesi luovutuksen ja käsittelyn yllä
+        kuvatulla tavalla {formattedDate}.
+      </>
+    ),
     privacyPolicy: "Tietosuojaseloste",
     privacyPolicyMissing: "Tietosuojaseloste puuttuu",
     actions: {
@@ -1106,10 +1119,16 @@ const translations: Translations = {
       },
       empty: (
         <>
-          Sinulla ei ole ohjelmanumeroita eikä ohjelmatarjouksia. Jos
+          Sinulla ei ole ohjelmanumeroita eikä avoimia ohjelmatarjouksia. Jos
           ilmoittaudut ohjelmanpitäjäksi tapahtumaan, joka käyttää Kompassia
           ohjelmansa hallintaan, löydät ohjelmatarjoukset ja ohjelmanumerot
           täältä.
+        </>
+      ),
+      allProgramOffers: (
+        <>
+          Löydät kaikki tekemäsi ohjelmatarjoukset, mukaan lukien ne jotka on jo
+          käsitelty, täältä:
         </>
       ),
     },
@@ -1242,8 +1261,13 @@ const translations: Translations = {
       },
 
       actions: {
+        edit: {
+          title: "Muokkaa ohjelmatarjousta",
+          label: "Muokkaa",
+        },
         accept: {
           title: "Hyväksy ohjelmatarjous",
+          label: "Hyväksy",
           message: (
             <>
               Voit luoda ohjelmanumeron tästä ohjelmatarjouksesta tarkistamalla
@@ -1256,6 +1280,35 @@ const translations: Translations = {
             submit: "Hyväksy",
             cancel: "Sulje hyväksymättä",
           },
+        },
+        cancel: {
+          title: "Hylkää tai peru ohjelmatarjous",
+          label: "Hylkää tai peru",
+          message: (
+            <>
+              <p>Haluatko hylätä tai perua ohjelmatarjouksen?</p>
+              <p>
+                Merkitse ohjelmatarjous <strong>peruutetuksi</strong>, jos
+                ohjelmanpitäjä pyysi itse ohjelmatarjouksensa peruuttamista.
+              </p>
+              <p>
+                Merkitse ohjelmatarjous <strong>hylätyksi</strong>, jos päätit
+                olla ottamatta ohjelmatarjousta vastaan.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Proceed",
+            cancel: "Close without rejecting or cancelling",
+          },
+        },
+      },
+
+      OldVersionAlert: {
+        title: "Tämä on vanha versio ohjelmatarjouksesta",
+        message: "Ohjelmatarjousta on muokattu. Tämä on vanha versio.",
+        actions: {
+          returnToCurrentVersion: "Palaa uusimpaan versioon",
         },
       },
     },
@@ -1417,6 +1470,18 @@ const translations: Translations = {
         helpText:
           "Jos tämä on asetettu, kysely lakkaa ottamasta vastaan vastauksia tähän aikaan.",
       },
+      responsesEditableUntil: {
+        title: "Vastaukset muokattavissa tähän asti",
+        helpText: (
+          <>
+            Jos tämä on asetettu, käyttäjät voivat muokata vastauksiaan tähän
+            aikaan asti. Jos tätä ei ole asetettu, vastauksia ei voi muokata.
+            (Voit myös asettaa dimension arvolle asetuksen{" "}
+            <em>Lukitse kohde muokkauksilta</em> lukitaksesi muokkauksilta
+            vastaukset joilla on kyseinen arvo.)
+          </>
+        ),
+      },
       countResponses: "Vastauksia",
       languages: "Kielet",
       actions: "Toiminnot",
@@ -1545,6 +1610,38 @@ const translations: Translations = {
           submit: "Poista vastaus",
           cancel: "Peruuta poistamatta",
         },
+      },
+      editResponse: {
+        title: "Muokkaa vastausta",
+        label: "Muokkaa",
+        cancel: "Peru muokkaus",
+        editingOwn: (formattedCreatedAt: ReactNode) => (
+          <>
+            Muokkaat vastausta, jonka lähetit {formattedCreatedAt}. Muokkauksesi
+            astuvat voimaan vasta kun lähetät lomakkeen.
+          </>
+        ),
+        editingOthers: (
+          formattedCreatedAt: ReactNode,
+          createdBy: ReactNode,
+        ) => (
+          <>
+            Muokkaat vastausta, jonka on lähettänyt <strong>{createdBy}</strong>{" "}
+            {formattedCreatedAt}. Muokkauksesi astuvat voimaan vasta kun lähetät
+            lomakkeen.
+          </>
+        ),
+        cannotEdit: (
+          <>
+            <h1>Vastausta ei voi muokata</h1>
+            <p>Et voi muokata tätä vastausta tällä hetkellä.</p>
+          </>
+        ),
+        success: (surveyTitle: string) => (
+          <>
+            Vastauksesi kyselyyn <em>{surveyTitle}</em> on päivitetty.
+          </>
+        ),
       },
       exportDropdown: {
         dropdownHeader: "Lataa vastaukset",
@@ -1777,6 +1874,11 @@ const translations: Translations = {
           helpText:
             "Arvon väri vastauslistassa. Käytä kirkkaita värejä: ne vaalenevat tai tummenevat tarvittaessa.",
         },
+        isSubjectLocked: {
+          title: "Lukitse kohde muokkauksilta",
+          helpText:
+            "Jos tämä on asetettu, tämän arvon liittäminen kohteeseen lukitsee kohteen muokkauksilta.",
+        },
         localizedTitleHeader: {
           title: "Otsikko lokalisoituna",
           helpText:
@@ -1800,6 +1902,18 @@ const translations: Translations = {
       title: "Muokkaa kyselyä",
       actions: {
         submit: "Tallenna kentät",
+      },
+    },
+    ResponseHistory: {
+      title: "Vanhat versiot",
+      message:
+        "Tätä vastausta on muokattu. Tämä on vastauksen ajantasaisin versio. Alta löydät vanhat versiot.",
+    },
+    OldVersionAlert: {
+      title: "Tämä on vanha versio vastauksesta",
+      message: "Vastausta on muokattu. Tämä on vanha versio.",
+      actions: {
+        returnToCurrentVersion: "Palaa uusimpaan versioon",
       },
     },
   },

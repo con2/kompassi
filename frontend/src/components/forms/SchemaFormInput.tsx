@@ -1,4 +1,5 @@
 import { Temporal } from "@js-temporal/polyfill";
+import makeInputId from "./makeInputId";
 import type { Field } from "./models";
 import UploadedFileCards from "./UploadedFileCards";
 import { timezone } from "@/config";
@@ -6,6 +7,7 @@ import type { Translations } from "@/translations/en";
 
 interface SchemaFormInputProps {
   field: Field;
+  idPrefix?: string;
   value?: any;
   readOnly?: boolean;
   messages: Translations["SchemaForm"];
@@ -27,6 +29,7 @@ function SchemaFormInput({
   field,
   value,
   messages,
+  idPrefix = "",
   readOnly: elementReadOnly = false,
 }: SchemaFormInputProps) {
   const {
@@ -37,7 +40,7 @@ function SchemaFormInput({
     readOnly: fieldReadOnly = false,
   } = field;
   const readOnly = elementReadOnly || fieldReadOnly;
-
+  const id = makeInputId(idPrefix, field);
   // TODO: make id unique in a deterministic fashion
   switch (type) {
     case "Spacer":
@@ -52,7 +55,7 @@ function SchemaFormInput({
           defaultValue={value}
           required={required}
           readOnly={readOnly}
-          id={slug}
+          id={id}
           name={slug}
         />
       );
@@ -64,7 +67,7 @@ function SchemaFormInput({
           defaultValue={value}
           required={required}
           readOnly={readOnly}
-          id={slug}
+          id={id}
           name={slug}
         />
       );
@@ -77,7 +80,7 @@ function SchemaFormInput({
           defaultValue={value}
           required={required}
           readOnly={readOnly}
-          id={slug}
+          id={id}
           name={slug}
           step={field.decimalPlaces ? 1 / 10 ** field.decimalPlaces : 1}
           inputMode={field.decimalPlaces ? "decimal" : "numeric"}
@@ -94,7 +97,7 @@ function SchemaFormInput({
           defaultChecked={!!value}
           required={required}
           disabled={readOnly}
-          id={slug}
+          id={id}
           name={slug}
         />
       );
@@ -111,7 +114,7 @@ function SchemaFormInput({
               className="form-select"
               required={required}
               disabled={readOnly}
-              id={slug}
+              id={id}
               name={slug}
               defaultValue={value}
             >
@@ -127,23 +130,26 @@ function SchemaFormInput({
           // radio button group
           return (
             <>
-              {choices.map((choice) => (
-                <div key={choice.slug} className="mb-2">
-                  <input
-                    className="form-check-input"
-                    type="radio"
-                    required={required}
-                    disabled={readOnly}
-                    id={choice.slug}
-                    name={slug}
-                    value={choice.slug}
-                    defaultChecked={choice.slug === value}
-                  />{" "}
-                  <label htmlFor={choice.slug} className="form-check-label">
-                    {choice.title}
-                  </label>
-                </div>
-              ))}
+              {choices.map((choice) => {
+                const choiceId = makeInputId(idPrefix, field, choice);
+                return (
+                  <div key={choice.slug} className="mb-2">
+                    <input
+                      className="form-check-input"
+                      type="radio"
+                      required={required}
+                      disabled={readOnly}
+                      id={choiceId}
+                      name={slug}
+                      value={choice.slug}
+                      defaultChecked={choice.slug === value}
+                    />{" "}
+                    <label htmlFor={choiceId} className="form-check-label">
+                      {choice.title}
+                    </label>
+                  </div>
+                );
+              })}
             </>
           );
       }
@@ -153,6 +159,9 @@ function SchemaFormInput({
         <>
           {field.choices?.map((choice) => {
             const name = `${field.slug}.${choice.slug}`;
+            const choiceId = `${idPrefix}${idPrefix ? "-" : ""}${field.slug}-${
+              choice.slug
+            }`;
             return (
               <div key={choice.slug} className="mb-2">
                 <input
@@ -160,10 +169,10 @@ function SchemaFormInput({
                   type="checkbox"
                   defaultChecked={value?.includes(choice.slug)}
                   disabled={readOnly}
-                  id={name}
+                  id={choiceId}
                   name={name}
                 />{" "}
-                <label htmlFor={name} className="form-check-label">
+                <label htmlFor={choiceId} className="form-check-label">
                   {choice.title}
                 </label>
               </div>
@@ -217,7 +226,7 @@ function SchemaFormInput({
           <input
             className="form-control"
             type="file"
-            id={slug}
+            id={id}
             name={slug}
             required={required}
             multiple={field.multiple}
@@ -232,7 +241,7 @@ function SchemaFormInput({
           defaultValue={value}
           required={required}
           readOnly={readOnly}
-          id={slug}
+          id={id}
           name={slug}
         />
       );
@@ -244,7 +253,7 @@ function SchemaFormInput({
           defaultValue={value}
           required={required}
           readOnly={readOnly}
-          id={slug}
+          id={id}
           name={slug}
         />
       );
@@ -256,7 +265,7 @@ function SchemaFormInput({
           defaultValue={value ? dateTimeToHtml(value) : undefined}
           required={required}
           readOnly={readOnly}
-          id={slug}
+          id={id}
           name={slug}
         />
       );

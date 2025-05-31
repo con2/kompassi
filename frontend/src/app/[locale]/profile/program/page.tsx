@@ -1,15 +1,17 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
 import {
   ProfileProgramItemFragment,
-  ProfileProgramOfferFragment,
+  ProfileResponsesTableRowFragment,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
 import SignInRequired from "@/components/errors/SignInRequired";
+import ProfileResponsesTable from "@/components/forms/ProfileResponsesTable";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -38,34 +40,6 @@ graphql(`
   }
 `);
 
-graphql(`
-  fragment ProfileProgramOffer on FullResponseType {
-    id
-    createdAt
-    values(keyFieldsOnly: true)
-
-    form {
-      event {
-        slug
-        name
-      }
-    }
-
-    dimensions(keyDimensionsOnly: true) {
-      dimension {
-        slug
-        title(lang: $locale)
-      }
-
-      value {
-        slug
-        title(lang: $locale)
-        color
-      }
-    }
-  }
-`);
-
 const query = graphql(`
   query ProfileProgramItemList($locale: String!) {
     profile {
@@ -75,7 +49,7 @@ const query = graphql(`
         }
 
         programOffers(filters: [{ dimension: "state", values: "new" }]) {
-          ...ProfileProgramOffer
+          ...ProfileResponsesTableRow
         }
       }
     }
@@ -150,31 +124,6 @@ export default async function ProfileProgramItemList({ params }: Props) {
     },
   ];
 
-  const programOfferColumns: Column<ProfileProgramOfferFragment>[] = [
-    {
-      slug: "event",
-      title: t.attributes.event,
-      getCellContents: (row) => row.form.event.name,
-    },
-    {
-      slug: "title",
-      title: t.attributes.title,
-      getCellContents: (program) => (
-        <>
-          {(program.values as Record<string, any>).title ?? ""}
-          <span className="ms-2">
-            {program.dimensions?.map((dimension) => (
-              <DimensionBadge
-                key={dimension.dimension.slug}
-                dimension={dimension}
-              />
-            ))}
-          </span>
-        </>
-      ),
-    },
-  ];
-
   const programItems = data.profile.program.programs;
   const programOffers = data.profile.program.programOffers;
 
@@ -198,20 +147,42 @@ export default async function ProfileProgramItemList({ params }: Props) {
       {programOffers.length > 0 && (
         <>
           <p>{t.profile.programOffers.listTitle}:</p>
-          <DataTable rows={programOffers} columns={programOfferColumns}>
-            <tfoot>
-              <tr>
-                <td colSpan={programOfferColumns.length}>
-                  {t.profile.programOffers.tableFooter(programOffers.length)}
-                </td>
-              </tr>
-            </tfoot>
-          </DataTable>
+          <ProfileResponsesTable
+            responses={programOffers}
+            messages={translations.Survey}
+            locale={locale}
+            footer={t.profile.programOffers.tableFooter(programOffers.length)}
+            extraColumns={[
+              {
+                slug: "title",
+                title: t.attributes.title,
+                getCellContents: (programOffer) => (
+                  <>
+                    {(programOffer.values as Record<string, any>).title ?? ""}
+                    <span className="ms-2">
+                      {programOffer.dimensions?.map((dimension) => (
+                        <DimensionBadge
+                          key={dimension.dimension.slug}
+                          dimension={dimension}
+                        />
+                      ))}
+                    </span>
+                  </>
+                ),
+              },
+            ]}
+          />
         </>
       )}
       {programItems.length === 0 && programOffers.length === 0 && (
         <p>{t.profile.empty}</p>
       )}
+      <p className="mt-4">
+        {t.profile.allProgramOffers}{" "}
+        <Link href="/profile/responses" className="link-subtle">
+          {translations.Survey.ownResponsesTitle}
+        </Link>
+      </p>
     </ViewContainer>
   );
 }

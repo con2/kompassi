@@ -84,7 +84,7 @@ class FullSurveyType(LimitedSurveyType):
         Authorization required.
         """
         graphql_check_instance(survey, info, app=survey.app, field="responses")
-        return DimensionFilters.from_graphql(filters).filter(survey.responses.all()).order_by("created_at")
+        return DimensionFilters.from_graphql(filters).filter(survey.current_responses.all()).order_by("created_at")
 
     responses = graphene.List(
         graphene.NonNull(LimitedResponseType),
@@ -99,7 +99,7 @@ class FullSurveyType(LimitedSurveyType):
         Authorization required.
         """
         graphql_check_instance(survey, info, app=survey.app, field="responses")
-        return survey.responses.filter(id=id).first()
+        return survey.current_responses.filter(id=id).first()
 
     response = graphene.Field(
         FullResponseType,
@@ -114,7 +114,7 @@ class FullSurveyType(LimitedSurveyType):
         if not info.context.user.is_authenticated:
             return 0
 
-        return survey.responses.filter(created_by=info.context.user).count()
+        return survey.current_responses.filter(created_by=info.context.user).count()
 
     count_responses_by_current_user = graphene.Field(
         graphene.NonNull(graphene.Int),
@@ -132,7 +132,7 @@ class FullSurveyType(LimitedSurveyType):
         Authorization required.
         """
         graphql_check_instance(survey, info, app=survey.app, field="responses")
-        return DimensionFilters.from_graphql(filters).filter(survey.responses.all()).count()
+        return DimensionFilters.from_graphql(filters).filter(survey.current_responses.all()).count()
 
     count_responses = graphene.Field(
         graphene.NonNull(graphene.Int),
@@ -153,7 +153,7 @@ class FullSurveyType(LimitedSurveyType):
         not present in the base language is not guaranteed. Authorization required.
         """
         graphql_check_instance(survey, info, app=survey.app, field="responses")
-        responses = DimensionFilters.from_graphql(filters).filter(survey.responses.all()).order_by("created_at")
+        responses = DimensionFilters.from_graphql(filters).filter(survey.current_responses.all()).order_by("created_at")
         fields = survey.get_combined_fields(lang)
         valuesies = [response.get_processed_form_data(fields)[0] for response in responses.only("form_data")]
         summary = summarize_responses(fields, valuesies)
@@ -231,6 +231,7 @@ class FullSurveyType(LimitedSurveyType):
             "slug",
             "active_from",
             "active_until",
+            "responses_editable_until",
             "languages",
             "key_fields",
             "login_required",

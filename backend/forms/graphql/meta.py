@@ -111,7 +111,10 @@ class FormsProfileMetaType(graphene.ObjectType):
         """
         if info.context.user != meta.person.user:
             raise SuspiciousOperation("User mismatch")
-        return Response.objects.filter(created_by=meta.person.user).order_by("-created_at")
+        return Response.objects.filter(
+            created_by=meta.person.user,
+            superseded_by=None,
+        ).order_by("-created_at")
 
     responses = graphene.NonNull(
         graphene.List(

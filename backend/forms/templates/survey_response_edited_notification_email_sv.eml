@@ -1,0 +1,5 @@
+Svaret till enkäten ”{{ survey_title }}” har redigerats:
+
+{{ response_url }}
+--
+{{ sender_email }}

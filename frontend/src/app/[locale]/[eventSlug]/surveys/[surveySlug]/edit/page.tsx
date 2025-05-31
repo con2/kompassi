@@ -24,6 +24,7 @@ graphql(`
     countResponsesByCurrentUser
     activeFrom
     activeUntil
+    responsesEditableUntil
     canRemove
     purpose
     protectResponses
@@ -139,6 +140,11 @@ export default async function EditSurveyPage({ params }: Props) {
       slug: "activeUntil",
       type: "DateTimeField",
       ...t.attributes.activeUntil,
+    },
+    {
+      slug: "responsesEditableUntil",
+      type: "DateTimeField",
+      ...t.attributes.responsesEditableUntil,
     },
     {
       slug: "protectResponses",

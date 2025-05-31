@@ -28,7 +28,7 @@ const query = graphql(`
       name
 
       program {
-        dimensions {
+        dimensions(publicOnly: false) {
           ...DimensionRowGroup
         }
 

@@ -7,12 +7,13 @@ from core.models.event import Event
 from dimensions.models.dimension import Dimension
 from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
 from dimensions.models.universe import Universe
-from forms.models.enums import Anonymity
+from forms.models.enums import Anonymity, SurveyApp, SurveyPurpose
 from forms.models.response import Response
 from forms.models.survey import Survey
 from forms.models.workflow import Workflow
 from graphql_api.language import SUPPORTED_LANGUAGE_CODES
 from involvement.models.involvement import Involvement
+from tickets_v2.views.pos_view import HttpRequest
 
 from ..models.program import Program
 
@@ -71,6 +72,8 @@ STATE_DIMENSION_DTO = DimensionDTO(
         DimensionValueDTO(
             slug="accepted",
             is_technical=True,
+            # cannot use is_subject_locked on state=accepted because
+            # we may want to allow editing the program but not the offer
             title={
                 "fi": "Hyväksytty",
                 "en": "Accepted",
@@ -81,6 +84,7 @@ STATE_DIMENSION_DTO = DimensionDTO(
         DimensionValueDTO(
             slug="rejected",
             is_technical=True,
+            is_subject_locked=True,
             title={
                 "fi": "Hylätty",
                 "en": "Rejected",
@@ -91,6 +95,7 @@ STATE_DIMENSION_DTO = DimensionDTO(
         DimensionValueDTO(
             slug="cancelled",
             is_technical=True,
+            is_subject_locked=True,
             title={
                 "fi": "Peruutettu",
                 "en": "Cancelled",
@@ -142,39 +147,34 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
 
     @classmethod
     def backfill(cls, event: Event):
-        cls.backfill_default_dimensions(event)
-        cls.backfill_involvement(event)
+        logger.info("Backfilling program V2 settings for event %s", event.slug)
 
-        Survey.objects.filter(
-            event=event,
-            app="program_v2",
-            anonymity=Anonymity.NAME_AND_EMAIL.value,
-        ).update(
-            anonymity=Anonymity.FULL_PROFILE.value,
-        )
-
-        Program.refresh_cached_fields_qs(Program.objects.filter(event=event))
-
-    @classmethod
-    def backfill_default_dimensions(cls, event: Event):
-        """
-        Use this method to migrate events that had Program V2 initialized
-        before April 2025.
-        """
-        logger.info("Backfilling default dimensions for event %s", event.slug)
-
-        universe = cls.get_program_universe(event)
-        cls._setup_default_dimensions(universe)
-        cache = universe.preload_dimensions()
+        program_universe = cls.get_program_universe(event)
+        cls._setup_default_dimensions(program_universe)
+        program_cache = program_universe.preload_dimensions()
 
         meta = event.program_v2_event_meta
         if meta is None:
             raise ValueError("Event has no program_v2_event_meta")
 
-        for survey in meta.program_offer_forms.all():
-            survey.set_default_dimension_values(cls._get_default_dimension_values(survey), cache)
+        if not meta.default_registry:
+            raise ValueError("Event has no default registry for program_v2")
 
-        for program_offer in meta.program_offers.all():
+        # Program form settings
+        Survey.objects.filter(
+            event=event,
+            app="program_v2",
+        ).update(
+            anonymity=Anonymity.FULL_PROFILE.value,
+            registry=meta.default_registry,
+        )
+
+        for offer_form in meta.program_offer_forms.all():
+            offer_form.with_mandatory_attributes_for_app(SurveyApp.PROGRAM_V2, SurveyPurpose.DEFAULT).save()
+            offer_form.set_default_dimension_values(cls._get_default_dimension_values(offer_form), program_cache)
+
+        # Program offer dimensions
+        for program_offer in meta.current_program_offers.all():
             existing_values = program_offer.cached_dimensions
             values_to_set = {}
 
@@ -184,8 +184,9 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
                 values_to_set["form"] = [program_offer.survey.slug]
 
             if values_to_set:
-                program_offer.set_dimension_values(values_to_set, cache)
+                program_offer.set_dimension_values(values_to_set, program_cache)
 
+        # Program dimensions
         for program in Program.objects.filter(event=event):
             existing_values = program.cached_dimensions
             values_to_set = {}
@@ -196,53 +197,30 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
                 values_to_set["form"] = [program.program_offer.survey.slug] if program.program_offer else []
 
             if values_to_set:
-                program.set_dimension_values(values_to_set, cache)
+                program.set_dimension_values(values_to_set, program_cache)
 
-        Program.refresh_cached_dimensions_qs(Program.objects.filter(event=event))
+        Program.refresh_cached_fields_qs(Program.objects.filter(event=event))
 
-    @classmethod
-    def backfill_involvement(cls, event: Event):
-        """
-        Use this method to migrate events that had Program V2 initialized
-        before May 2025.
-        """
-        logger.info("Backfilling involvement for event %s", event.slug)
-
-        meta = event.program_v2_event_meta
-        if meta is None:
-            raise ValueError("Event has no program_v2_event_meta")
-
-        if not meta.default_registry:
-            raise ValueError("Event has no default registry for program_v2")
-
-        Survey.objects.filter(
-            event=event,
-            app="program_v2",
-            registry=None,
-        ).update(
-            registry=meta.default_registry,
-        )
-
-        universe = event.involvement_universe
-        Involvement.setup_dimensions(universe)
-        cache = universe.preload_dimensions()
+        # Involvements
+        involvement_universe = event.involvement_universe
+        Involvement.setup_dimensions(involvement_universe)
+        involvement_cache = involvement_universe.preload_dimensions()
 
         for program_offer in Response.objects.filter(
             form__event=event,
             form__survey__app="program_v2",
+            superseded_by=None,
         ):
-            program_offer.survey.workflow.ensure_involvement(program_offer, cache=cache)
+            program_offer.survey.workflow.ensure_involvement(program_offer, cache=involvement_cache)
 
-        for program in Program.objects.filter(event=event):
-            if program.program_offer:
-                Involvement.from_accepted_program_offer(
-                    program_offer=program.program_offer,
-                    program=program,
-                    cache=cache,
-                )
+        for program in Program.objects.filter(event=event, program_offer__isnull=False):
+            Involvement.from_accepted_program_offer(
+                program_offer=program.program_offer,
+                program=program,
+                cache=involvement_cache,
+            )
 
-            # TODO(#305) Handle other program hosts
-            # TODO(#664) Handle programs that are not created from program offers)
+        Program.refresh_cached_fields_qs(Program.objects.filter(event=event))
 
     def handle_form_update(self):
         """
@@ -365,3 +343,9 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         Badges are managed via Involvement.
         """
         return None, False
+
+    def response_can_be_edited_by(self, response: Response, request: HttpRequest) -> bool:
+        # cannot use is_subject_locked on state=accepted because we may want to allow editing the program but not the offer
+        return super().response_can_be_edited_by(response, request) and "new" in response.cached_dimensions.get(
+            "state", ["new"]
+        )

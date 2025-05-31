@@ -24,6 +24,11 @@ class DimensionValue(models.Model):
         help_text="Technical values cannot be edited in the UI. They are used for internal purposes and have some assumptions about them.",
     )
 
+    is_subject_locked = models.BooleanField(
+        default=False,
+        help_text="If set, subjects this value is assigned to can no longer be edited by whomever submitted them.",
+    )
+
     order = models.SmallIntegerField(
         default=0,
         help_text="Only applies if `dimension.value_ordering` is `manual`.",

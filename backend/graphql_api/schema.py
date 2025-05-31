@@ -2,7 +2,7 @@ import graphene
 
 from core.graphql.event_full import FullEventType
 from core.graphql.mutations.confirm_email import ConfirmEmail
-from core.graphql.profile import ProfileType
+from core.graphql.profile_own import OwnProfileType
 from core.models import Event, Person
 from core.utils import normalize_whitespace
 from dimensions.graphql.mutations.delete_dimension import DeleteDimension
@@ -93,7 +93,7 @@ class Query(graphene.ObjectType):
         except Person.DoesNotExist:
             return None
 
-    profile = graphene.Field(ProfileType)
+    profile = graphene.Field(OwnProfileType)
 
     @staticmethod
     def resolve_user_registry(root, info):

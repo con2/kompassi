@@ -16,6 +16,7 @@ interface Props {
     name: string;
     slug: string;
   };
+  alerts?: ReactNode;
   actions?: ReactNode;
   active: ProgramAdminTabsProps["active"];
   searchParams: Record<string, string>;
@@ -25,6 +26,7 @@ interface Props {
 export default async function ProgramAdminView({
   translations,
   event,
+  alerts,
   actions,
   active,
   children,
@@ -43,6 +45,7 @@ export default async function ProgramAdminView({
         <ViewHeadingActions>{actions}</ViewHeadingActions>
       </ViewHeadingActionsWrapper>
 
+      {alerts}
       <Errors error={error} messages={translations.Program.errors} />
 
       <ProgramAdminTabs

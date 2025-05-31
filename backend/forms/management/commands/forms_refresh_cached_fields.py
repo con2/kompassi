@@ -11,4 +11,4 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         Survey.refresh_cached_default_dimensions_qs(Survey.objects.all())
         Form.refresh_enriched_fields_qs(Form.objects.all())
-        Response.refresh_cached_fields_qs(Response.objects.all())
+        Response.refresh_cached_fields_qs(Response.objects.filter(superseded_by=None))

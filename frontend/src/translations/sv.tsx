@@ -914,6 +914,9 @@ const translations: Translations = {
         helpText:
           "Om detta är inställt kommer enkäten att sluta acceptera svar vid denna tidpunkt.",
       },
+      responsesEditableUntil: UNTRANSLATED(
+        en.Survey.attributes.responsesEditableUntil,
+      ),
       countResponses: "Svaren",
       languages: "Språk",
       actions: "Actions",
@@ -1025,6 +1028,7 @@ const translations: Translations = {
           cancel: "Avbryt utan att radera",
         },
       }),
+      editResponse: UNTRANSLATED(en.Survey.actions.editResponse),
       exportDropdown: {
         dropdownHeader: "Ladda ner svar",
         excel: "Ladda ner som Excel",
@@ -1156,6 +1160,8 @@ const translations: Translations = {
         submit: "Spara fält",
       },
     },
+    ResponseHistory: UNTRANSLATED(en.Survey.ResponseHistory),
+    OldVersionAlert: UNTRANSLATED(en.Survey.OldVersionAlert),
   },
 
   Invitation: UNTRANSLATED(en.Invitation),

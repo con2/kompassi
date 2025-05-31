@@ -28,7 +28,7 @@ class DeleteSurveyResponses(graphene.Mutation):
         if not survey.can_responses_be_deleted_by(request):
             raise ValueError("Cannot delete responses")
 
-        queryset = survey.responses.filter(id__in=input.response_ids)
+        queryset = survey.current_responses.filter(id__in=input.response_ids)
         _, deleted_by_model = queryset.delete()
         count_deleted = deleted_by_model.get("forms.Response", 0)
 

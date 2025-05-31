@@ -6,7 +6,7 @@ import graphene_django
 from ..models.person import Person
 
 
-class LimitedPersonType(graphene_django.DjangoObjectType):
+class LimitedProfileType(graphene_django.DjangoObjectType):
     """
     Represent Person without a way to traverse back to Event.
     """
@@ -33,3 +33,9 @@ class LimitedPersonType(graphene_django.DjangoObjectType):
         return person.full_name
 
     full_name = graphene.NonNull(graphene.String)
+
+    @staticmethod
+    def resolve_display_name(person: Person, info) -> str:
+        return person.display_name
+
+    display_name = graphene.NonNull(graphene.String)

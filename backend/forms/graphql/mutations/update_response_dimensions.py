@@ -38,7 +38,7 @@ class UpdateResponseDimensions(graphene.Mutation):
         form_data: dict[str, str] = input.form_data  # type: ignore
 
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-        response = survey.responses.get(id=input.response_id)
+        response = survey.current_responses.get(id=input.response_id)
 
         dimensions = list(survey.dimensions.filter(is_technical=False))
 

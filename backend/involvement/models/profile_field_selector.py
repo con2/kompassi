@@ -8,35 +8,7 @@ import pydantic
 from core.models.person import Person
 from forms.models.enums import Anonymity
 
-
-class Profile(pydantic.BaseModel, populate_by_name=True, frozen=True):
-    """
-    Represents a user profile with fields that can be selected for transfer.
-    NOTE: Must match Profile in frontend/src/components/involvement/models.ts.
-    """
-
-    first_name: str = pydantic.Field(
-        default="",
-        validation_alias="firstName",
-        serialization_alias="firstName",
-    )
-    last_name: str = pydantic.Field(
-        default="",
-        validation_alias="lastName",
-        serialization_alias="lastName",
-    )
-    nick: str = pydantic.Field(default="")
-    email: str = pydantic.Field(default="")
-    phone_number: str = pydantic.Field(
-        default="",
-        validation_alias="phoneNumber",
-        serialization_alias="phoneNumber",
-    )
-    discord_handle: str = pydantic.Field(
-        default="",
-        validation_alias="discordHandle",
-        serialization_alias="discordHandle",
-    )
+from .profile import NameDisplayStyle, Profile
 
 
 class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=True):
@@ -97,6 +69,9 @@ class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=Tru
             email=person.email if self.email else "",
             phone_number=person.normalized_phone_number if self.phone_number else "",
             discord_handle=person.discord_handle if self.discord_handle else "",
+            name_display_style=NameDisplayStyle(person.preferred_name_display_style)
+            if person.preferred_name_display_style
+            else NameDisplayStyle.FIRSTNAME_NICK_LASTNAME,
         )
 
     @classmethod

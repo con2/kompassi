@@ -1,28 +1,28 @@
 import type { HeadingLevel } from "../helpers/Heading";
-import { defaultLayout, Field, Layout } from "./models";
+import { Field } from "./models";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
 import type { Translations } from "@/translations/en";
 
 interface SchemaFormProps {
   fields: Field[];
-  layout?: Layout;
   values?: Record<string, any>;
   messages: Translations["SchemaForm"];
   headingLevel?: HeadingLevel;
   readOnly?: boolean;
   className?: string;
+  idPrefix?: string;
 }
 
 export function SchemaForm(props: SchemaFormProps) {
   const {
     fields,
-    layout = defaultLayout,
     values,
     messages,
     headingLevel,
     readOnly,
     className = "",
+    idPrefix,
   } = props;
   return (
     <div className={className}>
@@ -37,14 +37,15 @@ export function SchemaForm(props: SchemaFormProps) {
           <SchemaFormField
             key={slug}
             field={field}
-            layout={layout}
             headingLevel={headingLevel}
+            idPrefix={idPrefix}
           >
             <SchemaFormInput
               field={field}
               value={values?.[field.slug]}
               messages={messages}
               readOnly={readOnly}
+              idPrefix={idPrefix}
             />
           </SchemaFormField>
         );

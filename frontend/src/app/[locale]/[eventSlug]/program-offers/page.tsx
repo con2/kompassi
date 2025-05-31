@@ -30,7 +30,7 @@ graphql(`
     id
     createdAt
     createdBy {
-      displayName
+      fullName
     }
     sequenceNumber
     values(keyFieldsOnly: true)
@@ -199,7 +199,7 @@ export default async function ProgramOffersPage({
     {
       slug: "createdBy",
       title: surveyT.attributes.createdBy,
-      getCellContents: (row) => row.createdBy?.displayName || "",
+      getCellContents: (row) => row.createdBy?.fullName || "",
     },
   ];
 

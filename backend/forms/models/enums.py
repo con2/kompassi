@@ -29,3 +29,11 @@ class SurveyPurpose(Enum):
     # INVITE surveys are answered through the /<event-slug>/invitation/<invitation-id> endpoint
     # Responses are handled by accept_invitation mutation (involvement application)
     INVITE = "INVITE"
+
+
+class EditMode(Enum):
+    # The user is editing items owned by them
+    OWNER = "OWNER"
+
+    # An admin is editing items owned by others
+    ADMIN = "ADMIN"

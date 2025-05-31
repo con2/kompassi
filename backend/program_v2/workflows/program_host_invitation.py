@@ -24,8 +24,16 @@ class ProgramHostInvitationWorkflow(Workflow):
         """
         return None, False
 
-    def handle_new_response_phase1(self, response: Response):
+    def handle_new_response_phase1(
+        self,
+        response: Response,
+        old_version: Response | None = None,
+    ):
         pass
 
-    def handle_new_response_phase2(self, response: Response):
+    def handle_new_response_phase2(
+        self,
+        response: Response,
+        old_version: Response | None = None,
+    ):
         pass

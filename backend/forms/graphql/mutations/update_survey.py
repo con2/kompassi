@@ -19,6 +19,7 @@ class SurveyForm(django_forms.ModelForm):
             "max_responses_per_user",
             "active_from",
             "active_until",
+            "responses_editable_until",
             "protect_responses",
         )
 

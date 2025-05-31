@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 import uuid
 from collections.abc import Collection, Iterable, Mapping, Sequence
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from django.conf import settings
 from django.db import models, transaction
@@ -33,7 +33,7 @@ logger = logging.getLogger("kompassi")
 class Response(models.Model):
     # TODO UUID7
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="responses")
+    form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="all_responses")
     form_data = JSONField()
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
@@ -62,6 +62,14 @@ class Response(models.Model):
         help_text="key field slug -> value as in values",
     )
 
+    superseded_by = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
     # related fields
     dimensions: models.QuerySet[ResponseDimensionValue]
     programs: models.QuerySet[Program]
@@ -81,6 +89,10 @@ class Response(models.Model):
     @property
     def timezone(self):
         return self.event.timezone
+
+    @property
+    def old_versions(self) -> models.QuerySet[Response]:
+        return Response.objects.filter(superseded_by=self).order_by("-created_at")
 
     def get_attachments(
         self,
@@ -104,10 +116,12 @@ class Response(models.Model):
 
             if field_warnings := warnings.get(field.slug, []):
                 logger.warning(
-                    "Refusing to operate on attachments of field %s of responpse %s due to warnings: %s",
-                    field.slug,
-                    self.id,
-                    field_warnings,
+                    "Cowardly refusing to operate on attachments of field that has warnings: %s",
+                    dict(
+                        response=self.id,
+                        field=field.slug,
+                        warnings=field_warnings,
+                    ),
                 )
 
             urls: list[str] = values.get(field.slug, [])
@@ -227,14 +241,25 @@ class Response(models.Model):
             self.form_data,
         )
 
-    notification_templates = {
-        language.code: f"survey_response_notification_email/{language.code}.eml" for language in SUPPORTED_LANGUAGES
+    new_response_message_templates: ClassVar[dict[str, str]] = {
+        language.code: f"survey_response_notification_email_{language.code}.eml" for language in SUPPORTED_LANGUAGES
     }
 
-    subject_templates = {
+    new_response_subject_templates: ClassVar[dict[str, str]] = {
         "fi": "{survey_title} ({event_name}): Uusi vastaus",
         "en": "{survey_title} ({event_name}): New response",
         "sv": "{survey_title} ({event_name}): Nytt svar",
+    }
+
+    edited_response_message_templates: ClassVar[dict[str, str]] = {
+        language.code: f"survey_response_edited_notification_email_{language.code}.eml"
+        for language in SUPPORTED_LANGUAGES
+    }
+
+    edited_response_subject_templates: ClassVar[dict[str, str]] = {
+        "fi": "{survey_title} ({event_name}): Vastausta muokattu",
+        "en": "{survey_title} ({event_name}): Response edited",
+        "sv": "{survey_title} ({event_name}): Svar redigerat",
     }
 
     @property

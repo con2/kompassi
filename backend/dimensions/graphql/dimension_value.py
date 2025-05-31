@@ -24,6 +24,7 @@ class DimensionValueType(DjangoObjectType):
             "slug",
             "color",
             "is_technical",
+            "is_subject_locked",
             # NOTE SUPPORTED_LANGUAGES
             "title_en",
             "title_fi",

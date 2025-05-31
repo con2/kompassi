@@ -17,7 +17,12 @@ def dimension_post_delete(sender, instance: Dimension | DimensionValue, **kwargs
     universe = instance.universe
     surveys = universe.surveys.all()
 
-    Response.refresh_cached_fields_qs(Response.objects.filter(form__survey__in=surveys))
+    Response.refresh_cached_fields_qs(
+        Response.objects.filter(
+            form__survey__in=surveys,
+            superseded_by=None,
+        )
+    )
     Form.refresh_enriched_fields_qs(Form.objects.filter(survey__in=surveys))
 
 

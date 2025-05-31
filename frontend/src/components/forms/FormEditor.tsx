@@ -8,7 +8,7 @@ import EditFieldModal from "./EditFieldModal";
 import FormEditorControls from "./FormEditorControls";
 import { addField, removeField, replaceField } from "./formEditorLogic";
 import { Modal, useModal } from "./LegacyModal";
-import { FieldType, emptyField, Field, Layout, defaultLayout } from "./models";
+import { Field, FieldType, emptyField } from "./models";
 import newField from "./newField";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
@@ -18,7 +18,6 @@ import "./FormEditor.scss";
 
 interface Props {
   value: Field[];
-  layout?: Layout;
   onChange(fields: Field[]): void;
   onPromoteFieldToDimension(fieldSlug: string): Promise<void>;
   messages: {
@@ -66,7 +65,6 @@ export default function FormEditor(props: Props) {
     dimensions,
   } = props;
   const t = messages.FormEditor;
-  const layout = props.layout ?? defaultLayout;
 
   const [targetFieldName, setTargetFieldName] = React.useState("");
   const [editExisting, setEditExisting] = React.useState(false);
@@ -127,7 +125,7 @@ export default function FormEditor(props: Props) {
       {fields.map((field) => (
         <div key={field.slug} className="FormEditor-field">
           <div className="FormEditor-background">
-            <SchemaFormField layout={layout} key={field.slug} field={field}>
+            <SchemaFormField key={field.slug} field={field}>
               <SchemaFormInput
                 field={field}
                 readOnly={true}

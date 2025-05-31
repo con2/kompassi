@@ -24,6 +24,7 @@ graphql(`
     slug
     color
     isTechnical
+    isSubjectLocked
     canRemove
     title(lang: $locale)
     # NOTE SUPPORTED_LANGUAGES

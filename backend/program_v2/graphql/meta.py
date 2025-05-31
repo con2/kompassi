@@ -11,6 +11,7 @@ from core.utils.text_utils import normalize_whitespace
 from dimensions.graphql.dimension import FullDimensionType
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from forms.graphql.response_full import FullResponseType
+from forms.graphql.response_profile import ProfileResponseType
 from forms.models.response import Response
 from graphql_api.language import DEFAULT_LANGUAGE
 
@@ -218,7 +219,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         Returns all responses to all program offer forms of this event.
         """
         graphql_check_model(Response, meta.event.scope, info, app="program_v2")
-        program_offers = meta.program_offers.all()
+        program_offers = meta.current_program_offers.all()
 
         if filters:
             program_offers = ProgramFilters.from_graphql(filters).filter_program_offers(program_offers)
@@ -236,7 +237,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         """
         Returns the total number of program offers (not taking into account filters).
         """
-        return meta.program_offers.count()
+        return meta.current_program_offers.count()
 
     count_program_offers = graphene.NonNull(
         graphene.Int,
@@ -246,14 +247,19 @@ class ProgramV2EventMetaType(DjangoObjectType):
     @staticmethod
     def resolve_program_offer(meta: ProgramV2EventMeta, info, id: str):
         """
-        Returns a single response program offer.
+        Returns a single program offer.
+        Also old versions of program offers can be retrieved by their ID.
         """
-        response = meta.program_offers.filter(id=id).first()
+        # check done on this level so that we do not give off information
+        # about the existence of a program offer to unauthorized users
+        graphql_check_instance(
+            meta.event,  # type: ignore
+            info,
+            app="program_v2",
+            field="program_offers",
+        )
 
-        if response:
-            graphql_check_instance(response, info, app="program_v2")
-
-        return response
+        return meta.all_program_offers.filter(id=id).first()
 
     program_offer = graphene.Field(
         FullResponseType,
@@ -380,9 +386,9 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
         filters: list[DimensionFilterInput] | None = None,
     ):
         """
-        Returns all responses to all program offer forms of this event.
+        Returns all current responses to all program offer forms of this event.
         """
-        program_offers = meta.program_offers.all()
+        program_offers = meta.current_program_offers.all()
 
         if filters:
             program_offers = ProgramFilters.from_graphql(
@@ -396,7 +402,7 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
         return program_offers.order_by("-created_at")
 
     program_offers = graphene.NonNull(
-        graphene.List(graphene.NonNull(FullResponseType)),
+        graphene.List(graphene.NonNull(ProfileResponseType)),
         filters=graphene.List(DimensionFilterInput),
         description=normalize_whitespace(resolve_program_offers.__doc__ or ""),
     )

@@ -1,13 +1,15 @@
 import graphene
-from django.contrib.auth.models import User
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
-from core.graphql.user_limited import LimitedUserType
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.utils import resolve_local_datetime_field
+from involvement.graphql.profile_selected import SelectedProfileType
+from involvement.models.profile import Profile
 
+from ..models.enums import EditMode
 from ..models.response import Response
+from .enums import EditModeType
 
 
 class LimitedResponseType(DjangoObjectType):
@@ -40,18 +42,26 @@ class LimitedResponseType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_created_by(response: Response, info) -> User | None:
+    def resolve_created_by(response: Response, info) -> Profile | None:
         """
         Returns the user who submitted the response. If response is to an anonymous survey,
         this information will not be available.
         """
+
         if (survey := response.form.survey) and survey.anonymity in ("HARD", "SOFT"):
             return None
 
-        return response.created_by
+        if not response.created_by:
+            return None
+
+        person = response.created_by.person
+        if not person:
+            return None
+
+        return response.survey.profile_field_selector.select(person)
 
     created_by = graphene.Field(
-        LimitedUserType,
+        SelectedProfileType,
         description=resolve_created_by.__doc__,
     )
 
@@ -79,12 +89,39 @@ class LimitedResponseType(DjangoObjectType):
         return cached_dimensions
 
     cached_dimensions = graphene.Field(
-        GenericScalar,
+        graphene.NonNull(GenericScalar),
         description=normalize_whitespace(resolve_cached_dimensions.__doc__ or ""),
         key_dimensions_only=graphene.Boolean(),
     )
 
     resolve_created_at = resolve_local_datetime_field("created_at")
+
+    @staticmethod
+    def resolve_can_edit(
+        response: Response,
+        info,
+        mode: EditMode = EditMode.ADMIN,
+    ):
+        """
+        Returns whether the response can be edited by the user in the given edit mode.
+
+        The edit mode can be either ADMIN (default) or OWN.
+        ADMIN determines CBAC edit permissions, while OWN determines if the user
+        is the owner of the response and editing it is allowed by the survey.
+        """
+        match mode:
+            case EditMode.ADMIN:
+                return response.survey.workflow.response_can_be_edited_by_admin(response, info.context)
+            case EditMode.OWNER:
+                return response.survey.workflow.response_can_be_edited_by(response, info.context)
+            case _:
+                raise ValueError(f"Unknown edit mode: {mode}")
+
+    can_edit = graphene.Field(
+        graphene.NonNull(graphene.Boolean),
+        description=normalize_whitespace(resolve_can_edit.__doc__ or ""),
+        mode=graphene.Argument(EditModeType),
+    )
 
     class Meta:
         model = Response

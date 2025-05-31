@@ -1,14 +1,14 @@
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardTitle from "react-bootstrap/CardTitle";
+import FormattedDateTime from "../FormattedDateTime";
 import { Field } from "../forms/models";
 import { SchemaForm } from "../forms/SchemaForm";
-import {
-  Profile,
-  profileFields,
-  ProfileFieldSelector,
-  Registry,
-} from "./models";
+import { ProfileFields } from "../profile/ProfileFields";
+import { Registry } from "./models";
+import { Scope } from "@/app/[locale]/[eventSlug]/program/models";
+import { auth } from "@/auth";
+import { Profile, ProfileFieldSelector } from "@/components/profile/models";
 import { kompassiBaseUrl } from "@/config";
 import type { Translations } from "@/translations/en";
 
@@ -81,27 +81,34 @@ function RegistryComponent({
 }
 
 interface Props {
+  scope: Scope;
   profileFieldSelector: ProfileFieldSelector;
   profile: Profile;
   sourceRegistry: Registry;
   targetRegistry: Registry;
   translations: Translations;
+  locale: string;
   className?: string;
+  consentGivenAt?: string;
 }
 
-export default function TransferConsentForm({
+export default async function TransferConsentForm({
+  scope,
   profileFieldSelector,
   profile,
   sourceRegistry,
   targetRegistry,
-  translations: messages,
+  consentGivenAt,
+  translations,
+  locale,
   className = "mt-4 mb-4 p-2 pb-0",
 }: Props) {
-  const t = messages.TransferConsentForm;
+  const t = translations.TransferConsentForm;
+  const session = await auth();
 
-  const consentFields: Field[] = [
+  const fields: Field[] = [
     {
-      slug: "kompassi_transfer_consent",
+      slug: "kompassiTransferConsent",
       title: t.consentCheckBox,
       type: "SingleCheckbox",
       required: true,
@@ -112,38 +119,31 @@ export default function TransferConsentForm({
     <Card className={className}>
       <CardBody>
         <CardTitle>{t.title}</CardTitle>
-        <div className="card-text">{t.message}</div>
+        <div className="card-text">
+          {consentGivenAt ? t.messageAlreadyAccepted : t.message}
+        </div>
         <div className="d-flex flex-column flex-md-row align-items-center my-4">
           <RegistryComponent
             registryType={t.sourceRegistry}
             registry={sourceRegistry}
-            messages={messages}
+            messages={translations}
           />
           <TransferDirectionArrow />
           <RegistryComponent
             registryType={t.targetRegistry}
             registry={targetRegistry}
-            messages={messages}
+            messages={translations}
           />
         </div>
         <Card>
           <CardBody>
-            <div className="form-text mb-2">Luovutettavat tiedot:</div>
-            <div className="row">
-              {profileFields.map((field) => {
-                if (!profileFieldSelector[field]) {
-                  return null;
-                }
-                return (
-                  <div key={field} className="col-md-4 mb-2">
-                    <div>
-                      <strong>{messages.Profile.attributes[field]}</strong>
-                    </div>
-                    <div>{(profile as any)[field]}</div>
-                  </div>
-                );
-              })}
-            </div>
+            <div className="form-text mb-2">{t.dataToBeTransferred}</div>
+            <ProfileFields
+              profileFieldSelector={profileFieldSelector}
+              profile={profile}
+              compact
+              messages={translations.Profile}
+            />
             <div className="form-text mt-2">
               {t.actions.editProfile.message}{" "}
               <a
@@ -157,12 +157,27 @@ export default function TransferConsentForm({
             </div>
           </CardBody>
         </Card>
-        <SchemaForm
-          className="mt-4"
-          fields={consentFields}
-          values={{}}
-          messages={messages.SchemaForm}
-        />
+        {consentGivenAt ? (
+          <div className="mt-4 mb-2">
+            <em>
+              {t.consentAlreadyGivenAt(
+                <FormattedDateTime
+                  value={consentGivenAt}
+                  scope={scope}
+                  session={session}
+                  locale={locale}
+                />,
+              )}
+            </em>
+          </div>
+        ) : (
+          <SchemaForm
+            className="mt-4"
+            fields={fields}
+            values={{}}
+            messages={translations.SchemaForm}
+          />
+        )}
       </CardBody>
     </Card>
   );

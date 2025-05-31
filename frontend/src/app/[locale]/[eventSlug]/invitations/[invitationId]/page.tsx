@@ -20,28 +20,6 @@ import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment FullProfile on ProfileType {
-    firstName
-    lastName
-    nick
-    email
-    phoneNumber
-    discordHandle
-  }
-`);
-
-graphql(`
-  fragment FullProfileFieldSelector on ProfileFieldSelectorType {
-    firstName
-    lastName
-    nick
-    email
-    phoneNumber
-    discordHandle
-  }
-`);
-
-graphql(`
   fragment TransferConsentFormRegistry on LimitedRegistryType {
     organization {
       slug
@@ -60,7 +38,7 @@ const query = graphql(`
     $locale: String
   ) {
     profile {
-      ...FullProfile
+      ...FullOwnProfile
     }
 
     userRegistry {
@@ -68,7 +46,9 @@ const query = graphql(`
     }
 
     event(slug: $eventSlug) {
+      slug
       name
+      timezone
 
       involvement {
         invitation(invitationId: $invitationId) {
@@ -239,6 +219,8 @@ export default async function SurveyPage({ params }: Props) {
           sourceRegistry={userRegistry}
           targetRegistry={targetRegistry}
           translations={translations}
+          scope={event}
+          locale={locale}
         />
 
         <SchemaForm fields={fields} messages={translations.SchemaForm} />
