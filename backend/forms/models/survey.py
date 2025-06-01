@@ -274,7 +274,7 @@ class Survey(models.Model):
         return Response.objects.filter(
             form__in=self.languages.all(),
             superseded_by=None,
-        ).order_by("created_at")
+        ).order_by("revision_created_at")
 
     @property
     def all_responses(self):
@@ -282,7 +282,7 @@ class Survey(models.Model):
 
         return Response.objects.filter(
             form__in=self.languages.all(),
-        ).order_by("created_at")
+        ).order_by("revision_created_at")
 
     @cached_property
     def title_dict(self):

@@ -56,8 +56,8 @@ const query = graphql(`
           response(id: $responseId) {
             id
             sequenceNumber
-            createdAt
-            createdBy {
+            revisionCreatedAt
+            revisionCreatedBy {
               displayName
               email
             }
@@ -134,7 +134,7 @@ export default async function SurveyResponsePage({ params }: Props) {
 
   const { anonymity, canRemoveResponses, protectResponses } =
     data.event.forms.survey;
-  const { sequenceNumber, createdAt, language, form } =
+  const { sequenceNumber, revisionCreatedAt, language, form } =
     data.event.forms.survey.response;
   const { fields } = form;
 
@@ -152,7 +152,7 @@ export default async function SurveyResponsePage({ params }: Props) {
       title: t.attributes.sequenceNumber,
     },
     {
-      slug: "createdAt",
+      slug: "revisionCreatedAt",
       // TODO(#438) use DateTimeField
       type: "SingleLineText",
       title: t.attributes.createdAt,
@@ -161,23 +161,25 @@ export default async function SurveyResponsePage({ params }: Props) {
 
   if (anonymity === "NAME_AND_EMAIL") {
     technicalFields.push({
-      slug: "createdBy",
+      slug: "revisionCreatedBy",
       type: "SingleLineText",
       title: t.attributes.createdBy,
     });
   }
 
   // TODO(#438) use DateTimeField
-  const formattedCreatedAt = createdAt ? formatDateTime(createdAt, locale) : "";
-  const createdBy = response.createdBy;
-  const formattedCreatedBy = createdBy
-    ? `${createdBy.displayName} <${createdBy.email}>`
+  const formattedCreatedAt = revisionCreatedAt
+    ? formatDateTime(revisionCreatedAt, locale)
+    : "";
+  const revisionCreatedBy = response.revisionCreatedBy;
+  const formattedCreatedBy = revisionCreatedBy
+    ? `${revisionCreatedBy.displayName} <${revisionCreatedBy.email}>`
     : "-";
 
   const technicalValues = {
     sequenceNumber,
-    createdAt: formattedCreatedAt,
-    createdBy: formattedCreatedBy,
+    revisionCreatedAt: formattedCreatedAt,
+    revisionCreatedBy: formattedCreatedBy,
   };
 
   const dimensions = data.event.forms.survey.dimensions ?? [];

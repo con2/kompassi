@@ -29,13 +29,13 @@ const query = graphql(`
       forms {
         response(id: $responseId) {
           id
-          createdAt
+          revisionCreatedAt
           canEdit(mode: OWNER)
           values
 
           supersededBy {
             id
-            createdAt
+            revisionCreatedAt
           }
 
           dimensions {
@@ -164,7 +164,7 @@ export default async function ProfileSurveyResponsePage({ params }: Props) {
           sourceRegistry={userRegistry}
           targetRegistry={survey.registry}
           translations={translations}
-          consentGivenAt={response.createdAt}
+          consentGivenAt={response.revisionCreatedAt}
           scope={event}
           locale={locale}
         />

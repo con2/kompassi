@@ -18,7 +18,7 @@ import { getTranslations } from "@/translations";
 graphql(`
   fragment ProfileResponsesTableRow on ProfileResponseType {
     id
-    createdAt
+    revisionCreatedAt
     canEdit(mode: OWNER)
 
     values(keyFieldsOnly: true)

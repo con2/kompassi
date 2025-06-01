@@ -427,7 +427,7 @@ def test_survey_to_badge():
         response = Response.objects.create(
             form=form_en,
             form_data={},
-            created_by=person.user,
+            revision_created_by=person.user,
         )
         survey.workflow.handle_new_response_phase1(response)
     survey.workflow.handle_new_response_phase2(response)

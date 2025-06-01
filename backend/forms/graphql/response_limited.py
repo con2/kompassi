@@ -42,27 +42,51 @@ class LimitedResponseType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_created_by(response: Response, info) -> Profile | None:
+    def resolve_revision_created_by(response: Response, info) -> Profile | None:
         """
-        Returns the user who submitted the response. If response is to an anonymous survey,
-        this information will not be available.
+        Returns the user who submitted this version of the response.
+        If response is to an anonymous survey, this information will not be available.
         """
 
         if (survey := response.form.survey) and survey.anonymity in ("HARD", "SOFT"):
             return None
 
-        if not response.created_by:
+        if not response.revision_created_by:
             return None
 
-        person = response.created_by.person
+        person = response.revision_created_by.person
         if not person:
             return None
 
         return response.survey.profile_field_selector.select(person)
 
-    created_by = graphene.Field(
+    revision_created_by = graphene.Field(
         SelectedProfileType,
-        description=resolve_created_by.__doc__,
+        description=resolve_revision_created_by.__doc__,
+    )
+
+    @staticmethod
+    def resolve_original_created_by(response: Response, info) -> Profile | None:
+        """
+        Returns the user who originally submitted this response.
+        If response is to an anonymous survey, this information will not be available.
+        """
+
+        if (survey := response.form.survey) and survey.anonymity in ("HARD", "SOFT"):
+            return None
+
+        if not response.original_created_by:
+            return None
+
+        person = response.original_created_by.person  # type: ignore
+        if not person:
+            return None
+
+        return response.survey.profile_field_selector.select(person)
+
+    original_created_by = graphene.Field(
+        SelectedProfileType,
+        description=resolve_original_created_by.__doc__,
     )
 
     @staticmethod
@@ -94,7 +118,13 @@ class LimitedResponseType(DjangoObjectType):
         key_dimensions_only=graphene.Boolean(),
     )
 
-    resolve_created_at = resolve_local_datetime_field("created_at")
+    resolve_original_created_at = resolve_local_datetime_field("original_created_at")
+    original_created_at = graphene.Field(
+        graphene.NonNull(graphene.DateTime),
+        description="The date and time when the response was originally created.",
+    )
+
+    resolve_revision_created_at = resolve_local_datetime_field("revision_created_at")
 
     @staticmethod
     def resolve_can_edit(
@@ -128,6 +158,6 @@ class LimitedResponseType(DjangoObjectType):
         fields = (
             "id",
             "form_data",
-            "created_at",
+            "revision_created_at",
             "sequence_number",
         )

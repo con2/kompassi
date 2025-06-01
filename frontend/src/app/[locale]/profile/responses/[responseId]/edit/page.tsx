@@ -32,7 +32,7 @@ const query = graphql(`
       forms {
         response(id: $responseId) {
           id
-          createdAt
+          revisionCreatedAt
           canEdit(mode: OWNER)
           values
 
@@ -111,7 +111,7 @@ export default async function ProfileSurveyEditResponsePage({ params }: Props) {
 
   const response = data.profile.forms.response;
   const { profile, userRegistry } = data;
-  const { createdAt, form, canEdit } = response;
+  const { revisionCreatedAt, form, canEdit } = response;
 
   if (!canEdit) {
     return <ViewContainer>{t.actions.editResponse.cannotEdit}</ViewContainer>;
@@ -147,7 +147,7 @@ export default async function ProfileSurveyEditResponsePage({ params }: Props) {
       <Alert variant="warning">
         {t.actions.editResponse.editingOwn(
           <FormattedDateTime
-            value={createdAt}
+            value={revisionCreatedAt}
             scope={event}
             session={session}
             locale={locale}
@@ -167,7 +167,7 @@ export default async function ProfileSurveyEditResponsePage({ params }: Props) {
             sourceRegistry={userRegistry}
             targetRegistry={survey.registry}
             translations={translations}
-            consentGivenAt={response.createdAt}
+            consentGivenAt={response.revisionCreatedAt}
             scope={event}
             locale={locale}
           />

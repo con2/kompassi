@@ -31,8 +31,8 @@ graphql(`
   fragment SurveyResponse on LimitedResponseType {
     id
     sequenceNumber
-    createdAt
-    createdBy {
+    revisionCreatedAt
+    revisionCreatedBy {
       displayName
     }
     language
@@ -173,12 +173,12 @@ export default async function FormResponsesPage({
       title: "#",
     },
     {
-      slug: "createdAt",
+      slug: "revisionCreatedAt",
       title: t.attributes.createdAt,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}>
           <FormattedDateTime
-            value={row.createdAt}
+            value={row.revisionCreatedAt}
             locale={locale}
             scope={data.event}
             session={session}
@@ -190,9 +190,9 @@ export default async function FormResponsesPage({
 
   if (anonymity === "NAME_AND_EMAIL") {
     columns.push({
-      slug: "createdBy",
+      slug: "revisionCreatedBy",
       title: t.attributes.createdBy,
-      getCellContents: (row) => row.createdBy?.displayName || "",
+      getCellContents: (row) => row.revisionCreatedBy?.displayName || "",
     });
   }
 

@@ -7,14 +7,13 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import SignInRequired from "@/components/errors/SignInRequired";
 import { AlsoAvailableInLanguage } from "@/components/forms/AlsoAvailableInLanguage";
-import { Field, validateFields } from "@/components/forms/models";
+import { validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import TransferConsentForm from "@/components/involvement/TransferConsentForm";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
-import { kompassiBaseUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
@@ -101,9 +100,20 @@ export default async function SurveyPage({ params }: Props) {
     variables: { eventSlug, surveySlug, locale },
   });
   const { event, profile, userRegistry } = data;
-  if (!event?.forms?.survey?.form) {
+
+  if (!event?.forms?.survey) {
     notFound();
   }
+
+  if (!event.forms.survey.form) {
+    return (
+      <ViewContainer>
+        <ViewHeading>{t.errors.noLanguageVersions.title}</ViewHeading>
+        <p>{t.errors.noLanguageVersions.message}</p>
+      </ViewContainer>
+    );
+  }
+
   const {
     languages,
     loginRequired,

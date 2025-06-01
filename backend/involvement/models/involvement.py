@@ -298,7 +298,7 @@ class Involvement(models.Model):
 
         involvement, _created = cls.objects.update_or_create(
             universe=cache.universe,
-            person=response.created_by.person,
+            person=response.original_created_by.person,  # type: ignore
             program=None,
             response=response,
             defaults=dict(
@@ -333,7 +333,7 @@ class Involvement(models.Model):
         # NOTE update_or_create for backfill
         involvement, _created = cls.objects.update_or_create(
             universe=cache.universe,
-            person=program_offer.created_by.person,
+            person=program_offer.original_created_by.person,  # type: ignore
             program=program,
             defaults=dict(
                 response=program_offer,
@@ -377,7 +377,7 @@ class Involvement(models.Model):
 
         involvement, created = cls.objects.update_or_create(
             universe=cache.universe,
-            person=response.created_by.person,
+            person=response.original_created_by.person,  # type: ignore
             program=invitation.program,
             defaults=dict(
                 response=response,

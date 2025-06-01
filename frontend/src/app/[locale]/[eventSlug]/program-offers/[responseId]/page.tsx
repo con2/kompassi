@@ -30,14 +30,15 @@ graphql(`
   fragment ProgramOfferDetail on FullResponseType {
     id
     sequenceNumber
-    createdAt
-    createdBy {
-      displayName
+    revisionCreatedAt
+    revisionCreatedBy {
+      fullName
       ...FullSelectedProfile
     }
     language
     values
     form {
+      description
       fields
       survey {
         title(lang: $locale)
@@ -174,8 +175,14 @@ export default async function ProgramOfferPage({
 
   const programOffer = data.event.program.programOffer;
   const { event } = data;
-  const { createdAt, createdBy, form, supersededBy, oldVersions, canEdit } =
-    programOffer;
+  const {
+    revisionCreatedAt,
+    revisionCreatedBy,
+    form,
+    supersededBy,
+    oldVersions,
+    canEdit,
+  } = programOffer;
   const { fields, survey: programForm } = form;
 
   const values: Record<string, any> = programOffer.values ?? {};
@@ -239,71 +246,67 @@ export default async function ProgramOfferPage({
       searchParams={searchParams}
       actions={
         <ButtonGroup>
-          {canEdit && (
-            <Link
-              className="btn btn-outline-primary disabled"
-              href={`/${locale}/${eventSlug}/program-offers/${responseId}/edit`}
-              title={t.actions.edit.title}
-            >
-              {t.actions.edit.label}
-            </Link>
-          )}
-          {canAccept && (
-            <>
-              <ModalButton
-                className="btn btn-outline-success"
-                label={t.actions.accept.label + "…"}
-                title={t.actions.accept.title}
-                messages={t.actions.accept.modalActions}
-                action={acceptProgramOffer.bind(
-                  null,
-                  locale,
-                  eventSlug,
-                  responseId,
-                )}
-              >
-                {programOffer.programs.length > 0 && (
-                  <div className="alert alert-warning">
-                    <p>
-                      {t.attributes.programs.acceptAgainWarning(
-                        programOffer.programs.length,
-                      )}
-                    </p>
-                    {programOffer.programs.map((program) => (
-                      <div key={program.slug}>
-                        <Link
-                          className="link-subtle"
-                          href={`/${eventSlug}/program-admin/${program.slug}`}
-                          title={program.title}
-                          target="_blank"
-                        >
-                          {program.title}
-                        </Link>
-                      </div>
-                    ))}
+          <ModalButton
+            className="btn btn-outline-success"
+            label={t.actions.accept.label + "…"}
+            title={t.actions.accept.title}
+            messages={t.actions.accept.modalActions}
+            disabled={!canAccept}
+            action={acceptProgramOffer.bind(
+              null,
+              locale,
+              eventSlug,
+              responseId,
+            )}
+          >
+            {programOffer.programs.length > 0 && (
+              <div className="alert alert-warning">
+                <p>
+                  {t.attributes.programs.acceptAgainWarning(
+                    programOffer.programs.length,
+                  )}
+                </p>
+                {programOffer.programs.map((program) => (
+                  <div key={program.slug}>
+                    <Link
+                      className="link-subtle"
+                      href={`/${eventSlug}/program-admin/${program.slug}`}
+                      title={program.title}
+                      target="_blank"
+                    >
+                      {program.title}
+                    </Link>
                   </div>
-                )}
-                <p>{t.actions.accept.message}</p>
-                <SchemaForm
-                  fields={acceptProgramOfferFields}
-                  values={acceptProgramOfferValues}
-                  messages={translations.SchemaForm}
-                  headingLevel="h4"
-                  idPrefix="accept-program-offer"
-                />
-              </ModalButton>
+                ))}
+              </div>
+            )}
+            <p>{t.actions.accept.message}</p>
+            <SchemaForm
+              fields={acceptProgramOfferFields}
+              values={acceptProgramOfferValues}
+              messages={translations.SchemaForm}
+              headingLevel="h4"
+              idPrefix="accept-program-offer"
+            />
+          </ModalButton>
 
-              <ModalButton
-                className="btn btn-outline-danger"
-                label={t.actions.cancel.label + "…"}
-                title={t.actions.cancel.title}
-                messages={t.actions.cancel.modalActions}
-                disabled
-              >
-                <p>{t.actions.cancel.message}</p>
-              </ModalButton>
-            </>
-          )}
+          <ModalButton
+            className="btn btn-outline-danger"
+            label={t.actions.cancel.label + "…"}
+            title={t.actions.cancel.title}
+            messages={t.actions.cancel.modalActions}
+            disabled={!canAccept}
+          >
+            <p>{t.actions.cancel.message}</p>
+          </ModalButton>
+
+          <Link
+            className={`btn btn-outline-primary ${canEdit ? "" : "disabled"}`}
+            href={`/${locale}/${eventSlug}/program-offers/${responseId}/edit`}
+            title={t.actions.edit.title}
+          >
+            {t.actions.edit.label}
+          </Link>
         </ButtonGroup>
       }
     >
@@ -315,112 +318,113 @@ export default async function ProgramOfferPage({
           messages={t.OldVersionAlert}
           className="mt-4 mb-4"
         />
-      ) : null}
-
-      <div className="row mb-5 mt-4">
-        {!!dimensions?.length && (
-          <div className="col-md-8">
-            <div className="card mb-3 h-100">
-              <div className="card-body">
-                <h5 className="card-title mb-3">
-                  {surveyT.attributes.dimensions}
-                </h5>
-                {/* TODO improve feedback of successful save */}
-                <DimensionValueSelectionForm
-                  dimensions={dimensions}
-                  cachedDimensions={programOffer.cachedDimensions}
-                  translations={translations}
-                  technicalDimensions="readonly"
-                  readOnly={dimensionsReadOnly}
-                  idPrefix="response-dimensions"
-                  onChange={updateResponseDimensions.bind(
-                    null,
-                    eventSlug,
-                    surveySlug,
-                    responseId,
-                  )}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-        <div className="col">
-          <div className="card mb-3 h-100">
-            <div className="card-body">
-              <h5 className="card-title mb-3">
-                {surveyT.attributes.technicalDetails}
-              </h5>
-
-              <div className="mb-4">
-                <label className="form-label fw-bold">
-                  {surveyT.attributes.createdAt}
-                </label>
-                <div>
-                  <FormattedDateTime
-                    value={createdAt}
-                    locale={locale}
-                    scope={event}
-                    session={session}
-                  />
-                </div>
-              </div>
-
-              {createdBy && (
-                <div className="mb-4">
-                  <label className="form-label fw-bold">
-                    {surveyT.attributes.createdBy}
-                  </label>
-                  <div>
-                    <ModalButton
-                      className="btn btn-link p-0 link-subtle"
-                      label={createdBy.displayName + "…"}
-                      title="View profile"
-                      messages={{
-                        submit: "This modal has no submit button :)",
-                        cancel: "Close",
-                      }}
-                    >
-                      <ProfileFields
-                        profileFieldSelector={programForm.profileFieldSelector}
-                        profile={createdBy}
-                        messages={translations.Profile}
-                      />
-                    </ModalButton>
+      ) : (
+        <>
+          <div className="row mb-5 mt-4">
+            {!!dimensions?.length && (
+              <div className="col-md-8">
+                <div className="card mb-3 h-100">
+                  <div className="card-body">
+                    <h5 className="card-title mb-3">
+                      {surveyT.attributes.dimensions}
+                    </h5>
+                    {/* TODO improve feedback of successful save */}
+                    <DimensionValueSelectionForm
+                      dimensions={dimensions}
+                      cachedDimensions={programOffer.cachedDimensions}
+                      translations={translations}
+                      technicalDimensions="readonly"
+                      readOnly={dimensionsReadOnly}
+                      idPrefix="response-dimensions"
+                      onChange={updateResponseDimensions.bind(
+                        null,
+                        eventSlug,
+                        surveySlug,
+                        responseId,
+                      )}
+                    />
                   </div>
                 </div>
-              )}
+              </div>
+            )}
+            <div className="col">
+              <div className="card mb-3 h-100">
+                <div className="card-body">
+                  <h5 className="card-title mb-3">
+                    {surveyT.attributes.technicalDetails}
+                  </h5>
 
-              {oldVersions.length > 0 && (
-                <div className="mb-4">
-                  <label className="form-label fw-bold">
-                    {surveyT.ResponseHistory.title}
-                  </label>
-                  <ul className="list-unstyled m-0">
-                    {oldVersions.map((version) => (
-                      <li key={version.id}>
-                        <Link
-                          href={`/${event.slug}/program-offers/${version.id}`}
-                          className="link-subtle"
+                  <div className="mb-4">
+                    <label className="form-label fw-bold">
+                      {surveyT.attributes.createdAt}
+                    </label>
+                    <div>
+                      <FormattedDateTime
+                        value={revisionCreatedAt}
+                        locale={locale}
+                        scope={event}
+                        session={session}
+                      />
+                    </div>
+                  </div>
+
+                  {revisionCreatedBy && (
+                    <div className="mb-4">
+                      <label className="form-label fw-bold">
+                        {surveyT.attributes.createdBy}
+                      </label>
+                      <div>
+                        <ModalButton
+                          className="btn btn-link p-0 link-subtle"
+                          label={revisionCreatedBy.fullName + "…"}
+                          title={surveyT.actions.viewProfile.title}
+                          messages={surveyT.actions.viewProfile.modalActions}
                         >
-                          <FormattedDateTime
-                            value={version.createdAt}
-                            locale={locale}
-                            scope={event}
-                            session={session}
+                          <ProfileFields
+                            profileFieldSelector={
+                              programForm.profileFieldSelector
+                            }
+                            profile={revisionCreatedBy}
+                            messages={translations.Profile}
                           />
-                          {version.createdBy && (
-                            <> ({version.createdBy?.displayName})</>
-                          )}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                        </ModalButton>
+                      </div>
+                    </div>
+                  )}
+
+                  {oldVersions.length > 0 && (
+                    <div className="mb-4">
+                      <label className="form-label fw-bold">
+                        {surveyT.ResponseHistory.title}
+                      </label>
+                      <ul className="list-unstyled m-0">
+                        {oldVersions.map((version) => (
+                          <li key={version.id}>
+                            <Link
+                              href={`/${event.slug}/program-offers/${version.id}`}
+                              className="link-subtle"
+                            >
+                              <FormattedDateTime
+                                value={version.revisionCreatedAt}
+                                locale={locale}
+                                scope={event}
+                                session={session}
+                              />
+                              {version.revisionCreatedBy && (
+                                <> ({version.revisionCreatedBy?.displayName})</>
+                              )}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       {programOffer.programs.length > 0 && (
         <div className="alert alert-primary">

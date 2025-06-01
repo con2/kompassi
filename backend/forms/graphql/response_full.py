@@ -55,7 +55,7 @@ class FullResponseType(LimitedResponseType):
         fields = (
             "id",
             "form_data",
-            "created_at",
+            "revision_created_at",
             "sequence_number",
             "superseded_by",
         )

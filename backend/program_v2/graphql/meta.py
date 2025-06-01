@@ -224,7 +224,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         if filters:
             program_offers = ProgramFilters.from_graphql(filters).filter_program_offers(program_offers)
 
-        return program_offers.order_by("-created_at")
+        return program_offers
 
     program_offers = graphene.NonNull(
         graphene.List(graphene.NonNull(FullResponseType)),

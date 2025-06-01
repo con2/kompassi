@@ -228,7 +228,7 @@ const translations = {
       slug: {
         title: "Technical name",
         helpText:
-          "Machine-readable field name. Valid characters: letters A-Za-z, numbers 0-9, underscore _. Must not start with a number. The slug must be the same in different languages.",
+          "Machine-readable field name. Valid characters: small letters a-z, numbers 0-9, underscore _. Must not start with a number. The slug must be the same in different languages.",
       },
       title: {
         title: "Title",
@@ -1274,6 +1274,28 @@ const translations = {
         edit: {
           title: "Edit program offer",
           label: "Edit",
+          cancel: "Cancel editing",
+          editingOthers: (
+            formattedCreatedAt: ReactNode,
+            createdBy: ReactNode,
+          ) => (
+            <>
+              You are editing a program offer that was submitted on{" "}
+              {formattedCreatedAt} by <strong>{createdBy}</strong>. Your edits
+              will only take effect when you submit the form.
+            </>
+          ),
+          cannotEdit: (
+            <>
+              <h1>Cannot edit program offer</h1>
+              <p>You cannot edit this program offer at this time.</p>
+            </>
+          ),
+          success: (title: string) => (
+            <>
+              Program offer <em>{title}</em> has been updated.
+            </>
+          ),
         },
         accept: {
           title: "Accept program offer",
@@ -1710,6 +1732,24 @@ const translations = {
       editDimension: "Edit dimension",
       editDimensionValue: "Edit value",
       editSurvey: "Edit",
+      viewProfile: {
+        title: "View user profile",
+        modalActions: {
+          submit: "This modal has no submit button :)",
+          cancel: "Close",
+        },
+      },
+    },
+    errors: {
+      noLanguageVersions: {
+        title: "No language versions",
+        message: (
+          <>
+            This survey has no language versions. It cannot be filled in until
+            the survey owner adds at least one language version.
+          </>
+        ),
+      },
     },
     tabs: {
       summary: "Summary",

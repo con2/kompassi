@@ -15,7 +15,6 @@ import {
   buildDimensionFilters,
   getDimensionValueTitle,
 } from "@/components/dimensions/helpers";
-import { Dimension } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
@@ -28,8 +27,8 @@ import { getTranslations } from "@/translations";
 graphql(`
   fragment ProgramOffer on FullResponseType {
     id
-    createdAt
-    createdBy {
+    revisionCreatedAt
+    revisionCreatedBy {
       fullName
     }
     sequenceNumber
@@ -183,12 +182,12 @@ export default async function ProgramOffersPage({
 
   const columns: Column<ProgramOfferFragment>[] = [
     {
-      slug: "createdAt",
+      slug: "revisionCreatedAt",
       title: <>{surveyT.attributes.createdAt} 🔼</>,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/program-offers/${row.id}?${queryString}`}>
           <FormattedDateTime
-            value={row.createdAt}
+            value={row.revisionCreatedAt}
             locale={locale}
             scope={data.event}
             session={session}
@@ -197,9 +196,9 @@ export default async function ProgramOffersPage({
       ),
     },
     {
-      slug: "createdBy",
+      slug: "revisionCreatedBy",
       title: surveyT.attributes.createdBy,
-      getCellContents: (row) => row.createdBy?.fullName || "",
+      getCellContents: (row) => row.revisionCreatedBy?.fullName || "",
     },
   ];
 

@@ -50,7 +50,7 @@ class CreateSurveyResponse(graphene.Mutation):
 
         # TODO(https://github.com/con2/kompassi/issues/365): shows the ip of v2 backend, not the client
         ip_address = get_ip(info.context)
-        created_by = user if (user := info.context.user) and user.is_authenticated else None
+        revision_created_by = user if (user := info.context.user) and user.is_authenticated else None
 
         if input.edit_response_id:
             try:
@@ -63,35 +63,45 @@ class CreateSurveyResponse(graphene.Mutation):
 
             if not survey.workflow.response_can_be_edited_by(old_version, request):
                 raise Exception("Response cannot be edited by the user")
+
+            original_created_by = old_version.original_created_by
+            original_created_at = old_version.original_created_at
         else:
             old_version = None
+            original_created_by = None
+            original_created_at = None
 
-            if survey.login_required and not created_by:
+            if survey.login_required and not revision_created_by:
                 raise Exception("Login required")
 
             if survey.max_responses_per_user:  # noqa: SIM102
-                if survey.current_responses.filter(created_by=created_by).count() >= survey.max_responses_per_user:
+                if (
+                    survey.current_responses.filter(revision_created_by=revision_created_by).count()
+                    >= survey.max_responses_per_user
+                ):
                     raise Exception("Maximum number of responses reached")
 
         if survey.purpose != SurveyPurpose.DEFAULT and old_version is None:
             raise Exception("Special purpose surveys cannot be submitted via this endpoint")
 
         if survey.anonymity == "HARD":
-            created_by = None
+            revision_created_by = None
             ip_address = ""
 
         with transaction.atomic():
             response = Response.objects.create(
                 form=form,
                 form_data=input.form_data,
-                created_by=created_by,
+                revision_created_by=revision_created_by,
                 ip_address=ip_address,
                 sequence_number=survey.get_next_sequence_number(),
+                original_created_by=original_created_by or revision_created_by,
+                original_created_at=original_created_at,
             )
 
             if old_version:
                 old_version.superseded_by = response
-                old_version.save(update_fields=["superseded_by", "updated_at"])
+                old_version.save(update_fields=["superseded_by"])
                 survey.all_responses.filter(superseded_by=old_version).update(superseded_by=response)
 
             survey.workflow.handle_new_response_phase1(response)

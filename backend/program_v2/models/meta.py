@@ -95,11 +95,12 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
                 "form__event",
                 "form__survey",
                 "form__survey__event",
-                "created_by",
+                "revision_created_by",
             )
             .prefetch_related(
                 "programs",
             )
+            .order_by("-revision_created_at")
         )
 
     @property
@@ -159,7 +160,7 @@ class ProgramV2ProfileMeta:
             Response.objects.filter(
                 form__survey__app="program_v2",
                 form__survey__purpose_slug="DEFAULT",
-                created_by=self.person.user,
+                original_created_by=self.person.user,
                 superseded_by=None,
             )
             .select_related(
@@ -167,9 +168,11 @@ class ProgramV2ProfileMeta:
                 "form__event",
                 "form__survey",
                 "form__survey__event",
-                "created_by",
+                "revision_created_by",
+                "original_created_by",
             )
             .prefetch_related(
                 "programs",
             )
+            .order_by("-revision_created_at")
         )

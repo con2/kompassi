@@ -164,11 +164,11 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         if not SurveyToBadgeMapping.objects.filter(survey=response.survey).exists():
             return None, False
 
-        user = response.created_by
-        if not user or not user.person:
+        user = response.original_created_by
+        if not user or not user.person:  # type: ignore
             return None, False
 
-        return Badge.ensure(response.survey.event, user.person)
+        return Badge.ensure(response.survey.event, user.person)  # type: ignore
 
     def notify_subscribers(
         self,
@@ -242,10 +242,10 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         if not request.user.is_authenticated:
             return False
 
-        if not response.created_by:
+        if not response.revision_created_by:
             return False
 
-        if response.created_by != request.user:
+        if response.revision_created_by != request.user:
             return False
 
         if response.superseded_by is not None:

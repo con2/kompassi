@@ -58,7 +58,9 @@ class SurveyToBadgeMapping(models.Model):
 
         matches: list[tuple[Response, PersonnelClass, str]] = []
 
-        for response in self.survey.current_responses.filter(created_by=person.user).order_by("-created_at"):
+        for response in self.survey.current_responses.filter(
+            original_created_by=person.user,
+        ).order_by("-revision_created_at"):
             present_pairs = {
                 (dimension_slug, value_slug)
                 for dimension_slug, value_slugs in response.cached_dimensions.items()

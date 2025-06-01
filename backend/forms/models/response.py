@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import uuid
 from collections.abc import Collection, Iterable, Mapping, Sequence
+from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from django.conf import settings
@@ -36,9 +37,28 @@ class Response(models.Model):
     form = models.ForeignKey(Form, on_delete=models.CASCADE, related_name="all_responses")
     form_data = JSONField()
 
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    revision_created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    original_created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+
+    revision_created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+    original_created_at = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
 
     ip_address = models.CharField(
         max_length=48,
@@ -92,7 +112,25 @@ class Response(models.Model):
 
     @property
     def old_versions(self) -> models.QuerySet[Response]:
-        return Response.objects.filter(superseded_by=self).order_by("-created_at")
+        return Response.objects.filter(
+            superseded_by=self.current_version,
+        ).order_by("-revision_created_at")
+
+    @property
+    def current_version(self) -> Response:
+        return self.superseded_by or self
+
+    @cached_property
+    def original(self) -> Response:
+        return self.old_versions.last() or self
+
+    @property
+    def is_current_version(self) -> bool:
+        return self.superseded_by is None
+
+    @property
+    def is_original(self) -> bool:
+        return self.original == self
 
     def get_attachments(
         self,
@@ -174,13 +212,38 @@ class Response(models.Model):
         ):
             response.cached_dimensions = response._build_cached_dimensions()
             response.cached_key_fields = response._build_cached_key_fields()
+
+            if response.original_created_by is None:
+                response.original_created_by = response.original.revision_created_by
+            if response.original_created_at is None:
+                response.original_created_at = response.original.revision_created_at
+
             bulk_update.append(response)
-        cls.objects.bulk_update(bulk_update, ["cached_dimensions", "cached_key_fields"], batch_size=batch_size)
+        cls.objects.bulk_update(
+            bulk_update,
+            [
+                "cached_dimensions",
+                "cached_key_fields",
+                "original_created_at",
+                "original_created_by",
+            ],
+            batch_size=batch_size,
+        )
 
     def refresh_cached_fields(self):
+        update_fields = ["cached_dimensions", "cached_key_fields"]
         self.cached_dimensions = self._build_cached_dimensions()
         self.cached_key_fields = self._build_cached_key_fields()
-        self.save(update_fields=["cached_dimensions", "cached_key_fields"])
+
+        if self.original_created_by is None:
+            self.original_created_by = self.original.revision_created_by
+            update_fields.append("original_created_by")
+
+        if self.original_created_at is None:
+            self.original_created_at = self.original.revision_created_at
+            update_fields.append("original_created_at")
+
+        self.save(update_fields=update_fields)
 
     @transaction.atomic
     def set_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):

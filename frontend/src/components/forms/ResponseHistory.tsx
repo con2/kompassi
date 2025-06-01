@@ -11,8 +11,8 @@ import type { Translations } from "@/translations/en";
 graphql(`
   fragment ResponseRevision on LimitedResponseType {
     id
-    createdAt
-    createdBy {
+    revisionCreatedAt
+    revisionCreatedBy {
       displayName
     }
   }
@@ -62,7 +62,7 @@ export async function ResponseHistory({
                   className="link-subtle"
                 >
                   <FormattedDateTime
-                    value={version.createdAt}
+                    value={version.revisionCreatedAt}
                     locale={locale}
                     scope={scope}
                     session={session}

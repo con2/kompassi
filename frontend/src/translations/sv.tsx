@@ -1084,7 +1084,9 @@ const translations: Translations = {
       editDimension: "Ändra dimensionen",
       editDimensionValue: "Ändra val",
       editSurvey: "Ändra",
+      viewProfile: UNTRANSLATED(en.Survey.actions.viewProfile),
     },
+    errors: UNTRANSLATED(en.Survey.errors),
     tabs: {
       summary: "Sammanfattning",
       responses: "Svaren",

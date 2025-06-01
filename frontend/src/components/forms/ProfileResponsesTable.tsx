@@ -26,12 +26,12 @@ export default async function ProfileResponsesTable({
 
   const columns: Column<ProfileResponsesTableRowFragment>[] = [
     {
-      slug: "createdAt",
+      slug: "revisionCreatedAt",
       title: t.attributes.createdAt,
       getCellContents: (row) => (
         <Link href={`/profile/responses/${row.id}`} className="link-subtle">
           <FormattedDateTime
-            value={row.createdAt}
+            value={row.revisionCreatedAt}
             locale={locale}
             scope={row.form.event}
             session={session}

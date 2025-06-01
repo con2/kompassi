@@ -84,6 +84,6 @@ class ProfileResponseType(LimitedResponseType):
         fields = (
             "id",
             "form_data",
-            "created_at",
             "superseded_by",
+            "revision_created_at",
         )

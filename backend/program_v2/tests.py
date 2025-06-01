@@ -105,7 +105,7 @@ def test_program_hosts():
                 "title": "Test program",
                 "description": "Test description",
             },
-            created_by=person.user,
+            revision_created_by=person.user,
             ip_address="127.0.0.1",
             sequence_number=offer_program.get_next_sequence_number(),
         )
@@ -136,10 +136,11 @@ def test_program_hosts():
         accept_invitation_response = Response.objects.create(
             form=accept_invitation_en,
             form_data={},
-            created_by=person2.user,
+            revision_created_by=person2.user,
             ip_address="127.0.0.1",
             sequence_number=accept_invitation.get_next_sequence_number(),
         )
+        accept_invitation.workflow.handle_new_response_phase1(accept_invitation_response)
 
         invitation.mark_used()
 

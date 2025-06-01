@@ -25,16 +25,21 @@ class ResponseDimensionValueInline(admin.TabularInline):
 @admin.register(Response)
 class ResponseAdmin(admin.ModelAdmin):
     model = Response
-    list_display = ("created_at", "form", "sequence_number", "created_by")
+    list_display = (
+        "revision_created_at",
+        "form",
+        "sequence_number",
+    )
     list_filter = ("form__event", "form")
     readonly_fields = (
         "form",
         "form_data",
-        "created_by",
         "ip_address",
-        "created_at",
-        "updated_at",
         "sequence_number",
+        "revision_created_at",
+        "revision_created_by",
+        "original_created_at",
+        "original_created_by",
     )
     fields = readonly_fields
     inlines = (ResponseDimensionValueInline,)

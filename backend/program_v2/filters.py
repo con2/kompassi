@@ -208,7 +208,7 @@ class ProgramFilters:
                     case ProgramUserRelation.FAVORITED:
                         program_offers = program_offers.none()
                     case ProgramUserRelation.HOSTING:
-                        program_offers = program_offers.filter(created_by=user)
+                        program_offers = program_offers.filter(revision_created_by=user)
                     case _:
                         raise NotImplementedError(self.user_relation)
             else:

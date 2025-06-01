@@ -88,7 +88,7 @@ def write_responses_as_excel(
     else:
         output = XlsxWriter(output_stream)
 
-    header_row = ["response.created_at", "response.language"]
+    header_row = ["response.revision_created_at", "response.language"]
     profile_field_selector = survey.profile_field_selector
 
     for profile_field_slug in profile_field_selector:
@@ -102,11 +102,11 @@ def write_responses_as_excel(
         values, warnings = response.get_processed_form_data(fields)
 
         response_row = [
-            localtime(response.created_at).replace(tzinfo=None),
+            localtime(response.revision_created_at).replace(tzinfo=None),
             response.form.language,
         ]
 
-        if response.created_by and (person := response.created_by.person):
+        if (user := response.original_created_by) and (person := user.person):  # type: ignore
             profile = profile_field_selector.select(person)
             response_row.extend(getattr(profile, field_slug) for field_slug in survey.profile_field_selector)
         else:

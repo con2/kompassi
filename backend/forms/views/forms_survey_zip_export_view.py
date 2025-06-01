@@ -55,7 +55,7 @@ def forms_survey_zip_export_view(
                 survey,
                 survey.dimensions.order_by("order"),
                 survey.combined_fields,
-                responses.only("form_data").order_by("created_at"),
+                responses.only("form_data").order_by("revision_created_at"),
                 excel_file,  # type: ignore
             )
 

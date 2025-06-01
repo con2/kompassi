@@ -225,7 +225,7 @@ const translations: Translations = {
       slug: {
         title: "Tekninen nimi",
         helpText:
-          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: kirjaimet A-Za-z, numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla. Kentän teknisen nimen tulee olla sama eri kieliversioissa.",
+          "Kentän tekninen nimi. Ei näytetä loppukäyttäjälle. Sallitut merkit: pienet kirjaimet a-z (ei ääkköset åäö), numerot 0-9 ja alaviiva _. Ei saa alkaa numerolla. Kentän teknisen nimen tulee olla sama eri kieliversioissa.",
       },
       title: {
         title: "Otsikko",
@@ -1264,6 +1264,28 @@ const translations: Translations = {
         edit: {
           title: "Muokkaa ohjelmatarjousta",
           label: "Muokkaa",
+          cancel: "Peru muokkaus",
+          editingOthers: (
+            formattedCreatedAt: ReactNode,
+            createdBy: ReactNode,
+          ) => (
+            <>
+              Muokkaat ohjelmatarjousta, jonka lähetti {formattedCreatedAt}{" "}
+              <strong>{createdBy}</strong>. Muutokset astuvat voimaan vasta, kun
+              lähetät lomakkeen.
+            </>
+          ),
+          cannotEdit: (
+            <>
+              <h1>Ohjelmatarjousta ei voi muokata</h1>
+              <p>Et voi muokata tätä ohjelmatarjousta tällä hetkellä.</p>
+            </>
+          ),
+          success: (title: string) => (
+            <>
+              Ohjelmatarjous <em>{title}</em> on päivitetty.
+            </>
+          ),
         },
         accept: {
           title: "Hyväksy ohjelmatarjous",
@@ -1698,6 +1720,24 @@ const translations: Translations = {
       editDimension: "Muokkaa dimensiota",
       editDimensionValue: "Muokkaa arvoa",
       editSurvey: "Muokkaa",
+      viewProfile: {
+        title: "Näytä käyttäjäprofiili",
+        modalActions: {
+          submit: "Tässä modaalissa ei ole sulkunappia :)",
+          cancel: "Sulje",
+        },
+      },
+    },
+    errors: {
+      noLanguageVersions: {
+        title: "Kyselyllä ei ole kieliversioita",
+        message: (
+          <>
+            Tällä kyselyllä ei ole yhtään kieliversiota. Kyselyyn ei voi vastata
+            ennen kuin kyselyn omistaja lisää vähintään yhden kieliversion.
+          </>
+        ),
+      },
     },
     tabs: {
       summary: "Yhteenveto",

@@ -112,9 +112,9 @@ class FormsProfileMetaType(graphene.ObjectType):
         if info.context.user != meta.person.user:
             raise SuspiciousOperation("User mismatch")
         return Response.objects.filter(
-            created_by=meta.person.user,
+            revision_created_by=meta.person.user,
             superseded_by=None,
-        ).order_by("-created_at")
+        ).order_by("-revision_created_at")
 
     responses = graphene.NonNull(
         graphene.List(
@@ -130,7 +130,7 @@ class FormsProfileMetaType(graphene.ObjectType):
         """
         if info.context.user != meta.person.user:
             raise SuspiciousOperation("User mismatch")
-        return Response.objects.get(created_by=meta.person.user, id=id)
+        return Response.objects.get(revision_created_by=meta.person.user, id=id)
 
     response = graphene.Field(
         ProfileResponseType,
