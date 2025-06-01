@@ -73,7 +73,7 @@ export default function ModalButton({
             <>
               <Modal.Body>{children}</Modal.Body>
               <Modal.Footer>
-                <Button variant="primary" onClick={close}>
+                <Button variant="outline-primary" onClick={close}>
                   {messages.cancel}
                 </Button>
               </Modal.Footer>
