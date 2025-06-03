@@ -42,9 +42,9 @@ export async function submit(
     throw new Error("Failed to create survey response");
   }
 
-  revalidatePath(`/event/${eventSlug}/program-offers`);
-  revalidatePath(`/event/${eventSlug}/program-offers/${editResponseId}`);
+  revalidatePath(`/${locale}/${eventSlug}/program-offers`);
+  revalidatePath(`/${locale}/${eventSlug}/program-offers/${editResponseId}`);
   return void redirect(
-    `/event/${eventSlug}/program-offers?editSuccess=${newResponseId}`,
+    `/${eventSlug}/program-offers?editSuccess=${newResponseId}`,
   );
 }

@@ -237,6 +237,15 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
 
     def response_can_be_edited_by(self, response: Response, request: HttpRequest) -> bool:
         """
+        Check if the response can be edited by the user.
+        This is a common method that checks both owner and admin editability.
+        """
+        return self.response_can_be_edited_by_owner(response, request) or self.response_can_be_edited_by_admin(
+            response, request
+        )
+
+    def response_can_be_edited_by_owner(self, response: Response, request: HttpRequest) -> bool:
+        """
         Common criteria for editability of a response shared by all workflows.
         """
         if not request.user.is_authenticated:
@@ -261,7 +270,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         response: Response,
         request: HttpRequest,
     ) -> bool:
-        return is_graphql_allowed_for_model(
+        return response.superseded_by is None and is_graphql_allowed_for_model(
             request.user,
             instance=response.survey,
             app=response.survey.app,

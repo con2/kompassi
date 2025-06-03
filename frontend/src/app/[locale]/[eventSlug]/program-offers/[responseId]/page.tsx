@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Fragment } from "react";
 import { ButtonGroup } from "react-bootstrap";
 import { updateResponseDimensions } from "../../surveys/[surveySlug]/responses/[responseId]/actions";
 import { acceptProgramOffer } from "./actions";
@@ -30,10 +31,14 @@ graphql(`
   fragment ProgramOfferDetail on FullResponseType {
     id
     sequenceNumber
+    originalCreatedAt
+    originalCreatedBy {
+      fullName
+      ...FullSelectedProfile
+    }
     revisionCreatedAt
     revisionCreatedBy {
       fullName
-      ...FullSelectedProfile
     }
     language
     values
@@ -176,6 +181,8 @@ export default async function ProgramOfferPage({
   const programOffer = data.event.program.programOffer;
   const { event } = data;
   const {
+    originalCreatedAt,
+    originalCreatedBy,
     revisionCreatedAt,
     revisionCreatedBy,
     form,
@@ -245,72 +252,97 @@ export default async function ProgramOfferPage({
       active="programOffers"
       searchParams={searchParams}
       actions={
-        <ButtonGroup>
-          <ModalButton
-            className="btn btn-outline-success"
-            label={t.actions.accept.label + "…"}
-            title={t.actions.accept.title}
-            messages={t.actions.accept.modalActions}
-            disabled={!canAccept}
-            action={acceptProgramOffer.bind(
-              null,
-              locale,
-              eventSlug,
-              responseId,
-            )}
-          >
-            {programOffer.programs.length > 0 && (
-              <div className="alert alert-warning">
-                <p>
-                  {t.attributes.programs.acceptAgainWarning(
-                    programOffer.programs.length,
-                  )}
-                </p>
-                {programOffer.programs.map((program) => (
-                  <div key={program.slug}>
-                    <Link
-                      className="link-subtle"
-                      href={`/${eventSlug}/program-admin/${program.slug}`}
-                      title={program.title}
-                      target="_blank"
-                    >
-                      {program.title}
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            )}
-            <p>{t.actions.accept.message}</p>
-            <SchemaForm
-              fields={acceptProgramOfferFields}
-              values={acceptProgramOfferValues}
-              messages={translations.SchemaForm}
-              headingLevel="h4"
-              idPrefix="accept-program-offer"
-            />
-          </ModalButton>
+        supersededBy ? undefined : (
+          <ButtonGroup>
+            <ModalButton
+              className="btn btn-outline-success"
+              label={t.actions.accept.label + "…"}
+              title={t.actions.accept.title}
+              messages={t.actions.accept.modalActions}
+              disabled={!canAccept}
+              action={acceptProgramOffer.bind(
+                null,
+                locale,
+                eventSlug,
+                responseId,
+              )}
+            >
+              {programOffer.programs.length > 0 && (
+                <div className="alert alert-warning">
+                  <p>
+                    {t.attributes.programs.acceptAgainWarning(
+                      programOffer.programs.length,
+                    )}
+                  </p>
+                  {programOffer.programs.map((program) => (
+                    <div key={program.slug}>
+                      <Link
+                        className="link-subtle"
+                        href={`/${eventSlug}/program-admin/${program.slug}`}
+                        title={program.title}
+                        target="_blank"
+                      >
+                        {program.title}
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p>{t.actions.accept.message}</p>
+              <SchemaForm
+                fields={acceptProgramOfferFields}
+                values={acceptProgramOfferValues}
+                messages={translations.SchemaForm}
+                headingLevel="h4"
+                idPrefix="accept-program-offer"
+              />
+            </ModalButton>
 
-          <ModalButton
-            className="btn btn-outline-danger"
-            label={t.actions.cancel.label + "…"}
-            title={t.actions.cancel.title}
-            messages={t.actions.cancel.modalActions}
-            disabled={!canAccept}
-          >
-            <p>{t.actions.cancel.message}</p>
-          </ModalButton>
+            <ModalButton
+              className="btn btn-outline-danger"
+              label={t.actions.cancel.label + "…"}
+              title={t.actions.cancel.title}
+              messages={t.actions.cancel.modalActions}
+              disabled={!canAccept}
+            >
+              <p>{t.actions.cancel.message}</p>
+            </ModalButton>
 
-          <Link
-            className={`btn btn-outline-primary ${canEdit ? "" : "disabled"}`}
-            href={`/${locale}/${eventSlug}/program-offers/${responseId}/edit`}
-            title={t.actions.edit.title}
-          >
-            {t.actions.edit.label}
-          </Link>
-        </ButtonGroup>
+            <Link
+              className={`btn btn-outline-primary ${canEdit ? "" : "disabled"}`}
+              href={`/${locale}/${eventSlug}/program-offers/${responseId}/edit`}
+              title={t.actions.edit.title}
+            >
+              {t.actions.edit.label}
+            </Link>
+          </ButtonGroup>
+        )
       }
     >
       <h3 className="mt-4">{values.title ?? t.singleTitle}</h3>
+
+      {programOffer.programs.length > 0 && (
+        <div className="alert alert-primary mt-4 mb-4">
+          <p>{t.attributes.programs.message(programOffer.programs.length)}</p>
+          {programOffer.programs.map((program) => (
+            <div key={program.slug}>
+              <Link
+                className="link-subtle"
+                href={`/${eventSlug}/program-admin/${program.slug}`}
+                title={program.title}
+              >
+                {program.title}
+              </Link>
+            </div>
+          ))}
+          <p className="mt-3 mb-0">
+            {t.attributes.programs.dimensionsWillNotBeUpdatedOnProgramItem(
+              programOffer.programs.length,
+            )}
+          </p>
+        </div>
+      )}
+
       {supersededBy ? (
         <OldVersionAlert
           supersededBy={supersededBy}
@@ -356,11 +388,11 @@ export default async function ProgramOfferPage({
 
                   <div className="mb-4">
                     <label className="form-label fw-bold">
-                      {surveyT.attributes.createdAt}
+                      {surveyT.attributes.originalCreatedAt}
                     </label>
                     <div>
                       <FormattedDateTime
-                        value={revisionCreatedAt}
+                        value={originalCreatedAt}
                         locale={locale}
                         scope={event}
                         session={session}
@@ -368,15 +400,15 @@ export default async function ProgramOfferPage({
                     </div>
                   </div>
 
-                  {revisionCreatedBy && (
+                  {originalCreatedBy && (
                     <div className="mb-4">
                       <label className="form-label fw-bold">
-                        {surveyT.attributes.createdBy}
+                        {surveyT.attributes.originalCreatedBy}
                       </label>
                       <div>
                         <ModalButton
                           className="btn btn-link p-0 link-subtle"
-                          label={revisionCreatedBy.fullName + "…"}
+                          label={originalCreatedBy.fullName + "…"}
                           title={surveyT.actions.viewProfile.title}
                           messages={surveyT.actions.viewProfile.modalActions}
                         >
@@ -384,7 +416,7 @@ export default async function ProgramOfferPage({
                             profileFieldSelector={
                               programForm.profileFieldSelector
                             }
-                            profile={revisionCreatedBy}
+                            profile={originalCreatedBy}
                             messages={translations.Profile}
                           />
                         </ModalButton>
@@ -393,59 +425,65 @@ export default async function ProgramOfferPage({
                   )}
 
                   {oldVersions.length > 0 && (
-                    <div className="mb-4">
-                      <label className="form-label fw-bold">
-                        {surveyT.ResponseHistory.title}
-                      </label>
-                      <ul className="list-unstyled m-0">
-                        {oldVersions.map((version) => (
-                          <li key={version.id}>
-                            <Link
-                              href={`/${event.slug}/program-offers/${version.id}`}
-                              className="link-subtle"
-                            >
-                              <FormattedDateTime
-                                value={version.revisionCreatedAt}
-                                locale={locale}
-                                scope={event}
-                                session={session}
-                              />
-                              {version.revisionCreatedBy && (
-                                <> ({version.revisionCreatedBy?.displayName})</>
-                              )}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    <>
+                      <div className="mb-4">
+                        <label className="form-label fw-bold">
+                          {surveyT.attributes.currentVersionCreatedAt}
+                        </label>
+                        <div>
+                          <FormattedDateTime
+                            value={revisionCreatedAt}
+                            locale={locale}
+                            scope={event}
+                            session={session}
+                          />
+                        </div>
+                      </div>
+
+                      {revisionCreatedBy && (
+                        <div className="mb-4">
+                          <label className="form-label fw-bold">
+                            {surveyT.attributes.currentVersionCreatedBy}
+                          </label>
+                          <div>{revisionCreatedBy.fullName}</div>
+                        </div>
+                      )}
+
+                      <div className="mb-4">
+                        <label className="form-label fw-bold">
+                          {surveyT.ResponseHistory.title}
+                        </label>
+                        <ul className="list-unstyled m-0">
+                          {oldVersions.map((version) => (
+                            <li key={version.id}>
+                              <Link
+                                href={`/${event.slug}/program-offers/${version.id}`}
+                                className="link-subtle"
+                              >
+                                <FormattedDateTime
+                                  value={version.revisionCreatedAt}
+                                  locale={locale}
+                                  scope={event}
+                                  session={session}
+                                />
+                                {version.revisionCreatedBy && (
+                                  <>
+                                    {" "}
+                                    ({version.revisionCreatedBy?.displayName})
+                                  </>
+                                )}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
             </div>
           </div>
         </>
-      )}
-
-      {programOffer.programs.length > 0 && (
-        <div className="alert alert-primary">
-          <p>{t.attributes.programs.message(programOffer.programs.length)}</p>
-          {programOffer.programs.map((program) => (
-            <div key={program.slug}>
-              <Link
-                className="link-subtle"
-                href={`/${eventSlug}/program-admin/${program.slug}`}
-                title={program.title}
-              >
-                {program.title}
-              </Link>
-            </div>
-          ))}
-          <p className="mt-3 mb-0">
-            {t.attributes.programs.dimensionsWillNotBeUpdatedOnProgramItem(
-              programOffer.programs.length,
-            )}
-          </p>
-        </div>
       )}
 
       <SchemaForm

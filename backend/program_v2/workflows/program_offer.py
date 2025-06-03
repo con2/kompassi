@@ -344,8 +344,8 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         """
         return None, False
 
-    def response_can_be_edited_by(self, response: Response, request: HttpRequest) -> bool:
+    def response_can_be_edited_by_owner(self, response: Response, request: HttpRequest) -> bool:
         # cannot use is_subject_locked on state=accepted because we may want to allow editing the program but not the offer
-        return super().response_can_be_edited_by(response, request) and "new" in response.cached_dimensions.get(
+        return super().response_can_be_edited_by_owner(response, request) and "new" in response.cached_dimensions.get(
             "state", ["new"]
         )

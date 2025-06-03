@@ -155,7 +155,7 @@ export default async function SurveyResponsePage({ params }: Props) {
       slug: "revisionCreatedAt",
       // TODO(#438) use DateTimeField
       type: "SingleLineText",
-      title: t.attributes.createdAt,
+      title: t.attributes.originalCreatedAt,
     },
   ];
 
@@ -163,7 +163,7 @@ export default async function SurveyResponsePage({ params }: Props) {
     technicalFields.push({
       slug: "revisionCreatedBy",
       type: "SingleLineText",
-      title: t.attributes.createdBy,
+      title: t.attributes.originalCreatedBy,
     });
   }
 

@@ -28,7 +28,7 @@ graphql(`
   fragment ProgramOffer on FullResponseType {
     id
     revisionCreatedAt
-    revisionCreatedBy {
+    originalCreatedBy {
       fullName
     }
     sequenceNumber
@@ -183,7 +183,7 @@ export default async function ProgramOffersPage({
   const columns: Column<ProgramOfferFragment>[] = [
     {
       slug: "revisionCreatedAt",
-      title: <>{surveyT.attributes.createdAt} 🔼</>,
+      title: <>{surveyT.attributes.originalCreatedAt} 🔼</>,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/program-offers/${row.id}?${queryString}`}>
           <FormattedDateTime
@@ -196,9 +196,9 @@ export default async function ProgramOffersPage({
       ),
     },
     {
-      slug: "revisionCreatedBy",
-      title: surveyT.attributes.createdBy,
-      getCellContents: (row) => row.revisionCreatedBy?.fullName || "",
+      slug: "originalCreatedBy",
+      title: surveyT.attributes.originalCreatedBy,
+      getCellContents: (row) => row.originalCreatedBy?.fullName || "",
     },
   ];
 

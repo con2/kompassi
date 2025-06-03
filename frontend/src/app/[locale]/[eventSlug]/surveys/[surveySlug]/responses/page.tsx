@@ -174,7 +174,7 @@ export default async function FormResponsesPage({
     },
     {
       slug: "revisionCreatedAt",
-      title: t.attributes.createdAt,
+      title: t.attributes.originalCreatedAt,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}>
           <FormattedDateTime
@@ -191,7 +191,7 @@ export default async function FormResponsesPage({
   if (anonymity === "NAME_AND_EMAIL") {
     columns.push({
       slug: "revisionCreatedBy",
-      title: t.attributes.createdBy,
+      title: t.attributes.originalCreatedBy,
       getCellContents: (row) => row.revisionCreatedBy?.displayName || "",
     });
   }

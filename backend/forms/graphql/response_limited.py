@@ -143,7 +143,7 @@ class LimitedResponseType(DjangoObjectType):
             case EditMode.ADMIN:
                 return response.survey.workflow.response_can_be_edited_by_admin(response, info.context)
             case EditMode.OWNER:
-                return response.survey.workflow.response_can_be_edited_by(response, info.context)
+                return response.survey.workflow.response_can_be_edited_by_owner(response, info.context)
             case _:
                 raise ValueError(f"Unknown edit mode: {mode}")
 
