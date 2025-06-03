@@ -66,7 +66,7 @@ def access_profile_privilege_view(request, privilege_slug):
 
 @person_required
 @require_POST
-@csp_update({"form-action": ["https://slack.com"]})  # type: ignore
+@csp_update({"form-action": ["https://join.slack.com"]})  # type: ignore
 def access_profile_request_privilege_view(request, privilege_slug):
     if not request.user.person.is_email_verified:
         messages.error(request, "Käyttöoikeuden pyytäminen edellyttää vahvistettua sähköpostiosoitetta.")
