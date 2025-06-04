@@ -1031,6 +1031,9 @@ const translations = {
       programHosts: {
         title: "Program hosts",
       },
+      scheduleItems: {
+        title: "Schedule items",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -1417,7 +1420,71 @@ const translations = {
       singleTitle: "Schedule item",
       listTitle: "Schedule items",
       attributes: {
-        startTime: "Start time",
+        slug: {
+          title: "Slug",
+          helpText: (
+            <>
+              Machine readable name of the schedule item. Must be unique among
+              schedule items of the event. Cannot be changed after creation. Can
+              contain lower case letters, numbers and dashes (-). If you
+              anticipate this program item will only have one schedule item,
+              best practice is to use the slug of the program item as the slug
+              of the schedule item.
+            </>
+          ),
+        },
+        subtitle: {
+          title: "Subtitle",
+          helpText: (
+            <>
+              If there are multiple schedule items, the subtitle can be used to
+              differentiate them from each other. Will be appended to the
+              program title in parentheses. Examples: Given a program item with
+              the title <em>Freedom Fighters</em>, you might have{" "}
+              <em>Freedom Fighters (Character Creation)</em>,{" "}
+              <em>Freedom Fighters (Run 1)</em> etc. with the value of this
+              field being that in parentheses.
+            </>
+          ),
+        },
+        startTime: {
+          title: "Starting time",
+          helpText: <>In the time zone of the event.</>,
+        },
+        durationMinutes: {
+          title: "Duration in minutes",
+        },
+        room: {
+          title: "Room",
+          helpText: (
+            DimensionsLink: ({
+              children,
+            }: {
+              children: ReactNode;
+            }) => ReactNode,
+          ) => (
+            <>
+              To change the choices of this field, update the values of the{" "}
+              <em>room</em> dimension in the{" "}
+              <DimensionsLink>dimension editor</DimensionsLink>.
+            </>
+          ),
+        },
+        freeformLocation: {
+          title: "Freeform location",
+          helpText: (
+            <>
+              If the Room field above is empty, this will be used alone as the
+              visitor-visible location of the schedule item. If Room is
+              specified and this field is not, the value of the Room field alone
+              is used as the visitor-visible location. If both are specified,
+              the value of this field will be appended to the value of the Room
+              field in parentheses. Examples: If Room is <em>Main Hall</em> and
+              this field is <em>Stage</em>, the visitor-visible location will be{" "}
+              <em>Main Hall (Stage)</em>.
+            </>
+          ),
+        },
       },
     },
 

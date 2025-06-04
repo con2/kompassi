@@ -1,6 +1,9 @@
 import { Temporal } from "@js-temporal/polyfill";
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
 import makeInputId from "./makeInputId";
 import type { Field } from "./models";
+import { SchemaForm } from "./SchemaForm";
 import UploadedFileCards from "./UploadedFileCards";
 import { timezone } from "@/config";
 import type { Translations } from "@/translations/en";
@@ -268,6 +271,21 @@ function SchemaFormInput({
           id={id}
           name={slug}
         />
+      );
+    case "MultiItemField":
+      return (
+        <Card className="mb-3">
+          <CardBody>
+            <SchemaForm
+              fields={field.fields}
+              idPrefix={`${id}`}
+              namePrefix={slug}
+              values={value}
+              readOnly={readOnly}
+              messages={messages}
+            />
+          </CardBody>
+        </Card>
       );
     default:
       const exhaustiveCheck: never = type;

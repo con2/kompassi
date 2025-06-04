@@ -11,7 +11,12 @@ interface SchemaFormProps {
   headingLevel?: HeadingLevel;
   readOnly?: boolean;
   className?: string;
+
+  /// For when you need to render multiple SchemaForms that may have fields with the same slug
   idPrefix?: string;
+
+  /// For nested SchemaForms
+  namePrefix?: string;
 }
 
 export function SchemaForm(props: SchemaFormProps) {
@@ -23,6 +28,7 @@ export function SchemaForm(props: SchemaFormProps) {
     readOnly,
     className = "",
     idPrefix,
+    namePrefix,
   } = props;
   return (
     <div className={className}>
@@ -31,6 +37,10 @@ export function SchemaForm(props: SchemaFormProps) {
         if (!slug) {
           console.warn(`Field ${index} has no slug`);
           slug = `field-${index}`;
+        }
+
+        if (namePrefix) {
+          slug = `${namePrefix}.${slug}`;
         }
 
         return (

@@ -770,6 +770,9 @@ const translations: Translations = {
         message: "Det här programmet har skapats från ett programerbjudande:",
       },
       programHosts: UNTRANSLATED(en.Program.attributes.programHosts),
+      scheduleItems: {
+        title: "Programtider",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>

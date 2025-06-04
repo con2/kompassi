@@ -5,11 +5,14 @@ import { Field, Value, Values } from "./models";
 export default function processFormData(
   fields: Field[],
   formData: FormData,
+  prefix: string = "",
 ): Values {
   const byFieldName = Object.fromEntries(formData.entries());
   const values: Values = {};
 
   for (const field of fields) {
+    const slug = prefix ? `${prefix}.${field.slug}` : field.slug;
+
     switch (field.type) {
       case "Spacer":
       case "Divider":
@@ -19,15 +22,19 @@ export default function processFormData(
       case "SingleLineText":
       case "MultiLineText":
       case "SingleSelect":
-        values[field.slug] = byFieldName[field.slug] as string;
+        values[field.slug] = byFieldName[slug] as string;
         break;
 
       case "NumberField":
-        values[field.slug] = parseFloat(byFieldName[field.slug] as string);
+        values[field.slug] = parseFloat(byFieldName[slug] as string);
         break;
 
       case "SingleCheckbox":
-        values[field.slug] = Boolean(byFieldName[field.slug]);
+        values[field.slug] = Boolean(byFieldName[slug]);
+        break;
+
+      case "MultiItemField":
+        values[field.slug] = processFormData(field.fields, formData, slug);
         break;
 
       default:

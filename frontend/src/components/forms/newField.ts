@@ -30,6 +30,8 @@ export default function newField(
       return { type, slug, title: "", dimension: "" };
     case "RadioMatrix":
       return { type, slug, title: "", choices: [], questions: [] };
+    case "MultiItemField":
+      return { type, slug, title: "", fields: [] };
     default:
       const exhaustiveCheck: never = type;
       throw new Error(`Unknown field type ${exhaustiveCheck}`);

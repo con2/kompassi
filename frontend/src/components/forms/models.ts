@@ -18,7 +18,8 @@ export type FieldType =
   | "DateTimeField"
   | "DimensionSingleSelect"
   | "DimensionMultiSelect"
-  | "DimensionSingleCheckbox";
+  | "DimensionSingleCheckbox"
+  | "MultiItemField";
 
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
@@ -39,6 +40,7 @@ export const fieldTypes: FieldType[] = [
   "DateField",
   "TimeField",
   "DateTimeField",
+  "MultiItemField",
 ];
 
 export const fieldTypesConvertibleToDimension: FieldType[] = [
@@ -185,13 +187,19 @@ interface FileUpload extends BaseField {
   multiple?: boolean;
 }
 
+export interface MultiItemField extends BaseField {
+  type: "MultiItemField";
+  fields: Field[];
+}
+
 /// Value of a single field (without knowing its type)
 export type Value =
   | string
   | number
   | boolean
   | string[]
-  | Record<string, string>;
+  | Record<string, string>
+  | Record<string, unknown>; /// MultiItemField
 /// Values of all fields in a form
 export type Values = Record<string, Value>;
 
@@ -213,7 +221,8 @@ export type Field =
   | DateTimeField
   | DimensionSingleSelect
   | DimensionMultiSelect
-  | DimensionSingleCheckbox;
+  | DimensionSingleCheckbox
+  | MultiItemField;
 
 export interface FormSchema {
   title: string;
