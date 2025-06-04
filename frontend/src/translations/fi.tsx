@@ -1741,6 +1741,10 @@ const translations: Translations = {
           </>
         ),
       },
+      surveyNotActive: {
+        title: "Kysely ei ole avoinna",
+        message: <>Tämä kysely ei tällä hetkellä ota vastaan vastauksia.</>,
+      },
     },
     tabs: {
       summary: "Yhteenveto",

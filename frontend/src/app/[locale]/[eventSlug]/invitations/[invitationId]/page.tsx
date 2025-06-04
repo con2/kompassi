@@ -167,8 +167,8 @@ export default async function SurveyPage({ params }: Props) {
   if (!isActive) {
     return (
       <ViewContainer>
-        <ViewHeading>{surveyT.errors.notActive.title}</ViewHeading>
-        <p>{surveyT.errors.notActive.message}</p>
+        <ViewHeading>{surveyT.errors.surveyNotActive.title}</ViewHeading>
+        <p>{surveyT.errors.surveyNotActive.message}</p>
       </ViewContainer>
     );
   }

@@ -1753,8 +1753,8 @@ const translations = {
           </>
         ),
       },
-      notActive: {
-        title: "Survey not active",
+      surveyNotActive: {
+        title: "Survey is not active",
         message: <>This survey is not currently open for responses.</>,
       },
     },

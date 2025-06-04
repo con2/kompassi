@@ -85,6 +85,18 @@ export async function generateMetadata({ params }: Props) {
     query,
     variables: { eventSlug, surveySlug, locale },
   });
+
+  if (!data.event?.forms?.survey) {
+    notFound();
+  }
+
+  if (data?.event?.forms?.survey?.loginRequired) {
+    const session = await auth();
+    if (!session) {
+      return t.SignInRequired.metadata;
+    }
+  }
+
   return {
     title: `${data.event?.name}: ${data.event?.forms?.survey?.form?.title} – Kompassi`,
     description: data.event?.forms?.survey?.form?.description ?? "",
@@ -121,9 +133,18 @@ export default async function SurveyPage({ params }: Props) {
     countResponsesByCurrentUser,
     purpose,
     profileFieldSelector,
+    isActive,
     registry: targetRegistry,
   } = event.forms.survey;
-  const { isActive } = event.forms.survey;
+  if (!isActive) {
+    return (
+      <ViewContainer>
+        <ViewHeading>{t.errors.surveyNotActive.title}</ViewHeading>
+        <p>{t.errors.surveyNotActive.message}</p>
+      </ViewContainer>
+    );
+  }
+
   const { title, description, fields, language } = event.forms.survey.form;
 
   if (loginRequired) {
@@ -173,12 +194,13 @@ export default async function SurveyPage({ params }: Props) {
         path={`/${eventSlug}/${surveySlug}`}
       />
 
-      {!isActive && (
+      {/* TODO No good way currently to separate "not logged in" and "not active and not admin" from "not active and admin override" */}
+      {/* {!isActive && (
         <div className="alert alert-warning">
           <h5>{t.attributes.isActive.adminOverride.title}</h5>
           <p className="mb-0">{t.attributes.isActive.adminOverride.message}</p>
         </div>
-      )}
+      )} */}
 
       <ParagraphsDangerousHtml html={description} />
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
