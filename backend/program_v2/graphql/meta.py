@@ -399,7 +399,7 @@ class ProgramV2ProfileMetaType(graphene.ObjectType):
                 user=info.context.user,
             )
 
-        return program_offers.order_by("-created_at")
+        return program_offers
 
     program_offers = graphene.NonNull(
         graphene.List(graphene.NonNull(ProfileResponseType)),

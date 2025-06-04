@@ -67,7 +67,7 @@ class AcceptInvitation(graphene.Mutation):
             response = Response.objects.create(
                 form=form,
                 form_data=input.form_data,
-                created_by=request.user,
+                revision_created_by=request.user,
                 ip_address=ip_address,
                 sequence_number=survey.get_next_sequence_number(),
             )

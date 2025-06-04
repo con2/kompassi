@@ -103,6 +103,12 @@ interface Props {
 export async function generateMetadata({ params }: Props) {
   const { locale, eventSlug, invitationId } = params;
   const t = getTranslations(locale);
+
+  const session = await auth();
+  if (!session) {
+    return t.SignInRequired.metadata;
+  }
+
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, invitationId, locale },
@@ -150,6 +156,23 @@ export default async function SurveyPage({ params }: Props) {
   }
 
   const { languages, isActive } = event.involvement.invitation.survey;
+  if (!languages || languages.length === 0) {
+    return (
+      <ViewContainer>
+        <ViewHeading>{surveyT.errors.noLanguageVersions.title}</ViewHeading>
+        <p>{surveyT.errors.noLanguageVersions.message}</p>
+      </ViewContainer>
+    );
+  }
+  if (!isActive) {
+    return (
+      <ViewContainer>
+        <ViewHeading>{surveyT.errors.notActive.title}</ViewHeading>
+        <p>{surveyT.errors.notActive.message}</p>
+      </ViewContainer>
+    );
+  }
+
   const { title, description, fields, language } =
     event.involvement.invitation.survey.form;
 
