@@ -24,11 +24,18 @@ from .models import CBACEntry, EmailAlias, EmailAliasDomain, InternalEmailAlias,
 
 logger = logging.getLogger("kompassi")
 
-SLACK_INVITE_ORIGIN = "https://join.slack.com"
+# FMH slack is chaining redirects and all redirects in the chain need to be allowed
+SLACK_INVITE_ORIGINS = [
+    "https://con2.slack.com",
+    "https://desucon.slack.com",
+    "https://join.slack.com",
+    "https://slack.com",
+    "https://traconfi.slack.com",
+]
 
 
 @person_required
-@csp_update({"form-action": [SLACK_INVITE_ORIGIN]})  # type: ignore
+@csp_update({"form-action": SLACK_INVITE_ORIGINS})  # type: ignore
 def access_profile_privileges_view(request):
     person = request.user.person
 
@@ -68,7 +75,7 @@ def access_profile_privilege_view(request, privilege_slug):
 
 @person_required
 @require_POST
-@csp_update({"form-action": [SLACK_INVITE_ORIGIN]})  # type: ignore
+@csp_update({"form-action": SLACK_INVITE_ORIGINS})  # type: ignore
 def access_profile_request_privilege_view(request, privilege_slug):
     if not request.user.person.is_email_verified:
         messages.error(request, "Käyttöoikeuden pyytäminen edellyttää vahvistettua sähköpostiosoitetta.")
