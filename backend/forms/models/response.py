@@ -258,26 +258,16 @@ class Response(models.Model):
         """
         from .response_dimension_value import ResponseDimensionValue
 
-        bulk_delete = self.dimensions.filter(value__dimension__slug__in=values_to_set.keys())
-        bulk_create: list[ResponseDimensionValue] = []
+        self.dimensions.filter(value__dimension__slug__in=values_to_set.keys()).delete()
 
-        for dimension_slug, value_slugs in values_to_set.items():
-            bulk_delete = bulk_delete.exclude(
-                value__dimension__slug=dimension_slug,
-                value__slug__in=value_slugs,
+        ResponseDimensionValue.objects.bulk_create(
+            ResponseDimensionValue(
+                response=self,
+                value=cache.values_by_dimension[dimension_slug][value_slug],
             )
-
-            for value_slug in value_slugs:
-                if value_slug not in self.cached_dimensions.get(dimension_slug, []):
-                    bulk_create.append(
-                        ResponseDimensionValue(
-                            response=self,
-                            value=cache.values_by_dimension[dimension_slug][value_slug],
-                        )
-                    )
-
-        bulk_delete.delete()
-        ResponseDimensionValue.objects.bulk_create(bulk_create)
+            for dimension_slug, value_slugs in values_to_set.items()
+            for value_slug in value_slugs
+        )
 
     def get_processed_form_data(
         self,
