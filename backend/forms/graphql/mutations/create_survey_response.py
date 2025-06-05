@@ -35,15 +35,6 @@ class CreateSurveyResponse(graphene.Mutation):
         request: HttpRequest = info.context
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
 
-        if not survey.is_active:
-            graphql_check_instance(
-                survey,
-                request,
-                app=survey.app,
-                field="responses",
-                operation="create",
-            )
-
         form = survey.get_form(input.locale)  # type: ignore
         if not form:
             raise Exception("Form not found")
@@ -58,9 +49,6 @@ class CreateSurveyResponse(graphene.Mutation):
             except Response.DoesNotExist as e:
                 raise Exception("Response to edit not found") from e
 
-            if old_version.superseded_by is not None:
-                raise Exception("Only the most recent version of the response can be edited")
-
             if not survey.workflow.response_can_be_edited_by(old_version, request):
                 raise Exception("Response cannot be edited by the user")
 
@@ -70,6 +58,15 @@ class CreateSurveyResponse(graphene.Mutation):
             old_version = None
             original_created_by = None
             original_created_at = None
+
+            if not survey.is_active:
+                graphql_check_instance(
+                    survey,
+                    request,
+                    app=survey.app,
+                    field="responses",
+                    operation="create",
+                )
 
             if survey.login_required and not revision_created_by:
                 raise Exception("Login required")
