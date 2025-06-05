@@ -248,22 +248,51 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         """
         Common criteria for editability of a response shared by all workflows.
         """
+        log_context: dict[str, str | dict[str, list[str]]] = dict(
+            scope=response.survey.scope.slug,
+            survey=response.survey.slug,
+            response=response.id,
+            created_by=response.revision_created_by.username if response.revision_created_by else None,
+            logged_in_user=request.user.username if request.user.is_authenticated else None,  # type: ignore
+        )
+
         if not request.user.is_authenticated:
+            logger.info("Response not editable by owner (not logged in): %s", log_context)
             return False
 
         if not response.revision_created_by:
+            logger.info("Response not editable by owner (revision_created_by unset): %s", log_context)
             return False
 
         if response.revision_created_by != request.user:
+            logger.info("Response not editable by owner (not created by user): %s", log_context)
             return False
 
         if response.superseded_by is not None:
+            logger.info("Response not editable by owner (not current version): %s", log_context)
             return False
 
-        if not (response.survey.responses_editable_until and now() < self.survey.responses_editable_until):
+        if not response.survey.responses_editable_until:
+            logger.info("Response not editable by owner (responses_editable_until unset): %s", log_context)
             return False
 
-        return not response.dimensions.filter(value__is_subject_locked=True).exists()
+        if now() >= self.survey.responses_editable_until:
+            log_context["responses_editable_until"] = self.survey.responses_editable_until.isoformat()
+            logger.info("Response not editable by owner (responses_editable_until passed): %s", log_context)
+            return False
+
+        locking_dimension_values = response.dimensions.filter(value__is_subject_locked=True)
+        if locking_dimension_values.exists():
+            locking_dimensions: dict[str, list[str]] = {}
+            log_context["locking_dimensions"] = locking_dimensions
+            for rdv in locking_dimension_values:
+                locking_dimensions.setdefault(rdv.value.dimension.slug, []).append(rdv.value.slug)
+
+            logger.info("Response not editable by owner (subject locked dimensions): %s", log_context)
+            return False
+
+        logger.info("Response editable by owner: %s", log_context)
+        return True
 
     def response_can_be_edited_by_admin(
         self,
