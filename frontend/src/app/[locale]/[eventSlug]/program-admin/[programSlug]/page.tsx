@@ -15,8 +15,6 @@ import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView"
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
-// TODO(Japsu) Deterministic order of dimensions & values
-// See https://con2.slack.com/archives/C3ZGNGY48/p1718446605681339
 const query = graphql(`
   query ProgramAdminDetailQuery(
     $eventSlug: String!
