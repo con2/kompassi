@@ -68,6 +68,7 @@ function getSummaryChoices(
     case "DateField":
     case "TimeField":
     case "DateTimeField":
+    case "MultiItemField":
       // no choices
       break;
 

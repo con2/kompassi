@@ -282,6 +282,7 @@ const translations = {
       DateField: "Date",
       DateTimeField: "Date and time",
       TimeField: "Time",
+      MultiItemField: "Multiple items",
     },
     advancedFieldTypes: {
       SingleSelect: {

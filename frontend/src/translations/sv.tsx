@@ -132,6 +132,7 @@ const translations: Translations = {
       DateField: "Datum",
       DateTimeField: "Datum och tid",
       TimeField: "Tid",
+      MultiItemField: UNSURE("Fält med flera poster"),
     },
     advancedFieldTypes: UNTRANSLATED(en.FormEditor.advancedFieldTypes),
 

@@ -286,6 +286,7 @@ const translations: Translations = {
       DateField: "Päivämäärä",
       DateTimeField: "Päivämäärä ja kellonaika",
       TimeField: "Kellonaika",
+      MultiItemField: "Kasa alilomakejuttuja",
     },
     advancedFieldTypes: {
       SingleSelect: {
