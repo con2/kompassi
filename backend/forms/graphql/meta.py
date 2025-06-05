@@ -4,7 +4,7 @@ import graphene
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
 
-from access.cbac import graphql_check_instance, graphql_check_model, is_graphql_allowed_for_model
+from access.cbac import graphql_check_model, is_graphql_allowed_for_model
 from core.utils import get_objects_within_period, normalize_whitespace
 
 from ..models.enums import SurveyApp
@@ -95,12 +95,14 @@ class FormsEventMetaType(graphene.ObjectType):
         if purpose:
             qs = qs.filter(purpose_slug=SurveyPurpose(purpose).value)
 
-        survey = qs.first()
+        return qs.first()
 
-        if survey and not survey.is_active:
-            graphql_check_instance(survey, info, app=survey.app)
-
-        return survey
+        # TODO Rethink this. With this check, we cannot supply a reasonable
+        # "Survey is not active" error message.
+        # survey = qs.first()
+        # if survey and not survey.is_active:
+        #     graphql_check_instance(survey, info, app=survey.app)
+        # return survey
 
 
 class FormsProfileMetaType(graphene.ObjectType):
