@@ -33,6 +33,7 @@ export default function ProgramAdminDetailTabs({
       slug: "scheduleItems",
       title: t.adminDetailTabs.scheduleItems,
       href: `/${eventSlug}/program-admin/${programSlug}/schedule`,
+      disabled: true,
     },
     {
       slug: "programHosts",
