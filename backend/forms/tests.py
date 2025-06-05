@@ -735,8 +735,7 @@ def test_put_survey_dimension(_patched_graphql_check_instance):
 
 
 @pytest.mark.django_db
-@mock.patch("forms.graphql.meta.graphql_check_instance", autospec=True)
-def test_survey_without_forms(_patched_graphql_check_instance):
+def test_survey_without_forms():
     """
     A survey that doesn't yet have any Forms should degrade gracefully.
     """
