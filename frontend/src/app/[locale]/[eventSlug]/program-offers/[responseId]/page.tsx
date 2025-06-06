@@ -298,13 +298,13 @@ export default async function ProgramOfferPage({
               />
             </ModalButton>
 
-            {/* TODO(#673) && false: implement reject, cancel and delete actions */}
             <ModalButton
               className="btn btn-outline-danger"
               label={t.actions.cancel.label + "…"}
               title={t.actions.cancel.title}
               messages={t.actions.cancel.modalActions}
-              disabled={!canAccept && false}
+              // disabled={!canAccept}
+              disabled={true} // TODO(#673): enable cancel action
             >
               <p>{t.actions.cancel.message}</p>
             </ModalButton>
