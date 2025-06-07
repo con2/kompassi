@@ -100,7 +100,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
             .prefetch_related(
                 "programs",
             )
-            .order_by("-revision_created_at")
+            .order_by("-original_created_at")
         )
 
     @property

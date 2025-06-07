@@ -27,7 +27,7 @@ import { getTranslations } from "@/translations";
 graphql(`
   fragment ProgramOffer on FullResponseType {
     id
-    revisionCreatedAt
+    originalCreatedAt
     originalCreatedBy {
       fullName
     }
@@ -182,12 +182,12 @@ export default async function ProgramOffersPage({
 
   const columns: Column<ProgramOfferFragment>[] = [
     {
-      slug: "revisionCreatedAt",
+      slug: "originalCreatedAt",
       title: <>{surveyT.attributes.currentVersionCreatedAt} 🔼</>,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/program-offers/${row.id}?${queryString}`}>
           <FormattedDateTime
-            value={row.revisionCreatedAt}
+            value={row.originalCreatedAt}
             locale={locale}
             scope={data.event}
             session={session}
