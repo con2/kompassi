@@ -23,7 +23,7 @@ def write_program_offers_as_excel(
     output = XlsxWriter(output_stream)
 
     responses_by_program_form: groupby[Survey, Response] = groupby(
-        responses.order_by("form__survey", "-created_at"),
+        responses.order_by("form__survey", "-revision_created_at"),
         lambda r: r.form.survey,
     )
 
