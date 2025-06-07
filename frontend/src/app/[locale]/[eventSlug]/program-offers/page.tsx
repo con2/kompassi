@@ -183,7 +183,7 @@ export default async function ProgramOffersPage({
   const columns: Column<ProgramOfferFragment>[] = [
     {
       slug: "revisionCreatedAt",
-      title: <>{surveyT.attributes.originalCreatedAt} 🔼</>,
+      title: <>{surveyT.attributes.currentVersionCreatedAt} 🔼</>,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/program-offers/${row.id}?${queryString}`}>
           <FormattedDateTime
