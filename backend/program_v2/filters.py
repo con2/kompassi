@@ -41,12 +41,7 @@ class ProgramFilters:
     slugs: list[str] | None = None
     hide_past: bool = False
     updated_after: datetime | None = None
-    dimension_filters: DimensionFilters = field(
-        default_factory=lambda: DimensionFilters(
-            filters={},
-            field_name="cached_combined_dimensions",
-        )
-    )
+    dimension_filters: DimensionFilters = field(default_factory=DimensionFilters)
     user_relation: ProgramUserRelation | None = None
 
     @classmethod
@@ -80,7 +75,7 @@ class ProgramFilters:
 
         return cls(
             slugs=slugs,
-            dimension_filters=DimensionFilters(filters=filters, field_name="cached_combined_dimensions"),
+            dimension_filters=DimensionFilters(filters=filters),
             user_relation=user_relation,
             hide_past=hide_past,
             updated_after=updated_after,
@@ -95,7 +90,7 @@ class ProgramFilters:
         updated_after: datetime | None = None,
     ):
         return cls(
-            dimension_filters=DimensionFilters.from_graphql(filters, field_name="cached_combined_dimensions"),
+            dimension_filters=DimensionFilters.from_graphql(filters),
             user_relation=user_relation,
             hide_past=hide_past,
             updated_after=ensure_aware(updated_after) if updated_after else None,
@@ -125,7 +120,10 @@ class ProgramFilters:
             else:
                 return programs.none()
 
-        programs = self.dimension_filters.filter(programs)
+        programs = self.dimension_filters.filter(
+            programs,
+            field_name="cached_combined_dimensions",
+        )
 
         if self.hide_past:
             if t is None:
@@ -169,7 +167,10 @@ class ProgramFilters:
             else:
                 return schedule_items.none()
 
-        schedule_items = self.dimension_filters.filter(schedule_items)
+        schedule_items = self.dimension_filters.filter(
+            schedule_items,
+            field_name="cached_combined_dimensions",
+        )
 
         if self.hide_past:
             if t is None:

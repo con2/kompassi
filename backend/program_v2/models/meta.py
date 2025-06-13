@@ -170,8 +170,8 @@ class ProgramV2ProfileMeta:
 
         return (
             Response.objects.filter(
-                form__survey__app="program_v2",
-                form__survey__purpose_slug="DEFAULT",
+                form__survey__app_name=SurveyApp.PROGRAM_V2.value,
+                form__survey__purpose_slug=SurveyPurpose.DEFAULT.value,
                 original_created_by=self.person.user,
                 superseded_by=None,
             )

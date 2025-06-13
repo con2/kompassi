@@ -11,13 +11,11 @@ T = TypeVar("T", bound=models.Model)
 
 class DimensionFilters(pydantic.BaseModel):
     filters: dict[str, list[str]] = pydantic.Field(default_factory=dict)
-    field_name: str = "cached_dimensions"
 
     @classmethod
     def from_query_dict(
         cls,
         filters: QueryDict | dict[str, list[str]],
-        field_name: str = "cached_dimensions",
     ) -> Self:
         if isinstance(filters, QueryDict):
             filters = {k: [str(v) for v in vs] for k, vs in filters.lists()}
@@ -29,14 +27,12 @@ class DimensionFilters(pydantic.BaseModel):
 
         return cls(
             filters=filters,
-            field_name=field_name,
         )
 
     @classmethod
     def from_graphql(
         cls,
         filters: list[DimensionFilterInput] | None,
-        field_name: str = "cached_dimensions",
     ):
         dimensions = (
             {filter.dimension: ["*"] if filter.values is None else filter.values for filter in filters}
@@ -46,12 +42,12 @@ class DimensionFilters(pydantic.BaseModel):
 
         return cls(
             filters=dimensions,  # type: ignore
-            field_name=field_name,
         )
 
     def filter(
         self,
         queryset: models.QuerySet[T],
+        field_name: str = "cached_dimensions",
     ):
         # optimization: we can check dimensions with only single value or wildcard
         # with a single @> operator query on the GIN index
@@ -66,10 +62,10 @@ class DimensionFilters(pydantic.BaseModel):
                 # slow path: multiple values for the same dimension (OR/ANY semantics within dimension)
                 q = models.Q()
                 for value_slug in value_slugs:
-                    q |= models.Q(**{f"{self.field_name}__contains": {dimension_slug: [value_slug]}})
+                    q |= models.Q(**{f"{field_name}__contains": {dimension_slug: [value_slug]}})
                 queryset = queryset.filter(q)
 
         if fast_dimension_filters:
-            queryset = queryset.filter(**{f"{self.field_name}__contains": fast_dimension_filters})
+            queryset = queryset.filter(**{f"{field_name}__contains": fast_dimension_filters})
 
         return queryset
