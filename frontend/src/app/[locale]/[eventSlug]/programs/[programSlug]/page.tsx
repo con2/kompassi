@@ -184,6 +184,7 @@ export default async function NewProgramPage({ params }: Props) {
         {program.cachedHosts && <strong>{program.cachedHosts}</strong>}
         {program.scheduleItems.map((scheduleItem, index) => (
           <div key={index} className="fst-italic">
+            {scheduleItem.subtitle && <>{scheduleItem.subtitle}: </>}
             {scheduleItem.location && <>{scheduleItem.location}, </>}
             <FormattedDateTimeRange
               locale={locale}
@@ -194,9 +195,6 @@ export default async function NewProgramPage({ params }: Props) {
               end={scheduleItem.endTime}
               includeDuration={true}
             />
-            {scheduleItem.subtitle && (
-              <span className="ms-2">({scheduleItem.subtitle})</span>
-            )}{" "}
             {data.profile && (
               <FavoriteContextProvider
                 slugs={favoriteScheduleItemSlugs}

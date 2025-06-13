@@ -9,9 +9,11 @@ import {
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
-import DimensionBadge from "@/components/dimensions/DimensionBadge";
 import SignInRequired from "@/components/errors/SignInRequired";
-import ProfileResponsesTable from "@/components/forms/ProfileResponsesTable";
+import FormattedDateTime from "@/components/FormattedDateTime";
+import FormattedDateTimeRange, {
+  formatDurationMinutes,
+} from "@/components/FormattedDateTimeRange";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -24,18 +26,15 @@ graphql(`
     event {
       slug
       name
+      timezone
     }
-    dimensions(keyDimensionsOnly: true) {
-      dimension {
-        slug
-        title(lang: $locale)
-      }
-
-      value {
-        slug
-        title(lang: $locale)
-        color
-      }
+    scheduleItems {
+      slug
+      startTime
+      endTime
+      durationMinutes
+      location(lang: $locale)
+      subtitle
     }
   }
 `);
@@ -55,6 +54,40 @@ const query = graphql(`
     }
   }
 `);
+
+function ProgramLink({
+  program,
+  children,
+}: {
+  program: ProfileProgramItemFragment;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={`/${program.event.slug}/programs/${program.slug}`}
+      className="link-subtle"
+    >
+      {children}
+    </Link>
+  );
+}
+
+function ProgramOfferLink({
+  programOffer,
+  children,
+}: {
+  programOffer: ProfileResponsesTableRowFragment;
+  children: React.ReactNode;
+}) {
+  return (
+    <Link
+      href={`/profile/responses/${programOffer.id}`}
+      className="link-subtle"
+    >
+      {children}
+    </Link>
+  );
+}
 
 interface Props {
   params: {
@@ -81,6 +114,8 @@ export default async function ProfileProgramItemList({ params }: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;
+  const surveyT = translations.Survey;
+  const scheduleT = translations.Program.ScheduleItem;
   const session = await auth();
 
   // TODO encap
@@ -108,19 +143,102 @@ export default async function ProfileProgramItemList({ params }: Props) {
     {
       slug: "title",
       title: t.attributes.title,
-      getCellContents: (program) => (
-        <>
-          {program.title}
-          <span className="ms-2">
-            {program.dimensions?.map((dimension) => (
-              <DimensionBadge
-                key={dimension.dimension.slug}
-                dimension={dimension}
-              />
-            ))}
-          </span>
-        </>
+      getCellContents: (row) => (
+        <ProgramLink program={row}>{row.title}</ProgramLink>
       ),
+    },
+    {
+      slug: "time",
+      title: scheduleT.attributes.time.title,
+      getCellContents: (row) =>
+        row.scheduleItems.map((scheduleItem) => (
+          <div key={scheduleItem.slug}>
+            {scheduleItem.subtitle && (
+              <>
+                <em>{scheduleItem.subtitle}:</em>{" "}
+              </>
+            )}
+            <FormattedDateTimeRange
+              start={scheduleItem.startTime}
+              end={scheduleItem.endTime}
+              locale={locale}
+              session={session}
+              scope={row.event}
+            />{" "}
+            ({formatDurationMinutes(scheduleItem.durationMinutes, locale)})
+          </div>
+        )),
+    },
+    {
+      slug: "location",
+      title: scheduleT.attributes.location.title,
+      getCellContents: (row) =>
+        row.scheduleItems.map((scheduleItem) => (
+          <div key={scheduleItem.slug}>{scheduleItem.location}</div>
+        )),
+    },
+    {
+      slug: "actions",
+      title: "",
+      className: "text-end align-middle",
+      getCellContents: (program) => {
+        return (
+          <ProgramLink program={program}>
+            🔍 {surveyT.actions.viewResponse.label}
+          </ProgramLink>
+        );
+      },
+    },
+  ];
+
+  const programOfferColumns: Column<ProfileResponsesTableRowFragment>[] = [
+    {
+      slug: "event",
+      title: t.attributes.event,
+      getCellContents: (row) => row.form.event.name,
+    },
+    {
+      slug: "title",
+      title: t.attributes.title,
+      getCellContents: (row) => (
+        <ProgramOfferLink programOffer={row}>
+          {(row.values as Record<string, any>).title ?? ""}
+        </ProgramOfferLink>
+      ),
+    },
+    {
+      slug: "revisionCreatedAt",
+      title: surveyT.attributes.currentVersionCreatedAt,
+      getCellContents: (row) => (
+        <FormattedDateTime
+          value={row.revisionCreatedAt}
+          locale={locale}
+          scope={row.form.event}
+          session={session}
+        />
+      ),
+    },
+    {
+      slug: "actions",
+      title: "",
+      className: "text-end",
+      getCellContents: (row) => {
+        return (
+          <>
+            {row.canEdit && (
+              <Link
+                href={`/profile/responses/${row.id}/edit`}
+                className="link-subtle me-3"
+              >
+                ✏ {surveyT.actions.editResponse.label}
+              </Link>
+            )}
+            <ProgramOfferLink programOffer={row}>
+              🔍 {surveyT.actions.viewResponse.label}
+            </ProgramOfferLink>
+          </>
+        );
+      },
     },
   ];
 
@@ -147,31 +265,7 @@ export default async function ProfileProgramItemList({ params }: Props) {
       {programOffers.length > 0 && (
         <>
           <p>{t.profile.programOffers.listTitle}:</p>
-          <ProfileResponsesTable
-            responses={programOffers}
-            messages={translations.Survey}
-            locale={locale}
-            footer={t.profile.programOffers.tableFooter(programOffers.length)}
-            extraColumns={[
-              {
-                slug: "title",
-                title: t.attributes.title,
-                getCellContents: (programOffer) => (
-                  <>
-                    {(programOffer.values as Record<string, any>).title ?? ""}
-                    <span className="ms-2">
-                      {programOffer.dimensions?.map((dimension) => (
-                        <DimensionBadge
-                          key={dimension.dimension.slug}
-                          dimension={dimension}
-                        />
-                      ))}
-                    </span>
-                  </>
-                ),
-              },
-            ]}
-          />
+          <DataTable columns={programOfferColumns} rows={programOffers} />
         </>
       )}
       {programItems.length === 0 && programOffers.length === 0 && (

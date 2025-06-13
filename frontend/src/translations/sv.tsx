@@ -1005,6 +1005,10 @@ const translations: Translations = {
         tooltip: "Kopiera länk till urklipp",
         success: "En länk till enkäten har kopierats till urklipp.",
       },
+      viewResponse: {
+        title: "Visa svaret",
+        label: "Visa",
+      },
       viewResponses: "Visa svar",
       toggleSubscription: "Meddela mig om nya svar",
       submit: "Skicka",
