@@ -1107,6 +1107,7 @@ const translations = {
       programHosts: "Program hosts",
       dimensions: "Dimensions",
       annotations: "Annotations",
+      preview: "Preview",
     },
 
     profile: {

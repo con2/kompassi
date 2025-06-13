@@ -72,7 +72,7 @@ const query = graphql(`
             ...ProgramDetailAnnotation
           }
 
-          dimensions(isShownInDetail: true) {
+          dimensions(isShownInDetail: true, publicOnly: true) {
             dimension {
               slug
               title(lang: $locale)

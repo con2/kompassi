@@ -57,6 +57,7 @@ class FullProgramType(LimitedProgramType):
         is_list_filter: bool = False,
         is_shown_in_detail: bool = False,
         key_dimensions_only: bool = False,
+        public_only: bool = True,
     ):
         """
         `is_list_filter` - only return dimensions that are shown in the list filter.
@@ -74,6 +75,15 @@ class FullProgramType(LimitedProgramType):
         if key_dimensions_only:
             pdvs = pdvs.filter(value__dimension__is_key_dimension=True)
 
+        if public_only:
+            pdvs = pdvs.filter(value__dimension__is_public=True)
+        else:
+            graphql_check_instance(
+                program,
+                info,
+                field="dimensions",
+            )
+
         return pdvs.distinct()
 
     dimensions = graphene.NonNull(
@@ -81,6 +91,7 @@ class FullProgramType(LimitedProgramType):
         is_list_filter=graphene.Boolean(),
         is_shown_in_detail=graphene.Boolean(),
         key_dimensions_only=graphene.Boolean(),
+        public_only=graphene.Boolean(),
         description=normalize_whitespace(resolve_dimensions.__doc__ or ""),
     )
     cached_dimensions = graphene.Field(GenericScalar)

@@ -1098,6 +1098,7 @@ const translations: Translations = {
       programHosts: "Ohjelmanpitäjät",
       dimensions: "Dimensiot",
       annotations: "Lisätiedot",
+      preview: "Esikatselu",
     },
 
     profile: {

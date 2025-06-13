@@ -50,6 +50,24 @@ export default function ProgramAdminDetailTabs({
       href: `/${eventSlug}/program-admin/${programSlug}/annotations`,
       disabled: true,
     },
+    {
+      slug: "preview",
+      title: t.adminDetailTabs.preview,
+      href: `/${eventSlug}/programs/${programSlug}`,
+      getTabHeader() {
+        // Program view has no admin controls, so treat it as external for now
+        return (
+          <a
+            className="nav-link"
+            href={this.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {this.title}…
+          </a>
+        );
+      },
+    },
   ];
 
   return <Tabs tabs={tabs} active={active} />;
