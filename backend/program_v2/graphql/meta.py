@@ -99,6 +99,12 @@ class ProgramV2EventMetaType(DjangoObjectType):
     )
 
     @staticmethod
+    def resolve_schedule_item(meta: ProgramV2EventMeta, info, slug: str):
+        return ScheduleItem.objects.get(program__event=meta.event, slug=slug)
+
+    schedule_item = graphene.Field(FullScheduleItemType, slug=graphene.String(required=True))
+
+    @staticmethod
     def resolve_annotations(
         meta: ProgramV2EventMeta,
         info,

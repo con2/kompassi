@@ -1,4 +1,5 @@
 import graphene
+from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
 from core.utils.text_utils import normalize_whitespace
@@ -12,17 +13,31 @@ class LimitedScheduleItemType(DjangoObjectType):
         model = ScheduleItem
         fields = (
             "slug",
-            "subtitle",
             "start_time",
             "created_at",
             "updated_at",
+            "cached_dimensions",
         )
+
+    cached_dimensions = graphene.Field(GenericScalar)
+
+    @staticmethod
+    def resolve_duration_minutes(parent: ScheduleItem, info):
+        return parent.duration.total_seconds() // 60
+
+    duration_minutes = graphene.NonNull(graphene.Int)
 
     @staticmethod
     def resolve_length_minutes(parent: ScheduleItem, info):
-        return parent.length.total_seconds() // 60
+        """
+        Deprecated alias for `duration_minutes`.
+        """
+        return LimitedScheduleItemType.resolve_duration_minutes(parent, info)
 
-    length_minutes = graphene.NonNull(graphene.Int)
+    length_minutes = graphene.NonNull(
+        graphene.Int,
+        description=normalize_whitespace(resolve_length_minutes.__doc__ or ""),
+    )
 
     resolve_start_time = resolve_local_datetime_field("start_time")
 
@@ -52,4 +67,44 @@ class LimitedScheduleItemType(DjangoObjectType):
     title = graphene.NonNull(
         graphene.String,
         description=normalize_whitespace(resolve_title.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_room(parent: ScheduleItem, info):
+        """
+        Convenience helper to get the value slug of the `room` dimension.
+        NOTE: You should usually display `location` to users instead.
+        """
+        value_slugs = parent.cached_dimensions.get("room", [])
+        return value_slugs[0] if value_slugs else ""
+
+    room = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_room.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_freeform_location(parent: ScheduleItem, info):
+        """
+        Convenience helper to get the freeform location of the schedule item.
+        NOTE: You should usually display `location` to users instead.
+        """
+        return parent.annotations.get("internal:freeformLocation", "")
+
+    freeform_location = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_freeform_location.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_subtitle(parent: ScheduleItem, info):
+        """
+        Convenience helper to get the subtitle of the schedule item.
+        NOTE: You should usually display `title` to users instead.
+        """
+        return parent.annotations.get("internal:subtitle", "")
+
+    subtitle = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_subtitle.__doc__ or ""),
     )

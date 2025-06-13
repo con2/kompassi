@@ -1,15 +1,11 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
-import { ProfileResponsesTableRowFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
-import AlertNavigateOnClose from "@/components/errors/AlertNavigateOnClose";
+import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
 import ProfileResponsesTable from "@/components/forms/ProfileResponsesTable";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -66,7 +62,7 @@ interface Props {
     locale: string;
   };
   searchParams: {
-    editSuccess?: string;
+    success?: string;
   };
 }
 
@@ -109,19 +105,11 @@ export default async function OwnResponsesPage({
   const t = translations.Survey;
 
   const responses = data.profile.forms.responses;
-  const editedResponse = searchParams.editSuccess
-    ? responses.find((response) => response.id === searchParams.editSuccess)
-    : null;
 
   return (
     <ViewContainer>
       <ViewHeading>{t.ownResponsesTitle}</ViewHeading>
-
-      {editedResponse && (
-        <AlertNavigateOnClose variant="success">
-          {t.actions.editResponse.success(editedResponse.form.title)}
-        </AlertNavigateOnClose>
-      )}
+      <Messages messages={t.messages} searchParams={searchParams} />
 
       <ProfileResponsesTable
         messages={translations.Survey}

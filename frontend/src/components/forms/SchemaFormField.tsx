@@ -1,20 +1,28 @@
 import { ReactNode } from "react";
 
+import { Dimension } from "../dimensions/models";
 import { Heading, HeadingLevel } from "../helpers/Heading";
 import ParagraphsDangerousHtml from "../helpers/ParagraphsDangerousHtml";
 import makeInputId from "./makeInputId";
 import { Field } from "./models";
 
-function Label({ field, idPrefix }: { field: Field; idPrefix: string }) {
-  const { type, title, required, slug } = field;
+function Label({
+  field,
+  idPrefix,
+  children,
+}: {
+  field: Field;
+  idPrefix: string;
+  children: ReactNode;
+}) {
+  const { type } = field;
   const inputId = makeInputId(idPrefix, field);
   const className =
     type === "SingleCheckbox" ? "form-check-label" : "form-label fw-bold";
 
   return (
     <label className={className} htmlFor={inputId}>
-      {title}
-      {required && "*"}
+      {children}
     </label>
   );
 }
@@ -23,6 +31,7 @@ interface SchemaFormFieldProps {
   field: Field;
   children?: ReactNode;
   idPrefix?: string;
+  highlightReadOnlyFields?: boolean;
 
   /// used for StaticText.title
   headingLevel?: HeadingLevel;
@@ -36,10 +45,16 @@ export default function SchemaFormField({
   field,
   children,
   headingLevel,
+  highlightReadOnlyFields = false,
   idPrefix = "",
 }: SchemaFormFieldProps) {
   const { type } = field;
-  const title = field.required ? `${field.title}*` : field.title;
+  let title = <>{field.title}</>;
+  if (highlightReadOnlyFields && field.readOnly) {
+    title = <>{title} 🔒</>;
+  } else if (field.required) {
+    title = <>{title}*</>;
+  }
 
   // FIXME(SECURITY): cannot ParagraphsDangerousHtml user content like this, use Markdown or something
   const helpText =
@@ -69,7 +84,9 @@ export default function SchemaFormField({
       return (
         <div className="form-check mb-4">
           {children}
-          <Label field={field} idPrefix={idPrefix} />
+          <Label field={field} idPrefix={idPrefix}>
+            {title}
+          </Label>
           {helpText && <div className="form-text">{helpText}</div>}
         </div>
       );
@@ -77,7 +94,9 @@ export default function SchemaFormField({
     default:
       return (
         <div className="mb-4">
-          <Label field={field} idPrefix={idPrefix} />
+          <Label field={field} idPrefix={idPrefix}>
+            {title}
+          </Label>
           {children}
           {helpText && <div className="form-text">{helpText}</div>}
         </div>

@@ -1,19 +1,7 @@
+import { invalidDimensionSlugs } from "./consts";
 import type { Dimension } from "./models";
 import { validateCachedDimensions } from "./models";
 import type { DimensionFilterInput } from "@/__generated__/graphql";
-
-// Keep in sync with backend/dimensions/models/dimension.py
-const invalidDimensionSlugs = [
-  "slug",
-  "title",
-  "description",
-  "annotations",
-  "favorited",
-  "past",
-  "display",
-  "search",
-  "error",
-];
 
 /// Helper to build turn search params into dimension filters that you can pass into GraphQL
 export function buildDimensionFilters(

@@ -41,6 +41,10 @@ export function formatDuration(start: string, end: string, locale: string) {
     .until(endDateTime)
     .total({ unit: "minute" });
 
+  return formatDurationMinutes(durationMinutes, locale);
+}
+
+export function formatDurationMinutes(durationMinutes: number, locale: string) {
   const hours = Math.floor(durationMinutes / 60);
   const minutes = durationMinutes % 60;
 

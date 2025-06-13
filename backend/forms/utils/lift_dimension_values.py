@@ -106,7 +106,6 @@ def lift_dimension_values(
 
             values_to_set[dimension.slug].add(value_slug)
 
-    if values_to_set:
-        response.set_dimension_values(values_to_set, cache)
+    response.set_dimension_values(values_to_set, cache)
 
     return values_to_set

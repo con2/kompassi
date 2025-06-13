@@ -55,20 +55,19 @@ export default function ProgramAdminTabs({
       slug: "preview",
       title: t.actions.preview,
       href: `/${eventSlug}/program${queryString}`,
-      disabled: true,
-      // getTabHeader() {
-      //   // Program view has no admin controls, so treat it as external for now
-      //   return (
-      //     <a
-      //       className="nav-link"
-      //       href={this.href}
-      //       target="_blank"
-      //       rel="noopener noreferrer"
-      //     >
-      //       {this.title}…
-      //     </a>
-      //   );
-      // },
+      getTabHeader() {
+        // Program view has no admin controls, so treat it as external for now
+        return (
+          <a
+            className="nav-link"
+            href={this.href}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {this.title}…
+          </a>
+        );
+      },
     },
     {
       slug: "preferences",

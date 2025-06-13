@@ -34,6 +34,7 @@ from program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
 from program_v2.graphql.mutations.create_program import CreateProgram
 from program_v2.graphql.mutations.create_program_form import CreateProgramForm
 from program_v2.graphql.mutations.delete_program_host import DeleteProgramHost
+from program_v2.graphql.mutations.delete_schedule_item import DeleteScheduleItem
 from program_v2.graphql.mutations.favorites import (
     MarkProgramAsFavorite,
     MarkScheduleItemAsFavorite,
@@ -42,6 +43,7 @@ from program_v2.graphql.mutations.favorites import (
 )
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
 from program_v2.graphql.mutations.invite_program_host import InviteProgramHost
+from program_v2.graphql.mutations.put_schedule_item import PutScheduleItem
 from program_v2.graphql.mutations.update_program import UpdateProgram
 from program_v2.graphql.mutations.update_program_annotations import UpdateProgramAnnotations
 from program_v2.graphql.mutations.update_program_dimensions import UpdateProgramDimensions
@@ -168,6 +170,9 @@ class Mutation(graphene.ObjectType):
 
     invite_program_host = InviteProgramHost.Field()
     delete_program_host = DeleteProgramHost.Field()
+
+    put_schedule_item = PutScheduleItem.Field()
+    delete_schedule_item = DeleteScheduleItem.Field()
 
     # Tickets v2
     create_product = CreateProduct.Field()

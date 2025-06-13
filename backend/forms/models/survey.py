@@ -6,7 +6,7 @@ from collections.abc import Collection, Mapping
 from dataclasses import dataclass
 from datetime import datetime
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 import yaml
 from django.conf import settings
@@ -25,6 +25,7 @@ from dimensions.models.dimension_dto import DimensionDTO
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
+from dimensions.utils.set_dimension_values import set_dimension_values
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
 from involvement.models.enums import InvolvementType
 from involvement.models.profile_field_selector import ProfileFieldSelector
@@ -48,7 +49,7 @@ class Survey(models.Model):
     event: models.ForeignKey[Event] = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
-    app = models.CharField(
+    app_name = models.CharField(
         choices=[(app.value, app.value) for app in SurveyApp],
         max_length=max(len(app.value) for app in SurveyApp),
         default=SurveyApp.FORMS.value,
@@ -157,12 +158,37 @@ class Survey(models.Model):
     default_dimensions: models.QuerySet[SurveyDefaultDimensionValue]
     id: int
 
+    def __init__(self, *args, **kwargs) -> None:
+        if purpose := kwargs.pop("purpose", None):
+            if isinstance(purpose, SurveyPurpose):
+                kwargs["purpose_slug"] = purpose.value
+            else:
+                kwargs["purpose_slug"] = purpose
+
+        if app := kwargs.pop("app", None):
+            if isinstance(app, SurveyApp):
+                kwargs["app_name"] = app.value
+            else:
+                kwargs["app_name"] = app
+
+        super().__init__(*args, **kwargs)
+
     @cached_property
     def profile_field_selector(self) -> ProfileFieldSelector:
         return ProfileFieldSelector.from_anonymity(self.anonymity)
 
     @property
+    def app(self) -> SurveyApp:
+        if not self.app_name:
+            raise ValueError("app_name must be set")
+
+        return SurveyApp(self.app_name)
+
+    @property
     def purpose(self) -> SurveyPurpose:
+        if not self.purpose_slug:
+            raise ValueError("purpose_slug must be set")
+
         return SurveyPurpose(self.purpose_slug)
 
     @property
@@ -195,13 +221,13 @@ class Survey(models.Model):
     @cached_property
     def universe(self) -> Universe:
         match self.app:
-            case "forms":
+            case SurveyApp.FORMS:
                 return Universe.objects.get_or_create(
                     scope=self.scope,
                     slug=self.slug,
                     app="forms",
                 )[0]
-            case "program_v2":
+            case SurveyApp.PROGRAM_V2:
                 return self.event.program_universe
             case _:
                 raise NotImplementedError(self.app)
@@ -298,7 +324,7 @@ class Survey(models.Model):
                 instance=self,
                 operation="delete",
                 field="self",
-                app=self.app,
+                app=self.app.value,
             )
             and not self.languages.exists()
         )
@@ -310,7 +336,7 @@ class Survey(models.Model):
                 instance=self,
                 operation="delete",
                 field="responses",
-                app=self.app,
+                app=self.app.value,
             )
             and not self.protect_responses
         )
@@ -324,31 +350,39 @@ class Survey(models.Model):
     def __str__(self):
         return f"{self.event.slug}/{self.slug}"
 
-    def with_mandatory_attributes_for_app(self, app: SurveyApp, purpose: SurveyPurpose):
-        self.app = app.value
-        self.purpose_slug = purpose.value
+    def with_mandatory_fields(self) -> Self:
+        if self.app is None:
+            raise ValueError("app must be set before calling with_mandatory_fields")
+        if self.purpose is None:
+            raise ValueError("purpose must be set before calling with_mandatory_fields")
 
-        match app:
+        match self.app:
             case SurveyApp.PROGRAM_V2:
                 meta = self.event.program_v2_event_meta
                 if meta is None:
                     raise ValueError(f"Event {self.event} does not have a program v2 event meta")
 
+                if meta.default_registry is None:
+                    raise ValueError(f"Event {self.event} does not have a default registry for program v2")
+
                 self.login_required = True
                 self.anonymity = Anonymity.FULL_PROFILE
                 self.registry = meta.default_registry
 
-                if purpose == SurveyPurpose.DEFAULT:
+                if self.purpose == SurveyPurpose.DEFAULT:
                     # The program offer workflow uses a dimension to lock responses from editing.
                     self.responses_editable_until = self.event.end_time
                     self.key_fields = ["title"]
 
             case SurveyApp.FORMS:
-                if purpose == SurveyPurpose.INVITE:
+                if self.purpose == SurveyPurpose.INVITE:
                     raise ValueError("ACCEPT_INVITATION is not a valid purpose for FORMS app")
 
                 if self.anonymity == Anonymity.NAME_AND_EMAIL:
                     self.login_required = True
+
+            case _:
+                raise NotImplementedError(self.app)
 
         return self
 
@@ -369,6 +403,8 @@ class Survey(models.Model):
         survey = Survey(
             event=event,
             slug=slug,
+            app=app,
+            purpose=purpose,
             anonymity=self.anonymity if anonymity is None else anonymity,
             login_required=self.login_required,
             max_responses_per_user=self.max_responses_per_user,
@@ -376,7 +412,7 @@ class Survey(models.Model):
             protect_responses=self.protect_responses,
             created_by=created_by,
             registry=self.registry if registry is None else registry,
-        ).with_mandatory_attributes_for_app(app, purpose)
+        ).with_mandatory_fields()
 
         survey.save()
 
@@ -391,39 +427,9 @@ class Survey(models.Model):
 
     @transaction.atomic
     def set_default_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
-        """
-        Changes only those dimension values that are present in dimension_values.
-        This allows to eg. retain a technical "state" dimension while setting other values.
-
-        NOTE: Caller must call refresh_cached_dimensions() or refresh_cached_dimensions_qs()
-        afterwards to update the cached_dimensions field.
-
-        :param values_to_set: Mapping of dimension slug to list of value slugs.
-        :param cache: Cache from Universe.preload_dimensions()
-        """
         from .survey_default_dimension_value import SurveyDefaultDimensionValue
 
-        bulk_delete = self.default_dimensions.filter(value__dimension__slug__in=values_to_set.keys())
-        bulk_create: list[SurveyDefaultDimensionValue] = []
-
-        for dimension_slug, value_slugs in values_to_set.items():
-            bulk_delete = bulk_delete.exclude(
-                value__dimension__slug=dimension_slug,
-                value__slug__in=value_slugs,
-            )
-
-            for value_slug in value_slugs:
-                if value_slug not in self.cached_default_dimensions.get(dimension_slug, []):
-                    bulk_create.append(
-                        SurveyDefaultDimensionValue(
-                            survey=self,
-                            value=cache.values_by_dimension[dimension_slug][value_slug],
-                        )
-                    )
-
-        bulk_delete.delete()
-        SurveyDefaultDimensionValue.objects.bulk_create(bulk_create)
-        self.refresh_cached_default_dimensions()
+        set_dimension_values(SurveyDefaultDimensionValue, self, values_to_set, cache)
 
     def _build_cached_default_dimensions(self) -> dict[str, list[str]]:
         new_cached_dimensions = {}

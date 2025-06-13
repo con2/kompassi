@@ -4,8 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-# TODO: convert to simple Enum without str
-class SurveyApp(str, Enum):
+class SurveyApp(Enum):
     FORMS = "forms"
     PROGRAM_V2 = "program_v2"
 

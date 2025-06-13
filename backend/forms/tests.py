@@ -3,6 +3,7 @@ from unittest import mock
 
 import pytest
 import yaml
+from django.db import transaction
 
 from core.models import Event
 from dimensions.graphql.mutations.put_dimension import PutDimension
@@ -12,6 +13,7 @@ from graphql_api.schema import schema
 
 from .excel_export import get_header_cells, get_response_cells
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
+from .models.enums import SurveyApp, SurveyPurpose
 from .models.field import Choice, Field, FieldType
 from .models.form import Form
 from .models.response import Response
@@ -767,75 +769,82 @@ def test_survey_without_forms():
 
 @pytest.mark.django_db
 def test_promote_field_to_dimension():
-    event, _created = Event.get_or_create_dummy()
+    with transaction.atomic():
+        event, _created = Event.get_or_create_dummy()
 
-    survey = Survey.objects.create(
-        event=event,
-        slug="test-survey",
-    )
+        survey = Survey.objects.create(
+            event=event,
+            slug="test-survey",
+            app=SurveyApp.FORMS,
+            purpose=SurveyPurpose.DEFAULT,
+        ).with_mandatory_fields()
 
-    form_en = Form.objects.create(
-        event=event,
-        survey=survey,
-        language="en",
-        fields=[
-            dict(
-                slug="q_foo",
-                type="SingleSelect",
-                title="Foo",
-                choices=[
-                    dict(
-                        slug="c_bar",
-                        title="Bar",
-                    ),
-                    dict(
-                        slug="c_baz",
-                        title="Baz",
-                    ),
-                ],
-            ),
-        ],
-    )
+        form_en = Form.objects.create(
+            event=event,
+            survey=survey,
+            language="en",
+            fields=[
+                dict(
+                    slug="q_foo",
+                    type="SingleSelect",
+                    title="Foo",
+                    choices=[
+                        dict(
+                            slug="c_bar",
+                            title="Bar",
+                        ),
+                        dict(
+                            slug="c_baz",
+                            title="Baz",
+                        ),
+                    ],
+                ),
+            ],
+        )
 
-    form_fi = Form.objects.create(
-        event=event,
-        survey=survey,
-        language="fi",
-        fields=[
-            dict(
-                slug="q_foo",
-                type="SingleSelect",
-                title="Foo mutta suomeksi",
-                choices=[
-                    dict(
-                        slug="c_bar",
-                        title="Baari",
-                    ),
-                    # missing baz
-                ],
-            ),
-        ],
-    )
+        form_fi = Form.objects.create(
+            event=event,
+            survey=survey,
+            language="fi",
+            fields=[
+                dict(
+                    slug="q_foo",
+                    type="SingleSelect",
+                    title="Foo mutta suomeksi",
+                    choices=[
+                        dict(
+                            slug="c_bar",
+                            title="Baari",
+                        ),
+                        # missing baz
+                    ],
+                ),
+            ],
+        )
 
-    response1 = Response.objects.create(
-        form=form_en,
-        form_data={
-            "q_foo": "c_baz",
-        },
-    )
-    response2 = Response.objects.create(
-        form=form_fi,
-        form_data={
-            "q_foo": "c_bar",
-        },
-    )
-    response3 = Response.objects.create(
-        form=form_fi,
-        form_data={},
-    )
+    with transaction.atomic():
+        response1 = Response.objects.create(
+            form=form_en,
+            form_data={
+                "q_foo": "c_baz",
+            },
+        )
+    with transaction.atomic():
+        response2 = Response.objects.create(
+            form=form_fi,
+            form_data={
+                "q_foo": "c_bar",
+            },
+        )
+    with transaction.atomic():
+        response3 = Response.objects.create(
+            form=form_fi,
+            form_data={},
+        )
 
     # CASE 1: New dimension
-    promote_field_to_dimension(survey, "q_foo")
+    with transaction.atomic():
+        promote_field_to_dimension(survey, "q_foo")
 
     dimension = survey.dimensions.get()
     assert dimension.slug == "q-foo"

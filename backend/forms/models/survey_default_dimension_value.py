@@ -16,12 +16,12 @@ class SurveyDefaultDimensionValue(models.Model):
     When a response is created, the default dimension values are set on the response.
     """
 
-    survey = models.ForeignKey(
+    subject: models.ForeignKey[Survey] = models.ForeignKey(
         Survey,
         on_delete=models.CASCADE,
         related_name="default_dimensions",
     )
-    value = models.ForeignKey(
+    value: models.ForeignKey[DimensionValue] = models.ForeignKey(
         DimensionValue,
         on_delete=models.CASCADE,
         related_name="+",
@@ -31,4 +31,4 @@ class SurveyDefaultDimensionValue(models.Model):
         return f"{self.value.dimension}={self.value}"
 
     class Meta:
-        unique_together = ("survey", "value")
+        unique_together = ("subject", "value")

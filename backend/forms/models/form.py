@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterable
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Self
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
-from django.db import models, transaction
+from django.db import models
 from django.http import HttpRequest
 
 from access.cbac import is_graphql_allowed_for_model
@@ -60,6 +61,17 @@ class Form(models.Model):
     def __str__(self):
         return f"{self.event.slug if self.event else None}/{self.survey.slug}-{self.language}"
 
+    def save(self, *, update_fields: Iterable[str] | None = None, **kwargs):
+        if update_fields is None:
+            self.with_cached_fields()
+        else:
+            update_fields = set(update_fields)
+            if "fields" in update_fields:
+                self.with_cached_fields()
+                update_fields.add("cached_enriched_fields")
+
+        super().save(update_fields=update_fields, **kwargs)
+
     def can_be_deleted_by(self, request: HttpRequest):
         # TODO should we use Survey instead as a privileges root?
         return (
@@ -73,42 +85,18 @@ class Form(models.Model):
             and not self.all_responses.exists()
         )
 
-    @property
-    def enriched_fields(self) -> list[dict[str, Any]]:
-        """
-        There is a chicken and egg problem with the enriched_fields property, mostly when
-        Forms, Surveys and Dimensions are created programmatically (eg. in tests and setup scripts).
-        If a `valueFrom` directive is used in a Field, the Form needs to belong to a Survey.
-
-        NOTE: You may not mutate this list.
-        """
-        if not self.cached_enriched_fields:
-            self.refresh_enriched_fields()
-
-        return self.cached_enriched_fields
-
     @classmethod
-    @transaction.atomic
-    def refresh_enriched_fields_qs(cls, qs: models.QuerySet[Self]):
-        """
-        Refresh cached_enriched_fields for all forms in the queryset.
-        """
-        forms_to_update = []
-        for form in qs.select_for_update(of=("self",)):
-            form.cached_enriched_fields = form._build_enriched_fields()
-            forms_to_update.append(form)
-        cls.objects.bulk_update(forms_to_update, ["cached_enriched_fields"])
+    def refresh_cached_fields_qs(cls, qs: models.QuerySet[Self], batch_size: int = 100):
+        cls.objects.bulk_update(
+            [form.with_cached_fields() for form in qs], ["cached_enriched_fields"], batch_size=batch_size
+        )
 
-    def refresh_enriched_fields(self):
-        """
-        Refresh cached_enriched_fields for this form.
-        NOTE: Use refresh_enriched_fields_qs for bulk updates.
-        """
-        self.cached_enriched_fields = self._build_enriched_fields()
-        self.save(update_fields=["cached_enriched_fields"])
+    def with_cached_fields(self):
+        self.cached_enriched_fields = [self._enrich_field(field) for field in self.fields]
+        return self
 
-    def _build_enriched_fields(self) -> list[dict[str, Any]]:
-        return [self._enrich_field(field) for field in self.fields]
+    def refresh_cached_fields(self):
+        self.with_cached_fields().save(update_fields=["cached_enriched_fields"])
 
     def _enrich_field(self, field: dict[str, Any]) -> dict[str, Any]:
         """
@@ -130,7 +118,7 @@ class Form(models.Model):
 
     @cached_property
     def validated_fields(self) -> list[Field]:
-        return [Field.model_validate(field_dict) for field_dict in self.enriched_fields]
+        return [Field.model_validate(field_dict) for field_dict in self.cached_enriched_fields]
 
     @property
     def scope(self):
@@ -167,5 +155,4 @@ class Form(models.Model):
         else:
             raise KeyError(f"Field {field.slug} not found in form {self}")
 
-        self.cached_enriched_fields = self._build_enriched_fields()
         del self.validated_fields

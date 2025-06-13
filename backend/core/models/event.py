@@ -227,9 +227,9 @@ class Event(models.Model):
         The Universe for Dimensions that are attached to program items.
         NOTE: Must return the same as ProgramV2EventMeta.universe.
         """
-        from program_v2.workflows.program_offer import ProgramOfferWorkflow
+        from program_v2.dimensions import get_program_universe
 
-        return ProgramOfferWorkflow.get_program_universe(self)
+        return get_program_universe(self)
 
     @cached_property
     def involvement_universe(self) -> Universe:
@@ -307,7 +307,7 @@ class Event(models.Model):
         from program_v2.models import ProgramV2EventMeta
 
         # NOTE: Do not cache None
-        meta = getattr(self, "_program_v2_event_meta", None)
+        meta: ProgramV2EventMeta | None = getattr(self, "_program_v2_event_meta", None)
         if meta is None:
             try:
                 self._program_v2_event_meta = meta = ProgramV2EventMeta.objects.get(event=self)

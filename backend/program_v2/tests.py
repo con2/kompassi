@@ -15,7 +15,7 @@ from involvement.models.involvement import Involvement
 from .filters import ProgramFilters
 from .models.meta import ProgramV2EventMeta
 from .models.program import Program
-from .models.schedule import ScheduleItem
+from .models.schedule_item import ScheduleItem
 
 
 @pytest.mark.django_db
@@ -28,8 +28,13 @@ def test_program_filters():
     p1 = Program(event=event, title="Program 1")
     p1.save()
 
-    s1 = ScheduleItem(program=p1, start_time=datetime.now(UTC), length=timedelta(hours=1)).with_generated_fields()
+    s1 = ScheduleItem(
+        program=p1,
+        start_time=datetime.now(UTC),
+        duration=timedelta(hours=1),
+    ).with_mandatory_fields()
     s1.save()
+    s1.refresh_dependents()
 
     t2 = datetime.now(UTC)
     updated_after_t2 = ProgramFilters.from_query_dict({"updated_after": [t2.isoformat()]})
@@ -52,7 +57,9 @@ def test_program_hosts():
     offer_program = Survey(
         event=event,
         slug="offer-program",
-    ).with_mandatory_attributes_for_app(SurveyApp.PROGRAM_V2, SurveyPurpose.DEFAULT)
+        app=SurveyApp.PROGRAM_V2,
+        purpose=SurveyPurpose.DEFAULT,
+    ).with_mandatory_fields()
     offer_program.save()
     offer_program.workflow.handle_new_survey()
 
@@ -81,7 +88,9 @@ def test_program_hosts():
     accept_invitation = Survey(
         event=event,
         slug="accept-program-invitation",
-    ).with_mandatory_attributes_for_app(SurveyApp.PROGRAM_V2, SurveyPurpose.INVITE)
+        app=SurveyApp.PROGRAM_V2,
+        purpose=SurveyPurpose.INVITE,
+    ).with_mandatory_fields()
     accept_invitation.save()
     accept_invitation.workflow.handle_new_survey()
 

@@ -39,12 +39,12 @@ class UpdateFormFields(graphene.Mutation):
         graphql_check_instance(
             survey,
             info,
-            app=survey.app,
+            app=survey.app_name,
             field="languages",
             operation="update",
         )
 
         form.fields = [field.model_dump(mode="json", by_alias=True) for field in fields.fields]
-        form.save(update_fields=["fields"])
+        form.save(update_fields=["fields", "cached_enriched_fields"])
 
         return UpdateFormFields(survey=survey)  # type: ignore

@@ -55,23 +55,25 @@ class CreateSurvey(graphene.Mutation):
             graphql_check_instance(
                 source_survey,
                 info,
-                app=source_survey.app,  # NOTE same check as in FormsProfileMeta.surveys
+                app=source_survey.app_name,  # NOTE same check as in FormsProfileMeta.surveys
             )
 
             survey = source_survey.clone(
                 event=event,
                 slug=str(input.survey_slug),
-                anonymity=anonymity,
                 app=app,
+                purpose=purpose,
+                anonymity=anonymity,
                 created_by=request.user,  # type: ignore
-                purpose=SurveyPurpose.DEFAULT,
             )
         else:
             survey = Survey(
                 event=event,
                 slug=input.survey_slug,
+                app=app,
+                purpose=purpose,
                 anonymity=anonymity.value,
-            ).with_mandatory_attributes_for_app(app, purpose)
+            ).with_mandatory_fields()
             survey.full_clean()  # Validate fields
             survey.save()
 

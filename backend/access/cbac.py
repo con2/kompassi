@@ -1,5 +1,6 @@
 import logging
 from collections.abc import Callable
+from enum import Enum
 from functools import wraps
 from typing import Literal, Protocol
 
@@ -63,7 +64,7 @@ def make_graphql_claims(
     *,
     scope: Scope,
     operation: Operation,
-    app: str,
+    app: str | Enum,
     model: str,
     field: str,
     **extra: str,
@@ -71,9 +72,17 @@ def make_graphql_claims(
     # event and organization
     extra.update(scope.cbac_claims)
 
+    if hasattr(app, "app_name"):
+        # InvolvementApp etc. that skip the _v2 madness
+        app_name = app.app_name  # type: ignore
+    elif isinstance(app, Enum):
+        app_name = app.value
+    else:
+        app_name = app
+
     return dict(
         operation=operation,
-        app=app,
+        app=app_name,
         model=model,
         field=field,
         view="graphql",
@@ -86,7 +95,7 @@ def is_graphql_allowed(
     *,
     scope: Scope,
     operation: Operation,
-    app: str,
+    app: str | Enum,
     model: str,
     field: str = "self",
     **extra: str,
@@ -118,7 +127,7 @@ def is_graphql_allowed_for_model(
     instance: HasScope | HasImmutableScope,
     operation: Operation,
     field: str = "self",
-    app: str = "",
+    app: str | Enum = "",
     **extra: str,
 ) -> bool:
     model_name = instance.__class__.__name__
@@ -146,7 +155,7 @@ def graphql_check_model(
     *,
     field: str = "self",
     operation: Operation = "query",
-    app: str = "",
+    app: str | Enum = "",
 ):
     request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
     if not app:
@@ -176,7 +185,7 @@ def graphql_check_instance(
     *,
     field: str = "self",
     operation: Operation = "query",
-    app: str = "",
+    app: str | Enum = "",
 ):
     """
     Check that the user has access to a single object. Pass "self" as the field

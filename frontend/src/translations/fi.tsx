@@ -1412,48 +1412,64 @@ const translations: Translations = {
           },
         },
       },
+      messages: {
+        deleted: "Ohjelmanpitäjä poistettu ohjelmanumerosta.",
+        invited: "Ohjelmanpitäjäkutsu lähetetty.",
+        resent: "Ohjelmanpitäjäkutsu lähetettiin uudelleen.",
+        revoked: "Ohjelmanpitäjäkutsu peruttiin.",
+      },
     },
 
     ScheduleItem: {
       singleTitle: "Aikataulumerkintä",
       listTitle: "Aikataulumerkinnät",
+      tableFooter: (numScheduleItems: number) =>
+        `${numScheduleItems} aikataulumerkintä${
+          numScheduleItems === 1 ? "" : "ä"
+        }.`,
       attributes: {
         slug: {
           title: "Tekninen nimi",
           helpText: UNTRANSLATED(
             <>
-              Machine readable name of the schedule item. Must be unique among
-              schedule items of the event. Cannot be changed after creation. Can
-              contain lower case letters, numbers and dashes (-). If you
-              anticipate this program item will only have one schedule item,
-              best practice is to use the slug of the program item as the slug
-              of the schedule item.
+              Koneellisesti luettava nimi aikataulumerkinnälle. Täytyy olla
+              uniikki tapahtuman aikataulumerkintöjen joukossa. Ei voi muuttaa
+              luomisen jälkeen. Voi sisältää pieniä kirjaimia, numeroita ja
+              väliviivoja (-). Jos ennakoit, että ohjelmanumerolla on vain yksi
+              aikataulumerkintä, on suositeltavaa käyttää ohjelmanumeron
+              teknistä nimeä myös aikataulumerkinnän teknisenä nimenä.
             </>,
           ),
         },
         subtitle: {
-          title: "Subtitle",
+          title: "Alaotsikko",
           helpText: (
             <>
-              If there are multiple schedule items, the subtitle can be used to
-              differentiate them from each other. Will be appended to the
-              program title in parentheses. Examples: Given a program item with
-              the title <em>Freedom Fighters</em>, you might have{" "}
-              <em>Freedom Fighters (Character Creation)</em>,{" "}
-              <em>Freedom Fighters (Run 1)</em> etc. with the value of this
-              field being that in parentheses.
+              Jos ohjelmanumerolla on useita aikataulumerkintöjä, alaotsikkoa
+              voidaan käyttää erottamaan ne toisistaan. Alaotsikko liitetään
+              ohjelmanumeron otsikkoon sulkeissa. Esimerkki: Jos ohjelmanumeron
+              otsikko on <em>Freedom Fighters</em>, voi sillä olla
+              aikataulumerkintöjä kuten <em>Freedom Fighters (hahmonluonti)</em>
+              , <em>Freedom Fighters (pelautus 1)</em> jne. missä alaotsikko on
+              se mitä on sulkeissa.
             </>
           ),
+          noSubtitle: "Ei alaotsikkoa",
         },
         startTime: {
-          title: "Starting time",
-          helpText: <>In the time zone of the event.</>,
+          title: "Aloitusaika",
+        },
+        duration: {
+          title: "Kesto",
         },
         durationMinutes: {
-          title: "Duration in minutes",
+          title: "Kesto minuutteina",
+        },
+        location: {
+          title: "Sijainti",
         },
         room: {
-          title: "Room",
+          title: "Sali",
           helpText: (
             DimensionsLink: ({
               children,
@@ -1462,27 +1478,73 @@ const translations: Translations = {
             }) => ReactNode,
           ) => (
             <>
-              To change the choices of this field, update the values of the{" "}
-              <em>room</em> dimension in the{" "}
-              <DimensionsLink>dimension editor</DimensionsLink>.
+              Muuttaaksesi tämän kentän vaihtoehtoja muokkaa dimensiota{" "}
+              <code>room</code>{" "}
+              <DimensionsLink>
+                ohjelman dimensioiden muokkausnäkymässä
+              </DimensionsLink>{" "}
+              (aukeaa uuteen välilehteen).
             </>
           ),
         },
         freeformLocation: {
-          title: "Freeform location",
+          title: "Vapaamuotoinen sijainti",
           helpText: (
             <>
-              If the Room field above is empty, this will be used alone as the
-              visitor-visible location of the schedule item. If Room is
-              specified and this field is not, the value of the Room field alone
-              is used as the visitor-visible location. If both are specified,
-              the value of this field will be appended to the value of the Room
-              field in parentheses. Examples: If Room is <em>Main Hall</em> and
-              this field is <em>Stage</em>, the visitor-visible location will be{" "}
-              <em>Main Hall (Stage)</em>.
+              Jos yllä oleva Sali-kenttä on tyhjä, tätä kenttää käytetään
+              yksinään aikataulumerkinnän kävijälle näkyvänä sijaintina. Jos
+              sali on asetettu ja tämä kenttä on tyhjä, käytetään pelkästään
+              salin nimeä. Jos molemmat on määritetty, tämän kentän arvo
+              liitetään salin nimeen sulkeissa. Esimerkkejä: Jos sali on{" "}
+              <em>Pääsali</em> ja tässä kentässä lukee <em>lava</em>, kävijälle
+              näkyvä sijainti on <em>Pääsali (lava)</em>.
             </>
           ),
         },
+      },
+      actions: {
+        edit: {
+          title: "Muokkaa aikataulumerkintää",
+          label: "Muokkaa",
+          modalActions: {
+            submit: "Tallenna muutokset",
+            cancel: "Peruuta",
+          },
+        },
+        add: {
+          title: "Lisää aikataulumerkintä",
+          label: "Lisää",
+          modalActions: {
+            submit: "Luo aikataulumerkintä",
+            cancel: "Peruuta",
+          },
+        },
+        remove: {
+          title: "Poista aikataulumerkintä",
+          label: "Poista",
+          message: (scheduleItemTitle: string) => (
+            <>
+              <p>
+                Are you sure you want to remove the schedule item{" "}
+                <strong>{scheduleItemTitle}</strong>?
+              </p>
+              <p>
+                This action cannot be undone. You will need to create a new
+                schedule item if you want to add it back.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Poista aikataulumerkintä",
+            cancel: "Sulje poistamatta",
+          },
+        },
+      },
+
+      messages: {
+        created: "Aikataulumerkintä luotu.",
+        updated: "Aikataulumerkintä päivitetty.",
+        removed: "Aikataulumerkintä poistettu.",
       },
     },
 
@@ -1737,11 +1799,6 @@ const translations: Translations = {
             <p>Et voi muokata tätä vastausta tällä hetkellä.</p>
           </>
         ),
-        success: (surveyTitle: string) => (
-          <>
-            Vastauksesi kyselyyn <em>{surveyTitle}</em> on päivitetty.
-          </>
-        ),
       },
       exportDropdown: {
         dropdownHeader: "Lataa vastaukset",
@@ -1820,6 +1877,9 @@ const translations: Translations = {
         title: "Kysely ei ole avoinna",
         message: <>Tämä kysely ei tällä hetkellä ota vastaan vastauksia.</>,
       },
+    },
+    messages: {
+      responseEdited: "Muokkaus tallennettiin.",
     },
     tabs: {
       summary: "Yhteenveto",
@@ -2099,11 +2159,6 @@ const translations: Translations = {
           submit: "Lähetä uudelleen",
           cancel: "Sulje uudelleenlähettämättä",
         },
-        success: (email: string) => (
-          <>
-            Kutsu osoitteeseen <strong>{email}</strong> lähetettiin uudelleen.
-          </>
-        ),
       },
     },
   },

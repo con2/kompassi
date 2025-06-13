@@ -67,9 +67,21 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
 
     @cached_property
     def universe(self) -> Universe:
-        from program_v2.workflows.program_offer import ProgramOfferWorkflow
+        from program_v2.dimensions import get_program_universe
 
-        return ProgramOfferWorkflow.get_program_universe(self.event)
+        return get_program_universe(self.event)
+
+    @property
+    def programs(self):
+        from .program import Program
+
+        return Program.objects.filter(event=self.event)
+
+    @property
+    def schedule_items(self):
+        from .schedule_item import ScheduleItem
+
+        return ScheduleItem.objects.filter(cached_event=self.event)
 
     @property
     def current_program_offers(self):
@@ -86,8 +98,8 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         return (
             Response.objects.filter(
                 form__event=self.event,
-                form__survey__app="program_v2",
-                form__survey__purpose_slug="DEFAULT",
+                form__survey__app_name=SurveyApp.PROGRAM_V2.value,
+                form__survey__purpose_slug=SurveyPurpose.DEFAULT.value,
                 **extra_criteria,
             )
             .select_related(
@@ -126,7 +138,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     def program_offer_forms(self):
         return Survey.objects.filter(
             event=self.event,
-            app=SurveyApp.PROGRAM_V2.value,
+            app_name=SurveyApp.PROGRAM_V2.value,
             purpose_slug=SurveyPurpose.DEFAULT.value,
         )
 
@@ -134,7 +146,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     def accept_invitation_forms(self):
         return Survey.objects.filter(
             event=self.event,
-            app=SurveyApp.PROGRAM_V2.value,
+            app_name=SurveyApp.PROGRAM_V2.value,
             purpose_slug=SurveyPurpose.INVITE.value,
         )
 

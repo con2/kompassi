@@ -12,12 +12,12 @@ logger = logging.getLogger("kompassi")
 
 
 class ResponseDimensionValue(models.Model):
-    response = models.ForeignKey(
+    subject: models.ForeignKey[Response] = models.ForeignKey(
         Response,
         on_delete=models.CASCADE,
         related_name="dimensions",
     )
-    value = models.ForeignKey(
+    value: models.ForeignKey[DimensionValue] = models.ForeignKey(
         DimensionValue,
         on_delete=models.CASCADE,
         related_name="+",
@@ -27,4 +27,4 @@ class ResponseDimensionValue(models.Model):
         return f"{self.value.dimension}={self.value}"
 
     class Meta:
-        unique_together = ("response", "value")
+        unique_together = ("subject", "value")

@@ -12,6 +12,9 @@ interface SchemaFormProps {
   readOnly?: boolean;
   className?: string;
 
+  /// Display a lock icon next to read-only fields
+  highlightReadOnlyFields?: boolean;
+
   /// For when you need to render multiple SchemaForms that may have fields with the same slug
   idPrefix?: string;
 
@@ -29,6 +32,7 @@ export function SchemaForm(props: SchemaFormProps) {
     className = "",
     idPrefix,
     namePrefix,
+    highlightReadOnlyFields,
   } = props;
   return (
     <div className={className}>
@@ -49,6 +53,7 @@ export function SchemaForm(props: SchemaFormProps) {
             field={field}
             headingLevel={headingLevel}
             idPrefix={idPrefix}
+            highlightReadOnlyFields={highlightReadOnlyFields}
           >
             <SchemaFormInput
               field={field}

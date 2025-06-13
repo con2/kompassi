@@ -83,7 +83,7 @@ class FullSurveyType(LimitedSurveyType):
         Returns the responses to this survey regardless of language version used.
         Authorization required.
         """
-        graphql_check_instance(survey, info, app=survey.app, field="responses")
+        graphql_check_instance(survey, info, app=survey.app_name, field="responses")
         return (
             DimensionFilters.from_graphql(filters)
             .filter(survey.current_responses.all())
@@ -102,7 +102,7 @@ class FullSurveyType(LimitedSurveyType):
         Returns a single response to this survey regardless of language version used.
         Authorization required.
         """
-        graphql_check_instance(survey, info, app=survey.app, field="responses")
+        graphql_check_instance(survey, info, app=survey.app_name, field="responses")
         return survey.current_responses.filter(id=id).first()
 
     response = graphene.Field(
@@ -135,7 +135,7 @@ class FullSurveyType(LimitedSurveyType):
         Returns the number of responses to this survey regardless of language version used.
         Authorization required.
         """
-        graphql_check_instance(survey, info, app=survey.app, field="responses")
+        graphql_check_instance(survey, info, app=survey.app_name, field="responses")
         return DimensionFilters.from_graphql(filters).filter(survey.current_responses.all()).count()
 
     count_responses = graphene.Field(
@@ -156,7 +156,7 @@ class FullSurveyType(LimitedSurveyType):
         that language is used as the base for the combined fields. Order of fields
         not present in the base language is not guaranteed. Authorization required.
         """
-        graphql_check_instance(survey, info, app=survey.app, field="responses")
+        graphql_check_instance(survey, info, app=survey.app_name, field="responses")
         responses = (
             DimensionFilters.from_graphql(filters)
             .filter(survey.current_responses.all())

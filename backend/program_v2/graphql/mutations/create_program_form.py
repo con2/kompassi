@@ -54,21 +54,24 @@ class CreateProgramForm(graphene.Mutation):
             graphql_check_instance(
                 source_survey,
                 info,
-                app=source_survey.app,  # NOTE same check as in FormsProfileMeta.surveys
+                app=source_survey.app_name,  # NOTE same check as in FormsProfileMeta.surveys
             )
 
             survey = source_survey.clone(
                 event=event,
                 slug=str(input.survey_slug),
                 app=app,
+                purpose=purpose,
                 created_by=request.user,  # type: ignore
             )
         else:
             survey = Survey(
                 event=event,
                 slug=input.survey_slug,
-            ).with_mandatory_attributes_for_app(app, purpose)
-            survey.full_clean()  # Validate fields
+                app=app,
+                purpose=purpose,
+            ).with_mandatory_fields()
+            survey.full_clean()
             survey.save()
 
         survey.workflow.handle_new_survey()

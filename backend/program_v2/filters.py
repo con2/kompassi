@@ -14,7 +14,7 @@ from forms.models.response import Response
 from forms.utils.process_form_data import FALSY_VALUES
 
 from .models.program import Program
-from .models.schedule import ScheduleItem
+from .models.schedule_item import ScheduleItem
 
 
 def ensure_aware(dt: datetime) -> datetime:
@@ -41,7 +41,12 @@ class ProgramFilters:
     slugs: list[str] | None = None
     hide_past: bool = False
     updated_after: datetime | None = None
-    dimension_filters: DimensionFilters = field(default_factory=DimensionFilters)
+    dimension_filters: DimensionFilters = field(
+        default_factory=lambda: DimensionFilters(
+            filters={},
+            field_name="cached_combined_dimensions",
+        )
+    )
     user_relation: ProgramUserRelation | None = None
 
     @classmethod
@@ -75,7 +80,7 @@ class ProgramFilters:
 
         return cls(
             slugs=slugs,
-            dimension_filters=DimensionFilters(filters=filters),
+            dimension_filters=DimensionFilters(filters=filters, field_name="cached_combined_dimensions"),
             user_relation=user_relation,
             hide_past=hide_past,
             updated_after=updated_after,
@@ -90,7 +95,7 @@ class ProgramFilters:
         updated_after: datetime | None = None,
     ):
         return cls(
-            dimension_filters=DimensionFilters.from_graphql(filters),  # type: ignore
+            dimension_filters=DimensionFilters.from_graphql(filters, field_name="cached_combined_dimensions"),
             user_relation=user_relation,
             hide_past=hide_past,
             updated_after=ensure_aware(updated_after) if updated_after else None,
@@ -164,17 +169,7 @@ class ProgramFilters:
             else:
                 return schedule_items.none()
 
-        # XXX have to implement DimensionFilters.filter ourselves due to indirect access
-        # perhaps this will be fixed when dimensions are pushed to ScheduleItem level?
-        for dimension_slug, value_slugs in self.dimension_filters.filters.items():
-            value_slugs = [slug for slugs in value_slugs for slug in slugs.split(",")]
-            if "*" in value_slugs:
-                schedule_items = schedule_items.filter(program__dimensions__value__dimension__slug=dimension_slug)
-            else:
-                schedule_items = schedule_items.filter(
-                    program__dimensions__value__dimension__slug=dimension_slug,
-                    program__dimensions__value__slug__in=value_slugs,
-                )
+        schedule_items = self.dimension_filters.filter(schedule_items)
 
         if self.hide_past:
             if t is None:

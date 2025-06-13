@@ -26,7 +26,7 @@ class FormType(DjangoObjectType):
     @staticmethod
     def resolve_fields(parent: Form, info, enrich: bool = True):
         if enrich:
-            return parent.enriched_fields
+            return parent.cached_enriched_fields
         else:
             return parent.fields
 

@@ -1,19 +1,25 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { CardText, CardTitle } from "react-bootstrap";
-import Card from "react-bootstrap/Card";
-import CardBody from "react-bootstrap/CardBody";
-
-import { updateProgramBasicInfo } from "../actions";
+import ScheduleItemTable from "./ScheduleItemsTable";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import { Field } from "@/components/forms/models";
-import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
+import Messages from "@/components/errors/Messages";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+
+graphql(`
+  fragment ProgramAdminDetailScheduleItem on LimitedScheduleItemType {
+    slug
+    title
+    subtitle
+    location(lang: $locale)
+    startTime
+    durationMinutes
+    room
+    freeformLocation
+  }
+`);
 
 const query = graphql(`
   query ProgramAdminDetailSchedule(
@@ -30,6 +36,11 @@ const query = graphql(`
         dimensions {
           slug
           title(lang: $locale)
+
+          values(lang: $locale) {
+            slug
+            title(lang: $locale)
+          }
         }
 
         program(slug: $programSlug) {
@@ -37,11 +48,7 @@ const query = graphql(`
           title
 
           scheduleItems {
-            slug
-            subtitle
-            location
-            startTime
-            endTime
+            ...ProgramAdminDetailScheduleItem
           }
         }
       }
@@ -54,6 +61,9 @@ interface Props {
     locale: string;
     eventSlug: string;
     programSlug: string;
+  };
+  searchParams: {
+    success?: string;
   };
 }
 
@@ -77,11 +87,11 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ProgramAdminDetailSchedulePage({
   params,
+  searchParams,
 }: Props) {
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Program;
-  const iTem = translations.Program.ScheduleItem;
+  const t = translations.Program.ScheduleItem;
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, programSlug, locale },
@@ -92,57 +102,8 @@ export default async function ProgramAdminDetailSchedulePage({
 
   const event = data.event;
   const program = data.event.program.program;
-
-  const DimensionsLink = ({ children }: { children: React.ReactNode }) => (
-    <Link href={`/${event.slug}/program-dimensions`} className="link-subtle">
-      {children}
-    </Link>
-  );
-
-  const fields: Field[] = [
-    {
-      slug: "scheduleItems",
-      ...t.attributes.scheduleItems,
-      type: "MultiItemField",
-      fields: [
-        {
-          slug: "slug",
-          type: "SingleLineText",
-          required: true,
-          ...iTem.attributes.slug,
-        },
-        {
-          slug: "subtitle",
-          type: "SingleLineText",
-          ...iTem.attributes.subtitle,
-        },
-        {
-          slug: "startTime",
-          type: "DateTimeField",
-          required: true,
-          ...iTem.attributes.startTime,
-        },
-        {
-          slug: "durationMinutes",
-          type: "NumberField",
-          required: true,
-          ...iTem.attributes.durationMinutes,
-        },
-        {
-          slug: "room",
-          type: "SingleSelect",
-          choices: [],
-          title: iTem.attributes.room.title,
-          helpText: iTem.attributes.room.helpText(DimensionsLink),
-        },
-        {
-          slug: "freeformLocation",
-          type: "SingleLineText",
-          ...iTem.attributes.freeformLocation,
-        },
-      ],
-    },
-  ];
+  const scheduleItems = program.scheduleItems;
+  const dimensions = data.event.program.dimensions;
 
   return (
     <ProgramAdminDetailView
@@ -151,26 +112,15 @@ export default async function ProgramAdminDetailSchedulePage({
       translations={translations}
       active={"scheduleItems"}
     >
-      <Card>
-        <CardBody>
-          {" "}
-          <form
-            action={updateProgramBasicInfo.bind(
-              null,
-              locale,
-              event.slug,
-              program.slug,
-            )}
-          >
-            <SchemaForm
-              fields={fields}
-              values={program}
-              messages={translations.SchemaForm}
-            />
-            <SubmitButton>{translations.Common.submit}</SubmitButton>
-          </form>
-        </CardBody>
-      </Card>
+      <Messages messages={t.messages} searchParams={searchParams} />
+
+      <ScheduleItemTable
+        locale={locale}
+        event={event}
+        program={program}
+        dimensions={dimensions}
+        scheduleItems={scheduleItems}
+      />
     </ProgramAdminDetailView>
   );
 }

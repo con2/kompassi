@@ -31,7 +31,7 @@ class Universe(models.Model):
     hence, multiple Universes per Scope.
     """
 
-    scope = models.ForeignKey(Scope, on_delete=models.CASCADE)
+    scope: models.ForeignKey[Scope] = models.ForeignKey(Scope, on_delete=models.CASCADE)
     slug = make_slug_field(unique=False)
 
     app = models.CharField(

@@ -72,12 +72,16 @@ class DimensionValue(models.Model):
     def is_in_use(self) -> bool:
         from forms.models.response_dimension_value import ResponseDimensionValue
         from program_v2.models.program_dimension_value import ProgramDimensionValue
+        from program_v2.models.schedule_item_dimension_value import ScheduleItemDimensionValue
 
         match self.universe.app:
             case "forms":
                 return ResponseDimensionValue.objects.filter(value=self).exists()
             case "program_v2":
-                return ProgramDimensionValue.objects.filter(value=self).exists()
+                return (
+                    ProgramDimensionValue.objects.filter(value=self).exists()
+                    or ScheduleItemDimensionValue.objects.filter(value=self).exists()
+                )
             case _:
                 raise NotImplementedError(self.universe.app)
 

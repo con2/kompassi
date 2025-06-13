@@ -28,7 +28,7 @@ export function buildDimensionField(
   dimension: Dimension,
   cachedDimensions: Record<string, string[]>,
   technicalDimensions: "omit" | "readonly" | "editable" = "omit",
-) {
+): { field: SingleSelect | MultiSelect; value: string | string[] } {
   const valueList = cachedDimensions[dimension.slug] ?? [];
   let type = dimension.isMultiValue ? "MultiSelect" : "SingleSelect";
   if (type === "SingleSelect" && valueList.length > 1) {
@@ -42,11 +42,7 @@ export function buildDimensionField(
   const value = type === "SingleSelect" ? valueList[0] ?? "" : valueList;
   const readOnly = technicalDimensions === "readonly" && dimension.isTechnical;
 
-  const titleParts = [dimension.title ?? dimension.slug];
-  if (readOnly) {
-    titleParts.push("🔒");
-  }
-  const title = titleParts.join(" ");
+  const title = dimension.title || dimension.slug;
 
   const field: SingleSelect | MultiSelect =
     type === "SingleSelect"
@@ -54,14 +50,14 @@ export function buildDimensionField(
           slug: dimension.slug,
           type: "SingleSelect",
           presentation: "dropdown",
-          title: title,
+          title,
           choices: buildDimensionChoices(dimension),
           readOnly,
         }
       : {
           slug: dimension.slug,
           type: "MultiSelect",
-          title: title,
+          title,
           choices: buildDimensionChoices(dimension),
           readOnly,
         };
@@ -133,6 +129,7 @@ export default function DimensionValueSelectionForm({
         messages={translations.SchemaForm}
         readOnly={readOnly}
         idPrefix={idPrefix}
+        highlightReadOnlyFields={true}
       />
       <noscript>
         <SubmitButton>{t.actions.saveDimensions}</SubmitButton>

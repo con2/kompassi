@@ -7,7 +7,7 @@ from graphene.types.generic import GenericScalar
 from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
 
-from ...models.survey import Survey, SurveyApp
+from ...models.survey import Survey
 from ..survey_full import FullSurveyType
 
 
@@ -57,7 +57,7 @@ class UpdateSurvey(graphene.Mutation):
         graphql_check_instance(
             survey,
             info,
-            app=survey.app,
+            app=survey.app_name,
             operation="update",
         )
 
@@ -66,7 +66,6 @@ class UpdateSurvey(graphene.Mutation):
             raise django_forms.ValidationError(form.errors)  # type: ignore
 
         survey: Survey = form.save(commit=False)
-        survey = survey.with_mandatory_attributes_for_app(SurveyApp.FORMS, survey.purpose)
-        survey.save()
+        survey.with_mandatory_fields().save()
 
         return UpdateSurvey(survey=survey)  # type: ignore

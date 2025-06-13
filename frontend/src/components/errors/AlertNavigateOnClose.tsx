@@ -27,6 +27,7 @@ export default function AlertNavigateOnClose({
       variant={variant}
       dismissible
       onClose={() => router.replace(alwaysHref)}
+      className="mb-3 mt-3"
     >
       {children}
     </Alert>

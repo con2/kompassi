@@ -1,7 +1,7 @@
 import graphene
 
 from ...models.program import Program
-from ...models.schedule import ScheduleItem
+from ...models.schedule_item import ScheduleItem
 
 
 class FavoriteInput(graphene.InputObjectType):

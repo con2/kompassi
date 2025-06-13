@@ -55,7 +55,7 @@ class FormsEventMetaType(graphene.ObjectType):
         Until TODO(#324), you can as a workaround do something like
         `surveys: surveys(app: FORMS), programForms: surveys(app: PROGRAM_V2)`.
         """
-        qs = Survey.objects.filter(event=meta.event, app=app.value)
+        qs = Survey.objects.filter(event=meta.event, app_name=app.value)
 
         if purpose:
             qs = qs.filter(purpose_slug__in=[SurveyPurpose(p).value for p in purpose])
@@ -63,7 +63,7 @@ class FormsEventMetaType(graphene.ObjectType):
             qs = qs.filter(purpose_slug=SurveyPurpose.DEFAULT.value)
 
         if include_inactive:
-            graphql_check_model(Survey, meta.event.scope, info, app=app.value)
+            graphql_check_model(Survey, meta.event.scope, info, app=app)
         else:
             qs = get_objects_within_period(qs)
 
@@ -90,10 +90,10 @@ class FormsEventMetaType(graphene.ObjectType):
         qs = Survey.objects.filter(event=meta.event, slug=slug)
 
         if app:
-            qs = qs.filter(app=app)
+            qs = qs.filter(app_name=app.value)
 
         if purpose:
-            qs = qs.filter(purpose_slug=SurveyPurpose(purpose).value)
+            qs = qs.filter(purpose_slug=purpose.value)
 
         return qs.first()
 
@@ -170,7 +170,7 @@ class FormsProfileMetaType(graphene.ObjectType):
                 instance=survey,  # type: ignore
                 operation="query",
                 field="self",
-                app=survey.app,  # TODO(#574) check this
+                app=survey.app_name,  # TODO(#574) check this
             )
         ]
 

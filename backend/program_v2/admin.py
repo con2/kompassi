@@ -8,7 +8,7 @@ from django.contrib import admin
 
 from .models.meta import ProgramV2EventMeta
 from .models.program import Program
-from .models.schedule import ScheduleItem
+from .models.schedule_item import ScheduleItem
 
 
 class ScheduleItemInline(admin.TabularInline):
@@ -30,7 +30,6 @@ class ProgramAdmin(admin.ModelAdmin):
         "cached_dimensions",
         "cached_earliest_start_time",
         "cached_latest_end_time",
-        "cached_location",
         "cached_color",
     )
 

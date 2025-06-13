@@ -26,7 +26,7 @@ graphql(`
 graphql(`
   fragment ScheduleItemList on FullScheduleItemType {
     slug
-    location
+    location(lang: $locale)
     subtitle
     startTime
     endTime

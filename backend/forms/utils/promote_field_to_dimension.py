@@ -6,7 +6,6 @@ from dimensions.models.dimension import ValueOrdering
 from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 
 from ..models.field import Choice, Field, FieldType
-from ..models.form import Form
 from ..models.response import Response
 from ..models.survey import Survey
 from ..utils.lift_dimension_values import lift_dimension_values
@@ -135,14 +134,12 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
             ),
         )
 
-    Form.objects.bulk_update(forms, ["fields", "cached_enriched_fields"])
-    Form.refresh_enriched_fields_qs(Form.objects.filter(id__in=[form.id for form in forms]))
+        form.save()
 
     # reload cache
     cache = survey.universe.preload_dimensions(dimension_slugs=[dimension_slug])
 
     # lift values of the field to the dimension in responses
-    bulk_update = []
     for form in forms:
         for response in form.all_responses.all():  # NOTE also old versions!
             lift_dimension_values(
@@ -151,10 +148,4 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
                 cache=cache,
             )
 
-    Response.objects.bulk_update(bulk_update, ["form_data"])
-    Response.refresh_cached_fields_qs(
-        Response.objects.filter(
-            form__in=forms,
-            superseded_by=None,
-        )
-    )
+    Response.refresh_cached_fields_qs(Response.objects.filter(form__in=forms))

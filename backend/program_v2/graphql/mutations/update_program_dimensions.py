@@ -48,5 +48,6 @@ class UpdateProgramDimensions(graphene.Mutation):
         cache = universe.preload_dimensions(dimension_slugs=values.keys())
         program.set_dimension_values(values, cache=cache)
         program.refresh_cached_dimensions()
+        program.refresh_dependents()
 
         return UpdateProgramDimensions(program=program)  # type: ignore

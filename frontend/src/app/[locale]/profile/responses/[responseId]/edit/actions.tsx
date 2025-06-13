@@ -44,5 +44,5 @@ export async function submit(
 
   revalidatePath(`/profile/responses`);
   revalidatePath(`/profile/responses/${editResponseId}`);
-  return void redirect(`/profile/responses?editSuccess=${newResponseId}`);
+  return void redirect(`/profile/responses?success=created`);
 }

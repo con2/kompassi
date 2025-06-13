@@ -7,13 +7,16 @@ from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar
 
 from django.conf import settings
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models, transaction
 from django.db.models import JSONField
 from django.utils.translation import gettext_lazy as _
 
 from core.models.event import Event
 from dimensions.models.scope import Scope
+from dimensions.utils.build_cached_dimensions import build_cached_dimensions
 from dimensions.utils.dimension_cache import DimensionCache
+from dimensions.utils.set_dimension_values import set_dimension_values
 from graphql_api.language import SUPPORTED_LANGUAGES
 
 from .attachment import Attachment
@@ -93,6 +96,15 @@ class Response(models.Model):
     # related fields
     dimensions: models.QuerySet[ResponseDimensionValue]
     programs: models.QuerySet[Program]
+
+    class Meta:
+        indexes = [
+            GinIndex(
+                fields=["cached_dimensions"],
+                name="forms_response_gin",
+                opclasses=["jsonb_path_ops"],
+            ),
+        ]
 
     @property
     def survey(self) -> Survey:
@@ -184,14 +196,9 @@ class Response(models.Model):
         """
         Used by ..handlers/dimension.py to populate cached_dimensions
         """
-        new_cached_dimensions = {}
-        for sdv in self.dimensions.all():
-            new_cached_dimensions.setdefault(sdv.value.dimension.slug, []).append(sdv.value.slug)
-
-        return new_cached_dimensions
+        return build_cached_dimensions(self.dimensions.all())
 
     @classmethod
-    @transaction.atomic
     def refresh_cached_fields_qs(
         cls,
         responses: models.QuerySet[Response],
@@ -258,16 +265,7 @@ class Response(models.Model):
         """
         from .response_dimension_value import ResponseDimensionValue
 
-        self.dimensions.filter(value__dimension__slug__in=values_to_set.keys()).delete()
-
-        ResponseDimensionValue.objects.bulk_create(
-            ResponseDimensionValue(
-                response=self,
-                value=cache.values_by_dimension[dimension_slug][value_slug],
-            )
-            for dimension_slug, value_slugs in values_to_set.items()
-            for value_slug in value_slugs
-        )
+        set_dimension_values(ResponseDimensionValue, self, values_to_set, cache)
 
     def get_processed_form_data(
         self,
@@ -317,10 +315,10 @@ class Response(models.Model):
 
     @property
     def admin_url(self) -> str:
-        match SurveyApp(self.survey.app):
+        match SurveyApp(self.survey.app_name):
             case SurveyApp.FORMS:
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/surveys/{self.survey.slug}/responses/{self.id}"
             case SurveyApp.PROGRAM_V2:
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
             case _:
-                raise ValueError(f"Unknown app type: {self.survey.app}")
+                raise ValueError(f"Unknown app type: {self.survey.app_name}")

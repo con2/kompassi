@@ -82,6 +82,7 @@ export function getFieldEditorFields(
       return editableFieldFields.concat([choicesField]); // , encryptTo]);
     case "DimensionSingleSelect":
     case "DimensionMultiSelect":
+    case "DimensionSingleCheckbox":
       return editableFieldFields.concat([dimensionField]); // , encryptTo]);
     case "RadioMatrix":
       return editableFieldFields.concat([

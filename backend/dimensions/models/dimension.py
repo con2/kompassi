@@ -39,6 +39,7 @@ INVALID_DIMENSION_SLUGS = [
     "display",
     "search",
     "error",
+    "success",
 ]
 
 
@@ -59,7 +60,11 @@ class Dimension(models.Model):
     or program items. These things are called atoms.
     """
 
-    universe = models.ForeignKey(Universe, on_delete=models.CASCADE, related_name="dimensions")
+    universe: models.ForeignKey[Universe] = models.ForeignKey(
+        Universe,
+        on_delete=models.CASCADE,
+        related_name="dimensions",
+    )
     order = models.SmallIntegerField(default=0)
 
     is_public = models.BooleanField(
@@ -120,6 +125,20 @@ class Dimension(models.Model):
     title_fi = models.TextField(blank=True, default="")
     title_sv = models.TextField(blank=True, default="")
 
+    values: models.QuerySet[DimensionValue]
+
+    class Meta:
+        ordering = ("universe", "order", "slug")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["universe", "slug"],
+                name="dimension_unique_universe_slug",
+            ),
+        ]
+
+    def __str__(self):
+        return self.slug
+
     @property
     def title_dict(self) -> dict[str, str]:
         """
@@ -131,8 +150,6 @@ class Dimension(models.Model):
             "fi": self.title_fi,
             "sv": self.title_sv,
         }
-
-    values: models.QuerySet[DimensionValue]
 
     @property
     def scope(self) -> Scope:
@@ -196,12 +213,16 @@ class Dimension(models.Model):
     def is_in_use(self) -> bool:
         from forms.models.response_dimension_value import ResponseDimensionValue
         from program_v2.models.program_dimension_value import ProgramDimensionValue
+        from program_v2.models.schedule_item_dimension_value import ScheduleItemDimensionValue
 
         match self.universe.app:
             case "forms":
                 return ResponseDimensionValue.objects.filter(value__dimension=self).exists()
             case "program_v2":
-                return ProgramDimensionValue.objects.filter(value__dimension=self).exists()
+                return (
+                    ProgramDimensionValue.objects.filter(value__dimension=self).exists()
+                    or ScheduleItemDimensionValue.objects.filter(value__dimension=self).exists()
+                )
             case _:
                 raise NotImplementedError(self.universe.app)
 
@@ -218,14 +239,7 @@ class Dimension(models.Model):
             and not self.is_in_use
         )
 
-    class Meta:
-        ordering = ("universe", "order", "slug")
-        constraints = [
-            models.UniqueConstraint(
-                fields=["universe", "slug"],
-                name="dimension_unique_universe_slug",
-            ),
-        ]
+    def refresh_dependents(self):
+        from forms.models.form import Form
 
-    def __str__(self):
-        return self.slug
+        Form.refresh_cached_fields_qs(Form.objects.filter(survey__universe=self.universe))

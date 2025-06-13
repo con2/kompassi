@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import Errors from "../errors/Errors";
+import Messages from "../errors/Messages";
 import ProgramAdminTabs, {
   ProgramAdminTabsProps,
 } from "@/components/program/ProgramAdminTabs";
@@ -46,7 +46,10 @@ export default async function ProgramAdminView({
       </ViewHeadingActionsWrapper>
 
       {alerts}
-      <Errors error={error} messages={translations.Program.errors} />
+      <Messages
+        messages={translations.Program.errors}
+        searchParams={searchParams}
+      />
 
       <ProgramAdminTabs
         eventSlug={event.slug}

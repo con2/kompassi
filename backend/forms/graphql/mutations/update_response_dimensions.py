@@ -45,7 +45,7 @@ class UpdateResponseDimensions(graphene.Mutation):
         graphql_check_instance(
             response,
             info,
-            app=survey.app,
+            app=survey.app_name,
             field="dimensions",
             operation="update",
         )

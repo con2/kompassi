@@ -5,7 +5,7 @@ from graphene_django import DjangoObjectType
 from access.cbac import graphql_check_instance
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.language import DEFAULT_LANGUAGE
-from graphql_api.utils import resolve_local_datetime_field, resolve_localized_field
+from graphql_api.utils import get_message_in_language, resolve_local_datetime_field
 
 from ..models import Program
 from ..models.annotations import ANNOTATIONS
@@ -32,16 +32,18 @@ class LimitedProgramType(DjangoObjectType):
 
     cached_hosts = graphene.NonNull(graphene.String)
 
-    resolve_location = resolve_localized_field("cached_location")
+    @staticmethod
+    def resolve_location(parent: Program, info, lang: str = DEFAULT_LANGUAGE):
+        """
+        Deprecated. Use `scheduleItem.location` instead.
+        """
+        first_schedule_item = parent.schedule_items.first()
+        if first_schedule_item:
+            return get_message_in_language(first_schedule_item.cached_location, lang)
+        return ""
 
     location = graphene.String(
-        description=normalize_whitespace(
-            """
-            Supplied for convenience. Prefer scheduleItem.location if possible.
-            Caveat: When a program item has multiple schedule items, they may be in different locations.
-            In such cases, a comma separated list of locations is returned.
-        """
-        ),
+        description=normalize_whitespace(resolve_location.__doc__ or ""),
         lang=graphene.String(),
     )
 

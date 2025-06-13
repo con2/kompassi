@@ -85,7 +85,7 @@ const query = graphql(`
           scheduleItems {
             slug
             subtitle
-            location
+            location(lang: $locale)
             startTime
             endTime
           }

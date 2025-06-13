@@ -1094,6 +1094,7 @@ const translations: Translations = {
       viewProfile: UNTRANSLATED(en.Survey.actions.viewProfile),
     },
     errors: UNTRANSLATED(en.Survey.errors),
+    messages: UNTRANSLATED(en.Survey.messages),
     tabs: {
       summary: "Sammanfattning",
       responses: "Svaren",

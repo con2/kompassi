@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, Flag
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -10,11 +10,22 @@ class AnnotationDataType(Enum):
     BOOLEAN = "boolean"
 
 
+class AnnotationAppliesTo(Flag):
+    """
+    Program annotations that apply to schedule items are also pushed down to schedule items.
+    """
+
+    NOTHING = 0
+    PROGRAM = 1 << 0
+    SCHEDULE_ITEM = 1 << 1
+
+
 class AnnotationSchemoid(BaseModel):
     slug: str
     title: dict[str, str]
     description: dict[str, str] = Field(default_factory=dict)
     type: AnnotationDataType = AnnotationDataType.STRING
+    applies_to: AnnotationAppliesTo = AnnotationAppliesTo.PROGRAM
     is_public: bool = True
     is_shown_in_detail: bool = True
     is_computed: bool = False
@@ -213,12 +224,25 @@ ANNOTATIONS = [
         is_shown_in_detail=False,
     ),
     AnnotationSchemoid(
-        slug="knutepunkt:tagline",
+        slug="internal:freeformLocation",
         title=dict(
-            fi="Tagline",
-            en="Tag line",
-            sv="Tagline",
+            fi="Vapaamuotoinen sijainti",
+            en="Freeform location",
         ),
+        applies_to=AnnotationAppliesTo.SCHEDULE_ITEM,
+        is_public=True,
+        is_shown_in_detail=False,  # use location instead
+    ),
+    AnnotationSchemoid(
+        slug="internal:subtitle",
+        title=dict(
+            fi="Alaotsikko",
+            en="Subtitle",
+            sv="Underrubrik",
+        ),
+        applies_to=AnnotationAppliesTo.SCHEDULE_ITEM,
+        is_public=True,
+        is_shown_in_detail=False,  # use title instead
     ),
 ]
 

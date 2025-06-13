@@ -1,4 +1,5 @@
 import { title } from "process";
+import { label } from "motion/react-client";
 import Email from "next-auth/providers/email";
 import { JSX, ReactNode } from "react";
 
@@ -1415,11 +1416,21 @@ const translations = {
           },
         },
       },
+      messages: {
+        deleted: "Program host removed from the program item.",
+        invited: "Program host invitation sent.",
+        resent: "Program host invitation resent.",
+        revoked: "Program host invitation revoked.",
+      },
     },
 
     ScheduleItem: {
       singleTitle: "Schedule item",
       listTitle: "Schedule items",
+      tableFooter: (numScheduleItems: number) =>
+        `${numScheduleItems} schedule item${
+          numScheduleItems === 1 ? "" : "s"
+        }.`,
       attributes: {
         slug: {
           title: "Slug",
@@ -1447,13 +1458,19 @@ const translations = {
               field being that in parentheses.
             </>
           ),
+          noSubtitle: "No subtitle",
         },
         startTime: {
           title: "Starting time",
-          helpText: <>In the time zone of the event.</>,
+        },
+        duration: {
+          title: "Duration",
         },
         durationMinutes: {
           title: "Duration in minutes",
+        },
+        location: {
+          title: "Location",
         },
         room: {
           title: "Room",
@@ -1466,8 +1483,9 @@ const translations = {
           ) => (
             <>
               To change the choices of this field, update the values of the{" "}
-              <em>room</em> dimension in the{" "}
-              <DimensionsLink>dimension editor</DimensionsLink>.
+              <code>room</code> dimension in the{" "}
+              <DimensionsLink>dimension editor</DimensionsLink> (opens in a new
+              tab).
             </>
           ),
         },
@@ -1486,6 +1504,50 @@ const translations = {
             </>
           ),
         },
+      },
+      actions: {
+        edit: {
+          title: "Edit schedule item",
+          label: "Edit",
+          modalActions: {
+            submit: "Save changes",
+            cancel: "Cancel",
+          },
+        },
+        add: {
+          title: "Add schedule item",
+          label: "Add",
+          modalActions: {
+            submit: "Add",
+            cancel: "Cancel",
+          },
+        },
+        remove: {
+          title: "Remove schedule item",
+          label: "Remove",
+          message: (scheduleItemTitle: string) => (
+            <>
+              <p>
+                Are you sure you want to remove the schedule item{" "}
+                <strong>{scheduleItemTitle}</strong>?
+              </p>
+              <p>
+                This action cannot be undone. You will need to create a new
+                schedule item if you want to add it back.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Remove schedule item",
+            cancel: "Close without removing",
+          },
+        },
+      },
+
+      messages: {
+        created: "Schedule item created.",
+        updated: "Schedule item updated.",
+        removed: "Schedule item removed.",
       },
     },
 
@@ -1732,11 +1794,6 @@ const translations = {
             <p>You cannot edit this response at this time.</p>
           </>
         ),
-        success: (surveyTitle: string) => (
-          <>
-            Your response to the survey <em>{surveyTitle}</em> has been updated.
-          </>
-        ),
       },
       deleteResponse: {
         title: "Delete response",
@@ -1825,6 +1882,9 @@ const translations = {
         title: "Survey is not active",
         message: <>This survey is not currently open for responses.</>,
       },
+    },
+    messages: {
+      responseEdited: "The response has been updated.",
     },
     tabs: {
       summary: "Summary",
@@ -2099,11 +2159,6 @@ const translations = {
           submit: "Resend invitation",
           cancel: "Close without resending",
         },
-        success: (email: string) => (
-          <>
-            The invitation to <strong>{email}</strong> was successfully re-sent.
-          </>
-        ),
       },
     },
   },

@@ -24,7 +24,7 @@ def export_programs(
             event.begin = schedule_item.start_time
             event.end = schedule_item.cached_end_time
             event.description = program.description.replace("\r", "")
-            event.location = get_message_in_language(program.cached_location, language)
+            event.location = get_message_in_language(schedule_item.cached_location, language)
             calendar.events.add(event)
 
     output_stream.writelines(calendar.serialize_iter())

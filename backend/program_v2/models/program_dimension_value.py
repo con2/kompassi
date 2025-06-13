@@ -15,12 +15,12 @@ logger = logging.getLogger("kompassi")
 class ProgramDimensionValue(models.Model):
     id: int
 
-    program = models.ForeignKey(
+    subject: models.ForeignKey[Program] = models.ForeignKey(
         Program,
         on_delete=models.CASCADE,
         related_name="dimensions",
     )
-    value = models.ForeignKey(
+    value: models.ForeignKey[DimensionValue] = models.ForeignKey(
         DimensionValue,
         on_delete=models.CASCADE,
         related_name="+",
@@ -39,7 +39,7 @@ class ProgramDimensionValue(models.Model):
         return event
 
     class Meta:
-        unique_together = ("program", "value")
+        unique_together = ("subject", "value")
 
         # NOTE: only implements the `manual` ordering for now
         # See https://con2.slack.com/archives/C3ZGNGY48/p1718446605681339

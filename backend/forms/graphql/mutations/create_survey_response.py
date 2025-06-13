@@ -5,6 +5,7 @@ from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 from core.utils import get_ip
+from program_v2.models.program import Program
 
 from ...models.enums import SurveyPurpose
 from ...models.response import Response
@@ -63,7 +64,7 @@ class CreateSurveyResponse(graphene.Mutation):
                 graphql_check_instance(
                     survey,
                     request,
-                    app=survey.app,
+                    app=survey.app_name,
                     field="responses",
                     operation="create",
                 )
@@ -99,9 +100,15 @@ class CreateSurveyResponse(graphene.Mutation):
             if old_version:
                 old_version.superseded_by = response
                 old_version.save(update_fields=["superseded_by"])
+
+                # TODO put these somewhere
                 survey.all_responses.filter(superseded_by=old_version).update(superseded_by=response)
 
-            survey.workflow.handle_new_response_phase1(response)
+                # corner case: make offer, accept offer, admin edit offer
+                # (offerer cannot edit after accepting)
+                Program.objects.filter(program_offer=old_version).update(program_offer=response)
 
-        survey.workflow.handle_new_response_phase2(response)
+            survey.workflow.handle_new_response_phase1(response, old_version=old_version)
+
+        survey.workflow.handle_new_response_phase2(response, old_version=old_version)
         return CreateSurveyResponse(response=response)  # type: ignore

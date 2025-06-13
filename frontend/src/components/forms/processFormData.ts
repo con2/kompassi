@@ -22,10 +22,13 @@ export default function processFormData(
       case "SingleLineText":
       case "MultiLineText":
       case "SingleSelect":
+      case "DateTimeField":
+      case "DateField":
         values[field.slug] = byFieldName[slug] as string;
         break;
 
       case "NumberField":
+      case "DecimalField":
         values[field.slug] = parseFloat(byFieldName[slug] as string);
         break;
 

@@ -11,7 +11,7 @@ import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensi
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import Errors from "@/components/errors/Errors";
+import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";

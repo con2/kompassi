@@ -35,7 +35,7 @@ def forms_survey_zip_export_view(
     graphql_check_instance(
         survey,
         request,
-        app=survey.app,
+        app=survey.app_name,
         field="responses",
         operation="query",
     )

@@ -70,6 +70,7 @@ class PutDimension(graphene.Mutation):
         )
 
         # TODO update_or_create
+        dimension: Dimension
         if input.dimension_slug is not None:
             # updating existing Dimension
             dimension = universe.dimensions.get(slug=input.dimension_slug)
@@ -87,5 +88,7 @@ class PutDimension(graphene.Mutation):
             dimension.save()
         else:
             raise django_forms.ValidationError(form.errors)
+
+        dimension.refresh_dependents()
 
         return PutDimension(dimension=dimension)  # type: ignore

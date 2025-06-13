@@ -30,7 +30,7 @@ class DeleteInvitation(graphene.Mutation):
         graphql_check_instance(
             invitation,
             info,
-            app=invitation.survey.app,
+            app=invitation.survey.app_name,
             operation="delete",
         )
 

@@ -11,10 +11,9 @@ class FullScheduleItemType(LimitedScheduleItemType):
     class Meta:
         model = ScheduleItem
         fields = (
-            "slug",
-            "subtitle",
-            "start_time",
             "program",
+            "slug",
+            "start_time",
             "created_at",
             "updated_at",
         )

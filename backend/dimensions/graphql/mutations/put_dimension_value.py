@@ -85,4 +85,6 @@ class PutDimensionValue(graphene.Mutation):
         else:
             raise django_forms.ValidationError(form.errors)
 
+        dimension.refresh_dependents()
+
         return PutDimensionValue(value=value)  # type: ignore

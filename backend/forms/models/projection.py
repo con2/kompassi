@@ -123,9 +123,9 @@ class Projection(models.Model):
         if not surveys:
             raise ValueError("Projection must have at least one survey to determine the app.")
 
-        app = SurveyApp(surveys.pop(0).app)
+        app = SurveyApp(surveys.pop(0).app_name)
 
-        if any(SurveyApp(survey.app) != app for survey in surveys):
+        if any(SurveyApp(survey.app_name) != app for survey in surveys):
             raise ValueError("All surveys in a projection must share the same app.")
 
         return app

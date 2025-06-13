@@ -4,7 +4,7 @@ aiodns==3.4.0
     # via aiohttp
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.11.18
+aiohttp==3.12.12
     # via -r requirements.in
 aiosignal==1.3.2
     # via aiohttp
@@ -42,9 +42,9 @@ binapy==0.8.0
     # via jwskate
 bleach==6.2.0
     # via -r requirements.in
-boto3==1.38.20
+boto3==1.38.36
     # via -r requirements.in
-botocore==1.38.20
+botocore==1.38.36
     # via
     #   boto3
     #   s3transfer
@@ -52,7 +52,7 @@ brotli==1.1.0
     # via
     #   aiohttp
     #   fonttools
-celery==5.5.2
+celery==5.5.3
     # via -r requirements.in
 certifi==2025.4.26
     # via
@@ -90,7 +90,7 @@ click-repl==0.3.0
     # via celery
 crispy-bootstrap3==2024.1
     # via -r requirements.in
-cryptography==45.0.2
+cryptography==45.0.4
     # via
     #   jwcrypto
     #   jwskate
@@ -103,7 +103,7 @@ decorator==5.2.1
     #   ipython
 distlib==0.3.9
     # via virtualenv
-django==5.2.1
+django==5.2.3
     # via
     #   -r requirements.in
     #   crispy-bootstrap3
@@ -162,9 +162,9 @@ filelock==3.18.0
     # via virtualenv
 flake8==7.2.0
     # via -r requirements.in
-fonttools==4.58.0
+fonttools==4.58.3
     # via weasyprint
-frozenlist==1.6.0
+frozenlist==1.7.0
     # via
     #   aiohttp
     #   aiosignal
@@ -199,7 +199,7 @@ httpx==0.28.1
     # via fastapi
 ics==0.7.2
     # via -r requirements.in
-identify==2.6.10
+identify==2.6.12
     # via pre-commit
 idna==3.10
     # via
@@ -212,7 +212,7 @@ iniconfig==2.1.0
     # via pytest
 ipdb==0.13.13
     # via -r requirements.in
-ipython==9.2.0
+ipython==9.3.0
     # via
     #   -r requirements.in
     #   ipdb
@@ -230,7 +230,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsonschema==4.23.0
+jsonschema==4.24.0
     # via -r requirements.in
 jsonschema-specifications==2025.4.1
     # via jsonschema
@@ -238,7 +238,7 @@ jwcrypto==1.5.6
     # via django-oauth-toolkit
 jwskate==0.12.2
     # via -r requirements.in
-kombu==5.5.3
+kombu==5.5.4
     # via celery
 lippukala @ git+https://github.com/kcsry/lippukala@fd6f55f499b12062887f6c78ff2c6749df8ba5cc
     # via -r requirements.in
@@ -270,6 +270,7 @@ packaging==25.0
     # via
     #   django-csp
     #   gunicorn
+    #   kombu
     #   pytest
 paikkala @ git+https://github.com/kcsry/paikkala@93b8b98c99f31d4dbc4bfa703afd77d8df7f66d8
     # via -r requirements.in
@@ -281,7 +282,7 @@ passlib==1.7.4
     # via -r requirements.in
 pexpect==4.9.0
     # via ipython
-phonenumberslite==9.0.5
+phonenumberslite==9.0.7
     # via -r requirements.in
 pillow==11.2.1
     # via
@@ -300,7 +301,7 @@ prompt-toolkit==3.0.51
     # via
     #   click-repl
     #   ipython
-propcache==0.3.1
+propcache==0.3.2
     # via
     #   aiohttp
     #   yarl
@@ -314,13 +315,13 @@ ptyprocess==0.7.0
     # via pexpect
 pure-eval==0.2.3
     # via stack-data
-pycares==4.8.0
+pycares==4.9.0
     # via aiodns
 pycodestyle==2.13.0
     # via flake8
 pycparser==2.22
     # via cffi
-pydantic==2.11.4
+pydantic==2.11.6
     # via
     #   -r requirements.in
     #   fastapi
@@ -335,6 +336,7 @@ pygments==2.19.1
     # via
     #   ipython
     #   ipython-pygments-lexers
+    #   pytest
     #   rich
 pynacl==1.5.0
     # via paramiko
@@ -342,9 +344,9 @@ pyphen==0.17.2
     # via weasyprint
 pypugjs==5.12.0
     # via -r requirements.in
-pyright==1.1.400
+pyright==1.1.402
     # via -r requirements.in
-pytest==8.3.5
+pytest==8.4.0
     # via pytest-django
 pytest-django==4.11.1
     # via -r requirements.in
@@ -372,7 +374,7 @@ pyyaml==6.0.2
     #   -r requirements.in
     #   pre-commit
     #   uvicorn
-redis==6.1.0
+redis==6.2.0
     # via django-redis
 referencing==0.36.2
     # via
@@ -384,7 +386,7 @@ reportlab==4.4.1
     # via
     #   -r requirements.in
     #   lippukala
-requests==2.32.3
+requests==2.32.4
     # via
     #   -r requirements.in
     #   django-oauth-toolkit
@@ -395,15 +397,15 @@ rich==14.0.0
     # via
     #   rich-toolkit
     #   typer
-rich-toolkit==0.14.6
+rich-toolkit==0.14.7
     # via fastapi-cli
-rpds-py==0.25.0
+rpds-py==0.25.1
     # via
     #   jsonschema
     #   referencing
-ruff==0.11.10
+ruff==0.11.13
     # via -r requirements.in
-s3transfer==0.12.0
+s3transfer==0.13.0
     # via boto3
 shellingham==1.5.4
     # via typer
@@ -438,13 +440,13 @@ traitlets==5.14.3
     # via
     #   ipython
     #   matplotlib-inline
-typer==0.15.3
+typer==0.16.0
     # via fastapi-cli
 types-python-dateutil==2.9.0.20250516
     # via arrow
 types-pyyaml==6.0.12.20250516
     # via django-stubs
-typing-extensions==4.13.2
+typing-extensions==4.14.0
     # via
     #   binapy
     #   django-stubs
@@ -460,7 +462,7 @@ typing-extensions==4.13.2
     #   rich-toolkit
     #   typer
     #   typing-inspection
-typing-inspection==0.4.0
+typing-inspection==0.4.1
     # via pydantic
 tzdata==2025.2
     # via kombu
@@ -470,7 +472,7 @@ urllib3==2.4.0
     # via
     #   botocore
     #   requests
-uvicorn==0.34.2
+uvicorn==0.34.3
     # via
     #   -r requirements.in
     #   fastapi
@@ -504,7 +506,7 @@ xlsxwriter==3.2.3
     # via -r requirements.in
 xlwt==1.3.0
     # via lippukala
-yarl==1.20.0
+yarl==1.20.1
     # via aiohttp
 zopfli==0.2.3.post1
     # via fonttools

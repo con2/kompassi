@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from typing import TYPE_CHECKING
 
 import pydantic
 from django.conf import settings
@@ -19,6 +20,10 @@ from .enums import SurveyPurpose
 from .response import Response
 from .survey import Survey, SurveyApp
 
+if TYPE_CHECKING:
+    from involvement.models.involvement import Involvement
+
+
 logger = logging.getLogger("kompassi")
 
 
@@ -31,14 +36,14 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
 
     @property
     def app(self) -> SurveyApp:
-        return SurveyApp(self.survey.app)
+        return SurveyApp(self.survey.app_name)
 
     @classmethod
     def get_workflow(cls, survey: Survey):
         from program_v2.workflows.program_host_invitation import ProgramHostInvitationWorkflow
         from program_v2.workflows.program_offer import ProgramOfferWorkflow
 
-        match SurveyApp(survey.app), survey.purpose:
+        match SurveyApp(survey.app_name), survey.purpose:
             case SurveyApp.PROGRAM_V2, SurveyPurpose.DEFAULT:
                 return ProgramOfferWorkflow(survey=survey)
             case SurveyApp.PROGRAM_V2, SurveyPurpose.INVITE:
@@ -130,14 +135,14 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         *,
         old_version: Response | None = None,
         cache: DimensionCache,
-    ):
+    ) -> Involvement | None:
         """
         If the response ought to result in Involvement, create it.
         """
         from involvement.models.involvement import Involvement
 
         if not response.survey.registry:
-            return
+            return None
 
         if old_version:
             Involvement.objects.filter(
@@ -146,7 +151,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
                 response=response,
             )
 
-        Involvement.from_survey_response(
+        return Involvement.from_survey_response(
             response=response,
             cache=cache,
         )
@@ -224,7 +229,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             if is_graphql_allowed_for_model(
                 subscriber,
                 instance=survey,
-                app=survey.app,
+                app=survey.app_name,
                 operation="query",
                 field="responses",
             )
@@ -302,7 +307,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         return response.superseded_by is None and is_graphql_allowed_for_model(
             request.user,
             instance=response.survey,
-            app=response.survey.app,
+            app=response.survey.app_name,
             operation="update",
             field="responses",
         )

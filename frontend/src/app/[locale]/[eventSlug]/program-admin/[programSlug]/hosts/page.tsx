@@ -23,6 +23,7 @@ import AnnotationsForm from "@/components/annotations/AnnotationsForm";
 import { validateCachedAnnotations } from "@/components/annotations/models";
 import { Column, DataTable } from "@/components/DataTable";
 import AlertNavigateOnClose from "@/components/errors/AlertNavigateOnClose";
+import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
@@ -107,7 +108,7 @@ interface Props {
     programSlug: string;
   };
   searchParams: {
-    resent?: string;
+    success?: string;
   };
 }
 
@@ -318,11 +319,6 @@ export default async function ProgramAdminDetailPage({
     language: locale,
   };
 
-  const resentEmail =
-    searchParams.resent &&
-    invitations.find((invitation) => invitation.id === searchParams.resent)
-      ?.email;
-
   validateCachedAnnotations(annotations, program.cachedAnnotations);
   const [_defaultFormattedHostsAnnotation, overrideFormattedHostsAnnotation] =
     annotations;
@@ -334,6 +330,8 @@ export default async function ProgramAdminDetailPage({
       translations={translations}
       active={"programHosts"}
     >
+      <Messages searchParams={searchParams} messages={t.messages} />
+
       <DataTable rows={programHosts} columns={programHostColumns}>
         <tfoot>
           <tr>
@@ -369,14 +367,6 @@ export default async function ProgramAdminDetailPage({
         <>
           <h4 className="mt-5">{inviT.listTitle}</h4>
           <p>{inviT.listDescription}</p>
-          {resentEmail && (
-            <AlertNavigateOnClose
-              variant="success"
-              href={`/${eventSlug}/program-admin/${programSlug}/hosts`}
-            >
-              {inviT.actions.resend.success(resentEmail)}
-            </AlertNavigateOnClose>
-          )}
           <DataTable rows={invitations} columns={invitationColumns}>
             <tfoot>
               <tr>

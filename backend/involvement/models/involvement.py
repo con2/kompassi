@@ -4,6 +4,7 @@ from collections.abc import Collection, Mapping
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models, transaction
 
 from badges.models import Badge
@@ -159,6 +160,11 @@ class Involvement(models.Model):
                 condition=models.Q(response__isnull=False),
                 name="involvement_response_idx",
             ),
+            GinIndex(
+                fields=["cached_dimensions"],
+                name="involvement_gin",
+                opclasses=["jsonb_path_ops"],
+            ),
         ]
 
     @cached_property
@@ -167,7 +173,10 @@ class Involvement(models.Model):
 
     @cached_property
     def event(self) -> Event:
-        return self.scope.event
+        event = self.scope.event
+        if event is None:
+            raise ValueError(f"Scope of universe {self.universe} has no event")
+        return event
 
     # TODO Ephemeral dimensions
     # Hoist app and type from dimensions to the Involvement table
