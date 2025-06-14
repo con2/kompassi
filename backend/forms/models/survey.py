@@ -165,6 +165,9 @@ class Survey(models.Model):
     id: int
     universe_id: int | None
 
+    class Meta:
+        unique_together = [("event", "slug")]
+
     def __init__(self, *args, **kwargs) -> None:
         if purpose := kwargs.pop("purpose", None):
             if isinstance(purpose, SurveyPurpose):
@@ -180,10 +183,11 @@ class Survey(models.Model):
 
         super().__init__(*args, **kwargs)
 
-    def save(self, **kwargs) -> None:
-        if self.app_name and self.slug and not self.universe_id:
-            self.universe = self._get_universe()
+    def __str__(self):
+        return f"{self.event.slug}/{self.slug}"
 
+    def save(self, **kwargs):
+        self.with_mandatory_fields()
         super().save(**kwargs)
 
     @cached_property
@@ -356,17 +360,16 @@ class Survey(models.Model):
     def get_next_sequence_number(self):
         return (self.current_responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1
 
-    class Meta:
-        unique_together = [("event", "slug")]
-
-    def __str__(self):
-        return f"{self.event.slug}/{self.slug}"
-
     def with_mandatory_fields(self) -> Self:
+        if not self.slug:
+            raise ValueError("slug must be set before calling with_mandatory_fields")
         if self.app is None:
             raise ValueError("app must be set before calling with_mandatory_fields")
         if self.purpose is None:
             raise ValueError("purpose must be set before calling with_mandatory_fields")
+
+        if self.universe_id is None:
+            self.universe = self._get_universe()
 
         match self.app:
             case SurveyApp.PROGRAM_V2:
