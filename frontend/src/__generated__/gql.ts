@@ -82,6 +82,7 @@ const documents = {
     "\n  fragment ProgramAdminHost on FullProgramHostType {\n    person {\n      firstName\n      lastName\n      nick\n    }\n    programs {\n      slug\n      title\n      cachedDimensions\n    }\n  }\n": types.ProgramAdminHostFragmentDoc,
     "\n  query ProgramAdminHosts($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      program {\n        programHosts {\n          ...ProgramAdminHost\n        }\n      }\n    }\n  }\n": types.ProgramAdminHostsDocument,
     "\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n": types.AcceptProgramOfferDocument,
+    "\n  mutation CancelProgramOffer($input: CancelProgramOfferInput!) {\n    cancelProgramOffer(input: $input) {\n      responseId\n    }\n  }\n": types.CancelProgramOfferDocument,
     "\n  mutation EditProgramOffer($input: CreateSurveyResponseInput!) {\n    createSurveyResponse(input: $input) {\n      response {\n        id\n      }\n    }\n  }\n": types.EditProgramOfferDocument,
     "\n  fragment ProgramOfferEdit on FullResponseType {\n    id\n    revisionCreatedAt\n    originalCreatedBy {\n      fullName\n      ...FullSelectedProfile\n    }\n    language\n    values\n    form {\n      title\n      description\n      fields\n      survey {\n        slug\n        cachedDefaultDimensions\n        profileFieldSelector {\n          ...FullProfileFieldSelector\n        }\n      }\n    }\n    cachedDimensions\n    supersededBy {\n      ...ResponseRevision\n    }\n    oldVersions {\n      ...ResponseRevision\n    }\n    canEdit(mode: ADMIN)\n  }\n": types.ProgramOfferEditFragmentDoc,
     "\n  query ProgramOfferEditPage($eventSlug: String!, $responseId: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      program {\n        programOffer(id: $responseId) {\n          ...ProgramOfferEdit\n        }\n      }\n    }\n  }\n": types.ProgramOfferEditPageDocument,
@@ -454,6 +455,10 @@ export function graphql(source: "\n  query ProgramAdminHosts($eventSlug: String!
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CancelProgramOffer($input: CancelProgramOfferInput!) {\n    cancelProgramOffer(input: $input) {\n      responseId\n    }\n  }\n"): (typeof documents)["\n  mutation CancelProgramOffer($input: CancelProgramOfferInput!) {\n    cancelProgramOffer(input: $input) {\n      responseId\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

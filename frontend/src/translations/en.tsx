@@ -1333,11 +1333,26 @@ const translations = {
                 Mark the offer as <strong>rejected</strong> if you chose not to
                 accept the program offer as part of the event program.
               </p>
+              <p>
+                If for some reason you need to <strong>delete</strong> the
+                program altogether, you can do so here. However, please consider
+                the above two alternatives first.
+              </p>
             </>
           ),
           modalActions: {
             submit: "Proceed",
             cancel: "Close without rejecting or cancelling",
+          },
+          attributes: {
+            resolution: {
+              title: "Resolution",
+              choices: {
+                CANCEL: "Mark program offer as cancelled",
+                REJECT: "Reject program offer",
+                DELETE: "Delete program offer altogether",
+              },
+            },
           },
         },
       },
@@ -1349,6 +1364,12 @@ const translations = {
         actions: {
           returnToCurrentVersion: "Return to the current version",
         },
+      },
+
+      messages: {
+        cancelled: "Program offer cancelled.",
+        rejected: "Program offer rejected.",
+        deleted: "Program offer deleted.",
       },
     },
 

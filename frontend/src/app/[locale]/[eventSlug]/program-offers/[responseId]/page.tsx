@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { Fragment } from "react";
 import { ButtonGroup } from "react-bootstrap";
 import { updateResponseDimensions } from "../../surveys/[surveySlug]/responses/[responseId]/actions";
-import { acceptProgramOffer } from "./actions";
+import { acceptProgramOffer, cancelProgramOffer } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -232,6 +232,29 @@ export default async function ProgramOfferPage({
     );
   }
 
+  const cancelProgramOfferFields: Field[] = [
+    {
+      slug: "resolution",
+      type: "SingleSelect",
+      title: t.actions.cancel.attributes.resolution.title,
+      required: true,
+      choices: [
+        {
+          slug: "CANCEL",
+          title: t.actions.cancel.attributes.resolution.choices.CANCEL,
+        },
+        {
+          slug: "REJECT",
+          title: t.actions.cancel.attributes.resolution.choices.REJECT,
+        },
+        {
+          slug: "DELETE",
+          title: t.actions.cancel.attributes.resolution.choices.DELETE,
+        },
+      ],
+    },
+  ];
+
   const uniquenessInsurance =
     programOffer.programs.length > 0 ? `-${programOffer.programs.length}` : "";
   const acceptProgramOfferValues: Record<string, any> = {
@@ -303,10 +326,19 @@ export default async function ProgramOfferPage({
               label={t.actions.cancel.label + "…"}
               title={t.actions.cancel.title}
               messages={t.actions.cancel.modalActions}
-              // disabled={!canAccept}
-              disabled={true} // TODO(#673): enable cancel action
+              disabled={!canAccept}
+              action={cancelProgramOffer.bind(
+                null,
+                locale,
+                eventSlug,
+                responseId,
+              )}
             >
               <p>{t.actions.cancel.message}</p>
+              <SchemaForm
+                fields={cancelProgramOfferFields}
+                messages={translations.SchemaForm}
+              />
             </ModalButton>
 
             <Link

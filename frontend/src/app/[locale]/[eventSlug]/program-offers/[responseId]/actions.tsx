@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
+import { ProgramOfferResolution } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 
 const mutation = graphql(`
@@ -46,4 +47,56 @@ export async function acceptProgramOffer(
   revalidatePath(`/${locale}/${eventSlug}/program-offers/${responseId}`);
   revalidatePath(`/${locale}/${eventSlug}/program-offers`);
   redirect(`/${eventSlug}/program-admin/${program.slug}`);
+}
+
+const cancelProgramOfferMutation = graphql(`
+  mutation CancelProgramOffer($input: CancelProgramOfferInput!) {
+    cancelProgramOffer(input: $input) {
+      responseId
+    }
+  }
+`);
+
+export async function cancelProgramOffer(
+  locale: string,
+  eventSlug: string,
+  responseId: string,
+  formData: FormData,
+) {
+  const input = {
+    eventSlug,
+    responseId,
+    resolution: formData.get("resolution") as ProgramOfferResolution,
+  };
+
+  const { data, errors } = await getClient().mutate({
+    mutation: cancelProgramOfferMutation,
+    variables: {
+      input,
+    },
+  });
+
+  if (errors) {
+    throw new Error(errors[0].message);
+  }
+
+  let success: string;
+  switch (input.resolution) {
+    case ProgramOfferResolution.Cancel:
+      success = "cancelled";
+      break;
+    case ProgramOfferResolution.Reject:
+      success = "rejected";
+      break;
+    case ProgramOfferResolution.Delete:
+      success = "deleted";
+      break;
+    default:
+      const _exhaustiveCheck: never = input.resolution;
+      throw new Error(`Unknown resolution type ${_exhaustiveCheck}`);
+  }
+
+  revalidatePath(`/${locale}/${eventSlug}/program-offers/${responseId}`);
+  revalidatePath(`/${locale}/${eventSlug}/program-offers`);
+  redirect(`/${eventSlug}/program-offers?success=${success}`);
 }

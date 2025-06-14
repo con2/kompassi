@@ -15,6 +15,7 @@ import {
   buildDimensionFilters,
   getDimensionValueTitle,
 } from "@/components/dimensions/helpers";
+import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
@@ -316,6 +317,7 @@ export default async function ProgramOffersPage({
         )
       }
     >
+      <Messages searchParams={searchParams} messages={t.messages} />
       <DimensionFilters
         dimensions={listFilters}
         className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1 xxx-this-is-horrible"

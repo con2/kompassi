@@ -1335,7 +1335,23 @@ const translations: Translations = {
             submit: "Proceed",
             cancel: "Close without rejecting or cancelling",
           },
+          attributes: {
+            resolution: {
+              title: "Miten haluat käsitellä ohjelmatarjouksen?",
+              choices: {
+                CANCEL: "Merkitse ohjelmatarjous peruutetuksi",
+                REJECT: "Hylkää ohjelmatarjous",
+                DELETE: "Poista ohjelmatarjous kokonaan",
+              },
+            },
+          },
         },
+      },
+
+      messages: {
+        cancelled: "Ohjelmatarjous merkitty peruutetuksi.",
+        rejected: "Ohjelmatarjous hylätty.",
+        deleted: "Ohjelmatarjous poistettu.",
       },
 
       OldVersionAlert: {
