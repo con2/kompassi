@@ -31,6 +31,7 @@ from involvement.graphql.mutations.resend_invitation import ResendInvitation
 from involvement.graphql.registry_limited import LimitedRegistryType
 from involvement.models.registry import Registry
 from program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
+from program_v2.graphql.mutations.cancel_program_offer import CancelProgramOffer
 from program_v2.graphql.mutations.create_program import CreateProgram
 from program_v2.graphql.mutations.create_program_form import CreateProgramForm
 from program_v2.graphql.mutations.delete_program_host import DeleteProgramHost
@@ -162,8 +163,10 @@ class Mutation(graphene.ObjectType):
     create_program_form = CreateProgramForm.Field()
     update_program_form = UpdateProgramForm.Field()
 
-    create_program = CreateProgram.Field()
     accept_program_offer = AcceptProgramOffer.Field()
+    cancel_program_offer = CancelProgramOffer.Field()
+
+    create_program = CreateProgram.Field()
     update_program = UpdateProgram.Field()
     update_program_annotations = UpdateProgramAnnotations.Field()
     update_program_dimensions = UpdateProgramDimensions.Field()
