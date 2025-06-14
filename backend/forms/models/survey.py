@@ -147,6 +147,12 @@ class Survey(models.Model):
         related_name="surveys",
     )
 
+    universe = models.ForeignKey(
+        Universe,
+        on_delete=models.CASCADE,
+        related_name="surveys",
+    )
+
     cached_default_dimensions = models.JSONField(blank=True, default=dict)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
@@ -157,6 +163,7 @@ class Survey(models.Model):
     badge_mappings: models.QuerySet[SurveyToBadgeMapping]
     default_dimensions: models.QuerySet[SurveyDefaultDimensionValue]
     id: int
+    universe_id: int | None
 
     def __init__(self, *args, **kwargs) -> None:
         if purpose := kwargs.pop("purpose", None):
@@ -172,6 +179,12 @@ class Survey(models.Model):
                 kwargs["app_name"] = app
 
         super().__init__(*args, **kwargs)
+
+    def save(self, **kwargs) -> None:
+        if self.app_name and self.slug and not self.universe_id:
+            self.universe = self._get_universe()
+
+        super().save(**kwargs)
 
     @cached_property
     def profile_field_selector(self) -> ProfileFieldSelector:
@@ -218,8 +231,7 @@ class Survey(models.Model):
         """
         return self.event.scope
 
-    @cached_property
-    def universe(self) -> Universe:
+    def _get_universe(self) -> Universe:
         match self.app:
             case SurveyApp.FORMS:
                 return Universe.objects.get_or_create(
