@@ -1320,7 +1320,7 @@ const translations = {
           },
         },
         cancel: {
-          title: "Reject or cancel program offer",
+          title: "Cancel, reject or delete program offer",
           label: "Reject or cancel",
           message: (
             <>

@@ -136,7 +136,7 @@ export default async function OwnResponsesPage({
                     .map((dimension) => (
                       <DimensionBadge
                         key={dimension.dimension.slug}
-                        dimension={dimension}
+                        subjectDimensionValue={dimension}
                       />
                     ))}
                 </span>

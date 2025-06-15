@@ -122,7 +122,11 @@ function SchemaFormInput({
               defaultValue={value}
             >
               {choices.map((choice) => (
-                <option value={choice.slug} key={choice.slug}>
+                <option
+                  value={choice.slug}
+                  key={choice.slug}
+                  disabled={choice.disabled}
+                >
                   {choice.title}
                 </option>
               ))}
@@ -141,7 +145,7 @@ function SchemaFormInput({
                       className="form-check-input"
                       type="radio"
                       required={required}
-                      disabled={readOnly}
+                      disabled={readOnly || choice.disabled}
                       id={choiceId}
                       name={slug}
                       value={choice.slug}

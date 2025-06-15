@@ -138,6 +138,7 @@ export interface DimensionSingleCheckbox extends BaseField {
 export interface Choice {
   slug: string;
   title: string;
+  disabled?: boolean; /// Only makes sense for SingleSelect with presentation="radio"
 }
 
 export type SingleSelectPresentation = "dropdown" | "radio";

@@ -1329,11 +1329,16 @@ const translations: Translations = {
                 Merkitse ohjelmatarjous <strong>hylätyksi</strong>, jos päätit
                 olla ottamatta ohjelmatarjousta vastaan.
               </p>
+              <p>
+                Voit myös <strong>poistaa</strong> ohjelmatarjouksen kokonaan.
+                Harkitse kuitenkin, sopiiko jompi kumpi edellä mainituista
+                ratkaisusta tähän tilanteeseen.
+              </p>
             </>
           ),
           modalActions: {
-            submit: "Proceed",
-            cancel: "Close without rejecting or cancelling",
+            submit: "Toteuta valittu ratkaisu",
+            cancel: "Sulje perumatta ohjelmatarjousta",
           },
           attributes: {
             resolution: {

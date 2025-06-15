@@ -153,6 +153,52 @@ class LimitedResponseType(DjangoObjectType):
         mode=graphene.Argument(EditModeType),
     )
 
+    @staticmethod
+    def resolve_can_accept(
+        response: Response,
+        info,
+    ):
+        """
+        Returns whether the response can be accepted by the user as an administrator.
+        Not all survey workflows have the notion of accepting a response, in which case
+        this field will always return False.
+        """
+        return response.survey.workflow.response_can_be_accepted_by(response, info.context)
+
+    can_accept = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_accept.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_can_cancel(
+        response: Response,
+        info,
+    ):
+        """
+        Returns whether the response can be cancelled by the user.
+        Not all survey workflows have the notion of cancelling a response, in which case
+        this field will always return False.
+        """
+        return response.survey.workflow.response_can_be_cancelled_by(response, info.context)
+
+    can_cancel = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_cancel.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_can_delete(
+        response: Response,
+        info,
+    ):
+        return response.survey.workflow.response_can_be_deleted_by(response, info.context)
+
+    can_delete = graphene.NonNull(
+        graphene.Boolean,
+        description="Whether the response can be deleted by the user.",
+    )
+
     class Meta:
         model = Response
         fields = (

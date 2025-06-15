@@ -140,3 +140,36 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         return super().response_can_be_edited_by_owner(response, request) and "new" in response.cached_dimensions.get(
             "state", ["new"]
         )
+
+    def response_can_be_deleted_by(self, response: Response, request: HttpRequest) -> bool:
+        return not response.programs.exists() and super().response_can_be_deleted_by(response, request)
+
+    def response_can_be_accepted_by(
+        self,
+        response: Response,
+        request: HttpRequest,
+    ) -> bool:
+        """
+        A program offer can be accepted multiple times.
+        A rejected or cancelled offer can be accepted again, turning it into an accepted offer.
+        Old versions of the response are handled when the current version is accepted.
+        """
+        return response.is_current_version
+
+    def response_can_be_cancelled_by(
+        self,
+        response: Response,
+        request: HttpRequest,
+    ) -> bool:
+        """
+        Cancelling a program offer that has already been accepted only makes sense
+        when all the programs have been cancelled or rejected. This is done via
+        program item admin and not via the program offer workflow.
+
+        Cancelling or rejecting a cancelled program offer merely changes its state,
+        so this is allowed to let the program admin change their mind about whether
+        the program offer should be considered cancelled or rejected.
+
+        Old versions of the response are handled when the current version is cancelled.
+        """
+        return response.is_current_version and not response.programs.exists()

@@ -45,7 +45,7 @@ class Event(models.Model):
 
     name = models.CharField(max_length=63, verbose_name="Tapahtuman nimi")
 
-    organization = models.ForeignKey(
+    organization: models.ForeignKey[Organization] = models.ForeignKey(
         Organization,
         on_delete=models.CASCADE,
         verbose_name="Järjestäjätaho",

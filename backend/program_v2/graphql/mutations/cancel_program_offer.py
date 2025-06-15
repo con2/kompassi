@@ -2,9 +2,11 @@ from enum import Enum
 
 import graphene
 from django.db import transaction
+from django.http import HttpRequest
 
 from access.cbac import graphql_check_instance
 from core.models.event import Event
+from event_log_v2.utils.emit import emit
 
 
 class ProgramOfferResolution(Enum):
@@ -31,12 +33,14 @@ class CancelProgramOffer(graphene.Mutation):
     @transaction.atomic
     @staticmethod
     def mutate(_root, info, input: CancelProgramOfferInput):
+        request: HttpRequest = info.context
         event = Event.objects.get(slug=input.event_slug)
         meta = event.program_v2_event_meta
         if not meta:
-            raise ValueError("Event is not a program event")
+            raise ValueError("Event does not use Program V2")
 
         program_offer = meta.current_program_offers.get(id=input.response_id)
+        response_id = program_offer.id
 
         # TODO(#670) cancel own program offer (now only admin cancel is implemented)
 
@@ -57,8 +61,16 @@ class CancelProgramOffer(graphene.Mutation):
                 program_offer.set_dimension_values({"state": ["cancelled"]}, cache)
                 program_offer.refresh_cached_fields()
             case ProgramOfferResolution.DELETE:
+                emit(
+                    "forms.response.deleted",
+                    request=request,
+                    response=program_offer,
+                    organization=event.organization,
+                    event=program_offer.event,
+                )
+                meta.all_program_offers.filter(superseded_by=program_offer).delete()
                 program_offer.delete()
             case _:
                 raise NotImplementedError(f"Resolution {input.resolution} is not implemented")
 
-        return CancelProgramOffer(response_id=program_offer.id)  # type: ignore
+        return CancelProgramOffer(response_id=response_id)  # type: ignore

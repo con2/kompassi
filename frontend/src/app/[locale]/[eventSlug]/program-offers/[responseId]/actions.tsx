@@ -80,23 +80,34 @@ export async function cancelProgramOffer(
     throw new Error(errors[0].message);
   }
 
-  let success: string;
-  switch (input.resolution) {
-    case ProgramOfferResolution.Cancel:
-      success = "cancelled";
-      break;
-    case ProgramOfferResolution.Reject:
-      success = "rejected";
-      break;
-    case ProgramOfferResolution.Delete:
-      success = "deleted";
-      break;
-    default:
-      const _exhaustiveCheck: never = input.resolution;
-      throw new Error(`Unknown resolution type ${_exhaustiveCheck}`);
+  const cancelledResponseId = data?.cancelProgramOffer?.responseId;
+  if (!cancelledResponseId) {
+    throw new Error("Backend did not return a response ID");
   }
 
-  revalidatePath(`/${locale}/${eventSlug}/program-offers/${responseId}`);
+  revalidatePath(
+    `/${locale}/${eventSlug}/program-offers/${cancelledResponseId}`,
+  );
   revalidatePath(`/${locale}/${eventSlug}/program-offers`);
-  redirect(`/${eventSlug}/program-offers?success=${success}`);
+
+  switch (input.resolution) {
+    case ProgramOfferResolution.Cancel:
+      redirect(
+        `/${eventSlug}/program-offers/${cancelledResponseId}?success=cancelled`,
+      );
+
+    case ProgramOfferResolution.Reject:
+      redirect(
+        `/${eventSlug}/program-offers/${cancelledResponseId}?success=rejected`,
+      );
+
+    case ProgramOfferResolution.Delete:
+      redirect(`/${eventSlug}/program-offers?success=deleted`);
+
+    default:
+      const _exhaustiveCheck: never = input.resolution;
+      throw new Error(
+        `Unknown resolution type ${_exhaustiveCheck} should have been rejected by server (this shouldn't happen)`,
+      );
+  }
 }

@@ -311,3 +311,37 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             operation="update",
             field="responses",
         )
+
+    # TODO(#714) Reconcile with Survey.can_responses_be_deleted_by
+    def response_can_be_deleted_by(
+        self,
+        response: Response,
+        request: HttpRequest,
+    ) -> bool:
+        return not response.survey.protect_responses and is_graphql_allowed_for_model(
+            request.user,
+            instance=response.survey,
+            app=response.survey.app_name,
+            operation="delete",
+            field="responses",
+        )
+
+    def response_can_be_accepted_by(
+        self,
+        response: Response,
+        request: HttpRequest,
+    ) -> bool:
+        """
+        The default workflow does not have the notion of accepting a response.
+        """
+        return False
+
+    def response_can_be_cancelled_by(
+        self,
+        response: Response,
+        request: HttpRequest,
+    ) -> bool:
+        """
+        The default workflow does not have the notion of cancelling a response.
+        """
+        return False

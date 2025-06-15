@@ -345,6 +345,7 @@ class Survey(models.Model):
             and not self.languages.exists()
         )
 
+    # TODO(#714) Reconcile with Workflow.can_response_be_deleted_by
     def can_responses_be_deleted_by(self, request: HttpRequest):
         return (
             is_graphql_allowed_for_model(

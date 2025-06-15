@@ -8,6 +8,7 @@ import { acceptProgramOffer, cancelProgramOffer } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
+import DimensionBadge from "@/components/dimensions/DimensionBadge";
 import DimensionValueSelectionForm, {
   buildDimensionValueSelectionForm,
 } from "@/components/dimensions/DimensionValueSelectionForm";
@@ -15,6 +16,7 @@ import {
   Dimension,
   validateCachedDimensions,
 } from "@/components/dimensions/models";
+import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
@@ -65,7 +67,13 @@ graphql(`
     oldVersions {
       ...ResponseRevision
     }
+    dimensions {
+      ...DimensionBadge
+    }
     canEdit(mode: ADMIN)
+    canAccept
+    canCancel
+    canDelete
   }
 `);
 
@@ -193,6 +201,7 @@ export default async function ProgramOfferPage({
   const { fields, survey: programForm } = form;
 
   const values: Record<string, any> = programOffer.values ?? {};
+  const { canAccept, canCancel, canDelete } = programOffer;
 
   validateFields(fields);
 
@@ -242,14 +251,17 @@ export default async function ProgramOfferPage({
         {
           slug: "CANCEL",
           title: t.actions.cancel.attributes.resolution.choices.CANCEL,
+          disabled: !canCancel,
         },
         {
           slug: "REJECT",
           title: t.actions.cancel.attributes.resolution.choices.REJECT,
+          disabled: !canCancel,
         },
         {
           slug: "DELETE",
           title: t.actions.cancel.attributes.resolution.choices.DELETE,
+          disabled: !canDelete,
         },
       ],
     },
@@ -265,8 +277,11 @@ export default async function ProgramOfferPage({
   };
 
   const surveySlug = programOffer.form.survey!.slug;
-  const canAccept = !supersededBy;
   const dimensionsReadOnly = !!supersededBy;
+
+  const stateDimension = programOffer.dimensions.find(
+    (d) => d.dimension.slug === "state",
+  );
 
   return (
     <ProgramAdminView
@@ -326,7 +341,7 @@ export default async function ProgramOfferPage({
               label={t.actions.cancel.label + "…"}
               title={t.actions.cancel.title}
               messages={t.actions.cancel.modalActions}
-              disabled={!canAccept}
+              disabled={!canCancel && !canDelete}
               action={cancelProgramOffer.bind(
                 null,
                 locale,
@@ -352,7 +367,12 @@ export default async function ProgramOfferPage({
         )
       }
     >
-      <h3 className="mt-4">{values.title ?? t.singleTitle}</h3>
+      <h3 className="mt-4">
+        {values.title ?? t.singleTitle}{" "}
+        {stateDimension && (
+          <DimensionBadge subjectDimensionValue={stateDimension} />
+        )}
+      </h3>
 
       {programOffer.programs.length > 0 && (
         <div className="alert alert-primary mt-4 mb-4">
@@ -375,6 +395,8 @@ export default async function ProgramOfferPage({
           </p>
         </div>
       )}
+
+      <Messages messages={t.messages} searchParams={searchParams} />
 
       {supersededBy ? (
         <OldVersionAlert

@@ -1,10 +1,13 @@
 import logging
 from collections.abc import Mapping
+from datetime import date, datetime
 from functools import cached_property
 from typing import Any, Self
+from uuid import UUID
 
 from django.conf import settings
 from django.db import models
+from pydantic import BaseModel
 
 from core.models import Event, Organization, Person
 from tickets_v2.optimized_server.utils.uuid7 import uuid7, uuid7_month_range_for_year_month, uuid7_to_datetime
@@ -103,6 +106,30 @@ class Entry(MonthlyPartitionsMixin, models.Model):
         return queryset.filter(id__gte=start, id__lt=end)
 
     @classmethod
+    def conform(cls, value: Any) -> Any:
+        """
+        Conform the value to a type that can be stored in the database.
+        """
+        if slug := getattr(value, "slug", None):
+            value = slug
+        elif id := getattr(value, "id", None):
+            value = id
+
+        # encode safe complex types as strings
+        if isinstance(value, UUID):
+            value = str(value)
+        elif isinstance(value, (datetime, date)):
+            value = value.isoformat()
+        elif isinstance(value, BaseModel):
+            value = value.model_dump(
+                mode="json",
+                by_alias=True,
+                exclude_none=True,
+            )
+
+        return value
+
+    @classmethod
     def hoist(cls, attrs: Mapping[str, Any]):
         """
         Given a dictionary of potential kwargs to the constructor, separate relational fields
@@ -120,6 +147,6 @@ class Entry(MonthlyPartitionsMixin, models.Model):
         if "entry_type" in other_fields:
             attrs["entry_type"] = other_fields.pop("entry_type")
 
-        other_fields = {k: v for (k, v) in other_fields.items() if v not in (None, "")}
+        other_fields = {k: cv for (k, v) in other_fields.items() if (cv := cls.conform(v)) not in (None, "")}
 
         return attrs, other_fields
