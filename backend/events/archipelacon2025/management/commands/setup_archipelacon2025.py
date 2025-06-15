@@ -5,6 +5,7 @@ from django.utils.timezone import get_current_timezone
 
 from core.models import Event, Organization, Venue
 from program_v2.models.meta import ProgramV2EventMeta
+from program_v2.workflows.program_offer import ProgramOfferWorkflow
 
 
 class Command(BaseCommand):
@@ -48,3 +49,5 @@ class Command(BaseCommand):
                 contact_email="Archipelacon programme team <programme@archipelacon.org>",
             ),
         )
+
+        ProgramOfferWorkflow.backfill(event)
