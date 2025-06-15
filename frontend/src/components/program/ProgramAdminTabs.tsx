@@ -21,9 +21,14 @@ export default function ProgramAdminTabs({
   searchParams,
 }: ProgramAdminTabsProps) {
   const t = translations.Program;
-  const queryString = searchParams
-    ? "?" + new URLSearchParams(searchParams).toString()
-    : "";
+
+  // Strip non-dimension search parameters from the query string
+  // to avoid passing them to the tabs, as they are not relevant there.
+  const { success, error, ...forwardSearchParams } = searchParams || {};
+  const queryString =
+    Object.keys(forwardSearchParams).length > 0
+      ? "?" + new URLSearchParams(forwardSearchParams).toString()
+      : "";
 
   const tabs: Tab[] = [
     {

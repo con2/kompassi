@@ -7,6 +7,7 @@ from django.http import HttpRequest
 from access.cbac import graphql_check_instance
 from core.models.event import Event
 from event_log_v2.utils.emit import emit
+from involvement.models.involvement import Involvement
 
 
 class ProgramOfferResolution(Enum):
@@ -28,7 +29,7 @@ class CancelProgramOffer(graphene.Mutation):
     class Arguments:
         input = CancelProgramOfferInput(required=True)
 
-    response_id = graphene.UUID()
+    response_id = graphene.NonNull(graphene.UUID)
 
     @transaction.atomic
     @staticmethod
@@ -51,15 +52,30 @@ class CancelProgramOffer(graphene.Mutation):
             operation="delete",
         )
 
-        cache = program_offer.survey.universe.preload_dimensions(["state"])
+        program_dimensions_cache = program_offer.survey.universe.preload_dimensions(["state"])
+        involvement_dimensions_cache = program_offer.event.involvement_universe.preload_dimensions()
 
         match input.resolution:
             case ProgramOfferResolution.REJECT:
-                program_offer.set_dimension_values({"state": ["rejected"]}, cache)
+                program_offer.set_dimension_values(
+                    {"state": ["rejected"]},
+                    cache=program_dimensions_cache,
+                )
                 program_offer.refresh_cached_fields()
+                Involvement.from_survey_response(
+                    program_offer,
+                    cache=involvement_dimensions_cache,
+                )
             case ProgramOfferResolution.CANCEL:
-                program_offer.set_dimension_values({"state": ["cancelled"]}, cache)
+                program_offer.set_dimension_values(
+                    {"state": ["cancelled"]},
+                    cache=program_dimensions_cache,
+                )
                 program_offer.refresh_cached_fields()
+                Involvement.from_survey_response(
+                    program_offer,
+                    cache=involvement_dimensions_cache,
+                )
             case ProgramOfferResolution.DELETE:
                 emit(
                     "forms.response.deleted",
@@ -68,6 +84,13 @@ class CancelProgramOffer(graphene.Mutation):
                     organization=event.organization,
                     event=program_offer.event,
                 )
+
+                Involvement.from_survey_response(
+                    program_offer,
+                    cache=involvement_dimensions_cache,
+                    deleting=True,
+                )
+
                 meta.all_program_offers.filter(superseded_by=program_offer).delete()
                 program_offer.delete()
             case _:

@@ -114,7 +114,7 @@ export type CancelAndRefundOrderInput = {
 
 export type CancelProgramOffer = {
   __typename?: 'CancelProgramOffer';
-  responseId?: Maybe<Scalars['UUID']['output']>;
+  responseId: Scalars['UUID']['output'];
 };
 
 export type CancelProgramOfferInput = {
@@ -2809,7 +2809,7 @@ export type CancelProgramOfferMutationVariables = Exact<{
 }>;
 
 
-export type CancelProgramOfferMutation = { __typename?: 'Mutation', cancelProgramOffer?: { __typename?: 'CancelProgramOffer', responseId?: string | null } | null };
+export type CancelProgramOfferMutation = { __typename?: 'Mutation', cancelProgramOffer?: { __typename?: 'CancelProgramOffer', responseId: string } | null };
 
 export type EditProgramOfferMutationVariables = Exact<{
   input: CreateSurveyResponseInput;

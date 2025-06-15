@@ -293,6 +293,7 @@ class Involvement(models.Model):
         cls,
         response: Response,
         cache: DimensionCache,
+        deleting: bool = False,
     ):
         """
         Handles Involvement for normal survey responses and program offers.
@@ -304,6 +305,28 @@ class Involvement(models.Model):
         if involvement_type is None:
             raise ValueError(f"Survey {response.survey} does not have an involvement type")
         app = involvement_type.app
+
+        if deleting:
+            try:
+                involvement = cls.objects.get(
+                    universe=cache.universe,
+                    person=response.original_created_by.person,  # type: ignore
+                    program=None,
+                    response=response,
+                )
+            except cls.DoesNotExist:
+                return None
+            else:
+                # make sure badges are revoked etc.
+                involvement.is_active = False
+                involvement.save(update_fields=["is_active"])
+                involvement.refresh_cached_dimensions()
+                involvement.refresh_dependents()
+
+                # deleting a program offer or response probably also means we want to
+                # be rid of the Involvement
+                involvement.delete()
+                return None
 
         involvement, _created = cls.objects.update_or_create(
             universe=cache.universe,
