@@ -93,7 +93,7 @@ class Setup:
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-            work_begins=(self.event.start_time - timedelta(days=2)).replace(hour=8, minute=0, tzinfo=self.tz),  # type: ignore
+            work_begins=(self.event.start_time - timedelta(days=1)).replace(hour=8, minute=0, tzinfo=self.tz),  # type: ignore
             work_ends=self.event.end_time.replace(hour=23, minute=0, tzinfo=self.tz),  # type: ignore
             admin_group=labour_admin_group,
             contact_email="Ropecon 2025 -vapaaehtoisvastaava <vapaaehtoiset@ropecon.fi>",
@@ -106,7 +106,7 @@ class Setup:
                 registration_closes=t + timedelta(days=60),  # type: ignore
             )
 
-        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
+        labour_event_meta, unused = LabourEventMeta.objects.update_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
         )
