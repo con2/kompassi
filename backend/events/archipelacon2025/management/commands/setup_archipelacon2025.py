@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from django.utils.timezone import get_current_timezone
 
 from core.models import Event, Organization, Venue
+from involvement.models.registry import Registry
 from program_v2.models.meta import ProgramV2EventMeta
 from program_v2.workflows.program_offer import ProgramOfferWorkflow
 
@@ -35,9 +36,19 @@ class Command(BaseCommand):
                 name_inessive="Archipelaconissa",
                 homepage_url="https://archipelacon.org/",
                 organization=organization,
-                start_time=datetime(2025, 6, 26, 12, 0, tzinfo=tz),
+                start_time=datetime(2025, 6, 26, 11, 0, tzinfo=tz),
                 end_time=datetime(2025, 6, 29, 18, 8, tzinfo=tz),
                 venue=venue,
+            ),
+        )
+
+        # TODO(Archipelacon): Define your volunteer registry
+        registry, _created = Registry.objects.get_or_create(
+            scope=organization.scope,
+            slug="volunteers",
+            defaults=dict(
+                title_fi="Archipelaconin vapaaehtoisrekisteri",
+                title_en="Volunteers of Archipelacon",
             ),
         )
 
@@ -47,6 +58,7 @@ class Command(BaseCommand):
             defaults=dict(
                 admin_group=admin_group,
                 contact_email="Archipelacon programme team <programme@archipelacon.org>",
+                default_registry=registry,
             ),
         )
 
