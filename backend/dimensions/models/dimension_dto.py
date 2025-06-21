@@ -19,6 +19,7 @@ class DimensionDTO(pydantic.BaseModel):
 
     slug: str = pydantic.Field(min_length=1)
     title: dict[str, str]
+    order: int | None = pydantic.Field(default=None)
 
     is_public: bool = pydantic.Field(default=True)
     is_key_dimension: bool = pydantic.Field(default=False)
@@ -52,6 +53,7 @@ class DimensionDTO(pydantic.BaseModel):
         remove_others=False,
         remove_other_values=False,
         dimension_value_batch_size=200,
+        override_order: bool = False,
     ) -> list[Dimension]:
         dimensions_upsert = (
             Dimension(
@@ -69,10 +71,28 @@ class DimensionDTO(pydantic.BaseModel):
                 is_negative_selection=dimension_dto.is_negative_selection,
                 is_technical=dimension_dto.is_technical,
                 value_ordering=dimension_dto.value_ordering,
-                order=order * 10,
+                order=dimension_dto.order if dimension_dto.order is not None else order * 10,
             )
             for order, dimension_dto in enumerate(dimension_dtos)
         )
+
+        update_dimension_fields = [
+            # NOTE SUPPORTED_LANGUAGES
+            "title_en",
+            "title_fi",
+            "title_sv",
+            "is_public",
+            "is_key_dimension",
+            "is_multi_value",
+            "is_list_filter",
+            "is_shown_in_detail",
+            "is_negative_selection",
+            "is_technical",
+            "value_ordering",
+        ]
+        if override_order:
+            update_dimension_fields.append("order")
+
         django_dimensions = Dimension.objects.bulk_create(
             dimensions_upsert,
             update_conflicts=True,
@@ -80,21 +100,7 @@ class DimensionDTO(pydantic.BaseModel):
                 "universe",
                 "slug",
             ),
-            update_fields=(
-                # NOTE SUPPORTED_LANGUAGES
-                "title_en",
-                "title_fi",
-                "title_sv",
-                "is_public",
-                "is_key_dimension",
-                "is_multi_value",
-                "is_list_filter",
-                "is_shown_in_detail",
-                "is_negative_selection",
-                "is_technical",
-                "value_ordering",
-                # "order",
-            ),
+            update_fields=update_dimension_fields,
         )
         logger.info("Saved %s dimensions", len(django_dimensions))
 
