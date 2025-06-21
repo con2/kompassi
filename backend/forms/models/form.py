@@ -31,7 +31,11 @@ class Form(models.Model):
     """
 
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="forms")
-    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, related_name="languages")
+    survey: models.ForeignKey[Survey] = models.ForeignKey(
+        Survey,
+        on_delete=models.CASCADE,
+        related_name="languages",
+    )
     language = models.CharField(
         max_length=2,
         default=DEFAULT_LANGUAGE,
