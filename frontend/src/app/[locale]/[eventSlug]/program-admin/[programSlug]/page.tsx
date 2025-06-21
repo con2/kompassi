@@ -1,16 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { CardText, CardTitle } from "react-bootstrap";
+import { ButtonGroup, CardText, CardTitle } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 
-import { updateProgramBasicInfo } from "./actions";
+import { cancelProgramItem, updateProgramBasicInfo } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
+import ModalButton from "@/components/ModalButton";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -34,6 +35,9 @@ const query = graphql(`
           title
           description
           cachedHosts
+
+          canCancel
+          canDelete
 
           programOffer {
             id
@@ -114,6 +118,7 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
 
   const event = data.event;
   const program = data.event.program.program;
+  const { canCancel, canDelete } = data.event.program.program;
 
   const fields: Field[] = [
     {
@@ -129,12 +134,62 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
     },
   ];
 
+  const cancelProgramItemFields: Field[] = [
+    {
+      slug: "resolution",
+      type: "SingleSelect",
+      title: t.actions.cancel.attributes.resolution.title,
+      required: true,
+      choices: [
+        {
+          slug: "CANCEL",
+          title: t.actions.cancel.attributes.resolution.choices.CANCEL,
+          disabled: !canCancel,
+        },
+        {
+          slug: "CANCEL_AND_HIDE",
+          title: t.actions.cancel.attributes.resolution.choices.CANCEL_AND_HIDE,
+          // disabled: !canCancel,
+          disabled: true, // TODO: implement this
+        },
+        {
+          slug: "DELETE",
+          title: t.actions.cancel.attributes.resolution.choices.DELETE,
+          disabled: !canDelete,
+        },
+      ],
+    },
+  ];
+
   return (
     <ProgramAdminDetailView
       event={event}
       program={program}
       translations={translations}
       active={"basicInfo"}
+      actions={
+        <ButtonGroup>
+          <ModalButton
+            className="btn btn-outline-danger"
+            label={t.actions.cancel.label + "…"}
+            title={t.actions.cancel.title}
+            messages={t.actions.cancel.modalActions}
+            disabled={!canCancel && !canDelete}
+            action={cancelProgramItem.bind(
+              null,
+              locale,
+              eventSlug,
+              programSlug,
+            )}
+          >
+            <p>{t.actions.cancel.message}</p>
+            <SchemaForm
+              fields={cancelProgramItemFields}
+              messages={translations.SchemaForm}
+            />
+          </ModalButton>
+        </ButtonGroup>
+      }
     >
       <Card>
         <CardBody>

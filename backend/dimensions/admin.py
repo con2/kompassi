@@ -16,7 +16,7 @@ class DimensionAdmin(admin.ModelAdmin):
     model = Dimension
     inlines = [DimensionValueInline]
     list_display = ("admin_get_title", "slug", "admin_get_universe", "admin_get_scope")
-    list_filter = ("universe__scope",)
+    list_filter = ("universe",)
     list_display_links = ("admin_get_title", "slug")
 
 

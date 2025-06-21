@@ -1,7 +1,9 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
+import { ProgramItemResolution } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 
 const mutation = graphql(`
@@ -36,4 +38,65 @@ export async function updateProgramBasicInfo(
 
   revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}`);
   revalidatePath(`/${locale}/${eventSlug}/program-admin`);
+}
+
+const cancelProgramItemMutation = graphql(`
+  mutation CancelProgramItem($input: CancelProgramInput!) {
+    cancelProgram(input: $input) {
+      responseId
+    }
+  }
+`);
+
+export async function cancelProgramItem(
+  locale: string,
+  eventSlug: string,
+  programSlug: string,
+  formData: FormData,
+) {
+  const input = {
+    eventSlug,
+    programSlug,
+    resolution: formData.get("resolution") as ProgramItemResolution,
+  };
+
+  const { data, errors } = await getClient().mutate({
+    mutation: cancelProgramItemMutation,
+    variables: {
+      input,
+    },
+  });
+
+  if (errors) {
+    throw new Error(errors[0].message);
+  }
+
+  revalidatePath(`/${locale}/${eventSlug}/program-admin`);
+
+  const cancelledResponseId = data?.cancelProgram?.responseId;
+  if (!cancelledResponseId) {
+    // The program was not created from a program offer.
+    redirect(`/${eventSlug}/program-admin?success=removed`);
+  }
+
+  revalidatePath(
+    `/${locale}/${eventSlug}/program-offers/${cancelledResponseId}`,
+  );
+
+  switch (input.resolution) {
+    case ProgramItemResolution.Cancel:
+    case ProgramItemResolution.CancelAndHide:
+      redirect(
+        `/${eventSlug}/program-offers/${cancelledResponseId}?success=spawnCancelled`,
+      );
+
+    case ProgramItemResolution.Delete:
+      redirect(`/${eventSlug}/program-offers?success=spawnDeleted`);
+
+    default:
+      const _exhaustiveCheck: never = input.resolution;
+      throw new Error(
+        `Unknown resolution type ${_exhaustiveCheck} should have been rejected by server (this shouldn't happen)`,
+      );
+  }
 }

@@ -429,6 +429,48 @@ class Involvement(models.Model):
 
         return involvement
 
+    @classmethod
+    def from_program_state_change(
+        cls,
+        program: Program,
+        cache: DimensionCache,
+        deleting: bool = False,
+    ):
+        if cache.universe.app != "involvement":
+            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
+
+        app = InvolvementApp.PROGRAM
+        involvement_type = InvolvementType.PROGRAM_HOST
+        dimensions = dict(
+            app=[app.value],
+            type=[involvement_type.value],  # TODO others
+        )
+
+        involvements = cls.objects.filter(
+            universe=cache.universe,
+            program=program,
+        )
+
+        if deleting:
+            for involvement in involvements:
+                involvement.is_active = program.is_active
+                involvement.save(update_fields=["is_active"])
+                involvement.refresh_cached_dimensions()
+                involvement.refresh_dependents()
+
+                involvement.delete()
+
+            return cls.objects.none()
+        else:
+            for involvement in involvements:
+                involvement.is_active = program.is_active
+                involvement.save(update_fields=["is_active"])
+                involvement.set_dimension_values(dimensions, cache=cache)
+                involvement.refresh_cached_dimensions()
+                involvement.refresh_dependents()
+
+        return involvement
+
     def refresh_dependents(self):
         if self.program:
             self.program.refresh_cached_fields()

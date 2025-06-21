@@ -154,4 +154,5 @@ class FullProgramType(LimitedProgramType):
             "updated_at",
             "program_offer",
             "event",
+            "can_cancel",
         )

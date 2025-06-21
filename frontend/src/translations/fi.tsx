@@ -1045,6 +1045,46 @@ const translations: Translations = {
           cancel: "Peruuta",
         },
       },
+      cancel: {
+        title: "Peru tai poista ohjelmanumero",
+        label: "Peru tai poista",
+        message: (
+          <>
+            <p>Haluatko varmasti perua tai poistaa ohjelmanumeron?</p>
+            <p>
+              Jos merkitset ohjelmanumeron <strong>peruutetuksi</strong>, se
+              säilytetään tapahtuman ohjelmalistauksessa mutta merkitään
+              näkyvästi peruutetuksi. Voit palauttaa ohjelmanumeron myöhemmin,
+              jos tulet toisiin ajatuksiin.
+            </p>
+            <p>
+              Voit myös <strong>perua ja piilottaa</strong> ohjelmanumeron.
+              Tällöin ohjelmanumeron tiedot säilytetään sisäisesti, mutta se
+              piilotetaan ohjelmalistauksesta. Voit palauttaa ohjelmanumeron
+              myöhemmin.
+            </p>
+            <p>
+              Voit myös <strong>poistaa ohjelmanumeron kokonaan</strong>.
+              Harkitse kuitenkin, riittäisikö ohjelmanumeron peruminen.
+              Poistettua ohjelmanumeroa ei voi palauttaa.
+            </p>
+          </>
+        ),
+        modalActions: {
+          submit: "Toteuta valittu toiminto",
+          cancel: "Sulje perumatta",
+        },
+        attributes: {
+          resolution: {
+            title: "Ratkaisu",
+            choices: {
+              CANCEL: "Merkitse ohjelmanumero peruutetuksi",
+              CANCEL_AND_HIDE: "Peru ja piilota ohjelmanumero",
+              DELETE: "Poista ohjelmanumero kokonaan",
+            },
+          },
+        },
+      },
     },
     errors: {
       failedToCreate: "Ohjelmanumeron luonti epäonnistui.",
@@ -1334,6 +1374,10 @@ const translations: Translations = {
                 Harkitse kuitenkin, sopiiko jompi kumpi edellä mainituista
                 ratkaisusta tähän tilanteeseen.
               </p>
+              <p>
+                Jos ohjelmanumero luotiin ohjelmatarjouksesta, saat päättää
+                ohjelmatarjouksen kohtalon seuraavassa vaiheessa.
+              </p>
             </>
           ),
           modalActions: {
@@ -1357,6 +1401,22 @@ const translations: Translations = {
         cancelled: "Ohjelmatarjous merkitty peruutetuksi.",
         rejected: "Ohjelmatarjous hylätty.",
         deleted: "Ohjelmatarjous poistettu.",
+        spawnCancelled: (
+          <p>
+            Tästä ohjelmatarjouksesta luotu ohjelmanumero peruttiin. Nyt
+            ohjelmatarjouksen kohtalo on käsissäsi. Voit jättää sen sikseen,
+            merkitä sen peruutetuksi tai hylätyksi tai poistaa sen kokonaan.
+            Valitse viisaasti.
+          </p>
+        ),
+        spawnDeleted: (
+          <p>
+            Tästä ohjelmatarjouksesta luotu ohjelmanumero poistettiin. Nyt
+            ohjelmatarjouksen kohtalo on käsissäsi. Voit jättää sen sikseen,
+            merkitä sen peruutetuksi tai hylätyksi tai poistaa sen kokonaan.
+            Valitse viisaasti.
+          </p>
+        ),
       },
 
       OldVersionAlert: {

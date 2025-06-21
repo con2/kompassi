@@ -80,7 +80,7 @@ class CancelProgramOffer(graphene.Mutation):
                 emit(
                     "forms.response.deleted",
                     request=request,
-                    response=program_offer,
+                    response=response_id,
                     organization=event.organization,
                     event=program_offer.event,
                 )

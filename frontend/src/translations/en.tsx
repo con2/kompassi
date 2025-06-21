@@ -1054,6 +1054,49 @@ const translations = {
           cancel: "Cancel",
         },
       },
+      cancel: {
+        title: "Cancel or remove a program item",
+        label: "Cancel",
+        message: (
+          <>
+            <p>Do you want to reject or cancel the program item?</p>
+            <p>
+              Mark the item as <strong>cancelled</strong> to keep it in the
+              event program, visibly marked as cancelled. This action can be
+              undone.
+            </p>
+            <p>
+              You can also <strong>cancel and hide</strong> the program item to
+              keep an internal record of it, but hide it from the public event
+              program. This action can be undone.
+            </p>
+            <p>
+              If for some reason you need to <strong>delete</strong> the program
+              item altogether, you can do so here. However, please consider
+              cancelling instead. This action cannot be undone.
+            </p>
+            <p>
+              If this program item was created from a program offer, you will
+              get to decide the fate of the program offer in the next phase.
+            </p>
+          </>
+        ),
+        modalActions: {
+          submit: "Proceed",
+          cancel: "Close without rejecting or cancelling",
+        },
+        attributes: {
+          resolution: {
+            title: "Resolution",
+            choices: {
+              CANCEL: "Mark program item as cancelled",
+              CANCEL_AND_HIDE:
+                "Mark program item as cancelled and hide from public",
+              DELETE: "Delete program item altogether",
+            },
+          },
+        },
+      },
     },
     errors: {
       failedToCreate: "Failed to create program item.",
@@ -1370,6 +1413,22 @@ const translations = {
         cancelled: "Program offer cancelled.",
         rejected: "Program offer rejected.",
         deleted: "Program offer deleted.",
+        spawnCancelled: (
+          <p>
+            A program item created from this program offer was cancelled. Now
+            the fate of the program offer it was created from is at your hands.
+            You may leave it as is, mark it as cancelled or rejected or remove
+            it altogether. Choose wisely.
+          </p>
+        ),
+        spawnDeleted: (
+          <p>
+            A program item created from this program offer was removed. Now the
+            fate of the program offer it was created from is at your hands. You
+            may leave it as is, mark it as cancelled or rejected or remove it
+            altogether. Choose wisely.
+          </p>
+        ),
       },
     },
 

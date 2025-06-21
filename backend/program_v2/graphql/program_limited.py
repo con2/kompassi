@@ -154,6 +154,18 @@ class LimitedProgramType(DjangoObjectType):
     resolve_created_at = resolve_local_datetime_field("created_at")
     resolve_updated_at = resolve_local_datetime_field("updated_at")
 
+    @staticmethod
+    def resolve_can_cancel(program: Program, info):
+        return program.can_be_cancelled_by(info)
+
+    can_cancel = graphene.NonNull(graphene.Boolean)
+
+    @staticmethod
+    def resolve_can_delete(program: Program, info):
+        return program.can_be_cancelled_by(info)
+
+    can_delete = graphene.NonNull(graphene.Boolean)
+
     class Meta:
         model = Program
         fields = (

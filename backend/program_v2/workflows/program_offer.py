@@ -1,5 +1,6 @@
 import logging
 
+from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
 from forms.models.enums import Anonymity, SurveyApp
 from forms.models.response import Response
@@ -172,4 +173,14 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
 
         Old versions of the response are handled when the current version is cancelled.
         """
-        return response.is_current_version and not response.programs.exists()
+        return (
+            response.is_current_version
+            and not response.programs.exists()
+            and is_graphql_allowed_for_model(
+                request.user,
+                instance=response.survey,
+                app="program_v2",
+                operation="delete",
+                field="responses",
+            )
+        )

@@ -13,6 +13,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.timezone import now
 
+from access.cbac import is_graphql_allowed_for_model
 from core.models import Event
 from core.utils.model_utils import slugify, validate_slug
 from dimensions.models.scope import Scope
@@ -84,8 +85,10 @@ class Program(models.Model):
         help_text="If this program was created from a program offer, this field will be set to the program offer.",
     )
 
-    # TODO(#665)
-    is_cancelled = False
+    @property
+    def is_cancelled(self) -> bool:
+        # Program items generally should not end up in the rejected state, but we check for it just in case.
+        return bool(set(self.cached_dimensions.get("state", [])).intersection({"cancelled", "rejected"}))
 
     @property
     def is_active(self) -> bool:
@@ -407,4 +410,15 @@ class Program(models.Model):
                 "program",
             )
             .order_by("created_at")
+        )
+
+    def can_be_cancelled_by(
+        self,
+        request: HttpRequest,
+    ) -> bool:
+        return is_graphql_allowed_for_model(
+            request.user,
+            instance=self,
+            app="program_v2",
+            operation="delete",
         )
