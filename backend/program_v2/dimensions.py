@@ -118,11 +118,14 @@ def setup_program_dimensions(universe: Universe) -> Sequence[Dimension]:
     return DimensionDTO.save_many(
         universe,
         [
-            get_date_dimension_dto(universe),
-            ROOM_DIMENSION_DTO,
-            get_form_dimension_dto(universe),
-            STATE_DIMENSION_DTO,
+            # date dimension before user specified dimensions
+            get_date_dimension_dto(universe).model_copy(update=dict(order=-9000)),
+            # other technical dimensions after user specified dimensions
+            ROOM_DIMENSION_DTO.model_copy(update=dict(order=9000)),
+            get_form_dimension_dto(universe).model_copy(update=dict(order=9100)),
+            STATE_DIMENSION_DTO.model_copy(update=dict(order=9200)),
         ],
+        override_order=True,
     )
 
 
@@ -196,6 +199,7 @@ def get_date_dimension_dto(universe: Universe) -> DimensionDTO:
         slug="date",
         title=DATE_DIMENSION_TITLE_LOCALIZED,
         choices=list(get_date_dimension_values(universe)),
+        order=-9000,
         value_ordering=ValueOrdering.SLUG,
         is_public=True,
         is_list_filter=True,
