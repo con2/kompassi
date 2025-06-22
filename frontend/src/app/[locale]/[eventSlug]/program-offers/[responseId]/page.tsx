@@ -374,6 +374,8 @@ export default async function ProgramOfferPage({
         )}
       </h3>
 
+      <Messages messages={t.messages} searchParams={searchParams} />
+
       {programOffer.programs.length > 0 && (
         <div className="alert alert-primary mt-4 mb-4">
           <p>{t.attributes.programs.message(programOffer.programs.length)}</p>
@@ -395,8 +397,6 @@ export default async function ProgramOfferPage({
           </p>
         </div>
       )}
-
-      <Messages messages={t.messages} searchParams={searchParams} />
 
       {supersededBy ? (
         <OldVersionAlert

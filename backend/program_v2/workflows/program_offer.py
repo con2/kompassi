@@ -111,6 +111,9 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
             program_offer.survey.workflow.ensure_involvement(program_offer, cache=involvement_cache)
 
         for program in Program.objects.filter(event=event, program_offer__isnull=False):
+            if not program.program_offer:
+                raise AssertionError("This cannot happen due to program_offer__isnull=True, but appease typechecker")
+
             Involvement.from_accepted_program_offer(
                 program_offer=program.program_offer,
                 program=program,

@@ -1056,7 +1056,7 @@ const translations = {
       },
       cancel: {
         title: "Cancel or remove a program item",
-        label: "Cancel",
+        label: "Cancel or remove",
         message: (
           <>
             <p>Do you want to reject or cancel the program item?</p>
@@ -1091,10 +1091,46 @@ const translations = {
             choices: {
               CANCEL: "Mark program item as cancelled",
               CANCEL_AND_HIDE:
-                "Mark program item as cancelled and hide from public",
+                "Mark program item as cancelled and hide from public (program visibility not implemented yet)",
               DELETE: "Delete program item altogether",
             },
           },
+        },
+      },
+      delete: {
+        title: "Delete cancelled program item",
+        label: "Delete",
+        message: (
+          <>
+            <p>
+              Are you sure you want to delete this cancelled program item? This
+              action cannot be undone.
+            </p>
+            <p>
+              If this program item was created from a program offer, you will
+              get to decide the fate of the program offer in the next phase.
+            </p>
+          </>
+        ),
+        modalActions: {
+          submit: "Delete",
+          cancel: "Close without deleting",
+        },
+      },
+      restore: {
+        title: "Restore cancelled program item",
+        label: "Restore",
+        message: (
+          <>
+            <p>
+              Are you sure you want to restore this cancelled program item to
+              active status?
+            </p>
+          </>
+        ),
+        modalActions: {
+          submit: "Restore",
+          cancel: "Close without restoring",
         },
       },
     },

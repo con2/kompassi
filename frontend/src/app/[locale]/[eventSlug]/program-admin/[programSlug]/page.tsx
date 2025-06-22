@@ -5,8 +5,13 @@ import { ButtonGroup, CardText, CardTitle } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 
-import { cancelProgramItem, updateProgramBasicInfo } from "./actions";
+import {
+  cancelProgramItem,
+  cancelProgramItemWithResolutionForm,
+  updateProgramBasicInfo,
+} from "./actions";
 import { graphql } from "@/__generated__";
+import { ProgramItemResolution } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
@@ -38,6 +43,7 @@ const query = graphql(`
 
           canCancel
           canDelete
+          canRestore
 
           programOffer {
             id
@@ -54,16 +60,10 @@ const query = graphql(`
             ...ProgramDetailAnnotation
           }
 
-          dimensions(isShownInDetail: true) {
-            dimension {
-              slug
-              title(lang: $locale)
-            }
-            value {
-              slug
-              title(lang: $locale)
-            }
+          dimensions(publicOnly: false) {
+            ...ProgramDimensionBadge
           }
+
           scheduleItems {
             slug
             subtitle
@@ -118,7 +118,7 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
 
   const event = data.event;
   const program = data.event.program.program;
-  const { canCancel, canDelete } = data.event.program.program;
+  const { canCancel, canDelete, canRestore } = data.event.program.program;
 
   const fields: Field[] = [
     {
@@ -169,25 +169,55 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
       active={"basicInfo"}
       actions={
         <ButtonGroup>
-          <ModalButton
-            className="btn btn-outline-danger"
-            label={t.actions.cancel.label + "…"}
-            title={t.actions.cancel.title}
-            messages={t.actions.cancel.modalActions}
-            disabled={!canCancel && !canDelete}
-            action={cancelProgramItem.bind(
-              null,
-              locale,
-              eventSlug,
-              programSlug,
-            )}
-          >
-            <p>{t.actions.cancel.message}</p>
-            <SchemaForm
-              fields={cancelProgramItemFields}
-              messages={translations.SchemaForm}
-            />
-          </ModalButton>
+          {canRestore ? (
+            <ModalButton
+              className="btn btn-outline-primary"
+              label={t.actions.restore.label + "…"}
+              title={t.actions.restore.title}
+              messages={t.actions.restore.modalActions}
+            >
+              <p>{t.actions.restore.message}</p>
+            </ModalButton>
+          ) : undefined}
+          {canCancel && canDelete ? (
+            <ModalButton
+              className="btn btn-outline-danger"
+              label={t.actions.cancel.label + "…"}
+              title={t.actions.cancel.title}
+              messages={t.actions.cancel.modalActions}
+              disabled={!canCancel && !canDelete}
+              action={cancelProgramItemWithResolutionForm.bind(
+                null,
+                locale,
+                event.slug,
+                program.slug,
+              )}
+            >
+              <p>{t.actions.cancel.message}</p>
+              <SchemaForm
+                fields={cancelProgramItemFields}
+                messages={translations.SchemaForm}
+              />
+            </ModalButton>
+          ) : undefined}
+          {canDelete && !canCancel ? (
+            <ModalButton
+              className="btn btn-outline-danger"
+              label={t.actions.delete.label + "…"}
+              title={t.actions.delete.title}
+              messages={t.actions.delete.modalActions}
+              disabled={!canCancel && !canDelete}
+              action={cancelProgramItem.bind(
+                null,
+                locale,
+                event.slug,
+                program.slug,
+                ProgramItemResolution.Delete,
+              )}
+            >
+              <p>{t.actions.delete.message}</p>
+            </ModalButton>
+          ) : undefined}
         </ButtonGroup>
       }
     >

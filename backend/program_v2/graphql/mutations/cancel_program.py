@@ -21,7 +21,7 @@ ProgramItemResolutionType = graphene.Enum.from_enum(ProgramItemResolution)
 
 class CancelProgramInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
-    program_slug = graphene.UUID(required=True)
+    program_slug = graphene.String(required=True)
     resolution = graphene.Argument(ProgramItemResolutionType, required=True)
 
 
@@ -46,7 +46,7 @@ class CancelProgram(graphene.Mutation):
 
         program = meta.programs.get(slug=input.program_slug)
         program_slug = program.slug
-        response_id = program.id
+        response_id = program.program_offer_id
 
         # TODO(#671) cancel own program item (now only admin cancel is implemented)
 

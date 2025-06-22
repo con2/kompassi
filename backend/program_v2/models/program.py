@@ -5,6 +5,7 @@ from collections.abc import Collection, Mapping
 from datetime import tzinfo
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, ClassVar, Self
+from uuid import UUID
 
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
@@ -77,7 +78,7 @@ class Program(models.Model):
     )
     cached_color = models.CharField(max_length=15, blank=True, default="")
 
-    program_offer = models.ForeignKey(
+    program_offer: models.ForeignKey[Response] | None = models.ForeignKey(
         Response,
         on_delete=models.SET_NULL,
         null=True,
@@ -85,6 +86,7 @@ class Program(models.Model):
         related_name="programs",
         help_text="If this program was created from a program offer, this field will be set to the program offer.",
     )
+    program_offer_id: UUID | None
 
     @property
     def is_cancelled(self) -> bool:
@@ -440,9 +442,26 @@ class Program(models.Model):
         self,
         request: HttpRequest,
     ) -> bool:
+        return not self.is_cancelled and self.can_be_deleted_by(request)
+
+    def can_be_deleted_by(
+        self,
+        request: HttpRequest,
+    ) -> bool:
         return is_graphql_allowed_for_model(
             request.user,
             instance=self,
             app="program_v2",
             operation="delete",
+        )
+
+    def can_be_restored_by(
+        self,
+        request: HttpRequest,
+    ) -> bool:
+        return self.is_cancelled and is_graphql_allowed_for_model(
+            request.user,
+            instance=self,
+            app="program_v2",
+            operation="update",
         )

@@ -1,14 +1,35 @@
 import Link from "next/link";
 import { ReactNode } from "react";
+import DimensionBadge from "../dimensions/DimensionBadge";
 import ProgramAdminDetailTabs, {
   ProgramAdminTab,
 } from "./ProgramAdminDetailTabs";
+import { graphql } from "@/__generated__";
+import {
+  DimensionBadgeFragment,
+  ProgramDimensionBadgeFragment,
+} from "@/__generated__/graphql";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {
   ViewHeadingActions,
   ViewHeadingActionsWrapper,
 } from "@/components/ViewHeading";
 import type { Translations } from "@/translations/en";
+
+graphql(`
+  fragment ProgramDimensionBadge on ProgramDimensionValueType {
+    dimension {
+      slug
+      title(lang: $locale)
+    }
+
+    value {
+      slug
+      title(lang: $locale)
+      color
+    }
+  }
+`);
 
 interface Event {
   slug: string;
@@ -18,6 +39,7 @@ interface Event {
 interface Program {
   slug: string;
   title: string;
+  dimensions: ProgramDimensionBadgeFragment[];
 }
 
 interface Props {
@@ -39,17 +61,25 @@ export default function ProgramAdminDetailView({
 }: Props) {
   const t = translations.Program;
 
+  console.log(program.dimensions);
+  const stateDimension = program.dimensions.find(
+    (d) => d.dimension.slug === "state",
+  );
+
   return (
     <ViewContainer>
       <Link className="link-subtle" href={`/${event.slug}/program-admin`}>
         &lt; {t.actions.returnToProgramAdminList(event.name)}
       </Link>
 
-      <ViewHeadingActionsWrapper>
-        <ViewHeading>
+      <ViewHeadingActionsWrapper className="mt-2">
+        <h3 className="mb-3">
           {program.title}
           <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
-        </ViewHeading>
+          {stateDimension && (
+            <DimensionBadge subjectDimensionValue={stateDimension} />
+          )}
+        </h3>
         <ViewHeadingActions>{actions}</ViewHeadingActions>
       </ViewHeadingActionsWrapper>
 

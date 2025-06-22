@@ -48,16 +48,26 @@ const cancelProgramItemMutation = graphql(`
   }
 `);
 
-export async function cancelProgramItem(
+export async function cancelProgramItemWithResolutionForm(
   locale: string,
   eventSlug: string,
   programSlug: string,
   formData: FormData,
 ) {
+  const resolution = formData.get("resolution") as ProgramItemResolution;
+  return cancelProgramItem(locale, eventSlug, programSlug, resolution);
+}
+
+export async function cancelProgramItem(
+  locale: string,
+  eventSlug: string,
+  programSlug: string,
+  resolution: ProgramItemResolution,
+) {
   const input = {
     eventSlug,
     programSlug,
-    resolution: formData.get("resolution") as ProgramItemResolution,
+    resolution,
   };
 
   const { data, errors } = await getClient().mutate({

@@ -162,9 +162,15 @@ class LimitedProgramType(DjangoObjectType):
 
     @staticmethod
     def resolve_can_delete(program: Program, info):
-        return program.can_be_cancelled_by(info.context)
+        return program.can_be_deleted_by(info.context)
 
     can_delete = graphene.NonNull(graphene.Boolean)
+
+    @staticmethod
+    def resolve_can_restore(program: Program, info):
+        return program.can_be_restored_by(info.context)
+
+    can_restore = graphene.NonNull(graphene.Boolean)
 
     class Meta:
         model = Program
