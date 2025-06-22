@@ -156,13 +156,13 @@ class LimitedProgramType(DjangoObjectType):
 
     @staticmethod
     def resolve_can_cancel(program: Program, info):
-        return program.can_be_cancelled_by(info)
+        return program.can_be_cancelled_by(info.context)
 
     can_cancel = graphene.NonNull(graphene.Boolean)
 
     @staticmethod
     def resolve_can_delete(program: Program, info):
-        return program.can_be_cancelled_by(info)
+        return program.can_be_cancelled_by(info.context)
 
     can_delete = graphene.NonNull(graphene.Boolean)
 

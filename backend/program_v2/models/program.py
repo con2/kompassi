@@ -27,6 +27,7 @@ from involvement.models.enums import InvolvementType
 from involvement.models.invitation import Invitation
 from involvement.models.involvement import Involvement
 
+from ..dimensions import get_scheduled_dimension_value
 from .annotations import extract_annotations
 
 if TYPE_CHECKING:
@@ -113,13 +114,36 @@ class Program(models.Model):
     def __str__(self):
         return str(self.title)
 
+    def refresh_technical_dimensions(self):
+        cache = self.meta.universe.preload_dimensions(["scheduled"])
+
+        values = get_scheduled_dimension_value(self.schedule_items.count())
+        self.set_dimension_values({"scheduled": values}, cache=cache)
+
+    @classmethod
+    def refresh_technical_dimensions_qs(
+        cls,
+        queryset: models.QuerySet[Self],
+        cache: DimensionCache | None = None,
+    ):
+        for program in queryset.annotate(count_schedule_items=models.Count("schedule_items")):
+            cur_cache = cache or program.meta.universe.preload_dimensions(["scheduled"])
+            values = get_scheduled_dimension_value(program.count_schedule_items)  # type: ignore
+            program.set_dimension_values({"scheduled": values}, cache=cur_cache)
+
     def refresh_cached_fields(self):
+        self.refresh_technical_dimensions()
         self.refresh_cached_dimensions()
         self.refresh_cached_times()
         self.refresh_annotations()
 
     @classmethod
-    def refresh_cached_fields_qs(cls, queryset: models.QuerySet[Self]):
+    def refresh_cached_fields_qs(
+        cls,
+        queryset: models.QuerySet[Self],
+        cache: DimensionCache | None = None,
+    ):
+        cls.refresh_technical_dimensions_qs(queryset, cache=cache)
         cls.refresh_cached_dimensions_qs(queryset)
         cls.refresh_cached_times_qs(queryset)
         cls.refresh_annotations_qs(queryset)

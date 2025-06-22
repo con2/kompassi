@@ -97,6 +97,67 @@ STATE_DIMENSION_DTO = DimensionDTO(
     ],
 )
 
+SCHEDULED_DIMENSION_DTO = DimensionDTO(
+    slug="scheduled",
+    value_ordering=ValueOrdering.MANUAL,
+    # applies_to=DimensionAppliesTo.PROGRAM_ITEM,
+    is_technical=True,
+    is_public=True,
+    is_list_filter=True,
+    is_key_dimension=False,  # column added manually in program item list view
+    is_multi_value=True,
+    title=dict(
+        fi="Aikataulutettu",
+        en="Scheduled",
+    ),
+    choices=[
+        DimensionValueDTO(
+            slug="none",
+            is_technical=True,
+            title={
+                "fi": "Ei aikataulutettu",
+                "en": "Not yet scheduled",
+            },
+        ),
+        DimensionValueDTO(
+            slug="one",
+            is_technical=True,
+            title={
+                "fi": "Yksi aikataulumerkintä",
+                "en": "One schedule item",
+            },
+        ),
+        DimensionValueDTO(
+            slug="one-or-more",
+            is_technical=True,
+            title={
+                "fi": "Yksi tai useampia aikataulumerkintöjä",
+                "en": "One or more schedule items",
+            },
+        ),
+        DimensionValueDTO(
+            slug="multiple",
+            is_technical=True,
+            title={
+                "fi": "Useita aikataulumerkintöjä",
+                "en": "Multiple schedule items",
+            },
+        ),
+    ],
+)
+
+
+def get_scheduled_dimension_value(count_schedule_items: int) -> list[str]:
+    match count_schedule_items:
+        case 0:
+            return ["none"]
+        case 1:
+            return ["one", "one-or-more"]
+        case _ if count_schedule_items > 1:
+            return ["one-or-more", "multiple"]
+        case _:
+            raise ValueError(f"Invalid count_schedule_items: {count_schedule_items}. Must be >= 0.")
+
 
 def get_program_universe(event: Event) -> Universe:
     """
@@ -124,8 +185,8 @@ def setup_program_dimensions(universe: Universe) -> Sequence[Dimension]:
             ROOM_DIMENSION_DTO.model_copy(update=dict(order=9000)),
             get_form_dimension_dto(universe).model_copy(update=dict(order=9100)),
             STATE_DIMENSION_DTO.model_copy(update=dict(order=9200)),
+            SCHEDULED_DIMENSION_DTO.model_copy(update=dict(order=9300)),
         ],
-        override_order=True,
     )
 
 

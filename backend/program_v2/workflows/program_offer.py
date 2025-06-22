@@ -95,7 +95,7 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
             if values_to_set:
                 program.set_dimension_values(values_to_set, program_cache)
 
-        Program.refresh_cached_fields_qs(meta.programs.all())
+        Program.refresh_cached_fields_qs(meta.programs.all(), cache=program_cache)
         ScheduleItem.refresh_cached_fields_qs(meta.schedule_items.all())
 
         # Involvements
@@ -117,7 +117,7 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
                 cache=involvement_cache,
             )
 
-        Program.refresh_cached_fields_qs(Program.objects.filter(event=event))
+        Program.refresh_cached_fields_qs(meta.programs.all(), cache=program_cache)
 
     def handle_form_update(self):
         """
