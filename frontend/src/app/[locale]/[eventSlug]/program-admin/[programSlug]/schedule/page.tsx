@@ -47,6 +47,10 @@ const query = graphql(`
           slug
           title
 
+          dimensions(publicOnly: false) {
+            ...ProgramDimensionBadge
+          }
+
           scheduleItems {
             ...ProgramAdminDetailScheduleItem
           }
@@ -111,9 +115,9 @@ export default async function ProgramAdminDetailSchedulePage({
       program={program}
       translations={translations}
       active={"scheduleItems"}
+      searchParams={searchParams}
+      messages={t.messages}
     >
-      <Messages messages={t.messages} searchParams={searchParams} />
-
       <ScheduleItemTable
         locale={locale}
         event={event}

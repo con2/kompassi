@@ -4,7 +4,6 @@ import graphene
 from django.db import transaction
 from django.http import HttpRequest
 
-from access.cbac import graphql_check_instance
 from core.models.event import Event
 from event_log_v2.utils.emit import emit
 from involvement.models.involvement import Involvement
@@ -50,18 +49,14 @@ class CancelProgram(graphene.Mutation):
 
         # TODO(#671) cancel own program item (now only admin cancel is implemented)
 
-        graphql_check_instance(
-            program,
-            info,
-            app="program_v2",
-            operation="delete",
-        )
-
         program_dimensions_cache = meta.universe.preload_dimensions(["state"])
         involvement_dimensions_cache = program.event.involvement_universe.preload_dimensions()
 
         match input.resolution:
             case ProgramItemResolution.CANCEL:
+                if not program.can_be_cancelled_by(request):
+                    raise ValueError("You cannot cancel this program.")
+
                 emit(
                     "program_v2.programs.cancelled",
                     request=request,
@@ -81,6 +76,9 @@ class CancelProgram(graphene.Mutation):
                 )
                 program.refresh_dependents()
             case ProgramItemResolution.DELETE:
+                if not program.can_be_deleted_by(request):
+                    raise ValueError("You cannot delete this program.")
+
                 emit(
                     "program_v2.programs.deleted",
                     request=request,

@@ -8,6 +8,7 @@ import CardBody from "react-bootstrap/CardBody";
 import {
   cancelProgramItem,
   cancelProgramItemWithResolutionForm,
+  restoreProgramItem,
   updateProgramBasicInfo,
 } from "./actions";
 import { graphql } from "@/__generated__";
@@ -83,6 +84,9 @@ interface Props {
     eventSlug: string;
     programSlug: string;
   };
+  searchParams: {
+    success?: string;
+  };
 }
 
 export const revalidate = 0;
@@ -104,7 +108,10 @@ export async function generateMetadata({ params }: Props) {
   return { title, description };
 }
 
-export default async function ProgramAdminDetailPage({ params }: Props) {
+export default async function ProgramAdminDetailPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;
@@ -167,6 +174,8 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
       program={program}
       translations={translations}
       active={"basicInfo"}
+      searchParams={searchParams}
+      messages={t.messages}
       actions={
         <ButtonGroup>
           {canRestore ? (
@@ -175,6 +184,12 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
               label={t.actions.restore.label + "…"}
               title={t.actions.restore.title}
               messages={t.actions.restore.modalActions}
+              action={restoreProgramItem.bind(
+                null,
+                locale,
+                event.slug,
+                program.slug,
+              )}
             >
               <p>{t.actions.restore.message}</p>
             </ModalButton>

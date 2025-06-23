@@ -47,7 +47,7 @@ export default async function ProgramAdminView({
 
       {alerts}
       <Messages
-        messages={translations.Program.errors}
+        messages={translations.Program.messages}
         searchParams={searchParams}
       />
 

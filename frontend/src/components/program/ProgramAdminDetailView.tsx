@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ReactNode } from "react";
 import DimensionBadge from "../dimensions/DimensionBadge";
+import Messages from "../errors/Messages";
 import ProgramAdminDetailTabs, {
   ProgramAdminTab,
 } from "./ProgramAdminDetailTabs";
@@ -49,6 +50,8 @@ interface Props {
   active: ProgramAdminTab;
   children?: ReactNode;
   actions?: ReactNode;
+  searchParams: Record<string, string>;
+  messages: Record<string, string | ReactNode>;
 }
 
 export default function ProgramAdminDetailView({
@@ -58,10 +61,10 @@ export default function ProgramAdminDetailView({
   active,
   children,
   actions,
+  messages,
+  searchParams,
 }: Props) {
   const t = translations.Program;
-
-  console.log(program.dimensions);
   const stateDimension = program.dimensions.find(
     (d) => d.dimension.slug === "state",
   );
@@ -82,6 +85,8 @@ export default function ProgramAdminDetailView({
         </h3>
         <ViewHeadingActions>{actions}</ViewHeadingActions>
       </ViewHeadingActionsWrapper>
+
+      <Messages messages={messages} searchParams={searchParams} />
 
       <ProgramAdminDetailTabs
         eventSlug={event.slug}

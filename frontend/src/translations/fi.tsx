@@ -1086,8 +1086,12 @@ const translations: Translations = {
         },
       },
     },
-    errors: {
+    messages: {
       failedToCreate: "Ohjelmanumeron luonti epäonnistui.",
+      restored: "Ohjelmanumero palautettu.",
+      cancelled: "Ohjelmanumero merkitty peruutetuksi.",
+      cancelledAndHidden: "Ohjelmanumero peruttu ja piilotettu.",
+      deleted: "Ohjelmanumero poistettu.",
     },
     favorites: {
       markAsFavorite: "Merkitse suosikiksi",

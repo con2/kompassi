@@ -22,8 +22,6 @@ import { auth } from "@/auth";
 import AnnotationsForm from "@/components/annotations/AnnotationsForm";
 import { validateCachedAnnotations } from "@/components/annotations/models";
 import { Column, DataTable } from "@/components/DataTable";
-import AlertNavigateOnClose from "@/components/errors/AlertNavigateOnClose";
-import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
@@ -89,6 +87,9 @@ const query = graphql(`
           title
           cachedAnnotations(slug: $annotationSlugs, publicOnly: false)
 
+          dimensions(publicOnly: false) {
+            ...ProgramDimensionBadge
+          }
           programHosts {
             ...ProgramAdminDetailHost
           }
@@ -329,9 +330,9 @@ export default async function ProgramAdminDetailPage({
       program={program}
       translations={translations}
       active={"programHosts"}
+      searchParams={searchParams}
+      messages={t.messages}
     >
-      <Messages searchParams={searchParams} messages={t.messages} />
-
       <DataTable rows={programHosts} columns={programHostColumns}>
         <tfoot>
           <tr>

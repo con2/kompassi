@@ -46,6 +46,7 @@ from program_v2.graphql.mutations.favorites import (
 from program_v2.graphql.mutations.feedback import CreateProgramFeedback
 from program_v2.graphql.mutations.invite_program_host import InviteProgramHost
 from program_v2.graphql.mutations.put_schedule_item import PutScheduleItem
+from program_v2.graphql.mutations.restore_program import RestoreProgram
 from program_v2.graphql.mutations.update_program import UpdateProgram
 from program_v2.graphql.mutations.update_program_annotations import UpdateProgramAnnotations
 from program_v2.graphql.mutations.update_program_dimensions import UpdateProgramDimensions
@@ -172,6 +173,7 @@ class Mutation(graphene.ObjectType):
     update_program_annotations = UpdateProgramAnnotations.Field()
     update_program_dimensions = UpdateProgramDimensions.Field()
     cancel_program = CancelProgram.Field()
+    restore_program = RestoreProgram.Field()
 
     invite_program_host = InviteProgramHost.Field()
     delete_program_host = DeleteProgramHost.Field()

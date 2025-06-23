@@ -110,3 +110,45 @@ export async function cancelProgramItem(
       );
   }
 }
+
+const restoreProgramItemMutation = graphql(`
+  mutation RestoreProgramItem($input: RestoreProgramInput!) {
+    restoreProgram(input: $input) {
+      programSlug
+    }
+  }
+`);
+export async function restoreProgramItem(
+  locale: string,
+  eventSlug: string,
+  programSlug: string,
+) {
+  const input = {
+    eventSlug,
+    programSlug,
+  };
+
+  const { data, errors } = await getClient().mutate({
+    mutation: restoreProgramItemMutation,
+    variables: {
+      input,
+    },
+  });
+
+  if (errors) {
+    throw new Error(errors[0].message);
+  }
+
+  const restoredProgramSlug = data?.restoreProgram?.programSlug;
+  if (!restoredProgramSlug) {
+    throw new Error(
+      "The program was not restored successfully. Please try again.",
+    );
+  }
+
+  revalidatePath(`/${locale}/${eventSlug}/program-admin`);
+  revalidatePath(
+    `/${locale}/${eventSlug}/program-admin/${restoredProgramSlug}`,
+  );
+  redirect(`/${eventSlug}/program-admin/${programSlug}?success=restored`);
+}

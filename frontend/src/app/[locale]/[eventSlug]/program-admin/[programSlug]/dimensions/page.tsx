@@ -36,6 +36,10 @@ const query = graphql(`
           slug
           title
           cachedDimensions
+
+          dimensions(publicOnly: false) {
+            ...ProgramDimensionBadge
+          }
         }
       }
     }
@@ -47,6 +51,9 @@ interface Props {
     locale: string;
     eventSlug: string;
     programSlug: string;
+  };
+  searchParams: {
+    success?: string;
   };
 }
 
@@ -68,7 +75,10 @@ export async function generateMetadata({ params }: Props) {
   return { title };
 }
 
-export default async function ProgramAdminDetailPage({ params }: Props) {
+export default async function ProgramAdminDetailPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;
@@ -97,6 +107,8 @@ export default async function ProgramAdminDetailPage({ params }: Props) {
       program={program}
       translations={translations}
       active={"dimensions"}
+      searchParams={searchParams}
+      messages={t.messages}
     >
       <Card>
         <CardBody>

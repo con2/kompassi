@@ -1134,8 +1134,12 @@ const translations = {
         },
       },
     },
-    errors: {
+    messages: {
       failedToCreate: "Failed to create program item.",
+      restored: "Program item restored.",
+      cancelled: "Program item marked as cancelled.",
+      cancelledAndHidden: "Program item marked as cancelled and hidden.",
+      deleted: "Program item deleted.",
     },
     favorites: {
       markAsFavorite: "Mark as favorite",
