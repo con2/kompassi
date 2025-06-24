@@ -149,6 +149,12 @@ class LimitedProgramType(DjangoObjectType):
 
     is_accepting_feedback = graphene.NonNull(graphene.Boolean)
 
+    @staticmethod
+    def resolve_is_cancelled(program: Program, info):
+        return program.is_cancelled
+
+    is_cancelled = graphene.NonNull(graphene.Boolean)
+
     resolve_cached_earliest_start_time = resolve_local_datetime_field("cached_earliest_start_time")
     resolve_cached_latest_end_time = resolve_local_datetime_field("cached_latest_end_time")
     resolve_created_at = resolve_local_datetime_field("created_at")

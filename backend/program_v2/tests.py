@@ -4,7 +4,6 @@ import pytest
 from django.db import transaction
 
 from access.models.email_alias_domain import EmailAliasDomain
-from core.models.event import Event
 from core.models.person import Person
 from forms.models.enums import SurveyApp, SurveyPurpose
 from forms.models.form import Form
@@ -20,7 +19,8 @@ from .models.schedule_item import ScheduleItem
 
 @pytest.mark.django_db
 def test_program_filters():
-    event, _ = Event.get_or_create_dummy()
+    meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
 
     t1 = datetime.now(UTC)
     updated_after_t1 = ProgramFilters.from_query_dict({"updated_after": [t1.isoformat()]})

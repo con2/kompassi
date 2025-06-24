@@ -20,6 +20,7 @@ graphql(`
     title
     cachedDimensions
     color
+    isCancelled
   }
 `);
 

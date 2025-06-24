@@ -1068,6 +1068,10 @@ const translations: Translations = {
               Harkitse kuitenkin, riittäisikö ohjelmanumeron peruminen.
               Poistettua ohjelmanumeroa ei voi palauttaa.
             </p>
+            <p>
+              Jos tämä ohjelmanumero luotiin ohjelmatarjouksen perusteella, saat
+              päättää ohjelmatarjouksen kohtalosta seuraavassa vaiheessa.
+            </p>
           </>
         ),
         modalActions: {
@@ -1083,6 +1087,42 @@ const translations: Translations = {
               DELETE: "Poista ohjelmanumero kokonaan",
             },
           },
+        },
+      },
+      delete: {
+        title: "Poista peruutettu ohjelmanumero",
+        label: "Poista",
+        message: (
+          <>
+            <p>
+              Haluatko varmasti poistaa tämän peruutetun ohjelmanumeron? Tätä
+              toimintoa ei voi perua.
+            </p>
+            <p>
+              Jos tämä ohjelmanumero luotiin ohjelmatarjouksen perusteella, saat
+              päättää ohjelmatarjouksen kohtalosta seuraavassa vaiheessa.
+            </p>
+          </>
+        ),
+        modalActions: {
+          submit: "Poista",
+          cancel: "Sulje poistamatta",
+        },
+      },
+      restore: {
+        title: "Palauta peruutettu ohjelmanumero",
+        label: "Palauta",
+        message: (
+          <>
+            <p>
+              Haluatko varmasti palauttaa tämän peruutetun ohjelmanumeron
+              aktiiviseksi?
+            </p>
+          </>
+        ),
+        modalActions: {
+          submit: "Palauta",
+          cancel: "Sulje palauttamatta",
         },
       },
     },

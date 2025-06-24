@@ -776,6 +776,7 @@ const translations: Translations = {
       },
     },
     actions: {
+      ...UNTRANSLATED(en.Program.actions),
       returnToProgramList: (eventName: string) =>
         `Tillbaka till programmet för ${eventName}`,
       returnToProgramAdminList: (eventName: string) =>
@@ -783,10 +784,8 @@ const translations: Translations = {
       addTheseToCalendar: "Lägg till dessa program i kalendern",
       addThisToCalendar: "Lägg till detta program i kalendern",
       signUpForThisProgram: "Anmäl dig till detta program",
-      preview: UNTRANSLATED("Preview schedule"),
-      preferences: UNTRANSLATED("Preferences"),
-      create: UNTRANSLATED(en.Program.actions.create),
     },
+    messages: UNTRANSLATED(en.Program.messages),
     errors: {
       failedToCreate: "Programmet kunde inte skapas.",
     },

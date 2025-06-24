@@ -234,3 +234,10 @@ class ScheduleItem(models.Model):
 
     def refresh_dependents(self):
         self.program.refresh_cached_fields()
+
+    @property
+    def is_cancelled(self) -> bool:
+        """
+        TODO(#726) Cancel single schedule item without cancelling the whole program.
+        """
+        return bool(set(self.cached_dimensions.get("state", [])).intersection({"cancelled", "rejected"}))

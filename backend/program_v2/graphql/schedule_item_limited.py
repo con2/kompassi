@@ -108,3 +108,9 @@ class LimitedScheduleItemType(DjangoObjectType):
         graphene.String,
         description=normalize_whitespace(resolve_subtitle.__doc__ or ""),
     )
+
+    @staticmethod
+    def resolve_is_cancelled(schedule_item: ScheduleItem, info):
+        return schedule_item.is_cancelled
+
+    is_cancelled = graphene.NonNull(graphene.Boolean)
