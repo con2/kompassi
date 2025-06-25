@@ -116,7 +116,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         )
 
     @property
-    def program_hosts(self) -> models.QuerySet[Involvement]:
+    def active_program_hosts(self) -> models.QuerySet[Involvement]:
         return (
             Involvement.objects.filter(
                 universe=self.event.involvement_universe,

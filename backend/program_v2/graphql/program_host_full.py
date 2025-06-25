@@ -25,10 +25,7 @@ class ProgramHost:
 
     @classmethod
     def from_event(cls, meta: ProgramV2EventMeta) -> Iterable[Self]:
-        for person, involvements in groupby(
-            meta.program_hosts.order_by("person"),
-            key=lambda x: x.person,
-        ):
+        for person, involvements in groupby(meta.active_program_hosts, key=lambda x: x.person):
             yield cls(
                 person=person,
                 involvements=list(involvements),
