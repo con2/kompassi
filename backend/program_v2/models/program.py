@@ -184,7 +184,7 @@ class Program(models.Model):
         num_programs_updated = cls.objects.bulk_update(
             (
                 program.with_cached_dimensions()
-                for program in queryset.select_for_update(of=("self",)).only(
+                for program in queryset.select_for_update(of=("self",), no_key=True).only(
                     "id",
                     "cached_dimensions",
                     "cached_combined_dimensions",
@@ -224,7 +224,7 @@ class Program(models.Model):
             num_updated = cls.objects.bulk_update(
                 (
                     program.with_cached_times()
-                    for program in queryset.select_for_update(of=("self",)).only(
+                    for program in queryset.select_for_update(of=("self",), no_key=True).only(
                         "id",
                         "cached_earliest_start_time",
                         "cached_latest_end_time",
@@ -240,7 +240,7 @@ class Program(models.Model):
         self.annotations = dict(self.annotations, **kwargs)
 
         default_formatted_hosts = ", ".join(
-            host.person.display_name for host in self.program_hosts.filter(is_active=True)
+            host.person.display_name for host in self.active_program_hosts.filter(is_active=True)
         )
         formatted_hosts = self.annotations.get("internal:overrideFormattedHosts", default_formatted_hosts)
         self.annotations.update(
@@ -261,7 +261,7 @@ class Program(models.Model):
             num_updated = queryset.bulk_update(
                 (
                     program.with_annotations()
-                    for program in queryset.select_for_update(of=("self",)).only("id", "annotations")
+                    for program in queryset.select_for_update(of=("self",), no_key=True).only("id", "annotations")
                 ),
                 ["annotations"],
                 batch_size=cls.program_batch_size,
@@ -384,7 +384,25 @@ class Program(models.Model):
         return program
 
     @property
-    def program_hosts(self) -> models.QuerySet[Involvement]:
+    def active_program_hosts(self) -> models.QuerySet[Involvement]:
+        return (
+            Involvement.objects.filter(
+                program=self,
+                is_active=True,
+            )
+            .select_related(
+                "person",
+                "program",
+            )
+            .order_by(
+                "person__surname",
+                "person__first_name",
+                "program__cached_earliest_start_time",
+            )
+        )
+
+    @property
+    def all_program_hosts(self) -> models.QuerySet[Involvement]:
         return (
             Involvement.objects.filter(
                 program=self,
@@ -464,4 +482,16 @@ class Program(models.Model):
             instance=self,
             app="program_v2",
             operation="update",
+        )
+
+    def can_program_host_be_invited_by(
+        self,
+        request: HttpRequest,
+    ) -> bool:
+        return not self.is_cancelled and is_graphql_allowed_for_model(
+            request.user,
+            instance=self,
+            app="program_v2",
+            operation="create",
+            field="program_hosts",
         )

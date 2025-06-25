@@ -297,10 +297,14 @@ export default async function ProgramOffersPage({
   }
 
   const programOffers = data.event.program.programOffers;
-  const listFilters = data.event.program.listFilters;
   const excelExportLink = data.event.program.programOffersExcelExportLink
     ? `${data.event.program.programOffersExcelExportLink}?${queryString}`
     : null;
+
+  // TODO When Dimension.appliesTo is implemented, .filter can be removed
+  const listFilters = data.event.program.listFilters.filter(
+    (dimension) => dimension.slug !== "scheduled", // only applies to program items
+  );
 
   // TODO ProgramAdminView
   return (

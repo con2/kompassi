@@ -9,10 +9,12 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
+import DimensionValues from "@/components/dimensions/DimensionValues";
 import DimensionValueSelectionForm, {
   buildDimensionValueSelectionForm,
 } from "@/components/dimensions/DimensionValueSelectionForm";
 import {
+  CachedDimensions,
   Dimension,
   validateCachedDimensions,
 } from "@/components/dimensions/models";
@@ -59,6 +61,7 @@ graphql(`
     programs {
       slug
       title
+      cachedDimensions
     }
     cachedDimensions
     supersededBy {
@@ -279,7 +282,8 @@ export default async function ProgramOfferPage({
   const surveySlug = programOffer.form.survey!.slug;
   const dimensionsReadOnly = !!supersededBy;
 
-  const stateDimension = programOffer.dimensions.find(
+  const stateDimension = dimensions.find((d) => d.slug === "state");
+  const responseStateDimensionValue = programOffer.dimensions.find(
     (d) => d.dimension.slug === "state",
   );
 
@@ -369,8 +373,8 @@ export default async function ProgramOfferPage({
     >
       <h3 className="mt-4">
         {values.title ?? t.singleTitle}{" "}
-        {stateDimension && (
-          <DimensionBadge subjectDimensionValue={stateDimension} />
+        {responseStateDimensionValue && (
+          <DimensionBadge subjectDimensionValue={responseStateDimensionValue} />
         )}
       </h3>
 
@@ -387,7 +391,19 @@ export default async function ProgramOfferPage({
                 title={program.title}
               >
                 {program.title}
-              </Link>
+              </Link>{" "}
+              {stateDimension && (
+                <>
+                  {"("}
+                  <DimensionValues
+                    dimension={stateDimension}
+                    cachedDimensions={
+                      program.cachedDimensions as CachedDimensions
+                    }
+                  />
+                  {")"}
+                </>
+              )}
             </div>
           ))}
           <p className="mt-3 mb-0">

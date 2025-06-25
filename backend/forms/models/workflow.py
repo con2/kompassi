@@ -318,12 +318,16 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         response: Response,
         request: HttpRequest,
     ) -> bool:
-        return not response.survey.protect_responses and is_graphql_allowed_for_model(
-            request.user,
-            instance=response.survey,
-            app=response.survey.app_name,
-            operation="delete",
-            field="responses",
+        return (
+            not response.survey.protect_responses
+            and response.is_current_version
+            and is_graphql_allowed_for_model(
+                request.user,
+                instance=response.survey,
+                app=response.survey.app_name,
+                operation="delete",
+                field="responses",
+            )
         )
 
     def response_can_be_accepted_by(

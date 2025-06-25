@@ -145,9 +145,6 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
             "state", ["new"]
         )
 
-    def response_can_be_deleted_by(self, response: Response, request: HttpRequest) -> bool:
-        return not response.programs.exists() and super().response_can_be_deleted_by(response, request)
-
     def response_can_be_accepted_by(
         self,
         response: Response,
@@ -176,14 +173,10 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
 
         Old versions of the response are handled when the current version is cancelled.
         """
-        return (
-            response.is_current_version
-            and not response.programs.exists()
-            and is_graphql_allowed_for_model(
-                request.user,
-                instance=response.survey,
-                app="program_v2",
-                operation="delete",
-                field="responses",
-            )
+        return response.is_current_version and is_graphql_allowed_for_model(
+            request.user,
+            instance=response.survey,
+            app="program_v2",
+            operation="delete",
+            field="responses",
         )

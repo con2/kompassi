@@ -85,6 +85,8 @@ const query = graphql(`
         program(slug: $programSlug) {
           slug
           title
+          canInviteProgramHost
+
           cachedAnnotations(slug: $annotationSlugs, publicOnly: false)
 
           dimensions(publicOnly: false) {
@@ -345,6 +347,7 @@ export default async function ProgramAdminDetailPage({
                 label={t.actions.inviteProgramHost.title + "…"}
                 title={t.actions.inviteProgramHost.title}
                 messages={t.actions.inviteProgramHost.modalActions}
+                disabled={!program.canInviteProgramHost}
                 action={inviteProgramHost.bind(
                   null,
                   locale,
