@@ -77,7 +77,10 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     dimension_slug = slugify(field_slug)
 
     # don't want to lose existing translations
-    cache = survey.universe.preload_dimensions(dimension_slugs=[dimension_slug])
+    cache = survey.universe.preload_dimensions(
+        dimension_slugs=[dimension_slug],
+        allow_missing=True,  # we might be creating a new dimension
+    )
 
     def merge_choice_translations(choice_slug: str) -> dict[str, str]:
         value = cache.values_by_dimension.get(dimension_slug, {}).get(slugify(choice_slug))

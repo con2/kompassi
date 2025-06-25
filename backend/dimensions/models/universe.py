@@ -65,7 +65,15 @@ class Universe(models.Model):
 
         return Involvement.objects.filter(event=self.scope.event)
 
-    def preload_dimensions(self, dimension_slugs: Collection[str] | None = None) -> DimensionCache:
+    def preload_dimensions(
+        self,
+        dimension_slugs: Collection[str] | None = None,
+        allow_missing: bool = False,
+    ) -> DimensionCache:
         from ..utils.dimension_cache import DimensionCache
 
-        return DimensionCache.from_universe(self, dimension_slugs=dimension_slugs)
+        return DimensionCache.from_universe(
+            self,
+            dimension_slugs=dimension_slugs,
+            allow_missing=allow_missing,
+        )

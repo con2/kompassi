@@ -28,6 +28,7 @@ class DimensionCache:
         cls,
         universe: Universe,
         dimension_slugs: Collection[str] | None = None,
+        allow_missing: bool = False,
     ) -> DimensionCache:
         dimensions = universe.dimensions.all().prefetch_related("values")
         if dimension_slugs is not None:
@@ -39,7 +40,7 @@ class DimensionCache:
         for dimension in dimensions.values():
             values_by_dimension[dimension.slug] = {value.slug: value for value in dimension.values.all()}
 
-        if dimension_slugs is not None:
+        if dimension_slugs is not None and not allow_missing:
             # make sure that all requested dimensions are present
             for slug in dimension_slugs:
                 if slug not in dimensions:
