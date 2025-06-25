@@ -239,9 +239,9 @@ class Program(models.Model):
     def with_annotations(self, **kwargs) -> Self:
         self.annotations = dict(self.annotations, **kwargs)
 
-        default_formatted_hosts = ", ".join(
-            host.person.display_name for host in self.active_program_hosts.filter(is_active=True)
-        )
+        # TODO(#728): if soft delete of program hosts is implemented, this should be updated to
+        # include only active program hosts
+        default_formatted_hosts = ", ".join(host.person.display_name for host in self.all_program_hosts)
         formatted_hosts = self.annotations.get("internal:overrideFormattedHosts", default_formatted_hosts)
         self.annotations.update(
             {
@@ -406,7 +406,6 @@ class Program(models.Model):
         return (
             Involvement.objects.filter(
                 program=self,
-                is_active=True,
             )
             .select_related(
                 "person",

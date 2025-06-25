@@ -1083,7 +1083,8 @@ const translations: Translations = {
             title: "Ratkaisu",
             choices: {
               CANCEL: "Merkitse ohjelmanumero peruutetuksi",
-              CANCEL_AND_HIDE: "Peru ja piilota ohjelmanumero",
+              CANCEL_AND_HIDE:
+                "Peru ja piilota ohjelmanumero (ohjelmien näkyvyyttä ei ole vielä toteutettu)",
               DELETE: "Poista ohjelmanumero kokonaan",
             },
           },

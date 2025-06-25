@@ -5,7 +5,6 @@ from django.db import transaction
 from django.http import HttpRequest
 
 from access.cbac import graphql_check_instance
-from badges.models import Badge
 
 from ...models.program import Program
 from ..program_full import FullProgramType
@@ -28,7 +27,6 @@ class DeleteProgramHost(graphene.Mutation):
     def mutate(self, info, input):
         request: HttpRequest = info.context
         program = Program.objects.get(event__slug=input.event_slug, slug=input.program_slug)
-        event = program.event
 
         graphql_check_instance(
             program,
@@ -43,8 +41,11 @@ class DeleteProgramHost(graphene.Mutation):
             )
             involvement.is_active = False
             involvement.save(update_fields=["is_active"])
+            involvement.refresh_dependents()
 
-            program.refresh_cached_fields()
-            Badge.ensure(event, involvement.person)
+            # TODO(#728) Soft delete of program hosts
+            # At the moment we can't distinguish soft delete from cancelled program
+            # using is_active alone, so we just delete the program host involvement.
+            involvement.delete()
 
         return DeleteProgramHost(program=program)  # type: ignore

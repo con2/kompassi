@@ -113,19 +113,30 @@ class FullProgramType(LimitedProgramType):
     )
 
     @staticmethod
-    def resolve_program_hosts(program: Program, info):
+    def resolve_program_hosts(
+        program: Program,
+        info,
+        include_inactive: bool = False,
+    ):
         graphql_check_instance(
             program,
             info,
             field="program_hosts",
         )
 
-        return program.involvements.filter(
-            is_active=True,
+        queryset = program.involvements.filter(
             program=program,
-        ).select_related("person")
+        )
 
-    program_hosts = graphene.NonNull(graphene.List(graphene.NonNull(LimitedInvolvementType)))
+        if not include_inactive:
+            queryset = queryset.filter(is_active=True)
+
+        return queryset.select_related("person")
+
+    program_hosts = graphene.NonNull(
+        graphene.List(graphene.NonNull(LimitedInvolvementType)),
+        include_inactive=graphene.Boolean(),
+    )
 
     @staticmethod
     def resolve_invitations(program: Program, info):

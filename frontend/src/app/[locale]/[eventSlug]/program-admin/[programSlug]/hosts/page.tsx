@@ -92,7 +92,7 @@ const query = graphql(`
           dimensions(publicOnly: false) {
             ...ProgramDimensionBadge
           }
-          programHosts {
+          programHosts(includeInactive: true) {
             ...ProgramAdminDetailHost
           }
           invitations {

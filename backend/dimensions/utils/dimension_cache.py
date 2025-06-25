@@ -39,6 +39,12 @@ class DimensionCache:
         for dimension in dimensions.values():
             values_by_dimension[dimension.slug] = {value.slug: value for value in dimension.values.all()}
 
+        if dimension_slugs is not None:
+            # make sure that all requested dimensions are present
+            for slug in dimension_slugs:
+                if slug not in dimensions:
+                    raise ValueError(f"Dimension '{slug}' not found in universe '{universe.slug}'")
+
         return cls(
             universe=universe,
             dimensions=dimensions,
