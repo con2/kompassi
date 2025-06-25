@@ -31,7 +31,10 @@ class DeleteScheduleItem(graphene.Mutation):
     def mutate(root, info, input: DeleteScheduleItemInput):
         request: HttpRequest = info.context
 
-        schedule_item = ScheduleItem.objects.select_for_update().get(
+        schedule_item = ScheduleItem.objects.select_for_update(
+            of=("self",),
+            no_key=False,  # ! we are going to delete it
+        ).get(
             program__event__slug=input.event_slug,
             program__slug=input.program_slug,
             slug=input.schedule_item_slug,

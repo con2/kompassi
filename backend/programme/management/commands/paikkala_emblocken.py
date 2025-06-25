@@ -55,11 +55,13 @@ class Command(BaseCommand):
         kompassi_programme = Programme.objects.get(title=options["programme_title"], category__event=event)
 
         with transaction.atomic():
-            paikkala_program = PaikkalaProgram.objects.select_for_update().get(kompassi_programme=kompassi_programme)
+            paikkala_program = PaikkalaProgram.objects.select_for_update(of=("self",), no_key=True).get(
+                kompassi_programme=kompassi_programme,
+            )
 
             for zone_name in options["zone_name"]:
                 zone = PaikkalaZone.objects.get(room=paikkala_program.room, name=zone_name)
-                for row in zone.rows.all():
+                for row in zone.rows.all():  # type: ignore
                     block, created = PerProgramBlock.objects.get_or_create(
                         program=paikkala_program,
                         row=row,

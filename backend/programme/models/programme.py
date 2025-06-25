@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import timedelta
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Self
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
@@ -2032,15 +2032,6 @@ class Programme(models.Model, CsvExportMixin):
                 and getattr(field, "name", None) not in CSV_EXPORT_EXCLUDED_FIELDS
             )
         ]
-
-    @classmethod
-    def reslugify(cls, queryset: models.QuerySet[Self]):
-        queryset = queryset.select_for_update(of=("self",))
-        queryset.update(slug="")
-
-        for programme in queryset:
-            # pre_save signal will re-create the slug
-            programme.save(update_fields=("slug",))
 
     class Meta:
         verbose_name = _("programme")

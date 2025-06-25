@@ -33,7 +33,9 @@ class Command(BaseCommand):
                 event = Event.objects.get(slug=event_slug)
                 stderr.write(event.slug + "\n")
 
-                for badge in Badge.objects.filter(personnel_class__event=event).select_for_update():
+                for badge in Badge.objects.filter(
+                    personnel_class__event=event,
+                ).select_for_update(of=("self",), no_key=True):
                     _, updated = badge.reemperkelate()
                     stderr.write("+" if updated else ".")
                     stderr.flush()

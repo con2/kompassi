@@ -206,7 +206,7 @@ class Response(models.Model):
     ):
         bulk_update = []
         for response in (
-            responses.select_for_update(of=("self",))
+            responses.select_for_update(of=("self",), no_key=True)
             .prefetch_related(
                 "dimensions__value__dimension",
                 "dimensions__value",

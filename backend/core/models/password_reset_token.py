@@ -25,7 +25,7 @@ class PasswordResetToken(OneTimeCode):
     def reset_password(cls, code, new_password):
         with transaction.atomic():
             try:
-                code = cls.objects.select_for_update().get(code=code, state="valid")
+                code = cls.objects.select_for_update(no_key=True).get(code=code, state="valid")
             except cls.DoesNotExist as dne:
                 raise PasswordResetError("invalid_code") from dne
 

@@ -38,7 +38,9 @@ class DeleteProgramHost(graphene.Mutation):
         )
 
         with transaction.atomic():
-            involvement = program.program_hosts.select_for_update().get(id=input.involvement_id)
+            involvement = program.active_program_hosts.select_for_update(of=("self",), no_key=True).get(
+                id=input.involvement_id,
+            )
             involvement.is_active = False
             involvement.save(update_fields=["is_active"])
 

@@ -32,7 +32,7 @@ class PutScheduleItem(graphene.Mutation):
     def mutate(root, info, input: PutScheduleItemInput):
         request: HttpRequest = info.context
 
-        program = Program.objects.select_for_update().get(
+        program = Program.objects.select_for_update(of=("self",), no_key=True).get(
             event__slug=input.event_slug,
             slug=input.program_slug,
         )

@@ -235,7 +235,7 @@ class Involvement(models.Model):
     def refresh_cached_dimensions_qs(cls, queryset: models.QuerySet[Self]):
         bulk_update = []
         for obj in (
-            queryset.select_for_update(of=("self",))
+            queryset.select_for_update(of=("self",), no_key=True)
             .prefetch_related(
                 "dimensions__value__dimension",
                 "dimensions__value",

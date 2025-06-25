@@ -24,7 +24,7 @@ class ScheduleItemDTO(pydantic.BaseModel, populate_by_name=True, frozen=True):
         slug = slugify(self.slug)
 
         schedule_item = (
-            ScheduleItem.objects.select_for_update()
+            ScheduleItem.objects.select_for_update(of=("self",), no_key=True)
             .filter(
                 program=program,
                 slug=slug,
