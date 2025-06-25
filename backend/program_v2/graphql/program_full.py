@@ -132,7 +132,7 @@ class FullProgramType(LimitedProgramType):
         graphql_check_instance(
             program,
             info,
-            field="invitations",
+            field="program_hosts",
         )
 
         return program.invitations.filter(used_at__isnull=True)

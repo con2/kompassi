@@ -3,7 +3,6 @@ import logging
 import graphene
 from django.http import HttpRequest
 
-from access.cbac import graphql_check_instance
 from involvement.graphql.invitation_full import FullInvitationType
 
 from ...models.program import Program
@@ -29,12 +28,8 @@ class InviteProgramHost(graphene.Mutation):
         request: HttpRequest = info.context
         program = Program.objects.get(event__slug=input.event_slug, slug=input.program_slug)
 
-        graphql_check_instance(
-            program,
-            request,
-            field="program_hosts",
-            operation="create",
-        )
+        if not program.can_program_host_be_invited_by(request):
+            raise ValueError("Cannot invite a program host to this program.")
 
         survey = program.meta.accept_invitation_forms.get(slug=input.survey_slug)
 

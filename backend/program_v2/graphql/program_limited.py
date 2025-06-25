@@ -178,6 +178,12 @@ class LimitedProgramType(DjangoObjectType):
 
     can_restore = graphene.NonNull(graphene.Boolean)
 
+    @staticmethod
+    def resolve_can_invite_program_host(program: Program, info):
+        return program.can_program_host_be_invited_by(info.context)
+
+    can_invite_program_host = graphene.NonNull(graphene.Boolean)
+
     class Meta:
         model = Program
         fields = (
