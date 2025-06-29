@@ -233,9 +233,9 @@ class Event(models.Model):
 
     @cached_property
     def involvement_universe(self) -> Universe:
-        from involvement.models.involvement import Involvement
+        from involvement.dimensions import get_involvement_universe
 
-        return Involvement.get_universe(self)
+        return get_involvement_universe(self)
 
     @property
     def involvements(self) -> models.QuerySet[Involvement]:

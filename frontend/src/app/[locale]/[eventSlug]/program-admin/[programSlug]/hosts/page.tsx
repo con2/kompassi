@@ -33,7 +33,7 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations, SupportedLanguage } from "@/translations";
 
 graphql(`
-  fragment ProgramAdminDetailHost on LimitedInvolvementType {
+  fragment ProgramAdminDetailHost on LimitedProgramHostType {
     id
     person {
       fullName

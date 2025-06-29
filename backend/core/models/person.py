@@ -141,6 +141,8 @@ class Person(models.Model):
     qualifications: models.QuerySet[PersonQualification]  # XXX naming
     email_aliases: models.QuerySet[EmailAlias]
     user_id: int
+    id: int
+    pk: int
 
     class Meta:
         ordering = ["surname"]

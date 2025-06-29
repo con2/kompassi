@@ -54,6 +54,7 @@ graphql(`
     title(lang: $locale)
     isKeyDimension
     isTechnical
+    isMultiValue
 
     values(lang: $locale) {
       slug

@@ -65,15 +65,7 @@ const query = graphql(`
         calendarExportLink
 
         listFilters: dimensions(isListFilter: true) {
-          slug
-          title(lang: $locale)
-          isListFilter
-
-          values(lang: $locale) {
-            slug
-            title(lang: $locale)
-            color
-          }
+          ...DimensionFilter
         }
 
         scheduleItems(filters: $filters, hidePast: $hidePast) {

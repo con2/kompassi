@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from typing import Self
+from functools import reduce
+from typing import Any, Self
 
 import pydantic
 
 from core.models.person import Person
 from forms.models.enums import Anonymity
 
-from .profile import NameDisplayStyle, Profile
+from .enums import NameDisplayStyle
 
 
 class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=True):
@@ -57,12 +58,37 @@ class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=Tru
         """
         return any(self)
 
-    def select(self, person: Person) -> Profile:
+    def __or__(self, other: ProfileFieldSelector) -> ProfileFieldSelector:
+        """
+        Combines two ProfileFieldSelectors using a logical OR.
+        Returns a new ProfileFieldSelector with fields selected if either selector has them.
+        """
+        if not isinstance(other, ProfileFieldSelector):
+            raise TypeError(f"Cannot __or__ ProfileFieldSelector with {type(other)}")
+
+        return ProfileFieldSelector(
+            first_name=self.first_name or other.first_name,
+            last_name=self.last_name or other.last_name,
+            nick=self.nick or other.nick,
+            email=self.email or other.email,
+            phone_number=self.phone_number or other.phone_number,
+            discord_handle=self.discord_handle or other.discord_handle,
+        )
+
+    @classmethod
+    def union(cls, *selectors: ProfileFieldSelector) -> ProfileFieldSelector:
+        return reduce(
+            lambda acc, inv: acc | inv,
+            selectors,
+            ProfileFieldSelector(),
+        )
+
+    def select(self, person: Person) -> dict[str, Any]:
         """
         Selects the fields from the given Person based on this selector.
         Returns a Profile with only the selected fields populated.
         """
-        return Profile(
+        return dict(
             first_name=person.first_name if self.first_name else "",
             last_name=person.surname if self.last_name else "",
             nick=person.nick if self.nick else "",
@@ -103,11 +129,4 @@ class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=Tru
                     email=True,
                 )
             case Anonymity.FULL_PROFILE:
-                return cls(
-                    first_name=True,
-                    last_name=True,
-                    nick=True,
-                    email=True,
-                    phone_number=True,
-                    discord_handle=True,
-                )
+                return cls.all_fields()

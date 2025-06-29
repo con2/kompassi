@@ -67,15 +67,9 @@ const query = graphql(`
 
           fields(lang: $locale, keyFieldsOnly: true)
           dimensions {
-            slug
-            title(lang: $locale)
-            isKeyDimension
+            ...DimensionFilter
 
-            values {
-              slug
-              title(lang: $locale)
-              color
-            }
+            isListFilter
           }
 
           countResponses
@@ -164,6 +158,7 @@ export default async function FormResponsesPage({
     translations.Survey.attributes.anonymity.thirdPerson;
 
   const dimensions = survey.dimensions ?? [];
+  const listFilters = dimensions.filter((dimension) => dimension.isListFilter);
   const keyFields = survey.fields;
   validateFields(keyFields);
 
@@ -309,7 +304,7 @@ export default async function FormResponsesPage({
         </div>
       </div>
 
-      <DimensionFilters dimensions={dimensions} />
+      <DimensionFilters dimensions={listFilters} />
       <ResponseTabs
         eventSlug={eventSlug}
         surveySlug={surveySlug}

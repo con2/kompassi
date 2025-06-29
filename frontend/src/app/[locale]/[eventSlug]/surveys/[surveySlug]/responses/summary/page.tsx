@@ -33,12 +33,7 @@ const query = graphql(`
           countFilteredResponses: countResponses(filters: $filters)
           countResponses
           dimensions {
-            slug
-            title(lang: $locale)
-            values {
-              slug
-              title(lang: $locale)
-            }
+            ...DimensionFilter
           }
         }
       }

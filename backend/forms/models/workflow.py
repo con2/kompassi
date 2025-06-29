@@ -144,15 +144,9 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         if not response.survey.registry:
             return None
 
-        if old_version:
-            Involvement.objects.filter(
-                response=old_version,
-            ).update(
-                response=response,
-            )
-
         return Involvement.from_survey_response(
             response=response,
+            old_version=old_version,
             cache=cache,
         )
 

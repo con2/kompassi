@@ -1,67 +1,19 @@
 from __future__ import annotations
 
-from enum import Enum
-from typing import TYPE_CHECKING
+from collections.abc import Collection
+from typing import TYPE_CHECKING, Self
 
 import pydantic
+
+from .enums import NameDisplayStyle
+from .involvement import Involvement
+from .profile_field_selector import ProfileFieldSelector
 
 if TYPE_CHECKING:
     from core.models.person import Person
 
-    from .profile_field_selector import ProfileFieldSelector
 
-
-class NameDisplayStyle(Enum):
-    # NOTE: "surname" for compatibility with legacy
-    FIRSTNAME_NICK_LASTNAME = "firstname_nick_surname", 'Firstname "Nickname" Lastname'
-    FIRSTNAME_LASTNAME = "firstname_surname", "Firstname Lastname"
-    FIRSTNAME = "firstname", "Firstname"
-    NICK = "nick", "Nickname"
-
-    _value_: str
-    label: str
-
-    def __new__(cls, value: str, label: str):
-        obj = object.__new__(cls)
-        obj._value_ = value
-        obj.label = label
-        return obj
-
-    def format(
-        self,
-        first_name: str,
-        nick: str,
-        last_name: str,
-        always_include_real_name: bool = False,
-    ) -> str:
-        name_display_style = self
-        if always_include_real_name:
-            if "nick" in self.value:
-                name_display_style = NameDisplayStyle.FIRSTNAME_NICK_LASTNAME
-            else:
-                name_display_style = NameDisplayStyle.FIRSTNAME_LASTNAME
-
-        match name_display_style:
-            case NameDisplayStyle.FIRSTNAME_NICK_LASTNAME:
-                parts = [
-                    first_name,
-                    f"”{nick}”" if nick else "",
-                    last_name,
-                ]
-            case NameDisplayStyle.FIRSTNAME_LASTNAME:
-                parts = [
-                    first_name,
-                    last_name,
-                ]
-            case NameDisplayStyle.FIRSTNAME:
-                parts = [first_name]
-            case NameDisplayStyle.NICK:
-                parts = [nick]
-
-        return " ".join(part for part in parts) if parts else ""
-
-
-class Profile(pydantic.BaseModel, populate_by_name=True, frozen=True):
+class Profile(pydantic.BaseModel, populate_by_name=True, frozen=True, arbitrary_types_allowed=True):
     """
     Represents a user profile with fields that can be selected for transfer.
     NOTE: Must match Profile in frontend/src/components/involvement/models.ts.
@@ -96,6 +48,12 @@ class Profile(pydantic.BaseModel, populate_by_name=True, frozen=True):
         serialization_alias="nameDisplayStyle",
     )
 
+    # NOTE: ProfileType does not expose this to GraphQL (ProfileWithInvolvementType does)
+    involvements: list[Involvement] = pydantic.Field(
+        default_factory=list,
+        description="List of involvements associated with this profile.",
+    )
+
     @pydantic.computed_field
     @property
     def display_name(self) -> str:
@@ -126,8 +84,15 @@ class Profile(pydantic.BaseModel, populate_by_name=True, frozen=True):
         )
 
     @classmethod
-    def from_person(cls, person: Person, profile_field_selector: ProfileFieldSelector) -> Profile:
+    def from_person(cls, person: Person, profile_field_selector: ProfileFieldSelector) -> Self:
         """
         Creates a Profile instance from a Person object and a ProfileFieldSelector.
         """
-        return profile_field_selector.select(person)
+        return cls(**profile_field_selector.select(person))
+
+    @classmethod
+    def from_person_involvements(cls, person: Person, involvements: Collection[Involvement]) -> Self:
+        field_selector = ProfileFieldSelector.union(*[inv.profile_field_selector for inv in involvements])
+        profile_fields = field_selector.select(person)
+
+        return cls(**profile_fields, involvements=list(involvements))

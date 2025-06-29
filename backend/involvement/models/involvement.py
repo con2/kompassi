@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from collections.abc import Collection, Mapping
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
@@ -10,14 +11,16 @@ from django.db import models, transaction
 from badges.models import Badge
 from core.models.event import Event
 from core.models.person import Person
-from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
+from dimensions.utils.set_dimension_values import set_dimension_values
 from forms.models.survey import SurveyPurpose
+from graphql_api.language import DEFAULT_LANGUAGE
 
 from .enums import InvolvementApp, InvolvementType
 from .invitation import Invitation
+from .profile_field_selector import ProfileFieldSelector
 
 if TYPE_CHECKING:
     from forms.models.response import Response
@@ -27,53 +30,7 @@ if TYPE_CHECKING:
 
 from .registry import Registry
 
-# NOTE SUPPORTED_LANGUAGES
-DIMENSIONS = [
-    DimensionDTO(
-        slug="app",
-        title=dict(
-            en="Application",
-            fi="Sovellus",
-            sv="Applikation",
-        ),
-        is_technical=True,
-        choices=[
-            DimensionValueDTO(
-                slug=app.value,
-                title=dict(en=app.label),
-                is_technical=True,
-            )
-            for app in InvolvementApp
-        ],
-    ),
-    DimensionDTO(
-        slug="type",
-        title=dict(
-            en="Type",
-            fi="Tyyppi",
-            sv="Typ",
-        ),
-        is_technical=True,
-        choices=[
-            DimensionValueDTO(
-                slug="program-offer",
-                title=dict(
-                    en="Program offer",
-                    fi="Ohjelmatarjous",
-                ),
-                is_technical=True,
-            ),
-            DimensionValueDTO(
-                slug="program-host",
-                title=dict(
-                    en="Program host",
-                    fi="Ohjelmanumero",
-                ),
-                is_technical=True,
-            ),
-        ],
-    ),
-]
+logger = logging.getLogger("kompassi")
 
 
 class Involvement(models.Model):
@@ -191,37 +148,50 @@ class Involvement(models.Model):
 
     @property
     def description(self) -> str:
-        """
-        Returns a human-readable description of the involvement.
-        """
+        return f"{self.type.label}: {self.get_title() or 'No title'}"
+
+    @property
+    def profile_field_selector(self) -> ProfileFieldSelector:
+        match self.type:
+            case InvolvementType.PROGRAM_HOST:
+                return ProfileFieldSelector.all_fields()
+            case _ if self.response is not None:
+                return self.response.survey.profile_field_selector
+            case _:
+                raise NotImplementedError(f"Profile field selector not implemented for involvement type {self.type!r}")
+
+    @property
+    def program_offer(self) -> Response | None:
+        match self.type:
+            case InvolvementType.PROGRAM_OFFER:
+                return self.response
+            case _:
+                return None
+
+    def get_title(self, lang: str = DEFAULT_LANGUAGE) -> str | None:
+        match self.type:
+            case InvolvementType.PROGRAM_HOST if self.program:
+                return self.program.title
+            case InvolvementType.PROGRAM_OFFER if self.response:
+                return self.response.cached_key_fields.get("title")
+            case InvolvementType.SURVEY_RESPONSE if self.response and self.response.survey:
+                return self.response.survey.get_title(lang)
+            case _:
+                raise TypeError(f"get_title(): Invalid involvement {self.id}")
+
+    @property
+    def admin_link(self) -> str:
         match self.type:
             case InvolvementType.PROGRAM_OFFER if self.response:
-                title = self.response.cached_key_fields.get("title", "")
-                return f"Program offer: {title}"
+                path = f"program-offers/{self.response.id}/"
             case InvolvementType.PROGRAM_HOST if self.program:
-                title = self.program.title
-                return f"Program host: {title}"
+                path = f"program-admin/{self.program.slug}/hosts"
             case InvolvementType.SURVEY_RESPONSE if self.response:
-                return f"Survey response: {self.response.survey.slug}"
+                path = f"{self.response.survey.slug}/responses/{self.response.id}/"
             case _:
-                return f"Invalid involvement of type {self.type!r}"
+                raise TypeError(f"admin_link(): Invalid involvement {self.id}")
 
-    @classmethod
-    def setup_dimensions(cls, universe: Universe) -> None:
-        DimensionDTO.save_many(universe, DIMENSIONS)
-
-    @classmethod
-    def get_universe(cls, event: Event) -> Universe:
-        universe, created = Universe.objects.get_or_create(
-            scope=event.scope,
-            slug="involvement",
-            app="involvement",
-        )
-
-        if created:
-            cls.setup_dimensions(universe)
-
-        return universe
+        return f"/{self.scope.slug}/{path}"
 
     def _build_cached_dimensions(self) -> dict[str, list[str]]:
         new_cached_dimensions = {}
@@ -248,7 +218,8 @@ class Involvement(models.Model):
         ):
             obj.cached_dimensions = obj._build_cached_dimensions()
             bulk_update.append(obj)
-        cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
+        num_updated = cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
+        logger.info("Refreshed cached dimensions for %s involvements", num_updated)
 
     def refresh_cached_dimensions(self):
         self.cached_dimensions = self._build_cached_dimensions()
@@ -267,32 +238,32 @@ class Involvement(models.Model):
         """
         from .involvement_dimension_value import InvolvementDimensionValue
 
-        bulk_delete = self.dimensions.filter(value__dimension__slug__in=values_to_set.keys())
-        bulk_create: list[InvolvementDimensionValue] = []
+        set_dimension_values(
+            InvolvementDimensionValue,
+            self,
+            values_to_set,
+            cache=cache,
+        )
 
-        for dimension_slug, value_slugs in values_to_set.items():
-            bulk_delete = bulk_delete.exclude(
-                value__dimension__slug=dimension_slug,
-                value__slug__in=value_slugs,
-            )
-
-            for value_slug in value_slugs:
-                if value_slug not in self.cached_dimensions.get(dimension_slug, []):
-                    bulk_create.append(
-                        InvolvementDimensionValue(
-                            subject=self,
-                            value=cache.values_by_dimension[dimension_slug][value_slug],
-                        )
-                    )
-
-        bulk_delete.delete()
-        InvolvementDimensionValue.objects.bulk_create(bulk_create)
+    @classmethod
+    def _build_technical_dimension_values(
+        cls,
+        app: InvolvementApp,
+        type: InvolvementType,
+        is_active: bool,
+    ) -> dict[str, list[str]]:
+        return dict(
+            app=[app.value],
+            type=[type.value],
+            state=is_active and ["active"] or ["inactive"],
+        )
 
     @classmethod
     def from_survey_response(
         cls,
         response: Response,
         cache: DimensionCache,
+        old_version: Response | None,
         deleting: bool = False,
     ):
         """
@@ -306,7 +277,20 @@ class Involvement(models.Model):
             raise ValueError(f"Survey {response.survey} does not have an involvement type")
         app = involvement_type.app
 
-        if deleting:
+        is_active = not deleting and response.survey.workflow.is_response_active(response)
+        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active)
+
+        if old_version and deleting:
+            raise AssertionError("Both old_version and deleting cannot be True at the same time")
+
+        if old_version:
+            Involvement.objects.filter(
+                response=old_version,
+            ).update(
+                response=response,
+            )
+
+        elif deleting:
             try:
                 involvement = cls.objects.get(
                     universe=cache.universe,
@@ -318,8 +302,9 @@ class Involvement(models.Model):
                 return None
             else:
                 # make sure badges are revoked etc.
-                involvement.is_active = False
+                involvement.is_active = is_active
                 involvement.save(update_fields=["is_active"])
+                involvement.set_dimension_values(dimensions, cache=cache)
                 involvement.refresh_cached_dimensions()
                 involvement.refresh_dependents()
 
@@ -335,14 +320,10 @@ class Involvement(models.Model):
             response=response,
             defaults=dict(
                 registry=response.survey.registry,
-                is_active=response.survey.workflow.is_response_active(response),
+                is_active=is_active,
             ),
         )
 
-        dimensions = dict(
-            app=[app.value],
-            type=[involvement_type.value],
-        )
         involvement.set_dimension_values(dimensions, cache=cache)
         involvement.refresh_cached_dimensions()
         involvement.refresh_dependents()
@@ -361,6 +342,7 @@ class Involvement(models.Model):
 
         app = InvolvementApp.PROGRAM
         involvement_type = InvolvementType.PROGRAM_HOST
+        is_active = program.is_active
 
         # NOTE update_or_create for backfill
         involvement, _created = cls.objects.update_or_create(
@@ -370,14 +352,11 @@ class Involvement(models.Model):
             defaults=dict(
                 response=program_offer,
                 registry=program_offer.survey.registry,
-                is_active=program.is_active,
+                is_active=is_active,
             ),
         )
 
-        dimensions = dict(
-            app=[app.value],
-            type=[involvement_type.value],  # TODO others
-        )
+        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active)
         involvement.set_dimension_values(dimensions, cache=cache)
         involvement.refresh_cached_dimensions()
         involvement.refresh_dependents()
@@ -406,23 +385,21 @@ class Involvement(models.Model):
             raise ValueError(f"Survey {response.survey} does not have an involvement type")
 
         app = involvement_type.app
+        is_active = response.survey.workflow.is_response_active(response)
+        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active)
 
-        involvement, created = cls.objects.update_or_create(
+        involvement, _created = cls.objects.update_or_create(
             universe=cache.universe,
             person=response.original_created_by.person,  # type: ignore
             program=invitation.program,
             defaults=dict(
                 response=response,
                 registry=response.survey.registry,
-                is_active=response.survey.workflow.is_response_active(response),
+                is_active=is_active,
                 invitation=invitation,
             ),
         )
 
-        dimensions = dict(
-            app=[app.value],
-            type=[involvement_type.value],
-        )
         involvement.set_dimension_values(dimensions, cache=cache)
         involvement.refresh_cached_dimensions()
         involvement.refresh_dependents()
@@ -441,35 +418,26 @@ class Involvement(models.Model):
 
         app = InvolvementApp.PROGRAM
         involvement_type = InvolvementType.PROGRAM_HOST
-        dimensions = dict(
-            app=[app.value],
-            type=[involvement_type.value],  # TODO others
-        )
+        is_active = not deleting and program.is_active
+        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active)
 
         involvements = cls.objects.filter(
             universe=cache.universe,
             program=program,
         )
 
+        for involvement in involvements:
+            involvement.is_active = program.is_active
+            involvement.save(update_fields=["is_active"])
+            involvement.set_dimension_values(dimensions, cache=cache)
+            involvement.refresh_cached_dimensions()
+            involvement.refresh_dependents()
+
         if deleting:
-            for involvement in involvements:
-                involvement.is_active = program.is_active
-                involvement.save(update_fields=["is_active"])
-                involvement.refresh_cached_dimensions()
-                involvement.refresh_dependents()
-
-                involvement.delete()
-
+            involvements.delete()
             return cls.objects.none()
-        else:
-            for involvement in involvements:
-                involvement.is_active = program.is_active
-                involvement.save(update_fields=["is_active"])
-                involvement.set_dimension_values(dimensions, cache=cache)
-                involvement.refresh_cached_dimensions()
-                involvement.refresh_dependents()
 
-        return involvement
+        return involvements
 
     def refresh_dependents(self):
         if self.program:

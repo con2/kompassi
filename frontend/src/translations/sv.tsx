@@ -1177,6 +1177,7 @@ const translations: Translations = {
     OldVersionAlert: UNTRANSLATED(en.Survey.OldVersionAlert),
   },
 
+  Involvement: UNTRANSLATED(en.Involvement),
   Invitation: UNTRANSLATED(en.Invitation),
 
   SignInRequired: {

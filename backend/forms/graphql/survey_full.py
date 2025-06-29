@@ -7,8 +7,8 @@ from access.cbac import graphql_check_instance
 from core.graphql.event_limited import LimitedEventType
 from core.utils import normalize_whitespace
 from dimensions.filters import DimensionFilters
-from dimensions.graphql.dimension import FullDimensionType
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
+from dimensions.graphql.dimension_full import FullDimensionType
 
 from ..models.form import Form
 from ..models.survey import Survey

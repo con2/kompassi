@@ -7,6 +7,7 @@ import graphene
 
 from core.graphql.profile_limited import LimitedProfileType
 from core.models.person import Person
+from dimensions.filters import DimensionFilters
 from involvement.models.involvement import Involvement
 
 from ..models.meta import ProgramV2EventMeta
@@ -24,8 +25,12 @@ class ProgramHost:
         return [involvement.program for involvement in self.involvements if involvement.program is not None]
 
     @classmethod
-    def from_event(cls, meta: ProgramV2EventMeta) -> Iterable[Self]:
-        for person, involvements in groupby(meta.active_program_hosts, key=lambda x: x.person):
+    def from_event(
+        cls,
+        meta: ProgramV2EventMeta,
+        program_filters: DimensionFilters | None = None,
+    ) -> Iterable[Self]:
+        for person, involvements in groupby(meta.get_active_program_hosts(program_filters), key=lambda x: x.person):
             yield cls(
                 person=person,
                 involvements=list(involvements),

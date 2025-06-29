@@ -45,3 +45,53 @@ class InvolvementType(Enum):
         obj.label = label
         obj.app = app
         return obj
+
+
+class NameDisplayStyle(Enum):
+    # NOTE: "surname" for compatibility with legacy
+    FIRSTNAME_NICK_LASTNAME = "firstname_nick_surname", 'Firstname "Nickname" Lastname'
+    FIRSTNAME_LASTNAME = "firstname_surname", "Firstname Lastname"
+    FIRSTNAME = "firstname", "Firstname"
+    NICK = "nick", "Nickname"
+
+    _value_: str
+    label: str
+
+    def __new__(cls, value: str, label: str):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.label = label
+        return obj
+
+    def format(
+        self,
+        first_name: str,
+        nick: str,
+        last_name: str,
+        always_include_real_name: bool = False,
+    ) -> str:
+        name_display_style = self
+        if always_include_real_name:
+            if "nick" in self.value:
+                name_display_style = NameDisplayStyle.FIRSTNAME_NICK_LASTNAME
+            else:
+                name_display_style = NameDisplayStyle.FIRSTNAME_LASTNAME
+
+        match name_display_style:
+            case NameDisplayStyle.FIRSTNAME_NICK_LASTNAME:
+                parts = [
+                    first_name,
+                    f"”{nick}”" if nick else "",
+                    last_name,
+                ]
+            case NameDisplayStyle.FIRSTNAME_LASTNAME:
+                parts = [
+                    first_name,
+                    last_name,
+                ]
+            case NameDisplayStyle.FIRSTNAME:
+                parts = [first_name]
+            case NameDisplayStyle.NICK:
+                parts = [nick]
+
+        return " ".join(part for part in parts) if parts else ""

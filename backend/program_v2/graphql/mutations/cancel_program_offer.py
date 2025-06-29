@@ -64,6 +64,7 @@ class CancelProgramOffer(graphene.Mutation):
                 program_offer.refresh_cached_fields()
                 Involvement.from_survey_response(
                     program_offer,
+                    old_version=None,
                     cache=involvement_dimensions_cache,
                 )
             case ProgramOfferResolution.CANCEL:
@@ -74,6 +75,7 @@ class CancelProgramOffer(graphene.Mutation):
                 program_offer.refresh_cached_fields()
                 Involvement.from_survey_response(
                     program_offer,
+                    old_version=None,
                     cache=involvement_dimensions_cache,
                 )
             case ProgramOfferResolution.DELETE:
@@ -87,6 +89,7 @@ class CancelProgramOffer(graphene.Mutation):
 
                 Involvement.from_survey_response(
                     program_offer,
+                    old_version=None,
                     cache=involvement_dimensions_cache,
                     deleting=True,
                 )

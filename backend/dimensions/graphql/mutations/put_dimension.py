@@ -7,7 +7,7 @@ from core.utils.form_utils import camel_case_keys_to_snake_case
 
 from ...models.dimension import Dimension
 from ...models.universe import Universe
-from ..dimension import FullDimensionType
+from ..dimension_full import FullDimensionType
 
 
 class DimensionForm(django_forms.ModelForm):

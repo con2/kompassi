@@ -1,7 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 
-from dimensions.graphql.dimension import FullDimensionType
+from dimensions.graphql.dimension_full import FullDimensionType
 
 from ..models.response_dimension_value import ResponseDimensionValue
 

@@ -1477,12 +1477,11 @@ const translations: Translations = {
       singleTitle: "Ohjelmanpitäjä",
       listTitle: "Ohjelmanpitäjät",
       attributes: {
-        count: (numHosts: number) =>
-          numHosts === 1 ? (
-            <>Yksi ohjelmanpitäjä.</>
-          ) : (
-            <>{numHosts} ohjelmanpitäjää.</>
-          ),
+        count: (numHosts: number) => (
+          <>
+            Näytetään {numHosts} ohjelmanpitäjä{numHosts === 1 ? "" : "ä"}.
+          </>
+        ),
         programItems: "Ohjelmanumerot",
       },
       actions: {
@@ -2230,6 +2229,40 @@ const translations: Translations = {
       message: "Vastausta on muokattu. Tämä on vanha versio.",
       actions: {
         returnToCurrentVersion: "Palaa uusimpaan versioon",
+      },
+    },
+  },
+
+  Involvement: {
+    listTitle: "Tapahtuman kanssa tekemisissä olevat henkilöt",
+    attributes: {
+      involvement: {
+        title: "Osallistuminen",
+      },
+      count: (numPeople: number, numInvolvements: number) => (
+        <>
+          Näytetään {numPeople} {numPeople === 1 ? "henkilö" : "henkilöä"}{" "}
+          joilla on yhteensä {numInvolvements} osallistumista.
+        </>
+      ),
+      title: {
+        title: "Otsikko",
+        missing: "Ei otsikkoa",
+      },
+      type: {
+        title: "Tyyppi",
+        choices: {
+          PROGRAM_HOST: "Ohjelmanpitäjä",
+          PROGRAM_OFFER: "Ohjelmatarjous",
+          SURVEY_RESPONSE: "Kyselyvastaus",
+        },
+      },
+      isActive: {
+        title: "Tila",
+        choices: {
+          active: "Aktiivinen",
+          inactive: "Ei aktiivinen",
+        },
       },
     },
   },

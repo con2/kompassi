@@ -1,19 +1,19 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback } from "react";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ToggleButton from "react-bootstrap/ToggleButton";
 
 import classes from "./DimensionFilters.module.css";
-import type { Dimension, DimensionValue } from "./models";
+import type { DimensionValue } from "./models";
+import { DimensionFilterFragment } from "@/__generated__/graphql";
 
 interface PropsWithoutProgramFilters {
   programFilters?: false;
   className?: string;
   search?: boolean;
-  dimensions: Dimension[];
+  dimensions: DimensionFilterFragment[];
   messages?: {
     searchPlaceholder?: string;
   };
@@ -23,7 +23,7 @@ interface PropsWithProgramFilters {
   programFilters: true;
   className?: string;
   search?: boolean;
-  dimensions: Dimension[];
+  dimensions: DimensionFilterFragment[];
   isLoggedIn: boolean;
   messages: {
     showOnlyFavorites: string;

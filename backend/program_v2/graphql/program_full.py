@@ -6,12 +6,12 @@ from core.graphql.event_limited import LimitedEventType
 from core.utils.text_utils import normalize_whitespace
 from forms.graphql.response_limited import LimitedResponseType
 from involvement.graphql.invitation_limited import LimitedInvitationType
-from involvement.graphql.involvement_limited import LimitedInvolvementType
 
 from ..models import Program
 from ..models.annotations import ANNOTATIONS
 from .annotations import ProgramAnnotationType
 from .program_dimension_value import ProgramDimensionValueType
+from .program_host_limited import LimitedProgramHostType
 from .program_limited import LimitedProgramType
 from .schedule_item_limited import LimitedScheduleItemType
 
@@ -134,7 +134,7 @@ class FullProgramType(LimitedProgramType):
         return queryset.select_related("person")
 
     program_hosts = graphene.NonNull(
-        graphene.List(graphene.NonNull(LimitedInvolvementType)),
+        graphene.List(graphene.NonNull(LimitedProgramHostType)),
         include_inactive=graphene.Boolean(),
     )
 

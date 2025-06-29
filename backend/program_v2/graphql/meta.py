@@ -8,8 +8,9 @@ from graphene_django import DjangoObjectType
 from access.cbac import graphql_check_instance, graphql_check_model
 from core.models import Event
 from core.utils.text_utils import normalize_whitespace
-from dimensions.graphql.dimension import FullDimensionType
+from dimensions.filters import DimensionFilters
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
+from dimensions.graphql.dimension_full import FullDimensionType
 from forms.graphql.response_full import FullResponseType
 from forms.graphql.response_profile import ProfileResponseType
 from forms.models.response import Response
@@ -290,13 +291,21 @@ class ProgramV2EventMetaType(DjangoObjectType):
     def resolve_program_hosts(
         meta: ProgramV2EventMeta,
         info,
-        # filters: list[DimensionFilterInput] | None = None,
+        program_filters: list[DimensionFilterInput] | None = None,
+        # involvement_filters: list[DimensionFilterInput] | None = None,
     ):
         graphql_check_model(Event, meta.event.scope, info, app="program_v2", field="program_hosts")
 
-        return ProgramHost.from_event(meta)
+        return ProgramHost.from_event(
+            meta,
+            program_filters=DimensionFilters.from_graphql(program_filters),
+            # involvement_filters=DimensionFilters.from_graphql(involvement_filters),
+        )
 
-    program_hosts = graphene.NonNull(graphene.List(graphene.NonNull(FullProgramHostType)))
+    program_hosts = graphene.NonNull(
+        graphene.List(graphene.NonNull(FullProgramHostType)),
+        program_filters=graphene.List(DimensionFilterInput),
+    )
 
 
 ProgramUserRelationType = graphene.Enum.from_enum(ProgramUserRelation)

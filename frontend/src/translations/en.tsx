@@ -1476,12 +1476,11 @@ const translations = {
       singleTitle: "Program host",
       listTitle: "Program hosts",
       attributes: {
-        count: (numHosts: number) =>
-          numHosts === 1 ? (
-            <>One program host.</>
-          ) : (
-            <>{numHosts} program hosts.</>
-          ),
+        count: (numHosts: number) => (
+          <>
+            Showing {numHosts} program host{numHosts === 1 ? "" : "s"}.
+          </>
+        ),
         programItems: "Program items",
       },
       actions: {
@@ -2286,6 +2285,40 @@ const translations = {
         modalActions: {
           submit: "Resend invitation",
           cancel: "Close without resending",
+        },
+      },
+    },
+  },
+
+  Involvement: {
+    listTitle: "People involved in the event",
+    attributes: {
+      involvement: {
+        title: "Involvement",
+      },
+      count: (numPeople: number, numInvolvements: number) => (
+        <>
+          Showing {numPeople} {numPeople === 1 ? "person" : "people"} with{" "}
+          {numInvolvements} involvement{numInvolvements === 1 ? "" : "s"}.
+        </>
+      ),
+      title: {
+        title: "Title",
+        missing: "No title",
+      },
+      type: {
+        title: "Type",
+        choices: {
+          PROGRAM_HOST: "Program host",
+          PROGRAM_OFFER: "Program offer",
+          SURVEY_RESPONSE: "Survey response",
+        },
+      },
+      isActive: {
+        title: "State",
+        choices: {
+          active: "Active",
+          inactive: "Inactive",
         },
       },
     },

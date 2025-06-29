@@ -81,7 +81,7 @@ interface Props {
 function getDimensions(
   messages: Translations["Tickets"],
   products: ProductChoiceFragment[],
-): Dimension[] {
+) {
   const t = messages.Order;
   const producT = messages.Product;
 
@@ -89,6 +89,7 @@ function getDimensions(
     {
       slug: "status",
       title: t.attributes.status.title,
+      isMultiValue: false,
       values: Object.entries(t.attributes.status.choices)
         .filter(([slug]) => slug !== PaymentStatus.NotStarted)
         .map(([slug, { shortTitle }]) => ({
@@ -99,6 +100,7 @@ function getDimensions(
     {
       slug: "product",
       title: producT.clientAttributes.product,
+      isMultiValue: false,
       values: products.map(({ id, title }) => ({ slug: id, title })),
     },
   ];

@@ -9,6 +9,8 @@ import { ProgramAdminHostFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
+import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import SignInRequired from "@/components/errors/SignInRequired";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -30,14 +32,21 @@ graphql(`
 `);
 
 const query = graphql(`
-  query ProgramAdminHosts($eventSlug: String!) {
+  query ProgramAdminHosts(
+    $eventSlug: String!
+    $filters: [DimensionFilterInput!]
+    $locale: String
+  ) {
     event(slug: $eventSlug) {
       name
       slug
       timezone
 
       program {
-        programHosts {
+        dimensions(isListFilter: true, publicOnly: false) {
+          ...DimensionFilter
+        }
+        programHosts(programFilters: $filters) {
           ...ProgramAdminHost
         }
       }
@@ -55,12 +64,13 @@ interface Props {
 
 export const revalidate = 0;
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
+  const filters = buildDimensionFilters(searchParams);
   const { data, errors } = await getClient().query({
     query,
-    variables: { eventSlug, locale },
+    variables: { eventSlug, locale, filters },
   });
   const title = getPageTitle({
     translations,
@@ -78,7 +88,6 @@ export default async function ProgramAdminHostsPage({
   const translations = getTranslations(locale);
   const profileT = translations.Profile;
   const t = translations.Program.ProgramHost;
-  const queryString = new URLSearchParams(searchParams).toString();
   const session = await auth();
 
   // TODO encap
@@ -86,9 +95,10 @@ export default async function ProgramAdminHostsPage({
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
+  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale },
+    variables: { eventSlug, locale, filters },
   });
   if (!data.event?.program?.programHosts) {
     notFound();
@@ -96,6 +106,11 @@ export default async function ProgramAdminHostsPage({
 
   const event = data.event;
   const programHosts = data.event.program.programHosts;
+
+  // TODO ugly. showing active only
+  const dimensions = data.event.program.dimensions.filter(
+    (dimension) => dimension.slug !== "state",
+  );
 
   const columns: Column<ProgramAdminHostFragment>[] = [
     {
@@ -140,6 +155,10 @@ export default async function ProgramAdminHostsPage({
       active={"programHosts"}
       searchParams={searchParams}
     >
+      <DimensionFilters
+        dimensions={dimensions}
+        className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1"
+      />
       <DataTable rows={programHosts} columns={columns}>
         <tfoot>
           <tr>

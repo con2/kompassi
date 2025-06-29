@@ -58,7 +58,7 @@ class LimitedResponseType(DjangoObjectType):
         if not person:
             return None
 
-        return response.survey.profile_field_selector.select(person)
+        return Profile.from_person(person, response.survey.profile_field_selector)
 
     revision_created_by = graphene.Field(
         SelectedProfileType,
@@ -82,7 +82,7 @@ class LimitedResponseType(DjangoObjectType):
         if not person:
             return None
 
-        return response.survey.profile_field_selector.select(person)
+        return Profile.from_person(person, response.survey.profile_field_selector)
 
     original_created_by = graphene.Field(
         SelectedProfileType,

@@ -6,7 +6,7 @@ from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
 
 from ...models.universe import Universe
-from ..dimension import DimensionValueType
+from ..dimension_full import DimensionValueType
 from ..dimension_value import DimensionValue
 
 

@@ -1,3 +1,17 @@
+import { graphql } from "@/__generated__";
+
+graphql(`
+  fragment DimensionFilter on FullDimensionType {
+    slug
+    title(lang: $locale)
+    isMultiValue
+    values(lang: $locale) {
+      slug
+      title(lang: $locale)
+    }
+  }
+`);
+
 // | null | undefined to make it easier to work with GraphQL
 export interface DimensionValue {
   slug: string;

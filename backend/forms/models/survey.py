@@ -309,6 +309,10 @@ class Survey(models.Model):
 
         return None
 
+    def get_title(self, lang: str = DEFAULT_LANGUAGE) -> str | None:
+        form = self.get_form(lang)
+        return form.title if form is not None else None
+
     @property
     def current_responses(self):
         from .response import Response

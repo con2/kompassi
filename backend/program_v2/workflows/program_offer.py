@@ -6,6 +6,7 @@ from forms.models.enums import Anonymity, SurveyApp
 from forms.models.response import Response
 from forms.models.survey import Survey
 from forms.models.workflow import Workflow
+from involvement.dimensions import setup_involvement_dimensions
 from involvement.models.involvement import Involvement
 from tickets_v2.views.pos_view import HttpRequest
 
@@ -100,22 +101,27 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
 
         # Involvements
         involvement_universe = event.involvement_universe
-        Involvement.setup_dimensions(involvement_universe)
+        setup_involvement_dimensions(involvement_universe)
         involvement_cache = involvement_universe.preload_dimensions()
 
-        for program_offer in Response.objects.filter(
-            form__event=event,
-            form__survey__app_name=SurveyApp.PROGRAM_V2.value,
-            superseded_by=None,
-        ):
+        # Due to faulty logic, each version of a program offer generated an Involvement.
+        _, deleted_by_model = Involvement.objects.filter(
+            # Of this event
+            universe=involvement_universe,
+            # Is of type program offer (ie. not program host in a program item)
+            program__isnull=True,
+            # Is an old version of a program offer
+            response__superseded_by__isnull=False,
+            # Just to be sure: This version of the program offer has not been accepted as a program item
+            response__programs__isnull=True,
+        ).delete()
+        logger.info("Involvement cleanup for old response versions deleted: %s", deleted_by_model)
+
+        for program_offer in meta.current_program_offers.all():
             program_offer.survey.workflow.ensure_involvement(program_offer, cache=involvement_cache)
 
-        for program in Program.objects.filter(event=event, program_offer__isnull=False):
-            if not program.program_offer:
-                raise AssertionError("This cannot happen due to program_offer__isnull=True, but appease typechecker")
-
-            Involvement.from_accepted_program_offer(
-                program_offer=program.program_offer,
+        for program in meta.programs.all():
+            Involvement.from_program_state_change(
                 program=program,
                 cache=involvement_cache,
             )

@@ -9,6 +9,7 @@ from core.models.contact_email_mixin import ContactEmailMixin, contact_email_val
 from core.models.event import Event
 from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
+from dimensions.filters import DimensionFilters
 from dimensions.models.universe import Universe
 from forms.models.enums import SurveyApp, SurveyPurpose
 from forms.models.response import Response
@@ -115,13 +116,22 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
             .order_by("-original_created_at")
         )
 
-    @property
-    def active_program_hosts(self) -> models.QuerySet[Involvement]:
-        return (
+    def get_active_program_hosts(
+        self,
+        program_filters: DimensionFilters | None = None,
+        involvement_filters: DimensionFilters | None = None,
+    ) -> models.QuerySet[Involvement]:
+        if program_filters:
+            program_ids = program_filters.filter(self.programs.all()).values_list("id", flat=True)
+            program_criteria = {"program__in": program_ids}
+        else:
+            program_criteria = {"program__isnull": False}
+
+        involvements = (
             Involvement.objects.filter(
                 universe=self.event.involvement_universe,
-                program__isnull=False,
                 is_active=True,
+                **program_criteria,
             )
             .select_related(
                 "person",
@@ -133,6 +143,11 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
                 "program__cached_earliest_start_time",
             )
         )
+
+        if involvement_filters:
+            involvements = involvement_filters.filter(involvements)
+
+        return involvements
 
     @property
     def program_offer_forms(self):

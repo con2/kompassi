@@ -28,6 +28,7 @@ extend-ignore = [
     "C901",  # function is too complex
     "E401",  # multiple imports on one line (handled by I)
     "E731",  # do not assign a lambda expression, use a def
+    "PLC0415",  # import must be at the top of the file (but we have circulars)
     "PLR0911",  # too many returns
     "PLR0912",  # too many branches
     "PLR0913",  # too many args
