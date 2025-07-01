@@ -108,7 +108,7 @@ def write_responses_as_excel(
 
         if (user := response.original_created_by) and (person := user.person):  # type: ignore
             profile = profile_field_selector.select(person)
-            response_row.extend(getattr(profile, field_slug) for field_slug in survey.profile_field_selector)
+            response_row.extend(profile.get(field_slug) for field_slug in survey.profile_field_selector)
         else:
             response_row.extend("" for _ in survey.profile_field_selector)
 
