@@ -102,7 +102,7 @@ export default async function TicketsPage({ params }: Props) {
                         id={`quantity-${product.id}`}
                         name={`quantity-${product.id}`}
                         min={0}
-                        defaultValue={0}
+                        defaultValue=""
                         max={product.maxPerOrder}
                       />
                     ) : (
