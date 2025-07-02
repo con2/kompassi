@@ -133,9 +133,10 @@ def core_profile_menu_items(request):
     items.extend(membership_profile_menu_items(request))
     items.extend(access_profile_menu_items(request))
 
-    admin_url = "/admin/"  # XXX hardcoded
-    admin_active = False
-    admin_text = _("Site administration")
-    items.append((admin_active, admin_url, admin_text))
+    if request.user.is_staff:
+        admin_url = "/admin/"
+        admin_active = False
+        admin_text = _("Site administration")
+        items.append((admin_active, admin_url, admin_text))
 
     return items
