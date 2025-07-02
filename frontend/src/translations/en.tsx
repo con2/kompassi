@@ -472,7 +472,9 @@ const translations = {
         },
         quantity: {
           title: "Quantity",
+          quantityForProduct: "Quantity for product",
           unit: "pcs",
+          placeholder: "Quantity",
         },
         total: "Total",
         description: {

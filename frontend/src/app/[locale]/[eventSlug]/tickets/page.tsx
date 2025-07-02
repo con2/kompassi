@@ -1,3 +1,6 @@
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
+import CardTitle from "react-bootstrap/CardTitle";
 import { createOrder } from "./actions";
 import ProductsForm from "./ProductsForm";
 import ContactForm from "@/components/tickets/ContactForm";
@@ -64,62 +67,59 @@ export default async function TicketsPage({ params }: Props) {
         onSubmit={createOrder.bind(null, locale, eventSlug)}
         messages={{ noProductsSelectedError: t.errors.NO_PRODUCTS_SELECTED }}
       >
-        <table className="table table-striped mt-4 mb-4">
-          <thead>
-            <tr className="row">
-              <th className="col-8">{producT.clientAttributes.product}</th>
-              <th className="col">
-                {producT.clientAttributes.unitPrice.title}
-              </th>
-              <th className="col">{producT.clientAttributes.quantity.title}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => {
-              const className = product.available ? "" : "text-muted";
-              return (
-                <tr key={product.id} className="row">
-                  <td className={`col-8 ${className}`}>
-                    <p>
-                      <strong>{product.title}</strong>
-                    </p>
-                    {product.description}
-                  </td>
-                  <td className={`col fs-4 ${className}`}>
-                    {formatMoney(product.price)}
-                  </td>
-                  <td className={`col fs-4 ${className}`}>
-                    <label
-                      htmlFor={`quantity-${product.id}`}
-                      className="visually-hidden"
-                    >
-                      {producT.clientAttributes.quantity.title}
-                    </label>
-                    {product.available ? (
-                      <input
-                        type="number"
-                        className="form-control"
-                        id={`quantity-${product.id}`}
-                        name={`quantity-${product.id}`}
-                        min={0}
-                        defaultValue=""
-                        max={product.maxPerOrder}
-                      />
-                    ) : (
-                      producT.clientAttributes.soldOut
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {products.map((product) => {
+          const className = product.available ? "" : "text-muted";
+          return (
+            <Card key={product.id} className="mb-3">
+              <CardBody className={`row ${className}`}>
+                <div className="col-md-8 m-md-0 mb-2">
+                  <CardTitle>{product.title}</CardTitle>
+                  {product.description}
+                </div>
 
-        <h2 className="mb-4">{t.contactForm.title}</h2>
-        <ContactForm
-          messages={translations}
-          termsAndConditionsUrl={event.termsAndConditionsUrl}
-        />
+                <div className={`col-md m-md-0 mb-3 fs-4 text-md-end`}>
+                  {formatMoney(product.price)}
+                </div>
+
+                <div className={`col-md fs-4`}>
+                  <label
+                    htmlFor={`quantity-${product.id}`}
+                    className="visually-hidden"
+                  >
+                    {producT.clientAttributes.quantity.quantityForProduct}{" "}
+                    {product.title}
+                  </label>
+                  {product.available ? (
+                    <input
+                      type="number"
+                      className="form-control"
+                      id={`quantity-${product.id}`}
+                      name={`quantity-${product.id}`}
+                      min={0}
+                      defaultValue=""
+                      max={product.maxPerOrder}
+                      placeholder={
+                        producT.clientAttributes.quantity.placeholder + "…"
+                      }
+                    />
+                  ) : (
+                    producT.clientAttributes.soldOut
+                  )}
+                </div>
+              </CardBody>
+            </Card>
+          );
+        })}
+
+        <h2 className="mt-4 mb-4">{t.contactForm.title}</h2>
+        <Card className="mb-3">
+          <CardBody>
+            <ContactForm
+              messages={translations}
+              termsAndConditionsUrl={event.termsAndConditionsUrl}
+            />
+          </CardBody>
+        </Card>
 
         <div className="d-grid gap-2 mb-4">
           <button className="btn btn-primary btn-lg" type="submit">

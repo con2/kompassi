@@ -462,7 +462,9 @@ const translations: Translations = {
         },
         quantity: {
           title: "Lukumäärä",
+          quantityForProduct: "Lukumäärä tuotteelle",
           unit: "kpl",
+          placeholder: "Lukumäärä",
         },
         total: "Yhteensä",
         description: {
