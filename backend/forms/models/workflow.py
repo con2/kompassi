@@ -18,7 +18,7 @@ from graphql_api.utils import get_message_in_language
 from ..utils.lift_dimension_values import lift_dimension_values
 from .enums import SurveyPurpose
 from .response import Response
-from .survey import Survey, SurveyApp
+from .survey import DimensionApp, Survey
 
 if TYPE_CHECKING:
     from involvement.models.involvement import Involvement
@@ -35,18 +35,18 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     survey: Survey
 
     @property
-    def app(self) -> SurveyApp:
-        return SurveyApp(self.survey.app_name)
+    def app(self) -> DimensionApp:
+        return DimensionApp(self.survey.app_name)
 
     @classmethod
     def get_workflow(cls, survey: Survey):
         from program_v2.workflows.program_host_invitation import ProgramHostInvitationWorkflow
         from program_v2.workflows.program_offer import ProgramOfferWorkflow
 
-        match SurveyApp(survey.app_name), survey.purpose:
-            case SurveyApp.PROGRAM_V2, SurveyPurpose.DEFAULT:
+        match DimensionApp(survey.app_name), survey.purpose:
+            case DimensionApp.PROGRAM_V2, SurveyPurpose.DEFAULT:
                 return ProgramOfferWorkflow(survey=survey)
-            case SurveyApp.PROGRAM_V2, SurveyPurpose.INVITE:
+            case DimensionApp.PROGRAM_V2, SurveyPurpose.INVITE:
                 return ProgramHostInvitationWorkflow(survey=survey)
             case _:
                 return cls(survey=survey)
@@ -86,7 +86,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
                 cache=cache,
             )
         else:
-            response.set_dimension_values(self.survey.cached_default_dimensions, cache=cache)
+            response.set_dimension_values(self.survey.cached_default_response_dimensions, cache=cache)
 
         lift_dimension_values(response, cache=cache)
         response.refresh_cached_fields()

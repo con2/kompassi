@@ -42,7 +42,7 @@ class LimitedSurveyType(DjangoObjectType):
             "purpose",
             "profile_field_selector",
             "registry",
-            "cached_default_dimensions",
+            "cached_default_response_dimensions",
         )
 
-    cached_default_dimensions = graphene.NonNull(GenericScalar)
+    cached_default_response_dimensions = graphene.NonNull(GenericScalar)

@@ -17,6 +17,7 @@ from django.utils.timezone import now
 from access.cbac import is_graphql_allowed_for_model
 from core.models import Event
 from core.utils.model_utils import slugify, validate_slug
+from dimensions.models.cached_dimensions import CachedDimensions, StrictCachedDimensions, validate_cached_dimensions
 from dimensions.models.scope import Scope
 from dimensions.utils.build_cached_dimensions import build_cached_dimensions
 from dimensions.utils.dimension_cache import DimensionCache
@@ -329,7 +330,7 @@ class Program(models.Model):
         slug: str = "",
         title: str = "",
         created_by: Any | None = None,  # User
-        dimension_values: Mapping[str, Collection[str]] | None = None,
+        dimension_values: StrictCachedDimensions | None = None,
     ) -> Self:
         """
         Accept a program offer and return the new Program instance.
@@ -337,7 +338,7 @@ class Program(models.Model):
         event = program_offer.event
         cache = event.program_universe.preload_dimensions()
 
-        combined_dimension_values: Mapping[str, Collection[str]] = dict(program_offer.survey.cached_default_dimensions)
+        combined_dimension_values = validate_cached_dimensions(program_offer.survey.cached_default_response_dimensions)
         combined_dimension_values.update(program_offer.cached_dimensions)
         if dimension_values is not None:
             combined_dimension_values.update(dimension_values)
@@ -422,6 +423,7 @@ class Program(models.Model):
         self,
         email: str,
         survey: Survey,
+        involvement_dimensions: CachedDimensions,
         language: str = DEFAULT_LANGUAGE,
         created_by: Any | None = None,  # User
     ) -> Invitation:
@@ -434,6 +436,7 @@ class Program(models.Model):
             email=email,
             created_by=created_by,
             language=language,
+            cached_dimensions=validate_cached_dimensions(involvement_dimensions),
         )
         invitation.full_clean()
         invitation.save()

@@ -14,7 +14,7 @@ import pydantic
 from fastapi import HTTPException
 
 from ...optimized_server.utils.uuid7 import uuid7
-from ..config import TICKETS_BASE_URL
+from ..config import DEBUG, TICKETS_BASE_URL
 from ..excs import ProviderCannot
 from ..models.customer import Customer
 from ..models.enums import PaymentProvider, PaymentStampType, PaymentStatus
@@ -131,7 +131,7 @@ class CreatePaymentRequest(pydantic.BaseModel):
             language=request.language,
             customer=request.customer,
             redirect_urls=CallbackUrls.for_payment_redirect(event.slug, result.order_id),
-            callback_urls=CallbackUrls.for_payment_callback(event.slug, result.order_id),
+            callback_urls=None if DEBUG else CallbackUrls.for_payment_callback(event.slug, result.order_id),
         )
 
     @classmethod
@@ -146,7 +146,7 @@ class CreatePaymentRequest(pydantic.BaseModel):
             language=order.language,
             customer=order.customer,
             redirect_urls=CallbackUrls.for_payment_redirect(event.slug, order.id),
-            callback_urls=CallbackUrls.for_payment_callback(event.slug, order.id),
+            callback_urls=None if DEBUG else CallbackUrls.for_payment_callback(event.slug, order.id),
         )
 
     def prepare(

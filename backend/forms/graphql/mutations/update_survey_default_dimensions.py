@@ -44,7 +44,7 @@ class UpdateSurveyDefaultDimensions(graphene.Mutation):
         cache = survey.universe.preload_dimensions(dimension_slugs=values.keys())
 
         with transaction.atomic():
-            survey.set_default_dimension_values(values, cache)
+            survey.set_default_response_dimension_values(values, cache)
             survey.refresh_cached_default_dimensions()
 
         return UpdateSurveyDefaultDimensions(survey=survey)  # type: ignore

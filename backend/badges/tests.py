@@ -405,7 +405,7 @@ def test_survey_to_badge():
         ],
     ).save(survey.universe)
 
-    survey.set_default_dimension_values({"status": ["new"]}, cache=survey.universe.preload_dimensions())
+    survey.set_default_response_dimension_values({"status": ["new"]}, cache=survey.universe.preload_dimensions())
 
     form_en = Form.objects.create(
         event=event,

@@ -5,7 +5,8 @@ from django.db import transaction
 
 from access.models.email_alias_domain import EmailAliasDomain
 from core.models.person import Person
-from forms.models.enums import SurveyApp, SurveyPurpose
+from dimensions.models.enums import DimensionApp
+from forms.models.enums import SurveyPurpose
 from forms.models.form import Form
 from forms.models.response import Response
 from forms.models.survey import Survey
@@ -57,7 +58,7 @@ def test_program_hosts():
     offer_program = Survey(
         event=event,
         slug="offer-program",
-        app=SurveyApp.PROGRAM_V2,
+        app=DimensionApp.PROGRAM_V2,
         purpose=SurveyPurpose.DEFAULT,
     ).with_mandatory_fields()
     offer_program.save()
@@ -88,7 +89,7 @@ def test_program_hosts():
     accept_invitation = Survey(
         event=event,
         slug="accept-program-invitation",
-        app=SurveyApp.PROGRAM_V2,
+        app=DimensionApp.PROGRAM_V2,
         purpose=SurveyPurpose.INVITE,
     ).with_mandatory_fields()
     accept_invitation.save()
@@ -139,6 +140,7 @@ def test_program_hosts():
         person2.email,
         survey=accept_invitation,
         language="en",
+        involvement_dimensions={},
     )
 
     with transaction.atomic():

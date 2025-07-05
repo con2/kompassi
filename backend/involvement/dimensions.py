@@ -3,6 +3,7 @@ from __future__ import annotations
 from core.models.event import Event
 from dimensions.models.dimension_dto import DimensionDTO
 from dimensions.models.dimension_value_dto import DimensionValueDTO
+from dimensions.models.enums import DimensionApp
 from dimensions.models.universe import Universe
 
 from .models.enums import InvolvementApp
@@ -92,7 +93,7 @@ def get_involvement_universe(event: Event) -> Universe:
     universe, created = Universe.objects.get_or_create(
         scope=event.scope,
         slug="involvement",
-        app="involvement",
+        app_name=DimensionApp.INVOLVEMENT.value,
     )
 
     if created:

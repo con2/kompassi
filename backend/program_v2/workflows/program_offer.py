@@ -2,7 +2,8 @@ import logging
 
 from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
-from forms.models.enums import Anonymity, SurveyApp
+from dimensions.models.enums import DimensionApp
+from forms.models.enums import Anonymity
 from forms.models.response import Response
 from forms.models.survey import Survey
 from forms.models.workflow import Workflow
@@ -35,7 +36,7 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         super().handle_new_survey()
         setup_program_dimensions(self.survey.universe)
 
-        self.survey.set_default_dimension_values(
+        self.survey.set_default_response_dimension_values(
             self._get_default_dimension_values(self.survey),
             self.survey.universe.preload_dimensions(),
         )
@@ -59,7 +60,7 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         # Program form settings
         Survey.objects.filter(
             event=event,
-            app_name=SurveyApp.PROGRAM_V2.value,
+            app_name=DimensionApp.PROGRAM_V2.value,
         ).update(
             anonymity=Anonymity.FULL_PROFILE.value,
             registry=meta.default_registry,
@@ -67,7 +68,9 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
 
         for offer_form in meta.program_offer_forms.all():
             offer_form.with_mandatory_fields().save()
-            offer_form.set_default_dimension_values(cls._get_default_dimension_values(offer_form), program_cache)
+            offer_form.set_default_response_dimension_values(
+                cls._get_default_dimension_values(offer_form), program_cache
+            )
             offer_form.refresh_cached_default_dimensions()
 
         # Program offer dimensions

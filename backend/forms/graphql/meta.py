@@ -6,12 +6,13 @@ from django.core.exceptions import SuspiciousOperation
 
 from access.cbac import graphql_check_model, is_graphql_allowed_for_model
 from core.utils import get_objects_within_period, normalize_whitespace
+from dimensions.graphql.enums import DimensionAppType
+from dimensions.models.enums import DimensionApp
 
-from ..models.enums import SurveyApp
 from ..models.meta import FormsEventMeta, FormsProfileMeta
 from ..models.response import Response
 from ..models.survey import Survey, SurveyPurpose
-from .enums import SurveyAppType, SurveyPurposeType
+from .enums import SurveyPurposeType
 from .response_profile import ProfileResponseType
 from .survey_full import FullSurveyType
 
@@ -29,7 +30,7 @@ class FormsEventMetaType(graphene.ObjectType):
             graphene.NonNull(FullSurveyType),
         ),
         include_inactive=graphene.Boolean(),
-        app=graphene.NonNull(SurveyAppType),
+        app=graphene.NonNull(DimensionAppType),
         purpose=graphene.List(graphene.NonNull(SurveyPurposeType)),
     )
 
@@ -37,7 +38,7 @@ class FormsEventMetaType(graphene.ObjectType):
     def resolve_surveys(
         meta: FormsEventMeta,
         info,
-        app: SurveyApp,
+        app: DimensionApp,
         include_inactive: bool = False,
         purpose: list[SurveyPurpose] | None = None,
     ):
@@ -72,7 +73,7 @@ class FormsEventMetaType(graphene.ObjectType):
     survey = graphene.Field(
         FullSurveyType,
         slug=graphene.String(required=True),
-        app=graphene.Argument(SurveyAppType),
+        app=graphene.Argument(DimensionAppType),
         purpose=graphene.Argument(SurveyPurposeType),
     )
 
@@ -81,7 +82,7 @@ class FormsEventMetaType(graphene.ObjectType):
         meta: FormsEventMeta,
         info,
         slug: str,
-        app: SurveyApp | None = None,
+        app: DimensionApp | None = None,
         purpose: SurveyPurpose | None = None,
     ):
         """
