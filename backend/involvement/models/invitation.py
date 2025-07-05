@@ -73,11 +73,11 @@ class Invitation(UUID7Mixin, models.Model):
         help_text="The email address of the person to invite. This is used to send the invitation.",
     )
 
-    # cached_dimensions = models.JSONField(
-    #     default=dict,
-    #     blank=True,
-    #     help_text="Dimensions to set on the Involvement created from this Invitation.",
-    # )
+    cached_dimensions = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text="Dimensions to set on the Involvement created from this Invitation.",
+    )
 
     @cached_property
     def involvement_type(self) -> InvolvementType:

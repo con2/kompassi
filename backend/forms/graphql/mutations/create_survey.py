@@ -3,8 +3,9 @@ from django.http import HttpRequest
 
 from access.cbac import graphql_check_instance, graphql_check_model
 from core.models import Event
+from dimensions.models.enums import DimensionApp
 
-from ...models.enums import SurveyApp, SurveyPurpose
+from ...models.enums import SurveyPurpose
 from ...models.survey import Anonymity, Survey
 from ..survey_full import FullSurveyType
 from ..survey_limited import AnonymiType
@@ -41,7 +42,7 @@ class CreateSurvey(graphene.Mutation):
             app="forms",  # program offer forms created via another mutation
         )
 
-        app = SurveyApp.FORMS
+        app = DimensionApp.FORMS
         purpose = SurveyPurpose.DEFAULT
 
         anonymity = Anonymity(input.anonymity)

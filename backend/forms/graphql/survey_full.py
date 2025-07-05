@@ -228,7 +228,7 @@ class FullSurveyType(LimitedSurveyType):
     # TODO change to Scope
     event = graphene.NonNull(LimitedEventType)
 
-    cached_default_dimensions = graphene.Field(
+    cached_default_response_dimensions = graphene.Field(
         GenericScalar,
         description="Default dimension values that will be set on new responses.",
     )
@@ -247,7 +247,7 @@ class FullSurveyType(LimitedSurveyType):
             "max_responses_per_user",
             "protect_responses",
             "event",
-            "cached_default_dimensions",
+            "cached_default_response_dimensions",
             "profile_field_selector",
             "registry",
         )

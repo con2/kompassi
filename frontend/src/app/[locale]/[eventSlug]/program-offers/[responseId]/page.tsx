@@ -52,7 +52,7 @@ graphql(`
       survey {
         title(lang: $locale)
         slug
-        cachedDefaultDimensions
+        cachedDefaultResponseDimensions
         profileFieldSelector {
           ...FullProfileFieldSelector
         }
@@ -211,7 +211,7 @@ export default async function ProgramOfferPage({
   validateCachedDimensions(programOffer.cachedDimensions);
   const dimensions: Dimension[] = data.event.program.dimensions;
   const defaultDimensions =
-    programOffer.form.survey.cachedDefaultDimensions ?? {};
+    programOffer.form.survey.cachedDefaultResponseDimensions ?? {};
   const { fields: dimensionFields, values: dimensionValues } =
     buildDimensionValueSelectionForm(dimensions, {
       ...defaultDimensions,

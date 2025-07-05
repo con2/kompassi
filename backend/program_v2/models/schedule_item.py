@@ -52,10 +52,11 @@ class ScheduleItem(models.Model):
         on_delete=models.CASCADE,
         related_name="schedule_items",
     )
-    cached_location = models.JSONField(blank=True, default=dict)
     cached_dimensions = models.JSONField(blank=True, default=dict)
     cached_combined_dimensions = models.JSONField(blank=True, default=dict)
 
+    # TODO internal:formattedLocation:fi etc. annotations?
+    cached_location = models.JSONField(blank=True, default=dict)
     annotations = models.JSONField(blank=True, default=dict)
 
     favorited_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="favorite_schedule_items", blank=True)

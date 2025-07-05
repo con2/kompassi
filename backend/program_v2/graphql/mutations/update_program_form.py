@@ -5,9 +5,9 @@ from django import forms as django_forms
 
 from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
+from dimensions.models.enums import DimensionApp
 from forms.graphql.mutations.update_survey import UpdateSurveyInput
 from forms.graphql.survey_full import FullSurveyType
-from forms.models.enums import SurveyApp
 from forms.models.survey import Survey
 
 
@@ -40,7 +40,7 @@ class UpdateProgramForm(graphene.Mutation):
         survey = Survey.objects.get(
             event__slug=input.event_slug,
             slug=input.survey_slug,
-            app_name=SurveyApp.PROGRAM_V2.value,
+            app_name=DimensionApp.PROGRAM_V2.value,
         )
         form_data: dict[str, str] = input.form_data  # type: ignore
 

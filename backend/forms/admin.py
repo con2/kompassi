@@ -5,7 +5,7 @@ from .models.projection import Projection
 from .models.response import Response
 from .models.response_dimension_value import ResponseDimensionValue
 from .models.survey import Survey
-from .models.survey_default_dimension_value import SurveyDefaultDimensionValue
+from .models.survey_default_response_dimension_value import SurveyDefaultResponseDimensionValue
 
 
 @admin.register(Form)
@@ -52,7 +52,7 @@ class ResponseAdmin(admin.ModelAdmin):
 
 
 class SurveyDefaultDimensionValueInline(admin.TabularInline):
-    model = SurveyDefaultDimensionValue
+    model = SurveyDefaultResponseDimensionValue
     extra = 1
     raw_id_fields = ("value",)
 

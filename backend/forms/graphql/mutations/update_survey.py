@@ -6,8 +6,8 @@ from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
+from dimensions.models.enums import DimensionApp
 
-from ...models.enums import SurveyApp
 from ...models.survey import Survey
 from ..survey_full import FullSurveyType
 
@@ -51,7 +51,7 @@ class UpdateSurvey(graphene.Mutation):
         survey = Survey.objects.get(
             event__slug=input.event_slug,
             slug=input.survey_slug,
-            app_name=SurveyApp.FORMS.value,
+            app_name=DimensionApp.FORMS.value,
         )
         form_data: dict[str, str] = input.form_data  # type: ignore
 

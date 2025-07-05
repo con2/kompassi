@@ -13,7 +13,7 @@ from access.cbac import is_graphql_allowed_for_model
 from core.utils.model_utils import make_slug_field
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES, getattr_message_in_language
 
-from .enums import ValueOrdering
+from .enums import DimensionApp, ValueOrdering
 from .scope import Scope
 from .universe import Universe
 
@@ -216,15 +216,15 @@ class Dimension(models.Model):
         from program_v2.models.schedule_item_dimension_value import ScheduleItemDimensionValue
 
         match self.universe.app:
-            case "forms":
+            case DimensionApp.FORMS:
                 return ResponseDimensionValue.objects.filter(value__dimension=self).exists()
-            case "program_v2":
+            case DimensionApp.PROGRAM_V2:
                 return (
                     ProgramDimensionValue.objects.filter(value__dimension=self).exists()
                     or ScheduleItemDimensionValue.objects.filter(value__dimension=self).exists()
                 )
             case _:
-                raise NotImplementedError(self.universe.app)
+                raise NotImplementedError(self.universe.app.value)
 
     def can_be_deleted_by(self, request: HttpRequest) -> bool:
         return (
@@ -233,7 +233,7 @@ class Dimension(models.Model):
                 instance=self,
                 operation="delete",
                 field="self",
-                app=self.universe.app,
+                app=self.universe.app.value,
             )
             and not self.is_technical
             and not self.is_in_use

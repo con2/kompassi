@@ -7,17 +7,12 @@ from django.db import models
 
 from core.utils.model_utils import make_slug_field
 
+from .enums import DimensionApp
 from .scope import Scope
 
 if TYPE_CHECKING:
     from ..utils.dimension_cache import DimensionCache
     from .dimension import Dimension
-
-APP_CHOICES = [
-    ("forms", "Surveys V2"),
-    ("program_v2", "Program V2"),
-    ("involvement", "Involvement"),
-]
 
 
 class Universe(models.Model):
@@ -34,9 +29,9 @@ class Universe(models.Model):
     scope: models.ForeignKey[Scope] = models.ForeignKey(Scope, on_delete=models.CASCADE)
     slug = make_slug_field(unique=False)
 
-    app = models.CharField(
-        choices=APP_CHOICES,
-        max_length=max(len(choice[0]) for choice in APP_CHOICES),
+    app_name = models.CharField(
+        choices=[(app.value, app.name) for app in DimensionApp],
+        max_length=max(len(app.value) for app in DimensionApp),
     )
 
     dimensions: models.QuerySet[Dimension]
@@ -45,19 +40,30 @@ class Universe(models.Model):
         unique_together = [("scope", "slug")]
 
     def __str__(self):
-        return f"{self.scope}/{self.slug} ({self.app})"
+        return f"{self.scope}/{self.slug} ({self.app_name})"
+
+    @property
+    def app(self) -> DimensionApp:
+        return DimensionApp(self.app_name)
 
     @property
     def surveys(self):
-        from forms.models.survey import Survey, SurveyApp
+        from forms.models.survey import Survey
 
-        match SurveyApp(self.app):
-            case SurveyApp.FORMS:
-                return Survey.objects.filter(event=self.scope.event, slug=self.slug, app="forms")
-            case SurveyApp.PROGRAM_V2:
-                return Survey.objects.filter(event=self.scope.event, app="program_v2")
+        match self.app:
+            case DimensionApp.FORMS:
+                return Survey.objects.filter(
+                    event=self.scope.event,
+                    slug=self.slug,
+                    app_name=self.app.value,
+                )
+            case DimensionApp.PROGRAM_V2:
+                return Survey.objects.filter(
+                    event=self.scope.event,
+                    app_name=self.app.value,
+                )
             case _:
-                raise ValueError(f"Unknown app type: {self.app}")
+                raise ValueError(f"Unknown app type: {self.app_name}")
 
     @property
     def involvements(self):

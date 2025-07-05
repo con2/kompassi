@@ -32,7 +32,7 @@ graphql(`
       fields
       survey {
         slug
-        cachedDefaultDimensions
+        cachedDefaultResponseDimensions
         profileFieldSelector {
           ...FullProfileFieldSelector
         }

@@ -9,11 +9,12 @@ from core.models import Event
 from dimensions.graphql.mutations.put_dimension import PutDimension
 from dimensions.models.dimension import Dimension, ValueOrdering
 from dimensions.models.dimension_value import DimensionValue
+from dimensions.models.enums import DimensionApp
 from graphql_api.schema import schema
 
 from .excel_export import get_header_cells, get_response_cells
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
-from .models.enums import SurveyApp, SurveyPurpose
+from .models.enums import SurveyPurpose
 from .models.field import Choice, Field, FieldType
 from .models.form import Form
 from .models.response import Response
@@ -775,8 +776,8 @@ def test_promote_field_to_dimension():
         survey = Survey.objects.create(
             event=event,
             slug="test-survey",
-            app=SurveyApp.FORMS,
-            purpose=SurveyPurpose.DEFAULT,
+            app_name=DimensionApp.FORMS.value,
+            purpose_slug=SurveyPurpose.DEFAULT.value,
         ).with_mandatory_fields()
 
         form_en = Form.objects.create(

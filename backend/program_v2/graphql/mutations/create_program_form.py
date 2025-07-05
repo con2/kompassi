@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from access.cbac import graphql_check_instance, graphql_check_model
 from core.models import Event
 from forms.graphql.survey_full import FullSurveyType
-from forms.models.survey import Survey, SurveyApp, SurveyPurpose
+from forms.models.survey import DimensionApp, Survey, SurveyPurpose
 
 SurveyPurposeType = graphene.Enum.from_enum(SurveyPurpose)
 
@@ -42,7 +42,7 @@ class CreateProgramForm(graphene.Mutation):
         )
 
         purpose = SurveyPurpose(input.purpose) if input.purpose is not None else SurveyPurpose.DEFAULT
-        app = SurveyApp.PROGRAM_V2
+        app = DimensionApp.PROGRAM_V2
 
         if input.copy_from:
             source_event_slug, source_survey_slug = str(input.copy_from).split("/")

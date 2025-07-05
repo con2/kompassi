@@ -11,7 +11,7 @@ from .survey import Survey
 logger = logging.getLogger("kompassi")
 
 
-class SurveyDefaultDimensionValue(models.Model):
+class SurveyDefaultResponseDimensionValue(models.Model):
     """
     When a response is created, the default dimension values are set on the response.
     """
@@ -19,7 +19,7 @@ class SurveyDefaultDimensionValue(models.Model):
     subject: models.ForeignKey[Survey] = models.ForeignKey(
         Survey,
         on_delete=models.CASCADE,
-        related_name="default_dimensions",
+        related_name="default_response_dimensions",
     )
     value: models.ForeignKey[DimensionValue] = models.ForeignKey(
         DimensionValue,

@@ -34,7 +34,7 @@ const query = graphql(`
           dimensions {
             ...DimensionRowGroup
           }
-          cachedDefaultDimensions
+          cachedDefaultResponseDimensions
         }
       }
     }
@@ -105,7 +105,7 @@ export default async function ProgramFormDimensionDefaults({ params }: Props) {
   const survey = data.event.forms.survey;
   const dimensions = data.event.forms.survey.dimensions;
 
-  validateCachedDimensions(survey.cachedDefaultDimensions);
+  validateCachedDimensions(survey.cachedDefaultResponseDimensions);
 
   return (
     <ProgramFormEditorView
@@ -117,7 +117,7 @@ export default async function ProgramFormDimensionDefaults({ params }: Props) {
       <p className="form-text">{t.attributes.dimensionDefaults.description} </p>
       <DimensionValueSelectionForm
         dimensions={dimensions}
-        cachedDimensions={survey.cachedDefaultDimensions}
+        cachedDimensions={survey.cachedDefaultResponseDimensions}
         onChange={updateProgramFormDefaultDimensions.bind(
           null,
           locale,

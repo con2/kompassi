@@ -7,6 +7,7 @@ from django.http import HttpRequest
 
 from access.cbac import is_graphql_allowed_for_model
 from core.utils.model_utils import make_slug_field
+from dimensions.models.enums import DimensionApp
 from graphql_api.language import DEFAULT_LANGUAGE, getattr_message_in_language
 
 from .dimension import Dimension
@@ -75,15 +76,15 @@ class DimensionValue(models.Model):
         from program_v2.models.schedule_item_dimension_value import ScheduleItemDimensionValue
 
         match self.universe.app:
-            case "forms":
+            case DimensionApp.FORMS:
                 return ResponseDimensionValue.objects.filter(value=self).exists()
-            case "program_v2":
+            case DimensionApp.PROGRAM_V2:
                 return (
                     ProgramDimensionValue.objects.filter(value=self).exists()
                     or ScheduleItemDimensionValue.objects.filter(value=self).exists()
                 )
             case _:
-                raise NotImplementedError(self.universe.app)
+                raise NotImplementedError(self.universe.app_name)
 
     def can_be_deleted_by(self, request: HttpRequest) -> bool:
         return (
@@ -92,7 +93,7 @@ class DimensionValue(models.Model):
                 instance=self,
                 operation="delete",
                 field="self",
-                app=self.universe.app,
+                app=self.universe.app.value,
             )
             and not self.is_technical
             and not self.is_in_use

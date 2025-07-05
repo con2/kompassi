@@ -22,6 +22,7 @@ from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, log_get_or
 from core.utils.pkg_resources_compat import resource_stream
 from dimensions.models.dimension import Dimension
 from dimensions.models.dimension_dto import DimensionDTO
+from dimensions.models.enums import DimensionApp
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
@@ -32,14 +33,15 @@ from involvement.models.profile_field_selector import ProfileFieldSelector
 from involvement.models.registry import Registry
 
 from ..utils.merge_form_fields import merge_fields
-from .enums import Anonymity, SurveyApp, SurveyPurpose
+from .enums import Anonymity, SurveyPurpose
 
 if TYPE_CHECKING:
     from badges.models.survey_to_badge import SurveyToBadgeMapping
 
     from .form import Form
     from .survey import Survey
-    from .survey_default_dimension_value import SurveyDefaultDimensionValue
+    from .survey_default_involvement_dimension_value import SurveyDefaultInvolvementDimensionValue
+    from .survey_default_response_dimension_value import SurveyDefaultResponseDimensionValue
     from .workflow import Workflow
 
 logger = logging.getLogger("kompassi")
@@ -50,9 +52,9 @@ class Survey(models.Model):
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     app_name = models.CharField(
-        choices=[(app.value, app.value) for app in SurveyApp],
-        max_length=max(len(app.value) for app in SurveyApp),
-        default=SurveyApp.FORMS.value,
+        choices=[(app.value, app.value) for app in DimensionApp],
+        max_length=max(len(app.value) for app in DimensionApp),
+        default=DimensionApp.FORMS.value,
         help_text="Which app manages this survey?",
     )
     purpose_slug = models.CharField(
@@ -153,7 +155,11 @@ class Survey(models.Model):
         related_name="surveys",
     )
 
-    cached_default_dimensions = models.JSONField(blank=True, default=dict)
+    default_response_dimensions: models.QuerySet[SurveyDefaultResponseDimensionValue]
+    cached_default_response_dimensions = models.JSONField(blank=True, default=dict)
+
+    default_involvement_dimensions: models.QuerySet[SurveyDefaultInvolvementDimensionValue]
+    cached_default_involvement_dimensions = models.JSONField(blank=True, default=dict)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -161,7 +167,6 @@ class Survey(models.Model):
 
     languages: models.QuerySet[Form]
     badge_mappings: models.QuerySet[SurveyToBadgeMapping]
-    default_dimensions: models.QuerySet[SurveyDefaultDimensionValue]
     id: int
     universe_id: int | None
 
@@ -176,7 +181,7 @@ class Survey(models.Model):
                 kwargs["purpose_slug"] = purpose
 
         if app := kwargs.pop("app", None):
-            if isinstance(app, SurveyApp):
+            if isinstance(app, DimensionApp):
                 kwargs["app_name"] = app.value
             else:
                 kwargs["app_name"] = app
@@ -195,11 +200,11 @@ class Survey(models.Model):
         return ProfileFieldSelector.from_anonymity(self.anonymity)
 
     @property
-    def app(self) -> SurveyApp:
+    def app(self) -> DimensionApp:
         if not self.app_name:
             raise ValueError("app_name must be set")
 
-        return SurveyApp(self.app_name)
+        return DimensionApp(self.app_name)
 
     @property
     def purpose(self) -> SurveyPurpose:
@@ -215,11 +220,11 @@ class Survey(models.Model):
             return None
 
         match self.app, self.purpose:
-            case SurveyApp.PROGRAM_V2, SurveyPurpose.DEFAULT:
+            case DimensionApp.PROGRAM_V2, SurveyPurpose.DEFAULT:
                 return InvolvementType.PROGRAM_OFFER
-            case SurveyApp.PROGRAM_V2, SurveyPurpose.INVITE:
+            case DimensionApp.PROGRAM_V2, SurveyPurpose.INVITE:
                 return InvolvementType.PROGRAM_HOST
-            case SurveyApp.FORMS, _:
+            case DimensionApp.FORMS, _:
                 return InvolvementType.SURVEY_RESPONSE
             case _:
                 raise NotImplementedError(f"{self.app=} {self.purpose=} is not implemented")
@@ -237,13 +242,13 @@ class Survey(models.Model):
 
     def _get_universe(self) -> Universe:
         match self.app:
-            case SurveyApp.FORMS:
+            case DimensionApp.FORMS:
                 return Universe.objects.get_or_create(
                     scope=self.scope,
                     slug=self.slug,
-                    app="forms",
+                    app_name=self.app.value,
                 )[0]
-            case SurveyApp.PROGRAM_V2:
+            case DimensionApp.PROGRAM_V2:
                 return self.event.program_universe
             case _:
                 raise NotImplementedError(self.app)
@@ -377,7 +382,7 @@ class Survey(models.Model):
             self.universe = self._get_universe()
 
         match self.app:
-            case SurveyApp.PROGRAM_V2:
+            case DimensionApp.PROGRAM_V2:
                 meta = self.event.program_v2_event_meta
                 if meta is None:
                     raise ValueError(f"Event {self.event} does not have a program v2 event meta")
@@ -394,7 +399,7 @@ class Survey(models.Model):
                     self.responses_editable_until = self.event.end_time
                     self.key_fields = ["title"]
 
-            case SurveyApp.FORMS:
+            case DimensionApp.FORMS:
                 if self.purpose == SurveyPurpose.INVITE:
                     raise ValueError("ACCEPT_INVITATION is not a valid purpose for FORMS app")
 
@@ -410,7 +415,7 @@ class Survey(models.Model):
         self,
         event: Event,
         slug: str,
-        app: SurveyApp,
+        app: DimensionApp,
         purpose: SurveyPurpose,
         anonymity: Anonymity | None = None,
         created_by: AbstractBaseUser | None = None,
@@ -446,21 +451,54 @@ class Survey(models.Model):
         return survey
 
     @transaction.atomic
-    def set_default_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
-        from .survey_default_dimension_value import SurveyDefaultDimensionValue
+    def set_default_response_dimension_values(
+        self,
+        values_to_set: Mapping[str, Collection[str]],
+        cache: DimensionCache,
+    ):
+        from .survey_default_response_dimension_value import SurveyDefaultResponseDimensionValue
 
-        set_dimension_values(SurveyDefaultDimensionValue, self, values_to_set, cache)
+        if cache.universe.app != self.app:
+            raise AssertionError(f"Expected cache universe to match survey app ({cache.universe.app} != {self.app})")
 
-    def _build_cached_default_dimensions(self) -> dict[str, list[str]]:
+        set_dimension_values(SurveyDefaultResponseDimensionValue, self, values_to_set, cache)
+
+    @transaction.atomic
+    def set_default_involvement_dimension_values(
+        self,
+        values_to_set: Mapping[str, Collection[str]],
+        cache: DimensionCache,
+    ):
+        from .survey_default_involvement_dimension_value import SurveyDefaultInvolvementDimensionValue
+
+        if cache.universe.app != DimensionApp.INVOLVEMENT:
+            raise AssertionError(f"Expected involvement dimensions cache, got {cache.universe.app}")
+
+        set_dimension_values(SurveyDefaultInvolvementDimensionValue, self, values_to_set, cache)
+
+    def _build_cached_default_response_dimensions(self) -> dict[str, list[str]]:
         new_cached_dimensions = {}
-        for sddv in self.default_dimensions.all():
-            new_cached_dimensions.setdefault(sddv.value.dimension.slug, []).append(sddv.value.slug)
+        for sdrdv in self.default_response_dimensions.all():
+            new_cached_dimensions.setdefault(sdrdv.value.dimension.slug, []).append(sdrdv.value.slug)
+
+        return new_cached_dimensions
+
+    def _build_cached_default_involvement_dimensions(self) -> dict[str, list[str]]:
+        new_cached_dimensions = {}
+        for sdidv in self.default_involvement_dimensions.all():
+            new_cached_dimensions.setdefault(sdidv.value.dimension.slug, []).append(sdidv.value.slug)
 
         return new_cached_dimensions
 
     def refresh_cached_default_dimensions(self):
-        self.cached_default_dimensions = self._build_cached_default_dimensions()
-        self.save(update_fields=["cached_default_dimensions"])
+        self.cached_default_response_dimensions = self._build_cached_default_response_dimensions()
+        self.cached_default_involvement_dimensions = self._build_cached_default_involvement_dimensions()
+        self.save(
+            update_fields=[
+                "cached_default_response_dimensions",
+                "cached_default_involvement_dimensions",
+            ]
+        )
 
     @classmethod
     def refresh_cached_default_dimensions_qs(
@@ -470,9 +508,17 @@ class Survey(models.Model):
     ):
         bulk_update = []
         for survey in surveys:
-            survey.cached_default_dimensions = survey._build_cached_default_dimensions()
+            survey.cached_default_response_dimensions = survey._build_cached_default_response_dimensions()
+            survey.cached_default_involvement_dimensions = survey._build_cached_default_involvement_dimensions()
             bulk_update.append(survey)
-        Survey.objects.bulk_update(bulk_update, ["cached_default_dimensions"], batch_size=batch_size)
+        Survey.objects.bulk_update(
+            bulk_update,
+            [
+                "cached_default_response_dimensions",
+                "cached_default_involvement_dimensions",
+            ],
+            batch_size=batch_size,
+        )
 
 
 @dataclass
