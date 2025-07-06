@@ -2279,8 +2279,8 @@ const translations: Translations = {
       <>
         Suodattamaton lista piilotettu ({numPeople} henkilö
         {numPeople === 1 ? "" : "ä"} ja {numInvolvements}{" "}
-        {numInvolvements === 1 ? "osallistuminen" : "osallistumista"}{" "}
-        piilotettu. Tarkenna hakua nähdäksesi tulokset.
+        {numInvolvements === 1 ? "osallistuminen" : "osallistumista"}). Tarkenna
+        hakua nähdäksesi tulokset.
       </>
     ),
   },
