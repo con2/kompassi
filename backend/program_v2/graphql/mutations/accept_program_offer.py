@@ -5,7 +5,7 @@ from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance, graphql_check_model
 from core.models.event import Event
-from dimensions.utils.process_dimensions_form import process_dimensions_form
+from dimensions.utils.process_dimension_value_selection_form import process_dimension_value_selection_form
 from forms.models.field import Field, FieldType
 from forms.utils.process_form_data import process_form_data
 
@@ -74,16 +74,29 @@ class AcceptProgramOffer(graphene.Mutation):
         if warnings:
             raise ValueError(warnings)
 
-        dimension_values = process_dimensions_form(
+        print("form_data", form_data)
+
+        program_dimensions = process_dimension_value_selection_form(
             list(event.program_universe.dimensions.filter(is_technical=False)),
             form_data,
+            slug_prefix="program_dimensions",
         )
+        involvement_dimensions = process_dimension_value_selection_form(
+            list(event.involvement_universe.dimensions.filter(is_technical=False)),
+            form_data,
+            slug_prefix="involvement_dimensions",
+        )
+
+        print("program_dimensions", program_dimensions)
+        print("involvement_dimensions", involvement_dimensions)
+
         program = Program.from_program_offer(
             program_offer,
             slug=values.get("slug", ""),
             title=values.get("title", ""),
             created_by=request.user,
-            dimension_values=dimension_values,
+            program_dimension_values=program_dimensions,
+            involvement_dimension_values=involvement_dimensions,
         )
 
         return AcceptProgramOffer(program=program)  # type: ignore

@@ -151,10 +151,11 @@ class DimensionSingleSelectFieldProcessor(SingleSelectFieldProcessor):
 
 class MultiSelectFieldProcessor(FieldProcessor):
     def extract_value(self, field: Field, form_data: dict[str, Any]):
+        field_slug_dot = f"{field.slug}."
         return [
-            key.split(".", 1)[1]
+            key.removeprefix(field_slug_dot)
             for key, value in form_data.items()
-            if key.startswith(f"{field.slug}.") and value and value.strip().lower() not in FALSY_VALUES
+            if key.startswith(field_slug_dot) and value and value.strip().lower() not in FALSY_VALUES
         ]
 
     def validate_value(self, field: Field, value: Any) -> list[FieldWarning]:
@@ -187,7 +188,12 @@ class DimensionMultiSelectFieldProcessor(MultiSelectFieldProcessor):
 
 class RadioMatrixFieldProcessor(FieldProcessor):
     def extract_value(self, field: Field, form_data: dict[str, Any]):
-        return {key.split(".", 1)[1]: value for key, value in form_data.items() if key.startswith(f"{field.slug}.")}
+        field_slug_dot = f"{field.slug}."
+        return {
+            key.removeprefix(field_slug_dot): value
+            for key, value in form_data.items()
+            if key.startswith(field_slug_dot)
+        }
 
     def validate_value(self, field: Field, value: Any) -> list[FieldWarning]:
         values: dict[str, str] = value
@@ -268,22 +274,34 @@ SINGLE_LINE_TEXT_PROCESSORS: dict[str, FieldProcessor] = {
 }
 
 
-def process_form_data(fields: Sequence[Field], form_data: dict[str, Any]):
+def process_form_data(
+    fields: Sequence[Field],
+    form_data: dict[str, Any],
+    *,
+    slug_prefix: str = "",
+):
+    """
+    :param slug_prefix: If set, this prefix plus a dot will be removed from the field slugs.
+    """
     values: dict[str, Any] = {}
     warnings: dict[str, list[FieldWarning]] = {}
 
+    slug_prefix_dot = f"{slug_prefix}." if slug_prefix else ""
+
     for field in fields:
+        field_slug = field.slug.removeprefix(slug_prefix_dot)
         processor = FIELD_PROCESSORS.get(field.type)
 
         if processor is None:
-            warnings[field.slug] = [FieldWarning.UNKNOWN_FIELD_TYPE]
+            warnings[field_slug] = [FieldWarning.UNKNOWN_FIELD_TYPE]
             continue
 
+        # NOTE: uses possibly prefixed slug
         value = processor.extract_value(field, form_data)
         value_warnings = processor.validate_value(field, value)
 
         if value_warnings:
-            warnings[field.slug] = value_warnings
+            warnings[field_slug] = value_warnings
 
         if value is VALUE_MISSING or value is INVALID_VALUE:
             continue
@@ -295,6 +313,6 @@ def process_form_data(fields: Sequence[Field], form_data: dict[str, Any]):
         # after a user has already submitted a form with that choice selected.
         # It's better to let the editor see the invalid choice than silently ignore it.
 
-        values[field.slug] = value
+        values[field_slug] = value
 
     return values, warnings

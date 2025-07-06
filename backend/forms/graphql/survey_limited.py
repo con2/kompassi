@@ -43,6 +43,14 @@ class LimitedSurveyType(DjangoObjectType):
             "profile_field_selector",
             "registry",
             "cached_default_response_dimensions",
+            "cached_default_involvement_dimensions",
         )
 
-    cached_default_response_dimensions = graphene.NonNull(GenericScalar)
+    cached_default_response_dimensions = graphene.Field(
+        GenericScalar,
+        description="Default dimension values that will be set on new responses.",
+    )
+    cached_default_involvement_dimensions = graphene.Field(
+        GenericScalar,
+        description="Default dimension values that will be set on involvements based on responses.",
+    )

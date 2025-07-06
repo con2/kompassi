@@ -132,10 +132,14 @@ class Field(pydantic.BaseModel, populate_by_name=True):
         cls,
         dimension: Dimension,
         type: Literal[FieldType.DIMENSION_SINGLE_SELECT] | Literal[FieldType.DIMENSION_MULTI_SELECT],
+        *,
         language: str | None = None,
+        slug_prefix: str | None = None,
     ) -> Field:
+        slug = f"{slug_prefix}.{dimension.slug}" if slug_prefix else dimension.slug
+
         return cls(
-            slug=dimension.slug,
+            slug=slug,
             type=type,
             dimension=dimension.slug,
             choices=dimension.as_choices(language=language),

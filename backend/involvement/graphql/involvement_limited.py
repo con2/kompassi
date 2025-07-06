@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import graphene
 import graphene_django
+from graphene.types.generic import GenericScalar
 
 from forms.graphql.response_limited import LimitedResponseType
 from graphql_api.language import DEFAULT_LANGUAGE
@@ -27,6 +28,7 @@ class LimitedInvolvementType(graphene_django.DjangoObjectType):
             "response",
             "type",
             "app",
+            "cached_dimensions",
         )
 
     program = graphene.Field(LimitedProgramType)
@@ -42,3 +44,4 @@ class LimitedInvolvementType(graphene_django.DjangoObjectType):
 
     title = graphene.String(lang=graphene.String())
     admin_link = graphene.String()
+    cached_dimensions = graphene.NonNull(GenericScalar)

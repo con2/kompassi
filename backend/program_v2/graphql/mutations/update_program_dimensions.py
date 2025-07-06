@@ -4,7 +4,7 @@ from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 from core.models import Event
-from dimensions.utils.process_dimensions_form import process_dimensions_form
+from dimensions.utils.process_dimension_value_selection_form import process_dimension_value_selection_form
 
 from ...models.program import Program
 from ..program_full import FullProgramType
@@ -44,7 +44,7 @@ class UpdateProgramDimensions(graphene.Mutation):
             operation="update",
         )
 
-        values = process_dimensions_form(dimensions, form_data)
+        values = process_dimension_value_selection_form(dimensions, form_data)
         cache = universe.preload_dimensions(dimension_slugs=values.keys())
         program.set_dimension_values(values, cache=cache)
         program.refresh_cached_dimensions()

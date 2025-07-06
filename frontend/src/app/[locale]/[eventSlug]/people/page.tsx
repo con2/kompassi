@@ -6,9 +6,15 @@ import { graphql } from "@/__generated__";
 import { InvolvedPersonFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
+import { CachedAnnotations } from "@/components/annotations/models";
 import { Column, DataTable } from "@/components/DataTable";
+import CachedDimensionBadges from "@/components/dimensions/CachedDimensionsBadges";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
+import {
+  CachedDimensions,
+  validateCachedDimensions,
+} from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
 import ViewContainer from "@/components/ViewContainer";
@@ -30,6 +36,7 @@ graphql(`
       title
       adminLink
       isActive
+      cachedDimensions
     }
   }
 `);
@@ -47,8 +54,12 @@ const query = graphql(`
       timezone
 
       involvement {
-        dimensions(isListFilter: true) {
+        dimensions(publicOnly: false) {
+          isKeyDimension
+          isListFilter
+
           ...DimensionFilter
+          ...CachedDimensionsBadges
         }
 
         people(filters: $filters, search: $search) {
@@ -114,6 +125,12 @@ function textMutedWhenInactive(
   );
 }
 
+function hideStatusActive(cachedDimensions: unknown) {
+  validateCachedDimensions(cachedDimensions);
+  const { state = [], ...rest } = cachedDimensions;
+  return { ...rest, state: state.filter((s) => s !== "active") };
+}
+
 export default async function PeoplePage({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
@@ -139,6 +156,10 @@ export default async function PeoplePage({ params, searchParams }: Props) {
   const { event } = data;
   let people = data.event.involvement.people;
   const dimensions = data.event.involvement.dimensions;
+  const keyDimensions = dimensions.filter(
+    (dimension) => dimension.isKeyDimension,
+  );
+  const listFilters = dimensions.filter((dimension) => dimension.isListFilter);
 
   const columns: Column<InvolvedPersonFragment>[] = [
     {
@@ -166,10 +187,6 @@ export default async function PeoplePage({ params, searchParams }: Props) {
             className += " text-muted";
           }
 
-          const active = involvement.isActive ? null : (
-            <em> ({t.attributes.isActive.choices.inactive})</em>
-          );
-
           const title = involvement.title ? (
             <>{involvement.title}</>
           ) : (
@@ -192,7 +209,12 @@ export default async function PeoplePage({ params, searchParams }: Props) {
               ) : (
                 title
               )}
-              {active}
+              <CachedDimensionBadges
+                dimensions={keyDimensions}
+                cachedDimensions={hideStatusActive(
+                  involvement.cachedDimensions,
+                )}
+              />
             </div>
           );
         });
@@ -215,7 +237,7 @@ export default async function PeoplePage({ params, searchParams }: Props) {
       searchParams={searchParams}
     >
       <DimensionFilters
-        dimensions={dimensions}
+        dimensions={listFilters}
         className="mt-1"
         search={true}
         messages={t.filters}

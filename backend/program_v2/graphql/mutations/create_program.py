@@ -6,7 +6,7 @@ from graphene.types.generic import GenericScalar
 from access.cbac import graphql_check_model
 from core.models import Event
 from core.utils.model_utils import slugify
-from dimensions.utils.process_dimensions_form import process_dimensions_form
+from dimensions.utils.process_dimension_value_selection_form import process_dimension_value_selection_form
 
 from ...models.program import Program
 from ..program_full import FullProgramType
@@ -55,7 +55,7 @@ class CreateProgram(graphene.Mutation):
         )
         program.full_clean()
 
-        dimension_values = process_dimensions_form(
+        dimension_values = process_dimension_value_selection_form(
             list(event.program_universe.dimensions.filter(is_technical=False)),
             values,
         )

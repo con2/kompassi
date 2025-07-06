@@ -205,6 +205,8 @@ const translations: Translations = {
       scheduleItems: {
         title: "Programtider",
       },
+      dimensions: UNTRANSLATED(en.Program.attributes.dimensions),
+      annotations: UNTRANSLATED(en.Program.attributes.annotations),
     },
     actions: {
       ...UNTRANSLATED(en.Program.actions),

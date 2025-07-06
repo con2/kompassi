@@ -3,7 +3,7 @@ from django.db import transaction
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
-from dimensions.utils.process_dimensions_form import process_dimensions_form
+from dimensions.utils.process_dimension_value_selection_form import process_dimension_value_selection_form
 
 from ...models.survey import Survey
 from ..survey_full import FullSurveyType
@@ -40,7 +40,7 @@ class UpdateSurveyDefaultDimensions(graphene.Mutation):
             operation="update",
         )
 
-        values = process_dimensions_form(dimensions, form_data)
+        values = process_dimension_value_selection_form(dimensions, form_data)
         cache = survey.universe.preload_dimensions(dimension_slugs=values.keys())
 
         with transaction.atomic():

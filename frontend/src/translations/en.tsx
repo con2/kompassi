@@ -1038,6 +1038,8 @@ const translations = {
       scheduleItems: {
         title: "Schedule items",
       },
+      dimensions: "Program item dimensions",
+      annotations: "Additional information",
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -1484,6 +1486,7 @@ const translations = {
           </>
         ),
         programItems: "Program items",
+        dimensions: "Program host dimensions",
       },
       actions: {
         inviteProgramHost: {

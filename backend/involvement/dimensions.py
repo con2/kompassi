@@ -54,6 +54,7 @@ DIMENSIONS = [
             sv="Status",
         ),
         is_technical=True,
+        is_key_dimension=True,
         order=9000,
         choices=[
             DimensionValueDTO(

@@ -1029,6 +1029,8 @@ const translations: Translations = {
       scheduleItems: {
         title: "Aikataulumerkinnät",
       },
+      dimensions: "Ohjelmanumeron dimensiot",
+      annotations: "Lisätiedot",
     },
     actions: {
       returnToProgramList: (eventName: string) =>
@@ -1485,6 +1487,7 @@ const translations: Translations = {
           </>
         ),
         programItems: "Ohjelmanumerot",
+        dimensions: "Ohjelmanpitäjän dimensiot",
       },
       actions: {
         inviteProgramHost: {

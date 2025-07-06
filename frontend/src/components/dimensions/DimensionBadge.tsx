@@ -1,6 +1,5 @@
 import { makeBadgeBackgroundColor } from "./helpers";
 import { graphql } from "@/__generated__";
-import { DimensionBadgeFragment } from "@/__generated__/graphql";
 
 graphql(`
   fragment DimensionBadge on ResponseDimensionValueType {

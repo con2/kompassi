@@ -53,6 +53,7 @@ graphql(`
         title(lang: $locale)
         slug
         cachedDefaultResponseDimensions
+        cachedDefaultInvolvementDimensions
         profileFieldSelector {
           ...FullProfileFieldSelector
         }
@@ -91,17 +92,15 @@ const query = graphql(`
       slug
       timezone
 
+      involvement {
+        dimensions(publicOnly: false) {
+          ...DimensionValueSelect
+        }
+      }
+
       program {
         dimensions(publicOnly: false) {
-          slug
-          title(lang: $locale)
-          isTechnical
-          isMultiValue
-
-          values(lang: $locale) {
-            slug
-            title(lang: $locale)
-          }
+          ...DimensionValueSelect
         }
 
         programOffer(id: $responseId) {
@@ -187,6 +186,7 @@ export default async function ProgramOfferPage({
 
   const surveyT = translations.Survey;
   const programT = translations.Program;
+  const programHosT = translations.Program.ProgramHost;
   const t = translations.Program.ProgramOffer;
 
   const programOffer = data.event.program.programOffer;
@@ -209,14 +209,35 @@ export default async function ProgramOfferPage({
   validateFields(fields);
 
   validateCachedDimensions(programOffer.cachedDimensions);
-  const dimensions: Dimension[] = data.event.program.dimensions;
-  const defaultDimensions =
+  const programDimensions: Dimension[] = data.event.program.dimensions;
+  const defaultProgramDimensions =
     programOffer.form.survey.cachedDefaultResponseDimensions ?? {};
-  const { fields: dimensionFields, values: dimensionValues } =
-    buildDimensionValueSelectionForm(dimensions, {
-      ...defaultDimensions,
-      ...programOffer.cachedDimensions,
-    });
+  validateCachedDimensions(defaultProgramDimensions);
+  const { fields: programDimensionFields, values: programDimensionValues } =
+    buildDimensionValueSelectionForm(
+      programDimensions,
+      {
+        ...defaultProgramDimensions,
+        ...programOffer.cachedDimensions,
+      },
+      "omit",
+      "program_dimensions",
+    );
+
+  const involvementDimensions: Dimension[] =
+    data.event.involvement?.dimensions ?? [];
+  const defaultInvolvementDimensions =
+    programOffer.form.survey.cachedDefaultInvolvementDimensions ?? {};
+  validateCachedDimensions(defaultInvolvementDimensions);
+  const {
+    fields: involvementDimensionFields,
+    values: involvementDimensionValues,
+  } = buildDimensionValueSelectionForm(
+    involvementDimensions,
+    defaultInvolvementDimensions,
+    "omit",
+    "involvement_dimensions",
+  );
 
   const acceptProgramOfferFields: Field[] = [
     {
@@ -233,14 +254,30 @@ export default async function ProgramOfferPage({
     },
   ];
 
-  if (dimensions.filter((dimension) => !dimension.isTechnical).length > 0) {
+  if (
+    involvementDimensions.filter((dimension) => !dimension.isTechnical).length >
+    0
+  ) {
     acceptProgramOfferFields.push(
       {
-        slug: "dimensionsHeader",
+        slug: "involvementDimensionsHeader",
         type: "StaticText",
-        title: surveyT.attributes.dimensions,
+        title: programHosT.attributes.dimensions,
       },
-      ...dimensionFields,
+      ...involvementDimensionFields,
+    );
+  }
+
+  if (
+    programDimensions.filter((dimension) => !dimension.isTechnical).length > 0
+  ) {
+    acceptProgramOfferFields.push(
+      {
+        slug: "programDimensionsHeader",
+        type: "StaticText",
+        title: programT.attributes.dimensions,
+      },
+      ...programDimensionFields,
     );
   }
 
@@ -276,13 +313,14 @@ export default async function ProgramOfferPage({
     slug: slugify(values.title || "") + uniquenessInsurance,
     title: values.title,
     description: values.description,
-    ...dimensionValues,
+    ...programDimensionValues,
+    ...involvementDimensionValues,
   };
 
   const surveySlug = programOffer.form.survey!.slug;
   const dimensionsReadOnly = !!supersededBy;
 
-  const stateDimension = dimensions.find((d) => d.slug === "state");
+  const stateDimension = programDimensions.find((d) => d.slug === "state");
   const responseStateDimensionValue = programOffer.dimensions.find(
     (d) => d.dimension.slug === "state",
   );
@@ -424,7 +462,7 @@ export default async function ProgramOfferPage({
       ) : (
         <>
           <div className="row mb-5 mt-4">
-            {!!dimensions?.length && (
+            {!!programDimensions?.length && (
               <div className="col-md-8">
                 <div className="card mb-3 h-100">
                   <div className="card-body">
@@ -433,7 +471,7 @@ export default async function ProgramOfferPage({
                     </h5>
                     {/* TODO improve feedback of successful save */}
                     <DimensionValueSelectionForm
-                      dimensions={dimensions}
+                      dimensions={programDimensions}
                       cachedDimensions={programOffer.cachedDimensions}
                       translations={translations}
                       technicalDimensions="readonly"

@@ -3,7 +3,22 @@ import { Choice, MultiSelect, SingleSelect } from "../forms/models";
 import { SchemaForm } from "../forms/SchemaForm";
 import SubmitButton from "../forms/SubmitButton";
 import { Dimension } from "./models";
+import { graphql } from "@/__generated__";
 import type { Translations } from "@/translations/en";
+
+graphql(`
+  fragment DimensionValueSelect on FullDimensionType {
+    slug
+    title(lang: $locale)
+    isTechnical
+    isMultiValue
+
+    values(lang: $locale) {
+      slug
+      title(lang: $locale)
+    }
+  }
+`);
 
 export function buildDimensionChoices(
   dimension: Dimension,
@@ -28,6 +43,7 @@ export function buildDimensionField(
   dimension: Dimension,
   cachedDimensions: Record<string, string[]>,
   technicalDimensions: "omit" | "readonly" | "editable" = "omit",
+  slugPrefix: string = "",
 ): { field: SingleSelect | MultiSelect; value: string | string[] } {
   const valueList = cachedDimensions[dimension.slug] ?? [];
   let type = dimension.isMultiValue ? "MultiSelect" : "SingleSelect";
@@ -43,11 +59,12 @@ export function buildDimensionField(
   const readOnly = technicalDimensions === "readonly" && dimension.isTechnical;
 
   const title = dimension.title || dimension.slug;
+  const slug = slugPrefix ? `${slugPrefix}.${dimension.slug}` : dimension.slug;
 
   const field: SingleSelect | MultiSelect =
     type === "SingleSelect"
       ? {
-          slug: dimension.slug,
+          slug,
           type: "SingleSelect",
           presentation: "dropdown",
           title,
@@ -55,7 +72,7 @@ export function buildDimensionField(
           readOnly,
         }
       : {
-          slug: dimension.slug,
+          slug,
           type: "MultiSelect",
           title,
           choices: buildDimensionChoices(dimension),
@@ -71,6 +88,7 @@ export function buildDimensionValueSelectionForm(
   dimensions: Dimension[],
   cachedDimensions: Record<string, string[]>,
   technicalDimensions: TechnicalDimensionsHandling = "omit",
+  slugPrefix: string = "",
 ) {
   if (technicalDimensions === "omit") {
     dimensions = dimensions.filter((dimension) => !dimension.isTechnical);
@@ -83,7 +101,12 @@ export function buildDimensionValueSelectionForm(
   }
 
   const fieldsValues = dimensions.map((dimension) =>
-    buildDimensionField(dimension, cachedDimensions, technicalDimensions),
+    buildDimensionField(
+      dimension,
+      cachedDimensions,
+      technicalDimensions,
+      slugPrefix,
+    ),
   );
   const fields = fieldsValues.map(({ field }) => field);
   const values: Record<string, any> = {};
@@ -102,6 +125,7 @@ interface Props {
   readOnly?: boolean;
   technicalDimensions?: TechnicalDimensionsHandling;
   idPrefix?: string;
+  namePrefix?: string;
 }
 
 /// A form to select values for dimensions.
@@ -113,11 +137,14 @@ export default function DimensionValueSelectionForm({
   readOnly = false,
   technicalDimensions = "omit",
   idPrefix,
+  namePrefix,
 }: Props) {
+  // TODO Robustify SchemaForm.namePrefix and use it instead?
   const { fields, values } = buildDimensionValueSelectionForm(
     dimensions,
     cachedDimensions,
     technicalDimensions,
+    namePrefix,
   );
   const t = translations.Survey;
 

@@ -17,7 +17,7 @@ from django.utils.timezone import now
 from access.cbac import is_graphql_allowed_for_model
 from core.models import Event
 from core.utils.model_utils import slugify, validate_slug
-from dimensions.models.cached_dimensions import CachedDimensions, StrictCachedDimensions, validate_cached_dimensions
+from dimensions.models.cached_dimensions import CachedDimensions, validate_cached_dimensions
 from dimensions.models.scope import Scope
 from dimensions.utils.build_cached_dimensions import build_cached_dimensions
 from dimensions.utils.dimension_cache import DimensionCache
@@ -329,8 +329,9 @@ class Program(models.Model):
         program_offer: Response,
         slug: str = "",
         title: str = "",
+        program_dimension_values: CachedDimensions | None = None,
+        involvement_dimension_values: CachedDimensions | None = None,
         created_by: Any | None = None,  # User
-        dimension_values: StrictCachedDimensions | None = None,
     ) -> Self:
         """
         Accept a program offer and return the new Program instance.
@@ -339,12 +340,13 @@ class Program(models.Model):
         cache = event.program_universe.preload_dimensions()
 
         combined_dimension_values = validate_cached_dimensions(program_offer.survey.cached_default_response_dimensions)
-        combined_dimension_values.update(program_offer.cached_dimensions)
-        if dimension_values is not None:
-            combined_dimension_values.update(dimension_values)
+        combined_dimension_values.update(validate_cached_dimensions(program_offer.cached_dimensions))
+        if program_dimension_values:
+            combined_dimension_values.update(validate_cached_dimensions(program_dimension_values))
         combined_dimension_values.update(
             state=["accepted"],
         )
+        print("combined_dimension_values", combined_dimension_values)
 
         values, warnings = program_offer.get_processed_form_data()
         if warnings:
@@ -380,6 +382,7 @@ class Program(models.Model):
             program_offer,
             program,
             cache=event.involvement_universe.preload_dimensions(),
+            dimension_values=involvement_dimension_values or {},
         )
 
         return program

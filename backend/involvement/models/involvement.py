@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Collection, Mapping
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
@@ -11,6 +10,7 @@ from django.db import models, transaction
 from badges.models import Badge
 from core.models.event import Event
 from core.models.person import Person
+from dimensions.models.cached_dimensions import CachedDimensions, StrictCachedDimensions, validate_cached_dimensions
 from dimensions.models.enums import DimensionApp
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
@@ -227,7 +227,7 @@ class Involvement(models.Model):
         self.save(update_fields=["cached_dimensions"])
 
     @transaction.atomic
-    def set_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
+    def set_dimension_values(self, values_to_set: CachedDimensions, cache: DimensionCache):
         """
         Changes only those dimension values that are present in dimension_values.
 
@@ -253,7 +253,7 @@ class Involvement(models.Model):
         type: InvolvementType,
         is_active: bool,
         registry: Registry,
-    ) -> dict[str, list[str]]:
+    ) -> StrictCachedDimensions:
         return dict(
             app=[app.value],
             type=[type.value],
@@ -285,7 +285,6 @@ class Involvement(models.Model):
             raise ValueError(f"Survey {response.survey} does not have a registry")
 
         is_active = not deleting and response.survey.workflow.is_response_active(response)
-        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
 
         if old_version and deleting:
             raise AssertionError("Both old_version and deleting cannot be True at the same time")
@@ -311,6 +310,7 @@ class Involvement(models.Model):
                 # make sure badges are revoked etc.
                 involvement.is_active = is_active
                 involvement.save(update_fields=["is_active"])
+                dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
                 involvement.set_dimension_values(dimensions, cache=cache)
                 involvement.refresh_cached_dimensions()
                 involvement.refresh_dependents()
@@ -332,10 +332,11 @@ class Involvement(models.Model):
         )
 
         if created:
-            dimensions = dict(
-                response.survey.cached_default_involvement_dimensions,
-                **dimensions,
-            )
+            dimensions = validate_cached_dimensions(response.survey.cached_default_involvement_dimensions)
+            dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
+        else:
+            # leave non-technical dimensions untouched
+            dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
 
         involvement.set_dimension_values(dimensions, cache=cache)
         involvement.refresh_cached_dimensions()
@@ -348,6 +349,7 @@ class Involvement(models.Model):
         cls,
         program_offer: Response,
         program: Program,
+        dimension_values: CachedDimensions,
         cache: DimensionCache,
     ):
         if cache.universe.app != DimensionApp.INVOLVEMENT:
@@ -371,11 +373,11 @@ class Involvement(models.Model):
         )
 
         if created:
-            dimensions = dict(
-                program_offer.survey.cached_default_involvement_dimensions,
-                **cls._build_technical_dimension_values(app, involvement_type, is_active, registry),
-            )
+            dimensions = validate_cached_dimensions(program_offer.survey.cached_default_involvement_dimensions)
+            dimensions.update(validate_cached_dimensions(dimension_values))
+            dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
         else:
+            # leave non-technical dimensions untouched
             dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
 
         involvement.set_dimension_values(dimensions, cache=cache)
@@ -425,8 +427,8 @@ class Involvement(models.Model):
         )
 
         if created:
-            dimensions = dict(response.survey.cached_default_involvement_dimensions)
-            dimensions.update(invitation.cached_dimensions)
+            dimensions = validate_cached_dimensions(response.survey.cached_default_involvement_dimensions)
+            dimensions.update(validate_cached_dimensions(invitation.cached_dimensions))
             dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
         else:
             dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
