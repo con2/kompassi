@@ -6,7 +6,7 @@ from dimensions.models.dimension_value_dto import DimensionValueDTO
 from dimensions.models.enums import DimensionApp
 from dimensions.models.universe import Universe
 
-from .models.enums import InvolvementApp
+from .models.enums import InvolvementApp, InvolvementType
 
 # NOTE SUPPORTED_LANGUAGES
 DIMENSIONS = [
@@ -39,21 +39,11 @@ DIMENSIONS = [
         order=-9000,
         choices=[
             DimensionValueDTO(
-                slug="program-offer",
-                title=dict(
-                    en="Program offer",
-                    fi="Ohjelmatarjous",
-                ),
+                slug=type.value,
+                title=type.get_title_dict(),
                 is_technical=True,
-            ),
-            DimensionValueDTO(
-                slug="program-host",
-                title=dict(
-                    en="Program host",
-                    fi="Ohjelmanumero",
-                ),
-                is_technical=True,
-            ),
+            )
+            for type in InvolvementType
         ],
     ),
     DimensionDTO(

@@ -67,6 +67,13 @@ class InvolvementType(Enum):
         obj.title_sv = title_sv
         return obj
 
+    def get_title_dict(self) -> dict[str, str]:
+        return {
+            language_code: title
+            for language_code in SUPPORTED_LANGUAGE_CODES
+            if (title := getattr(self, f"title_{language_code}"))
+        }
+
 
 class NameDisplayStyle(Enum):
     # NOTE: "surname" for compatibility with legacy

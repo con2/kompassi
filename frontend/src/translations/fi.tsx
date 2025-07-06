@@ -2258,7 +2258,7 @@ const translations: Translations = {
       type: {
         title: "Tyyppi",
         choices: {
-          PROGRAM_HOST: "Ohjelmanpitäjä",
+          PROGRAM_HOST: "Ohjelmanumero",
           PROGRAM_OFFER: "Ohjelmatarjous",
           SURVEY_RESPONSE: "Kyselyvastaus",
         },

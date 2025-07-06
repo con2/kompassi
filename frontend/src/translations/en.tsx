@@ -2315,7 +2315,7 @@ const translations = {
       type: {
         title: "Type",
         choices: {
-          PROGRAM_HOST: "Program host",
+          PROGRAM_HOST: "Program item",
           PROGRAM_OFFER: "Program offer",
           SURVEY_RESPONSE: "Survey response",
         },

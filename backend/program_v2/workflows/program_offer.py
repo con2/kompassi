@@ -1,5 +1,7 @@
 import logging
 
+from django.db import transaction
+
 from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
 from dimensions.models.enums import DimensionApp
@@ -43,6 +45,7 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
         self.survey.refresh_cached_default_dimensions()
 
     @classmethod
+    @transaction.atomic
     def backfill(cls, event: Event):
         logger.info("Backfilling program V2 settings for event %s", event.slug)
 
