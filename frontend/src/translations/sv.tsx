@@ -610,6 +610,7 @@ const translations: Translations = {
 
   Involvement: UNTRANSLATED(en.Involvement),
   Invitation: UNTRANSLATED(en.Invitation),
+  Registry: UNTRANSLATED(en.Registry),
 
   SignInRequired: {
     metadata: {

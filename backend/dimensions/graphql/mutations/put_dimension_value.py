@@ -60,7 +60,7 @@ class PutDimensionValue(graphene.Mutation):
         graphql_check_instance(
             universe,  # type: ignore
             info,
-            app=universe.app,
+            app=universe.app.value,
             field="dimensions",
             operation="update",
         )

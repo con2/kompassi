@@ -7,7 +7,7 @@ from django.db import models
 
 from core.models.organization import Organization
 from dimensions.models.scope import Scope
-from graphql_api.language import DEFAULT_LANGUAGE, getattr_message_in_language
+from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES, getattr_message_in_language
 
 
 class Registry(models.Model):
@@ -59,3 +59,10 @@ class Registry(models.Model):
             scope=Scope.get_root_scope(),
             slug="users",
         )
+
+    def get_title_dict(self) -> dict[str, str]:
+        return {
+            language_code: title
+            for language_code in SUPPORTED_LANGUAGE_CODES
+            if (title := getattr(self, f"title_{language_code}"))
+        }

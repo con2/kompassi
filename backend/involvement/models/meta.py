@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from itertools import groupby
 
 from core.models.event import Event
-from dimensions.filters import DimensionFilters
 
+from ..filters import InvolvementFilters
 from .invitation import Invitation
 from .profile import Profile
 
@@ -31,9 +31,9 @@ class InvolvementEventMeta:
             "program",
         )
 
-    def get_people(self, filters: DimensionFilters | None = None) -> list[Profile]:
+    def get_people(self, filters: InvolvementFilters | None = None) -> list[Profile]:
         if filters is None:
-            filters = DimensionFilters()
+            filters = InvolvementFilters()
 
         involvements = filters.filter(
             self.event.involvements.all()

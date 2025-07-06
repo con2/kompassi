@@ -5,6 +5,7 @@ from datetime import timedelta
 from core.models.event import Event
 from dimensions.models.dimension import Dimension
 from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
+from dimensions.models.enums import DimensionApp
 from dimensions.models.universe import Universe
 from graphql_api.language import SUPPORTED_LANGUAGE_CODES
 
@@ -166,7 +167,7 @@ def get_program_universe(event: Event) -> Universe:
     universe, created = Universe.objects.get_or_create(
         scope=event.scope,
         slug="program",
-        app="program_v2",
+        app_name=DimensionApp.PROGRAM_V2.value,
     )
 
     if created:

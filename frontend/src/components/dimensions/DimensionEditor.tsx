@@ -229,7 +229,7 @@ export function DimensionEditor({
       return (
         <tr style={{ borderWidth: "3px 0 3px 0" }}>
           <DimensionCells dimension={dimension} />
-          <AddValueCell dimension={dimension} />
+          {!dimension.isTechnical && <AddValueCell dimension={dimension} />}
         </tr>
       );
     }
@@ -245,7 +245,7 @@ export function DimensionEditor({
           );
         })}
         <tr>
-          <AddValueCell dimension={dimension} />
+          {!dimension.isTechnical && <AddValueCell dimension={dimension} />}
         </tr>
       </>
     );

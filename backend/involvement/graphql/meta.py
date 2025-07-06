@@ -5,9 +5,9 @@ from django.http import HttpRequest
 
 from access.cbac import graphql_check_instance, graphql_check_model
 from core.utils.text_utils import normalize_whitespace
-from dimensions.filters import DimensionFilters
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from dimensions.graphql.dimension_full import FullDimensionType
+from involvement.filters import InvolvementFilters
 
 from ..models.involvement import Involvement
 from ..models.meta import InvolvementEventMeta
@@ -39,6 +39,7 @@ class InvolvementEventMetaType(graphene.ObjectType):
         meta: InvolvementEventMeta,
         info,
         filters: list[DimensionFilterInput] | None = None,
+        search: str = "",
     ):
         """
         List of people involved in the event, filtered by dimensions.
@@ -51,15 +52,15 @@ class InvolvementEventMetaType(graphene.ObjectType):
             request,
         )
 
-        return meta.get_people(
-            filters=DimensionFilters.from_graphql(filters=filters),
-        )
+        involvement_filters = InvolvementFilters.from_graphql(filters=filters, search=search)
+        return meta.get_people(involvement_filters)
 
     people = graphene.NonNull(
         graphene.List(
             graphene.NonNull(ProfileWithInvolvementType),
         ),
         filters=graphene.List(DimensionFilterInput, required=False),
+        search=graphene.String(default_value=""),
         description=normalize_whitespace(resolve_people.__doc__ or ""),
     )
 

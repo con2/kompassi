@@ -10,12 +10,12 @@ from django.db import models
 
 from core.utils.model_utils import make_slug_field
 from dimensions.filters import DimensionFilters
+from dimensions.models.enums import DimensionApp
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
 from graphql_api.language import DEFAULT_LANGUAGE
 
-from .enums import SurveyApp
 from .response import Response
 from .splat import Splat
 from .survey import Survey
@@ -118,14 +118,14 @@ class Projection(models.Model):
         return f"{self.scope}/{self.slug}"
 
     @cached_property
-    def app(self) -> SurveyApp:
+    def app(self) -> DimensionApp:
         surveys = list(self.surveys.all())
         if not surveys:
             raise ValueError("Projection must have at least one survey to determine the app.")
 
-        app = SurveyApp(surveys.pop(0).app_name)
+        app = DimensionApp(surveys.pop(0).app_name)
 
-        if any(SurveyApp(survey.app_name) != app for survey in surveys):
+        if any(DimensionApp(survey.app_name) != app for survey in surveys):
             raise ValueError("All surveys in a projection must share the same app.")
 
         return app

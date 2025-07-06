@@ -1,10 +1,16 @@
+from __future__ import annotations
+
 from functools import cache, cached_property
+from typing import TYPE_CHECKING
 
 from django.db import models
 
 from core.models.event import Event
 from core.models.organization import Organization
 from core.utils.model_utils import make_slug_field, slugify
+
+if TYPE_CHECKING:
+    from involvement.models.registry import Registry
 
 
 class Scope(models.Model):
@@ -28,6 +34,7 @@ class Scope(models.Model):
 
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, null=True, blank=True)
     event: models.ForeignKey[Event] | None = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True)
+    registries: models.QuerySet[Registry]
 
     def __str__(self):
         return self.slug

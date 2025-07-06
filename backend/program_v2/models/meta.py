@@ -10,8 +10,9 @@ from core.models.event import Event
 from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
 from dimensions.filters import DimensionFilters
+from dimensions.models.enums import DimensionApp
 from dimensions.models.universe import Universe
-from forms.models.enums import SurveyApp, SurveyPurpose
+from forms.models.enums import SurveyPurpose
 from forms.models.response import Response
 from forms.models.survey import Survey
 from involvement.models.involvement import Involvement
@@ -99,7 +100,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         return (
             Response.objects.filter(
                 form__event=self.event,
-                form__survey__app_name=SurveyApp.PROGRAM_V2.value,
+                form__survey__app_name=DimensionApp.PROGRAM_V2.value,
                 form__survey__purpose_slug=SurveyPurpose.DEFAULT.value,
                 **extra_criteria,
             )
@@ -153,7 +154,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     def program_offer_forms(self):
         return Survey.objects.filter(
             event=self.event,
-            app_name=SurveyApp.PROGRAM_V2.value,
+            app_name=DimensionApp.PROGRAM_V2.value,
             purpose_slug=SurveyPurpose.DEFAULT.value,
         )
 
@@ -161,7 +162,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     def accept_invitation_forms(self):
         return Survey.objects.filter(
             event=self.event,
-            app_name=SurveyApp.PROGRAM_V2.value,
+            app_name=DimensionApp.PROGRAM_V2.value,
             purpose_slug=SurveyPurpose.INVITE.value,
         )
 
@@ -185,7 +186,7 @@ class ProgramV2ProfileMeta:
 
         return (
             Response.objects.filter(
-                form__survey__app_name=SurveyApp.PROGRAM_V2.value,
+                form__survey__app_name=DimensionApp.PROGRAM_V2.value,
                 form__survey__purpose_slug=SurveyPurpose.DEFAULT.value,
                 original_created_by=self.person.user,
                 superseded_by=None,

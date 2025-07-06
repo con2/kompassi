@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ReactNode } from "react";
+import { Alert } from "react-bootstrap";
 import { graphql } from "@/__generated__";
 import { InvolvedPersonFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -9,7 +10,9 @@ import { Column, DataTable } from "@/components/DataTable";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import SignInRequired from "@/components/errors/SignInRequired";
+import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
 import ViewContainer from "@/components/ViewContainer";
+import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -36,6 +39,7 @@ const query = graphql(`
     $eventSlug: String!
     $filters: [DimensionFilterInput!]
     $locale: String
+    $search: String
   ) {
     event(slug: $eventSlug) {
       slug
@@ -47,7 +51,7 @@ const query = graphql(`
           ...DimensionFilter
         }
 
-        people(filters: $filters) {
+        people(filters: $filters, search: $search) {
           ...InvolvedPerson
         }
       }
@@ -122,16 +126,18 @@ export default async function PeoplePage({ params, searchParams }: Props) {
   }
 
   const filters = buildDimensionFilters(searchParams);
+  const search = searchParams.search || "";
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale, filters },
+    variables: { eventSlug, locale, filters, search },
   });
 
   if (!data.event?.involvement) {
     notFound();
   }
 
-  const people = data.event.involvement.people;
+  const { event } = data;
+  let people = data.event.involvement.people;
   const dimensions = data.event.involvement.dimensions;
 
   const columns: Column<InvolvedPersonFragment>[] = [
@@ -199,18 +205,37 @@ export default async function PeoplePage({ params, searchParams }: Props) {
     0,
   );
 
+  const isMessageShown = Object.entries(searchParams).length == 0;
+
   return (
-    <ViewContainer>
-      <DimensionFilters dimensions={dimensions} />
-      <DataTable columns={columns} rows={people}>
-        <tfoot>
-          <tr>
-            <td colSpan={columns.length}>
-              {t.attributes.count(people.length, countInvolvements)}
-            </td>
-          </tr>
-        </tfoot>
-      </DataTable>
-    </ViewContainer>
+    <InvolvementAdminView
+      translations={translations}
+      event={event}
+      active="people"
+      searchParams={searchParams}
+    >
+      <DimensionFilters
+        dimensions={dimensions}
+        className="mt-1"
+        search={true}
+        messages={t.filters}
+      />
+
+      {isMessageShown ? (
+        <Alert variant="warning">
+          {t.noFiltersApplied(people.length, countInvolvements)}
+        </Alert>
+      ) : (
+        <DataTable columns={columns} rows={people}>
+          <tfoot>
+            <tr>
+              <td colSpan={columns.length}>
+                {t.attributes.count(people.length, countInvolvements)}
+              </td>
+            </tr>
+          </tfoot>
+        </DataTable>
+      )}
+    </InvolvementAdminView>
   );
 }

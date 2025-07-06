@@ -2236,7 +2236,11 @@ const translations: Translations = {
   },
 
   Involvement: {
-    listTitle: "Tapahtuman kanssa tekemisissä olevat henkilöt",
+    adminTitle: "Henkilötietojen hallinta",
+    listTitle: "Henkilöhaku",
+    forEvent(eventName: string) {
+      return <>tapahtumalle {eventName}</>;
+    },
     attributes: {
       involvement: {
         title: "Osallistuminen",
@@ -2267,6 +2271,23 @@ const translations: Translations = {
         },
       },
     },
+    messages: {},
+    filters: {
+      searchPlaceholder: "Hae nimellä tai sähköpostilla",
+    },
+    noFiltersApplied: (numPeople: number, numInvolvements: number) => (
+      <>
+        Suodattamaton lista piilotettu ({numPeople} henkilö
+        {numPeople === 1 ? "" : "ä"} ja {numInvolvements}{" "}
+        {numInvolvements === 1 ? "osallistuminen" : "osallistumista"}{" "}
+        piilotettu. Tarkenna hakua nähdäksesi tulokset.
+      </>
+    ),
+  },
+
+  Registry: {
+    singleTitle: "Henkilörekisteri",
+    listTitle: "Henkilörekisterit",
   },
 
   Invitation: {

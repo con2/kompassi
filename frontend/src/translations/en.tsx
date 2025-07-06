@@ -2293,7 +2293,11 @@ const translations = {
   },
 
   Involvement: {
-    listTitle: "People involved in the event",
+    adminTitle: "Personal data management",
+    listTitle: "Directory",
+    forEvent(eventName: string) {
+      return <>for {eventName}</>;
+    },
     attributes: {
       involvement: {
         title: "Involvement",
@@ -2324,6 +2328,21 @@ const translations = {
         },
       },
     },
+    messages: {},
+    filters: {
+      searchPlaceholder: "Search by name or email",
+    },
+    noFiltersApplied: (numPeople: number, numInvolvements: number) => (
+      <>
+        Unfiltered list of {numPeople} people with {numInvolvements}{" "}
+        involvements hidden. To show results, please narrow down your search.
+      </>
+    ),
+  },
+
+  Registry: {
+    singleTitle: "Registry",
+    listTitle: "Registries",
   },
 
   SignInRequired: {

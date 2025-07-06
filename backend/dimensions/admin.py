@@ -29,5 +29,5 @@ class ScopeAdmin(admin.ModelAdmin):
 @admin.register(Universe)
 class UniverseAdmin(admin.ModelAdmin):
     model = Universe
-    list_display = ("slug", "scope", "app")
-    list_filter = ("scope", "app")
+    list_display = ("slug", "scope", "app_name")
+    list_filter = ("scope", "app_name")

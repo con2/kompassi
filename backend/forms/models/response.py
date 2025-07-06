@@ -22,7 +22,7 @@ from graphql_api.language import SUPPORTED_LANGUAGES
 from .attachment import Attachment
 from .field import Field
 from .form import Form
-from .survey import Survey, SurveyApp
+from .survey import DimensionApp, Survey
 
 if TYPE_CHECKING:
     from program_v2.models.program import Program
@@ -315,10 +315,10 @@ class Response(models.Model):
 
     @property
     def admin_url(self) -> str:
-        match SurveyApp(self.survey.app_name):
-            case SurveyApp.FORMS:
+        match DimensionApp(self.survey.app_name):
+            case DimensionApp.FORMS:
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/surveys/{self.survey.slug}/responses/{self.id}"
-            case SurveyApp.PROGRAM_V2:
+            case DimensionApp.PROGRAM_V2:
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
             case _:
                 raise ValueError(f"Unknown app type: {self.survey.app_name}")

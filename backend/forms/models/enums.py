@@ -4,11 +4,6 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
-class SurveyApp(Enum):
-    FORMS = "forms"
-    PROGRAM_V2 = "program_v2"
-
-
 # TODO: remove, use ProfileFieldSelector directly
 class Anonymity(models.TextChoices):
     # not linked to user account, IP address not recorded

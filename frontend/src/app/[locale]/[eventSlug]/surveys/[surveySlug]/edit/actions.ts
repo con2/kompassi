@@ -3,7 +3,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
-import { SurveyApp } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 
 const createSurveyLanguageMutation = graphql(`

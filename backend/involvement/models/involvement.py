@@ -11,11 +11,12 @@ from django.db import models, transaction
 from badges.models import Badge
 from core.models.event import Event
 from core.models.person import Person
+from dimensions.models.enums import DimensionApp
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from dimensions.utils.dimension_cache import DimensionCache
 from dimensions.utils.set_dimension_values import set_dimension_values
-from forms.models.survey import SurveyPurpose
+from forms.models.enums import SurveyPurpose
 from graphql_api.language import DEFAULT_LANGUAGE
 
 from .enums import InvolvementApp, InvolvementType
@@ -148,7 +149,7 @@ class Involvement(models.Model):
 
     @property
     def description(self) -> str:
-        return f"{self.type.label}: {self.get_title() or 'No title'}"
+        return f"{self.type.title_en}: {self.get_title() or 'No title'}"
 
     @property
     def profile_field_selector(self) -> ProfileFieldSelector:
@@ -251,11 +252,13 @@ class Involvement(models.Model):
         app: InvolvementApp,
         type: InvolvementType,
         is_active: bool,
+        registry: Registry,
     ) -> dict[str, list[str]]:
         return dict(
             app=[app.value],
             type=[type.value],
             state=is_active and ["active"] or ["inactive"],
+            registry=[registry.slug],
         )
 
     @classmethod
@@ -269,16 +272,20 @@ class Involvement(models.Model):
         """
         Handles Involvement for normal survey responses and program offers.
         """
-        if cache.universe.app != "involvement":
-            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
+        if cache.universe.app != DimensionApp.INVOLVEMENT:
+            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app}")
 
         involvement_type = response.survey.involvement_type
         if involvement_type is None:
             raise ValueError(f"Survey {response.survey} does not have an involvement type")
         app = involvement_type.app
 
+        registry = response.survey.registry
+        if registry is None:
+            raise ValueError(f"Survey {response.survey} does not have a registry")
+
         is_active = not deleting and response.survey.workflow.is_response_active(response)
-        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active)
+        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
 
         if old_version and deleting:
             raise AssertionError("Both old_version and deleting cannot be True at the same time")
@@ -313,7 +320,7 @@ class Involvement(models.Model):
                 involvement.delete()
                 return None
 
-        involvement, _created = cls.objects.update_or_create(
+        involvement, created = cls.objects.update_or_create(
             universe=cache.universe,
             person=response.original_created_by.person,  # type: ignore
             program=None,
@@ -323,6 +330,12 @@ class Involvement(models.Model):
                 is_active=is_active,
             ),
         )
+
+        if created:
+            dimensions = dict(
+                response.survey.cached_default_involvement_dimensions,
+                **dimensions,
+            )
 
         involvement.set_dimension_values(dimensions, cache=cache)
         involvement.refresh_cached_dimensions()
@@ -337,15 +350,16 @@ class Involvement(models.Model):
         program: Program,
         cache: DimensionCache,
     ):
-        if cache.universe.app != "involvement":
-            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
+        if cache.universe.app != DimensionApp.INVOLVEMENT:
+            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app}")
 
         app = InvolvementApp.PROGRAM
         involvement_type = InvolvementType.PROGRAM_HOST
         is_active = program.is_active
+        registry = program.meta.default_registry
 
         # NOTE update_or_create for backfill
-        involvement, _created = cls.objects.update_or_create(
+        involvement, created = cls.objects.update_or_create(
             universe=cache.universe,
             person=program_offer.original_created_by.person,  # type: ignore
             program=program,
@@ -356,7 +370,14 @@ class Involvement(models.Model):
             ),
         )
 
-        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active)
+        if created:
+            dimensions = dict(
+                program_offer.survey.cached_default_involvement_dimensions,
+                **cls._build_technical_dimension_values(app, involvement_type, is_active, registry),
+            )
+        else:
+            dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
+
         involvement.set_dimension_values(dimensions, cache=cache)
         involvement.refresh_cached_dimensions()
         involvement.refresh_dependents()
@@ -374,8 +395,8 @@ class Involvement(models.Model):
         Used to accept program host invitations.
         In the future perhaps also other types of Invitations.
         """
-        if cache.universe.app != "involvement":
-            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
+        if cache.universe.app_name != "involvement":
+            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app_name!r}")
 
         if response.survey.purpose != SurveyPurpose.INVITE:
             raise ValueError(f"Expected response to be an invitation response, got {response.survey.purpose!r}")
@@ -384,21 +405,31 @@ class Involvement(models.Model):
         if involvement_type is None:
             raise ValueError(f"Survey {response.survey} does not have an involvement type")
 
+        registry = invitation.survey.registry
+        if registry is None:
+            raise ValueError(f"Invitation {invitation} does not have a registry")
+
         app = involvement_type.app
         is_active = response.survey.workflow.is_response_active(response)
-        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active)
 
-        involvement, _created = cls.objects.update_or_create(
+        involvement, created = cls.objects.update_or_create(
             universe=cache.universe,
             person=response.original_created_by.person,  # type: ignore
             program=invitation.program,
             defaults=dict(
                 response=response,
-                registry=response.survey.registry,
+                registry=registry,
                 is_active=is_active,
                 invitation=invitation,
             ),
         )
+
+        if created:
+            dimensions = dict(response.survey.cached_default_involvement_dimensions)
+            dimensions.update(invitation.cached_dimensions)
+            dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
+        else:
+            dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
 
         involvement.set_dimension_values(dimensions, cache=cache)
         involvement.refresh_cached_dimensions()
@@ -413,13 +444,12 @@ class Involvement(models.Model):
         cache: DimensionCache,
         deleting: bool = False,
     ):
-        if cache.universe.app != "involvement":
-            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
+        if cache.universe.app_name != "involvement":
+            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app_name!r}")
 
         app = InvolvementApp.PROGRAM
         involvement_type = InvolvementType.PROGRAM_HOST
         is_active = not deleting and program.is_active
-        dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active)
 
         involvements = cls.objects.filter(
             universe=cache.universe,
@@ -429,6 +459,12 @@ class Involvement(models.Model):
         for involvement in involvements:
             involvement.is_active = program.is_active
             involvement.save(update_fields=["is_active"])
+            dimensions = cls._build_technical_dimension_values(
+                app,
+                involvement_type,
+                is_active,
+                involvement.registry,
+            )
             involvement.set_dimension_values(dimensions, cache=cache)
             involvement.refresh_cached_dimensions()
             involvement.refresh_dependents()

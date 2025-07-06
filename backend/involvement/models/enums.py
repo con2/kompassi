@@ -2,20 +2,28 @@ from __future__ import annotations
 
 from enum import Enum
 
+from graphql_api.language import SUPPORTED_LANGUAGE_CODES
+
 
 class InvolvementApp(Enum):
     # NOTE: use dashes in app names (URL slugs)
-    FORMS = "forms", "Surveys V2", "forms"
-    PROGRAM = "program", "Program V2", "program_v2"
+    FORMS = "forms", "forms", "Surveys V2", "Kyselyt V2", "Enkät V2"
+    PROGRAM = "program", "program_v2", "Program V2", "Ohjelma V2", "Program V2"
 
     value: str
-    label: str
     app_name: str
 
-    def __new__(cls, value: str, label: str, app_name: str):
+    # NOTE SUPPORTED_LANGUAGES
+    title_en: str
+    title_fi: str
+    title_sv: str
+
+    def __new__(cls, value: str, app_name: str, title_en: str, title_fi: str, title_sv: str):
         obj = object.__new__(cls)
         obj._value_ = value
-        obj.label = label
+        obj.title_en = title_en
+        obj.title_fi = title_fi
+        obj.title_sv = title_sv
         obj.app_name = app_name
         return obj
 
@@ -28,22 +36,35 @@ class InvolvementApp(Enum):
             return cls.PROGRAM
         return cls(app_name)
 
+    def get_title_dict(self) -> dict[str, str]:
+        return {
+            language_code: title
+            for language_code in SUPPORTED_LANGUAGE_CODES
+            if (title := getattr(self, f"title_{language_code}"))
+        }
+
 
 class InvolvementType(Enum):
     # NOTE: use dashes in app names (URL slugs)
-    PROGRAM_OFFER = "program-offer", "Program offer", InvolvementApp.PROGRAM
-    PROGRAM_HOST = "program-host", "Program host", InvolvementApp.PROGRAM
-    SURVEY_RESPONSE = "survey-response", "Survey response", InvolvementApp.FORMS
+    PROGRAM_OFFER = "program-offer", InvolvementApp.PROGRAM, "Program offer", "Ohjelmatarjous", "Programerbjudande"
+    PROGRAM_HOST = "program-host", InvolvementApp.PROGRAM, "Program host", "Ohjelmanumero", "Programvärd"
+    SURVEY_RESPONSE = "survey-response", InvolvementApp.FORMS, "Survey response", "Kyselyvastaus", "Enkätsvar"
 
     value: str
-    label: str
     app: InvolvementApp
 
-    def __new__(cls, value: str, label: str, app: InvolvementApp):
+    # NOTE SUPPORTED_LANGUAGES
+    title_en: str
+    title_fi: str
+    title_sv: str
+
+    def __new__(cls, value: str, app: InvolvementApp, title_en: str, title_fi: str, title_sv: str):
         obj = object.__new__(cls)
         obj._value_ = value
-        obj.label = label
         obj.app = app
+        obj.title_en = title_en
+        obj.title_fi = title_fi
+        obj.title_sv = title_sv
         return obj
 
 

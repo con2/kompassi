@@ -2,7 +2,9 @@ import logging
 
 import graphene
 from django.http import HttpRequest
+from graphene.types.generic import GenericScalar
 
+from dimensions.models.cached_dimensions import validate_cached_dimensions
 from involvement.graphql.invitation_full import FullInvitationType
 
 from ...models.program import Program
@@ -16,6 +18,7 @@ class InviteProgramHostInput(graphene.InputObjectType):
     survey_slug = graphene.String(required=True)  # if we ever want to have multiple acceptance forms
     email = graphene.String(required=True)
     language = graphene.String(required=True)
+    dimension_values = GenericScalar()
 
 
 class InviteProgramHost(graphene.Mutation):
@@ -33,10 +36,13 @@ class InviteProgramHost(graphene.Mutation):
 
         survey = program.meta.accept_invitation_forms.get(slug=input.survey_slug)
 
+        dimension_values = validate_cached_dimensions(input.dimension_values) if input.dimension_values else {}
+
         invitation = program.invite_program_host(
             email=input.email,
             survey=survey,
             language=input.language.lower(),
+            involvement_dimensions=dimension_values,
         )
 
         return InviteProgramHost(invitation=invitation)  # type: ignore
