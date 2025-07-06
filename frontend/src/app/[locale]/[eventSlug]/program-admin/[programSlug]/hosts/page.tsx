@@ -244,6 +244,10 @@ export default async function ProgramAdminDetailPage({
               row.id,
             )}
           >
+            <div className="mb-3">
+              <div className="form-label fw-bold">{t.singleTitle}</div>
+              <div>{row.person.fullName}</div>
+            </div>
             <SchemaForm
               fields={fields}
               values={values}
