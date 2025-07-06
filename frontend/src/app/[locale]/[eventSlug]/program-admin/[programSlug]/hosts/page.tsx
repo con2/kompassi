@@ -10,6 +10,7 @@ import {
   overrideFormattedHosts,
   resendInvitation,
   revokeInvitation,
+  updateProgramHostDimensions,
 } from "./actions";
 import { annotationSlugs } from "./consts";
 import { graphql } from "@/__generated__";
@@ -23,7 +24,9 @@ import AnnotationsForm from "@/components/annotations/AnnotationsForm";
 import { validateCachedAnnotations } from "@/components/annotations/models";
 import { Column, DataTable } from "@/components/DataTable";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
+import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
 import { getDimensionValueTitle } from "@/components/dimensions/helpers";
+import { validateCachedDimensions } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
@@ -73,6 +76,7 @@ const query = graphql(`
       involvement {
         dimensions(keyDimensionsOnly: true, publicOnly: false) {
           ...ColoredKeyDimensionTableCell
+          ...DimensionValueSelect
         }
       }
 
@@ -218,27 +222,56 @@ export default async function ProgramAdminDetailPage({
     slug: "actions",
     title: "",
     className: "text-end",
-    getCellContents: (row) => (
-      <ModalButton
-        className="btn btn-outline-danger btn-sm"
-        label={t.actions.removeProgramHost.label + "…"}
-        title={t.actions.removeProgramHost.title}
-        messages={t.actions.removeProgramHost.modalActions}
-        submitButtonVariant="danger"
-        action={deleteProgramHost.bind(
-          null,
-          locale,
-          eventSlug,
-          programSlug,
-          row.id,
-        )}
-      >
-        {t.actions.removeProgramHost.message(
-          row.person.fullName,
-          program.title,
-        )}
-      </ModalButton>
-    ),
+    getCellContents: (row) => {
+      validateCachedDimensions(row.cachedDimensions);
+      const { fields, values } = buildDimensionValueSelectionForm(
+        involvementDimensions,
+        row.cachedDimensions,
+        "omit",
+      );
+      return (
+        <ButtonGroup>
+          <ModalButton
+            className="btn btn-outline-primary btn-sm"
+            label={t.actions.editProgramHost.label + "…"}
+            title={t.actions.editProgramHost.title}
+            messages={t.actions.editProgramHost.modalActions}
+            disabled={!program.canInviteProgramHost}
+            action={updateProgramHostDimensions.bind(
+              null,
+              locale,
+              eventSlug,
+              row.id,
+            )}
+          >
+            <SchemaForm
+              fields={fields}
+              values={values}
+              messages={translations.SchemaForm}
+            />
+          </ModalButton>
+          <ModalButton
+            className="btn btn-outline-danger btn-sm"
+            label={t.actions.removeProgramHost.label + "…"}
+            title={t.actions.removeProgramHost.title}
+            messages={t.actions.removeProgramHost.modalActions}
+            submitButtonVariant="danger"
+            action={deleteProgramHost.bind(
+              null,
+              locale,
+              eventSlug,
+              programSlug,
+              row.id,
+            )}
+          >
+            {t.actions.removeProgramHost.message(
+              row.person.fullName,
+              program.title,
+            )}
+          </ModalButton>
+        </ButtonGroup>
+      );
+    },
   });
 
   const invitationColumns: Column<ProgramAdminDetailInvitationFragment>[] = [

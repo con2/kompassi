@@ -1540,12 +1540,21 @@ const translations = {
             cancel: "Close without removing",
           },
         },
+        editProgramHost: {
+          title: "Edit program host",
+          label: "Edit",
+          modalActions: {
+            submit: "Save changes",
+            cancel: "Close without saving",
+          },
+        },
       },
       messages: {
         deleted: "Program host removed from the program item.",
         invited: "Program host invitation sent.",
         resent: "Program host invitation resent.",
         revoked: "Program host invitation revoked.",
+        updated: "Program host updated.",
       },
     },
 

@@ -1542,12 +1542,21 @@ const translations: Translations = {
             cancel: "Sulje poistamatta",
           },
         },
+        editProgramHost: {
+          title: "Muokkaa ohjelmanpitäjää",
+          label: "Muokkaa",
+          modalActions: {
+            submit: "Tallenna muutokset",
+            cancel: "Sulje tallentamatta",
+          },
+        },
       },
       messages: {
         deleted: "Ohjelmanpitäjä poistettu ohjelmanumerosta.",
         invited: "Ohjelmanpitäjäkutsu lähetetty.",
         resent: "Ohjelmanpitäjäkutsu lähetettiin uudelleen.",
         revoked: "Ohjelmanpitäjäkutsu peruttiin.",
+        updated: "Ohjelmanpitäjän tiedot päivitetty.",
       },
     },
 

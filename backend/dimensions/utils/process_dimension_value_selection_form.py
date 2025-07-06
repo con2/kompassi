@@ -1,4 +1,4 @@
-from collections.abc import Collection
+from collections.abc import Iterable
 
 from forms.models.field import Field, FieldType
 from forms.utils.process_form_data import process_form_data
@@ -8,7 +8,7 @@ from ..models.dimension import Dimension
 
 
 def process_dimension_value_selection_form(
-    dimensions: Collection[Dimension],
+    dimensions: Iterable[Dimension],
     form_data: dict[str, str],
     *,
     slug_prefix: str = "",

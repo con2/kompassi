@@ -73,6 +73,49 @@ export async function deleteProgramHost(
   redirect(`/${eventSlug}/program-admin/${programSlug}/hosts?success=deleted`);
 }
 
+const updateProgramHostDimensionsMutation = graphql(`
+  mutation UpdateProgramHostDimensions(
+    $input: UpdateInvolvementDimensionsInput!
+  ) {
+    updateInvolvementDimensions(input: $input) {
+      involvement {
+        program {
+          slug
+        }
+      }
+    }
+  }
+`);
+
+export async function updateProgramHostDimensions(
+  locale: string,
+  eventSlug: string,
+  involvementId: string,
+  formData: FormData,
+) {
+  const { data, errors } = await getClient().mutate({
+    mutation: updateProgramHostDimensionsMutation,
+    variables: {
+      input: {
+        involvementId,
+        eventSlug,
+        formData: Object.fromEntries(formData.entries()),
+      },
+    },
+  });
+
+  const programSlug =
+    data?.updateInvolvementDimensions?.involvement?.program?.slug;
+  if (!programSlug) {
+    throw new Error(
+      "Failed to update program host dimensions: Program slug is missing.",
+    );
+  }
+
+  revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
+  redirect(`/${eventSlug}/program-admin/${programSlug}/hosts?success=updated`);
+}
+
 const deleteInvitationMutation = graphql(`
   mutation DeleteInvitation($input: DeleteInvitationInput!) {
     deleteInvitation(input: $input) {
