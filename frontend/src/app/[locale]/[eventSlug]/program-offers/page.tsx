@@ -50,18 +50,8 @@ graphql(`
 
 graphql(`
   fragment ProgramOfferDimension on FullDimensionType {
-    slug
-    title(lang: $locale)
-    isKeyDimension
-    isTechnical
-    isMultiValue
-
-    values(lang: $locale) {
-      slug
-      title(lang: $locale)
-      color
-      isTechnical
-    }
+    ...DimensionFilter
+    ...ColoredKeyDimensionTableCell
   }
 `);
 

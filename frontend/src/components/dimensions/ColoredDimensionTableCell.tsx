@@ -3,12 +3,27 @@ import { Column } from "../DataTable";
 import { getDimensionValueTitle, makeColorTranslucent } from "./helpers";
 import type { Dimension } from "./models";
 import { validateCachedDimensions } from "./models";
+import { graphql } from "@/__generated__";
+import { ColoredKeyDimensionTableCellFragment } from "@/__generated__/graphql";
+
+graphql(`
+  fragment ColoredKeyDimensionTableCell on FullDimensionType {
+    slug
+    title(lang: $locale)
+    isKeyDimension
+    values(lang: $locale) {
+      slug
+      title(lang: $locale)
+      color
+    }
+  }
+`);
 
 interface Props {
   // TODO move typing to codegen.ts (backend must specify scalar type)
   // cachedDimensions?: CachedDimensions;
   cachedDimensions?: unknown;
-  dimension: Dimension;
+  dimension: ColoredKeyDimensionTableCellFragment;
   children?: ReactNode;
 }
 
@@ -18,7 +33,7 @@ interface ResponseLike {
 }
 
 export function buildKeyDimensionColumns<T extends ResponseLike>(
-  dimensions: Dimension[],
+  dimensions: ColoredKeyDimensionTableCellFragment[],
 ): Column<T>[] {
   return dimensions
     .filter((dimension) => dimension.isKeyDimension)

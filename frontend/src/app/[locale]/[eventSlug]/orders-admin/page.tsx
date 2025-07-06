@@ -90,6 +90,7 @@ function getDimensions(
       slug: "status",
       title: t.attributes.status.title,
       isMultiValue: false,
+      isListFilter: true,
       values: Object.entries(t.attributes.status.choices)
         .filter(([slug]) => slug !== PaymentStatus.NotStarted)
         .map(([slug, { shortTitle }]) => ({
@@ -101,6 +102,7 @@ function getDimensions(
       slug: "product",
       title: producT.clientAttributes.product,
       isMultiValue: false,
+      isListFilter: true,
       values: products.map(({ id, title }) => ({ slug: id, title })),
     },
   ];
@@ -242,7 +244,7 @@ export default async function OrdersPage({ params, searchParams }: Props) {
 
       <DimensionFilters
         dimensions={dimensions}
-        className="row row-cols-md-auto g-3 align-items-center mt-1 mb-2"
+        className="mb-2"
         messages={{
           searchPlaceholder: t.actions.search,
         }}

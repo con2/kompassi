@@ -22,6 +22,8 @@ import { auth } from "@/auth";
 import AnnotationsForm from "@/components/annotations/AnnotationsForm";
 import { validateCachedAnnotations } from "@/components/annotations/models";
 import { Column, DataTable } from "@/components/DataTable";
+import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
+import { getDimensionValueTitle } from "@/components/dimensions/helpers";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
@@ -35,6 +37,7 @@ import { getTranslations, SupportedLanguage } from "@/translations";
 graphql(`
   fragment ProgramAdminDetailHost on LimitedProgramHostType {
     id
+    cachedDimensions
     person {
       fullName
       firstName
@@ -66,6 +69,12 @@ const query = graphql(`
       name
       slug
       timezone
+
+      involvement {
+        dimensions(keyDimensionsOnly: true, publicOnly: false) {
+          ...ColoredKeyDimensionTableCell
+        }
+      }
 
       forms {
         inviteForms: surveys(
@@ -164,6 +173,7 @@ export default async function ProgramAdminDetailPage({
   const programHosts = data.event.program.program.programHosts;
   const invitations = data.event.program.program.invitations;
   const annotations = data.event.program.annotations;
+  const involvementDimensions = data.event.involvement?.dimensions ?? [];
 
   const programHostColumns: Column<ProgramAdminDetailHostFragment>[] = [
     {
@@ -196,33 +206,40 @@ export default async function ProgramAdminDetailPage({
       title: profileT.advancedAttributes.discordHandle.title,
       getCellContents: (row) => row.person.discordHandle,
     },
-    {
-      slug: "actions",
-      title: "",
-      className: "text-end",
-      getCellContents: (row) => (
-        <ModalButton
-          className="btn btn-outline-danger btn-sm"
-          label={t.actions.removeProgramHost.label + "…"}
-          title={t.actions.removeProgramHost.title}
-          messages={t.actions.removeProgramHost.modalActions}
-          submitButtonVariant="danger"
-          action={deleteProgramHost.bind(
-            null,
-            locale,
-            eventSlug,
-            programSlug,
-            row.id,
-          )}
-        >
-          {t.actions.removeProgramHost.message(
-            row.person.fullName,
-            program.title,
-          )}
-        </ModalButton>
-      ),
-    },
   ];
+
+  programHostColumns.push(
+    ...buildKeyDimensionColumns(
+      involvementDimensions.filter((dimension) => dimension.slug !== "state"),
+    ),
+  );
+
+  programHostColumns.push({
+    slug: "actions",
+    title: "",
+    className: "text-end",
+    getCellContents: (row) => (
+      <ModalButton
+        className="btn btn-outline-danger btn-sm"
+        label={t.actions.removeProgramHost.label + "…"}
+        title={t.actions.removeProgramHost.title}
+        messages={t.actions.removeProgramHost.modalActions}
+        submitButtonVariant="danger"
+        action={deleteProgramHost.bind(
+          null,
+          locale,
+          eventSlug,
+          programSlug,
+          row.id,
+        )}
+      >
+        {t.actions.removeProgramHost.message(
+          row.person.fullName,
+          program.title,
+        )}
+      </ModalButton>
+    ),
+  });
 
   const invitationColumns: Column<ProgramAdminDetailInvitationFragment>[] = [
     {

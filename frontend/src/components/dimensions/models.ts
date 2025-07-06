@@ -5,6 +5,7 @@ graphql(`
     slug
     title(lang: $locale)
     isMultiValue
+    isListFilter
     values(lang: $locale) {
       slug
       title(lang: $locale)
