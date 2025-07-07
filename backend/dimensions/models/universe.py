@@ -11,6 +11,8 @@ from .enums import DimensionApp
 from .scope import Scope
 
 if TYPE_CHECKING:
+    from involvement.models.involvement import Involvement
+
     from ..utils.dimension_cache import DimensionCache
     from .dimension import Dimension
 
@@ -34,6 +36,7 @@ class Universe(models.Model):
         max_length=max(len(app.value) for app in DimensionApp),
     )
 
+    all_involvements: models.QuerySet[Involvement]
     dimensions: models.QuerySet[Dimension]
 
     class Meta:
@@ -41,6 +44,13 @@ class Universe(models.Model):
 
     def __str__(self):
         return f"{self.scope}/{self.slug} ({self.app_name})"
+
+    @property
+    def active_involvements(self) -> models.QuerySet[Involvement]:
+        """
+        Returns all Involvements in this Universe that are active.
+        """
+        return self.all_involvements.filter(is_active=True)
 
     @property
     def app(self) -> DimensionApp:
@@ -64,12 +74,6 @@ class Universe(models.Model):
                 )
             case _:
                 raise ValueError(f"Unknown app type: {self.app_name}")
-
-    @property
-    def involvements(self):
-        from involvement.models.involvement import Involvement
-
-        return Involvement.objects.filter(event=self.scope.event)
 
     def preload_dimensions(
         self,

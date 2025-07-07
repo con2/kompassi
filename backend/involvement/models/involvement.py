@@ -18,6 +18,7 @@ from dimensions.utils.dimension_cache import DimensionCache
 from dimensions.utils.set_dimension_values import set_dimension_values
 from forms.models.enums import SurveyPurpose
 from graphql_api.language import DEFAULT_LANGUAGE
+from involvement.models.involvement_to_group import InvolvementToGroupMapping
 
 from .enums import InvolvementApp, InvolvementType
 from .invitation import Invitation
@@ -43,7 +44,7 @@ class Involvement(models.Model):
     universe: models.ForeignKey[Universe] = models.ForeignKey(
         Universe,
         on_delete=models.CASCADE,
-        related_name="involvements",
+        related_name="all_involvements",
         db_index=False,
     )
 
@@ -482,4 +483,18 @@ class Involvement(models.Model):
             self.program.refresh_cached_fields()
 
         if self.event.badges_event_meta:
+            # ITB
             Badge.ensure(self.event, self.person)
+
+        InvolvementToGroupMapping.ensure(self.universe, self.person)
+
+    @cached_property
+    def dimensions_pairs(self) -> set[tuple[str, str]]:
+        """
+        Returns a set of tuples (dimension_slug, value_slug) for the cached dimensions.
+        """
+        return {
+            (dimension_slug, value_slug)
+            for dimension_slug, value_slugs in self.cached_dimensions.items()
+            for value_slug in value_slugs
+        }

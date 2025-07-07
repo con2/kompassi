@@ -3,6 +3,8 @@ from typing import Any
 from core.models.event import Event
 from core.models.person import Person
 
+from ..models.survey_to_badge import SurveyToBadgeMapping
+
 
 def get_priority(pair):
     personnel_class, job_title = pair
@@ -17,6 +19,7 @@ def default_badge_factory(event: Event, person: Person) -> dict[str, Any]:
 
     If the key `personnel_class` in that dictionary is None, that person should not have a badge.
     """
+    from involvement.models.involvement_to_badge import InvolvementToBadgeMapping
     from labour.models.personnel_class import PersonnelClass
 
     personnel_classes: list[tuple[PersonnelClass, str]] = []
@@ -32,36 +35,30 @@ def default_badge_factory(event: Event, person: Person) -> dict[str, Any]:
             job_title = signup.some_job_title
             personnel_classes.extend((pc, job_title) for pc in signup.personnel_classes.all())
 
-    if event.programme_event_meta is not None:
-        from programme.models import ProgrammeRole
-        from programme.models.programme import PROGRAMME_STATES_LIVE
-
-        # Insertion order matters (most privileged first). list.sort is guaranteed to be stable.
-        personnel_classes.extend(
-            (programme_role.role.personnel_class, programme_role.role.public_title)
-            for programme_role in ProgrammeRole.objects.filter(
-                person=person,
-                programme__category__event=event,
-                programme__state__in=PROGRAMME_STATES_LIVE,
-            )
-            .order_by("role__priority")
-            .select_related("role")
-        )
-
-    # Implement Survey to Badge (STB).
+    # Survey to Badge (STB).
     # See https://outline.con2.fi/doc/survey-to-badge-stb-mxK1UW6hAn
-    if event.forms_event_meta is not None:
-        from ..models.survey_to_badge import SurveyToBadgeMapping
+    # Serves Surveys V2 in an interim capacity (to be replaced by ITB).
+    for survey_mapping in (
+        SurveyToBadgeMapping.objects.filter(
+            survey__event=event,
+        )
+        .select_related("personnel_class")
+        .order_by("priority")
+    ):
+        for _response, personnel_class, job_title in survey_mapping.match(person):
+            personnel_classes.append((personnel_class, job_title))
 
-        for survey_mapping in (
-            SurveyToBadgeMapping.objects.filter(
-                survey__event=event,
-            )
-            .select_related("personnel_class")
-            .order_by("priority")
-        ):
-            for _response, personnel_class, job_title in survey_mapping.match(person):
-                personnel_classes.append((personnel_class, job_title))
+    # Involvement to Badge (ITB)
+    # Serves Program V2 etc.
+    for involvement_mapping in (
+        InvolvementToBadgeMapping.objects.filter(
+            universe__scope__event=event,
+        )
+        .select_related("personnel_class")
+        .order_by("priority")
+    ):
+        for _involvement, personnel_class, job_title in involvement_mapping.match(person):
+            personnel_classes.append((personnel_class, job_title))
 
     if personnel_classes:
         personnel_classes.sort(key=get_priority)

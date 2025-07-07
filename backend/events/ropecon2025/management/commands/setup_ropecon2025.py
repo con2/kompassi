@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
@@ -13,6 +14,8 @@ from core.models import Event, Organization, Person, Venue
 from forms.models.meta import FormsEventMeta
 from intra.models import IntraEventMeta, Team
 from involvement.models import Registry
+from involvement.models.involvement_to_badge import InvolvementToBadgeMapping
+from involvement.models.involvement_to_group import InvolvementToGroupMapping
 from labour.models import (
     AlternativeSignupForm,
     JobCategory,
@@ -250,7 +253,7 @@ class Setup:
 
     def setup_program_v2(self):
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
-        ProgramV2EventMeta.objects.update_or_create(
+        meta, _ = ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
@@ -260,6 +263,26 @@ class Setup:
                     slug="volunteers",
                 ),
             ),
+        )
+
+        universe = self.event.involvement_universe
+
+        ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
+        InvolvementToBadgeMapping.objects.update_or_create(
+            universe=universe,
+            required_dimensions={"state": ["active"], "type": ["program-host"]},
+            personnel_class=ohjelma,
+            defaults=dict(
+                job_title="Ohjelmanjärjestäjä",
+                priority=self.get_ordering_number(),
+            ),
+        )
+
+        group, _ = Group.objects.get_or_create(name="ropecon2025-ohjelma-itg")
+        InvolvementToGroupMapping.objects.get_or_create(
+            universe=universe,
+            required_dimensions={"state": ["active"], "type": ["program-host"]},
+            group=group,
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
