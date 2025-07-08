@@ -12,7 +12,6 @@ from forms.models.meta import FormsEventMeta
 from forms.models.response import Response
 from forms.models.survey import Survey
 from labour.models import JobCategory, LabourEventMeta, PersonnelClass, Signup
-from programme.models import Programme, ProgrammeEventMeta, ProgrammeRole, Role
 
 from .emperkelators.tracon2024 import TicketType, TraconEmperkelator
 from .models.badge import Badge
@@ -27,7 +26,6 @@ class BadgesTestCase(TestCase):
     def setUp(self):
         self.meta, unused = BadgesEventMeta.get_or_create_dummy()
         LabourEventMeta.get_or_create_dummy()
-        ProgrammeEventMeta.get_or_create_dummy()
 
         self.event = self.meta.event
         self.person, unused = Person.get_or_create_dummy()
@@ -188,43 +186,6 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge.personnel_class == pc2
 
-    def test_condb_137_programme_to_labour(self):
-        """
-        Most conventions assign a higher priority (lower priority number) to volunteer workers than
-        speakers and other programme hosts. This is to say, if the same person is both volunteering and
-        speaking, they are supposed to get a worker badge, not a speaker badge. This is, of course,
-        configurable on a per-event basis, but this is how it is in our test data.
-
-        We model a case in which the same person is first accepted as a speaker and thus gets a speaker
-        badge, and is then accepted as a volunteer worker, "promoting" them to worker status and earning
-        them a worker badge.
-        """
-        programme_role, unused = ProgrammeRole.get_or_create_dummy()
-
-        badge, created = Badge.ensure(person=self.person, event=self.event)
-        assert badge
-        assert not created
-        assert badge.personnel_class == programme_role.role.personnel_class
-
-        signup, created = Signup.get_or_create_dummy(accepted=True)
-
-        badge, created = Badge.ensure(person=self.person, event=self.event)
-        assert badge
-        assert not created
-        assert badge.personnel_class == signup.personnel_classes.get()
-
-        # Now cancel the worker signup and make sure they go back to having a programme badge
-        signup.personnel_classes.set([])
-        signup.job_categories_accepted.set([])
-        signup.state = "cancelled"
-        signup.save()
-        signup.apply_state()
-
-        badge, created = Badge.ensure(person=self.person, event=self.event)
-        assert badge
-        assert not created
-        assert badge.personnel_class == programme_role.role.personnel_class
-
     def test_condb_428_labour(self):
         """
         If someone is first accepted as a worker, but then cancels their participation or they are fired,
@@ -248,77 +209,6 @@ class BadgesTestCase(TestCase):
         assert not created
         assert badge is None
 
-    def test_condb_428_programme(self):
-        """
-        If someone is first accepted as a speaker, but then cancels their programme or they are fired,
-        their badge should get revoked.
-        """
-        programme_role, unused = ProgrammeRole.get_or_create_dummy()
-        programme = programme_role.programme
-
-        badge, created = Badge.ensure(person=self.person, event=self.event)
-        assert badge
-        assert not created
-        assert badge.personnel_class == programme_role.role.personnel_class
-
-        programme.state = "rejected"
-        programme.save()
-        programme.apply_state()
-
-        badge, created = Badge.ensure(person=self.person, event=self.event)
-        assert not created
-        assert badge is None
-
-    def test_condb_261(self):
-        """
-        If someone changes their name while they have outstanding badges, those badges should get revoked
-        and re-created.
-        """
-        programme_role, unused = ProgrammeRole.get_or_create_dummy()
-
-        badge, created = Badge.ensure(person=self.person, event=self.event)
-        assert badge
-        assert not created
-        assert badge.first_name == self.person.first_name
-
-        self.person.first_name = "Matilda"
-        self.person.save()
-        self.person.apply_state()
-
-        badge, created = Badge.ensure(person=self.person, event=self.event)
-        assert badge
-        assert not created
-        assert badge.first_name == self.person.first_name
-
-    def test_programme_roles(self):
-        """
-        If someone has multiple programmes, they should get the job title of the highest-priority (lowest
-        priority number) Role.
-        """
-        programme_role, unused = ProgrammeRole.get_or_create_dummy()
-        role = programme_role.role
-        personnel_class = role.personnel_class
-
-        badge, created = Badge.ensure(person=self.person, event=self.event)
-        assert badge
-        assert not created
-        assert badge.job_title == role.title
-
-        programme2, unused = Programme.get_or_create_dummy(title="Cosplay-deitti")
-        role2, unused = Role.get_or_create_dummy(
-            personnel_class=personnel_class,
-            priority=role.priority - 10,
-            title="More Importanter Programme Person",
-        )
-        programme_Role2, unused = ProgrammeRole.get_or_create_dummy(programme=programme2, role=role2)
-
-        programme2.apply_state()
-
-        badge, created = Badge.ensure(person=self.person, event=self.event)
-        assert badge
-        assert not created
-        assert badge.job_title == role2.title
-
 
 @pytest.mark.django_db
 def test_tracon2024_perks():
@@ -327,21 +217,22 @@ def test_tracon2024_perks():
     meta, _ = BadgesEventMeta.get_or_create_dummy(emperkelator_name="tracon2024")
     event = meta.event
 
-    role, _ = Role.get_or_create_dummy(
-        event=event,
-        perks=TraconEmperkelator(
-            ticket_type=TicketType.WEEKEND_TICKET,
-            swag=True,
-            meals=1,
-        ).model_dump(),
-    )
+    # Programme V1 no longer supported by Badges
+    # role, _ = Role.get_or_create_dummy(
+    #     event=event,
+    #     perks=TraconEmperkelator(
+    #         ticket_type=TicketType.WEEKEND_TICKET,
+    #         swag=True,
+    #         meals=1,
+    #     ).model_dump(),
+    # )
 
     # weekend ticket, one meal, normal swag
-    ProgrammeRole.get_or_create_dummy(
-        event=event,
-        person=person,
-        role=role,
-    )
+    # ProgrammeRole.get_or_create_dummy(
+    #     event=event,
+    #     person=person,
+    #     role=role,
+    # )
 
     # internal badge, three meals, normal swag
     personnel_class, _ = PersonnelClass.get_or_create_dummy(
