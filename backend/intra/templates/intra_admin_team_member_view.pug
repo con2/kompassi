@@ -17,7 +17,7 @@ block admin_content
         {% crispy team_member_form %}
       .panel-footer.clearfix
         .btn-group.pull-right
-          a.btn.btn-default(href='{% url "intra_organizer_view" event.slug %}') {% trans "Cancel and return" %}
+          a.btn.btn-default(href='{% url "intra:organizer_view" event.slug %}') {% trans "Cancel and return" %}
           if team_member_form.instance.pk
             button.btn.btn-danger(type='submit', name='action', value='delete')
               i.fa.fa-trash.kompassi-icon-space-right

@@ -2,7 +2,7 @@
 #   title:
 #     fi: Myyntipaikan tyyppi
 #     en: Type of sales spot
-#   is_key_dimension: true
+#   isKeyDimension: true
 #   choices:
 #     - slug: vendor_hall
 #       title:
@@ -21,11 +21,10 @@
   title:
     fi: Hakemuksen tila
     en: Application status
-  is_key_dimension: true
+  isKeyDimension: true
   choices:
     - slug: new
       color: blue
-      is_initial: true
       title:
         fi: Uusi
         en: New

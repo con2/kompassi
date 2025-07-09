@@ -14,6 +14,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -38,7 +42,7 @@ jobs:
           python-version: '3.x'
 
       - id: cache-bin
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: bin
           key: ${{ runner.os }}-bin-2
@@ -50,19 +54,24 @@ jobs:
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
-      - uses: docker/login-action@v3
+      - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ secrets.GHCR_USERNAME }}
-          password: ${{ secrets.GHCR_PASSWORD }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/setup-buildx-action@v3
       - id: build
         run: |
+          # only push to ghcr.io on push to main
+          if ! [[ "$GITHUB_EVENT_NAME" == 'push' && "$GITHUB_REF" == 'refs/heads/main' ]]; then
+            export SKAFFOLD_PUSH=false
+          fi
           python3 -m pip install -U pip setuptools wheel
           python3 -m pip install emskaffolden
           emskaffolden -E staging -- build --file-output build.json
         working-directory: backend
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: build-json
           path: backend/build.json
@@ -75,7 +84,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: build-json
       - uses: actions/setup-python@v5
@@ -83,7 +92,7 @@ jobs:
           python-version: '3.x'
 
       - id: cache-bin
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: bin
           key: ${{ runner.os }}-bin-2
@@ -108,7 +117,7 @@ jobs:
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: build-json
       - uses: actions/setup-python@v5
@@ -116,7 +125,7 @@ jobs:
           python-version: '3.x'
 
       - id: cache-bin
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: bin
           key: ${{ runner.os }}-bin-2

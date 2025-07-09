@@ -1,0 +1,61 @@
+title: Kertauskurssi-ilmoittautuminen 4.5.2024
+description: |
+  Kertauskurssi 04.05.2024 klo 10-18
+
+  Kertauskurssille voit osallistua, jos olet käynyt järjestyksenvalvojan peruskurssin 1.3.2007 jälkeen (ja sinulla on kurssitodistus tallessa) tai sinulla on vielä voimassa oleva hyväksyntä järjestyksenvalvojaksi.
+  Kurssit järjestetään Tampereella.
+
+  Kurssille osallistujan tulee sitoutua käymään kaikki sen sisältämät oppitunnit, jotta kurssi suoritetaan hyväksytysti. Kouluttaja kysyy sinulta päivän aikana henkilötunnuksen annettavaa todistusta varten.
+
+  Lisätiedot kurssista <a href="https://2024.tracon.fi/?p=565" target="_blank" rel="noopener noreferrer">Traconin sivuilla</a>.
+
+fields:
+  - slug: name
+    title: Virallinen nimi
+    type: SingleLineText
+    required: true
+    helpText: |
+      Kirjoita tähän virallinen nimesi sisältäen kaikki etunimet.
+      Kompassissa voit käyttää nimenäsi myös muuta kuin juridista nimeä,
+      mutta kurssitodistukseen tarvitsemme juridisen nimesi.
+
+  - slug: email
+    title: Sähköpostiosoite
+    type: SingleLineText
+    required: true
+
+  - slug: phone
+    title: Puhelinnumero
+    type: SingleLineText
+    required: true
+
+  - slug: licence-enddate
+    title: Viimeisimmän hyväksynnän päättymispäivämäärä
+    type: DateField
+
+  - slug: course-year
+    title: Suoritetun peruskurssin ajankohta
+    type: SingleLineText
+    helpText: Arvio vuodesta riittää.
+
+  - slug: contract
+    title: Sitoudun osallistumaan kurssille ja toimimaan Traconissa 2024 vähintään 12h järjestyksenvalvojana.
+    type: SingleCheckbox
+    required: true
+
+  - slug: data-protection-text
+    type: StaticText
+    title: Tietosuoja
+    helpText: >
+      Rekisterinpitäjä on Tracon ry edustajanaan Katariina Pirttijärvi.
+      Tietoja käytetään järjestyksenvalvojan kertauskurssin järjestämiseen.
+      Tietoja säilytetään Tracon 2024 -tapahtumaan asti tai kunnes velvoitteesi toimia järjestyksenvalvojana on päättynyt, jonka jälkeen ne tuhotaan.
+      Tietoja ei luovuteta ulkopuolisille.
+      Tietoja ei käytetä suoramarkkinointiin.
+      Tietoja ei siirretä EU:n tai Euroopan talousalueen ulkopuolelle.
+      Rekisteröitynä sinulla on oikeuksia, joihin voit tutustua <a href="https://tietosuoja.fi/yksityishenkilot" target="_blank" rel="noopener noreferrer">Tietosuojavaltuutetun sivuilla</a>.
+
+  - slug: data-protection-consent
+    type: SingleCheckbox
+    title: Hyväksyn ja annan suostumukseni henkilötietojen käsittelyyn yllä olevien periaatteiden mukaisesti
+    required: true

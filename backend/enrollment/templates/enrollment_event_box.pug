@@ -23,3 +23,5 @@ if event.enrollment_event_meta.is_participant_list_public
 if is_enrollment_admin
   h4 {% trans "You have enrollment admin privileges for this event" %}
   p: a(href='{% url "enrollment_admin_view" event.slug %}').btn.btn-primary {% trans "Go to admin view…" %}
+
+hr

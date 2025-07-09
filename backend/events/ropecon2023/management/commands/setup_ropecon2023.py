@@ -5,9 +5,9 @@ from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from pkg_resources import resource_string
 
 from core.utils import full_hours_between
+from core.utils.pkg_resources_compat import resource_string
 
 
 def mkpath(*parts):
@@ -508,7 +508,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
-            due_days=14,
             reference_number_template="2023{:06d}",
             contact_email="Ropecon 2023 -lipunmyynti <lipunmyynti@ropecon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Ropecon 2023 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"

@@ -103,10 +103,7 @@ class ViewMethodsMixin:
                         if request is not None and self.event.programme_event_meta.is_user_admin(request.user):
                             messages.warning(
                                 request,
-                                "Tilassa {room} on päällekkäisiä ohjelmanumeroita kello {start_time}".format(
-                                    room=room,
-                                    start_time=format_datetime(start_time.astimezone(tzlocal())),
-                                ),
+                                f"Tilassa {room} on päällekkäisiä ohjelmanumeroita kello {format_datetime(start_time.astimezone(tzlocal()))}",
                             )
 
                     programme = programmes[0]

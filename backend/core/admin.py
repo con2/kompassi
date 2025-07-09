@@ -5,14 +5,12 @@ from django.contrib.auth.models import Group, User
 
 from access.admin import InlineAccessOrganizationMetaAdmin
 from badges.admin import InlineBadgesEventMetaAdmin
-from directory.admin import InlineDirectoryOrganizationMetaAdmin
-from enrollment.admin import InlineEnrollmentEventMetaAdmin
 from intra.admin import InlineIntraEventMetaAdmin
 from labour.admin import InlineLabourEventMetaAdmin
 from membership.admin import InlineMembershipOrganizationMetaAdmin
 from payments.admin import InlinePaymentsOrganizationMetaAdmin
-from programme.admin import InlineProgrammeEventMetaAdmin
-from tickets.admin import InlineTicketsEventMetaAdmin
+from program_v2.admin import InlineProgramV2EventMetaAdmin
+from tickets_v2.admin import InlineTicketsV2EventMetaAdmin
 
 from .models import CarouselSlide, Event, Organization, Person, Venue
 
@@ -25,13 +23,12 @@ class OrganizationAdmin(admin.ModelAdmin):
         InlineMembershipOrganizationMetaAdmin,
         InlineAccessOrganizationMetaAdmin,
         InlinePaymentsOrganizationMetaAdmin,
-        InlineDirectoryOrganizationMetaAdmin,
     )
 
 
 @admin.action(description="Yhdistä valitut henkilöt")
 def merge_selected_people(modeladmin, request, queryset):
-    if queryset.count() < 2:  # noqa: PLR2004
+    if queryset.count() < 2:
         return
 
     from core.merge_people import find_best_candidate, merge_people
@@ -64,10 +61,9 @@ class EventAdmin(admin.ModelAdmin):
 
     inlines = (
         InlineLabourEventMetaAdmin,
-        InlineProgrammeEventMetaAdmin,
-        InlineTicketsEventMetaAdmin,
+        InlineProgramV2EventMetaAdmin,
+        InlineTicketsV2EventMetaAdmin,
         InlineBadgesEventMetaAdmin,
-        InlineEnrollmentEventMetaAdmin,
         InlineIntraEventMetaAdmin,
     )
 
@@ -90,9 +86,9 @@ class EventAdmin(admin.ModelAdmin):
                 )
             ),
         ),
-    )
+    )  # type: ignore
 
-    def get_readonly_fields(self, request, obj=None) -> tuple[str]:
+    def get_readonly_fields(self, request, obj=None) -> tuple[str, ...]:
         # slug may be edited when creating but not when modifying existing event
         # (breaks urls and kills puppies)
         if obj:
@@ -107,14 +103,14 @@ class GroupForm(forms.ModelForm):
         label="Users",
         queryset=User.objects.all().order_by("username"),
         required=False,
-        widget=admin.widgets.FilteredSelectMultiple("users", is_stacked=False),
+        widget=admin.widgets.FilteredSelectMultiple("users", is_stacked=False),  # type: ignore
     )
 
     class Meta:
         model = Group
         exclude = ()
         widgets = {
-            "permissions": admin.widgets.FilteredSelectMultiple("permissions", is_stacked=False),
+            "permissions": admin.widgets.FilteredSelectMultiple("permissions", is_stacked=False),  # type: ignore
         }
 
 
@@ -125,7 +121,7 @@ class MyGroupAdmin(GroupAdmin):
     def save_model(self, request, obj, form, change):
         # save first to obtain id
         super(GroupAdmin, self).save_model(request, obj, form, change)
-        obj.user_set.set(form.cleaned_data["users"], clear=True)
+        obj.user_set.set(form.cleaned_data["users"], clear=True)  # type: ignore
 
     def get_form(self, request, obj=None, **kwargs):
         if obj:

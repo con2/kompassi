@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS
 
 
@@ -17,7 +18,7 @@ class Role(models.Model):
         verbose_name=_("Job title"),
     )
 
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     override_public_title = models.CharField(
         max_length=63,
@@ -42,6 +43,13 @@ class Role(models.Model):
         ),
     )
 
+    perks = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name=_("Perks"),
+        help_text=_("Perks for this role"),
+    )
+
     class Meta:
         verbose_name = _("role")
         verbose_name_plural = _("roles")
@@ -59,14 +67,25 @@ class Role(models.Model):
         return self.override_public_title if self.override_public_title else self.title
 
     @classmethod
-    def get_or_create_dummy(cls, personnel_class=None, priority=0, title="Overbaron"):
+    def get_or_create_dummy(
+        cls,
+        personnel_class=None,
+        priority=0,
+        title="Overbaron",
+        perks: dict[str, int | bool] | None = None,
+        event: Event | None = None,
+    ):
         from labour.models import PersonnelClass
 
+        if event is None:
+            event, _ = Event.get_or_create_dummy()
+
         if personnel_class is None:
-            personnel_class, unused = PersonnelClass.get_or_create_dummy(
+            personnel_class, _ = PersonnelClass.get_or_create_dummy(
                 app_label="programme",
                 name="Entertainer",
                 priority=40,
+                event=event,
             )
 
         return cls.objects.get_or_create(
@@ -75,6 +94,7 @@ class Role(models.Model):
             defaults=dict(
                 priority=priority,
                 require_contact_info=False,
+                perks=perks or dict(),
             ),
         )
 

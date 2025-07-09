@@ -10,8 +10,8 @@
   .panel.panel-default
     .panel-heading: strong Hakijan pätevyydet
     ul.list-group
-    if signup.person.personqualification_set.exists
-      for pq in signup.person.personqualification_set.all
+    if signup.person.qualifications.exists
+      for pq in signup.person.qualifications.all
         li.list-group-item
           | {{ pq.qualification }}
           if pq.qualification_extra

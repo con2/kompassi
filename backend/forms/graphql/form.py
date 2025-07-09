@@ -1,5 +1,6 @@
 import graphene
 from django.conf import settings
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
@@ -7,16 +8,25 @@ from core.graphql.limited_event import LimitedEventType
 from core.utils.text_utils import normalize_whitespace
 
 from ..models.form import Form
-from .limited_survey import LimitedSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
 
 
 class FormType(DjangoObjectType):
+    class Meta:
+        model = Form
+        fields = (
+            "title",
+            "description",
+            "thank_you_message",
+            "language",
+            "survey",
+        )
+
     @staticmethod
     def resolve_fields(parent: Form, info, enrich: bool = True):
         if enrich:
-            return parent.enriched_fields
+            return parent.cached_enriched_fields
         else:
             return parent.fields
 
@@ -37,30 +47,14 @@ class FormType(DjangoObjectType):
     event = graphene.Field(graphene.NonNull(LimitedEventType))
 
     @staticmethod
-    def resolve_survey(parent: Form, info):
-        return parent.survey
-
-    survey = graphene.Field(LimitedSurveyType)
-
-    @staticmethod
     def resolve_can_remove(form: Form, info):
         """
         A form can be removed if it has no responses.
         """
-        return form.can_remove
+        request: HttpRequest = info.context
+        return form.can_be_deleted_by(request)
 
     can_remove = graphene.NonNull(
         graphene.Boolean,
         description=normalize_whitespace(resolve_can_remove.__doc__ or ""),
     )
-
-    class Meta:
-        model = Form
-        fields = (
-            "slug",
-            "title",
-            "description",
-            "thank_you_message",
-            "layout",
-            "language",
-        )

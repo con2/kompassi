@@ -120,10 +120,6 @@ msgstr "Seuraava"
 msgid "Note!"
 msgstr "Huom!"
 
-#: models.py
-msgid "Payment due (days)"
-msgstr "Maksuaika (päivää)"
-
 #: views/public_views.py
 msgid "Please check the form."
 msgstr "Ole hyvä ja tarkista lomake."
@@ -210,10 +206,6 @@ msgstr "Ostajalla on tämän verran aikaa tilauksen vahvistuksen jälkeen maksaa
 #: models.py
 msgid "This text will be printed in the electronic ticket."
 msgstr "Tämä teksti tulostetaan sähköiseen lippuun."
-
-#: models.py
-msgid "This text will be printed in the footer of printed receipts (for mail orders). Entering contact information here is recommended."
-msgstr "Tämä teksti tulostetaan postitse toimitettavien tilausten keräilylistan alareunaan. Tähän on suositeltavaa sisällyttää yhteystiedot."
 
 #: models.py
 msgid "This text will be shown on the front page of the web shop."
@@ -328,12 +320,6 @@ msgstr "Tähdellä (*) merkityt kentät ovat pakollisia."
 msgid "I accept the <a href='{}' target='_blank' rel='noreferrer noopener'>terms and conditions</a> (required)."
 msgstr "Hyväksyn <a href='{}' target='_blank' rel='noreferrer noopener'>palvelun ehdot</a> (pakollinen)."
 
-msgid "Accommodee marked as arrived."
-msgstr "Majoittuja merkitty saapuneeksi."
-
-msgid "Accommodee marked as left."
-msgstr "Majoittuja merkitty poistuneeksi."
-
 msgid "Not arrived"
 msgstr "Ei saapunut"
 
@@ -372,3 +358,9 @@ msgstr "Tämä tapahtuma ei käytä Kompassia lipunmyyntiin."
 
 msgid "Ticket sales for this event has not yet started."
 msgstr "Tämän tapahtuman lipunmyynti ei ole vielä alkanut."
+
+msgid "Download event sales statistics as CSV"
+msgstr "Lataa tapahtuman myyntitilastot CSV-tiedostona"
+
+msgid "You have ticket admin privileges for this event"
+msgstr "Sinulla on lipunmyyntivastaavan oikeudet tähän tapahtumaan"

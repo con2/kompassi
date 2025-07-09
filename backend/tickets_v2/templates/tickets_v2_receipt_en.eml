@@ -1,0 +1,28 @@
+{% load tickets_v2_tags %}Dear recipient,
+
+Thank you for your order at the {{ event_name }} online shop!
+Your order number is {{ order_number|format_order_number }}.
+
+We confirm the following products have been paid for:
+
+{% for op in products %}{{ op.quantity }} pcs  {{ op.title }}
+    {{ op.quantity }} x {{ op.price|format_money }}
+{% endfor %}
+Total: {{ total_price|format_money }} (VAT 0%){% if have_etickets %}
+
+Please find attached your electronic tickets. The electronic ticket will be
+exchanged for a wristband at the ticket exchange when you arrive at the event.
+You can print the electronic ticket or show it from the screen of your smartphone
+or tablet device. If neither of these is possible, please make note of the
+ticket code under each ticket barcode and supply it at the ticket exchange.{% endif %}
+
+The contact information you supplied:
+
+{{ first_name }} {{ last_name }}{% if phone %}
+{{ phone }}{% endif %}
+{{ email }}
+
+If there are any errors in the details above, please contact us without delay
+by replying to this message.
+
+{% include "tickets_v2_footer_en.eml" %}

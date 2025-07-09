@@ -1,29 +1,41 @@
 import type { HeadingLevel } from "../helpers/Heading";
-import { Field, Layout } from "./models";
+import { Field } from "./models";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
 import type { Translations } from "@/translations/en";
 
 interface SchemaFormProps {
   fields: Field[];
-  layout?: Layout;
   values?: Record<string, any>;
   messages: Translations["SchemaForm"];
   headingLevel?: HeadingLevel;
   readOnly?: boolean;
+  className?: string;
+
+  /// Display a lock icon next to read-only fields
+  highlightReadOnlyFields?: boolean;
+
+  /// For when you need to render multiple SchemaForms that may have fields with the same slug
+  idPrefix?: string;
+
+  /// For nested SchemaForms
+  namePrefix?: string;
 }
 
 export function SchemaForm(props: SchemaFormProps) {
   const {
     fields,
-    layout = Layout.Vertical,
     values,
     messages,
     headingLevel,
     readOnly,
+    className = "",
+    idPrefix,
+    namePrefix,
+    highlightReadOnlyFields,
   } = props;
   return (
-    <>
+    <div className={className}>
       {fields.map((field, index) => {
         let slug = field.slug;
         if (!slug) {
@@ -31,22 +43,28 @@ export function SchemaForm(props: SchemaFormProps) {
           slug = `field-${index}`;
         }
 
+        if (namePrefix) {
+          slug = `${namePrefix}.${slug}`;
+        }
+
         return (
           <SchemaFormField
             key={slug}
             field={field}
-            layout={layout}
             headingLevel={headingLevel}
+            idPrefix={idPrefix}
+            highlightReadOnlyFields={highlightReadOnlyFields}
           >
             <SchemaFormInput
               field={field}
               value={values?.[field.slug]}
               messages={messages}
               readOnly={readOnly}
+              idPrefix={idPrefix}
             />
           </SchemaFormField>
         );
       })}
-    </>
+    </div>
   );
 }

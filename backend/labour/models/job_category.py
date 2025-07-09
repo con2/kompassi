@@ -1,7 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 
+from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, omit_keys, pick_attrs, slugify
+
+from .personnel_class import PersonnelClass
+from .qualifications import Qualification
+
+if TYPE_CHECKING:
+    from .roster import Job
+    from .signup import Signup
 
 
 def format_job_categories(job_categories):
@@ -9,12 +21,12 @@ def format_job_categories(job_categories):
 
 
 class JobCategory(models.Model):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE, verbose_name=_("event"))
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, verbose_name=_("event"))
     app_label = models.CharField(max_length=63, blank=True, default="labour")
 
     # TODO rename this to "title"
     name = models.CharField(max_length=63, verbose_name=_("Name"))
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     description = models.TextField(
         verbose_name=_("Description"),
@@ -33,13 +45,13 @@ class JobCategory(models.Model):
     )
 
     required_qualifications = models.ManyToManyField(
-        "labour.Qualification",
+        Qualification,
         blank=True,
         verbose_name=_("Required qualifications"),
     )
 
     personnel_classes = models.ManyToManyField(
-        "labour.PersonnelClass",
+        PersonnelClass,
         blank=True,
         verbose_name=_("Personnel classes"),
         help_text=_(
@@ -47,13 +59,23 @@ class JobCategory(models.Model):
         ),
     )
 
-    @classmethod
-    def get_or_create_dummy(cls, name="Courier"):
-        from .labour_event_meta import LabourEventMeta
-        from .personnel_class import PersonnelClass
+    accepted_signups: models.QuerySet[Signup]
+    jobs: models.QuerySet[Job]
 
-        meta, unused = LabourEventMeta.get_or_create_dummy()
-        event = meta.event
+    @classmethod
+    def get_or_create_dummy(
+        cls,
+        event: Event | None = None,
+        personnel_class: PersonnelClass | None = None,
+        name="Courier",
+    ):
+        from .labour_event_meta import LabourEventMeta
+
+        if event is None:
+            meta, _ = LabourEventMeta.get_or_create_dummy()
+            event = meta.event
+        else:
+            meta, _ = LabourEventMeta.get_or_create_dummy(event=event)
 
         job_category, created = cls.objects.get_or_create(
             event=event,
@@ -61,7 +83,9 @@ class JobCategory(models.Model):
         )
 
         if created:
-            personnel_class, unused = PersonnelClass.get_or_create_dummy(app_label="labour")
+            if personnel_class is None:
+                personnel_class, _ = PersonnelClass.get_or_create_dummy(app_label="labour")
+
             job_category.personnel_classes.add(personnel_class)
 
         meta.create_groups()
@@ -112,7 +136,7 @@ class JobCategory(models.Model):
             return True
 
         else:
-            quals = [pq.qualification for pq in person.personqualification_set.all()]
+            quals = [pq.qualification for pq in person.qualifications.all()]
             return all(qual in quals for qual in self.required_qualifications.all())
 
     class Meta:
@@ -168,7 +192,7 @@ class JobCategory(models.Model):
         return [
             signup.as_dict()
             for signup in (
-                self.accepted_signup_set.filter(is_active=True)
+                self.accepted_signups.filter(is_active=True)
                 .order_by("person__surname", "person__first_name")
                 .select_related("person")
             )
@@ -191,7 +215,7 @@ class JobCategory(models.Model):
         )
 
         if include_jobs:
-            doc["jobs"] = [job.as_dict(include_shifts=include_shifts) for job in self.job_set.all()]
+            doc["jobs"] = [job.as_dict(include_shifts=include_shifts) for job in self.jobs.all()]
 
         if include_requirements:
             doc["requirements"] = self._make_requirements()

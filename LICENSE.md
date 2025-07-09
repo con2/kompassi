@@ -2,14 +2,17 @@
 
     The MIT License (MIT)
 
+    Copyright © 2024 Tracon ry
     Copyright © 2009–2024 Santtu Pajukanta
+    Copyright © 2012–2024 Meeri Panula
+    Copyright © 2014–2024 Jyrki Launonen
     Copyright © 2015–2024 Aarni Koskela, Santeri Hiltunen
-    Copyright © 2020–2023 Tuomas Puikkonen
+    Copyright © 2020–2024 Tuomas Puikkonen
+    Copyright © 2024 Arttu Hanska, Juho Juopperi, Anssi Kolehmainen, Maura Kastinen, Natalie Lankila, Otte Mäkipää, Risto Ruuskanen, Hannele Tervo
     Copyright © 2019 Mikko Hänninen
     Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö
     Copyright © 2015–2017 Miika Ojamo
-    Copyright © 2014–2016 Jyrki Launonen
     Copyright © 2012–2018 Meeri Panula
     Copyright © 2009–2015 Jussi Sorjonen
     Copyright © 2014 Pekka Wallendahl
@@ -33,6 +36,18 @@
     LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
+
+### A note about the copyright of Tracon ry
+
+Regarding the following copyright statement above:
+
+```
+    Copyright © 2024 Tracon ry
+```
+
+The work of Santtu Pajukanta during December 2024 was paid for by Tracon and executed through his employer, Polar Squad Oy. Intellectual property rights to the work produced by Santtu Pajukanta during December 2024 belongs to Tracon ry as stipulated in the contract between Tracon ry and Polar Squad Oy.
+
+Santtu Pajukanta personally retains intellectual property rights to works produced outside December 2024, and the copyright of works produced by other contributors is retained by the respective contributors.
 
 ## Moe (mobile programme schedule)
 

@@ -31,7 +31,7 @@ class Command(BaseCommand):
                 ["afterparteh", "afterparty"],
             )
 
-            cutoff = date(2024 - 18, 9, 23)
+            cutoff = date(2024 - 18, 9, 21)
 
             for sex in SignupExtra.objects.filter(event=event, is_active=True, person__birth_date__lte=cutoff):
                 privileged.user_set.add(sex.person.user)

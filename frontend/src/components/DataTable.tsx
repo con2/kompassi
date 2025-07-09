@@ -1,20 +1,45 @@
 import { ReactNode, Fragment } from "react";
 
+type Responsive = "sm" | "md" | "lg" | "xl" | boolean;
+
 export interface Column<Row> {
   slug: string;
-  title: string;
+  title: ReactNode;
   getCellElement?: (row: Row, children?: ReactNode) => ReactNode;
   getCellContents?: (row: Row) => ReactNode;
+  getHeaderElement?: (children?: ReactNode) => ReactNode;
+  getHeaderContents?: () => ReactNode;
+  className?: string;
   scope?: string;
 }
 
+function ResponsiveWrapper({
+  responsive,
+  children,
+}: {
+  responsive?: Responsive;
+  children?: ReactNode;
+}) {
+  switch (responsive) {
+    case "sm":
+    case "md":
+    case "lg":
+    case "xl":
+      return <div className={`table-responsive-${responsive}`}>{children}</div>;
+    case true:
+      return <div className="table-responsive">{children}</div>;
+    default:
+      return <>{children}</>;
+  }
+}
+
 interface DataTableProps<Row> {
+  className?: string;
   rows: Row[];
   columns: Column<Row>[];
   getTotalMessage?: (total: number) => ReactNode;
-
-  /// By default, first column (0) is designated scope="row". Set to -1 to disable.
-  rowScopeColumnIndex?: number;
+  responsive?: Responsive;
+  children?: ReactNode;
 }
 
 function defaultCellElement<Row>(
@@ -22,11 +47,19 @@ function defaultCellElement<Row>(
   _row: Row,
   children?: ReactNode,
 ) {
-  return (
-    <td scope={this.scope} className="align-middle">
-      {children}
-    </td>
-  );
+  if (this.scope === "row") {
+    return (
+      <th scope={this.scope} className={this.className}>
+        {children}
+      </th>
+    );
+  } else {
+    return (
+      <td scope={this.scope} className={this.className}>
+        {children}
+      </td>
+    );
+  }
 }
 
 function defaultCellContents<Row>(this: Column<Row>, row: Row) {
@@ -39,42 +72,58 @@ function defaultCellContents<Row>(this: Column<Row>, row: Row) {
   return <>{"" + value}</>;
 }
 
+function defaultHeaderElement<Row>(this: Column<Row>, children?: ReactNode) {
+  return (
+    <th key={this.slug} scope="col" className={this.className}>
+      {children}
+    </th>
+  );
+}
+
+function defaultHeaderContents<Row>(this: Column<Row>) {
+  return this.title;
+}
+
 export function DataTable<Row>(props: DataTableProps<Row>) {
-  const { rowScopeColumnIndex } = props;
-  const columns = props.columns.map((column, index) => ({
+  const { rows, getTotalMessage, responsive, children } = props;
+  const columns: Column<Row>[] = props.columns.map((column, index) => ({
     getCellElement: column.getCellElement ?? defaultCellElement,
     getCellContents: column.getCellContents ?? defaultCellContents,
-    scope: rowScopeColumnIndex === index ? "row" : undefined,
+    getHeaderElement: column.getHeaderElement ?? defaultHeaderElement,
+    getHeaderContents: column.getHeaderContents ?? defaultHeaderContents,
+    className: "align-middle",
     ...column,
   }));
 
-  const totalMessage = props.getTotalMessage?.(props.rows.length);
+  const totalMessage = getTotalMessage?.(props.rows.length);
+  const className = props.className ?? "table table-striped";
 
   return (
-    <>
-      <table className="table table-striped table-bordered">
+    <ResponsiveWrapper responsive={responsive}>
+      <table className={className}>
         <thead>
           <tr>
             {columns.map((column) => (
-              <th key={column.slug} scope="col" className="align-middle">
-                {column.title}
-              </th>
+              <Fragment key={column.slug}>
+                {column.getHeaderElement!(column!.getHeaderContents!())}
+              </Fragment>
             ))}
           </tr>
         </thead>
         <tbody>
-          {props.rows.map((row, idx) => (
+          {rows.map((row, idx) => (
             <tr key={idx}>
               {columns.map((column) => (
                 <Fragment key={column.slug}>
-                  {column.getCellElement(row, column.getCellContents(row))}
+                  {column.getCellElement!(row, column.getCellContents!(row))}
                 </Fragment>
               ))}
             </tr>
           ))}
         </tbody>
+        {children}
       </table>
       {totalMessage && <p>{totalMessage}</p>}
-    </>
+    </ResponsiveWrapper>
   );
 }

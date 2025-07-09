@@ -1,13 +1,12 @@
-from django.utils.translation import gettext_lazy as _
+from event_log_v2 import registry
 
-from event_log import registry
-
+# TODO(2025/04) remove once 2024/09 partition has been reaped
 registry.register(
     name="tickets.accommodation.presence.arrived",
-    message=_("{entry.accommodation_information} arrived in {entry.limit_group.description}"),
+    message="{accommodation_information} arrived in {limit_group}",
 )
 
 registry.register(
     name="tickets.accommodation.presence.left",
-    message=_("{entry.accommodation_information} left {entry.limit_group.description}"),
+    message="{accommodation_information} left {limit_group}",
 )

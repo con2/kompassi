@@ -1,0 +1,14 @@
+- load trans from i18n
+h3 {% trans "Tickets" %}<sup>v2 BETA</sup>
+
+if have_tickets_v2_products_available
+  h4 {% trans "Ticket sales is currently open." %}
+  p: a(href='{{ settings.KOMPASSI_V2_BASE_URL }}/{{ event.slug }}/tickets').btn.btn-primary {% trans "Buy tickets" %}…
+else
+  h4 {% trans "Ticket sales is not currently open." %}
+
+if is_tickets_v2_admin
+  h4 {% trans "You have ticket admin privileges for this event" %}
+  p: a(href='{{ settings.KOMPASSI_V2_BASE_URL }}/{{ event.slug }}/products').btn.btn-primary {% trans "Go to admin" %}…
+
+hr

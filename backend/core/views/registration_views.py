@@ -11,17 +11,15 @@ from django.views.decorators.http import require_http_methods
 
 from ..forms import RegistrationForm, RegistrationPersonForm, TermsAndConditionsForm
 from ..models import Person
-from ..page_wizard import page_wizard_vars
 from ..utils import get_next, initialize_form
 from .login_views import do_login
 
 
 @sensitive_post_parameters("registration-password", "registration-password_again")
 @require_http_methods(["GET", "HEAD", "POST"])
-@csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
+@csp_update({"form-action": settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS})
 def core_registration_view(request):
-    vars = page_wizard_vars(request)
-    next = vars["next"]
+    next = get_next(request)
 
     if request.user.is_authenticated:
         return redirect(next)
@@ -53,7 +51,7 @@ def core_registration_view(request):
             person.apply_state_new_user(request, password)
 
             user = authenticate(username=username, password=password)
-            response = do_login(request, user=user, password=None, next=next)
+            response = do_login(request, user=user, next=next)
             messages.success(
                 request,
                 f"Käyttäjätunnuksesi on luotu. Tervetuloa {settings.KOMPASSI_INSTALLATION_NAME_ILLATIVE}!",
@@ -62,7 +60,7 @@ def core_registration_view(request):
         else:
             messages.error(request, "Ole hyvä ja tarkista lomake.")
 
-    vars.update(
+    vars = dict(
         next=next,
         person_form=person_form,
         registration_form=registration_form,

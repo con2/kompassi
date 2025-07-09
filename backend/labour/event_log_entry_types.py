@@ -1,25 +1,22 @@
-from django.utils.translation import gettext_lazy as _
-
-from event_log import registry
+from event_log_v2 import registry
 
 registry.register(
     name="labour.signup.created",
-    message=_("{entry.person} signed up for volunteer work in {entry.event}"),
-    email_body_template="labour_signup_created.eml",
+    message="{person} signed up for volunteer work in {event}",
 )
 
 
 registry.register(
     name="labour.signup.updated",
-    message=_("{entry.person} updated their application for volunteer work in {entry.event}"),
+    message="The volunteer work application for {person} in {event} was updated by {actor}",
 )
 
 registry.register(
     name="labour.signup.archived",
-    message=_("The application of {entry.person} for volunteer work in {entry.event} was archived"),
+    message="The application of {person} for volunteer work in {event} was archived",
 )
 
 registry.register(
     name="labour.signup.deleted",
-    message=_("The application of {entry.person} for volunteer work in {entry.event} was deleted"),
+    message="The application of {person} for volunteer work in {event} was deleted",
 )

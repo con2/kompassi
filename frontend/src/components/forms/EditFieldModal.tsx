@@ -1,16 +1,24 @@
 "use client";
 
+import { useCallback, useMemo } from "react";
+
+import Modal from "react-bootstrap/Modal";
+import { Dimension } from "../dimensions/models";
+import {
+  fieldToValues,
+  formDataToField,
+  getFieldEditorFields,
+} from "./editFieldForm";
 import "./FormEditor.scss";
-import getFieldEditorFields from "./getFieldEditorFields";
-import { Modal, useModal } from "./LegacyModal";
 import { Field } from "./models";
 import { SchemaForm } from "./SchemaForm";
 import type { Translations } from "@/translations/en";
 
 interface EditFieldModalProps {
-  initialValues: Field;
+  fieldToEdit: Field;
   onSubmit(field: Field): void;
   onClose(): void;
+  dimensions: Dimension[];
   messages: {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];
@@ -18,26 +26,54 @@ interface EditFieldModalProps {
 }
 
 const EditFieldModal = ({
-  initialValues,
+  fieldToEdit,
   onSubmit,
   onClose,
   messages,
+  dimensions,
 }: EditFieldModalProps) => {
-  const t = messages.FormEditor;
+  const t = messages.FormEditor.editFieldModal;
   const fields = getFieldEditorFields(
-    initialValues.type,
+    fieldToEdit.type,
     messages.FormEditor.editFieldForm,
+    dimensions,
   );
-  const modal = useModal({ isOpen: true });
+
+  const handleSubmit = useCallback(
+    (event: React.SyntheticEvent) => {
+      event.preventDefault();
+      const formData = new FormData(event.target as HTMLFormElement);
+      const field = formDataToField(fields, fieldToEdit, formData);
+      onSubmit(field);
+    },
+    [fieldToEdit, fields, onSubmit],
+  );
+  const values = useMemo(() => fieldToValues(fieldToEdit), [fieldToEdit]);
 
   return (
-    <Modal
-      {...modal}
-      title={t.editField}
-      onClose={onClose}
-      messages={t.editFieldModal.actions}
-    >
-      <SchemaForm fields={fields} messages={messages.SchemaForm} readOnly />
+    <Modal show={true} onHide={onClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          {t.title}: {messages.FormEditor.fieldTypes[fieldToEdit.type]}
+        </Modal.Title>
+      </Modal.Header>
+      <form onSubmit={handleSubmit}>
+        <Modal.Body>
+          <SchemaForm
+            fields={fields}
+            values={values}
+            messages={messages.SchemaForm}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <button type="button" className="btn btn-secondary" onClick={onClose}>
+            {t.actions.cancel}
+          </button>
+          <button type="submit" className="btn btn-primary">
+            {t.actions.submit}
+          </button>
+        </Modal.Footer>
+      </form>
     </Modal>
   );
 };

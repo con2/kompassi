@@ -1,6 +1,5 @@
 import graphene
-
-from access.cbac import graphql_check_instance
+from django.http import HttpRequest
 
 from ...models.survey import Survey
 
@@ -22,11 +21,13 @@ class DeleteSurvey(graphene.Mutation):
         info,
         input: DeleteSurveyInput,
     ):
-        survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
+        survey = Survey.objects.get(
+            event__slug=input.event_slug,
+            slug=input.survey_slug,
+        )
 
-        # TODO(#324) rethink
-        graphql_check_instance(survey, info, "self", "mutation")
-        if not survey.can_remove:
+        request: HttpRequest = info.context
+        if not survey.can_be_deleted_by(request):
             raise Exception("Cannot delete survey")
 
         survey.delete()

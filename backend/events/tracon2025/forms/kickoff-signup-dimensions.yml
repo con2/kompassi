@@ -1,0 +1,43 @@
+- slug: participation
+  title:
+    en: Osallistuminen
+    fi: Osallistuminen
+    sv: ""
+  choices:
+    - slug: kickoff
+      title:
+        en: Kick offiin
+        fi: Kick offiin
+        sv: ""
+      color: ""
+    - slug: pj
+      title:
+        en: Pikkujouluun
+        fi: Pikkujouluun
+        sv: ""
+      color: ""
+  is_key_dimension: true
+  is_multi_value: true
+  isPublic: false
+- slug: status
+  title:
+    en: Tila
+    fi: Tila
+    sv: ""
+  choices:
+    - slug: in-effect
+      title:
+        en: Voimassa
+        fi: Voimassa
+        sv: Voimassa
+      color: aquamarine
+
+    - slug: cancelled
+      title:
+        en: Peruutettu
+        fi: Peruutettu
+        sv: Peruutettu
+      color: crimson
+  is_key_dimension: true
+  is_multi_value: false
+  isPublic: true

@@ -1,5 +1,4 @@
 title: Hae kulukorvausta
-layout: vertical
 description: |
   Tällä lomakkeella voit hakea kulukorvausta Tracon ry:ltä tapahtumaan tai yhdistystoimintaan liittyvästä kulusta,
   lähettää Tracon ry:lle laskun tai toimittaa Tracon ry:n pankkikortilla maksetun kulun kuitin.
@@ -9,14 +8,13 @@ description: |
   osoitteella <em>rahat ät tracon piste fi</em> tai Slackissa <em>@Aketzu</em>.
 fields:
   - slug: event
-    type: SingleSelect
+    type: DimensionSingleSelect
     title: Tapahtuma
     required: true
     helpText: |
       Mihin tapahtumaan liittyvästä kulusta haet korvausta tai minkä laskun lähetät?
       Jos kulukorvaus ei liity tapahtumaan, valitse <em>Maksu ei liity tapahtumaan</em>.
-    choicesFrom:
-      dimension: event
+    dimension: event
 
   - slug: title
     type: SingleLineText

@@ -7,7 +7,7 @@ from paikkala.models import Ticket
 from badges.models import Badge
 from core.excel_export import XlsxWriter
 from core.models import Event
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 from tickets.models import Order
 
 
@@ -21,7 +21,6 @@ def core_fobba_export_view(request, event_slug, format="xlsx"):
     emit(
         "core.person.exported",
         request=request,
-        event=event,
         other_fields=dict(filename=filename),
     )
 

@@ -12,14 +12,21 @@ class XlsxWriter:
     """
 
     def __init__(self, output_stream):
-        self.row = 0
         self.output_stream = output_stream
         self.buf = io.BytesIO()
         self.workbook = xlsxwriter.Workbook(self.buf)
-        self.worksheet = self.workbook.add_worksheet()
         self.must_close = True
+        self.row = 0
+        self.worksheet = None
 
     def writerow(self, row):
+        if self.worksheet is None:
+            self.new_worksheet()
+
+        # appease typechecker
+        if self.worksheet is None:
+            raise AssertionError("Worksheet still None after new_worksheet() (this should never happen)")
+
         for col, value in enumerate(row):
             if isinstance(value, str):
                 # Workaround to avoid corner case bug that triggers (when all of the following)
@@ -31,6 +38,10 @@ class XlsxWriter:
                 self.worksheet.write(self.row, col, value)
 
         self.row += 1
+
+    def new_worksheet(self, name: str | None = None):
+        self.worksheet = self.workbook.add_worksheet(name)
+        self.row = 0
 
     def close(self):
         self.workbook.close()

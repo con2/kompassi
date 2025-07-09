@@ -1,15 +1,27 @@
+from __future__ import annotations
+
 import logging
+from functools import cached_property
+from typing import TYPE_CHECKING
 
 from django.db import models
 from django.db.models import Q
 
 from ..utils import SLUG_FIELD_PARAMS, pick_attrs, slugify
 
+if TYPE_CHECKING:
+    from access.models import AccessOrganizationMeta
+    from membership.models import MembershipOrganizationMeta
+    from payments.models import PaymentsOrganizationMeta
+
+    from .event import Event
+
+
 logger = logging.getLogger("kompassi")
 
 
 class Organization(models.Model):
-    slug = models.CharField(**SLUG_FIELD_PARAMS)
+    slug = models.CharField(**SLUG_FIELD_PARAMS)  # type: ignore
 
     name = models.CharField(max_length=255, verbose_name="Nimi")
     name_genitive = models.CharField(max_length=255, verbose_name="Nimi genetiivissä")
@@ -52,6 +64,11 @@ class Organization(models.Model):
         ],
     )
 
+    events: models.QuerySet[Event]
+    membershiporganizationmeta: models.OneToOneField[MembershipOrganizationMeta]
+    accessorganizationmeta: models.OneToOneField[AccessOrganizationMeta]
+    paymentsorganizationmeta: models.OneToOneField[PaymentsOrganizationMeta]
+
     def save(self, *args, **kwargs):
         if self.name and not self.slug:
             self.slug = slugify(self.name)
@@ -66,6 +83,19 @@ class Organization(models.Model):
 
     def __str__(self):
         return self.name
+
+    @cached_property
+    def scope(self):
+        from dimensions.models import Scope
+
+        return Scope.objects.get_or_create(
+            organization=self,
+            event=None,
+            defaults=dict(
+                slug=self.slug,
+                name=self.name,
+            ),
+        )[0]
 
     @classmethod
     def get_or_create_dummy(cls):
@@ -93,15 +123,6 @@ class Organization(models.Model):
         try:
             return self.accessorganizationmeta
         except AccessOrganizationMeta.DoesNotExist:
-            return None
-
-    @property
-    def directory_organization_meta(self):
-        from directory.models import DirectoryOrganizationMeta
-
-        try:
-            return self.directoryorganizationmeta
-        except DirectoryOrganizationMeta.DoesNotExist:
             return None
 
     @property

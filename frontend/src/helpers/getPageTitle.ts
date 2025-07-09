@@ -2,9 +2,9 @@ import { Translations } from "@/translations/en";
 
 interface Props {
   translations: Translations;
-  event: { name: string } | null | undefined;
-  subject: string | null | undefined;
-  viewTitle: string | null | undefined;
+  event?: { name: string } | null | undefined;
+  subject?: string | null | undefined;
+  viewTitle?: string | null | undefined;
 }
 
 export default function getPageTitle(props: Props) {

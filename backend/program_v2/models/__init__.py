@@ -1,5 +1,5 @@
-from .dimension import Dimension, DimensionValue, ProgramDimensionValue
 from .meta import ProgramV2EventMeta
-from .offer_form import OfferForm
 from .program import Program
-from .schedule import ScheduleItem
+from .program_dimension_value import ProgramDimensionValue
+from .schedule_item import ScheduleItem
+from .schedule_item_dimension_value import ScheduleItemDimensionValue

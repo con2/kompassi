@@ -1,14 +1,12 @@
-from django.utils.translation import gettext_lazy as _
-
-from event_log import registry
+from event_log_v2 import registry
 
 registry.register(
     name="directory.search.performed",
-    message=_("User {entry.created_by} searched the {entry.organization} directory for: {entry.search_term}"),
+    message="User {actor} searched the {organization} directory for: {search_term}",
 )
 
 
 registry.register(
     name="directory.viewed",
-    message=_("User {entry.created_by} browsed the {entry.organization} directory without a search term."),
+    message="User {actor} browsed the {organization} directory without a search term.",
 )

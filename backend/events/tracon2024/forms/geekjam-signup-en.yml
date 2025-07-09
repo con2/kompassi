@@ -1,0 +1,38 @@
+title: Sign up to Geek & Trad Jam at Tracon 2024
+description: |
+  Program Tent 1 in the park, Friday 6 September at 7:00–9:00 PM.
+
+  Know how to play a (portable) instrument? Like to play together? Bring yourself and your instrument(s) to the park! We'll play geek music (possibly mixed with some Irish and other trad music) together. Some (but not all) songs may also be sing-along and there may be an electric piano. We'll prefer D whistle compatible keys (D major, G major, E minor, B minor) to allow whistles & simple system flutes to participate. Sign-up is not mandatory, but you can also use this form to suggest songs! You're also welcome to just listen.
+fields:
+  - slug: nick
+    type: SingleLineText
+    title: Nick name
+    required: true
+
+  - slug: instruments
+    type: MultiLineText
+    title: Instrument(s)
+    helpText: |
+      Which instrument (if any) are you bringing? If the keys you can play in are limited by the instrument, please also list the keys you are comfortable playing in.
+
+  - slug: song_suggestions
+    type: MultiLineText
+    title: Song suggestions
+    helpText: |
+      Which songs would you like to play? YouTube links to OST and covers are also welcome.
+
+  - slug: data_protection_text
+    type: StaticText
+    title: Data Protection
+    helpText: >
+      The data controller is Tracon ry represented by Santtu Pajukanta.
+      The information will be used for organizing the geek music jam at Tracon 2024 event.
+      The data will be stored until the event, after which it will be deleted.
+      The information will not be disclosed to third parties.
+      The information will not be used for direct marketing.
+      The information will not be transferred outside the EU or the European Economic Area.
+
+  - slug: data_protection_consent
+    type: SingleCheckbox
+    title: I give my consent for the processing of my personal data as described above.
+    required: true

@@ -5,7 +5,7 @@ https://outline.con2.fi/doc/ticket-sales-1cFCJvcZxc
 
 from csp.decorators import csp_update
 from django.contrib import messages
-from django.db import connection, transaction
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
@@ -14,20 +14,17 @@ from core.utils import initialize_form
 from payments.models.checkout_payment import CHECKOUT_PAYMENT_WALL_ORIGIN, CheckoutPayment
 
 from ..forms import CustomerForm, OrderProductForm
-from ..helpers import tickets_event_required
-from .tickets_v1_views import clear_order, get_order, set_order, tickets_welcome_view
+from ..helpers import (
+    clear_order,
+    get_order,
+    set_order,
+    tickets_event_required,
+)
 
 
 @tickets_event_required
 @require_http_methods(["GET", "HEAD", "POST"])
-def tickets_router_view(request, event, *args, **kwargs):
-    if event.tickets_event_meta.tickets_view_version == "v1.5":
-        return tickets_view(request, event, *args, **kwargs)
-    else:
-        return tickets_welcome_view(request, event.slug, *args, **kwargs)
-
-
-@csp_update(FORM_ACTION=CHECKOUT_PAYMENT_WALL_ORIGIN)
+@csp_update({"form-action": [CHECKOUT_PAYMENT_WALL_ORIGIN]})  # type: ignore
 def tickets_view(request, event):
     order = get_order(request, event)
     if order.is_confirmed:
@@ -36,10 +33,6 @@ def tickets_view(request, event):
     code = request.GET.get("code", "")
 
     with transaction.atomic():
-        # TODO handle serialization_failure
-        cursor = connection.cursor()
-        cursor.execute("set transaction isolation level serializable")
-
         order_product_forms = OrderProductForm.get_for_order(request, order, code=code)
         customer_form = initialize_form(CustomerForm, request, order=order)
 
@@ -121,19 +114,16 @@ def tickets_confirmed_view(request, event, order):
         match request.POST.get("action"):
             case "new-order":
                 clear_order(request, event)
-                return redirect("tickets_welcome_view", event.slug)
+                return redirect("tickets_view", event.slug)
             case "cancel-order":
                 if order.is_paid:
                     messages.error(
                         request,
-                        _(
-                            "The order is paid and cannot be canceled here. "
-                            "Please contact us if you need to cancel it."
-                        ),
+                        _("The order is paid and cannot be canceled here. Please contact us if you need to cancel it."),
                     )
                 else:
                     order.cancel(send_email=False)
-                    return redirect("tickets_welcome_view", event.slug)
+                    return redirect("tickets_view", event.slug)
             case "pay-order":
                 if order.is_paid:
                     messages.error(request, _("This order has already been paid."))

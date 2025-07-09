@@ -1,0 +1,47 @@
+- slug: program
+  title:
+    fi: Ohjelma
+    en: Program
+  isKeyDimension: true
+  isPublic: true
+  choices:
+    - slug: opening-ceremony
+      title:
+        fi: avajaisissa
+        en: at the opening ceremony
+    - slug: closing-ceremony
+      title:
+        fi: päättäjäisissä
+        en: at the closing ceremony
+    - slug: either
+      title:
+        fi: kummassa tahansa
+        en: either
+
+- slug: status
+  title:
+    fi: Hakemuksen tila
+    en: Application status
+  isKeyDimension: true
+  isPublic: true
+  choices:
+    - slug: new
+      color: blue
+      title:
+        fi: Uusi
+        en: New
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+        en: Accepted
+    - slug: rejected
+      color: red
+      title:
+        fi: Hylätty
+        en: Rejected
+    - slug: cancelled
+      color: red
+      title:
+        fi: Peruutettu
+        en: Cancelled

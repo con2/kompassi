@@ -12,6 +12,7 @@ kompassi_apps = [
     "labour",
     "programme",
     "tickets",
+    "tickets_v2",
     "payments",
     "api",
     "api_v2",
@@ -20,7 +21,6 @@ kompassi_apps = [
     "access",
     "desuprofile_integration",
     "membership",
-    "events.tracon2023",
     "enrollment",
     "intra",
     "feedback",
@@ -28,6 +28,9 @@ kompassi_apps = [
     "listings",
     "metrics",
     "forms",
+    "emprinten",
+    "program_v2",
+    "events.frostbite2025",
 ]
 
 urlpatterns = [

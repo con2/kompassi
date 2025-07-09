@@ -1,0 +1,81 @@
+title: Tracon esiintyjähaku avajaisiin ja päättäjäisiin
+description: |
+  Tällä lomakkeella haet esiintyjäksi 6.-8.9.2024 järjestettävän Traconin avajaisiin tai päättäjäisiin.
+
+  Esiintyjähaku on auki 30.4.2024 klo 23.59 asti. Valittuihin otetaan yhteyttä hakuajan sulkeuduttua.
+
+  Huomioithan, että tänä vuonna avajaiset järjestetään poikkeuksellisesti Sorsapuiston Puistolavalla. Päättäjäiset ovat tuttuun tapaan taas Isossa Salissa.
+
+  Lisäkysymyksiä voi laittaa tulemaan avajais- ja päättäjäisvastaavalle Jansutille osoitteeseen <em>jansutti@tracon.fi</em>.
+fields:
+  - slug: contact-header
+    type: StaticText
+    title: Yhteystiedot
+    helpText: |
+      Tarvitsemme yhteystiedot sekä ennen conia yhteydenpitoon, että conin aikana mahdollisten kiireellisten asioiden hoitamiseen.
+
+      Mikäli esiintyjiä on useampia, riittää että yksi henkilö täyttää tämän lomakkeen.
+
+      Yhteystietoja käytetään vain Traconiin liittyvään viestintään ja ne poistetaan tapahtuman jälkeen.
+
+  - slug: title
+    type: StaticText
+    title: Yhteyshenkilön tiedot
+    helpText: Jos kyseessä on isompi ryhmä, ilmoita yhden yhteyshenkilön tiedot joka infoaa koko ryhmää
+
+  - slug: name
+    type: SingleLineText
+    title: Koko nimi
+    required: true
+
+  - slug: email
+    type: SingleLineText
+    htmlType: email
+    title: Sähköposti
+    required: true
+
+  - slug: phone
+    type: SingleLineText
+    title: Puhelinnumero
+    required: true
+
+  - slug: performance-title
+    type: StaticText
+    title: Esityksen tiedot
+
+  - slug: program
+    type: DimensionSingleSelect
+    title: Haluaisitko esiintyä
+    required: true
+    dimension: program
+
+  - slug: performer-name
+    type: SingleLineText
+    title: Taiteilijanimi tai ryhmän nimi
+    required: true
+    helpText: Esiintyjä tai ryhmä esitellään tällä nimellä julkisissa materiaaleissa ja juonnoissa.
+
+  - slug: number-of-performers
+    type: SingleLineText
+    title: Esiintyjien lukumäärä
+    required: true
+
+  - slug: performance
+    type: MultiLineText
+    title: Esityksen kuvaus
+    required: true
+    helpText: |
+      Kerro minkälainen esitys sinulta tai ryhmältäsi olisi tulossa.
+
+  - slug: performance-sample
+    type: MultiLineText
+    title: Esitysnäyte
+    required: true
+    helpText: YouTube- tmv. linkki, mistä näkee esimerkin esityksesi tyylistä
+
+  - slug: technical-supplies
+    type: MultiLineText
+    title: Tekniikkatarpeet
+    required: true
+    helpText: |
+      Kerro jo alustavasti, millaista tekniikkaa/valotoiveita jne. esityksesi tarvitsisi.

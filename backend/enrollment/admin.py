@@ -5,6 +5,7 @@ from .models import Enrollment, EnrollmentEventMeta
 
 class InlineEnrollmentEventMetaAdmin(admin.StackedInline):
     model = EnrollmentEventMeta
+    raw_id_fields = ("admin_group",)
 
 
 @admin.register(Enrollment)

@@ -1,0 +1,19 @@
+.favorite {
+  margin: 0;
+  padding: 0;
+  line-height: 24px;
+  height: 24px;
+  filter: grayscale(100%);
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.favorite.xl {
+  line-height: 30px;
+  height: 30px;
+  font-size: 30px;
+}
+
+.favorite.active {
+  filter: grayscale(0%);
+}

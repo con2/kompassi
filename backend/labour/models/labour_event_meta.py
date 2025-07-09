@@ -1,11 +1,12 @@
 from datetime import timedelta
+from typing import Any
 
 from django.conf import settings
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
-from core.models import ContactEmailMixin, EventMetaBase, contact_email_validator
+from core.models import ContactEmailMixin, Event, EventMetaBase, contact_email_validator
 from core.utils import alias_property, full_hours_between, is_within_period
 
 from .constants import GROUP_VERBOSE_NAMES_BY_SUFFIX, SIGNUP_STATE_GROUPS
@@ -59,6 +60,13 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         "erikoistehtäville.",
     )
 
+    work_certificate_pdf_project = models.ForeignKey(
+        "emprinten.Project",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+
     work_certificate_signer = models.TextField(
         null=True,
         blank=True,
@@ -95,14 +103,21 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         )
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, event: Event | None = None):
         from django.contrib.contenttypes.models import ContentType
 
         from core.models import Event
 
         from .signup_extras import EmptySignupExtra
 
-        event, unused = Event.get_or_create_dummy()
+        if event is None:
+            event, unused = Event.get_or_create_dummy()
+
+        if event.start_time is None:
+            raise ValueError("Event must have a start time")
+        if event.end_time is None:
+            raise ValueError("Event must have an end time")
+
         content_type = ContentType.objects.get_for_model(EmptySignupExtra)
         (admin_group,) = LabourEventMeta.get_or_create_groups(event, ["admins"])
 
@@ -171,7 +186,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         if "background_tasks" in settings.INSTALLED_APPS:
             from ..tasks import labour_event_meta_create_groups
 
-            labour_event_meta_create_groups.delay(self.pk)
+            labour_event_meta_create_groups.delay(self.pk)  # type: ignore
         else:
             self.create_groups()
 
@@ -179,7 +194,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         from .job_category import JobCategory
         from .personnel_class import PersonnelClass
 
-        job_categories_or_suffixes = list(SIGNUP_STATE_GROUPS)
+        job_categories_or_suffixes: list[Any] = list(SIGNUP_STATE_GROUPS)
         job_categories_or_suffixes.extend(JobCategory.objects.filter(event=self.event))
         job_categories_or_suffixes.extend(PersonnelClass.objects.filter(event=self.event, app_label="labour"))
         return LabourEventMeta.get_or_create_groups(self.event, job_categories_or_suffixes)

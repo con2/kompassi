@@ -1,18 +1,12 @@
 from django.contrib import admin
 
 from .models import (
-    AccommodationInformation,
     Customer,
     LimitGroup,
     Order,
     OrderProduct,
     Product,
-    TicketsEventMeta,
 )
-
-
-class InlineTicketsEventMetaAdmin(admin.StackedInline):
-    model = TicketsEventMeta
 
 
 @admin.register(Product)
@@ -59,25 +53,6 @@ class OrderAdmin(admin.ModelAdmin):
         OrderProductInline,
         #        CustomerInline
     ]
-
-
-@admin.register(AccommodationInformation)
-class AccommodationInformationAdmin(admin.ModelAdmin):
-    model = AccommodationInformation
-    list_display = (
-        "event",
-        "product_name",
-        "formatted_order_number",
-        "last_name",
-        "first_name",
-        "phone_number",
-        "email",
-    )
-
-    list_filter = ("order_product__product__event",)
-    ordering = ("order_product__product__event", "order_product__product", "last_name", "first_name")
-    search_fields = ("last_name", "first_name", "phone_number", "email", "order_product__order__id")
-    fields = ("last_name", "first_name", "phone_number", "email")
 
 
 admin.site.register(Customer)

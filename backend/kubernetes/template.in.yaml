@@ -6,43 +6,41 @@
 #########
 ---
 !If
-  test: !Var redis_managed
-  then: !Include redis/service.in.yaml
+test: !Var redis_managed
+then: !Include redis/service.in.yaml
 
 ---
 !If
-  test: !Var redis_managed
-  then: !Include redis/deployment.in.yaml
+test: !Var redis_managed
+then: !Include redis/deployment.in.yaml
 
 ---
 !If
-  test: !All [!Var redis_managed, !Var redis_storage_pvc]
-  then: !Include redis/pvc.in.yaml
-
+test: !All [!Var redis_managed, !Var redis_storage_pvc]
+then: !Include redis/pvc.in.yaml
 
 ##############
 # POSTGRESQL #
 ##############
 ---
 !If
-  test: !Var postgres_managed
-  then: !Include postgres/service.in.yaml
+test: !Var postgres_managed
+then: !Include postgres/service.in.yaml
 
 ---
 !If
-  test: !Var postgres_managed
-  then: !Include postgres/deployment.in.yaml
+test: !Var postgres_managed
+then: !Include postgres/deployment.in.yaml
 
 ---
 !If
-  test: !Var postgres_managed
-  then: !Include postgres/pvc.in.yaml
+test: !Var postgres_managed
+then: !Include postgres/pvc.in.yaml
 
 ---
 !If
-  test: !Var postgres_managed
-  then: !Include postgres/secret.in.yaml
-
+test: !Var postgres_managed
+then: !Include postgres/secret.in.yaml
 
 #########################
 # GUNICORN (Web server) #
@@ -53,21 +51,36 @@
 !Include kompassi/deployment.in.yaml
 ---
 !If
-  test: !Var kompassi_storage_pvc
-  then: !Include kompassi/pvc.in.yaml
+test: !Var kompassi_storage_pvc
+then: !Include kompassi/pvc.in.yaml
 ---
 !If
-  test: !Var kompassi_secret_managed
-  then: !Include kompassi/secret.in.yaml
+test: !Var kompassi_secret_managed
+then: !Include kompassi/secret.in.yaml
 
-
+#############################################
+# UVICORN (Optimized server for tickets_v2) #
+#############################################
+---
+!If
+test: !Var kompassi_uvicorn_enabled
+then: !Include uvicorn/service.in.yaml
+---
+!If
+test: !Var kompassi_uvicorn_enabled
+then: !Include uvicorn/deployment.in.yaml
 ##############################
 # CELERY (Background worker) #
 ##############################
 ---
 !Include celery/deployment.in.yaml
-
-
+###########################################################
+# NEW BACKGROUND WORKER (to replace celery at some point) #
+###########################################################
+---
+!If
+test: !Var kompassi_background_worker_enabled
+then: !Include worker/deployment.in.yaml
 ###############################
 # NGINX (Static file serving) #
 ###############################
@@ -75,8 +88,6 @@
 !Include nginx/service.in.yaml
 ---
 !Include nginx/deployment.in.yaml
-
-
 ###########
 # INGRESS #
 ###########
@@ -84,5 +95,5 @@
 !Include ingress/ingress.in.yaml
 ---
 !If
-  test: !Var backup_ingress_public_hostnames
-  then: !Include ingress/ingress-backup.in.yaml
+test: !Var backup_ingress_public_hostnames
+then: !Include ingress/ingress-backup.in.yaml

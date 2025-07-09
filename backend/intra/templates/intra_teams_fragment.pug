@@ -1,0 +1,9 @@
+for team in teams
+  h2= team.name
+
+  //- NOTE: our wp theme for some reason puts space between divs
+  p
+    for member in team.members.all
+      if member.is_shown_publicly
+        <strong>{{ member.display_name }}</strong>, {{ member.job_title }}
+        <br>

@@ -1,9 +1,9 @@
-FROM node:21 as deps
+FROM node:22 AS deps
 WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-FROM node:21 as builder
+FROM node:22 AS builder
 WORKDIR /usr/src/app
 ENV NEXT_TELEMETRY_DISABLED 1
 COPY --from=deps /usr/src/app/node_modules ./node_modules
@@ -12,7 +12,7 @@ COPY package.json package-lock.json next.config.js tsconfig.json .eslintrc.json 
 COPY src src
 RUN npm run build
 
-FROM node:21 as runner
+FROM node:22 AS runner
 WORKDIR /usr/src/app
 ENV NODE_ENV production
 ENV NEXT_TELEMETRY_DISABLED 1

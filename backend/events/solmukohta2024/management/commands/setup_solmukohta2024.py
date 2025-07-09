@@ -1,12 +1,10 @@
 import os
 from datetime import datetime, timedelta
 
-import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from pkg_resources import resource_stream
 
 
 def mkpath(*parts):
@@ -27,7 +25,6 @@ class Setup:
         self.setup_core()
         self.setup_programme()
         self.setup_tickets()
-        self.setup_forms()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -89,6 +86,10 @@ class Setup:
                 schedule_layout="full_width",
             ),
         )
+
+        if not programme_event_meta.override_schedule_link:
+            programme_event_meta.override_schedule_link = "https://solmukohta.eu/programme/guide/#event:solmukohta"
+            programme_event_meta.save(update_fields=["override_schedule_link"])
 
         if settings.DEBUG:
             programme_event_meta.accepting_cold_offers_from = now() - timedelta(days=60)
@@ -260,7 +261,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2023{:05d}",
             contact_email="Solmukohta 2024 <tickets@solmukohta.eu>",
             ticket_free_text="This is your electronic ticket for Solmukohta 2024.\n"
@@ -272,7 +272,6 @@ class Setup:
 <p>After completing the purchase a receipt and the ticket will be emailed to the address provided. Double check that you type in the correct email address!</p>
 <p>For faster check in at the Solmukohta 2024 event, we ask all participants to have their identification ready at check in.</p>
 """,
-            tickets_view_version="v1.5",
         )
 
         if self.test:
@@ -454,6 +453,47 @@ class Setup:
                     limit_group("Thursday tickets", 5),
                 ],
             ),
+            dict(
+                name="Day ticket – Sunday",
+                description="Sunday ticket to Solmukohta. This ticket allows you to attend Solmukohta on Sunday April 14.",
+                mail_description=day_ticket_mail_description,
+                price_cents=40_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("Sunday tickets", 1),
+                ],
+            ),
+            dict(
+                name="Book – What Do We Do When We Play? (2020)",
+                description=(
+                    "ONLY FOR RETRIEVAL AT SOLMUKOHTA 2024. IF YOU CANNOT COME, HAVE A FRIEND PICK IT UP FROM THE INFO WITH THE RECEIPT. WE DO NOT MAIL BOOKS.\n\n"
+                    "Over the course of thirty years, the Nordic larp community has learned a huge amount about the design and analysis of larps. Now, we open the next chapter and ask the question, “what do we do when we play?”\n\n"
+                    "This book focuses on the experience, skills, and understanding of the participant. With 85 texts from 73 authors, we’re still just scratching the surface, but we hope that you'll find pieces in here that change the way you play and how you think about it."
+                ),
+                price_cents=25_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("2020 book", 12),
+                ],
+            ),
+            dict(
+                name="Book – Liminal Encounters (2024)",
+                description=(
+                    "ONLY FOR RETRIEVAL AT SOLMUKOHTA 2024. IF YOU CANNOT COME, HAVE A FRIEND PICK IT UP FROM THE INFO WITH THE RECEIPT. WE DO NOT MAIL BOOKS.\n\n"
+                    "Do you want to know what is going on in larp and where the discourse is going? Read the Solmukohta 2024 book, Liminal Encounters: Evolving Discourse in Nordic and Nordic-inspired Larp. The book contains opinions and debate, concrete tips on how to make larps, and academic style analysis. At 400 pages, with 58 contributors, it both delivers fresh perspectives and further develops established theories."
+                ),
+                price_cents=25_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=ordering(),
+                limit_groups=[
+                    limit_group("2024 book", 24),
+                ],
+            ),
         ]:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
@@ -463,65 +503,6 @@ class Setup:
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
-
-    def setup_forms(self):
-        from forms.models.dimension import DimensionDTO
-        from forms.models.form import Form
-        from forms.models.survey import Survey
-
-        passenger_registration, _ = Survey.objects.update_or_create(
-            event=self.event,
-            slug="passenger-registration",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["official_last_name", "official_first_names"],
-            ),
-        )
-
-        with resource_stream("events.solmukohta2024", "forms/passenger-registration-dimensions.yaml") as f:
-            data = yaml.safe_load(f)
-
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(passenger_registration)
-
-        with resource_stream("events.solmukohta2024", "forms/passenger-registration-en.yaml") as f:
-            data = yaml.safe_load(f)
-
-        passenger_registration_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="passenger-registration-en",
-            language="en",
-            defaults=data,
-        )
-
-        passenger_registration.languages.set([passenger_registration_en])
-
-        hackathon_signup, _ = Survey.objects.update_or_create(
-            event=self.event,
-            slug="hackathon-signup",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["name"],
-            ),
-        )
-
-        with resource_stream("events.solmukohta2024", "forms/hackathon-signup-dimensions.yaml") as f:
-            data = yaml.safe_load(f)
-
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(hackathon_signup)
-
-        with resource_stream("events.solmukohta2024", "forms/hackathon-signup-en.yaml") as f:
-            data = yaml.safe_load(f)
-
-        hackathon_signup_en, created = Form.objects.update_or_create(
-            event=self.event,
-            slug="hackathon-signup-en",
-            language="en",
-            defaults=data,
-        )
-
-        hackathon_signup.languages.set([hackathon_signup_en])
 
 
 class Command(BaseCommand):

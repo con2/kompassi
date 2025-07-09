@@ -17,9 +17,9 @@ block content
 
   .panel.panel-default
     .panel-heading: strong {% trans "Qualifications" %}
-    if signup.person.personqualification_set.exists
+    if signup.person.qualifications.exists
       ul.list-group
-        for pq in signup.person.personqualification_set.all
+        for pq in signup.person.qualifications.all
           li.list-group-item
             | {{ pq.qualification }}
             if pq.qualification_extra

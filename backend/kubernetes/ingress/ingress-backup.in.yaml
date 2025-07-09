@@ -6,6 +6,7 @@ metadata:
     - !Var base_ingress_annotations
     - nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
+  ingressClassName: !Var ingress_class_name
   tls:
     - secretName: ingress-backup
       hosts: !Var backup_ingress_public_hostnames

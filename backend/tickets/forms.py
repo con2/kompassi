@@ -7,58 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from core.utils import horizontal_form_helper, indented_without_label, initialize_form
 from core.utils.locale_utils import get_message_in_language
 
-from .models import AccommodationInformation, Customer, Order, OrderProduct, Product
-
-
-class NullForm(forms.Form):
-    pass
-
-
-class AccommodationInformationForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-
-        for field_name, field in self.fields.items():
-            if field_name not in ("email", "room_name"):
-                field.required = True
-
-    @classmethod
-    def get_for_order(cls, request, order, admin=False):
-        ais = AccommodationInformation.get_for_order(order)
-        return [cls.get_for_accommodation_information(request, ai) for ai in ais]
-
-    @classmethod
-    def get_for_accommodation_information(cls, request, ai):
-        return initialize_form(
-            cls,
-            request,
-            instance=ai,
-            prefix="a%d" % ai.pk,
-        )
-
-    class Meta:
-        model = AccommodationInformation
-        fields = ("first_name", "last_name", "phone_number", "email")
-
-
-class AccommodationInformationAdminForm(AccommodationInformationForm):
-    class Meta:
-        model = AccommodationInformation
-        fields = ("first_name", "last_name", "phone_number", "email", "room_name")
-
-
-class AccommodationPresenceForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.label_class = "sr-only"
-        self.helper.form_tag = False
-
-    class Meta:
-        model = AccommodationInformation
-        fields = ("room_name",)
+from .models import Customer, Order, OrderProduct, Product
 
 
 class OrderProductForm(forms.ModelForm):
@@ -75,7 +24,7 @@ class OrderProductForm(forms.ModelForm):
 
         count_field = self.fields["count"]
         count_field.validators.append(validators.MaxValueValidator(max_count_per_product))
-        count_field.widget.attrs["max"] = count_field.max_value = max_count_per_product
+        count_field.widget.attrs["max"] = count_field.max_value = max_count_per_product  # type: ignore
 
     @classmethod
     def get_for_order(cls, request, order, admin=False, code=""):
@@ -95,11 +44,8 @@ class OrderProductForm(forms.ModelForm):
 
         max_count_per_product = order.event.tickets_event_meta.max_count_per_product
         if not admin:
-            if product.amount_available < max_count_per_product:
-                max_count_per_product = product.amount_available
-            if max_count_per_product < 0:
-                # oops, we have accidentially oversold the product
-                max_count_per_product = 0
+            max_count_per_product = min(product.amount_available, max_count_per_product)
+            max_count_per_product = max(max_count_per_product, 0)
 
         return initialize_form(
             OrderProductForm,

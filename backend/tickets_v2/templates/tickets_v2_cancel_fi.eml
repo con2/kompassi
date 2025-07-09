@@ -1,0 +1,19 @@
+{% load tickets_v2_tags %}Hyvä vastaanottaja,
+
+{{ event_name }} -verkkokaupassa tekemäsi tilaus numero {{ order_number|format_order_number }} on peruttu.
+
+Tilaus sisälsi seuraavat tuotteet:
+
+{% for op in products %}{{ op.quantity }} kpl  {{ op.title }}
+    {{ op.quantity }} x {{ op.price|format_money }}
+{% endfor %}
+Yhteensä: {{ total_price|format_money }} (ALV 0%)
+
+Jos epäilet, että tilauksesi on peruuntunut virheellisesti,
+ota yhteyttä asiakaspalveluun vastaamalla tähän viestiin.{% if is_refund %}
+
+Maksu palautetaan alkuperäiselle maksutavalle. Jos palautus ei saavu
+5 pankkipäivän kuluessa, ole hyvä ja ota yhteyttä asiakaspalveluun
+vastaamalla tähän viestiin.{% endif %}
+
+{% include "tickets_v2_footer_fi.eml" %}

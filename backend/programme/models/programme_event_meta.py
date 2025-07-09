@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
-from core.models import ContactEmailMixin, EventMetaBase, contact_email_validator
+from core.models import ContactEmailMixin, Event, EventMetaBase, contact_email_validator
 from core.utils import alias_property, is_within_period
 
 SCHEDULE_LAYOUT_CHOICES = [
@@ -61,6 +63,15 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
     paikkala_default_max_tickets_per_batch = models.IntegerField(default=5)
     paikkala_default_max_tickets_per_user = models.IntegerField(default=5)
 
+    override_schedule_link = models.URLField(
+        blank=True,
+        verbose_name=_("Override schedule link"),
+        help_text=_(
+            "If you have a separate programme system, you can link to it here. "
+            "This link will replace the link to the internal programme schedule."
+        ),
+    )
+
     use_cbac = True
 
     # if set, would get copies of all programme messages
@@ -85,7 +96,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         return Programme.objects.filter(**criteria).exclude(room__in=schedule_rooms)
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, event: Event | None = None):
         from django.utils.timezone import now
 
         from core.models import Event
@@ -196,6 +207,15 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
         from .alternative_programme_form import AlternativeProgrammeForm
 
         return AlternativeProgrammeForm.objects.filter(event=self.event, slug="default").first()
+
+    @property
+    def schedule_link(self):
+        if self.override_schedule_link:
+            return self.override_schedule_link
+        elif meta := self.event.program_v2_event_meta:
+            return meta.schedule_url
+        else:
+            return ""
 
     def get_programmes_with_open_reservations(self, t=None):
         from .programme import Programme

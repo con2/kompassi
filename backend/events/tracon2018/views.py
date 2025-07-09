@@ -6,7 +6,7 @@ from django.utils.timezone import now
 
 from core.csv_export import csv_response
 from core.models import Event
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 from labour.helpers import labour_admin_required
 
 from .models import Poison, SignupExtra
@@ -24,7 +24,7 @@ def tracon2018_afterparty_participants_view(request, vars, event):
         timestamp=now().strftime("%Y%m%d%H%M%S"),
     )
 
-    emit("core.person.exported", request=request, event=event)
+    emit("core.person.exported", request=request)
 
     return csv_response(
         event,

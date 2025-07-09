@@ -4,11 +4,13 @@ h3 {% trans "Ticket sales" %}
 if event.tickets_event_meta.is_ticket_sales_open
   h4 {% trans "Ticket sales is currently open." %}
 
-  p: a(href='{% url "tickets_welcome_view" event.slug %}').btn.btn-primary {% trans "Buy tickets" %}
+  p: a(href='{% url "tickets_view" event.slug %}').btn.btn-primary {% trans "Buy tickets" %}
 else
   h4 {% trans "Ticket sales is not currently open." %}
 
 if is_tickets_admin
-  h4 Sinulla on lipunmyynti&shy;vastaavan oikeudet tähän tapahtumaan
+  h4 {% trans "You have ticket admin privileges for this event" %}
 
   p: a(href='{% url "tickets_admin_stats_view" event.slug %}').btn.btn-primary Siirry lipunmyynnin hallintaan
+
+hr

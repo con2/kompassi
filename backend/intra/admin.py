@@ -5,6 +5,7 @@ from .models import IntraEventMeta, Team, TeamMember
 
 class InlineIntraEventMetaAdmin(admin.StackedInline):
     model = IntraEventMeta
+    raw_id_fields = ("admin_group", "organizer_group")
 
 
 @admin.register(Team)

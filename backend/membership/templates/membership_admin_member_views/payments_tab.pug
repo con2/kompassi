@@ -32,7 +32,7 @@
       else
         if not current_term
           p.text-danger Nykyisen toimikauden tiedot puuttuvat. Syötä tiedot Toimikauden tiedot -näkymässä ennen jäsenmaksujen syöttämistä.
-        if not membership.in_effect
+        if not membership.is_in_effect
           p.text-danger Jäsenyys ei ole tällä hetkellä voimassa. Voit merkitä jäsenmaksun maksetuksi kun jäsenyys on asetettu voimaan.
 
 if membership_fee_payment_form

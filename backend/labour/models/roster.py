@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from collections import defaultdict, namedtuple
 from datetime import timedelta
 
@@ -32,10 +34,19 @@ class WorkPeriod(models.Model):
 
 
 class Job(models.Model):
-    # REVERSE: shifts: Shift 0..N -> 1 Job
-    job_category = models.ForeignKey("labour.JobCategory", on_delete=models.CASCADE, verbose_name=_("job category"))
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    id: int
+
+    job_category = models.ForeignKey(
+        "labour.JobCategory",
+        on_delete=models.CASCADE,
+        verbose_name=_("job category"),
+        related_name="jobs",
+    )
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
     title = models.CharField(max_length=63, verbose_name=_("job title"))
+
+    shifts: models.QuerySet[Shift]
+    requirements: models.QuerySet[JobRequirement]
 
     class Meta:
         verbose_name = _("job")
@@ -132,6 +143,8 @@ class JobRequirement(models.Model):
 
 
 class Shift(models.Model, CsvExportMixin):
+    id: int
+
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="shifts")
     start_time = models.DateTimeField()
     hours = models.PositiveIntegerField()
@@ -223,12 +236,7 @@ class Shift(models.Model, CsvExportMixin):
 
     def __str__(self):
         parts = [
-            "{interval} ({hours} h): {job_category_name} ({job_name})".format(
-                interval=format_interval(self.start_time, self.end_time),
-                hours=self.hours,
-                job_category_name=self.job.job_category.title if self.job and self.job.job_category else None,
-                job_name=self.job.title if self.job else None,
-            )
+            f"{format_interval(self.start_time, self.end_time)} ({self.hours} h): {self.job.job_category.title if self.job and self.job.job_category else None} ({self.job.title if self.job else None})"
         ]
 
         if self.notes:

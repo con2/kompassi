@@ -4,11 +4,23 @@ from datetime import datetime, timedelta
 import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from pkg_resources import resource_stream
 
-from core.utils import slugify
+from badges.models import BadgesEventMeta
+from core.models import Event, Organization, Person, Venue
+from core.utils import full_hours_between, slugify
+from core.utils.pkg_resources_compat import resource_stream
+from dimensions.models.dimension_dto import DimensionDTO
+from forms.models.form import Form
+from forms.models.survey import Survey
+from intra.models import IntraEventMeta, Team
+from labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Qualification
+from programme.models import Category, ProgrammeEventMeta, Role, SpecialStartTime, TimeBlock
+from tickets.models import LimitGroup, Product, TicketsEventMeta
+
+from ...models import SignupExtra
 
 
 def mkpath(*parts):
@@ -35,8 +47,6 @@ class Setup:
         self.setup_forms()
 
     def setup_core(self):
-        from core.models import Event, Organization, Venue
-
         self.venue, unused = Venue.objects.get_or_create(
             name="Pohjankartanon koulu",
             defaults=dict(
@@ -66,20 +76,11 @@ class Setup:
         )
 
     def setup_labour(self):
-        from django.contrib.contenttypes.models import ContentType
-
-        from core.models import Event, Person
-        from labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Qualification
-
-        from ...models import SignupExtra
-
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
-            from core.models import Person
-
             person, unused = Person.get_or_create_dummy()
-            labour_admin_group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
@@ -94,8 +95,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
@@ -124,12 +125,6 @@ class Setup:
 
         tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
         coniitti = PersonnelClass.objects.get(event=self.event, slug="coniitti")
-
-        if not JobCategory.objects.filter(event=self.event).exists():
-            JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug="frostbite2018"),
-                target_event=self.event,
-            )
 
         for name, description, pcs in [
             (
@@ -180,8 +175,6 @@ class Setup:
         )
 
     def setup_badges(self):
-        from badges.models import BadgesEventMeta
-
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
@@ -191,10 +184,6 @@ class Setup:
         )
 
     def setup_programme(self):
-        from core.utils import full_hours_between
-        from labour.models import PersonnelClass
-        from programme.models import Category, ProgrammeEventMeta, Role, SpecialStartTime, TimeBlock
-
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
@@ -265,13 +254,10 @@ class Setup:
                 SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
 
     def setup_tickets(self):
-        from tickets.models import LimitGroup, Product, TicketsEventMeta
-
         (tickets_admin_group,) = TicketsEventMeta.get_or_create_groups(self.event, ["admins"])
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2024{:06d}",
             contact_email="Matsucon <matsuconfi@gmail.com>",
             ticket_free_text="Tämä on sähköinen lippusi Matsucon 2024 -tapahtumaan. Sähköinen lippu vaihdetaan\n"
@@ -288,8 +274,8 @@ class Setup:
         if self.test:
             t = now()
             defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),
-                ticket_sales_ends=t + timedelta(days=60),
+                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
+                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -314,9 +300,9 @@ class Setup:
                 name="Viikonloppulippu",
                 description="Viikonloppulippu oikeuttaa sisäänpääsyn molempiin Matsuconin päiviin. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Viikonloppuliput", 550),
+                    limit_group("Viikonloppuliput", 650),
                 ],
-                price_cents=1800,
+                price_cents=2000,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -325,9 +311,9 @@ class Setup:
                 name="Lauantailippu",
                 description="Lauantailippu oikeuttaa sisäänpääsyyn Matsuconin ensimmäiseen päivään. Sähköinen lippu vaihdetaan ovella rannekkeeseen.",
                 limit_groups=[
-                    limit_group("Lauantailiput", 300),
+                    limit_group("Lauantailiput", 200),
                 ],
-                price_cents=1200,
+                price_cents=1500,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -338,7 +324,7 @@ class Setup:
                 limit_groups=[
                     limit_group("Sunnuntailiput", 150),
                 ],
-                price_cents=1200,
+                price_cents=1500,
                 electronic_ticket=True,
                 available=True,
                 ordering=ordering(),
@@ -347,7 +333,7 @@ class Setup:
                 name="Iltabilelippu",
                 description="Iltabilelippu oikeuttaa sisäänpääsyyn Matsuconin iltabileisiin tapahtuman lauantai-iltana.",
                 limit_groups=[
-                    limit_group("Iltabileliput", 120),
+                    limit_group("Iltabileliput", 150),
                 ],
                 price_cents=1000,
                 electronic_ticket=True,
@@ -386,11 +372,9 @@ class Setup:
             product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
-                product.limit_groups.set(limit_groups)
+                product.limit_groups.set(limit_groups)  # type: ignore
 
     def setup_intra(self):
-        from intra.models import IntraEventMeta, Team
-
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("conitea")
         meta, unused = IntraEventMeta.objects.get_or_create(
@@ -417,32 +401,7 @@ class Setup:
             )
 
     def setup_forms(self):
-        from forms.models.dimension import DimensionDTO
-        from forms.models.form import Form
-        from forms.models.survey import Survey
-
         # Artist Alley application
-
-        with resource_stream("events.matsucon2024", "forms/artist-alley-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        artist_alley_application_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        with resource_stream("events.matsucon2024", "forms/artist-alley-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        artist_alley_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
         artist_alley_application, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="artist-alley-application",
@@ -453,36 +412,33 @@ class Setup:
             ),
         )
 
-        artist_alley_application.languages.set([artist_alley_application_fi, artist_alley_application_en])
+        with resource_stream("events.matsucon2024", "forms/artist-alley-application-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        artist_alley_application_en, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=artist_alley_application,
+            language="en",
+            defaults=data,
+        )
+
+        with resource_stream("events.matsucon2024", "forms/artist-alley-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        artist_alley_application_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=artist_alley_application,
+            language="fi",
+            defaults=data,
+        )
 
         with resource_stream("events.matsucon2024", "forms/artist-alley-application-dimensions.yml") as f:
             data = yaml.safe_load(f)
 
         for dimension in data:
-            DimensionDTO.model_validate(dimension).save(artist_alley_application)
+            DimensionDTO.model_validate(dimension).save(artist_alley_application.universe)
 
         # Vendor application
-
-        with resource_stream("events.matsucon2024", "forms/vendor-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        vendor_application_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        with resource_stream("events.matsucon2024", "forms/vendor-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        vendor_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
         vendor_application, _ = Survey.objects.get_or_create(
             event=self.event,
             slug="vendor-application",
@@ -500,13 +456,31 @@ class Setup:
             ),
         )
 
-        vendor_application.languages.set([vendor_application_fi, vendor_application_en])
+        with resource_stream("events.matsucon2024", "forms/vendor-application-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        vendor_application_en, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=vendor_application,
+            language="en",
+            defaults=data,
+        )
+
+        with resource_stream("events.matsucon2024", "forms/vendor-application-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        vendor_application_fi, created = Form.objects.get_or_create(
+            event=self.event,
+            survey=vendor_application,
+            language="fi",
+            defaults=data,
+        )
 
         with resource_stream("events.matsucon2024", "forms/vendor-application-dimensions.yml") as f:
             data = yaml.safe_load(f)
 
         for dimension in data:
-            DimensionDTO.model_validate(dimension).save(vendor_application)
+            DimensionDTO.model_validate(dimension).save(vendor_application.universe)
 
 
 class Command(BaseCommand):

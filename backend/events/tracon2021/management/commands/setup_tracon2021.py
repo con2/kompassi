@@ -25,7 +25,6 @@ class Setup:
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
-        self.setup_directory()
         # self.setup_kaatoilmo()
         # self.setup_sms()
 
@@ -244,7 +243,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
-            due_days=14,
             reference_number_template="2021{:06d}",
             contact_email="Traconin lipunmyynti <liput@tracon.fi>",
             ticket_free_text=(
@@ -383,10 +381,6 @@ class Setup:
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
                 product.save()
-
-        if not meta.receipt_footer:
-            meta.receipt_footer = "Tracon ry / Y-tunnus 2886274-5 / liput@tracon.fi"
-            meta.save()
 
     def setup_programme(self):
         from core.utils import full_hours_between
@@ -605,18 +599,6 @@ class Setup:
         for team in Team.objects.filter(event=self.event):
             team.is_public = team.slug != "tracoff"
             team.save()
-
-    def setup_directory(self):
-        from directory.models import DirectoryAccessGroup
-
-        labour_admin_group = self.event.labour_event_meta.get_group("admins")
-
-        DirectoryAccessGroup.objects.get_or_create(
-            organization=self.event.organization,
-            group=labour_admin_group,
-            active_from=now(),
-            active_until=self.event.end_time + timedelta(days=30),
-        )
 
     def setup_kaatoilmo(self):
         from labour.models import Survey

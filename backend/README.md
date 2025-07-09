@@ -2,6 +2,7 @@
 
 Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. Work in progress.
 
+
 ## Getting Started
 
 ### The Easy Way
@@ -37,9 +38,9 @@ Kompassi uses the standard Django DB migration facility. However, due to the dev
 
 ### The Hard Way
 
-**NOTE:** Python 3.12 or greater is required. Python 2.7 is not supported.
+**NOTE:** Python 3.13 or greater is required. Python 2.7 is not supported.
 
-    python3.12 -m venv venv3-kompassi
+    python3.13 -m venv venv3-kompassi
     source venv3-kompassi/bin/activate
     git clone https://github.com/tracon/kompassi.git
     cd kompassi
@@ -95,7 +96,7 @@ All the words _hostname_, _database_, _username_ and _password_ are 8 characters
 
     The MIT License (MIT)
 
-    Copyright © 2009–2024 Santtu Pajukanta
+    Copyright © 2009–2025 Santtu Pajukanta
     Copyright © 2020–2024 Tuomas Puikkonen
     Copyright © 2019 Mikko Hänninen
     Copyright © 2018 Kalle Kivimaa

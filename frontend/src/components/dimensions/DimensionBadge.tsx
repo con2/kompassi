@@ -1,6 +1,5 @@
 import { makeBadgeBackgroundColor } from "./helpers";
 import { graphql } from "@/__generated__";
-import { DimensionBadgeFragment } from "@/__generated__/graphql";
 
 graphql(`
   fragment DimensionBadge on ResponseDimensionValueType {
@@ -18,22 +17,33 @@ graphql(`
 `);
 
 interface Props {
-  dimension: DimensionBadgeFragment;
+  subjectDimensionValue: {
+    dimension: {
+      slug: string;
+      title?: string | null;
+    };
+
+    value: {
+      slug: string;
+      title?: string | null;
+      color?: string | null;
+    };
+  };
 }
 
-export default function DimensionBadge({ dimension }: Props) {
+export default function DimensionBadge({ subjectDimensionValue: sdv }: Props) {
   return (
     <span
-      key={dimension.dimension.slug}
+      key={sdv.dimension.slug}
       className="badge ms-2"
-      title={dimension.dimension.title || dimension.dimension.slug}
+      title={sdv.dimension.title || sdv.dimension.slug}
       style={{
-        backgroundColor: dimension.value.color
-          ? makeBadgeBackgroundColor(dimension.value.color)
+        backgroundColor: sdv.value.color
+          ? makeBadgeBackgroundColor(sdv.value.color)
           : "var(--bs-secondary)",
       }}
     >
-      {dimension.value.title}
+      {sdv.value.title}
     </span>
   );
 }

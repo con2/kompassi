@@ -1,19 +1,24 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from datetime import datetime
+from functools import cached_property
 
 from django.conf import settings
 from django.db import connection, models, transaction
 from django.utils.html import escape
 from django.utils.translation import gettext_lazy as _
-from pkg_resources import resource_string
 
 from core.csv_export import CsvExportMixin
 from core.models.constants import NAME_DISPLAY_STYLE_FORMATS
 from core.models.event import Event
 from core.utils import time_bool_property
+from core.utils.pkg_resources_compat import resource_string
 
 from ..proxies.badge.privacy import BadgePrivacyAdapter
+from ..utils.default_badge_factory import default_badge_factory
+from .badges_event_meta import BadgesEventMeta
 
 logger = logging.getLogger("kompassi")
 
@@ -137,6 +142,13 @@ class Badge(models.Model, CsvExportMixin):
         related_name="badges",
     )
 
+    perks = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name=_("Perks"),
+        help_text=_("Perks for the holder of this badge"),
+    )
+
     is_revoked = time_bool_property("revoked_at")
     is_printed = time_bool_property("printed_at")
     is_printed_separately = time_bool_property("printed_separately_at")
@@ -170,6 +182,10 @@ class Badge(models.Model, CsvExportMixin):
         return self.printed_at if self.printed_at is not None else ""
 
     @property
+    def formatted_perks(self):
+        return str(self.meta.emperkelator.model_validate(self.perks))
+
+    @property
     def full_name(self):
         """
         Analogous to Person.full_name
@@ -199,9 +215,8 @@ class Badge(models.Model, CsvExportMixin):
         """
         Makes sure the person has a badge of the correct class and up-to-date information for a given event.
         """
-
-        from badges.utils import default_badge_factory
-
+        if not event.badges_event_meta:
+            raise AssertionError("event has no badges_event_meta")
         if not person:
             raise AssertionError("person is not set")
 
@@ -221,20 +236,53 @@ class Badge(models.Model, CsvExportMixin):
             if existing_badge:
                 # There is an existing un-revoked badge. Check that its information is correct.
                 if any(getattr(existing_badge, key) != value for (key, value) in expected_badge_opts.items()):
+                    # The badge information is out of date. Revoke the badge and create a new one.
                     existing_badge.revoke()
                 else:
+                    # The badge information is up-to-date.
+                    # Perks are not printed on the badge, so no need to reprint the badge on perks change.
+                    existing_badge.reemperkelate()
+
                     return existing_badge, False
 
             if expected_badge_opts.get("personnel_class") is None:
                 # They should not have a badge.
                 return None, False
 
-            badge_opts = dict(new_badge_opts, person=person)
-
-            badge = cls(**badge_opts)
-            badge.save()
+            badge = cls(person=person, **new_badge_opts)
+            badge.save()  # calls reemperkelate
 
             return badge, True
+
+    def save(self, *args, **kwargs):
+        update_fields = kwargs.get("update_fields")
+        if not update_fields or "perks" in update_fields:
+            self.reemperkelate(commit=False)
+
+        return super().save(*args, **kwargs)
+
+    def reemperkelate(self, commit=True):
+        """
+        Refresh the perks on the badge based on the current state of the event and the person.
+        """
+        Emperkelator = self.meta.emperkelator
+        if self.person:
+            perks = Emperkelator.emperkelate(self)
+            perks_dict = perks.model_dump()
+        else:
+            perks_dict = self.personnel_class.perks
+            perks = Emperkelator.model_validate(perks_dict)
+
+        if self.perks == perks_dict:
+            # Up to date
+            return perks, False
+
+        # Needs refresh
+        self.perks = perks_dict
+        if commit:
+            self.save(update_fields=["perks"])
+
+        return perks, True
 
     @classmethod
     def get_csv_fields(cls, event):
@@ -269,7 +317,7 @@ class Badge(models.Model, CsvExportMixin):
         return self.personnel_class.event
 
     @property
-    def meta(self):
+    def meta(self) -> BadgesEventMeta:
         return self.event.badges_event_meta
 
     @property
@@ -380,3 +428,35 @@ class Badge(models.Model, CsvExportMixin):
             cursor.execute(ArrivalsRow.QUERY, [event_slug])
             # TODO backfill missing hours
             return [ArrivalsRow(*row) for row in cursor.fetchall()]
+
+    @cached_property
+    def _shirt_size(self):
+        if perks_shirt_size := self.perks.get("shirt_size"):
+            return perks_shirt_size
+        elif self.signup_extra and hasattr(self.signup_extra, "shirt_size"):
+            return self.signup_extra.get_shirt_size_display()
+        else:
+            return "Ei paitaa"
+
+    @property
+    def shirt_size(self):
+        if self._shirt_type == "Ei paitaa" or self._shirt_size == "Ei paitaa":
+            return ""
+
+        return self._shirt_size
+
+    @cached_property
+    def _shirt_type(self):
+        if perks_shirt_type := self.perks.get("shirt_type"):
+            return perks_shirt_type
+        elif self.signup_extra and hasattr(self.signup_extra, "shirt_type"):
+            return self.signup_extra.get_shirt_type_display()
+        else:
+            return "Ei paitaa"
+
+    @property
+    def shirt_type(self):
+        if self._shirt_size == "Ei paitaa":
+            return "Ei paitaa"
+
+        return self._shirt_type

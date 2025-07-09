@@ -25,7 +25,6 @@ class Setup:
         self.setup_access()
         self.setup_badges()
         self.setup_intra()
-        self.setup_directory()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -71,13 +70,13 @@ class Setup:
             Survey,
         )
 
-        from ...models import SignupExtra, SpecialDiet
+        from ...models import Poison, SignupExtra, SpecialDiet
 
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
-            labour_admin_group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
@@ -92,8 +91,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
@@ -121,22 +120,6 @@ class Setup:
                     priority=self.get_ordering_number(),
                 ),
             )
-
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
-        vastaava = PersonnelClass.objects.get(event=self.event, slug="vastaava")
-
-        # Copy personnel class descriptions from previous event
-        for personnel_class in PersonnelClass.objects.filter(event=self.event, perks_markdown=""):
-            previous_instance = (
-                PersonnelClass.objects.filter(event__slug="frostbite2024", slug=personnel_class.slug)
-                .exclude(perks_markdown="")
-                .first()
-            )
-            if not previous_instance:
-                continue
-
-            personnel_class.perks_markdown = previous_instance.perks_markdown
-            personnel_class.save(update_fields=["perks_markdown"])
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
@@ -182,6 +165,16 @@ class Setup:
         ]:
             SpecialDiet.objects.get_or_create(name=diet_name)
 
+        for poison in [
+            "Olut",
+            "Olut (gluteeniton)",
+            "Siideri",
+            "Lonkero",
+            "Limu (sokerillinen)",
+            "Limu (sokeriton)",
+        ]:
+            Poison.objects.get_or_create(name=poison)
+
         AlternativeSignupForm.objects.get_or_create(
             event=self.event,
             slug="xxlomake",
@@ -209,6 +202,22 @@ class Setup:
                     "tapahtumaviikonlopun sunnuntaina noin kello 19."
                 ),
                 form_class_path="events.desucon2024.forms:AfterpartyParticipationSurvey",
+                active_from=now(),
+                active_until=self.event.start_time,
+            ),
+        )
+
+        Survey.objects.get_or_create(
+            event=self.event,
+            slug="tyovoimamajoitus",
+            defaults=dict(
+                title="Ilmoittautuminen työvoimamajoitukseen",
+                description=(
+                    "Tarjoamme työvoimalle ja ohjelmanjärjestäjille tarvittaessa maksuttoman lattiamajoituksen Kuusi-salissa "
+                    "tapahtuman molempina öinä. Majoitustilan riittävyyden arvioimiseksi pyydämme ilmoittamaan, "
+                    "tarvitsetko majoitusta ja mille öille."
+                ),
+                form_class_path="events.desucon2024.forms:AccommodationSurvey",
                 active_from=now(),
                 active_until=self.event.start_time,
             ),
@@ -262,6 +271,7 @@ class Setup:
             "Työpajanpitäjä",
             "Keskustelupiirin vetäjä",
             "Tuomari",
+            "Juontaja",
         ]:
             role_personnel_class = personnel_class if "hjelmanjärjestäjä" in role_title else personnel_2nd_class
 
@@ -303,13 +313,16 @@ class Setup:
             ("Erikoisohjelma", "erik", "color7"),
             ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen"),
         ]:
-            Category.objects.get_or_create(
+            Category.objects.update_or_create(
                 event=self.event,
                 slug=slug,
-                defaults=dict(
+                create_defaults=dict(
                     title=title,
+                ),
+                defaults=dict(
                     style=style,
                     public=style != "sisainen",
+                    v2_dimensions={},  # force its update via .save
                 ),
             )
 
@@ -430,20 +443,6 @@ class Setup:
                 slug=team_slug,
                 defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
-
-    def setup_directory(self):
-        from directory.models import DirectoryAccessGroup, DirectoryOrganizationMeta
-
-        DirectoryOrganizationMeta.objects.get_or_create(organization=self.event.organization)
-
-        labour_admin_group = self.event.labour_event_meta.get_group("admins")
-
-        DirectoryAccessGroup.objects.get_or_create(
-            organization=self.event.organization,
-            group=labour_admin_group,
-            active_from=self.event.created_at,
-            active_until=self.event.end_time + timedelta(days=30),
-        )
 
 
 class Command(BaseCommand):

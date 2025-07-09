@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpRequest, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.http import urlencode
 
@@ -20,3 +20,20 @@ def get_next(request, default="/"):
         next = request.GET.get("next", None)
 
     return next if next else default
+
+
+def get_event_and_organization(request: HttpRequest):
+    from ..models.event import Event
+    from ..models.organization import Organization
+
+    event = None
+    organization = None
+
+    if resolver_match := request.resolver_match:
+        if event_slug := resolver_match.kwargs.get("event_slug"):
+            if event := Event.objects.filter(slug=event_slug).select_related("organization").first():
+                organization = event.organization
+        elif organization_slug := resolver_match.kwargs.get("organization_slug"):
+            organization = Organization.objects.filter(slug=organization_slug).first()
+
+    return event, organization

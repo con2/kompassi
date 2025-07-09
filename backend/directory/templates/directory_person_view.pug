@@ -3,7 +3,7 @@ extends base
 block title
   | {{ person.full_name }}
 block content
-  - url "directory_view" organization.slug as directory_url
+  - url "directory:directory_view" organization.slug as directory_url
 
   h2
     | {{ person.full_name }}

@@ -95,3 +95,6 @@ block admin_content
             td {{ arrival_row.hour|date:"SHORT_DATETIME_FORMAT"|default:"Ei lunastettu" }}
             td.text-right {{ arrival_row.arrivals }}
             td.text-right {{ arrival_row.cum_arrivals }}
+
+  p: a(href="{% url 'tickets_admin_export_yearly_statistics_view' event.slug %}")
+    | {% trans "Download event sales statistics as CSV" %}…

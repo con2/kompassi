@@ -2,12 +2,11 @@
   title:
     fi: Tila
     en: Status
-  is_key_dimension: true
-  is_shown_to_respondent: true
+  isKeyDimension: true
+  isPublic: true
   choices:
     - slug: new
       color: blue
-      is_initial: true
       title:
         fi: Uusi
         en: New

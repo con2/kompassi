@@ -1,6 +1,0 @@
-ul.nav.nav-tabs(role='tablist')
-  for tab in tabs
-    li(role='presentation', class='#{tab.active_css}')
-      a(href='#{tab.id}', role='tab')= tab.title
-        if tab.notifications
-          .badge= tab.notifications

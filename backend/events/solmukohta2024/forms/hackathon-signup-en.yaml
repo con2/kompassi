@@ -1,5 +1,4 @@
 title: KP/SK IT Hackathon – A Week in Finland 2024
-layout: vertical
 description: |
   Please fill in this form to sign up for the KP/SK IT Hackathon at A Week in Finland 2024.
   The hackathon will take place on Wednesday 10 April at the Polar Squad office in downtown
@@ -33,12 +32,11 @@ fields:
 
   - slug: participation
     title: Participation
-    type: SingleSelect
+    type: DimensionSingleSelect
     required: true
     helpText: |
       Will you participate in the hackathon on site in Tampere, or online from elsewhere?
-    choicesFrom:
-      dimension: participation
+    dimension: participation
 
   - slug: stake
     title: What is your stake in KP/SK IT systems?

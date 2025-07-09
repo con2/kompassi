@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 from django.forms import ValidationError
 from django.template.loader import render_to_string
@@ -26,7 +27,7 @@ class Connection(models.Model):
     )
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
+        User,
         on_delete=models.CASCADE,
         verbose_name="Käyttäjä",
     )
@@ -45,6 +46,8 @@ class ConfirmationCode(OneTimeCode):
     )
 
     next_url = models.CharField(max_length=1023, blank=True, default="")
+
+    user: User
 
     def render_message_subject(self, request):
         return f"{settings.KOMPASSI_INSTALLATION_NAME}: Desuprofiilin yhdistäminen"
@@ -117,7 +120,7 @@ class DesuprogrammeFeedback(DesuprogrammeFeedbackBase, JSONSchemaObject):
         if self.ip_address is not None:
             attrs["author_ip_address"] = self.ip_address
         if connection:
-            attrs["author"] = connection.user.person
+            attrs["author"] = connection.user.person  # type: ignore
         if self.anonymous is not None:
             attrs["is_anonymous"] = self.anonymous
 

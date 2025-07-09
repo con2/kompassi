@@ -229,7 +229,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2019{:06}",
             contact_email="Nekocon (2019) <nekoconliput@gmail.com>",
             ticket_free_text="Tämä on sähköinen lippusi vuoden 2019 Nekoconiin. Sähköinen lippu vaihdetaan rannekkeeseen\n"
@@ -282,7 +281,6 @@ class Setup:
                 ],
                 price_cents=1500,
                 electronic_ticket=False,
-                requires_accommodation_information=True,
                 available=True,
                 ordering=self.get_ordering_number(),
             ),

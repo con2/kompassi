@@ -1,0 +1,59 @@
+title: Expense Claim
+description: |
+  With this form, you can apply for expense reimbursement from Kotae ry for an
+  event or association-related expense. Fill out the form carefully and attach
+  all requested attachments.
+
+  If you have not asked for prior approval for the expenses or if you have any
+  questions about expense reimbursements, please contact us by email at
+  <em>talous at kotae dot fi</em> or on Discord at <em>@Nimu</em> or
+  <em>@Aketzu</em>.
+
+fields:
+  - slug: title
+    type: SingleLineText
+    title: Title
+    required: true
+    helpText: Briefly tell us what expense you are applying for reimbursement for or what the invoice is for.
+
+  - slug: description
+    type: MultiLineText
+    title: Description
+    helpText: |
+      If the title does not tell everything essential, you can provide additional information here.
+
+  - slug: amount
+    type: DecimalField
+    minValue: 0
+    decimalPlaces: 2
+    title: Amount
+    required: true
+    helpText: |
+      How much are you applying for reimbursement or what is the invoice amount? Write the amount in euros.
+
+  - slug: recipient
+    type: SingleLineText
+    title: Recipient
+    required: true
+    helpText: |
+      Who will the reimbursement be paid to? Write the first and last name or the company name here.
+
+  - slug: recipient_iban
+    type: SingleLineText
+    title: Bank account number of the recipient
+    required: true
+    helpText: |
+      Which account will the reimbursement be paid to? Write the IBAN account number in the format FI12 3456 7890 1234 56.
+
+  - slug: attachments
+    type: FileUpload
+    title: Receipts
+    required: true
+    multiple: true
+    helpText: |
+      Attach all receipts necessary for the expense reimbursement.
+      The date of the expense, the amount, the VAT rate, and the recipient of the payment must be apparent from the receipts.
+      For payments made in a currency other than euros, the exchange rate or
+      the amount in the original currency must also be apparent.
+      If you do not have a receipt, write a free-form explanation of the expense and
+      why a receipt is not available, and sign it.

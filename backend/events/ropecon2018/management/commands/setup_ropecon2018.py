@@ -633,7 +633,6 @@ Puheohjelman käytössä ovat osittain samat tilat kuin edellisvuonna. Samoista 
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2018{:05d}",
             contact_email="Ropecon 2018 -lipunmyynti <lipunmyynti@ropecon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Ropecon 2018 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"

@@ -141,7 +141,6 @@ class TeamMember(models.Model):
             "is_team_leader",
             "display_name",
             "job_title",
-            email=self.signup.email_address,
         )
 
     class Meta:

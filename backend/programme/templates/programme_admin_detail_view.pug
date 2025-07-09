@@ -26,7 +26,7 @@ block content_full_width
 
     form(method='POST', role='form').form-horizontal
       //- To catch Enter button presses
-      button.btn.btn-success.hidden(type='submit', name='action', value='save-edit') {% trans "Save and continue" %}
+      button.btn.btn-success.hidden(type='submit', name='action', value='save-edit', disabled="true") {% trans "Save and continue" %}
 
       .tab-content.kompassi-slight-space-above
         include programme_admin_detail_views/programme_tab
@@ -35,8 +35,3 @@ block content_full_width
         include programme_admin_detail_views/reservations_tab
         include programme_admin_detail_views/hosts_tab
         include programme_admin_detail_views/feedback_tab
-
-    include programme_admin_detail_views/invitation_modal
-    include programme_admin_detail_views/freeform_host_modal
-    include programme_admin_detail_views/change_host_role_modals
-    include programme_admin_detail_views/change_invitation_role_modals

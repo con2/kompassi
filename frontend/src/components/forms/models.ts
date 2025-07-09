@@ -1,4 +1,4 @@
-import { FormsFormLayoutChoices } from "@/__generated__/graphql";
+import { ReactNode } from "react";
 
 export type FieldType =
   | "SingleLineText"
@@ -15,17 +15,24 @@ export type FieldType =
   | "DecimalField"
   | "DateField"
   | "TimeField"
-  | "DateTimeField";
+  | "DateTimeField"
+  | "DimensionSingleSelect"
+  | "DimensionMultiSelect"
+  | "DimensionSingleCheckbox"
+  | "MultiItemField";
 
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
   "MultiLineText",
   "SingleCheckbox",
+  "DimensionSingleCheckbox",
   "StaticText",
   "Divider",
   "Spacer",
   "SingleSelect",
+  "DimensionSingleSelect",
   "MultiSelect",
+  "DimensionMultiSelect",
   "RadioMatrix",
   "FileUpload",
   "NumberField",
@@ -33,6 +40,13 @@ export const fieldTypes: FieldType[] = [
   "DateField",
   "TimeField",
   "DateTimeField",
+  "MultiItemField",
+];
+
+export const fieldTypesConvertibleToDimension: FieldType[] = [
+  "SingleSelect",
+  "MultiSelect",
+  "SingleCheckbox",
 ];
 
 /** These field types represent static elements on the form and don't have values. */
@@ -52,12 +66,13 @@ export type HtmlType =
 interface BaseField {
   type: FieldType;
   slug: string;
-  title?: string;
+  title?: ReactNode;
   summaryTitle?: string;
-  helpText?: string;
+  helpText?: ReactNode;
   required?: boolean;
   readOnly?: boolean;
   htmlType?: HtmlType;
+  encryptTo?: string[];
 }
 
 export interface Divider extends BaseField {
@@ -115,9 +130,15 @@ export interface SingleCheckbox extends BaseField {
   type: "SingleCheckbox";
 }
 
+export interface DimensionSingleCheckbox extends BaseField {
+  type: "DimensionSingleCheckbox";
+  dimension: string;
+}
+
 export interface Choice {
   slug: string;
   title: string;
+  disabled?: boolean; /// Only makes sense for SingleSelect with presentation="radio"
 }
 
 export type SingleSelectPresentation = "dropdown" | "radio";
@@ -133,7 +154,25 @@ export interface MultiSelect extends BaseField {
   choices: Choice[];
 }
 
-export type SelectField = SingleSelect | MultiSelect;
+export interface DimensionSingleSelect extends BaseField {
+  type: "DimensionSingleSelect";
+  dimension: string;
+  subsetValues?: string[];
+  choices: Choice[];
+  presentation?: SingleSelectPresentation;
+}
+
+export interface DimensionMultiSelect extends BaseField {
+  type: "DimensionMultiSelect";
+  dimension: string;
+  subsetValues?: string[];
+  choices: Choice[];
+}
+
+export interface MultiSelect extends BaseField {
+  type: "MultiSelect";
+  choices: Choice[];
+}
 
 /**
  * choices are columns, questions are rows
@@ -149,10 +188,21 @@ interface FileUpload extends BaseField {
   multiple?: boolean;
 }
 
-export type Layout = FormsFormLayoutChoices;
-export const Layout = FormsFormLayoutChoices;
+export interface MultiItemField extends BaseField {
+  type: "MultiItemField";
+  fields: Field[];
+}
 
-export const defaultLayout = Layout.Vertical;
+/// Value of a single field (without knowing its type)
+export type Value =
+  | string
+  | number
+  | boolean
+  | string[]
+  | Record<string, string>
+  | Record<string, unknown>; /// MultiItemField
+/// Values of all fields in a form
+export type Values = Record<string, Value>;
 
 export type Field =
   | SingleLineText
@@ -169,19 +219,21 @@ export type Field =
   | DecimalField
   | DateField
   | TimeField
-  | DateTimeField;
+  | DateTimeField
+  | DimensionSingleSelect
+  | DimensionMultiSelect
+  | DimensionSingleCheckbox
+  | MultiItemField;
 
 export interface FormSchema {
   title: string;
   slug: string;
   fields: Field[];
-  layout: Layout;
 }
 
 export const dummyForm: FormSchema = {
   title: "Dummy form",
   slug: "dummy-form",
-  layout: Layout.Horizontal,
   fields: [
     {
       type: "SingleLineText",

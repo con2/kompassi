@@ -1,0 +1,193 @@
+title: Survey on Tracon Hitpoint's larp programme
+description: |
+  Tracon Hitpoint is planning to expand its larp programme with the vision
+  of "The most interesting larp event in Tampere in 2025". The purpose of
+  this survey is to find out what kind of demand there is for a larp event
+  and what kind of programme is expected from it. All questions are optional.
+  At the end of the survey, there is an opportunity to leave
+  your contact information if you want Tracon Hitpoint to contact you about
+  organising the larp programme for the event.
+
+  <strong>In Finnish / Suomeksi:</strong> Tämä kysely on saatavilla myös <a href="/fi/events/hitpoint2024/surveys/larp-survey">suomeksi</a>.
+fields:
+  - type: StaticText
+    title: Background information
+    slug: background
+
+  - slug: participated_in_tracon_hitpoint
+    title: How many times have you participated in Tracon Hitpoint?
+    helpText: "Tracon Hitpoint has been organized four times: in 2015, 2017, 2019 and 2024."
+    type: SingleLineText
+    htmlType: number
+    summaryTitle: Times participated
+
+  - slug: larping
+    title: In which of the following ways do you usually participate in larps?
+    type: MultiSelect
+    choices:
+      - slug: player
+        title: As a player
+      - slug: gm-ingame
+        title: As a game master, responsible for character writing or other narrative matters
+      - slug: gm-offgame
+        title: As a game master, responsible for practical matters
+      - slug: photographer
+        title: As a photographer
+      - slug: kitchen
+        title: As a member of the kitchen staff
+      - slug: team-other
+        title: As another member of the organizing team, such as a general helper or support and safety person
+      - slug: not-participating
+        title: I do not participate in larps
+
+  - slug: how_many_larps
+    title: How many larps do you participate in on average per year?
+    type: SingleSelect
+    choices:
+      - slug: never
+        title: I have never larped
+      - slug: fewer_than_one
+        title: Less than one larp per year
+      - slug: one_or_a_few
+        title: From one to a few larps per year
+      - slug: several
+        title: Several larps per year
+
+  - slug: groups
+    title: Are you part of any of the following groups or associations or do you regularly participate in their activities such as larps?
+    type: MultiSelect
+    choices:
+      - slug: exca
+        title: Tampereen akateeeminen roolipelikerho Excalibur ry
+      - slug: epel
+        title: Epel Larp ry
+      - slug: myssy
+        title: Mielikuvitusystävät ry
+      - slug: stl
+        title: Tampereen seudun larppaajat (Facebook group)
+      - slug: suomilarp
+        title: Suomi Larp (Facebook group)
+      - slug: tawerna
+        title: Tawerna (Discord)
+
+  - slug: groups_other
+    title: While organizing a larp event in Tampere, should we contact any other groups or associations not mentioned above? How do we get in contact with them?
+    type: MultiLineText
+
+  - type: StaticText
+    title: A larp event in Tampere
+    slug: larp_event
+
+  - slug: claims
+    title: How do you feel about the following statements?
+    type: RadioMatrix
+    choices: &choices
+      - slug: "1"
+        title: Strongly disagree
+      - slug: "2"
+        title: Somewhat disagree
+      - slug: "3"
+        title: Somewhat agree
+      - slug: "4"
+        title: Strongly agree
+    questions:
+      - slug: need_larp_event
+        title: Tampere needs an event aimed at larpers
+      - slug: would_partake
+        title: If there was an event aimed at larpers in Tampere, I would participate
+      - slug: part_of_hitpoint
+        title: The event could be organized as part of another event, such as Tracon Hitpoint
+      - slug: own_event
+        title: The event should be organized as its own separate, independent event
+
+  - slug: program
+    title: How do you feel about the following statements regarding the event program?
+    type: RadioMatrix
+    choices: *choices
+    questions:
+      - slug: should_have_larps
+        title: The event program should include larps
+      - slug: should_have_talks
+        title: The event program should include speech and discussion programs about larping
+      - slug: should_have_workshops
+        title: The event program should include participatory programs about larping, such as workshops
+      - slug: players_pov
+        title: The event program should include programs that deal with larping from the player's perspective
+      - slug: gms_pov
+        title: The event program should include programs that deal with organizing a larp from the game master's perspective
+
+  - slug: audience
+    title: How do you feel about the following statements regarding the event language and target audience?
+    type: RadioMatrix
+    choices: *choices
+    questions:
+      - slug: finnish_language
+        title: The event should be unilingually in Finnish
+      - slug: english_language
+        title: The event should be unilingually in English
+      - slug: finnish_and_english_language
+        title: The event should include programming both in Finnish and in English
+      - slug: newbies
+        title: Beginners and those interested in larping should be especially taken into consideration at the event
+      - slug: younglings
+        title: Young larpers and young people interested in larping should be especially taken into consideration at the event
+
+  - slug: what_kinda
+    title: What kind of event would you like? What kind of program would you like there to be?
+    type: MultiLineText
+    helpText: >
+      Here you can freely express your thoughts on the above statements and brainstorm
+      program items or activities.
+      You do not have to volunteer to organize them
+      or know who would.
+
+  - slug: free_text
+    title: Free-form greetings to the organizers of Tracon Hitpoint
+    type: MultiLineText
+    helpText: >
+      Is there something related to Tracon Hitpoint that comes to mind,
+      which does not fit into any of the previous fields?
+
+  - slug: participation
+    type: StaticText
+    title: Participating in organizing a larp event in Tampere
+    helpText: >
+      Answering the questions in this section does not commit you to anything.
+      You are warmly welcome to offer programming for the event and
+      participate in its creation later by contacting hitpoint.larp@tracon.fi.
+
+  - slug: would_like_to
+    title: Would you like to be involved in making a larp event in Tampere in any of the following ways?
+    helpText: These ways to participate in the event entitle you to free admission and other benefits. However, they do not pay a salary or fee.
+    type: MultiSelect
+    choices:
+      - slug: larp
+        title: I would like to organize a larp at the event
+      - slug: workshop
+        title: I would like to organize a workshop or similar participatory program item
+      - slug: talk
+        title: I would like to give a talk or other program
+      - slug: volunteer
+        title: I would like to do volunteer work
+      - slug: other
+        title: I would like to participate in making the event in some other way (specify below)
+
+  - slug: would_like_to_other
+    title: Please elaborate on your above answers if you feel like!
+    type: MultiLineText
+    helpText: >
+      Do you have a larp either already written or in planning that could be suitable to be played at the event?
+      What kind of program would you like to organize or what kind of volunteer work would you like to do?
+      If you would like to be involved in making the event in some other way, please tell about it here.
+
+  - slug: contact
+    title: If you want us to contact you, leave your contact information here (email, phone number and instant messaging, Discord username, etc.).
+    type: MultiLineText
+    helpText: >
+      The controller of personal data is Tracon ry represented by Santtu "Japsu" Pajukanta.
+      The information is used only for contact regarding the organization of a larp event in Tampere.
+      The information is stored for the duration of the contact round and then deleted.
+      The information is not disclosed to third parties.
+      The information is not used for direct marketing.
+      The information is not transferred outside the EU or the European Economic Area.
+      As a data subject, you have rights that you can familiarize yourself with on the <a href="https://tietosuoja.fi/en/private-persons">Data Protection Ombudsman's website</a>.

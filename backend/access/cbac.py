@@ -1,31 +1,31 @@
 import logging
 from collections.abc import Callable
+from enum import Enum
 from functools import wraps
-from typing import TYPE_CHECKING, Literal, Protocol
+from typing import Literal, Protocol
 
 from django.contrib.auth.decorators import login_required
-from django.db import models
+from django.http import HttpRequest
+from graphene import ResolveInfo
 
-from event_log.utils import emit
+from core.utils.view_utils import get_event_and_organization
+from dimensions.models.scope import Scope
+from event_log_v2.utils.emit import emit
 
 from .exceptions import CBACPermissionDenied
 from .models.cbac_entry import CBACEntry, Claims
 
-if TYPE_CHECKING:
-    from core.models.event import Event
-
-
 logger = logging.getLogger("kompassi")
-Operation = Literal["query"] | Literal["mutation"]
+Operation = Literal["query", "create", "update", "delete", "put"]
 
 
 def get_default_claims(request, **overrides: str):
     claims = {}
 
-    # from core.middleware.EventOrganizationMiddleware
-    if event := request.event:
+    event, organization = get_event_and_organization(request)
+    if event:
         claims["event"] = event.slug
-    if organization := request.organization:
+    if organization:
         claims["organization"] = organization.slug
 
     # from Django router
@@ -62,19 +62,28 @@ def default_cbac_required(view_func):
 
 def make_graphql_claims(
     *,
-    event: "Event",
+    scope: Scope,
     operation: Operation,
-    app: str,
-    object_type: str,
+    app: str | Enum,
+    model: str,
     field: str,
     **extra: str,
 ) -> Claims:
+    # event and organization
+    extra.update(scope.cbac_claims)
+
+    if hasattr(app, "app_name"):
+        # InvolvementApp etc. that skip the _v2 madness
+        app_name = app.app_name  # type: ignore
+    elif isinstance(app, Enum):
+        app_name = app.value
+    else:
+        app_name = app
+
     return dict(
-        event=event.slug,
-        organization=event.organization.slug,
         operation=operation,
-        app=app,
-        object_type=object_type,
+        app=app_name,
+        model=model,
         field=field,
         view="graphql",
         **extra,
@@ -84,103 +93,128 @@ def make_graphql_claims(
 def is_graphql_allowed(
     user,
     *,
-    event: "Event",
+    scope: Scope,
     operation: Operation,
-    app: str,
-    object_type: str,
-    field: str,
+    app: str | Enum,
+    model: str,
+    field: str = "self",
     **extra: str,
-):
+) -> bool:
     claims = make_graphql_claims(
-        event=event,
+        scope=scope,
         operation=operation,
         app=app,
-        object_type=object_type,
+        model=model,
         field=field,
         **extra,
     )
 
-    return CBACEntry.is_allowed(user, claims), claims
+    return CBACEntry.is_allowed(user, claims)
 
 
-class HasEventProperty(Protocol):
-    event: "Event"
+class HasScope(Protocol):
+    scope: Scope
 
 
-class HasEventForeignKey(Protocol):
-    event: models.ForeignKey["Event"]
+class HasImmutableScope(Protocol):
+    @property
+    def scope(self) -> Scope: ...
 
 
 def is_graphql_allowed_for_model(
     user,
     *,
-    instance: HasEventProperty | HasEventForeignKey,
-    operation: Literal["query"] | Literal["mutation"],
-    field: str,
+    instance: HasScope | HasImmutableScope,
+    operation: Operation,
+    field: str = "self",
+    app: str | Enum = "",
     **extra: str,
-):
-    event = instance.event
-    object_type = instance.__class__.__name__
-    app = instance.__class__._meta.app_label  # type: ignore
+) -> bool:
+    model_name = instance.__class__.__name__
+    if not app:
+        app = instance.__class__._meta.app_label  # type: ignore
+    slug = getattr(instance, "slug", None)
+    extra = dict(slug=slug) if slug is not None else {}
 
-    return is_graphql_allowed(
-        user,
-        event=event,  # type: ignore
+    claims = make_graphql_claims(
+        scope=instance.scope,
         operation=operation,
         app=app,
-        object_type=object_type,
+        model=model_name,
         field=field,
         **extra,
     )
 
+    return CBACEntry.is_allowed(user, claims)
 
-# TODO(#324) rethink
-def graphql_check_model(model, event: "Event", info, operation: Operation = "query"):
-    user = info.context.user
-    app = model._meta.app_label
 
-    allowed, claims = is_graphql_allowed(
-        user,
-        event=event,
+def graphql_check_model(
+    model,
+    scope: Scope,
+    info: ResolveInfo | HttpRequest,
+    *,
+    field: str = "self",
+    operation: Operation = "query",
+    app: str | Enum = "",
+):
+    request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
+    if not app:
+        app = model._meta.app_label
+
+    claims = make_graphql_claims(
+        scope=scope,
         operation=operation,
         app=app,
-        object_type=model.__name__,
-        field="self",
+        model=model.__name__,
+        field=field,
     )
-    if not allowed:
+
+    if not CBACEntry.is_allowed(request.user, claims):
         emit(
             "access.cbac.denied",
-            request=info.context,
+            request=request,
             other_fields={"claims": claims},
         )
 
-        raise Exception("Unauthorized")
+        raise CBACPermissionDenied(claims)
 
 
-# TODO(#324) rethink
-def graphql_check_instance(instance, info, field: str, operation: Operation = "query"):
+def graphql_check_instance(
+    instance: HasScope | HasImmutableScope,
+    info: ResolveInfo | HttpRequest,
+    *,
+    field: str = "self",
+    operation: Operation = "query",
+    app: str | Enum = "",
+):
     """
     Check that the user has access to a single object. Pass "self" as the field
     for operations targeting the entire model instance.
     """
-    user = info.context.user
-    extra = dict(slug=instance.slug) if hasattr(instance, "slug") else {}
+    request: HttpRequest = info.context if isinstance(info, ResolveInfo) else info
+    model_name = instance.__class__.__name__
+    if not app:
+        app = instance.__class__._meta.app_label  # type: ignore
+    slug = getattr(instance, "slug", None)
+    extra = dict(slug=slug) if slug is not None else {}
 
-    allowed, claims = is_graphql_allowed_for_model(
-        user,
-        instance=instance,
+    claims = make_graphql_claims(
+        scope=instance.scope,
         operation=operation,
+        app=app,
+        model=model_name,
         field=field,
         **extra,
     )
-    if not allowed:
+
+    if not CBACEntry.is_allowed(request.user, claims):
         emit(
             "access.cbac.denied",
-            request=info.context,
+            request=request,
             other_fields={"claims": claims},
         )
 
-        raise Exception("Unauthorized")
+        raise CBACPermissionDenied(claims)
 
 
 def graphql_query_cbac_required(func: Callable):

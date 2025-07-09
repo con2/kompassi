@@ -1,7 +1,7 @@
 import logging
 from datetime import timedelta
 
-from csp.decorators import csp_exempt
+from csp.decorators import csp_update
 from django.contrib import messages
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import Group
@@ -15,7 +15,7 @@ from api.utils import api_login_required, cbac_api_view, handle_api_errors
 from core.helpers import person_required
 from core.models import Person
 from core.utils import groupby_strict, pick_attrs, url
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from .constants import CBAC_SUDO_CLAIMS, CBAC_SUDO_VALID_MINUTES
 from .exceptions import CBACPermissionDenied
@@ -24,9 +24,18 @@ from .models import CBACEntry, EmailAlias, EmailAliasDomain, InternalEmailAlias,
 
 logger = logging.getLogger("kompassi")
 
+# FMH slack is chaining redirects and all redirects in the chain need to be allowed
+SLACK_INVITE_ORIGINS = [
+    "https://con2.slack.com",
+    "https://desucon.slack.com",
+    "https://join.slack.com",
+    "https://slack.com",
+    "https://traconfi.slack.com",
+]
+
 
 @person_required
-@csp_exempt
+@csp_update({"form-action": SLACK_INVITE_ORIGINS})  # type: ignore
 def access_profile_privileges_view(request):
     person = request.user.person
 
@@ -66,7 +75,7 @@ def access_profile_privilege_view(request, privilege_slug):
 
 @person_required
 @require_POST
-@csp_exempt
+@csp_update({"form-action": SLACK_INVITE_ORIGINS})  # type: ignore
 def access_profile_request_privilege_view(request, privilege_slug):
     if not request.user.person.is_email_verified:
         messages.error(request, "Käyttöoikeuden pyytäminen edellyttää vahvistettua sähköpostiosoitetta.")
@@ -198,7 +207,7 @@ def access_admin_group_emails_api(request, group_name):
     group = get_object_or_404(Group, name=group_name)
 
     return HttpResponse(
-        "\n".join(user.email for user in group.user_set.all() if user.email),
+        "\n".join(user.email for user in group.user_set.all() if user.email),  # type: ignore
         content_type="text/plain; charset=UTF-8",
     )
 
@@ -247,7 +256,7 @@ def not_found_view(request, exception=None):
     )
 
 
-@user_passes_test(lambda u: u.is_superuser)
+@user_passes_test(lambda u: u.is_superuser)  # type: ignore
 def sudo_view(request):
     next = request.GET.get("next") or "/"
     claims = {k: v for (k, v) in request.POST.items() if k in CBAC_SUDO_CLAIMS}

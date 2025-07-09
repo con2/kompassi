@@ -12,7 +12,7 @@ from ..models import Badge
 
 
 @require_http_methods(["GET", "HEAD", "POST"])
-@csp_update(SCRIPT_SRC=["cdn.jsdelivr.net"])
+@csp_update({"script-src": ["cdn.jsdelivr.net"]})  # type: ignore
 @badges_event_required
 def badges_admin_onboarding_view(request, event):
     meta = event.badges_event_meta
@@ -47,7 +47,7 @@ def badges_admin_onboarding_view(request, event):
 
             # Accessing badge.signup_extra for each badge causes one extra query per badge
             # So cache them.
-            if SignupExtra and SignupExtra.schema_version >= 2:  # noqa: PLR2004
+            if SignupExtra and SignupExtra.schema_version >= 2:
                 people = [badge.person_id for badge in badges if badge.person]
                 signup_extras = SignupExtra.objects.filter(event=event, person_id__in=people)
                 signup_extras_by_person_id = {sx.person_id: sx for sx in signup_extras}
@@ -56,11 +56,14 @@ def badges_admin_onboarding_view(request, event):
                 for badge in badges:
                     badge._signup_extra = signup_extras_by_person_id.get(badge.person_id)
 
+        is_perks_column_shown = meta.emperkelator_name != "noop"
+
         vars = dict(
             event=event,
             badges=badges,
             shirt_type_field=shirt_type_field,
             shirt_size_field=shirt_size_field,
+            is_perks_column_shown=is_perks_column_shown,
             personnel_classes=personnel_classes,
         )
 

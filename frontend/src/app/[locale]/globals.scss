@@ -17,3 +17,13 @@ $table-striped-bg-factor: 0.03;
     text-decoration: none;
   }
 }
+
+.link-subtle.text-muted,
+.text-muted .link-subtle,
+.link-subtle .text-muted {
+  color: color-mix(in srgb, var(--bs-primary) 25%, var(--bs-secondary) 75%);
+}
+
+.accordion-header .accordion-button {
+  font-weight: bold;
+}

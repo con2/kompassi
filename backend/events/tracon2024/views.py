@@ -5,7 +5,7 @@ from django.utils.timezone import now
 from access.cbac import default_cbac_required
 from core.csv_export import csv_response
 from core.models import Event
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from .models import Poison
 from .proxies import SignupExtraAfterpartyProxy
@@ -13,7 +13,9 @@ from .proxies import SignupExtraAfterpartyProxy
 
 @default_cbac_required
 def tracon2024_afterparty_participants_view(request, event_slug):
-    assert event_slug == "tracon2024"  # noqa: S101
+    if event_slug != "tracon2024":
+        raise NotImplementedError("This view is only available for tracon2024")
+
     event = Event.objects.get(slug=event_slug)
 
     participants = SignupExtraAfterpartyProxy.objects.filter(afterparty_participation=True)
@@ -23,7 +25,7 @@ def tracon2024_afterparty_participants_view(request, event_slug):
         timestamp=now().strftime("%Y%m%d%H%M%S"),
     )
 
-    emit("core.person.exported", request=request, event=event)
+    emit("core.person.exported", request=request)
 
     return csv_response(
         event,
@@ -37,7 +39,9 @@ def tracon2024_afterparty_participants_view(request, event_slug):
 
 @default_cbac_required
 def tracon2024_afterparty_summary_view(request, event_slug):
-    assert event_slug == "tracon2024"  # noqa: S101
+    if event_slug != "tracon2024":
+        raise NotImplementedError("This view is only available for tracon2024")
+
     event = Event.objects.get(slug=event_slug)
 
     poisons = Poison.objects.all().annotate(

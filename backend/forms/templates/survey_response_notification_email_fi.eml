@@ -1,0 +1,6 @@
+Kyselyssä ”{{ survey_title }}” on uusi vastaus:
+
+{{ response_url }}
+
+--
+{{ sender_email }}

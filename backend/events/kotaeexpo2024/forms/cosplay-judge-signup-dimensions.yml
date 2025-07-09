@@ -1,11 +1,10 @@
 - slug: status
   title:
     fi: Hakemuksen tila
-  is_key_dimension: true
+  isKeyDimension: true
   choices:
     - slug: new
       color: blue
-      is_initial: true
       title:
         fi: Uusi
     - slug: accepted
@@ -24,8 +23,8 @@
 - slug: category
   title:
     fi: Cosplaykilpailun sarjat
-  is_key_dimension: true
-  is_multi_value: true
+  isKeyDimension: true
+  isMultiValue: true
   choices:
     - slug: esityskilpailu
       title:

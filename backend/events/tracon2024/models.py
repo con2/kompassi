@@ -6,7 +6,7 @@ from labour.models import SignupExtraBase
 
 SHIRT_SIZES = [
     ("NO_SHIRT", "Ei paitaa"),
-    ("BOTTLE", "Juomapullo"),
+    # ("BOTTLE", "Juomapullo"),
     ("XS", "XS Unisex"),
     ("S", "S Unisex"),
     ("M", "M Unisex"),
@@ -23,6 +23,7 @@ SHIRT_SIZES = [
     ("LF_XL", "XL Ladyfit"),
     ("LF_XXL", "2XL Ladyfit"),
     ("LF_3XL", "3XL Ladyfit"),
+    ("BAG", "Kangaskassi"),
 ]
 
 SHIFT_TYPE_CHOICES = [
@@ -189,8 +190,7 @@ class SignupExtra(SignupExtraBase):
     afterparty_policy = models.BooleanField(
         default=False,
         verbose_name=(
-            "Olen tutustunut Traconin "
-            '<a href="https://tracon.fi/hairinta" target="_blank" rel="noopener noreferrer">häirinnän vastaiseen linjaukseen</a>, '
+            "Olen tutustunut Traconin häirinnän vastaiseen linjaukseen, "
             "ymmärrän sen olevan voimassa myös kaadossa ja sitoudun noudattamaan sitä."
         ),
     )
@@ -214,7 +214,8 @@ class SignupExtra(SignupExtraBase):
         help_text=(
             "Kaatajaiset järjestyvät oman työryhmän voimin, mutta joskus lisäkädet ovat tarpeen. "
             "Oletko valmis auttamaan kaadon järjestelyissä, esim. logistiikassa tai juomien kaatamisessa? "
-            "Jos olet, kirjoita tähän, mitää hommia, mihin aikaan ja kuinka paljon (karkea tuntimäärä illan aikana). "
+            "Jos kyllä, kirjoita tähän. "
+            "Erityisesti pulaa on usein paluukuskeista, niin omalla autolla kuin ilman omaa autoa raittiina liikkeellä olevista. "
             "Vastanneisiin otetaan yhteyttä Slackitse jos apuanne tarvitaan."
         ),
     )

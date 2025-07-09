@@ -1,24 +1,31 @@
+from __future__ import annotations
+
 import json
 import logging
 from dataclasses import dataclass
 from datetime import date
 from functools import cached_property
+from typing import TYPE_CHECKING
 from uuid import uuid4
 
 import requests
 from django.conf import settings
 from django.db import connection, models
 from django.db.models import JSONField
+from django.http import HttpRequest
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
-from pkg_resources import resource_string
 
+from core.utils.pkg_resources_compat import resource_string
 from tickets.utils import format_price
+from tickets_v2.optimized_server.utils.paytrail_hmac import calculate_hmac
 
-from ..utils import calculate_hmac
 from .payments_organization_meta import META_DEFAULTS
+
+if TYPE_CHECKING:
+    from tickets.models.order import Order
 
 logger = logging.getLogger("kompassi")
 
@@ -122,7 +129,10 @@ class CheckoutPayment(models.Model):
         return super().save(*args, **kwargs)
 
     @classmethod
-    def from_order(cls, order):
+    def from_order(cls, order: Order):
+        if order.event.start_time is None:
+            raise ValueError("cannot perform Paytrail payment for event that has no start time")
+
         items = [
             {
                 "unitPrice": order_product.product.price_cents,
@@ -134,6 +144,9 @@ class CheckoutPayment(models.Model):
             for order_product in order.order_product_set.all()
             if order_product.count > 0
         ]
+
+        if order.customer is None:
+            raise ValueError(f"Order {order} has no customer")
 
         customer = {
             "email": order.customer.email,
@@ -219,7 +232,7 @@ class CheckoutPayment(models.Model):
 
         return self._membership_fee_payment
 
-    def perform_create_payment_request(self, request):
+    def perform_create_payment_request(self, request: HttpRequest):
         if not settings.DEBUG and self.meta.checkout_merchant == META_DEFAULTS["checkout_merchant"]:
             raise ValueError(f"Event {self.event} has testing merchant in production, please change this in admin")
 
@@ -260,7 +273,7 @@ class CheckoutPayment(models.Model):
 
         self.checkout_reference = result["reference"]
         self.checkout_transaction_id = result["transactionId"]
-        self.save()
+        self.save(update_fields=["checkout_reference", "checkout_transaction_id"])
 
         return result
 
@@ -317,19 +330,7 @@ class CheckoutPayment(models.Model):
 
     def get_redirect(self):
         if self.tickets_order:
-            match self.tickets_order.event.tickets_event_meta.tickets_view_version:
-                case "v1":
-                    if self.status in ["ok", "pending", "delayed"]:
-                        return redirect("tickets_thanks_view", self.tickets_order.event.slug)
-                    else:
-                        return redirect("tickets_confirm_view", self.tickets_order.event.slug)
-                case "v1.5":
-                    # XXX named tickets_welcome_view for historical reasons
-                    # but it actually shows the order confirmation view
-                    return redirect("tickets_welcome_view", self.tickets_order.event.slug)
-                case unsupported_version:
-                    raise NotImplementedError(unsupported_version)
-
+            return redirect("tickets_view", self.tickets_order.event.slug)
         elif self.membership_fee_payment:
             return redirect("core_organization_view", self.membership_fee_payment.term.organization.slug)
         else:

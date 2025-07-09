@@ -1,10 +1,12 @@
 from functools import wraps
 
 from django.contrib import messages
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 
 from access.cbac import default_cbac_required
 from core.models import Event
+from core.utils.view_utils import get_event_and_organization
 
 from .views.admin_menu_items import labour_admin_menu_items
 
@@ -14,7 +16,10 @@ def labour_admin_required(view_func):
     @default_cbac_required
     def wrapper(request, *args, **kwargs):
         kwargs.pop("event_slug")
-        event = request.event
+        event, _ = get_event_and_organization(request)
+        if not event:
+            raise Http404
+
         meta = event.labour_event_meta
 
         if not meta:

@@ -25,6 +25,12 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
+            "--room-slugs",
+            nargs="*",
+            metavar="ROOM_SLUG",
+        )
+
+        parser.add_argument(
             "--really",
             default=False,
             action="store_true",
@@ -36,6 +42,10 @@ class Command(BaseCommand):
                 event = Event.objects.get(slug=event_slug)
 
                 ps = Programme.objects.filter(category__event=event, is_using_paikkala=True)
+
+                if opts["room_slugs"]:
+                    ps = ps.filter(room__slug__in=opts["room_slugs"])
+
                 num_ps = ps.distinct().count()
                 p_ids = list(ps.distinct().values_list("id", flat=True))
 

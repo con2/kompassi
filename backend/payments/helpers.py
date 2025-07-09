@@ -4,8 +4,9 @@ from functools import wraps
 from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404
 
+from tickets_v2.optimized_server.utils.paytrail_hmac import calculate_hmac
+
 from .models import CheckoutPayment
-from .utils import calculate_hmac
 
 logger = logging.getLogger("kompassi")
 

@@ -1,0 +1,29 @@
+{% load tickets_v2_tags %}Hyvä vastaanottaja,
+
+Kiitos tilauksestasi {{ event_name }} -tapahtuman verkkokaupassa!
+Tilauksesi numero on {{ order_number|format_order_number }}.
+
+Vahvistamme maksetuiksi seuraavat lipputuotteet:
+
+{% for op in products %}{{ op.quantity }} kpl  {{ op.title }}
+    {{ op.quantity }} x {{ op.price|format_money }}
+{% endfor %}
+Yhteensä: {{ total_price|format_money }} (ALV 0%){% if have_etickets %}
+
+Löydät tilaamasi sähköiset liput liitetiedostosta. Sähköinen lippu
+vaihdetaan rannekkeeseen lipunvaihtopisteessä saapuessasi tapahtumaan. Voit
+tulostaa sähköisen lipun tai näyttää sen älypuhelimen tai tablettitietokoneen
+näytöltä. Mikäli kumpikaan näistä ei ole mahdollista, ota ylös jokaisesta
+e-lipusta viivakoodin alla oleva neljästä tai viidestä sanasta koostuva
+sanakoodi ja ilmoita se lipunvaihtopisteessä.{% endif %}
+
+Antamasi yhteystiedot:
+
+{{ first_name }} {{ last_name }}{% if phone %}
+{{ phone }}{% endif %}
+{{ email }}
+
+Jos yllä olevissa tiedoissa on virheitä, otathan välittömästi yhteyttä
+lipunmyyntiin vastaamalla tähän viestiin.
+
+{% include "tickets_v2_footer_fi.eml" %}

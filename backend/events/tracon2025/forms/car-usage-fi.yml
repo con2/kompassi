@@ -1,0 +1,69 @@
+title: Hae kulukorvausta
+description: |
+  Tällä lomakkeella voit hakea kulukorvausta Tracon ry:ltä tapahtumaan tai yhdistystoimintaan liittyvästä oman auton matkakulusta.
+
+  Jos sinulla on kysyttävää kulukorvauksista, ota yhteyttä Tracon ry:n rahastonhoitajaan sähköpostitse
+  osoitteella <em>rahat ät tracon piste fi</em> tai Slackissa <em>@Aketzu</em>.
+
+  Lisätietoja löytyy <a href="https://wiki.tracon.fi/doc/matkakorvausten-maksamisen-perusteet-sBXyp2MylN">wikistä</a>.
+
+fields:
+  - slug: event
+    type: DimensionSingleSelect
+    title: Tapahtuma
+    required: true
+    helpText: |
+      Mihin tapahtumaan liittyvästä kulusta haet korvausta tai minkä laskun lähetät?
+      Jos kulukorvaus ei liity tapahtumaan, valitse <em>Maksu ei liity tapahtumaan</em>.
+    dimension: event
+
+  - slug: title
+    type: SingleLineText
+    title: Otsikko
+    required: true
+    helpText: Kerro <strong>lyhyesti</strong>, mistä oman auton käytöstä haet korvausta.
+
+  - slug: description
+    type: MultiLineText
+    title: Kuvaus
+    helpText: |
+      Lisätietoja matkasta, esimerkiksi mistä minne ajoit, kuka oli mukana jne.
+
+  - slug: kilometers
+    type: DecimalField
+    minValue: 0
+    decimalPlaces: 0
+    title: Kilometrejä
+    required: true
+    helpText: |
+      Kuinka monta kilometriä ajoit yhteensä?
+
+  - slug: rate
+    type: DecimalField
+    minValue: 0
+    decimalPlaces: 2
+    title: Taksa
+    required: true
+    helpText: |
+      Mikä km-korvaustaksa? 0,15e/km normaali, 0,25e/km jos sinulla oli kyydissä matkustaja tai muu syy korkeampaan taksaan.
+
+  - slug: recipient
+    type: SingleLineText
+    title: Saaja
+    required: true
+    helpText: |
+      Kenen tilille korvaus maksetaan? Kirjoita tähän etu- ja sukunimi tai yrityksen nimi.
+
+  - slug: recipient_iban
+    type: SingleLineText
+    title: Saajan tilinumero
+    required: true
+    helpText: |
+      Mille tilille korvaus maksetaan? Kirjoita IBAN-tilinumero muodossa FI12 3456 7890 1234 56.
+
+  - slug: hetuprovided
+    type: SingleCheckbox
+    title: Henkilötunnus lähetetty
+    required: true
+    helpText: |
+      Oletko lähettänyt henkilötunnuksesi rahastonhoitajalle? Esimerkiksi tekstiviestillä (+358405085390) tai Slackissä (@Aketzu).

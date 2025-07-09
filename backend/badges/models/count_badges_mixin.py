@@ -83,12 +83,12 @@ class CountBadgesMixin:
                     )
                 )
 
-        if sum(p.width for p in progress) > 100:  # noqa: PLR2004
+        if sum(p.width for p in progress) > 100:
             candidates_for_deflation = [p for p in progress if p.width > PROGRESS_ELEMENT_MIN_WIDTH]
             candidates_for_deflation.sort(key=lambda p: -p.width)
 
             for p in cycle(candidates_for_deflation):
-                if sum(p.width for p in progress) <= 100 or all(  # noqa: PLR2004
+                if sum(p.width for p in progress) <= 100 or all(
                     p.width <= PROGRESS_ELEMENT_MIN_WIDTH for p in candidates_for_deflation
                 ):
                     break

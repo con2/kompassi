@@ -1,0 +1,70 @@
+title: Expense Claim
+description: |
+  With this form, you can apply for travel expense reimbursement for own car usage from Tracon ry for an event or association-related expense.
+
+  If you have any questions about expense reimbursements, please contact Tracon ry's treasurer by email
+  at <em>rahat at tracon dot fi</em> or on Slack at <em>@Aketzu</em>.
+
+  More details can be found in <a href="https://wiki.tracon.fi/doc/matkakorvausten-maksamisen-perusteet-sBXyp2MylN">the wiki</a>.
+
+fields:
+  - slug: event
+    type: DimensionSingleSelect
+    title: Event
+    required: true
+    helpText: |
+      Which event is the expense you are applying for reimbursement related to or submitting an invoice for?
+      If the expense is not related to an event, select <em>Payment is not related to an event</em>.
+    dimension: event
+
+  - slug: title
+    type: SingleLineText
+    title: Title
+    required: true
+    helpText: Briefly tell us what own car usage you are applying for reimbursement for.
+
+  - slug: description
+    type: MultiLineText
+    title: Description
+    helpText: |
+      Extra information about the travel, e.g. where you drove from and to, who was with you, etc.
+
+  - slug: kilometers
+    type: DecimalField
+    minValue: 0
+    decimalPlaces: 0
+    title: Kilometers
+    required: true
+    helpText: |
+      How many kilometers did you drive in total?
+
+  - slug: rate
+    type: DecimalField
+    minValue: 0
+    decimalPlaces: 2
+    title: Rate per kilometer
+    required: true
+    helpText: |
+      How much reimbursement per kilometer? 0.15e/km standard, 0.25e/km if you have a passenger or other reason for a higher rate.
+
+  - slug: recipient
+    type: SingleLineText
+    title: Recipient
+    required: true
+    helpText: |
+      Who will the reimbursement be paid to? Write the first and last name or the company name here.
+
+  - slug: recipient_iban
+    type: SingleLineText
+    title: Bank account number of the recipient
+    required: true
+    helpText: |
+      Which account will the reimbursement be paid to? Write the IBAN account number in the format FI12 3456 7890 1234 56.
+      <strong>NOTE:</strong> If you paid the expense with Tracon ry's debit card, write the word "card" here instead of your account number.
+
+  - slug: hetuprovided
+    type: SingleCheckbox
+    title: Personal identity code (HETU) sent
+    required: true
+    helpText: |
+      Have you sent your personal identity code (HETU) to the treasurer? For example by SMS (to +358405085390) or Slack (@Aketzu).

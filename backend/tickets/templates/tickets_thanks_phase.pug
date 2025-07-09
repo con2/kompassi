@@ -1,8 +1,0 @@
-extends tickets_phase_base.pug
-- load i18n
-block body_text
-  .pull-right.text-muted {{ order.formatted_order_number }}
-  h2 {% trans "Thank you for your order!" %}
-  p {% trans "Your order is now complete. Welcome to the event!" %}
-block form_content
-  include tickets_order_fragment

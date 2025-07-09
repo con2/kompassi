@@ -8,14 +8,13 @@ from django.views.decorators.http import require_http_methods
 
 from ..forms import LoginForm
 from ..models import Person
-from ..page_wizard import page_wizard_clear, page_wizard_vars
 from ..utils import get_next, initialize_form
 from .email_verification_views import remind_email_verification_if_needed
 
 
 @sensitive_post_parameters("password")
 @require_http_methods(["GET", "POST"])
-@csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
+@csp_update({"form-action": settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS})
 def core_login_view(request):
     next = get_next(request, "core_frontpage_view")
     form = initialize_form(LoginForm, request, initial=dict(next=next))
@@ -38,8 +37,7 @@ def core_login_view(request):
 
             user = authenticate(username=username, password=password)
             if user:
-                response = do_login(request, user=user, password=password, next=next)
-                page_wizard_clear(request)
+                response = do_login(request, user=user, next=next)
                 messages.success(request, "Olet nyt kirjautunut sisään.")
                 return response
             else:
@@ -47,32 +45,29 @@ def core_login_view(request):
         else:
             messages.error(request, "Ole hyvä ja korjaa virheelliset kentät.")
 
-    vars = page_wizard_vars(request)
-
-    vars.update(form=form, login_page=True)
+    vars = dict(form=form, login_page=True)
 
     return render(request, "core_login_view.pug", vars)
 
 
-def do_login(request, user, password=None, next="core_frontpage_view"):
+def do_login(request, user, next="core_frontpage_view", backend=None):
     """
     Performs Django login and required post-login steps.
-
-    `django.contrib.auth.authenticate` must be called first.
+    `django.contrib.auth.authenticate` must be called first or `backend` provided.
     """
 
     if user.groups.filter(name=settings.KOMPASSI_APPLICATION_USER_GROUP).exists():
         messages.error(request, "API-käyttäjätunnuksilla sisäänkirjautuminen on estetty.")
         return redirect("core_frontpage_view")
 
-    login(request, user)
+    login(request, user, backend=backend)
     remind_email_verification_if_needed(request, next)
 
     return redirect(next)
 
 
 @require_http_methods(["GET", "HEAD", "POST"])
-@csp_update(FORM_ACTION=settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS)
+@csp_update({"form-action": settings.KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS})
 def core_logout_view(request):
     next = get_next(request)
     logout(request)

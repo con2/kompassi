@@ -397,7 +397,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2023{:06d}",
             contact_email="Tracon Hitpoint -lipunmyynti <hitpoint@tracon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Tracon Hitpoint -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"

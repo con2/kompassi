@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.template.loader import render_to_string
 
 from ..utils import url
@@ -23,15 +23,20 @@ class PasswordResetToken(OneTimeCode):
 
     @classmethod
     def reset_password(cls, code, new_password):
-        try:
-            code = cls.objects.get(code=code, state="valid")
-        except cls.DoesNotExist as dne:
-            raise PasswordResetError("invalid_code") from dne
+        with transaction.atomic():
+            try:
+                code = cls.objects.select_for_update(no_key=True).get(code=code, state="valid")
+            except cls.DoesNotExist as dne:
+                raise PasswordResetError("invalid_code") from dne
 
-        code.mark_used()
+            code.mark_used()
 
-        user = code.person.user
-        user.set_password(new_password)
-        user.save()
+            user = code.person.user
+            user.set_password(new_password)
+            user.save(update_fields=["password"])
+
+            # the user's keypairs are encrypted with the user's password
+            # so they can't be used if the user doesn't know their password
+            user.keypairs.all().delete()
 
         return user

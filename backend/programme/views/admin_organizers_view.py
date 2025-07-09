@@ -7,7 +7,7 @@ from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat, cs
 from core.models import Person
 from core.sort_and_filter import Filter
 from core.utils import groupby_strict
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 from labour.models import PersonnelClass
 
 from ..helpers import programme_admin_required
@@ -72,7 +72,7 @@ def admin_organizers_view(request, vars, event, format="screen"):
         return render(request, "programme_admin_organizers_view.pug", vars)
     elif format == "txt":
         emails = "\n".join(programme_roles.order_by("person__email").values_list("person__email", flat=True).distinct())
-        emit("core.person.exported", request=request, event=event)
+        emit("core.person.exported", request=request)
         return HttpResponse(emails, content_type="text/plain")
     elif format in CSV_EXPORT_FORMATS:
         filename = "{event.slug}_programme_organizers_{timestamp}.{format}".format(
@@ -81,7 +81,7 @@ def admin_organizers_view(request, vars, event, format="screen"):
             format=format,
         )
 
-        emit("core.person.exported", request=request, event=event)
+        emit("core.person.exported", request=request)
 
         return csv_response(
             event,

@@ -17,5 +17,5 @@ block content
             td {{ poison.name }}
             td {{ poison.victims }}
 
-  p: a(href="{% url 'tracon2023_afterparty_participants_view' event.slug %}") Lataa osallistujaluettelo (XLSX)
+  p: a(href="{% url 'tracon2024_afterparty_participants_view' event.slug %}") Lataa osallistujaluettelo (XLSX)
   p: a(href="{% url 'programme:admin_reservation_status_view' event.slug %}") Kaatobussien tiedot ohjelmanhallinnassa

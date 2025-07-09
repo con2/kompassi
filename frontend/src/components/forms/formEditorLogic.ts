@@ -35,10 +35,6 @@ export function removeField(fields: Field[], slug: string): Field[] {
   return fields.slice(0, index).concat(fields.slice(index + 1));
 }
 
-export function canEditField(field: Field) {
-  return !nonValueFieldTypes.includes(field.type);
-}
-
 export function replaceField(fields: Field[], slug: string, newField: Field) {
   const index = fields.findIndex((field) => field.slug === slug);
 

@@ -2,19 +2,13 @@
 
 import React from "react";
 
+import { Dimension } from "../dimensions/models";
 import AddFieldDropdown from "./AddFieldDropdown";
 import EditFieldModal from "./EditFieldModal";
 import FormEditorControls from "./FormEditorControls";
 import { addField, removeField, replaceField } from "./formEditorLogic";
 import { Modal, useModal } from "./LegacyModal";
-import {
-  FieldType,
-  emptyField,
-  nonValueFieldTypes,
-  Field,
-  Layout,
-  defaultLayout,
-} from "./models";
+import { Field, FieldType, emptyField } from "./models";
 import newField from "./newField";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
@@ -22,21 +16,55 @@ import type { Translations } from "@/translations/en";
 
 import "./FormEditor.scss";
 
-interface FormEditorProps {
+interface Props {
   value: Field[];
-  layout?: Layout;
   onChange(fields: Field[]): void;
+  onPromoteFieldToDimension(fieldSlug: string): Promise<void>;
   messages: {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];
   };
+  dimensions: Dimension[];
+}
+
+/// The end user facing SchemaForm operates on enriched fields
+/// that have the choices already populated for dimension fields.
+/// The form editor operates on raw fields and enjoys no such luxury.
+function injectChoices(field: Field, dimensions: Dimension[]): Field {
+  if (
+    // is of a type that can has dimension values as choices
+    (field.type === "DimensionSingleSelect" ||
+      field.type === "DimensionMultiSelect") &&
+    // has a dimension set
+    field.dimension &&
+    // has no choices pre-populated by the server
+    (!field.choices || field.choices.length === 0)
+  ) {
+    // TODO(#643) subsetValues
+    const dimension = dimensions.find((d) => d.slug === field.dimension);
+    if (dimension) {
+      return {
+        ...field,
+        choices: dimension.values.map(({ slug, title }) => ({
+          slug,
+          title: title || slug,
+        })),
+      };
+    }
+  }
+  return field;
 }
 
 /** Fully controlled form editor component. */
-export default function FormEditor(props: FormEditorProps) {
-  const { value: fields, onChange, messages } = props;
+export default function FormEditor(props: Props) {
+  const {
+    value,
+    onChange,
+    onPromoteFieldToDimension: onPromoteFieldToDimension,
+    messages,
+    dimensions,
+  } = props;
   const t = messages.FormEditor;
-  const layout = props.layout ?? defaultLayout;
 
   const [targetFieldName, setTargetFieldName] = React.useState("");
   const [editExisting, setEditExisting] = React.useState(false);
@@ -45,12 +73,14 @@ export default function FormEditor(props: FormEditorProps) {
 
   const removeFieldModal = useModal();
 
+  const fields = value.map((field) => injectChoices(field, dimensions));
+
   const handleAddField = React.useCallback(
     (fieldType: FieldType, aboveFieldSlug?: string) => {
       const usedIdentifiers = fields.map((field) => field.slug);
       const field = newField(fieldType, usedIdentifiers);
 
-      if (nonValueFieldTypes.includes(fieldType)) {
+      if (["Divider", "Spacer"].includes(fieldType)) {
         // This field type has no options to be edited by the user,
         // so skip the edit dialog.
         onChange(addField(fields, field, aboveFieldSlug));
@@ -95,7 +125,7 @@ export default function FormEditor(props: FormEditorProps) {
       {fields.map((field) => (
         <div key={field.slug} className="FormEditor-field">
           <div className="FormEditor-background">
-            <SchemaFormField layout={layout} key={field.slug} field={field}>
+            <SchemaFormField key={field.slug} field={field}>
               <SchemaFormInput
                 field={field}
                 readOnly={true}
@@ -109,6 +139,7 @@ export default function FormEditor(props: FormEditorProps) {
               onAddField={handleAddField}
               onRemoveField={handleRemoveField}
               onEditField={handleEditField}
+              onPromoteFieldToDimension={onPromoteFieldToDimension}
               messages={messages.FormEditor}
             />
           </div>
@@ -131,15 +162,17 @@ export default function FormEditor(props: FormEditorProps) {
 
       {editFieldModalOpen && (
         <EditFieldModal
-          initialValues={fieldBeingEdited}
+          fieldToEdit={fieldBeingEdited}
           onSubmit={(values) => {
             const newFields = editExisting
               ? replaceField(fields, targetFieldName, values)
               : addField(fields, values, targetFieldName);
 
+            setEditFieldModalOpen(false);
             onChange(newFields);
           }}
           onClose={() => setEditFieldModalOpen(false)}
+          dimensions={dimensions}
           messages={messages}
         />
       )}

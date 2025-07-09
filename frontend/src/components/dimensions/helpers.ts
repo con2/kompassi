@@ -1,4 +1,4 @@
-import { Choice, MultiSelect, SingleSelect } from "../forms/models";
+import { invalidDimensionSlugs } from "./consts";
 import type { Dimension } from "./models";
 import { validateCachedDimensions } from "./models";
 import type { DimensionFilterInput } from "@/__generated__/graphql";
@@ -9,29 +9,11 @@ export function buildDimensionFilters(
 ): DimensionFilterInput[] {
   return Object.entries(searchParams)
     .filter(([_, value]) => value.length)
+    .filter(([dimension]) => !invalidDimensionSlugs.includes(dimension))
     .map(([dimension, value]) => ({
       dimension,
       values: [value],
     }));
-}
-
-export function buildDimensionChoices(
-  dimension: Dimension,
-  includeEmptyChoice: boolean = false,
-): Choice[] {
-  const choices = dimension.values.map((value) => ({
-    slug: value.slug,
-    title: value.title ?? value.slug,
-  }));
-
-  if (includeEmptyChoice) {
-    choices.unshift({
-      slug: "",
-      title: "",
-    });
-  }
-
-  return choices;
 }
 
 /// For subjects using the cached dimensions protocol, this helper will return the
@@ -47,59 +29,6 @@ export function getDimensionValueTitle(
     valueSlugs.includes(value.slug),
   );
   return dimensionValues.map((value) => value.title).join(", ");
-}
-
-export function buildDimensionField(
-  dimension: Dimension,
-  cachedDimensions: unknown,
-) {
-  validateCachedDimensions(cachedDimensions);
-
-  const valueList = cachedDimensions[dimension.slug] ?? [];
-  let type = dimension.isMultiValue ? "MultiSelect" : "SingleSelect";
-  if (type === "SingleSelect" && valueList.length > 1) {
-    console.warn(
-      "SingleSelect was requested but multiple values were already set.",
-      { dimension, cachedDimensions },
-    );
-    type = "MultiSelect";
-  }
-
-  const value = type === "SingleSelect" ? valueList[0] ?? "" : valueList;
-
-  const field: SingleSelect | MultiSelect =
-    type === "SingleSelect"
-      ? {
-          slug: dimension.slug,
-          type: "SingleSelect",
-          presentation: "dropdown",
-          title: dimension.title ?? dimension.slug,
-          choices: buildDimensionChoices(dimension),
-        }
-      : {
-          slug: dimension.slug,
-          type: "MultiSelect",
-          title: dimension.title ?? dimension.slug,
-          choices: buildDimensionChoices(dimension),
-        };
-
-  return { field, value };
-}
-
-export function buildDimensionForm(
-  dimensions: Dimension[],
-  cachedDimensions: unknown,
-) {
-  const fieldsValues = dimensions.map((dimension) =>
-    buildDimensionField(dimension, cachedDimensions),
-  );
-  const fields = fieldsValues.map(({ field }) => field);
-  const values: Record<string, any> = {};
-  fieldsValues.forEach(({ field, value }) => {
-    values[field.slug] = value;
-  });
-
-  return { fields, values };
 }
 
 export function makeColorTranslucent(color: string) {

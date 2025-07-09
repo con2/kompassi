@@ -6,15 +6,23 @@ from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
+from dimensions.models.enums import DimensionApp
 
 from ...models.survey import Survey
-from ..survey import SurveyType
+from ..survey_full import FullSurveyType
 
 
 class SurveyForm(django_forms.ModelForm):
     class Meta:
         model = Survey
-        fields = ("login_required", "max_responses_per_user", "active_from", "active_until")
+        fields = (
+            "login_required",
+            "max_responses_per_user",
+            "active_from",
+            "active_until",
+            "responses_editable_until",
+            "protect_responses",
+        )
 
     @classmethod
     def from_form_data(cls, survey: Survey, form_data: dict[str, str]) -> Self:
@@ -32,7 +40,7 @@ class UpdateSurvey(graphene.Mutation):
     class Arguments:
         input = UpdateSurveyInput(required=True)
 
-    survey = graphene.Field(SurveyType)
+    survey = graphene.Field(FullSurveyType)
 
     @staticmethod
     def mutate(
@@ -40,16 +48,25 @@ class UpdateSurvey(graphene.Mutation):
         info,
         input: UpdateSurveyInput,
     ):
-        survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
+        survey = Survey.objects.get(
+            event__slug=input.event_slug,
+            slug=input.survey_slug,
+            app_name=DimensionApp.FORMS.value,
+        )
         form_data: dict[str, str] = input.form_data  # type: ignore
 
-        # TODO(#324) rethink
-        graphql_check_instance(survey, info, "self", "mutation")
+        graphql_check_instance(
+            survey,
+            info,
+            app=survey.app,
+            operation="update",
+        )
 
         form = SurveyForm.from_form_data(survey, form_data)
         if not form.is_valid():
-            raise django_forms.ValidationError(form.errors)
+            raise django_forms.ValidationError(form.errors)  # type: ignore
 
-        form.save()
+        survey: Survey = form.save(commit=False)
+        survey.with_mandatory_fields().save()
 
         return UpdateSurvey(survey=survey)  # type: ignore

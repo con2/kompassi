@@ -1,4 +1,3 @@
-
 # Set this to the public hostname of your service.
 # First is canonical.
 ingress_public_hostnames:
@@ -17,15 +16,18 @@ kompassi_secret_managed: true
 kompassi_storage_pvc: true
 
 # Storage class used for upload storage, or !Void for default
-kompassi_storage_pvc_storageclass: !Void
+kompassi_storage_pvc_storageclass:
+  !Void # To use an existing NFS export as the image storage, set kompassi_storage_nfs to the IP of the server.
 
-# To use an existing NFS export as the image storage, set kompassi_storage_nfs to the IP of the server.
-kompassi_storage_nfs: ''
+
+kompassi_storage_nfs: ""
 kompassi_storage_nfs_path: /
 
 kompassi_installation_slug: komplocaldev
 kompassi_installation_name: Kompassi (LOCAL DEV)
+kompassi_base_url: http://kompassi.localhost
 kompassi_v2_base_url: http://kompassi2.localhost
+kompassi_tickets_v2_api_url: http://uvicorn.default.svc.cluster.local:7998
 
 kompassi_allowed_hosts: !Var ingress_public_hostnames
 kompassi_cors_allowed_hosts: []
@@ -66,9 +68,13 @@ kompassi_liveness_probe:
   initialDelaySeconds: 15
   periodSeconds: 30
 
+kompassi_uvicorn_enabled: true
+
 # If you use ingress-nginx and cert-manager, TLS can be automatically configured by setting this to true.
 ingress_letsencrypt_enabled: false
 ingress_letsencrypt_cluster_issuer: letsencrypt-prod
+
+ingress_class_name: nginx
 
 redis_managed: true
 redis_image: redis
@@ -76,15 +82,16 @@ redis_hostname: redis
 redis_broker_database: 1
 redis_cache_database: 2
 redis_storage_pvc: true
-redis_storage_pvc_storageclass: !Void
+redis_storage_pvc_storageclass:
+  !Void # NOTE: "managed" PostgreSQL should not be considered production-ready.
 
-# NOTE: "managed" PostgreSQL should not be considered production-ready.
+
 postgres_managed: true
 postgres_image: postgres
 postgres_hostname: postgres
 postgres_database: kompassi
 postgres_username: kompassi
-postgres_password: ''
+postgres_password: ""
 postgres_storage_pvc_storageclass: !Void
 
 minio_bucket_name: kompassi
@@ -100,8 +107,8 @@ postgres_ssl: false
 # Whether or not "python manage.py setup" should run as init container
 setup_should_run: true
 
-smtp_server: ''
-smtp_default_from_email: ''
+smtp_server: ""
+smtp_default_from_email: ""
 
 # Configuration vars end here. Configuration snippets follow. May be overridden for advanced configuration.
 
@@ -115,21 +122,24 @@ kompassi_container_security_context:
   readOnlyRootFilesystem: true
   allowPrivilegeEscalation: false
 
+# new background worker (to replace celery at some point)
+kompassi_background_worker_enabled: true
+
 # macro to render pod affinity
 # this goes into spec/template/spec/affinity in deployment with param_component_name set to component name
 # override with !Void to disable affinity
 macro_pod_affinity:
   podAntiAffinity:
     preferredDuringSchedulingIgnoredDuringExecution:
-    - weight: 50
-      podAffinityTerm:
-        labelSelector:
-          matchExpressions:
-          - key: component
-            operator: In
-            values:
-            - !Var param_component_name
-        topologyKey: "kubernetes.io/hostname"
+      - weight: 50
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: component
+                operator: In
+                values:
+                  - !Var param_component_name
+          topologyKey: "kubernetes.io/hostname"
 
 # Common environment vars for both kompassi and celery pods.
 kompassi_environment:
@@ -174,7 +184,7 @@ kompassi_environment:
   - name: ALLOWED_HOSTS
     value: !Join
       items: !Var kompassi_allowed_hosts
-      separator: ' '
+      separator: " "
   - name: EMAIL_HOST
     value: !Var smtp_server
   - name: DEFAULT_FROM_EMAIL
@@ -187,8 +197,17 @@ kompassi_environment:
     value: !Var kompassi_installation_name
   - name: KOMPASSI_INSTALLATION_SLUG
     value: !Var kompassi_installation_slug
+  - name: KOMPASSI_BASE_URL
+    value: !Var kompassi_base_url
   - name: KOMPASSI_V2_BASE_URL
     value: !Var kompassi_v2_base_url
+  - name: KOMPASSI_TICKETS_V2_API_URL
+    value: !Var kompassi_tickets_v2_api_url
+  - name: KOMPASSI_TICKETS_V2_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: ticketsApiKey
   - name: KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID
     valueFrom:
       secretKeyRef:
@@ -202,11 +221,11 @@ kompassi_environment:
   - name: CORS_ORIGIN_WHITELIST
     value: !Join
       items: !Var kompassi_cors_allowed_hosts
-      separator: ' '
+      separator: " "
   - name: KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS
     value: !Join
       items: !Var kompassi_csp_allowed_login_redirects
-      separator: ' '
+      separator: " "
 
   # used by python manage.py setup to do nothing if nothing has changed
   - name: KOMPASSI_SETUP_RUN_ID
@@ -255,23 +274,23 @@ kompassi_volumes:
   - name: kompassi-temp
     emptyDir: {}
   - !If
-      test: !Var kompassi_storage_pvc
-      then:
-        name: kompassi-media
-        persistentVolumeClaim:
-          claimName: kompassi-media
+    test: !Var kompassi_storage_pvc
+    then:
+      name: kompassi-media
+      persistentVolumeClaim:
+        claimName: kompassi-media
   - !If
-      test: !Var kompassi_storage_nfs
-      then:
-        name: kompassi-media
-        nfs:
-          server: !Var kompassi_storage_nfs
-          path: !Var kompassi_storage_nfs_path
+    test: !Var kompassi_storage_nfs
+    then:
+      name: kompassi-media
+      nfs:
+        server: !Var kompassi_storage_nfs
+        path: !Var kompassi_storage_nfs_path
   - !If
-      test: !Not,Any [!Var kompassi_storage_pvc, !Var kompassi_storage_nfs]
-      then:
-        name: kompassi-media
-        emptyDir: {}
+    test: !Not,Any [!Var kompassi_storage_pvc, !Var kompassi_storage_nfs]
+    then:
+      name: kompassi-media
+      emptyDir: {}
 
 base_ingress_annotations:
   nginx.ingress.kubernetes.io/proxy-body-size: "100m"
@@ -283,10 +302,10 @@ base_ingress_annotations:
 ingress_annotations: !Merge
   - !Var base_ingress_annotations
   - !If
-      test: !Var ingress_letsencrypt_enabled
-      then:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    test: !Var ingress_letsencrypt_enabled
+    then:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
 
 ingress_tls: !If
   test: !Var ingress_letsencrypt_enabled

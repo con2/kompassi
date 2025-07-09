@@ -5,9 +5,9 @@ from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from pkg_resources import resource_string
 
 from core.utils import full_hours_between
+from core.utils.pkg_resources_compat import resource_string
 
 
 def mkpath(*parts):
@@ -82,7 +82,7 @@ class Setup:
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
-            labour_admin_group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
@@ -97,8 +97,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
@@ -288,10 +288,15 @@ class Setup:
                     name=room_name,
                 )
 
-        priority = 0
+        # would normally be automatically created when meta.importer_name == "default"
+        # but using custom importer opts out of it
+        for room in Room.objects.filter(event=self.event):
+            room.v2_dimensions = {"room": [room.slug]}
+            room.save(update_fields=["v2_dimensions"])
+
+        priority = 40
         for pc_slug, role_title, role_is_default in [
-            ("ohjelma", "Ohjelma, päivä, 1 ruoka", True),
-            ("ohjelma", "N Ohjelma, päivä, 1 ruoka", False),
+            ("ohjelma", "Ohjelma, päivä, ruoka", True),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
             role, created = Role.objects.get_or_create(
@@ -311,51 +316,219 @@ class Setup:
 
         Role.objects.get_or_create(
             personnel_class=personnel_class,
-            title="Näkymätön ohjelmanjärjestäjä",
+            title="Ohjelma, päivä, ruoka, näkymätön",
             defaults=dict(
                 override_public_title="Ohjelmanjärjestäjä",
                 is_default=False,
                 is_public=False,
+                priority=50,
             ),
         )
 
-        have_categories = Category.objects.filter(event=self.event).exists()
-        if not have_categories:
-            for title, slug, style in [
-                ("Puheohjelma: esitelmä / Presentation", "pres", "color1"),
-                ("Puheohjelma: paneeli / Panel discussion", "panel", "color1"),
-                ("Puheohjelma: keskustelu / Discussion group", "disc", "color1"),
-                ("Työpaja: käsityö / Workshop: crafts", "workcraft", "color2"),
-                ("Työpaja: figut / Workshop: miniature figurines", "workmini", "color2"),
-                ("Työpaja: musiikki / Workshop: music", "workmusic", "color2"),
-                ("Työpaja: muu / Workshop: other", "workother", "color2"),
-                ("Tanssiohjelma / Dance programme", "dance", "color2"),
-                ("Esitysohjelma / Performance programme", "perforprog", "color2"),
-                ("Miitti / Meetup", "meetup", "color2"),
-                ("Kokemuspiste: demotus / Experience Point: Demo game", "expdemo", "color3"),
-                ("Kokemuspiste: avoin pelautus / Experience Point: Open game", "expopen", "color3"),
-                ("Kokemuspiste: muu / Experience Point: Other", "expother", "color3"),
-                ("Figupelit: demotus / Miniature wargames: Demo game", "minidemo", "color3"),
-                ("Figupelit: avoin pelautus / Miniature wargames: Open game", "miniopen", "color3"),
-                ("Turnaukset: figupelit / Tournament: Miniature wargames", "tourmini", "color3"),
-                ("Turnaukset: korttipelit / Tournament: Card games", "tourcard", "color3"),
-                ("Turnaukset: lautapelit / Tournament: Board games", "tourboard", "color3"),
-                ("Turnaukset: muu / Tournament: Other", "tourother", "color3"),
-                ("Muu peliohjelma / Other game programme", "othergame", "color3"),
-                ("Roolipeli / Pen & Paper RPG", "rpg", "color4"),
-                ("LARP", "larp", "color5"),
-                ("Muu ohjelma / Other programme", "other", "color6"),
-                ("Sisäinen ohjelma", "internal", "sisainen"),
-            ]:
-                Category.objects.get_or_create(
-                    event=self.event,
-                    slug=slug,
-                    defaults=dict(
-                        title=title,
-                        style=style,
-                        public=style != "sisainen",
-                    ),
-                )
+        for input_data in [
+            (
+                "Puheohjelma: esitelmä / Presentation",
+                "pres",
+                "color1",
+                {"type": ["talk", "presentation"]},
+            ),
+            (
+                "Puheohjelma: paneeli / Panel discussion",
+                "panel",
+                "color1",
+                {"type": ["talk", "panel"]},
+            ),
+            (
+                "Puheohjelma: keskustelu / Discussion group",
+                "disc",
+                "color1",
+                {"type": ["talk", "discussion"]},
+            ),
+            (
+                "Työpaja: käsityö / Workshop: crafts",
+                "workcraft",
+                "color2",
+                {
+                    "type": ["workshop"],
+                    "topic": ["crafts"],
+                    "konsti": ["workshop"],
+                },
+            ),
+            (
+                "Työpaja: figut / Workshop: miniature figurines",
+                "workmini",
+                "color2",
+                {
+                    "type": ["workshop"],
+                    "topic": ["miniatures"],
+                    "konsti": ["workshop"],
+                },
+            ),
+            (
+                "Työpaja: musiikki / Workshop: music",
+                "workmusic",
+                "color2",
+                {
+                    "type": ["workshop"],
+                    "topic": ["music"],
+                    "konsti": ["workshop"],
+                },
+            ),
+            (
+                "Työpaja: muu / Workshop: other",
+                "workother",
+                "color2",
+                {
+                    "type": ["workshop"],
+                    "konsti": ["workshop"],
+                },
+            ),
+            (
+                "Tanssiohjelma / Dance programme",
+                "dance",
+                "color2",
+                {"type": ["activity"], "topic": ["dance"]},
+            ),
+            (
+                "Esitysohjelma / Performance programme",
+                "perforprog",
+                "color2",
+                {"type": ["performance"]},
+            ),
+            (
+                "Miitti / Meetup",
+                "meetup",
+                "color2",
+                {"type": ["meetup"]},
+            ),
+            (
+                "Kokemuspiste: demotus / Experience Point: Demo game",
+                "expdemo",
+                "color3",
+                {
+                    "type": ["experience", "gaming", "demo"],
+                    "konsti": ["experiencePoint"],
+                },
+            ),
+            (
+                "Kokemuspiste: avoin pelautus / Experience Point: Open game",
+                "expopen",
+                "color3",
+                {
+                    "type": ["experience", "gaming", "open-gaming"],
+                    "konsti": ["experiencePoint"],
+                },
+            ),
+            (
+                "Kokemuspiste: muu / Experience Point: Other",
+                "expother",
+                "color3",
+                {
+                    "type": ["experience"],
+                    "konsti": ["experiencePoint"],
+                },
+            ),
+            (
+                "Figupelit: demotus / Miniature wargames: Demo game",
+                "minidemo",
+                "color3",
+                {
+                    "type": ["gaming", "demo"],
+                    "topic": ["miniatures"],
+                    "konsti": ["other"],
+                },
+            ),
+            (
+                "Figupelit: avoin pelautus / Miniature wargames: Open game",
+                "miniopen",
+                "color3",
+                {"type": ["gaming", "open-gaming"], "topic": ["miniatures"]},
+            ),
+            (
+                "Turnaukset: figupelit / Tournament: Miniature wargames",
+                "tourmini",
+                "color3",
+                {
+                    "type": ["gaming", "tournament"],
+                    "topic": ["miniatures"],
+                    "konsti": ["tournament"],
+                },
+            ),
+            (
+                "Turnaukset: korttipelit / Tournament: Card games",
+                "tourcard",
+                "color3",
+                {
+                    "type": ["gaming", "tournament"],
+                    "topic": ["cardgames"],
+                    "konsti": ["tournament"],
+                },
+            ),
+            (
+                "Turnaukset: lautapelit / Tournament: Board games",
+                "tourboard",
+                "color3",
+                {
+                    "type": ["gaming", "tournament"],
+                    "topic": ["boardgames"],
+                    "konsti": ["tournament"],
+                },
+            ),
+            (
+                "Turnaukset: muu / Tournament: Other",
+                "tourother",
+                "color3",
+                {
+                    "type": ["gaming", "tournament"],
+                    "konsti": ["tournament"],
+                },
+            ),
+            (
+                "Muu peliohjelma / Other game programme",
+                "othergame",
+                "color3",
+                {"type": ["gaming"], "konsti": ["other"]},
+            ),
+            (
+                "Roolipeli / Pen & Paper RPG",
+                "rpg",
+                "color4",
+                {"type": ["gaming"], "topic": ["penandpaper"], "konsti": ["tabletopRPG"]},
+            ),
+            (
+                "LARP",
+                "larp",
+                "color5",
+                {"type": ["gaming"], "topic": ["larp"], "konsti": ["larp"]},
+            ),
+            (
+                "Muu ohjelma / Other programme",
+                "other",
+                "color6",
+                {"konsti": ["other"]},
+            ),
+            ("Sisäinen ohjelma", "internal", "sisainen"),
+        ]:
+            if len(input_data) == 3:
+                title, slug, style = input_data
+                v2_dimensions = {}
+            elif len(input_data) == 4:
+                title, slug, style, v2_dimensions = input_data
+            else:
+                raise ValueError(input_data)
+
+            Category.objects.update_or_create(
+                event=self.event,
+                slug=slug,
+                create_defaults=dict(
+                    title=title,
+                    style=style,
+                    public=style != "sisainen",
+                ),
+                defaults=dict(
+                    v2_dimensions=v2_dimensions,
+                ),
+            )
 
         TimeBlock.objects.get_or_create(
             event=self.event,
@@ -389,11 +562,11 @@ class Setup:
                     view.rooms = rooms
                     view.save()
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="roolipeli",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa pöytäroolipeliä / Call for GMs (tabletop role-playing games) 2024",
                 description=resource_string(__name__, "texts/roolipelit.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2024.forms:RpgForm",
@@ -401,13 +574,16 @@ class Setup:
                 order=20,
                 role=role,
             ),
+            defaults=dict(
+                v2_dimensions={"topic": ["penandpaper"], "type": ["gaming"]},
+            ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="larp",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa larppia / Call for Larps 2024",
                 description=resource_string(__name__, "texts/larpit.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2024.forms:LarpForm",
@@ -415,13 +591,16 @@ class Setup:
                 order=30,
                 role=role,
             ),
+            defaults=dict(
+                v2_dimensions={"topic": ["larp"], "type": ["gaming"]},
+            ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="pelitiski",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa peliohjelmaa / Call for Game Programme 2024",
                 short_description="Figupelit, korttipelit, lautapelit, turnaukset, Kokemuspisteen pelit yms. / Miniature wargames, board games, card games, game tournaments, games at the Experience Point etc.",
                 description=resource_string(__name__, "texts/pelitiski.html").decode("UTF-8"),
@@ -432,11 +611,11 @@ class Setup:
             ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="tyopaja",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa työpajaohjelmaa / Call for Workshop Programme 2024",
                 description=resource_string(__name__, "texts/tyopaja.html").decode("UTF-8"),
                 programme_form_code="events.ropecon2024.forms:WorkshopForm",
@@ -444,13 +623,16 @@ class Setup:
                 order=70,
                 role=role,
             ),
+            defaults=dict(
+                v2_dimensions={"type": ["workshop"]},
+            ),
         )
 
-        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, 1 ruoka")
-        form, _ = AlternativeProgrammeForm.objects.get_or_create(
+        role = Role.objects.get(personnel_class__event=self.event, title="Ohjelma, päivä, ruoka")
+        form, _ = AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="default",
-            defaults=dict(
+            create_defaults=dict(
                 title="Tarjoa ohjelmaa Ropeconille / Call for Programme 2024",
                 short_description="Puheohjelmat, esitykset ym. / Lecture program, show program etc.",
                 description=resource_string(__name__, "texts/muuohjelma.html").decode("UTF-8"),
@@ -477,18 +659,26 @@ class Setup:
         ]:
             TimeSlot.objects.get_or_create(name=time_slot_name)
 
-        if not Tag.objects.filter(event=self.event).exists():
-            for tag_title in [
-                "Demo",
-                "Kilpailu/Turnaus",
-                "Kunniavieras",
-                "Aihe: Figupelit",
-                "Aihe: Korttipelit",
-                "Aihe: Larpit",
-                "Aihe: Lautapelit",
-                "Aihe: Pöytäroolipelit",
-            ]:
-                Tag.objects.get_or_create(event=self.event, title=tag_title)
+        for tag_title, v2_dimensions in [
+            ("Demo", {"type": ["demo"]}),
+            ("Kilpailu/Turnaus", {"type": ["tournament"]}),
+            ("Kunniavieras", {"topic": ["goh"]}),
+            ("Aihe: Figupelit", {"topic": ["miniatures"]}),
+            ("Aihe: Korttipelit", {"topic": ["cardgames"]}),
+            ("Aihe: Larpit", {"topic": ["larp"]}),
+            ("Aihe: Lautapelit", {"topic": ["boardgames"]}),
+            ("Aihe: Pöytäroolipelit", {"topic": ["penandpaper"]}),
+            ("Boffaus", {"topic": ["boffering"]}),
+            ("Tanssiohjelma", {"topic": ["dance"]}),
+            ("Liikunnallinen ohjelma", {"type": ["activity"]}),
+        ]:
+            Tag.objects.update_or_create(
+                event=self.event,
+                title=tag_title,
+                defaults=dict(
+                    v2_dimensions=v2_dimensions,
+                ),
+            )
 
         self.event.programme_event_meta.create_groups()
 
@@ -498,10 +688,8 @@ class Setup:
         tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 
         defaults = dict(
-            tickets_view_version="v1.5",
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
-            due_days=14,
             reference_number_template="2024{:06d}",
             contact_email="Ropecon 2024 -lipunmyynti <lipunmyynti@ropecon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Ropecon 2024 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
@@ -533,8 +721,8 @@ class Setup:
         if self.test:
             t = now()
             defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),
-                ticket_sales_ends=t + timedelta(days=60),
+                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
+                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -742,7 +930,7 @@ class Setup:
             product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
-                product.limit_groups.set(limit_groups)
+                product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
 
     def setup_badges(self):

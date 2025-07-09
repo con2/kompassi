@@ -1,24 +1,22 @@
-from django.utils.translation import gettext_lazy as _
-
-from event_log import registry
+from event_log_v2 import registry
 
 registry.register(
     name="access.cbacentry.created",
-    message=_("A CBAC entry for {entry.person} was created by {entry.created_by}: {entry.other_fields}"),
+    message="A CBAC entry for {user} was created by {actor}: {claims}",
 )
 
 registry.register(
     name="access.cbacentry.deleted",
-    message=_("A CBAC entry for {entry.person} was deleted by {entry.created_by}: {entry.other_fields}"),
+    message="A CBAC entry for {user} was deleted by {actor}: {claims}",
 )
 
 
 registry.register(
     name="access.cbac.denied",
-    message=_("{entry.created_by} was denied permission by CBAC: {entry.cbac_claims}"),
+    message="{actor} was denied permission by CBAC: {claims}",
 )
 
 registry.register(
     name="access.cbac.sudo",
-    message=_("{entry.created_by} bypassed the permissions check: {entry.cbac_claims}"),
+    message="{actor} bypassed the permissions check: {claims}",
 )

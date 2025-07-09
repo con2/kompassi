@@ -1,15 +1,15 @@
 import logging
 
-from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..forms import PasswordForm, PersonForm
 from ..helpers import person_required
@@ -71,8 +71,12 @@ def core_password_view(request):
                 messages.error(request, "Nykyinen salasana ei täsmää.")
                 return redirect("core_password_view")
 
-            user.set_password(new_password)
-            user.save()
+            with transaction.atomic():
+                for keypair in user.keypairs.all():
+                    keypair.reencrypt_private_key(old_password, new_password)
+
+                user.set_password(new_password)
+                user.save(update_fields=["password"])
 
             messages.success(
                 request,
@@ -91,6 +95,11 @@ def core_password_view(request):
 
 
 def core_profile_menu_items(request):
+    from access.views import access_profile_menu_items
+    from labour.views import labour_profile_menu_items
+    from membership.views import membership_profile_menu_items
+    from programme.views.profile_menu_items import programme_profile_menu_items
+
     items = []
 
     if not request.user.is_authenticated:
@@ -119,28 +128,13 @@ def core_profile_menu_items(request):
             email_verification_text = _("E-mail address verification")
             items.append((email_verification_active, email_verification_url, email_verification_text))
 
-    if "labour" in settings.INSTALLED_APPS:
-        from labour.views import labour_profile_menu_items
+    items.extend(labour_profile_menu_items(request))
+    items.extend(programme_profile_menu_items(request))
+    items.extend(membership_profile_menu_items(request))
+    items.extend(access_profile_menu_items(request))
 
-        items.extend(labour_profile_menu_items(request))
-
-    if "programme" in settings.INSTALLED_APPS:
-        from programme.views import programme_profile_menu_items
-
-        items.extend(programme_profile_menu_items(request))
-
-    if "membership" in settings.INSTALLED_APPS:
-        from membership.views import membership_profile_menu_items
-
-        items.extend(membership_profile_menu_items(request))
-
-    if "access" in settings.INSTALLED_APPS:
-        from access.views import access_profile_menu_items
-
-        items.extend(access_profile_menu_items(request))
-
-    if "django.contrib.admin" in settings.INSTALLED_APPS and request.user.is_staff:
-        admin_url = "/admin/"  # XXX hardcoded
+    if request.user.is_staff:
+        admin_url = "/admin/"
         admin_active = False
         admin_text = _("Site administration")
         items.append((admin_active, admin_url, admin_text))

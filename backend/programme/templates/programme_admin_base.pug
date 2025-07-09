@@ -1,0 +1,11 @@
+extends base
+block content
+  h2 {{ admin_title }}
+  .alert.alert-warning
+    p Ohjelmanhallinta V1 on poistunut käytöstä huhtikuussa 2025. Vanhojen ohjelmanumeroiden tietoja voi selata muttei enää muokata.
+  .row
+    .col-md-3
+      ul.nav.nav-pills.nav-stacked
+        include core_admin_menu_items
+    .col-md-9
+      block admin_content

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..forms import (
     PasswordResetForm,
@@ -46,7 +46,7 @@ def core_password_reset_view(request, code):
                 )
                 return redirect("core_frontpage_view")
             else:
-                emit("core.password.changed", request=request, created_by=user)
+                emit("core.password.changed", request=request, actor=user)
 
                 messages.success(
                     request, "Salasanasi on nyt vaihdettu. Voit nyt kirjautua sisään uudella salasanallasi."

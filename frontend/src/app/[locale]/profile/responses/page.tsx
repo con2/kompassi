@@ -1,23 +1,24 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
-import { ProfileResponsesTableRowFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import SignInRequired from "@/components/SignInRequired";
+import Messages from "@/components/errors/Messages";
+import SignInRequired from "@/components/errors/SignInRequired";
+import ProfileResponsesTable from "@/components/forms/ProfileResponsesTable";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
-import { timezone } from "@/config";
 import { getTranslations } from "@/translations";
 
 graphql(`
   fragment ProfileResponsesTableRow on ProfileResponseType {
     id
-    createdAt
+    revisionCreatedAt
+    canEdit(mode: OWNER)
+
+    values(keyFieldsOnly: true)
+
     dimensions(keyDimensionsOnly: true) {
       dimension {
         slug
@@ -30,12 +31,15 @@ graphql(`
         color
       }
     }
+
     form {
-      slug
       title
       event {
         slug
         name
+      }
+      survey {
+        slug
       }
     }
   }
@@ -57,6 +61,9 @@ interface Props {
   params: {
     locale: string;
   };
+  searchParams: {
+    success?: string;
+  };
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -71,7 +78,10 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function OwnResponsesPage({ params }: Props) {
+export default async function OwnResponsesPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
   const session = await auth();
@@ -93,52 +103,48 @@ export default async function OwnResponsesPage({ params }: Props) {
   }
 
   const t = translations.Survey;
-  const columns: Column<ProfileResponsesTableRowFragment>[] = [
-    {
-      slug: "createdAt",
-      title: t.attributes.createdAt,
-      getCellContents: (row) => (
-        <Link href={`/profile/responses/${row.id}`}>
-          <FormattedDateTime
-            value={row.createdAt}
-            locale={locale}
-            scope={row.form.event}
-            session={session}
-          />
-        </Link>
-      ),
-    },
-    {
-      slug: "event",
-      title: t.attributes.event,
-      getCellContents: (row) => row.form.event.name,
-    },
-    {
-      slug: "formTitle",
-      title: t.attributes.formTitle,
-      getCellContents: (row) => (
-        <>
-          {row.form.title}
-          <span className="ms-2">
-            {row.dimensions?.map((dimension) => (
-              <DimensionBadge
-                key={dimension.dimension.slug}
-                dimension={dimension}
-              />
-            ))}
-          </span>
-        </>
-      ),
-    },
-  ];
 
   const responses = data.profile.forms.responses;
 
   return (
     <ViewContainer>
       <ViewHeading>{t.ownResponsesTitle}</ViewHeading>
-      <DataTable rows={responses} columns={columns} />
-      <p>{t.showingResponses(responses.length, responses.length)}</p>
+      <Messages messages={t.messages} searchParams={searchParams} />
+
+      <ProfileResponsesTable
+        messages={translations.Survey}
+        responses={responses}
+        locale={locale}
+        footer={t.showingResponses(responses.length, responses.length)}
+        extraColumns={[
+          {
+            slug: "formTitle",
+            title: t.attributes.formTitle,
+            getCellContents: (row) => (
+              <>
+                {row.form.title}
+                <span className="ms-2">
+                  {row.dimensions
+                    .filter(
+                      (dimension) =>
+                        // Avoid duplication of program form title for program offers
+                        !(
+                          dimension.dimension.slug === "form" &&
+                          dimension.value.slug === row.form.survey.slug
+                        ),
+                    )
+                    .map((dimension) => (
+                      <DimensionBadge
+                        key={dimension.dimension.slug}
+                        subjectDimensionValue={dimension}
+                      />
+                    ))}
+                </span>
+              </>
+            ),
+          },
+        ]}
+      />
     </ViewContainer>
   );
 }

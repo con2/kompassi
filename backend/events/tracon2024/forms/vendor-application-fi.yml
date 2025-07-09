@@ -1,5 +1,4 @@
 title: Myyjähaku
-layout: vertical
 description: |
   Tällä lomakkeella haetaan myyjäpaikkaa Tracon-tapahtumasta 6.-8.9.2024.
 
@@ -54,7 +53,6 @@ fields:
     helpText: "Yhteydenpitoon tapahtuman aikana sekä ympäröivinä päivinä."
     required: false
 
-
   - slug: location_title
     title: Myyntialue
     type: StaticText
@@ -102,7 +100,6 @@ fields:
     type: MultiLineText
     required: false
 
-
   - slug: advertising_title
     title: Mainospaikat
     type: StaticText
@@ -139,7 +136,6 @@ fields:
     type: SingleCheckbox
     required: false
 
-
   - slug: additional_details_title
     type: StaticText
     title: Lisätiedot
@@ -154,7 +150,7 @@ fields:
     type: StaticText
     title: Tietosuoja
     helpText: >
-      Henkilötietojen käsittelijä on Tracon ry edustajanaan Otto "Amoeba" Martin.
+      Rekisterinpitäjä on Tracon ry edustajanaan Otto "Amoeba" Martin.
       Tietoja käytetään tamperelaisen Tracon -tapahtuman myyntialueen sekä mainonnan järjestämiseen.
       Tietoja säilytetään tapahtumavuoden ajan ja sen jälkeen ne poistetaan.
       Tietoja ei luovuteta ulkopuolisille.

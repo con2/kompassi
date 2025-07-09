@@ -8,7 +8,7 @@ from django.views.decorators.http import require_http_methods
 
 from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, csv_response
 from core.sort_and_filter import Filter, Sorter
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 
 from ..filters import SignupStateFilter
 from ..helpers import labour_admin_required
@@ -86,7 +86,7 @@ def admin_signups_view(request, vars, event, format="screen"):
 
     if SignupExtra and SignupExtra.get_field("night_work"):
         night_work_path = "{prefix}{app_label}_signup_extra__night_work".format(
-            prefix="person__" if SignupExtra.schema_version >= 2 else "",  # noqa: PLR2004
+            prefix="person__" if SignupExtra.schema_version >= 2 else "",
             app_label=SignupExtra._meta.app_label,
         )
         night_work_filter = Filter(request, "night_work").add_booleans(night_work_path)
@@ -185,7 +185,7 @@ def admin_signups_view(request, vars, event, format="screen"):
     elif format in CSV_EXPORT_FORMATS:
         filename = f"{event.slug}_signups_{now().strftime('%Y%m%d%H%M%S')}.{format}"
 
-        emit("core.person.exported", request=request, event=event)
+        emit("core.person.exported", request=request)
 
         return csv_response(
             event,

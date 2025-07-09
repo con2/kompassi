@@ -1,0 +1,113 @@
+title: Taidekujahaku
+description: |
+  Cosmoconin taidekujahaku aukeaa 21.10.2024 ja sulkeutuu 7.11.2024. Haku suoritetaan portfoliohakuna ja jokainen hakija arvioidaan Cosmoconin työryhmän sisältä koostuvan raadin toimesta. Cosmoconin taidekujalla on käytössä ensikertalaiskiintiö. Valintoihin vaikuttavia tekijöitä ovat mm. Soveltuvuus tapahtumaan, tekninen osaaminen ja monipuolisuus.
+
+  Tarjolla on sekä koko viikonlopun, että yhden päivän pöytiä. Pöydän koko on 140 x 60 cm.
+  Taidekujapaikan hinta koko viikonlopun ajalta on 30€, lauantailta 15€ ja sunnuntailta 10€.
+  Pöytäpaikkoja on rajoitetusti. Hakea voit joko yksin tai yhdessä kaverin kanssa. Muistathan täyttää lomakkeeseen kaikkien hakijoiden tiedot!
+
+  Ennen lomakkeen täyttämistä, varmistathan että kaikki linkit ovat toimivia ja PDF-tiedostot ladattu pilvipalveluun kuten Google driveen eikä jaettu suoraan tiedostosijaintina tai Canva-linkkinä. Varmista myös, ettei portfoliotiedostosi ole salasanan takana.
+  Tarkemmat ohjeet hakuprosessia varten löydät <a href="https://cosmocon.fi/taidekuja/">nettisivuiltamme</a>
+
+  Valinnoista ilmoitetaan hakijoille henkilökohtaisesti 15.11.2024 mennessä sähköpostin välityksellä.
+
+  Mikäli sinulle tulee kysyttävää hausta, olethan yhteyksissä taidekujavastaavaamme: taidekuja@cosmocon.fi
+
+  Huomioithan, että hakemukset tulee toimittaa tämän hakulomakkeen kautta, sähköpostitse toimitettuja hakemuksia ei oteta huomioon.
+
+fields:
+  - slug: name
+    title: Nimi ja nimimerkki
+    type: SingleLineText
+    required: true
+
+  - slug: second_artist
+    title: Haetko yksin vai jaatko pöydän toisen hakijan kanssa?
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: second_no
+        title: Haen yksin
+      - slug: second_yes
+        title: Toisen hakijan kanssa
+
+  - slug: second_name
+    title: Toisen hakijan nimi ja nimimerkki
+    type: SingleLineText
+    required: false
+
+  - slug: portfolio
+    title: Linkki portfolioon
+    type: SingleLineText
+    required: true
+
+  - slug: experience
+    title: Kujailukokemuksesi?
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: exp_new
+        title: Kujailen ensimmäistä kertaa
+      - slug: exp_newish
+        title: 1-3 kertaa
+      - slug: exp_lessnew
+        title: 4-10 kertaa
+      - slug: exp_experienced
+        title: Enemmän kuin 10 kertaa
+
+  - slug: product_desc
+    title: Kerro hieman itsestäsi ja tuotteistasi, joita olisit tuomassa myyntiin. Voit kertoa myös miksi haluaisit taidekujalle juuri Cosmoconiin
+    type: MultiLineText
+    required: true
+
+  - slug: day
+    title: Haen
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: weekend
+        title: Koko viikonlopun pöytää
+      - slug: sat
+        title: Lauantain pöytää
+      - slug: sun
+        title: Sunnuntain pöytää
+
+  - slug: description
+    title: Esittelyteksti nettisivuillemme ja sosiaaliseen mediaan, mikäli tulet valituksi
+    type: SingleLineText
+    required: true
+
+  - slug: avatar
+    title: Kuvake esittelyn yhteyteen
+    type: FileUpload
+    required: false
+
+  - slug: email
+    title: Sähköpostiosoitteesi, josta tavoitamme sinut mikäli tulet valituksi taidekujalle
+    type: SingleLineText
+    required: true
+
+  - slug: phone
+    title: Puhelinnumero
+    type: SingleLineText
+    required: true
+
+  - slug: reserve
+    title: Oletko valmis ottamaan vastaan peruutuspaikan varasijalta?
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: "yes"
+        title: Kyllä
+      - slug: "no"
+        title: En
+
+  - slug: rules
+    title: Olen lukenut ja sisäistänyt annetut ohjeet ja vahvistan, että antamani tiedot ovat todenmukaisia
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: "yes"
+        title: Kyllä
+      - slug: "no"
+        title: En

@@ -14,6 +14,10 @@ def initialize_signup_forms(request, event, signup, admin=False, SignupFormClass
         SignupFormClass = SignupForm
         SignupExtraFormClass = event.labour_event_meta.signup_extra_model.get_form_class()
 
+    if signup is not None and signup.alternative_signup_form_used is not None:
+        # SignupFormClass = signup.alternative_signup_form_used.signup_form_class
+        SignupExtraFormClass = signup.alternative_signup_form_used.signup_extra_form_class
+
     # Signup form and signup extra form not editable in admin mode
     signup_form = initialize_form(
         SignupFormClass,
@@ -31,7 +35,7 @@ def initialize_signup_forms(request, event, signup, admin=False, SignupFormClass
     )
 
     if admin:
-        from ..forms import SignupAdminForm
+        from ..forms import OverrideWorkingHoursForm, SignupAdminForm
 
         signup_admin_form = initialize_form(
             SignupAdminForm,
@@ -41,6 +45,13 @@ def initialize_signup_forms(request, event, signup, admin=False, SignupFormClass
             prefix="admin",
         )
 
-        return signup_form, signup_extra_form, signup_admin_form
+        override_working_hours_form = initialize_form(
+            OverrideWorkingHoursForm,
+            request,
+            instance=signup,
+            prefix="hours",
+        )
+
+        return signup_form, signup_extra_form, signup_admin_form, override_working_hours_form
     else:
         return signup_form, signup_extra_form

@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from core.models import Person
 from core.tabs import Tab
 from core.utils import initialize_form
+from event_log_v2.utils.emit import emit
 
 from ..forms import AdminPersonForm
 from ..helpers import labour_admin_required
@@ -23,10 +24,16 @@ from .view_helpers import initialize_signup_forms
 def admin_signup_view(request, vars, event, person_id):
     person = get_object_or_404(Person, pk=int(person_id))
     signup = get_object_or_404(Signup, person=person, event=event)
+    signup_extra = signup.signup_extra
 
     old_state_flags = signup._state_flags
 
-    signup_form, signup_extra_form, signup_admin_form = initialize_signup_forms(request, event, signup, admin=True)
+    signup_form, signup_extra_form, signup_admin_form, override_working_hours_form = initialize_signup_forms(
+        request,
+        event,
+        signup,
+        admin=True,
+    )
     person_form = initialize_form(
         AdminPersonForm,
         request,
@@ -45,13 +52,31 @@ def admin_signup_view(request, vars, event, person_id):
                 signup.state = state_name
                 break
 
-        if signup_form.is_valid() and signup_extra_form.is_valid() and signup_admin_form.is_valid():
+        old_shirt_size = getattr(signup_extra, "shirt_size", None)
+
+        if (
+            signup_form.is_valid()
+            and signup_extra_form.is_valid()
+            and signup_admin_form.is_valid()
+            and override_working_hours_form.is_valid()
+        ):
             signup_form.save()
             signup_extra_form.save()
             signup_admin_form.save()
+            override_working_hours_form.save()
+
+            new_shirt_size = getattr(signup_extra, "shirt_size", None)
 
             signup.apply_state()
             messages.success(request, "Tiedot tallennettiin.")
+
+            emit(
+                "labour.signup.updated",
+                person=signup.person.pk,
+                request=request,
+                old_shirt_size=old_shirt_size,
+                new_shirt_size=new_shirt_size,
+            )
 
             if "save-return" in request.POST:
                 return redirect("labour:admin_signups_view", event.slug)
@@ -106,6 +131,7 @@ def admin_signup_view(request, vars, event, person_id):
         signup_admin_form=signup_admin_form,
         signup_extra_form=signup_extra_form,
         signup_form=signup_form,
+        override_working_hours_form=override_working_hours_form,
         tabs=tabs,
         total_hours=signup.shifts.all().aggregate(Sum("hours"))["hours__sum"],
         # XXX hack: widget customization is very difficult, so apply styles via JS
@@ -113,6 +139,6 @@ def admin_signup_view(request, vars, event, person_id):
         non_qualified_category_names_json=json.dumps(non_qualified_category_names),
     )
 
-    person.log_view(request, event=event)
+    person.log_view(request)
 
     return render(request, "labour_admin_signup_view.pug", vars)

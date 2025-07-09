@@ -3,6 +3,7 @@ import warnings
 from email.utils import parseaddr
 
 import environ
+from csp.constants import NONE, SELF, UNSAFE_EVAL, UNSAFE_INLINE
 from django.contrib.messages import constants as messages
 from django.utils.translation import gettext_lazy as _
 
@@ -40,6 +41,7 @@ DATABASES = {
         "HOST": env("POSTGRES_HOSTNAME", default="postgres"),
         "NAME": env("POSTGRES_DATABASE", default="kompassi"),
         "USER": env("POSTGRES_USERNAME", default="kompassi"),
+        "PORT": env("POSTGRES_PORT", default="5432"),
         "PASSWORD": env("POSTGRES_PASSWORD", default="secret"),
         "OPTIONS": {
             "sslmode": env("POSTGRES_SSLMODE", default="allow"),
@@ -83,14 +85,20 @@ STATIC_ROOT = mkpath("static")
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = ()
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
 SECRET_KEY = env.str("SECRET_KEY", default=("" if not DEBUG else "xxx"))
 
@@ -105,8 +113,6 @@ MIDDLEWARE = (
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "oauth2_provider.middleware.OAuth2TokenMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "core.middleware.PageWizardMiddleware",
-    "core.middleware.EventOrganizationMiddleware",
     "django.middleware.locale.LocaleMiddleware",
 )
 
@@ -132,7 +138,6 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
             ],
             "loaders": [
-                # PyPugJS part:   ##############################
                 (
                     "pypugjs.ext.django.Loader",
                     (
@@ -173,11 +178,14 @@ INSTALLED_APPS = (
     "paikkala",
     # kompassi core apps
     "core",
+    "dimensions",
+    "involvement",
     "programme",
     "program_v2",
     "labour",
     "labour_common_qualifications",
     "tickets",
+    "tickets_v2",
     "payments",
     "mailings",
     "api",
@@ -190,26 +198,25 @@ INSTALLED_APPS = (
     "desuprofile_integration",
     "enrollment",
     "feedback",
-    "event_log",
+    "event_log_v2",
     "directory",
     "listings",
     "forms",
     "metrics",
     "background_tasks",
+    "emprinten",
     # organizations
     "organizations.tracon_ry",
     "organizations.kotae_ry",
     "organizations.ropecon_ry",
+    "organizations.cosmocon_ry",
     # events
-    "events.frostbite2018",
     "events.kuplii2018",
     "events.tracon2018",
     "events.popcultday2018",
-    "events.desucon2018",
     "events.matsucon2018",
     "events.ropecon2018",
     "events.finncon2018",
-    "events.mimicon2018",
     "events.frostbite2019",
     "events.desucon2019",
     "events.tracon2019",
@@ -258,6 +265,7 @@ INSTALLED_APPS = (
     "events.finncon2023",
     "events.cosvision2023",
     "events.shumicon2023",
+    "events.shumicon2025",
     "events.matsucon2023",
     "events.popcultnights2023",
     "events.kotaeexpo2024",
@@ -270,7 +278,18 @@ INSTALLED_APPS = (
     "events.ropecon2024",
     "events.popcultday2024",
     "events.matsucon2024",
+    "events.ropecon2025",
+    "events.frostbite2025",
+    "events.desucon2025",
+    "events.kotaeexpo2025",
+    "events.popcultnights2024",
+    "events.tracon2025",
+    "events.cosmocon2025",
+    "events.kuplii2025",
+    "events.matsucon2025",
+    "events.archipelacon2025",
     # zombies are obsolete apps that can't be removed due to cross-app references in models
+    "zombies.event_log",
     "zombies.surveys",
     "zombies.hitpoint2017",
 )
@@ -319,6 +338,13 @@ LOGGING = {
     },
 }
 
+GRAPHENE = {
+    "SCHEMA": "graphql_api.schema.schema",
+    "MIDDLEWARE": [
+        "graphql_api.graphene_middleware.LoggingErrorsMiddleware",
+    ],
+}
+
 LOGIN_URL = "/login"
 
 CRISPY_TEMPLATE_PACK = "bootstrap3"
@@ -328,18 +354,22 @@ AWS_ACCESS_KEY_ID = env("MINIO_ACCESS_KEY_ID", default="kompassi")
 AWS_SECRET_ACCESS_KEY = env("MINIO_SECRET_ACCESS_KEY", default="kompassi")
 AWS_S3_ENDPOINT_URL = env("MINIO_ENDPOINT_URL", default="http://localhost:9000")
 
+KOMPASSI_BASE_URL = env("KOMPASSI_BASE_URL", default="http://localhost:8000")
 KOMPASSI_V2_BASE_URL = env("KOMPASSI_V2_BASE_URL", default="http://localhost:3000")
 
 # TODO script-src unsafe-inline needed at least by feedback.js. unsafe-eval needed by Knockout (roster.js).
-# XXX style-src unsafe-inline is just basic plebbery and should be eradicated.
-CSP_DEFAULT_SRC = "'none'"
-CSP_SCRIPT_SRC = "'self' 'unsafe-inline' 'unsafe-eval'"
-CSP_CONNECT_SRC = "'self'"
-CSP_IMG_SRC = f"'self' {AWS_S3_ENDPOINT_URL}"
-CSP_STYLE_SRC = "'self' 'unsafe-inline'"
-CSP_FONT_SRC = "'self'"
-CSP_FORM_ACTION = f"'self' {KOMPASSI_V2_BASE_URL}"
-CSP_FRAME_ANCESTORS = "'none'"
+CONTENT_SECURITY_POLICY = {
+    "DIRECTIVES": {
+        "default-src": [NONE],
+        "script-src": [SELF, UNSAFE_INLINE, UNSAFE_EVAL],  # XXX unsafe-inline should be eradicated.
+        "connect-src": [SELF],
+        "img-src": [SELF, AWS_S3_ENDPOINT_URL],
+        "style-src": [SELF, UNSAFE_INLINE],  # XXX unsafe-inline should be eradicated.
+        "font-src": [SELF],
+        "form-action": [SELF, KOMPASSI_V2_BASE_URL],
+        "frame-ancestors": [NONE],
+    }
+}
 X_FRAME_OPTIONS = "DENY"
 
 
@@ -350,9 +380,9 @@ MESSAGE_TAGS = {
 
 KOMPASSI_APPLICATION_NAME = "Kompassi"
 KOMPASSI_INSTALLATION_NAME = env("KOMPASSI_INSTALLATION_NAME", default="Kompassi (DEV)")
-KOMPASSI_INSTALLATION_NAME_ILLATIVE = "Kompassin kehitys\u00ADinstanssiin" if DEBUG else "Kompassiin"
-KOMPASSI_INSTALLATION_NAME_GENITIVE = "Kompassin kehitys\u00ADinstanssin" if DEBUG else "Kompassin"
-KOMPASSI_INSTALLATION_NAME_PARTITIVE = "Kompassin kehitys\u00ADinstanssia" if DEBUG else "Kompassia"
+KOMPASSI_INSTALLATION_NAME_ILLATIVE = "Kompassin kehitys\u00adinstanssiin" if DEBUG else "Kompassiin"
+KOMPASSI_INSTALLATION_NAME_GENITIVE = "Kompassin kehitys\u00adinstanssin" if DEBUG else "Kompassin"
+KOMPASSI_INSTALLATION_NAME_PARTITIVE = "Kompassin kehitys\u00adinstanssia" if DEBUG else "Kompassia"
 KOMPASSI_INSTALLATION_SLUG = env("KOMPASSI_INSTALLATION_SLUG", default="turskadev")
 KOMPASSI_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi"
 FEEDBACK_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute"
@@ -362,7 +392,6 @@ KOMPASSI_NEW_USER_GROUPS = ["users"]
 KOMPASSI_MAY_SEND_INFO_GROUP_NAME = "kompassi-maysendinfo"
 
 AUTHENTICATION_BACKENDS = (
-    "core.backends.PasswordlessLoginBackend",
     "django.contrib.auth.backends.ModelBackend",
     "oauth2_provider.backends.OAuth2Backend",
 )
@@ -384,6 +413,7 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.dummy.EmailBackend"
 
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="spam@example.com")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 
 
 if "lippukala" in INSTALLED_APPS:

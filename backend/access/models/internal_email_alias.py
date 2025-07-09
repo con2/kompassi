@@ -15,12 +15,13 @@ from .email_alias_mixin import EmailAliasMixin
 logger = logging.getLogger("kompassi")
 
 
-# TODO perhaps move to config
 APP_ALIAS_TEMPLATES = dict(
     core="suunnistajat",
     labour="{event.slug}-tyovoima",
     programme="{event.slug}-ohjelma",
+    program_v2="{event.slug}-ohjelma",
     tickets="{event.slug}-liput",
+    tickets_v2="{event.slug}-liput",
 )
 
 
@@ -97,18 +98,25 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
             for app_label in [
                 "labour",
                 "programme",
+                "program_v2",
                 "tickets",
+                "tickets_v2",
             ]:
                 meta = event.get_app_event_meta(app_label)
                 if not meta:
                     continue
 
-                alias, created = cls.objects.get_or_create(
+                plain_contact_email = meta.plain_contact_email
+                if not plain_contact_email:
+                    logger.warning("Not creating %s internal alias for %s", app_label, event)
+                    continue
+
+                alias, created = cls.objects.update_or_create(
                     domain=domain,
                     app_label=app_label,
                     event=event,
                     defaults=dict(
-                        target_emails=meta.plain_contact_email,
+                        target_emails=plain_contact_email,
                     ),
                 )
                 log_get_or_create(logger, alias, created)

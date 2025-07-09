@@ -37,7 +37,6 @@ class SignupExtraForm(forms.ModelForm):
             "special_diet",
             "special_diet_other",
             "night_work",
-            "need_lodging",
             "more_info",
             "want_certificate",
             "prior_experience",

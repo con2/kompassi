@@ -5,9 +5,9 @@ from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from pkg_resources import resource_stream
 
 from core.utils import full_hours_between
+from core.utils.pkg_resources_compat import resource_stream
 
 
 class Setup:
@@ -27,7 +27,6 @@ class Setup:
         self.setup_access()
         self.setup_badges()
         self.setup_intra()
-        self.setup_directory()
         self.setup_forms()
 
     def setup_core(self):
@@ -450,32 +449,11 @@ class Setup:
                 defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
 
-    def setup_directory(self):
-        from directory.models import DirectoryAccessGroup, DirectoryOrganizationMeta
-
-        DirectoryOrganizationMeta.objects.get_or_create(organization=self.event.organization)
-
-        labour_admin_group = self.event.labour_event_meta.get_group("admins")
-
-        DirectoryAccessGroup.objects.get_or_create(
-            organization=self.event.organization,
-            group=labour_admin_group,
-            active_from=self.event.created_at,
-            active_until=self.event.end_time + timedelta(days=30),
-        )
-
     def setup_forms(self):
         from forms.models import Form, Survey
 
         with resource_stream("events.frostbite2024", "forms/number-field-test.yml") as f:
             data = yaml.safe_load(f)
-
-        form_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="number-field-test",
-            language="fi",
-            defaults=data,
-        )
 
         survey, _ = Survey.objects.get_or_create(
             event=self.event,
@@ -486,7 +464,12 @@ class Setup:
             ),
         )
 
-        survey.languages.set([form_fi])
+        Form.objects.get_or_create(
+            event=self.event,
+            survey=survey,
+            language="fi",
+            defaults=data,
+        )
 
 
 class Command(BaseCommand):

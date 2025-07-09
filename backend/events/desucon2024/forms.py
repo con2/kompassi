@@ -221,9 +221,34 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
         model = SignupExtra
         fields = (
             "afterparty_participation",
+            "pick_your_poison",
             "special_diet",
             "special_diet_other",
+            "gender_segregation",
         )
         widgets = dict(
             special_diet=forms.CheckboxSelectMultiple,
+            pick_your_poison=forms.CheckboxSelectMultiple,
         )
+
+
+class AccommodationSurvey(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        kwargs.pop("event")
+
+        super().__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+    @classmethod
+    def get_instance_for_event_and_person(cls, event, person):
+        return SignupExtra.objects.get(
+            event=event,
+            person=person,
+            is_active=True,
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = ("accommodation",)

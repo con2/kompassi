@@ -4,6 +4,7 @@ metadata:
   name: kompassi
   annotations: !Var ingress_annotations
 spec:
+  ingressClassName: !Var ingress_class_name
   tls: !Var ingress_tls
   rules: !Loop
     over: !Var ingress_public_hostnames
@@ -12,6 +13,16 @@ spec:
       host: !Var hostname
       http:
         paths:
+          - !If
+            test: !Var kompassi_uvicorn_enabled
+            then:
+              pathType: Prefix
+              path: /api/tickets-v2
+              backend:
+                service:
+                  name: uvicorn
+                  port:
+                    number: 7998
           - pathType: Prefix
             path: /static
             backend:

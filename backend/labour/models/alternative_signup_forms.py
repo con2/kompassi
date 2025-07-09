@@ -36,7 +36,7 @@ class AlternativeSignupForm(models.Model):
 
     signup_extra_form_class_path = models.CharField(
         max_length=63,
-        default="labour.forms:ObsoleteEmptySignupExtraV1Form",
+        default="labour.forms:SignupExtraForm",
         help_text="Viittaus lisätietolomakkeen toteuttavaan luokkaan. Esimerkki: tracon9.forms:ConcomSignupExtraForm",
     )
 

@@ -15,6 +15,13 @@ class IntraEventMeta(EventMetaBase):
         "auth.Group", on_delete=models.CASCADE, related_name="as_organizer_group_for_intra_event_meta"
     )
 
+    is_organizer_list_public = models.BooleanField(
+        help_text="If set, the organizer list (name and job title) can be accessed via the GraphQL API.",
+        default=False,
+    )
+
+    use_cbac = True
+
     @classmethod
     def get_or_create_dummy(cls):
         from core.models import Event

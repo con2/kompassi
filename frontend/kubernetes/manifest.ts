@@ -5,6 +5,7 @@ interface Environment {
   secretManaged: boolean;
   kompassiBaseUrl: string;
   tlsEnabled: boolean;
+  ticketsApiUrl: string;
 }
 
 type EnvironmentName = "dev" | "staging" | "production";
@@ -16,18 +17,22 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     secretManaged: true,
     kompassiBaseUrl: "https://dev.kompassi.eu",
     tlsEnabled: false,
+    // as an optimization, access the tickets API directly without going through the ingress
+    ticketsApiUrl: "http://uvicorn.default.svc.cluster.local:7998",
   },
   staging: {
     hostname: "v2.dev.kompassi.eu",
     secretManaged: false,
     kompassiBaseUrl: "https://dev.kompassi.eu",
     tlsEnabled: true,
+    ticketsApiUrl: "http://uvicorn.kompassi-staging.svc.cluster.local:7998",
   },
   production: {
     hostname: "v2.kompassi.eu",
     secretManaged: false,
     kompassiBaseUrl: "https://kompassi.eu",
     tlsEnabled: true,
+    ticketsApiUrl: "http://uvicorn.kompassi-production.svc.cluster.local:7998",
   },
 };
 
@@ -48,8 +53,9 @@ const nodeServiceName = "node";
 const clusterIssuer = "letsencrypt-prod";
 const tlsSecretName = "ingress-letsencrypt";
 const port = 3000;
+const ingressClassName = "nginx";
 
-const { hostname, secretManaged, kompassiBaseUrl, tlsEnabled } =
+const { hostname, secretManaged, kompassiBaseUrl, tlsEnabled, ticketsApiUrl } =
   environmentConfiguration;
 
 const ingressProtocol = tlsEnabled ? "https" : "http";
@@ -92,6 +98,8 @@ const env = Object.entries({
   NEXT_PUBLIC_KOMPASSI_BASE_URL: kompassiBaseUrl,
   KOMPASSI_OIDC_CLIENT_ID: secretKeyRef("KOMPASSI_OIDC_CLIENT_ID"),
   KOMPASSI_OIDC_CLIENT_SECRET: secretKeyRef("KOMPASSI_OIDC_CLIENT_SECRET"),
+  KOMPASSI_TICKETS_V2_API_URL: ticketsApiUrl,
+  KOMPASSI_TICKETS_V2_API_KEY: secretKeyRef("KOMPASSI_TICKETS_V2_API_KEY"),
 }).map(([key, value]) => {
   if (value instanceof Object) {
     return {
@@ -105,6 +113,20 @@ const env = Object.entries({
     };
   }
 });
+
+const volumes = [
+  {
+    name: "kompassi2-temp",
+    emptyDir: {},
+  },
+];
+
+const volumeMounts = [
+  {
+    name: "kompassi2-temp",
+    mountPath: "/usr/src/app/.next/cache",
+  },
+];
 
 const deployment = {
   apiVersion: "apps/v1",
@@ -128,6 +150,7 @@ const deployment = {
           runAsGroup: 1000,
           fsGroup: 1000,
         },
+        volumes,
         initContainers: [],
         containers: [
           {
@@ -141,6 +164,7 @@ const deployment = {
             },
             startupProbe: probe,
             livenessProbe: probe,
+            volumeMounts,
           },
         ],
       },
@@ -170,12 +194,17 @@ const tls = tlsEnabled
   ? [{ hosts: [hostname], secretName: tlsSecretName }]
   : [];
 
+const defaultIngressAnnotations = {
+  "nginx.ingress.kubernetes.io/proxy-body-size": "100m",
+  "nginx.org/client-max-body-size": "100m",
+};
 const ingressAnnotations = tlsEnabled
   ? {
       "cert-manager.io/cluster-issuer": clusterIssuer,
       "nginx.ingress.kubernetes.io/ssl-redirect": "true",
+      ...defaultIngressAnnotations,
     }
-  : {};
+  : defaultIngressAnnotations;
 
 const ingress = {
   apiVersion: "networking.k8s.io/v1",
@@ -186,6 +215,7 @@ const ingress = {
     annotations: ingressAnnotations,
   },
   spec: {
+    ingressClassName,
     tls,
     rules: [
       {
@@ -228,6 +258,7 @@ const secret = {
     KOMPASSI_OIDC_CLIENT_SECRET: b64("kompassi_insecure_test_client_secret"),
     KOMPASSI_OIDC_CLIENT_ID: b64("kompassi_insecure_test_client_id"),
     NEXTAUTH_SECRET: b64("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"),
+    KOMPASSI_TICKETS_V2_API_KEY: b64("kompassi_insecure_test_api_key"),
   },
 };
 
@@ -249,6 +280,6 @@ function main() {
   }
 }
 
-if (require.main === module) {
+if (import.meta.url === "file://" + process.argv[1]) {
   main();
 }

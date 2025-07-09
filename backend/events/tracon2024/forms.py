@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from crispy_forms.layout import Fieldset, Layout
+from crispy_forms.layout import HTML, Fieldset, Layout
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
@@ -437,6 +437,20 @@ class AfterpartyParticipationSurvey(forms.ModelForm):
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "afterparty_participation",
+            "pick_your_poison",
+            "special_diet",
+            "special_diet_other",
+            "afterparty_help",
+            Fieldset(
+                "Häirinnän vastainen linjaus",
+                HTML(
+                    'Tutustuthan <a href="https://2024.tracon.fi/turvallisuus/#H%C3%A4irinn%C3%A4n-vastainen-linjaus" target="_blank" rel="noopener noreferrer">Traconin häirinnän vastaiseen linjaukseen</a> ennen kaatajaisiin ilmoittautumista.'
+                ),
+                "afterparty_policy",
+            ),
+        )
 
         self.fields["afterparty_policy"].required = True
 

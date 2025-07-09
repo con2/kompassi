@@ -1,0 +1,85 @@
+title: Cosmocon cosplaykilpailu ilmoittautuminen
+description: |
+  Hei! Tervetuloa ilmoittautumaan Cosmoconin 2025 cosplaykilpailuihin! Kilpailuun hyväksytään ilmoittautumisjärjestyksessä. Ennakkoilmoittautuminen on auki 1.11.- 15.12.2024. Kaikille ilmoittautuneille ilmoitetaan tulokset 20.12.
+  Kisassa julkisesti näytetään vain kisaajan nimi tai nimimekki, cossattavan hahmon nimi ja lähde. Juontaja lukee kisassa antamasi tiedot asusta. Muita henkilökohtaisia tietoja emme julkaise missään. Kaikki lomakkeen kysymykset ovat pakollisia. Otathan huomioon, että kisaan osallistuminen on suostumus siihen, että näyt kuvissa mitä otetaan kisoissa ja mahdollisesti käytetään Cosmoconin sosiaalisessa mediassa, nettisivuilla tai muussa markkinoinnissa.
+
+  Lähetäthän referenssikuvat ja valkokankaalle heijastettavan kuvan cossaamastasi hahmosta pilvipalvelun kautta. Voit esimerkiksi luoda Google Drive kansion, johon lisätä nämä kuvat. Siten voit helposti vain liittää kansion linkin tälle hakemuslomakkeelle. Pidäthän huolen siitä, että kansiossa ei ole salaukset päällä eikä se ole salasanan takana. Lisää ohjeita cosplaykilpailuun ilmoittautumiseen löytyy <a href="https://cosmocon.fi/cosplay-kilpailu/cosplay-kilpailun-ennakkoilmoittautuminen/">täältä</a>.
+
+  Vain tällä ennakkoilmoittautumislomakkeella lähetetyt ilmoittautumiset hyväksytään. Sähköpostilla tai muulla tavoin lähetettyjä ilmoittautumisia emme huomioi.
+  Luethan cosplaykisan säännöt ennen ilmoittautumista. Säännöt löytyvät <a href="https://cosmocon.fi/cosplay-kilpailu/">täältä</a>.
+
+  Mikäli sinulle heräsi kysymyksiä, voit lähettää meille sähköpostia osoitteeseen cosplay@cosmocon.fi
+
+fields:
+  - slug: name
+    title: Kilpailijan nimi tai nimimerkki
+    type: SingleLineText
+    required: true
+
+  - slug: email
+    title: Sähköpostiosoite
+    type: SingleLineText
+    required: true
+
+  - slug: phone
+    title: Puhelinnumero (vain kiireellistä yhteydenottoa varten)
+    type: SingleLineText
+    required: true
+
+  - slug: character
+    title: Cossattavan hahmon nimi
+    type: SingleLineText
+    required: true
+
+  - slug: source
+    title: Hahmon lähde
+    type: SingleLineText
+    required: true
+
+  - slug: costume
+    title: Kerro asustasi jotain?
+    helpText: Esimerkiksi mistä sait inspiraation juuri tähän cossiin tai jos olet aloittanut asun teon tai asu on jo valmis, voit kertoa jonkin hauskan jutun asun teosta tai kohdan puvusta mikä oli helpointa/vaikeinta toteuttaa.
+    type: MultiLineText
+    required: true
+
+  - slug: pictures
+    title: Kuvat hahmosta
+    helpText: Lisää tähän linkki referenssikuviin ja valkokankaalle heijastettavaan kuvaan hahmosta. Lähetäthän sellaiset referenssikuvat, jossa hahmo näkyy kokonaisuudessaan.
+    type: MultiLineText
+    required: true
+
+  - slug: feedback
+    title: Haluatko tuomaripalautteen asustasi kirjallisena?
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: feed_yes
+        title: Kyllä
+      - slug: feed_no
+        title: Ei
+
+  - slug: privacy
+    title: Hyväksyn ja ymmärrän, että Cosmoconia järjestävät tahot näkevät ja käsittelevät tietojani liittyen cosplaykilpailuun. Tiedot tuhotaan Cosmocon -tapahtuman jälkeen.
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: priv_yes
+        title: Kyllä
+
+  - slug: rules
+    title: Olen lukenut Cosmoconin cosplaykilpailun säännöt
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: rules_yes
+        title: Kyllä
+
+  - slug: reserve
+    title: Mikäli en tule heti valituksi, haluan jäädä varasijalle siltä varalta, että joku valituista kisaajista jää kisasta pois.
+    type: SingleSelect
+    required: true
+    choices:
+      - slug: res_yes
+        title: Kyllä
+      - slug: res_no
+        title: Ei

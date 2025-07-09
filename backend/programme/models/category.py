@@ -1,8 +1,7 @@
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
+from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, slugify
 
 
@@ -11,11 +10,20 @@ class Category(models.Model):
 
     event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
     title = models.CharField(max_length=1023)
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
     style = models.CharField(max_length=15)
     notes = models.TextField(blank=True)
     public = models.BooleanField(default=True)
     order = models.IntegerField(default=0)
+
+    v2_dimensions = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text=(
+            "dimension slug -> list of dimension value slugs. "
+            "When program is imported to v2, dimension values indicated here are added to programs of this category."
+        ),
+    )
 
     def __str__(self):
         return self.title
@@ -27,13 +35,16 @@ class Category(models.Model):
         verbose_name_plural = _("categories")
 
     @classmethod
-    def get_or_create_dummy(cls):
+    def get_or_create_dummy(cls, event: Event | None = None):
         from .programme_event_meta import ProgrammeEventMeta
 
-        meta, unused = ProgrammeEventMeta.get_or_create_dummy()
+        if event is None:
+            event, _ = Event.get_or_create_dummy()
+
+        meta, unused = ProgrammeEventMeta.get_or_create_dummy(event=event)
 
         return cls.objects.get_or_create(
-            event=meta.event,
+            event=event,
             title="Dummy category",
             defaults=dict(
                 style="dummy",
@@ -44,8 +55,8 @@ class Category(models.Model):
     def qualified_slug(self):
         return f"category-{self.slug}"
 
+    def save(self, *args, **kwargs):
+        if self.title and not self.slug:
+            self.slug = slugify(self.title)
 
-@receiver(pre_save, sender=Category)
-def populate_category_slug(sender, instance, **kwargs):
-    if instance.title and not instance.slug:
-        instance.slug = slugify(instance.title)
+        return super().save(*args, **kwargs)

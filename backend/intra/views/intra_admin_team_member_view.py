@@ -58,10 +58,10 @@ def intra_admin_team_member_view(request, vars, event, team_slug=None, person_id
                     messages.success(request, _("The team member was updated."))
 
                 if action == "save-return":
-                    return redirect("intra_organizer_view", event.slug)
+                    return redirect("intra:organizer_view", event.slug)
                 elif action == "save-continue":
                     return redirect(
-                        "intra_admin_team_member_view", event.slug, team_member.team.slug, team_member.person.id
+                        "intra:admin_team_member_view", event.slug, team_member.team.slug, team_member.person.id
                     )
             else:
                 messages.error(request, _("Please check the team_member_form."))
@@ -71,7 +71,7 @@ def intra_admin_team_member_view(request, vars, event, team_slug=None, person_id
 
             team_member.delete()
             messages.success(request, _("The member was removed from the team."))
-            return redirect("intra_organizer_view", event.slug)
+            return redirect("intra:organizer_view", event.slug)
         else:
             messages.error(request, _("Invalid action."))
 

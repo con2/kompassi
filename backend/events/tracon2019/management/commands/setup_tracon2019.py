@@ -25,7 +25,6 @@ class Setup:
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
-        self.setup_directory()
         self.setup_kaatoilmo()
         # self.setup_sms()
 
@@ -253,7 +252,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
-            due_days=14,
             reference_number_template="2019{:06d}",
             contact_email="Traconin lipunmyynti <liput@tracon.fi>",
             ticket_free_text=(
@@ -345,7 +343,6 @@ class Setup:
                     limit_group("Majoitus Aleksanteri pe-la", 100),
                 ],
                 price_cents=1000,
-                requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -357,7 +354,6 @@ class Setup:
                     limit_group("Majoitus Aleksanteri la-su", 100),
                 ],
                 price_cents=1000,
-                requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -369,7 +365,6 @@ class Setup:
                     limit_group("Majoitus Amuri pe-la", 195),
                 ],
                 price_cents=1000,
-                requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -381,7 +376,6 @@ class Setup:
                     limit_group("Majoitus Amuri la-su", 195),
                 ],
                 price_cents=1000,
-                requires_accommodation_information=True,
                 electronic_ticket=False,
                 available=True,
                 ordering=self.get_ordering_number(),
@@ -395,10 +389,6 @@ class Setup:
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
                 product.save()
-
-        if not meta.receipt_footer:
-            meta.receipt_footer = "Tracon ry / Y-tunnus 2886274-5 / liput@tracon.fi"
-            meta.save()
 
     def setup_programme(self):
         from core.utils import full_hours_between
@@ -594,18 +584,6 @@ class Setup:
                 slug=team_slug,
                 defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),
             )
-
-    def setup_directory(self):
-        from directory.models import DirectoryAccessGroup
-
-        labour_admin_group = self.event.labour_event_meta.get_group("admins")
-
-        DirectoryAccessGroup.objects.get_or_create(
-            organization=self.event.organization,
-            group=labour_admin_group,
-            active_from=datetime(2018, 9, 26, 12, 39, 0, tzinfo=self.tz),
-            active_until=self.event.end_time + timedelta(days=30),
-        )
 
     def setup_kaatoilmo(self):
         from labour.models import Survey

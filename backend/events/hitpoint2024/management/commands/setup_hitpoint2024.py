@@ -5,9 +5,9 @@ from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from pkg_resources import resource_stream
 
 from core.utils import full_hours_between
+from core.utils.pkg_resources_compat import resource_stream
 
 
 class Setup:
@@ -24,7 +24,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_intra()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
         self.setup_access()
         self.setup_badges()
@@ -97,8 +97,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
 
         labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
@@ -226,7 +226,9 @@ class Setup:
             Category,
             ProgrammeEventMeta,
             Role,
+            Room,
             SpecialStartTime,
+            Tag,
             TimeBlock,
         )
 
@@ -262,28 +264,61 @@ class Setup:
                 ),
             )
 
-        have_categories = Category.objects.filter(event=self.event).exists()
-        if not have_categories:
-            for title, slug, style in [
-                ("Larp", "larp", "color1"),
-                ("Lautapelit", "lautapelit", "color2"),
-                ("Puheohjelma", "puheohjelma", "color3"),
-                ("Roolipeli", "roolipeli", "color4"),
-                ("Freeform", "freeform", "color1"),
-                ("Korttipelit", "korttipelit", "color5"),
-                ("Figupelit", "figupelit", "color6"),
-                ("Muu ohjelma", "muu-ohjelma", "color7"),
-                ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen"),
-            ]:
-                Category.objects.get_or_create(
-                    event=self.event,
-                    slug=slug,
-                    defaults=dict(
-                        title=title,
-                        style=style,
-                        public=style != "sisainen",
-                    ),
-                )
+        for title, slug, style, v2_dimensions in [
+            ("Larppaaminen", "larp", "color1", {"topic": ["larp"]}),
+            ("Lautapelit", "lautapelit", "color2", {"topic": ["boardgames"]}),
+            ("Puheohjelma", "puheohjelma", "color3", {"type": ["talk"]}),
+            ("Roolipeli", "roolipeli", "color4", {"topic": ["penandpaper"]}),
+            ("Freeform", "freeform", "color1", {"topic": ["larp"]}),
+            ("Korttipelit", "korttipelit", "color5", {"topic": ["cardgames"]}),
+            ("Figupelit", "figupelit", "color6", {"topic": ["miniatures"]}),
+            ("Muu ohjelma", "muu-ohjelma", "color7", {"topic": []}),  # nonfalsy to avoid default
+            ("Sisäinen ohjelma", "sisainen-ohjelma", "sisainen", {"topic": []}),
+        ]:
+            Category.objects.update_or_create(
+                event=self.event,
+                slug=slug,
+                defaults=dict(
+                    title=title,
+                    style=style,
+                    public=style != "sisainen",
+                    v2_dimensions=v2_dimensions,
+                ),
+            )
+
+        for tag_slug, tag_title, v2_dimensions in [
+            ("konsti-placeholder", "Konsti: Placeholder", {"konsti": []}),
+            ("signup-rpg-desk", "Ilmoittautuminen roolipelitiskillä", {"signup": ["rpg-desk"]}),
+        ]:
+            Tag.objects.update_or_create(
+                event=self.event,
+                slug=tag_slug,
+                defaults=dict(
+                    title=tag_title,
+                    style="label-default",
+                    v2_dimensions=v2_dimensions,
+                    public=False,
+                ),
+            )
+
+        Tag.objects.filter(
+            event=self.event,
+            slug="sisainen-ohjelma",
+        ).delete()
+
+        for old_tag_slug, new_tag_slug in [
+            ("figupelit", "miniatures"),
+            ("korttipelit", "cardgames"),
+            ("roolipeli", "penandpaper"),
+            ("lautapelit", "boardgames"),
+            ("puheohjelma", "talk"),
+        ]:
+            old_tag = Tag.objects.filter(event=self.event, slug=old_tag_slug).first()
+            new_tag = Tag.objects.filter(event=self.event, slug=new_tag_slug).first()
+            if old_tag and new_tag:
+                for programme in old_tag.programme_set.all():
+                    programme.tags.add(new_tag)
+                old_tag.delete()
 
         for start_time, end_time in [
             (
@@ -312,29 +347,31 @@ class Setup:
                 programme_form_code="events.hitpoint2024.forms:RpgForm",
                 num_extra_invites=0,
                 order=10,
+                v2_dimensions={"type": ["gaming"], "topic": ["penandpaper"]},
             ),
         )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="freeform",
             defaults=dict(
-                title="Tarjoa freeform-skenaariota",
+                title="Tarjoa larppia tai freeform-skenaariota",
                 short_description="",
                 programme_form_code="events.hitpoint2024.forms:FreeformForm",
-                num_extra_invites=0,
+                num_extra_invites=3,
                 order=20,
+                v2_dimensions={"type": ["gaming"], "topic": ["larp"]},
             ),
         )
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
                 title="Tarjoa puhe- tai muuta ohjelmaa",
                 short_description="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole roolipeli tai freeform-skenaario.",
-                programme_form_code="programme.forms:ProgrammeOfferForm",
-                num_extra_invites=0,
+                programme_form_code="events.hitpoint2024.forms:ProgrammeOfferForm",
+                num_extra_invites=3,
                 order=30,
             ),
         )
@@ -356,6 +393,10 @@ class Setup:
 
         self.event.programme_event_meta.create_groups()
 
+        for room in Room.objects.filter(event=self.event):
+            room.v2_dimensions = {"room": [room.slug]}
+            room.save(update_fields=["v2_dimensions"])
+
     def setup_tickets(self):
         from tickets.models import LimitGroup, Product, TicketsEventMeta
 
@@ -363,7 +404,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2024{:06d}",
             contact_email="Tracon Hitpoint -lipunmyynti <hitpoint@tracon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Tracon Hitpoint -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"
@@ -386,7 +426,11 @@ class Setup:
                 ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
-        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+        TicketsEventMeta.objects.update_or_create(
+            event=self.event,
+            create_defaults=defaults,
+            defaults=dict(),
+        )
 
         def limit_group(description, limit):
             limit_group, unused = LimitGroup.objects.get_or_create(
@@ -401,6 +445,17 @@ class Setup:
             dict(
                 name="Tracon Hitpoint -pääsylippu",
                 description="Viikonloppulippu Tracon Hitpoint 2024 -tapahtumaan. Voimassa koko viikonlopun tapahtuman aukioloaikoina la klo 10–23:30 ja su klo 10–17. Toimitetaan sähköpostitse PDF-tiedostona, jossa olevaa viivakoodia vastaan saat rannekkeen tapahtumaan saapuessasi.",
+                limit_groups=[
+                    limit_group("Pääsyliput", 500),
+                ],
+                price_cents=1200,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Tracon Hitpoint -kummilippu (Hope ry)",
+                description="Kummilippu Tracon Hitpoint 2024 -tapahtumaan. Jokaista ostettua kummilippua kohti lahjoitamme koko viikonlopun lipun tapahtumaamme Hope ry:lle. Heidän kautttaan lahjaliput jaetaan vähävaraisille tai muista syistä lipun hankintaan tukea tarvitseville. HUOM! Tämä tuote ei sisällä sisäänpääsyä itsellesi Tracon Hitpointiin.",
                 limit_groups=[
                     limit_group("Pääsyliput", 500),
                 ],
@@ -485,25 +540,15 @@ class Setup:
 
     def setup_forms(self):
         from forms.models import Form, Survey
+        from forms.models.meta import FormsEventMeta
 
-        with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
-            data = yaml.safe_load(f)
+        (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])
 
-        form_fi, created = Form.objects.get_or_create(
+        FormsEventMeta.objects.update_or_create(
             event=self.event,
-            slug="larp-survey-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        with resource_stream("events.hitpoint2024", "forms/larp-survey-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        form_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="larp-survey-en",
-            language="en",
-            defaults=data,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
         )
 
         survey, _ = Survey.objects.get_or_create(
@@ -514,11 +559,29 @@ class Setup:
             ),
         )
 
+        with resource_stream("events.hitpoint2024", "forms/larp-survey-fi.yml") as f:
+            data = yaml.safe_load(f)
+
+        Form.objects.update_or_create(
+            event=self.event,
+            survey=survey,
+            language="fi",
+            defaults=data,
+        )
+
+        with resource_stream("events.hitpoint2024", "forms/larp-survey-en.yml") as f:
+            data = yaml.safe_load(f)
+
+        Form.objects.update_or_create(
+            event=self.event,
+            survey=survey,
+            language="en",
+            defaults=data,
+        )
+
         if not survey.key_fields:
             survey.key_fields = ["participated_in_tracon_hitpoint"]
             survey.save()
-
-        survey.languages.set([form_fi, form_en])
 
 
 class Command(BaseCommand):

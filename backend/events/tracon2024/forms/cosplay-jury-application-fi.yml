@@ -1,0 +1,95 @@
+title: Hae cosplaytuomariksi
+description: |
+  Tällä lomakkeella voit hakea Traconin cosplaykilpailujen tuomariksi. Tuomareita haetaan ryhmäpukukilpailuun sekä photoshoot-kilpailuun aloittelijat & kokeneet -kategorioihin. Ennen hakemuksen lähettämistä tutustuthan ensin kilpailuihin sekä niiden sääntöhin sivuiltamme.
+
+  Haku tuomariksi on auki X.-X.X. Täytäthän lomakkeen huolellisesti. Lomaketta EI voi muokata lähettämisen jälkeen. Pääset kuitenkin tarkastelemaan vastauksiasi kompassissa.
+
+  Ongelmatilanteissa, ota yhteyttä <em>cosplay@tracon.fi</em> tai suoraan cosplayvastaavaan <em>chamira@tracon.fi</em>
+fields:
+  - slug: performer_name
+    type: SingleLineText
+    title: Nimi / Nick, jota haluat käyttää julkisesti
+    required: true
+
+  - slug: birthday
+    type: SingleLineText
+    title: Syntymäaika
+    required: true
+    helpText: |
+      Syntymäaika muodossa pp.kk.vv
+
+  - slug: phone
+    type: SingleLineText
+    title: Puhelinnumero
+    required: true
+    helpText: Käytämme tätä numeroa vain, mikäli meidän tulee tavoittaa sinut kiireellisesti tapahtuman aikana.
+
+  - slug: category1
+    type: SingleSelect
+    title: Kategoria
+    required: true
+    helpText: Mihin kilpailuista haet ensisijaisesti tuomariksi?
+    choices:
+      - slug: ryhma
+        title: Ryhmäpukukilpailu
+      - slug: photoa
+        title: Photoshoot - aloittelijat
+      - slug: photok
+        title: Photoshoot - kokeneet
+
+  - slug: category2
+    type: MultiSelect
+    title: Voin tuomaroida myös...
+    required: true
+    helpText: Kilpailut, joiden tuomarointi kiinnostaa sinua myös.
+    choices:
+      - slug: ryhma
+        title: Ryhmäpukukilpailu
+      - slug: photoa
+        title: Photoshoot - aloittelijat
+      - slug: photok
+        title: Photoshoot - kokeneet
+
+  - slug: portfolio
+    type: MultiLineText
+    title: Linkki cosplaysivullesi ja/tai portfolioon
+    required: true
+    helpText: |
+      Esimerkiksi instagram-sivusi, drive- tai dropbox kansio.
+
+  - slug: lisatieto
+    type: MultiLineText
+    title: Vapaavalintainen esittely
+    required: true
+    helpText: |
+      Kerro meille itsestäsi ja esittele meille portfoliosi tai cosplaysivusi sisällöstä. Minkälaisia pukuja olet tehnyt tai millaista kokemusta valokuvauksesta kuvaajana tai mallina toimimisesta?
+
+  - slug: esittely
+    type: MultiLineText
+    title: Alustava tuomariesittely
+    required: true
+    helpText: |
+      Kirjoita tähän lyhyt, alustava tuomari esittely itsestäsi.  Käytämme tätä mikäli sinut valitaan tuomariksi. Tässä esimerkkejä vuodelta 2023: https://2023.tracon.fi/blog/2023/08/11/cosplaytuomarit-esittaytyvat
+
+  - slug: kuva
+    type: FileUpload
+    title: Kuva tuomariesittelyyn
+    required: true
+    helpText: |
+      Kuva joka julkaistaan tuomariesittelysi yhteydessä, mainostaessamme kilpailuja sekä kilpailuiden introjen aikana. Suosittelemme sinua valitsemaan pystykuvan, jonka keskiössä olet sinä itse.
+      Saatamme rajata kuvaa erilaisia formaatteja varten; esimerkiksi somepostauksiin, verkkosivuille, introja tai ohjelmalehteä varten. Pidäthän huolen, että olet kertonut tästä kuvaajallesi ja että se on hänelle ok.
+      Pyrimme lisäämään kuvaajan nimen kuvan yhteyteen aina sen ollessa mahdollista, mutta esimerkiksi cosplaykilpailujen introissa tämä ei välttämättä onnistu. Kerrothan myös tämän kuvaajalle ja varmistat sen olevan ok.
+
+  - slug: kuvaaja
+    type: SingleLineText
+    title: Kuvaaja
+    required: true
+    helpText: |
+      Kuvaajan nimi joka julkaistaan tuomariesittelykuvasi yhteydessä.
+
+  - slug: food
+    type: MultiLineText
+    title: Allergiat ja erityisruokavaliot
+    required: true
+    helpText: |
+      Traconin greenroomin lisäksi myös cosplay backstagella on tarjottavissa lauantaina ja sunnuntaina pientä purtavaa. Mainitsethan mahdolliset allergiat ja erikoisruokavaliot niin pystymme parhaamme mukaan tarjoamaan jokaiselle jotakin.

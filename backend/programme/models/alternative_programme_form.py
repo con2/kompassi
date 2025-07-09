@@ -88,6 +88,15 @@ class AlternativeProgrammeForm(models.Model):
         help_text=_("If set, programme hosts entering programme using this form will by default gain this role."),
     )
 
+    v2_dimensions = models.JSONField(
+        default=dict,
+        blank=True,
+        help_text=(
+            "dimension slug -> list of dimension value slugs. "
+            "When program is imported to v2, dimension values indicated here are added to programs of this category."
+        ),
+    )
+
     def __str__(self):
         return self.title
 

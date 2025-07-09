@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 import logging
 from datetime import timedelta
 from functools import cached_property
+from typing import TYPE_CHECKING, Any
 
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
@@ -11,8 +14,13 @@ from django.utils.timezone import get_default_timezone, now
 from django.utils.translation import gettext_lazy as _
 
 from core.csv_export import CsvExportMixin
+from core.models import Event
 from core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, format_datetime, slugify, url
 from core.utils.time_utils import format_interval
+from graphql_api.language import get_language_choices
+
+if TYPE_CHECKING:
+    from .programme_feedback import ProgrammeFeedback
 
 logger = logging.getLogger("kompassi")
 
@@ -66,7 +74,7 @@ TRISTATE_CHOICES = [
 
 TRISTATE_FIELD_PARAMS = dict(
     choices=TRISTATE_CHOICES,
-    max_length=max(len(key) for (key, _) in TRISTATE_CHOICES),
+    max_length=max(len(key) for (key, _) in TRISTATE_CHOICES),  # type: ignore
 )
 
 ENCUMBERED_CONTENT_CHOICES = [
@@ -101,12 +109,6 @@ PROGRAMME_STATES_NEW = ["idea", "asked", "offered"]
 PROGRAMME_STATES_LIVE = ["accepted", "published"]
 PROGRAMME_STATES_ACTIVE = PROGRAMME_STATES_NEW + PROGRAMME_STATES_LIVE
 PROGRAMME_STATES_INACTIVE = ["rejected", "cancelled"]
-
-LANGUAGE_CHOICES = [
-    ("fi", _("Finnish")),
-    ("sv", _("Swedish")),
-    ("en", _("English")),
-]
 
 ROPECON2018_SIGNUP_LIST_CHOICES = [
     ("none", _("No sign-up")),
@@ -202,6 +204,10 @@ class Programme(models.Model, CsvExportMixin):
     AlternativeProgrammeForms.
     """
 
+    id: int
+    pk: int
+    feedback: models.Manager[ProgrammeFeedback]
+
     category = models.ForeignKey(
         "programme.Category",
         on_delete=models.CASCADE,
@@ -217,7 +223,7 @@ class Programme(models.Model, CsvExportMixin):
         help_text=_("Which form was used to offer this Programme? If null, the default form was used."),
     )
 
-    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)
+    slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
     title = models.CharField(
         max_length=1023,
@@ -269,14 +275,14 @@ class Programme(models.Model, CsvExportMixin):
         default="no",
         verbose_name=_("Audio playback"),
         help_text=_("Will you play audio in your programme?"),
-        **TRISTATE_FIELD_PARAMS,
+        **TRISTATE_FIELD_PARAMS,  # type: ignore
     )
 
     use_video = models.CharField(
         default="no",
         verbose_name=_("Video playback"),
         help_text=_("Will you play video in your programme?"),
-        **TRISTATE_FIELD_PARAMS,
+        **TRISTATE_FIELD_PARAMS,  # type: ignore
     )
 
     number_of_microphones = models.IntegerField(
@@ -447,7 +453,7 @@ class Programme(models.Model, CsvExportMixin):
     language = models.CharField(
         max_length=2,
         default="fi",
-        choices=LANGUAGE_CHOICES,
+        choices=get_language_choices(),
         verbose_name=_("Language"),
         help_text=_("What is the primary language of your programme?"),
     )
@@ -473,7 +479,14 @@ class Programme(models.Model, CsvExportMixin):
         null=True,
         default=240,
         verbose_name=_("approximate length (minutes)"),
-        help_text=_("Please give your best guess on how long you expect your game to take."),
+        help_text=_("Please give your best guess on how long you expect one run of your game to take."),
+    )
+    max_runs = models.PositiveSmallIntegerField(
+        blank=True,
+        null=True,
+        default=1,
+        verbose_name=_("Maximum number of runs"),
+        help_text=_("How many times are you prepared to run this game?"),
     )
     physical_play = models.CharField(
         max_length=max(len(key) for (key, text) in PHYSICAL_PLAY_CHOICES),
@@ -488,8 +501,7 @@ class Programme(models.Model, CsvExportMixin):
     is_english_ok = models.BooleanField(
         verbose_name=_("English OK"),
         help_text=_(
-            "Please tick this box if you are able, prepared and willing to host your programme in English if "
-            "necessary."
+            "Please tick this box if you are able, prepared and willing to host your programme in English if necessary."
         ),
         default=False,
     )
@@ -1393,7 +1405,7 @@ class Programme(models.Model, CsvExportMixin):
         default="",
         verbose_name=_("Author (if other than the GM)"),
         help_text=_(
-            "If the scenario has been written by someone else than the GM, we require that the author be " "disclosed."
+            "If the scenario has been written by someone else than the GM, we require that the author be disclosed."
         ),
     )
 
@@ -1445,6 +1457,8 @@ class Programme(models.Model, CsvExportMixin):
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_("Created at"))
     updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name=_("Updated at"))
+
+    invitation_set: models.QuerySet[Any]
 
     @property
     def event(self):
@@ -1498,16 +1512,7 @@ class Programme(models.Model, CsvExportMixin):
     def is_published(self):
         return self.state == "published"
 
-    @property
-    def is_open_for_feedback(self):
-        t = now()
-        return (
-            # Programme has started OR
-            (self.start_time is not None and t >= self.start_time)
-            or
-            # The event is over
-            (self.event.end_time is not None and t >= self.event.end_time)
-        )
+    is_open_for_feedback = False
 
     @property
     def show_signup_link(self):
@@ -1518,12 +1523,17 @@ class Programme(models.Model, CsvExportMixin):
         )
 
     @classmethod
-    def get_or_create_dummy(cls, title="Dummy program", state="published"):
+    def get_or_create_dummy(
+        cls,
+        title="Dummy program",
+        state="published",
+        event: Event | None = None,
+    ):
         from .category import Category
         from .room import Room
 
-        category, unused = Category.get_or_create_dummy()
-        room, unused = Room.get_or_create_dummy()
+        category, unused = Category.get_or_create_dummy(event=event)
+        room, unused = Room.get_or_create_dummy(event=event)
 
         return cls.objects.get_or_create(
             title=title,
@@ -1554,6 +1564,10 @@ class Programme(models.Model, CsvExportMixin):
     @property
     def is_public(self):
         return self.state == "published" and self.category is not None and self.category.public
+
+    @property
+    def public_tags(self):
+        return self.tags.filter(public=True)
 
     def as_json(self, format="default"):
         from core.utils import pick_attrs
@@ -1737,7 +1751,18 @@ class Programme(models.Model, CsvExportMixin):
             self.end_time = self.start_time + timedelta(minutes=self.length)
 
         if self.title and not self.slug:
-            self.slug = slugify(self.title)
+            slug = base_slug = slugify(self.title)
+            counter = 1
+
+            qs = Programme.objects.filter(category__event=self.category.event)
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+
+            while qs.filter(slug=slug).exists():
+                counter += 1
+                slug = f"{base_slug}-{counter}"
+
+            self.slug = slug
 
         return super().save(*args, **kwargs)
 
@@ -1756,7 +1781,7 @@ class Programme(models.Model, CsvExportMixin):
     def apply_state_async(self):
         from ..tasks import programme_apply_state_async
 
-        programme_apply_state_async.delay(self.pk)
+        programme_apply_state_async.delay(self.pk)  # type: ignore
 
     def _apply_state_async(self):
         self.apply_state_group_membership()
@@ -1964,16 +1989,16 @@ class Programme(models.Model, CsvExportMixin):
         from paikkala.models import Program as PaikkalaProgram
         from paikkala.models import Row
 
-        paikkala_room = self.room.paikkalize()
+        paikkala_room = self.room.paikkalize()  # type: ignore
         meta = self.event.programme_event_meta
         tz = get_default_timezone()
 
         paikkala_program_kwargs = dict(
             event_name=self.event.name,
-            name=truncatechars(self.title, PaikkalaProgram._meta.get_field("name").max_length),
+            name=truncatechars(self.title, PaikkalaProgram._meta.get_field("name").max_length),  # type: ignore
             room=paikkala_room,
             require_user=True,
-            reservation_start=self.start_time.replace(hour=9, minute=0, tzinfo=tz),
+            reservation_start=self.start_time.replace(hour=9, minute=0, tzinfo=tz),  # type: ignore
             reservation_end=self.end_time,
             invalid_after=self.end_time,
             max_tickets=0,
@@ -2012,5 +2037,7 @@ class Programme(models.Model, CsvExportMixin):
         verbose_name = _("programme")
         verbose_name_plural = _("programmes")
         ordering = ["start_time", "room"]
-        indexes = [models.Index(fields=["category", "state"])]
-        # unique_together = [('category', 'slug')]
+        indexes = [
+            models.Index(fields=["category", "state"]),
+            models.Index(fields=["category", "slug"]),
+        ]

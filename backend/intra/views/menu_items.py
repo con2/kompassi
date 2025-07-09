@@ -5,7 +5,7 @@ from core.utils import url
 
 
 def get_organizers_menu_item(request, event, may_be_active=True, notifications=0):
-    organizers_url = url("intra_organizer_view", event.slug)
+    organizers_url = url("intra:organizer_view", event.slug)
     organizers_active = may_be_active and request.path.startswith(organizers_url)
     organizers_text = _("Teams and organizers")
 
@@ -20,7 +20,7 @@ def get_organizers_menu_item(request, event, may_be_active=True, notifications=0
 def intra_admin_menu_items(request, event):
     meta = event.intra_event_meta
 
-    privileges_url = url("intra_admin_privileges_view", event.slug)
+    privileges_url = url("intra:admin_privileges_view", event.slug)
     privileges_active = request.path.startswith(privileges_url)
     privileges_text = _("Privileges")
 

@@ -8,11 +8,8 @@ block content
     .panel-heading: strong {% trans "Onboarding" %}
     .panel-body
       .text-muted
-        if event.badges_event_meta.onboarding_instructions_markdown
-          | {{ event.badges_event_meta.onboarding_instructions_html|safe }}
-        else
-          p Merkitse henkilö saapuneeksi klikkaamalla taulukon riviä. Haku toimii välittömästi ilman rivinvaihdon tmv. painallusta ja hakee ainoastaan nimikentästä.
-          p Viemällä hiiren osoittimen henkilöstöluokan nimen päälle näet, mitä kyseisen henkilöstöluokan henkilölle annetaan, mikäli tämä tieto on syötetty.
+        p Merkitse henkilö saapuneeksi klikkaamalla taulukon riviä. Haku toimii välittömästi ilman rivinvaihdon tmv. painallusta ja hakee ainoastaan nimikentästä.
+        p Viemällä hiiren osoittimen henkilöstöluokan nimen päälle näet, mitä kyseisen henkilöstöluokan henkilölle annetaan, mikäli tämä tieto on syötetty.
       .form-group
         label(for='onboarding_search') {% trans "Search" %}
         input#onboarding_search.form-control(type='search')
@@ -30,16 +27,15 @@ block content
             th {% trans "Shirt type" %}
           if shirt_size_field
             th {% trans "Shirt size" %}
+          if is_perks_column_shown
+            th {% trans "Perks" %}
       tbody
         for badge in badges
           tr.a_badge(data-id=badge.id, class='{% if badge.is_arrived %}badge--arrived success{% endif %}')
             td.status.fa-fw
               i.fa.fa-spinner.fa-pulse.status__loading
               i.fa.fa-check.status__success
-            td.personnel_class(
-              data-slug=badge.personnel_class.slug,
-              class="{% if badge.personnel_class.perks_markdown %}perky{% endif %}"
-            )
+            td.personnel_class(data-slug=badge.personnel_class.slug)
               | {{ badge.personnel_class }}
             td.name
               if event.badges_event_meta.real_name_must_be_visible
@@ -61,19 +57,11 @@ block content
 
             td.title= badge.job_title
             if shirt_type_field
-              if badge.signup_extra
-                td.shirt_type= badge.signup_extra.get_shirt_type_display
-              else
-                td.shirt_type
+              td.shirt_type= badge.shirt_type
             if shirt_size_field
-              if badge.signup_extra
-                td.shirt= badge.signup_extra.get_shirt_size_display
-              else
-                td.shirt
-
-  for personnel_class in personnel_classes
-    if personnel_class.perks_markdown
-      template(id="pc-perks-{{ personnel_class.slug }}") {{ personnel_class.perks_html|safe }}
+              td.shirt_size= badge.shirt_size
+            if is_perks_column_shown
+              td.perks= badge.formatted_perks
 
 block extra_head
   style.
@@ -137,16 +125,3 @@ block extra_scripts
           $this.removeClass('badge--loading')
         })
     }, 500, { trailing: false }))
-
-    $('.perky').popover({
-      container: 'body',
-      html: true,
-      placement: 'top',
-      trigger: 'hover',
-      title: function() {
-        return $(this).text();
-      },
-      content: function(){
-        return $('#pc-perks-' + $(this).data('slug')).html();
-      }
-    });

@@ -3,9 +3,9 @@
   a.btn.btn-default(href='{% url "programme:admin_view" event.slug %}')
     i.fa.fa-undo.kompassi-icon-space-right
     {% trans "Abandon changes and return" %}
-  button.btn.btn-primary(type='submit', name='action', value='save-return')
+  button.btn.btn-primary(type='submit', name='action', value='save-return', disabled="true")
     i.fa.fa-plus.kompassi-icon-space-right
     {% trans "Save and return" %}
-  button.btn.btn-success(type='submit', name='action', value='save-edit')
+  button.btn.btn-success(type='submit', name='action', value='save-edit', disabled="true")
     i.fa.fa-plus.kompassi-icon-space-right
     {% trans "Save and continue" %}

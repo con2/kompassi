@@ -1,31 +1,55 @@
+from __future__ import annotations
+
 import logging
 import typing
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta, tzinfo
+from functools import cached_property
+from zoneinfo import ZoneInfo
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 
-from ..utils import SLUG_FIELD_PARAMS, event_meta_property, format_date_range, pick_attrs, slugify
+from ..utils import SLUG_FIELD_PARAMS, event_meta_property, format_date, format_date_range, pick_attrs, slugify
+from .organization import Organization
+from .venue import Venue
 
 if typing.TYPE_CHECKING:
+    from dimensions.models.scope import Scope
+    from dimensions.models.universe import Universe
+    from forms.models.survey import Survey
+    from involvement.models.involvement import Involvement
     from labour.models.signup import Signup
-    from program_v2.models import Dimension, Program
+    from program_v2.models import Program, ProgramV2EventMeta, ScheduleItem
+    from tickets_v2.models import TicketsV2EventMeta
 
 
 logger = logging.getLogger("kompassi")
 
 
+def validate_timezone_name(value: str) -> None:
+    try:
+        ZoneInfo(value)
+    except Exception as e:
+        raise ValidationError(f"Invalid timezone name: {value}") from e
+
+
 class Event(models.Model):
+    id: int
+
     slug = models.CharField(**SLUG_FIELD_PARAMS)  # type: ignore
 
     name = models.CharField(max_length=63, verbose_name="Tapahtuman nimi")
 
-    organization = models.ForeignKey(
-        "core.Organization", on_delete=models.CASCADE, verbose_name="Järjestäjätaho", related_name="events"
+    organization: models.ForeignKey[Organization] = models.ForeignKey(
+        Organization,
+        on_delete=models.CASCADE,
+        verbose_name="Järjestäjätaho",
+        related_name="events",
     )
 
     name_genitive = models.CharField(
@@ -47,7 +71,7 @@ class Event(models.Model):
     )
 
     venue = models.ForeignKey(
-        "core.Venue",
+        Venue,
         on_delete=models.CASCADE,
         verbose_name="Tapahtumapaikka",
     )
@@ -101,13 +125,19 @@ class Event(models.Model):
         help_text="Muutaman kappaleen mittainen kuvaus tapahtumasta. Näkyy tapahtumasivulla.",
     )
 
+    timezone_name = models.CharField(
+        default="Europe/Helsinki",
+        validators=[validate_timezone_name],
+    )
+
     created_at = models.DateTimeField(null=True, blank=True, auto_now_add=True)
     updated_at = models.DateTimeField(null=True, blank=True, auto_now=True)
 
     # related fields
-    programs: models.QuerySet["Program"]
-    dimensions: models.QuerySet["Dimension"]
-    signup_set: models.QuerySet["Signup"]
+    programs: models.QuerySet[Program]
+    schedule_items: models.QuerySet[ScheduleItem]
+    signup_set: models.QuerySet[Signup]
+    surveys: models.QuerySet[Survey]
 
     class Meta:
         verbose_name = "Tapahtuma"
@@ -128,6 +158,19 @@ class Event(models.Model):
 
         return super().save(*args, **kwargs)
 
+    @cached_property
+    def scope(self) -> Scope:
+        from dimensions.models import Scope
+
+        return Scope.objects.get_or_create(
+            event=self,
+            defaults=dict(
+                slug=self.slug,
+                name=self.name,
+                organization=self.organization,
+            ),
+        )[0]
+
     @property
     def panel_css_class(self):
         return self.organization.panel_css_class
@@ -142,6 +185,10 @@ class Event(models.Model):
         if not self.start_time or not self.end_time:
             return ""
         return format_date_range(self.start_time, self.end_time)
+
+    @property
+    def formatted_end_date(self) -> str:
+        return format_date(self.end_time)
 
     @property
     def headline(self):
@@ -165,6 +212,36 @@ class Event(models.Model):
     @property
     def venue_name(self):
         return self.venue.name if self.venue else None
+
+    @cached_property
+    def timezone(self) -> tzinfo:
+        try:
+            return ZoneInfo(self.timezone_name)
+        except Exception:
+            logger.warning(f"Invalid timezone name: {self.timezone_name}", exc_info=True)
+            return UTC
+
+    @cached_property
+    def program_universe(self) -> Universe:
+        """
+        The Universe for Dimensions that are attached to program items.
+        NOTE: Must return the same as ProgramV2EventMeta.universe.
+        """
+        from program_v2.dimensions import get_program_universe
+
+        return get_program_universe(self)
+
+    @cached_property
+    def involvement_universe(self) -> Universe:
+        from involvement.dimensions import get_involvement_universe
+
+        return get_involvement_universe(self)
+
+    @property
+    def involvements(self) -> models.QuerySet[Involvement]:
+        from involvement.models.involvement import Involvement
+
+        return Involvement.objects.filter(universe=self.involvement_universe)
 
     @classmethod
     def get_or_create_dummy(cls, name="Dummy event"):
@@ -222,17 +299,36 @@ class Event(models.Model):
     intra_event_meta = event_meta_property("intra")
 
     @property
-    def program_v2_event_meta(self):
+    def program_v2_event_meta(self) -> ProgramV2EventMeta | None:
         """
         for program_v2, app_label is program_v2 but prefix is programv2
         so event_meta_property("programv2") did not
         """
         from program_v2.models import ProgramV2EventMeta
 
-        try:
-            return ProgramV2EventMeta.objects.get(event=self)
-        except ProgramV2EventMeta.DoesNotExist:
-            return None
+        # NOTE: Do not cache None
+        meta: ProgramV2EventMeta | None = getattr(self, "_program_v2_event_meta", None)
+        if meta is None:
+            try:
+                self._program_v2_event_meta = meta = ProgramV2EventMeta.objects.get(event=self)
+            except ProgramV2EventMeta.DoesNotExist:
+                meta = None
+
+        return meta
+
+    @property
+    def tickets_v2_event_meta(self) -> TicketsV2EventMeta | None:
+        from tickets_v2.models import TicketsV2EventMeta
+
+        # NOTE: Do not cache None
+        meta = getattr(self, "_tickets_v2_event_meta", None)
+        if meta is None:
+            try:
+                self._tickets_v2_event_meta = meta = TicketsV2EventMeta.objects.get(event=self)
+            except TicketsV2EventMeta.DoesNotExist:
+                meta = None
+
+        return meta
 
     def get_app_event_meta(self, app_label: str):
         return getattr(self, f"{app_label}_event_meta")
@@ -267,3 +363,50 @@ class Event(models.Model):
         Shorthand for commonly used CBAC claims.
         """
         return dict(organization=self.organization.slug, event=self.slug, **extra_claims)
+
+    @classmethod
+    def get_or_create_lite_event(
+        cls,
+        slug: str,
+        name: str,
+        organization_name: str,
+        venue_name: str,
+        start_time: datetime,
+        end_time: datetime,
+        public: bool = True,
+        homepage_url: str = "",
+    ):
+        """
+        Create an event for pure V2 use with minimal information required.
+        Can be used out of the box with Surveys V2.
+        """
+        # if created here, these need to be fixed via taka-admin at least for the inflected names
+        organization, _ = Organization.objects.get_or_create(
+            slug=slugify(organization_name),
+            defaults=dict(
+                name=organization_name,
+                name_genitive=organization_name,
+            ),
+        )
+        venue, _ = Venue.objects.get_or_create(
+            name=venue_name,
+            defaults=dict(
+                name_inessive=venue_name,
+            ),
+        )
+
+        return cls.objects.get_or_create(
+            slug=slug,
+            defaults=dict(
+                name=name,
+                name_genitive=f"{name} -tapahtuman",
+                name_illative=f"{name} -tapahtumaan",
+                name_inessive=f"{name} -tapahtumassa",
+                organization=organization,
+                venue=venue,
+                start_time=start_time,
+                end_time=end_time,
+                public=public,
+                homepage_url=homepage_url,
+            ),
+        )

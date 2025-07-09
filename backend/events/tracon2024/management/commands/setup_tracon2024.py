@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 
-import yaml
 from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 from django.utils.timezone import now
-from pkg_resources import resource_stream
+
+from core.utils import slugify
 
 
 class Setup:
@@ -23,13 +23,11 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_badges()
-        # self.setup_tickets()
+        self.setup_tickets()
         self.setup_programme()
-        self.setup_program_v2()
         self.setup_intra()
         self.setup_access()
-        self.setup_directory()
-        # self.setup_kaatoilmo()
+        self.setup_kaatoilmo()
         self.setup_forms()
 
     def setup_core(self):
@@ -61,6 +59,7 @@ class Setup:
     def setup_labour(self):
         from django.contrib.contenttypes.models import ContentType
 
+        from badges.emperkelators.tracon2024 import TicketType, TraconEmperkelator
         from core.models import Event, Person
         from labour.models import (
             AlternativeSignupForm,
@@ -96,8 +95,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
         else:
             pass
@@ -111,38 +110,78 @@ class Setup:
         if fmh.exists():
             fmh.update(name="Vuorovastaava", slug="vuorovastaava")
 
-        for pc_name, pc_slug, pc_app_label, pc_afterparty in [
-            ("Coniitti", "coniitti", "labour", True),
-            ("Duniitti", "duniitti", "labour", True),
-            ("Vuorovastaava", "vuorovastaava", "labour", True),
-            ("Työvoima", "tyovoima", "labour", True),
-            ("Ohjelma", "ohjelma", "programme", True),
-            ("Ohjelma 2. luokka", "ohjelma-2lk", "programme", False),
-            ("Ohjelma 3. luokka", "ohjelma-3lk", "programme", False),
+        for pc_data in [
+            (
+                "Coniitti",
+                "coniitti",
+                "labour",
+                TraconEmperkelator(
+                    override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
+                ),
+            ),
+            (
+                "Duniitti",
+                "duniitti",
+                "labour",
+                TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
+            ),
+            (
+                "Vuorovastaava",
+                "vuorovastaava",
+                "labour",
+                TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
+            ),
+            (
+                "Työvoima",
+                "tyovoima",
+                "labour",
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=2, swag=True),
+            ),
+            (
+                "Ohjelma",
+                "ohjelma",
+                "programme",
+                TraconEmperkelator(),  # handled in programme.Role
+            ),
             (
                 "Guest of Honour",
                 "goh",
                 "programme",
-                False,
-            ),  # tervetullut muttei kutsuta automaattiviestillä
-            ("Media", "media", "badges", False),
-            ("Myyjä", "myyja", "badges", False),
-            ("Vieras", "vieras", "badges", False),
-            ("Vapaalippu, viikonloppu", "vapaalippu-vkl", "tickets", False),
-            ("Vapaalippu, lauantai", "vapaalippu-la", "tickets", False),
-            ("Vapaalippu, sunnuntai", "vapaalippu-su", "tickets", False),
-            ("Cosplaykisaaja", "cosplay", "tickets", False),
-            ("AMV-kisaaja", "amv", "tickets", False),
-            ("Taidekuja", "taidekuja", "tickets", False),
-            ("Yhdistyspöydät", "yhdistyspoydat", "tickets", False),
+                "GoH-tiimi hoitaa (ei jaeta ovelta)",
+            ),
+            ("Media", "media", "badges", "Badge (external)"),
+            ("Myyjä", "myyja", "badges", "Myyjäranneke"),
+            ("Artesaani", "artesaani", "badges", "?"),
+            ("Vieras", "vieras", "badges", "Badge (external)"),
+            ("Vapaalippu, viikonloppu", "vapaalippu-vkl", "tickets", "Viikonloppuranneke"),
+            ("Vapaalippu, lauantai", "vapaalippu-la", "tickets", "Lauantairanneke"),
+            ("Vapaalippu, sunnuntai", "vapaalippu-su", "tickets", "Sunnuntairanneke"),
+            ("Cosplaykisaaja", "cosplay", "tickets", "?"),
+            ("AMV-kisaaja", "amv", "tickets", "?"),
+            ("Taidekuja", "taidekuja", "tickets", "?"),
+            ("Taidepolku", "taidepolku", "tickets", "?"),
+            ("Yhdistyspöydät", "yhdistyspoydat", "tickets", "?"),
         ]:
-            personnel_class, created = PersonnelClass.objects.get_or_create(
+            if len(pc_data) == 4:
+                pc_name, pc_slug, pc_app_label, pc_perks = pc_data
+                perks = (
+                    pc_perks
+                    if isinstance(pc_perks, TraconEmperkelator)
+                    else TraconEmperkelator(override_formatted_perks=pc_perks)
+                )
+
+            else:
+                pc_name, pc_slug, pc_app_label = pc_data
+                perks = TraconEmperkelator()
+
+            PersonnelClass.objects.update_or_create(
                 event=self.event,
                 slug=pc_slug,
                 defaults=dict(
                     name=pc_name,
                     app_label=pc_app_label,
                     priority=self.get_ordering_number(),
+                    perks=perks.model_dump(),
                 ),
             )
 
@@ -158,9 +197,6 @@ class Setup:
             slug="duniitti",
             icon_css_class="fa-user",
         ).update(icon_css_class="fa-check-square-o")
-
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
-        coniitti = PersonnelClass.objects.get(event=self.event, slug="coniitti")
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
@@ -259,11 +295,12 @@ class Setup:
         from badges.models import BadgesEventMeta
 
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, unused = BadgesEventMeta.objects.get_or_create(
+        meta, unused = BadgesEventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
                 real_name_must_be_visible=True,
+                emperkelator_name="tracon2024",
             ),
         )
 
@@ -275,7 +312,6 @@ class Setup:
         defaults = dict(
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
-            due_days=14,
             reference_number_template="2024{:06d}",
             contact_email="Traconin lipunmyynti <liput@tracon.fi>",
             ticket_free_text=(
@@ -288,7 +324,7 @@ class Setup:
             ),
             front_page_text=(
                 "<h2>Tervetuloa ostamaan pääsylippuja Traconiin!</h2>"
-                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla heti tilauksen yhteydessä.</p>"
+                "<p>Liput maksetaan suomalaisilla verkkopankkitunnuksilla, maksukortilla tai MobilePaylla heti tilauksen yhteydessä.</p>"
                 "<p>Lue lisää tapahtumasta <a href='http://2024.tracon.fi'>Traconin kotisivuilta</a>.</p>"
             ),
         )
@@ -312,87 +348,85 @@ class Setup:
             return limit_group
 
         for product_info in [
-            # dict(
-            #     name="Viikonloppulippu",
-            #     description="Voimassa koko tapahtuman ajan perjantaista sunnuntaihin. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Perjantain liput", 5200),
-            #         limit_group("Lauantain liput", 5200),
-            #         limit_group("Sunnuntain liput", 5200),
-            #     ],
-            #     price_cents=4500,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name="Perjantailippu",
-            #     description="Voimassa perjantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Perjantain liput", 5200),
-            #     ],
-            #     price_cents=2000,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name="Lauantailippu",
-            #     description="Voimassa lauantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Lauantain liput", 5200),
-            #     ],
-            #     price_cents=3500,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name="Sunnuntailippu",
-            #     description="Voimassa sunnuntaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Sunnuntain liput", 5200),
-            #     ],
-            #     price_cents=3000,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name="K18 Iltabilelippu",
-            #     description="Voimassa Traconin iltabileiden ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
-            #     limit_groups=[
-            #         limit_group("Iltabileliput", 1300),
-            #     ],
-            #     price_cents=1500,
-            #     electronic_ticket=True,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name="Lattiamajoitus 1 yö pe–la – Amurin koulutalo (ei sis. makuualustaa)",
-            #     description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
-            #     limit_groups=[
-            #         limit_group("Majoitus Amuri pe-la", 235),
-            #     ],
-            #     price_cents=1000,
-            #     requires_accommodation_information=True,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
-            # dict(
-            #     name="Lattiamajoitus 1 yö la–su – Amurin koulutalo (ei sis. makuualustaa)",
-            #     description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Amurin koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
-            #     limit_groups=[
-            #         limit_group("Majoitus Amuri la-su", 235),
-            #     ],
-            #     price_cents=1000,
-            #     requires_accommodation_information=True,
-            #     electronic_ticket=False,
-            #     available=True,
-            #     ordering=self.get_ordering_number(),
-            # ),
+            dict(
+                name="Viikonloppulippu",
+                description="Voimassa koko tapahtuman ajan perjantaista sunnuntaihin. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Perjantain liput", 3860),
+                    limit_group("Lauantain liput", 3860),
+                    limit_group("Sunnuntain liput", 3860),
+                ],
+                price_cents=50_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Perjantailippu",
+                description="Voimassa perjantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Perjantain liput", 3860),
+                ],
+                price_cents=25_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Lauantailippu",
+                description="Voimassa lauantaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Lauantain liput", 3860),
+                ],
+                price_cents=40_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Sunnuntailippu",
+                description="Voimassa sunnuntaina tapahtuman aukiolon ajan. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Sunnuntain liput", 3860),
+                ],
+                price_cents=35_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="K18 Iltabilelippu",
+                description="Voimassa Traconin iltabileiden ajan. Huomioithan, että bileiden ikäraja on 18 vuotta. Toimitetaan sähköpostitse PDF-tiedostona.",
+                limit_groups=[
+                    limit_group("Iltabileliput", 1200),
+                ],
+                price_cents=20_00,
+                electronic_ticket=True,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Lattiamajoitus 1 yö pe–la – Fista, Tampereen kansainvälinen koulutalo",
+                description="Lattiamajoituspaikka perjantain ja lauantain väliseksi yöksi Fistan koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
+                limit_groups=[
+                    limit_group("Majoitus Fista pe-la", 220),
+                ],
+                price_cents=12_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Lattiamajoitus 1 yö la–su – Fista, Tampereen kansainvälinen koulutalo",
+                description="Lattiamajoituspaikka lauantain ja sunnuntain väliseksi yöksi Fistan koulutalolta. Majoituspaikat eivät sisällä makuualustaa, joten sinun tarvitsee tuoda makuupussi ja makuualusta tai patja. Majoituksesta ei tule erillistä PDF-lippua vaan sisään pääsee ilmoittamalla nimensä saapuessaan.",
+                limit_groups=[
+                    limit_group("Majoitus Fista la-su", 220),
+                ],
+                price_cents=12_00,
+                electronic_ticket=False,
+                available=True,
+                ordering=self.get_ordering_number(),
+            ),
             dict(
                 name="Taru sormusten herrasta 20.9.2024 – Conitealippu",
                 description="Teatterilippu <strong>Traconin conitean, Hitpointin conitean tai yhdistyksen hallituksen jäsenelle itselleen</strong> alennettuun hintaan.",
@@ -400,7 +434,6 @@ class Setup:
                     limit_group("TSH-coniteanäytäntö", 90),
                 ],
                 price_cents=35_00,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="tsh-rcjxrpwl",  # will be changed in production
@@ -413,10 +446,79 @@ class Setup:
                     limit_group("TSH-coniteanäytäntö", 90),
                 ],
                 price_cents=75_00,
-                requires_accommodation_information=False,
                 electronic_ticket=False,
                 available=True,
                 code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Katkarapuleipä",
+                description="Laktoositon, saatavilla gluteeniton (ilmoita erikoisruokavaliosta Haiskulle/Dennulle)",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=14_00,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Mordor-leivos",
+                description="Laktoositon, gluteeniton",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=9_00,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Kahvi",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=4_50,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Tee",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=4_50,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Taru sormusten herrasta 20.9.2024 – Väliaikatarjoilu: Kuohuviini",
+                description="Piccolo (20 cl). Katetaan 1 lasin kanssa; pyydä tarvittaessa toinen lasi ravintolan henkilökunnalta.",
+                limit_groups=[
+                    limit_group("TSH-väliaikatarjoilut", 9999),
+                ],
+                price_cents=13_50,
+                electronic_ticket=False,
+                available=True,
+                code="tsh-rcjxrpwl",  # will be changed in production
+                ordering=self.get_ordering_number(),
+            ),
+            dict(
+                name="Conitean edustushupparin omavastuu",
+                description="Käytä tätä tuotetta vain jos olet jo tilannut itsellesi hupparin aiemmin ohjeistetulla tavalla.",
+                limit_groups=[
+                    limit_group("Edustustuotteet", 9999),
+                ],
+                price_cents=19_00,
+                electronic_ticket=False,
+                available=True,
+                code="hup-hvltvckn",  # will be changed in production
                 ordering=self.get_ordering_number(),
             ),
         ]:
@@ -429,11 +531,8 @@ class Setup:
                 product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
 
-        if not meta.receipt_footer:
-            meta.receipt_footer = "Tracon ry / Y-tunnus 2886274-5 / liput@tracon.fi"
-            meta.save()
-
     def setup_programme(self):
+        from badges.emperkelators.tracon2024 import TicketType, TraconEmperkelator
         from core.utils import full_hours_between
         from labour.models import PersonnelClass
         from programme.models import (
@@ -441,6 +540,7 @@ class Setup:
             Category,
             ProgrammeEventMeta,
             Role,
+            Room,
             SpecialStartTime,
             Tag,
             TimeBlock,
@@ -464,47 +564,70 @@ class Setup:
             programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
             programme_event_meta.save()
 
-        for pc_slug, role_title, role_is_default in [
-            ("ohjelma", "Ohjelmanjärjestäjä", True),
-            ("ohjelma-2lk", "Ohjelmanjärjestäjä (2. luokka)", False),
-            ("ohjelma-3lk", "Ohjelmanjärjestäjä (3. luokka)", False),
+        for pc_slug, role_title, role_is_default, perks in [
+            (
+                "ohjelma",
+                "Ohjelmanjärjestäjä",
+                True,
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=True),
+            ),
+            (
+                "ohjelma",
+                "Esiintyjä",
+                False,
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=True),
+            ),
+            (
+                "ohjelma",
+                "Keskustelunvetäjä",
+                False,
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=False),
+            ),
+            (
+                "ohjelma",
+                "Työpajanvetäjä",
+                False,
+                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=False),
+            ),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
-            Role.objects.get_or_create(
+            perks_dict = perks.model_dump()
+            Role.objects.update_or_create(
                 personnel_class=personnel_class,
                 title=role_title,
                 defaults=dict(
                     is_default=role_is_default,
+                    perks=perks_dict,
                 ),
             )
 
-            Role.objects.get_or_create(
+            Role.objects.update_or_create(
                 personnel_class=personnel_class,
                 title=f"Näkymätön {role_title.lower()}",
                 defaults=dict(
                     override_public_title=role_title,
                     is_default=False,
                     is_public=False,
+                    perks=perks_dict,
                 ),
             )
 
-        have_categories = Category.objects.filter(event=self.event).exists()
-        if not have_categories:
-            for title, style in [
-                ("Animeohjelma", "anime"),
-                ("Cosplayohjelma", "cosplay"),
-                ("Miitti", "miitti"),
-                ("Muu ohjelma", "muu"),
-                ("Roolipeliohjelma", "rope"),
-                ("Peliohjelma", "color7"),
-            ]:
-                Category.objects.get_or_create(
-                    event=self.event,
-                    style=style,
-                    defaults=dict(
-                        title=title,
-                    ),
-                )
+        for title, style in [
+            ("Animeohjelma", "anime"),
+            ("Cosplayohjelma", "cosplay"),
+            ("Miitti", "miitti"),
+            ("Muu ohjelma", "muu"),
+            ("Roolipeliohjelma", "rope"),
+            ("Peliohjelma", "color7"),
+        ]:
+            Category.objects.update_or_create(
+                event=self.event,
+                style=style,
+                defaults=dict(
+                    title=title,
+                    v2_dimensions={"category": [slugify(title)]},
+                ),
+            )
 
         assert self.event.start_time
         assert self.event.end_time
@@ -513,8 +636,8 @@ class Setup:
 
         for start_time, end_time in [
             (
-                self.event.start_time.replace(hour=16, minute=0, tzinfo=self.tz),
-                self.event.start_time.replace(hour=21, minute=0, tzinfo=self.tz),
+                self.event.start_time.replace(hour=15, minute=0, tzinfo=self.tz),
+                saturday.replace(hour=0, minute=0, tzinfo=self.tz),
             ),
             (
                 saturday.replace(hour=9, minute=0, tzinfo=self.tz),
@@ -542,22 +665,29 @@ class Setup:
                         start_time=hour_start_time.replace(minute=minute),
                     )
 
-        for tag_title, tag_class in [
-            ("Suositeltu", "hilight"),
-            ("Musiikki", "label-info"),
-            ("In English", "label-success"),
-            ("English OK", "label-success"),
-            ("K-18", "label-danger"),
-            ("Paikkaliput", "label-default"),
-            ("Kirkkaita/välkkyviä valoja", "label-warning"),
-            ("Kovia ääniä", "label-warning"),
-            ("Savutehosteita", "label-warning"),
+        # truthy "empty" value to opt out of automatic dimensions
+        no_tags = {"accessibility": []}
+        for tag_title, tag_class, v2_dimensions in [
+            ("Suositeltu", "hilight", no_tags),
+            ("Musiikki", "label-info", no_tags),
+            ("In English", "label-success", {"language": ["en"]}),
+            ("English OK", "label-success", {"language": ["fi", "en"]}),
+            ("K-18", "label-danger", {"audience": ["r18"]}),
+            ("Paikkaliput", "label-default", {"signup": ["paikkala"]}),
+            ("Kirkkaita/välkkyviä valoja", "label-warning", {"accessibility": ["flashing-lights"]}),
+            ("Kovia ääniä", "label-warning", {"accessibility": ["loud-noises"]}),
+            ("Savutehosteita", "label-warning", {"accessibility": ["smoke-effects"]}),
+            ("Konsti: Kirpputori", "label-default", {"konsti": ["fleamarket"]}),
+            ("Konsti: Larppi", "label-default", {"konsti": ["larp"]}),
+            ("Konsti: Placeholder", "label-default", {}),
         ]:
-            Tag.objects.get_or_create(
+            Tag.objects.update_or_create(
                 event=self.event,
                 title=tag_title,
                 defaults=dict(
                     style=tag_class,
+                    v2_dimensions=v2_dimensions,
+                    public=":" not in tag_title,
                 ),
             )
 
@@ -579,7 +709,7 @@ class Setup:
         ]:
             AccessibilityWarning.objects.get_or_create(name=accessibility_warning)
 
-        AlternativeProgrammeForm.objects.get_or_create(
+        AlternativeProgrammeForm.objects.update_or_create(
             event=self.event,
             slug="rpg",
             defaults=dict(
@@ -587,6 +717,7 @@ class Setup:
                 programme_form_code="events.tracon2024.forms:RpgForm",
                 num_extra_invites=0,
                 order=10,
+                v2_dimensions={"konsti": ["tabletopRPG"]},
             ),
         )
 
@@ -607,119 +738,9 @@ class Setup:
 
         self.event.programme_event_meta.create_groups()
 
-    def setup_program_v2(self):
-        """
-        This is for development purposes only. Once program v2 is up and running, there will be some
-        default form that will be used to initialize the event, and a feature will be provided to copy
-        forms from another event.
-        """
-        from forms.models import Form
-        from program_v2.models import Dimension, OfferForm, ProgramV2EventMeta
-        from programme.models import ProgrammeEventMeta
-
-        category_dimension, _ = Dimension.objects.get_or_create(
-            event=self.event,
-            slug="category",
-            defaults=dict(
-                title=dict(
-                    fi="Ohjelmatyyppi",
-                    en="Category",
-                ),
-            ),
-        )
-
-        (programme_admin_group,) = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins"])
-        ProgramV2EventMeta.objects.get_or_create(
-            event=self.event,
-            defaults=dict(
-                admin_group=programme_admin_group,
-                primary_dimension=category_dimension,
-            ),
-        )
-
-        with resource_stream("program_v2.models", "default_forms/fi.yml") as f:
-            default_form_fi_fields = yaml.safe_load(f)["fields"]
-
-        default_form_fi, _ = Form.objects.get_or_create(
-            event=self.event,
-            slug="program-default-fi",
-            language="fi",
-            defaults=dict(
-                title="Tarjoa puhe- tai muuta ohjelmaa",
-                fields=default_form_fi_fields,
-            ),
-        )
-
-        with resource_stream("program_v2.models", "default_forms/en.yml") as f:
-            default_form_en_fields = yaml.safe_load(f)["fields"]
-
-        default_form_en, _ = Form.objects.get_or_create(
-            event=self.event,
-            slug="program-default-en",
-            language="en",
-            defaults=dict(
-                title="Offer a talk or other programme item",
-                fields=default_form_en_fields,
-            ),
-        )
-
-        default_form, _ = OfferForm.objects.get_or_create(
-            event=self.event,
-            slug="default",
-            defaults=dict(
-                short_description=dict(
-                    fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi ei ole pöytäroolipeli.",
-                    en="Select this option if your programme item is not a tabletop role-playing game.",
-                ),
-                active_from=now(),
-            ),
-        )
-
-        if not default_form.languages.exists():
-            default_form.languages.set([default_form_fi, default_form_en])
-
-        rpg_form_fi, _ = Form.objects.get_or_create(
-            event=self.event,
-            slug="program-rpg-fi",
-            defaults=dict(
-                title="Tarjoa pöytäroolipeliä",
-                language="fi",
-                fields=[],
-            ),
-        )
-
-        rpg_form_en, _ = Form.objects.get_or_create(
-            event=self.event,
-            slug="program-rpg-en",
-            defaults=dict(
-                title="Offer a tabletop role-playing game",
-                language="en",
-                fields=[],
-            ),
-        )
-
-        rpg_form, _ = OfferForm.objects.get_or_create(
-            event=self.event,
-            slug="rpg",
-            defaults=dict(
-                short_description=dict(
-                    fi="Valitse tämä vaihtoehto, mikäli ohjelmanumerosi on pöytäroolipeli.",
-                    en="Select this option if your programme item is a tabletop role-playing game.",
-                ),
-                active_from=now(),
-            ),
-        )
-
-        if not rpg_form.languages.exists():
-            rpg_form.languages.set([rpg_form_fi, rpg_form_en])
-
-        Dimension.ensure_v1_default_dimensions(
-            self.event,
-            clear=False,
-        )
-
-        # leftover unattached forms that will come to haunt us at refresh_forms
-        Form.objects.filter(event=self.event, slug__startswith="programme-").delete()
+        for room in Room.objects.filter(event=self.event):
+            room.v2_dimensions = {"room": [room.slug]}
+            room.save(update_fields=["v2_dimensions"])
 
     def setup_access(self):
         from access.models import EmailAliasType, GroupEmailAliasGrant, GroupPrivilege, Privilege
@@ -790,19 +811,6 @@ class Setup:
         for team in Team.objects.filter(event=self.event):
             team.is_public = team.slug != "tracoff"
             team.save()
-
-    def setup_directory(self):
-        from directory.models import DirectoryAccessGroup
-
-        labour_admin_group = self.event.labour_event_meta.get_group("admins")
-
-        assert self.event.end_time
-        DirectoryAccessGroup.objects.get_or_create(
-            organization=self.event.organization,
-            group=labour_admin_group,
-            active_from=now(),
-            active_until=self.event.end_time + timedelta(days=30),
-        )
 
     def setup_kaatoilmo(self):
         from labour.models import Survey
@@ -888,201 +896,50 @@ class Setup:
             Poison.objects.get_or_create(name=poison_name)
 
     def setup_forms(self):
-        from forms.models.dimension import DimensionDTO
-        from forms.models.form import Form
-        from forms.models.survey import Survey
+        from forms.models.survey import SurveyDTO
 
-        # Hackathon feedback survey
-
-        with resource_stream("events.tracon2024", "forms/hackathon-feedback.yml") as f:
-            data = yaml.safe_load(f)
-
-        hackathon_feedback_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="hackathon-feedback",
-            language="fi",
-            defaults=data,
-        )
-
-        hackathon_feedback_survey, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="hackathon-feedback",
-            defaults=dict(
-                active_from=now(),
+        for survey in [
+            SurveyDTO(
+                slug="artisan-application",
+                key_fields=["name", "email", "helper"],
             ),
-        )
-
-        hackathon_feedback_survey.languages.set([hackathon_feedback_fi])
-
-        # Vendor signup form
-
-        with resource_stream("events.tracon2024", "forms/vendor-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        vendor_application_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        with resource_stream("events.tracon2024", "forms/vendor-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        vendor_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        vendor_application_survey, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="vendor-application",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["name"],
+            SurveyDTO(
+                slug="artist-alley-application",
+                key_fields=["name", "email", "artist_name1", "location", "reserve"],
             ),
-        )
-
-        vendor_application_survey.languages.set([vendor_application_fi, vendor_application_en])
-
-        with resource_stream("events.tracon2024", "forms/vendor-application-dimensions.yml") as f:
-            data = yaml.safe_load(f)
-
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(vendor_application_survey)
-
-        # Expense claim form
-
-        expense_claim_survey, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="expense-claim",
-            defaults=dict(
-                active_from=now(),
+            SurveyDTO(
+                slug="expense-claim",
                 key_fields=["title", "amount"],
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),
-        )
-
-        with resource_stream("events.tracon2024", "forms/expense-claim-dimensions.yml") as f:
-            data = yaml.safe_load(f)
-
-        dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
-        DimensionDTO.save_many(expense_claim_survey, dimensions)
-
-        with resource_stream("events.tracon2024", "forms/expense-claim-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        expense_claim_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="expense-claim-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        with resource_stream("events.tracon2024", "forms/expense-claim-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        expense_claim_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="expense-claim-en",
-            language="en",
-            defaults=data,
-        )
-
-        expense_claim_survey.languages.set([expense_claim_fi, expense_claim_en])
-
-        # Artisan application
-
-        with resource_stream("events.tracon2024", "forms/artisan-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        artisan_appliation_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artisan-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        with resource_stream("events.tracon2024", "forms/artisan-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        artisan_appliation_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artisan-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        artisan_application, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="artisan-application",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["name", "email", "helper"],
-                login_required=True,
+            SurveyDTO(slug="hackathon-feedback"),
+            SurveyDTO(slug="jv-kertauskurssi"),
+            SurveyDTO(
+                slug="opening-closing-performer-application",
+                key_fields=["performer-name"],
             ),
-        )
-
-        artisan_application.languages.set([artisan_appliation_fi, artisan_appliation_en])
-
-        with resource_stream("events.tracon2024", "forms/artisan-application-dimensions.yml") as f:
-            data = yaml.safe_load(f)
-
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(artisan_application)
-
-        # Artist Alley application
-
-        with resource_stream("events.tracon2024", "forms/artist-alley-application-en.yml") as f:
-            data = yaml.safe_load(f)
-
-        artist_alley_application_en, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application-en",
-            language="en",
-            defaults=data,
-        )
-
-        # TODO(#386)
-        if not created:
-            artist_alley_application_en.fields = data["fields"]
-            artist_alley_application_en.save()
-
-        with resource_stream("events.tracon2024", "forms/artist-alley-application-fi.yml") as f:
-            data = yaml.safe_load(f)
-
-        artist_alley_application_fi, created = Form.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application-fi",
-            language="fi",
-            defaults=data,
-        )
-
-        # TODO(#386)
-        if not created:
-            artist_alley_application_fi.fields = data["fields"]
-            artist_alley_application_fi.save()
-
-        artist_alley_application, _ = Survey.objects.get_or_create(
-            event=self.event,
-            slug="artist-alley-application",
-            defaults=dict(
-                active_from=now(),
-                key_fields=["name", "email", "artist_name1", "location", "reserve"],
-                login_required=True,
+            SurveyDTO(
+                slug="vendor-application",
+                key_fields=["name"],
             ),
-        )
-
-        artist_alley_application.languages.set([artist_alley_application_fi, artist_alley_application_en])
-
-        with resource_stream("events.tracon2024", "forms/artist-alley-application-dimensions.yml") as f:
-            data = yaml.safe_load(f)
-
-        for dimension in data:
-            DimensionDTO.model_validate(dimension).save(artist_alley_application)
+            SurveyDTO(
+                slug="cosplay-jury-application",
+                key_fields=["performer_name"],
+                login_required=True,
+                anonymity="NAME_AND_EMAIL",
+            ),
+            SurveyDTO(
+                slug="virkistyspaiva",
+                login_required=True,
+                anonymity="NAME_AND_EMAIL",
+            ),
+            SurveyDTO(
+                slug="geekjam-signup",
+                key_fields=["nick", "instruments"],
+            ),
+        ]:
+            survey.save(self.event)
 
 
 class Command(BaseCommand):

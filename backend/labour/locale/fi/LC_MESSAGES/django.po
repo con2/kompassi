@@ -455,8 +455,8 @@ msgid "You can edit your answers via the same link until the survey expires at %
 msgstr "Voit muokata vastauksiasi saman linkin kautta kunnes kysely vanhenee %(expiration_date)s."
 
 #:
-msgid "{entry.person} signed up for volunteer work in {entry.event}"
-msgstr "{entry.person} ilmoittautui vapaaehtoistöihin tapahtumaan {entry.event}"
+msgid "{person} signed up for volunteer work in {event}"
+msgstr "{person} ilmoittautui vapaaehtoistöihin tapahtumaan {event}"
 
 #: templates/labour_survey_view.pug
 msgid "You can edit your answers via the same link until the survey is closed."
@@ -657,3 +657,9 @@ msgstr "Päivitä pätevyydet…"
 
 msgid "Your application to this event"
 msgstr "Hakemuksesi tähän tapahtumaan"
+
+msgid "Work reference"
+msgstr "Työtodistus"
+
+msgid "Override working hours for benefits calculation"
+msgstr "Aseta työtunnit käsin etuuslaskentaa varten"

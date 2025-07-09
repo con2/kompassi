@@ -5,7 +5,10 @@ from django.core.management.base import BaseCommand
 
 from access.models import AccessOrganizationMeta, EmailAliasDomain, EmailAliasType, SMTPServer
 from core.models import Organization
+from intra.models import IntraEventMeta
+from involvement.models.registry import Registry
 from membership.models import MembershipOrganizationMeta, Term
+from payments.models import PaymentsOrganizationMeta
 from payments.models.payments_organization_meta import META_DEFAULTS
 
 
@@ -17,8 +20,9 @@ class Setup:
         self.setup_core()
         self.setup_membership()
         self.setup_access()
-        self.setup_directory()
         self.setup_payments()
+        self.setup_intra()
+        self.setup_involvement()
 
     def setup_core(self):
         self.organization, unused = Organization.objects.get_or_create(
@@ -137,17 +141,29 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
             if created:
                 smtp_server.domains.add(domain)
 
-    def setup_directory(self):
-        from directory.models import DirectoryOrganizationMeta
-
-        DirectoryOrganizationMeta.objects.get_or_create(organization=self.organization)
-
     def setup_payments(self):
-        from payments.models import PaymentsOrganizationMeta
-
         PaymentsOrganizationMeta.objects.get_or_create(
             organization=self.organization,
             defaults=META_DEFAULTS,
+        )
+
+    def setup_intra(self):
+        # tracon-ry events since 2016 have dynamic organizer list in tracon/wp
+        IntraEventMeta.objects.filter(
+            event__organization=self.organization,
+            event__start_time__gte=date(2016, 1, 1),
+        ).update(
+            is_organizer_list_public=True,
+        )
+
+    def setup_involvement(self):
+        volunteers, _ = Registry.objects.get_or_create(
+            scope=self.organization.scope,
+            slug="volunteers",
+            defaults=dict(
+                title_en="Volunteers of Tracon ry",
+                title_fi="Tracon ry:n vapaaehtoisrekisteri",
+            ),
         )
 
 

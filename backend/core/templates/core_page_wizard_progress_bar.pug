@@ -1,8 +1,0 @@
-if page_wizard
-  .container
-    ol.breadcrumb
-      for link_text, active in page_wizard
-        if active
-          li.active: {{ link_text }}
-        else
-          li {{ link_text }}

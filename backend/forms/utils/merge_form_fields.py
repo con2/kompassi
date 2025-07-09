@@ -6,12 +6,15 @@ Note that fields present in only one language version are not guaranteed to be
 in any particular order.
 """
 
+from __future__ import annotations
+
 from collections.abc import Iterable, Sequence
 from functools import reduce
-from typing import Protocol, TypeVar
+from typing import TYPE_CHECKING, Protocol, TypeVar
 
-from ..models.field import Field
-from ..models.form import Form
+if TYPE_CHECKING:
+    from ..models.field import Field
+    from ..models.form import Form
 
 
 class HasSlug(Protocol):
@@ -21,7 +24,7 @@ class HasSlug(Protocol):
 T = TypeVar("T", bound=HasSlug)
 
 
-def _merge_choices(
+def merge_choices(
     choices: Sequence[T] | None,
     other_choices: Sequence[T] | None,
 ) -> list[T] | None:
@@ -42,9 +45,9 @@ def _merge_fields(fields: Sequence[Field], other_fields: Sequence[Field]) -> lis
 
     for field in fields:
         if field.choices:
-            result[field.slug].choices = _merge_choices(field.choices, result[field.slug].choices or [])
+            result[field.slug].choices = merge_choices(field.choices, result[field.slug].choices or [])
         if field.questions:
-            result[field.slug].questions = _merge_choices(field.questions, result[field.slug].questions or [])
+            result[field.slug].questions = merge_choices(field.questions, result[field.slug].questions or [])
 
     return list(result.values())
 

@@ -7,7 +7,6 @@ from .models import (
     AlternativeProgrammeForm,
     Category,
     Programme,
-    ProgrammeEventMeta,
     ProgrammeFeedback,
     Role,
     Room,
@@ -32,10 +31,6 @@ def activate_selected_items(modeladmin, request, queryset):
     queryset.update(active=False)
 
 
-class InlineProgrammeEventMetaAdmin(admin.StackedInline):
-    model = ProgrammeEventMeta
-
-
 class ProgrammeRoleInline(admin.TabularInline):
     model = Programme.organizers.through
     verbose_name = "organizer"
@@ -47,6 +42,7 @@ class ProgrammeAdmin(admin.ModelAdmin):
     fields = (
         "title",
         "category",
+        "state",
         "room",
         "start_time",
         "length",
@@ -54,10 +50,12 @@ class ProgrammeAdmin(admin.ModelAdmin):
         "paikkala_icon",
         "is_paikkala_public",
         "is_paikkala_time_visible",
+        "hosts_from_host",
     )
     readonly_fields = (
         "title",
         "category",
+        "state",
         "room",
         "start_time",
         "length",
@@ -66,6 +64,14 @@ class ProgrammeAdmin(admin.ModelAdmin):
     list_display = ("title", "category", "room", "start_time", "length", "end_time")
     list_filter = ("category__event",)
     search_fields = ("title",)
+
+
+class ProgrammeInline(admin.TabularInline):
+    model = Programme
+    fields = ("title", "category", "room", "start_time", "length", "end_time")
+    readonly_fields = ("title", "category", "room", "start_time", "length", "end_time")
+    extra = 0
+    show_change_link = True
 
 
 @admin.register(View)
@@ -98,6 +104,7 @@ class RoleAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("event", "title", "public")
     list_filter = ("event",)
+    inlines = [ProgrammeInline]
 
 
 @admin.register(SpecialStartTime)
@@ -204,7 +211,7 @@ class ProgrammeFeedbackAdmin(admin.ModelAdmin):
                 fields=("is_visible", "hidden_at", "hidden_by"),
             ),
         ),
-    )
+    )  # type: ignore
 
     def has_add_permission(self, *args, **kwargs):
         return False

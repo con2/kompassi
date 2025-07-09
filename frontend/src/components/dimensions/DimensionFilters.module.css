@@ -1,0 +1,10 @@
+.dimensionFilter:has(option:checked:not([value=""])),
+.searchTerm[value]:not([value=""]) {
+  background-color: var(--bs-primary);
+  color: white;
+}
+
+.dimensionFilter:has(option:checked:not([value=""]))::placeholder,
+.searchTerm[value]:not([value=""])::placeholder {
+  color: white;
+}

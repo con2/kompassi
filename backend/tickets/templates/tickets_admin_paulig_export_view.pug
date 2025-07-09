@@ -1,0 +1,23 @@
+- load static
+html
+  head
+    title
+      block full_title
+        | {{ event.name }}: Tilaukset &ndash; {{ settings.KOMPASSI_INSTALLATION_NAME }}
+    link(rel='stylesheet', href='{% static "kompassi.css" %}')
+    link(rel='stylesheet', href='{% static "core/css/font-awesome.min.css" %}')
+    link(rel='icon', type='image/png', href='/static/favicon.png')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+  body
+    .container
+      h1 {{ event.name }}: Tilaukset
+      for order, filtered_order_products in orders_with_filtered_products
+        table.table.table-striped.table-bordered(style="break-inside: avoid")
+          thead
+            tr
+              th(scope="rowgroup", colspan="2") {{ order.customer }}
+          tbody
+            for op in filtered_order_products
+              tr
+                td {{ op.product.name }}
+                td {{ op.count }} kpl

@@ -206,7 +206,6 @@ class Setup:
 
         defaults = dict(
             admin_group=tickets_admin_group,
-            due_days=14,
             reference_number_template="2018{:05d}",
             contact_email="Matsucon <matsuconfi@gmail.com>",
             ticket_free_text="Tämä on sähköinen lippusi Matsucon 2018 -tapahtumaan. Sähköinen lippu vaihdetaan\n"
@@ -286,7 +285,6 @@ class Setup:
                 ],
                 price_cents=700,
                 electronic_ticket=False,
-                requires_accommodation_information=True,
                 available=True,
                 ordering=ordering(),
             ),
@@ -298,7 +296,6 @@ class Setup:
                 ],
                 price_cents=1000,
                 electronic_ticket=False,
-                requires_accommodation_information=True,
                 available=True,
                 ordering=ordering(),
             ),

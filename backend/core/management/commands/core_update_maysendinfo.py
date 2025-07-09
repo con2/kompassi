@@ -16,7 +16,6 @@ class Command(BaseCommand):
         users = User.objects.filter(person__may_send_info=True)
         group.user_set.set(users, clear=True)
         logger.info(
-            "{num_users} users will now receive info spam".format(
-                num_users=Group.objects.get(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME).user_set.count(),
-            )
+            "%d users will now receive info spam",
+            Group.objects.get(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME).user_set.count(),
         )

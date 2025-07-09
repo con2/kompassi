@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: uvicorn
+spec:
+  selector:
+    matchLabels:
+      stack: kompassi
+      component: uvicorn
+  template:
+    metadata:
+      labels:
+        stack: kompassi
+        component: uvicorn
+    spec:
+      affinity: !With
+        vars:
+          param_component_name: uvicorn
+        template: !Var macro_pod_affinity
+      enableServiceLinks: false
+      securityContext: !Var kompassi_pod_security_context
+      containers:
+        - name: master
+          image: !Var kompassi_image
+          ports:
+            - containerPort: 7998
+          env: !Var kompassi_environment
+          securityContext: !Var kompassi_container_security_context
+          args:
+            - uvicorn
+            - --host=0.0.0.0
+            - --port=7998
+            - --no-access-log
+            - !Format "--workers={kompassi_workers}"
+            - tickets_v2.optimized_server.app:app
+          startupProbe:
+            httpGet:
+              path: /api/tickets-v2/status
+              port: 7998
+              httpHeaders:
+                - name: Host
+                  value: !Lookup ingress_public_hostnames[0]
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            # 5 * 12 seconds = 1 minute
+            failureThreshold: 12
+          readinessProbe:
+            httpGet:
+              path: /api/tickets-v2/status
+              port: 7998
+              httpHeaders:
+                - name: Host
+                  value: !Lookup ingress_public_hostnames[0]
+            initialDelaySeconds: 0
+            periodSeconds: 30
+          livenessProbe:
+            httpGet:
+              path: /api/tickets-v2/status
+              port: 7998
+              httpHeaders:
+                - name: Host
+                  value: !Lookup ingress_public_hostnames[0]
+            initialDelaySeconds: 15
+            periodSeconds: 30

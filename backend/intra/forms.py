@@ -1,6 +1,9 @@
+from __future__ import annotations
+
+from typing import Any
+
 from crispy_forms.layout import Fieldset, Layout
 from django import forms
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
@@ -43,15 +46,15 @@ class TeamMemberForm(forms.ModelForm):
             ]:
                 del self.fields[field_name]
 
-        self.fields["team"].queryset = Team.objects.filter(event=event)
-        self.fields["person"].queryset = Person.objects.filter(
+        self.fields["team"].queryset = Team.objects.filter(event=event)  # type: ignore
+        self.fields["person"].queryset = Person.objects.filter(  # type: ignore
             user__groups=event.intra_event_meta.organizer_group,
         )
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
 
-        layout_parts = [
+        layout_parts: list[Any] = [
             "team",
             "person",
         ]
@@ -119,9 +122,21 @@ class PrivilegesForm(forms.Form):
             "The Programme admin can approve or reject programme offers, modify the event programme schedule etc."
         ),
     )
+    program_v2 = forms.BooleanField(
+        required=False,
+        label=_("Program v2 admin"),
+        help_text=_(
+            "The Program admin can approve or reject program offers, modify the event program schedule etc. in Program V2."
+        ),
+    )
     tickets = forms.BooleanField(
         required=False,
         label=_("Tickets admin"),
+        help_text=_("The Tickets admin can view, cancel and modify ticket orders and exchange electronic tickets."),
+    )
+    tickets_v2 = forms.BooleanField(
+        required=False,
+        label=_("Tickets v2 admin"),
         help_text=_("The Tickets admin can view, cancel and modify ticket orders and exchange electronic tickets."),
     )
     badges = forms.BooleanField(
@@ -133,6 +148,11 @@ class PrivilegesForm(forms.Form):
         required=False,
         label=_("Intra admin"),
         help_text=_("The Intra admin can assign organizers to teams and manage these privileges."),
+    )
+    forms = forms.BooleanField(
+        required=False,
+        label=_("Surveys admin"),
+        help_text=_("The Surveys admin can manage surveys and view survey responses."),
     )
 
     def __init__(self, *args, **kwargs):
@@ -161,27 +181,24 @@ class PrivilegesForm(forms.Form):
         self.helper.layout = Layout(Fieldset(_("Privileges"), *layout_fields))
 
     @classmethod
-    def save(cls, forms: list["PrivilegesForm"]):
+    def save(cls, forms: list[PrivilegesForm]):
+        from .tasks import privileges_form_save
+
         if not forms:
             return
 
         event = forms[0].event
-
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from .tasks import privileges_form_save
-
-            data = [(form.user.id, form.cleaned_data) for form in forms]
-            privileges_form_save.delay(event.id, data)
-        else:
-            data = [(form.user, form.cleaned_data) for form in forms]
-            cls._save(event, data)
+        data = [(form.user.id, form.cleaned_data) for form in forms]
+        privileges_form_save.delay(event.id, data)  # type: ignore
 
     @classmethod
     def _save(cls, event: Event, data: list[tuple[AbstractUser, dict[str, bool]]]):
         for user, is_member_by_app in data:
             for app_label in event.intra_event_meta.get_active_apps():
                 ensure_user_is_member_of_group(
-                    user, event.get_app_event_meta(app_label).admin_group, is_member_by_app[app_label]
+                    user,
+                    event.get_app_event_meta(app_label).admin_group,
+                    is_member_by_app[app_label],
                 )
 
         CBACEntry.ensure_admin_group_privileges_for_event(event)

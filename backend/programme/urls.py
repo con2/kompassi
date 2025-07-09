@@ -3,45 +3,22 @@ from django.views.generic import RedirectView
 
 from programme.views.paikkala_views import paikkala_special_reservation_view
 
-from .views import (
-    accept_invitation_view,
-    admin_change_host_role_view,
-    admin_change_invitation_role_view,
-    admin_cold_offers_view,
-    admin_create_view,
-    admin_detail_view,
-    admin_email_list_view,
-    admin_feedback_view,
-    admin_invitations_view,
-    admin_mail_editor_view,
-    admin_mail_view,
-    admin_organizers_view,
-    admin_publish_view,
-    admin_reservation_status_view,
-    admin_reservations_export_view,
-    admin_rooms_view,
-    admin_schedule_update_view_view,
-    admin_schedule_view,
-    admin_special_view,
-    admin_view,
-    feedback_view,
-    internal_adobe_taggedtext_view,
-    internal_schedule_view,
-    json_view,
-    mobile_schedule_view,
-    offer_form_view,
-    offer_view,
-    paikkala_inspection_view,
-    paikkala_relinquish_view,
-    paikkala_reservation_view,
-    plaintext_view,
-    profile_detail_view,
-    profile_feedback_view,
-    profile_reservations_view,
-    profile_view,
-    schedule_view,
-    special_view,
-)
+from .views.admin_detail_view import admin_detail_view
+from .views.admin_feedback_view import admin_feedback_view
+from .views.admin_invitations_view import admin_invitations_view
+from .views.admin_mail_editor_view import admin_mail_editor_view
+from .views.admin_mail_view import admin_mail_view
+from .views.admin_organizers_view import admin_organizers_view
+from .views.admin_reservation_status_view import admin_reservation_status_view
+from .views.admin_reservations_export_view import admin_reservations_export_view
+from .views.admin_rooms_view import admin_rooms_view
+from .views.admin_views import admin_email_list_view, admin_view
+from .views.paikkala_views import paikkala_inspection_view, paikkala_relinquish_view, paikkala_reservation_view
+from .views.profile_detail_view import profile_detail_view
+from .views.profile_feedback_view import profile_feedback_view
+from .views.profile_reservations_view import profile_reservations_view
+from .views.profile_view import profile_view
+from .views.schedule_redirect_view import schedule_redirect_view
 
 app_name = "programme"
 urlpatterns = [
@@ -52,52 +29,13 @@ urlpatterns = [
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/?$",
-        schedule_view,
-        dict(show_programme_actions=True),
-        name="schedule_view",
+        schedule_redirect_view,
+        name="schedule_redirect_view",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/special/?$",
-        special_view,
-        dict(show_programme_actions=True),
-        name="special_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/special/fragment/?$",
-        special_view,
-        dict(template="programme_list.pug"),
-        name="special_fragment_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/fragment/?$",
-        schedule_view,
-        dict(template="programme_schedule_fragment.pug"),
-        name="programme_schedule_fragment",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/mobile/?$",
-        mobile_schedule_view,
-        name="mobile_schedule_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/full/?$",
-        internal_schedule_view,
-        name="internal_schedule_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/new/?$",
-        offer_view,
-        name="offer_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/new/(?P<form_slug>[a-z0-9-]+)/?$",
-        offer_form_view,
-        name="offer_form_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/feedback/?$",
-        feedback_view,
-        name="feedback_view",
+        schedule_redirect_view,
+        name="schedule_redirect_view_special",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/reservations/(?P<pk>\d+)/relinquish/?$",
@@ -120,57 +58,9 @@ urlpatterns = [
         name="paikkala_special_reservation_view",
     ),
     re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme\.taggedtext$",
-        internal_adobe_taggedtext_view,
-        name="internal_adobe_taggedtext_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme\.txt$",
-        plaintext_view,
-        name="plaintext_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme\.json$",
-        json_view,
-        name="json_view_legacy_url",
-    ),
-    re_path(
-        r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme$",
-        json_view,
-        name="json_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/desucon\.json$",
-        json_view,
-        dict(format="desucon"),
-        name="moe_view",
-    ),
-    re_path(
-        r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/ropecon/?$",
-        json_view,
-        dict(format="ropecon"),
-        name="rcon_view",
-    ),
-    re_path(
-        r"^api/v1/events/(?P<event_slug>[a-z0-9-]+)/programme/hitpoint/?$",
-        json_view,
-        dict(format="hitpoint"),
-        name="hitpoint_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/invitation/(?P<code>[a-f0-9]+)/?$",
-        accept_invitation_view,
-        name="accept_invitation_view",
-    ),
-    re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/?$",
         admin_view,
         name="admin_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/new/?$",
-        admin_create_view,
-        name="admin_create_view",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/?$",
@@ -178,19 +68,9 @@ urlpatterns = [
         name="admin_detail_view",
     ),
     re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/invitations/(?P<invitation_id>\d+)/?$",
-        admin_change_invitation_role_view,
-        name="admin_change_invitation_role_view",
-    ),
-    re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/reservations\.xlsx$",
         admin_reservations_export_view,
         name="admin_reservations_export_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/hosts/(?P<programme_role_id>\d+)/?$",
-        admin_change_host_role_view,
-        name="admin_change_host_role_view",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/invitations/?$",
@@ -216,31 +96,6 @@ urlpatterns = [
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/rooms/?$",
         admin_rooms_view,
         name="admin_rooms_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/schedule/?$",
-        admin_schedule_view,
-        name="admin_schedule_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/schedule/view/(?P<view_id>\d+)/?$",
-        admin_schedule_update_view_view,
-        name="admin_schedule_update_view_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/special/?$",
-        admin_special_view,
-        name="admin_special_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/publish/?$",
-        admin_publish_view,
-        name="admin_publish_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/start/?$",
-        admin_cold_offers_view,
-        name="admin_cold_offers_view",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/reservations/?$",

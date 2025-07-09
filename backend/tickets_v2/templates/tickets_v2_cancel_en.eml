@@ -1,0 +1,18 @@
+{% load tickets_v2_tags %}Dear recipient,
+
+Your order number {{ order_number|format_order_number }} made in the
+online shop of {{ event_name }} has been cancelled.
+
+Contents of the order:
+
+{% for op in products %}{{ op.quantity }} pcs  {{ op.title }}
+    {{ op.quantity }} x {{ op.price|format_money }}
+{% endfor %}
+Total: {{ total_price|format_money }} (VAT 0%)
+
+If you suspect this is in error, please contact us by replying to this message.{% if is_refund %}
+
+The payment will be refunded to the original payment method. If you do not see
+the refund in 5 banking days, please contact us by replying to this message.{% endif %}
+
+{% include "tickets_v2_footer_en.eml" %}

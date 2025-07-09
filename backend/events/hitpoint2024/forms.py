@@ -149,14 +149,101 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         return dict()
 
 
+class ProgrammeOfferForm(forms.ModelForm, AlternativeProgrammeFormMixin):
+    def __init__(self, *args, **kwargs):
+        event = kwargs.pop("event")
+        if "admin" in kwargs:
+            admin = kwargs.pop("admin")
+        else:
+            admin = False
+
+        super().__init__(*args, **kwargs)
+
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+
+        for field_name in [
+            "title",
+        ]:
+            self.fields[field_name].required = True
+
+        if not admin:
+            for field_name in [
+                "description",
+                # "video_permission",
+                # "stream_permission",
+                "photography",
+                "rerun",
+                # "encumbered_content",
+            ]:
+                self.fields[field_name].required = True
+
+        self.fields["category"].queryset = Category.objects.filter(event=event, public=True)
+        self.fields["category"].label = _("Topic")
+
+    def get_excluded_field_defaults(self):
+        return dict()
+
+    class Meta:
+        model = Programme
+        fields = (
+            "title",
+            "description",
+            "category",
+            "computer",
+            "use_audio",
+            "use_video",
+            # "number_of_microphones",
+            "tech_requirements",
+            # "video_permission",
+            # "stream_permission",
+            # "encumbered_content",
+            "photography",
+            "rerun",
+            "room_requirements",
+            "requested_time_slot",
+            "notes_from_host",
+        )
+
+
+class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = horizontal_form_helper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            "shirt_size",
+            "special_diet",
+            "special_diet_other",
+        )
+
+    class Meta:
+        model = SignupExtra
+        fields = (
+            "shirt_size",
+            "special_diet",
+            "special_diet_other",
+        )
+
+        widgets = dict(
+            special_diet=forms.CheckboxSelectMultiple,
+        )
+
+    def get_excluded_field_defaults(self):
+        return dict(
+            free_text="Syötetty käyttäen ohjelmanjärjestäjän ilmoittautumislomaketta",
+            shift_type="kaikkikay",
+        )
+
+
 DESCRIPTION_HELP_TEXT = _(
     "Advertise your game to potential players. Also explain, what is expected of players "
     "and what kind of themes are involved. Be extra sure to inform about potentially "
     "shocking themes. Recommended length is 300–500 characters. We reserve the right "
     "to edit this as necessary (including but not limited to shortening)."
 )
-APPROXIMATE_LENGTH_HELP_TEXT = _(
-    "In order to gain free entry, you are required to run at in total least four " "hours of games."
+MAX_RUNS_HELP_TEXT = _(
+    "How many times are you prepared to run this game? For free entry, you are expected to run a game for at least four hours."
 )
 
 
@@ -173,6 +260,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "title",
             "rpg_system",
             "approximate_length",
+            "max_runs",
             "min_players",
             "max_players",
             "description",
@@ -188,7 +276,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             ),
         )
 
-        self.fields["approximate_length"].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields["max_runs"].help_text = MAX_RUNS_HELP_TEXT
 
         self.fields["three_word_description"].required = True
         self.fields["three_word_description"].label = _("Summary in one sentence")
@@ -208,6 +296,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "title",
             "rpg_system",
             "approximate_length",
+            "max_runs",
             "min_players",
             "max_players",
             "three_word_description",
@@ -249,10 +338,12 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         self.helper.layout = Layout(
             "title",
             "approximate_length",
+            "max_runs",
             "min_players",
             "max_players",
             "description",
             "three_word_description",
+            "room_requirements",
             "physical_play",
             "other_author",
             "hitpoint2020_preferred_time_slots",
@@ -260,12 +351,13 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             Fieldset(
                 _("Whom is the game for?"),
                 "is_english_ok",
+                "is_children_friendly",
                 "is_age_restricted",
                 "is_beginner_friendly",
             ),
         )
 
-        self.fields["approximate_length"].help_text = APPROXIMATE_LENGTH_HELP_TEXT
+        self.fields["max_runs"].help_text = MAX_RUNS_HELP_TEXT
 
         self.fields["three_word_description"].required = True
         self.fields["three_word_description"].label = _("Summary in one sentence")
@@ -282,15 +374,18 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
         fields = (
             "title",
             "approximate_length",
+            "max_runs",
             "min_players",
             "max_players",
             "description",
             "three_word_description",
+            "room_requirements",
             "physical_play",
             "other_author",
             "hitpoint2020_preferred_time_slots",
             "notes_from_host",
             "is_english_ok",
+            "is_children_friendly",
             "is_age_restricted",
             "is_beginner_friendly",
         )
@@ -316,7 +411,7 @@ class SwagSurvey(forms.ModelForm):
 
     @classmethod
     def get_instance_for_event_and_person(cls, event, person):
-        return SignupExtra.objects.get(signup__event=event, signup__person=person)
+        return SignupExtra.objects.get(event=event, person=person)
 
     class Meta:
         model = SignupExtra

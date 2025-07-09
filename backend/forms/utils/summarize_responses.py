@@ -5,13 +5,15 @@ See ../tests.py:test_summarize_responses for examples.
 
 from collections import Counter
 from enum import Enum
-from typing import Any, Literal
+from typing import Any, Literal, Self
 
 import pydantic
 
 from ..models.field import Field, FieldType
 
 # NOTE: Keep in sync with frontend/src/components/SchemaForm/models.ts
+
+Values = dict[str, Any]
 
 
 class SummaryType(str, Enum):
@@ -22,23 +24,29 @@ class SummaryType(str, Enum):
     FILE_UPLOAD = "FileUpload"
 
 
-class BaseFieldSummary(pydantic.BaseModel):
+class BaseFieldSummary(pydantic.BaseModel, populate_by_name=True):
     # XXX(pyright): pyright does not understand populate_by_name=True, hence javaScriptCase here
-    countResponses: int
-    countMissingResponses: int
+    count_responses: int = pydantic.Field(
+        validation_alias="countResponses",
+        serialization_alias="countResponses",
+    )
+    count_missing_responses: int = pydantic.Field(
+        validation_alias="countMissingResponses",
+        serialization_alias="countMissingResponses",
+    )
 
 
-class TextFieldSummary(BaseFieldSummary):
+class TextFieldSummary(BaseFieldSummary, populate_by_name=True):
     type: Literal[SummaryType.TEXT] = SummaryType.TEXT
     summary: list[str]
 
 
-class FileUploadSummary(BaseFieldSummary):
+class FileUploadSummary(BaseFieldSummary, populate_by_name=True):
     type: Literal[SummaryType.FILE_UPLOAD] = SummaryType.FILE_UPLOAD
     summary: list[str]
 
 
-class SingleCheckboxSummary(BaseFieldSummary):
+class SingleCheckboxSummary(BaseFieldSummary, populate_by_name=True):
     """
     For a single checkbox field, there is no separation between "not answered" and "not checked".
     Hence the summary is the number of responses that had the checkbox checked, and that is
@@ -48,12 +56,35 @@ class SingleCheckboxSummary(BaseFieldSummary):
     type: Literal[SummaryType.SINGLE_CHECKBOX] = SummaryType.SINGLE_CHECKBOX
 
 
-class SelectFieldSummary(BaseFieldSummary):
+class SelectFieldSummary(BaseFieldSummary, populate_by_name=True):
     type: Literal[SummaryType.SELECT] = SummaryType.SELECT
     summary: dict[str, int]
 
+    @classmethod
+    def from_valuesies(cls, field: Field, valuesies: list[Values], total_responses: int) -> Self:
+        field_summary = Counter()
 
-class MatrixFieldSummary(BaseFieldSummary):
+        for value in valuesies:
+            value = value.get(field.slug)
+            if value is None:
+                continue
+
+            # javascript object keys are always strings
+            value = str(value)
+
+            field_summary[value] += 1
+
+        count_responses = sum(field_summary.values())
+        count_missing_responses = total_responses - count_responses
+
+        return cls(
+            count_responses=count_responses,
+            count_missing_responses=count_missing_responses,
+            summary=dict(field_summary),
+        )
+
+
+class MatrixFieldSummary(BaseFieldSummary, populate_by_name=True):
     type: Literal[SummaryType.MATRIX] = SummaryType.MATRIX
     summary: dict[str, dict[str, int]]
 
@@ -62,7 +93,7 @@ FieldSummary = TextFieldSummary | SingleCheckboxSummary | SelectFieldSummary | M
 Summary = dict[str, FieldSummary]
 
 
-def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) -> Summary:
+def summarize_responses(fields: list[Field], valuesies: list[Values]) -> Summary:
     summary: Summary = {}
 
     total_responses = len(valuesies)
@@ -72,32 +103,17 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
             case FieldType.STATIC_TEXT | FieldType.SPACER | FieldType.DIVIDER:
                 pass
 
-            # TODO: handle htmlType="number" for high cardinality fields
-            case FieldType.SINGLE_LINE_TEXT if field.html_type == "number":
-                field_summary = Counter()
-
-                for value in valuesies:
-                    value = value.get(field.slug)
-                    if value is None:
-                        continue
-
-                    # javascript object keys are always strings
-                    value = str(value)
-
-                    field_summary[value] += 1
-
-                count_responses = sum(field_summary.values())
-                count_missing_responses = total_responses - count_responses
-
-                summary[field.slug] = SelectFieldSummary(
-                    countResponses=count_responses,
-                    countMissingResponses=count_missing_responses,
-                    summary=dict(field_summary),
+            case FieldType.NUMBER_FIELD:
+                summary[field.slug] = SelectFieldSummary.from_valuesies(
+                    field=field,
+                    valuesies=valuesies,
+                    total_responses=total_responses,
                 )
 
             # TODO(#436) Time zone handling
             case (
                 FieldType.SINGLE_LINE_TEXT
+                | FieldType.DECIMAL_FIELD
                 | FieldType.MULTI_LINE_TEXT
                 | FieldType.DATE_FIELD
                 | FieldType.TIME_FIELD
@@ -120,8 +136,8 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 count_missing_responses = total_responses - count_responses
 
                 summary[field.slug] = TextFieldSummary(
-                    countResponses=count_responses,
-                    countMissingResponses=count_missing_responses,
+                    count_responses=count_responses,
+                    count_missing_responses=count_missing_responses,
                     summary=field_summary,
                 )
 
@@ -142,8 +158,8 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 count_missing_responses = total_responses - count_responses
 
                 summary[field.slug] = FileUploadSummary(
-                    countResponses=count_responses,
-                    countMissingResponses=count_missing_responses,
+                    count_responses=count_responses,
+                    count_missing_responses=count_missing_responses,
                     summary=field_summary,
                 )
 
@@ -152,8 +168,8 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 count_missing_responses = total_responses - count_responses
 
                 summary[field.slug] = SingleCheckboxSummary(
-                    countResponses=count_responses,
-                    countMissingResponses=count_missing_responses,
+                    count_responses=count_responses,
+                    count_missing_responses=count_missing_responses,
                 )
 
             case FieldType.SINGLE_SELECT:
@@ -176,8 +192,8 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
 
                 summary[field.slug] = SelectFieldSummary(
                     summary=dict(field_summary),
-                    countResponses=count_responses,
-                    countMissingResponses=count_missing_responses,
+                    count_responses=count_responses,
+                    count_missing_responses=count_missing_responses,
                 )
 
             case FieldType.MULTI_SELECT:
@@ -200,8 +216,8 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 count_missing_responses = total_responses - count_responses
 
                 summary[field.slug] = SelectFieldSummary(
-                    countResponses=count_responses,
-                    countMissingResponses=count_missing_responses,
+                    count_responses=count_responses,
+                    count_missing_responses=count_missing_responses,
                     summary=dict(field_summary),
                 )
 
@@ -230,8 +246,8 @@ def summarize_responses(fields: list[Field], valuesies: list[dict[str, Any]]) ->
                 count_missing_responses = total_responses - count_responses
 
                 summary[field.slug] = MatrixFieldSummary(
-                    countResponses=count_responses,
-                    countMissingResponses=count_missing_responses,
+                    count_responses=count_responses,
+                    count_missing_responses=count_missing_responses,
                     summary=field_summary,
                 )
 

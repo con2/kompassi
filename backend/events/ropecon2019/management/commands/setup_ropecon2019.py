@@ -691,7 +691,6 @@ Ropeconissa on myös akateeminen seminaari. Akateemiseen seminaariin on erilline
         defaults = dict(
             admin_group=tickets_admin_group,
             pos_access_group=pos_access_group,
-            due_days=14,
             reference_number_template="2019{:05d}",
             contact_email="Ropecon 2019 -lipunmyynti <lipunmyynti@ropecon.fi>",
             ticket_free_text="Tämä on sähköinen lippusi Ropecon 2019 -tapahtumaan. Sähköinen lippu vaihdetaan rannekkeeseen\n"

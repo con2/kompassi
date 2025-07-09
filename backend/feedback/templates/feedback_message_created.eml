@@ -1,14 +1,11 @@
 {{ settings.KOMPASSI_INSTALLATION_NAME|safe }} on saanut palautetta palautelaatikon kautta. Voit vastata palautteen kirjoittajalle suoraan vastaamalla tähän sähköpostiviestiin.
 
 Lähettäjä:
-{{ entry.feedback_message.author_display_name|safe }}
-
-Lähettäjän sähköpostiosoite:
-{{ entry.feedback_message.author_email|safe }}
+{{ actor_display_name|safe }} <{{ actor_email|safe }}>
 
 Viesti:
 
-{{ entry.feedback_message.feedback|safe }}
+{{ feedback_message|safe }}
 
 --
-{{ settings.DEFAULT_FROM_EMAIL }}
+{{ default_from_email }}

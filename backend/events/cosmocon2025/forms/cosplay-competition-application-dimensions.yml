@@ -1,0 +1,27 @@
+- slug: status
+  title:
+    fi: Tila
+    en: Status
+  isKeyDimension: true
+  isPublic: true
+  choices:
+    - slug: new
+      color: blue
+      title:
+        fi: Uusi
+        en: New
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+        en: Accepted
+    - slug: rejected
+      color: red
+      title:
+        fi: Hylätty
+        en: Rejected
+    - slug: reserve
+      color: yellow
+      title:
+        fi: Varasija
+        en: Reserve

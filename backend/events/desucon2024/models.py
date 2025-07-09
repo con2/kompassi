@@ -43,8 +43,22 @@ ACCOMMODATION_CHOICES = [
     ("whole_weekend", "Majoitun koko viikonlopun"),
 ]
 
+GENDER_SEGREGATION_CHOICES = [
+    ("m", "Miesten vuoro"),
+    ("f", "Naisten vuoro"),
+    ("x", "Sekasauna"),
+    ("z", "Ei väliä / en sauno"),
+]
+
 
 class SpecialDiet(models.Model):
+    name = models.CharField(max_length=63)
+
+    def __str__(self):
+        return self.name
+
+
+class Poison(models.Model):
     name = models.CharField(max_length=63)
 
     def __str__(self):
@@ -140,6 +154,20 @@ class SignupExtra(SignupExtraBase):
             "tapahtuman molempina öinä. Majoitustilan riittävyyden arvioimiseksi pyydämme ilmoittamaan, "
             "tarvitsetko majoitusta ja mille öille."
         ),
+    )
+
+    pick_your_poison = models.ManyToManyField(
+        Poison,
+        blank=True,
+        verbose_name="Mitä haluaisit juoda kaatajaisissa?",
+    )
+
+    gender_segregation = models.CharField(
+        verbose_name="Saunavuoro",
+        help_text="Millä saunavuorolla haluat saunoa? Tämä ei sido sinua mihinkään; käytämme tietoa saunavuorojen aikatauluttamiseen.",
+        max_length=1,
+        choices=GENDER_SEGREGATION_CHOICES,
+        default="z",
     )
 
     @classmethod

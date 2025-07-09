@@ -2,16 +2,16 @@ import argparse
 import logging
 from collections.abc import Iterable
 
-import pkg_resources
 from django.core.management.base import BaseCommand
 
+from core.utils.pkg_resources_compat import resource_string
 from labour.models.roster import Shift
 from programme.models.programme_role import ProgrammeRole
 
 from ...models import Event
 
 logger = logging.getLogger("kompassi")
-DUPLICATE_PROGRAMME_ROLES_SQL = pkg_resources.resource_string(__name__, "sql/duplicate_programme_roles.sql").decode()
+DUPLICATE_PROGRAMME_ROLES_SQL = resource_string(__name__, "sql/duplicate_programme_roles.sql").decode()
 
 
 class Command(BaseCommand):

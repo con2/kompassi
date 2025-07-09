@@ -1,4 +1,5 @@
 extends core_admin_base
+- load trans from i18n
 block title
   | Badget
 block admin_content
@@ -52,9 +53,12 @@ block admin_content
               th
         .panel-footer.clearfix
           .btn-group.pull-right
+            a.btn.btn-default(href='{% url "badges_admin_import_view" event.slug %}')
+              i.fa.fa-plus.kompassi-icon-space-right
+              {% trans "Import badges" %}
             a.btn.btn-success(href='{% url "badges_admin_create_view" event.slug %}')
               i.fa.fa-plus.kompassi-icon-space-right
-              | Lisää uusi käsin
+              {% trans "Manually add a badge" %}
 
 block extra_scripts
   style

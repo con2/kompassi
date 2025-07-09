@@ -3,7 +3,6 @@ import logging
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.utils import timezone
-from django.views.decorators.http import require_safe
 
 from core.csv_export import CSV_EXPORT_FORMATS, EXPORT_FORMATS, ExportFormat, csv_response
 from core.models import Person
@@ -137,20 +136,6 @@ def admin_view(request, vars, event, format="screen"):
         return render(request, "programme_admin_print_view.pug", vars)
     else:
         raise NotImplementedError(format)
-
-
-@programme_admin_required
-@require_safe
-def admin_special_view(request, vars, event):
-    from .public_views import actual_special_view
-
-    return actual_special_view(
-        request,
-        event,
-        template="programme_admin_special_view.pug",
-        vars=vars,
-        show_programme_actions=True,
-    )
 
 
 @programme_admin_required

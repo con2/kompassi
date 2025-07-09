@@ -1,0 +1,27 @@
+- slug: participation
+  isKeyDimension: true
+  isMultiValue: true
+  title:
+    fi: Osallistuminen
+  choices:
+    - slug: ruoka
+      title:
+        fi: Ruokailuun
+    - slug: ilta
+      title:
+        fi: Iltaohjelmaan
+
+- slug: status
+  isKeyDimension: true
+  isPublic: true
+  title:
+    fi: Tila
+  choices:
+    - slug: in-effect
+      color: blue
+      title:
+        fi: Voimassa
+    - slug: cancelled
+      color: red
+      title:
+        fi: Peruutettu

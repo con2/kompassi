@@ -1,23 +1,24 @@
+from __future__ import annotations
+
 import logging
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
-from datetime import time as dtime
 from typing import TYPE_CHECKING
 
-from dateutil.tz import tzlocal
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.db import connection, models
 from django.template.loader import render_to_string
 from django.utils import timezone, translation
 from django.utils.translation import gettext_lazy as _
-from pkg_resources import resource_string
 
 from core.models.event import Event
-from core.utils import url
+from core.utils.pkg_resources_compat import resource_string
+from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
-from ..utils import append_reference_number_checksum, format_date, format_price
-from .consts import LANGUAGE_CHOICES, UNPAID_CANCEL_HOURS
+from ..utils import append_reference_number_checksum, format_price
+from .consts import UNPAID_CANCEL_HOURS
+from .customer import Customer
 from .tickets_event_meta import TicketsEventMeta
 
 if TYPE_CHECKING:
@@ -37,11 +38,11 @@ class ArrivalsRow:
 
 
 class Order(models.Model):
-    order_product_set: models.QuerySet["OrderProduct"]
+    order_product_set: models.QuerySet[OrderProduct]
 
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
 
-    customer = models.OneToOneField("tickets.Customer", on_delete=models.CASCADE, null=True, blank=True)
+    customer = models.OneToOneField(Customer, on_delete=models.CASCADE, null=True, blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
 
     confirm_time = models.DateTimeField(
@@ -74,7 +75,8 @@ class Order(models.Model):
     language = models.CharField(
         max_length=2,
         blank=True,
-        default=LANGUAGE_CHOICES[0][0],
+        choices=get_language_choices(),
+        default=DEFAULT_LANGUAGE,
         verbose_name="Kieli",
     )
 
@@ -91,21 +93,14 @@ class Order(models.Model):
         return self.payment_date is not None
 
     @property
-    def is_overdue(self):
-        return self.due_date and self.is_confirmed and not self.is_paid and self.due_date < timezone.now()
-
-    @property
     def is_cancelled(self):
         return self.cancellation_time is not None
 
     @property
     def price_cents(self):
-        # TODO Port to Django DB reduction functions if possible
-        return sum(op.price_cents for op in self.order_product_set.all())
-
-    @property
-    def requires_accommodation_information(self):
-        return self.order_product_set.filter(count__gt=0, product__requires_accommodation_information=True).exists()
+        return self.order_product_set.aggregate(
+            sum=models.Sum(models.F("product__price_cents") * models.F("count")),
+        )["sum"]
 
     @property
     def formatted_price(self):
@@ -113,13 +108,12 @@ class Order(models.Model):
 
     @property
     def readable_state(self):
-        if self.is_paid:
+        if self.is_cancelled:
+            return "Cancelled"
+        elif self.is_paid:
             return "Paid"
         elif self.is_confirmed:
-            if self.is_overdue:
-                return f"Confirmed; payment overdue since {self.formatted_due_date}"
-            else:
-                return f"Confirmed; payment due {self.formatted_due_date}"
+            return "Confirmed"
         else:
             return "Unconfirmed"
 
@@ -223,30 +217,6 @@ class Order(models.Model):
         return dict(order=self)
 
     @property
-    def due_date(self):
-        if self.confirm_time:
-            return datetime.combine(
-                (self.confirm_time + timedelta(days=self.meta.due_days)).date(), dtime(23, 59, 59)
-            ).replace(tzinfo=tzlocal())
-        else:
-            return None
-
-    @property
-    def formatted_due_date(self):
-        return format_date(self.due_date)
-
-    def checkout_return_url(self, request):
-        return request.build_absolute_uri(url("payments_process_view", self.event.slug))
-
-    @property
-    def reservation_valid_until(self):
-        return (
-            self.confirm_time + timedelta(seconds=self.event.tickets_event_meta.reservation_seconds)
-            if self.confirm_time
-            else None
-        )
-
-    @property
     def contains_electronic_tickets(self):
         return self.order_product_set.filter(count__gt=0, product__electronic_ticket=True).exists()
 
@@ -267,8 +237,6 @@ class Order(models.Model):
     def css_class(self):
         if self.is_cancelled:
             return "danger"
-        elif self.is_overdue:
-            return "warning"
         else:
             return ""
 
@@ -371,10 +339,6 @@ class Order(models.Model):
 
         # don't fail silently, warn admins instead
         bcc: list[str] = []
-        meta = self.event.tickets_event_meta
-
-        if meta.ticket_spam_email:
-            bcc.append(meta.ticket_spam_email)
 
         for op in self.order_product_set.filter(count__gt=0):
             if op.product.notify_email:

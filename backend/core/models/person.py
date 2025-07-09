@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from datetime import date, datetime
 from typing import TYPE_CHECKING
@@ -10,9 +12,12 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Q
+from django.http import HttpRequest
 from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+
+from graphql_api.language import DEFAULT_LANGUAGE, SupportedLanguageCode
 
 from ..utils import calculate_age, format_phone_number, phone_number_validator, pick_attrs
 from .constants import (
@@ -24,7 +29,9 @@ from .constants import (
 )
 
 if TYPE_CHECKING:
+    from access.models.email_alias import EmailAlias
     from badges.models.badge import Badge
+    from labour.models.qualifications import PersonQualification
 
 
 logger = logging.getLogger("kompassi")
@@ -130,7 +137,12 @@ class Person(models.Model):
 
     email_verified_at = models.DateTimeField(null=True, blank=True)
 
-    badges: models.QuerySet["Badge"]
+    badges: models.QuerySet[Badge]
+    qualifications: models.QuerySet[PersonQualification]  # XXX naming
+    email_aliases: models.QuerySet[EmailAlias]
+    user_id: int
+    id: int
+    pk: int
 
     class Meta:
         ordering = ["surname"]
@@ -233,14 +245,25 @@ class Person(models.Model):
             return self.first_name
 
     @classmethod
-    def get_or_create_dummy(cls, superuser=True):
+    def get_or_create_dummy(cls, superuser=True, another=False):
         User = get_user_model()
 
+        if another:
+            username = "another"
+            first_name = "Matti"
+            last_name = "Meikäläinen"
+            nick = "Masa666"
+        else:
+            username = "mahti"
+            first_name = "Markku"
+            last_name = "Mahtinen"
+            nick = "Mahti"
+
         user, unused = User.objects.get_or_create(
-            username="mahti",
+            username=username,
             defaults=dict(
-                first_name="Markku",
-                last_name="Mahtinen",
+                first_name=first_name,
+                last_name=last_name,
                 is_staff=superuser,
                 is_superuser=superuser,
             ),
@@ -255,9 +278,9 @@ class Person(models.Model):
             defaults=dict(
                 first_name=user.first_name,  # type: ignore
                 surname=user.last_name,  # type: ignore
-                nick="Mahti",
+                nick=nick,
                 birth_date=date(1984, 1, 1),
-                email="mahti@example.com",
+                email=f"{username}@example.com",
                 phone="+358 50 555 1234",
                 email_verified_at=now(),
             ),
@@ -344,50 +367,79 @@ class Person(models.Model):
         code.save()
         code.send(request)
 
-    def setup_email_verification(self, request):
+    def setup_email_verification(
+        self,
+        request: HttpRequest,
+        language: SupportedLanguageCode = DEFAULT_LANGUAGE,
+    ):
         from .email_verification_token import EmailVerificationToken
 
         self.email_verified_at = None
         self.save()
 
-        self.setup_code(request, EmailVerificationToken)
+        self.setup_code(request, EmailVerificationToken, language=language)
 
-    def setup_password_reset(self, request):
+    def setup_password_reset(
+        self,
+        request: HttpRequest,
+        language: SupportedLanguageCode = DEFAULT_LANGUAGE,
+    ):
         from core.utils import get_ip
 
         from .password_reset_token import PasswordResetToken
 
-        self.setup_code(request, PasswordResetToken, ip_address=get_ip(request) or "")
+        self.setup_code(
+            request,
+            PasswordResetToken,
+            language=language,
+            ip_address=get_ip(request),
+        )
 
-    def verify_email(self, code=None):
+    def verify_email(self, code: str | None):
+        """
+        Verify this users's email. If code is provided, it must match a valid EmailVerificationToken.
+        Note that a verified email may also be verified again. This is useful for claiming new orders
+        made while not logged in.
+        """
+        from tickets_v2.models.order import Order
+
         from .email_verification_token import EmailVerificationError, EmailVerificationToken
 
-        if self.is_email_verified:
-            raise EmailVerificationError("already_verified")
+        if not self.user:
+            raise EmailVerificationError("no_user")
 
-        if isinstance(code, str):
+        if code:
             try:
-                code = EmailVerificationToken.objects.get(code=code)
+                code_instance = EmailVerificationToken.objects.get(code=code)
             except EmailVerificationToken.DoesNotExist as dne:
                 raise EmailVerificationError("invalid_code") from dne
 
-        if code:
             # Verify with a single code. The code needs to be checked.
-
-            if code.person != self:
+            if code_instance.person != self:
                 raise EmailVerificationError("wrong_person")
-            if code.state != "valid":
+            if code_instance.state != "valid":
                 raise EmailVerificationError("code_not_valid")
-            if code.email != self.email:
+            if code_instance.email != self.email:
                 raise EmailVerificationError("email_changed")
 
-            code.mark_used()
+            code_instance.mark_used()
         else:
             # Forcibly verify, regardless of codes.
-            EmailVerificationToken.objects.filter(person=self, state="valid").update(state="revoked")
+            pass
 
         self.email_verified_at = timezone.now()
         self.save()
+
+        # Mark other pending verification codes as revoked
+        EmailVerificationToken.objects.filter(person=self, state="valid").update(state="revoked")
+
+        # Claim all unclaimed orders with this email address
+        Order.objects.filter(
+            owner=None,
+            email=self.email,
+        ).update(
+            owner=self.user,
+        )
 
     @property
     def age_now(self):
@@ -520,14 +572,14 @@ class Person(models.Model):
 
         return vcard.serialize()
 
-    def log_view(self, request, **extra_attrs):
+    def log_view(self, request):
         """
         Logs an instance of this persons' Personally Identifiable Information being viewed by
         another user.
         """
-        from event_log.utils import emit
+        from event_log_v2.utils.emit import emit
 
-        emit("core.person.viewed", person=self, request=request, **extra_attrs)
+        emit("core.person.viewed", person=self.pk, request=request)
 
     @property
     def with_privacy(self):

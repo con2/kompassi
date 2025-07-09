@@ -1,5 +1,4 @@
 title: Kotae-Pop-tanssikilpailun tuomarihaku
-layout: vertical
 description: |
   Hae tuomariksi Kotae Expon 2024 Kotae-Pop-kilpailuun.
 fields:
@@ -17,11 +16,10 @@ fields:
     helpText: Lähetämme tiedon hakemuksesi hyväksymisestä tai hylkäämisestä sinulle sähköpostilla
 
   - slug: category
-    type: MultiSelect
+    type: DimensionMultiSelect
     title: Mitä kilpailusarjoja haluaisit tuomaroida?
     required: true
-    choicesFrom:
-      dimension: category
+    dimension: category
     helpText: Voit valita useita vaihtoehtoja.
 
   - slug: tuntemus

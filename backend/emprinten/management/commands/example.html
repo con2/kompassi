@@ -1,0 +1,28 @@
+<body>
+<aside>
+    <div>
+        <header>TYÖTODISTUS</header>
+        <value>Esimerkki ry</value>
+    </div>
+    <div>
+        <img alt="logo" src="example.png" style="height: 44mm;"/>
+    </div>
+</aside>
+<div style="margin-top: 2.2cm;">
+<h1>Todistus vapaaehtoistyöstä {{ row.event.name_inessive|default("Esimerkissä") }}</h1>
+<p>Pyynnöstä todistan, että <strong>{{ row.full_name }}</strong> on tehnyt vapaaehtoistyötä Esimerkki ry:n
+järjestämässä tapahtumassa:
+</p>
+<p style="white-space: pre; margin-bottom: 2cm;">
+<strong>{{ row.event.name|default("Esimerkki") }}</strong>
+<em>{{ row.event.headline|default("Virtuaaliepätodellisuudessa 29.–30.2.2200") }}</em>
+{{ row.job_title|default("Haravointi") }}
+</p>
+<p style="white-space: pre;" class="page-break">
+Virtuaalitodellisuus {{ row.event.formatted_end_date|default("30.2.2200") }}
+<img src="example.png" style="height: 30mm;"/>
+Ahto Simakuutio
+Työvoimavastaava
+</p>
+</div>
+</body>

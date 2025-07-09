@@ -2,7 +2,7 @@ minimum_pre_commit_version: 2.15.0
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.1.13"
+    rev: "v0.4.9"
     hooks:
       - id: ruff
         args:
@@ -26,3 +26,15 @@ repos:
             ^backend|
             ^.github
           )
+  # XXX somehow the typechecking still leaks to parts of the code that is not yet ready for pyrekt
+  # - repo: https://github.com/RobertCraigie/pyright-python
+  #   rev: v1.1.367
+  #   hooks:
+  #     - id: pyright
+  #       language: system
+  #       # add apps as they become fully typechecked
+  #       files: |
+  #         (?x)(
+  #           ^backend/directory/|
+  #           ^backend/program_v2/|
+  #         )

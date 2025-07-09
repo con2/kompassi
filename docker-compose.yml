@@ -11,9 +11,11 @@ services:
     # see #357 #375 #408
     ports:
       - 3000:3000
+      - 7998:7998
       - 8000:8000
       - 9000:9000
-      - 9001:9001
+      # minio console, uncomment if you need it
+      # - 9001:9001
   backend:
     build: backend
     init: true
@@ -23,9 +25,11 @@ services:
     depends_on:
       - redis
       - postgres
-    volumes:
+    volumes: &volumes
       - ./backend:/usr/src/app
       - ./dev-secrets:/usr/src/app/dev-secrets:rw
+    tmpfs:
+      - /tmp
     environment: &environment
       PYTHONUNBUFFERED: 1
       DEBUG: 1
@@ -37,6 +41,26 @@ services:
       MINIO_SECRET_ACCESS_KEY: kompassi
       MINIO_ENDPOINT_URL: http://localhost:9000
       KOMPASSI_GENERATE_OIDC_RSA_PRIVATE_KEY_PATH: dev-secrets/id_rsa.key
+      SECRET_KEY: The SECRET_KEY setting must not be empty.
+      KOMPASSI_BASE_URL: http://localhost:8000
+      TICKETS_BASE_URL: http://localhost:7998
+      KOMPASSI_V2_BASE_URL: http://localhost:3000
+      KOMPASSI_TICKETS_V2_API_KEY: secret
+  uvicorn:
+    build: backend
+    init: true
+    command:
+      - uvicorn
+      - --workers=8
+      - --host=0.0.0.0
+      - --port=7998
+      - --no-access-log
+      - tickets_v2.optimized_server.app:app
+    network_mode: service:router
+    depends_on:
+      - postgres
+    volumes: *volumes
+    environment: *environment
   celery:
     build: backend
     init: true
@@ -44,11 +68,25 @@ services:
     depends_on:
       - redis
       - postgres
-    volumes:
-      - ./backend:/usr/src/app:ro
-      - ./dev-secrets:/usr/src/app/dev-secrets:rw
-    environment:
-      <<: *environment
+    volumes: *volumes
+    tmpfs:
+      - /tmp
+    environment: *environment
+  # TODO replace celery with a more sensible solution
+  # until then, tickets_v2 has its own worker
+  worker:
+    build: backend
+    init: true
+    restart: unless-stopped
+    command:
+      - python
+      - manage.py
+      - tickets_v2_worker
+    network_mode: service:router
+    depends_on:
+      - postgres
+    volumes: *volumes
+    environment: *environment
   frontend:
     build:
       context: frontend
@@ -61,16 +99,26 @@ services:
       - ./frontend/src:/usr/src/app/src
     environment:
       NEXT_PUBLIC_KOMPASSI_BASE_URL: http://localhost:8000
+      NEXT_PUBLIC_TICKETS_BASE_URL: http://localhost:7998
       NEXTAUTH_URL: http://localhost:3000
       NEXTAUTH_SECRET: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+      KOMPASSI_TICKETS_V2_API_KEY: secret
   postgres:
     # image: postgres
     build: backend/kompassi/sql/
     init: true
-    ports:
-      - 5432:5432
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+    # uncomment if you need to access postgres from host
+    # note: you can use `docker compose exec postgres psql -U kompassi` to access psql cli
+    # ports:
+    #   - 5433:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    # tmpfs:
+    #   - /var/lib/postgresql/data
     environment:
       POSTGRES_USER: kompassi
       POSTGRES_PASSWORD: secret

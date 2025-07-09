@@ -131,10 +131,7 @@ class Membership(models.Model, CsvExportMixin):
         return f"{self.person.surname}, {self.person.official_first_names}, {self.person.muncipality}"
 
     def __str__(self):
-        return "{organization}/{person}".format(
-            organization=self.organization.name if self.organization else None,
-            person=self.person.official_name if self.person else None,
-        )
+        return f"{self.organization.name if self.organization else None}/{self.person.official_name if self.person else None}"
 
     @classmethod
     def get_csv_fields(cls, unused_organization):
@@ -221,13 +218,15 @@ class Membership(models.Model, CsvExportMixin):
 
         # TODO entrance fee
 
-        if not term.membership_fee_cents or self.state != "in_effect":
+        if self.state != "in_effect":
             return None
+
+        membership_fee_cents = term.membership_fee_cents or 0
 
         payment = MembershipFeePayment(
             member=self,
             term=term,
-            amount_cents=term.membership_fee_cents,
+            amount_cents=membership_fee_cents,
             payment_method=term.payment_method,
             payment_type="membership_fee",
         )

@@ -1,5 +1,4 @@
 title: Kysely Tracon Hitpointin larppiohjelmasta
-layout: vertical
 description: |
   Tracon Hitpoint suunnittelee larppiaiheisen ohjelmansa laajentamista
   visionaan ”Kiinnostavin larppiaiheinen tapahtuma Tampereella vuonna 2025”.
@@ -18,8 +17,7 @@ fields:
   - slug: participated_in_tracon_hitpoint
     title: Montako kertaa olet osallistunut Tracon Hitpointiin?
     helpText: "Tracon Hitpoint on järjestetty neljä kertaa: vuosina 2015, 2017, 2019 ja 2024."
-    type: SingleLineText
-    htmlType: number
+    type: NumberField
     summaryTitle: Osallistumiskerrat
 
   - slug: larping
@@ -185,7 +183,7 @@ fields:
     title: Jos haluat, että otamme sinuun yhteyttä, jätä tähän yhteystietosi (sähköposti, puhelinnumero ja pikaviestimet, Discord-tunnus tms.).
     type: MultiLineText
     helpText: >
-      Henkilötietojen käsittelijä on Tracon ry edustajanaan Santtu "Japsu" Pajukanta.
+      Rekisterinpitäjä on Tracon ry edustajanaan Santtu "Japsu" Pajukanta.
       Tietoja käytetään vain tamperelaisen larppitapahtuman järjestämistä koskevaan yhteydenottoon.
       Tietoja säilytetään yhteydenottokierroksen ajan ja sen jälkeen ne poistetaan.
       Tietoja ei luovuteta ulkopuolisille.

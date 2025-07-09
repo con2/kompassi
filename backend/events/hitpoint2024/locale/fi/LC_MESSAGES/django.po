@@ -18,3 +18,9 @@ msgstr "Tiivistä pelisi kuvaus yhteen lauseeseen."
 
 msgid "Check this box if your RPG is played in English."
 msgstr "Ruksaa tämä ruutu, jos pelisi pelataan englanniksi."
+
+msgid "How many times are you prepared to run this game? For free entry, you are expected to run a game for at least four hours."
+msgstr "Kuinka monta kertaa olet valmis pitämään tämän pelin? Maksuton sisäänpääsy edellyttää pelauttamista vähintään neljän tunnin edestä."
+
+msgid "Topic"
+msgstr "Aihe"

@@ -1,0 +1,5 @@
+Det finns en ny svar till enkäten ”{{ survey_title }}”:
+
+{{ response_url }}
+--
+{{ sender_email }}

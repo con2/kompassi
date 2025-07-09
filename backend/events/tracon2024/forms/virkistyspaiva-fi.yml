@@ -1,0 +1,40 @@
+title: Ilmoittautuminen virkistyspäivään 27.7.2024
+description: |
+  Ilmoittautumislomake vuoden 2024 virkistyspäivään.
+  Lomakkeella voit ilmoittautua koko päivää, pelkkään ruokailuun tai pelkkään iltaohjelmaan.
+  Mikäli et pääse osallistumaan, lomaketta ei tarvitse täyttää.
+
+  Ilmoittautuminen on sitova ja päättyy 17.7.
+
+  Mikäli herää kysyttävää, otathan yhteyttä virkistykseen Slackissa <em>@Haisku</em> tai <em>@dennu</em>
+fields:
+  - slug: participation
+    type: DimensionMultiSelect
+    title: Osallistun…
+    required: true
+    dimension: participation
+    helpText: |
+      Jos osallistut sekä ruokailuun että iltaohjelmaan, ruksaa molemmat.
+
+  - slug: category2
+    type: MultiSelect
+    title: Mahdolliset erityisruokavaliot
+    helpText: |
+      Erityisruokavaliot ilmoitetaan ravintolalle etukäteen.
+    choices:
+      - slug: laktoosi
+        title: Laktoositon
+      - slug: maito
+        title: Maidoton
+      - slug: kasvis
+        title: Kasvisruokavalio
+      - slug: vege
+        title: Vegaani
+      - slug: GL
+        title: Gluteeniton
+
+  - slug: category3
+    type: MultiLineText
+    title: Lisätietoa virkistykselle
+    helpText: |
+      Muuta huomioitavaa, esim. tarkennuksia erikoisruokavalioon

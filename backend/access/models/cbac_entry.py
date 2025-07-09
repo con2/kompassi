@@ -3,13 +3,13 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
 from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.utils.timezone import now
 
 from core.utils import get_objects_within_period, log_get_or_create
-from event_log.utils import emit
+from event_log_v2.utils.emit import emit
 from intra.constants import SUPPORTED_APPS
 
 from ..constants import CBAC_VALID_AFTER_EVENT_DAYS
@@ -57,7 +57,7 @@ class CBACEntry(models.Model):
     @classmethod
     def get_entries(
         cls,
-        user: AbstractUser,
+        user: AbstractBaseUser | AnonymousUser,
         claims: Claims | None = None,
         t: datetime | None = None,
         **extra_criteria,
@@ -81,8 +81,24 @@ class CBACEntry(models.Model):
         return queryset
 
     @classmethod
-    def is_allowed(cls, user: AbstractUser, claims: Claims, t: datetime | None = None):
-        return cls.get_entries(user, claims, t=t).exists()
+    def is_allowed(
+        cls,
+        user: AbstractBaseUser | AnonymousUser,
+        claims: Claims,
+        t: datetime | None = None,
+    ) -> bool:
+        if not user.is_authenticated:
+            return False
+
+        result = cls.get_entries(
+            user,  # type: ignore
+            claims,
+            t=t,
+        ).exists()
+
+        logger.debug("CBACEntry.is_allowed %s %r", result, claims)
+
+        return result
 
     @classmethod
     def ensure_admin_group_privileges(cls, t: datetime | None = None):
