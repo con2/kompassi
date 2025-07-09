@@ -22,6 +22,7 @@ kompassi_admins:
   - Santtu Pajukanta <santtu@pajukanta.fi>
 
 kompassi_csp_allowed_login_redirects:
+  - https://dev.kompassi.eu
   - dev.ropekonsti.fi
   - localhost:3000
   - localhost:5000
