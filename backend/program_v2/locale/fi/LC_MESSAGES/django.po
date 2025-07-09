@@ -1,0 +1,17 @@
+msgid "Program"
+msgstr "Ohjelma"
+
+msgid "View schedule on event home page"
+msgstr "Katsele aikataulua tapahtuman kotisivuilla"
+
+msgid "View schedule in Kompassi"
+msgstr "Katsele aikataulua Kompassissa"
+
+msgid "Go to admin"
+msgstr "Siirry hallintaan"
+
+msgid "The program schedule for this event has been published"
+msgstr "Ohjelmakartta on julkaistu"
+
+msgid "You have program admin privileges for this event"
+msgstr "Sinulla on ohjelmavastaavan oikeudet tähän tapahtumaan"

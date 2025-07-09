@@ -23,7 +23,7 @@ from labour.models import (
     PersonnelClass,
 )
 from program_v2.models.meta import ProgramV2EventMeta
-from program_v2.workflows.program_offer import ProgramOfferWorkflow
+from program_v2.utils.backfill import backfill
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.optimized_server.models.enums import PaymentProvider
 
@@ -258,6 +258,7 @@ class Setup:
             defaults=dict(
                 admin_group=admin_group,
                 contact_email="Ropecon 2025 -ohjelmatiimi <ohjelma@ropecon.fi>",
+                guide_v2_embedded_url="https://ropecon.fi/opas/",
                 default_registry=Registry.objects.get(
                     scope=self.organization.scope,
                     slug="volunteers",
@@ -280,6 +281,7 @@ class Setup:
             universe=universe,
             required_dimensions={
                 "state": ["active"],
+                "type": ["program-host"],
                 "program-host-has-badge": ["yes"],
             },
             personnel_class=ohjelma,
@@ -301,7 +303,7 @@ class Setup:
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
-        ProgramOfferWorkflow.backfill(self.event)
+        backfill(self.event)
 
     def setup_forms(self):
         (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])

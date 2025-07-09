@@ -8,6 +8,7 @@ from enrollment.views import enrollment_event_box_context
 from forms.views.forms_event_box_context import forms_event_box_context
 from intra.views import intra_event_box_context
 from labour.views import labour_event_box_context
+from program_v2.views.program_v2_event_box_context import program_v2_event_box_context
 from programme.views.event_box_context import programme_event_box_context
 from tickets.views import tickets_event_box_context
 from tickets_v2.views.tickets_v2_event_box_context import tickets_v2_event_box_context
@@ -31,6 +32,9 @@ def core_event_view(request, event_slug):
 
     if event.programme_event_meta:
         vars.update(programme_event_box_context(request, event))
+
+    if event.program_v2_event_meta:
+        vars.update(program_v2_event_box_context(request, event))
 
     if event.tickets_event_meta:
         vars.update(tickets_event_box_context(request, event))

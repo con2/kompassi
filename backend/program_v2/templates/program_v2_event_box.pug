@@ -1,0 +1,16 @@
+- load trans from i18n
+
+if is_program_v2_event_box_shown
+  h3 {% trans "Program" %}<sup>v2 BETA</sup>
+
+  if is_program_v2_published
+    h4 {% trans "The program schedule for this event has been published" %}
+    if event.program_v2_event_meta.guide_v2_embedded_url
+      p: a(href=event.program_v2_event_meta.guide_v2_embedded_url, target='_blank').btn.btn-primary {% trans "View schedule on event home page" %}…
+    p: a(href='{{ settings.KOMPASSI_V2_BASE_URL }}/{{ event.slug }}/program', target='_blank').btn.btn-primary {% trans "View schedule in Kompassi" %}…
+
+  if is_program_v2_admin
+    h4 {% trans "You have program admin privileges for this event" %}
+    p: a(href='{{ settings.KOMPASSI_V2_BASE_URL }}/{{ event.slug }}/program-admin').btn.btn-primary {% trans "Go to admin" %}…
+
+  hr

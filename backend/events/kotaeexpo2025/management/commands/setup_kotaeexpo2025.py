@@ -14,7 +14,7 @@ from intra.models import IntraEventMeta, Team
 from involvement.models.registry import Registry
 from labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Survey
 from program_v2.models.meta import ProgramV2EventMeta
-from program_v2.workflows.program_offer import ProgramOfferWorkflow
+from program_v2.utils.backfill import backfill
 
 from ...models import Accommodation, KnownLanguage, SignupExtra
 
@@ -311,7 +311,7 @@ class Setup:
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
-        ProgramOfferWorkflow.backfill(self.event)
+        backfill(self.event)
 
 
 class Command(BaseCommand):

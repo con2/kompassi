@@ -35,7 +35,7 @@ from labour.models.personnel_class import PersonnelClass
 from labour.models.qualifications import Qualification
 from labour.models.survey import Survey as LabourSurvey
 from program_v2.models.meta import ProgramV2EventMeta
-from program_v2.workflows.program_offer import ProgramOfferWorkflow
+from program_v2.utils.backfill import backfill
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.models.product import Product
 from tickets_v2.models.quota import Quota
@@ -327,6 +327,7 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
+                guide_v2_embedded_url="https://2025.tracon.fi/opas/",
                 default_registry=Registry.objects.get(
                     scope=self.event.organization.scope,
                     slug="volunteers",
@@ -335,7 +336,7 @@ class Setup:
         )
 
         # TODO(2026): Remove (normally setup when program universe is first accessed)
-        ProgramOfferWorkflow.backfill(self.event)
+        backfill(self.event)
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack

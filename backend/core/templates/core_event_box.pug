@@ -21,10 +21,9 @@
           else
             span.label.label-default.kompassi-space-after {% trans "Volunteers" %}
 
-        // TODO program_v2
-        if event.programme_event_meta
-          if event.programme_event_meta.schedule_link
-            span.label.label-primary.kompassi-space-after: a(href='{{ event.programme_event_meta.schedule_link }}')  {% trans "Schedule published" %}…
+        if event.program_v2_event_meta
+          if event.program_v2_event_meta.guide_v2_embedded_url
+            span.label.label-primary.kompassi-space-after: a(href='{{ event.program_v2_event_meta.guide_v2_embedded_url }}')  {% trans "Schedule published" %}…
           else
             span.label.label-default.kompassi-space-after {% trans "Schedule" %}
 
