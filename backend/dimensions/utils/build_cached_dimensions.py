@@ -2,7 +2,7 @@ from collections import defaultdict
 
 from django.db import models
 
-from ..models.cached_dimensions import StrictCachedDimensions
+from ..models.cached_dimensions import StrictCachedDimensions, validate_cached_dimensions
 
 
 def build_cached_dimensions(*querysets: models.QuerySet) -> StrictCachedDimensions:
@@ -16,4 +16,4 @@ def build_cached_dimensions(*querysets: models.QuerySet) -> StrictCachedDimensio
         for item in queryset:
             dimensions[item.value.dimension.slug].add(item.value.slug)
 
-    return {slug: sorted(values) for slug, values in dimensions.items()}
+    return validate_cached_dimensions(dimensions)
