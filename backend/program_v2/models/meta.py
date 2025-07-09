@@ -33,6 +33,8 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         help_text="Foo Bar &lt;foo.bar@example.com&gt;",
     )
 
+    # NOTE: currently this being set has the side effect of is_program_published being True.
+    # In the future, is_program_published will be time based.
     guide_v2_embedded_url = models.CharField(
         max_length=255,
         blank=True,
@@ -92,6 +94,11 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     @property
     def all_program_offers(self):
         return self._get_program_offers()
+
+    @property
+    def is_program_published(self) -> bool:
+        # TODO
+        return bool(self.guide_v2_embedded_url)
 
     def _get_program_offers(self, **extra_criteria: Any) -> models.QuerySet[Response]:
         """

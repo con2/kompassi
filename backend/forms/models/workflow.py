@@ -135,6 +135,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         *,
         old_version: Response | None = None,
         cache: DimensionCache,
+        override_dimensions: bool = False,
     ) -> Involvement | None:
         """
         If the response ought to result in Involvement, create it.
@@ -148,6 +149,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             response=response,
             old_version=old_version,
             cache=cache,
+            override_dimensions=override_dimensions,
         )
 
     def ensure_survey_to_badge(self, response: Response):

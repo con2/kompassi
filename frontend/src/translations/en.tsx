@@ -1505,6 +1505,19 @@ const translations = {
         ),
         programItems: "Program items",
         dimensions: "Program host dimensions",
+        role: {
+          title: "Role",
+          choices: {
+            OFFERER: {
+              title: "Offerer",
+              description: "The program item was created based on their offer.",
+            },
+            INVITED: {
+              title: "Invited",
+              description: "They were invited as a host to the program item.",
+            },
+          },
+        },
       },
       actions: {
         inviteProgramHost: {
@@ -1523,6 +1536,11 @@ const translations = {
             language: {
               title: "Language",
               helpText: "Which language should the invitation be sent in?",
+            },
+            dimensionsHeader: {
+              title: "Program host dimensions",
+              helpText:
+                "These dimension values will be set by default for the program host upon acceptance of the invitation.",
             },
           },
           message: (

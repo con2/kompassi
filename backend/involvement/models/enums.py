@@ -123,3 +123,30 @@ class NameDisplayStyle(Enum):
                 parts = [nick]
 
         return " ".join(part for part in parts) if parts else ""
+
+
+class ProgramHostRole(Enum):
+    OFFERER = "offerer", "Offerer", "Tarjoaja", "Erbjudare"
+    INVITED = "invited", "Invited", "Kutsuttu", "Inbjuden"
+
+    value: str
+
+    # NOTE SUPPORTED_LANGUAGES
+    title_en: str
+    title_fi: str
+    title_sv: str
+
+    def __new__(cls, value: str, title_en: str, title_fi: str, title_sv: str):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.title_en = title_en
+        obj.title_fi = title_fi
+        obj.title_sv = title_sv
+        return obj
+
+    def get_title_dict(self) -> dict[str, str]:
+        return {
+            language_code: title
+            for language_code in SUPPORTED_LANGUAGE_CODES
+            if (title := getattr(self, f"title_{language_code}"))
+        }

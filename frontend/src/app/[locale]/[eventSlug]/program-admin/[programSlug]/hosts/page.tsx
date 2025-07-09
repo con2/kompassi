@@ -17,6 +17,7 @@ import { graphql } from "@/__generated__";
 import {
   ProgramAdminDetailHostFragment,
   ProgramAdminDetailInvitationFragment,
+  ProgramHostRole,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -25,7 +26,6 @@ import { validateCachedAnnotations } from "@/components/annotations/models";
 import { Column, DataTable } from "@/components/DataTable";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
 import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
-import { getDimensionValueTitle } from "@/components/dimensions/helpers";
 import { validateCachedDimensions } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
@@ -41,6 +41,7 @@ graphql(`
   fragment ProgramAdminDetailHost on LimitedProgramHostType {
     id
     cachedDimensions
+    programHostRole
     person {
       fullName
       firstName
@@ -58,6 +59,7 @@ graphql(`
     id
     email
     createdAt
+    cachedDimensions
   }
 `);
 
@@ -74,7 +76,7 @@ const query = graphql(`
       timezone
 
       involvement {
-        dimensions(keyDimensionsOnly: true, publicOnly: false) {
+        dimensions(publicOnly: false) {
           ...ColoredKeyDimensionTableCell
           ...DimensionValueSelect
         }
@@ -88,6 +90,7 @@ const query = graphql(`
         ) {
           slug
           title(lang: $locale)
+          cachedDefaultInvolvementDimensions
         }
       }
 
@@ -177,7 +180,25 @@ export default async function ProgramAdminDetailPage({
   const programHosts = data.event.program.program.programHosts;
   const invitations = data.event.program.program.invitations;
   const annotations = data.event.program.annotations;
+  const defaultProgramForm = data.event.forms?.inviteForms[0];
+
   const involvementDimensions = data.event.involvement?.dimensions ?? [];
+  const involvementDimensionColumns = buildKeyDimensionColumns(
+    involvementDimensions.filter((dimension) => dimension.slug !== "state"),
+  );
+  // TODO this makes limited sense if there are multiple accept invite forms
+  const involvementDimensionDefaults =
+    defaultProgramForm?.cachedDefaultInvolvementDimensions ?? {};
+  validateCachedDimensions(involvementDimensionDefaults);
+  const {
+    fields: involvementDimensionFields,
+    values: involvementDimensionValues,
+  } = buildDimensionValueSelectionForm(
+    involvementDimensions,
+    involvementDimensionDefaults,
+    "omit",
+    "involvement_dimensions",
+  );
 
   const programHostColumns: Column<ProgramAdminDetailHostFragment>[] = [
     {
@@ -210,73 +231,81 @@ export default async function ProgramAdminDetailPage({
       title: profileT.advancedAttributes.discordHandle.title,
       getCellContents: (row) => row.person.discordHandle,
     },
-  ];
-
-  programHostColumns.push(
-    ...buildKeyDimensionColumns(
-      involvementDimensions.filter((dimension) => dimension.slug !== "state"),
-    ),
-  );
-
-  programHostColumns.push({
-    slug: "actions",
-    title: "",
-    className: "text-end",
-    getCellContents: (row) => {
-      validateCachedDimensions(row.cachedDimensions);
-      const { fields, values } = buildDimensionValueSelectionForm(
-        involvementDimensions,
-        row.cachedDimensions,
-        "omit",
-      );
-      return (
-        <ButtonGroup>
-          <ModalButton
-            className="btn btn-outline-primary btn-sm"
-            label={t.actions.editProgramHost.label + "…"}
-            title={t.actions.editProgramHost.title}
-            messages={t.actions.editProgramHost.modalActions}
-            disabled={!program.canInviteProgramHost}
-            action={updateProgramHostDimensions.bind(
-              null,
-              locale,
-              eventSlug,
-              row.id,
-            )}
-          >
-            <div className="mb-3">
-              <div className="form-label fw-bold">{t.singleTitle}</div>
-              <div>{row.person.fullName}</div>
-            </div>
-            <SchemaForm
-              fields={fields}
-              values={values}
-              messages={translations.SchemaForm}
-            />
-          </ModalButton>
-          <ModalButton
-            className="btn btn-outline-danger btn-sm"
-            label={t.actions.removeProgramHost.label + "…"}
-            title={t.actions.removeProgramHost.title}
-            messages={t.actions.removeProgramHost.modalActions}
-            submitButtonVariant="danger"
-            action={deleteProgramHost.bind(
-              null,
-              locale,
-              eventSlug,
-              programSlug,
-              row.id,
-            )}
-          >
-            {t.actions.removeProgramHost.message(
-              row.person.fullName,
-              program.title,
-            )}
-          </ModalButton>
-        </ButtonGroup>
-      );
+    ...involvementDimensionColumns,
+    {
+      slug: "role",
+      title: (
+        <>
+          <span className="visually-hidden">{t.attributes.role.title}</span>
+        </>
+      ),
+      getCellContents: (row) =>
+        row.programHostRole === ProgramHostRole.Offerer ? (
+          <span title={t.attributes.role.choices.OFFERER.description}>👑</span>
+        ) : (
+          <></>
+        ),
     },
-  });
+    {
+      slug: "actions",
+      title: "",
+      className: "text-end",
+      getCellContents: (row) => {
+        validateCachedDimensions(row.cachedDimensions);
+        const { fields, values } = buildDimensionValueSelectionForm(
+          involvementDimensions,
+          row.cachedDimensions,
+          "omit",
+        );
+        return (
+          <ButtonGroup>
+            <ModalButton
+              className="btn btn-outline-primary btn-sm"
+              label={t.actions.editProgramHost.label + "…"}
+              title={t.actions.editProgramHost.title}
+              messages={t.actions.editProgramHost.modalActions}
+              disabled={!program.canInviteProgramHost}
+              action={updateProgramHostDimensions.bind(
+                null,
+                locale,
+                eventSlug,
+                row.id,
+              )}
+            >
+              <div className="mb-3">
+                <div className="form-label fw-bold">{t.singleTitle}</div>
+                <div>{row.person.fullName}</div>
+              </div>
+              <SchemaForm
+                fields={fields}
+                values={values}
+                messages={translations.SchemaForm}
+              />
+            </ModalButton>
+            <ModalButton
+              className="btn btn-outline-danger btn-sm"
+              label={t.actions.removeProgramHost.label + "…"}
+              title={t.actions.removeProgramHost.title}
+              messages={t.actions.removeProgramHost.modalActions}
+              submitButtonVariant="danger"
+              action={deleteProgramHost.bind(
+                null,
+                locale,
+                eventSlug,
+                programSlug,
+                row.id,
+              )}
+            >
+              {t.actions.removeProgramHost.message(
+                row.person.fullName,
+                program.title,
+              )}
+            </ModalButton>
+          </ButtonGroup>
+        );
+      },
+    },
+  ];
 
   const invitationColumns: Column<ProgramAdminDetailInvitationFragment>[] = [
     {
@@ -295,6 +324,7 @@ export default async function ProgramAdminDetailPage({
       slug: "email",
       title: inviT.attributes.email,
     },
+    ...involvementDimensionColumns,
     {
       slug: "actions",
       title: "",
@@ -371,9 +401,19 @@ export default async function ProgramAdminDetailPage({
     },
   ];
 
+  if (involvementDimensionFields.length > 0) {
+    inviteProgramHostFields.push({
+      slug: "dimensionsHeader",
+      type: "StaticText",
+      ...t.actions.inviteProgramHost.attributes.dimensionsHeader,
+    });
+    inviteProgramHostFields.push(...involvementDimensionFields);
+  }
+
   const inviteProgramHostDefaults = {
-    surveySlug: data.event.forms?.inviteForms[0]?.slug,
+    surveySlug: defaultProgramForm?.slug,
     language: locale,
+    ...involvementDimensionValues,
   };
 
   validateCachedAnnotations(annotations, program.cachedAnnotations);
@@ -392,10 +432,10 @@ export default async function ProgramAdminDetailPage({
       <DataTable rows={programHosts} columns={programHostColumns}>
         <tfoot>
           <tr>
-            <td colSpan={programHostColumns.length - 1}>
+            <td colSpan={programHostColumns.length - 2}>
               {t.attributes.count(programHosts.length)}
             </td>
-            <td className="text-end">
+            <td className="text-end" colSpan={2}>
               <ModalButton
                 className="btn btn-outline-primary btn-sm"
                 label={t.actions.inviteProgramHost.title + "…"}
@@ -414,6 +454,7 @@ export default async function ProgramAdminDetailPage({
                   fields={inviteProgramHostFields}
                   values={inviteProgramHostDefaults}
                   messages={translations.SchemaForm}
+                  headingLevel="h5"
                 />
               </ModalButton>
             </td>

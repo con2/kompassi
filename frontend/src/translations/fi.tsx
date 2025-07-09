@@ -1506,6 +1506,19 @@ const translations: Translations = {
         ),
         programItems: "Ohjelmanumerot",
         dimensions: "Ohjelmanpitäjän dimensiot",
+        role: {
+          title: "Rooli",
+          choices: {
+            OFFERER: {
+              title: "Tarjoaja",
+              description: "Ohjelmanpitäjä, joka on luonut ohjelmatarjouksen.",
+            },
+            INVITED: {
+              title: "Kutsuttu",
+              description: "Ohjelmanpitäjä, joka on kutsuttu ohjelmanumeroon.",
+            },
+          },
+        },
       },
       actions: {
         inviteProgramHost: {
@@ -1524,6 +1537,11 @@ const translations: Translations = {
             language: {
               title: "Kieli",
               helpText: "Millä kielellä kutsu lähetetään?",
+            },
+            dimensionsHeader: {
+              title: "Ohjelmanpitäjän dimensiot",
+              helpText:
+                "Nämä dimensioarvot asetetaan ohjelmanpitäjälle kutsun hyväksymisen yhteydessä.",
             },
           },
           message: (

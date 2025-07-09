@@ -14,13 +14,14 @@ from dimensions.models.cached_dimensions import CachedDimensions, StrictCachedDi
 from dimensions.models.enums import DimensionApp
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
+from dimensions.utils.build_cached_dimensions import build_cached_dimensions
 from dimensions.utils.dimension_cache import DimensionCache
 from dimensions.utils.set_dimension_values import set_dimension_values
 from forms.models.enums import SurveyPurpose
 from graphql_api.language import DEFAULT_LANGUAGE
 from involvement.models.involvement_to_group import InvolvementToGroupMapping
 
-from .enums import InvolvementApp, InvolvementType
+from .enums import InvolvementApp, InvolvementType, ProgramHostRole
 from .invitation import Invitation
 from .profile_field_selector import ProfileFieldSelector
 
@@ -170,6 +171,16 @@ class Involvement(models.Model):
             case _:
                 return None
 
+    @property
+    def program_host_role(self) -> ProgramHostRole | None:
+        match self.type:
+            case InvolvementType.PROGRAM_HOST if self.invitation:
+                return ProgramHostRole.INVITED
+            case InvolvementType.PROGRAM_HOST:
+                return ProgramHostRole.OFFERER
+            case _:
+                return None
+
     def get_title(self, lang: str = DEFAULT_LANGUAGE) -> str | None:
         match self.type:
             case InvolvementType.PROGRAM_HOST if self.program:
@@ -195,13 +206,6 @@ class Involvement(models.Model):
 
         return f"/{self.scope.slug}/{path}"
 
-    def _build_cached_dimensions(self) -> dict[str, list[str]]:
-        new_cached_dimensions = {}
-        for sdv in self.dimensions.all():
-            new_cached_dimensions.setdefault(sdv.value.dimension.slug, []).append(sdv.value.slug)
-
-        return new_cached_dimensions
-
     @transaction.atomic
     @classmethod
     def refresh_cached_dimensions_qs(cls, queryset: models.QuerySet[Self]):
@@ -218,13 +222,13 @@ class Involvement(models.Model):
                 "dimensions__value__slug",
             )
         ):
-            obj.cached_dimensions = obj._build_cached_dimensions()
+            obj.cached_dimensions = build_cached_dimensions(obj.dimensions.all())
             bulk_update.append(obj)
         num_updated = cls.objects.bulk_update(bulk_update, ["cached_dimensions"])
         logger.info("Refreshed cached dimensions for %s involvements", num_updated)
 
     def refresh_cached_dimensions(self):
-        self.cached_dimensions = self._build_cached_dimensions()
+        self.cached_dimensions = build_cached_dimensions(self.dimensions.all())
         self.save(update_fields=["cached_dimensions"])
 
     @transaction.atomic
@@ -269,6 +273,7 @@ class Involvement(models.Model):
         cache: DimensionCache,
         old_version: Response | None,
         deleting: bool = False,
+        override_dimensions: bool = False,
     ):
         """
         Handles Involvement for normal survey responses and program offers.
@@ -332,7 +337,7 @@ class Involvement(models.Model):
             ),
         )
 
-        if created:
+        if created or override_dimensions:
             dimensions = validate_cached_dimensions(response.survey.cached_default_involvement_dimensions)
             dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
         else:
@@ -352,6 +357,8 @@ class Involvement(models.Model):
         program: Program,
         dimension_values: CachedDimensions,
         cache: DimensionCache,
+        *,
+        override_dimensions: bool = False,
     ):
         if cache.universe.app != DimensionApp.INVOLVEMENT:
             raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app}")
@@ -373,7 +380,7 @@ class Involvement(models.Model):
             ),
         )
 
-        if created:
+        if created or override_dimensions:
             dimensions = validate_cached_dimensions(program_offer.survey.cached_default_involvement_dimensions)
             dimensions.update(validate_cached_dimensions(dimension_values))
             dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
@@ -393,6 +400,8 @@ class Involvement(models.Model):
         invitation: Invitation,
         response: Response,
         cache: DimensionCache,
+        *,
+        override_dimensions: bool = False,
     ):
         """
         Used to accept program host invitations.
@@ -427,7 +436,7 @@ class Involvement(models.Model):
             ),
         )
 
-        if created:
+        if created or override_dimensions:
             dimensions = validate_cached_dimensions(response.survey.cached_default_involvement_dimensions)
             dimensions.update(validate_cached_dimensions(invitation.cached_dimensions))
             dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
@@ -462,6 +471,7 @@ class Involvement(models.Model):
         for involvement in involvements:
             involvement.is_active = program.is_active
             involvement.save(update_fields=["is_active"])
+
             dimensions = cls._build_technical_dimension_values(
                 app,
                 involvement_type,
@@ -477,6 +487,42 @@ class Involvement(models.Model):
             return cls.objects.none()
 
         return involvements
+
+    @classmethod
+    def from_involvement(
+        cls,
+        involvement: Involvement,
+        cache: DimensionCache,
+        override_dimensions: bool = False,
+    ) -> Self:
+        """
+        Helper to call again the from_* method that likely created the involvement.
+        Used by backfill.
+        """
+        if involvement.type != InvolvementType.PROGRAM_HOST:
+            raise NotImplementedError(f"from_involvement() not implemented for involvement type {involvement.type!r}")
+
+        if involvement.response is None:
+            raise ValueError("A program host involvement must have a response")
+
+        if involvement.program is None:
+            raise ValueError("A program host involvement must have a program")
+
+        if involvement.invitation is not None:
+            return cls.from_accepted_invitation(
+                involvement.invitation,
+                involvement.response,
+                cache=cache,
+                override_dimensions=override_dimensions,
+            )
+
+        return cls.from_accepted_program_offer(
+            program_offer=involvement.response,
+            program=involvement.program,
+            dimension_values=involvement.cached_dimensions,
+            cache=cache,
+            override_dimensions=override_dimensions,
+        )
 
     def refresh_dependents(self):
         if self.program:

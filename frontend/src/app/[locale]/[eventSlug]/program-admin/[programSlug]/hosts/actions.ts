@@ -23,19 +23,13 @@ export async function inviteProgramHost(
   programSlug: string,
   formData: FormData,
 ) {
-  const surveySlug = formData.get("surveySlug") as string;
-  const email = formData.get("email") as string;
-  const language = formData.get("language") as string;
-
   await getClient().mutate({
     mutation: inviteProgramHostMutation,
     variables: {
       input: {
         eventSlug,
         programSlug,
-        surveySlug,
-        email,
-        language,
+        formData: Object.fromEntries(formData.entries()),
       },
     },
   });

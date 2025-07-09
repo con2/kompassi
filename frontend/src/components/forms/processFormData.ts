@@ -5,13 +5,13 @@ import { Field, Value, Values } from "./models";
 export default function processFormData(
   fields: Field[],
   formData: FormData,
-  prefix: string = "",
+  slugPrefix: string = "",
 ): Values {
   const byFieldName = Object.fromEntries(formData.entries());
   const values: Values = {};
 
   for (const field of fields) {
-    const slug = prefix ? `${prefix}.${field.slug}` : field.slug;
+    const slug = slugPrefix ? `${slugPrefix}.${field.slug}` : field.slug;
 
     switch (field.type) {
       case "Spacer":

@@ -1,10 +1,11 @@
 import logging
 
 import graphene
+import pydantic
 from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
-from dimensions.models.cached_dimensions import validate_cached_dimensions
+from dimensions.utils.process_dimension_value_selection_form import process_dimension_value_selection_form
 from involvement.graphql.invitation_full import FullInvitationType
 
 from ...models.program import Program
@@ -15,10 +16,13 @@ logger = logging.getLogger(__name__)
 class InviteProgramHostInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
     program_slug = graphene.String(required=True)
-    survey_slug = graphene.String(required=True)  # if we ever want to have multiple acceptance forms
-    email = graphene.String(required=True)
-    language = graphene.String(required=True)
-    dimension_values = GenericScalar()
+    form_data = GenericScalar(required=True)
+
+
+class InviteProgramHostForm(pydantic.BaseModel):
+    email: str
+    survey_slug: str = pydantic.Field(validation_alias="surveySlug")
+    language: str
 
 
 class InviteProgramHost(graphene.Mutation):
@@ -34,14 +38,18 @@ class InviteProgramHost(graphene.Mutation):
         if not program.can_program_host_be_invited_by(request):
             raise ValueError("Cannot invite a program host to this program.")
 
-        survey = program.meta.accept_invitation_forms.get(slug=input.survey_slug)
-
-        dimension_values = validate_cached_dimensions(input.dimension_values) if input.dimension_values else {}
+        values = InviteProgramHostForm.model_validate(input.form_data)
+        survey = program.meta.accept_invitation_forms.get(slug=values.survey_slug)
+        dimension_values = process_dimension_value_selection_form(
+            program.event.involvement_universe.dimensions.filter(is_technical=False),
+            input.form_data,
+            slug_prefix="involvement_dimensions",
+        )
 
         invitation = program.invite_program_host(
-            email=input.email,
+            email=values.email,
             survey=survey,
-            language=input.language.lower(),
+            language=values.language.lower(),
             involvement_dimensions=dimension_values,
         )
 

@@ -6,19 +6,13 @@ import { graphql } from "@/__generated__";
 import { InvolvedPersonFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { CachedAnnotations } from "@/components/annotations/models";
 import { Column, DataTable } from "@/components/DataTable";
 import CachedDimensionBadges from "@/components/dimensions/CachedDimensionsBadges";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import {
-  CachedDimensions,
-  validateCachedDimensions,
-} from "@/components/dimensions/models";
+import { validateCachedDimensions } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 

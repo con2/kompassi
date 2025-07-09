@@ -5,6 +5,7 @@ import graphene_django
 from graphene.types.generic import GenericScalar
 
 from core.graphql.profile_limited import LimitedProfileType
+from involvement.graphql.enums import ProgramHostRoleType
 from involvement.models.involvement import Involvement
 
 
@@ -18,7 +19,9 @@ class LimitedProgramHostType(graphene_django.DjangoObjectType):
             "updated_at",
             "person",
             "cached_dimensions",
+            "program_host_role",
         )
 
     person = graphene.NonNull(LimitedProfileType)
     cached_dimensions = graphene.NonNull(GenericScalar)
+    program_host_role = graphene.Field(ProgramHostRoleType)

@@ -1,5 +1,6 @@
 import graphene
 import graphene_django
+from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 from forms.graphql.survey_limited import LimitedSurveyType
@@ -15,6 +16,7 @@ class LimitedInvitationType(graphene_django.DjangoObjectType):
             "id",
             "survey",
             "language",
+            "cached_dimensions",
         )
 
     survey = graphene.Field(LimitedSurveyType)
@@ -27,6 +29,7 @@ class LimitedInvitationType(graphene_django.DjangoObjectType):
 
     resolve_created_at = resolve_local_datetime_field("created_at")
     created_at = graphene.NonNull(graphene.DateTime)
+    cached_dimensions = GenericScalar()
 
     @staticmethod
     def resolve_email(invitation: Invitation, info) -> str:

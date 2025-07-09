@@ -28,11 +28,11 @@ interface Props {
 }
 
 // XXX any with sugar on top
-interface ResponseLike {
+interface HasCachedDimensions {
   cachedDimensions?: unknown | null;
 }
 
-export function buildKeyDimensionColumns<T extends ResponseLike>(
+export function buildKeyDimensionColumns<T extends HasCachedDimensions>(
   dimensions: ColoredKeyDimensionTableCellFragment[],
 ): Column<T>[] {
   return dimensions
