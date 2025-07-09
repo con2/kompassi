@@ -26,7 +26,7 @@ class Setup:
         self.setup_programme()
         self.setup_intra()
         self.setup_access()
-        self.setup_forms()
+        # self.setup_forms()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue

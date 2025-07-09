@@ -6,7 +6,6 @@ from django.utils.timezone import get_current_timezone
 from core.models import Event, Organization, Venue
 from involvement.models.registry import Registry
 from program_v2.models.meta import ProgramV2EventMeta
-from program_v2.workflows.program_offer import ProgramOfferWorkflow
 
 
 class Command(BaseCommand):
@@ -62,4 +61,4 @@ class Command(BaseCommand):
             ),
         )
 
-        ProgramOfferWorkflow.backfill(event)
+        # ProgramOfferWorkflow.backfill(event)
