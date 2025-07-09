@@ -269,29 +269,20 @@ class Setup:
         universe = self.event.involvement_universe
 
         ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
-        InvolvementToBadgeMapping.objects.filter(
-            universe=universe,
-            required_dimensions={
-                "state": ["active"],
-                "type": ["program-host"],
-            },
-            personnel_class=ohjelma,
-        ).delete()
         InvolvementToBadgeMapping.objects.update_or_create(
             universe=universe,
-            required_dimensions={
-                "state": ["active"],
-                "type": ["program-host"],
-                "program-host-has-badge": ["yes"],
-            },
             personnel_class=ohjelma,
             defaults=dict(
+                required_dimensions={
+                    "state": ["active"],
+                    "type": ["program-host"],
+                    "program-host-has-badge": ["yes"],
+                },
                 job_title="Ohjelmanjärjestäjä",
                 priority=self.get_ordering_number(),
             ),
         )
 
-        Group.objects.filter(name="ropecon2025-ohjelma-itg").delete()
         group, _ = Group.objects.get_or_create(name="ropecon2025-program-hosts")
         InvolvementToGroupMapping.objects.get_or_create(
             universe=universe,
