@@ -25,6 +25,7 @@ from dimensions.models.dimension_dto import DimensionDTO
 from dimensions.models.enums import DimensionApp
 from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
+from dimensions.utils.build_cached_dimensions import build_cached_dimensions
 from dimensions.utils.dimension_cache import DimensionCache
 from dimensions.utils.set_dimension_values import set_dimension_values
 from graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES
@@ -476,23 +477,9 @@ class Survey(models.Model):
 
         set_dimension_values(SurveyDefaultInvolvementDimensionValue, self, values_to_set, cache)
 
-    def _build_cached_default_response_dimensions(self) -> dict[str, list[str]]:
-        new_cached_dimensions = {}
-        for sdrdv in self.default_response_dimensions.all():
-            new_cached_dimensions.setdefault(sdrdv.value.dimension.slug, []).append(sdrdv.value.slug)
-
-        return new_cached_dimensions
-
-    def _build_cached_default_involvement_dimensions(self) -> dict[str, list[str]]:
-        new_cached_dimensions = {}
-        for sdidv in self.default_involvement_dimensions.all():
-            new_cached_dimensions.setdefault(sdidv.value.dimension.slug, []).append(sdidv.value.slug)
-
-        return new_cached_dimensions
-
     def refresh_cached_default_dimensions(self):
-        self.cached_default_response_dimensions = self._build_cached_default_response_dimensions()
-        self.cached_default_involvement_dimensions = self._build_cached_default_involvement_dimensions()
+        self.cached_default_response_dimensions = build_cached_dimensions(self.default_response_dimensions.all())
+        self.cached_default_involvement_dimensions = build_cached_dimensions(self.default_involvement_dimensions.all())
         self.save(
             update_fields=[
                 "cached_default_response_dimensions",
@@ -508,8 +495,12 @@ class Survey(models.Model):
     ):
         bulk_update = []
         for survey in surveys:
-            survey.cached_default_response_dimensions = survey._build_cached_default_response_dimensions()
-            survey.cached_default_involvement_dimensions = survey._build_cached_default_involvement_dimensions()
+            survey.cached_default_response_dimensions = build_cached_dimensions(
+                survey.default_response_dimensions.all()
+            )
+            survey.cached_default_involvement_dimensions = build_cached_dimensions(
+                survey.default_involvement_dimensions.all()
+            )
             bulk_update.append(survey)
         Survey.objects.bulk_update(
             bulk_update,

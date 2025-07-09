@@ -2,8 +2,10 @@ from collections import defaultdict
 
 from django.db import models
 
+from ..models.cached_dimensions import StrictCachedDimensions
 
-def build_cached_dimensions(*querysets: models.QuerySet) -> dict[str, list[str]]:
+
+def build_cached_dimensions(*querysets: models.QuerySet) -> StrictCachedDimensions:
     """
     Given one or more query sets of model instances following the SubjectDimensionValue
     protocol, this function builds an aggregated dictionary of cached dimensions that
