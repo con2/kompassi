@@ -43,13 +43,11 @@ export default function SurveyEditorTabs({
     });
   }
 
-  if (!(mode === "program-forms" && survey.purpose === "INVITE")) {
-    tabs.push({
-      slug: "dimensionDefaults",
-      title: t.attributes.dimensionDefaults.title,
-      href: `${url}/dimension-defaults`,
-    });
-  }
+  tabs.push({
+    slug: "dimensionDefaults",
+    title: t.attributes.dimensionDefaults.title,
+    href: `${url}/dimension-defaults`,
+  });
 
   for (const languageVersion of survey.languages) {
     // graphql enums are upper case :(

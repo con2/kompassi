@@ -176,19 +176,49 @@ class FullSurveyType(LimitedSurveyType):
     )
 
     @staticmethod
-    def resolve_dimensions(survey: Survey, info, key_dimensions_only: bool = False):
-        qs = survey.dimensions.all().order_by("order", "slug")
+    def resolve_dimensions(
+        survey: Survey,
+        info,
+        # TODO unify naming
+        is_list_filter: bool = False,
+        is_shown_in_detail: bool = False,
+        public_only: bool = True,
+        key_dimensions_only: bool = False,
+    ):
+        """
+        `is_list_filter` - only return dimensions that are shown in the list filter.
+        `is_shown_in_detail` - only return dimensions that are shown in the detail view.
+        If you supply both, you only get their intersection.
+        """
+        if public_only:
+            dimensions = survey.universe.dimensions.filter(is_public=True)
+        else:
+            graphql_check_instance(
+                survey,  # type: ignore
+                info,
+                field="dimensions",
+                app=survey.app.value,
+            )
+            dimensions = survey.universe.dimensions.all()
+
+        if is_list_filter:
+            dimensions = dimensions.filter(is_list_filter=True)
+
+        if is_shown_in_detail:
+            dimensions = dimensions.filter(is_shown_in_detail=True)
 
         if key_dimensions_only:
-            qs = qs.filter(is_key_dimension=True)
+            dimensions = dimensions.filter(is_key_dimension=True)
 
-        return qs
+        return dimensions.order_by("order", "slug")
 
     dimensions = graphene.NonNull(
-        graphene.List(
-            graphene.NonNull(FullDimensionType),
-            key_dimensions_only=graphene.Boolean(),
-        )
+        graphene.List(graphene.NonNull(FullDimensionType)),
+        is_list_filter=graphene.Boolean(),
+        is_shown_in_detail=graphene.Boolean(),
+        public_only=graphene.Boolean(),
+        key_dimensions_only=graphene.Boolean(),
+        description=normalize_whitespace(resolve_dimensions.__doc__ or ""),
     )
 
     @staticmethod

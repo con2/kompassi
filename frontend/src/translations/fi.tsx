@@ -1280,6 +1280,24 @@ const translations: Translations = {
             },
           },
         },
+        programDimensionDefaults: {
+          title: "Ohjelmanumeron dimensioiden oletusarvot",
+          description: (
+            <>
+              Nämä dimensioarvot asetetaan oletusarvoisesti ohjelmatarjouksille
+              ja niistä luoduille ohjelmanumeroille.
+            </>
+          ),
+        },
+        involvementDimensionDefaults: {
+          title: "Ohjelmanpitäjän dimensioiden oletusarvot",
+          description: (
+            <>
+              Nämä dimensioarvot asetetaan oletusarvoisesti ohjelmanpitäjille
+              hyväksymisen yhteydessä.
+            </>
+          ),
+        },
       },
       actions: {
         viewOffers: "Tarjoukset",
@@ -1831,6 +1849,8 @@ const translations: Translations = {
             kyselyvastauksille. Teknisten dimensioiden arvoja ei voi muuttaa.
           </>
         ),
+        technicalDimensionsCannotBeChanged:
+          "Teknisten dimensioiden arvoja ei voi muuttaa.",
       },
       values: "Arvot",
       value: "Arvo",

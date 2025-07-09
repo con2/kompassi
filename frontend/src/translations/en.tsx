@@ -1282,6 +1282,24 @@ const translations = {
             },
           },
         },
+        programDimensionDefaults: {
+          title: "Program item dimension defaults",
+          description: (
+            <>
+              These dimension values will be set by default for program offers
+              and program items created from them.
+            </>
+          ),
+        },
+        involvementDimensionDefaults: {
+          title: "Program host dimension defaults",
+          description: (
+            <>
+              These dimension values will be set by default for program hosts
+              upon acceptance.
+            </>
+          ),
+        },
       },
       actions: {
         viewOffers: "View offers",
@@ -1822,11 +1840,10 @@ const translations = {
       dimensionDefaults: {
         title: "Dimension defaults",
         description: (
-          <>
-            These dimension values will be set by default for new responses.
-            Values of technical dimensions cannot be changed.
-          </>
+          <>These dimension values will be set by default for new responses.</>
         ),
+        technicalDimensionsCannotBeChanged:
+          "Values of technical dimensions cannot be changed.",
       },
       values: "Values",
       value: "Arvo",

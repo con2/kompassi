@@ -4,6 +4,10 @@ import { notFound } from "next/navigation";
 import ProgramFormEditorView from "../edit/ProgramFormEditorView";
 import { updateProgramFormDefaultDimensions } from "./actions";
 import { graphql } from "@/__generated__";
+import {
+  SurveyDefaultDimensionsUniverse,
+  SurveyPurpose,
+} from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import DimensionValueSelectionForm from "@/components/dimensions/DimensionValueSelectionForm";
@@ -22,8 +26,14 @@ const query = graphql(`
       name
       slug
 
+      involvement {
+        dimensions(publicOnly: false) {
+          ...DimensionValueSelect
+        }
+      }
+
       forms {
-        survey(slug: $surveySlug, app: PROGRAM_V2, purpose: DEFAULT) {
+        survey(slug: $surveySlug, app: PROGRAM_V2) {
           slug
           title(lang: $locale)
           canRemove
@@ -31,10 +41,11 @@ const query = graphql(`
           languages {
             language
           }
-          dimensions {
-            ...DimensionRowGroup
+          dimensions(publicOnly: false) {
+            ...DimensionValueSelect
           }
           cachedDefaultResponseDimensions
+          cachedDefaultInvolvementDimensions
         }
       }
     }
@@ -90,7 +101,8 @@ export default async function ProgramFormDimensionDefaults({ params }: Props) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
-  const t = translations.Survey;
+  const surveyT = translations.Survey;
+  const t = translations.Program.ProgramForm;
 
   const { data } = await getClient().query({
     query,
@@ -103,9 +115,11 @@ export default async function ProgramFormDimensionDefaults({ params }: Props) {
 
   const event = data.event;
   const survey = data.event.forms.survey;
-  const dimensions = data.event.forms.survey.dimensions;
+  const programDimensions = data.event.forms.survey.dimensions;
+  const involvementDimensions = data.event.involvement?.dimensions ?? [];
 
   validateCachedDimensions(survey.cachedDefaultResponseDimensions);
+  validateCachedDimensions(survey.cachedDefaultInvolvementDimensions);
 
   return (
     <ProgramFormEditorView
@@ -114,27 +128,66 @@ export default async function ProgramFormDimensionDefaults({ params }: Props) {
       activeTab="dimensionDefaults"
       translations={translations}
     >
-      <p className="form-text">{t.attributes.dimensionDefaults.description} </p>
+      <h4>{t.attributes.involvementDimensionDefaults.title}</h4>
+      <p className="form-text">
+        {t.attributes.involvementDimensionDefaults.description}{" "}
+        <Link
+          className="link-subtle"
+          href={`/${eventSlug}/involvement-dimensions`}
+          target="_blank"
+        >
+          {surveyT.actions.editDimensions}…
+        </Link>
+      </p>
       <DimensionValueSelectionForm
-        dimensions={dimensions}
-        cachedDimensions={survey.cachedDefaultResponseDimensions}
+        dimensions={involvementDimensions}
+        cachedDimensions={survey.cachedDefaultInvolvementDimensions}
         onChange={updateProgramFormDefaultDimensions.bind(
           null,
           locale,
           eventSlug,
           surveySlug,
+          SurveyDefaultDimensionsUniverse.Involvement,
         )}
         translations={translations}
         technicalDimensions="readonly"
+        idPrefix="involvement-dimension-defaults"
       />
-      <p className="form-text mb-0">
-        <Link
-          className="link-subtle"
-          href={`/${locale}/${eventSlug}/program-dimensions`}
-          target="_blank"
-        >
-          {t.actions.editDimensions}…
-        </Link>
+
+      {survey.purpose == SurveyPurpose.Default && (
+        <>
+          <h4>{t.attributes.programDimensionDefaults.title}</h4>
+          <p className="form-text">
+            {t.attributes.programDimensionDefaults.description}{" "}
+            <Link
+              className="link-subtle"
+              href={`/${eventSlug}/program-dimensions`}
+              target="_blank"
+            >
+              {surveyT.actions.editDimensions}…
+            </Link>
+          </p>
+          <DimensionValueSelectionForm
+            dimensions={programDimensions}
+            cachedDimensions={survey.cachedDefaultResponseDimensions}
+            onChange={updateProgramFormDefaultDimensions.bind(
+              null,
+              locale,
+              eventSlug,
+              surveySlug,
+              SurveyDefaultDimensionsUniverse.Response,
+            )}
+            translations={translations}
+            technicalDimensions="readonly"
+            idPrefix="program-dimension-defaults"
+          />
+        </>
+      )}
+      <p className="form-text">
+        {
+          surveyT.attributes.dimensionDefaults
+            .technicalDimensionsCannotBeChanged
+        }
       </p>
     </ProgramFormEditorView>
   );

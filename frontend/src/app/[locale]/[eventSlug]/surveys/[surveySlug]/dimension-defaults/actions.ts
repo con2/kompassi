@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
+import { SurveyDefaultDimensionsUniverse } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 
 const mutation = graphql(`
@@ -25,6 +26,7 @@ export async function updateSurveyDefaultDimensions(
   const input = {
     eventSlug,
     surveySlug,
+    universe: SurveyDefaultDimensionsUniverse.Response, // TODO Involvement too
     formData: Object.fromEntries(formData),
   };
   const { data } = await getClient().mutate({
