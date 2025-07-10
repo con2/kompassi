@@ -17,7 +17,6 @@ from ..workflows.program_offer import ProgramOfferWorkflow
 logger = logging.getLogger("kompassi")
 
 
-@transaction.atomic
 def backfill(
     event: Event,
     override_involvement_dimensions: bool = False,
@@ -32,11 +31,10 @@ def backfill(
         of the form that they used to become a program host.
     """
 
-    logger.info("Backfilling program V2 settings for event %s", event.slug)
-
-    program_universe = get_program_universe(event)
-    setup_program_dimensions(program_universe)
-    program_cache = program_universe.preload_dimensions()
+    logger.info(
+        "Backfilling program V2 settings for event %s. Note that this may take several minutes for a large event.",
+        event.slug,
+    )
 
     meta = event.program_v2_event_meta
     if meta is None:
@@ -44,6 +42,11 @@ def backfill(
 
     if not meta.default_registry:
         raise ValueError("Event has no default registry for program_v2")
+
+    with transaction.atomic():
+        program_universe = get_program_universe(event)
+        setup_program_dimensions(program_universe)
+        program_cache = program_universe.preload_dimensions()
 
     # Program form settings
     Survey.objects.filter(
@@ -54,78 +57,74 @@ def backfill(
         registry=meta.default_registry,
     )
 
-    for offer_form in meta.program_offer_forms.all():
-        offer_form.with_mandatory_fields().save()
-        offer_form.set_default_response_dimension_values(
-            ProgramOfferWorkflow._get_default_dimension_values(offer_form),
-            cache=program_cache,
-        )
-        offer_form.refresh_cached_default_dimensions()
+    with transaction.atomic():
+        for offer_form in meta.program_offer_forms.all():
+            offer_form.with_mandatory_fields().save()
+            offer_form.set_default_response_dimension_values(
+                ProgramOfferWorkflow._get_default_dimension_values(offer_form),
+                cache=program_cache,
+            )
+            offer_form.refresh_cached_default_dimensions()
 
     # Program offer dimensions
-    for program_offer in meta.current_program_offers.all():
-        existing_values = program_offer.cached_dimensions
-        values_to_set = {}
+    with transaction.atomic():
+        for program_offer in meta.current_program_offers.all():
+            existing_values = program_offer.cached_dimensions
+            values_to_set = {}
 
-        if not existing_values.get("state", []):
-            values_to_set["state"] = ["accepted"] if program_offer.programs.exists() else ["new"]
-        if not existing_values.get("form", []):
-            values_to_set["form"] = [program_offer.survey.slug]
+            if not existing_values.get("state", []):
+                values_to_set["state"] = ["accepted"] if program_offer.programs.exists() else ["new"]
+            if not existing_values.get("form", []):
+                values_to_set["form"] = [program_offer.survey.slug]
 
-        if values_to_set:
-            program_offer.set_dimension_values(values_to_set, program_cache)
+            if values_to_set:
+                program_offer.set_dimension_values(values_to_set, program_cache)
 
     # Program dimensions
-    for program in Program.objects.filter(event=event):
-        existing_values = program.cached_dimensions
-        values_to_set = {}
+    with transaction.atomic():
+        for program in Program.objects.filter(event=event):
+            existing_values = program.cached_dimensions
+            values_to_set = {}
 
-        if not existing_values.get("state", []):
-            values_to_set["state"] = ["accepted"]
-        if not existing_values.get("form", []):
-            values_to_set["form"] = [program.program_offer.survey.slug] if program.program_offer else []
+            if not existing_values.get("state", []):
+                values_to_set["state"] = ["accepted"]
+            if not existing_values.get("form", []):
+                values_to_set["form"] = [program.program_offer.survey.slug] if program.program_offer else []
 
-        if values_to_set:
-            program.set_dimension_values(values_to_set, program_cache)
+            if values_to_set:
+                program.set_dimension_values(values_to_set, program_cache)
 
-    Program.refresh_cached_fields_qs(meta.programs.all(), cache=program_cache)
-    ScheduleItem.refresh_cached_fields_qs(meta.schedule_items.all())
+    with transaction.atomic():
+        Program.refresh_cached_fields_qs(meta.programs.all(), cache=program_cache)
+    with transaction.atomic():
+        ScheduleItem.refresh_cached_fields_qs(meta.schedule_items.all())
 
     # Involvements
-    involvement_universe = event.involvement_universe
-    setup_involvement_dimensions(involvement_universe, event)
-    involvement_cache = involvement_universe.preload_dimensions()
+    with transaction.atomic():
+        involvement_universe = event.involvement_universe
+        setup_involvement_dimensions(involvement_universe, event)
+        involvement_cache = involvement_universe.preload_dimensions()
 
-    # Due to faulty logic, each version of a program offer generated an Involvement.
-    _, deleted_by_model = Involvement.objects.filter(
-        # Of this event
-        universe=involvement_universe,
-        # Is of type program offer (ie. not program host in a program item)
-        program__isnull=True,
-        # Is an old version of a program offer
-        response__superseded_by__isnull=False,
-        # Just to be sure: This version of the program offer has not been accepted as a program item
-        response__programs__isnull=True,
-    ).delete()
-    logger.info("Involvement cleanup for old response versions deleted: %s", deleted_by_model)
-
-    logger.info("Backfilling involvement for %d program offers", meta.current_program_offers.count())
-    for program_offer in meta.current_program_offers.all():
-        program_offer.survey.workflow.ensure_involvement(
-            program_offer,
-            cache=involvement_cache,
-            override_dimensions=override_involvement_dimensions,
-        )
-
-    logger.info("Backfilling involvement for %d program items", meta.programs.count())
-    for program in meta.programs.all():
-        for program_host in program.all_program_hosts.all():
-            Involvement.from_involvement(
-                involvement=program_host,
+    with transaction.atomic():
+        logger.info("Backfilling involvement for %d program offers", meta.current_program_offers.count())
+        for program_offer in meta.current_program_offers.all():
+            program_offer.survey.workflow.ensure_involvement(
+                program_offer,
                 cache=involvement_cache,
                 override_dimensions=override_involvement_dimensions,
             )
 
-    Program.refresh_cached_fields_qs(meta.programs.all(), cache=program_cache)
+    with transaction.atomic():
+        logger.info("Backfilling involvement for %d program items", meta.programs.count())
+        for program in meta.programs.all():
+            for program_host in program.all_program_hosts.all():
+                Involvement.from_involvement(
+                    involvement=program_host,
+                    cache=involvement_cache,
+                    override_dimensions=override_involvement_dimensions,
+                )
+
+    with transaction.atomic():
+        Program.refresh_cached_fields_qs(meta.programs.all(), cache=program_cache)
 
     logger.info("Backfilling program V2 settings for event %s completed.", event.slug)

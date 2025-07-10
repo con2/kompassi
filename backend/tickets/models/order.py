@@ -438,5 +438,4 @@ class Order(models.Model):
 
         with connection.cursor() as cursor:
             cursor.execute(ArrivalsRow.QUERY, [event_slug])
-            # TODO backfill missing hours
             return [ArrivalsRow(*row) for row in cursor.fetchall()]

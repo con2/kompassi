@@ -60,5 +60,3 @@ class Command(BaseCommand):
                 default_registry=registry,
             ),
         )
-
-        # ProgramOfferWorkflow.backfill(event)

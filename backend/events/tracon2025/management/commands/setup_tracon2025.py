@@ -35,7 +35,6 @@ from labour.models.personnel_class import PersonnelClass
 from labour.models.qualifications import Qualification
 from labour.models.survey import Survey as LabourSurvey
 from program_v2.models.meta import ProgramV2EventMeta
-from program_v2.utils.backfill import backfill
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.models.product import Product
 from tickets_v2.models.quota import Quota
@@ -334,9 +333,6 @@ class Setup:
                 ),
             ),
         )
-
-        # TODO(2026): Remove (normally setup when program universe is first accessed)
-        backfill(self.event)
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack

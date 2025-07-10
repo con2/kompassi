@@ -458,9 +458,6 @@ class Setup:
             ),
         )
 
-        # TODO(2026): Remove (normally setup when program universe is first accessed)
-        # ProgramOfferWorkflow.backfill(self.event)
-
     def setup_tickets_v2(self):
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
         meta, _ = TicketsV2EventMeta.objects.update_or_create(
