@@ -61,10 +61,13 @@ class ProgramFilters:
         slugs = filters.pop("slug", [])
         hide_past = all(v.lower() in FALSY_VALUES for v in filters.pop("past", []))
 
-        user_relations = [ProgramUserRelation(rel.upper()) for rel in filters.pop("relation", [])]
+        user_relations = {ProgramUserRelation(rel.upper()) for rel in filters.pop("relation", [])}
+        if (favorited := filters.pop("favorited", [])) and not all(v.lower() in FALSY_VALUES for v in favorited):
+            # legacy way to specify rel=favorited
+            user_relations.add(ProgramUserRelation.FAVORITED)
         if len(user_relations) > 1:
             raise ValueError("Only one user relation can be specified.")
-        user_relation = user_relations[0] if user_relations else None
+        user_relation = next(iter(user_relations)) if user_relations else None
 
         updated_after = (
             parse_datetime(updated_after_str)
