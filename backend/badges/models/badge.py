@@ -14,6 +14,7 @@ from core.csv_export import CsvExportMixin
 from core.models.constants import NAME_DISPLAY_STYLE_FORMATS
 from core.models.event import Event
 from core.utils import time_bool_property
+from core.utils.cleanup import register_cleanup
 from core.utils.pkg_resources_compat import resource_string
 
 from ..proxies.badge.privacy import BadgePrivacyAdapter
@@ -32,6 +33,14 @@ class ArrivalsRow:
     QUERY = resource_string(__name__, "queries/arrivals_by_hour.sql").decode()
 
 
+@register_cleanup(
+    # Revoked unprinted badges should have been deleted outright.
+    lambda qs: qs.filter(
+        revoked_at__isnull=False,
+        batch__isnull=True,
+        printed_separately_at__isnull=True,
+    )
+)
 class Badge(models.Model, CsvExportMixin):
     person_id: int | None
     person = models.ForeignKey(

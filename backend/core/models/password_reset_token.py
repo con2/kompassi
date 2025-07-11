@@ -1,6 +1,11 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.db import models, transaction
 from django.template.loader import render_to_string
+from django.utils.timezone import now
+
+from core.utils.cleanup import register_cleanup
 
 from ..utils import url
 from .one_time_code import OneTimeCode
@@ -10,6 +15,7 @@ class PasswordResetError(RuntimeError):
     pass
 
 
+@register_cleanup(lambda qs: qs.filter(used_at__lt=now() - timedelta(days=30)))
 class PasswordResetToken(OneTimeCode):
     ip_address = models.CharField(max_length=45, blank=True)  # IPv6
 

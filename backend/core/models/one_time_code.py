@@ -9,8 +9,6 @@ from django.utils.translation import gettext_lazy as _
 
 from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
-from .constants import EMAIL_LENGTH
-
 logger = logging.getLogger("kompassi")
 
 ONE_TIME_CODE_LENGTH = 40
@@ -52,6 +50,8 @@ class OneTimeCodeMixin:
         raise NotImplementedError()
 
     def send(self, request, **kwargs):
+        from ..tasks import send_email
+
         body = self.render_message_body(request)
         subject = self.render_message_subject(request)
 
@@ -64,17 +64,7 @@ class OneTimeCodeMixin:
 
         opts.update(kwargs)
 
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import send_email
-
-            send_email.delay(**opts)  # type: ignore
-        else:
-            from django.core.mail import EmailMessage
-
-            if settings.DEBUG:
-                logger.debug(body)
-
-            EmailMessage(**opts).send(fail_silently=True)
+        send_email.delay(**opts)  # type: ignore
 
     def mark_used(self):
         if self.state != "valid":
@@ -119,40 +109,4 @@ class OneTimeCode(models.Model, OneTimeCodeMixin):
         abstract = True
         indexes = [
             models.Index(fields=["person", "state"]),
-        ]
-
-
-class OneTimeCodeLite(OneTimeCodeMixin, models.Model):
-    """
-    An OneTimeCode that is not tied to a Person.
-    """
-
-    code = models.CharField(max_length=63, unique=True)
-    email = models.EmailField(
-        blank=True,
-        max_length=EMAIL_LENGTH,
-        verbose_name=_("E-mail address"),
-    )
-    created_at = models.DateTimeField(auto_now_add=True)
-    used_at = models.DateTimeField(null=True, blank=True)
-    state = models.CharField(
-        max_length=8,
-        default="valid",
-        choices=ONE_TIME_CODE_STATE_CHOICES,
-    )
-
-    def save(self, *args, **kwargs):
-        if not self.code:
-            self.code = self.generate_code()
-
-        return super().save(*args, **kwargs)
-
-    @property
-    def name_and_email(self):
-        return self.email
-
-    class Meta:
-        abstract = True
-        indexes = [
-            models.Index(fields=["email", "state"]),
         ]

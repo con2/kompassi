@@ -46,6 +46,7 @@ def core_stats_view(request):
         etickets_used=Code.objects.filter(status=USED).count(),
         seat_reservations_issued=Ticket.objects.count(),
         formatted_revenue=format_price(revenue),
+        login_page=True,  # cached -> do not show other user's name in the header
     )
 
     return render(request, "core_stats_view.pug", vars)

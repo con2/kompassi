@@ -46,6 +46,8 @@ class SMTPServer(models.Model):
     password_file_path_on_server = models.CharField(max_length=255, blank=True)
     trigger_file_path_on_server = models.CharField(max_length=255, blank=True)
 
+    smtp_passwords: models.QuerySet
+
     def __str__(self):
         return self.hostname
 
@@ -57,12 +59,9 @@ class SMTPServer(models.Model):
         return "\n".join(lines)
 
     def push_smtppasswd_file(self):
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import smtp_server_push_smtppasswd_file
+        from ..tasks import smtp_server_push_smtppasswd_file
 
-            smtp_server_push_smtppasswd_file.delay(self.id)
-        else:
-            self._push_smtppaswd_file()
+        smtp_server_push_smtppasswd_file.delay(self.id)  # type: ignore
 
     def _push_smtppasswd_file(self):
         logger.info("Pushing smtppasswd file for %s", self)

@@ -80,7 +80,7 @@ class StateTransition:
         # XXX In the Grand Order, the first flag is `is_active`.
         # If the worker would end up in an inactive state, they must not have shifts.
         if not STATE_FLAGS_BY_NAME[self.to_state][0] and self.signup.shifts.exists():
-            return _("This signup has shifts. Please remove the shifts before cancelling or " "rejecting the signup.")
+            return _("This signup has shifts. Please remove the shifts before cancelling or rejecting the signup.")
 
         return ""
 
@@ -549,14 +549,10 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         return signups
 
     def apply_state(self):
+        from ..tasks import signup_apply_state
+
         self.apply_state_sync()
-
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import signup_apply_state
-
-            signup_apply_state.delay(self.pk)  # type: ignore
-        else:
-            self._apply_state()
+        signup_apply_state.delay(self.pk)  # type: ignore
 
     def apply_state_sync(self):
         self.apply_state_ensure_job_categories_accepted_is_set()

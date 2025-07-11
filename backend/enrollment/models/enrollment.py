@@ -1,5 +1,12 @@
+from __future__ import annotations
+
+from datetime import timedelta
+
 from django.db import models
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+
+from core.utils.cleanup import register_cleanup
 
 STATE_CHOICES = [
     ("NEW", _("New")),
@@ -16,6 +23,12 @@ STATE_LABEL_CLASSES = dict(
 )
 
 
+@register_cleanup(
+    lambda qs: qs.filter(
+        event__start_time__lt=now() - timedelta(days=30),
+        state__in=["CANCELLED", "REJECTED"],
+    ),
+)
 class Enrollment(models.Model):
     """
     Holds all the possible fields an enrollment instance may have

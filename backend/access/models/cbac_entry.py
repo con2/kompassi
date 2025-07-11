@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import logging
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, Self
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
@@ -9,6 +11,7 @@ from django.db import models
 from django.utils.timezone import now
 
 from core.utils import get_objects_within_period, log_get_or_create
+from core.utils.cleanup import register_cleanup
 from event_log_v2.utils.emit import emit
 from intra.constants import SUPPORTED_APPS
 
@@ -166,18 +169,20 @@ class CBACEntry(models.Model):
                     )
 
     @classmethod
-    def prune_expired(cls, *, t: datetime | None = None, request=None):
-        if t is None:
-            t = now()
-
-        expired_entries = cls.objects.filter(valid_until__lte=t)
-        logger.info("Removing %d CBAC entries expired on or before %s", expired_entries.count(), t.isoformat())
+    def get_entries_for_cleanup(cls, queryset: models.QuerySet[Self]):
+        """
+        Cleanup filter used by @register_cleanup.
+        As a side effect, emits an event for each expired entry.
+        """
+        expired_entries = cls.objects.filter(valid_until__lt=now())
 
         for cbac_entry in expired_entries:
             emit(
-                "access.cbacentry.deleted",
-                request=request,
+                "access.cbacentry.expired",
                 other_fields=cbac_entry.as_dict(),
             )
 
-        expired_entries.delete()
+        return expired_entries
+
+
+register_cleanup(CBACEntry.get_entries_for_cleanup)(CBACEntry)

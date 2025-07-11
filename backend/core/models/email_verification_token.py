@@ -1,8 +1,12 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.db import models
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
+from core.utils.cleanup import register_cleanup
 from graphql_api.language import DEFAULT_LANGUAGE, to_supported_language
 
 from ..utils import url
@@ -13,6 +17,7 @@ class EmailVerificationError(RuntimeError):
     pass
 
 
+@register_cleanup(lambda qs: qs.filter(used_at__lt=now() - timedelta(days=30)))
 class EmailVerificationToken(OneTimeCode):
     email = models.CharField(max_length=255)
 

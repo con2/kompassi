@@ -5,6 +5,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import time_bool_property
+from core.utils.cleanup import register_cleanup
 
 from .constants import BADGE_ELIGIBLE_FOR_BATCHING
 
@@ -21,6 +22,7 @@ def contains_moon_runes(unicode_str):
         return False
 
 
+@register_cleanup(lambda qs: qs.filter(badges__isnull=True))
 class Batch(models.Model):
     event = models.ForeignKey(
         "core.Event",

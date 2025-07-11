@@ -3,6 +3,7 @@ import logging
 from django.db import models
 
 from core.csv_export import CsvExportMixin
+from core.utils.cleanup import register_cleanup
 
 from ..utils import format_price
 from .order import Order
@@ -11,6 +12,7 @@ from .product import Product
 logger = logging.getLogger("kompassi")
 
 
+@register_cleanup(lambda qs: qs.filter(count=0))
 class OrderProduct(models.Model, CsvExportMixin):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_product_set")
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="order_product_set")

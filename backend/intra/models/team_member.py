@@ -18,6 +18,7 @@ NAME_DISPLAY_STYLE_CHOICES = [
 logger = logging.getLogger("kompassi")
 
 
+# TODO make signup a ForeignKey and cleanup on signup.is_active = False
 class TeamMember(models.Model):
     team = models.ForeignKey("intra.Team", on_delete=models.CASCADE, verbose_name=_("Team"), related_name="members")
     person = models.ForeignKey(

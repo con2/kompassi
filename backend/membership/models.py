@@ -8,18 +8,28 @@ from core.csv_export import CsvExportMixin
 from core.models import Organization, Person
 from core.models.group_management_mixin import GroupManagementMixin
 from core.utils import ensure_user_group_membership, format_date, url
+from core.utils.cleanup import register_cleanup
 from tickets.utils import append_reference_number_checksum, format_price
 
 
 class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
     organization = models.OneToOneField(
-        Organization, on_delete=models.CASCADE, primary_key=True, verbose_name="Organisaatio"
+        Organization,
+        on_delete=models.CASCADE,
+        primary_key=True,
+        verbose_name="Organisaatio",
     )
     admin_group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, verbose_name="Ylläpitäjäryhmä", related_name="admin_group_for"
+        Group,
+        on_delete=models.CASCADE,
+        verbose_name="Ylläpitäjäryhmä",
+        related_name="admin_group_for",
     )
     members_group = models.ForeignKey(
-        Group, on_delete=models.CASCADE, verbose_name="Jäsenryhmä", related_name="members_group_for"
+        Group,
+        on_delete=models.CASCADE,
+        verbose_name="Jäsenryhmä",
+        related_name="members_group_for",
     )
     receiving_applications = models.BooleanField(
         default=True,
@@ -27,7 +37,9 @@ class MembershipOrganizationMeta(models.Model, GroupManagementMixin):
         help_text="Tämä asetus kontrolloi, voiko yhdistyksen jäseneksi hakea suoraan Kompassin kautta.",
     )
     membership_requirements = models.TextField(
-        blank=True, verbose_name="Kuka voi hakea jäsenyyttä?", help_text="Esim. copy-paste säännöistä."
+        blank=True,
+        verbose_name="Kuka voi hakea jäsenyyttä?",
+        help_text="Esim. copy-paste säännöistä.",
     )
 
     def __str__(self):
@@ -76,11 +88,20 @@ PAYMENT_TYPE_CHOICES = [
 ]
 
 
+@register_cleanup(lambda qs: qs.filter(state__in=["discharged", "declined"]))
 class Membership(models.Model, CsvExportMixin):
     organization = models.ForeignKey(
-        Organization, on_delete=models.CASCADE, verbose_name="Yhdistys", related_name="memberships"
+        Organization,
+        on_delete=models.CASCADE,
+        verbose_name="Yhdistys",
+        related_name="memberships",
     )
-    person = models.ForeignKey(Person, on_delete=models.CASCADE, verbose_name="Henkilö", related_name="memberships")
+    person = models.ForeignKey(
+        Person,
+        on_delete=models.CASCADE,
+        verbose_name="Henkilö",
+        related_name="memberships",
+    )
     state = models.CharField(
         max_length=max(len(key) for (key, val) in STATE_CHOICES),
         choices=STATE_CHOICES,
@@ -116,7 +137,7 @@ class Membership(models.Model, CsvExportMixin):
 
     @property
     def formatted_state(self):
-        return self.get_state_display()
+        return self.get_state_display()  # type: ignore
 
     @property
     def state_css(self):
@@ -173,12 +194,9 @@ class Membership(models.Model, CsvExportMixin):
         return None, None
 
     def apply_state(self):
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from .tasks import membership_apply_state
+        from .tasks import membership_apply_state
 
-            membership_apply_state.delay(self.pk)
-        else:
-            self._apply_state()
+        membership_apply_state.delay(self.pk)  # type: ignore
 
     def _apply_state(self):
         self._apply_state_group_membership()

@@ -1,7 +1,6 @@
 from datetime import timedelta
 from typing import Any
 
-from django.conf import settings
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -36,7 +35,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         max_length=255,
         blank=True,
         verbose_name="tarkkailusähköposti",
-        help_text="Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään myös " "tähän osoitteeseen.",
+        help_text="Kaikki työvoimajärjestelmän lähettämät sähköpostiviestit lähetetään myös tähän osoitteeseen.",
     )
 
     contact_email = models.CharField(
@@ -183,12 +182,9 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         return groups
 
     def create_groups_async(self):
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import labour_event_meta_create_groups
+        from ..tasks import labour_event_meta_create_groups
 
-            labour_event_meta_create_groups.delay(self.pk)  # type: ignore
-        else:
-            self.create_groups()
+        labour_event_meta_create_groups.delay(self.pk)  # type: ignore
 
     def create_groups(self):
         from .job_category import JobCategory

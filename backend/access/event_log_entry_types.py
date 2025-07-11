@@ -10,6 +10,11 @@ registry.register(
     message="A CBAC entry for {user} was deleted by {actor}: {claims}",
 )
 
+registry.register(
+    name="access.cbacentry.expired",
+    message="A CBAC entry for {user} expired and was deleted: {claims}",
+)
+
 
 registry.register(
     name="access.cbac.denied",

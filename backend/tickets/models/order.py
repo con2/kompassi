@@ -13,6 +13,7 @@ from django.utils import timezone, translation
 from django.utils.translation import gettext_lazy as _
 
 from core.models.event import Event
+from core.utils.cleanup import register_cleanup
 from core.utils.pkg_resources_compat import resource_string
 from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
@@ -37,6 +38,13 @@ class ArrivalsRow:
     QUERY = resource_string(__name__, "queries/arrivals_by_hour.sql").decode()
 
 
+@register_cleanup(
+    # Unconfirmed orders for past events (with a safety margin of 30 days)
+    lambda qs: qs.filter(
+        event__start_time__lt=timezone.now() - timedelta(days=30),
+        confirm_time__isnull=True,
+    )
+)
 class Order(models.Model):
     order_product_set: models.QuerySet[OrderProduct]
 
@@ -326,12 +334,9 @@ class Order(models.Model):
         return printer.finish()
 
     def send_confirmation_message(self, msgtype):
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import order_send_confirmation_message
+        from ..tasks import order_send_confirmation_message
 
-            order_send_confirmation_message.delay(self.pk, msgtype)  # type: ignore
-        else:
-            self._send_confirmation_message(msgtype)
+        order_send_confirmation_message.delay(self.pk, msgtype)  # type: ignore
 
     def _send_confirmation_message(self, msgtype: str):
         if not self.customer:

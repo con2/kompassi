@@ -9,11 +9,12 @@ from core.utils import (
     format_phone_number,
     phone_number_validator,
 )
+from core.utils.cleanup import register_cleanup
 
 logger = logging.getLogger("kompassi")
 
 
-# TODO mayhaps combine with Person someday soon?
+@register_cleanup(lambda qs: qs.filter(order__isnull=True))
 class Customer(models.Model):
     # REVERSE: order = OneToOne(Order)
 

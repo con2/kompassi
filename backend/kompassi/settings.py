@@ -203,7 +203,6 @@ INSTALLED_APPS = (
     "listings",
     "forms",
     "metrics",
-    "background_tasks",
     "emprinten",
     # organizations
     "organizations.tracon_ry",
@@ -384,8 +383,8 @@ KOMPASSI_INSTALLATION_NAME_ILLATIVE = "Kompassin kehitys\u00adinstanssiin" if DE
 KOMPASSI_INSTALLATION_NAME_GENITIVE = "Kompassin kehitys\u00adinstanssin" if DEBUG else "Kompassin"
 KOMPASSI_INSTALLATION_NAME_PARTITIVE = "Kompassin kehitys\u00adinstanssia" if DEBUG else "Kompassia"
 KOMPASSI_INSTALLATION_SLUG = env("KOMPASSI_INSTALLATION_SLUG", default="turskadev")
-KOMPASSI_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi"
-FEEDBACK_PRIVACY_POLICY_URL = "https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi-palaute"
+KOMPASSI_PRIVACY_POLICY_URL = "https://tracon.fi/tietosuoja"
+FEEDBACK_PRIVACY_POLICY_URL = "https://tracon.fi/tietosuoja"
 
 # Confluence & co. require a group of users
 KOMPASSI_NEW_USER_GROUPS = ["users"]

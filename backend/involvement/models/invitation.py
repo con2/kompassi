@@ -35,6 +35,9 @@ class Invitation(UUID7Mixin, models.Model):
     Accepting the invitation also involves answering a Survey.
     When the invitation is accepted, an Involvement is created.
     An Invitation can only be used once.
+
+    NOTE: Do not try to @register_cleanup on this model,
+    as the invitation is referred to by the Involvement.
     """
 
     id = models.UUIDField(default=uuid7, primary_key=True, editable=False)

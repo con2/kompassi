@@ -22,3 +22,8 @@ registry.register(
     name="core.password.changed",
     message="User {actor} changed their password",
 )
+
+registry.register(
+    name="core.cleanup.performed",
+    message="Cleanup for {model_name} deleted: {deleted}",
+)

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -44,6 +43,7 @@ class Privilege(models.Model):
         )
 
     def grant(self, person):
+        from ..tasks import grant_privilege
         from .granted_privilege import GrantedPrivilege
 
         gp, created = GrantedPrivilege.objects.get_or_create(
@@ -53,12 +53,7 @@ class Privilege(models.Model):
         if gp.state != "approved":
             return
 
-        if "background_tasks" in settings.INSTALLED_APPS:
-            from ..tasks import grant_privilege
-
-            grant_privilege.delay(self.pk, person.pk)  # type: ignore
-        else:
-            self._grant(person)
+        grant_privilege.delay(self.pk, person.pk)  # type: ignore
 
     def _grant(self, person):
         from .granted_privilege import GrantedPrivilege

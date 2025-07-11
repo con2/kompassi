@@ -1,14 +1,17 @@
 from collections import namedtuple
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.forms import ValidationError
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 
 from api.utils import JSONSchemaObject
 from core.models import OneTimeCode
 from core.utils import url
+from core.utils.cleanup import register_cleanup
 
 DESUPROFILE_USERNAME_MAX_LENGTH = 150
 
@@ -36,6 +39,7 @@ class Connection(models.Model):
         return self.user.username
 
 
+@register_cleanup(lambda qs: qs.filter(used_at__lt=now() - timedelta(days=30)))
 class ConfirmationCode(OneTimeCode):
     desuprofile_id = models.IntegerField()
 
