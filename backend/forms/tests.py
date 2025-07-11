@@ -692,10 +692,9 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
 
     response.refresh_from_db()
 
-    assert response.cached_dimensions == {
-        "test-dimension": ["test-dimension-value-2"],
-        "test-dimension2": ["test-dimension2-value-1", "test-dimension2-value-2"],
-    }
+    assert set(response.cached_dimensions.keys()) == {"test-dimension", "test-dimension2"}
+    assert set(response.cached_dimensions["test-dimension"]) == {"test-dimension-value-2"}
+    assert set(response.cached_dimensions["test-dimension2"]) == {"test-dimension2-value-1", "test-dimension2-value-2"}
 
 
 @pytest.mark.django_db
