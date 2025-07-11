@@ -1,15 +1,12 @@
 import logging
 
-from django.contrib import messages
-from django.db import transaction
-from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.translation import gettext_lazy as _
+from django.shortcuts import get_object_or_404, render
 
 from core.helpers import person_required
 from core.utils import initialize_form
 
-from ..forms import ProgrammeSelfServiceForm, get_sired_invitation_formset
-from ..models import FreeformOrganizer, Invitation, ProgrammeRole
+from ..forms import ProgrammeSelfServiceForm
+from ..models import FreeformOrganizer, ProgrammeRole
 
 logger = logging.getLogger("kompassi")
 
@@ -19,8 +16,10 @@ def profile_detail_view(request, programme_id):
     programme_role_qs = ProgrammeRole.objects.filter(person=request.user.person, programme=int(programme_id))
     try:
         programme_role = get_object_or_404(programme_role_qs)
-    except ProgrammeRole.MultipleObjectsReturned:
+    except ProgrammeRole.MultipleObjectsReturned as e:
         programme_role = programme_role_qs.first()
+        if programme_role is None:
+            raise AssertionError("This shouldn't happen (appease typechecker)") from e
         logger.warning("Multiple roles for same programme/person: %s", programme_role.programme)
 
     programme = programme_role.programme
@@ -42,12 +41,7 @@ def profile_detail_view(request, programme_id):
         readonly=not programme.host_can_edit,
     )
 
-    sired_invitation_formset = get_sired_invitation_formset(
-        request,
-        num_extra_invites=programme_role.extra_invites_left,
-    )
-
-    forms = [form, sired_invitation_formset]
+    forms = [form]
 
     SignupExtra = event.programme_event_meta.signup_extra_model
     if SignupExtra and SignupExtra.supports_programme:
@@ -64,50 +58,15 @@ def profile_detail_view(request, programme_id):
         signup_extra = None
         signup_extra_form = None
 
-    if request.method == "POST":
-        if not programme.host_can_edit:
-            messages.error(request, programme.host_cannot_edit_explanation)
-            return redirect("programme:profile_detail_view", programme.id)
-
-        elif all(the_form.is_valid() for the_form in forms):
-            with transaction.atomic():
-                form.save()
-
-                if signup_extra_form:
-                    signup_extra = signup_extra_form.process(signup_extra)
-
-                for extra_invite in sired_invitation_formset.save(commit=False):
-                    extra_invite.programme = programme
-                    extra_invite.created_by = request.user
-                    extra_invite.role = programme_role.role
-                    extra_invite.sire = programme_role
-                    extra_invite.save()
-                    extra_invite.send(request)
-
-            messages.success(request, _("The changes were saved."))
-            return redirect("programme:profile_view")
-
-        else:
-            messages.error(request, "Please check the form.")
-
-    invitations = Invitation.objects.filter(programme=programme, state="valid")
-    invitations = list(invitations)
-    for invitation in invitations:
-        invitation.sired_by_current_user = invitation.sire and invitation.sire.person == request.user.person
-
     vars = dict(
         alternative_programme_form=alternative_programme_form,
         event=event,
         form=form,
         freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
-        host_can_invite_more=programme_role.extra_invites_left > 0,
-        invitations=invitations,
-        num_extra_invites=programme_role.extra_invites_left,
         programme_role=programme_role,
         programme_roles=ProgrammeRole.objects.filter(programme=programme),
         programme=programme,
         signup_extra_form=signup_extra_form,
-        sired_invitation_formset=sired_invitation_formset,
     )
 
     return render(request, "programme_profile_detail_view.pug", vars)

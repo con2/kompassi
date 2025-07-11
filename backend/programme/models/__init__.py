@@ -1,7 +1,6 @@
 from .alternative_programme_form import AlternativeProgrammeForm, AlternativeProgrammeFormMixin
 from .category import Category
 from .freeform_organizer import FreeformOrganizer
-from .invitation import Invitation
 from .programme import START_TIME_LABEL, STATE_CHOICES, Programme
 from .programme_event_meta import ProgrammeEventMeta
 from .programme_feedback import ProgrammeFeedback

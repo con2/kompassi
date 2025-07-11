@@ -5,7 +5,6 @@ from programme.views.paikkala_views import paikkala_special_reservation_view
 
 from .views.admin_detail_view import admin_detail_view
 from .views.admin_feedback_view import admin_feedback_view
-from .views.admin_invitations_view import admin_invitations_view
 from .views.admin_mail_editor_view import admin_mail_editor_view
 from .views.admin_mail_view import admin_mail_view
 from .views.admin_organizers_view import admin_organizers_view
@@ -71,11 +70,6 @@ urlpatterns = [
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/(?P<programme_id>\d+)/reservations\.xlsx$",
         admin_reservations_export_view,
         name="admin_reservations_export_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/invitations/?$",
-        admin_invitations_view,
-        name="admin_invitations_view",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/feedback/?$",

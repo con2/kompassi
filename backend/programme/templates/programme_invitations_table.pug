@@ -12,14 +12,6 @@ table.table.table-striped.programme-host-table
         td= programme_role.person.first_name
         td= programme_role.person.nick
         td= programme_role.role
-    for other_invitation in invitations
-      tr
-        td(colspan="3"): em {% trans "Someone else has invited someone, but they have not yet accepted their invitation." %}
-        td: em= other_invitation.role
-    for invite_form in sired_invitation_formset
-      tr
-        td(colspan="3") {{ invite_form.email }}
-        td: em= invitation.role
     for freeform_organizer in freeform_organizers
       tr
         td(colspan="3")= freeform_organizer.text

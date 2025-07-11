@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import timedelta
 from functools import cached_property
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
@@ -1457,8 +1457,6 @@ class Programme(models.Model, CsvExportMixin):
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, verbose_name=_("Created at"))
     updated_at = models.DateTimeField(auto_now=True, null=True, verbose_name=_("Updated at"))
-
-    invitation_set: models.QuerySet[Any]
 
     @property
     def event(self):

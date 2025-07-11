@@ -6,7 +6,6 @@ block title
 block profile_content
   h3 {% trans "Edit programme" %}
   form(method='POST').form-horizontal
-    {{ sired_invitation_formset.management_form }}
     .panel.panel-default
       .panel-heading
         include programme_panel_heading
@@ -32,17 +31,6 @@ block profile_content
               td= programme_role.person.first_name
               td= programme_role.person.nick
               td= programme_role.role
-          for other_invitation in invitations
-            tr
-              if other_invitation.sired_by_current_user
-                td(colspan="3"): em= other_invitation.email
-              else
-                td(colspan="3"): em {% trans "Someone else has invited someone, but they have not yet accepted their invitation." %}
-              td: em= other_invitation.role
-          for invite_form in sired_invitation_formset
-            tr
-              td(colspan="3") {{ invite_form.email }}
-              td: em= programme_role.role
           for freeform_organizer in freeform_organizers
             tr
               td(colspan="3")= freeform_organizer.text

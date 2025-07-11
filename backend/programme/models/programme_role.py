@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from typing import Self
-
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from core.csv_export import CsvExportMixin
 from core.models import Event, Person
 
-from .invitation import Invitation
 from .programme import Programme
 from .role import Role
 
@@ -17,7 +14,6 @@ class ProgrammeRole(models.Model, CsvExportMixin):
     person = models.ForeignKey(Person, on_delete=models.CASCADE, related_name="programme_roles")
     programme = models.ForeignKey(Programme, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
-    invitation = models.ForeignKey(Invitation, on_delete=models.CASCADE, null=True, blank=True)
 
     # denormalized from programme.state
     is_active = models.BooleanField(default=True)
@@ -34,8 +30,6 @@ class ProgrammeRole(models.Model, CsvExportMixin):
         verbose_name=_("Override perks"),
         help_text=_("If set, overrides the perks set in the role."),
     )
-
-    sired_invitations: models.QuerySet[Invitation]
 
     @property
     def perks(self) -> dict[str, int | bool]:
@@ -54,20 +48,6 @@ class ProgrammeRole(models.Model, CsvExportMixin):
         verbose_name = _("Programme host")
         verbose_name_plural = _("Programme hosts")
         unique_together = [("person", "programme")]
-
-    @classmethod
-    def from_invitation(cls, invitation: Invitation, person: Person) -> Self:
-        """
-        Return an unsaved new ProgrammeRole that gets its fields from `invitation` and `person`.
-        """
-
-        return cls(
-            person=person,
-            programme=invitation.programme,
-            role=invitation.role,
-            invitation=invitation,
-            extra_invites=invitation.extra_invites,
-        )
 
     @classmethod
     def get_or_create_dummy(
@@ -100,21 +80,6 @@ class ProgrammeRole(models.Model, CsvExportMixin):
         programme.apply_state()
 
         return programme_role, created
-
-    @property
-    def formatted_extra_invites(self):
-        if self.extra_invites < 1:
-            return str(self.extra_invites)
-        else:
-            return f"{self.extra_invites_used}/{self.extra_invites}"
-
-    @property
-    def extra_invites_used(self):
-        return self.sired_invitations.count()
-
-    @property
-    def extra_invites_left(self):
-        return self.extra_invites - self.extra_invites_used
 
     @property
     def role_or_status(self):

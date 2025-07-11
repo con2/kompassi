@@ -18,7 +18,6 @@ from .models import (
     ViewRoom,
 )
 from .proxies.freeform_organizer.admin import FreeformOrganizerAdminProxy
-from .proxies.invitation.admin import InvitationAdminProxy
 
 
 @admin.action(description=_("Deactivate selected items"))
@@ -123,14 +122,6 @@ class TimeBlockAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     list_display = ("event", "title")
     list_filter = ("event",)
-
-
-@admin.register(InvitationAdminProxy)
-class InvitationAdmin(admin.ModelAdmin):
-    list_display = ("admin_get_event", "admin_get_title", "email", "state", "created_by")
-    list_filter = ("programme__category__event", "state")
-    ordering = ("programme__category__event", "programme__title", "email")
-    raw_id_fields = ("programme",)
 
 
 @admin.register(FreeformOrganizerAdminProxy)

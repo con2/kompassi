@@ -9,7 +9,6 @@ from core.utils import initialize_form
 
 from ..forms import (
     FreeformOrganizerForm,
-    InvitationForm,
     IsUsingPaikkalaForm,
     PaikkalaProgramForm,
     ProgrammeInternalForm,
@@ -59,7 +58,6 @@ def admin_detail_view(request, vars, event, programme_id):
     else:
         paikkala_program_form = None
 
-    invitation_form = initialize_form(InvitationForm, request, event=event, prefix="invitation")
     freeform_organizer_form = initialize_form(FreeformOrganizerForm, request, prefix="freeform")
 
     SignupExtra = event.programme_event_meta.signup_extra_model
@@ -88,9 +86,6 @@ def admin_detail_view(request, vars, event, programme_id):
             )
         )
 
-    change_invitation_role_forms = []
-
-    invitations = programme.invitation_set.filter(state="valid")
     feedback = programme.visible_feedback
 
     tabs = [
@@ -98,21 +93,18 @@ def admin_detail_view(request, vars, event, programme_id):
         Tab("programme-admin-programme-schedule-tab", _("Schedule information")),
         Tab("programme-admin-programme-internal-tab", _("Internal information")),
         Tab("programme-admin-programme-reservations-tab", _("Seat reservations")),
-        Tab("programme-admin-programme-hosts-tab", _("Programme hosts"), notifications=invitations.count()),
+        Tab("programme-admin-programme-hosts-tab", _("Programme hosts")),
         Tab("programme-admin-programme-feedback-tab", _("Feedback"), notifications=feedback.count()),
     ]
 
     previous_programme, next_programme = programme.get_previous_and_next_programme()
 
     vars.update(
-        change_invitation_role_forms=change_invitation_role_forms,
         feedback=feedback,
         forms_per_host=forms_per_host,
         freeform_organizer_form=freeform_organizer_form,
         freeform_organizers=FreeformOrganizer.objects.filter(programme=programme),
         internal_form=internal_form,
-        invitation_form=invitation_form,
-        invitations=invitations,
         is_using_paikkala_form=is_using_paikkala_form,
         next_programme=next_programme,
         overlapping_programmes=programme.get_overlapping_programmes(),

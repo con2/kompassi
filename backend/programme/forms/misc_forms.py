@@ -1,11 +1,9 @@
 from django import forms
-from django.forms.models import modelformset_factory
 from django.utils.translation import gettext_lazy as _
 
 from core.utils import (
     format_datetime,
     horizontal_form_helper,
-    initialize_form_set,
 )
 
 from ..models import (
@@ -14,7 +12,6 @@ from ..models import (
     AlternativeProgrammeFormMixin,
     Category,
     FreeformOrganizer,
-    Invitation,
     Programme,
     ProgrammeEventMeta,
     ProgrammeRole,
@@ -179,57 +176,6 @@ class ScheduleForm(forms.ModelForm):
         )
 
 
-class InvitationForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        event = kwargs.pop("event")
-
-        super().__init__(*args, **kwargs)
-
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-
-        self.fields["role"].queryset = Role.objects.filter(personnel_class__event=event)
-
-    class Meta:
-        model = Invitation
-        fields = (
-            "email",
-            "role",
-            "extra_invites",
-        )
-
-
-class SiredInvitationForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-
-        self.fields["email"].widget.attrs["placeholder"] = _("Please enter an e-mail address to invite another host")
-        self.fields["email"].label = False
-
-    class Meta:
-        model = Invitation
-        fields = ("email",)
-
-
-def get_sired_invitation_formset(request, num_extra_invites):
-    SiredInvitationFormset = modelformset_factory(
-        Invitation,
-        form=SiredInvitationForm,
-        validate_max=True,
-        extra=num_extra_invites,
-        max_num=num_extra_invites,
-    )
-
-    return initialize_form_set(
-        SiredInvitationFormset,
-        request,
-        queryset=Invitation.objects.none(),
-    )
-
-
 class FreeformOrganizerForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -259,25 +205,6 @@ class ChangeHostRoleForm(forms.ModelForm):
 
     class Meta:
         model = ProgrammeRole
-        fields = (
-            "role",
-            "extra_invites",
-        )
-
-
-class ChangeInvitationRoleForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        event = kwargs.pop("event")
-
-        super().__init__(*args, **kwargs)
-
-        self.helper = horizontal_form_helper()
-        self.helper.form_tag = False
-
-        self.fields["role"].queryset = Role.objects.filter(personnel_class__event=event)
-
-    class Meta:
-        model = Invitation
         fields = (
             "role",
             "extra_invites",

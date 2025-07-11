@@ -4,7 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from core.admin_menus import AdminMenuItem
 from core.utils import url
 
-from ..models import Invitation, Programme, ProgrammeFeedback
+from ..models import Programme, ProgrammeFeedback
 
 
 def programme_admin_menu_items(request, event):
@@ -13,16 +13,6 @@ def programme_admin_menu_items(request, event):
     organizers_url = url("programme:admin_organizers_view", event.slug)
     organizers_active = request.path.startswith(organizers_url)
     organizers_text = _("Programme hosts")
-
-    offers_url = url("programme:admin_view", event.slug) + "?state=offered&sort=created_at"
-    offers_active = request.get_full_path() == offers_url
-    offers_text = _("New offers")
-    offers_notifications = Programme.objects.filter(category__event=event, state="offered").count()
-
-    invitations_url = url("programme:admin_invitations_view", event.slug)
-    invitations_active = request.path == invitations_url
-    invitations_text = _("Open invitations")
-    invitations_notifications = Invitation.objects.filter(programme__category__event=event, state="valid").count()
 
     mail_url = url("programme:admin_mail_view", event.slug)
     mail_active = request.path.startswith(mail_url)
@@ -41,13 +31,6 @@ def programme_admin_menu_items(request, event):
 
     menu_items = [
         AdminMenuItem(is_active=organizers_active, href=organizers_url, text=organizers_text),
-        AdminMenuItem(is_active=offers_active, href=offers_url, text=offers_text, notifications=offers_notifications),
-        AdminMenuItem(
-            is_active=invitations_active,
-            href=invitations_url,
-            text=invitations_text,
-            notifications=invitations_notifications,
-        ),
         AdminMenuItem(is_active=mail_active, href=mail_url, text=mail_text),
         AdminMenuItem(
             is_active=feedback_active, href=feedback_url, text=feedback_text, notifications=feedback_notifications
@@ -83,8 +66,6 @@ def programme_admin_menu_items(request, event):
         (
             organizers_active,
             feedback_active,
-            invitations_active,
-            offers_active,
             reservations_active,
             mail_active,
         )
