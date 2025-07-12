@@ -3,6 +3,7 @@ import CardBody from "react-bootstrap/CardBody";
 import CardTitle from "react-bootstrap/CardTitle";
 import { createOrder } from "./actions";
 import ProductsForm from "./ProductsForm";
+import SubmitButton from "@/components/forms/SubmitButton";
 import ContactForm from "@/components/tickets/ContactForm";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -122,9 +123,9 @@ export default async function TicketsPage({ params }: Props) {
         </Card>
 
         <div className="d-grid gap-2 mb-4">
-          <button className="btn btn-primary btn-lg" type="submit">
+          <SubmitButton className="btn btn-primary btn-lg">
             {t.actions.purchase}
-          </button>
+          </SubmitButton>
         </div>
       </ProductsForm>
     </ViewContainer>
