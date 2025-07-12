@@ -5,11 +5,13 @@ import graphene
 from django import forms as django_forms
 from django.db import models, transaction
 from django.forms.models import model_to_dict
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 from core.models.event import Event
 from core.utils.form_utils import camel_case_keys_to_snake_case
+from event_log_v2.utils.emit import emit
 from forms.models.field import Choice, Field, FieldType
 from forms.utils.process_form_data import process_form_data
 
@@ -94,6 +96,8 @@ class UpdateProduct(graphene.Mutation):
         info,
         input: UpdateProductInput,
     ):
+        request: HttpRequest = info.context
+
         product = (
             Product.objects.select_for_update(of=("self",))
             .select_related("event")
@@ -130,6 +134,8 @@ class UpdateProduct(graphene.Mutation):
         new_revision_fields = changed_fields - REVISION_EXEMPT_FIELDS
 
         if new_revision_fields:
+            old_version_id = product.id
+
             logger.info(
                 "Creating new revision of product %s due to change in %s",
                 product,
@@ -147,6 +153,8 @@ class UpdateProduct(graphene.Mutation):
             n += Product.objects.filter(event=event, superseded_by=input.product_id).update(superseded_by=product)
             logger.info("Marked %d old product versions as superseded by %s", n, product)
         else:
+            old_version_id = None
+
             logger.debug("Updating product %s in place", product)
             form.save()
 
@@ -170,5 +178,14 @@ class UpdateProduct(graphene.Mutation):
             meta.reticket()
         else:
             logger.debug("Product %s quotas unchanged, no need to reticket.", product)
+
+        emit(
+            "tickets_v2.product.updated",
+            event=event,
+            product=product,
+            old_version_id=old_version_id,
+            request=request,
+            context=product.admin_url,
+        )
 
         return UpdateProduct(product=product)  # type: ignore

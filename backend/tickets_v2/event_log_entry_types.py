@@ -7,7 +7,12 @@ registry.register(
 
 registry.register(
     name="tickets_v2.order.created",
-    message="Order {order_number} in {event} was administratively created by {actor}",
+    message="Order {order_number} in {event} was created by {actor}",
+)
+
+registry.register(
+    name="tickets_v2.order.updated",
+    message="Order {order_number} in {event} was updated by {actor}",
 )
 
 registry.register(
@@ -29,3 +34,12 @@ registry.register(
     name="tickets_v2.order.marked_as_paid",
     message="Order {order_number} in {event} was manually marked as paid by {actor_type} {actor}",
 )
+
+for data_type in ["product", "quota"]:
+    for action in ["created", "updated", "deleted"]:
+        print(
+            registry.register(
+                name=f"tickets_v2.{data_type}.{action}",
+                message=f"{data_type.capitalize()} {{{data_type}}} in {{event}} was {action} by {{actor}}",
+            )
+        )

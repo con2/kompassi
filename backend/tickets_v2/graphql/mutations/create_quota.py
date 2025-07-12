@@ -1,10 +1,12 @@
 import graphene
 from django import forms as django_forms
 from django.db import transaction
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_model
 from core.models import Event
+from event_log_v2.utils.emit import emit
 
 from ...models.quota import Quota
 from ..quota_limited import LimitedQuotaType
@@ -36,6 +38,7 @@ class CreateQuota(graphene.Mutation):
         info,
         input: CreateQuotaInput,
     ):
+        request: HttpRequest = info.context
         event = Event.objects.get(slug=input.event_slug)
         graphql_check_model(Quota, event.scope, info, operation="create")
 
@@ -48,5 +51,13 @@ class CreateQuota(graphene.Mutation):
         quota.save()
 
         quota.set_quota(form.cleaned_data["quota"])
+
+        emit(
+            "tickets_v2.quota.created",
+            event=event,
+            quota=quota,
+            request=request,
+            context=quota.admin_url,
+        )
 
         return CreateQuota(quota=quota)  # type: ignore

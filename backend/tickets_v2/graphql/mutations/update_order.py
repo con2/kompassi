@@ -3,10 +3,12 @@ from typing import Self
 import graphene
 from django import forms as django_forms
 from django.db import transaction
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
+from event_log_v2.utils.emit import emit
 
 from ...models.order import Order
 from ..order_limited import LimitedOrderType
@@ -43,6 +45,7 @@ class UpdateOrder(graphene.Mutation):
         info,
         input: UpdateOrderInput,
     ):
+        request: HttpRequest = info.context
         order = Order.objects.get(event__slug=input.event_slug, id=input.order_id)
         form_data: dict[str, str] = input.form_data  # type: ignore
 
@@ -56,5 +59,14 @@ class UpdateOrder(graphene.Mutation):
         # this in turn fails on django.db.utils.ProgrammingError: column "order_number" can only be updated to DEFAULT
         form.save(commit=False)
         order.save(update_fields=["first_name", "last_name", "email", "phone"])
+
+        emit(
+            "tickets_v2.order.updated",
+            event=order.event,
+            order=order.id,
+            order_number=order.formatted_order_number,
+            request=request,
+            context=order.admin_url,
+        )
 
         return UpdateOrder(order=order)  # type: ignore

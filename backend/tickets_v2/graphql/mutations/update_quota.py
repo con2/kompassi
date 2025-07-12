@@ -3,10 +3,12 @@ from typing import Self
 import graphene
 from django import forms as django_forms
 from django.db import transaction
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
 from core.utils.form_utils import camel_case_keys_to_snake_case
+from event_log_v2.utils.emit import emit
 
 from ...models.quota import Quota
 from ..quota_limited import LimitedQuotaType
@@ -44,6 +46,8 @@ class UpdateQuota(graphene.Mutation):
         info,
         input: UpdateQuotaInput,
     ):
+        request: HttpRequest = info.context
+
         quota = Quota.objects.get(event__slug=input.event_slug, id=input.quota_id)
         form_data: dict[str, str] = input.form_data  # type: ignore
 
@@ -55,5 +59,13 @@ class UpdateQuota(graphene.Mutation):
 
         form.save()
         quota.set_quota(form.cleaned_data["quota"])
+
+        emit(
+            "tickets_v2.quota.updated",
+            event=quota.event,
+            quota=quota,
+            request=request,
+            context=quota.admin_url,
+        )
 
         return UpdateQuota(quota=quota)  # type: ignore

@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import ClassVar
 
 import pydantic
+from django.conf import settings
 from django.db import connection, models
 from django.http import HttpRequest
 from django.utils.timezone import now
@@ -120,6 +121,10 @@ class Product(models.Model):
     @property
     def scope(self):
         return self.event.scope
+
+    @property
+    def admin_url(self):
+        return f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/products/{self.id}/"
 
     def get_counters(self, request: HttpRequest | None) -> ProductCounters:
         effective_product_id = self.superseded_by_id or self.id

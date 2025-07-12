@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 
 import pydantic
+from django.conf import settings
 from django.db import connection, models
 from django.http import HttpRequest
 
@@ -88,6 +89,10 @@ class Quota(models.Model):
     def scope(self):
         return self.event.scope
 
+    @property
+    def admin_url(self):
+        return f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/quotas/{self.id}/"
+
     def set_quota(self, quota: int):
         num_current_tickets = self.tickets.count()
         adjustment = quota - num_current_tickets
@@ -109,8 +114,7 @@ class Quota(models.Model):
         num_tickets_deleted = deleted_by_model.get("tickets_v2.Ticket", 0)
         if num_tickets_deleted != num_tickets_to_delete:
             raise ValueError(
-                f"Expected to delete {num_tickets_to_delete} tickets, "
-                f"but was only able to delete {num_tickets_deleted}"
+                f"Expected to delete {num_tickets_to_delete} tickets, but was only able to delete {num_tickets_deleted}"
             )
 
     def create_tickets(self, num_tickets: int):
