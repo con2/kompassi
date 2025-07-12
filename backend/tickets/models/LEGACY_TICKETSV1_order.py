@@ -18,12 +18,12 @@ from core.utils.pkg_resources_compat import resource_string
 from graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
 from ..utils import append_reference_number_checksum, format_price
-from .consts import UNPAID_CANCEL_HOURS
-from .customer import Customer
-from .tickets_event_meta import TicketsEventMeta
+from .LEGACY_TICKETSV1_consts import UNPAID_CANCEL_HOURS
+from .LEGACY_TICKETSV1_customer import Customer
+from .LEGACY_TICKETSV1_tickets_event_meta import TicketsEventMeta
 
 if TYPE_CHECKING:
-    from .order_product import OrderProduct
+    from .LEGACY_TICKETSV1_order_product import OrderProduct
 
 
 logger = logging.getLogger("kompassi")
@@ -404,7 +404,7 @@ class Order(models.Model):
 
     @classmethod
     def get_or_create_dummy(cls, event=None):
-        from .customer import Customer
+        from .LEGACY_TICKETSV1_customer import Customer
 
         if event is None:
             meta, unused = TicketsEventMeta.get_or_create_dummy()

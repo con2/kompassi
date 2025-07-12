@@ -25,7 +25,7 @@ from ..helpers import perform_search, tickets_admin_required, tickets_event_requ
 from ..models import (
     Order,
 )
-from ..models.consts import UNPAID_CANCEL_HOURS
+from ..models.LEGACY_TICKETSV1_consts import UNPAID_CANCEL_HOURS
 from ..utils import format_price
 
 __all__ = [

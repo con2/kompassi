@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from core.models import Event
 
 from ..utils import format_price
-from .consts import LOW_AVAILABILITY_THRESHOLD
+from .LEGACY_TICKETSV1_consts import LOW_AVAILABILITY_THRESHOLD
 
 logger = logging.getLogger("kompassi")
 
@@ -81,7 +81,7 @@ class Product(models.Model):
 
     @property
     def amount_sold(self):
-        from .order_product import OrderProduct
+        from .LEGACY_TICKETSV1_order_product import OrderProduct
 
         cnt = OrderProduct.objects.filter(
             product=self, order__confirm_time__isnull=False, order__cancellation_time__isnull=True
@@ -100,7 +100,7 @@ class Product(models.Model):
 
     @classmethod
     def get_or_create_dummy(cls, name="Dummy product", limit_groups=None):
-        from .tickets_event_meta import TicketsEventMeta
+        from .LEGACY_TICKETSV1_tickets_event_meta import TicketsEventMeta
 
         if limit_groups is None:
             limit_groups = []
@@ -125,7 +125,7 @@ class Product(models.Model):
 
     @classmethod
     def get_or_create_dummies(cls):
-        from .limit_group import LimitGroup
+        from .LEGACY_TICKETSV1_limit_group import LimitGroup
 
         [limit_saturday, limit_sunday] = LimitGroup.get_or_create_dummies()
 

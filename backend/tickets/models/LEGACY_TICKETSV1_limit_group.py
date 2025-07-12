@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from .consts import LOW_AVAILABILITY_THRESHOLD
+from .LEGACY_TICKETSV1_consts import LOW_AVAILABILITY_THRESHOLD
 
 if TYPE_CHECKING:
-    from .product import Product
+    from .LEGACY_TICKETSV1_product import Product
 
 
 logger = logging.getLogger("kompassi")
@@ -32,7 +32,7 @@ class LimitGroup(models.Model):
 
     @cached_property
     def amount_sold(self):
-        from .order_product import OrderProduct
+        from .LEGACY_TICKETSV1_order_product import OrderProduct
 
         amount_sold = OrderProduct.objects.filter(
             product__limit_groups=self,

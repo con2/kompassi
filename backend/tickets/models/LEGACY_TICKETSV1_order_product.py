@@ -6,8 +6,8 @@ from core.csv_export import CsvExportMixin
 from core.utils.cleanup import register_cleanup
 
 from ..utils import format_price
-from .order import Order
-from .product import Product
+from .LEGACY_TICKETSV1_order import Order
+from .LEGACY_TICKETSV1_product import Product
 
 logger = logging.getLogger("kompassi")
 

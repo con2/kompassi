@@ -25,7 +25,7 @@ from tickets_v2.optimized_server.utils.paytrail_hmac import calculate_hmac
 from .payments_organization_meta import META_DEFAULTS
 
 if TYPE_CHECKING:
-    from tickets.models.order import Order
+    from tickets.models.LEGACY_TICKETSV1_order import Order
 
 logger = logging.getLogger("kompassi")
 

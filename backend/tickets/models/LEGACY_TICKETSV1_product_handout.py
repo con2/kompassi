@@ -5,7 +5,7 @@ from lippukala.models import Code
 
 from core.models import Event
 
-from .product import Product
+from .LEGACY_TICKETSV1_product import Product
 
 
 @dataclass
