@@ -404,7 +404,6 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
           )}
         >
           {t.actions.cancelAndRefund.message}
-          {t.actions.refundCommon.refundMayFail}
         </ModalButton>
       ),
     },
@@ -426,7 +425,6 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
           )}
         >
           {t.actions.refundCancelledOrder.message}
-          {t.actions.refundCommon.refundMayFail}
         </ModalButton>
       ),
     },
@@ -448,7 +446,6 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
           )}
         >
           {t.actions.retryRefund.message}
-          {t.actions.refundCommon.refundMayFail}
         </ModalButton>
       ),
     },

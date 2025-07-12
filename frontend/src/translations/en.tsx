@@ -782,9 +782,18 @@ const translations = {
               <ol>
                 <li>mark the order as cancelled,</li>
                 <li>invalidate any electronic tickets,</li>
-                <li>send a cancellation notice to the customer, and</li>
                 <li>request the payment processor to refund the payment?</li>
               </ol>
+              <p>
+                Upon successful refund, a refund notice will be sent to the
+                customer.
+              </p>
+              <p>
+                <strong>NOTE:</strong> The refund may fail if there are not
+                sufficient funds deposited with the payment processor. In this
+                case, you need to transfer funds and retry the refund at a later
+                date, or complete the refund via other means.
+              </p>
             </>
           ),
           modalActions: {
@@ -795,10 +804,22 @@ const translations = {
         refundCancelledOrder: {
           title: "Refund",
           message: (
-            <p>
-              Are you sure you want request the payment processor to refund the
-              payment?
-            </p>
+            <>
+              <p>
+                Are you sure you want request the payment processor to refund
+                the payment?
+              </p>
+              <p>
+                Upon successful refund, a refund notice will be sent to the
+                customer.
+              </p>
+              <p>
+                <strong>NOTE:</strong> The refund may fail if there are not
+                sufficient funds deposited with the payment processor. In this
+                case, you need to transfer funds and retry the refund at a later
+                date, or complete the refund via other means.
+              </p>
+            </>
           ),
           modalActions: {
             submit: "Request refund",
@@ -811,15 +832,19 @@ const translations = {
             <>
               <p>Are you sure you want to</p>
               <ol>
-                <li>mark the order as cancelled,</li>
-                <li>invalidate any electronic tickets, and</li>
-                <li>send a cancellation notice to the customer?</li>
+                <li>mark the order as cancelled, and</li>
+                <li>invalidate any electronic tickets?</li>
               </ol>
               <p>
                 <strong>NOTE:</strong> No automatic refund will be made. If the
                 payment needs to be refunded in part or in full, you will need
                 to do this via the merchant panel of the payment processor, or
                 use the &quot;Cancel and refund&quot; function.
+              </p>
+              <p>
+                <strong>NOTE:</strong> No notice of cancellation will be sent to
+                the customer. You are responsible for any communications with
+                the customer required regarding this cancellation.
               </p>
             </>
           ),
@@ -831,10 +856,22 @@ const translations = {
         retryRefund: {
           title: "Retry refund",
           message: (
-            <p>
-              Are you sure you want to make a new request the payment processor
-              to refund the payment?
-            </p>
+            <>
+              <p>
+                Are you sure you want to make a new request the payment
+                processor to refund the payment?
+              </p>
+              <p>
+                Upon successful refund, a refund notice will be sent to the
+                customer.
+              </p>
+              <p>
+                <strong>NOTE:</strong> The refund may fail if there are not
+                sufficient funds deposited with the payment processor. In this
+                case, you need to transfer funds and retry the refund at a later
+                date, or complete the refund via other means.
+              </p>
+            </>
           ),
           modalActions: {
             submit: "Retry refund",
@@ -853,22 +890,16 @@ const translations = {
                 attempted. It is entirely up to you to make sure the customer
                 gets their money back.
               </p>
+              <p>
+                A notice will be sent to the customer stating the order has been
+                cancelled and refunded.
+              </p>
             </>
           ),
           modalActions: {
             submit: "Mark as manually refunded",
             cancel: "Close without marking",
           },
-        },
-        refundCommon: {
-          refundMayFail: (
-            <>
-              <strong>NOTE:</strong> The refund may fail if there are not
-              sufficient funds deposited with the payment processor. In this
-              case, you need to transfer funds and retry the refund at a later
-              date, or complete the refund via other means.
-            </>
-          ),
         },
       },
     },

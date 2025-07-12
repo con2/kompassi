@@ -773,9 +773,18 @@ const translations: Translations = {
               <ol>
                 <li>merkitsee tilauksen perutuksi,</li>
                 <li>mitätöi mahdolliset e-liput,</li>
-                <li>lähettää asiakkaalle peruutusilmoituksen, ja</li>
-                <li>tekee maksunvälittäjälle pyynnön maksun palautuksesta.</li>
+                <li>tekee maksunvälittäjälle pyynnön palauttaa maksu.</li>
               </ol>
+              <p>
+                Onnistuneesta maksunpalautuksesta lähetetään ilmoitus
+                asiakkaalle.
+              </p>
+              <p>
+                <strong>HUOM:</strong> Maksun palautus voi epäonnistua, jos
+                maksunvälittäjän hallussa ei ole riittävästi myyjän varoja.
+                Tällöin tulee siirtää varoja maksunvälittäjälle ja yrittää
+                palautusta uudelleen, tai hoitaa palautus loppuun muulla tavoin.
+              </p>
             </>
           ),
           modalActions: {
@@ -786,9 +795,21 @@ const translations: Translations = {
         refundCancelledOrder: {
           title: "Palauta maksu",
           message: (
-            <p>
-              Haluatko varmasti pyytää maksunvälittäjää palauttamaan maksun?
-            </p>
+            <>
+              <p>
+                Haluatko varmasti pyytää maksunvälittäjää palauttamaan maksun?
+              </p>
+              <p>
+                Onnistuneesta maksunpalautuksesta lähetetään ilmoitus
+                asiakkaalle.
+              </p>
+              <p>
+                <strong>HUOM:</strong> Maksun palautus voi epäonnistua, jos
+                maksunvälittäjän hallussa ei ole riittävästi myyjän varoja.
+                Tällöin tulee siirtää varoja maksunvälittäjälle ja yrittää
+                palautusta uudelleen, tai hoitaa palautus loppuun muulla tavoin.
+              </p>
+            </>
           ),
           modalActions: {
             submit: "Pyydä palautusta",
@@ -801,15 +822,19 @@ const translations: Translations = {
             <>
               <p>Tämä toiminto tekee seuraavat toimenpiteet:</p>
               <ol>
-                <li>merkitsee tilauksen perutuksi,</li>
-                <li>mitätöi mahdolliset e-liput, ja</li>
-                <li>lähettää asiakkaalle peruutusilmoituksen.</li>
+                <li>merkitsee tilauksen perutuksi, ja</li>
+                <li>mitätöi mahdolliset e-liput.</li>
               </ol>
               <p>
                 <strong>HUOM:</strong> Maksua ei palauteta automaattisesti. Jos
                 maksu tulee palauttaa kokonaan tai osittain, se on tehtävä
                 maksunvälittäjän hallintapaneelista tai{" "}
                 <em>Peruuta ja palauta maksu</em> -toiminnolla.
+              </p>
+              <p>
+                <strong>HUOM:</strong> Peruutuksesta ei lähetetä ilmoitusta
+                asiakkaalle. Vastaat itse kaikesta kommunikaatiosta asiakkaan
+                kanssa peruutukseen liittyen.
               </p>
             </>
           ),
@@ -821,10 +846,22 @@ const translations: Translations = {
         retryRefund: {
           title: "Yritä palautusta uudelleen",
           message: (
-            <p>
-              Haluatko varmasti tehdä maksunvälittäjälle uuden
-              maksunpalautuspyynnön?
-            </p>
+            <>
+              <p>
+                Haluatko varmasti tehdä maksunvälittäjälle uuden
+                maksunpalautuspyynnön?
+              </p>
+              <p>
+                Onnistuneesta maksunpalautuksesta lähetetään ilmoitus
+                asiakkaalle.
+              </p>
+              <p>
+                <strong>HUOM:</strong> Maksun palautus voi epäonnistua, jos
+                maksunvälittäjän hallussa ei ole riittävästi myyjän varoja.
+                Tällöin tulee siirtää varoja maksunvälittäjälle ja yrittää
+                palautusta uudelleen, tai hoitaa palautus loppuun muulla tavoin.
+              </p>
+            </>
           ),
           modalActions: {
             submit: "Yritä uudelleen",
@@ -844,22 +881,16 @@ const translations: Translations = {
                 palauttaa automaattisesti. Olet vastuussa siitä, että palautus
                 tulee asianmukaisesti hoidetuksi.
               </p>
+              <p>
+                Asiakkaalle lähetetään ilmoitus, että tilaus on peruutettu ja
+                maksu palautettu.
+              </p>
             </>
           ),
           modalActions: {
-            submit: "Mark as manually refunded",
-            cancel: "Close without marking",
+            submit: "Merkitse manuaalisesti palautetuksi",
+            cancel: "Sulje merkitsemättä palautetuksi",
           },
-        },
-        refundCommon: {
-          refundMayFail: (
-            <p>
-              <strong>HUOM:</strong> Maksun palautus voi epäonnistua, jos
-              maksunvälittäjän hallussa ei ole riittävästi myyjän varoja.
-              Tällöin tulee siirtää varoja maksunvälittäjälle ja yrittää
-              uudelleen, tai hoitaa palautus loppuun muulla tavoin.
-            </p>
-          ),
         },
       },
     },
