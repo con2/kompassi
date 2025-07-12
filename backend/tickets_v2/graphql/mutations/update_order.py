@@ -57,7 +57,7 @@ class UpdateOrder(graphene.Mutation):
 
         # XXX for some reason, form.save(commit=True) tries to save all fields, not only those changed by the form
         # this in turn fails on django.db.utils.ProgrammingError: column "order_number" can only be updated to DEFAULT
-        form.save(commit=False)
+        order = form.save(commit=False)
         order.save(update_fields=["first_name", "last_name", "email", "phone"])
 
         emit(
