@@ -46,7 +46,7 @@ class CreateQuota(graphene.Mutation):
         if not form.is_valid():
             raise ValueError(form.errors)
 
-        quota = form.save(commit=False)
+        quota: Quota = form.save(commit=False)
         quota.event = event
         quota.save()
 
