@@ -2,6 +2,7 @@ import logging
 from collections.abc import Callable
 from datetime import timedelta
 
+from django.contrib.sessions.models import Session
 from django.db import models
 from django.utils.timezone import now
 from oauth2_provider.models import AccessToken, RefreshToken
@@ -48,14 +49,9 @@ def perform_cleanup():
     logger.info("Cleanup completed.")
 
 
-def cleanup_oauth_provider_accesstoken(queryset: models.QuerySet[AccessToken]) -> models.QuerySet[AccessToken]:
-    return queryset.filter(expires__lt=now())
-
-
-def cleanup_oauth_provider_refreshtoken(queryset: models.QuerySet[RefreshToken]) -> models.QuerySet[RefreshToken]:
-    return queryset.filter(created__lt=now() - timedelta(days=60))
-
-
 # python manage.py cleartokens doesn't seem to do the needful
-register_cleanup(cleanup_oauth_provider_accesstoken)(AccessToken)
-register_cleanup(cleanup_oauth_provider_refreshtoken)(RefreshToken)
+register_cleanup(lambda qs: qs.filter(expires__lt=now()))(AccessToken)
+register_cleanup(lambda qs: qs.filter(created__lt=now() - timedelta(days=60)))(RefreshToken)
+
+# avoid the need for an extra manage.py clearsessions
+register_cleanup(lambda qs: qs.filter(expire_date__lt=now()))(Session)

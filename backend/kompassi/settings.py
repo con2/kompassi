@@ -50,7 +50,7 @@ DATABASES = {
     },
 }
 
-SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
