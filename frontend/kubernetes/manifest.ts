@@ -6,6 +6,7 @@ interface Environment {
   kompassiBaseUrl: string;
   tlsEnabled: boolean;
   ticketsApiUrl: string;
+  livenessProbeEnabled: boolean;
 }
 
 type EnvironmentName = "dev" | "staging" | "production";
@@ -19,6 +20,7 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     tlsEnabled: false,
     // as an optimization, access the tickets API directly without going through the ingress
     ticketsApiUrl: "http://uvicorn.default.svc.cluster.local:7998",
+    livenessProbeEnabled: true,
   },
   staging: {
     hostname: "v2.dev.kompassi.eu",
@@ -26,6 +28,7 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     kompassiBaseUrl: "https://dev.kompassi.eu",
     tlsEnabled: true,
     ticketsApiUrl: "http://uvicorn.kompassi-staging.svc.cluster.local:7998",
+    livenessProbeEnabled: true,
   },
   production: {
     hostname: "v2.kompassi.eu",
@@ -33,6 +36,7 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     kompassiBaseUrl: "https://kompassi.eu",
     tlsEnabled: true,
     ticketsApiUrl: "http://uvicorn.kompassi-production.svc.cluster.local:7998",
+    livenessProbeEnabled: false, // TODO re-enable after Hunger Games
   },
 };
 
@@ -55,8 +59,14 @@ const tlsSecretName = "ingress-letsencrypt";
 const port = 3000;
 const ingressClassName = "nginx";
 
-const { hostname, secretManaged, kompassiBaseUrl, tlsEnabled, ticketsApiUrl } =
-  environmentConfiguration;
+const {
+  hostname,
+  secretManaged,
+  kompassiBaseUrl,
+  tlsEnabled,
+  ticketsApiUrl,
+  livenessProbeEnabled,
+} = environmentConfiguration;
 
 const ingressProtocol = tlsEnabled ? "https" : "http";
 const publicUrl = `${ingressProtocol}://${hostname}`;
@@ -163,7 +173,7 @@ const deployment = {
               allowPrivilegeEscalation: false,
             },
             startupProbe: probe,
-            livenessProbe: probe,
+            livenessProbe: livenessProbeEnabled ? probe : undefined,
             volumeMounts,
           },
         ],
