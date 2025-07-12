@@ -654,7 +654,7 @@ const translations = {
         provider: {
           title: "Payment provider",
           choices: {
-            NONE: "None",
+            NONE: "None (0-sum or manual)",
             PAYTRAIL: "Paytrail",
             STRIPE: "Stripe",
           },
@@ -898,6 +898,22 @@ const translations = {
           ),
           modalActions: {
             submit: "Mark as manually refunded",
+            cancel: "Close without marking",
+          },
+        },
+        markAsPaid: {
+          title: "Mark as paid",
+          message: (
+            <>
+              <p>Are you sure you want to mark this order as paid?</p>
+              <p>
+                A receipt will be sent to the customer. If the order contains
+                electronic tickets, they will be attached to the receipt.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Mark as paid",
             cancel: "Close without marking",
           },
         },

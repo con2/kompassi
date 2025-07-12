@@ -9,6 +9,7 @@ import AccordionItem from "react-bootstrap/AccordionItem";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import {
   cancelAndRefundOrder,
+  markOrderAsPaid,
   resendConfirmation,
   updateOrder,
 } from "./actions";
@@ -87,6 +88,8 @@ const query = graphql(`
           email
           phone
           canRefund
+          canRefundManually
+          canMarkAsPaid
           products {
             title
             quantity
@@ -362,6 +365,21 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
       ),
     },
     {
+      slug: "markAsPaid",
+      isShown: order.canMarkAsPaid,
+      getElement: () => (
+        <ModalButton
+          title={t.actions.markAsPaid.title}
+          className="btn btn-success"
+          submitButtonVariant="success"
+          messages={t.actions.markAsPaid.modalActions}
+          action={markOrderAsPaid.bind(null, locale, eventSlug, order.id)}
+        >
+          {t.actions.markAsPaid.message}
+        </ModalButton>
+      ),
+    },
+    {
       slug: "cancelWithoutRefunding",
       isShown:
         order.status === PaymentStatus.NotStarted ||
@@ -451,7 +469,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
     },
     {
       slug: "refundManually",
-      isShown: order.canRefund,
+      isShown: order.canRefundManually,
       getElement: () => (
         <ModalButton
           title={t.actions.refundManually.title}

@@ -175,6 +175,10 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
 
     event_id: int
 
+    @property
+    def status(self) -> PaymentStatus:
+        return PaymentStatus(self.cached_status)
+
     @cached_property
     def timezone(self):
         return self.event.timezone
@@ -304,10 +308,25 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         )
 
     def can_be_refunded_by(self, request: HttpRequest):
+        """
+        NOTE: checks for ability to perform a provider refund
+        """
         # TODO should this method do all the same checks that cancel_and_refund does?
         return (
-            PaymentStatus(self.cached_status).is_refundable
+            self.status.is_refundable
             and self.cached_price > 0
+            and self.payment_stamps.filter(status=PaymentStatus.PAID).exclude(provider_id=PaymentProvider.NONE).exists()
+            and is_graphql_allowed_for_model(
+                request.user,
+                instance=self,
+                operation="update",
+                field="self",
+            )
+        )
+
+    def can_be_manually_refunded_by(self, request: HttpRequest):
+        return (
+            self.status.is_refundable
             and self.payment_stamps.filter(status=PaymentStatus.PAID).exists()
             and is_graphql_allowed_for_model(
                 request.user,
@@ -318,10 +337,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         )
 
     def can_be_paid_by(self, _request: HttpRequest | None = None):
-        return (
-            self.cached_status in (PaymentStatus.NOT_STARTED, PaymentStatus.PENDING, PaymentStatus.FAILED)
-            and self.cached_price > 0
-        )
+        return self.status.is_payable and self.cached_price > 0
 
     def cancel_and_refund(self, refund_type: RefundType):
         from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, UNUSED
@@ -392,3 +408,30 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         if response_stamp:
             with transaction.atomic():
                 response_stamp.save()
+
+    def can_be_marked_as_paid_by(self, request: HttpRequest):
+        return self.status.is_payable and is_graphql_allowed_for_model(
+            request.user,
+            instance=self,
+            operation="update",
+            field="self",
+        )
+
+    def mark_as_paid(self):
+        from .payment_stamp import PaymentStamp
+
+        if not self.status.is_payable:
+            raise ValueError("Order cannot be marked as paid")
+
+        payment_stamp = PaymentStamp(
+            event=self.event,
+            order_id=self.id,
+            correlation_id=uuid7(),
+            provider_id=PaymentProvider.NONE,
+            type=PaymentStampType.PAYMENT_CALLBACK,
+            status=PaymentStatus.PAID,
+            data={},
+        )
+
+        with transaction.atomic():
+            payment_stamp.save()

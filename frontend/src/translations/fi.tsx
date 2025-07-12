@@ -645,7 +645,7 @@ const translations: Translations = {
         provider: {
           title: "Maksunvälittäjä",
           choices: {
-            NONE: "Ei mitään",
+            NONE: "Ei mitään (0-summa tai manuaalinen)",
             PAYTRAIL: "Paytrail",
             STRIPE: "Stripe",
           },
@@ -890,6 +890,22 @@ const translations: Translations = {
           modalActions: {
             submit: "Merkitse manuaalisesti palautetuksi",
             cancel: "Sulje merkitsemättä palautetuksi",
+          },
+        },
+        markAsPaid: {
+          title: "Merkitse maksetuksi",
+          message: (
+            <>
+              <p>Haluatko varmasti merkitä tilauksen maksetuksi?</p>
+              <p>
+                Asiakkaalle lähetetään kuitti. Jos tilaus sisältää sähköisiä
+                lippuja, ne lähetetään kuitin liitteenä.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Merkitse maksetuksi",
+            cancel: "Sulje merkitsemättä maksetuksi",
           },
         },
       },

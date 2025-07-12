@@ -7,6 +7,7 @@ import {
   ResendOrderConfirmationInput,
   UpdateOrderInput,
   RefundType,
+  MarkOrderAsPaidInput,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 
@@ -92,6 +93,34 @@ export async function cancelAndRefundOrder(
 
   await getClient().mutate({
     mutation: refundOrderMutation,
+    variables: { input },
+  });
+
+  revalidatePath(`/${locale}/${eventSlug}/orders-admin/${orderId}`);
+}
+
+const markOrderAsPaidMutation = graphql(`
+  mutation MarkOrderAsPaid($input: MarkOrderAsPaidInput!) {
+    markOrderAsPaid(input: $input) {
+      order {
+        id
+      }
+    }
+  }
+`);
+
+export async function markOrderAsPaid(
+  locale: string,
+  eventSlug: string,
+  orderId: string,
+) {
+  const input: MarkOrderAsPaidInput = {
+    eventSlug,
+    orderId,
+  };
+
+  await getClient().mutate({
+    mutation: markOrderAsPaidMutation,
     variables: { input },
   });
 

@@ -76,7 +76,7 @@ class FullOrderType(LimitedOrderType):
     @staticmethod
     def resolve_can_refund(order: Order, info):
         """
-        Returns whether the order can be refunded.
+        Returns whether a provider refund can be initiated for this order.
         """
         request: HttpRequest = info.context
         return order.can_be_refunded_by(request)
@@ -84,4 +84,30 @@ class FullOrderType(LimitedOrderType):
     can_refund = graphene.NonNull(
         graphene.Boolean,
         description=normalize_whitespace(resolve_can_refund.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_can_refund_manually(order: Order, info):
+        """
+        Returns whether the order can be refunded manually.
+        """
+        request: HttpRequest = info.context
+        return order.can_be_manually_refunded_by(request)
+
+    can_refund_manually = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_refund_manually.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_can_mark_as_paid(order: Order, info):
+        """
+        Returns whether the order can be marked as paid.
+        """
+        request: HttpRequest = info.context
+        return order.can_be_marked_as_paid_by(request)
+
+    can_mark_as_paid = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_mark_as_paid.__doc__ or ""),
     )
