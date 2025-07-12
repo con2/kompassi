@@ -85,7 +85,19 @@ class ReceiptStatus(IntEnum):
     # BOUNCE = 4
 
 
-class RefundType(str, Enum):
+class RefundType(Enum):
     NONE = "NONE"
     MANUAL = "MANUAL"
     PROVIDER = "PROVIDER"
+
+    @property
+    def event_log_entry_type(self):
+        match self:
+            case RefundType.NONE:
+                return "tickets_v2.order.cancelled"
+            case RefundType.MANUAL:
+                return "tickets_v2.order.refunded.manual"
+            case RefundType.PROVIDER:
+                return "tickets_v2.order.refunded.provider"
+            case _:
+                raise NotImplementedError(f"Unsupported refund type: {self}")

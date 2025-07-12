@@ -7,11 +7,13 @@ from ...models.order import Order
 from ...optimized_server.models.enums import RefundType
 from ..order_limited import LimitedOrderType
 
+RefundTypeType = graphene.Enum.from_enum(RefundType)
+
 
 class CancelAndRefundOrderInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
     order_id = graphene.String(required=True)
-    refund_type = graphene.InputField(graphene.Enum.from_enum(RefundType), required=True)
+    refund_type = graphene.InputField(RefundTypeType, required=True)
 
 
 class CancelAndRefundOrder(graphene.Mutation):

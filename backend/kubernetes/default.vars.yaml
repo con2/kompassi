@@ -38,6 +38,9 @@ kompassi_admins: []
 kompassi_workers: 4
 kompassi_timeout_seconds: 120
 
+kompassi_cron_nightly_enabled: true
+kompassi_cron_nightly_suspended: false
+
 kompassi_startup_probe:
   httpGet:
     path: /api/v1/status

@@ -1,6 +1,7 @@
 import logging
 from collections.abc import Mapping
 from datetime import date, datetime
+from enum import Enum
 from functools import cached_property
 from typing import Any, Self
 from uuid import UUID
@@ -114,6 +115,8 @@ class Entry(MonthlyPartitionsMixin, models.Model):
             value = slug
         elif id := getattr(value, "id", None):
             value = id
+        elif isinstance(value, Enum):
+            value = value.value
 
         # encode safe complex types as strings
         if isinstance(value, UUID):

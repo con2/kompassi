@@ -69,6 +69,13 @@ then: !Include uvicorn/service.in.yaml
 !If
 test: !Var kompassi_uvicorn_enabled
 then: !Include uvicorn/deployment.in.yaml
+##########################
+# CRON (Scheduled tasks) #
+##########################
+---
+!If
+test: !Var kompassi_cron_nightly_enabled
+then: !Include cron/cronjob_nightly.in.yaml
 ##############################
 # CELERY (Background worker) #
 ##############################

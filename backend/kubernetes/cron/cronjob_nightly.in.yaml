@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kompassi-nightly
+spec:
+  schedule: "7 0 * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  suspend: !Var kompassi_cron_nightly_suspended
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            stack: kompassi
+            component: kompassi
+        spec:
+          affinity: !With
+            vars:
+              param_component_name: kompassi
+            template: !Var macro_pod_affinity
+          enableServiceLinks: false
+          securityContext: !Var kompassi_pod_security_context
+          restartPolicy: OnFailure
+          containers:
+            - name: master
+              image: !Var kompassi_image
+              ports:
+                - containerPort: 8000
+              env: !Var kompassi_environment
+              securityContext: !Var kompassi_container_security_context
+              args:
+                - python
+                - manage.py
+                - cron_nightly
+              volumeMounts: !Var kompassi_volume_mounts
+          volumes: !Var kompassi_volumes

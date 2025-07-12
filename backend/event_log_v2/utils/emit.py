@@ -76,9 +76,8 @@ def emit(entry_type: str, **kwargs):
     if request := kwargs.pop("request", None):
         kwargs = dict(attrs_from_request(request), **kwargs)
 
-    logger.debug("event_log.utils.emit %s %s", entry_type, kwargs)
-
     kwargs, other_fields = Entry.hoist(kwargs)
+    logger.debug("event_log.utils.emit %s %s", entry_type, other_fields)
 
     entry = Entry(entry_type=entry_type, other_fields=other_fields, **kwargs)
     entry.save()

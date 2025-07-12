@@ -21,13 +21,13 @@ spec:
       securityContext: !Var kompassi_pod_security_context
       initContainers:
         - !If
-            test: !Var setup_should_run
-            then:
-              name: setup
-              image: !Var kompassi_image
-              args: ["python", "manage.py", "setup"]
-              env: !Var kompassi_environment
-              securityContext: !Var kompassi_container_security_context
+          test: !Var setup_should_run
+          then:
+            name: setup
+            image: !Var kompassi_image
+            args: ["python", "manage.py", "setup"]
+            env: !Var kompassi_environment
+            securityContext: !Var kompassi_container_security_context
       containers:
         - name: master
           image: !Var kompassi_image

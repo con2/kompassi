@@ -1,21 +1,26 @@
 from __future__ import annotations
 
+import logging
+from datetime import datetime
 from decimal import Decimal
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models, transaction
 from django.db.models import Value
 from django.db.models.functions import Concat, Lower
 from django.http import HttpRequest
 from django.urls import reverse
+from django.utils.timezone import get_current_timezone
 from lippukala.models.code import Code as LippukalaCode
 from lippukala.models.order import Order as LippukalaOrder
 
 from access.cbac import is_graphql_allowed_for_model
 from core.models.event import Event
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
+from event_log_v2.utils.emit import emit
 from event_log_v2.utils.monthly_partitions import UUID7Mixin
 from graphql_api.language import SUPPORTED_LANGUAGES
 
@@ -24,6 +29,7 @@ from ..optimized_server.models.order import OrderProduct
 from ..optimized_server.utils.formatting import format_order_number
 from ..optimized_server.utils.uuid7 import uuid7
 from ..utils.event_partitions import EventPartitionsMixin
+from .enums import ActorType
 from .meta import TicketsV2EventMeta
 from .product import Product
 
@@ -33,6 +39,7 @@ if TYPE_CHECKING:
 
 
 PRODUCT_CACHE: dict[int, dict[int, Product]] = {}
+logger = logging.getLogger("kompassi")
 
 
 class OrderMixin:
@@ -253,7 +260,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         return PaymentStamp.objects.filter(
             event_id=self.event_id,
             order_id=self.id,
-        )
+        ).order_by("id")
 
     @property
     def receipts(self) -> models.QuerySet[Receipt]:
@@ -262,7 +269,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         return Receipt.objects.filter(
             event_id=self.event_id,
             order_id=self.id,
-        )
+        ).order_by("id")
 
     @cached_property
     def meta(self) -> TicketsV2EventMeta:
@@ -289,6 +296,10 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             if (lippukala_order := self.lippukala_order)
             else LippukalaCode.objects.none()
         )
+
+    @property
+    def admin_url(self):
+        return f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/orders-admin/{self.id}"
 
     def get_etickets_link(self, request: HttpRequest):
         if self.cached_status != PaymentStatus.PAID:
@@ -339,10 +350,48 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
     def can_be_paid_by(self, _request: HttpRequest | None = None):
         return self.status.is_payable and self.cached_price > 0
 
-    def cancel_and_refund(self, refund_type: RefundType):
+    @staticmethod
+    def _build_internal_payment_stamp_data(
+        actor_type: ActorType = ActorType.ADMIN,
+        actor_user: User | None = None,
+    ):
+        return dict(
+            __actorType=actor_type.value,
+            __actorUserId=actor_user.id if actor_user else None,  # type: ignore
+        )
+
+    def emit_event_log_entry(
+        self,
+        entry_type: str,
+        *,
+        actor_type: ActorType = ActorType.ADMIN,
+        actor_user: User | None = None,
+    ):
+        return emit(
+            entry_type,
+            event=self.event,
+            order=self.id,
+            order_number=self.formatted_order_number,
+            actor_type=actor_type,
+            actor=actor_user,
+            context=self.admin_url,
+        )
+
+    def cancel_and_refund(
+        self,
+        refund_type: RefundType,
+        *,
+        actor_type: ActorType = ActorType.ADMIN,
+        actor_user: User | None = None,
+    ):
         from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, UNUSED
 
         from .payment_stamp import PaymentStamp
+
+        data = self._build_internal_payment_stamp_data(
+            actor_type=actor_type,
+            actor_user=actor_user,
+        )
 
         match refund_type:
             case RefundType.NONE:
@@ -357,8 +406,9 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                     provider_id=PaymentProvider.NONE,
                     type=PaymentStampType.CANCEL_WITHOUT_REFUND,
                     status=PaymentStatus.CANCELLED,
-                    data={},
+                    data=data,
                 )
+
             case RefundType.MANUAL:
                 if self.cached_status == PaymentStatus.REFUNDED:
                     raise ValueError("Order is already refunded")
@@ -371,7 +421,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                     provider_id=PaymentProvider.NONE,
                     type=PaymentStampType.MANUAL_REFUND,
                     status=PaymentStatus.REFUNDED,
-                    data={},
+                    data=data,
                 )
             case RefundType.PROVIDER:
                 if self.cached_status == PaymentStatus.REFUNDED:
@@ -383,6 +433,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
 
                 prepared_request = self.meta.provider.prepare_refund(paid_stamp)
                 request_stamp = prepared_request.request_stamp
+                request_stamp.data = dict(request_stamp.data or {}, **data)
             case _:
                 raise ValueError(f"Unsupported refund type: {refund_type}")
 
@@ -401,6 +452,12 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                     status=MANUAL_INTERVENTION_REQUIRED,
                 )
 
+            self.emit_event_log_entry(
+                refund_type.event_log_entry_type,
+                actor_type=actor_type,
+                actor_user=actor_user,
+            )
+
         response_stamp = None
         if prepared_request:
             _response, response_stamp = prepared_request.send()
@@ -408,6 +465,39 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         if response_stamp:
             with transaction.atomic():
                 response_stamp.save()
+
+    @classmethod
+    def cancel_unpaid_orders(
+        cls,
+        threshold: datetime | None = None,
+        actor_type: ActorType = ActorType.SYSTEM,
+        actor_user: User | None = None,
+    ):
+        """
+        Cancels all unpaid orders that are older than the threshold.
+        If threshold is None, cancels all unpaid orders done before midnight Europe/Helsinki time.
+        As this is usually run in the wee hours of the night, this gives orders made late the previous day
+        a chance to be paid before they are cancelled.
+        """
+        if threshold is None:
+            tz = get_current_timezone()
+            threshold = datetime.now(tz).replace(hour=0, minute=0, second=0, microsecond=0)
+
+        orders = cls.objects.filter(
+            cached_status__lt=PaymentStatus.PAID.value,
+            id__lt=uuid7(threshold),
+        )
+
+        if num_orders := orders.count():
+            logger.info("Cancelling %d unpaid orders older than %s", num_orders, threshold)
+            for order in orders:
+                order.cancel_and_refund(
+                    refund_type=RefundType.NONE,
+                    actor_type=actor_type,
+                    actor_user=actor_user,
+                )
+        else:
+            logger.info("No unpaid orders older than %s to cancel", threshold)
 
     def can_be_marked_as_paid_by(self, request: HttpRequest):
         return self.status.is_payable and is_graphql_allowed_for_model(
@@ -417,11 +507,20 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             field="self",
         )
 
-    def mark_as_paid(self):
+    def mark_as_paid(
+        self,
+        actor_type: ActorType = ActorType.ADMIN,
+        actor_user: User | None = None,
+    ):
         from .payment_stamp import PaymentStamp
 
         if not self.status.is_payable:
             raise ValueError("Order cannot be marked as paid")
+
+        data = self._build_internal_payment_stamp_data(
+            actor_type=actor_type,
+            actor_user=actor_user,
+        )
 
         payment_stamp = PaymentStamp(
             event=self.event,
@@ -430,8 +529,14 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             provider_id=PaymentProvider.NONE,
             type=PaymentStampType.PAYMENT_CALLBACK,
             status=PaymentStatus.PAID,
-            data={},
+            data=data,
         )
 
         with transaction.atomic():
             payment_stamp.save()
+
+            self.emit_event_log_entry(
+                "tickets_v2.order.marked_as_paid",
+                actor_type=actor_type,
+                actor_user=actor_user,
+            )
