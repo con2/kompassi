@@ -68,7 +68,7 @@ const query = graphql(`
   }
 `);
 
-export const revalidate = 5;
+export const revalidate = 0;
 
 interface Props {
   params: {
