@@ -5,11 +5,11 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ButtonToolbar from "react-bootstrap/ButtonToolbar";
 import Stack from "react-bootstrap/Stack";
 
-import { Dimension } from "../dimensions/models";
 import ModalButton from "../ModalButton";
 import AddFieldDropdown from "./AddFieldDropdown";
 import { canMoveDown, canMoveUp, moveDown, moveUp } from "./formEditorLogic";
 import { Field, FieldType, fieldTypesConvertibleToDimension } from "./models";
+import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 
 import "./FormEditor.scss";
@@ -22,7 +22,7 @@ interface FormEditorControlsProps {
   onRemoveField(fieldName: string): void;
   onEditField(fieldName: string): void;
   onPromoteFieldToDimension(fieldName: string): void;
-  dimensions?: Dimension[];
+  dimensions?: DimensionValueSelectFragment[];
   messages: Translations["FormEditor"];
 }
 

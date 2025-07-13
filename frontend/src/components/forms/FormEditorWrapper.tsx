@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { Dimension } from "../dimensions/models";
 import FormEditor from "./FormEditor";
 import { Field } from "./models";
+import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 
 interface Props {
   initialFields: Field[];
-  dimensions: Dimension[];
+  dimensions: DimensionValueSelectFragment[];
   messages: {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];

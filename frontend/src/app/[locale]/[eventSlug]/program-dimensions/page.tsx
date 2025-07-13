@@ -27,7 +27,7 @@ const query = graphql(`
 
       program {
         dimensions(publicOnly: false) {
-          ...DimensionRowGroup
+          ...DimensionEditor
         }
       }
     }

@@ -19,7 +19,7 @@ graphql(`
     purpose
 
     dimensions {
-      ...DimensionRowGroup
+      ...DimensionEditor
     }
 
     form(lang: $language) {

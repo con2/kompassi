@@ -1,33 +1,24 @@
 import { graphql } from "@/__generated__";
 
 graphql(`
+  fragment DimensionFilterValue on DimensionValueType {
+    slug
+    title(lang: $locale)
+  }
+`);
+
+graphql(`
   fragment DimensionFilter on FullDimensionType {
     slug
     title(lang: $locale)
     isMultiValue
     isListFilter
+    isKeyDimension
     values(lang: $locale) {
-      slug
-      title(lang: $locale)
+      ...DimensionFilterValue
     }
   }
 `);
-
-// | null | undefined to make it easier to work with GraphQL
-export interface DimensionValue {
-  slug: string;
-  title?: string | null;
-  color?: string | null;
-}
-
-export interface Dimension {
-  slug: string;
-  title?: string | null;
-  isMultiValue?: boolean;
-  isTechnical?: boolean;
-  isKeyDimension?: boolean;
-  values: DimensionValue[];
-}
 
 export type CachedDimensions = Record<string, string[]>;
 

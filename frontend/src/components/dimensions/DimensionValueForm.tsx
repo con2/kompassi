@@ -1,5 +1,5 @@
 import colors from "./colors";
-import { ValueFieldsFragment } from "@/__generated__/graphql";
+import { DimensionEditorValueFragment } from "@/__generated__/graphql";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import { supportedLanguages } from "@/translations";
@@ -10,7 +10,7 @@ interface Props {
     SchemaForm: Translations["SchemaForm"];
     Survey: Translations["Survey"];
   };
-  value?: ValueFieldsFragment;
+  value?: DimensionEditorValueFragment;
 }
 
 const headingLevel = "h5";

@@ -2,7 +2,6 @@
 
 import React from "react";
 
-import { Dimension } from "../dimensions/models";
 import AddFieldDropdown from "./AddFieldDropdown";
 import EditFieldModal from "./EditFieldModal";
 import FormEditorControls from "./FormEditorControls";
@@ -12,6 +11,7 @@ import { Field, FieldType, emptyField } from "./models";
 import newField from "./newField";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";
+import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 
 import "./FormEditor.scss";
@@ -24,13 +24,16 @@ interface Props {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];
   };
-  dimensions: Dimension[];
+  dimensions: DimensionValueSelectFragment[];
 }
 
 /// The end user facing SchemaForm operates on enriched fields
 /// that have the choices already populated for dimension fields.
 /// The form editor operates on raw fields and enjoys no such luxury.
-function injectChoices(field: Field, dimensions: Dimension[]): Field {
+function injectChoices(
+  field: Field,
+  dimensions: DimensionValueSelectFragment[],
+): Field {
   if (
     // is of a type that can has dimension values as choices
     (field.type === "DimensionSingleSelect" ||

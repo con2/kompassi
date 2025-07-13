@@ -68,7 +68,7 @@ const query = graphql(`
           fields(lang: $locale, keyFieldsOnly: true)
           dimensions {
             ...DimensionFilter
-            ...ColoredKeyDimensionTableCell
+            ...ColoredDimensionTableCell
           }
 
           countResponses

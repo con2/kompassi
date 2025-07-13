@@ -25,7 +25,7 @@ const query = graphql(`
 
       involvement {
         dimensions(publicOnly: false) {
-          ...DimensionRowGroup
+          ...DimensionEditor
         }
       }
     }

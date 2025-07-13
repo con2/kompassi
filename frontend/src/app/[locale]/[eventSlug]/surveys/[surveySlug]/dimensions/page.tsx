@@ -19,44 +19,6 @@ import SignInRequired from "@/components/errors/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
-graphql(`
-  fragment ValueFields on DimensionValueType {
-    slug
-    color
-    isTechnical
-    isSubjectLocked
-    canRemove
-    title(lang: $locale)
-    # NOTE SUPPORTED_LANGUAGES
-    titleFi
-    titleEn
-    titleSv
-  }
-`);
-
-graphql(`
-  fragment DimensionRowGroup on FullDimensionType {
-    slug
-    canRemove
-    title(lang: $locale)
-    isPublic
-    isKeyDimension
-    isMultiValue
-    isListFilter
-    isShownInDetail
-    isNegativeSelection
-    isTechnical
-    valueOrdering
-    # NOTE SUPPORTED_LANGUAGES
-    titleFi
-    titleEn
-    titleSv
-    values {
-      ...ValueFields
-    }
-  }
-`);
-
 const query = graphql(`
   query DimensionsList(
     $eventSlug: String!
@@ -75,7 +37,7 @@ const query = graphql(`
             language
           }
           dimensions {
-            ...DimensionRowGroup
+            ...DimensionEditor
           }
         }
       }

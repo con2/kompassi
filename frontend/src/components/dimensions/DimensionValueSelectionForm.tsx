@@ -2,8 +2,8 @@ import AutoSubmitForm from "../AutoSubmitForm";
 import { Choice, MultiSelect, SingleSelect } from "../forms/models";
 import { SchemaForm } from "../forms/SchemaForm";
 import SubmitButton from "../forms/SubmitButton";
-import { Dimension } from "./models";
 import { graphql } from "@/__generated__";
+import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 
 graphql(`
@@ -21,7 +21,7 @@ graphql(`
 `);
 
 export function buildDimensionChoices(
-  dimension: Dimension,
+  dimension: DimensionValueSelectFragment,
   includeEmptyChoice: boolean = false,
 ): Choice[] {
   const choices = dimension.values.map((value) => ({
@@ -40,7 +40,7 @@ export function buildDimensionChoices(
 }
 
 export function buildDimensionField(
-  dimension: Dimension,
+  dimension: DimensionValueSelectFragment,
   cachedDimensions: Record<string, string[]>,
   technicalDimensions: "omit" | "readonly" | "editable" = "omit",
   slugPrefix: string = "",
@@ -85,7 +85,7 @@ export function buildDimensionField(
 export type TechnicalDimensionsHandling = "omit" | "readonly" | "editable";
 
 export function buildDimensionValueSelectionForm(
-  dimensions: Dimension[],
+  dimensions: DimensionValueSelectFragment[],
   cachedDimensions: Record<string, string[]>,
   technicalDimensions: TechnicalDimensionsHandling = "omit",
   slugPrefix: string = "",
@@ -118,7 +118,7 @@ export function buildDimensionValueSelectionForm(
 }
 
 interface Props {
-  dimensions: Dimension[];
+  dimensions: DimensionValueSelectFragment[];
   cachedDimensions: Record<string, string[]>;
   onChange(formData: FormData): Promise<void>;
   translations: Translations;

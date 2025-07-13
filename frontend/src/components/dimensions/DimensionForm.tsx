@@ -1,4 +1,4 @@
-import { DimensionRowGroupFragment } from "@/__generated__/graphql";
+import { DimensionEditorFragment } from "@/__generated__/graphql";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import { supportedLanguages } from "@/translations";
@@ -9,7 +9,7 @@ interface Props {
     SchemaForm: Translations["SchemaForm"];
     Survey: Translations["Survey"];
   };
-  dimension?: DimensionRowGroupFragment;
+  dimension?: DimensionEditorFragment;
 }
 
 const headingLevel = "h5";

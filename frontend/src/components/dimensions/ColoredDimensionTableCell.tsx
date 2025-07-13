@@ -1,16 +1,17 @@
 import type { ReactNode } from "react";
 import { Column } from "../DataTable";
 import { getDimensionValueTitle, makeColorTranslucent } from "./helpers";
-import type { Dimension } from "./models";
 import { validateCachedDimensions } from "./models";
 import { graphql } from "@/__generated__";
-import { ColoredKeyDimensionTableCellFragment } from "@/__generated__/graphql";
+import { ColoredDimensionTableCellFragment } from "@/__generated__/graphql";
 
 graphql(`
-  fragment ColoredKeyDimensionTableCell on FullDimensionType {
+  fragment ColoredDimensionTableCell on FullDimensionType {
     slug
     title(lang: $locale)
     isKeyDimension
+    isTechnical
+    isMultiValue
     values(lang: $locale) {
       slug
       title(lang: $locale)
@@ -23,7 +24,7 @@ interface Props {
   // TODO move typing to codegen.ts (backend must specify scalar type)
   // cachedDimensions?: CachedDimensions;
   cachedDimensions?: unknown;
-  dimension: ColoredKeyDimensionTableCellFragment;
+  dimension: ColoredDimensionTableCellFragment;
   children?: ReactNode;
 }
 
@@ -33,7 +34,7 @@ interface HasCachedDimensions {
 }
 
 export function buildKeyDimensionColumns<T extends HasCachedDimensions>(
-  dimensions: ColoredKeyDimensionTableCellFragment[],
+  dimensions: ColoredDimensionTableCellFragment[],
 ): Column<T>[] {
   return dimensions
     .filter((dimension) => dimension.isKeyDimension)

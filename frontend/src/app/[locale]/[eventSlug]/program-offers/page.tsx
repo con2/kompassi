@@ -51,7 +51,8 @@ graphql(`
 graphql(`
   fragment ProgramOfferDimension on FullDimensionType {
     ...DimensionFilter
-    ...ColoredKeyDimensionTableCell
+    ...ColoredDimensionTableCell
+    ...DimensionValueSelect
   }
 `);
 

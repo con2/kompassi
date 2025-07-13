@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { Fragment } from "react";
 import { ButtonGroup } from "react-bootstrap";
 import { updateResponseDimensions } from "../../surveys/[surveySlug]/responses/[responseId]/actions";
 import { acceptProgramOffer, cancelProgramOffer } from "./actions";
@@ -15,7 +14,6 @@ import DimensionValueSelectionForm, {
 } from "@/components/dimensions/DimensionValueSelectionForm";
 import {
   CachedDimensions,
-  Dimension,
   validateCachedDimensions,
 } from "@/components/dimensions/models";
 import Messages from "@/components/errors/Messages";
@@ -209,7 +207,7 @@ export default async function ProgramOfferPage({
   validateFields(fields);
 
   validateCachedDimensions(programOffer.cachedDimensions);
-  const programDimensions: Dimension[] = data.event.program.dimensions;
+  const programDimensions = data.event.program.dimensions;
   const defaultProgramDimensions =
     programOffer.form.survey.cachedDefaultResponseDimensions ?? {};
   validateCachedDimensions(defaultProgramDimensions);
@@ -224,8 +222,7 @@ export default async function ProgramOfferPage({
       "program_dimensions",
     );
 
-  const involvementDimensions: Dimension[] =
-    data.event.involvement?.dimensions ?? [];
+  const involvementDimensions = data.event.involvement?.dimensions ?? [];
   const defaultInvolvementDimensions =
     programOffer.form.survey.cachedDefaultInvolvementDimensions ?? {};
   validateCachedDimensions(defaultInvolvementDimensions);

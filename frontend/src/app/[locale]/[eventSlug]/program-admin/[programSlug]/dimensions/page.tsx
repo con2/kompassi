@@ -29,7 +29,7 @@ const query = graphql(`
 
       program {
         dimensions(publicOnly: false) {
-          ...DimensionRowGroup
+          ...DimensionEditor
         }
 
         program(slug: $programSlug) {

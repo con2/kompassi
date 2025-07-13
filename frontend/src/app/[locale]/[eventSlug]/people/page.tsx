@@ -49,11 +49,9 @@ const query = graphql(`
 
       involvement {
         dimensions(publicOnly: false) {
-          isKeyDimension
-          isListFilter
-
           ...DimensionFilter
           ...CachedDimensionsBadges
+          ...DimensionValueSelect
         }
 
         people(filters: $filters, search: $search) {

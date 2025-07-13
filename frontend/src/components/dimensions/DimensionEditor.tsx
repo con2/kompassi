@@ -4,14 +4,53 @@ import ModalButton from "../ModalButton";
 import DimensionForm from "./DimensionForm";
 import DimensionValueForm from "./DimensionValueForm";
 import { makeColorTranslucent } from "./helpers";
+import { graphql } from "@/__generated__";
 import {
-  DimensionRowGroupFragment,
-  ValueFieldsFragment,
+  DimensionEditorFragment,
+  DimensionEditorValueFragment,
 } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 
+graphql(`
+  fragment DimensionEditorValue on DimensionValueType {
+    slug
+    color
+    isTechnical
+    isSubjectLocked
+    canRemove
+    title(lang: $locale)
+    # NOTE SUPPORTED_LANGUAGES
+    titleFi
+    titleEn
+    titleSv
+  }
+`);
+
+graphql(`
+  fragment DimensionEditor on FullDimensionType {
+    slug
+    canRemove
+    title(lang: $locale)
+    isPublic
+    isKeyDimension
+    isMultiValue
+    isListFilter
+    isShownInDetail
+    isNegativeSelection
+    isTechnical
+    valueOrdering
+    # NOTE SUPPORTED_LANGUAGES
+    titleFi
+    titleEn
+    titleSv
+    values {
+      ...DimensionEditorValue
+    }
+  }
+`);
+
 interface Props {
-  dimensions: DimensionRowGroupFragment[];
+  dimensions: DimensionEditorFragment[];
   translations: Translations;
 
   onCreateDimension(formData: FormData): Promise<void>;
@@ -83,7 +122,7 @@ export function DimensionEditor({
   function DimensionCells({
     dimension,
   }: {
-    dimension: DimensionRowGroupFragment;
+    dimension: DimensionEditorFragment;
   }) {
     const rowspan = dimension.values.length + 1;
     const dimensionEditIcon = dimension.isTechnical ? "🔧" : "✏️";
@@ -130,11 +169,7 @@ export function DimensionEditor({
     );
   }
 
-  function AddValueCell({
-    dimension,
-  }: {
-    dimension: DimensionRowGroupFragment;
-  }) {
+  function AddValueCell({ dimension }: { dimension: DimensionEditorFragment }) {
     return (
       <td colSpan={3}>
         <ModalButton
@@ -165,8 +200,8 @@ export function DimensionEditor({
     value,
     dimension,
   }: {
-    value: ValueFieldsFragment;
-    dimension: DimensionRowGroupFragment;
+    value: DimensionEditorValueFragment;
+    dimension: DimensionEditorFragment;
   }) {
     const backgroundColor = value.color && makeColorTranslucent(value.color);
     const valueEditIcon = value.isTechnical ? "🔧" : "✏️";
@@ -220,10 +255,10 @@ export function DimensionEditor({
     );
   }
 
-  function DimensionRowGroup({
+  function DimensionEditor({
     dimension,
   }: {
-    dimension: DimensionRowGroupFragment;
+    dimension: DimensionEditorFragment;
   }) {
     if (dimension.values.length === 0) {
       return (
@@ -272,7 +307,7 @@ export function DimensionEditor({
       </thead>
       <tbody>
         {dimensions.map((dimension) => (
-          <DimensionRowGroup key={dimension.slug} dimension={dimension} />
+          <DimensionEditor key={dimension.slug} dimension={dimension} />
         ))}
         <tr>
           <td colSpan={4}>

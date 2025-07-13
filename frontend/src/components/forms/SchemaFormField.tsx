@@ -1,6 +1,5 @@
 import { ReactNode } from "react";
 
-import { Dimension } from "../dimensions/models";
 import { Heading, HeadingLevel } from "../helpers/Heading";
 import ParagraphsDangerousHtml from "../helpers/ParagraphsDangerousHtml";
 import makeInputId from "./makeInputId";

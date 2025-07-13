@@ -34,13 +34,7 @@ const query = graphql(`
 
       program {
         dimensions {
-          slug
-          title(lang: $locale)
-
-          values(lang: $locale) {
-            slug
-            title(lang: $locale)
-          }
+          ...DimensionValueSelect
         }
 
         program(slug: $programSlug) {

@@ -1,12 +1,12 @@
-import { Dimension } from "../dimensions/models";
 import { Choice, Field, FieldType, Values } from "./models";
 import processFormData from "./processFormData";
+import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 
 export function getFieldEditorFields(
   fieldType: FieldType,
   messages: Translations["FormEditor"]["editFieldForm"],
-  dimensions: Dimension[],
+  dimensions: DimensionValueSelectFragment[],
 ): Field[] {
   const t = messages;
   const slugField: Field = {

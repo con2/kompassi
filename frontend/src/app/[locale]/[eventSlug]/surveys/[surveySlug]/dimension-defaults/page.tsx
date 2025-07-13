@@ -32,7 +32,7 @@ const query = graphql(`
             language
           }
           dimensions {
-            ...DimensionRowGroup
+            ...DimensionEditor
           }
           cachedDefaultResponseDimensions
         }

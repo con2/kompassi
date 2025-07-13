@@ -6,8 +6,10 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 import ToggleButton from "react-bootstrap/ToggleButton";
 
 import classes from "./DimensionFilters.module.css";
-import type { DimensionValue } from "./models";
-import { DimensionFilterFragment } from "@/__generated__/graphql";
+import {
+  DimensionFilterFragment,
+  DimensionFilterValueFragment,
+} from "@/__generated__/graphql";
 
 interface PropsWithoutProgramFilters {
   programFilters?: false;
@@ -116,7 +118,7 @@ export function DimensionFilters(props: Props) {
     <form className={className} onSubmit={onSubmit}>
       {dimensions.map((dimension) => {
         const dimensionTitle = dimension.title ?? dimension.slug;
-        const nothing: DimensionValue = {
+        const nothing: DimensionFilterValueFragment = {
           slug: "",
           title: `${dimensionTitle}...`,
         };

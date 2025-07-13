@@ -1,7 +1,8 @@
-import { CachedDimensions, Dimension } from "./models";
+import { CachedDimensions } from "./models";
+import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 
 interface Props {
-  dimension: Dimension;
+  dimension: DimensionValueSelectFragment;
   cachedDimensions: CachedDimensions;
 }
 

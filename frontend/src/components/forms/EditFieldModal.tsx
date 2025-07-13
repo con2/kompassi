@@ -1,9 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-
 import Modal from "react-bootstrap/Modal";
-import { Dimension } from "../dimensions/models";
 import {
   fieldToValues,
   formDataToField,
@@ -12,13 +10,14 @@ import {
 import "./FormEditor.scss";
 import { Field } from "./models";
 import { SchemaForm } from "./SchemaForm";
+import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 
 interface EditFieldModalProps {
   fieldToEdit: Field;
   onSubmit(field: Field): void;
   onClose(): void;
-  dimensions: Dimension[];
+  dimensions: DimensionValueSelectFragment[];
   messages: {
     FormEditor: Translations["FormEditor"];
     SchemaForm: Translations["SchemaForm"];

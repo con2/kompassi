@@ -77,7 +77,7 @@ const query = graphql(`
 
       involvement {
         dimensions(publicOnly: false) {
-          ...ColoredKeyDimensionTableCell
+          ...ColoredDimensionTableCell
           ...DimensionValueSelect
         }
       }

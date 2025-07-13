@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { ReactNode } from "react";
-import { ProgramAdminDetailScheduleItemFragment } from "@/__generated__/graphql";
+import {
+  DimensionValueSelectFragment,
+  ProgramAdminDetailScheduleItemFragment,
+} from "@/__generated__/graphql";
 import { buildDimensionField } from "@/components/dimensions/DimensionValueSelectionForm";
-import { Dimension } from "@/components/dimensions/models";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import type { Translations } from "@/translations/en";
@@ -12,14 +14,14 @@ interface Props {
     slug: string;
   };
   scheduleItem?: Partial<ProgramAdminDetailScheduleItemFragment>;
-  dimensions: Dimension[];
+  dimensions: DimensionValueSelectFragment[];
   translations: Translations;
 }
 
 export function buildScheduleItemForm(
   eventSlug: string,
   editingExisting: boolean,
-  roomDimension: Dimension | "pass-through" | "omit",
+  roomDimension: DimensionValueSelectFragment | "pass-through" | "omit",
   translations?: Translations,
 ) {
   const t = translations?.Program.ScheduleItem;

@@ -1,7 +1,9 @@
 import { invalidDimensionSlugs } from "./consts";
-import type { Dimension } from "./models";
 import { validateCachedDimensions } from "./models";
-import type { DimensionFilterInput } from "@/__generated__/graphql";
+import type {
+  DimensionFilterInput,
+  DimensionValueSelectFragment,
+} from "@/__generated__/graphql";
 
 /// Helper to build turn search params into dimension filters that you can pass into GraphQL
 export function buildDimensionFilters(
@@ -19,7 +21,7 @@ export function buildDimensionFilters(
 /// For subjects using the cached dimensions protocol, this helper will return the
 /// formatted dimension value for a given dimension. Multiple values will look like "Foo, Bar".
 export function getDimensionValueTitle(
-  dimension: Dimension,
+  dimension: DimensionValueSelectFragment,
   cachedDimensions: unknown,
 ) {
   validateCachedDimensions(cachedDimensions);

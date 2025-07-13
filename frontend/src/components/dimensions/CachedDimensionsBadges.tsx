@@ -1,7 +1,8 @@
 import { Fragment } from "react";
 import { makeBadgeBackgroundColor } from "./helpers";
-import { Dimension, validateCachedDimensions } from "./models";
+import { validateCachedDimensions } from "./models";
 import { graphql } from "@/__generated__";
+import { CachedDimensionsBadgesFragment } from "@/__generated__/graphql";
 
 graphql(`
   fragment CachedDimensionsBadges on FullDimensionType {
@@ -17,7 +18,7 @@ graphql(`
 `);
 
 interface Props {
-  dimensions: Dimension[];
+  dimensions: CachedDimensionsBadgesFragment[];
   cachedDimensions: unknown;
 }
 

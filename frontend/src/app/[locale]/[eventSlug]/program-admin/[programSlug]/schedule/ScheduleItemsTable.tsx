@@ -1,10 +1,12 @@
 import { ButtonGroup } from "react-bootstrap";
 import { deleteScheduleItem, putScheduleItem } from "./actions";
 import ScheduleItemForm from "./ScheduleItemForm";
-import { ProgramAdminDetailScheduleItemFragment } from "@/__generated__/graphql";
+import {
+  DimensionValueSelectFragment,
+  ProgramAdminDetailScheduleItemFragment,
+} from "@/__generated__/graphql";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
-import { Dimension } from "@/components/dimensions/models";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { formatDurationMinutes } from "@/components/FormattedDateTimeRange";
 import ModalButton from "@/components/ModalButton";
@@ -19,7 +21,7 @@ interface Props {
     slug: string;
     timezone: string;
   };
-  dimensions: Dimension[];
+  dimensions: DimensionValueSelectFragment[];
   scheduleItems: ProgramAdminDetailScheduleItemFragment[];
 }
 

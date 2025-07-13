@@ -3,17 +3,16 @@ import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
 import {
+  DimensionFilterFragment,
   OrderListFragment,
   PaymentStatus,
   ProductChoiceFragment,
-  QuotaListFragment,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import { Dimension } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
@@ -81,7 +80,7 @@ interface Props {
 function getDimensions(
   messages: Translations["Tickets"],
   products: ProductChoiceFragment[],
-) {
+): DimensionFilterFragment[] {
   const t = messages.Order;
   const producT = messages.Product;
 
@@ -91,6 +90,7 @@ function getDimensions(
       title: t.attributes.status.title,
       isMultiValue: false,
       isListFilter: true,
+      isKeyDimension: true,
       values: Object.entries(t.attributes.status.choices)
         .filter(([slug]) => slug !== PaymentStatus.NotStarted)
         .map(([slug, { shortTitle }]) => ({
@@ -103,6 +103,7 @@ function getDimensions(
       title: producT.clientAttributes.product,
       isMultiValue: false,
       isListFilter: true,
+      isKeyDimension: true,
       values: products.map(({ id, title }) => ({ slug: id, title })),
     },
   ];

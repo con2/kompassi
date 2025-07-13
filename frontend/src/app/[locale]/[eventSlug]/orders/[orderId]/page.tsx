@@ -20,10 +20,6 @@ interface Props {
 
 export const revalidate = 0;
 
-function formatOrderNumber(orderNumber: number) {
-  return `#${orderNumber.toString().padStart(6, "0")}`;
-}
-
 /// NOTE: This page is on the Critical Path of the Hunger Games, so be extra mindful of performance.
 /// Also this page can be accessed without authentication (ie. we don't know the accessor is the person who ordered)
 /// so absolutely no PII.
