@@ -15,18 +15,27 @@ const createSurveyMutation = graphql(`
   }
 `);
 
-export async function createSurvey(eventSlug: string, formData: FormData) {
+export async function createSurvey(
+  locale: string,
+  eventSlug: string,
+  formData: FormData,
+) {
   const surveySlug = formData.get("slug")!.toString();
   const anonymity = formData.get("anonymity")!.toString();
   const copyFrom = formData.get("copyFrom")?.toString() ?? null;
 
-  await getClient().mutate({
+  const { data } = await getClient().mutate({
     mutation: createSurveyMutation,
     variables: {
       input: { eventSlug, surveySlug, anonymity: anonymity as any, copyFrom },
     },
   });
 
-  revalidatePath(`/${eventSlug}/surveys`);
-  redirect(`/${eventSlug}/surveys/${surveySlug}/edit`);
+  const createdSurveySlug = data?.createSurvey?.survey?.slug ?? "";
+  if (!createdSurveySlug) {
+    return void redirect(`/${eventSlug}/surveys?error=failedToCreate`);
+  }
+
+  revalidatePath(`/${locale}/${eventSlug}/surveys`);
+  redirect(`/${eventSlug}/surveys/${createdSurveySlug}/edit`);
 }

@@ -37,9 +37,7 @@ registry.register(
 
 for data_type in ["product", "quota"]:
     for action in ["created", "updated", "deleted"]:
-        print(
-            registry.register(
-                name=f"tickets_v2.{data_type}.{action}",
-                message=f"{data_type.capitalize()} {{{data_type}}} in {{event}} was {action} by {{actor}}",
-            )
+        registry.register(
+            name=f"tickets_v2.{data_type}.{action}",
+            message=f"{data_type.capitalize()} {{{data_type}}} in {{event}} was {action} by {{actor}}",
         )

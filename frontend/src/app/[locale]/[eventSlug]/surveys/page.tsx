@@ -251,7 +251,7 @@ export default async function SurveysPage({ params }: Props) {
             label={t.actions.createSurvey + "…"}
             title={t.createSurveyModal.title}
             messages={t.createSurveyModal.actions}
-            action={createSurvey.bind(null, eventSlug)}
+            action={createSurvey.bind(null, locale, eventSlug)}
           >
             <SchemaForm
               fields={createSurveyFields}

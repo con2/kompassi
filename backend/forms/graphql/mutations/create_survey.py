@@ -3,6 +3,7 @@ from django.http import HttpRequest
 
 from access.cbac import graphql_check_instance, graphql_check_model
 from core.models import Event
+from core.utils.model_utils import slugify
 from dimensions.models.enums import DimensionApp
 
 from ...models.enums import SurveyPurpose
@@ -46,6 +47,8 @@ class CreateSurvey(graphene.Mutation):
         purpose = SurveyPurpose.DEFAULT
 
         anonymity = Anonymity(input.anonymity)
+        slug = slugify(str(input.survey_slug))
+
         if input.copy_from:
             source_event_slug, source_survey_slug = str(input.copy_from).split("/")
             source_survey = Survey.objects.get(
@@ -61,7 +64,7 @@ class CreateSurvey(graphene.Mutation):
 
             survey = source_survey.clone(
                 event=event,
-                slug=str(input.survey_slug),
+                slug=slug,
                 app=app,
                 purpose=purpose,
                 anonymity=anonymity,
@@ -70,7 +73,7 @@ class CreateSurvey(graphene.Mutation):
         else:
             survey = Survey(
                 event=event,
-                slug=input.survey_slug,
+                slug=slug,
                 app=app,
                 purpose=purpose,
                 anonymity=anonymity.value,
