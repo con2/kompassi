@@ -1,5 +1,5 @@
 for item_active, item_url, item_text in core_profile_menu_items
   if item_active
-    li.active: a(href='{{ item_url }}') {{ item_text }}
+    li.active: a(href='{{ item_url }}') {{ item_text|safe }}
   else
-    li: a(href='{{ item_url }}') {{ item_text }}
+    li: a(href='{{ item_url }}') {{ item_text|safe }}

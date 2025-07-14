@@ -392,3 +392,9 @@ msgstr "Sähköposti on ensisijainen yhteydenpitokeino tapahtumaan liittyvissä 
 
 msgid "I may be sent information about future events by email <i>(optional)</i>"
 msgstr "Minulle saa lähettää sähköpostitse tietoa tulevista tapahtumista <i>(vapaaehtoinen)</i>"
+
+msgid "Ticket orders<sup>v2</sup>…"
+msgstr "Lipputilaukset<sup>v2</sup>…"
+
+msgid "Survey responses<sup>v2</sup>…"
+msgstr "Kyselyvastaukset<sup>v2</sup>…"

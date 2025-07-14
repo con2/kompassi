@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 
 from core.helpers import person_required
@@ -27,6 +28,7 @@ def profile_view(request):
         no_programmes=no_programmes,
         past_programmes=past_programmes,
         rejected_programmes=rejected_programmes,
+        program_v2_profile_link=f"{settings.KOMPASSI_V2_BASE_URL}/profile/program",
     )
 
     return render(request, "programme_profile_view.pug", vars)

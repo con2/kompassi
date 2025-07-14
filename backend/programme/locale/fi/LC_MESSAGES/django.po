@@ -1627,3 +1627,9 @@ msgstr "Voit piilottaa tämän näkymän poistamalla ruksin tästä ruudusta, va
 
 msgid "This view is currently not visible."
 msgstr "Tämä näkymä ei tällä hetkellä ole näkyvissä."
+
+msgid "Starting Summer 2025, you can manage your program items and program offers in Kompassi v2."
+msgstr "Alkaen kesästä 2025 löydät omat ohjelmanumerosi ja ohjelmatarjouksesi Kompassi v2:sta."
+
+msgid "Go to Kompassi v2 program page"
+msgstr "Siirry Kompassi v2:n ohjelmasivulle"

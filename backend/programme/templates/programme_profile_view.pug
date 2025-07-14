@@ -3,6 +3,9 @@ extends core_profile_base
 block title
   | {% trans "Programmes" %}
 block profile_content
+  .alert.alert-info
+    h4 {% trans "Starting Summer 2025, you can manage your program items and program offers in Kompassi v2." %}
+    p: a.btn.btn-primary(href=program_v2_profile_link, target="_blank", rel="noopener noreferrer") {% trans "Go to Kompassi v2 program page" %}…
   if future_programmes.exists
     h3 {% trans "Future programmes" %}
     for programme in future_programmes

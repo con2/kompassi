@@ -1,5 +1,6 @@
 import logging
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -132,6 +133,16 @@ def core_profile_menu_items(request):
     items.extend(programme_profile_menu_items(request))
     items.extend(membership_profile_menu_items(request))
     items.extend(access_profile_menu_items(request))
+
+    tickets_active = False
+    tickets_url = f"{settings.KOMPASSI_V2_BASE_URL}/profile/orders"
+    tickets_text = _("Ticket orders<sup>v2</sup>…")
+    items.append((tickets_active, tickets_url, tickets_text))
+
+    responses_active = False
+    responses_url = f"{settings.KOMPASSI_V2_BASE_URL}/profile/responses"
+    responses_text = _("Survey responses<sup>v2</sup>…")
+    items.append((responses_active, responses_url, responses_text))
 
     if request.user.is_staff:
         admin_url = "/admin/"
