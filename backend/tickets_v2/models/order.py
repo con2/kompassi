@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
@@ -475,13 +475,12 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
     ):
         """
         Cancels all unpaid orders that are older than the threshold.
-        If threshold is None, cancels all unpaid orders done before midnight Europe/Helsinki time.
-        As this is usually run in the wee hours of the night, this gives orders made late the previous day
-        a chance to be paid before they are cancelled.
+        If threshold is None, cancels all unpaid orders done before midnight three days ago Europe/Helsinki time.
+        This gives orders a chance to be paid before they are cancelled.
         """
         if threshold is None:
             tz = get_current_timezone()
-            threshold = datetime.now(tz).replace(hour=0, minute=0, second=0, microsecond=0)
+            threshold = (datetime.now(tz) - timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
 
         orders = cls.objects.filter(
             cached_status__lt=PaymentStatus.PAID.value,
