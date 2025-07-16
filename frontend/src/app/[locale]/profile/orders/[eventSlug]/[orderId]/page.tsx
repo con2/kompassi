@@ -3,10 +3,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { payOrder } from "../../actions";
 import { graphql } from "@/__generated__";
-import { PaymentStatus } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
+import { cancelOrder } from "@/app/[locale]/[eventSlug]/orders/[orderId]/actions";
 import { auth } from "@/auth";
 import SignInRequired from "@/components/errors/SignInRequired";
+import ModalButton from "@/components/ModalButton";
 import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import ViewContainer from "@/components/ViewContainer";
@@ -26,6 +27,7 @@ const query = graphql(`
           status
           eticketsLink
           canPay
+          canCancel
           products {
             title
             quantity
@@ -135,6 +137,20 @@ export default async function ProfileOrderPage({ params }: Props) {
           <Link className="btn btn-primary" href={order.eticketsLink}>
             {t.actions.viewTickets}
           </Link>
+        </div>
+      )}
+
+      {order.canCancel && (
+        <div className="d-grid gap-2 mb-4">
+          <ModalButton
+            className="btn btn-outline-danger"
+            label={t.actions.ownerCancel.title + "…"}
+            title={t.actions.ownerCancel.title}
+            messages={t.actions.ownerCancel.modalActions}
+            action={cancelOrder.bind(null, locale, order.event.slug, order.id)}
+          >
+            {t.actions.ownerCancel.message}
+          </ModalButton>
         </div>
       )}
     </ViewContainer>

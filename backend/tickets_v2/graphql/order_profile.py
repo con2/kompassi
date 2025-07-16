@@ -1,4 +1,5 @@
 import graphene
+from django.http import HttpRequest
 from graphene_pydantic import PydanticObjectType
 
 from core.graphql.event_limited import LimitedEventType
@@ -57,4 +58,14 @@ class ProfileOrderType(LimitedOrderType):
     products = graphene.NonNull(
         graphene.List(graphene.NonNull(OrderProductType)),
         description=normalize_whitespace(resolve_etickets_link.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_can_cancel(order: Order, info):
+        request: HttpRequest = info.context
+        return order.can_be_cancelled_by_owner(request.user)  # type: ignore
+
+    can_cancel = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_cancel.__doc__ or ""),
     )

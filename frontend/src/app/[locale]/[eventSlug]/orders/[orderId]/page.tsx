@@ -38,6 +38,12 @@ export default async function OrderPage({ params }: Props) {
     order.status === PaymentStatus.Failed ||
     order.status === PaymentStatus.Pending;
 
+  const showProfileMessage =
+    order.status === PaymentStatus.NotStarted ||
+    order.status === PaymentStatus.Pending ||
+    order.status === PaymentStatus.Failed ||
+    order.status === PaymentStatus.Paid;
+
   return (
     <ViewContainer>
       <OrderHeader order={order} messages={t} locale={locale} event={event} />
@@ -56,7 +62,7 @@ export default async function OrderPage({ params }: Props) {
         </Section>
       )}
 
-      <p>{t.Order.profileMessage(ProfileLink)}</p>
+      {showProfileMessage && <p>{t.Order.profileMessage(ProfileLink)}</p>}
     </ViewContainer>
   );
 }

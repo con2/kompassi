@@ -1,12 +1,16 @@
 import Link from "next/link";
 
-import { payOrder } from "../../[eventSlug]/orders/[orderId]/actions";
+import {
+  cancelOrder,
+  payOrder,
+} from "../../[eventSlug]/orders/[orderId]/actions";
 import { confirmEmail } from "./actions";
 import { graphql } from "@/__generated__";
 import { ProfileOrderFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import ModalButton from "@/components/ModalButton";
@@ -25,6 +29,7 @@ graphql(`
     status
     eticketsLink
     canPay
+    canCancel
 
     event {
       slug
@@ -51,6 +56,10 @@ interface Props {
   params: {
     locale: string;
   };
+  searchParams: {
+    success?: string;
+    error?: string;
+  };
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -65,7 +74,10 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function ProfileOrdersPage({ params }: Props) {
+export default async function ProfileOrdersPage({
+  params,
+  searchParams,
+}: Props) {
   const { locale } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Order;
@@ -128,10 +140,10 @@ export default async function ProfileOrdersPage({ params }: Props) {
         <>
           {order.eticketsLink && (
             <Link
-              className="btn btn-sm btn-outline-primary w-100"
+              className="btn btn-link link-subtle p-0 ms-2"
               href={order.eticketsLink}
             >
-              {t.actions.viewTickets}
+              🎫 {t.actions.viewTickets}
             </Link>
           )}
           {order.canPay && (
@@ -139,12 +151,28 @@ export default async function ProfileOrdersPage({ params }: Props) {
               action={payOrder.bind(null, locale, order.event.slug, order.id)}
             >
               <button
-                className="btn btn-sm btn-outline-primary w-100"
+                className="btn btn-link link-subtle p-0 ms-2"
                 type="submit"
               >
-                {t.actions.pay}
+                💳 {t.actions.pay}
               </button>
             </form>
+          )}
+          {order.canCancel && (
+            <ModalButton
+              className="btn btn-link link-subtle p-0 ms-2"
+              label={<>❌ {t.actions.ownerCancel.label}…</>}
+              title={t.actions.ownerCancel.title}
+              messages={t.actions.ownerCancel.modalActions}
+              action={cancelOrder.bind(
+                null,
+                locale,
+                order.event.slug,
+                order.id,
+              )}
+            >
+              {t.actions.ownerCancel.message}
+            </ModalButton>
           )}
         </>
       ),
@@ -157,6 +185,7 @@ export default async function ProfileOrdersPage({ params }: Props) {
   return (
     <ViewContainer>
       <ViewHeading>{profileT.title}</ViewHeading>
+      <Messages searchParams={searchParams} messages={t.profileMessages} />
       <p>{profileT.message}</p>
       {haveUnlinkedOrders && (
         <div className="card mb-4">

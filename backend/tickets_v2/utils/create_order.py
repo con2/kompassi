@@ -138,8 +138,6 @@ def get_expected_tickets_for_products(
     Given a dictionary of product id -> quantity, returns a dictionary of quota id -> quantity.
     """
     quota_ids_by_product_id = get_quota_ids_by_product_id(event_id)
-    print("quota_ids_by_product_id", quota_ids_by_product_id)
-    print("products", products)
 
     expected_quantities_by_quota_id: dict[int, int] = {}
     for product_id, quantity in products.items():

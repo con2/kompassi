@@ -79,7 +79,7 @@ class FullOrderType(LimitedOrderType):
         Returns whether a provider refund can be initiated for this order.
         """
         request: HttpRequest = info.context
-        return order.can_be_refunded_by(request)
+        return order.can_be_provider_refunded_by(request)
 
     can_refund = graphene.NonNull(
         graphene.Boolean,

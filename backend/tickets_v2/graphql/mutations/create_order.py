@@ -56,8 +56,6 @@ class CreateOrder(graphene.Mutation):
         products = validate_products_dict({op.product_id: op.quantity for op in input.products})  # type: ignore
         language = to_supported_language(input.language)  # type: ignore
 
-        print("products", products)
-
         order = create_order(event, customer, products, language)
 
         emit(

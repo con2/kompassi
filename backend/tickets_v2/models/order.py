@@ -318,10 +318,12 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             )
         )
 
-    def can_be_refunded_by(self, request: HttpRequest):
-        """
-        NOTE: checks for ability to perform a provider refund
-        """
+    def can_be_cancelled_by_owner(self, user: User):
+        return (
+            self.status.is_owner_cancelable and self.owner is not None and user.is_authenticated and user == self.owner
+        )
+
+    def can_be_provider_refunded_by(self, request: HttpRequest):
         # TODO should this method do all the same checks that cancel_and_refund does?
         return (
             self.status.is_refundable

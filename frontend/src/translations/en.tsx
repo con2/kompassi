@@ -608,6 +608,19 @@ const translations = {
           tickets from your <ProfileLink>profile</ProfileLink>.
         </>
       ),
+      profileMessages: {
+        confirmationEmailSent: (
+          <>
+            A confirmation email has been sent to your email address. Please
+            check your inbox and follow the instructions to confirm your email
+            address.
+          </>
+        ),
+        cancelled: <>Your order has been successfully cancelled.</>,
+        emailConfirmationFailed: (
+          <>Email confirmation failed. Please try again later.</>
+        ),
+      },
       attributes: {
         orderNumberAbbr: "Order #",
         orderNumberFull: "Order number",
@@ -749,6 +762,24 @@ const translations = {
         viewTickets: "View e-tickets",
         newOrder: "New order",
         search: "Search orders",
+        ownerCancel: {
+          title: "Cancel order",
+          label: "Cancel",
+          message: (
+            <>
+              <p>Are you sure you want to cancel your order?</p>
+              <p>Any tickets that have been reserved will be released.</p>
+              <p>
+                This action cannot be undone. If you have any questions, please
+                contact customer support.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Cancel order",
+            cancel: "Close without cancelling",
+          },
+        },
         saveContactInformation: "Save contact information",
         resendOrderConfirmation: {
           title: "Resend order confirmation",

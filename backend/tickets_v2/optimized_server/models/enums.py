@@ -68,6 +68,14 @@ class PaymentStatus(IntEnum):
             case _:
                 return False
 
+    @property
+    def is_owner_cancelable(self):
+        match self:
+            case PaymentStatus.NOT_STARTED | PaymentStatus.PENDING | PaymentStatus.FAILED:
+                return True
+            case _:
+                return False
+
 
 class ReceiptType(IntEnum):
     PAID = PaymentStatus.PAID.value

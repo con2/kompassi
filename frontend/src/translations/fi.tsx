@@ -599,6 +599,18 @@ const translations: Translations = {
           liput myös <ProfileLink>profiilistasi</ProfileLink>.
         </>
       ),
+      profileMessages: {
+        confirmationEmailSent: (
+          <>
+            Sähköpostiosoitteeseesi on lähetetty vahvistusviesti. Tarkista
+            sähköpostisi ja seuraa ohjeita vahvistaaksesi sähköpostiosoitteesi.
+          </>
+        ),
+        cancelled: <>Tilauksesi on peruttu onnistuneesti.</>,
+        emailConfirmationFailed: (
+          <>Sähköpostin vahvistaminen epäonnistui. Yritä myöhemmin uudelleen.</>
+        ),
+      },
       attributes: {
         orderNumberAbbr: "Tilausnro.",
         orderNumberFull: "Tilausnumero",
@@ -741,6 +753,24 @@ const translations: Translations = {
         newOrder: "Uusi tilaus",
         search: "Hae tilauksia",
         saveContactInformation: "Tallenna yhteystiedot",
+        ownerCancel: {
+          title: "Peruuta tilaus",
+          label: "Peruuta",
+          message: (
+            <>
+              <p>Oletko varma, että haluat peruuttaa tilauksesi?</p>
+              <p>Kaikki varatut liput vapautetaan.</p>
+              <p>
+                Tilauksen peruminen on lopullista. Jos sinulla on kysyttävää,
+                ota yhteyttä asiakastukeen.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Peruuta tilaus",
+            cancel: "Sulje peruuttamatta",
+          },
+        },
         resendOrderConfirmation: {
           title: "Lähetä tilausvahvistus uudelleen",
           message: (emailAddress: string) => (

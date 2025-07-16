@@ -53,6 +53,7 @@ from program_v2.graphql.mutations.update_program_annotations import UpdateProgra
 from program_v2.graphql.mutations.update_program_dimensions import UpdateProgramDimensions
 from program_v2.graphql.mutations.update_program_form import UpdateProgramForm
 from tickets_v2.graphql.mutations.cancel_and_refund_order import CancelAndRefundOrder
+from tickets_v2.graphql.mutations.cancel_own_unpaid_order import CancelOwnUnpaidOrder
 from tickets_v2.graphql.mutations.create_order import CreateOrder
 from tickets_v2.graphql.mutations.create_product import CreateProduct
 from tickets_v2.graphql.mutations.create_quota import CreateQuota
@@ -200,6 +201,7 @@ class Mutation(graphene.ObjectType):
     update_order = UpdateOrder.Field()
     resend_order_confirmation = ResendOrderConfirmation.Field()
     cancel_and_refund_order = CancelAndRefundOrder.Field()
+    cancel_own_unpaid_order = CancelOwnUnpaidOrder.Field()
     mark_order_as_paid = MarkOrderAsPaid.Field()
 
 

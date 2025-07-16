@@ -16,10 +16,31 @@ const confirmEmailMutation = graphql(`
 `);
 
 export async function confirmEmail(locale: string) {
-  await getClient().mutate({
-    mutation: confirmEmailMutation,
-    variables: { input: { locale } },
-  });
+  let error = false;
+
+  try {
+    const { data } = await getClient().mutate({
+      mutation: confirmEmailMutation,
+      variables: { input: { locale } },
+    });
+
+    if (!data?.confirmEmail?.user?.email) {
+      console.error("Email confirmation failed: No email returned");
+      error = true;
+    }
+  } catch (error) {
+    console.error("Error confirming email:", error);
+    error = true;
+  }
+
+  if (error) {
+    return void redirect(
+      `/${locale}/profile/orders?error=emailConfirmationFailed`,
+    );
+  }
+
+  revalidatePath(`/${locale}/profile/orders`);
+  return void redirect(`/profile/orders?success=confirmationEmailSent`);
 }
 
 // TODO Redirect to profile order page instead of unauthenticated order page
