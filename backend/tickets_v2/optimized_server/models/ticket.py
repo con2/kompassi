@@ -56,7 +56,10 @@ async def reserve_tickets(
 
         actual_tickets: dict[int, int] = {}
         async for row in cursor:
-            id, event_id, quota_id, row_order_id = row
+            _id, row_event_id, quota_id, row_order_id = row
+
+            if row_event_id != event_id:
+                raise UnsaneSituation()
 
             if row_order_id != order_id:
                 raise UnsaneSituation()

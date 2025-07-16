@@ -7,3 +7,4 @@ from
 where
   p.event_id = %s
 group by product_id
+order by product_id

@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import ClassVar
+from typing import Annotated, Any, ClassVar
 from uuid import UUID
 
 import pydantic
@@ -20,6 +20,33 @@ from ..utils.formatting import format_order_number, order_number_to_reference
 from .customer import Customer
 from .enums import PaymentStatus
 from .ticket import reserve_tickets
+
+
+def _quantity_is_nonnegative(products: dict[int, int]) -> dict[int, int]:
+    """
+    Validate that all product quantities are non-negative.
+    """
+    if any(quantity < 0 for quantity in products.values()):
+        raise InvalidProducts("Product quantities must be non-negative.")
+    return products
+
+
+ProductsDict = Annotated[dict[int, int], pydantic.AfterValidator(_quantity_is_nonnegative)]
+products_dict_adapter = pydantic.TypeAdapter(ProductsDict)
+
+
+def validate_products_dict(input: Any) -> ProductsDict:
+    """
+    Validate and coerce input into ProductsDict.
+    Use to validate untrusted input or turn dict[int, int] into ProductsDict.
+    NOTE: Does not validate that the keys refer to valid product IDs of a specific event.
+
+    >>> validate_products_dict({"1": 2, "2": 3})
+    {1: 2, 2: 3}
+    >>> validate_products_dict({1: -1})
+    ValidationError: ...
+    """
+    return products_dict_adapter.validate_python(input)
 
 
 class CreateOrderResult(pydantic.BaseModel):
@@ -39,7 +66,7 @@ class CreateOrderResult(pydantic.BaseModel):
 
 class CreateOrderRequest(pydantic.BaseModel):
     customer: Customer
-    products: dict[int, int]
+    products: ProductsDict
     language: str
 
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "create_order.sql").read_bytes()
@@ -51,20 +78,11 @@ class CreateOrderRequest(pydantic.BaseModel):
             return DEFAULT_LANGUAGE
         return value
 
-    @pydantic.field_validator("products", mode="after")
-    @staticmethod
-    def validate_products(value: dict[int, int]):
-        """
-        Negative quantities are not allowed.
-        """
-        if any(quantity < 0 for quantity in value.values()):
-            raise InvalidProducts()
-        return value
-
     async def save(self, db: AsyncConnection, event_id: int):
         """
         Create order and reserve tickets.
         Must be called within a transaction (SELECT FOR UPDATE SKIP LOCKED).
+        NOTE: Keep in sync with the Django version of this function.
         """
         async with db.cursor() as cursor:
             try:
