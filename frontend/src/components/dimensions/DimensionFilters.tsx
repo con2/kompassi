@@ -110,7 +110,7 @@ export function DimensionFilters(props: Props) {
     [searchParams, replace],
   );
 
-  const className = `row row-cols-md-auto g-3 align-items-center mb-4 ${
+  const className = `row row-cols-md-auto g-3 align-items-center mt-1 mb-2 ${
     props.className ?? ""
   }`;
 

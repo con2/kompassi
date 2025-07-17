@@ -314,10 +314,7 @@ export default async function ProgramOffersPage({
       }
     >
       <Messages searchParams={searchParams} messages={t.messages} />
-      <DimensionFilters
-        dimensions={listFilters}
-        className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1 xxx-this-is-horrible"
-      />
+      <DimensionFilters dimensions={listFilters} />
       <DataTable rows={programOffers} columns={columns}>
         <tfoot>
           <tr>

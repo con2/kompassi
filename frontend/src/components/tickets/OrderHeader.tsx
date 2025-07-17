@@ -36,7 +36,7 @@ export default function OrderHeader({
     <>
       <ViewHeading>
         {title}
-        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
+        <ViewHeading.Sub>{messages.forEvent(event.name)}</ViewHeading.Sub>
       </ViewHeading>
       <p>{message}</p>
 

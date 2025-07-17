@@ -5,13 +5,7 @@ select
   p2.title,
   p2.price,
   p2.quantity,
-  (
-    select max(ps.status)
-    from tickets_v2_paymentstamp ps
-    where
-      ps.event_id = %(event_id)s
-      and ps.order_id = %(order_id)s
-  ) as status
+  o.cached_status as status
 from
   tickets_v2_order o
   join lateral (

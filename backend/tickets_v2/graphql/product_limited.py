@@ -3,8 +3,10 @@ from django.db import models
 from django.http import HttpRequest
 from graphene_django import DjangoObjectType
 
+from access.cbac import graphql_query_cbac_required
 from core.utils.text_utils import normalize_whitespace
 from graphql_api.utils import resolve_local_datetime_field
+from tickets_v2.graphql.quota_bare import BareQuotaType
 
 from ..models.product import Product
 from ..models.quota import Quota
@@ -24,6 +26,15 @@ class LimitedProductType(DjangoObjectType):
             "etickets_per_product",
             "created_at",
         )
+
+    id = graphene.NonNull(graphene.Int)
+
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_quotas(product: Product, info):
+        return product.quotas.all()
+
+    quotas = graphene.NonNull(graphene.List(BareQuotaType))
 
     resolve_created_at = resolve_local_datetime_field("created_at")
 

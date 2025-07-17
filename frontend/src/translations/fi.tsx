@@ -412,7 +412,6 @@ const translations: Translations = {
     returnToTicketsPage: "Palaa lippusivulle",
     Product: {
       listTitle: "Tuotteet",
-      forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
       noProducts: {
         title: "Ei tuotteita saatavilla",
         message: "Yhtään tuotetta ei ole tällä hetkellä saatavilla.",
@@ -538,7 +537,6 @@ const translations: Translations = {
     Quota: {
       listTitle: "Kiintiöt",
       singleTitle: "Kiintiöt",
-      forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
       actions: {
         newQuota: {
           title: "Uusi kiintiö",
@@ -586,7 +584,6 @@ const translations: Translations = {
       listTitle: "Tilaukset",
       singleTitle: (orderNumber: string, paymentStatus: string) =>
         `Tilaus ${orderNumber} (${paymentStatus})`,
-      forEvent: (eventName: string) => <>tapahtumaan {eventName}</>,
       contactForm: {
         title: "Yhteystiedot",
       },
@@ -611,6 +608,22 @@ const translations: Translations = {
           <>Sähköpostin vahvistaminen epäonnistui. Yritä myöhemmin uudelleen.</>
         ),
       },
+      showingOrders: (numOrdersShown: number, numTotalOrders: number) => (
+        <>
+          Näytetään {numOrdersShown} tilaus{numOrdersShown === 1 ? "" : "ta"}{" "}
+          (yhteensä {numTotalOrders}).
+        </>
+      ),
+      noFiltersApplied: (
+        ForceLink: ({ children }: { children: ReactNode }) => JSX.Element,
+        numOrders: number,
+      ) => (
+        <>
+          Suodattamaton lista piilotettu ({numOrders} tilaus
+          {numOrders === 1 ? "" : "ta"}). Tarkenna hakua tai{" "}
+          <ForceLink>käytä Voimaa</ForceLink> nähdäksesi tulokset.
+        </>
+      ),
       attributes: {
         orderNumberAbbr: "Tilausnro.",
         orderNumberFull: "Tilausnumero",
@@ -654,6 +667,15 @@ const translations: Translations = {
             );
           },
         },
+        language: {
+          title: "Kieli",
+          helpText: (
+            <>
+              Kuitti ja sähköiset liput lähetetään annettuun
+              sähköpostiosoitteeseen tällä kielellä.
+            </>
+          ),
+        },
         provider: {
           title: "Maksunvälittäjä",
           choices: {
@@ -666,10 +688,10 @@ const translations: Translations = {
           title: "Tila",
           choices: {
             NOT_STARTED: {
-              title: "Tilauksen tila on tuntematon",
-              shortTitle: "Tuntematon",
+              title: "Tilaus odottaa maksua",
+              shortTitle: "Odottaa maksua",
               message:
-                "Tilauksesi tila on tuntematon. Yritä hetken kuluttua uudelleen ja ota tarvittaessa yhteyttä tapahtuman järjestäjään.",
+                "Tilauksesi on vahvistettu ja tuotteet on varattu sinulle, mutta emme ole vielä vastaanottaneet maksuasi. Käytä alla olevaa painiketta maksaaksesi tilauksesi mahdollisimman pian. Maksamattomat tilaukset perutaan.",
             },
             PENDING: {
               title: "Tilaus odottaa maksua",
@@ -715,6 +737,7 @@ const translations: Translations = {
             },
           },
         },
+        products: "Tuotteet",
       },
       errors: {
         NOT_ENOUGH_TICKETS: {
@@ -749,8 +772,73 @@ const translations: Translations = {
       actions: {
         purchase: "Vahvista tilaus ja siirry maksamaan",
         pay: "Maksa tilaus",
-        viewTickets: "Näytä e-liput",
-        newOrder: "Uusi tilaus",
+        viewOrderPage: "Tilaussivu",
+        viewTickets: "E-liput",
+        newOrder: {
+          label: "Uusi tilaus",
+          title: "Uuden tilauksen luominen lipunmyynnin hallinnan kautta",
+          message: (
+            <>
+              <p>
+                Tässä voit luoda uuden tilauksen. Lue ohjeet huolella
+                välttääksesi asiakkaalle näkyvät virheet, jotka potentiaalisesti
+                maksavat rahaa {":)"}
+              </p>
+              <p>
+                Lipunmyyntivastaavan oikeuksin voit valita tilaukseen tuotteita
+                riippumatta siitä, ovatko ne tällä hetkellä saatavilla.
+                Tuotteelle asetettu maksimimäärä tilausta kohden ei rajoita
+                tuotteiden määrää tätä kautta luoduissa tilauksissa.
+              </p>
+              <p>
+                Et voi kuitenkaan ylittää tuotteiden kiintiöitä, eli
+                valitsemiasi tuotteita tulee olla riittävästi saatavilla. Tätä
+                kautta luodut tilaukset kuluttavat tuotteiden kiintiöitä aivan
+                kuten julkisen lipunmyynnin kautta tehdyt tilaukset.
+              </p>
+              <p>
+                Tilaus luodaan maksamattomana, jos se ei ole nollahintainen.
+                Tilauksen luomisen jälkeen voit kopioida tilauksen
+                hallintasivulta linkin julkisen puolen tilaussivulle, jonka
+                avulla asiakas voi maksaa tilauksen. Voit myös merkitä tilauksen
+                maksetuksi manuaalisesti.
+              </p>
+              <p>
+                <strong>HUOM:</strong> Kun tilaus on maksettu, kuitti ja e-liput
+                lähetetään tilaukseen liitettyyn sähköpostiosoitteeseen. Vaikka
+                lippuja ei olisi tarkoitus toimittaa suoraan sähköpostilla
+                asiakkaalle, käytäthän oikeaa sähköpostiosoitetta (esim.
+                omaasi), jotta et vaaranna Kompassin mainetta sähköpostin
+                lähettäjänä turhilla bounceilla.
+              </p>
+              <p>
+                Tätä kautta luodut tilaukset merkitään tapahtumalokiin
+                mahdollisten väärinkäytösten selvittämistä varten.
+              </p>
+            </>
+          ),
+          actions: {
+            submit: "Luo tilaus",
+          },
+          errors: {
+            noProducts: (
+              ProductsLink: ({
+                children,
+              }: {
+                children: ReactNode;
+              }) => ReactNode,
+            ) => (
+              <>
+                <h4>Ei tuotteita</h4>
+                <p>
+                  Tälle tapahtumalle ei ole määritelty tuotteita. Luo
+                  tarvitsemasi tuotteet{" "}
+                  <ProductsLink>tuotteiden hallintanäkymässä</ProductsLink>.
+                </p>
+              </>
+            ),
+          },
+        },
         search: "Hae tilauksia",
         saveContactInformation: "Tallenna yhteystiedot",
         ownerCancel: {
@@ -772,7 +860,7 @@ const translations: Translations = {
           },
         },
         resendOrderConfirmation: {
-          title: "Lähetä tilausvahvistus uudelleen",
+          title: "Lähetä uudelleen",
           message: (emailAddress: string) => (
             <>
               <p>
@@ -796,14 +884,15 @@ const translations: Translations = {
           },
         },
         cancelAndRefund: {
-          title: "Peruuta ja palauta maksu",
+          title: "Peruuta tilaus ja palauta maksu",
+          label: "Palauta",
           message: (
             <>
               <p>Tämä toiminto tekee seuraavat toimenpiteet:</p>
               <ol>
                 <li>merkitsee tilauksen perutuksi,</li>
                 <li>mitätöi mahdolliset e-liput,</li>
-                <li>tekee maksunvälittäjälle pyynnön palauttaa maksu.</li>
+                <li>tekee maksunvälittäjälle maksunpalautuspyynnön.</li>
               </ol>
               <p>
                 Onnistuneesta maksunpalautuksesta lähetetään ilmoitus
@@ -847,7 +936,8 @@ const translations: Translations = {
           },
         },
         cancelWithoutRefunding: {
-          title: "Peruuta palauttamatta maksua",
+          title: "Peruuta ilman maksun palautusta",
+          label: "Peruuta",
           message: (
             <>
               <p>Tämä toiminto tekee seuraavat toimenpiteet:</p>
@@ -856,10 +946,10 @@ const translations: Translations = {
                 <li>mitätöi mahdolliset e-liput.</li>
               </ol>
               <p>
-                <strong>HUOM:</strong> Maksua ei palauteta automaattisesti. Jos
-                maksu tulee palauttaa kokonaan tai osittain, se on tehtävä
-                maksunvälittäjän hallintapaneelista tai{" "}
-                <em>Peruuta ja palauta maksu</em> -toiminnolla.
+                <strong>HUOM:</strong> Jos tilaus on maksettu, maksua ei
+                palauteta automaattisesti. Jos maksu tulee palauttaa kokonaan
+                tai osittain, se on tehtävä maksunvälittäjän hallintapaneelista
+                tai <em>Peruuta ja palauta maksu</em> -toiminnolla.
               </p>
               <p>
                 <strong>HUOM:</strong> Peruutuksesta ei lähetetä ilmoitusta
@@ -899,13 +989,14 @@ const translations: Translations = {
           },
         },
         refundManually: {
-          title: "Merkitse manuaalisesti palautetuksi",
+          title: "Merkitse palautetuksi",
           message: (
             <>
-              <p>
-                Haluatko varmasti merkitä tämän tilauksen manuaalisesti
-                palautetuksi?
-              </p>
+              <p>Tämä toiminto tekee seuraavat toimenpiteet:</p>
+              <ol>
+                <li>merkitsee tilauksen palautetuksi, ja</li>
+                <li>mitätöi mahdolliset e-liput.</li>
+              </ol>
               <p>
                 <strong>HUOM:</strong> Tämän jälkeen maksua ei enää yritetä
                 palauttaa automaattisesti. Olet vastuussa siitä, että palautus
@@ -1052,6 +1143,20 @@ const translations: Translations = {
         quotas: "Kiintiöt",
         reports: "Raportit",
         ticketControl: "Lipuntarkastus",
+      },
+      messages: {
+        orderCreated: (
+          <>
+            Tilaus luotiin onnistuneesti. Muista merkitä se maksetuksi jos
+            tarpeen tai välittää tilauslinkki asiakkaalle maksamista varten.
+          </>
+        ),
+        failedToCreateOrder: (
+          <>
+            Tilauksen luominen epäonnistui. Yritä myöhemmin uudelleen tai ota
+            yhteyttä tukeen.
+          </>
+        ),
       },
     },
   },

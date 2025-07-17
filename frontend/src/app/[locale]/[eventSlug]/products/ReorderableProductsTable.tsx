@@ -15,7 +15,7 @@ interface Props {
   };
   products: PreparedProduct[];
   messages: Translations["Tickets"]["Product"]["clientAttributes"];
-  onReorder: (productIds: string[]) => void;
+  onReorder: (productIds: number[]) => void;
 }
 
 export default function ReorderableProductsTable({

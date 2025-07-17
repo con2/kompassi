@@ -10,7 +10,7 @@ from ..product_limited import LimitedProductType
 
 class ReorderProductsInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
-    product_ids = graphene.List(graphene.NonNull(graphene.String), required=True)
+    product_ids = graphene.List(graphene.NonNull(graphene.Int), required=True)
 
 
 class ReorderProducts(graphene.Mutation):
@@ -26,7 +26,6 @@ class ReorderProducts(graphene.Mutation):
         info,
         input: ReorderProductsInput,
     ):
-        print("product_ids", input.product_ids)
         event = Event.objects.get(slug=input.event_slug)
         graphql_check_model(Product, event.scope, info, operation="update")
 

@@ -25,13 +25,15 @@ import {
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
-import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
 import ContactForm from "@/components/tickets/ContactForm";
 import ProductsTable from "@/components/tickets/ProductsTable";
+import TicketsAdminTabs from "@/components/tickets/TicketsAdminTabs";
+import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -116,7 +118,10 @@ interface Props {
     eventSlug: string;
     orderId: string;
   };
-  searchParams: string;
+  searchParams: {
+    success?: string;
+    error?: string;
+  };
 }
 
 export const revalidate = 0;
@@ -336,6 +341,20 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
 
   const actions = [
     {
+      slug: "viewOrderPage",
+      isShown: true,
+      getElement: () => (
+        <Link
+          className="btn btn-primary"
+          target="_blank"
+          rel="noopener noreferrer"
+          href={`/${event.slug}/orders/${order.id}`}
+        >
+          {t.actions.viewOrderPage}…
+        </Link>
+      ),
+    },
+    {
       slug: "viewTickets",
       isShown: !!order.eticketsLink,
       getElement: () => (
@@ -388,6 +407,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
         order.status === PaymentStatus.Paid,
       getElement: () => (
         <ModalButton
+          label={t.actions.cancelWithoutRefunding.label + "…"}
           title={t.actions.cancelWithoutRefunding.title}
           className="btn btn-danger"
           submitButtonVariant="danger"
@@ -410,6 +430,7 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
       getElement: () => (
         <ModalButton
           title={t.actions.cancelAndRefund.title}
+          label={t.actions.cancelAndRefund.label + "…"}
           className="btn btn-danger"
           submitButtonVariant="danger"
           messages={t.actions.cancelAndRefund.modalActions}
@@ -493,19 +514,12 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
   const visibleActions = actions.filter((action) => action.isShown);
 
   return (
-    <ViewContainer>
-      <ViewHeading>
-        {translations.Tickets.admin.title}
-        <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
-
-      <TicketAdminTabs
-        eventSlug={eventSlug}
-        active="orders"
-        translations={translations}
-        queryString={queryString}
-      />
-
+    <TicketsAdminView
+      translations={translations}
+      event={event}
+      searchParams={searchParams}
+      active="orders"
+    >
       <div className="d-flex">
         <h3 className="mt-3 mb-3">
           {t.singleTitle(order.formattedOrderNumber, paymentStatus)}
@@ -568,6 +582,6 @@ export default async function AdminOrderPage({ params, searchParams }: Props) {
           </AccordionBody>
         </AccordionItem>
       </Accordion>
-    </ViewContainer>
+    </TicketsAdminView>
   );
 }

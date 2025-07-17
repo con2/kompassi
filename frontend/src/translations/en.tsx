@@ -421,7 +421,6 @@ const translations = {
     returnToTicketsPage: "Return to the tickets page",
     Product: {
       listTitle: "Products",
-      forEvent: (eventName: string) => <>for {eventName}</>,
       noProducts: {
         title: "No products available",
         message: "There are no products available for purchase at the moment.",
@@ -547,7 +546,6 @@ const translations = {
     Quota: {
       listTitle: "Quotas",
       singleTitle: "Quota",
-      forEvent: (eventName: string) => <>for {eventName}</>,
       actions: {
         newQuota: {
           title: "New quota",
@@ -595,7 +593,6 @@ const translations = {
       listTitle: "Orders",
       singleTitle: (orderNumber: string, paymentStatus: string) =>
         `Order ${orderNumber} (${paymentStatus})`,
-      forEvent: (eventName: string) => <>for {eventName}</>,
       contactForm: {
         title: "Contact information",
       },
@@ -621,6 +618,22 @@ const translations = {
           <>Email confirmation failed. Please try again later.</>
         ),
       },
+      showingOrders: (numOrdersShown: number, numTotalOrders: number) => (
+        <>
+          Showing {numOrdersShown} order{numOrdersShown === 1 ? "" : "s"} (total{" "}
+          {numTotalOrders}).
+        </>
+      ),
+      noFiltersApplied: (
+        ForceLink: ({ children }: { children: ReactNode }) => JSX.Element,
+        numOrders: number,
+      ) => (
+        <>
+          Unfiltered list of {numOrders} order{numOrders === 1 ? "" : "s"}{" "}
+          hidden. To show results, please narrow down your search or{" "}
+          <ForceLink>use the Force</ForceLink>.
+        </>
+      ),
       attributes: {
         orderNumberAbbr: "Order #",
         orderNumberFull: "Order number",
@@ -663,6 +676,15 @@ const translations = {
               </>
             );
           },
+        },
+        language: {
+          title: "Language",
+          helpText: (
+            <>
+              Receipt and electronic tickets will be sent to the provided email
+              address in this language.
+            </>
+          ),
         },
         provider: {
           title: "Payment provider",
@@ -725,6 +747,7 @@ const translations = {
             },
           },
         },
+        products: "Products",
       },
       errors: {
         NOT_ENOUGH_TICKETS: {
@@ -759,8 +782,72 @@ const translations = {
       actions: {
         purchase: "Confirm order and proceed to payment",
         pay: "Pay for order",
-        viewTickets: "View e-tickets",
-        newOrder: "New order",
+        viewTickets: "E-tickets",
+        viewOrderPage: "Order page",
+        newOrder: {
+          label: "New order",
+          title: "Creating a new order via the admin interface",
+          message: (
+            <>
+              <p>
+                Here you can create a new order. Please read these instructions
+                carefully to avoid mistakes that may be visible to the customer
+                and cost money {":)"}
+              </p>
+              <p>
+                As an administrator, you can select products regardless of
+                whether they are publicly available at the moment. The{" "}
+                <em>Maximum amount per order</em> attribute of the product does
+                not apply.
+              </p>
+              <p>
+                However, you cannot exceed the quotas set for the products, ie.
+                there needs to be enough stock available for the products you
+                select. Orders done this way will consume quotas just like
+                orders done by customers via the public interface.
+              </p>
+              <p>
+                The order will be created in an unpaid state, if its price is
+                not zero. You can then either obtain a link to give to the
+                customer to pay for the order via the payment provider, or mark
+                the order as paid manually.
+              </p>
+              <p>
+                <strong>NOTE:</strong> Once the order has been paid, a receipt
+                and electronic tickets will be sent to the email address
+                associated with the order. Even if the tickets are not intended
+                to be delivered directly via email to the customer, please use
+                an actual, functional email address (e.g. your own) so as to
+                avoid jeopardizing the reputation of Kompassi as an email sender
+                with unnecessary bounces.
+              </p>
+              <p>
+                Orders created via this interface will be logged in the audit
+                log that may be used to investigate any wrongdoing.
+              </p>
+            </>
+          ),
+          actions: {
+            submit: "Create order",
+          },
+          errors: {
+            noProducts: (
+              ProductsLink: ({
+                children,
+              }: {
+                children: ReactNode;
+              }) => ReactNode,
+            ) => (
+              <>
+                <h4>No products</h4>
+                <p>
+                  There are no products for this event. Please create products
+                  in the <ProductsLink>products admin interface</ProductsLink>.
+                </p>
+              </>
+            ),
+          },
+        },
         search: "Search orders",
         ownerCancel: {
           title: "Cancel order",
@@ -806,7 +893,8 @@ const translations = {
           },
         },
         cancelAndRefund: {
-          title: "Cancel and refund",
+          title: "Cancel order and refund payment",
+          label: "Refund",
           message: (
             <>
               <p>Are you sure you want to</p>
@@ -858,7 +946,8 @@ const translations = {
           },
         },
         cancelWithoutRefunding: {
-          title: "Cancel without refunding",
+          title: "Cancel without refund",
+          label: "Cancel",
           message: (
             <>
               <p>Are you sure you want to</p>
@@ -1063,6 +1152,18 @@ const translations = {
         quotas: "Quotas",
         reports: "Reports",
         ticketControl: "Ticket control",
+      },
+      messages: {
+        orderCreated: (
+          <>
+            Order created successfully. Remember to mark it as paid if
+            necessary, or forward the order page link to the customer for
+            payment via payment provider.
+          </>
+        ),
+        failedToCreateOrder: (
+          <>Order creation failed. Please try again later or contact support.</>
+        ),
       },
     },
   },

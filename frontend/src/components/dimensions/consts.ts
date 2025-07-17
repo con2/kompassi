@@ -10,4 +10,5 @@ export const invalidDimensionSlugs = [
   "search",
   "error",
   "success",
+  "force",
 ];

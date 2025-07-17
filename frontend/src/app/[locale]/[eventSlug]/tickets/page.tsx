@@ -1,13 +1,12 @@
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
-import CardTitle from "react-bootstrap/CardTitle";
 import { createOrder } from "./actions";
 import ProductsForm from "./ProductsForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ContactForm from "@/components/tickets/ContactForm";
+import ProductCard from "@/components/tickets/ProductCard";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
-import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getProducts } from "@/services/tickets";
 import { getTranslations } from "@/translations";
@@ -50,7 +49,7 @@ export default async function TicketsPage({ params }: Props) {
       <ViewContainer>
         <ViewHeading>
           {producT.noProducts.title}
-          <ViewHeading.Sub>{producT.forEvent(event.name)}</ViewHeading.Sub>
+          <ViewHeading.Sub>{tickeT.forEvent(event.name)}</ViewHeading.Sub>
         </ViewHeading>
         <p>{producT.noProducts.message}</p>
       </ViewContainer>
@@ -66,49 +65,15 @@ export default async function TicketsPage({ params }: Props) {
 
       <ProductsForm
         onSubmit={createOrder.bind(null, locale, eventSlug)}
-        messages={{ noProductsSelectedError: t.errors.NO_PRODUCTS_SELECTED }}
+        messages={{ NO_PRODUCTS_SELECTED: t.errors.NO_PRODUCTS_SELECTED }}
       >
         {products.map((product) => {
-          const className = product.available ? "" : "text-muted";
           return (
-            <Card key={product.id} className="mb-3">
-              <CardBody className={`row ${className}`}>
-                <div className="col-md-8 m-md-0 mb-2">
-                  <CardTitle>{product.title}</CardTitle>
-                  {product.description}
-                </div>
-
-                <div className={`col-md m-md-0 mb-3 fs-4 text-md-end`}>
-                  {formatMoney(product.price)}
-                </div>
-
-                <div className={`col-md fs-4`}>
-                  <label
-                    htmlFor={`quantity-${product.id}`}
-                    className="visually-hidden"
-                  >
-                    {producT.clientAttributes.quantity.quantityForProduct}{" "}
-                    {product.title}
-                  </label>
-                  {product.available ? (
-                    <input
-                      type="number"
-                      className="form-control"
-                      id={`quantity-${product.id}`}
-                      name={`quantity-${product.id}`}
-                      min={0}
-                      defaultValue=""
-                      max={product.maxPerOrder}
-                      placeholder={
-                        producT.clientAttributes.quantity.placeholder + "…"
-                      }
-                    />
-                  ) : (
-                    producT.clientAttributes.soldOut
-                  )}
-                </div>
-              </CardBody>
-            </Card>
+            <ProductCard
+              key={product.id}
+              product={product}
+              messages={producT}
+            />
           );
         })}
 

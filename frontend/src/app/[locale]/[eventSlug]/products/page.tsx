@@ -12,7 +12,8 @@ import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
-import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
+import TicketsAdminTabs from "@/components/tickets/TicketsAdminTabs";
+import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {
   ViewHeadingActions,
@@ -20,6 +21,7 @@ import ViewHeading, {
 } from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import type { Translations } from "@/translations/en";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
@@ -100,9 +102,52 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
+// NOTE: result passed into client component
+// Uses markup-returning functions from i18n
+// Don't try to make a component out of this, you will regret it
+export function getAvailabilityMessage(
+  product: ProductListFragment,
+  t: Translations["Tickets"]["Product"],
+  locale: string,
+) {
+  let activityEmoji = product.isAvailable ? "✅" : "❌";
+  let message = "";
+
+  // TODO(#436) proper handling of event & session time zones
+  // Change untilTime(t: String): String to UntilTime(props: { children: ReactNode }): ReactNode
+  // and init as <….UntilTime><FormattedDateTime … /></UntilTime>?
+  if (product.isAvailable) {
+    if (product.availableUntil) {
+      message = t.serverAttributes.isAvailable.untilTime(
+        formatDateTime(product.availableUntil, locale),
+      );
+    } else {
+      message = t.serverAttributes.isAvailable.untilFurtherNotice;
+    }
+  } else {
+    if (
+      product.availableFrom &&
+      Temporal.Instant.compare(
+        Temporal.Instant.from(product.availableFrom),
+        Temporal.Now.instant(),
+      ) > 0
+    ) {
+      activityEmoji = "⏳";
+      message = t.serverAttributes.isAvailable.openingAt(
+        formatDateTime(product.availableFrom, locale),
+      );
+    } else {
+      message = t.serverAttributes.isAvailable.notAvailable;
+    }
+  }
+
+  return `${activityEmoji} ${message}`;
+}
+
 export default async function ProductsPage({ params }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
+  const tickeT = translations.Tickets;
   const t = translations.Tickets.Product;
   const session = await auth();
 
@@ -151,80 +196,36 @@ export default async function ProductsPage({ params }: Props) {
   ];
 
   // Pre-render some fields for client component
-  const preparedProducts: PreparedProduct[] = products.map((product) => {
-    let activityEmoji = product.isAvailable ? "✅" : "❌";
-    let message = "";
-
-    // TODO(#436) proper handling of event & session time zones
-    // Change untilTime(t: String): String to UntilTime(props: { children: ReactNode }): ReactNode
-    // and init as <….UntilTime><FormattedDateTime … /></UntilTime>?
-    if (product.isAvailable) {
-      if (product.availableUntil) {
-        message = t.serverAttributes.isAvailable.untilTime(
-          formatDateTime(product.availableUntil, locale),
-        );
-      } else {
-        message = t.serverAttributes.isAvailable.untilFurtherNotice;
-      }
-    } else {
-      if (
-        product.availableFrom &&
-        Temporal.Instant.compare(
-          Temporal.Instant.from(product.availableFrom),
-          Temporal.Now.instant(),
-        ) > 0
-      ) {
-        activityEmoji = "⏳";
-        message = t.serverAttributes.isAvailable.openingAt(
-          formatDateTime(product.availableFrom, locale),
-        );
-      } else {
-        message = t.serverAttributes.isAvailable.notAvailable;
-      }
-    }
-
-    const availabilityMessage = `${activityEmoji} ${message}`;
-
-    return {
-      ...product,
-      availabilityMessage,
-    };
-  });
+  const preparedProducts: PreparedProduct[] = products.map((product) => ({
+    ...product,
+    availabilityMessage: getAvailabilityMessage(product, t, locale),
+  }));
 
   return (
-    <ViewContainer>
-      <ViewHeadingActionsWrapper>
-        <ViewHeading>
-          {translations.Tickets.admin.title}
-          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-        </ViewHeading>
-        <ViewHeadingActions>
-          <ModalButton
-            title={t.actions.newProduct.title}
-            messages={t.actions.newProduct.modalActions}
-            action={createProduct.bind(null, locale, eventSlug)}
-            className="btn btn-outline-primary"
-          >
-            <SchemaForm
-              fields={newProductFields}
-              messages={translations.SchemaForm}
-            />
-          </ModalButton>
-        </ViewHeadingActions>
-      </ViewHeadingActionsWrapper>
-
-      <TicketAdminTabs
-        eventSlug={eventSlug}
-        active="products"
-        translations={translations}
-      />
-
+    <TicketsAdminView
+      translations={translations}
+      event={event}
+      active="products"
+      actions={
+        <ModalButton
+          title={t.actions.newProduct.title}
+          messages={t.actions.newProduct.modalActions}
+          action={createProduct.bind(null, locale, eventSlug)}
+          className="btn btn-outline-primary"
+        >
+          <SchemaForm
+            fields={newProductFields}
+            messages={translations.SchemaForm}
+          />
+        </ModalButton>
+      }
+    >
       <ReorderableProductsTable
         event={event}
         products={preparedProducts}
         messages={t.clientAttributes}
         onReorder={reorderProducts.bind(null, locale, eventSlug)}
       />
-    </ViewContainer>
+    </TicketsAdminView>
   );
 }

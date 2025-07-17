@@ -49,7 +49,7 @@ const reorderProductsMutation = graphql(`
 export async function reorderProducts(
   locale: string,
   eventSlug: string,
-  productIds: string[],
+  productIds: number[],
 ) {
   await getClient().mutate({
     mutation: reorderProductsMutation,

@@ -96,11 +96,15 @@ class TicketsV2EventMetaType(DjangoObjectType):
         info,
         filters: list[DimensionFilterInput] | None = None,
         search: str = "",
+        return_none: bool = False,
     ):
         """
         Returns orders made to this event.
         Admin oriented view; customers will access order information through `profile.tickets`.
         """
+        if return_none:
+            return Order.objects.none()
+
         return Order.filter_orders(
             Order.objects.filter(event=meta.event),
             filters=filters,
@@ -111,7 +115,22 @@ class TicketsV2EventMetaType(DjangoObjectType):
         graphene.List(graphene.NonNull(FullOrderType)),
         filters=graphene.List(DimensionFilterInput),
         search=graphene.String(),
+        return_none=graphene.Boolean(default_value=False),
         description=normalize_whitespace(resolve_orders.__doc__ or ""),
+    )
+
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_count_total_orders(meta: TicketsV2EventMeta, info):
+        """
+        Returns the total number of orders made to this event.
+        Admin oriented view; customers will access order information through `profile.tickets`.
+        """
+        return Order.objects.filter(event=meta.event).count()
+
+    count_total_orders = graphene.NonNull(
+        graphene.Int,
+        description=normalize_whitespace(resolve_count_total_orders.__doc__ or ""),
     )
 
     @graphql_query_cbac_required

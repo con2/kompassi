@@ -45,7 +45,7 @@ class ProductForm(django_forms.ModelForm):
 
 class UpdateProductInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
-    product_id = graphene.String(required=True)
+    product_id = graphene.Int(required=True)
     form_data = GenericScalar(required=True)
 
 

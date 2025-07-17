@@ -18,7 +18,7 @@ const updateProductMutation = graphql(`
 export async function updateProduct(
   locale: string,
   eventSlug: string,
-  productId: string,
+  productId: number,
   formData: FormData,
 ) {
   const result = await getClient().mutate({

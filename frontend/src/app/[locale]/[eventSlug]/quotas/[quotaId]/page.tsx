@@ -1,5 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
+import CardTitle from "react-bootstrap/CardTitle";
 import { deleteQuota, updateQuota } from "./actions";
 import { graphql } from "@/__generated__";
 import { QuotaProductFragment } from "@/__generated__/graphql";
@@ -11,12 +14,7 @@ import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
-import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
+import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import formatMoney from "@/helpers/formatMoney";
 import { getTranslations } from "@/translations";
 
@@ -137,39 +135,30 @@ export default async function AdminQuotaDetailPage({ params }: Props) {
   );
 
   return (
-    <ViewContainer>
-      <ViewHeadingActionsWrapper>
-        <ViewHeading>
-          {translations.Tickets.admin.title}
-          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-        </ViewHeading>
-        <ViewHeadingActions>
-          <ModalButton
-            title={t.actions.deleteQuota.title}
-            messages={t.actions.deleteQuota.modalActions}
-            action={
-              quota.canDelete
-                ? deleteQuota.bind(null, locale, eventSlug, params.quotaId)
-                : undefined
-            }
-            className="btn btn-outline-danger"
-          >
-            {quota.canDelete
-              ? t.actions.deleteQuota.confirmation(quota.name)
-              : t.actions.deleteQuota.cannotDelete}
-          </ModalButton>
-        </ViewHeadingActions>
-      </ViewHeadingActionsWrapper>
-
-      <TicketAdminTabs
-        eventSlug={eventSlug}
-        active="quotas"
-        translations={translations}
-      />
-
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5 className="card-title">{t.actions.editQuota}</h5>
+    <TicketsAdminView
+      translations={translations}
+      event={event}
+      active="quotas"
+      actions={
+        <ModalButton
+          title={t.actions.deleteQuota.title}
+          messages={t.actions.deleteQuota.modalActions}
+          action={
+            quota.canDelete
+              ? deleteQuota.bind(null, locale, eventSlug, params.quotaId)
+              : undefined
+          }
+          className="btn btn-outline-danger"
+        >
+          {quota.canDelete
+            ? t.actions.deleteQuota.confirmation(quota.name)
+            : t.actions.deleteQuota.cannotDelete}
+        </ModalButton>
+      }
+    >
+      <Card className="mb-4">
+        <CardBody>
+          <CardTitle>{t.actions.editQuota}</CardTitle>
           <form action={updateQuota.bind(null, locale, eventSlug, quota.id)}>
             <SchemaForm
               fields={fields}
@@ -179,12 +168,12 @@ export default async function AdminQuotaDetailPage({ params }: Props) {
             />
             <SubmitButton>{t.actions.saveQuota}</SubmitButton>
           </form>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
 
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5 className="card-title">{t.attributes.products.title}</h5>
+      <Card className="mb-4">
+        <CardBody>
+          <CardTitle>{t.attributes.products.title}</CardTitle>
           <p className="card-text">{t.attributes.products.helpText}</p>
           <DataTable columns={productColumns} rows={products}>
             <tfoot>
@@ -196,8 +185,8 @@ export default async function AdminQuotaDetailPage({ params }: Props) {
               </tr>
             </tfoot>
           </DataTable>
-        </div>
-      </div>
-    </ViewContainer>
+        </CardBody>
+      </Card>
+    </TicketsAdminView>
   );
 }

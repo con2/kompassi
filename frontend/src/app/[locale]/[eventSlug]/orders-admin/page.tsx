@@ -1,6 +1,8 @@
+import { filter } from "motion/react-client";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { Alert } from "react-bootstrap";
 import { graphql } from "@/__generated__";
 import {
   DimensionFilterFragment,
@@ -13,14 +15,17 @@ import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
+import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
-import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
+import TicketsAdminTabs from "@/components/tickets/TicketsAdminTabs";
+import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {
   ViewHeadingActions,
   ViewHeadingActionsWrapper,
 } from "@/components/ViewHeading";
+import { decodeBoolean } from "@/helpers/decodeBoolean";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -47,10 +52,11 @@ graphql(`
 `);
 
 const query = graphql(`
-  query OrderList(
+  query AdminOrderListWithOrders(
     $eventSlug: String!
     $filters: [DimensionFilterInput!]
-    $searchTerm: String
+    $search: String
+    $returnNone: Boolean = false
   ) {
     event(slug: $eventSlug) {
       name
@@ -61,9 +67,11 @@ const query = graphql(`
           ...ProductChoice
         }
 
-        orders(filters: $filters, search: $searchTerm) {
+        orders(filters: $filters, search: $search, returnNone: $returnNone) {
           ...OrderList
         }
+
+        countTotalOrders
       }
     }
   }
@@ -104,7 +112,7 @@ function getDimensions(
       isMultiValue: false,
       isListFilter: true,
       isKeyDimension: true,
-      values: products.map(({ id, title }) => ({ slug: id, title })),
+      values: products.map(({ id, title }) => ({ slug: "" + id, title })),
     },
   ];
 }
@@ -120,10 +128,9 @@ export async function generateMetadata({ params, searchParams }: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, filters },
+    variables: { eventSlug, returnNone: true },
   });
 
   if (!data.event?.tickets) {
@@ -154,11 +161,31 @@ export default async function OrdersPage({ params, searchParams }: Props) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
-  const filters = buildDimensionFilters(searchParams);
-  const searchTerm = searchParams.search ?? "";
+  // XXX there should be a better way to handle this
+  const {
+    success: _success,
+    error: _error,
+    search,
+    force = "false",
+    ...filterSearchParams
+  } = searchParams;
+  const filters = buildDimensionFilters(filterSearchParams);
+  const passedSearchParams = Object.fromEntries(
+    Object.entries({ ...filterSearchParams, search, force }).filter(
+      ([, value]) => !!value,
+    ),
+  );
+
+  const showResults =
+    decodeBoolean(force) || Object.entries(filters).length > 0 || !!search;
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, filters, searchTerm },
+    variables: {
+      eventSlug,
+      filters,
+      search,
+      returnNone: !showResults,
+    },
   });
 
   if (!data.event?.tickets) {
@@ -168,9 +195,10 @@ export default async function OrdersPage({ params, searchParams }: Props) {
   const event = data.event;
   const orders = data.event.tickets.orders;
   const products = data.event.tickets.products;
+  const countTotalOrders = data.event.tickets.countTotalOrders;
 
   const dimensions = getDimensions(translations.Tickets, products);
-  const queryString = new URLSearchParams(searchParams).toString();
+  const queryString = new URLSearchParams(passedSearchParams).toString();
 
   const columns: Column<OrderListFragment>[] = [
     {
@@ -222,37 +250,62 @@ export default async function OrdersPage({ params, searchParams }: Props) {
     },
   ];
 
+  function ForceLink({ children }: { children: React.ReactNode }) {
+    const strongWithTheForce = new URLSearchParams({
+      ...passedSearchParams,
+      force: "strong",
+    }).toString();
+    return (
+      <Link
+        href={`/${event.slug}/orders-admin?${strongWithTheForce}`}
+        className="link-subtle"
+        prefetch={false}
+      >
+        {children}
+      </Link>
+    );
+  }
+
   return (
-    <ViewContainer>
-      <ViewHeadingActionsWrapper>
-        <ViewHeading>
-          {translations.Tickets.admin.title}
-          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-        </ViewHeading>
-        <ViewHeadingActions>
-          <a href={`/${eventSlug}/tickets`} className="btn btn-outline-primary">
-            {t.actions.newOrder}…
-          </a>
-        </ViewHeadingActions>
-      </ViewHeadingActionsWrapper>
-
-      <TicketAdminTabs
-        eventSlug={eventSlug}
-        active="orders"
-        translations={translations}
-        queryString={queryString}
-      />
-
+    <TicketsAdminView
+      translations={translations}
+      event={event}
+      searchParams={searchParams}
+      active="orders"
+      actions={
+        <Link
+          href={`/${eventSlug}/orders-admin/new`}
+          className="btn btn-outline-primary"
+        >
+          {t.actions.newOrder.label}…
+        </Link>
+      }
+    >
       <DimensionFilters
         dimensions={dimensions}
-        className="mb-2"
         messages={{
           searchPlaceholder: t.actions.search,
         }}
         search
       />
 
-      <DataTable rows={orders} columns={columns} />
-    </ViewContainer>
+      {showResults ? (
+        <DataTable rows={orders} columns={columns}>
+          <tfoot>
+            <tr>
+              <td colSpan={columns.length}>
+                <strong>
+                  {t.showingOrders(orders.length, countTotalOrders)}
+                </strong>
+              </td>
+            </tr>
+          </tfoot>
+        </DataTable>
+      ) : (
+        <Alert variant="warning">
+          {t.noFiltersApplied(ForceLink, countTotalOrders)}
+        </Alert>
+      )}
+    </TicketsAdminView>
   );
 }

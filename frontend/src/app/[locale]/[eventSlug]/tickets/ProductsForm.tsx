@@ -6,7 +6,7 @@ import type { Translations } from "@/translations/en";
 
 interface Props {
   messages: {
-    noProductsSelectedError: Translations["Tickets"]["Order"]["errors"]["NO_PRODUCTS_SELECTED"];
+    NO_PRODUCTS_SELECTED: Translations["Tickets"]["Order"]["errors"]["NO_PRODUCTS_SELECTED"];
   };
   children?: ReactNode;
 
@@ -19,7 +19,7 @@ export default function ProductsForm({ messages, onSubmit, children }: Props) {
   function handleSubmit(formData: FormData) {
     if (getProductEntries(formData).length === 0) {
       // TODO some better way to show this (setCustomValidity?)
-      alert(messages.noProductsSelectedError.message);
+      alert(messages.NO_PRODUCTS_SELECTED.message);
       return;
     }
 

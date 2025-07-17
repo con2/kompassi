@@ -11,7 +11,7 @@ from uuid import UUID
 import pydantic
 from django.conf import settings
 from django.core.mail import EmailMessage
-from django.db import connection, models
+from django.db import connection, models, transaction
 from django.template.loader import render_to_string
 from lippukala.models import Code
 from lippukala.models import Order as LippukalaOrder
@@ -251,25 +251,32 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             return None
 
         eticket_text = ETICKET_TEXT[self.language].format(event_name=self.event.name)
-        lippukala_order, created = LippukalaOrder.objects.get_or_create(
-            reference_number=str(self.order_id),
-            defaults=dict(
-                event=self.event.slug,
-                address_text=f"{self.first_name} {self.last_name}\n{self.email}",
-                free_text=eticket_text,
-            ),
-        )
 
-        if not created:
-            return lippukala_order
-
-        Code.objects.bulk_create(
-            self.make_code(
-                lippukala_order,
-                product,
+        # There is a rare case where a huge order may receive duplicate ticket codes.
+        # In that case, let the IntegrityError rollback this transaction.
+        # Then we can (manually) create a new Receipt, which will then retry
+        # creating the LippukalaOrder and Codes.
+        # Without the transaction, the LippukalaOrder might be created without Codes.
+        with transaction.atomic():
+            lippukala_order, created = LippukalaOrder.objects.get_or_create(
+                reference_number=str(self.order_id),
+                defaults=dict(
+                    event=self.event.slug,
+                    address_text=f"{self.first_name} {self.last_name}\n{self.email}",
+                    free_text=eticket_text,
+                ),
             )
-            for product in self.etickets
-        )
+
+            if not created:
+                return lippukala_order
+
+            Code.objects.bulk_create(
+                self.make_code(
+                    lippukala_order,
+                    product,
+                )
+                for product in self.etickets
+            )
 
         return lippukala_order
 

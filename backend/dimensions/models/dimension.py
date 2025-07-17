@@ -38,8 +38,10 @@ INVALID_DIMENSION_SLUGS = [
     "past",
     "display",
     "search",
+    # Do or do not. There is no try.
     "error",
     "success",
+    "force",
 ]
 
 

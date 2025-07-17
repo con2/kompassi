@@ -11,7 +11,8 @@ import SignInRequired from "@/components/errors/SignInRequired";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
-import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
+import TicketsAdminTabs from "@/components/tickets/TicketsAdminTabs";
+import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading, {
   ViewHeadingActions,
@@ -166,34 +167,25 @@ export default async function QuotasPage({ params }: Props) {
   ];
 
   return (
-    <ViewContainer>
-      <ViewHeadingActionsWrapper>
-        <ViewHeading>
-          {translations.Tickets.admin.title}
-          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-        </ViewHeading>
-        <ViewHeadingActions>
-          <ModalButton
-            title={t.actions.newQuota.title}
-            messages={t.actions.newQuota.modalActions}
-            action={createQuota.bind(null, locale, eventSlug)}
-            className="btn btn-outline-primary"
-          >
-            <SchemaForm
-              fields={newQuotaFields}
-              messages={translations.SchemaForm}
-            />
-          </ModalButton>
-        </ViewHeadingActions>
-      </ViewHeadingActionsWrapper>
-
-      <TicketAdminTabs
-        eventSlug={eventSlug}
-        active="quotas"
-        translations={translations}
-      />
-
+    <TicketsAdminView
+      translations={translations}
+      event={event}
+      active="quotas"
+      actions={
+        <ModalButton
+          title={t.actions.newQuota.title}
+          messages={t.actions.newQuota.modalActions}
+          action={createQuota.bind(null, locale, eventSlug)}
+          className="btn btn-outline-primary"
+        >
+          <SchemaForm
+            fields={newQuotaFields}
+            messages={translations.SchemaForm}
+          />
+        </ModalButton>
+      }
+    >
       <DataTable rows={quotas} columns={columns} />
-    </ViewContainer>
+    </TicketsAdminView>
   );
 }

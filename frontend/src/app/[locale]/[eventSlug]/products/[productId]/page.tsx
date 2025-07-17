@@ -1,4 +1,8 @@
 import { notFound, redirect } from "next/navigation";
+import Card from "react-bootstrap/Card";
+import CardBody from "react-bootstrap/CardBody";
+import CardText from "react-bootstrap/CardText";
+import CardTitle from "react-bootstrap/CardTitle";
 import { deleteProduct, updateProduct } from "./actions";
 import { graphql } from "@/__generated__";
 import {
@@ -14,12 +18,7 @@ import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
-import TicketAdminTabs from "@/components/tickets/admin/TicketAdminTabs";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
+import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -164,8 +163,6 @@ export default async function AdminProductDetailPage({ params }: Props) {
     return void redirect(`/${eventSlug}/products/${product.supersededBy.id}`);
   }
 
-  const selectedQuotas = product.quotas.map((quota) => "" + quota.id);
-
   const baseFields: Field[] = [
     {
       slug: "title",
@@ -194,9 +191,6 @@ export default async function AdminProductDetailPage({ params }: Props) {
       type: "NumberField",
       ...t.clientAttributes.maxPerOrder,
     },
-  ];
-
-  const fields: Field[] = baseFields.concat([
     {
       slug: "quotas",
       type: "MultiSelect",
@@ -206,6 +200,9 @@ export default async function AdminProductDetailPage({ params }: Props) {
       })),
       ...t.clientAttributes.quotas,
     },
+  ];
+
+  const fields: Field[] = baseFields.concat([
     {
       slug: "scheduleHeading",
       title: t.clientAttributes.isAvailable,
@@ -223,9 +220,9 @@ export default async function AdminProductDetailPage({ params }: Props) {
     },
   ]);
 
-  const values = {
+  const currentVersion = {
     ...product,
-    quotas: selectedQuotas,
+    quotas: product.quotas.map((quota) => "" + quota.id),
   };
 
   const revisions: Revision[] = [
@@ -297,62 +294,51 @@ export default async function AdminProductDetailPage({ params }: Props) {
   ];
 
   return (
-    <ViewContainer>
-      <ViewHeadingActionsWrapper>
-        <ViewHeading>
-          {translations.Tickets.admin.title}
-          <ViewHeading.Sub>{t.forEvent(event.name)}</ViewHeading.Sub>
-        </ViewHeading>
-        <ViewHeadingActions>
-          <ModalButton
-            title={t.actions.deleteProduct.title}
-            messages={t.actions.deleteProduct.modalActions}
-            action={
-              product.canDelete
-                ? deleteProduct.bind(null, locale, eventSlug, productId)
-                : undefined
-            }
-            className="btn btn-outline-danger"
-          >
-            {product.canDelete
-              ? t.actions.deleteProduct.confirmation(product.title)
-              : t.actions.deleteProduct.cannotDelete}
-          </ModalButton>
-        </ViewHeadingActions>
-      </ViewHeadingActionsWrapper>
-
-      <TicketAdminTabs
-        eventSlug={eventSlug}
-        active="products"
-        translations={translations}
-      />
-
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5 className="card-title">{t.actions.editProduct}</h5>
+    <TicketsAdminView
+      translations={translations}
+      event={event}
+      active="products"
+      actions={
+        <ModalButton
+          title={t.actions.deleteProduct.title}
+          messages={t.actions.deleteProduct.modalActions}
+          action={
+            product.canDelete
+              ? deleteProduct.bind(null, locale, eventSlug, productId)
+              : undefined
+          }
+          className="btn btn-outline-danger"
+        >
+          {product.canDelete
+            ? t.actions.deleteProduct.confirmation(product.title)
+            : t.actions.deleteProduct.cannotDelete}
+        </ModalButton>
+      }
+    >
+      <Card className="mb-4">
+        <CardBody>
+          <CardTitle>{t.actions.editProduct}</CardTitle>
           <form
             action={updateProduct.bind(null, locale, eventSlug, product.id)}
           >
             <SchemaForm
               fields={fields}
-              values={values}
+              values={currentVersion}
               messages={translations.SchemaForm}
               headingLevel="h5"
             />
             <SubmitButton>{t.actions.saveProduct}</SubmitButton>
           </form>
-        </div>
-      </div>
+        </CardBody>
+      </Card>
 
-      <div className="card mb-4">
-        <div className="card-body">
-          <h5 className="card-title">{t.clientAttributes.revisions.title}</h5>
-          <p className="card-text">
-            {t.clientAttributes.revisions.description}
-          </p>
+      <Card className="mb-4">
+        <CardBody>
+          <CardTitle>{t.clientAttributes.revisions.title}</CardTitle>
+          <CardText>{t.clientAttributes.revisions.description}</CardText>
           <DataTable columns={revisionsColumns} rows={revisions} />
-        </div>
-      </div>
-    </ViewContainer>
+        </CardBody>
+      </Card>
+    </TicketsAdminView>
   );
 }

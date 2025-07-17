@@ -2,19 +2,25 @@ import Tabs, { Tab } from "@/components/ServerTabs";
 import { kompassiBaseUrl } from "@/config";
 import { Translations } from "@/translations/en";
 
-interface Props {
+export interface TicketsAdminTabsProps {
   eventSlug: string;
   active: "dashboard" | "orders" | "products" | "quotas" | "ticketControl";
   translations: Translations;
-  queryString?: string;
+  searchParams: Record<string, string>;
 }
 
-export default function TicketAdminTabs({
+export default function TicketsAdminTabs({
   eventSlug,
   translations,
   active,
-  queryString,
-}: Props) {
+  searchParams,
+}: TicketsAdminTabsProps) {
+  const {
+    success: _success,
+    error: _error,
+    ...passedSearchParams
+  } = searchParams;
+  const queryString = new URLSearchParams(passedSearchParams).toString();
   const t = translations.Tickets.admin;
   const tabs: Tab[] = [
     {
