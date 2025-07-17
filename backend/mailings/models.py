@@ -148,7 +148,7 @@ class Message(models.Model):
             self.sent_at = timezone.now()
             self.save()
 
-        message_send.delay(self.pk, [person.pk for person in recipients] if recipients is not None else None, resend)
+        message_send.delay(self.pk, [person.pk for person in recipients] if recipients is not None else None, resend)  # type: ignore
 
     def _send(self, recipients, resend):
         if recipients is None:
@@ -165,6 +165,9 @@ class Message(models.Model):
                 logger.warning("A Person doth multiple PersonMessages for a single Message have!")
                 person_message = PersonMessage.objects.filter(person=person, message=self).first()
                 created = False
+
+            if not person_message:
+                raise AssertionError("This won't happen (appease typechecker)")
 
             if created or resend:
                 person_message.actually_send()
@@ -230,15 +233,15 @@ class DedupMixin:
         the_hash = sha1(text.encode("UTF-8")).hexdigest()
 
         try:
-            return cls.objects.get_or_create(
+            return cls.objects.get_or_create(  # type: ignore
                 digest=the_hash,
                 defaults=dict(
                     text=text,
                 ),
             )
-        except cls.MultipleObjectsReturned:
+        except cls.MultipleObjectsReturned:  # type: ignore
             logger.warning("Multiple %s returned for hash %s", cls.__name__, the_hash)
-            return cls.objects.filter(digest=the_hash, text=text).first(), False
+            return cls.objects.filter(digest=the_hash, text=text).first(), False  # type: ignore
 
 
 class PersonMessageSubject(models.Model, DedupMixin):
