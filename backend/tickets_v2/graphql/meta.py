@@ -5,15 +5,18 @@ from graphene_django import DjangoObjectType
 from access.cbac import graphql_query_cbac_required
 from core.utils.text_utils import normalize_whitespace
 from dimensions.graphql.dimension_filter_input import DimensionFilterInput
+from graphql_api.language import DEFAULT_LANGUAGE
 
 from ..models.meta import TicketsV2EventMeta, TicketsV2ProfileMeta
 from ..models.order import Order
 from ..models.product import Product
 from ..models.quota import Quota
+from ..models.reports import get_reports
 from .order_full import FullOrderType
 from .order_profile import ProfileOrderType
 from .product_full import FullProductType
 from .quota_full import FullQuotaType
+from .report import ReportType
 
 
 class TicketsV2EventMetaType(DjangoObjectType):
@@ -146,6 +149,17 @@ class TicketsV2EventMetaType(DjangoObjectType):
         FullOrderType,
         id=graphene.String(required=True),
         description=normalize_whitespace(resolve_orders.__doc__ or ""),
+    )
+
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_reports(meta: TicketsV2EventMeta, info, lang: str = DEFAULT_LANGUAGE):
+        return get_reports(meta.event, lang)
+
+    reports = graphene.NonNull(
+        graphene.List(graphene.NonNull(ReportType)),
+        lang=graphene.String(default_value=DEFAULT_LANGUAGE),
+        description=normalize_whitespace(resolve_reports.__doc__ or ""),
     )
 
 

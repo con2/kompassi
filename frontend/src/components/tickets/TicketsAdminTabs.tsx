@@ -4,7 +4,13 @@ import { Translations } from "@/translations/en";
 
 export interface TicketsAdminTabsProps {
   eventSlug: string;
-  active: "dashboard" | "orders" | "products" | "quotas" | "ticketControl";
+  active:
+    | "dashboard"
+    | "orders"
+    | "products"
+    | "quotas"
+    | "reports"
+    | "ticketControl";
   translations: Translations;
   searchParams: Record<string, string>;
 }
@@ -37,6 +43,16 @@ export default function TicketsAdminTabs({
       slug: "orders",
       title: t.tabs.orders,
       href: `/${eventSlug}/orders-admin${queryString ? `?${queryString}` : ""}`,
+    },
+    {
+      slug: "quotas",
+      title: t.tabs.quotas,
+      href: `/${eventSlug}/quotas`,
+    },
+    {
+      slug: "reports",
+      title: t.tabs.reports,
+      href: `/${eventSlug}/tickets-reports`,
     },
     {
       slug: "ticketControl",
