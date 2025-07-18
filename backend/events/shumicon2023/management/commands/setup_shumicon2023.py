@@ -21,7 +21,7 @@ class Setup:
         self.setup_labour()
         self.setup_badges()
         self.setup_tickets()
-        self.setup_programme()
+        # self.setup_programme()
         self.setup_intra()
         # self.setup_access()
         # self.setup_kaatoilmo()

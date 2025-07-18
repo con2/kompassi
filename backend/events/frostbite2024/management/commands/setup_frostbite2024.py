@@ -23,7 +23,7 @@ class Setup:
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        self.setup_programme()
+        # self.setup_programme()
         self.setup_access()
         self.setup_badges()
         self.setup_intra()
@@ -420,7 +420,7 @@ class Setup:
         privilege = Privilege.objects.get(slug="desuslack")
         for group in [
             self.event.labour_event_meta.get_group("accepted"),
-            self.event.programme_event_meta.get_group("hosts"),
+            # self.event.programme_event_meta.get_group("hosts"),
         ]:
             GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 

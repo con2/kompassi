@@ -23,7 +23,7 @@ class Setup:
         self.test = test
         self.tz = tzlocal()
         self.setup_core()
-        self.setup_programme()
+        # self.setup_programme()
         self.setup_tickets()
 
     def setup_core(self):

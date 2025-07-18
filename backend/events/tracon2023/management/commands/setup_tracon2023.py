@@ -22,10 +22,10 @@ class Setup:
         self.setup_labour()
         self.setup_badges()
         self.setup_tickets()
-        self.setup_programme()
+        # self.setup_programme()
         self.setup_intra()
         self.setup_access()
-        self.setup_kaatoilmo()
+        # self.setup_kaatoilmo()
 
     def setup_core(self):
         from core.models import Event, Organization, Venue
@@ -587,7 +587,7 @@ class Setup:
         privilege = Privilege.objects.get(slug="tracon-slack")
         for group in [
             self.event.labour_event_meta.get_group("accepted"),
-            self.event.programme_event_meta.get_group("hosts"),
+            # self.event.programme_event_meta.get_group("hosts"),
         ]:
             GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 

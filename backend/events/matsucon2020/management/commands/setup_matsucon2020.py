@@ -26,7 +26,7 @@ class Setup:
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        self.setup_programme()
+        # self.setup_programme()
         self.setup_badges()
         # self.setup_tickets()
         self.setup_intra()

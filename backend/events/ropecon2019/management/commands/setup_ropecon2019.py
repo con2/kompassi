@@ -28,7 +28,7 @@ class Setup:
         self.setup_labour()
         self.setup_intra()
         self.setup_tickets()
-        self.setup_programme()
+        # self.setup_programme()
         self.setup_badges()
 
     def setup_core(self):
