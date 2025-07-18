@@ -322,15 +322,15 @@ def payment_attempts_by_payment_method(
     return report
 
 
-def ticket_exchange_progress(
+def ticket_exchange_by_product(
     event: Event,
     lang: str = DEFAULT_LANGUAGE,
 ):
     return Report.from_query(
-        slug="ticket_exchange_progress",
+        slug="ticket_exchange_by_product",
         title=dict(
-            en="Ticket exchange progress",
-            fi="Lippujen lunastuksen edistyminen",
+            en="Ticket exchange by product",
+            fi="Lippujen lunastus tuotteittain",
         ),
         event_slug=event.slug,
         columns=[
@@ -369,12 +369,12 @@ def ticket_exchange_progress(
     )
 
 
-class ArrivalsByHour(pydantic.BaseModel):
+class TicketExchangeByHour(pydantic.BaseModel):
     hour: datetime | None
     arrivals: int
     cum_arrivals: int
 
-    query: ClassVar[str] = (SQL_DIR / "report_arrivals_by_hour.sql").read_text()
+    query: ClassVar[str] = (SQL_DIR / "report_ticket_exchange_by_hour.sql").read_text()
 
     not_exchanged: ClassVar[dict[str, str]] = dict(
         fi="Ei lunastettu",
@@ -392,7 +392,7 @@ class ArrivalsByHour(pydantic.BaseModel):
         rows = cls.for_event(event)
         tz = event.timezone
         return Report(
-            slug="arrivals_by_hour",
+            slug="ticket_exchange_by_hour",
             title=dict(
                 en="Exchanged tickets by hour",
                 fi="Lippujen lunastus tunneittain",
@@ -439,8 +439,8 @@ class ArrivalsByHour(pydantic.BaseModel):
 REPORTS = dict(
     orders_by_payment_status=OrdersByPaymentStatus.report,
     payment_attempts_by_payment_method=payment_attempts_by_payment_method,
-    ticket_exchange_progress=ticket_exchange_progress,
-    arrivals_by_hour=ArrivalsByHour.report,
+    ticket_exchange_by_product=ticket_exchange_by_product,
+    ticket_exchange_by_hour=TicketExchangeByHour.report,
 )
 
 
