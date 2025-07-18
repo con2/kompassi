@@ -28,7 +28,7 @@ class ColumnType(PydanticObjectType):
 class ReportType(PydanticObjectType):
     class Meta:
         model = Report
-        exclude_fields = ("title",)
+        exclude_fields = ("title", "footer")
 
     title = graphene.NonNull(
         graphene.String,
@@ -38,3 +38,9 @@ class ReportType(PydanticObjectType):
 
     rows = graphene.NonNull(graphene.List(GenericScalar))
     columns = graphene.NonNull(graphene.List(graphene.NonNull(ColumnType)))
+
+    footer = graphene.NonNull(
+        graphene.String,
+        lang=graphene.String(required=False, default_value=DEFAULT_LANGUAGE),
+    )
+    resolve_footer = resolve_localized_field("footer")

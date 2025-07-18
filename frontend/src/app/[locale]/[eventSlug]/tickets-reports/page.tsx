@@ -8,7 +8,6 @@ import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
 import SignInRequired from "@/components/errors/SignInRequired";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
-import { decodeBoolean } from "@/helpers/decodeBoolean";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -16,6 +15,7 @@ graphql(`
   fragment Report on ReportType {
     slug
     title(lang: $locale)
+    footer(lang: $locale)
     columns {
       slug
       title(lang: $locale)
@@ -87,7 +87,7 @@ function formatCellValue(value: unknown, type: TypeOfColumn) {
     case TypeOfColumn.Int:
       return "" + value;
     case TypeOfColumn.Percentage:
-      return "" + ((value as number) * 100).toFixed(2) + "%";
+      return "" + ((value as number) * 100).toFixed(1) + "%";
   }
 }
 
@@ -106,6 +106,7 @@ function Report({ report }: { report: ReportFragment }) {
       <CardBody>
         <CardTitle>{report.title}</CardTitle>
         <DataTable columns={columns} rows={report.rows} />
+        {report.footer && <div className="mt-3 form-text">{report.footer}</div>}
       </CardBody>
     </Card>
   );

@@ -11,14 +11,24 @@ with payment_attempts_by_payment_method_and_status as (
     and type in (4, 5) -- PaymentStampType.PAYMENT_REDIRECT, .PAYMENT_CALLBACK
   group by
     correlation_id
+),
+payment_attempt_counts as (
+  select
+    payment_method,
+    sum(case when status = 3 then 1 else 0 end) as ok,     -- PaymentStatus.PAID
+    sum(case when status = 2 then 1 else 0 end) as failed, -- PaymentStatus.FAILED
+    count(*) as total
+  from
+    payment_attempts_by_payment_method_and_status
+  group by
+    payment_method
+  order by total desc
 )
 select
   payment_method,
-  sum(case when status = 3 then 1 else 0 end) as ok,     -- PaymentStatus.PAID
-  sum(case when status = 2 then 1 else 0 end) as failed, -- PaymentStatus.FAILED
-  count(*) as total
+  ok,
+  failed,
+  failed::float/total as failed_ratio,
+  total
 from
-  payment_attempts_by_payment_method_and_status
-group by
-  payment_method
-order by total desc
+  payment_attempt_counts

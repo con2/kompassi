@@ -26,16 +26,18 @@ class TypeOfColumn(Enum):
 
 class Column(pydantic.BaseModel):
     slug: str
-    title: dict[str, str]
+    title: dict[str, str] = pydantic.Field(default_factory=dict)
     type: TypeOfColumn
 
 
 class Report(pydantic.BaseModel):
     slug: str
-    title: dict[str, str]
+    title: dict[str, str] = pydantic.Field(default_factory=dict)
 
     columns: list[Column]
     rows: list[list[Value]]
+
+    footer: dict[str, str] = pydantic.Field(default_factory=dict)
 
     @classmethod
     def from_query(
@@ -44,6 +46,7 @@ class Report(pydantic.BaseModel):
         slug: str,
         title: dict[str, str],
         columns: list[Column],
+        total_row: bool = False,
         **kwargs,
     ) -> Report:
         query = (SQL_DIR / f"report_{slug}.sql").read_text()
@@ -86,20 +89,20 @@ class OrdersByPaymentStatus(pydantic.BaseModel):
     ]
     row_titles: ClassVar[dict[str, dict[str, str]]] = dict(
         new=dict(
-            fi="Uusi",
-            en="New",
+            fi="Maksamista ei ole yritetty",
+            en="Payment not attempted",
         ),
         fail=dict(
-            fi="Epäonnistunut",
-            en="Failed",
+            fi="Maksaminen epäonnistui",
+            en="Payment failed",
         ),
         ok_after_fail=dict(
-            fi="OK epäonnistuneiden yritysten jälkeen",
-            en="OK after failed attempts",
+            fi="Maksaminen onnistui epäonnistuneiden yritysten jälkeen",
+            en="Payment succeeded after failed attempts",
         ),
         ok_without_fail=dict(
-            fi="OK ilman epäonnistuneita yrityksiä",
-            en="OK without failed attempts",
+            fi="Maksaminen onnistui ensimmäisellä yrityksellä",
+            en="Payment succeeded on first attempt",
         ),
         total=dict(
             fi="Yhteensä",
@@ -135,6 +138,10 @@ class OrdersByPaymentStatus(pydantic.BaseModel):
             title=dict(
                 fi="Tilausten maksutilanne",
                 en="Orders by payment status",
+            ),
+            footer=dict(
+                fi="Tilaukset, jotka on sittemmin peruttu, on laskettu mukaan näihin tilastoihin.",
+                en="Orders that have been cancelled later are included in these statistics.",
             ),
             columns=[
                 Column(
@@ -208,6 +215,14 @@ def payment_attempts_by_payment_method(
                     fi="Epäonnistuneet",
                 ),
                 type=TypeOfColumn.INT,
+            ),
+            Column(
+                slug="failed_ratio",
+                title=dict(
+                    en="Failed ratio",
+                    fi="Epäonnistuneiden osuus",
+                ),
+                type=TypeOfColumn.PERCENTAGE,
             ),
             Column(
                 slug="total",
