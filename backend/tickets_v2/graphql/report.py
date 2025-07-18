@@ -36,8 +36,9 @@ class ReportType(PydanticObjectType):
     )
     resolve_title = resolve_localized_field("title")
 
-    rows = graphene.NonNull(graphene.List(GenericScalar))
+    rows = graphene.NonNull(graphene.List(graphene.List(GenericScalar)))
     columns = graphene.NonNull(graphene.List(graphene.NonNull(ColumnType)))
+    total_row = graphene.List(GenericScalar)
 
     footer = graphene.NonNull(
         graphene.String,

@@ -54,19 +54,8 @@ export default function ProgramAdminDetailTabs({
       slug: "preview",
       title: t.adminDetailTabs.preview,
       href: `/${eventSlug}/programs/${programSlug}`,
-      getTabHeader() {
-        // Program view has no admin controls, so treat it as external for now
-        return (
-          <a
-            className="nav-link"
-            href={this.href}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {this.title}…
-          </a>
-        );
-      },
+      // Program view has no admin controls, so treat it as external for now
+      external: true,
     },
   ];
 

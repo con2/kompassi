@@ -152,8 +152,8 @@ const documents = {
     "\n  mutation CreateSurvey($input: CreateSurveyInput!) {\n    createSurvey(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.CreateSurveyDocument,
     "\n  fragment Survey on FullSurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n    countResponses\n\n    languages {\n      language\n    }\n  }\n": types.SurveyFragmentDoc,
     "\n  query Surveys($eventSlug: String!, $locale: String) {\n    profile {\n      forms {\n        surveys(relation: ACCESSIBLE) {\n          event {\n            slug\n            name\n          }\n          slug\n          title(lang: $locale)\n        }\n      }\n    }\n\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys(includeInactive: true, app: FORMS) {\n          ...Survey\n        }\n      }\n    }\n  }\n": types.SurveysDocument,
-    "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n  }\n": types.ReportFragmentDoc,
-    "\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": types.TicketsAdminReportsPageDocument,
+    "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n": types.ReportFragmentDoc,
+    "\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": types.TicketsAdminReportsPageDocument,
     "\n  mutation GenerateKeyPair($password: String!) {\n    generateKeyPair(password: $password) {\n      id\n    }\n  }\n": types.GenerateKeyPairDocument,
     "\n  mutation RevokeKeyPair($id: String!) {\n    revokeKeyPair(id: $id) {\n      id\n    }\n  }\n": types.RevokeKeyPairDocument,
     "\n  fragment ProfileEncryptionKeys on KeyPairType {\n    id\n    createdAt\n  }\n": types.ProfileEncryptionKeysFragmentDoc,
@@ -761,11 +761,11 @@ export function graphql(source: "\n  query Surveys($eventSlug: String!, $locale:
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n  }\n"): (typeof documents)["\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n  }\n"];
+export function graphql(source: "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n"): (typeof documents)["\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

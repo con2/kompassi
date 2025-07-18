@@ -1143,6 +1143,7 @@ const translations: Translations = {
         quotas: "Kiintiöt",
         reports: "Raportit",
         ticketControl: "Lipuntarkastus",
+        webShop: "Lippukauppaan",
       },
       messages: {
         orderCreated: (
@@ -1222,7 +1223,7 @@ const translations: Translations = {
       addTheseToCalendar: "Lisää nämä ohjelmanumerot kalenteriin",
       addThisToCalendar: "Lisää tämä ohjelmanumero kalenteriin",
       signUpForThisProgram: "Ilmoittaudu tähän ohjelmanumeroon",
-      preview: "Ohjelmaoppaan esikatselu",
+      preview: "Ohjelmaopas",
       preferences: "Asetukset",
       create: {
         title: "Luo ohjelmanumero",

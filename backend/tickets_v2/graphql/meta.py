@@ -11,7 +11,7 @@ from ..models.meta import TicketsV2EventMeta, TicketsV2ProfileMeta
 from ..models.order import Order
 from ..models.product import Product
 from ..models.quota import Quota
-from ..models.reports import get_reports
+from ..models.reports import get_report, get_reports
 from .order_full import FullOrderType
 from .order_profile import ProfileOrderType
 from .product_full import FullProductType
@@ -154,12 +154,30 @@ class TicketsV2EventMetaType(DjangoObjectType):
     @graphql_query_cbac_required
     @staticmethod
     def resolve_reports(meta: TicketsV2EventMeta, info, lang: str = DEFAULT_LANGUAGE):
+        """
+        Get all the reports.
+        """
         return get_reports(meta.event, lang)
 
     reports = graphene.NonNull(
         graphene.List(graphene.NonNull(ReportType)),
         lang=graphene.String(default_value=DEFAULT_LANGUAGE),
         description=normalize_whitespace(resolve_reports.__doc__ or ""),
+    )
+
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_report(meta: TicketsV2EventMeta, info, slug: str, lang: str = DEFAULT_LANGUAGE):
+        """
+        Get single report. For available reports, see `getReports.slug`.
+        """
+        return get_report(slug, meta.event, lang)
+
+    report = graphene.Field(
+        ReportType,
+        slug=graphene.String(required=True),
+        lang=graphene.String(default_value=DEFAULT_LANGUAGE),
+        description=normalize_whitespace(resolve_report.__doc__ or ""),
     )
 
 

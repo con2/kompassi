@@ -27,3 +27,12 @@ $table-striped-bg-factor: 0.03;
 .accordion-header .accordion-button {
   font-weight: bold;
 }
+
+.material-symbol {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  fill: currentColor;
+  display: inline-block;
+  translate: 0 -0.1em;
+}

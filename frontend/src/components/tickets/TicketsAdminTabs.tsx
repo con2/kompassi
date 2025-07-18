@@ -42,12 +42,7 @@ export default function TicketsAdminTabs({
     {
       slug: "orders",
       title: t.tabs.orders,
-      href: `/${eventSlug}/orders-admin${queryString ? `?${queryString}` : ""}`,
-    },
-    {
-      slug: "quotas",
-      title: t.tabs.quotas,
-      href: `/${eventSlug}/quotas`,
+      href: `/${eventSlug}/orders-admin${queryString ? "?" + queryString : ""}`,
     },
     {
       slug: "reports",
@@ -55,21 +50,16 @@ export default function TicketsAdminTabs({
       href: `/${eventSlug}/tickets-reports`,
     },
     {
+      slug: "webShop",
+      title: t.tabs.webShop,
+      href: `/${eventSlug}/tickets`,
+      external: true,
+    },
+    {
       slug: "ticketControl",
       title: t.tabs.ticketControl,
       href: `${kompassiBaseUrl}/events/${eventSlug}/pos`,
-      getTabHeader() {
-        return (
-          <a
-            className="nav-link"
-            href={this.href}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {this.title}…
-          </a>
-        );
-      },
+      external: true,
     },
   ];
 

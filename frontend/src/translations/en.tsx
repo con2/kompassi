@@ -1152,6 +1152,7 @@ const translations = {
         quotas: "Quotas",
         reports: "Reports",
         ticketControl: "Ticket control",
+        webShop: "Web shop",
       },
       messages: {
         orderCreated: (
