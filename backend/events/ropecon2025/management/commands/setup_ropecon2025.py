@@ -22,6 +22,7 @@ from labour.models import (
     LabourEventMeta,
     PersonnelClass,
 )
+from program_v2.models.annotation import Annotation
 from program_v2.models.meta import ProgramV2EventMeta
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.optimized_server.models.enums import PaymentProvider
@@ -264,6 +265,9 @@ class Setup:
                 ),
             ),
         )
+
+        if not meta.annotations.exists():
+            meta.annotations.set(Annotation.objects.all())
 
         universe = self.event.involvement_universe
 

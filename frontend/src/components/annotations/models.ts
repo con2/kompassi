@@ -3,7 +3,7 @@ import { graphql } from "@/__generated__";
 import { AnnotationsFormAnnotationFragment } from "@/__generated__/graphql";
 
 graphql(`
-  fragment AnnotationsFormAnnotation on AnnotationSchemoidType {
+  fragment AnnotationsFormAnnotation on AnnotationType {
     slug
     type
     title(lang: $locale)
@@ -19,9 +19,11 @@ export function isValidCachedAnnotations(
   values: unknown,
 ): values is CachedAnnotations {
   if (typeof values !== "object" || values === null) {
+    console.error("Cached annotations must be an object");
     return false;
   }
   if (Array.isArray(values)) {
+    console.error("Cached annotations must not be an array");
     return false;
   }
 
@@ -30,17 +32,23 @@ export function isValidCachedAnnotations(
 
     const schemoid = schema.find((s) => s.slug === slug);
     if (!schemoid) {
+      console.error(`Annotation ${slug} not found in schema`);
       return false;
     }
     const { type } = schemoid;
 
     if (type === "BOOLEAN" && typeof value !== "boolean") {
+      console.error(
+        `Annotation ${slug} must be a boolean, got ${typeof value}`,
+      );
       return false;
     }
     if (type === "NUMBER" && typeof value !== "number") {
+      console.error(`Annotation ${slug} must be a number, got ${typeof value}`);
       return false;
     }
     if (type === "STRING" && typeof value !== "string") {
+      console.error(`Annotation ${slug} must be a string, got ${typeof value}`);
       return false;
     }
   }

@@ -1,55 +1,65 @@
-from enum import Enum, Flag
+from __future__ import annotations
+
 from typing import Any
 
 from pydantic import BaseModel, Field
 
+from core.utils.text_utils import normalize_whitespace
 
-class AnnotationDataType(Enum):
-    STRING = "string"
-    NUMBER = "number"
-    BOOLEAN = "boolean"
-
-
-class AnnotationAppliesTo(Flag):
-    """
-    Program annotations that apply to schedule items are also pushed down to schedule items.
-    """
-
-    NOTHING = 0
-    PROGRAM = 1 << 0
-    SCHEDULE_ITEM = 1 << 1
+from .annotation import Annotation
+from .enums import AnnotationDataType
 
 
-class AnnotationSchemoid(BaseModel):
+class AnnotationDTO(BaseModel, populate_by_name=True):
     slug: str
     title: dict[str, str]
     description: dict[str, str] = Field(default_factory=dict)
-    type: AnnotationDataType = AnnotationDataType.STRING
-    applies_to: AnnotationAppliesTo = AnnotationAppliesTo.PROGRAM
+    type: AnnotationDataType = Field(default=AnnotationDataType.STRING)
+
+    is_applicable_to_program_items: bool = True
+    is_applicable_to_schedule_items: bool = False
+
     is_public: bool = True
     is_shown_in_detail: bool = True
     is_computed: bool = False
 
-    def validate(self, value: Any):
-        """
-        Raises ValueError if the value is not valid for the annotation type.
-        """
-        if self.type == AnnotationDataType.STRING and not isinstance(value, str):
-            raise ValueError(f"Value for {self.slug} must be a string.")
-        if self.type == AnnotationDataType.NUMBER and not isinstance(value, (int, float)):
-            raise ValueError(f"Value for {self.slug} must be a number.")
-        if self.type == AnnotationDataType.BOOLEAN and not isinstance(value, bool):
-            raise ValueError(f"Value for {self.slug} must be a boolean.")
+    def to_django(self) -> Annotation:
+        return Annotation(
+            slug=self.slug,
+            title=self.title,
+            description=self.description,
+            type_slug=self.type.value,
+            is_applicable_to_program_items=self.is_applicable_to_program_items,
+            is_applicable_to_schedule_items=self.is_applicable_to_schedule_items,
+            is_public=self.is_public,
+            is_shown_in_detail=self.is_shown_in_detail,
+            is_computed=self.is_computed,
+        )
+
+    def save(self) -> Annotation:
+        return self.save_many([self])[0]
+
+    @classmethod
+    def save_many(cls, annotations: list[AnnotationDTO]) -> list[Annotation]:
+        update_fields = set(cls.model_fields.keys()) - {"slug", "type"}
+        update_fields |= {"type_slug"}
+
+        return Annotation.objects.bulk_create(
+            [dto.to_django() for dto in annotations],
+            unique_fields=["slug"],
+            update_fields=update_fields,
+            update_conflicts=True,
+        )
 
 
 class ProgramAnnotation(BaseModel):
-    annotation: AnnotationSchemoid
+    annotation: AnnotationDTO
     value: Any
 
 
 # Before putting these into database (and as long as v1 import is a thing), we define them here in the code
 ANNOTATIONS = [
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="ropecon:gameSlogan",
         title=dict(
             fi="Pelin slogan",
@@ -62,7 +72,7 @@ ANNOTATIONS = [
             sv="En kort mening som berättar för spelarna vad spelet erbjuder. Till exempel ”En traditionell D&D-dungeon crawl” eller ”Lovecraftsk skräck i Equestria”.",
         ),
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="konsti:rpgSystem",
         title=dict(
             fi="Pelisysteemi",
@@ -70,7 +80,7 @@ ANNOTATIONS = [
             sv="Rollspelssystem",
         ),
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="ropecon:otherAuthor",
         title=dict(
             fi="Pelin kirjoittaja (jos muu kuin pelinjohtaja)",
@@ -78,7 +88,7 @@ ANNOTATIONS = [
             sv="Författare (om annan än spelledaren)",
         ),
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="konsti:minAttendance",
         title=dict(
             fi="Minimiosallistujamäärä",
@@ -87,7 +97,7 @@ ANNOTATIONS = [
         ),
         type=AnnotationDataType.NUMBER,
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="konsti:maxAttendance",
         title=dict(
             fi="Maksimiosallistujamäärä",
@@ -96,7 +106,7 @@ ANNOTATIONS = [
         ),
         type=AnnotationDataType.NUMBER,
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="konsti:isPlaceholder",
         type=AnnotationDataType.BOOLEAN,
         is_shown_in_detail=False,
@@ -112,9 +122,15 @@ ANNOTATIONS = [
                 "programs of a type that often uses Konsti signup that "
                 "this program exists but does not require signup."
             ),
+            fi=(
+                "Jos tämä on valittuna ohjelmanumerolle, se näytetään Konstissa siten, "
+                "että siihen ei voi ilmoittautua. Tämä on hyödyllistä, jos haluat viestiä "
+                "vieraille, että tällainen ohjelma on olemassa, mutta siihen ei tarvitse ilmoittautua tai "
+                "ilmoittautuminen on hoidettu jotain muuta kautta."
+            ),
         ),
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="ropecon:numCharacters",
         title=dict(
             fi="Hahmojen määrä",
@@ -122,7 +138,7 @@ ANNOTATIONS = [
             sv="Antal karaktärer",
         ),
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="konsti:workshopFee",
         title=dict(
             fi="Työpajamaksu",
@@ -130,7 +146,7 @@ ANNOTATIONS = [
             sv="Workshopavgift",
         ),
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="ropecon:contentWarnings",
         title=dict(
             fi="Sisältövaroitukset",
@@ -138,7 +154,7 @@ ANNOTATIONS = [
             sv="Innehållsvarningar",
         ),
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="ropecon:accessibilityOther",
         title=dict(
             fi="Muut saavutettavuustiedot",
@@ -146,7 +162,7 @@ ANNOTATIONS = [
             sv="Övrig tillgänglighetsinformation",
         ),
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="ropecon:isRevolvingDoor",
         type=AnnotationDataType.BOOLEAN,
         title=dict(
@@ -159,7 +175,7 @@ ANNOTATIONS = [
             sv="Deltagare kan gå med i och lämna programmet medan det pågår.",
         ),
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="internal:formattedHosts",
         title=dict(
             fi="Ohjelmanpitäjät",
@@ -170,7 +186,7 @@ ANNOTATIONS = [
         is_shown_in_detail=False,
         is_computed=True,
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="internal:defaultFormattedHosts",
         title=dict(
             fi="Ohjelmanpitäjäin oletusesitystapa",
@@ -180,7 +196,7 @@ ANNOTATIONS = [
         is_shown_in_detail=False,
         is_computed=True,
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="internal:overrideFormattedHosts",
         title=dict(
             fi="Ylikirjoita ohjelmanpitäjäin esitystapa",
@@ -193,7 +209,7 @@ ANNOTATIONS = [
         is_public=False,
         is_shown_in_detail=False,
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="internal:links:signup",
         title=dict(
             fi="Ilmoittautumislinkki",
@@ -203,7 +219,7 @@ ANNOTATIONS = [
         is_public=False,
         is_shown_in_detail=False,
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="internal:links:tickets",
         title=dict(
             fi="Lipunmyyntilinkki",
@@ -213,7 +229,7 @@ ANNOTATIONS = [
         is_public=False,
         is_shown_in_detail=False,
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="internal:links:recording",
         title=dict(
             fi="Nauhoitelinkki",
@@ -223,61 +239,46 @@ ANNOTATIONS = [
         is_public=False,
         is_shown_in_detail=False,
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="internal:freeformLocation",
         title=dict(
             fi="Vapaamuotoinen sijainti",
             en="Freeform location",
         ),
-        applies_to=AnnotationAppliesTo.SCHEDULE_ITEM,
+        description=dict(
+            en=normalize_whitespace(
+                """
+                There are three ways to specify the location of a program item:
+                using a room dimension, using a freeform location (this annotation),
+                or a combination of both. When both are used, the freeform location
+                is appended to the room dimension value in parentheses, eg.
+                Main hall (Stage).
+                """
+            ),
+            fi=normalize_whitespace(
+                """
+                Ohjelmanumeron sijainti voidaan määrittää kolmella tavalla:
+                käyttäen salidimensiota, vapaamuotoista sijaintia tai näiden yhdistelmää.
+                Molempia käytettäessä vapaamuotoinen sijainti liitetään salidimension
+                arvon otsikkoon suluissa, esim. Pääsali (Lava).
+                """
+            ),
+        ),
+        is_applicable_to_program_items=False,
+        is_applicable_to_schedule_items=True,
         is_public=True,
         is_shown_in_detail=False,  # use location instead
     ),
-    AnnotationSchemoid(
+    AnnotationDTO(
         slug="internal:subtitle",
         title=dict(
             fi="Alaotsikko",
             en="Subtitle",
             sv="Underrubrik",
         ),
-        applies_to=AnnotationAppliesTo.SCHEDULE_ITEM,
+        is_applicable_to_program_items=False,
+        is_applicable_to_schedule_items=True,
         is_public=True,
         is_shown_in_detail=False,  # use title instead
     ),
 ]
-
-ANNOTATIONS_BY_SLUG = {annotation.slug: annotation for annotation in ANNOTATIONS}
-
-
-def validate_annotations(annotations: dict[str, Any]) -> None:
-    """
-    Validate the given annotations against the known annotations.
-
-    Args:
-        annotations: A dictionary of annotations to validate.
-        annotations_list: A list of AnnotationSchemoid objects to validate against.
-
-    Raises:
-        ValueError: If any annotation is not valid.
-    """
-    for slug, value in annotations.items():
-        schemoid = ANNOTATIONS_BY_SLUG.get(slug)
-        if schemoid is None:
-            raise ValueError(f"Unknown annotation slug: {slug}")
-        schemoid.validate(value)
-
-
-def extract_annotations(values: dict[str, Any], annotations=ANNOTATIONS) -> dict[str, Any]:
-    """
-    Extract known annotations from processed form data.
-
-    Args:
-        values: A dictionary of values to extract annotations from.
-        annotations: A list of AnnotationSchemoid objects to use for extraction.
-
-    Returns:
-        A dictionary containing the extracted annotations.
-    """
-    annotations = {ann.slug: value for ann in annotations if (value := values.get(ann.slug)) is not None}
-    validate_annotations(annotations)
-    return annotations

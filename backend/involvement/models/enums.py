@@ -9,6 +9,7 @@ class InvolvementApp(Enum):
     # NOTE: use dashes in app names (URL slugs)
     FORMS = "forms", "forms", "Surveys V2", "Kyselyt V2", "Enkät V2"
     PROGRAM = "program", "program_v2", "Program V2", "Ohjelma V2", "Program V2"
+    INVOLVEMENT = "involvement", "involvement", "Involvement", "Osallistuminen", "Deltagande"
 
     value: str
     app_name: str
@@ -49,6 +50,14 @@ class InvolvementType(Enum):
     PROGRAM_OFFER = "program-offer", InvolvementApp.PROGRAM, "Program offer", "Ohjelmatarjous", "Programerbjudande"
     PROGRAM_HOST = "program-host", InvolvementApp.PROGRAM, "Program host", "Ohjelmanumero", "Programvärd"
     SURVEY_RESPONSE = "survey-response", InvolvementApp.FORMS, "Survey response", "Kyselyvastaus", "Enkätsvar"
+
+    COMBINED_PERKS = (
+        "combined-perks",
+        InvolvementApp.INVOLVEMENT,
+        "Combined perks",
+        "Yhdistetyt edut",
+        "Kombinerade förmåner",
+    )
 
     value: str
     app: InvolvementApp

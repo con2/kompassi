@@ -30,7 +30,6 @@ from involvement.models.invitation import Invitation
 from involvement.models.involvement import Involvement
 
 from ..dimensions import get_scheduled_dimension_value
-from .annotations import extract_annotations
 
 if TYPE_CHECKING:
     from .meta import ProgramV2EventMeta
@@ -352,7 +351,9 @@ class Program(models.Model):
         if warnings:
             logger.warning("Program offer %s had form data warnings: %s", program_offer.id, warnings)
 
-        annotations = extract_annotations(values)
+        # TODO
+        # annotations = extract_annotations(values)
+        annotations = {}
 
         if not title:
             title = values.get("title", "")

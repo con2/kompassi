@@ -8,8 +8,8 @@ from forms.graphql.response_limited import LimitedResponseType
 from involvement.graphql.invitation_limited import LimitedInvitationType
 
 from ..models import Program
-from ..models.annotations import ANNOTATIONS
-from .annotations import ProgramAnnotationType
+from ..models.annotation_dto import ANNOTATIONS
+from .annotation import ProgramAnnotationType
 from .program_dimension_value import ProgramDimensionValueType
 from .program_host_limited import LimitedProgramHostType
 from .program_limited import LimitedProgramType

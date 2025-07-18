@@ -18,6 +18,7 @@ const translations: Translations = {
       "Jokin meni pieleen. JavaScript-konsolissa voi olla lisätietoja.",
     actions: "Toiminnot",
     standardActions: {
+      save: "Tallenna",
       open: "Avaa",
       edit: "Muokkaa",
       delete: "Poista",
@@ -1919,6 +1920,142 @@ const translations: Translations = {
     listTitle: "Dimensiot",
   },
 
+  Annotation: {
+    singleTitle: "Lisätieto",
+    listTitle: "Lisätiedot",
+    attributes: {
+      slug: {
+        title: "Tekninen nimi",
+        helpText: (
+          <>
+            Koostuu <em>nimiavaruudesta</em> ja <em>vartalosta</em>, jotka on
+            erotettu toisistaan kaksoispisteellä. Osat voivat sisältää pieniä ja
+            isoja kirjaimia sekä numeroita käyttäen <em>camelCase</em>
+            -nimentätapaa. Nimiavaruutta käytetään erottamaan lisätiedot eri
+            lähteistä, kuten tapahtuman järjestäjän, Kompassin tai muun
+            järjestelmän määrittelemät lisätiedot. Vartaloa käytetään erottamaan
+            lisätiedot toisistaan saman nimiavaruuden sisällä. Esimerkiksi{" "}
+            <code>konsti:maxParticipants</code> voisi olla lisätieto, joka
+            osoittaa ohjelmaelementin enimmäisosallistujamäärän, kun
+            ilmoittautuminen käsitellään Konstin kautta.
+          </>
+        ),
+      },
+      title: {
+        title: "Otsikko",
+      },
+      description: {
+        title: "Kuvaus",
+      },
+      isActive: {
+        title: "Käytä lisätietoa tässä tapahtumassa",
+        checkboxLabel: (annotationSlug: string) => (
+          <>
+            Käytä lisätietoa <code>{annotationSlug}</code> tässä tapahtumassa
+          </>
+        ),
+        description: (
+          <>
+            Jos tämä ei ole valittuna, tätä lisätietoa ei käytetä tässä
+            tapahtumassa. Jo asetetut lisätiedon arvot eivät katoa, mutta
+            lisätietoa ei näytetä ohjelmaoppaassa eikä sen arvoja kaivella
+            ohjelmalomakkeiden kentistä. Sisäisiä lisätietoja (
+            <code>internal:</code>) ei voi poistaa käytöstä, mutta voit
+            määritellä niillekin lomakekentät josta ne saavat arvonsa.
+          </>
+        ),
+      },
+      isShownInDetail: {
+        title: "Näytetään ohjelmaoppaassa",
+      },
+      isInternal: {
+        title: "Sisäinen",
+      },
+      programFormFields: {
+        title: "Lähdekentät ohjelmalomakkeilla",
+        description: (
+          <>
+            Niiden lomakekenttien tekniset nimet, joista tämän lisätiedon arvoja
+            yritetään kaivella. Yksi per rivi, järjestys merkitsee: lisätiedon
+            arvon määrittelee ensimmäinen näistä kentistä jolla on
+            oikeantyyppinen, epätyhjä arvo.
+          </>
+        ),
+      },
+      properties: {
+        title: "Ominaisuudet",
+      },
+      actions: {
+        title: "Toiminnot",
+      },
+    },
+    eventAnnotationsAdmin: {
+      title: "Tapahtumassa käytettävät lisätiedot",
+      message: (
+        <>
+          <p>
+            <strong>Lisätiedot</strong> ovat <em>avain-arvopareja</em> jotka
+            tarjoavat lisätietoa ohjelmanumeroista ja aikataulumerkinnöistä.
+            Niitä voidaan käyttää moniin tarkoituksiin: jotkin lisätiedot
+            näytetään ohjelmaoppaassa, jotkin tarjoavat lisätietoja Kompassille
+            ja muille järjestelmille.
+          </p>
+          <p>
+            Lisätietoja voidaan asettaa ohjelmanumeroille ja
+            aikataulumerkinnöille manuaalisesti tai ohjelmalomakkeiden kenttien
+            vastauksien perusteella.
+          </p>
+          <p>
+            Tässä näkymässä voit määritellä, mitä lisätietoja tässä tapahtumassa
+            käytetään sekä sen, minkä nimisistä ohjelmalomakkeiden kentistä
+            näitä tietoja haetaan.
+          </p>
+        </>
+      ),
+      tableFooter: (numAnnotations: number, numActiveAnnotations: number) => (
+        <>
+          {numAnnotations} lisätieto{numAnnotations === 1 ? "" : "a"} (
+          {numActiveAnnotations}{" "}
+          {numActiveAnnotations === 1 ? "aktiivinen" : "aktiivista"}).
+        </>
+      ),
+      actions: {
+        saveWithoutRefresh: {
+          title: "Tallenna päivittämättä arvoja",
+          description: (
+            <>
+              Tallentaa muutokset lisätiedon asetuksiin. Tälle lisätiedolle
+              aiemmin asetettuihin arvoihin ei kosketa, mutta tämän jälkeen
+              lähetettäviin ohjelmalomakkeiden vastauksiin sovelletaan tässä
+              määriteltyjä kenttiä.
+            </>
+          ),
+        },
+        saveAndRefresh: {
+          title: "Tallenna ja päivitä arvot",
+          description: (
+            <>
+              Tallentaa muutokset lisätietoon ja päivittää sen arvot kaikissa
+              ohjelmanumeroissa ja aikataulumerkinnöissä. Tälle lisätiedolle
+              aiemmin asetetut arvot ylikirjoitetaan.
+            </>
+          ),
+          confirmationMessage:
+            "Haluatko varmasti tallentaa ja päivittää tämän lisätiedon? Lisätiedon aiemmin asetetut arvot ylikirjoitetaan.",
+        },
+        createAnnotation: {
+          title: "Luo uusi lisätieto",
+          toBeImplemented: (
+            <>
+              Tapahtumakohtaisten lisätietojen hallinta toteutetaan myöhempiin
+              tapahtumiin.
+            </>
+          ),
+        },
+      },
+    },
+  },
+
   Survey: {
     listTitle: "Kyselyt",
     singleTitle: "Kysely",
@@ -2491,6 +2628,7 @@ const translations: Translations = {
       type: {
         title: "Tyyppi",
         choices: {
+          COMBINED_PERKS: "Yhdistetyt edut",
           PROGRAM_HOST: "Ohjelmanumero",
           PROGRAM_OFFER: "Ohjelmatarjous",
           SURVEY_RESPONSE: "Kyselyvastaus",

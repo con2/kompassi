@@ -25,6 +25,7 @@ const translations: Translations = {
       "Något gick fel. Det kan finnas ytterligare information i JavaScript-konsolen.",
     actions: "Funktioner",
     standardActions: {
+      save: "Spara",
       open: "Öppna",
       edit: "Ändra",
       delete: "Radera",
@@ -281,6 +282,8 @@ const translations: Translations = {
   Dimension: {
     listTitle: "Dimensioner",
   },
+
+  Annotation: UNTRANSLATED(en.Annotation),
 
   NewProgramView: {
     title: "Erbjud ett program",

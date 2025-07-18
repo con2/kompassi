@@ -1,6 +1,3 @@
-import { title } from "process";
-import { label } from "motion/react-client";
-import Email from "next-auth/providers/email";
 import { JSX, ReactNode } from "react";
 
 const translations = {
@@ -13,6 +10,7 @@ const translations = {
       "Something went wrong. There may be further information in the JavaScript console.",
     actions: "Actions",
     standardActions: {
+      save: "Save",
       open: "Open",
       edit: "Edit",
       delete: "Delete",
@@ -1913,6 +1911,137 @@ const translations = {
     listTitle: "Dimensions",
   },
 
+  Annotation: {
+    singleTitle: "Annotation",
+    listTitle: "Annotations",
+    eventAnnotationsAdmin: {
+      title: "Annotations used in this event",
+      message: (
+        <>
+          <p>
+            <strong>Annotations</strong> are <em>key-value pairs</em> that
+            provide additional information about program items and schedule
+            items. They can be used for various purposes: some annotations are
+            shown in the program guide, some provide additional information for
+            Kompassi and other systems.
+          </p>
+          <p>
+            Values of annotations can be set on program items and schedule items
+            based on answers to program form fields, or set manually by
+            administrators.
+          </p>
+          <p>
+            Here you can define which annotations are available in this event
+            and which program form fields are examined to determine values for
+            them.
+          </p>
+        </>
+      ),
+      tableFooter: (numAnnotations: number, numActiveAnnotations: number) => (
+        <>
+          {numAnnotations} annotation{numAnnotations === 1 ? "" : "s"} of which
+          {numActiveAnnotations} active.
+        </>
+      ),
+      actions: {
+        saveWithoutRefresh: {
+          title: "Save without refreshing",
+          description: (
+            <>
+              This will save changes to the properties of the annotation.
+              Existing values for this annotation will remain unaltered.
+              However, any further program form responses will be subject to the
+              program form fields defined for extraction here.
+            </>
+          ),
+        },
+        saveAndRefresh: {
+          title: "Save and refresh",
+          description: (
+            <>
+              This will save changes to the properties of the annotation and
+              refresh its values in all program items and schedule items. Any
+              previous values will be overwritten.
+            </>
+          ),
+          confirmationMessage:
+            "Are you sure you want to save and refresh this annotation? Existing values will be overwritten.",
+        },
+        createAnnotation: {
+          title: "Create annotation",
+          toBeImplemented: (
+            <>
+              Managing event specific annotations will be implemented in future
+              events.
+            </>
+          ),
+        },
+      },
+    },
+    attributes: {
+      slug: {
+        title: "Slug",
+        helpText: (
+          <>
+            Consists of a <em>namespace</em> and a <em>base name</em>, separated
+            by a colon (:). Both parts can contain lower and upper case letters
+            and numbers using <em>camelCase</em> naming. The namespace is used
+            to differentiate annotations from different sources, such as the
+            event organizer, program hosts or the system. The base name is used
+            to differentiate different annotations within the same namespace.
+            For example, <code>konsti:maxParticipants</code> could be an
+            annotation that indicates the maximum number of participants for a
+            program item when signup is handled via Konsti.
+          </>
+        ),
+      },
+      title: {
+        title: "Title",
+      },
+      description: {
+        title: "Description",
+      },
+      isActive: {
+        title: "Active",
+        checkboxLabel: (annotationSlug: string) => (
+          <>
+            Use annotation <code>{annotationSlug}</code> in this event
+          </>
+        ),
+        description: (
+          <>
+            If unchecked, this annotation will not be used for program in this
+            event. Annotations already set will not disappear, but they will not
+            be displayed in the program guide and their values will not be
+            extracted from program form fields.
+          </>
+        ),
+      },
+      isInternal: {
+        title: "Internal",
+      },
+      isShownInDetail: {
+        title: "Shown in program guide",
+      },
+      programFormFields: {
+        title: "Program form fields",
+        description: (
+          <>
+            Slugs of program form fields values for this annotation will be
+            extracted from. One per line, in order: the first field that has a
+            nonempty value of an appropriate type will be used.
+          </>
+        ),
+      },
+      properties: {
+        title: "Properties",
+      },
+      actions: {
+        title: "Actions",
+      },
+    },
+  },
+
   Survey: {
     listTitle: "Surveys",
     singleTitle: "Survey",
@@ -2542,6 +2671,7 @@ const translations = {
       type: {
         title: "Type",
         choices: {
+          COMBINED_PERKS: "Combined perks",
           PROGRAM_HOST: "Program item",
           PROGRAM_OFFER: "Program offer",
           SURVEY_RESPONSE: "Survey response",

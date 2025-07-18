@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from django.urls import reverse
 from graphene_django import DjangoObjectType
 
-from access.cbac import graphql_check_instance, graphql_check_model
+from access.cbac import graphql_check_instance, graphql_check_model, graphql_query_cbac_required
 from core.models import Event
 from core.utils.text_utils import normalize_whitespace
 from dimensions.filters import DimensionFilters
@@ -14,7 +14,6 @@ from dimensions.graphql.dimension_full import FullDimensionType
 from forms.graphql.response_full import FullResponseType
 from forms.graphql.response_profile import ProfileResponseType
 from forms.models.response import Response
-from graphql_api.language import DEFAULT_LANGUAGE
 
 from ..filters import ProgramFilters, ProgramUserRelation
 from ..models import (
@@ -22,9 +21,8 @@ from ..models import (
     ProgramV2EventMeta,
     ScheduleItem,
 )
-from ..models.annotations import ANNOTATIONS
 from ..models.meta import ProgramV2ProfileMeta
-from .annotations import AnnotationSchemoidType
+from .annotation import AnnotationType, EventAnnotationType
 from .program_full import FullProgramType
 from .program_host_full import FullProgramHostType, ProgramHost
 from .schedule_item_full import FullScheduleItemType
@@ -109,20 +107,40 @@ class ProgramV2EventMetaType(DjangoObjectType):
     def resolve_annotations(
         meta: ProgramV2EventMeta,
         info,
-        lang: str = DEFAULT_LANGUAGE,
         slug: list[str] | None = None,
+        public_only: bool = True,
     ):
-        annotations = ANNOTATIONS
+        queryset = meta.annotations.all()
+
+        if public_only:
+            queryset = queryset.filter(is_public=True)
 
         if slug is not None:
-            annotations = [annotation for annotation in annotations if annotation.slug in slug]
+            queryset = queryset.filter(slug__in=slug)
 
-        return annotations
+        return queryset
 
     annotations = graphene.NonNull(
-        graphene.List(graphene.NonNull(AnnotationSchemoidType)),
-        lang=graphene.String(),
+        graphene.List(graphene.NonNull(AnnotationType)),
         slug=graphene.List(graphene.NonNull(graphene.String)),
+        public_only=graphene.Boolean(default_value=True),
+    )
+
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_event_annotations(
+        meta: ProgramV2EventMeta,
+        info,
+    ):
+        """
+        Used for admin purposes changing settings of annotations in events.
+        Usually you should use `event.program.annotations` instead.
+        """
+        return meta.event_annotations.all().select_related("annotation").order_by("annotation__slug")
+
+    event_annotations = graphene.NonNull(
+        graphene.List(graphene.NonNull(EventAnnotationType)),
+        description=normalize_whitespace(resolve_event_annotations.__doc__ or ""),
     )
 
     @staticmethod

@@ -51,10 +51,11 @@ const getProgramAnnotationSchemaQuery = graphql(`
     $locale: String!
     $eventSlug: String!
     $annotationSlugs: [String!]
+    $publicOnly: Boolean = true
   ) {
     event(slug: $eventSlug) {
       program {
-        annotations(slug: $annotationSlugs) {
+        annotations(slug: $annotationSlugs, publicOnly: $publicOnly) {
           ...AnnotationsFormAnnotation
         }
       }
@@ -73,6 +74,7 @@ export async function getProgramAnnotationSchema(
       locale,
       eventSlug,
       annotationSlugs,
+      publicOnly: false,
     },
   });
 

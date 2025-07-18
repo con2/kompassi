@@ -8,7 +8,7 @@ from graphql_api.language import DEFAULT_LANGUAGE
 from graphql_api.utils import get_message_in_language, resolve_local_datetime_field
 
 from ..models import Program
-from ..models.annotations import ANNOTATIONS
+from ..models.annotation_dto import ANNOTATIONS
 from .program_links import ProgramLink, ProgramLinkType
 
 # imported for side effects (register object type used by django object type fields)

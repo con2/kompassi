@@ -95,7 +95,7 @@ const query = graphql(`
       }
 
       program {
-        annotations(slug: $annotationSlugs) {
+        annotations(slug: $annotationSlugs, publicOnly: false) {
           ...AnnotationsFormAnnotation
         }
         program(slug: $programSlug) {

@@ -9,6 +9,7 @@ export interface ProgramAdminTabsProps {
     | "programItems"
     | "programHosts"
     | "dimensions"
+    | "annotations"
     | "preferences";
   translations: Translations;
   searchParams?: Record<string, string>;
@@ -57,11 +58,17 @@ export default function ProgramAdminTabs({
       href: `/${eventSlug}/program-dimensions`,
     },
     {
+      slug: "annotations",
+      title: translations.Annotation.listTitle,
+      href: `/${eventSlug}/program-annotations`,
+    },
+    {
       slug: "preview",
       title: t.actions.preview,
       href: `/${eventSlug}/program${queryString}`,
       // Program view has no admin controls, so treat it as external for now
       external: true,
+      disabled: true,
     },
     {
       slug: "preferences",

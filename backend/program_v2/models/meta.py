@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
 from functools import cached_property
 from typing import Any
@@ -11,12 +13,15 @@ from core.models.event_meta_base import EventMetaBase
 from core.models.person import Person
 from dimensions.filters import DimensionFilters
 from dimensions.models.enums import DimensionApp
+from dimensions.models.scope import Scope
 from dimensions.models.universe import Universe
 from forms.models.enums import SurveyPurpose
 from forms.models.response import Response
 from forms.models.survey import Survey
 from involvement.models.involvement import Involvement
 from involvement.models.registry import Registry
+
+from .annotation import Annotation, EventAnnotation
 
 
 class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
@@ -48,12 +53,25 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         on_delete=models.SET_NULL,
     )
 
+    annotations: models.ManyToManyField[Annotation, EventAnnotation] = models.ManyToManyField(
+        Annotation,
+        through=EventAnnotation,
+        related_name="event_metas_using",
+        blank=True,
+        help_text="Annotations that are used for program in this event.",
+    )
+
     use_cbac = True
 
     event: models.ForeignKey[Event]
+    event_annotations: models.QuerySet[EventAnnotation]
 
     def __str__(self):
         return str(self.event)
+
+    @cached_property
+    def scope(self) -> Scope:
+        return self.event.scope
 
     @classmethod
     def get_or_create_dummy(cls):

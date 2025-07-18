@@ -72,6 +72,7 @@ class Command(BaseCommand):
             (("setup_api_v2",), dict()),
             (("setup_access",), dict()),
             (("setup_emprinten",), dict()),
+            (("setup_program_v2",), dict()),
         ]
 
         management_commands.extend(((command,), dict()) for command in organization_commands)

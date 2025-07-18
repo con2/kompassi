@@ -1,12 +1,12 @@
-from typing import Any
-
 import graphene
 from django.db import transaction
+from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from access.cbac import graphql_check_instance
-from program_v2.models.annotations import validate_annotations
+from core.models.event import Event
 
+from ...models.cached_annotations import validate_annotations
 from ...models.program import Program
 from ..program_full import FullProgramType
 
@@ -30,14 +30,22 @@ class UpdateProgramAnnotations(graphene.Mutation):
         info,
         input: UpdateProgramAnnotationsInput,
     ):
-        annotations: dict[str, Any] = input.annotations  # type: ignore
-        validate_annotations(annotations)
+        request: HttpRequest = info.context
+
+        event = Event.objects.get(slug=input.event_slug)
+        meta = event.program_v2_event_meta
+        if meta is None:
+            raise ValueError("Event does not have program metadata.")
+
+        print("input.annotations", input.annotations)
+        annotations = validate_annotations(input.annotations, meta.annotations.all())
+        print("annotations", annotations)
 
         program = Program.objects.get(event__slug=input.event_slug, slug=input.program_slug)
 
         graphql_check_instance(
             program,
-            info,
+            request,
             field="annotations",
             operation="update",
         )

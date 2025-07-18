@@ -11,6 +11,7 @@ import type { Translations } from "@/translations/en";
 interface SchemaFormInputProps {
   field: Field;
   idPrefix?: string;
+  namePrefix?: string;
   value?: any;
   readOnly?: boolean;
   messages: Translations["SchemaForm"];
@@ -33,17 +34,18 @@ function SchemaFormInput({
   value,
   messages,
   idPrefix = "",
+  namePrefix = "",
   readOnly: elementReadOnly = false,
 }: SchemaFormInputProps) {
-  const {
-    slug,
-    type,
-    required,
-    htmlType,
-    readOnly: fieldReadOnly = false,
-  } = field;
+  const { type, required, htmlType, readOnly: fieldReadOnly = false } = field;
   const readOnly = elementReadOnly || fieldReadOnly;
   const id = makeInputId(idPrefix, field);
+
+  let { slug } = field;
+  if (namePrefix) {
+    slug = `${namePrefix}.${slug}`;
+  }
+
   // TODO: make id unique in a deterministic fashion
   switch (type) {
     case "Spacer":

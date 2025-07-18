@@ -11,6 +11,8 @@ interface SchemaFormProps {
   headingLevel?: HeadingLevel;
   readOnly?: boolean;
   className?: string;
+  labelClassName?: string;
+  fieldMargin?: string;
 
   /// Display a lock icon next to read-only fields
   highlightReadOnlyFields?: boolean;
@@ -30,6 +32,8 @@ export function SchemaForm(props: SchemaFormProps) {
     headingLevel,
     readOnly,
     className = "",
+    fieldMargin,
+    labelClassName,
     idPrefix,
     namePrefix,
     highlightReadOnlyFields,
@@ -54,6 +58,8 @@ export function SchemaForm(props: SchemaFormProps) {
             headingLevel={headingLevel}
             idPrefix={idPrefix}
             highlightReadOnlyFields={highlightReadOnlyFields}
+            fieldMargin={fieldMargin}
+            labelClassName={labelClassName}
           >
             <SchemaFormInput
               field={field}
@@ -61,6 +67,7 @@ export function SchemaForm(props: SchemaFormProps) {
               messages={messages}
               readOnly={readOnly}
               idPrefix={idPrefix}
+              namePrefix={namePrefix}
             />
           </SchemaFormField>
         );
