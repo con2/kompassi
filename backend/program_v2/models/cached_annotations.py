@@ -9,7 +9,7 @@ AnnotationSlug = Annotated[
     str,
     pydantic.StringConstraints(
         min_length=1,
-        pattern=r"^[a-zA-Z0-9-_]+:[a-zA-Z0-9-_]+$",
+        pattern=r"^[a-zA-Z0-9-_:]+$",
     ),
 ]
 
@@ -33,3 +33,7 @@ def validate_annotations(
         schemoid.validate_value(value)
 
     return annotations_
+
+
+def compact_annotations(annotations: CachedAnnotations) -> CachedAnnotations:
+    return {k: v for (k, v) in annotations.items() if v not in (None, "", False)}

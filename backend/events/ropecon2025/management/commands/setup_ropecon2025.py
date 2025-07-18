@@ -266,6 +266,7 @@ class Setup:
             ),
         )
 
+        # TODO move this to backfill
         if not meta.annotations.exists():
             meta.annotations.set(Annotation.objects.all())
 

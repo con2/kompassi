@@ -252,7 +252,9 @@ export default async function ProgramAdminDetailPage({
               values={program}
               messages={translations.SchemaForm}
             />
-            <SubmitButton>{translations.Common.submit}</SubmitButton>
+            <SubmitButton>
+              {translations.Common.standardActions.save}
+            </SubmitButton>
           </form>
         </CardBody>
       </Card>

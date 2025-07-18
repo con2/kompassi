@@ -8,7 +8,6 @@ from forms.graphql.response_limited import LimitedResponseType
 from involvement.graphql.invitation_limited import LimitedInvitationType
 
 from ..models import Program
-from ..models.annotation_dto import ANNOTATIONS
 from .annotation import ProgramAnnotationType
 from .program_dimension_value import ProgramDimensionValueType
 from .program_host_limited import LimitedProgramHostType
@@ -24,30 +23,48 @@ class FullProgramType(LimitedProgramType):
     schedule_items = graphene.NonNull(graphene.List(graphene.NonNull(LimitedScheduleItemType)))
 
     @staticmethod
-    def resolve_annotations(program: Program, info, is_shown_in_detail: bool = False):
+    def resolve_annotations(
+        program: Program,
+        info,
+        is_shown_in_detail: bool = False,
+        public_only: bool = True,
+    ):
         """
         Program annotation values with schema attached to them. Only public annotations are returned.
 
         NOTE: If querying a lot of program items, consider using cachedAnnotations instead for SPEED.
         """
-        annotations = [annotation for annotation in ANNOTATIONS if annotation.is_public]
+        meta = program.event.program_v2_event_meta
+        if meta is None:
+            raise ValueError("Program without ProgramV2EventMeta, unpossible?!?")
+
+        if public_only:
+            schema = meta.annotations_with_fallback.filter(is_public=True)
+        else:
+            graphql_check_instance(
+                program,
+                info,
+                field="annotations",
+            )
+            schema = meta.annotations_with_fallback.all()
 
         if is_shown_in_detail:
-            annotations = [annotation for annotation in annotations if annotation.is_shown_in_detail]
+            schema = schema.filter(is_shown_in_detail=True)
 
         return [
             ProgramAnnotationType(
                 annotation=annotation,  # type: ignore
                 value=value,  # type: ignore
             )
-            for annotation in annotations
-            if (value := program.annotations.get(annotation.slug, None))
+            for annotation in schema
+            if (value := program.annotations.get(annotation.slug, None)) not in (None, "")
         ]
 
     annotations = graphene.NonNull(
         graphene.List(graphene.NonNull(ProgramAnnotationType)),
         description=normalize_whitespace(resolve_annotations.__doc__ or ""),
         is_shown_in_detail=graphene.Boolean(description="Only return annotations that are shown in the detail view."),
+        public_only=graphene.Boolean(default_value=True),
     )
 
     @staticmethod

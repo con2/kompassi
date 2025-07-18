@@ -1,8 +1,5 @@
 import processFormData from "../forms/processFormData";
-import {
-  getFormFieldForAnnotationSchemoid,
-  unmangleAnnotationSlug,
-} from "./models";
+import { getFormFieldForAnnotation, unmangleAnnotationSlug } from "./models";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { defaultLanguage } from "@/translations";
@@ -105,7 +102,7 @@ export async function updateProgramAnnotationsFromFormData(
     annotationSlugs,
   );
   const schemaMap = Object.fromEntries(schema.map((s) => [s.slug, s]));
-  const fields = schema.map(getFormFieldForAnnotationSchemoid);
+  const fields = schema.map(getFormFieldForAnnotation);
   const mangledValues = processFormData(fields, formData);
   const values = Object.fromEntries(
     Object.entries(mangledValues)

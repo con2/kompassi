@@ -29,6 +29,7 @@ graphql(`
       slug
       title(lang: $locale)
       description(lang: $locale)
+      type
       isComputed
       isPublic
       isShownInDetail

@@ -6,7 +6,7 @@ from graphene.types.generic import GenericScalar
 from access.cbac import graphql_check_instance
 from core.models.event import Event
 
-from ...models.cached_annotations import validate_annotations
+from ...models.cached_annotations import compact_annotations, validate_annotations
 from ...models.program import Program
 from ..program_full import FullProgramType
 
@@ -37,10 +37,8 @@ class UpdateProgramAnnotations(graphene.Mutation):
         if meta is None:
             raise ValueError("Event does not have program metadata.")
 
-        print("input.annotations", input.annotations)
-        annotations = validate_annotations(input.annotations, meta.annotations.all())
-        print("annotations", annotations)
-
+        schema = meta.annotations_with_fallback.filter(is_computed=False)
+        annotations = validate_annotations(input.annotations, schema)
         program = Program.objects.get(event__slug=input.event_slug, slug=input.program_slug)
 
         graphql_check_instance(
@@ -50,7 +48,7 @@ class UpdateProgramAnnotations(graphene.Mutation):
             operation="update",
         )
 
-        program.annotations = dict(program.annotations, **input.annotations)  # type: ignore
+        program.annotations = compact_annotations(dict(program.annotations, **annotations))  # type: ignore
         program.refresh_annotations()
 
         return UpdateProgramAnnotations(program=program)  # type: ignore

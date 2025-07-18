@@ -69,6 +69,17 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     def __str__(self):
         return str(self.event)
 
+    @property
+    def annotations_with_fallback(self) -> models.QuerySet[Annotation]:
+        if self.event_annotations.exists():
+            queryset = self.annotations.all()
+        else:
+            # Legacy event without event annotations
+            # TODO Backfill them and remove this
+            queryset = Annotation.objects.all()
+
+        return queryset.order_by("slug")
+
     @cached_property
     def scope(self) -> Scope:
         return self.event.scope

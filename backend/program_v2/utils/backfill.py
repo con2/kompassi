@@ -3,11 +3,13 @@ import logging
 from django.db import transaction
 
 from core.models.event import Event
+from core.utils.log_utils import log_get_or_create
 from dimensions.models.enums import DimensionApp
 from forms.models.enums import Anonymity
 from forms.models.survey import Survey
 from involvement.dimensions import setup_involvement_dimensions
 from involvement.models.involvement import Involvement
+from involvement.models.registry import Registry
 
 from ..dimensions import get_program_universe, setup_program_dimensions
 from ..models.program import Program
@@ -41,7 +43,15 @@ def backfill(
         raise ValueError("Event has no program_v2_event_meta")
 
     if not meta.default_registry:
-        raise ValueError("Event has no default registry for program_v2")
+        meta.default_registry, created = Registry.objects.get_or_create(
+            scope=event.organization.scope,
+            slug="volunteers",
+            defaults=dict(
+                title_fi=f"{event.organization.name} -vapaaehtoisrekisteri",
+                title_en=f"Volunteers of {event.organization.name}",
+            ),
+        )
+        log_get_or_create(logger, meta.default_registry, created)
 
     with transaction.atomic():
         program_universe = get_program_universe(event)

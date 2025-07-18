@@ -34,6 +34,7 @@ from labour.models.labour_event_meta import LabourEventMeta
 from labour.models.personnel_class import PersonnelClass
 from labour.models.qualifications import Qualification
 from labour.models.survey import Survey as LabourSurvey
+from program_v2.models.annotation import Annotation
 from program_v2.models.meta import ProgramV2EventMeta
 from tickets_v2.models.meta import TicketsV2EventMeta
 from tickets_v2.models.product import Product
@@ -322,7 +323,7 @@ class Setup:
 
     def setup_program_v2(self):
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
-        ProgramV2EventMeta.objects.update_or_create(
+        meta, _ = ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
@@ -333,6 +334,10 @@ class Setup:
                 ),
             ),
         )
+
+        # TODO move this to backfill
+        if not meta.annotations.exists():
+            meta.annotations.set(Annotation.objects.all())
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack

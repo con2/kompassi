@@ -68,7 +68,6 @@ export default function ProgramAdminTabs({
       href: `/${eventSlug}/program${queryString}`,
       // Program view has no admin controls, so treat it as external for now
       external: true,
-      disabled: true,
     },
     {
       slug: "preferences",

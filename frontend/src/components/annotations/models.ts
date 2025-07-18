@@ -1,6 +1,9 @@
 import { Field } from "../forms/models";
 import { graphql } from "@/__generated__";
-import { AnnotationsFormAnnotationFragment } from "@/__generated__/graphql";
+import {
+  AnnotationDataType,
+  AnnotationsFormAnnotationFragment,
+} from "@/__generated__/graphql";
 
 graphql(`
   fragment AnnotationsFormAnnotation on AnnotationType {
@@ -73,16 +76,26 @@ export function unmangleAnnotationSlug(slug: string) {
   return slug.replace("__", ":");
 }
 
-export function getFormFieldForAnnotationSchemoid(
+export function getFormFieldForAnnotation(
   annotation: AnnotationsFormAnnotationFragment,
 ): Field {
   const { slug, title, description, isComputed } = annotation;
-  const type =
-    annotation.type === "BOOLEAN"
-      ? "SingleCheckbox"
-      : annotation.type === "NUMBER"
-        ? "NumberField"
-        : "SingleLineText";
+  let type: "SingleCheckbox" | "NumberField" | "SingleLineText" =
+    "SingleLineText";
+  switch (annotation.type) {
+    case AnnotationDataType.Boolean:
+      type = "SingleCheckbox";
+      break;
+    case AnnotationDataType.Number:
+      type = "NumberField";
+      break;
+    case AnnotationDataType.String:
+      type = "SingleLineText";
+      break;
+    default:
+      const exhaustiveCheck: never = annotation.type;
+      throw new Error(`Unknown annotation type: ${exhaustiveCheck}`);
+  }
 
   return {
     slug: mangleAnnotationSlug(slug),

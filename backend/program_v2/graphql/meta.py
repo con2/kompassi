@@ -110,7 +110,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         slug: list[str] | None = None,
         public_only: bool = True,
     ):
-        queryset = meta.annotations.all()
+        queryset = meta.annotations_with_fallback.all()
 
         if public_only:
             queryset = queryset.filter(is_public=True)

@@ -8,7 +8,6 @@ from graphql_api.language import DEFAULT_LANGUAGE
 from graphql_api.utils import get_message_in_language, resolve_local_datetime_field
 
 from ..models import Program
-from ..models.annotation_dto import ANNOTATIONS
 from .program_links import ProgramLink, ProgramLinkType
 
 # imported for side effects (register object type used by django object type fields)
@@ -94,26 +93,28 @@ class LimitedProgramType(DjangoObjectType):
         """
         A mapping of program annotation slug to annotation value. Only public annotations are returned.
         """
+        meta = program.event.program_v2_event_meta
+        if meta is None:
+            raise ValueError("Program without ProgramV2EventMeta, unpossible?!?")
+
         if public_only:
-            annotations = [annotation for annotation in ANNOTATIONS if annotation.is_public]
+            schema = meta.annotations_with_fallback.filter(is_public=True)
         else:
             graphql_check_instance(
                 program,
                 info,
                 field="annotations",
             )
-            annotations = ANNOTATIONS
+            schema = meta.annotations_with_fallback.all()
 
         if is_shown_in_detail:
-            annotations = [annotation for annotation in annotations if annotation.is_shown_in_detail]
-
-        if slug:
-            annotations = [annotation for annotation in annotations if annotation.slug in slug]
+            schema = schema.filter(is_shown_in_detail=True)
 
         return {
             annotation.slug: value
-            for annotation in annotations
+            for annotation in schema
             if (value := program.annotations.get(annotation.slug, None)) not in (None, "")
+            and (slug is None or annotation.slug in slug)
         }
 
     cached_annotations = graphene.NonNull(

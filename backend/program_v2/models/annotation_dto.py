@@ -11,6 +11,14 @@ from .enums import AnnotationDataType
 
 
 class AnnotationDTO(BaseModel, populate_by_name=True):
+    """
+    Legacy model from when Annotation schemas used to live in the code only.
+    Now they have been migrated to the database, and this model is only used to
+    bootstrap them.
+
+    For everything else, use the `Annotation` model.
+    """
+
     slug: str
     title: dict[str, str]
     description: dict[str, str] = Field(default_factory=dict)
@@ -57,7 +65,6 @@ class ProgramAnnotation(BaseModel):
     value: Any
 
 
-# Before putting these into database (and as long as v1 import is a thing), we define them here in the code
 ANNOTATIONS = [
     AnnotationDTO(
         slug="ropecon:gameSlogan",

@@ -1,7 +1,7 @@
 import { SchemaForm } from "../forms/SchemaForm";
 import {
   CachedAnnotations,
-  getFormFieldForAnnotationSchemoid,
+  getFormFieldForAnnotation,
   mangleAnnotationSlug,
 } from "./models";
 import { AnnotationsFormAnnotationFragment } from "@/__generated__/graphql";
@@ -14,7 +14,7 @@ interface Props {
 }
 
 export default function AnnotationsForm({ schema, values, messages }: Props) {
-  const fields = schema.map(getFormFieldForAnnotationSchemoid);
+  const fields = schema.map(getFormFieldForAnnotation);
   const mangledValues = Object.fromEntries(
     schema.map((annotation) => [
       mangleAnnotationSlug(annotation.slug),

@@ -494,7 +494,9 @@ export default async function ProgramAdminDetailPage({
               values={program.cachedAnnotations}
               messages={translations.SchemaForm}
             />
-            <SubmitButton>{translations.Common.submit}</SubmitButton>
+            <SubmitButton>
+              {translations.Common.standardActions.save}
+            </SubmitButton>
           </form>
         </CardBody>
       </Card>
