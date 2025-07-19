@@ -113,12 +113,13 @@ services:
       - shared_preload_libraries=pg_stat_statements
     # uncomment if you need to access postgres from host
     # note: you can use `docker compose exec postgres psql -U kompassi` to access psql cli
-    # ports:
-    #   - 5433:5432
+    ports:
+      - 5433:5432
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-    # tmpfs:
-    #   - /var/lib/postgresql/data
+      # - postgres-data:/var/lib/postgresql/data
+      - ./kompassi-20250717.sql:/docker-entrypoint-initdb.d/00-schema.sql
+    tmpfs:
+      - /var/lib/postgresql/data
     environment:
       POSTGRES_USER: kompassi
       POSTGRES_PASSWORD: secret
