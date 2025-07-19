@@ -43,7 +43,6 @@ class PutEventAnnotation(graphene.Mutation):
 
     event_annotation = graphene.Field(EventAnnotationType)
 
-    @transaction.atomic
     @staticmethod
     def mutate(
         _root,
@@ -76,22 +75,26 @@ class PutEventAnnotation(graphene.Mutation):
         else:
             action = PutEventAnnotationAction.SAVE_WITHOUT_REFRESH
 
-        event_annotation, _ = EventAnnotation.objects.update_or_create(
-            meta=meta,
-            annotation=annotation,
-            defaults=dict(
-                is_active=input.is_active,
-                program_form_fields=program_form_fields,
-                action=action,
-            ),
-        )
+        with transaction.atomic():
+            event_annotation, _ = EventAnnotation.objects.select_for_update(
+                of=("self",),
+                no_key=True,
+            ).update_or_create(
+                meta=meta,
+                annotation=annotation,
+                defaults=dict(
+                    is_active=input.is_active,
+                    program_form_fields=program_form_fields,
+                    action=action,
+                ),
+            )
 
         match action:
             case PutEventAnnotationAction.SAVE_WITHOUT_REFRESH:
                 pass
             case PutEventAnnotationAction.SAVE_AND_REFRESH:
                 if event_annotation.is_active:
-                    event_annotation_refresh_values.delay(event.id, annotation.slug)  # type: ignore
+                    event_annotation_refresh_values.delay(event.id, annotation.id)  # type: ignore
             case _:
                 raise NotImplementedError(action)
 

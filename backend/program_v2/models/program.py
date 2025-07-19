@@ -28,7 +28,7 @@ from graphql_api.language import DEFAULT_LANGUAGE
 from involvement.models.enums import InvolvementType
 from involvement.models.invitation import Invitation
 from involvement.models.involvement import Involvement
-from program_v2.models.cached_annotations import CachedAnnotations, validate_annotations
+from program_v2.models.cached_annotations import CachedAnnotations, compact_annotations, validate_annotations
 from program_v2.utils.extract_annotations import extract_annotations
 
 from ..dimensions import get_scheduled_dimension_value
@@ -253,6 +253,8 @@ class Program(models.Model):
                 "internal:formattedHosts": formatted_hosts,
             }
         )
+
+        self.annotations = compact_annotations(self.annotations)
 
         return self
 

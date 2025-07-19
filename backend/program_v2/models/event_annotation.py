@@ -54,21 +54,3 @@ class EventAnnotation(models.Model):
             [cls(meta=meta, annotation=annotation) for annotation in annotations],
             ignore_conflicts=True,
         )
-
-    def refresh_values(self):
-        from ..utils.extract_annotations import extract_annotations_from_responses
-
-        programs = self.meta.programs.all()
-        logger.info(
-            "Refreshing values of annotation %s for %s program items (may take several minutes for a large event)",
-            self.annotation.slug,
-            programs.count(),
-        )
-        for program in programs:
-            program.refresh_annotations(
-                extract_annotations_from_responses(
-                    responses=program.responses.all(),
-                    event_annotations=[self],
-                )
-            )
-            program.refresh_dependents()

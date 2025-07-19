@@ -272,7 +272,11 @@ def test_extract_annotations():
             type_slug=AnnotationDataType.NUMBER.value,
             is_applicable_to_program_items=True,
         ),
-        program_form_fields=["max_participants"],
+        program_form_fields=[
+            "this_field_does_not_exist",
+            "max_participants",
+            "also_this_field_does_not_exist",
+        ],
     )
 
     actual_annotations1 = extract_annotations_from_responses(responses=[program_offer], event_annotations=[ea])
