@@ -5,8 +5,8 @@ from django.urls import include, path, re_path
 from django.views.generic import RedirectView
 from django.views.i18n import set_language
 
-handler404 = "access.views.not_found_view"
-handler403 = "access.views.permission_denied_view"
+handler404 = "access.views.error_views.not_found_view"
+handler403 = "access.views.error_views.permission_denied_view"
 
 kompassi_apps = [
     "labour",

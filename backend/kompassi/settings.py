@@ -491,7 +491,6 @@ if "desuprofile_integration" in INSTALLED_APPS:
 
 KOMPASSI_LISTING_URLCONFS = {
     "conit.fi": "listings.site_urlconfs.conit_fi",
-    "animecon.fi": "listings.site_urlconfs.animecon_fi",
 }
 
 

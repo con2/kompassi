@@ -96,7 +96,7 @@ def core_password_view(request):
 
 
 def core_profile_menu_items(request):
-    from access.views import access_profile_menu_items
+    from access.views.menu_items import access_profile_menu_items
     from labour.views import labour_profile_menu_items
     from membership.views import membership_profile_menu_items
     from programme.views.profile_menu_items import programme_profile_menu_items

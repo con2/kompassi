@@ -48,7 +48,7 @@ class InvolvementApp(Enum):
 class InvolvementType(Enum):
     # NOTE: use dashes in app names (URL slugs)
     PROGRAM_OFFER = "program-offer", InvolvementApp.PROGRAM, "Program offer", "Ohjelmatarjous", "Programerbjudande"
-    PROGRAM_HOST = "program-host", InvolvementApp.PROGRAM, "Program host", "Ohjelmanumero", "Programvärd"
+    PROGRAM_HOST = "program-host", InvolvementApp.PROGRAM, "Program item", "Ohjelmanumero", "Programvärd"
     SURVEY_RESPONSE = "survey-response", InvolvementApp.FORMS, "Survey response", "Kyselyvastaus", "Enkätsvar"
 
     COMBINED_PERKS = (

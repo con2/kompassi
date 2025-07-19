@@ -1,5 +1,4 @@
 from functools import cached_property
-from typing import Literal
 
 from django.db import models
 
@@ -106,14 +105,6 @@ class SignupExtraBase(SignupExtraMixin, models.Model):
         result.extend(pr.role.public_title for pr in programme_roles)
 
         return result
-
-    def as_dict(self, format: Literal["discord"]):
-        if format != "discord":
-            raise AssertionError("not implemented")
-        return dict(
-            handle=self.person.discord_handle,
-            roles=self.discord_roles,
-        )
 
     # NOTE: changing this to cached_property will break a test. beware
     @property
