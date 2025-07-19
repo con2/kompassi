@@ -270,7 +270,7 @@ class Response(models.Model):
     def get_processed_form_data(
         self,
         fields: Sequence[Field] | None = None,
-        field_slugs: Sequence[str] | None = None,
+        field_slugs: Collection[str] | None = None,
     ) -> tuple[dict[str, Any], dict[str, list[FieldWarning]]]:
         """
         If you only need a subset of fields, pass them in as fields or field_slugs.

@@ -50,5 +50,6 @@ class UpdateProgramAnnotations(graphene.Mutation):
 
         program.annotations = compact_annotations(dict(program.annotations, **annotations))  # type: ignore
         program.refresh_annotations()
+        program.refresh_dependents()
 
         return UpdateProgramAnnotations(program=program)  # type: ignore

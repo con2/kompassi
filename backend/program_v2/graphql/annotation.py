@@ -5,8 +5,9 @@ from graphene_django import DjangoObjectType
 from graphql_api.language import DEFAULT_LANGUAGE
 from graphql_api.utils import resolve_localized_field
 
-from ..models.annotation import Annotation, EventAnnotation
+from ..models.annotation import Annotation
 from ..models.enums import AnnotationDataType
+from ..models.event_annotation import EventAnnotation
 
 AnnotationDataTypeType = graphene.Enum.from_enum(AnnotationDataType)
 

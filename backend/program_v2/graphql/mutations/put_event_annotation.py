@@ -7,12 +7,15 @@ from django.http import HttpRequest
 
 from access.cbac import graphql_check_instance
 from core.models.event import Event
-from dimensions.models.cached_dimensions import Slug
+from program_v2.models.event_annotation import EventAnnotation
+from program_v2.tasks import event_annotation_refresh_values
 
 from ...models.annotation import Annotation
 from ..annotation import EventAnnotationType
 
-ListOfSlugsAdapter = pydantic.TypeAdapter(list[Slug])
+# too strict, users will be confounded
+# ListOfSlugsAdapter = pydantic.TypeAdapter(list[Slug])
+ListOfSlugsAdapter = pydantic.TypeAdapter(list[str])
 
 
 class PutEventAnnotationAction(Enum):
@@ -73,7 +76,8 @@ class PutEventAnnotation(graphene.Mutation):
         else:
             action = PutEventAnnotationAction.SAVE_WITHOUT_REFRESH
 
-        event_annotation, _ = meta.event_annotations.update_or_create(
+        event_annotation, _ = EventAnnotation.objects.update_or_create(
+            meta=meta,
             annotation=annotation,
             defaults=dict(
                 is_active=input.is_active,
@@ -81,5 +85,14 @@ class PutEventAnnotation(graphene.Mutation):
                 action=action,
             ),
         )
+
+        match action:
+            case PutEventAnnotationAction.SAVE_WITHOUT_REFRESH:
+                pass
+            case PutEventAnnotationAction.SAVE_AND_REFRESH:
+                if event_annotation.is_active:
+                    event_annotation_refresh_values.delay(event.id, annotation.slug)  # type: ignore
+            case _:
+                raise NotImplementedError(action)
 
         return PutEventAnnotation(event_annotation=event_annotation)  # type: ignore

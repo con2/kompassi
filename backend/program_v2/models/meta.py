@@ -21,7 +21,8 @@ from forms.models.survey import Survey
 from involvement.models.involvement import Involvement
 from involvement.models.registry import Registry
 
-from .annotation import Annotation, EventAnnotation
+from .annotation import Annotation
+from .event_annotation import EventAnnotation
 
 
 class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
@@ -53,26 +54,28 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         on_delete=models.SET_NULL,
     )
 
-    annotations: models.ManyToManyField[Annotation, EventAnnotation] = models.ManyToManyField(
-        Annotation,
-        through=EventAnnotation,
-        related_name="event_metas_using",
-        blank=True,
-        help_text="Annotations that are used for program in this event.",
-    )
-
     use_cbac = True
 
     event: models.ForeignKey[Event]
-    event_annotations: models.QuerySet[EventAnnotation]
+    all_event_annotations: models.QuerySet[EventAnnotation]
 
     def __str__(self):
         return str(self.event)
 
     @property
+    def annotations(self) -> models.QuerySet[Annotation]:
+        annotation_ids = self.active_event_annotations.values_list("annotation_id", flat=True)
+        return Annotation.objects.filter(id__in=annotation_ids)
+
+    @property
+    def active_event_annotations(self) -> models.QuerySet[EventAnnotation]:
+        return self.all_event_annotations.filter(is_active=True)
+
+    @property
     def annotations_with_fallback(self) -> models.QuerySet[Annotation]:
-        if self.event_annotations.exists():
-            queryset = self.annotations.all()
+        if self.all_event_annotations.exists():
+            annotation_ids = self.active_event_annotations.all().values_list("annotation_id", flat=True)
+            queryset = Annotation.objects.filter(id__in=annotation_ids)
         else:
             # Legacy event without event annotations
             # TODO Backfill them and remove this
@@ -87,7 +90,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     @classmethod
     def get_or_create_dummy(cls):
         event, _ = Event.get_or_create_dummy()
-        return cls.objects.get_or_create(
+        meta, created = cls.objects.get_or_create(
             event=event,
             defaults=dict(
                 admin_group=cls.get_or_create_groups(event, ("admins",))[0],
@@ -97,6 +100,9 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
                 default_registry=Registry.get_or_create_dummy()[0],
             ),
         )
+        if created:
+            meta.ensure()
+        return meta, created
 
     @cached_property
     def universe(self) -> Universe:
@@ -205,6 +211,12 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     @property
     def schedule_url(self):
         return f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/program"
+
+    def ensure(self):
+        """
+        Idempotent way to ensure all required structures are set up for this event.
+        """
+        EventAnnotation.ensure(self)
 
 
 @dataclass

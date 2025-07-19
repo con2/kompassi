@@ -2,13 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from django.contrib.postgres.fields import ArrayField
 from django.db import models
 
 from .enums import AnnotationDataType
 
 if TYPE_CHECKING:
-    from .meta import ProgramV2EventMeta
+    from .event_annotation import EventAnnotation
 
 
 class Annotation(models.Model):
@@ -27,6 +26,8 @@ class Annotation(models.Model):
     is_public = models.BooleanField(default=True)
     is_shown_in_detail = models.BooleanField(default=True)
     is_computed = models.BooleanField(default=False)
+
+    all_event_annotations: models.QuerySet[EventAnnotation]
 
     @property
     def type(self) -> AnnotationDataType:
@@ -50,28 +51,8 @@ class Annotation(models.Model):
         if self.type == AnnotationDataType.BOOLEAN and not isinstance(value, bool):
             raise ValueError(f"Value for {self.slug} must be a boolean.")
 
+    @classmethod
+    def ensure(cls):
+        from .annotation_dto import ANNOTATIONS, AnnotationDTO
 
-class EventAnnotation(models.Model):
-    meta: models.ForeignKey[ProgramV2EventMeta] = models.ForeignKey(
-        "program_v2.ProgramV2EventMeta",
-        on_delete=models.CASCADE,
-        related_name="event_annotations",
-    )
-
-    annotation: models.ForeignKey[Annotation] = models.ForeignKey(
-        "program_v2.Annotation",
-        on_delete=models.CASCADE,
-        related_name="event_annotations",
-    )
-
-    is_active = models.BooleanField(
-        default=True,
-        help_text="If false, this annotation will not be used in this event.",
-    )
-
-    program_form_fields = ArrayField(
-        models.TextField(),
-        default=list,
-        blank=True,
-        help_text="List of program form field slugs this annotation will be attempted to be extracted from, in order.",
-    )
+        AnnotationDTO.save_many(ANNOTATIONS)

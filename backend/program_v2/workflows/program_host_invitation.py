@@ -1,6 +1,9 @@
 from dimensions.utils.dimension_cache import DimensionCache
 from forms.models.response import Response
 from forms.models.workflow import Workflow
+from involvement.models.involvement import Involvement
+
+from ..utils.extract_annotations import extract_annotations_from_responses
 
 
 class ProgramHostInvitationWorkflow(Workflow):
@@ -35,4 +38,19 @@ class ProgramHostInvitationWorkflow(Workflow):
         response: Response,
         old_version: Response | None = None,
     ):
-        pass
+        involvement = Involvement.objects.get(
+            program__isnull=False,
+            response=response,
+        )
+
+        program = involvement.program
+        if program is None:
+            raise AssertionError("No it isn't (appease typechecker)")
+
+        program.refresh_annotations(
+            extract_annotations_from_responses(
+                program.responses.all(),
+                program.meta.active_event_annotations.all(),
+            )
+        )
+        program.refresh_dependents()

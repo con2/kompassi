@@ -28,6 +28,8 @@ from graphql_api.language import DEFAULT_LANGUAGE
 from involvement.models.enums import InvolvementType
 from involvement.models.invitation import Invitation
 from involvement.models.involvement import Involvement
+from program_v2.models.cached_annotations import CachedAnnotations, validate_annotations
+from program_v2.utils.extract_annotations import extract_annotations
 
 from ..dimensions import get_scheduled_dimension_value
 
@@ -236,8 +238,10 @@ class Program(models.Model):
             )
             logger.info("Refreshed cached times for %s programs", num_updated)
 
-    def with_annotations(self, **kwargs) -> Self:
-        self.annotations = dict(self.annotations, **kwargs)
+    def with_annotations(self, annotations_to_set: CachedAnnotations | None = None) -> Self:
+        self.annotations = dict(self.annotations)
+        if annotations_to_set:
+            self.annotations.update(annotations_to_set)
 
         # TODO(#728): if soft delete of program hosts is implemented, this should be updated to
         # include only active program hosts
@@ -252,8 +256,8 @@ class Program(models.Model):
 
         return self
 
-    def refresh_annotations(self, **kwargs):
-        self.with_annotations(**kwargs).save(update_fields=["annotations"])
+    def refresh_annotations(self, annotations_to_set: CachedAnnotations | None = None):
+        self.with_annotations(annotations_to_set).save(update_fields=["annotations"])
 
     @classmethod
     def refresh_annotations_qs(cls, queryset: models.QuerySet[Self]):
@@ -336,6 +340,9 @@ class Program(models.Model):
         Accept a program offer and return the new Program instance.
         """
         event = program_offer.event
+        meta = event.program_v2_event_meta
+        if meta is None:
+            raise TypeError(f"Event {event.slug} does not have program_v2_event_meta")
         cache = event.program_universe.preload_dimensions()
 
         combined_dimension_values = validate_cached_dimensions(program_offer.survey.cached_default_response_dimensions)
@@ -345,21 +352,23 @@ class Program(models.Model):
         combined_dimension_values.update(
             state=["accepted"],
         )
-        print("combined_dimension_values", combined_dimension_values)
 
         values, warnings = program_offer.get_processed_form_data()
         if warnings:
             logger.warning("Program offer %s had form data warnings: %s", program_offer.id, warnings)
-
-        # TODO
-        # annotations = extract_annotations(values)
-        annotations = {}
 
         if not title:
             title = values.get("title", "")
 
         if not slug:
             slug = slugify(title)
+
+        annotations = extract_annotations(
+            values,
+            warnings,
+            [ea.annotation for ea in meta.active_event_annotations.all()],
+            {ea.annotation.slug: ea.program_form_fields for ea in meta.active_event_annotations.all()},
+        )
 
         program = cls(
             event=program_offer.event,
@@ -461,6 +470,19 @@ class Program(models.Model):
             )
             .order_by("created_at")
         )
+
+    @property
+    def responses(self) -> models.QuerySet[Response]:
+        response_ids = self.all_program_hosts.filter(response__isnull=False).values_list("response_id", flat=True)
+        return Response.objects.filter(id__in=response_ids).order_by("revision_created_at")
+
+    @property
+    def validated_annotations(self) -> CachedAnnotations:
+        """
+        Returns the annotations of this program, validated against the event's schema.
+        """
+
+        return validate_annotations(self.annotations, self.meta.annotations_with_fallback.all())
 
     def can_be_cancelled_by(
         self,

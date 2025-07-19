@@ -11,11 +11,15 @@ from forms.models.form import Form
 from forms.models.response import Response
 from forms.models.survey import Survey
 from involvement.models.involvement import Involvement
+from program_v2.models.enums import AnnotationDataType
 
 from .filters import ProgramFilters
+from .models.annotation import Annotation
+from .models.event_annotation import EventAnnotation
 from .models.meta import ProgramV2EventMeta
 from .models.program import Program
 from .models.schedule_item import ScheduleItem
+from .utils.extract_annotations import extract_annotations_from_responses
 
 
 @pytest.mark.django_db
@@ -164,3 +168,181 @@ def test_program_hosts():
         program.refresh_cached_fields()
 
     assert event.involvements.count() == 3  # offer, host, host
+
+
+@pytest.mark.django_db
+def test_extract_annotations():
+    Annotation.ensure()
+
+    with transaction.atomic():
+        meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+        event = meta.event
+
+        person, _ = Person.get_or_create_dummy()
+        person2, _ = Person.get_or_create_dummy(another=True, superuser=False)
+
+        # after creating ProgramV2EventMeta so that aliases are created
+        EmailAliasDomain.get_or_create_dummy()
+
+        offer_program = Survey(
+            event=event,
+            slug="offer-program",
+            app=DimensionApp.PROGRAM_V2,
+            purpose=SurveyPurpose.DEFAULT,
+        ).with_mandatory_fields()
+        offer_program.save()
+        offer_program.workflow.handle_new_survey()
+
+        offer_program_en = Form(
+            event=event,
+            survey=offer_program,
+            language="en",
+            fields=[
+                dict(
+                    slug="title",
+                    title="Title",
+                    type="SingleLineText",
+                    required=True,
+                ),
+                dict(
+                    slug="description",
+                    title="Description",
+                    type="MultiLineText",
+                    required=True,
+                ),
+                dict(
+                    slug="max_participants",
+                    title="Max participants",
+                    type="NumberField",
+                    required=False,
+                ),
+            ],
+        )
+        offer_program_en.save()
+        offer_program.workflow.handle_form_update()
+
+        accept_invitation = Survey(
+            event=event,
+            slug="accept-program-invitation",
+            app=DimensionApp.PROGRAM_V2,
+            purpose=SurveyPurpose.INVITE,
+        ).with_mandatory_fields()
+        accept_invitation.save()
+        accept_invitation.workflow.handle_new_survey()
+
+        accept_invitation_en = Form(
+            event=event,
+            survey=accept_invitation,
+            language="en",
+            fields=[
+                dict(
+                    slug="max_participants",
+                    title="Max participants",
+                    type="NumberField",
+                    required=False,
+                ),
+            ],
+        )
+        accept_invitation_en.save()
+        accept_invitation.workflow.handle_form_update()
+
+    with transaction.atomic():
+        expected_annotations1 = {
+            "test:max_participants": 100,
+        }
+
+        program_offer = Response.objects.create(
+            form=offer_program_en,
+            form_data={
+                "title": "Test Program",
+                "description": "Test Description",
+                "max_participants": 100,
+            },
+            revision_created_by=person.user,
+        )
+        offer_program.workflow.handle_new_response_phase1(program_offer)
+    with transaction.atomic():
+        offer_program.workflow.handle_new_response_phase2(program_offer)
+
+    ea = EventAnnotation.objects.create(
+        meta=meta,
+        annotation=Annotation.objects.create(
+            slug="test:max_participants",
+            title={"en": "Max Participants"},
+            type_slug=AnnotationDataType.NUMBER.value,
+            is_applicable_to_program_items=True,
+        ),
+        program_form_fields=["max_participants"],
+    )
+
+    actual_annotations1 = extract_annotations_from_responses(responses=[program_offer], event_annotations=[ea])
+    assert actual_annotations1 == expected_annotations1
+
+    program1 = Program.from_program_offer(program_offer)
+    assert set(program1.validated_annotations.items()).issuperset(expected_annotations1.items())
+
+    # Test that extract_annotations works with accepted program having multiple responses
+    with transaction.atomic():
+        program_offer2 = Response.objects.create(
+            form=offer_program_en,
+            form_data={
+                "title": "Test Program 2",
+                "description": "Test Description 2",
+                # "max_participants": "",
+            },
+            revision_created_by=person2.user,
+        )
+        offer_program.workflow.handle_new_response_phase1(program_offer2)
+    with transaction.atomic():
+        offer_program.workflow.handle_new_response_phase2(program_offer2)
+
+    with transaction.atomic():
+        program2 = Program.from_program_offer(program_offer2)
+
+    with transaction.atomic():
+        invitation = program2.invite_program_host(
+            person2.email,
+            survey=accept_invitation,
+            language="en",
+            involvement_dimensions={},
+        )
+
+    with transaction.atomic():
+        expected_annotations2 = {
+            "test:max_participants": 50,
+        }
+
+        accept_invitation_response = Response.objects.create(
+            form=accept_invitation_en,
+            form_data={
+                "max_participants": 50,
+            },
+            revision_created_by=person2.user,
+            ip_address="127.0.0.1",
+            sequence_number=accept_invitation.get_next_sequence_number(),
+        )
+        accept_invitation.workflow.handle_new_response_phase1(accept_invitation_response)
+
+        invitation.mark_used()
+
+        Involvement.from_accepted_invitation(
+            response=accept_invitation_response,
+            invitation=invitation,
+            cache=event.involvement_universe.preload_dimensions(),
+        )
+
+        program2.refresh_cached_fields()
+
+    with transaction.atomic():
+        accept_invitation.workflow.handle_new_response_phase2(accept_invitation_response)
+
+    # isolated test: our test annotation is extracted from responses as expected
+    actual_annotations2 = extract_annotations_from_responses(
+        responses=[program_offer2, accept_invitation_response],
+        event_annotations=[ea],
+    )
+    assert actual_annotations2 == expected_annotations2
+
+    # integration test: our test annotation is extracted as part of program workflow as expected
+    program2.refresh_from_db()
+    assert set(program2.validated_annotations.items()).issuperset(expected_annotations2.items())
