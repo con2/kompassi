@@ -136,7 +136,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         Used for admin purposes changing settings of annotations in events.
         Usually you should use `event.program.annotations` instead.
         """
-        return meta.active_event_annotations.all().select_related("annotation").order_by("annotation__slug")
+        return meta.all_event_annotations.all().select_related("annotation").order_by("annotation__slug")
 
     event_annotations = graphene.NonNull(
         graphene.List(graphene.NonNull(EventAnnotationType)),
