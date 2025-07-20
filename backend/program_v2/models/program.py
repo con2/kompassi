@@ -238,7 +238,7 @@ class Program(models.Model):
             )
             logger.info("Refreshed cached times for %s programs", num_updated)
 
-    def with_annotations(self, update: CachedAnnotationsUpdate | None = None) -> Self:
+    def with_annotations(self, update: CachedAnnotationsUpdate | CachedAnnotations | None = None) -> Self:
         self.annotations = dict(self.annotations)
         if update:
             self.annotations.update(update)
@@ -258,7 +258,7 @@ class Program(models.Model):
 
         return self
 
-    def refresh_annotations(self, update: CachedAnnotationsUpdate | None = None):
+    def refresh_annotations(self, update: CachedAnnotationsUpdate | CachedAnnotations | None = None):
         self.with_annotations(update).save(update_fields=["annotations"])
 
     @classmethod

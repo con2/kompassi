@@ -47,9 +47,7 @@ class UpdateProgramAnnotations(graphene.Mutation):
         )
 
         # values "" and None used to indicate "remove this annotation"
-        print("input.annotations:", input.annotations)
         input_annotations = cached_annotations_update_adapter.validate_python(input.annotations)
-        print("input_annotations:", input_annotations)
 
         # validate only the annotations we are setting (do not contain "" or None)
         set_annotations = {k: v for (k, v) in input_annotations.items() if v not in (None, "")}
