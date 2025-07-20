@@ -80,11 +80,10 @@ export function getFormFieldForAnnotation(
   annotation: AnnotationsFormAnnotationFragment,
 ): Field {
   const { slug, title, description, isComputed } = annotation;
-  let type: "SingleCheckbox" | "NumberField" | "SingleLineText" =
-    "SingleLineText";
+  let type: "Tristate" | "NumberField" | "SingleLineText" = "SingleLineText";
   switch (annotation.type) {
     case AnnotationDataType.Boolean:
-      type = "SingleCheckbox";
+      type = "Tristate";
       break;
     case AnnotationDataType.Number:
       type = "NumberField";

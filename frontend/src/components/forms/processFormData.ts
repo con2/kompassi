@@ -33,6 +33,7 @@ export default function processFormData(
         break;
 
       case "SingleCheckbox":
+      case "Tristate":
         values[field.slug] = Boolean(byFieldName[slug]);
         break;
 
