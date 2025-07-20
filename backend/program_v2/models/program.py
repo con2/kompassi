@@ -28,10 +28,10 @@ from graphql_api.language import DEFAULT_LANGUAGE
 from involvement.models.enums import InvolvementType
 from involvement.models.invitation import Invitation
 from involvement.models.involvement import Involvement
-from program_v2.models.cached_annotations import CachedAnnotations, compact_annotations, validate_annotations
 from program_v2.utils.extract_annotations import extract_annotations_from_responses
 
 from ..dimensions import get_scheduled_dimension_value
+from .cached_annotations import CachedAnnotations, CachedAnnotationsUpdate, compact_annotations, validate_annotations
 
 if TYPE_CHECKING:
     from .meta import ProgramV2EventMeta
@@ -238,10 +238,10 @@ class Program(models.Model):
             )
             logger.info("Refreshed cached times for %s programs", num_updated)
 
-    def with_annotations(self, annotations_to_set: CachedAnnotations | None = None) -> Self:
+    def with_annotations(self, update: CachedAnnotationsUpdate | None = None) -> Self:
         self.annotations = dict(self.annotations)
-        if annotations_to_set:
-            self.annotations.update(annotations_to_set)
+        if update:
+            self.annotations.update(update)
 
         # TODO(#728): if soft delete of program hosts is implemented, this should be updated to
         # include only active program hosts
@@ -258,8 +258,8 @@ class Program(models.Model):
 
         return self
 
-    def refresh_annotations(self, annotations_to_set: CachedAnnotations | None = None):
-        self.with_annotations(annotations_to_set).save(update_fields=["annotations"])
+    def refresh_annotations(self, update: CachedAnnotationsUpdate | None = None):
+        self.with_annotations(update).save(update_fields=["annotations"])
 
     @classmethod
     def refresh_annotations_qs(cls, queryset: models.QuerySet[Self]):

@@ -7,7 +7,7 @@ from pydantic_core.core_schema import bool_schema, float_schema, str_schema
 
 
 class AnnotationDataType(Enum):
-    STRING = "string", str_schema(min_length=1)
+    STRING = "string", str_schema()
     NUMBER = "number", float_schema()
     BOOLEAN = "boolean", bool_schema()
 
