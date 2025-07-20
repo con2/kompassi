@@ -54,7 +54,7 @@ def extract_annotations_from_responses(
                     )
                     continue
 
-                value = annotation.conform_value(form_field, value)
+                value = annotation.type.conform_value(value)
                 if value is None:
                     # value did not conform to the data type of the annotation
                     continue

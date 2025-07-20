@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from typing import Annotated, Any
 
 import pydantic
+from pydantic_core import CoreSchema, SchemaValidator, core_schema
 
 from ..models.annotation import Annotation
 
@@ -18,21 +19,20 @@ CachedAnnotations = dict[AnnotationSlug, str | int | float | bool]
 adapter = pydantic.TypeAdapter(CachedAnnotations)
 
 
+def build_core_schema(schema: Iterable[Annotation]) -> CoreSchema:
+    return core_schema.typed_dict_schema(
+        {annotation.slug: core_schema.typed_dict_field(annotation.type.core_schema) for annotation in schema},
+        total=False,
+    )
+
+
 def validate_annotations(
     annotations: Any,
     schema: Iterable[Annotation],
 ) -> CachedAnnotations:
-    schema_by_slug = {annotation.slug: annotation for annotation in schema}
-    annotations_ = adapter.validate_python(annotations)
-
-    for slug, value in annotations_.items():
-        schemoid = schema_by_slug.get(slug)
-        if schemoid is None:
-            raise ValueError(f"Unknown annotation slug: {slug}")
-
-        schemoid.validate_value(value)
-
-    return annotations_
+    core_schema = build_core_schema(schema)
+    validator = SchemaValidator(core_schema)
+    return validator.validate_python(annotations)
 
 
 def compact_annotations(annotations: CachedAnnotations) -> CachedAnnotations:
