@@ -5,28 +5,11 @@ from core.utils.model_utils import slugify
 from dimensions.models.dimension import ValueOrdering
 from dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 
-from ..models.field import Choice, Field, FieldType
+from ..models.field import BOOLEAN_CHOICES, BOOLEAN_TRANSLATIONS, Choice, Field, FieldType
 from ..models.response import Response
 from ..models.survey import Survey
 from ..utils.lift_dimension_values import lift_dimension_values
 from ..utils.merge_form_fields import merge_choices
-
-BOOLEAN_CHOICES = [
-    Choice(slug="true"),
-    Choice(slug="false"),
-]
-BOOLEAN_TRANSLATIONS = {
-    "true": {
-        "en": "Yes",
-        "fi": "Kyllä",
-        "sv": "Ja",
-    },
-    "false": {
-        "en": "No",
-        "fi": "Ei",
-        "sv": "Nej",
-    },
-}
 
 
 def promote_field_to_dimension(survey: Survey, field_slug: str):
@@ -51,7 +34,7 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
     # make the language versions vote for the field type
     original_field_type = Counter(field.type for field in field_in_languages.values()).most_common(1)[0][0]
     match original_field_type:
-        case FieldType.SINGLE_SELECT:
+        case FieldType.SINGLE_SELECT | FieldType.TRISTATE:
             field_type = FieldType.DIMENSION_SINGLE_SELECT
         case FieldType.SINGLE_CHECKBOX:
             field_type = FieldType.DIMENSION_SINGLE_CHECKBOX
@@ -60,18 +43,21 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
         case _:
             raise NotImplementedError(original_field_type)
 
-    # use merge_choices for consistent ordering
-    choices = (
-        BOOLEAN_CHOICES
-        if original_field_type == FieldType.SINGLE_CHECKBOX
-        else (
-            reduce(
-                merge_choices,
-                [field.choices for field in field_in_languages.values()],
+    choices: list[Choice]
+    match original_field_type:
+        case FieldType.SINGLE_SELECT | FieldType.MULTI_SELECT:
+            # use merge_choices for consistent ordering
+            choices = (
+                reduce(
+                    merge_choices,
+                    [field.choices for field in field_in_languages.values()],
+                )
+                or []
             )
-            or []
-        )
-    )
+        case FieldType.SINGLE_CHECKBOX | FieldType.TRISTATE:
+            choices = BOOLEAN_CHOICES
+        case _:
+            raise NotImplementedError(original_field_type)
 
     # convert underscore to hyphen
     dimension_slug = slugify(field_slug)
@@ -98,7 +84,7 @@ def promote_field_to_dimension(survey: Survey, field_slug: str):
         DimensionValueDTO(
             slug=slugify(choice.slug),
             title=BOOLEAN_TRANSLATIONS[choice.slug]
-            if original_field_type == FieldType.SINGLE_CHECKBOX
+            if original_field_type in (FieldType.SINGLE_CHECKBOX, FieldType.TRISTATE)
             else merge_choice_translations(choice.slug),
         )
         for choice in choices

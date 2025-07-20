@@ -12,6 +12,7 @@ class FieldType(str, Enum):
     SINGLE_LINE_TEXT = "SingleLineText"
     MULTI_LINE_TEXT = "MultiLineText"
     SINGLE_CHECKBOX = "SingleCheckbox"
+    TRISTATE = "Tristate"
     STATIC_TEXT = "StaticText"
     DIVIDER = "Divider"
     SPACER = "Spacer"
@@ -37,6 +38,7 @@ class FieldType(str, Enum):
             FieldType.SINGLE_SELECT,
             FieldType.MULTI_SELECT,
             FieldType.SINGLE_CHECKBOX,
+            FieldType.TRISTATE,
         )
 
     @property
@@ -61,6 +63,24 @@ class FieldType(str, Enum):
 class Choice(pydantic.BaseModel):
     slug: str
     title: str = ""
+
+
+BOOLEAN_CHOICES = [
+    Choice(slug="true"),
+    Choice(slug="false"),
+]
+BOOLEAN_TRANSLATIONS = {
+    "true": {
+        "en": "Yes",
+        "fi": "Kyllä",
+        "sv": "Ja",
+    },
+    "false": {
+        "en": "No",
+        "fi": "Ei",
+        "sv": "Nej",
+    },
+}
 
 
 class Field(pydantic.BaseModel, populate_by_name=True):

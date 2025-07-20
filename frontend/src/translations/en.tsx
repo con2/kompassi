@@ -17,10 +17,6 @@ const translations = {
       create: "Create",
       close: "Close",
     },
-    boolean: {
-      true: "Yes",
-      false: "No",
-    },
   },
   Profile: {
     attributes: {
@@ -183,6 +179,14 @@ const translations = {
     warnings: {
       noFileUploaded: "No file uploaded.",
     },
+    boolean: {
+      true: "Yes",
+      false: "No",
+    },
+    checkbox: {
+      checked: "Checked",
+      unchecked: "Not checked",
+    },
   },
   MainView: {
     defaultErrorMessage:
@@ -270,6 +274,7 @@ const translations = {
       Spacer: "Empty space",
       SingleCheckbox: "Single check box",
       DimensionSingleCheckbox: "Single check box (Dimension)",
+      Tristate: "Tristate (Yes/No/Not set)",
       SingleSelect: "Single select",
       DimensionSingleSelect: "Single select (Dimension)",
       MultiSelect: "Multiple select",
@@ -2406,10 +2411,6 @@ const translations = {
     warnings: {
       choiceNotFound:
         "Choice not found. It may have been removed after this response was submitted.",
-    },
-    checkbox: {
-      checked: "Checked",
-      unchecked: "Not checked",
     },
     addLanguageModal: {
       language: {

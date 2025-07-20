@@ -9,7 +9,7 @@ from typing import Any, Literal, Self
 
 import pydantic
 
-from ..models.field import Field, FieldType
+from ..models.field import BOOLEAN_CHOICES, Field, FieldType
 
 # NOTE: Keep in sync with frontend/src/components/SchemaForm/models.ts
 
@@ -163,7 +163,7 @@ def summarize_responses(fields: list[Field], valuesies: list[Values]) -> Summary
                     summary=field_summary,
                 )
 
-            case FieldType.SINGLE_CHECKBOX:
+            case FieldType.SINGLE_CHECKBOX | FieldType.DIMENSION_SINGLE_CHECKBOX:
                 count_responses = sum(1 for values in valuesies if values.get(field.slug))
                 count_missing_responses = total_responses - count_responses
 
@@ -172,16 +172,22 @@ def summarize_responses(fields: list[Field], valuesies: list[Values]) -> Summary
                     count_missing_responses=count_missing_responses,
                 )
 
-            case FieldType.SINGLE_SELECT:
-                field_summary = {choice.slug: 0 for choice in field.choices or []}
+            case FieldType.SINGLE_SELECT | FieldType.DIMENSION_SINGLE_SELECT | FieldType.TRISTATE:
+                if field.type == FieldType.TRISTATE:
+                    choices = BOOLEAN_CHOICES
+                else:
+                    choices = field.choices or []
+
+                field_summary = {choice.slug: 0 for choice in choices}
 
                 for values in valuesies:
                     value = values.get(field.slug)
-                    if value:
-                        if field.type == FieldType.SINGLE_CHECKBOX:
-                            value = "true"
-                        else:
-                            value = str(value)
+                    if value is not None:
+                        match field.type:
+                            case FieldType.TRISTATE | FieldType.SINGLE_CHECKBOX:
+                                value = "true" if value else "false"
+                            case _:
+                                value = str(value)
 
                         # account for the possibility of a choice being removed
                         field_summary.setdefault(value, 0)

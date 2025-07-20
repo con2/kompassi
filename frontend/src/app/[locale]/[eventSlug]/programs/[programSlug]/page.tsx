@@ -165,8 +165,8 @@ export default async function NewProgramPage({ params }: Props) {
   function formatAnnotationValue(annotation: ProgramDetailAnnotationFragment) {
     if (annotation.annotation.type === AnnotationDataType.Boolean) {
       return annotation.value
-        ? translations.Common.boolean.true
-        : translations.Common.boolean.false;
+        ? translations.SchemaForm.boolean.true
+        : translations.SchemaForm.boolean.false;
     }
 
     return annotation.value;

@@ -7,6 +7,7 @@ export type FieldType =
   | "StaticText"
   | "Spacer"
   | "SingleCheckbox"
+  | "Tristate"
   | "SingleSelect"
   | "MultiSelect"
   | "RadioMatrix"
@@ -25,6 +26,7 @@ export const fieldTypes: FieldType[] = [
   "SingleLineText",
   "MultiLineText",
   "SingleCheckbox",
+  "Tristate",
   "DimensionSingleCheckbox",
   "StaticText",
   "Divider",
@@ -130,6 +132,10 @@ export interface SingleCheckbox extends BaseField {
   type: "SingleCheckbox";
 }
 
+export interface Tristate extends BaseField {
+  type: "Tristate";
+}
+
 export interface DimensionSingleCheckbox extends BaseField {
   type: "DimensionSingleCheckbox";
   dimension: string;
@@ -211,6 +217,7 @@ export type Field =
   | Spacer
   | StaticText
   | SingleCheckbox
+  | Tristate
   | SingleSelect
   | MultiSelect
   | RadioMatrix

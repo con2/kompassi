@@ -15,6 +15,7 @@ export default function newField(
     case "NumberField":
     case "DecimalField":
     case "SingleCheckbox":
+    case "Tristate":
     case "FileUpload":
     case "DateField":
     case "DateTimeField":

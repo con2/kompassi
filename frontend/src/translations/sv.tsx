@@ -32,10 +32,6 @@ const translations: Translations = {
       create: "Skapa",
       close: "Stäng",
     },
-    boolean: {
-      true: "Ja",
-      false: "Nej",
-    },
   },
   Profile: UNTRANSLATED(en.Profile),
   TransferConsentForm: UNTRANSLATED(en.TransferConsentForm),
@@ -71,6 +67,14 @@ const translations: Translations = {
     submit: "Skicka",
     warnings: {
       noFileUploaded: "Inga filer.",
+    },
+    boolean: {
+      true: "Ja",
+      false: "Nej",
+    },
+    checkbox: {
+      checked: "Valt",
+      unchecked: "Icke valt",
     },
   },
   MainView: {
@@ -121,6 +125,7 @@ const translations: Translations = {
       StaticText: "Statisk text",
       Spacer: "Tomt utrymme",
       SingleCheckbox: "Enkel kryssruta",
+      Tristate: "Tristate (ja/nej/inte angiven)",
       DimensionSingleCheckbox: "Enkel kryssruta för en dimension",
       SingleSelect: "Listrutan (ett val)",
       DimensionSingleSelect: "Listrutan (ett val från en dimension)",
@@ -561,10 +566,6 @@ const translations: Translations = {
     warnings: {
       choiceNotFound:
         "Valet hittades inte. Det kan ha tagits bort efter att detta svar skickades.",
-    },
-    checkbox: {
-      checked: "Valt",
-      unchecked: "Icke valt",
     },
     addLanguageModal: {
       language: {

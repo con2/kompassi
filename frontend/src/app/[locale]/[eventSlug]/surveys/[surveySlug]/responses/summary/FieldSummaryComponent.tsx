@@ -19,7 +19,7 @@ function getSummaryChoices(
   translations: Translations,
 ) {
   const { type } = field;
-  const t = translations.Survey;
+  const t = translations.SchemaForm;
   let choices: Choice[] = [];
   let questions: Choice[] = [];
 
@@ -34,6 +34,19 @@ function getSummaryChoices(
         {
           slug: "unchecked",
           title: t.checkbox.unchecked,
+        },
+      ];
+      break;
+
+    case "Tristate":
+      choices = [
+        {
+          slug: "true",
+          title: t.boolean.true,
+        },
+        {
+          slug: "false",
+          title: t.boolean.false,
         },
       ];
       break;

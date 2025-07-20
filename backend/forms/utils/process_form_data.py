@@ -139,6 +139,27 @@ class SingleSelectFieldProcessor(FieldProcessor):
         return warnings
 
 
+class TristateFieldProcessor(FieldProcessor):
+    def extract_value(self, field: Field, form_data: dict[str, Any]) -> Any:
+        value = form_data.get(field.slug)
+        if value == "true":
+            return True
+        elif value == "false":
+            return False
+        elif value is None:
+            return None
+        else:
+            return INVALID_VALUE
+
+    def validate_value(self, field: Field, value: Any) -> list[FieldWarning]:
+        warnings = []
+
+        if field.required and not isinstance(value, bool):
+            warnings.append(FieldWarning.REQUIRED_MISSING)
+
+        return warnings
+
+
 class DimensionSingleSelectFieldProcessor(SingleSelectFieldProcessor):
     def extract_value(self, field: Field, form_data: dict[str, Any]) -> Any:
         value = super().extract_value(field, form_data)
@@ -249,6 +270,7 @@ FIELD_PROCESSORS: dict[FieldType, FieldProcessor] = {
     FieldType.SINGLE_LINE_TEXT: FieldProcessor(),
     FieldType.MULTI_LINE_TEXT: FieldProcessor(),
     FieldType.SINGLE_CHECKBOX: SingleCheckboxFieldProcessor(),
+    FieldType.TRISTATE: TristateFieldProcessor(),
     FieldType.DIMENSION_SINGLE_CHECKBOX: SingleCheckboxFieldProcessor(),
     FieldType.STATIC_TEXT: NullFieldProcessor(),
     FieldType.DIVIDER: NullFieldProcessor(),

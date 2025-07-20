@@ -57,6 +57,21 @@ def test_process_form_data():
               title: A required field that is missing
               required: true
 
+            # tristate fields
+            - type: Tristate
+              slug: tristateTrue
+              title: Tristate true
+            - type: Tristate
+              slug: tristateFalse
+              title: Tristate false
+            - type: Tristate
+              slug: tristateUnset
+              title: Tristate unset
+            - type: Tristate
+              slug: tristateRequiredMissing
+              required: true
+              title: A required tristate field that is missing
+
             # single select
             - type: SingleSelect
               slug: singleSelect
@@ -139,6 +154,11 @@ def test_process_form_data():
         "thisIsFalse",
         "thisIsTrue",
         "singleCheckboxRequiredMissing",
+        # tristate fields
+        "tristateTrue",
+        "tristateFalse",
+        "tristateUnset",
+        "tristateRequiredMissing",
         # single select fields
         "singleSelect",
         "dropdown",
@@ -172,6 +192,9 @@ def test_process_form_data():
         "singleLineText": "Hello world",
         # single checkbox fields
         "thisIsTrue": "on",
+        # tristate fields
+        "tristateTrue": "true",
+        "tristateFalse": "false",
         # single select fields
         "singleSelect": "choice1",
         "dropdown": "choice2",
@@ -197,6 +220,11 @@ def test_process_form_data():
         # single checkbox fields
         thisIsTrue=True,
         thisIsFalse=False,
+        # tristate fields
+        tristateTrue=True,
+        tristateFalse=False,
+        tristateUnset=None,
+        tristateRequiredMissing=None,
         # single select fields
         singleSelect="choice1",
         dropdown="choice2",
@@ -231,6 +259,8 @@ def test_process_form_data():
         singleLineTextRequiredMissing=[FieldWarning.REQUIRED_MISSING],
         # single checkbox fields
         singleCheckboxRequiredMissing=[FieldWarning.REQUIRED_MISSING],
+        # tristate fields
+        tristateRequiredMissing=[FieldWarning.REQUIRED_MISSING],
         # single select fields
         singleSelectRequiredMissing=[FieldWarning.REQUIRED_MISSING],
         singleSelectInvalidChoice=[FieldWarning.INVALID_CHOICE],
@@ -258,6 +288,14 @@ def test_process_form_data():
         True,
         # singleCheckboxRequiredMissing
         False,
+        # tristateTrue
+        True,
+        # tristateFalse
+        False,
+        # tristateUnset
+        None,
+        # tristateRequiredMissing
+        None,
         # singleSelect
         "choice1",
         # dropdown

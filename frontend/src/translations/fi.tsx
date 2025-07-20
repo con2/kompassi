@@ -25,10 +25,6 @@ const translations: Translations = {
       create: "Uusi",
       close: "Sulje",
     },
-    boolean: {
-      true: "Kyllä",
-      false: "Ei",
-    },
   },
   Profile: {
     attributes: {
@@ -189,6 +185,14 @@ const translations: Translations = {
     warnings: {
       noFileUploaded: "Ei tiedostoja.",
     },
+    boolean: {
+      true: "Kyllä",
+      false: "Ei",
+    },
+    checkbox: {
+      checked: "Valittu",
+      unchecked: "Ei valittu",
+    },
   },
   MainView: {
     defaultErrorMessage:
@@ -275,6 +279,7 @@ const translations: Translations = {
       StaticText: "Kiinteä teksti",
       Spacer: "Tyhjä tila",
       SingleCheckbox: "Yksittäinen rasti ruutuun -kenttä",
+      Tristate: "Kyllä/Ei/Ei asetettu",
       DimensionSingleCheckbox: "Yksittäinen rasti ruutuun -kenttä (dimensio)",
       SingleSelect: "Valinta",
       DimensionSingleSelect: "Valinta (dimensio)",
@@ -2425,10 +2430,6 @@ const translations: Translations = {
     warnings: {
       choiceNotFound:
         "Vaihtoehtoa ei löydy. Se on voitu poistaa tämän vastauksen lähettämisen jälkeen.",
-    },
-    checkbox: {
-      checked: "Valittu",
-      unchecked: "Ei valittu",
     },
     addLanguageModal: {
       language: {

@@ -2,7 +2,7 @@ import { Temporal } from "@js-temporal/polyfill";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import makeInputId from "./makeInputId";
-import type { Field } from "./models";
+import type { Choice, Field, SingleSelectPresentation } from "./models";
 import { SchemaForm } from "./SchemaForm";
 import UploadedFileCards from "./UploadedFileCards";
 import { timezone } from "@/config";
@@ -32,7 +32,7 @@ function dateTimeToHtml(value: string) {
 function SchemaFormInput({
   field,
   value,
-  messages,
+  messages: t,
   idPrefix = "",
   namePrefix = "",
   readOnly: elementReadOnly = false,
@@ -106,13 +106,25 @@ function SchemaFormInput({
           name={slug}
         />
       );
+    case "Tristate":
     case "SingleSelect":
     case "DimensionSingleSelect":
-      let choices = field.choices ?? [];
+      let choices: Choice[];
+      let presentation: SingleSelectPresentation;
+      if (field.type === "Tristate") {
+        choices = [
+          { slug: "true", title: t.boolean.true },
+          { slug: "false", title: t.boolean.false },
+        ];
+        presentation = "dropdown";
+      } else {
+        choices = field.choices || [];
+        presentation = field.presentation || "radio";
+      }
 
-      switch (field.presentation) {
+      switch (presentation) {
         case "dropdown":
-          choices = [{ slug: "", title: "" }, ...field.choices];
+          choices = [{ slug: "", title: "" }, ...choices];
 
           return (
             <select
@@ -228,7 +240,7 @@ function SchemaFormInput({
       );
     case "FileUpload":
       if (readOnly) {
-        return <UploadedFileCards urls={value} messages={messages} />;
+        return <UploadedFileCards urls={value} messages={t} />;
       } else {
         // TODO what if readOnly or value but not both?
         return (
@@ -288,7 +300,7 @@ function SchemaFormInput({
               namePrefix={slug}
               values={value}
               readOnly={readOnly}
-              messages={messages}
+              messages={t}
             />
           </CardBody>
         </Card>
