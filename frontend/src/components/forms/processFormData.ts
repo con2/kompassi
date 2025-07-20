@@ -33,10 +33,21 @@ export default function processFormData(
         break;
 
       case "SingleCheckbox":
-      case "Tristate":
+        // "checked" => true
+        // "" => false
+        // undefined => false
         values[field.slug] = Boolean(byFieldName[slug]);
         break;
 
+      case "Tristate":
+        if (byFieldName[slug] === "true") {
+          values[field.slug] = true;
+        } else if (byFieldName[slug] === "false") {
+          values[field.slug] = false;
+        } else {
+          values[field.slug] = null;
+        }
+        break;
       case "MultiItemField":
         values[field.slug] = processFormData(field.fields, formData, slug);
         break;

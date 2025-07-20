@@ -204,6 +204,7 @@ export type Value =
   | string
   | number
   | boolean
+  | null
   | string[]
   | Record<string, string>
   | Record<string, unknown>; /// MultiItemField
