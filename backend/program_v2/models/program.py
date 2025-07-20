@@ -29,7 +29,7 @@ from involvement.models.enums import InvolvementType
 from involvement.models.invitation import Invitation
 from involvement.models.involvement import Involvement
 from program_v2.models.cached_annotations import CachedAnnotations, compact_annotations, validate_annotations
-from program_v2.utils.extract_annotations import extract_annotations
+from program_v2.utils.extract_annotations import extract_annotations_from_responses
 
 from ..dimensions import get_scheduled_dimension_value
 
@@ -365,11 +365,9 @@ class Program(models.Model):
         if not slug:
             slug = slugify(title)
 
-        annotations = extract_annotations(
-            values,
-            warnings,
-            [ea.annotation for ea in meta.active_event_annotations.all()],
-            {ea.annotation.slug: ea.program_form_fields for ea in meta.active_event_annotations.all()},
+        annotations = extract_annotations_from_responses(
+            [program_offer],
+            meta.active_event_annotations.all(),
         )
 
         program = cls(

@@ -11,7 +11,6 @@ from forms.models.form import Form
 from forms.models.response import Response
 from forms.models.survey import Survey
 from involvement.models.involvement import Involvement
-from program_v2.models.enums import AnnotationDataType
 
 from .filters import ProgramFilters
 from .models.annotation import Annotation
@@ -241,16 +240,18 @@ def test_extract_annotations():
                     type="NumberField",
                     required=False,
                 ),
+                dict(
+                    slug="is_revolving_door",
+                    title="Is revolving door",
+                    type="SingleCheckbox",
+                    required=False,
+                ),
             ],
         )
         accept_invitation_en.save()
         accept_invitation.workflow.handle_form_update()
 
     with transaction.atomic():
-        expected_annotations1 = {
-            "test:max_participants": 100,
-        }
-
         program_offer = Response.objects.create(
             form=offer_program_en,
             form_data={
@@ -264,26 +265,35 @@ def test_extract_annotations():
     with transaction.atomic():
         offer_program.workflow.handle_new_response_phase2(program_offer)
 
-    ea = EventAnnotation.objects.create(
+    ea, created = EventAnnotation.objects.update_or_create(
         meta=meta,
-        annotation=Annotation.objects.create(
-            slug="test:max_participants",
-            title={"en": "Max Participants"},
-            type_slug=AnnotationDataType.NUMBER.value,
-            is_applicable_to_program_items=True,
+        annotation=Annotation.objects.get(slug="konsti:maxAttendance"),
+        defaults=dict(
+            program_form_fields=[
+                "this_field_does_not_exist",
+                "max_participants",
+                "also_this_field_does_not_exist",
+            ],
         ),
-        program_form_fields=[
-            "this_field_does_not_exist",
-            "max_participants",
-            "also_this_field_does_not_exist",
-        ],
     )
+    assert not created
 
-    actual_annotations1 = extract_annotations_from_responses(responses=[program_offer], event_annotations=[ea])
-    assert actual_annotations1 == expected_annotations1
+    ea2, created = EventAnnotation.objects.update_or_create(
+        meta=meta,
+        annotation=Annotation.objects.get(slug="ropecon:isRevolvingDoor"),
+        defaults=dict(
+            program_form_fields=[
+                "this_field_does_not_exist",
+                "is_revolving_door",
+                "also_this_field_does_not_exist",
+            ],
+        ),
+    )
+    assert not created
 
     program1 = Program.from_program_offer(program_offer)
-    assert set(program1.validated_annotations.items()).issuperset(expected_annotations1.items())
+    assert program1.annotations["konsti:maxAttendance"] == 100
+    assert "ropecon:isRevolvingDoor" not in program1.annotations
 
     # Test that extract_annotations works with accepted program having multiple responses
     with transaction.atomic():
@@ -313,13 +323,15 @@ def test_extract_annotations():
 
     with transaction.atomic():
         expected_annotations2 = {
-            "test:max_participants": 50,
+            "konsti:maxAttendance": 0,
+            "ropecon:isRevolvingDoor": True,
         }
 
         accept_invitation_response = Response.objects.create(
             form=accept_invitation_en,
             form_data={
-                "max_participants": 50,
+                "max_participants": "0",
+                "is_revolving_door": "on",
             },
             revision_created_by=person2.user,
             ip_address="127.0.0.1",
@@ -343,7 +355,7 @@ def test_extract_annotations():
     # isolated test: our test annotation is extracted from responses as expected
     actual_annotations2 = extract_annotations_from_responses(
         responses=[program_offer2, accept_invitation_response],
-        event_annotations=[ea],
+        event_annotations=[ea, ea2],
     )
     assert actual_annotations2 == expected_annotations2
 

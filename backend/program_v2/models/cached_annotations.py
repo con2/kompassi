@@ -36,4 +36,4 @@ def validate_annotations(
 
 
 def compact_annotations(annotations: CachedAnnotations) -> CachedAnnotations:
-    return {k: v for (k, v) in annotations.items() if v not in (None, "", False)}
+    return {k: v for (k, v) in annotations.items() if v not in (None, "")}
