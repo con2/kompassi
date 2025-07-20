@@ -71,6 +71,12 @@ export const revalidate = 0;
 export async function generateMetadata({ params, searchParams }: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
+
+  const session = await auth();
+  if (!session) {
+    return translations.SignInRequired.metadata;
+  }
+
   const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
