@@ -5,6 +5,7 @@ Also handles stuff like totals, formatting, and so on.
 
 from __future__ import annotations
 
+import json
 from datetime import datetime
 from enum import Enum
 from functools import cached_property
@@ -18,6 +19,7 @@ from tabulate import tabulate
 from core.models.event import Event
 from core.utils.locale_utils import get_message_in_language
 from graphql_api.language import DEFAULT_LANGUAGE
+from tickets_v2.models.order import PaymentProvider
 
 Value = int | float | str | None
 SQL_DIR = Path(__file__).parent / "sql"
@@ -29,6 +31,12 @@ class TypeOfColumn(Enum):
     STRING = "string"
     PERCENTAGE = "percentage"
     DATETIME = "datetime"
+
+    # NUMERIC(10,2) in SQL
+    # decimal.Decimal in Python
+    # string of "0.00" in JSON
+    # formatted as "0,00 €" in frontend
+    CURRENCY = "currency"
 
 
 class TotalBy(Enum):
@@ -80,7 +88,7 @@ class Report(pydantic.BaseModel):
     rows: list[list[Value]]
     total_row: list[Value] | None = None
 
-    footer: dict[str, str] = pydantic.Field(default_factory=dict)
+    footer: dict[str, str] | None = None
 
     lang: str = DEFAULT_LANGUAGE
     has_total_row: bool = False
@@ -92,7 +100,7 @@ class Report(pydantic.BaseModel):
                 total_row.append("")
                 continue
 
-            if col.type in (TypeOfColumn.INT, TypeOfColumn.PERCENTAGE):
+            if col.type in (TypeOfColumn.INT, TypeOfColumn.PERCENTAGE, TypeOfColumn.CURRENCY):
                 total_row.append(col.total_aggregate([row[col_ind] for row in self.rows]))
             elif col.type in (TypeOfColumn.STRING, TypeOfColumn.DATETIME):
                 total_row.append(get_message_in_language(TOTAL, self.lang) if col_ind == 0 else "")
@@ -103,6 +111,8 @@ class Report(pydantic.BaseModel):
     def model_post_init(self, context: Any) -> None:
         if self.has_total_row:
             self.total_row = self.get_total_row()
+        if not self.footer:
+            self.footer = dict()
 
     @classmethod
     def from_query(
@@ -113,6 +123,7 @@ class Report(pydantic.BaseModel):
         columns: list[Column],
         has_total_row: bool = False,
         lang: str = DEFAULT_LANGUAGE,
+        footer: dict[str, str] | None = None,
         **kwargs,
     ) -> Report:
         query = (SQL_DIR / f"report_{slug}.sql").read_text()
@@ -128,6 +139,7 @@ class Report(pydantic.BaseModel):
             rows=rows,
             has_total_row=has_total_row,
             lang=lang,
+            footer=footer,
         )
 
     def print_tabular(self, lang: str = DEFAULT_LANGUAGE):
@@ -301,6 +313,10 @@ def payment_attempts_by_payment_method(
             ),
         ],
         has_total_row=True,
+        footer=dict(
+            en="Only showing payments done via Paytrail.",
+            fi="Näytetään vain Paytrailin kautta tehdyt maksut.",
+        ),
         lang=lang,
     )
 
@@ -436,9 +452,57 @@ class TicketExchangeByHour(pydantic.BaseModel):
         )
 
 
+def sales_by_payment_provider(
+    event: Event,
+    lang: str = DEFAULT_LANGUAGE,
+) -> Report:
+    return Report.from_query(
+        slug="sales_by_payment_provider",
+        title=dict(
+            en="Sales by payment provider",
+            fi="Myynti maksunvälittäjittäin",
+        ),
+        payment_providers=json.dumps([{"id": pm.value, "title": pm.name} for pm in PaymentProvider]),
+        event_id=event.id,
+        columns=[
+            Column(
+                slug="payment_provider",
+                title=dict(
+                    en="Payment provider",
+                    fi="Maksutapa",
+                ),
+                type=TypeOfColumn.STRING,
+            ),
+            Column(
+                slug="total_sold",
+                title=dict(
+                    en="Total sold",
+                    fi="Myyty",
+                ),
+                type=TypeOfColumn.CURRENCY,
+            ),
+            Column(
+                slug="total_paid",
+                title=dict(
+                    en="Total paid",
+                    fi="Maksettu",
+                ),
+                type=TypeOfColumn.CURRENCY,
+            ),
+        ],
+        has_total_row=True,
+        lang=lang,
+        footer=dict(
+            en="Total cancelled is not included in total sold or total paid.",
+            fi="Perutut tilaukset eivät sisälly myytyihin tai maksettuihin.",
+        ),
+    )
+
+
 REPORTS = dict(
     orders_by_payment_status=OrdersByPaymentStatus.report,
     payment_attempts_by_payment_method=payment_attempts_by_payment_method,
+    sales_by_payment_provider=sales_by_payment_provider,
     ticket_exchange_by_product=ticket_exchange_by_product,
     ticket_exchange_by_hour=TicketExchangeByHour.report,
 )

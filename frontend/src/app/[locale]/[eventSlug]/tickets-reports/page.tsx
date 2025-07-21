@@ -3,7 +3,11 @@ import { notFound } from "next/navigation";
 
 import { Card, CardBody, CardTitle } from "react-bootstrap";
 import { graphql } from "@/__generated__";
-import { ReportFragment, TypeOfColumn } from "@/__generated__/graphql";
+import {
+  PaymentProvider,
+  ReportFragment,
+  TypeOfColumn,
+} from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
@@ -11,6 +15,7 @@ import SignInRequired from "@/components/errors/SignInRequired";
 import { formatDateTime } from "@/components/FormattedDateTime";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import { timezone as defaultTimezone } from "@/config";
+import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { defaultLanguage, getTranslations } from "@/translations";
 
@@ -109,6 +114,8 @@ function formatCellValue(
       return "" + value;
     case TypeOfColumn.Percentage:
       return "" + ((value as number) * 100).toFixed(1) + "%";
+    case TypeOfColumn.Currency:
+      return formatMoney(value as string);
     case TypeOfColumn.Datetime:
       try {
         return formatDateTime(value as string, locale, options, timezone);
@@ -190,8 +197,24 @@ export default async function ReportsPage({ params }: Props) {
   }
 
   const event = data.event;
-  const reports = data.event.tickets.reports;
   const timezone = Temporal.TimeZone.from(event.timezone || "UTC");
+
+  // HACK
+  const reports = JSON.parse(
+    JSON.stringify(data.event.tickets.reports),
+  ) as ReportFragment[];
+  const salesByProviderReport = reports.find(
+    (report) => report.slug === "sales_by_payment_provider",
+  );
+  if (salesByProviderReport) {
+    salesByProviderReport.rows = salesByProviderReport.rows.map((row) => {
+      const [provider_id, ...rest]: [PaymentProvider, ...any[]] = row as any;
+      return [
+        translations.Tickets.Order.attributes.provider.choices[provider_id],
+        ...rest,
+      ];
+    });
+  }
 
   return (
     <TicketsAdminView

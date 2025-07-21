@@ -2364,7 +2364,7 @@ export type ReportType = {
   footer: Scalars['String']['output'];
   hasTotalRow: Scalars['Boolean']['output'];
   lang: Scalars['String']['output'];
-  rows: Array<Maybe<Array<Maybe<Scalars['GenericScalar']['output']>>>>;
+  rows: Array<Array<Maybe<Scalars['GenericScalar']['output']>>>;
   slug: Scalars['String']['output'];
   title: Scalars['String']['output'];
   totalRow?: Maybe<Array<Maybe<Scalars['GenericScalar']['output']>>>;
@@ -2577,6 +2577,7 @@ export enum TotalBy {
 
 /** An enumeration. */
 export enum TypeOfColumn {
+  Currency = 'CURRENCY',
   Datetime = 'DATETIME',
   Int = 'INT',
   Percentage = 'PERCENTAGE',
@@ -3648,7 +3649,7 @@ export type SurveysQueryVariables = Exact<{
 
 export type SurveysQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', forms: { __typename?: 'FormsProfileMetaType', surveys: Array<{ __typename?: 'FullSurveyType', slug: string, title?: string | null, event: { __typename?: 'LimitedEventType', slug: string, name: string } }> } } | null, event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', surveys: Array<{ __typename?: 'FullSurveyType', slug: string, title?: string | null, isActive: boolean, activeFrom?: string | null, activeUntil?: string | null, countResponses: number, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> }> } | null } | null };
 
-export type ReportFragment = { __typename?: 'ReportType', slug: string, title: string, footer: string, rows: Array<Array<unknown | null> | null>, totalRow?: Array<unknown | null> | null, columns: Array<{ __typename?: 'ColumnType', slug: string, title: string, type: TypeOfColumn }> };
+export type ReportFragment = { __typename?: 'ReportType', slug: string, title: string, footer: string, rows: Array<Array<unknown | null>>, totalRow?: Array<unknown | null> | null, columns: Array<{ __typename?: 'ColumnType', slug: string, title: string, type: TypeOfColumn }> };
 
 export type TicketsAdminReportsPageQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -3656,7 +3657,7 @@ export type TicketsAdminReportsPageQueryVariables = Exact<{
 }>;
 
 
-export type TicketsAdminReportsPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, tickets?: { __typename?: 'TicketsV2EventMetaType', reports: Array<{ __typename?: 'ReportType', slug: string, title: string, footer: string, rows: Array<Array<unknown | null> | null>, totalRow?: Array<unknown | null> | null, columns: Array<{ __typename?: 'ColumnType', slug: string, title: string, type: TypeOfColumn }> }> } | null } | null };
+export type TicketsAdminReportsPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, tickets?: { __typename?: 'TicketsV2EventMetaType', reports: Array<{ __typename?: 'ReportType', slug: string, title: string, footer: string, rows: Array<Array<unknown | null>>, totalRow?: Array<unknown | null> | null, columns: Array<{ __typename?: 'ColumnType', slug: string, title: string, type: TypeOfColumn }> }> } | null } | null };
 
 export type GenerateKeyPairMutationVariables = Exact<{
   password: Scalars['String']['input'];
