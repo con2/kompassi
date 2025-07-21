@@ -46,7 +46,7 @@
     "gulp-util": "^3.0.8",
     "hammerjs": "^2.0.8",
     "js-cookie": "^2.2.1",
-    "jsdom": "^16.0.0",
+    "jsdom": "^16.7.0",
     "knockout": "^3.5.1",
     "lodash": "^4.17.21",
     "mocha": "^10.3.0",
