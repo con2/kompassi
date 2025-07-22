@@ -68,9 +68,7 @@ export default function FormattedDateTimeRange({
   options = defaultOptions,
   includeDuration = false,
 }: Props) {
-  const timezone = scope.timezone
-    ? Temporal.TimeZone.from(scope.timezone)
-    : defaultTimezone;
+  const timezone = scope.timezone || defaultTimezone;
 
   const formattedStart = start
     ? formatDateTime(start, locale, options, timezone)

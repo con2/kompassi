@@ -21,7 +21,7 @@ export function formatDateTime(
   value: string,
   locale: string,
   options: Intl.DateTimeFormatOptions = defaultOptions,
-  timezone: Temporal.TimeZone | Temporal.TimeZoneProtocol = defaultTimezone,
+  timezone: Temporal.TimeZoneLike = defaultTimezone,
 ) {
   return Temporal.Instant.from(value)
     .toZonedDateTimeISO(timezone)
