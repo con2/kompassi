@@ -415,7 +415,7 @@ ruff==0.12.4
     # via -r requirements.in
 s3transfer==0.13.1
     # via boto3
-sentry-sdk==2.33.1
+sentry-sdk==2.33.2
     # via fastapi-cloud-cli
 shellingham==1.5.4
     # via typer
