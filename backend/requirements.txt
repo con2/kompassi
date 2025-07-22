@@ -4,7 +4,7 @@ aiodns==3.5.0
     # via aiohttp
 aiohappyeyeballs==2.6.1
     # via aiohttp
-aiohttp==3.12.14
+aiohttp[speedups]==3.12.14
     # via -r requirements.in
 aiosignal==1.4.0
     # via aiohttp
@@ -25,6 +25,10 @@ asgiref==3.9.1
     #   django-cors-headers
 asttokens==3.0.0
     # via stack-data
+async-timeout==5.0.1
+    # via
+    #   aiohttp
+    #   redis
 attrs==25.3.0
     # via
     #   aiohttp
@@ -72,7 +76,7 @@ charset-normalizer==3.4.2
     #   pypugjs
     #   reportlab
     #   requests
-click==8.2.1
+click==8.1.8
     # via
     #   celery
     #   click-didyoumean
@@ -102,7 +106,7 @@ decorator==5.2.1
     #   ipython
 distlib==0.3.9
     # via virtualenv
-django==5.2.4
+django==4.2.23
     # via
     #   -r requirements.in
     #   crispy-bootstrap3
@@ -115,7 +119,6 @@ django==5.2.4
     #   django-redis
     #   django-storages
     #   django-stubs
-    #   django-stubs-ext
     #   graphene-django
     #   lippukala
     #   paikkala
@@ -141,21 +144,24 @@ django-redis==6.0.0
     # via -r requirements.in
 django-storages==1.14.6
     # via -r requirements.in
-django-stubs==5.2.1
+django-stubs==1.7.0
     # via -r requirements.in
-django-stubs-ext==5.2.1
-    # via django-stubs
 dnspython==2.7.0
     # via email-validator
 email-validator==2.2.0
     # via
     #   fastapi
     #   pydantic
+exceptiongroup==1.3.0
+    # via
+    #   anyio
+    #   ipython
+    #   pytest
 executing==2.2.0
     # via stack-data
-fastapi==0.116.1
+fastapi[standard]==0.116.1
     # via -r requirements.in
-fastapi-cli==0.0.8
+fastapi-cli[standard]==0.0.8
     # via fastapi
 fastapi-cloud-cli==0.1.4
     # via fastapi-cli
@@ -163,7 +169,7 @@ filelock==3.18.0
     # via virtualenv
 flake8==7.3.0
     # via -r requirements.in
-fonttools==4.58.5
+fonttools[woff]==4.58.5
     # via weasyprint
 frozenlist==1.7.0
     # via
@@ -211,16 +217,16 @@ idna==3.10
     #   httpx
     #   requests
     #   yarl
+importlib-metadata==8.7.0
+    # via markdown
 iniconfig==2.1.0
     # via pytest
 ipdb==0.13.13
     # via -r requirements.in
-ipython==9.4.0
+ipython==8.18.1
     # via
     #   -r requirements.in
     #   ipdb
-ipython-pygments-lexers==1.1.1
-    # via ipython
 isort==6.0.1
     # via -r requirements.in
 jedi==0.19.2
@@ -243,7 +249,7 @@ jwskate==0.12.2
     # via -r requirements.in
 kombu==5.5.4
     # via celery
-lippukala @ git+https://github.com/kcsry/lippukala@fd6f55f499b12062887f6c78ff2c6749df8ba5cc
+lippukala @ git+https://github.com/kcsry/lippukala@v2.0.0
     # via -r requirements.in
 markdown==3.8.2
     # via -r requirements.in
@@ -261,6 +267,10 @@ multidict==6.6.3
     # via
     #   aiohttp
     #   yarl
+mypy==1.17.0
+    # via django-stubs
+mypy-extensions==1.1.0
+    # via mypy
 nodeenv==1.9.1
     # via
     #   pre-commit
@@ -275,7 +285,7 @@ packaging==25.0
     #   gunicorn
     #   kombu
     #   pytest
-paikkala @ git+https://github.com/kcsry/paikkala@93b8b98c99f31d4dbc4bfa703afd77d8df7f66d8
+paikkala @ git+https://github.com/kcsry/paikkala@v0.2.0
     # via -r requirements.in
 paramiko==3.5.1
     # via -r requirements.in
@@ -283,6 +293,8 @@ parso==0.8.4
     # via jedi
 passlib==1.7.4
     # via -r requirements.in
+pathspec==0.12.1
+    # via mypy
 pexpect==4.9.0
     # via ipython
 phonenumberslite==9.0.9
@@ -308,7 +320,7 @@ propcache==0.3.2
     # via
     #   aiohttp
     #   yarl
-psycopg==3.2.9
+psycopg[c,pool]==3.2.9
     # via -r requirements.in
 psycopg-c==3.2.9
     # via psycopg
@@ -324,7 +336,7 @@ pycodestyle==2.14.0
     # via flake8
 pycparser==2.22
     # via cffi
-pydantic==2.11.7
+pydantic[email]==2.11.7
     # via
     #   -r requirements.in
     #   fastapi
@@ -339,7 +351,6 @@ pyflakes==3.4.0
 pygments==2.19.2
     # via
     #   ipython
-    #   ipython-pygments-lexers
     #   pytest
     #   rich
 pynacl==1.5.0
@@ -432,11 +443,11 @@ sqlparse==0.5.3
     # via django
 stack-data==0.6.3
     # via ipython
-starlette==0.47.1
+starlette==0.47.2
     # via fastapi
 tabulate==0.9.0
     # via -r requirements.in
-tatsu==5.13.1
+tatsu==5.8.3
     # via ics
 text-unidecode==1.3
     # via graphene-django
@@ -446,6 +457,11 @@ tinycss2==1.4.0
     #   weasyprint
 tinyhtml5==2.0.0
     # via weasyprint
+tomli==2.2.1
+    # via
+    #   ipdb
+    #   mypy
+    #   pytest
 traitlets==5.14.3
     # via
     #   ipython
@@ -456,36 +472,46 @@ typer==0.16.0
     #   fastapi-cloud-cli
 types-python-dateutil==2.9.0.20250708
     # via arrow
-types-pyyaml==6.0.12.20250516
-    # via django-stubs
 typing-extensions==4.14.1
     # via
+    #   aiosignal
+    #   anyio
+    #   asgiref
     #   binapy
     #   django-stubs
-    #   django-stubs-ext
+    #   exceptiongroup
     #   fastapi
     #   graphene
+    #   graphql-core
+    #   ipython
     #   jwcrypto
     #   jwskate
+    #   multidict
+    #   mypy
+    #   psycopg
     #   psycopg-pool
     #   pydantic
     #   pydantic-core
     #   pyright
+    #   referencing
+    #   rich
     #   rich-toolkit
+    #   starlette
     #   typer
     #   typing-inspection
+    #   uvicorn
 typing-inspection==0.4.1
     # via pydantic
 tzdata==2025.2
     # via kombu
 unicodecsv==0.14.1
     # via -r requirements.in
-urllib3==2.5.0
+urllib3==1.26.20
     # via
     #   botocore
     #   requests
     #   sentry-sdk
-uvicorn==0.35.0
+uvicorn[standard]==0.35.0
     # via
     #   -r requirements.in
     #   fastapi
@@ -522,6 +548,8 @@ xlwt==1.3.0
     # via lippukala
 yarl==1.20.1
     # via aiohttp
+zipp==3.23.0
+    # via importlib-metadata
 zopfli==0.2.3.post1
     # via fonttools
 zxcvbn==4.5.0
