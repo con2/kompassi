@@ -7,7 +7,7 @@ FROM node:24 AS builder
 WORKDIR /usr/src/app
 ENV NEXT_TELEMETRY_DISABLED 1
 COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY package.json package-lock.json next.config.js tsconfig.json .eslintrc.json ./
+COPY package.json package-lock.json next.config.ts tsconfig.json .eslintrc.json ./
 # COPY public public
 COPY src src
 RUN npm run build
