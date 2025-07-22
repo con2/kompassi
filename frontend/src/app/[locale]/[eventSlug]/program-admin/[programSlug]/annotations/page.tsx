@@ -47,17 +47,18 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     programSlug: string;
-  };
-  searchParams: Record<string, string>;
+  }>;
+  searchParams: Promise<Record<string, string>>;
 }
 
 export const revalidate = 0;
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const { data, errors } = await getClient().query({
@@ -73,10 +74,9 @@ export async function generateMetadata({ params }: Props) {
   return { title };
 }
 
-export default async function ProgramAdminDetailAnnotationsPage({
-  params,
-  searchParams,
-}: Props) {
+export default async function ProgramAdminDetailAnnotationsPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;

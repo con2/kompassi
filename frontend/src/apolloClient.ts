@@ -1,11 +1,11 @@
 import { HttpLink, DefaultContext } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { registerApolloClient } from "@apollo/experimental-nextjs-app-support/rsc";
 import {
-  NextSSRInMemoryCache,
-  NextSSRApolloClient,
-} from "@apollo/experimental-nextjs-app-support/ssr";
+  registerApolloClient,
+  ApolloClient,
+  InMemoryCache,
+} from "@apollo/client-integration-nextjs";
 import { auth } from "./auth";
 import { kompassiBaseUrl } from "./config";
 
@@ -38,8 +38,8 @@ const httpLink = new HttpLink({
 });
 
 export const { getClient } = registerApolloClient(() => {
-  return new NextSSRApolloClient({
-    cache: new NextSSRInMemoryCache(),
+  return new ApolloClient({
+    cache: new InMemoryCache(),
     link: authLink.concat(errorLink).concat(httpLink),
   });
 });

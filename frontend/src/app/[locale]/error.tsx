@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useEffect } from "react";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { defaultLanguage } from "@/translations";
 
 // NOTE: Don't use getTranslations here, as it would bundle all the translations.
 // This is a fallback, so it should be lightweight.
@@ -33,9 +34,14 @@ export default function Error({ error }: Props) {
     console.error(error);
   }, [error]);
 
-  let { locale } = useParams();
-  if (Array.isArray(locale)) {
-    locale = locale[0];
+  let locale: string;
+  let { locale: paramLocale } = useParams();
+  if (Array.isArray(paramLocale)) {
+    locale = paramLocale[0] || defaultLanguage;
+  } else if (typeof paramLocale === "string") {
+    locale = paramLocale || defaultLanguage;
+  } else {
+    locale = defaultLanguage;
   }
 
   const { title, message } =

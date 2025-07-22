@@ -1,19 +1,19 @@
 import { redirect } from "next/navigation";
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     path: string[];
-  };
-  searchParams: Record<string, string>;
+  }>;
+  searchParams: Promise<Record<string, string>>;
 }
 
-export function generateMetadata({ params, searchParams }: Props): never {
+export default async function EventsRedirectPage(props: Props): Promise<never> {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { path } = params;
   const query = new URLSearchParams(searchParams).toString();
   return redirect(`/${path.join("/")}${query ? `?${query}` : ""}`);
 }
 
-export default function EventsRedirectPage(props: Props): never {
-  return generateMetadata(props);
-}
+export const generateMetadata = EventsRedirectPage;

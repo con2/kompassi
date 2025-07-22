@@ -55,17 +55,18 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string; // UI language
     eventSlug: string;
     surveySlug: string;
     language: string; // language code of form being edited
-  };
+  }>;
 }
 
 export const revalidate = 0;
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, surveySlug, language } = params;
   const translations = getTranslations(locale);
 
@@ -96,7 +97,8 @@ export async function generateMetadata({ params }: Props) {
   return { title };
 }
 
-export default async function EditSurveyLanguagePage({ params }: Props) {
+export default async function EditSurveyLanguagePage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, surveySlug, language } = params;
   const translations = getTranslations(locale);
   const t = translations.Survey;

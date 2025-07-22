@@ -12,12 +12,18 @@ export const metadata: Metadata = {
 
 interface Props {
   children: React.ReactNode;
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 }
 
-export default function RootLayout({ children, params: { locale } }: Props) {
+export default async function RootLayout(props: Props) {
+  const params = await props.params;
+
+  const { locale } = params;
+
+  const { children } = props;
+
   const supportedLanguage = toSupportedLanguage(locale);
 
   // TODO implement bootstrap dark mode toggle (<html data-bs-theme="dark">)

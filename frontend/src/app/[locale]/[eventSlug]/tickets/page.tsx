@@ -12,13 +12,14 @@ import { getProducts } from "@/services/tickets";
 import { getTranslations } from "@/translations";
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets;
@@ -33,7 +34,8 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function TicketsPage({ params }: Props) {
+export default async function TicketsPage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Order;

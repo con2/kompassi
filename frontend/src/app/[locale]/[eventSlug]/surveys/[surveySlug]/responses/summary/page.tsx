@@ -42,17 +42,19 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     surveySlug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     [key: string]: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params, searchParams }: Props) {
+export async function generateMetadata(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
 
@@ -85,7 +87,9 @@ export async function generateMetadata({ params, searchParams }: Props) {
   return { title };
 }
 
-export default async function SummaryPage({ params, searchParams }: Props) {
+export default async function SummaryPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { locale, eventSlug, surveySlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Survey;

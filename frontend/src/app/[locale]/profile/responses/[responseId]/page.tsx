@@ -72,13 +72,14 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     responseId: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale } = params;
   const translations = getTranslations(locale);
   const t = translations.Survey;
@@ -90,7 +91,8 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function ProfileSurveyResponsePage({ params }: Props) {
+export default async function ProfileSurveyResponsePage(props: Props) {
+  const params = await props.params;
   const { locale, responseId } = params;
   const translations = getTranslations(locale);
   const session = await auth();

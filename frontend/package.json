@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "dev": "concurrently -kn nextdev,codegen \"next dev\" \"graphql-codegen -w\"",
+    "dev": "concurrently -kn nextdev,codegen \"next dev --turbopack\" \"graphql-codegen -w\"",
     "format": "prettier --write .",
     "k8s:dev": "npm run k8s:generate && skaffold dev",
     "k8s:generate": "cd kubernetes && tsx manifest.ts",
@@ -16,17 +16,17 @@
   },
   "dependencies": {
     "@apollo/client": "^3.9.0-alpha.3",
-    "@apollo/experimental-nextjs-app-support": "^0.7.0",
+    "@apollo/client-integration-nextjs": "^0.12.2",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@js-temporal/polyfill": "^0.5.1",
     "bootstrap": "^5.3.5",
     "motion": "^11.15.0",
-    "next": "^14.2.28",
-    "next-auth": "^4.24.5",
-    "next-intl": "^3.26.3",
-    "react": "^18.2.0",
+    "next": "15.4.2",
+    "next-auth": "^4.24.11",
+    "next-intl": "^4.3.4",
+    "react": "19.1.0",
     "react-bootstrap": "^2.10.10",
-    "react-dom": "^18.2.0",
+    "react-dom": "19.1.0",
     "tsx": "^4.19.4"
   },
   "license": "MIT",
@@ -35,16 +35,20 @@
     "@graphql-codegen/client-preset": "^4.1.0",
     "@parcel/watcher": "^2.5.1",
     "@types/node": "^20.8.10",
-    "@types/react": "^18.2.34",
-    "@types/react-dom": "^18.2.14",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
     "concurrently": "^8.2.2",
     "eslint": "^8.52.0",
-    "eslint-config-next": "^14.0.1",
+    "eslint-config-next": "15.4.2",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-import": "^2.29.1",
     "prettier": "3.6.2",
     "sass": "^1.69.5",
     "typescript": "^5.2.2"
   },
-  "prettier": {}
+  "prettier": {},
+  "overrides": {
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6"
+  }
 }

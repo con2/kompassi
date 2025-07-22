@@ -53,16 +53,17 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     success?: string;
     error?: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets;
@@ -74,10 +75,9 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function ProfileOrdersPage({
-  params,
-  searchParams,
-}: Props) {
+export default async function ProfileOrdersPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { locale } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Order;

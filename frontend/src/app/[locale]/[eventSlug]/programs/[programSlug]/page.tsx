@@ -96,16 +96,17 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     programSlug: string;
-  };
+  }>;
 }
 
 export const revalidate = 5;
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const { data, errors } = await getClient().query({
@@ -143,7 +144,8 @@ function getLinkEmoji(type: ProgramLinkType) {
   }
 }
 
-export default async function NewProgramPage({ params }: Props) {
+export default async function NewProgramPage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;

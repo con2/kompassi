@@ -11,11 +11,11 @@ import { getOrder } from "@/services/tickets";
 import { getTranslations } from "@/translations";
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     orderId: string;
-  };
+  }>;
 }
 
 export const revalidate = 0;
@@ -23,7 +23,8 @@ export const revalidate = 0;
 /// NOTE: This page is on the Critical Path of the Hunger Games, so be extra mindful of performance.
 /// Also this page can be accessed without authentication (ie. we don't know the accessor is the person who ordered)
 /// so absolutely no PII.
-export default async function OrderPage({ params }: Props) {
+export default async function OrderPage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, orderId } = params;
   const { order, event } = await getOrder(eventSlug, orderId);
   const translations = getTranslations(locale);

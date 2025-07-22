@@ -1,13 +1,14 @@
 import { redirect } from "next/navigation";
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
-  };
+  }>;
 }
 
-export default function OrdersRedirectPage({ params }: Props) {
+export default async function OrdersRedirectPage(props: Props) {
+  const params = await props.params;
   const { eventSlug } = params;
   return void redirect(`/profile/orders?event=${eventSlug}`);
 }

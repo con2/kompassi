@@ -90,12 +90,13 @@ function ProgramOfferLink({
 }
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;
@@ -110,7 +111,8 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function ProfileProgramItemList({ params }: Props) {
+export default async function ProfileProgramItemList(props: Props) {
+  const params = await props.params;
   const { locale } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;

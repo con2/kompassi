@@ -27,16 +27,17 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     programSlug: string;
-  };
+  }>;
 }
 
 export const revalidate = 5;
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const { data, errors } = await getClient().query({
@@ -52,7 +53,8 @@ export async function generateMetadata({ params }: Props) {
   return { title };
 }
 
-export default async function ProgramFeedbackPage({ params }: Props) {
+export default async function ProgramFeedbackPage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program.feedback;

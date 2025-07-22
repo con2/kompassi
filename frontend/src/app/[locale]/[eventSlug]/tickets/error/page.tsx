@@ -5,13 +5,13 @@ import { getTranslations } from "@/translations";
 import type { Translations } from "@/translations/en";
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
-  };
-  searchParams: {
+  }>;
+  searchParams: Promise<{
     error?: string;
-  };
+  }>;
 }
 
 function getErrorMessage(error: any, translations: Translations) {
@@ -21,7 +21,9 @@ function getErrorMessage(error: any, translations: Translations) {
   return errorMessages[error] ?? errorMessages.UNKNOWN_ERROR;
 }
 
-export default function TicketsErrorPage({ params, searchParams }: Props) {
+export default async function TicketsErrorPage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const { title, message } = getErrorMessage(searchParams.error, translations);

@@ -55,17 +55,18 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
-  };
+  }>;
 }
 
 export interface PreparedProduct extends ProductListFragment {
   availabilityMessage: string;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
 
@@ -144,7 +145,8 @@ export function getAvailabilityMessage(
   return `${activityEmoji} ${message}`;
 }
 
-export default async function ProductsPage({ params }: Props) {
+export default async function ProductsPage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const tickeT = translations.Tickets;

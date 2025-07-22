@@ -28,16 +28,17 @@ const query = graphql(`
 `);
 
 interface SurveyPageProps {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     surveySlug: string;
-  };
+  }>;
 }
 
 export const revalidate = 0;
 
-export async function generateMetadata({ params }: SurveyPageProps) {
+export async function generateMetadata(props: SurveyPageProps) {
+  const params = await props.params;
   const { locale, eventSlug, surveySlug } = params;
   const t = getTranslations(locale);
   const { data } = await getClient().query({
@@ -49,7 +50,8 @@ export async function generateMetadata({ params }: SurveyPageProps) {
   };
 }
 
-export default async function SurveyPage({ params }: SurveyPageProps) {
+export default async function SurveyPage(props: SurveyPageProps) {
+  const params = await props.params;
   const { locale, eventSlug, surveySlug } = params;
   const t = getTranslations(locale).Survey;
   const { data } = await getClient().query({

@@ -1,14 +1,15 @@
 import { redirect } from "next/navigation";
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     surveySlug: string;
-  };
+  }>;
 }
 
-export default function SurveyRedirectPage({ params }: Props): never {
+export default async function SurveyRedirectPage(props: Props): Promise<never> {
+  const params = await props.params;
   const { eventSlug, surveySlug } = params;
   redirect(`/${eventSlug}/${surveySlug}`);
 }

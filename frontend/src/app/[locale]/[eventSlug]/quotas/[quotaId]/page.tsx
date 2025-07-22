@@ -51,16 +51,17 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     quotaId: string;
-  };
+  }>;
 }
 
 export const revalidate = 0;
 
-export default async function AdminQuotaDetailPage({ params }: Props) {
+export default async function AdminQuotaDetailPage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Quota;

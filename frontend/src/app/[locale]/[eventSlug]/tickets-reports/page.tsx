@@ -51,13 +51,14 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets;
@@ -176,7 +177,8 @@ function Report({ report, timezone, locale }: ReportProps) {
   );
 }
 
-export default async function ReportsPage({ params }: Props) {
+export default async function ReportsPage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets;

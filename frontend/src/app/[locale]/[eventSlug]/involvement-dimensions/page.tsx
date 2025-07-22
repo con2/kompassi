@@ -33,16 +33,18 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
-  };
-  searchParams: Record<string, string>;
+  }>;
+  searchParams: Promise<Record<string, string>>;
 }
 
 export const revalidate = 0;
 
-export default async function PeoplePage({ params, searchParams }: Props) {
+export default async function PeoplePage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
 

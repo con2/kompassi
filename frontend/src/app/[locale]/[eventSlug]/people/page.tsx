@@ -63,14 +63,16 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
-  };
-  searchParams: Record<string, string>;
+  }>;
+  searchParams: Promise<Record<string, string>>;
 }
 
-export async function generateMetadata({ params, searchParams }: Props) {
+export async function generateMetadata(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Involvement;
@@ -123,7 +125,9 @@ function hideStatusActive(cachedDimensions: unknown) {
   return { ...rest, state: state.filter((s) => s !== "active") };
 }
 
-export default async function PeoplePage({ params, searchParams }: Props) {
+export default async function PeoplePage(props: Props) {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Involvement;

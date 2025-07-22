@@ -45,14 +45,15 @@ const query = graphql(`
 `);
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     orderId: string;
-  };
+  }>;
 }
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, orderId } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Order;
@@ -80,7 +81,8 @@ export async function generateMetadata({ params }: Props) {
 
 export const revalidate = 0;
 
-export default async function ProfileOrderPage({ params }: Props) {
+export default async function ProfileOrderPage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, orderId } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Order;

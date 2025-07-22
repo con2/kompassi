@@ -87,16 +87,17 @@ type Revision =
   | (AdminProductDetailFragment & { isCurrent: true });
 
 interface Props {
-  params: {
+  params: Promise<{
     locale: string;
     eventSlug: string;
     productId: string;
-  };
+  }>;
 }
 
 export const revalidate = 0;
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, productId } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Product;
@@ -135,7 +136,8 @@ export async function generateMetadata({ params }: Props) {
   };
 }
 
-export default async function AdminProductDetailPage({ params }: Props) {
+export default async function AdminProductDetailPage(props: Props) {
+  const params = await props.params;
   const { locale, eventSlug, productId } = params;
   const translations = getTranslations(locale);
   const t = translations.Tickets.Product;
