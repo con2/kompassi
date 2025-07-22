@@ -41,9 +41,9 @@ binapy==0.8.0
     # via jwskate
 bleach==6.2.0
     # via -r requirements.in
-boto3==1.39.10
+boto3==1.39.11
     # via -r requirements.in
-botocore==1.39.10
+botocore==1.39.11
     # via
     #   boto3
     #   s3transfer
@@ -58,7 +58,6 @@ certifi==2025.7.14
     #   httpcore
     #   httpx
     #   requests
-    #   sentry-sdk
 cffi==1.17.1
     # via
     #   cryptography
@@ -157,8 +156,6 @@ fastapi==0.116.1
     # via -r requirements.in
 fastapi-cli==0.0.8
     # via fastapi
-fastapi-cloud-cli==0.1.4
-    # via fastapi-cli
 filelock==3.18.0
     # via virtualenv
 flake8==7.3.0
@@ -197,9 +194,7 @@ httpcore==1.0.9
 httptools==0.6.4
     # via uvicorn
 httpx==0.28.1
-    # via
-    #   fastapi
-    #   fastapi-cloud-cli
+    # via fastapi
 ics==0.7.2
     # via -r requirements.in
 identify==2.6.12
@@ -328,7 +323,6 @@ pydantic==2.11.7
     # via
     #   -r requirements.in
     #   fastapi
-    #   fastapi-cloud-cli
     #   graphene-pydantic
 pydantic-core==2.33.2
     # via pydantic
@@ -402,11 +396,7 @@ rich==14.0.0
     #   rich-toolkit
     #   typer
 rich-toolkit==0.14.8
-    # via
-    #   fastapi-cli
-    #   fastapi-cloud-cli
-rignore==0.6.4
-    # via fastapi-cloud-cli
+    # via fastapi-cli
 rpds-py==0.26.0
     # via
     #   jsonschema
@@ -415,8 +405,6 @@ ruff==0.12.4
     # via -r requirements.in
 s3transfer==0.13.1
     # via boto3
-sentry-sdk==2.33.2
-    # via fastapi-cloud-cli
 shellingham==1.5.4
     # via typer
 six==1.17.0
@@ -451,9 +439,7 @@ traitlets==5.14.3
     #   ipython
     #   matplotlib-inline
 typer==0.16.0
-    # via
-    #   fastapi-cli
-    #   fastapi-cloud-cli
+    # via fastapi-cli
 types-python-dateutil==2.9.0.20250708
     # via arrow
 types-pyyaml==6.0.12.20250516
@@ -484,13 +470,11 @@ urllib3==2.5.0
     # via
     #   botocore
     #   requests
-    #   sentry-sdk
 uvicorn==0.35.0
     # via
     #   -r requirements.in
     #   fastapi
     #   fastapi-cli
-    #   fastapi-cloud-cli
 uvloop==0.21.0
     # via uvicorn
 vine==5.1.0

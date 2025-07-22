@@ -18,7 +18,7 @@ django-redis
 django-storages
 django-stubs
 Django
-fastapi[standard]
+fastapi[standard-no-fastapi-cloud-cli]
 flake8
 graphene-django
 graphene-pydantic
