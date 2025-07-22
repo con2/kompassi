@@ -24,6 +24,4 @@ export const kompassiOidc = {
 
 export const publicUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
 
-export const timezone = Temporal.TimeZone.from(
-  process.env.KOMPASSI_TIMEZONE || "Europe/Helsinki",
-);
+export const timezone = process.env.KOMPASSI_TIMEZONE || "Europe/Helsinki";

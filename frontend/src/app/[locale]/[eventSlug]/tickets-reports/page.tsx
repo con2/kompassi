@@ -103,7 +103,7 @@ const defaultOptions: Intl.DateTimeFormatOptions = {
 function formatCellValue(
   value: unknown,
   type: TypeOfColumn,
-  timezone: Temporal.TimeZoneProtocol = defaultTimezone,
+  timezone: Temporal.TimeZoneLike = defaultTimezone,
   locale: string = defaultLanguage,
   options: Intl.DateTimeFormatOptions = defaultOptions,
 ) {
@@ -130,7 +130,7 @@ function formatCellValue(
 
 interface ReportProps {
   report: ReportFragment;
-  timezone: Temporal.TimeZoneProtocol;
+  timezone: Temporal.TimeZoneLike;
   locale: string;
 }
 
@@ -197,7 +197,7 @@ export default async function ReportsPage({ params }: Props) {
   }
 
   const event = data.event;
-  const timezone = Temporal.TimeZone.from(event.timezone || "UTC");
+  const timezone = event.timezone || defaultTimezone;
 
   // HACK
   const reports = JSON.parse(
