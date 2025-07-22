@@ -20,7 +20,7 @@
     "@graphql-typed-document-node/core": "^3.2.0",
     "@js-temporal/polyfill": "^0.5.1",
     "bootstrap": "^5.3.5",
-    "motion": "^11.15.0",
+    "motion": "^12.23.6",
     "next": "^14.2.28",
     "next-auth": "^4.24.5",
     "next-intl": "^3.26.3",
