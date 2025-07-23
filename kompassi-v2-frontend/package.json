@@ -40,7 +40,7 @@
     "concurrently": "^9.0.0",
     "eslint": "^8.52.0",
     "eslint-config-next": "15.4.3",
-    "eslint-config-prettier": "^9.1.0",
+    "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-import": "^2.29.1",
     "prettier": "3.6.2",
     "sass": "^1.69.5",
