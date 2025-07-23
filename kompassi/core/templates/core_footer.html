@@ -1,11 +1,9 @@
-{% load trans from i18n %} {% if event and event.homepage_url and
-event.organization.homepage_url and event.organization.name %}
+{% load trans from i18n %}
+{% if event and event.homepage_url and event.organization.homepage_url and event.organization.name %}
 <a href="{{ event.homepage_url }}" target="_blank">{{ event.name_genitive }}</a>
 järjestää
-<a href="{{ event.organization.homepage_url }}" target="_blank"
-  >{{ event.organization.name }}</a
->. {% endif %} {{ settings.KOMPASSI_APPLICATION_NAME }} &copy; 2009&ndash;2025
+<a href="{{ event.organization.homepage_url }}" target="_blank">{{ event.organization.name }}</a>.
+{% endif %}
+{{ settings.KOMPASSI_APPLICATION_NAME }} &copy; 2009&ndash;2025
 <a href="https://github.com/con2/kompassi">Santtu Pajukanta et al</a>.
-<a href="{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}"
-  >{% trans "Privacy policy" %}</a
->.
+<a href="{{ settings.KOMPASSI_PRIVACY_POLICY_URL }}">{% trans "Privacy policy" %}</a>.
