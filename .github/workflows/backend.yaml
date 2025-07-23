@@ -3,14 +3,26 @@ name: backend
 on:
   push:
     paths:
-      - backend/**
+      - kompassi/**
       - .github/workflows/backend.yaml
+      - Dockerfile
+      - Dockerfile.static
+      - manage.py
+      - pyproject.toml
+      - uv.lock
+      - skaffold.in.yaml
     branches:
       - main
   pull_request:
     paths:
-      - backend/**
+      - kompassi/**
       - .github/workflows/backend.yaml
+      - Dockerfile
+      - Dockerfile.static
+      - manage.py
+      - pyproject.toml
+      - uv.lock
+      - skaffold.in.yaml
     branches:
       - main
 
@@ -24,11 +36,11 @@ jobs:
     env:
       DOCKER_BUILDKIT: "1"
       COMPOSE_DOCKER_CLI_BUILD: "1"
+      UV_PYTHON_DOWNLOADS: "0"
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
       - run: docker compose -f docker-compose.test.yml up --exit-code-from test
-        working-directory: backend
 
   build:
     runs-on: ubuntu-latest
@@ -37,9 +49,11 @@ jobs:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
       - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version-file: ".python-version"
 
       - id: cache-bin
         uses: actions/cache@v4
@@ -67,8 +81,8 @@ jobs:
           if ! [[ "$GITHUB_EVENT_NAME" == 'push' && "$GITHUB_REF" == 'refs/heads/main' ]]; then
             export SKAFFOLD_PUSH=false
           fi
-          python3 -m pip install -U pip setuptools wheel
-          python3 -m pip install emskaffolden
+          uv pip install setuptools
+          uv pip install emskaffolden
           emskaffolden -E staging -- build --file-output build.json
         working-directory: backend
       - uses: actions/upload-artifact@v4
@@ -87,9 +101,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build-json
+
+      - uses: astral-sh/setup-uv@v6
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version-file: ".python-version"
 
       - id: cache-bin
         uses: actions/cache@v4
@@ -105,8 +121,8 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
       - run: |
-          python3 -m pip install -U pip setuptools wheel
-          python3 -m pip install emskaffolden
+          uv pip install setuptools
+          uv pip install emskaffolden
           emskaffolden -E staging -- deploy -n kompassi-staging -a ../build.json
         working-directory: backend
 
@@ -120,9 +136,11 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: build-json
+
+      - uses: astral-sh/setup-uv@v6
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version-file: ".python-version"
 
       - id: cache-bin
         uses: actions/cache@v4
@@ -138,7 +156,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
       - run: |
-          python3 -m pip install -U pip setuptools wheel
-          python3 -m pip install emskaffolden
+          uv pip install setuptools
+          uv pip install emskaffolden
           emskaffolden -E production -- deploy -n kompassi-production -a ../build.json
         working-directory: backend

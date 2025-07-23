@@ -1,0 +1,262 @@
+<!doctype html>
+<html>
+  <head>
+    <title>POS</title>
+    <script type="text/javascript">
+      var codeInput;
+      var statusDiv;
+
+      function xhr(url, data, callback) {
+        var req = new XMLHttpRequest();
+        req.open(data ? "POST" : "GET", url);
+        req.setRequestHeader(
+          "Content-Type",
+          "application/x-www-form-urlencoded",
+        );
+        req.onreadystatechange = function () {
+          if (req.readyState === 4 && req.status === 200) {
+            callback(req.status == 200, req.responseText, req);
+          }
+        };
+        req.send(data);
+      }
+
+      var codes = {};
+      var useQueue = [];
+      var currentlyShownId = null;
+
+      function forEachCode(func) {
+        for (var codeId in codes) {
+          func(codes[codeId]);
+        }
+      }
+
+      function extend(/* ... */) {
+        var target = arguments[0];
+        for (var i = 1; i < arguments.length; i++) {
+          var source = arguments[i];
+          if (source) {
+            for (var key in source) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      function parseData(data) {
+        if (typeof data === "string") data = JSON.parse(data);
+        data.codes.forEach(function (code) {
+          codes[code.id] = extend(codes[code.id] || {}, code);
+        });
+        console.log("Got " + data.codes.length + " codes");
+      }
+
+      function download() {
+        xhr("?json=1&t=" + (0 | new Date()), null, function (error, data, req) {
+          parseData(data);
+        });
+      }
+
+      function escapeHtml(str) {
+        var div = document.createElement("div");
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+      }
+
+      function Tee(template, env) {
+        return template.replace(/\{(.+?)\}/g, function (_, m) {
+          return escapeHtml(env[m] || "").replace(/\n/g, "<br>");
+        });
+      }
+
+      function showCode(code) {
+        currentlyShownId = code.id;
+        statusDiv.innerHTML = Tee(
+          "<div class=cd><span class=pfx>{prefix}</span>{code}</div>{lit}<div class=product>{prod}</div><div class=addr>{name}</div><div class=comment>{comment}</div>",
+          code,
+        );
+        var cls = "code-unused";
+        if (code.used) cls = "code-used";
+        else if (code.localUsed) cls = "code-localused";
+        document.body.className = cls;
+      }
+
+      function useCode(code) {
+        code.localUsed = true;
+        useQueue.push(code.id);
+        showCode(code);
+      }
+
+      function confirmUseCode(code) {
+        if (code.used || code.localUsed) {
+          alert(
+            "Koodi näyttää jo käytetyltä!\nOta yhteys tapahtuman taloustiimiin asian selvittämiseksi.",
+          );
+          return;
+        } else {
+          if (confirm("Käytä koodi " + code.code + "?")) {
+            useCode(code);
+            setTimeout(syncUseQueue, 4);
+            setTimeout(function () {
+              codeInput.value = "";
+              codeInput.focus();
+            }, 250);
+          }
+        }
+      }
+
+      function search(enter) {
+        var nStarting = 0;
+        var inputCode = codeInput.value.toLowerCase();
+        var regexpText = "^" + inputCode;
+        if (/^[a-z]+ /i.test(inputCode)) {
+          // Cheap "fuzzy" searching ("d bu" will match "desu butler")
+          regexpText =
+            "^" +
+            inputCode
+              .split(/\s+/)
+              .filter(function (word) {
+                return word.length > 0;
+              })
+              .join("[^ ]*? ");
+          regexpText = regexpText.replace(/\s+$/, "");
+        }
+        var searchRegexp = new RegExp(regexpText, "i");
+        var lastCode = null;
+        document.body.className = "";
+        forEachCode(function (code) {
+          var prefixedCode = (code.prefix || "") + code.code;
+          if (
+            inputCode == code.code ||
+            inputCode == prefixedCode ||
+            inputCode == code.lit.toLowerCase() ||
+            searchRegexp.test(code.code) ||
+            searchRegexp.test(prefixedCode) ||
+            searchRegexp.test(code.lit)
+          ) {
+            nStarting++;
+            lastCode = code;
+          }
+        });
+        if (nStarting == 1) {
+          showCode(lastCode);
+
+          // XXX HACK to lose race
+          if (enter)
+            setTimeout(function () {
+              confirmUseCode(lastCode);
+            }, 500);
+        } else if (nStarting == 0) {
+          statusDiv.innerHTML =
+            "Koodilla ei löydy yhtään lippua. Ole hyvä ja tarkista oikeinkirjoitus ja tapahtuma!";
+        } else {
+          statusDiv.innerHTML = "... " + nStarting + " ...";
+        }
+      }
+
+      function keyPress(event) {
+        search(false);
+      }
+
+      function formSubmit(event) {
+        event.preventDefault();
+        search(true);
+      }
+
+      function syncUseQueue() {
+        useQueue = useQueue.filter(function (id) {
+          return codes[id].localUsed && !codes[id].used;
+        });
+        if (useQueue.length) {
+          xhr(
+            location.href,
+            "use=" + useQueue.join(","),
+            function (error, data, xhr) {
+              console.log(
+                "successfully synced " + useQueue.length + " code uses",
+              );
+              parseData(data);
+              if (currentlyShownId) showCode(codes[currentlyShownId]);
+            },
+          );
+        }
+      }
+
+      function init() {
+        download();
+        setInterval(download, (50 + Math.random() * 20) * 1000);
+        setInterval(syncUseQueue, 5000);
+
+        codeInput = document.getElementById("code");
+        statusDiv = document.getElementById("status");
+        codeInput.addEventListener("input", keyPress, true);
+        document
+          .getElementById("codeform")
+          .addEventListener("submit", formSubmit, true);
+      }
+    </script>
+    <style type="text/css">
+      body,
+      input {
+        font:
+          36pt/1.2 Arial,
+          sans-serif;
+        -webkit-transition: background 0.5s;
+      }
+
+      body.code-unused {
+        background: #00c300;
+      }
+
+      body.code-localused {
+        background: #f95;
+      }
+
+      body.code-used {
+        background: #e51e1f;
+        color: yellow;
+      }
+
+      .cd {
+        font-family: consolas, monospace;
+        background: #000;
+        color: #fff;
+        font-size: 48pt;
+        padding: 12pt;
+      }
+
+      .pfx {
+        opacity: 0.6;
+      }
+
+      .product {
+        margin: 0.5em;
+        padding: 0.5em;
+        background: #333;
+        color: #fff;
+        border: 0.2em solid #000;
+      }
+
+      form {
+        margin: auto;
+        text-align: center;
+      }
+      #code {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body onload="init()">
+    <form id="codeform">
+      <input
+        placeholder="koodi tähän"
+        type="text"
+        id="code"
+        autofocus
+        autocomplete="no"
+      /><br />
+      <div id="status">&nbsp;</div>
+    </form>
+  </body>
+</html>

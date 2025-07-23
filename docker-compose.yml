@@ -17,7 +17,7 @@ services:
       # minio console, uncomment if you need it
       # - 9001:9001
   backend:
-    build: backend
+    build: .
     init: true
     command: python manage.py docker_start
     restart: unless-stopped
@@ -26,7 +26,7 @@ services:
       - redis
       - postgres
     volumes: &volumes
-      - ./backend:/usr/src/app
+      - ./kompassi:/usr/src/app/kompassi
       - ./dev-secrets:/usr/src/app/dev-secrets:rw
     tmpfs:
       - /tmp
@@ -47,7 +47,7 @@ services:
       KOMPASSI_V2_BASE_URL: http://localhost:3000
       KOMPASSI_TICKETS_V2_API_KEY: secret
   uvicorn:
-    build: backend
+    build: .
     init: true
     command:
       - uvicorn
@@ -55,14 +55,14 @@ services:
       - --host=0.0.0.0
       - --port=7998
       - --no-access-log
-      - tickets_v2.optimized_server.app:app
+      - kompassi.tickets_v2.optimized_server.app:app
     network_mode: service:router
     depends_on:
       - postgres
     volumes: *volumes
     environment: *environment
   celery:
-    build: backend
+    build: .
     init: true
     command: celery -A kompassi.celery_app:app worker
     depends_on:
@@ -75,7 +75,7 @@ services:
   # TODO replace celery with a more sensible solution
   # until then, tickets_v2 has its own worker
   worker:
-    build: backend
+    build: .
     init: true
     restart: unless-stopped
     command:
@@ -89,14 +89,14 @@ services:
     environment: *environment
   frontend:
     build:
-      context: frontend
+      context: kompassi-v2-frontend
       dockerfile: dev.Dockerfile
     init: true
     network_mode: service:router
     depends_on:
       - backend
     volumes:
-      - ./frontend/src:/usr/src/app/src
+      - ./kompassi-v2-frontend/src:/usr/src/app/src
     environment:
       NEXT_PUBLIC_KOMPASSI_BASE_URL: http://localhost:8000
       NEXT_PUBLIC_TICKETS_BASE_URL: http://localhost:7998
@@ -105,7 +105,7 @@ services:
       KOMPASSI_TICKETS_V2_API_KEY: secret
   postgres:
     # image: postgres
-    build: backend/kompassi/sql/
+    build: sql
     init: true
     command:
       - postgres
@@ -115,10 +115,12 @@ services:
     # note: you can use `docker compose exec postgres psql -U kompassi` to access psql cli
     # ports:
     #   - 5433:5432
+    # volumes:
+    #   - postgres-data:/var/lib/postgresql/data
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-    # tmpfs:
-    #   - /var/lib/postgresql/data
+      - ./kompassi-20250723.sql:/docker-entrypoint-initdb.d/00-schema.sql
+    tmpfs:
+      - /var/lib/postgresql/data
     environment:
       POSTGRES_USER: kompassi
       POSTGRES_PASSWORD: secret

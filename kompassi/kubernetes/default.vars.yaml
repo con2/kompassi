@@ -1,0 +1,319 @@
+# Set this to the public hostname of your service.
+# First is canonical.
+ingress_public_hostnames:
+  - kompassi.localhost
+
+# let skaffold manage the image tag
+kompassi_image: kompassi
+kompassi_static_image: kompassi-static
+
+# in production deployments, set to false and manage a secret yourself (see kompassi/secret.in.yaml)
+kompassi_secret_managed: true
+
+# By default image storage is configured using a PersistentVolumeClaim.
+# In order to use NFS, set this to false.
+# See also redis_storage_…
+kompassi_storage_pvc: true
+
+# Storage class used for upload storage, or !Void for default
+kompassi_storage_pvc_storageclass:
+  !Void # To use an existing NFS export as the image storage, set kompassi_storage_nfs to the IP of the server.
+
+
+kompassi_storage_nfs: ""
+kompassi_storage_nfs_path: /
+
+kompassi_installation_slug: komplocaldev
+kompassi_installation_name: Kompassi (LOCAL DEV)
+kompassi_base_url: http://kompassi.localhost
+kompassi_v2_base_url: http://kompassi2.localhost
+kompassi_tickets_v2_api_url: http://uvicorn.default.svc.cluster.local:7998
+
+kompassi_allowed_hosts: !Var ingress_public_hostnames
+kompassi_cors_allowed_hosts: []
+kompassi_csp_allowed_login_redirects: []
+kompassi_admins: []
+
+# workers per pod
+kompassi_workers: 4
+kompassi_timeout_seconds: 120
+
+kompassi_cron_nightly_enabled: true
+kompassi_cron_nightly_suspended: false
+
+kompassi_startup_probe:
+  httpGet:
+    path: /api/v1/status
+    port: 8000
+    httpHeaders:
+      - name: Host
+        value: !Lookup ingress_public_hostnames[0]
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  # 5 * 12 seconds = 1 minute
+  failureThreshold: 12
+kompassi_readiness_probe:
+  httpGet:
+    path: /api/v1/status
+    port: 8000
+    httpHeaders:
+      - name: Host
+        value: !Lookup ingress_public_hostnames[0]
+  initialDelaySeconds: 0
+  periodSeconds: 30
+kompassi_liveness_probe:
+  httpGet:
+    path: /api/v1/status
+    port: 8000
+    httpHeaders:
+      - name: Host
+        value: !Lookup ingress_public_hostnames[0]
+  initialDelaySeconds: 15
+  periodSeconds: 30
+
+kompassi_uvicorn_enabled: true
+
+# If you use ingress-nginx and cert-manager, TLS can be automatically configured by setting this to true.
+ingress_letsencrypt_enabled: false
+ingress_letsencrypt_cluster_issuer: letsencrypt-prod
+
+ingress_class_name: nginx
+
+redis_managed: true
+redis_image: redis
+redis_hostname: redis
+redis_broker_database: 1
+redis_cache_database: 2
+redis_storage_pvc: true
+redis_storage_pvc_storageclass:
+  !Void # NOTE: "managed" PostgreSQL should not be considered production-ready.
+
+
+postgres_managed: true
+postgres_image: postgres
+postgres_hostname: postgres
+postgres_database: kompassi
+postgres_username: kompassi
+postgres_password: ""
+postgres_storage_pvc_storageclass: !Void
+
+minio_bucket_name: kompassi
+minio_endpoint_url: http://minio:9000
+
+# these only take effect if kompassi_secret_managed: true
+minio_access_key_id: kompassi
+minio_secret_access_key: kompassi
+
+# note: managed postgres doesn't provide ssl, only enable if using external postgres
+postgres_ssl: false
+
+# Whether or not "python manage.py setup" should run as init container
+setup_should_run: true
+
+smtp_server: ""
+smtp_default_from_email: ""
+
+# Configuration vars end here. Configuration snippets follow. May be overridden for advanced configuration.
+
+# Security context for Edegal and Celery pods
+# User 998 (kompassi) is guaranteed to exist in the Docker image, only change if you know what you're doing
+kompassi_pod_security_context:
+  runAsUser: 998
+  runAsGroup: 998
+  fsGroup: 998
+kompassi_container_security_context:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+
+# new background worker (to replace celery at some point)
+kompassi_background_worker_enabled: true
+
+# macro to render pod affinity
+# this goes into spec/template/spec/affinity in deployment with param_component_name set to component name
+# override with !Void to disable affinity
+macro_pod_affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 50
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: component
+                operator: In
+                values:
+                  - !Var param_component_name
+          topologyKey: "kubernetes.io/hostname"
+
+# Common environment vars for both kompassi and celery pods.
+kompassi_environment:
+  - name: POSTGRES_HOSTNAME
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: hostname
+  - name: POSTGRES_DATABASE
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: database
+  - name: POSTGRES_USERNAME
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: username
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: postgres
+        key: password
+  - name: POSTGRES_SSLMODE
+    value: !If
+      test: !Var postgres_ssl
+      then: require
+      else: allow
+  - name: REDIS_HOSTNAME
+    value: !Var redis_hostname
+
+  # Format to ensure these are strings
+  - name: REDIS_BROKER_DATABASE
+    value: !Format "{redis_broker_database}"
+  - name: REDIS_CACHE_DATABASE
+    value: !Format "{redis_cache_database}"
+  - name: SECRET_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: secretKey
+  - name: ALLOWED_HOSTS
+    value: !Join
+      items: !Var kompassi_allowed_hosts
+      separator: " "
+  - name: EMAIL_HOST
+    value: !Var smtp_server
+  - name: DEFAULT_FROM_EMAIL
+    value: !Var smtp_default_from_email
+  - name: ADMINS
+    value: !Join
+      items: !Var kompassi_admins
+      separator: ","
+  - name: KOMPASSI_INSTALLATION_NAME
+    value: !Var kompassi_installation_name
+  - name: KOMPASSI_INSTALLATION_SLUG
+    value: !Var kompassi_installation_slug
+  - name: KOMPASSI_BASE_URL
+    value: !Var kompassi_base_url
+  - name: KOMPASSI_V2_BASE_URL
+    value: !Var kompassi_v2_base_url
+  - name: KOMPASSI_TICKETS_V2_API_URL
+    value: !Var kompassi_tickets_v2_api_url
+  - name: KOMPASSI_TICKETS_V2_API_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: ticketsApiKey
+  - name: KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: desuprofileOauth2ClientId
+  - name: KOMPASSI_DESUPROFILE_OAUTH2_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: desuprofileOauth2ClientSecret
+  - name: CORS_ORIGIN_WHITELIST
+    value: !Join
+      items: !Var kompassi_cors_allowed_hosts
+      separator: " "
+  - name: KOMPASSI_CSP_ALLOWED_LOGIN_REDIRECTS
+    value: !Join
+      items: !Var kompassi_csp_allowed_login_redirects
+      separator: " "
+
+  # used by python manage.py setup to do nothing if nothing has changed
+  - name: KOMPASSI_SETUP_RUN_ID
+    valueFrom:
+      fieldRef:
+        fieldPath: metadata.labels['pod-template-hash']
+
+  - name: MINIO_BUCKET_NAME
+    value: !Var minio_bucket_name
+  - name: MINIO_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: minioAccessKeyId
+  - name: MINIO_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: minioSecretAccessKey
+  - name: MINIO_ENDPOINT_URL
+    value: !Var minio_endpoint_url
+
+  - name: OIDC_RSA_PRIVATE_KEY
+    valueFrom:
+      secretKeyRef:
+        name: kompassi
+        key: oidcRsaPrivateKey
+
+# Common volumes for kompassi, celery and nginx pods.
+kompassi_volume_mounts:
+  - mountPath: /usr/src/app/media
+    name: kompassi-media
+  - mountPath: /tmp
+    name: kompassi-temp
+  - mountPath: /mnt/secrets/kompassi
+    name: kompassi-secret
+kompassi_volumes:
+  - name: kompassi-secret
+    secret:
+      secretName: kompassi
+      items:
+        - key: sshPrivateKey
+          path: sshPrivateKey
+        - key: sshKnownHosts
+          path: sshKnownHosts
+  - name: kompassi-temp
+    emptyDir: {}
+  - !If
+    test: !Var kompassi_storage_pvc
+    then:
+      name: kompassi-media
+      persistentVolumeClaim:
+        claimName: kompassi-media
+  - !If
+    test: !Var kompassi_storage_nfs
+    then:
+      name: kompassi-media
+      nfs:
+        server: !Var kompassi_storage_nfs
+        path: !Var kompassi_storage_nfs_path
+  - !If
+    test: !Not ,Any [!Var kompassi_storage_pvc, !Var kompassi_storage_nfs]
+    then:
+      name: kompassi-media
+      emptyDir: {}
+
+base_ingress_annotations:
+  nginx.ingress.kubernetes.io/proxy-body-size: "100m"
+  nginx.org/client-max-body-size: "100m"
+  nginx.ingress.kubernetes.io/proxy-send-timeout: !Format "{kompassi_timeout_seconds}"
+  nginx.ingress.kubernetes.io/proxy-read-timeout: !Format "{kompassi_timeout_seconds}"
+
+# Default annotations work for nginx ingress with or without LetsEncrypt TLS. Override if you need something else.
+ingress_annotations: !Merge
+  - !Var base_ingress_annotations
+  - !If
+    test: !Var ingress_letsencrypt_enabled
+    then:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+ingress_tls: !If
+  test: !Var ingress_letsencrypt_enabled
+  then:
+    - secretName: ingress-letsencrypt
+      hosts: !Var ingress_public_hostnames
+
+backup_ingress_public_hostnames: []

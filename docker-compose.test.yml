@@ -1,0 +1,32 @@
+services:
+  test:
+    build: .
+    # NOTE: do not use entrypoint as it sets BROKER_URL making Kompassi expect there is a background worker, hanging tests
+    entrypoint: []
+    command: scripts/wait-for-it.sh -s -t 60 postgres:5432 -- pytest --reuse-db
+    init: true
+    links:
+      # - rabbitmq
+      - postgres
+      # - memcache
+    volumes:
+      - ./kompassi:/usr/src/app/kompassi
+      - test-cache:/usr/src/app/.pytest_cache
+    environment:
+      DEBUG: "1"
+      ALLOWED_HOSTS: "*"
+      PYTHONDEVMODE: "1"
+  postgres:
+    # image: postgres
+    build: sql
+    init: true
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: kompassi
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: test_kompassi
+
+volumes:
+  test-cache: {}
+  postgres-data: {}
