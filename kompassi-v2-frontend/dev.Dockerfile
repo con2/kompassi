@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY scripts/ scripts/
-COPY codegen.ts package.json package-lock.json next.config.ts tsconfig.json .eslintrc.json ./
+COPY codegen.ts package.json package-lock.json next.config.ts tsconfig.json eslint.config.mjs ./
 # COPY public public
 COPY src src
 
