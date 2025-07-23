@@ -141,8 +141,8 @@ class Setup:
         for jc_name, qualification_name in [
             ("Järjestyksenvalvoja", "JV-kortti"),
         ]:
-            jc = JobCategory.objects.get(event=self.event, name=jc_name)
-            qual = Qualification.objects.get(name=qualification_name)
+            JobCategory.objects.get(event=self.event, name=jc_name)
+            Qualification.objects.get(name=qualification_name)
 
         for diet_name in [
             "Gluteeniton",

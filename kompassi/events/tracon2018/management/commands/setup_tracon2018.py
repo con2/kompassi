@@ -103,7 +103,7 @@ class Setup:
         if fmh.exists():
             fmh.update(name="Vuorovastaava", slug="vuorovastaava")
 
-        for pc_name, pc_slug, pc_app_label, pc_afterparty in [
+        for pc_name, pc_slug, pc_app_label, _pc_afterparty in [
             ("Coniitti", "coniitti", "labour", True),
             ("Duniitti", "duniitti", "labour", True),
             ("Vuorovastaava", "vuorovastaava", "labour", True),

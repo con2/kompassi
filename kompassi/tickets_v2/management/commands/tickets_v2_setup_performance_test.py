@@ -19,7 +19,7 @@ class Command(BaseCommand):
     def handle(*args, **opts):
         if not opts["really"]:
             raise NotReally(
-                "Use --really to actually reset the database. " "You probably shouldn't do this in production :))"
+                "Use --really to actually reset the database. You probably shouldn't do this in production :))"
             )
 
         # overkill

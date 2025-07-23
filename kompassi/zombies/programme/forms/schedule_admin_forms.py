@@ -91,7 +91,7 @@ class ViewForm(forms.ModelForm):
 
 
 NEW_ROOM_HELP_TEXT = _(
-    "You can either select an existing room or choose to create a new one by typing its " "name here, but not both."
+    "You can either select an existing room or choose to create a new one by typing its name here, but not both."
 )
 
 

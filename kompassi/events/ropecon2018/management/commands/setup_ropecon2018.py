@@ -104,7 +104,7 @@ class Setup:
             defaults=labour_event_meta_defaults,
         )
 
-        for pc_name, pc_slug, pc_app_label, pc_afterparty, pc_one_food, pc_two_foods in [
+        for pc_name, pc_slug, pc_app_label, _pc_afterparty, _pc_one_food, _pc_two_foods in [
             ("Conitea", "conitea", "labour", True, False, True),
             ("Vuorovastaava", "ylivankari", "labour", True, False, True),
             ("Ylityöntekijä", "ylityovoima", "labour", True, False, True),
@@ -298,8 +298,8 @@ class Setup:
         for jc_name, qualification_name in [
             ("Järjestyksenvalvoja", "JV-kortti"),
         ]:
-            jc = JobCategory.objects.get(event=self.event, name=jc_name)
-            qual = Qualification.objects.get(name=qualification_name)
+            JobCategory.objects.get(event=self.event, name=jc_name)
+            Qualification.objects.get(name=qualification_name)
 
         for diet_name in [
             "Gluteeniton",

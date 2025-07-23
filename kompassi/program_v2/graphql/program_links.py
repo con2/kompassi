@@ -111,10 +111,7 @@ class ProgramLink(graphene.ObjectType):
                 else:
                     href = program.get_calendar_export_link(request)
             case (
-                ProgramLinkType.SIGNUP
-                | ProgramLinkType.RESERVATION
-                | ProgramLinkType.TICKETS
-                | ProgramLinkType.REMOTE
+                ProgramLinkType.SIGNUP | ProgramLinkType.RESERVATION | ProgramLinkType.TICKETS | ProgramLinkType.REMOTE
             ):
                 # Do not show these links if the program has ended
                 if not include_expired and program.cached_latest_end_time and now() > program.cached_latest_end_time:

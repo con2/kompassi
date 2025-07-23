@@ -10,11 +10,11 @@ from psycopg_pool import AsyncConnectionPool
 
 def get_conninfo():
     return f"""
-    dbname={os.getenv('POSTGRES_DATABASE', 'kompassi')}
-    user={os.getenv('POSTGRES_USERNAME', 'kompassi')}
-    password={os.getenv('POSTGRES_PASSWORD', 'secret')}
-    host={os.getenv('POSTGRES_HOSTNAME', 'localhost')}
-    port={os.getenv('POSTGRES_PORT', '5432')}
+    dbname={os.getenv("POSTGRES_DATABASE", "kompassi")}
+    user={os.getenv("POSTGRES_USERNAME", "kompassi")}
+    password={os.getenv("POSTGRES_PASSWORD", "secret")}
+    host={os.getenv("POSTGRES_HOSTNAME", "localhost")}
+    port={os.getenv("POSTGRES_PORT", "5432")}
     """
 
 

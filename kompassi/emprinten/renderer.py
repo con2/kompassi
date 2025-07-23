@@ -145,7 +145,7 @@ def render_pdf(
             if DEBUG:
                 ls_r(tmpdir)
             # FileResponse closes the open file by itself.
-            return FileResponse(open(z_name, "rb"), content_type="application/zip")  # noqa: SIM115
+            return FileResponse(open(z_name, "rb"), content_type="application/zip")
 
         if len(results) > 1:
             return HttpResponse(status=401)
@@ -156,7 +156,7 @@ def render_pdf(
             file_name = name_factory.make({"row": row}, fallback="result.pdf", post_format=post_format)
             # FileResponse closes the open file by itself.
             return FileResponse(
-                open(pdf_name, "rb"),  # noqa: SIM115
+                open(pdf_name, "rb"),
                 content_type="application/pdf",
                 filename=file_name,
             )

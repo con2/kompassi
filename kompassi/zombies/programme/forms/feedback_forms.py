@@ -21,7 +21,7 @@ class ProgrammeFeedbackForm(forms.ModelForm):
         if is_own_programme:
             self.fields["is_anonymous"].disabled = True
             self.fields["is_anonymous"].help_text = _(
-                "Because you are the host of this programme, you cannot leave " "your feedback anonymously."
+                "Because you are the host of this programme, you cannot leave your feedback anonymously."
             )
 
     class Meta:

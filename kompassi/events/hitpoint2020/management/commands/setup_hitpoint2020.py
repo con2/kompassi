@@ -196,8 +196,8 @@ class Setup:
             ("Järjestyksenvalvoja", "JV-kortti"),
             ("Logistiikka", "Henkilöauton ajokortti (B)"),
         ]:
-            jc = JobCategory.objects.get(event=self.event, name=jc_name)
-            qual = Qualification.objects.get(name=qualification_name)
+            JobCategory.objects.get(event=self.event, name=jc_name)
+            Qualification.objects.get(name=qualification_name)
 
         for diet_name in [
             "Gluteeniton",

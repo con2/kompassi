@@ -119,8 +119,8 @@ class Setup:
                 ),
             )
 
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
-        vastaava = PersonnelClass.objects.get(event=self.event, slug="vastaava")
+        PersonnelClass.objects.get(event=self.event, slug="tyovoima")
+        PersonnelClass.objects.get(event=self.event, slug="vastaava")
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(

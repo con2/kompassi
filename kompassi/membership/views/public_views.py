@@ -52,8 +52,7 @@ def membership_apply_view(request, organization):
 
             messages.success(
                 request,
-                "Kiitos jäsenyyshakemuksestasi! Yhdistyksen hallitus käsittelee "
-                "hakemuksesi seuraavassa kokouksessaan.",
+                "Kiitos jäsenyyshakemuksestasi! Yhdistyksen hallitus käsittelee hakemuksesi seuraavassa kokouksessaan.",
             )
 
         return redirect("core_organization_view", organization.slug)

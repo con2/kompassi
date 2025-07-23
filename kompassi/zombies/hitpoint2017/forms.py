@@ -7,5 +7,5 @@ DESCRIPTION_HELP_TEXT = _(
     "to edit this as necessary (including but not limited to shortening)."
 )
 APPROXIMATE_LENGTH_HELP_TEXT = _(
-    "In order to gain free entry, you are required to run at in total least four " "hours of games."
+    "In order to gain free entry, you are required to run at in total least four hours of games."
 )

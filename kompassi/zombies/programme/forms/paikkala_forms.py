@@ -36,7 +36,7 @@ class PaikkalaProgramForm(forms.ModelForm):
         self.fields["reservation_start"].label = _("Reservation start")
         self.fields["reservation_end"].label = _("Reservation end")
         self.fields["reservation_end"].help_text = _(
-            "Both reservation start and reservation end must be set for the reservation " "to be considered open."
+            "Both reservation start and reservation end must be set for the reservation to be considered open."
         )
         self.fields["invalid_after"].label = _("Invalid after")
         # self.fields['require_user'].label = _('Require user')

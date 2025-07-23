@@ -127,10 +127,10 @@ class Setup:
                 ),
             )
 
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
-        conitea = PersonnelClass.objects.get(event=self.event, slug="conitea")
-        ylivankari = PersonnelClass.objects.get(event=self.event, slug="ylivankari")
-        ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
+        PersonnelClass.objects.get(event=self.event, slug="tyovoima")
+        PersonnelClass.objects.get(event=self.event, slug="conitea")
+        PersonnelClass.objects.get(event=self.event, slug="ylivankari")
+        PersonnelClass.objects.get(event=self.event, slug="ohjelma")
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
@@ -147,8 +147,8 @@ class Setup:
             ("Järjestyksenvalvoja", "JV-kortti"),
             ("Logistiikka", "Henkilöauton ajokortti (B)"),
         ]:
-            jc = JobCategory.objects.get(event=self.event, name=jc_name)
-            qual = Qualification.objects.get(name=qualification_name)
+            JobCategory.objects.get(event=self.event, name=jc_name)
+            Qualification.objects.get(name=qualification_name)
 
         for diet_name in [
             "Gluteeniton",

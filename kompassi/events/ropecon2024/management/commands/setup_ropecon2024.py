@@ -143,8 +143,8 @@ class Setup:
             ("Järjestyksenvalvoja", "JV-kortti"),
         ]:
             try:
-                jc = JobCategory.objects.get(event=self.event, name=jc_name)
-                qual = Qualification.objects.get(name=qualification_name)
+                JobCategory.objects.get(event=self.event, name=jc_name)
+                Qualification.objects.get(name=qualification_name)
             except JobCategory.DoesNotExist:
                 pass
 

@@ -23,7 +23,7 @@ def get_current_locale():
 T = TypeVar("T")
 
 
-def get_message_in_language(
+def get_message_in_language[T](
     messages: Mapping[str, T | None],
     lang: str | None = None,
 ) -> T | None:

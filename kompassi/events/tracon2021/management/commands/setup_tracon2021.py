@@ -104,7 +104,7 @@ class Setup:
         if fmh.exists():
             fmh.update(name="Vuorovastaava", slug="vuorovastaava")
 
-        for pc_name, pc_slug, pc_app_label, pc_afterparty in [
+        for pc_name, pc_slug, pc_app_label, _pc_afterparty in [
             ("Coniitti", "coniitti", "labour", True),
             ("Duniitti", "duniitti", "labour", True),
             ("Vuorovastaava", "vuorovastaava", "labour", True),
@@ -151,8 +151,8 @@ class Setup:
             icon_css_class="fa-user",
         ).update(icon_css_class="fa-check-square-o")
 
-        tyovoima = PersonnelClass.objects.get(event=self.event, slug="tyovoima")
-        coniitti = PersonnelClass.objects.get(event=self.event, slug="coniitti")
+        PersonnelClass.objects.get(event=self.event, slug="tyovoima")
+        PersonnelClass.objects.get(event=self.event, slug="coniitti")
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
