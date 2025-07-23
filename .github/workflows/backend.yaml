@@ -84,11 +84,10 @@ jobs:
           uv pip install setuptools
           uv pip install emskaffolden
           emskaffolden -E staging -- build --file-output build.json
-        working-directory: backend
       - uses: actions/upload-artifact@v4
         with:
           name: build-json
-          path: backend/build.json
+          path: build.json
 
   # TODO DRY
   deploy_staging:
@@ -124,7 +123,6 @@ jobs:
           uv pip install setuptools
           uv pip install emskaffolden
           emskaffolden -E staging -- deploy -n kompassi-staging -a ../build.json
-        working-directory: backend
 
   deploy_production:
     runs-on: self-hosted
@@ -159,4 +157,3 @@ jobs:
           uv pip install setuptools
           uv pip install emskaffolden
           emskaffolden -E production -- deploy -n kompassi-production -a ../build.json
-        working-directory: backend

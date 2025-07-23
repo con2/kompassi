@@ -3,13 +3,13 @@ name: frontend
 on:
   push:
     paths:
-      - frontend/**
+      - kompassi-v2-frontend/**
       - .github/workflows/frontend.yaml
     branches:
       - main
   pull_request:
     paths:
-      - frontend/**
+      - kompassi-v2-frontend/**
       - .github/workflows/frontend.yaml
     branches:
       - main
@@ -53,12 +53,12 @@ jobs:
             export SKAFFOLD_PUSH=false
           fi
           skaffold build --file-output build.json
-        working-directory: frontend
+        working-directory: kompassi-v2-frontend
       - name: Store build.json artifact
         uses: actions/upload-artifact@v4
         with:
           name: build-json
-          path: frontend/build.json
+          path: kompassi-v2-frontend/build.json
 
   deploy_staging:
     runs-on: self-hosted
@@ -89,13 +89,13 @@ jobs:
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
       - run: npm ci
-        working-directory: frontend
+        working-directory: kompassi-v2-frontend
       - run: npx tsx manifest.ts
-        working-directory: frontend/kubernetes
+        working-directory: kompassi-v2-frontend/kubernetes
         env:
           ENV: staging
       - run: skaffold deploy -n kompassi2-staging -a ../build.json
-        working-directory: frontend
+        working-directory: kompassi-v2-frontend
 
   deploy_production:
     runs-on: self-hosted
@@ -111,7 +111,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: kompassi-v2-frontend/package-lock.json
 
       - id: cache-bin
         uses: actions/cache@v4
@@ -126,10 +126,10 @@ jobs:
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
       - run: npm ci
-        working-directory: frontend
+        working-directory: kompassi-v2-frontend
       - run: npx tsx manifest.ts
-        working-directory: frontend/kubernetes
+        working-directory: kompassi-v2-frontend/kubernetes
         env:
           ENV: production
       - run: skaffold deploy -n kompassi2-production -a ../build.json
-        working-directory: frontend
+        working-directory: kompassi-v2-frontend
