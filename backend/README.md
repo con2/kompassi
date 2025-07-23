@@ -2,7 +2,6 @@
 
 Formerly known as Turska and ConDB. Simple web app for managing (Tra)con stuff. Work in progress.
 
-
 ## Getting Started
 
 ### The Easy Way
@@ -91,41 +90,3 @@ All the words _hostname_, _database_, _username_ and _password_ are 8 characters
 | `database` | `db`, `dbname` |
 | `password` | `pass`, `passwd` |
 | `username` | `user`, `login` |
-
-## License
-
-    The MIT License (MIT)
-
-    Copyright © 2009–2025 Santtu Pajukanta
-    Copyright © 2020–2024 Tuomas Puikkonen
-    Copyright © 2019 Mikko Hänninen
-    Copyright © 2018 Kalle Kivimaa
-    Copyright © 2017 Tomi Simsiö
-    Copyright © 2015–2017 Miika Ojamo
-    Copyright © 2015–2016 Aarni Koskela, Santeri Hiltunen
-    Copyright © 2014–2016 Jyrki Launonen
-    Copyright © 2012–2018 Meeri Panula
-    Copyright © 2009–2015 Jussi Sorjonen
-    Copyright © 2014 Pekka Wallendahl
-    Copyright © 2013 Esa Ollitervo
-    Copyright © 2011 Petri Haikonen
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in
-    all copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-    THE SOFTWARE.
-
-For third-party component licenses, see [LICENSE](https://github.com/tracon/kompassi/blob/master/LICENSE.md).

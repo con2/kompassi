@@ -172,7 +172,7 @@ msgstr "Yksityisyys"
 
 #: templates/core_footer.html
 msgid "Privacy policy"
-msgstr "Rekisteriseloste"
+msgstr "Tietosuojaseloste"
 
 #: views/profile_views.py
 msgid "Profile"

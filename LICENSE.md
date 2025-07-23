@@ -2,18 +2,18 @@
 
     The MIT License (MIT)
 
+    Copyright © 2009–2025 Santtu Pajukanta
     Copyright © 2024 Tracon ry
-    Copyright © 2009–2024 Santtu Pajukanta
-    Copyright © 2012–2024 Meeri Panula
+    Copyright © 2012–2025 Meeri Panula
+    Copyright © 2019–2025 Mikko Hänninen
+    Copyright © 2024–2025 Anssi Kolehmainen
     Copyright © 2014–2024 Jyrki Launonen
     Copyright © 2015–2024 Aarni Koskela, Santeri Hiltunen
     Copyright © 2020–2024 Tuomas Puikkonen
-    Copyright © 2024 Arttu Hanska, Juho Juopperi, Anssi Kolehmainen, Maura Kastinen, Natalie Lankila, Otte Mäkipää, Risto Ruuskanen, Hannele Tervo
-    Copyright © 2019 Mikko Hänninen
+    Copyright © 2024 Arttu Hanska, Juho Juopperi, Maura Kastinen, Natalie Lankila, Otte Mäkipää, Risto Ruuskanen, Hannele Tervo
     Copyright © 2018 Kalle Kivimaa
     Copyright © 2017 Tomi Simsiö
     Copyright © 2015–2017 Miika Ojamo
-    Copyright © 2012–2018 Meeri Panula
     Copyright © 2009–2015 Jussi Sorjonen
     Copyright © 2014 Pekka Wallendahl
     Copyright © 2013 Esa Ollitervo
@@ -48,54 +48,6 @@ Regarding the following copyright statement above:
 The work of Santtu Pajukanta during December 2024 was paid for by Tracon and executed through his employer, Polar Squad Oy. Intellectual property rights to the work produced by Santtu Pajukanta during December 2024 belongs to Tracon ry as stipulated in the contract between Tracon ry and Polar Squad Oy.
 
 Santtu Pajukanta personally retains intellectual property rights to works produced outside December 2024, and the copyright of works produced by other contributors is retained by the respective contributors.
-
-## Moe (mobile programme schedule)
-
-    The MIT License (MIT)
-
-    Copyright © 2015 Aarni Koskela / Kehittyvien Conien Suomi ry.
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
-
-This software includes third-party code in the form of the Mithril.js library.
-
-    Mithril.js is licensed under the MIT License (MIT).
-
-    Copyright © 2014 Leo Horie
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
 
 ## Lippukala (E-ticket system)
 
@@ -148,31 +100,6 @@ This software includes third-party code in the form of the Mithril.js library.
     All brand icons are trademarks of their respective owners.
     The use of these trademarks does not indicate endorsement of the trademark holder by Font Awesome, nor vice versa.
     Brand icons should only be used to represent the company or product to which they refer.
-
-## `ga-lite`
-
-Kompassi includes [ga-lite](https://github.com/jehna/ga-lite) under `core/static/core/js/ga-lite.min.js`.
-
-    The MIT License (MIT)
-
-    Copyright (c) 2015 Jesse Luoto
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy of
-    this software and associated documentation files (the "Software"), to deal in
-    the Software without restriction, including without limitation the rights to
-    use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-    the Software, and to permit persons to whom the Software is furnished to do so,
-    subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-    FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-    COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-    IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-    CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## `scripts/wait-for-it.sh`
 
