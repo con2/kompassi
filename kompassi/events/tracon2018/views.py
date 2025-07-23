@@ -15,8 +15,6 @@ from .proxies import SignupExtraAfterpartyProxy
 
 @labour_admin_required
 def tracon2018_afterparty_participants_view(request, vars, event):
-    assert event.slug == "tracon2018"
-
     participants = SignupExtraAfterpartyProxy.objects.filter(afterparty_participation=True)
 
     filename = "{event.slug}_afterparty_participants_{timestamp}.xlsx".format(
@@ -50,7 +48,6 @@ def count_passengers(signup_extras, field_name):
 
 
 def tracon2018_afterparty_summary_view(request, event_slug):
-    assert event_slug == "tracon2018"
     event = Event.objects.get(slug=event_slug)
 
     poisons = Poison.objects.all().annotate(

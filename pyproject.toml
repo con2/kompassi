@@ -72,7 +72,6 @@ target-version = "py312"
 line-length = 120
 
 [tool.ruff.lint]
-ignore-init-module-imports = true
 extend-select = [
     "B",
     "C",

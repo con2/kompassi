@@ -62,7 +62,6 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
 
     @classmethod
     def get_csv_fields(cls, event):
-        assert event.slug == "tracon2022"
         from kompassi.core.models import Person
 
         return [

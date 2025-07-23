@@ -51,7 +51,7 @@ class OrderProductForm(forms.ModelForm):
             OrderProductForm,
             request,
             instance=order_product,
-            prefix="p%d" % product.pk,
+            prefix=f"p{product.pk}",
             readonly=readonly,
             max_count_per_product=max_count_per_product,
         )

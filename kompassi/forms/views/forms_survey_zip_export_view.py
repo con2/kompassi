@@ -47,7 +47,9 @@ def forms_survey_zip_export_view(
 
     fields = survey.get_combined_fields()
     session = requests.Session()
-    tempfile = TemporaryFile()
+
+    # HttpResponse closes the file
+    tempfile = TemporaryFile()  # noqa: SIM115
 
     with ZipFile(tempfile, "w") as zip:  # type: ignore
         with zip.open(excel_filename, "w") as excel_file:

@@ -32,7 +32,8 @@ class OrderProduct(models.Model, CsvExportMixin):
 
     @property
     def description(self):
-        return "%dx %s" % (self.count, self.product.name if self.product is not None else None)
+        product_name = self.product.name if self.product is not None else None
+        return f"{self.count}x {product_name}"
 
     @classmethod
     def get_csv_fields(cls, event):

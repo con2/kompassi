@@ -279,7 +279,7 @@ class Setup:
         )
 
         # old, wrong info links
-        for wiki_space, link_title, link_group in [
+        for _wiki_space, link_title, link_group in [
             ("FINNCONWORK", "Finnconin työvoimawiki", "accepted"),
             ("FINNCON2018", "Finnconin coniteawiki", "conitea"),
         ]:
