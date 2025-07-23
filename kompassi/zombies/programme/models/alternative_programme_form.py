@@ -1,7 +1,9 @@
+from functools import cached_property
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from kompassi.core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, set_defaults
+from kompassi.core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, get_code, set_defaults
 
 
 class AlternativeProgrammeForm(models.Model):
@@ -104,14 +106,12 @@ class AlternativeProgrammeForm(models.Model):
     def qualified_slug(self):
         return f"form-{self.slug}"
 
-    @property
+    @cached_property
     def programme_form_class(self):
-        if not getattr(self, "_programme_form_class", None):
-            from kompassi.core.utils import get_code
-
-            self._programme_form_class = get_code(self.programme_form_code)
-
-        return self._programme_form_class
+        cp = self.programme_form_code
+        if not cp.startswith("kompassi."):
+            cp = f"kompassi.{cp}"
+        return get_code(cp)
 
     class Meta:
         verbose_name = _("alternative programme form")
