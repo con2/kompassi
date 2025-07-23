@@ -328,7 +328,7 @@ class Person(models.Model):
 
     @cached_property
     def desuprofile_connection(self):
-        from desuprofile_integration.models import Connection
+        from kompassi.desuprofile_integration.models import Connection
 
         if self.user is None:
             return None
