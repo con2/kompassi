@@ -24,8 +24,6 @@ interface ProfileLink {
   href: string;
 }
 
-type OpenMenu = "none" | "user" | "language";
-
 export default function NavigationMenus({ session, locale, messages }: Props) {
   const { switchTo: supportedLanguages } = messages.LanguageSwitcher;
   let pathname = usePathname();

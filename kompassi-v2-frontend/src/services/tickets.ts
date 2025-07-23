@@ -164,11 +164,6 @@ export async function getOrder(
   return response.json();
 }
 
-interface PayOrderRequest {
-  language: string;
-  // provider: …
-}
-
 interface PayOrderResponse {
   paymentRedirect: string;
 }

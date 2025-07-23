@@ -1,6 +1,5 @@
 "use server";
 
-import { ApolloClient } from "@apollo/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
