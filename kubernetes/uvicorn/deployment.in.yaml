@@ -32,7 +32,7 @@ spec:
             - --port=7998
             - --no-access-log
             - !Format "--workers={kompassi_workers}"
-            - tickets_v2.optimized_server.app:app
+            - kompassi.tickets_v2.optimized_server.app:app
           startupProbe:
             httpGet:
               path: /api/tickets-v2/status
