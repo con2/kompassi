@@ -155,4 +155,4 @@ jobs:
 
       - run: |
           uv pip install --system setuptools emskaffolden
-          emskaffolden -E production -- deploy -n kompassi-production -a ../build.json
+          emskaffolden -E production -- deploy -n kompassi-production -a build.json
