@@ -49,7 +49,7 @@ class SignupExtraForm(forms.ModelForm):
 class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
     def __init__(self, *args, **kwargs):
         kwargs.pop("event")
-        admin = kwargs.pop("admin")
+        kwargs.pop("admin")
 
         super().__init__(*args, **kwargs)
 
