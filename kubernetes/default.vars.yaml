@@ -290,7 +290,7 @@ kompassi_volumes:
         server: !Var kompassi_storage_nfs
         path: !Var kompassi_storage_nfs_path
   - !If
-    test: !Not ,Any [!Var kompassi_storage_pvc, !Var kompassi_storage_nfs]
+    test: !Not,Any [!Var kompassi_storage_pvc, !Var kompassi_storage_nfs]
     then:
       name: kompassi-media
       emptyDir: {}

@@ -24,6 +24,7 @@ repos:
           (?x)(
             .*__generated__.*|
             ^kompassi/|
+            ^kubernetes/|
             ^.github
           )
   # XXX somehow the typechecking still leaks to parts of the code that is not yet ready for pyrekt
