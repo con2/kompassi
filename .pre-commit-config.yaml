@@ -23,7 +23,7 @@ repos:
         exclude: |
           (?x)(
             .*__generated__.*|
-            ^backend|
+            ^kompassi/|
             ^.github
           )
   # XXX somehow the typechecking still leaks to parts of the code that is not yet ready for pyrekt
