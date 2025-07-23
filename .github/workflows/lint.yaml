@@ -27,7 +27,7 @@ jobs:
       - run: uv sync --locked
       - uses: pre-commit/action@v3.0.1
 
-  next-lint:
+  eslint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
