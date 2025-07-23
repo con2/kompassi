@@ -94,7 +94,7 @@ jobs:
         working-directory: kompassi-v2-frontend/kubernetes
         env:
           ENV: staging
-      - run: skaffold deploy -n kompassi2-staging -a ../build.json
+      - run: skaffold deploy -n kompassi2-staging -a build.json
         working-directory: kompassi-v2-frontend
 
   deploy_production:
@@ -131,5 +131,5 @@ jobs:
         working-directory: kompassi-v2-frontend/kubernetes
         env:
           ENV: production
-      - run: skaffold deploy -n kompassi2-production -a ../build.json
+      - run: skaffold deploy -n kompassi2-production -a build.json
         working-directory: kompassi-v2-frontend

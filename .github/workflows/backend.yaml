@@ -126,7 +126,7 @@ jobs:
 
       - run: |
           uv pip install --system setuptools emskaffolden
-          emskaffolden -E staging -- deploy -n kompassi-staging -a ../build.json
+          emskaffolden -E staging -- deploy -n kompassi-staging -a build.json
 
   deploy_production:
     runs-on: self-hosted
