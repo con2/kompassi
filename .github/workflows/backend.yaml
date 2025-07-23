@@ -85,8 +85,7 @@ jobs:
           if ! [[ "$GITHUB_EVENT_NAME" == 'push' && "$GITHUB_REF" == 'refs/heads/main' ]]; then
             export SKAFFOLD_PUSH=false
           fi
-          uv pip install emskaffolden==0.3.0
-          emskaffolden -E staging -- build --file-output build.json
+          uv run --with emskaffolden==0.3.0 emskaffolden -E staging -- build --file-output build.json
       - uses: actions/upload-artifact@v4
         with:
           name: build-json
@@ -125,8 +124,7 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
       - run: |
-          uv pip install emskaffolden==0.3.0
-          emskaffolden -E staging -- deploy -n kompassi-staging -a build.json
+          uv run --with emskaffolden==0.3.0 emskaffolden -E staging -- deploy -n kompassi-staging -a build.json
 
   deploy_production:
     runs-on: self-hosted
@@ -160,5 +158,4 @@ jobs:
       - run: echo "$PWD/bin" >> $GITHUB_PATH
 
       - run: |
-          uv pip install emskaffolden==0.3.0
-          emskaffolden -E production -- deploy -n kompassi-production -a build.json
+          uv run --with emskaffolden==0.3.0 emskaffolden -E production -- deploy -n kompassi-production -a build.json
