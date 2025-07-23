@@ -41,5 +41,5 @@ jobs:
       - run: npm ci
         working-directory: kompassi-v2-frontend
 
-      - run: npx eslint
+      - run: npx eslint src
         working-directory: kompassi-v2-frontend
