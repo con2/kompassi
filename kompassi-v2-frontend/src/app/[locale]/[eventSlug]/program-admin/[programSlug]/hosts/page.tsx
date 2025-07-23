@@ -140,7 +140,7 @@ export async function generateMetadata(props: Props) {
   const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
-  const { data, errors } = await getClient().query({
+  const { data } = await getClient().query({
     query,
     variables: { eventSlug, programSlug, locale, annotationSlugs },
   });
@@ -417,8 +417,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
   };
 
   validateCachedAnnotations(annotations, program.cachedAnnotations);
-  const [_defaultFormattedHostsAnnotation, overrideFormattedHostsAnnotation] =
-    annotations;
+  const overrideFormattedHostsAnnotation = annotations[1];
 
   return (
     <ProgramAdminDetailView

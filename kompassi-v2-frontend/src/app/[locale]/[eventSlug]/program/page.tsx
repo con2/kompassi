@@ -139,8 +139,6 @@ export default async function ProgramListPage(props: Props) {
   const favoriteScheduleItemSlugs = userScheduleItems.map((p) => p.slug);
 
   const urlSearchParams = new URLSearchParams(searchParams);
-  const activeTab =
-    urlSearchParams.get("display") === "table" ? "table" : "cards";
   const queryString = urlSearchParams.toString();
   const calendarExportLink = queryString
     ? `${event.program.calendarExportLink}?${queryString}`
@@ -158,12 +156,6 @@ export default async function ProgramListPage(props: Props) {
         messages={t.filters}
         isLoggedIn={!!data.profile}
       />
-      {/* <ProgramTabs
-        searchParams={searchParams}
-        eventSlug={event.slug}
-        active={activeTab}
-        translations={translations}
-      /> */}
       <FavoriteContextProvider
         slugs={favoriteScheduleItemSlugs}
         messages={t.favorites}
@@ -174,15 +166,6 @@ export default async function ProgramListPage(props: Props) {
         )}
         unmarkAsFavorite={unmarkAsFavorite.bind(null, locale, eventSlug)}
       >
-        {/* {activeTab === "table" ? (
-          <ProgramTable
-            scheduleItems={scheduleItems}
-            event={event}
-            locale={locale}
-            isLoggedIn={!!data.profile}
-            translations={translations}
-          />
-        ) : ( */}
         <div className="mt-3">
           {scheduleItems.map((scheduleItem) => (
             <ProgramCard

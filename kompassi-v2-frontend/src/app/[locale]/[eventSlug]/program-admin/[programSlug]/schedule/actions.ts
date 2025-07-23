@@ -50,14 +50,10 @@ export async function putScheduleItem(
 
   const client = getClient();
 
-  const { data, errors } = await client.mutate({
+  await client.mutate({
     mutation: putScheduleItemMutation,
     variables: { input },
   });
-
-  if (errors) {
-    throw new Error(errors.map((e) => e.message).join(", "));
-  }
 
   const action = editingExisting ? "updated" : "created";
 
@@ -93,14 +89,10 @@ export async function deleteScheduleItem(
 
   const client = getClient();
 
-  const { data, errors } = await client.mutate({
+  await client.mutate({
     mutation: deleteScheduleItemMutation,
     variables: { input },
   });
-
-  if (errors) {
-    throw new Error(errors.map((e) => e.message).join(", "));
-  }
 
   revalidatePath(`/${locale}/${eventSlug}/program`);
   revalidatePath(`/${locale}/${eventSlug}/program-admin`);

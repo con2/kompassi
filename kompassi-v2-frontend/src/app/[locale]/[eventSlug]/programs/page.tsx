@@ -9,6 +9,6 @@ interface Props {
 
 export default async function ProgramsRedirectPage(props: Props) {
   const params = await props.params;
-  const { locale, eventSlug } = params;
+  const { eventSlug } = params;
   redirect(`/${eventSlug}/program`);
 }

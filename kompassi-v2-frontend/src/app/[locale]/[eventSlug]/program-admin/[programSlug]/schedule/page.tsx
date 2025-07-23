@@ -1,12 +1,11 @@
 import { notFound } from "next/navigation";
 
-import ScheduleItemTable from "./ScheduleItemsTable";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import Messages from "@/components/errors/Messages";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import ScheduleItemTable from "./ScheduleItemsTable";
 
 graphql(`
   fragment ProgramAdminDetailScheduleItem on LimitedScheduleItemType {
@@ -71,7 +70,7 @@ export async function generateMetadata(props: Props) {
   const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
-  const { data, errors } = await getClient().query({
+  const { data } = await getClient().query({
     query,
     variables: { eventSlug, programSlug, locale },
   });

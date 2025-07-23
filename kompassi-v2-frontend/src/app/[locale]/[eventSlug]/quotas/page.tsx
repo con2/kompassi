@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { createQuota } from "./actions";
 import { graphql } from "@/__generated__";
 import { QuotaListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -11,15 +10,10 @@ import SignInRequired from "@/components/errors/SignInRequired";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
-import TicketsAdminTabs from "@/components/tickets/TicketsAdminTabs";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { createQuota } from "./actions";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`

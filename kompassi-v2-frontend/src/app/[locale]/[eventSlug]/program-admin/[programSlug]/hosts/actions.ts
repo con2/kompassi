@@ -87,7 +87,7 @@ export async function updateProgramHostDimensions(
   involvementId: string,
   formData: FormData,
 ) {
-  const { data, errors } = await getClient().mutate({
+  const { data } = await getClient().mutate({
     mutation: updateProgramHostDimensionsMutation,
     variables: {
       input: {

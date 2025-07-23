@@ -70,7 +70,7 @@ export async function generateMetadata(props: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const filters = buildDimensionFilters(searchParams);
-  const { data, errors } = await getClient().query({
+  const { data } = await getClient().query({
     query,
     variables: { eventSlug, locale, filters },
   });

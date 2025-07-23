@@ -1,8 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { notFound } from "next/navigation";
 
-import { createProduct, reorderProducts } from "./actions";
-import ReorderableProductsTable from "./ReorderableProductsTable";
 import { graphql } from "@/__generated__";
 import { ProductListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -12,16 +10,12 @@ import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
-import TicketsAdminTabs from "@/components/tickets/TicketsAdminTabs";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 import type { Translations } from "@/translations/en";
+import { createProduct, reorderProducts } from "./actions";
+import ReorderableProductsTable from "./ReorderableProductsTable";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
@@ -149,7 +143,6 @@ export default async function ProductsPage(props: Props) {
   const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const tickeT = translations.Tickets;
   const t = translations.Tickets.Product;
   const session = await auth();
 

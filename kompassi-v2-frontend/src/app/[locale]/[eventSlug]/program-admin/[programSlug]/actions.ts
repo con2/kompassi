@@ -22,7 +22,7 @@ export async function updateProgramBasicInfo(
   programSlug: string,
   formData: FormData,
 ) {
-  const { data, errors } = await getClient().mutate({
+  await getClient().mutate({
     mutation,
     variables: {
       input: {
@@ -32,9 +32,6 @@ export async function updateProgramBasicInfo(
       },
     },
   });
-  if (errors) {
-    throw new Error(errors[0].message);
-  }
 
   revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}`);
   revalidatePath(`/${locale}/${eventSlug}/program-admin`);

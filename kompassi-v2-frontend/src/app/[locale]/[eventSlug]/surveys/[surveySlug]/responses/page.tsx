@@ -150,7 +150,6 @@ export default async function FormResponsesPage(props: Props) {
     notFound();
   }
 
-  const event = data.event;
   const survey = data.event.forms.survey;
 
   const { anonymity } = survey;
@@ -261,8 +260,6 @@ export default async function FormResponsesPage(props: Props) {
         </ViewHeading>
         <div className="ms-auto">
           <ResponseListActions
-            scope={event}
-            survey={survey}
             isSubscribed={isSubscribed}
             onToggleSubscription={toggleSurveyResponseSubscription.bind(
               null,

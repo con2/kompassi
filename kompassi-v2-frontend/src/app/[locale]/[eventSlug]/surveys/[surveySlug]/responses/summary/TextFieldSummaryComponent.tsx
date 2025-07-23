@@ -12,7 +12,7 @@ export default function TextFieldSummaryComponent({
   translations,
 }: TextFieldSummaryComponentProps) {
   const t = translations.Survey;
-  const { summary, countResponses, countMissingResponses } = fieldSummary;
+  const { countResponses, countMissingResponses } = fieldSummary;
   return (
     <>
       {fieldSummary.summary.map((item, idx) => (

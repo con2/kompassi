@@ -119,7 +119,6 @@ export default async function ProfileSurveyEditResponsePage(props: Props) {
     return <ViewContainer>{t.actions.editResponse.cannotEdit}</ViewContainer>;
   }
 
-  const language = form.language;
   const { fields, survey, description, event } = form;
   const values: Record<string, any> = response.values ?? {};
 

@@ -1,5 +1,28 @@
 import Link from "next/link";
 
+import { graphql } from "@/__generated__";
+import {
+  AdminOrderCodeFragment,
+  AdminOrderPaymentStampFragment,
+  AdminOrderReceiptFragment,
+  CodeStatus,
+  PaymentStatus,
+  RefundType,
+} from "@/__generated__/graphql";
+import { getClient } from "@/apolloClient";
+import { auth } from "@/auth";
+import { Column, DataTable } from "@/components/DataTable";
+import SignInRequired from "@/components/errors/SignInRequired";
+import FormattedDateTime from "@/components/FormattedDateTime";
+import SubmitButton from "@/components/forms/SubmitButton";
+import ModalButton from "@/components/ModalButton";
+import ContactForm from "@/components/tickets/ContactForm";
+import ProductsTable from "@/components/tickets/ProductsTable";
+import TicketsAdminView from "@/components/tickets/TicketsAdminView";
+import ViewContainer from "@/components/ViewContainer";
+import ViewHeading from "@/components/ViewHeading";
+import getPageTitle from "@/helpers/getPageTitle";
+import { getTranslations } from "@/translations";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
 import Accordion from "react-bootstrap/Accordion";
@@ -13,31 +36,6 @@ import {
   resendConfirmation,
   updateOrder,
 } from "./actions";
-import { graphql } from "@/__generated__";
-import {
-  AdminOrderCodeFragment,
-  AdminOrderPaymentStampFragment,
-  AdminOrderReceiptFragment,
-  CodeStatus,
-  PaymentStatus,
-  RefundType,
-} from "@/__generated__/graphql";
-import { getClient } from "@/apolloClient";
-import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import Messages from "@/components/errors/Messages";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import SubmitButton from "@/components/forms/SubmitButton";
-import ModalButton from "@/components/ModalButton";
-import ContactForm from "@/components/tickets/ContactForm";
-import ProductsTable from "@/components/tickets/ProductsTable";
-import TicketsAdminTabs from "@/components/tickets/TicketsAdminTabs";
-import TicketsAdminView from "@/components/tickets/TicketsAdminView";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
-import getPageTitle from "@/helpers/getPageTitle";
-import { getTranslations } from "@/translations";
 
 graphql(`
   fragment AdminOrderPaymentStamp on LimitedPaymentStampType {
@@ -202,6 +200,7 @@ export default async function AdminOrderPage(props: Props) {
       slug: "createdAt",
       title: sTamp.attributes.createdAt,
       getCellContents: (stamp) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { __typename, ...interestingFields } = stamp;
         return (
           <ModalButton
@@ -339,8 +338,6 @@ export default async function AdminOrderPage(props: Props) {
   const order = data.event.tickets.order;
   const { shortTitle: paymentStatus } =
     t.attributes.status.choices[order.status];
-
-  const queryString = new URLSearchParams(searchParams).toString();
 
   const actions = [
     {

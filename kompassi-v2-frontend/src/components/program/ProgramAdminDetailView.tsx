@@ -1,3 +1,11 @@
+import { graphql } from "@/__generated__";
+import { ProgramDimensionBadgeFragment } from "@/__generated__/graphql";
+import ViewContainer from "@/components/ViewContainer";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
+import type { Translations } from "@/translations/en";
 import Link from "next/link";
 import { ReactNode } from "react";
 import DimensionBadge from "../dimensions/DimensionBadge";
@@ -5,17 +13,6 @@ import Messages from "../errors/Messages";
 import ProgramAdminDetailTabs, {
   ProgramAdminTab,
 } from "./ProgramAdminDetailTabs";
-import { graphql } from "@/__generated__";
-import {
-  DimensionBadgeFragment,
-  ProgramDimensionBadgeFragment,
-} from "@/__generated__/graphql";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
-import type { Translations } from "@/translations/en";
 
 graphql(`
   fragment ProgramDimensionBadge on ProgramDimensionValueType {

@@ -1,11 +1,10 @@
-import Link from "next/link";
-import { ReactNode } from "react";
-import { Column, DataTable } from "../DataTable";
-import DimensionBadge from "../dimensions/DimensionBadge";
-import FormattedDateTime from "../FormattedDateTime";
 import { ProfileResponsesTableRowFragment } from "@/__generated__/graphql";
 import { auth } from "@/auth";
 import { Translations } from "@/translations/en";
+import Link from "next/link";
+import { ReactNode } from "react";
+import { Column, DataTable } from "../DataTable";
+import FormattedDateTime from "../FormattedDateTime";
 
 interface Props {
   responses: ProfileResponsesTableRowFragment[];

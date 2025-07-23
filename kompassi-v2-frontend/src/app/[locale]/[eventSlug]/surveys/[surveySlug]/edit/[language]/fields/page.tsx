@@ -101,7 +101,6 @@ export default async function EditSurveyLanguagePage(props: Props) {
   const params = await props.params;
   const { locale, eventSlug, surveySlug, language } = params;
   const translations = getTranslations(locale);
-  const t = translations.Survey;
   const session = await auth();
 
   // TODO encap

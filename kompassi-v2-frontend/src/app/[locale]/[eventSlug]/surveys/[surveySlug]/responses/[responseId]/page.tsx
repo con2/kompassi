@@ -136,7 +136,7 @@ export default async function SurveyResponsePage(props: Props) {
 
   const { anonymity, canRemoveResponses, protectResponses } =
     data.event.forms.survey;
-  const { sequenceNumber, revisionCreatedAt, language, form } =
+  const { sequenceNumber, revisionCreatedAt, form } =
     data.event.forms.survey.response;
   const { fields } = form;
 

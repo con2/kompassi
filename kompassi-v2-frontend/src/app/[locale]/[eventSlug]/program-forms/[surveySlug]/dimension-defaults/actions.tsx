@@ -30,7 +30,7 @@ export async function updateProgramFormDefaultDimensions(
     universe,
     formData: Object.fromEntries(formData),
   };
-  const { data } = await getClient().mutate({
+  await getClient().mutate({
     mutation,
     variables: { input },
   });

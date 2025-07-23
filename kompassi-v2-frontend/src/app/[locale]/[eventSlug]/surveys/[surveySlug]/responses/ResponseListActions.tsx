@@ -12,12 +12,6 @@ interface Messages {
 }
 
 interface Props {
-  scope: {
-    slug: string;
-  };
-  survey: {
-    slug: string;
-  };
   isSubscribed: boolean;
   onToggleSubscription(): Promise<void>;
   exportUrls: {
@@ -29,8 +23,6 @@ interface Props {
 }
 
 export function ResponseListActions({
-  scope,
-  survey,
   isSubscribed,
   onToggleSubscription,
   exportUrls,

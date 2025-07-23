@@ -4,16 +4,14 @@ import { notFound } from "next/navigation";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 
-import { updateProgramDimensions } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import DimensionValueSelectionForm, {
-  buildDimensionValueSelectionForm,
-} from "@/components/dimensions/DimensionValueSelectionForm";
+import DimensionValueSelectionForm from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { updateProgramDimensions } from "./actions";
 
 // TODO(Japsu) Deterministic order of dimensions & values
 // See https://con2.slack.com/archives/C3ZGNGY48/p1718446605681339
@@ -63,7 +61,7 @@ export async function generateMetadata(props: Props) {
   const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
-  const { data, errors } = await getClient().query({
+  const { data } = await getClient().query({
     query,
     variables: { eventSlug, programSlug, locale },
     fetchPolicy: "network-only",
@@ -98,10 +96,6 @@ export default async function ProgramAdminDetailDimensionsPage(props: Props) {
   const dimensions = data.event.program.dimensions;
 
   validateCachedDimensions(program.cachedDimensions);
-  const { fields, values } = buildDimensionValueSelectionForm(
-    dimensions,
-    program.cachedDimensions,
-  );
 
   return (
     <ProgramAdminDetailView

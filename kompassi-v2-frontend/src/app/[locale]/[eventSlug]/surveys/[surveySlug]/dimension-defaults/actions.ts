@@ -29,7 +29,7 @@ export async function updateSurveyDefaultDimensions(
     universe: SurveyDefaultDimensionsUniverse.Response, // TODO Involvement too
     formData: Object.fromEntries(formData),
   };
-  const { data } = await getClient().mutate({
+  await getClient().mutate({
     mutation,
     variables: { input },
   });

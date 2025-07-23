@@ -31,7 +31,6 @@ export default async function InvolvementAdminView({
   searchParams,
 }: Props) {
   const t = translations.Involvement;
-  const { error, ...otherSearchParams } = searchParams || {};
 
   return (
     <ViewContainer>
@@ -52,7 +51,7 @@ export default async function InvolvementAdminView({
         eventSlug={event.slug}
         translations={translations}
         active={active}
-        searchParams={otherSearchParams}
+        searchParams={searchParams}
       />
       {children}
     </ViewContainer>

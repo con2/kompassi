@@ -1,8 +1,6 @@
-import { Temporal } from "@js-temporal/polyfill";
-import { Scope } from "./models";
 import { ScheduleItemListFragment } from "@/__generated__/graphql";
 import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
-import { timezone as defaultTimezone } from "@/config";
+import { Scope } from "./models";
 
 interface Props {
   scheduleItem: ScheduleItemListFragment;

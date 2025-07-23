@@ -40,7 +40,6 @@ export const revalidate = 0;
 export async function generateMetadata(props: SurveyPageProps) {
   const params = await props.params;
   const { locale, eventSlug, surveySlug } = params;
-  const t = getTranslations(locale);
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, surveySlug, locale },

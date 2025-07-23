@@ -83,11 +83,11 @@ export function DimensionEditor({
   onCreateDimension,
   onUpdateDimension,
   onDeleteDimension,
-  onReorderDimensions,
+  onReorderDimensions, // eslint-disable-line @typescript-eslint/no-unused-vars
   onCreateDimensionValue,
   onUpdateDimensionValue,
   onDeleteDimensionValue,
-  onReorderDimensionValues,
+  onReorderDimensionValues, // eslint-disable-line @typescript-eslint/no-unused-vars
 }: Props) {
   const t = translations.Survey;
 

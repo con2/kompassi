@@ -11,7 +11,7 @@ export const authOptions: AuthOptions = {
       type: "oauth",
       idToken: true,
 
-      profile(profile, tokens) {
+      profile(profile, _tokens) {
         return {
           image: null,
           id: profile.sub,

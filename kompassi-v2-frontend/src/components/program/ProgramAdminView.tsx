@@ -33,7 +33,6 @@ export default async function ProgramAdminView({
   searchParams,
 }: Props) {
   const surveyT = translations.Survey;
-  const { error, ...otherSearchParams } = searchParams || {};
 
   return (
     <ViewContainer>
@@ -55,7 +54,7 @@ export default async function ProgramAdminView({
         eventSlug={event.slug}
         translations={translations}
         active={active}
-        searchParams={otherSearchParams}
+        searchParams={searchParams}
       />
       {children}
     </ViewContainer>

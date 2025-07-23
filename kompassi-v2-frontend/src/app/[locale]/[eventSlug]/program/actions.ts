@@ -17,7 +17,7 @@ export async function markScheduleItemAsFavorite(
   eventSlug: string,
   scheduleItemSlug: string,
 ) {
-  const data = await getClient().mutate({
+  await getClient().mutate({
     mutation: markScheduleItemAsFavoriteMutation,
     variables: { input: { eventSlug, scheduleItemSlug } },
   });
@@ -37,7 +37,7 @@ export async function unmarkAsFavorite(
   eventSlug: string,
   scheduleItemSlug: string,
 ) {
-  const data = await getClient().mutate({
+  await getClient().mutate({
     mutation: unmarkScheduleItemAsFavoriteMutation,
     variables: { input: { eventSlug, scheduleItemSlug } },
   });

@@ -86,7 +86,7 @@ export function ReorderableDataTable<Row>(props: DataTableProps<Row>) {
     keyColumn,
     messages: t,
   } = props;
-  const columns: Column<Row>[] = props.columns.map((column, index) => ({
+  const columns: Column<Row>[] = props.columns.map((column) => ({
     getCellElement: column.getCellElement ?? defaultCellElement,
     getCellContents: column.getCellContents ?? defaultCellContents,
     getHeaderElement: column.getHeaderElement ?? defaultHeaderElement,

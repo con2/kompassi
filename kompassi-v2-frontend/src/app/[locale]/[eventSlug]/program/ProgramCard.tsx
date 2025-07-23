@@ -1,17 +1,17 @@
 import Link from "next/link";
 
+import {
+  ScheduleItemListFragment,
+  ScheduleProgramFragment,
+} from "@/__generated__/graphql";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardLink from "react-bootstrap/CardLink";
 import CardTitle from "react-bootstrap/CardTitle";
 import FavoriteButton from "./FavoriteButton";
-import { Event, Scope } from "./models";
+import { Scope } from "./models";
 import ScheduleItem from "./ScheduleItem";
 import { getProgramColorBorder } from "./style";
-import {
-  ScheduleItemListFragment,
-  ScheduleProgramFragment,
-} from "@/__generated__/graphql";
 
 interface Props {
   event: Scope;

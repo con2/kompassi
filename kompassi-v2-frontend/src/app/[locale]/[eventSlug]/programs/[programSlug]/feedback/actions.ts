@@ -1,10 +1,9 @@
 "use server";
 
+import { graphql } from "@/__generated__";
+import { getClient } from "@/apolloClient";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { graphql } from "@/__generated__";
-import { FavoriteInput } from "@/__generated__/graphql";
-import { getClient } from "@/apolloClient";
 
 const createProgramFeedbackMutation = graphql(`
   mutation CreateFeedback($input: ProgramFeedbackInput!) {
@@ -20,7 +19,7 @@ export async function createProgramFeedback(
   programSlug: string,
   formData: FormData,
 ) {
-  const data = await getClient().mutate({
+  await getClient().mutate({
     mutation: createProgramFeedbackMutation,
     variables: {
       input: {

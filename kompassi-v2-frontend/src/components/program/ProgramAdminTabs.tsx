@@ -25,7 +25,11 @@ export default function ProgramAdminTabs({
 
   // Strip non-dimension search parameters from the query string
   // to avoid passing them to the tabs, as they are not relevant there.
-  const { success, error, ...forwardSearchParams } = searchParams || {};
+  const {
+    success: _success, // eslint-disable-line @typescript-eslint/no-unused-vars
+    error: _error, // eslint-disable-line @typescript-eslint/no-unused-vars
+    ...forwardSearchParams
+  } = searchParams || {};
   const queryString =
     Object.keys(forwardSearchParams).length > 0
       ? "?" + new URLSearchParams(forwardSearchParams).toString()

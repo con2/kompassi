@@ -44,7 +44,10 @@ export function formatDuration(start: string, end: string, locale: string) {
   return formatDurationMinutes(durationMinutes, locale);
 }
 
-export function formatDurationMinutes(durationMinutes: number, locale: string) {
+export function formatDurationMinutes(
+  durationMinutes: number,
+  _locale: string = "unused",
+) {
   const hours = Math.floor(durationMinutes / 60);
   const minutes = durationMinutes % 60;
 

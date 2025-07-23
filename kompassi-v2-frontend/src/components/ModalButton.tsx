@@ -33,7 +33,7 @@ export default function ModalButton({
   const close = useCallback(() => {
     setIsVisible(false);
   }, []);
-  const open = useCallback((event: MouseEvent<HTMLButtonElement>) => {
+  const open = useCallback((_event: MouseEvent<HTMLButtonElement>) => {
     setIsVisible(true);
   }, []);
 

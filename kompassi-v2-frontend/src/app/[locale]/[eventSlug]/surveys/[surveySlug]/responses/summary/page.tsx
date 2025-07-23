@@ -66,7 +66,8 @@ export async function generateMetadata(props: Props) {
 
   const t = translations.Survey;
 
-  const { from: _, ...filterSearchParams } = searchParams;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { from: _from, ...filterSearchParams } = searchParams;
   const filters = buildDimensionFilters(filterSearchParams);
   const { data } = await getClient().query({
     query,
@@ -101,7 +102,8 @@ export default async function SummaryPage(props: Props) {
   }
 
   // TODO: Make "from" a reserved word in the form generator
-  const { from: _, ...filterSearchParams } = searchParams;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { from: _from, ...filterSearchParams } = searchParams;
   const filters = buildDimensionFilters(filterSearchParams);
   const { data } = await getClient().query({
     query,

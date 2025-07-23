@@ -108,8 +108,6 @@ export default function FieldSummaryComponent({
   field,
   fieldSummary,
 }: Props) {
-  const t = translations.Survey;
-
   const { countResponses, countMissingResponses, type } = fieldSummary;
   const { choices, questions } = getSummaryChoices(
     fieldSummary,

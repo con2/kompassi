@@ -1,7 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { notFound } from "next/navigation";
 
-import { Card, CardBody, CardTitle } from "react-bootstrap";
 import { graphql } from "@/__generated__";
 import {
   PaymentProvider,
@@ -18,6 +17,7 @@ import { timezone as defaultTimezone } from "@/config";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { defaultLanguage, getTranslations } from "@/translations";
+import { Card, CardBody, CardTitle } from "react-bootstrap";
 
 graphql(`
   fragment Report on ReportType {
@@ -120,7 +120,8 @@ function formatCellValue(
     case TypeOfColumn.Datetime:
       try {
         return formatDateTime(value as string, locale, options, timezone);
-      } catch (e) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      } catch (_e) {
         return value as string;
       }
     default:
@@ -181,7 +182,6 @@ export default async function ReportsPage(props: Props) {
   const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets;
 
   // TODO encap
   const session = await auth();

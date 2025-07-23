@@ -22,8 +22,8 @@ export default function TicketsAdminTabs({
   searchParams,
 }: TicketsAdminTabsProps) {
   const {
-    success: _success,
-    error: _error,
+    success: _success, // eslint-disable-line @typescript-eslint/no-unused-vars
+    error: _error, // eslint-disable-line @typescript-eslint/no-unused-vars
     ...passedSearchParams
   } = searchParams;
   const queryString = new URLSearchParams(passedSearchParams).toString();

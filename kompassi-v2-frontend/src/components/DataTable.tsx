@@ -86,7 +86,7 @@ function defaultHeaderContents<Row>(this: Column<Row>) {
 
 export function DataTable<Row>(props: DataTableProps<Row>) {
   const { rows, getTotalMessage, responsive, children } = props;
-  const columns: Column<Row>[] = props.columns.map((column, index) => ({
+  const columns: Column<Row>[] = props.columns.map((column) => ({
     getCellElement: column.getCellElement ?? defaultCellElement,
     getCellContents: column.getCellContents ?? defaultCellContents,
     getHeaderElement: column.getHeaderElement ?? defaultHeaderElement,

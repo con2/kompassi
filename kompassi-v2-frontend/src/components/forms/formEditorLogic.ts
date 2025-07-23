@@ -1,4 +1,4 @@
-import { Field, nonValueFieldTypes } from "./models";
+import { Field } from "./models";
 
 export function canMoveUp(fields: Field[], slug: string): boolean {
   return slug !== fields[0].slug;

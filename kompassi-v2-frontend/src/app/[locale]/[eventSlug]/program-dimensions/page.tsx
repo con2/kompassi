@@ -94,8 +94,6 @@ export default async function ProgramDimensionsPage(props: Props) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
-  const t = translations.Survey;
-
   const { data } = await getClient().query({
     query,
     variables: { locale, eventSlug },
