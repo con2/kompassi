@@ -53,6 +53,8 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
       - uses: actions/setup-python@v5
         with:
           python-version-file: ".python-version"
@@ -103,6 +105,8 @@ jobs:
           name: build-json
 
       - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
       - uses: actions/setup-python@v5
         with:
           python-version-file: ".python-version"
@@ -136,6 +140,8 @@ jobs:
           name: build-json
 
       - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
       - uses: actions/setup-python@v5
         with:
           python-version-file: ".python-version"
