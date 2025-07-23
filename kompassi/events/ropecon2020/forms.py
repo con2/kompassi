@@ -893,8 +893,6 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         kwargs.pop("event")
         admin = kwargs.pop("admin")
 
-        assert not admin
-
         super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()

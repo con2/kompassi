@@ -51,8 +51,6 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         kwargs.pop("event")
         admin = kwargs.pop("admin")
 
-        assert not admin
-
         super().__init__(*args, **kwargs)
 
         self.helper = horizontal_form_helper()
@@ -145,8 +143,6 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
 
 class SpecialistSignupForm(SignupForm, AlternativeFormMixin):
     def get_job_categories_query(self, event, admin=False):
-        assert not admin
-
         return Q(event__slug="frostbite2023", public=False) & ~Q(slug="vastaava")
 
     def get_excluded_field_defaults(self):
