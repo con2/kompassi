@@ -1,5 +1,5 @@
 # https://docs.google.com/spreadsheet/ccc?key=0Annwjrq9JeBldGQ3aEFRakpJeGtISUVpTnpJRl92dUE&usp=drive_web#gid=0
-KEYSPACE = list(
+KEYSPACE = sorted(
     {
         "ahma",
         "arkki",
