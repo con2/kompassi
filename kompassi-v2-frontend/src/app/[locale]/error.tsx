@@ -35,7 +35,7 @@ export default function Error({ error }: Props) {
   }, [error]);
 
   let locale: string;
-  let { locale: paramLocale } = useParams();
+  const { locale: paramLocale } = useParams();
   if (Array.isArray(paramLocale)) {
     locale = paramLocale[0] || defaultLanguage;
   } else if (typeof paramLocale === "string") {

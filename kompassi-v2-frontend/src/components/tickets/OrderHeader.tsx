@@ -12,7 +12,7 @@ interface Props {
     status: PaymentStatus;
   };
   messages: Translations["Tickets"];
-  session?: {}; // TODO timezone stuff
+  session?: unknown; // TODO timezone stuff
   event: {
     name: string;
   };
@@ -26,11 +26,7 @@ export default function OrderHeader({
   event,
 }: Props) {
   const t = messages.Order;
-  const {
-    title,
-    shortTitle: paymentStatus,
-    message,
-  } = t.attributes.status.choices[order.status];
+  const { title, message } = t.attributes.status.choices[order.status];
 
   return (
     <>

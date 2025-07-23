@@ -532,9 +532,9 @@ const translations: Translations = {
       serverAttributes: {
         isAvailable: {
           untilFurtherNotice: "Saatavilla toistaiseksi",
-          untilTime: (formattedTime: String) =>
+          untilTime: (formattedTime: string) =>
             `Saatavilla ${formattedTime} asti`,
-          openingAt: (formattedTime: String) =>
+          openingAt: (formattedTime: string) =>
             `Tulossa saataville ${formattedTime}`,
           notAvailable: "Ei saatavilla",
         },
@@ -2108,8 +2108,8 @@ const translations: Translations = {
       isActive: {
         title: "Avoinna vastauksille",
         untilFurtherNotice: "Avoinna toistaiseksi",
-        untilTime: (formattedTime: String) => `Avoinna ${formattedTime} asti`,
-        openingAt: (formattedTime: String) => `Avautuu ${formattedTime}`,
+        untilTime: (formattedTime: string) => `Avoinna ${formattedTime} asti`,
+        openingAt: (formattedTime: string) => `Avautuu ${formattedTime}`,
         closed: "Suljettu",
         adminOverride: {
           title: "Kysely ei ole käytössä",

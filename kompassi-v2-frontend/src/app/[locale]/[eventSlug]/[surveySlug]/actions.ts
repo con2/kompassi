@@ -27,11 +27,12 @@ const initFileUploadMutation = graphql(`
 `);
 
 export async function uploadFiles(
-  client: ApolloClient<any>,
   eventSlug: string,
   surveySlug: string,
   formData: FormData,
 ) {
+  const client = getClient();
+
   const uploadFile = async (file: File): Promise<string> => {
     const filename = `${eventSlug}/survey-response-files/${surveySlug}/${file.name}`;
     const input = { filename, fileType: file.type };
@@ -49,7 +50,7 @@ export async function uploadFiles(
 
   const formEntries = Array.from(formData.entries());
   const fileUploadPromises = formEntries.map(
-    async ([key, value]): Promise<[string, any]> => {
+    async ([key, value]): Promise<[string, unknown]> => {
       if (!(value instanceof File)) return [key, value];
       // undefined removes the entry from the object
       if (value.size === 0) return [key, undefined];
@@ -75,7 +76,7 @@ export async function uploadFiles(
         throw new Error(`Duplicate key that is not a FileUpload: ${key}`);
       }
     } else {
-      map.set(key, value);
+      map.set(key, value as string);
     }
   }
 
@@ -93,7 +94,7 @@ export async function submit(
     locale,
     eventSlug,
     surveySlug,
-    formData: await uploadFiles(client, eventSlug, surveySlug, formData),
+    formData: await uploadFiles(eventSlug, surveySlug, formData),
   };
   await client.mutate({
     mutation: createSurveyResponseMutation,

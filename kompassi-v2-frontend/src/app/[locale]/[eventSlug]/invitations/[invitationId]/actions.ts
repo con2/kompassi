@@ -32,7 +32,7 @@ export async function acceptInvitation(
         locale,
         eventSlug,
         invitationId,
-        formData: await uploadFiles(client, eventSlug, surveySlug, formData),
+        formData: await uploadFiles(eventSlug, surveySlug, formData),
       },
     },
   });

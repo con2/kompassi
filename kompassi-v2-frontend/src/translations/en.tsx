@@ -538,9 +538,9 @@ const translations = {
       serverAttributes: {
         isAvailable: {
           untilFurtherNotice: "Available until further notice",
-          untilTime: (formattedTime: String) =>
+          untilTime: (formattedTime: string) =>
             `Available until ${formattedTime}`,
-          openingAt: (formattedTime: String) =>
+          openingAt: (formattedTime: string) =>
             `Will become available at ${formattedTime}`,
           notAvailable: "Not available",
         },
@@ -2094,8 +2094,8 @@ const translations = {
       isActive: {
         title: "Receiving responses",
         untilFurtherNotice: "Open until further notice",
-        untilTime: (formattedTime: String) => `Open until ${formattedTime}`,
-        openingAt: (formattedTime: String) => `Opening at ${formattedTime}`,
+        untilTime: (formattedTime: string) => `Open until ${formattedTime}`,
+        openingAt: (formattedTime: string) => `Opening at ${formattedTime}`,
         closed: "Closed",
         adminOverride: {
           title: "This survey is not active",

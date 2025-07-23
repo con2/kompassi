@@ -29,7 +29,7 @@ export async function submit(
     eventSlug,
     surveySlug,
     editResponseId,
-    formData: await uploadFiles(client, eventSlug, surveySlug, formData),
+    formData: await uploadFiles(eventSlug, surveySlug, formData),
   };
 
   const { data } = await client.mutate({

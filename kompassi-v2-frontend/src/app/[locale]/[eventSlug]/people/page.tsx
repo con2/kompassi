@@ -150,7 +150,7 @@ export default async function PeoplePage(props: Props) {
   }
 
   const { event } = data;
-  let people = data.event.involvement.people;
+  const people = data.event.involvement.people;
   const dimensions = data.event.involvement.dimensions;
   const keyDimensions = dimensions.filter(
     (dimension) => dimension.isKeyDimension,
