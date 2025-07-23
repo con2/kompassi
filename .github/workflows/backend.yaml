@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - kompassi/**
+      - kubernetes/**
       - .github/workflows/backend.yaml
       - Dockerfile
       - Dockerfile.static
@@ -16,6 +17,7 @@ on:
   pull_request:
     paths:
       - kompassi/**
+      - kubernetes/**
       - .github/workflows/backend.yaml
       - Dockerfile
       - Dockerfile.static
