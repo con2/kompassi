@@ -45,11 +45,18 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         max_length=255,
         blank=True,
         help_text="URL to the embedded guide. This is used to form program links.",
+        default="",
+    )
+    konsti_url = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="URL to the Konsti signup application page for this event. This is used to form signup links.",
+        default="",
     )
 
     default_registry = models.ForeignKey(
         Registry,
-        null=True,
+        null=True,  # TODO make non-nullable
         blank=True,
         on_delete=models.SET_NULL,
     )
