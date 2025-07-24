@@ -91,6 +91,7 @@ function SchemaFormInput({
           inputMode={field.decimalPlaces ? "decimal" : "numeric"}
           min={field.minValue}
           max={field.maxValue}
+          key={value}
         />
       );
     case "SingleCheckbox":
