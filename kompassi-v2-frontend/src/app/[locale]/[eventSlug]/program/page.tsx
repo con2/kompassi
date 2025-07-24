@@ -175,6 +175,7 @@ export default async function ProgramListPage(props: Props) {
               event={event}
               isLoggedIn={!!data.profile}
               locale={locale}
+              messages={t}
             />
           ))}
         </div>

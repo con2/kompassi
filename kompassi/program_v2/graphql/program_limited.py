@@ -23,15 +23,6 @@ class LimitedProgramType(DjangoObjectType):
     `cachedDimensions` is still provided.
     """
 
-    @staticmethod
-    def resolve_cached_dimensions(parent: Program, info):
-        """
-        Cached dimensions are the dimension values that are set for the program item.
-        This is a mapping of dimension slug to dimension value.
-        """
-        print("cached_dimensions", parent.cached_dimensions)
-        return parent.cached_dimensions
-
     cached_dimensions = graphene.Field(GenericScalar)
 
     @staticmethod

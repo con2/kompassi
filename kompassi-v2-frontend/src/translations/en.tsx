@@ -1223,6 +1223,10 @@ const translations = {
       },
       dimensions: "Program item dimensions",
       annotations: "Additional information",
+      cancelled: {
+        title: "Cancelled",
+        message: "This program item has been cancelled.",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>

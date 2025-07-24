@@ -61,6 +61,7 @@ const query = graphql(`
           title
           description
           cachedHosts
+          isCancelled
 
           links(lang: $locale) {
             type
@@ -181,6 +182,12 @@ export default async function NewProgramPage(props: Props) {
       </Link>
 
       <ViewHeading>{program.title}</ViewHeading>
+
+      {program.isCancelled && (
+        <p className="text-danger fw-bold">
+          ❌ {t.attributes.cancelled.message}
+        </p>
+      )}
 
       <div>
         {program.cachedHosts && <strong>{program.cachedHosts}</strong>}
