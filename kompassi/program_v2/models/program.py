@@ -246,7 +246,7 @@ class Program(models.Model):
         # TODO(#728): if soft delete of program hosts is implemented, this should be updated to
         # include only active program hosts
         default_formatted_hosts = ", ".join(host.person.display_name for host in self.all_program_hosts)
-        formatted_hosts = self.annotations.get("internal:overrideFormattedHosts", default_formatted_hosts)
+        formatted_hosts = self.annotations.get("internal:overrideFormattedHosts", "") or default_formatted_hosts
         self.annotations.update(
             {
                 "internal:defaultFormattedHosts": default_formatted_hosts,
