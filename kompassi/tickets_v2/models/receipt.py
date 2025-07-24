@@ -24,6 +24,7 @@ from kompassi.tickets_v2.lippukala_integration import Queue as LippukalaQueue
 
 from ..optimized_server.models.enums import PaymentStatus, ReceiptStatus, ReceiptType
 from ..utils.event_partitions import EventPartitionsMixin
+from .meta import TicketsV2EventMeta
 from .order import Order, OrderMixin
 from .product import Product
 
@@ -203,6 +204,13 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
     def event(self) -> Event:
         return self._get_event(self.event_id)
 
+    @cached_property
+    def meta(self) -> TicketsV2EventMeta:
+        if self.event.tickets_v2_event_meta is None:
+            raise AssertionError("Event does not have tickets_v2_event_meta")
+
+        return self.event.tickets_v2_event_meta
+
     @classmethod
     def claim_pending_receipts(cls, event_id: int, batch_size: int = batch_size) -> tuple[list[Self], bool]:
         """
@@ -331,9 +339,11 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
         return f"{self.event.name}: {subject} ({self.formatted_order_number})"
 
     def send_receipt(self, from_email: str = FROM_EMAIL, mail_domain: str = MAIL_DOMAIN):
-        # NOTE doesn't check this internal alias exists (perf), too bad if it doesn't
-        reply_to_email = (f"{self.event.slug}-tickets@{mail_domain}",)
-        to_email = (f"{self.first_name} {self.last_name} <{self.email}>",)
+        from_email = (
+            f"{self.event.name} ({settings.KOMPASSI_INSTALLATION_NAME}) <{self.event.slug}-tickets@{mail_domain}>"
+        )
+        reply_to_emails = (contact_email,) if (contact_email := self.meta.contact_email) else ()
+        to_emails = (f"{self.first_name} {self.last_name} <{self.email}>",)
 
         # uncomment to see the receipts on terminal & write etickets to file
         # if settings.DEBUG:
@@ -348,8 +358,8 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             subject=self.subject,
             body=self.body,
             from_email=from_email,
-            reply_to=reply_to_email,
-            to=to_email,
+            reply_to=reply_to_emails,
+            to=to_emails,
         )
 
         if etickets_pdf := self.get_etickets_pdf():
