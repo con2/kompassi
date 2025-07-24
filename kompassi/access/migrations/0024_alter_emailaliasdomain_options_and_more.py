@@ -6,7 +6,11 @@ def populate_variant(app_config, schema_editor):
     EmailAliasType = app_config.get_model("access", "EmailAliasType")
     for alias_type in EmailAliasType.objects.all():
         match alias_type.account_name_code:
-            case "organizations.tracon_ry.email_aliases:nick":
+            case (
+                "organizations.tracon_ry.email_aliases:nick"
+                | "events.tracon11.email_aliases:requested_alias_or_nick"
+                | "events.aicon2016.email_aliases:requested_alias"
+            ):
                 variant_slug = "CUSTOM"
             case "access.email_aliases:nick":
                 variant_slug = "NICK"
