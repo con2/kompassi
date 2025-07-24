@@ -241,4 +241,4 @@ class ScheduleItem(models.Model):
         """
         TODO(#726) Cancel single schedule item without cancelling the whole program.
         """
-        return bool(set(self.cached_dimensions.get("state", [])).intersection({"cancelled", "rejected"}))
+        return bool(set(self.cached_combined_dimensions.get("state", [])).intersection({"cancelled", "rejected"}))

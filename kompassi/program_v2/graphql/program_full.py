@@ -1,5 +1,4 @@
 import graphene
-from graphene.types.generic import GenericScalar
 
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.graphql.event_limited import LimitedEventType
@@ -111,9 +110,6 @@ class FullProgramType(LimitedProgramType):
         public_only=graphene.Boolean(),
         description=normalize_whitespace(resolve_dimensions.__doc__ or ""),
     )
-    cached_dimensions = graphene.Field(GenericScalar)
-
-    color = graphene.NonNull(graphene.String)
 
     @staticmethod
     def resolve_program_offer(program: Program, info):
@@ -175,7 +171,6 @@ class FullProgramType(LimitedProgramType):
             "title",
             "slug",
             "description",
-            "cached_dimensions",
             "cached_earliest_start_time",
             "cached_latest_end_time",
             "created_at",
