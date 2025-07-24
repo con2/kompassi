@@ -213,6 +213,10 @@ const translations: Translations = {
       },
       dimensions: UNTRANSLATED(en.Program.attributes.dimensions),
       annotations: UNTRANSLATED(en.Program.attributes.annotations),
+      cancelled: UNSURE({
+        title: "Avbruten",
+        message: "Detta program har avbrutits.",
+      }),
     },
     actions: {
       ...UNTRANSLATED(en.Program.actions),

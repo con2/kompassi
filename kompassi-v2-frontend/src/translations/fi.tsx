@@ -1220,6 +1220,10 @@ const translations: Translations = {
       },
       dimensions: "Ohjelmanumeron dimensiot",
       annotations: "Lisätiedot",
+      cancelled: {
+        title: "Peruutettu",
+        message: "Tämä ohjelmanumero on peruutettu.",
+      },
     },
     actions: {
       returnToProgramList: (eventName: string) =>
