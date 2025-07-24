@@ -261,7 +261,7 @@ export default async function NewProgramPage(props: Props) {
       <div className="mb-3 mt-3">
         {program.dimensions.map((dimension) => (
           <Link
-            key={dimension.dimension.slug}
+            key={`${dimension.dimension.slug}-${dimension.value.slug}`}
             href={`/${eventSlug}/program?${dimension.dimension.slug}=${dimension.value.slug}`}
           >
             <span className="badge text-bg-primary me-2">
