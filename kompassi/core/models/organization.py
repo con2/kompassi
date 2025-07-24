@@ -10,10 +10,9 @@ from django.db.models import Q
 from ..utils import SLUG_FIELD_PARAMS, pick_attrs, slugify
 
 if TYPE_CHECKING:
-    from payments.models import PaymentsOrganizationMeta
-
     from kompassi.access.models import AccessOrganizationMeta
     from kompassi.membership.models import MembershipOrganizationMeta
+    from kompassi.payments.models import PaymentsOrganizationMeta
 
     from .event import Event
 
@@ -128,7 +127,7 @@ class Organization(models.Model):
 
     @property
     def payments_organization_meta(self):
-        from payments.models import PaymentsOrganizationMeta
+        from kompassi.payments.models import PaymentsOrganizationMeta
 
         try:
             return self.paymentsorganizationmeta
