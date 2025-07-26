@@ -498,6 +498,7 @@ const translations: Translations = {
             "Jos tämä on asetettu, tuote poistuu myynnistä kun tämä aika on ohitettu.",
         },
         countPaid: "Maksettu",
+        countUnpaid: "Maksamatta",
         countReserved: {
           title: "Myyty",
           description:

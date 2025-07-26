@@ -122,11 +122,6 @@ export default async function QuotasPage(props: Props) {
       ),
     },
     {
-      slug: "countPaid",
-      title: producT.clientAttributes.countPaid,
-      className: "text-end align-middle col-1",
-    },
-    {
       slug: "countReserved",
       title: producT.clientAttributes.countReserved.title,
       className: "text-end align-middle col-1",
@@ -135,6 +130,17 @@ export default async function QuotasPage(props: Props) {
           {producT.clientAttributes.countReserved.title}
         </abbr>
       ),
+    },
+    {
+      slug: "countPaid",
+      title: producT.clientAttributes.countPaid,
+      className: "text-end align-middle col-1",
+    },
+    {
+      slug: "countUnpaid",
+      title: producT.clientAttributes.countUnpaid,
+      className: "text-end align-middle col-1",
+      getCellContents: (quota) => quota.countReserved - quota.countPaid,
     },
     {
       slug: "countAvailable",

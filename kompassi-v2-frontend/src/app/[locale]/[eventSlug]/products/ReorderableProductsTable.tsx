@@ -52,17 +52,23 @@ export default function ReorderableProductsTable({
       title: t.isAvailable,
     },
     {
-      slug: "countPaid",
-      title: t.countPaid,
-      className: "text-end align-middle col-1",
-    },
-    {
       slug: "countReserved",
       title: t.countReserved.title,
       getHeaderContents: () => (
         <abbr title={t.countReserved.description}>{t.countReserved.title}</abbr>
       ),
       className: "text-end align-middle col-1",
+    },
+    {
+      slug: "countPaid",
+      title: t.countPaid,
+      className: "text-end align-middle col-1",
+    },
+    {
+      slug: "countUnpaid",
+      title: t.countUnpaid,
+      className: "text-end align-middle col-1",
+      getCellContents: (quota) => quota.countReserved - quota.countPaid,
     },
     {
       slug: "countAvailable",

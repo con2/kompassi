@@ -30,6 +30,7 @@ graphql(`
     countPaid
     countReserved
     countAvailable
+    countTotal
   }
 `);
 

@@ -509,6 +509,7 @@ const translations = {
           description:
             "In addition to paid orders, includes those orders that have been confirmed but not yet paid.",
         },
+        countUnpaid: "Unpaid",
         countAvailable: "Remaining",
         countTotal: "Total",
         actions: "Actions",
