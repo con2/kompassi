@@ -22,18 +22,20 @@ export async function createDimension(
   universeSlug: string,
   formData: FormData,
 ) {
+  const { slug: dimensionSlug, ...formData_ } = Object.fromEntries(formData);
   await getClient().mutate({
     mutation: putDimensionMutation,
     variables: {
       input: {
         scopeSlug,
         universeSlug,
-        formData: forceSlug(Object.fromEntries(formData)),
+        dimensionSlug: dimensionSlug as string,
+        formData: formData_,
       },
     },
   });
-  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
 
+  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
   redirect(`/${scopeSlug}/surveys/${universeSlug}/dimensions`);
 }
 
@@ -116,6 +118,7 @@ export async function createDimensionValue(
   dimensionSlug: string,
   formData: FormData,
 ) {
+  const { slug: valueSlug, ...formData_ } = Object.fromEntries(formData);
   await getClient().mutate({
     mutation: putDimensionValueMutation,
     variables: {
@@ -123,12 +126,13 @@ export async function createDimensionValue(
         scopeSlug,
         universeSlug,
         dimensionSlug,
-        formData: forceSlug(Object.fromEntries(formData)),
+        valueSlug: valueSlug as string,
+        formData: formData_,
       },
     },
   });
-  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
 
+  revalidatePath(`/${locale}/${scopeSlug}/${universeSlug}`);
   redirect(`/${scopeSlug}/surveys/${universeSlug}/dimensions`);
 }
 

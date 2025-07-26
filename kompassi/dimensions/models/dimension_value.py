@@ -3,11 +3,9 @@ from __future__ import annotations
 import logging
 
 from django.db import models
-from django.http import HttpRequest
 
-from kompassi.access.cbac import is_graphql_allowed_for_model
+from kompassi.core.middleware import RequestWithCache
 from kompassi.core.utils.model_utils import make_slug_field
-from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, getattr_message_in_language
 
 from .dimension import Dimension
@@ -43,6 +41,10 @@ class DimensionValue(models.Model):
     title_fi = models.TextField(blank=True, default="")
     title_sv = models.TextField(blank=True, default="")
 
+    dimension_id: int
+    id: int
+    pk: int
+
     @property
     def title_dict(self) -> dict[str, str]:
         """
@@ -69,37 +71,26 @@ class DimensionValue(models.Model):
     def scope(self) -> Scope:
         return self.dimension.scope
 
-    @property
-    def is_in_use(self) -> bool:
-        from kompassi.forms.models.response_dimension_value import ResponseDimensionValue
-        from kompassi.involvement.models.involvement_dimension_value import InvolvementDimensionValue
-        from kompassi.program_v2.models.program_dimension_value import ProgramDimensionValue
-        from kompassi.program_v2.models.schedule_item_dimension_value import ScheduleItemDimensionValue
-
-        match self.universe.app:
-            case DimensionApp.FORMS:
-                return ResponseDimensionValue.objects.filter(value=self).exists()
-            case DimensionApp.PROGRAM_V2:
-                return (
-                    ProgramDimensionValue.objects.filter(value=self).exists()
-                    or ScheduleItemDimensionValue.objects.filter(value=self).exists()
-                )
-            case DimensionApp.INVOLVEMENT:
-                return InvolvementDimensionValue.objects.filter(value=self).exists()
-            case _:
-                raise NotImplementedError(self.universe.app_name)
-
-    def can_be_deleted_by(self, request: HttpRequest) -> bool:
+    def can_be_deleted_by(self, request: RequestWithCache) -> bool:
+        cache = request.kompassi_cache
         return (
-            is_graphql_allowed_for_model(
-                request.user,
-                instance=self,
+            not self.is_technical
+            and not cache.for_universe(self.universe).is_dimension_value_in_use(self)
+            and cache.is_allowed(
+                instance=self.dimension,
                 operation="delete",
-                field="self",
-                app=self.universe.app.value,
+                field="values",
+                app=self.universe.app_name,
             )
-            and not self.is_technical
-            and not self.is_in_use
+        )
+
+    def can_be_updated_by(self, request: RequestWithCache) -> bool:
+        cache = request.kompassi_cache
+        return not self.is_technical and cache.is_allowed(
+            instance=self.dimension,
+            operation="update",
+            field="values",
+            app=self.universe.app_name,
         )
 
     class Meta:

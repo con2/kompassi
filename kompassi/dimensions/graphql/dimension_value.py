@@ -1,5 +1,4 @@
 import graphene
-from django.http import HttpRequest
 from graphene_django import DjangoObjectType
 
 from kompassi.dimensions.models.dimension_value import DimensionValue
@@ -10,13 +9,17 @@ class DimensionValueType(DjangoObjectType):
     title = graphene.String(lang=graphene.String())
     resolve_title = resolve_localized_field_getattr("title")
 
-    # TODO Slow when called once for each dimension value of Ropecon
     @staticmethod
     def resolve_can_remove(value: DimensionValue, info):
-        request: HttpRequest = info.context
-        return value.can_be_deleted_by(request)
+        return value.can_be_deleted_by(info.context)
 
     can_remove = graphene.NonNull(graphene.Boolean)
+
+    @staticmethod
+    def resolve_can_edit(value: DimensionValue, info):
+        return value.can_be_updated_by(info.context)
+
+    can_edit = graphene.NonNull(graphene.Boolean)
 
     class Meta:
         model = DimensionValue

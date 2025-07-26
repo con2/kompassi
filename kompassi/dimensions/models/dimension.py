@@ -6,14 +6,13 @@ from typing import TYPE_CHECKING
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.http import HttpRequest
 from django.utils.translation import get_language
 
-from kompassi.access.cbac import is_graphql_allowed_for_model
+from kompassi.core.middleware import RequestWithCache
 from kompassi.core.utils.model_utils import make_slug_field
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES, getattr_message_in_language
 
-from .enums import DimensionApp, ValueOrdering
+from .enums import ValueOrdering
 from .scope import Scope
 from .universe import Universe
 
@@ -101,6 +100,7 @@ class Dimension(models.Model):
             "NOTE: Does not make sense without `is_multi_value`."
         ),
     )
+
     is_technical = models.BooleanField(
         default=False,
         help_text=(
@@ -108,7 +108,13 @@ class Dimension(models.Model):
             "They are used for internal purposes have some assumptions about them (eg. their existence and that of certain values)."
         ),
     )
-
+    can_values_be_added = models.BooleanField(
+        default=True,
+        help_text=(
+            "If set, users can add values to this dimension in the UI and values added by the user can be edited. "
+            "Some technical dimensions may allow adding values and some may not."
+        ),
+    )
     value_ordering = models.CharField(
         choices=ValueOrdering.choices,
         default=ValueOrdering.TITLE.value,
@@ -128,6 +134,8 @@ class Dimension(models.Model):
     title_sv = models.TextField(blank=True, default="")
 
     values: models.QuerySet[DimensionValue]
+    id: int
+    pk: int
 
     class Meta:
         ordering = ("universe", "order", "slug")
@@ -211,37 +219,32 @@ class Dimension(models.Model):
     def admin_get_universe(self):
         return self.universe.slug if self.universe else None
 
-    @property
-    def is_in_use(self) -> bool:
-        from kompassi.forms.models.response_dimension_value import ResponseDimensionValue
-        from kompassi.involvement.models.involvement_dimension_value import InvolvementDimensionValue
-        from kompassi.program_v2.models.program_dimension_value import ProgramDimensionValue
-        from kompassi.program_v2.models.schedule_item_dimension_value import ScheduleItemDimensionValue
+    def can_be_deleted_by(self, request: RequestWithCache) -> bool:
+        cache = request.kompassi_cache
 
-        match self.universe.app:
-            case DimensionApp.FORMS:
-                return ResponseDimensionValue.objects.filter(value__dimension=self).exists()
-            case DimensionApp.PROGRAM_V2:
-                return (
-                    ProgramDimensionValue.objects.filter(value__dimension=self).exists()
-                    or ScheduleItemDimensionValue.objects.filter(value__dimension=self).exists()
-                )
-            case DimensionApp.INVOLVEMENT:
-                return InvolvementDimensionValue.objects.filter(value__dimension=self).exists()
-            case _:
-                raise NotImplementedError(self.universe.app.value)
-
-    def can_be_deleted_by(self, request: HttpRequest) -> bool:
         return (
-            is_graphql_allowed_for_model(
-                request.user,
+            not self.is_technical
+            and cache.is_allowed(
                 instance=self,
                 operation="delete",
-                field="self",
-                app=self.universe.app.value,
+                app=self.universe.app_name,
             )
-            and not self.is_technical
-            and not self.is_in_use
+            and not cache.for_universe(self.universe).is_dimension_in_use(self)
+        )
+
+    def can_values_be_created_by(self, request: RequestWithCache) -> bool:
+        return self.can_values_be_added and request.kompassi_cache.is_allowed(
+            instance=self,
+            operation="create",
+            app=self.universe.app_name,
+            field="values",
+        )
+
+    def can_be_updated_by(self, request: RequestWithCache) -> bool:
+        return request.kompassi_cache.is_allowed(
+            instance=self,
+            operation="update",
+            app=self.universe.app_name,
         )
 
     def refresh_dependents(self):

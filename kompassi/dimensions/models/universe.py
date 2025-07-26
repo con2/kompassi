@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from django.db import models
 
+from kompassi.core.middleware import RequestWithCache
 from kompassi.core.utils.model_utils import make_slug_field
 
 from .enums import DimensionApp
@@ -38,6 +39,9 @@ class Universe(models.Model):
 
     all_involvements: models.QuerySet[Involvement]
     dimensions: models.QuerySet[Dimension]
+
+    id: int
+    pk: int
 
     class Meta:
         unique_together = [("scope", "slug")]
@@ -86,4 +90,12 @@ class Universe(models.Model):
             self,
             dimension_slugs=dimension_slugs,
             allow_missing=allow_missing,
+        )
+
+    def can_dimensions_be_created_by(self, request: RequestWithCache) -> bool:
+        return request.kompassi_cache.is_allowed(
+            instance=self,
+            operation="create",
+            field="dimensions",
+            app=self.app_name,
         )

@@ -2,8 +2,9 @@ import graphene
 from django import forms as django_forms
 from graphene.types.generic import GenericScalar
 
-from kompassi.access.cbac import graphql_check_instance
+from kompassi.core.middleware import RequestWithCache
 from kompassi.core.utils.form_utils import camel_case_keys_to_snake_case
+from kompassi.core.utils.model_utils import slugify
 
 from ...models.dimension import Dimension
 from ...models.universe import Universe
@@ -14,7 +15,6 @@ class DimensionForm(django_forms.ModelForm):
     class Meta:
         model = Dimension
         fields = (
-            "slug",
             "is_public",
             "is_key_dimension",
             "is_multi_value",
@@ -28,17 +28,11 @@ class DimensionForm(django_forms.ModelForm):
             "title_sv",
         )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if self.instance.pk is not None:
-            del self.fields["slug"]
-
 
 class PutDimensionInput(graphene.InputObjectType):
     scope_slug = graphene.String(required=True)
     universe_slug = graphene.String(required=True)
-    dimension_slug = graphene.String(description="If set, update existing; otherwise, create new")
+    dimension_slug = graphene.String(required=True)
     form_data = GenericScalar(required=True)
 
 
@@ -54,6 +48,7 @@ class PutDimension(graphene.Mutation):
         info,
         input: PutDimensionInput,
     ):
+        request: RequestWithCache = info.context
         form_data = camel_case_keys_to_snake_case(input.form_data)  # type: ignore
 
         universe = Universe.objects.get(
@@ -61,33 +56,27 @@ class PutDimension(graphene.Mutation):
             slug=input.universe_slug,
         )
 
-        graphql_check_instance(
-            universe,  # type: ignore
-            info,
-            app=universe.app.value,
-            field="dimensions",
-            operation="update",
-        )
+        dimension = universe.dimensions.filter(slug=input.dimension_slug).first()
 
-        # TODO update_or_create
-        dimension: Dimension
-        if input.dimension_slug is not None:
-            # updating existing Dimension
-            dimension = universe.dimensions.get(slug=input.dimension_slug)
-            form = DimensionForm(form_data, instance=dimension)
-
-            # TODO dimension.can_be_edited_by
-            if dimension.is_technical:
-                raise ValueError("Cannot edit technical dimension")
-        else:
-            form = DimensionForm(form_data)
-
-        if form.is_valid():
-            dimension = form.save(commit=False)
-            dimension.universe = universe
-            dimension.save()
-        else:
+        form = DimensionForm(form_data, instance=dimension)
+        if not form.is_valid():
             raise django_forms.ValidationError(form.errors)
+
+        if dimension is None:
+            if not universe.can_dimensions_be_created_by(request):
+                raise Exception("You cannot create dimensions in this universe.")
+
+            created_dimension = form.save(commit=False)
+            created_dimension.universe = universe
+            created_dimension.slug = slugify(input.dimension_slug)  # type: ignore
+            created_dimension.save()
+
+            dimension = created_dimension
+        else:
+            if not dimension.can_be_updated_by(request):
+                raise Exception("You cannot update this dimension.")
+
+            dimension = form.save()
 
         dimension.refresh_dependents()
 

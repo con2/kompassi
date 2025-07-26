@@ -30,6 +30,7 @@ graphql(`
   fragment DimensionEditor on FullDimensionType {
     slug
     canRemove
+    canAddValues
     title(lang: $locale)
     isPublic
     isKeyDimension
@@ -280,7 +281,7 @@ export function DimensionEditor({
           );
         })}
         <tr>
-          {!dimension.isTechnical && <AddValueCell dimension={dimension} />}
+          {dimension.canAddValues && <AddValueCell dimension={dimension} />}
         </tr>
       </>
     );

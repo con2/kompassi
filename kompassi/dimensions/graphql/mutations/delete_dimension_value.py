@@ -1,6 +1,6 @@
 import graphene
-from django.http import HttpRequest
 
+from kompassi.core.middleware import RequestWithCache
 from kompassi.dimensions.models.dimension_value import DimensionValue
 
 
@@ -23,7 +23,7 @@ class DeleteDimensionValue(graphene.Mutation):
         info,
         input: DeleteDimensionValueInput,
     ):
-        request: HttpRequest = info.context
+        request: RequestWithCache = info.context
 
         value = DimensionValue.objects.get(
             dimension__universe__scope__slug=input.scope_slug,

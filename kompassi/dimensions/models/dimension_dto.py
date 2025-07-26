@@ -27,7 +27,9 @@ class DimensionDTO(pydantic.BaseModel):
     is_list_filter: bool = pydantic.Field(default=True)
     is_shown_in_detail: bool = pydantic.Field(default=True)
     is_negative_selection: bool = pydantic.Field(default=False)
+
     is_technical: bool = pydantic.Field(default=False)
+    can_values_be_added: bool = pydantic.Field(default=True)
 
     value_ordering: ValueOrdering = pydantic.Field(default=ValueOrdering.TITLE)
 
@@ -70,6 +72,7 @@ class DimensionDTO(pydantic.BaseModel):
                 is_shown_in_detail=dimension_dto.is_shown_in_detail,
                 is_negative_selection=dimension_dto.is_negative_selection,
                 is_technical=dimension_dto.is_technical,
+                can_values_be_added=dimension_dto.can_values_be_added,
                 value_ordering=dimension_dto.value_ordering,
                 order=dimension_dto.order if dimension_dto.order is not None else order * 10,
             )
@@ -88,6 +91,7 @@ class DimensionDTO(pydantic.BaseModel):
             "is_shown_in_detail",
             "is_negative_selection",
             "is_technical",
+            "can_values_be_added",
             "value_ordering",
         ]
         if override_order:

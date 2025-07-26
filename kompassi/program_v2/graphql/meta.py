@@ -178,7 +178,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         if key_dimensions_only:
             dimensions = dimensions.filter(is_key_dimension=True)
 
-        return dimensions.order_by("order")
+        return dimensions.select_related("universe").order_by("order")
 
     dimensions = graphene.NonNull(
         graphene.List(graphene.NonNull(FullDimensionType)),

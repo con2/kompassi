@@ -5,6 +5,7 @@ import pytest
 import yaml
 from django.db import transaction
 
+from kompassi.core.middleware import RequestLocalCache
 from kompassi.core.models import Event
 from kompassi.dimensions.graphql.mutations.put_dimension import PutDimension
 from kompassi.dimensions.models.dimension import Dimension, ValueOrdering
@@ -736,16 +737,7 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
 
 
 @pytest.mark.django_db
-@mock.patch("kompassi.dimensions.graphql.mutations.put_dimension.graphql_check_instance", autospec=True)
-def test_put_survey_dimension(_patched_graphql_check_instance):
-    form_data = {
-        "slug": "test-dimension",
-        "title_en": "Test dimension",
-        "title_sv": "Testdimension",
-        "isKeyDimension": "on",
-        "valueOrdering": "MANUAL",
-    }
-
+def test_put_survey_dimension():
     event, _created = Event.get_or_create_dummy()
 
     survey = Survey.objects.create(
@@ -753,14 +745,27 @@ def test_put_survey_dimension(_patched_graphql_check_instance):
         slug="test-survey",
     )
 
+    # fake request and request local cache
+    cache = RequestLocalCache(None)  # type: ignore
+    cache.mock_permissions(dict(app="forms"))
+    request = SimpleNamespace(user=None, kompassi_cache=cache)
+    info = SimpleNamespace(context=request)
+
+    # create dimension
+    form_data = {
+        "title_en": "Test dimension",
+        "title_sv": "Testdimension",
+        "isKeyDimension": "on",
+        "valueOrdering": "MANUAL",
+    }
     PutDimension.mutate(
         None,
-        MOCK_INFO,
+        info,
         SimpleNamespace(
             scope_slug=event.scope.slug,
             universe_slug=survey.universe.slug,
+            dimension_slug="test-dimension",
             form_data=form_data,
-            dimension_slug=None,
         ),  # type: ignore
     )
 
@@ -772,6 +777,27 @@ def test_put_survey_dimension(_patched_graphql_check_instance):
     assert dimension.title_fi == ""
     assert dimension.is_key_dimension is True
     assert dimension.is_multi_value is False
+
+    # update dimension
+    form_data = {
+        "title_en": "Test dimension",
+        "title_sv": "Testdimension2",
+        "isKeyDimension": "on",
+        "valueOrdering": "MANUAL",
+    }
+    PutDimension.mutate(
+        None,
+        info,
+        SimpleNamespace(
+            scope_slug=event.scope.slug,
+            universe_slug=survey.universe.slug,
+            dimension_slug="test-dimension",
+            form_data=form_data,
+        ),  # type: ignore
+    )
+
+    dimension.refresh_from_db()
+    assert dimension.title_sv == "Testdimension2"
 
 
 @pytest.mark.django_db

@@ -23,7 +23,8 @@ ROOM_DIMENSION_DTO = DimensionDTO(
     is_public=True,
     is_list_filter=True,
     is_key_dimension=False,
-    is_technical=True,  # but the values are not
+    is_technical=True,
+    can_values_be_added=True,
     title=dict(
         fi="Sali",
         en="Room",
@@ -45,6 +46,7 @@ STATE_DIMENSION_DTO = DimensionDTO(
     is_list_filter=True,
     is_key_dimension=True,
     is_technical=True,
+    can_values_be_added=False,
     title={
         "fi": "Tila",
         "en": "State",
@@ -103,6 +105,7 @@ SCHEDULED_DIMENSION_DTO = DimensionDTO(
     value_ordering=ValueOrdering.MANUAL,
     # applies_to=DimensionAppliesTo.PROGRAM_ITEM,
     is_technical=True,
+    can_values_be_added=False,
     is_public=False,
     is_list_filter=True,
     is_key_dimension=False,  # column added manually in program item list view
@@ -211,6 +214,7 @@ def get_form_dimension_dto(universe: Universe) -> DimensionDTO:
         is_list_filter=True,
         is_key_dimension=True,
         is_technical=True,
+        can_values_be_added=False,
         title={
             "fi": "Ohjelmalomake",
             "en": "Program form",
@@ -266,5 +270,6 @@ def get_date_dimension_dto(universe: Universe) -> DimensionDTO:
         is_public=True,
         is_list_filter=True,
         is_technical=True,
+        can_values_be_added=False,
         is_multi_value=True,
     )

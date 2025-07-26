@@ -5,6 +5,7 @@ from functools import wraps
 from typing import Literal, Protocol
 
 from django.contrib.auth.decorators import login_required
+from django.db import models
 from django.http import HttpRequest
 from graphene import ResolveInfo
 
@@ -121,10 +122,14 @@ class HasImmutableScope(Protocol):
     def scope(self) -> Scope: ...
 
 
+class HasScopeForeignKey(Protocol):
+    scope: models.ForeignKey[Scope]
+
+
 def is_graphql_allowed_for_model(
     user,
     *,
-    instance: HasScope | HasImmutableScope,
+    instance: HasScope | HasImmutableScope | HasScopeForeignKey,
     operation: Operation,
     field: str = "self",
     app: str | Enum = "",
@@ -137,7 +142,7 @@ def is_graphql_allowed_for_model(
     extra = dict(slug=slug) if slug is not None else {}
 
     claims = make_graphql_claims(
-        scope=instance.scope,
+        scope=instance.scope,  # type: ignore
         operation=operation,
         app=app,
         model=model_name,
@@ -180,7 +185,7 @@ def graphql_check_model(
 
 
 def graphql_check_instance(
-    instance: HasScope | HasImmutableScope,
+    instance: HasScope | HasImmutableScope | HasScopeForeignKey,
     info: ResolveInfo | HttpRequest,
     *,
     field: str = "self",
@@ -199,7 +204,7 @@ def graphql_check_instance(
     extra = dict(slug=slug) if slug is not None else {}
 
     claims = make_graphql_claims(
-        scope=instance.scope,
+        scope=instance.scope,  # type: ignore
         operation=operation,
         app=app,
         model=model_name,
