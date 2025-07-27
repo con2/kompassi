@@ -44,5 +44,7 @@ export async function submit(
 
   revalidatePath(`/${locale}/${eventSlug}/program-offers`);
   revalidatePath(`/${locale}/${eventSlug}/program-offers/${editResponseId}`);
-  return void redirect(`/${eventSlug}/program-offers?success=created`);
+  return void redirect(
+    `/${eventSlug}/program-offers?success=programOfferEdited`,
+  );
 }

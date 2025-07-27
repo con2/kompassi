@@ -15,7 +15,6 @@ import {
   buildDimensionFilters,
   getDimensionValueTitle,
 } from "@/components/dimensions/helpers";
-import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
@@ -40,7 +39,7 @@ graphql(`
       }
       language
     }
-    cachedDimensions
+    cachedDimensions(publicOnly: false)
     programs {
       slug
       title
@@ -56,7 +55,6 @@ graphql(`
   }
 `);
 
-// TODO
 const query = graphql(`
   query ProgramOffers(
     $eventSlug: String!
@@ -143,10 +141,8 @@ export default async function ProgramOffersPage(props: Props) {
   const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Program.ProgramOffer;
-  const queryString = new URLSearchParams(searchParams).toString();
   const surveyT = translations.Survey;
-  const programT = translations.Program;
+  const t = translations.Program;
   const session = await auth();
 
   // TODO encap
@@ -155,6 +151,16 @@ export default async function ProgramOffersPage(props: Props) {
   }
 
   const filters = buildDimensionFilters(searchParams);
+  const {
+    success: _success, // eslint-disable-line @typescript-eslint/no-unused-vars
+    error: _error, // eslint-disable-line @typescript-eslint/no-unused-vars
+    forwardedSearchParams,
+  } = searchParams;
+  let queryString = new URLSearchParams(forwardedSearchParams).toString();
+  if (queryString) {
+    queryString = `?${queryString}`;
+  }
+
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, locale, filters },
@@ -170,7 +176,7 @@ export default async function ProgramOffersPage(props: Props) {
     {
       slug: "title",
       type: "SingleLineText",
-      title: programT.attributes.title,
+      title: t.attributes.title,
     },
   ];
 
@@ -179,7 +185,7 @@ export default async function ProgramOffersPage(props: Props) {
       slug: "originalCreatedAt",
       title: <>{surveyT.attributes.currentVersionCreatedAt} 🔼</>,
       getCellContents: (row) => (
-        <Link href={`/${eventSlug}/program-offers/${row.id}?${queryString}`}>
+        <Link href={`/${eventSlug}/program-offers/${row.id}${queryString}`}>
           <FormattedDateTime
             value={row.originalCreatedAt}
             locale={locale}
@@ -264,34 +270,11 @@ export default async function ProgramOffersPage(props: Props) {
         }
       },
     });
-  } else {
-    // TODO is this fallback necessary?
-    columns.push({
-      slug: "state",
-      title: programT.attributes.state.title,
-      getCellContents: (row) => {
-        if (row.programs.length > 0) {
-          return row.programs.map((program) => (
-            <div key={program.slug}>
-              <Link
-                className="link-subtle"
-                href={`/${event.slug}/program-admin/${program.slug}`}
-                title={program.title}
-              >
-                {programT.attributes.state.choices.accepted}
-              </Link>
-            </div>
-          ));
-        } else {
-          return programT.attributes.state.choices.new;
-        }
-      },
-    });
   }
 
   const programOffers = data.event.program.programOffers;
   const excelExportLink = data.event.program.programOffersExcelExportLink
-    ? `${data.event.program.programOffersExcelExportLink}?${queryString}`
+    ? `${data.event.program.programOffersExcelExportLink}${queryString}`
     : null;
 
   // TODO When Dimension.appliesTo is implemented, .filter can be removed
@@ -314,7 +297,6 @@ export default async function ProgramOffersPage(props: Props) {
         )
       }
     >
-      <Messages searchParams={searchParams} messages={t.messages} />
       <DimensionFilters dimensions={listFilters} />
       <DataTable rows={programOffers} columns={columns}>
         <tfoot>

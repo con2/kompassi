@@ -48,7 +48,6 @@ interface Props {
   children?: ReactNode;
   actions?: ReactNode;
   searchParams: Record<string, string>;
-  messages: Record<string, string | ReactNode>;
 }
 
 export default function ProgramAdminDetailView({
@@ -58,7 +57,6 @@ export default function ProgramAdminDetailView({
   active,
   children,
   actions,
-  messages,
   searchParams,
 }: Props) {
   const t = translations.Program;
@@ -83,7 +81,7 @@ export default function ProgramAdminDetailView({
         <ViewHeadingActions>{actions}</ViewHeadingActions>
       </ViewHeadingActionsWrapper>
 
-      <Messages messages={messages} searchParams={searchParams} />
+      <Messages messages={t.messages} searchParams={searchParams} />
 
       <ProgramAdminDetailTabs
         eventSlug={event.slug}

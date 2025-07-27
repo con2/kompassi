@@ -426,7 +426,6 @@ export default async function ProgramAdminDetailPage(props: Props) {
       translations={translations}
       active={"programHosts"}
       searchParams={searchParams}
-      messages={t.messages}
     >
       <DataTable rows={programHosts} columns={programHostColumns}>
         <tfoot>

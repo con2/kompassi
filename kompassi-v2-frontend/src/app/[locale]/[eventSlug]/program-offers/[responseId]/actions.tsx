@@ -93,16 +93,16 @@ export async function cancelProgramOffer(
   switch (input.resolution) {
     case ProgramOfferResolution.Cancel:
       redirect(
-        `/${eventSlug}/program-offers/${cancelledResponseId}?success=cancelled`,
+        `/${eventSlug}/program-offers/${cancelledResponseId}?success=offerCancelled`,
       );
 
     case ProgramOfferResolution.Reject:
       redirect(
-        `/${eventSlug}/program-offers/${cancelledResponseId}?success=rejected`,
+        `/${eventSlug}/program-offers/${cancelledResponseId}?success=offerRejected`,
       );
 
     case ProgramOfferResolution.Delete:
-      redirect(`/${eventSlug}/program-offers?success=deleted`);
+      redirect(`/${eventSlug}/program-offers?success=offerDeleted`);
 
     default:
       const _exhaustiveCheck: never = input.resolution;

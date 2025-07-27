@@ -55,7 +55,9 @@ export async function putScheduleItem(
     variables: { input },
   });
 
-  const action = editingExisting ? "updated" : "created";
+  const action = editingExisting
+    ? "scheduleItemUpdated"
+    : "scheduleItemCreated";
 
   revalidatePath(`/${locale}/${eventSlug}/program`);
   revalidatePath(`/${locale}/${eventSlug}/program-admin`);
@@ -100,6 +102,6 @@ export async function deleteScheduleItem(
     `/${locale}/${eventSlug}/program-admin/${programSlug}/schedule`,
   );
   redirect(
-    `/${eventSlug}/program-admin/${programSlug}/schedule?success=removed`,
+    `/${eventSlug}/program-admin/${programSlug}/schedule?success=scheduleItemDeleted`,
   );
 }

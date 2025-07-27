@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 
-import { updateProgramAnnotations } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import AnnotationsForm from "@/components/annotations/AnnotationsForm";
@@ -12,6 +11,7 @@ import SubmitButton from "@/components/forms/SubmitButton";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { updateProgramAnnotations } from "./actions";
 
 // TODO(Japsu) Deterministic order of dimensions & values
 // See https://con2.slack.com/archives/C3ZGNGY48/p1718446605681339
@@ -79,7 +79,6 @@ export default async function ProgramAdminDetailAnnotationsPage(props: Props) {
   const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Program;
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, programSlug, locale },
@@ -109,7 +108,6 @@ export default async function ProgramAdminDetailAnnotationsPage(props: Props) {
       translations={translations}
       active={"annotations"}
       searchParams={searchParams}
-      messages={t.messages}
     >
       <Card>
         <CardBody>

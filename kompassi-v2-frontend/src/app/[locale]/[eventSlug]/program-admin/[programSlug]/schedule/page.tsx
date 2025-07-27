@@ -88,7 +88,6 @@ export default async function ProgramAdminDetailSchedulePage(props: Props) {
   const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Program.ScheduleItem;
   const { data } = await getClient().query({
     query,
     variables: { eventSlug, programSlug, locale },
@@ -109,7 +108,6 @@ export default async function ProgramAdminDetailSchedulePage(props: Props) {
       translations={translations}
       active={"scheduleItems"}
       searchParams={searchParams}
-      messages={t.messages}
     >
       <ScheduleItemTable
         locale={locale}

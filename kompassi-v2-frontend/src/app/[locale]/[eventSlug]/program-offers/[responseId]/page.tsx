@@ -16,7 +16,6 @@ import {
   CachedDimensions,
   validateCachedDimensions,
 } from "@/components/dimensions/models";
-import Messages from "@/components/errors/Messages";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
@@ -388,7 +387,7 @@ export default async function ProgramOfferPage(props: Props) {
                 responseId,
               )}
             >
-              <p>{t.actions.cancel.message}</p>
+              {t.actions.cancel.message}
               <SchemaForm
                 fields={cancelProgramOfferFields}
                 messages={translations.SchemaForm}
@@ -412,8 +411,6 @@ export default async function ProgramOfferPage(props: Props) {
           <DimensionBadge subjectDimensionValue={responseStateDimensionValue} />
         )}
       </h3>
-
-      <Messages messages={t.messages} searchParams={searchParams} />
 
       {programOffer.programs.length > 0 && (
         <div className="alert alert-primary mt-4 mb-4">

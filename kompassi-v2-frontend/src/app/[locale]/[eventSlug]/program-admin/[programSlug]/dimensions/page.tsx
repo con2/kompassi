@@ -80,7 +80,6 @@ export default async function ProgramAdminDetailDimensionsPage(props: Props) {
   const params = await props.params;
   const { locale, eventSlug, programSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Program;
   const surveyT = translations.Survey;
   const { data } = await getClient().query({
     query,
@@ -104,7 +103,6 @@ export default async function ProgramAdminDetailDimensionsPage(props: Props) {
       translations={translations}
       active={"dimensions"}
       searchParams={searchParams}
-      messages={t.messages}
     >
       <Card>
         <CardBody>

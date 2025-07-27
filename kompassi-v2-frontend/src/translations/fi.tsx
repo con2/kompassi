@@ -1326,11 +1326,38 @@ const translations: Translations = {
       },
     },
     messages: {
-      failedToCreate: "Ohjelmanumeron luonti epäonnistui.",
-      restored: "Ohjelmanumero palautettu.",
-      cancelled: "Ohjelmanumero merkitty peruutetuksi.",
-      cancelledAndHidden: "Ohjelmanumero peruttu ja piilotettu.",
-      deleted: "Ohjelmanumero poistettu.",
+      failedToCreateProgram: "Ohjelmanumeron luonti epäonnistui.",
+      programRestored: "Ohjelmanumero palautettu.",
+      programCancelled: "Ohjelmanumero merkitty peruutetuksi.",
+      programCancelledAndHidden: "Ohjelmanumero peruttu ja piilotettu.",
+      programDeleted: "Ohjelmanumero poistettu.",
+      offerCancelled: "Ohjelmatarjous merkitty peruutetuksi.",
+      offerRejected: "Ohjelmatarjous hylätty.",
+      offerDeleted: "Ohjelmatarjous poistettu.",
+      spawnCancelled: (
+        <p>
+          Tästä ohjelmatarjouksesta luotu ohjelmanumero peruttiin. Nyt
+          ohjelmatarjouksen kohtalo on käsissäsi. Voit jättää sen sikseen,
+          merkitä sen peruutetuksi tai hylätyksi tai poistaa sen kokonaan.
+          Valitse viisaasti.
+        </p>
+      ),
+      spawnDeleted: (
+        <p>
+          Tästä ohjelmatarjouksesta luotu ohjelmanumero poistettiin. Nyt
+          ohjelmatarjouksen kohtalo on käsissäsi. Voit jättää sen sikseen,
+          merkitä sen peruutetuksi tai hylätyksi tai poistaa sen kokonaan.
+          Valitse viisaasti.
+        </p>
+      ),
+      hostDeleted: "Ohjelmanpitäjä poistettu ohjelmanumerosta.",
+      hostUpdated: "Ohjelmanpitäjän tiedot päivitetty.",
+      invitationSent: "Ohjelmanpitäjäkutsu lähetetty.",
+      invitationResent: "Ohjelmanpitäjäkutsu lähetettiin uudelleen.",
+      invitationRevoked: "Ohjelmanpitäjäkutsu peruttiin.",
+      scheduleItemCreated: "Aikataulumerkintä luotu.",
+      scheduleItemUpdated: "Aikataulumerkintä päivitetty.",
+      scheduleItemRemoved: "Aikataulumerkintä poistettu.",
     },
     favorites: {
       markAsFavorite: "Merkitse suosikiksi",
@@ -1658,28 +1685,6 @@ const translations: Translations = {
         },
       },
 
-      messages: {
-        cancelled: "Ohjelmatarjous merkitty peruutetuksi.",
-        rejected: "Ohjelmatarjous hylätty.",
-        deleted: "Ohjelmatarjous poistettu.",
-        spawnCancelled: (
-          <p>
-            Tästä ohjelmatarjouksesta luotu ohjelmanumero peruttiin. Nyt
-            ohjelmatarjouksen kohtalo on käsissäsi. Voit jättää sen sikseen,
-            merkitä sen peruutetuksi tai hylätyksi tai poistaa sen kokonaan.
-            Valitse viisaasti.
-          </p>
-        ),
-        spawnDeleted: (
-          <p>
-            Tästä ohjelmatarjouksesta luotu ohjelmanumero poistettiin. Nyt
-            ohjelmatarjouksen kohtalo on käsissäsi. Voit jättää sen sikseen,
-            merkitä sen peruutetuksi tai hylätyksi tai poistaa sen kokonaan.
-            Valitse viisaasti.
-          </p>
-        ),
-      },
-
       OldVersionAlert: {
         title: "Tämä on vanha versio ohjelmatarjouksesta",
         message: "Ohjelmatarjousta on muokattu. Tämä on vanha versio.",
@@ -1780,13 +1785,6 @@ const translations: Translations = {
             cancel: "Sulje tallentamatta",
           },
         },
-      },
-      messages: {
-        deleted: "Ohjelmanpitäjä poistettu ohjelmanumerosta.",
-        invited: "Ohjelmanpitäjäkutsu lähetetty.",
-        resent: "Ohjelmanpitäjäkutsu lähetettiin uudelleen.",
-        revoked: "Ohjelmanpitäjäkutsu peruttiin.",
-        updated: "Ohjelmanpitäjän tiedot päivitetty.",
       },
     },
 
@@ -1912,12 +1910,6 @@ const translations: Translations = {
             cancel: "Sulje poistamatta",
           },
         },
-      },
-
-      messages: {
-        created: "Aikataulumerkintä luotu.",
-        updated: "Aikataulumerkintä päivitetty.",
-        removed: "Aikataulumerkintä poistettu.",
       },
     },
 

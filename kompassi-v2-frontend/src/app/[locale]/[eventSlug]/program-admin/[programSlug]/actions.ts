@@ -147,5 +147,7 @@ export async function restoreProgramItem(
   revalidatePath(
     `/${locale}/${eventSlug}/program-admin/${restoredProgramSlug}`,
   );
-  redirect(`/${eventSlug}/program-admin/${programSlug}?success=restored`);
+  redirect(
+    `/${eventSlug}/program-admin/${programSlug}?success=programRestored`,
+  );
 }

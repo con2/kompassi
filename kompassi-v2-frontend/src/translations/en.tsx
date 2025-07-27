@@ -1327,11 +1327,38 @@ const translations = {
       },
     },
     messages: {
-      failedToCreate: "Failed to create program item.",
-      restored: "Program item restored.",
-      cancelled: "Program item marked as cancelled.",
-      cancelledAndHidden: "Program item marked as cancelled and hidden.",
-      deleted: "Program item deleted.",
+      failedToCreateProgram: "Failed to create program item.",
+      programRestored: "Program item restored.",
+      programCancelled: "Program item marked as cancelled.",
+      programCancelledAndHidden: "Program item marked as cancelled and hidden.",
+      programDeleted: "Program item deleted.",
+      offerCancelled: "Program offer cancelled.",
+      offerRejected: "Program offer rejected.",
+      offerDeleted: "Program offer deleted.",
+      spawnCancelled: (
+        <p>
+          A program item created from this program offer was cancelled. Now the
+          fate of the program offer it was created from is at your hands. You
+          may leave it as is, mark it as cancelled or rejected or remove it
+          altogether. Choose wisely.
+        </p>
+      ),
+      spawnDeleted: (
+        <p>
+          A program item created from this program offer was removed. Now the
+          fate of the program offer it was created from is at your hands. You
+          may leave it as is, mark it as cancelled or rejected or remove it
+          altogether. Choose wisely.
+        </p>
+      ),
+      hostDeleted: "Program host removed from the program item.",
+      hostUpdated: "Program host updated.",
+      invitationSent: "Program host invitation sent.",
+      invitationResent: "Program host invitation resent.",
+      invitationRevoked: "Program host invitation revoked.",
+      scheduleItemCreated: "Schedule item created.",
+      scheduleItemUpdated: "Schedule item updated.",
+      scheduleItemRemoved: "Schedule item removed.",
     },
     favorites: {
       markAsFavorite: "Mark as favorite",
@@ -1658,28 +1685,6 @@ const translations = {
           returnToCurrentVersion: "Return to the current version",
         },
       },
-
-      messages: {
-        cancelled: "Program offer cancelled.",
-        rejected: "Program offer rejected.",
-        deleted: "Program offer deleted.",
-        spawnCancelled: (
-          <p>
-            A program item created from this program offer was cancelled. Now
-            the fate of the program offer it was created from is at your hands.
-            You may leave it as is, mark it as cancelled or rejected or remove
-            it altogether. Choose wisely.
-          </p>
-        ),
-        spawnDeleted: (
-          <p>
-            A program item created from this program offer was removed. Now the
-            fate of the program offer it was created from is at your hands. You
-            may leave it as is, mark it as cancelled or rejected or remove it
-            altogether. Choose wisely.
-          </p>
-        ),
-      },
     },
 
     ProgramHost: {
@@ -1772,13 +1777,6 @@ const translations = {
             cancel: "Close without saving",
           },
         },
-      },
-      messages: {
-        deleted: "Program host removed from the program item.",
-        invited: "Program host invitation sent.",
-        resent: "Program host invitation resent.",
-        revoked: "Program host invitation revoked.",
-        updated: "Program host updated.",
       },
     },
 
@@ -1903,12 +1901,6 @@ const translations = {
             cancel: "Close without removing",
           },
         },
-      },
-
-      messages: {
-        created: "Schedule item created.",
-        updated: "Schedule item updated.",
-        removed: "Schedule item removed.",
       },
     },
 

@@ -34,7 +34,9 @@ export async function inviteProgramHost(
     },
   });
   revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
-  redirect(`/${eventSlug}/program-admin/${programSlug}/hosts?success=invited`);
+  redirect(
+    `/${eventSlug}/program-admin/${programSlug}/hosts?success=invitationSent`,
+  );
 }
 
 const deleteProgramHostMutation = graphql(`
@@ -64,7 +66,9 @@ export async function deleteProgramHost(
     },
   });
   revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
-  redirect(`/${eventSlug}/program-admin/${programSlug}/hosts?success=deleted`);
+  redirect(
+    `/${eventSlug}/program-admin/${programSlug}/hosts?success=hostDeleted`,
+  );
 }
 
 const updateProgramHostDimensionsMutation = graphql(`
@@ -107,7 +111,9 @@ export async function updateProgramHostDimensions(
   }
 
   revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
-  redirect(`/${eventSlug}/program-admin/${programSlug}/hosts?success=updated`);
+  redirect(
+    `/${eventSlug}/program-admin/${programSlug}/hosts?success=hostUpdated`,
+  );
 }
 
 const deleteInvitationMutation = graphql(`
@@ -136,7 +142,9 @@ export async function revokeInvitation(
     },
   });
   revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
-  redirect(`/${eventSlug}/program-admin/${programSlug}/hosts?success=revoked`);
+  redirect(
+    `/${eventSlug}/program-admin/${programSlug}/hosts?success=invitationRevoked`,
+  );
 }
 
 const resendInvitationMutation = graphql(`
@@ -165,7 +173,9 @@ export async function resendInvitation(
     },
   });
   revalidatePath(`/${locale}/${eventSlug}/program-admin/${programSlug}/hosts`);
-  redirect(`/${eventSlug}/program-admin/${programSlug}/hosts?success=resent`);
+  redirect(
+    `/${eventSlug}/program-admin/${programSlug}/hosts?success=invitationResent`,
+  );
 }
 
 export async function overrideFormattedHosts(

@@ -35,13 +35,17 @@ export async function createProgram(
 
     if (errors || !data?.createProgram?.program) {
       console.error("GraphQL error creating program:", errors);
-      return void redirect(`/${eventSlug}/program-admin?error=failedToCreate`);
+      return void redirect(
+        `/${eventSlug}/program-admin?error=failedToCreateProgram`,
+      );
     }
 
     slug = data.createProgram.program.slug;
   } catch (error) {
     console.error("Exception occurred creating program:", error);
-    return void redirect(`/${eventSlug}/program-admin?error=failedToCreate`);
+    return void redirect(
+      `/${eventSlug}/program-admin?error=failedToCreateProgram`,
+    );
   }
 
   revalidatePath(`/${locale}/${eventSlug}/program-admin`);

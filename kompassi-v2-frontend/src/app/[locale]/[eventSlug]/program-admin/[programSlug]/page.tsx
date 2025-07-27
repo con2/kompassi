@@ -175,7 +175,6 @@ export default async function ProgramAdminDetailPage(props: Props) {
       translations={translations}
       active={"basicInfo"}
       searchParams={searchParams}
-      messages={t.messages}
       actions={
         <ButtonGroup>
           {canRestore ? (
