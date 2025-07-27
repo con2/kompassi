@@ -13,6 +13,7 @@ from kompassi.core.models import Event, Organization, Person, Venue
 from kompassi.forms.models.meta import FormsEventMeta
 from kompassi.forms.models.survey import Survey
 from kompassi.intra.models import IntraEventMeta, Team
+from kompassi.involvement.models.registry import Registry
 from kompassi.labour.models import (
     AlternativeSignupForm,
     JobCategory,
@@ -23,6 +24,7 @@ from kompassi.labour.models import (
 from kompassi.labour.models import (
     Survey as LabourSurvey,
 )
+from kompassi.program_v2.models.meta import ProgramV2EventMeta
 
 from ...models import Poison, SignupExtra, SpecialDiet
 
@@ -44,6 +46,7 @@ class Setup:
         self.setup_badges()
         self.setup_intra()
         self.setup_forms()
+        self.setup_program_v2()
 
     def setup_core(self):
         self.venue, unused = Venue.objects.get_or_create(
@@ -367,6 +370,21 @@ class Setup:
                         annotations={"desucon2025:formattedPerks": perks},
                     ),
                 )
+
+    def setup_program_v2(self):
+        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
+        meta, _ = ProgramV2EventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                contact_email="Desuconin ohjelmavastaava <ohjelma@desucon.fi>",
+                default_registry=Registry.objects.get(
+                    scope=self.event.organization.scope,
+                    slug="volunteers",
+                ),
+            ),
+        )
+        meta.ensure()
 
 
 class Command(BaseCommand):
