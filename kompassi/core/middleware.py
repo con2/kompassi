@@ -173,8 +173,6 @@ class RequestWithCache(HttpRequest):
 def request_cache_middleware(get_response):
     def middleware(request: RequestWithCache):
         request.kompassi_cache = RequestLocalCache(request=request)
-        response = get_response(request)
-        print("cbac_permissions after", request.kompassi_cache.cbac_permissions)
-        return response
+        return get_response(request)
 
     return middleware
