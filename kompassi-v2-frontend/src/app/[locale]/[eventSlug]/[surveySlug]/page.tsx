@@ -15,6 +15,8 @@ import TransferConsentForm from "@/components/involvement/TransferConsentForm";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
+import processFormData from "@/components/forms/processFormData";
+import searchParamsToFormData from "@/helpers/searchParamsToFormData";
 
 const query = graphql(`
   query SurveyPageQuery(
@@ -75,6 +77,9 @@ interface Props {
     locale: string;
     eventSlug: string;
     surveySlug: string;
+  }>;
+  searchParams: Promise<{
+    [key: string]: string;
   }>;
 }
 
@@ -183,6 +188,10 @@ export default async function SurveyPage(props: Props) {
 
   validateFields(fields);
 
+  const searchParams = await props.searchParams;
+  const urlSearchParams = new URLSearchParams(searchParams);
+  const formData = searchParamsToFormData(urlSearchParams);
+  const values = processFormData(fields, formData);
   return (
     <ViewContainer>
       <ViewHeading>
@@ -217,7 +226,11 @@ export default async function SurveyPage(props: Props) {
             locale={locale}
           />
         )}
-        <SchemaForm fields={fields} messages={translations.SchemaForm} />
+        <SchemaForm
+          fields={fields}
+          values={values}
+          messages={translations.SchemaForm}
+        />
         <SubmitButton>{t.actions.submit}</SubmitButton>
       </form>
     </ViewContainer>

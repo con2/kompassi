@@ -689,6 +689,7 @@ export type FullProgramType = {
   annotations: Array<ProgramAnnotationType>;
   /** A mapping of program annotation slug to annotation value. Only public annotations are returned. */
   cachedAnnotations: Scalars['GenericScalar']['output'];
+  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a single program or schedule item, but when using the plural resolvers like `programs` or `scheduleItems`, the performance difference can be significant. By default, returns both dimensions set on the program itself and those set on its schedule items. If `own_only` is True, only returns dimensions set on this item itself. By default, returns both public and internal dimensions. This will change in near future to only return public dimensions by default and require `publicOnly: false` to get internal dimensions. At that time, the default will change to `publicOnly: true`, and setting `publicOnly: false` will require authentication. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
   cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
   /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
   cachedEarliestStartTime?: Maybe<Scalars['DateTime']['output']>;
@@ -845,6 +846,7 @@ export type FullResponseTypeValuesArgs = {
 
 export type FullScheduleItemType = {
   __typename?: 'FullScheduleItemType';
+  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a single program or schedule item, but when using the plural resolvers like `programs` or `scheduleItems`, the performance difference can be significant. By default, returns both dimensions set on the program itself and those set on its schedule items. If `own_only` is True, only returns dimensions set on this item itself. By default, returns both public and internal dimensions. This will change in near future to only return public dimensions by default and require `publicOnly: false` to get internal dimensions. At that time, the default will change to `publicOnly: true`, and setting `publicOnly: false` will require authentication. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
   cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
   createdAt: Scalars['DateTime']['output'];
   durationMinutes: Scalars['Int']['output'];
@@ -1220,6 +1222,7 @@ export type LimitedProgramType = {
   __typename?: 'LimitedProgramType';
   /** A mapping of program annotation slug to annotation value. Only public annotations are returned. */
   cachedAnnotations: Scalars['GenericScalar']['output'];
+  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a single program or schedule item, but when using the plural resolvers like `programs` or `scheduleItems`, the performance difference can be significant. By default, returns both dimensions set on the program itself and those set on its schedule items. If `own_only` is True, only returns dimensions set on this item itself. By default, returns both public and internal dimensions. This will change in near future to only return public dimensions by default and require `publicOnly: false` to get internal dimensions. At that time, the default will change to `publicOnly: true`, and setting `publicOnly: false` will require authentication. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
   cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
   /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
   cachedEarliestStartTime?: Maybe<Scalars['DateTime']['output']>;
@@ -1397,6 +1400,7 @@ export type LimitedResponseTypeValuesArgs = {
 
 export type LimitedScheduleItemType = {
   __typename?: 'LimitedScheduleItemType';
+  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a single program or schedule item, but when using the plural resolvers like `programs` or `scheduleItems`, the performance difference can be significant. By default, returns both dimensions set on the program itself and those set on its schedule items. If `own_only` is True, only returns dimensions set on this item itself. By default, returns both public and internal dimensions. This will change in near future to only return public dimensions by default and require `publicOnly: false` to get internal dimensions. At that time, the default will change to `publicOnly: true`, and setting `publicOnly: false` will require authentication. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
   cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
   createdAt: Scalars['DateTime']['output'];
   durationMinutes: Scalars['Int']['output'];

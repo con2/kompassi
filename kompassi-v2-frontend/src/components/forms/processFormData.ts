@@ -1,5 +1,7 @@
 import { Field, Values } from "./models";
 
+const falsyValues = new Set(["false", "0", "off", "no"]);
+
 /// Implements subset of forms/utils/process_form_data.py:process_form_data
 /// just enough to do what we need to do with forms client-side.
 export default function processFormData(
@@ -12,8 +14,9 @@ export default function processFormData(
 
   for (const field of fields) {
     const slug = slugPrefix ? `${slugPrefix}.${field.slug}` : field.slug;
+    const type = field.type;
 
-    switch (field.type) {
+    switch (type) {
       case "Spacer":
       case "Divider":
       case "StaticText":
@@ -22,9 +25,39 @@ export default function processFormData(
       case "SingleLineText":
       case "MultiLineText":
       case "SingleSelect":
+      case "DimensionSingleSelect":
       case "DateTimeField":
       case "DateField":
+      case "TimeField":
         values[field.slug] = byFieldName[slug] as string;
+        break;
+
+      case "MultiSelect":
+      case "DimensionMultiSelect":
+        const choicesPrefix = `${slug}.`;
+        for (const [key, value] of Object.entries(byFieldName)) {
+          if (key.startsWith(choicesPrefix)) {
+            const choiceSlug = key.slice(choicesPrefix.length);
+            if (
+              typeof byFieldName[key] === "string" &&
+              !falsyValues.has(byFieldName[key])
+            ) {
+              const chosen = (values[choiceSlug] ??= []) as string[];
+              chosen.push(value as string);
+            }
+          }
+        }
+        break;
+
+      case "RadioMatrix":
+        const matrixValues: Record<string, string> = {};
+        for (const question of field.questions) {
+          const questionSlug = `${slug}.${question.slug}`;
+          const value = byFieldName[questionSlug];
+          if (value !== undefined) {
+            matrixValues[question.slug] = value as string;
+          }
+        }
         break;
 
       case "NumberField":
@@ -33,6 +66,7 @@ export default function processFormData(
         break;
 
       case "SingleCheckbox":
+      case "DimensionSingleCheckbox":
         // "checked" => true
         // "" => false
         // undefined => false
@@ -48,15 +82,21 @@ export default function processFormData(
           values[field.slug] = null;
         }
         break;
+
       case "MultiItemField":
         values[field.slug] = processFormData(field.fields, formData, slug);
         break;
 
+      case "FileUpload":
+        console.warn(
+          "processFormData: FileUpload is not supported client-side",
+          field,
+        );
+        break;
+
       default:
-        // NOTE: Not exhaustive by design.
-        // We don't need to implement this for all field types in the frontend.
-        // const exhaustiveCheck: never = field.type;
-        throw new Error(`Unsupported field type ${field.type}`);
+        const exhaustiveCheck: never = type;
+        throw new Error(`Unsupported field type ${exhaustiveCheck}`);
     }
   }
 
