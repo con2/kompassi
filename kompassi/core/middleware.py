@@ -11,8 +11,16 @@ from typing import TYPE_CHECKING
 
 from django.http import HttpRequest
 
-from kompassi.access.cbac import HasImmutableScope, HasScope, HasScopeForeignKey, Operation, make_graphql_claims
+from kompassi.access.cbac import (
+    CBACPermissionDenied,
+    HasImmutableScope,
+    HasScope,
+    HasScopeForeignKey,
+    Operation,
+    make_graphql_claims,
+)
 from kompassi.core.models.event import Event
+from kompassi.dimensions.utils.dimension_cache import DimensionCache
 
 if TYPE_CHECKING:
     from kompassi.dimensions.models.dimension import Dimension
@@ -46,11 +54,18 @@ class UniverseCache:
     def is_dimension_in_use(self, dimension: Dimension) -> bool:
         return dimension.id in self.dimension_value_usage
 
+    @cached_property
+    def dimension_cache(self) -> DimensionCache:
+        return self.universe.preload_dimensions()
+
 
 class RequestLocalCache:
     request: HttpRequest
     _event_cache: dict[str, EventCache] = {}
     _universe_cache: dict[int, UniverseCache] = {}
+
+    # event id -> UniverseCache
+    _program_universe_cache: dict[int, UniverseCache] = {}
 
     def __init__(self, request: HttpRequest):
         self.request = request
@@ -64,6 +79,17 @@ class RequestLocalCache:
         if universe.id not in self._universe_cache:
             self._universe_cache[universe.id] = UniverseCache(universe=universe)
         return self._universe_cache[universe.id]
+
+    def for_program_universe(self, event: Event) -> UniverseCache:
+        """
+        To avoid O(n) queries to program.event.program_universe
+        """
+        if event.id not in self._program_universe_cache:
+            universe = event.program_universe
+            cache = UniverseCache(universe=universe)
+            self._program_universe_cache[event.id] = cache
+            self._universe_cache[universe.id] = cache
+        return self._program_universe_cache[event.id]
 
     @cached_property
     def cbac_permissions(self) -> dict[frozenset[tuple[str, str]], bool]:
@@ -116,6 +142,25 @@ class RequestLocalCache:
 
         return self.has_cbac_permission(claims)
 
+    def check_permission(
+        self,
+        *,
+        instance: HasScope | HasImmutableScope | HasScopeForeignKey,
+        app: Enum | str,
+        operation: Operation = "query",
+        field: str = "self",
+    ):
+        claims = make_graphql_claims(
+            scope=instance.scope,  # type: ignore
+            model=instance.__class__.__name__,
+            operation=operation,
+            app=app,
+            field=field,
+        )
+
+        if not self.has_cbac_permission(claims):
+            raise CBACPermissionDenied(claims)
+
 
 class RequestWithCache(HttpRequest):
     """
@@ -128,6 +173,8 @@ class RequestWithCache(HttpRequest):
 def request_cache_middleware(get_response):
     def middleware(request: RequestWithCache):
         request.kompassi_cache = RequestLocalCache(request=request)
-        return get_response(request)
+        response = get_response(request)
+        print("cbac_permissions after", request.kompassi_cache.cbac_permissions)
+        return response
 
     return middleware

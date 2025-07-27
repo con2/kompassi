@@ -48,7 +48,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         updated_after: datetime | None = None,
     ):
         request: HttpRequest = info.context
-        programs = Program.objects.filter(event=meta.event)
+        programs = Program.objects.filter(event=meta.event).select_related("event")
         return ProgramFilters.from_graphql(
             filters,
             user_relation=ProgramUserRelation.FAVORITED if favorites_only else None,
@@ -81,12 +81,16 @@ class ProgramV2EventMetaType(DjangoObjectType):
         updated_after: datetime | None = None,
     ):
         request: HttpRequest = info.context
+        schedule_items = ScheduleItem.objects.filter(cached_event=meta.event).select_related(
+            "program",
+            "program__event",
+        )
         return ProgramFilters.from_graphql(
             filters,
             user_relation=ProgramUserRelation.FAVORITED if favorites_only else None,
             hide_past=hide_past,
             updated_after=updated_after,
-        ).filter_schedule_items(meta.event.schedule_items.all(), user=request.user)
+        ).filter_schedule_items(schedule_items, user=request.user)
 
     schedule_items = graphene.NonNull(
         graphene.List(graphene.NonNull(FullScheduleItemType)),

@@ -23,24 +23,7 @@ class LimitedProgramType(DjangoObjectType):
     `cachedDimensions` is still provided.
     """
 
-    @staticmethod
-    def resolve_cached_dimensions(parent: Program, info, own_only: bool = False):
-        """
-        Returns a mapping of dimension slugs to lists of value slugs.
-
-        By default, returns both dimensions set on the program itself and those set on its schedule items.
-        If `own_only` is True, only returns dimensions set on the program itself.
-        """
-        if own_only:
-            return parent.cached_dimensions
-        else:
-            return parent.cached_combined_dimensions
-
-    cached_dimensions = graphene.Field(
-        GenericScalar,
-        own_only=graphene.Boolean(default_value=False),
-        description=normalize_whitespace(resolve_cached_dimensions.__doc__ or ""),
-    )
+    from ..graphql.cached_dimensions import cached_dimensions, resolve_cached_dimensions
 
     @staticmethod
     def resolve_cached_hosts(parent: Program, info):

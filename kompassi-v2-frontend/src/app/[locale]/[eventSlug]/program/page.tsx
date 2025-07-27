@@ -18,7 +18,7 @@ graphql(`
   fragment ScheduleProgram on LimitedProgramType {
     slug
     title
-    cachedDimensions
+    cachedDimensions(publicOnly: true, listFiltersOnly: true)
     color
     isCancelled
   }

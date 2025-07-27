@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from collections.abc import Collection
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from ..models.dimension import Dimension
-from ..models.dimension_value import DimensionValue
-from ..models.universe import Universe
+if TYPE_CHECKING:
+    from ..models.dimension import Dimension
+    from ..models.dimension_value import DimensionValue
+    from ..models.universe import Universe
 
 
 @dataclass

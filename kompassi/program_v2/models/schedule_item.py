@@ -10,9 +10,11 @@ from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models, transaction
 
+from kompassi.core.models.event import Event
 from kompassi.core.utils.model_utils import make_slug_field, slugify
 from kompassi.dimensions.models.dimension_value import DimensionValue
 from kompassi.dimensions.models.scope import Scope
+from kompassi.dimensions.models.universe import Universe
 from kompassi.dimensions.utils.build_cached_dimensions import build_cached_dimensions
 from kompassi.dimensions.utils.dimension_cache import DimensionCache
 from kompassi.dimensions.utils.set_dimension_values import set_dimension_values
@@ -81,6 +83,14 @@ class ScheduleItem(models.Model):
     @property
     def scope(self) -> Scope:
         return self.program.scope
+
+    @property
+    def event(self) -> Event:
+        return self.program.event
+
+    @property
+    def universe(self) -> Universe:
+        return self.program.event.program_universe
 
     @property
     def title(self):

@@ -35,6 +35,8 @@ from ..integrations.konsti import get_konsti_signup_url
 from .cached_annotations import CachedAnnotations, CachedAnnotationsUpdate, compact_annotations, validate_annotations
 
 if TYPE_CHECKING:
+    from dimensions.models.universe import Universe
+
     from .meta import ProgramV2EventMeta
     from .program_dimension_value import ProgramDimensionValue
     from .schedule_item import ScheduleItem
@@ -99,6 +101,10 @@ class Program(models.Model):
     @property
     def is_active(self) -> bool:
         return not self.is_cancelled
+
+    @property
+    def universe(self) -> Universe:
+        return self.event.program_universe
 
     # related fields
     dimensions: models.QuerySet[ProgramDimensionValue]

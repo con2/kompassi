@@ -1,5 +1,4 @@
 import graphene
-from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
 from kompassi.core.utils.text_utils import normalize_whitespace
@@ -16,27 +15,9 @@ class LimitedScheduleItemType(DjangoObjectType):
             "start_time",
             "created_at",
             "updated_at",
-            "cached_dimensions",
         )
 
-    @staticmethod
-    def resolve_cached_dimensions(parent: ScheduleItem, info, own_only: bool = False):
-        """
-        Returns a mapping of dimension slugs to lists of value slugs.
-
-        By default, returns both dimensions set on the schedule item itself and those set on its parent program.
-        If `own_only` is True, only returns dimensions set on the schedule item itself.
-        """
-        if own_only:
-            return parent.cached_dimensions
-        else:
-            return parent.cached_combined_dimensions
-
-    cached_dimensions = graphene.Field(
-        GenericScalar,
-        own_only=graphene.Boolean(default_value=False),
-        description=normalize_whitespace(resolve_cached_dimensions.__doc__ or ""),
-    )
+    from .cached_dimensions import cached_dimensions, resolve_cached_dimensions
 
     @staticmethod
     def resolve_duration_minutes(parent: ScheduleItem, info):
