@@ -157,6 +157,8 @@ export default async function ProgramListPage(props: Props) {
         isLoggedIn={!!data.profile}
       />
       <FavoriteContextProvider
+        /* Force favorite buttons to re-render with refreshed data when filters change */
+        key={JSON.stringify(favoriteScheduleItemSlugs)}
         slugs={favoriteScheduleItemSlugs}
         messages={t.favorites}
         markAsFavorite={markScheduleItemAsFavorite.bind(
