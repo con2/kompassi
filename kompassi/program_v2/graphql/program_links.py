@@ -119,14 +119,13 @@ class ProgramLink(graphene.ObjectType):
                 else:
                     href = program.annotations.get(link_annotation, "")
             case ProgramLinkType.FEEDBACK:
-                href = (
-                    program.annotations.get(
+                if program.is_accepting_feedback:
+                    href = program.annotations.get(
                         link_annotation,
                         settings.KOMPASSI_V2_BASE_URL + f"/events/{event.slug}/programs/{program.slug}/feedback",
                     )
-                    if program.is_accepting_feedback
-                    else ""
-                )
+                else:
+                    href = ""
             case ProgramLinkType.GUIDE_V2_LIGHT:
                 href = settings.KOMPASSI_V2_BASE_URL + f"/{event.slug}/programs/{program.slug}"
             case ProgramLinkType.GUIDE_V2_EMBEDDED:

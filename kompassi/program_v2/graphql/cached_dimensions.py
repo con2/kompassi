@@ -28,6 +28,25 @@ def resolve_cached_dimensions(
     key_dimensions_only: bool = False,
     list_filters_only: bool = False,
 ) -> CachedDimensions:
+    """
+    Returns a mapping of dimension slugs to lists of value slugs.
+
+    Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries.
+    The difference is negligible for a single program or schedule item, but when using the plural
+    resolvers like `programs` or `scheduleItems`, the performance difference can be significant.
+
+    By default, returns both dimensions set on the program itself and those set on its schedule items.
+    If `own_only` is True, only returns dimensions set on this item itself.
+
+    By default, returns both public and internal dimensions. This will change in near future to only
+    return public dimensions by default and require `publicOnly: false` to get internal dimensions.
+    At that time, the default will change to `publicOnly: true`,
+    and setting `publicOnly: false` will require authentication.
+
+    To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`).
+    To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`).
+    """
+
     request: RequestWithCache = info.context
     cache = request.kompassi_cache
     dimension_cache = cache.for_program_universe(parent.event).dimension_cache
