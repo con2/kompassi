@@ -378,10 +378,14 @@ class Setup:
             defaults=dict(
                 admin_group=admin_group,
                 contact_email="Desuconin ohjelmavastaava <ohjelma@desucon.fi>",
-                default_registry=Registry.objects.get(
+                default_registry=Registry.objects.get_or_create(
                     scope=self.event.organization.scope,
                     slug="volunteers",
-                ),
+                    defaults=dict(
+                        title_fi="Desuconin vapaaehtoisrekisteri",
+                        title_en="Volunteers of Desucon",
+                    ),
+                )[0],
             ),
         )
         meta.ensure()
