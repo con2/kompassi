@@ -106,7 +106,7 @@ class Setup:
 
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-            work_begins=self.event.start_time.replace(hour=8, minute=0, tzinfo=self.tz),
+            work_begins=(self.event.start_time - timedelta(days=1)).replace(hour=8, minute=0, tzinfo=self.tz),
             work_ends=self.event.end_time.replace(hour=22, minute=0, tzinfo=self.tz),
             admin_group=labour_admin_group,
             contact_email="Traconin työvoimatiimi <tyovoima@tracon.fi>",
@@ -121,7 +121,7 @@ class Setup:
         else:
             pass
 
-        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
+        labour_event_meta, unused = LabourEventMeta.objects.update_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
         )
