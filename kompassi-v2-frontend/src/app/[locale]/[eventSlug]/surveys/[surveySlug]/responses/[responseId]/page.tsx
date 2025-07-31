@@ -4,21 +4,19 @@ import { notFound } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import DimensionValueSelectionForm, {
-  buildDimensionValueSelectionForm,
-} from "@/components/dimensions/DimensionValueSelectionForm";
+import DimensionValueSelectionForm from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
-import { Field, validateFields } from "@/components/forms/models";
+import { validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import { getTranslations } from "@/translations";
-import { updateResponseDimensions } from "./actions";
+import ModalButton from "@/components/ModalButton";
 import { OldVersionAlert } from "@/components/response/OldVersionAlert";
 import ResponseHistorySidebar from "@/components/response/ResponseHistorySidebar";
 import SurveyResponseAdminView from "@/components/response/SurveyResponseAdminView";
+import { getTranslations } from "@/translations";
 import { ButtonGroup } from "react-bootstrap";
-import ModalButton from "@/components/ModalButton";
 import { deleteSurveyResponses } from "../actions";
+import { updateResponseDimensions } from "./actions";
 
 graphql(`
   fragment SurveyResponseDetail on FullResponseType {

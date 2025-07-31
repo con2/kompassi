@@ -291,7 +291,6 @@ export default async function ProgramOfferPage(props: Props) {
     ...involvementDimensionValues,
   };
 
-  const surveySlug = response.form.survey!.slug;
   const dimensionsReadOnly = !!supersededBy;
 
   const stateDimension = programDimensions.find((d) => d.slug === "state");
@@ -317,7 +316,7 @@ export default async function ProgramOfferPage(props: Props) {
               action={acceptProgramOffer.bind(
                 null,
                 locale,
-                eventSlug,
+                event.slug,
                 responseId,
               )}
             >
@@ -332,7 +331,7 @@ export default async function ProgramOfferPage(props: Props) {
                     <div key={program.slug}>
                       <Link
                         className="link-subtle"
-                        href={`/${eventSlug}/program-admin/${program.slug}`}
+                        href={`/${event.slug}/program-admin/${program.slug}`}
                         title={program.title}
                         target="_blank"
                       >
@@ -361,8 +360,8 @@ export default async function ProgramOfferPage(props: Props) {
               action={cancelProgramOffer.bind(
                 null,
                 locale,
-                eventSlug,
-                responseId,
+                event.slug,
+                response.id,
               )}
             >
               {t.actions.cancel.message}
@@ -374,7 +373,7 @@ export default async function ProgramOfferPage(props: Props) {
 
             <Link
               className={`btn btn-outline-primary ${canEdit ? "" : "disabled"}`}
-              href={`/${locale}/${eventSlug}/program-offers/${responseId}/edit`}
+              href={`/${locale}/${event.slug}/program-offers/${response.id}/edit`}
               title={t.actions.edit.title}
             >
               {t.actions.edit.label}
@@ -397,7 +396,7 @@ export default async function ProgramOfferPage(props: Props) {
             <div key={program.slug}>
               <Link
                 className="link-subtle"
-                href={`/${eventSlug}/program-admin/${program.slug}`}
+                href={`/${event.slug}/program-admin/${program.slug}`}
                 title={program.title}
               >
                 {program.title}
@@ -427,7 +426,7 @@ export default async function ProgramOfferPage(props: Props) {
       {supersededBy ? (
         <OldVersionAlert
           supersededBy={supersededBy}
-          basePath={`/${eventSlug}/program-offers`}
+          basePath={`/${event.slug}/program-offers`}
           messages={t.OldVersionAlert}
           className="mt-4 mb-4"
         />
@@ -451,8 +450,8 @@ export default async function ProgramOfferPage(props: Props) {
                       idPrefix="response-dimensions"
                       onChange={updateResponseDimensions.bind(
                         null,
-                        eventSlug,
-                        surveySlug,
+                        event.slug,
+                        survey.slug,
                         responseId,
                       )}
                     />

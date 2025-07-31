@@ -476,6 +476,7 @@ const translations: Translations = {
       }),
       deleteResponse: UNSURE({
         title: "Radera svaret",
+        label: "Radera",
         confirmation: "Är du säker på att du vill radera det här svaret?",
         cannotDelete: "Det här svaret kan inte raderas.",
         modalActions: {
