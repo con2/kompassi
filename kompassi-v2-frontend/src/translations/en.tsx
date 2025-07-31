@@ -2284,6 +2284,7 @@ const translations = {
       },
       deleteResponse: {
         title: "Delete response",
+        label: "Delete",
         confirmation: "Are you sure you want to delete this response?",
         cannotDelete: "This response cannot be deleted.",
         modalActions: {
@@ -2673,6 +2674,7 @@ const translations = {
           PROGRAM_HOST: "Program item",
           PROGRAM_OFFER: "Program offer",
           SURVEY_RESPONSE: "Survey response",
+          LEGACY_SIGNUP: "Volunteer (V1)",
         },
       },
       isActive: {
@@ -2687,10 +2689,12 @@ const translations = {
     filters: {
       searchPlaceholder: "Search by name or email",
     },
-    noFiltersApplied: (numPeople: number, numInvolvements: number) => (
+    noFiltersApplied: (
+      ForceLink: ({ children }: { children: ReactNode }) => ReactNode,
+    ) => (
       <>
-        Unfiltered list of {numPeople} people with {numInvolvements}{" "}
-        involvements hidden. To show results, please narrow down your search.
+        Unfiltered list hidden. To show results, please narrow down your search
+        or <ForceLink>use the Force</ForceLink>.
       </>
     ),
   },

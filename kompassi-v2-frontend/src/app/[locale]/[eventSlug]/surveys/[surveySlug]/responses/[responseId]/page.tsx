@@ -1,27 +1,52 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ReactNode } from "react";
-import { deleteSurveyResponses } from "../actions";
-import { updateResponseDimensions } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import AutoSubmitForm from "@/components/AutoSubmitForm";
-import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
+import DimensionValueSelectionForm, {
+  buildDimensionValueSelectionForm,
+} from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
-import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
-import ModalButton from "@/components/ModalButton";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
+import { updateResponseDimensions } from "./actions";
+import { OldVersionAlert } from "@/components/response/OldVersionAlert";
+import ResponseHistorySidebar from "@/components/response/ResponseHistorySidebar";
+import SurveyResponseAdminView from "@/components/response/SurveyResponseAdminView";
+import { ButtonGroup } from "react-bootstrap";
+import ModalButton from "@/components/ModalButton";
+import { deleteSurveyResponses } from "../actions";
+
+graphql(`
+  fragment SurveyResponseDetail on FullResponseType {
+    ...ResponseHistorySidebar
+
+    values
+    cachedDimensions
+
+    form {
+      description
+      fields
+      survey {
+        title(lang: $locale)
+        slug
+        cachedDefaultResponseDimensions
+        cachedDefaultInvolvementDimensions
+        profileFieldSelector {
+          ...FullProfileFieldSelector
+        }
+      }
+    }
+
+    canEdit(mode: ADMIN)
+    canAccept
+    canCancel
+    canDelete
+  }
+`);
 
 const query = graphql(`
   query SurveyResponseDetail(
@@ -31,7 +56,16 @@ const query = graphql(`
     $locale: String
   ) {
     event(slug: $eventSlug) {
+      slug
       name
+      timezone
+
+      involvement {
+        dimensions(publicOnly: false) {
+          ...DimensionValueSelect
+        }
+      }
+
       forms {
         survey(slug: $surveySlug) {
           title(lang: $locale)
@@ -40,33 +74,12 @@ const query = graphql(`
           canRemoveResponses
           protectResponses
 
-          dimensions {
-            title(lang: $locale)
-            slug
-            isTechnical
-            isMultiValue
-
-            values {
-              title(lang: $locale)
-              slug
-              color
-            }
+          dimensions(publicOnly: false) {
+            ...DimensionValueSelect
           }
 
           response(id: $responseId) {
-            id
-            sequenceNumber
-            revisionCreatedAt
-            revisionCreatedBy {
-              displayName
-              email
-            }
-            language
-            values
-            form {
-              fields
-            }
-            cachedDimensions
+            ...SurveyResponseDetail
           }
         }
       }
@@ -81,6 +94,7 @@ interface Props {
     surveySlug: string;
     responseId: string;
   }>;
+  searchParams: Promise<Record<string, string>>;
 }
 
 export async function generateMetadata(props: Props) {
@@ -113,8 +127,9 @@ export async function generateMetadata(props: Props) {
 export const revalidate = 0;
 
 export default async function SurveyResponsePage(props: Props) {
+  const searchParams = await props.searchParams;
   const params = await props.params;
-  const { locale, eventSlug, surveySlug, responseId } = params;
+  const { locale, eventSlug, responseId, surveySlug } = params;
   const translations = getTranslations(locale);
   const session = await auth();
 
@@ -125,163 +140,116 @@ export default async function SurveyResponsePage(props: Props) {
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, surveySlug, locale, responseId },
+    variables: { eventSlug, locale, responseId, surveySlug },
   });
 
-  if (!data.event?.forms?.survey?.response?.form) {
+  if (!data.event?.forms?.survey?.response) {
     notFound();
   }
 
   const t = translations.Survey;
 
-  const { anonymity, canRemoveResponses, protectResponses } =
-    data.event.forms.survey;
-  const { sequenceNumber, revisionCreatedAt, form } =
-    data.event.forms.survey.response;
-  const { fields } = form;
+  const response = data.event?.forms?.survey?.response;
+  const { event } = data;
+  const { form, supersededBy, canEdit } = response;
+  const { fields, survey } = form;
 
-  const response = data.event.forms.survey.response;
   const values: Record<string, any> = response.values ?? {};
+  const { canDelete } = response;
 
   validateFields(fields);
 
-  // TODO using synthetic form fields for presentation is a hack
-  // but it shall suffice until someone comes up with a Design Vision™
-  const technicalFields: Field[] = [
-    {
-      slug: "sequenceNumber",
-      type: "SingleLineText",
-      title: t.attributes.sequenceNumber,
-    },
-    {
-      slug: "revisionCreatedAt",
-      // TODO(#438) use DateTimeField
-      type: "SingleLineText",
-      title: t.attributes.originalCreatedAt,
-    },
-  ];
-
-  if (anonymity === "NAME_AND_EMAIL") {
-    technicalFields.push({
-      slug: "revisionCreatedBy",
-      type: "SingleLineText",
-      title: t.attributes.originalCreatedBy,
-    });
-  }
-
-  // TODO(#438) use DateTimeField
-  const formattedCreatedAt = revisionCreatedAt
-    ? formatDateTime(revisionCreatedAt, locale)
-    : "";
-  const revisionCreatedBy = response.revisionCreatedBy;
-  const formattedCreatedBy = revisionCreatedBy
-    ? `${revisionCreatedBy.displayName} <${revisionCreatedBy.email}>`
-    : "-";
-
-  const technicalValues = {
-    sequenceNumber,
-    revisionCreatedAt: formattedCreatedAt,
-    revisionCreatedBy: formattedCreatedBy,
-  };
-
-  const dimensions = data.event.forms.survey.dimensions ?? [];
-
   validateCachedDimensions(response.cachedDimensions);
-  const { fields: dimensionFields, values: dimensionValues } =
-    buildDimensionValueSelectionForm(dimensions, response.cachedDimensions);
-
-  let cannotRemoveReason: string | ReactNode | null = null;
-  if (!canRemoveResponses) {
-    if (protectResponses) {
-      cannotRemoveReason = t.actions.deleteVisibleResponses.responsesProtected;
-    } else {
-      cannotRemoveReason = t.actions.deleteResponse.cannotDelete;
-    }
-  }
+  const surveyDimensions = data.event.forms.survey.dimensions;
+  const defaultSurveyDimensions =
+    response.form.survey.cachedDefaultResponseDimensions ?? {};
+  validateCachedDimensions(defaultSurveyDimensions);
+  const dimensionsReadOnly = !!supersededBy;
 
   return (
-    <ViewContainer>
-      <Link
-        className="link-subtle"
-        href={`/${eventSlug}/surveys/${surveySlug}/responses`}
-      >
-        &lt; {t.actions.returnToResponseList}
-      </Link>
-
-      <ViewHeadingActionsWrapper>
-        <ViewHeading>
-          {t.responseDetailTitle}
-          <ViewHeading.Sub>{data.event.forms.survey.title}</ViewHeading.Sub>
-        </ViewHeading>
-        <ViewHeadingActions>
+    <SurveyResponseAdminView
+      translations={translations}
+      event={data.event}
+      searchParams={searchParams}
+      survey={survey}
+      actions={
+        <ButtonGroup>
           <ModalButton
+            className="btn btn-outline-danger"
+            label={t.actions.deleteResponse.label + "…"}
             title={t.actions.deleteResponse.title}
             messages={t.actions.deleteResponse.modalActions}
-            action={
-              canRemoveResponses
-                ? deleteSurveyResponses.bind(
-                    null,
-                    locale,
-                    eventSlug,
-                    surveySlug,
-                    [response.id],
-                    {},
-                  )
-                : undefined
-            }
-            className="btn btn-outline-danger"
+            disabled={!canDelete}
+            action={deleteSurveyResponses.bind(
+              null,
+              locale,
+              eventSlug,
+              surveySlug,
+              [responseId],
+              searchParams,
+            )}
           >
-            {canRemoveResponses
-              ? t.actions.deleteResponse.confirmation
-              : cannotRemoveReason}
+            {t.actions.deleteResponse.confirmation}
           </ModalButton>
-        </ViewHeadingActions>
-      </ViewHeadingActionsWrapper>
 
-      <div className="row mb-5">
-        {!!dimensions?.length && (
-          <div className="col-md-8">
-            <div className="card mb-3 h-100">
-              <div className="card-body">
-                <h5 className="card-title mb-3">{t.attributes.dimensions}</h5>
-                {/* TODO improve feedback of successful save */}
-                <AutoSubmitForm
-                  action={updateResponseDimensions.bind(
-                    null,
-                    eventSlug,
-                    surveySlug,
-                    responseId,
-                  )}
-                >
-                  <SchemaForm
-                    fields={dimensionFields}
-                    values={dimensionValues}
-                    messages={translations.SchemaForm}
-                  />
-                  <noscript>
-                    <SubmitButton>{t.actions.saveDimensions}</SubmitButton>
-                  </noscript>
-                </AutoSubmitForm>
+          <Link
+            className={`btn btn-outline-primary ${canEdit ? "" : "disabled"}`}
+            href={`/${locale}/${eventSlug}/surveys/${surveySlug}/responses/${responseId}/edit`}
+            title={t.actions.editResponse.title}
+          >
+            {t.actions.editResponse.label}
+          </Link>
+        </ButtonGroup>
+      }
+    >
+      {supersededBy ? (
+        <OldVersionAlert
+          supersededBy={supersededBy}
+          basePath={`/${eventSlug}/program-offers`}
+          messages={t.OldVersionAlert}
+          className="mt-4 mb-4"
+        />
+      ) : (
+        <>
+          <div className="row mb-5 mt-4">
+            {!!surveyDimensions?.length && (
+              <div className="col-md-8">
+                <div className="card mb-3 h-100">
+                  <div className="card-body">
+                    <h5 className="card-title mb-3">
+                      {t.attributes.dimensions}
+                    </h5>
+                    <DimensionValueSelectionForm
+                      dimensions={surveyDimensions}
+                      cachedDimensions={response.cachedDimensions}
+                      translations={translations}
+                      technicalDimensions="readonly"
+                      readOnly={dimensionsReadOnly}
+                      idPrefix="response-dimensions"
+                      onChange={updateResponseDimensions.bind(
+                        null,
+                        eventSlug,
+                        surveySlug,
+                        responseId,
+                      )}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        )}
-        <div className="col">
-          <div className="card mb-3 h-100">
-            <div className="card-body">
-              <h5 className="card-title mb-3">
-                {t.attributes.technicalDetails}
-              </h5>
-              <SchemaForm
-                fields={technicalFields}
-                values={technicalValues}
-                messages={translations.SchemaForm}
-                readOnly
+            )}
+            <div className="col">
+              <ResponseHistorySidebar
+                event={event}
+                response={response}
+                locale={locale}
+                responsesBaseUrl={`/${event.slug}/surveys/${surveySlug}/responses`}
+                session={session}
+                messages={translations}
               />
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
 
       <SchemaForm
         fields={fields}
@@ -289,6 +257,6 @@ export default async function SurveyResponsePage(props: Props) {
         messages={translations.SchemaForm}
         readOnly
       />
-    </ViewContainer>
+    </SurveyResponseAdminView>
   );
 }

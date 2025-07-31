@@ -1,12 +1,15 @@
+import { graphql } from "@/__generated__";
+import {
+  ProfileResponseHistoryBannerFragment,
+  ResponseHistoryBannerFragment,
+} from "@/__generated__/graphql";
+import { Scope } from "@/app/[locale]/[eventSlug]/program/models";
+import { auth } from "@/auth";
+import type { Translations } from "@/translations/en";
 import Link from "next/link";
 import { Alert } from "react-bootstrap";
 import FormattedDateTime from "../FormattedDateTime";
 import { OldVersionAlert } from "./OldVersionAlert";
-import { graphql } from "@/__generated__";
-import { ResponseRevisionFragment } from "@/__generated__/graphql";
-import { Scope } from "@/app/[locale]/[eventSlug]/program/models";
-import { auth } from "@/auth";
-import type { Translations } from "@/translations/en";
 
 graphql(`
   fragment ResponseRevision on LimitedResponseType {
@@ -18,10 +21,37 @@ graphql(`
   }
 `);
 
+graphql(`
+  fragment ResponseHistoryBanner on FullResponseType {
+    id
+    supersededBy {
+      ...ResponseRevision
+    }
+    oldVersions {
+      ...ResponseRevision
+    }
+    originalCreatedAt
+  }
+`);
+
+graphql(`
+  fragment ProfileResponseHistoryBanner on ProfileResponseType {
+    id
+    supersededBy {
+      ...ResponseRevision
+    }
+    oldVersions {
+      ...ResponseRevision
+    }
+    originalCreatedAt
+  }
+`);
+
 interface Props {
   basePath: string;
-  supersededBy: ResponseRevisionFragment | null | undefined;
-  oldVersions: ResponseRevisionFragment[];
+  response:
+    | ResponseHistoryBannerFragment
+    | ProfileResponseHistoryBannerFragment;
   messages: {
     ResponseHistory: Translations["Survey"]["ResponseHistory"];
     OldVersionAlert: Translations["Survey"]["OldVersionAlert"];
@@ -30,11 +60,10 @@ interface Props {
   scope: Scope;
 }
 
-export async function ResponseHistory({
+export async function ResponseHistoryBanner({
   basePath,
-  supersededBy,
-  oldVersions,
   messages,
+  response,
   scope,
   locale,
 }: Props) {
@@ -43,19 +72,19 @@ export async function ResponseHistory({
 
   return (
     <>
-      {supersededBy && (
+      {response.supersededBy && (
         <OldVersionAlert
-          supersededBy={supersededBy}
+          supersededBy={response.supersededBy}
           basePath={basePath}
           messages={messages.OldVersionAlert}
         />
       )}
-      {oldVersions.length > 0 && (
+      {response.oldVersions.length > 0 && (
         <Alert variant="info" className="mb-4">
           <h5>{t.title}</h5>
           <p>{t.message}</p>
           <ul className="list-unstyled m-0">
-            {oldVersions.map((version) => (
+            {response.oldVersions.map((version) => (
               <li key={version.id}>
                 <Link
                   href={`${basePath}/${version.id}`}

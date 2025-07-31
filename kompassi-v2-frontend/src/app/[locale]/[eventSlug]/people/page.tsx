@@ -15,6 +15,7 @@ import SignInRequired from "@/components/errors/SignInRequired";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { decodeBoolean } from "@/helpers/decodeBoolean";
 
 graphql(`
   fragment InvolvedPerson on ProfileWithInvolvementType {
@@ -41,6 +42,7 @@ const query = graphql(`
     $filters: [DimensionFilterInput!]
     $locale: String
     $search: String
+    $returnNone: Boolean = false
   ) {
     event(slug: $eventSlug) {
       slug
@@ -54,7 +56,7 @@ const query = graphql(`
           ...DimensionValueSelect
         }
 
-        people(filters: $filters, search: $search) {
+        people(filters: $filters, search: $search, returnNone: $returnNone) {
           ...InvolvedPerson
         }
       }
@@ -85,7 +87,7 @@ export async function generateMetadata(props: Props) {
   const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale, filters },
+    variables: { eventSlug, locale, filters, returnNone: true },
   });
 
   if (!data.event?.involvement) {
@@ -138,11 +140,27 @@ export default async function PeoplePage(props: Props) {
     return <SignInRequired messages={translations.SignInRequired} />;
   }
 
-  const filters = buildDimensionFilters(searchParams);
-  const search = searchParams.search || "";
+  // XXX there should be a better way to handle this
+  const {
+    success: _success, // eslint-disable-line @typescript-eslint/no-unused-vars
+    error: _error, // eslint-disable-line @typescript-eslint/no-unused-vars
+    search = "",
+    force = "false",
+    ...filterSearchParams
+  } = searchParams;
+  const filters = buildDimensionFilters(filterSearchParams);
+  const passedSearchParams = Object.fromEntries(
+    Object.entries({ ...filterSearchParams, search, force }).filter(
+      ([, value]) => !!value,
+    ),
+  );
+
+  const showResults =
+    decodeBoolean(force) || Object.entries(filters).length > 0 || !!search;
+
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale, filters, search },
+    variables: { eventSlug, locale, filters, search, returnNone: !showResults },
   });
 
   if (!data.event?.involvement) {
@@ -191,6 +209,28 @@ export default async function PeoplePage(props: Props) {
             </>
           );
 
+          let link: ReactNode | null = null;
+          if (involvement.adminLink) {
+            if (involvement.adminLink.startsWith("/")) {
+              link = (
+                <Link className="link-subtle" href={involvement.adminLink}>
+                  {title}
+                </Link>
+              );
+            } else {
+              link = (
+                <a
+                  className="link-subtle"
+                  href={involvement.adminLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {title}
+                </a>
+              );
+            }
+          }
+
           return (
             <div key={involvement.id} className={className}>
               <>
@@ -198,13 +238,7 @@ export default async function PeoplePage(props: Props) {
                   involvement.type}
                 :{" "}
               </>
-              {involvement.adminLink ? (
-                <Link className="link-subtle" href={involvement.adminLink}>
-                  {title}
-                </Link>
-              ) : (
-                title
-              )}
+              {link}
               <CachedDimensionBadges
                 dimensions={keyDimensions}
                 cachedDimensions={hideStatusActive(
@@ -223,7 +257,21 @@ export default async function PeoplePage(props: Props) {
     0,
   );
 
-  const isMessageShown = Object.entries(searchParams).length == 0;
+  function ForceLink({ children }: { children: React.ReactNode }) {
+    const strongWithTheForce = new URLSearchParams({
+      ...passedSearchParams,
+      force: "strong",
+    }).toString();
+    return (
+      <Link
+        href={`/${event.slug}/people?${strongWithTheForce}`}
+        className="link-subtle"
+        prefetch={false}
+      >
+        {children}
+      </Link>
+    );
+  }
 
   return (
     <InvolvementAdminView
@@ -239,11 +287,7 @@ export default async function PeoplePage(props: Props) {
         messages={t.filters}
       />
 
-      {isMessageShown ? (
-        <Alert variant="warning">
-          {t.noFiltersApplied(people.length, countInvolvements)}
-        </Alert>
-      ) : (
+      {showResults ? (
         <DataTable columns={columns} rows={people}>
           <tfoot>
             <tr>
@@ -253,6 +297,8 @@ export default async function PeoplePage(props: Props) {
             </tr>
           </tfoot>
         </DataTable>
+      ) : (
+        <Alert variant="warning">{t.noFiltersApplied(ForceLink)}</Alert>
       )}
     </InvolvementAdminView>
   );

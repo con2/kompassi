@@ -2,7 +2,9 @@ import graphene
 from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
+from kompassi.core.middleware import RequestWithCache
 from kompassi.core.utils.text_utils import normalize_whitespace
+from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.graphql_api.utils import resolve_local_datetime_field
 from kompassi.involvement.graphql.profile_selected import SelectedProfileType
 from kompassi.involvement.models.profile import Profile
@@ -90,32 +92,60 @@ class LimitedResponseType(DjangoObjectType):
     )
 
     @staticmethod
-    def resolve_cached_dimensions(response: Response, info, key_dimensions_only: bool = False):
+    def resolve_cached_dimensions(
+        response: Response,
+        info,
+        public_only: bool = True,
+        key_dimensions_only: bool = False,
+        list_filters_only: bool = False,
+    ) -> CachedDimensions:
         """
-        Returns the dimensions of the response as
-        a dict of dimension slug -> list of dimension value slugs. If the response
-        is not related to a survey, there will be no dimensions and an empty dict
-        will always be returned.
+        Returns a mapping of dimension slugs to lists of value slugs.
 
-        Using this field is more efficient than querying the dimensions field
-        on the response, as the dimensions are cached on the response object.
+        Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries.
+        The difference is negligible for a response, but when operating on the plural resolver `responses`,
+        the performance difference can be significant.
+
+        By default, returns only public dimensions. If `publicOnly` is set to `false`,
+        both public and internal dimensions will be returned. In this case, authentication is required.
+
+        To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`).
+        To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`).
         """
+
+        request: RequestWithCache = info.context
+        cache = request.kompassi_cache
+        dimension_cache = cache.for_universe(response.survey.universe).dimension_cache
         cached_dimensions = response.cached_dimensions
 
-        if key_dimensions_only:
-            key_dimension_slugs = response.dimensions.filter(
-                value__dimension__slug__in=cached_dimensions.keys(),
-                value__dimension__is_key_dimension=True,
-            ).values_list("value__dimension__slug", flat=True)
+        if public_only:
+            cached_dimensions = {
+                k: v for (k, v) in cached_dimensions.items() if dimension_cache.dimensions[k].is_public
+            }
+        else:
+            cache.check_permission(
+                instance=response,
+                app=response.survey.universe.app_name,
+            )
 
-            return {k: v for k, v in cached_dimensions.items() if k in key_dimension_slugs}
+        if key_dimensions_only:
+            cached_dimensions = {
+                k: v for (k, v) in cached_dimensions.items() if dimension_cache.dimensions[k].is_key_dimension
+            }
+
+        if list_filters_only:
+            cached_dimensions = {
+                k: v for (k, v) in cached_dimensions.items() if dimension_cache.dimensions[k].is_list_filter
+            }
 
         return cached_dimensions
 
     cached_dimensions = graphene.Field(
-        graphene.NonNull(GenericScalar),
+        GenericScalar,
+        public_only=graphene.Boolean(default_value=True),
+        key_dimensions_only=graphene.Boolean(default_value=False),
+        list_filters_only=graphene.Boolean(default_value=False),
         description=normalize_whitespace(resolve_cached_dimensions.__doc__ or ""),
-        key_dimensions_only=graphene.Boolean(),
     )
 
     resolve_original_created_at = resolve_local_datetime_field("original_created_at")

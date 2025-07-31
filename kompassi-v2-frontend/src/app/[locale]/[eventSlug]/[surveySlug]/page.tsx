@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 
-import { submit } from "./actions";
 import { graphql } from "@/__generated__";
 import { SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -8,15 +7,16 @@ import { auth } from "@/auth";
 import SignInRequired from "@/components/errors/SignInRequired";
 import { AlsoAvailableInLanguage } from "@/components/forms/AlsoAvailableInLanguage";
 import { validateFields } from "@/components/forms/models";
+import processFormData from "@/components/forms/processFormData";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import TransferConsentForm from "@/components/involvement/TransferConsentForm";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
-import { getTranslations } from "@/translations";
-import processFormData from "@/components/forms/processFormData";
 import searchParamsToFormData from "@/helpers/searchParamsToFormData";
+import { getTranslations } from "@/translations";
+import { submit } from "./actions";
 
 const query = graphql(`
   query SurveyPageQuery(
@@ -191,7 +191,10 @@ export default async function SurveyPage(props: Props) {
   const searchParams = await props.searchParams;
   const urlSearchParams = new URLSearchParams(searchParams);
   const formData = searchParamsToFormData(urlSearchParams);
-  const values = processFormData(fields, formData);
+  const values = processFormData(
+    fields.filter((field) => field.type != "FileUpload"),
+    formData,
+  );
   return (
     <ViewContainer>
       <ViewHeading>

@@ -7,6 +7,7 @@ import { SchemaForm } from "./SchemaForm";
 import UploadedFileCards from "./UploadedFileCards";
 import { timezone } from "@/config";
 import type { Translations } from "@/translations/en";
+import { Fragment } from "react";
 
 interface SchemaFormInputProps {
   field: Field;
@@ -82,7 +83,7 @@ function SchemaFormInput({
         <input
           className="form-control"
           type="number"
-          defaultValue={value}
+          defaultValue={Number.isNaN(value) ? "" : value}
           required={required}
           readOnly={readOnly}
           id={id}
@@ -91,7 +92,7 @@ function SchemaFormInput({
           inputMode={field.decimalPlaces ? "decimal" : "numeric"}
           min={field.minValue}
           max={field.maxValue}
-          key={value}
+          key={"" + value}
         />
       );
     case "SingleCheckbox":
@@ -105,6 +106,7 @@ function SchemaFormInput({
           disabled={readOnly}
           id={id}
           name={slug}
+          key={"" + value}
         />
       );
     case "Tristate":
@@ -157,7 +159,7 @@ function SchemaFormInput({
         default:
           // radio button group
           return (
-            <>
+            <Fragment key={value}>
               {choices.map((choice) => {
                 const choiceId = makeInputId(idPrefix, field, choice);
                 return (
@@ -178,13 +180,13 @@ function SchemaFormInput({
                   </div>
                 );
               })}
-            </>
+            </Fragment>
           );
       }
     case "MultiSelect":
     case "DimensionMultiSelect":
       return (
-        <>
+        <Fragment key={JSON.stringify(value)}>
           {field.choices?.map((choice) => {
             const name = `${field.slug}.${choice.slug}`;
             const choiceId = `${idPrefix}${idPrefix ? "-" : ""}${field.slug}-${
@@ -199,19 +201,19 @@ function SchemaFormInput({
                   disabled={readOnly}
                   id={choiceId}
                   name={name}
-                />{" "}
+                />
                 <label htmlFor={choiceId} className="form-check-label">
                   {choice.title}
                 </label>
               </div>
             );
           })}
-        </>
+        </Fragment>
       );
     case "RadioMatrix":
       const questions = field.questions ?? [];
       return (
-        <table className="table table-striped">
+        <table key={JSON.stringify(value)} className="table table-striped">
           <thead>
             <tr>
               <th></th>
@@ -271,6 +273,7 @@ function SchemaFormInput({
           readOnly={readOnly}
           id={id}
           name={slug}
+          key={value}
         />
       );
     case "TimeField":
@@ -283,6 +286,7 @@ function SchemaFormInput({
           readOnly={readOnly}
           id={id}
           name={slug}
+          key={value}
         />
       );
     case "DateTimeField":
@@ -295,11 +299,12 @@ function SchemaFormInput({
           readOnly={readOnly}
           id={id}
           name={slug}
+          key={value}
         />
       );
     case "MultiItemField":
       return (
-        <Card className="mb-3">
+        <Card className="mb-3" key={JSON.stringify(value)}>
           <CardBody>
             <SchemaForm
               fields={field.fields}

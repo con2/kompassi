@@ -1,9 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { ButtonGroup } from "react-bootstrap";
-import { updateResponseDimensions } from "../../surveys/[surveySlug]/responses/[responseId]/actions";
-import { acceptProgramOffer, cancelProgramOffer } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -17,32 +14,26 @@ import {
   validateCachedDimensions,
 } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field, validateFields } from "@/components/forms/models";
-import { OldVersionAlert } from "@/components/forms/OldVersionAlert";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ModalButton from "@/components/ModalButton";
-import { ProfileFields } from "@/components/profile/ProfileFields";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
+import { OldVersionAlert } from "@/components/response/OldVersionAlert";
+import ResponseHistorySidebar from "@/components/response/ResponseHistorySidebar";
 import getPageTitle from "@/helpers/getPageTitle";
 import slugify from "@/helpers/slugify";
 import { getTranslations } from "@/translations";
+import { ButtonGroup } from "react-bootstrap";
+import { updateResponseDimensions } from "../../surveys/[surveySlug]/responses/[responseId]/actions";
+import { acceptProgramOffer, cancelProgramOffer } from "./actions";
 
 graphql(`
   fragment ProgramOfferDetail on FullResponseType {
-    id
-    sequenceNumber
-    originalCreatedAt
-    originalCreatedBy {
-      fullName
-      ...FullSelectedProfile
-    }
-    revisionCreatedAt
-    revisionCreatedBy {
-      fullName
-    }
-    language
+    ...ResponseHistorySidebar
+
     values
+    cachedDimensions
+
     form {
       description
       fields
@@ -56,21 +47,17 @@ graphql(`
         }
       }
     }
+
     programs {
       slug
       title
       cachedDimensions
     }
-    cachedDimensions
-    supersededBy {
-      ...ResponseRevision
-    }
-    oldVersions {
-      ...ResponseRevision
-    }
+
     dimensions {
       ...DimensionBadge
     }
+
     canEdit(mode: ADMIN)
     canAccept
     canCancel
@@ -186,36 +173,27 @@ export default async function ProgramOfferPage(props: Props) {
   const programHosT = translations.Program.ProgramHost;
   const t = translations.Program.ProgramOffer;
 
-  const programOffer = data.event.program.programOffer;
+  const response = data.event.program.programOffer;
   const { event } = data;
-  const {
-    originalCreatedAt,
-    originalCreatedBy,
-    revisionCreatedAt,
-    revisionCreatedBy,
-    form,
-    supersededBy,
-    oldVersions,
-    canEdit,
-  } = programOffer;
-  const { fields, survey: programForm } = form;
+  const { form, supersededBy, canEdit } = response;
+  const { fields, survey } = form;
 
-  const values: Record<string, any> = programOffer.values ?? {};
-  const { canAccept, canCancel, canDelete } = programOffer;
+  const values: Record<string, any> = response.values ?? {};
+  const { canAccept, canCancel, canDelete } = response;
 
   validateFields(fields);
 
-  validateCachedDimensions(programOffer.cachedDimensions);
+  validateCachedDimensions(response.cachedDimensions);
   const programDimensions = data.event.program.dimensions;
   const defaultProgramDimensions =
-    programOffer.form.survey.cachedDefaultResponseDimensions ?? {};
+    response.form.survey.cachedDefaultResponseDimensions ?? {};
   validateCachedDimensions(defaultProgramDimensions);
   const { fields: programDimensionFields, values: programDimensionValues } =
     buildDimensionValueSelectionForm(
       programDimensions,
       {
         ...defaultProgramDimensions,
-        ...programOffer.cachedDimensions,
+        ...response.cachedDimensions,
       },
       "omit",
       "program_dimensions",
@@ -223,7 +201,7 @@ export default async function ProgramOfferPage(props: Props) {
 
   const involvementDimensions = data.event.involvement?.dimensions ?? [];
   const defaultInvolvementDimensions =
-    programOffer.form.survey.cachedDefaultInvolvementDimensions ?? {};
+    response.form.survey.cachedDefaultInvolvementDimensions ?? {};
   validateCachedDimensions(defaultInvolvementDimensions);
   const {
     fields: involvementDimensionFields,
@@ -304,7 +282,7 @@ export default async function ProgramOfferPage(props: Props) {
   ];
 
   const uniquenessInsurance =
-    programOffer.programs.length > 0 ? `-${programOffer.programs.length}` : "";
+    response.programs.length > 0 ? `-${response.programs.length}` : "";
   const acceptProgramOfferValues: Record<string, any> = {
     slug: slugify(values.title || "") + uniquenessInsurance,
     title: values.title,
@@ -313,11 +291,11 @@ export default async function ProgramOfferPage(props: Props) {
     ...involvementDimensionValues,
   };
 
-  const surveySlug = programOffer.form.survey!.slug;
+  const surveySlug = response.form.survey!.slug;
   const dimensionsReadOnly = !!supersededBy;
 
   const stateDimension = programDimensions.find((d) => d.slug === "state");
-  const responseStateDimensionValue = programOffer.dimensions.find(
+  const responseStateDimensionValue = response.dimensions.find(
     (d) => d.dimension.slug === "state",
   );
 
@@ -343,14 +321,14 @@ export default async function ProgramOfferPage(props: Props) {
                 responseId,
               )}
             >
-              {programOffer.programs.length > 0 && (
+              {response.programs.length > 0 && (
                 <div className="alert alert-warning">
                   <p>
                     {t.attributes.programs.acceptAgainWarning(
-                      programOffer.programs.length,
+                      response.programs.length,
                     )}
                   </p>
-                  {programOffer.programs.map((program) => (
+                  {response.programs.map((program) => (
                     <div key={program.slug}>
                       <Link
                         className="link-subtle"
@@ -412,10 +390,10 @@ export default async function ProgramOfferPage(props: Props) {
         )}
       </h3>
 
-      {programOffer.programs.length > 0 && (
+      {response.programs.length > 0 && (
         <div className="alert alert-primary mt-4 mb-4">
-          <p>{t.attributes.programs.message(programOffer.programs.length)}</p>
-          {programOffer.programs.map((program) => (
+          <p>{t.attributes.programs.message(response.programs.length)}</p>
+          {response.programs.map((program) => (
             <div key={program.slug}>
               <Link
                 className="link-subtle"
@@ -440,7 +418,7 @@ export default async function ProgramOfferPage(props: Props) {
           ))}
           <p className="mt-3 mb-0">
             {t.attributes.programs.dimensionsWillNotBeUpdatedOnProgramItem(
-              programOffer.programs.length,
+              response.programs.length,
             )}
           </p>
         </div>
@@ -466,7 +444,7 @@ export default async function ProgramOfferPage(props: Props) {
                     {/* TODO improve feedback of successful save */}
                     <DimensionValueSelectionForm
                       dimensions={programDimensions}
-                      cachedDimensions={programOffer.cachedDimensions}
+                      cachedDimensions={response.cachedDimensions}
                       translations={translations}
                       technicalDimensions="readonly"
                       readOnly={dimensionsReadOnly}
@@ -483,107 +461,14 @@ export default async function ProgramOfferPage(props: Props) {
               </div>
             )}
             <div className="col">
-              <div className="card mb-3 h-100">
-                <div className="card-body">
-                  <h5 className="card-title mb-3">
-                    {surveyT.attributes.technicalDetails}
-                  </h5>
-
-                  <div className="mb-4">
-                    <label className="form-label fw-bold">
-                      {surveyT.attributes.originalCreatedAt}
-                    </label>
-                    <div>
-                      <FormattedDateTime
-                        value={originalCreatedAt}
-                        locale={locale}
-                        scope={event}
-                        session={session}
-                      />
-                    </div>
-                  </div>
-
-                  {originalCreatedBy && (
-                    <div className="mb-4">
-                      <label className="form-label fw-bold">
-                        {surveyT.attributes.originalCreatedBy}
-                      </label>
-                      <div>
-                        <ModalButton
-                          className="btn btn-link p-0 link-subtle"
-                          label={originalCreatedBy.fullName + "…"}
-                          title={surveyT.actions.viewProfile.title}
-                          messages={surveyT.actions.viewProfile.modalActions}
-                        >
-                          <ProfileFields
-                            profileFieldSelector={
-                              programForm.profileFieldSelector
-                            }
-                            profile={originalCreatedBy}
-                            messages={translations.Profile}
-                          />
-                        </ModalButton>
-                      </div>
-                    </div>
-                  )}
-
-                  {oldVersions.length > 0 && (
-                    <>
-                      <div className="mb-4">
-                        <label className="form-label fw-bold">
-                          {surveyT.attributes.currentVersionCreatedAt}
-                        </label>
-                        <div>
-                          <FormattedDateTime
-                            value={revisionCreatedAt}
-                            locale={locale}
-                            scope={event}
-                            session={session}
-                          />
-                        </div>
-                      </div>
-
-                      {revisionCreatedBy && (
-                        <div className="mb-4">
-                          <label className="form-label fw-bold">
-                            {surveyT.attributes.currentVersionCreatedBy}
-                          </label>
-                          <div>{revisionCreatedBy.fullName}</div>
-                        </div>
-                      )}
-
-                      <div className="mb-4">
-                        <label className="form-label fw-bold">
-                          {surveyT.ResponseHistory.title}
-                        </label>
-                        <ul className="list-unstyled m-0">
-                          {oldVersions.map((version) => (
-                            <li key={version.id}>
-                              <Link
-                                href={`/${event.slug}/program-offers/${version.id}`}
-                                className="link-subtle"
-                              >
-                                <FormattedDateTime
-                                  value={version.revisionCreatedAt}
-                                  locale={locale}
-                                  scope={event}
-                                  session={session}
-                                />
-                                {version.revisionCreatedBy && (
-                                  <>
-                                    {" "}
-                                    ({version.revisionCreatedBy?.displayName})
-                                  </>
-                                )}
-                              </Link>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
+              <ResponseHistorySidebar
+                event={event}
+                response={response}
+                locale={locale}
+                responsesBaseUrl={`/${event.slug}/program-offers`}
+                session={session}
+                messages={translations}
+              />
             </div>
           </div>
         </>

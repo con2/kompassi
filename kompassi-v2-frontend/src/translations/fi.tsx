@@ -2273,6 +2273,7 @@ const translations: Translations = {
       },
       deleteResponse: {
         title: "Poista vastaus",
+        label: "Poista",
         confirmation: "Haluatko varmasti poistaa tämän vastauksen?",
         cannotDelete: "Tätä vastausta ei voi poistaa.",
         modalActions: {
@@ -2630,6 +2631,7 @@ const translations: Translations = {
           PROGRAM_HOST: "Ohjelmanumero",
           PROGRAM_OFFER: "Ohjelmatarjous",
           SURVEY_RESPONSE: "Kyselyvastaus",
+          LEGACY_SIGNUP: "Vapaaehtoinen (V1)",
         },
       },
       isActive: {
@@ -2644,12 +2646,12 @@ const translations: Translations = {
     filters: {
       searchPlaceholder: "Hae nimellä tai sähköpostilla",
     },
-    noFiltersApplied: (numPeople: number, numInvolvements: number) => (
+    noFiltersApplied: (
+      ForceLink: ({ children }: { children: ReactNode }) => ReactNode,
+    ) => (
       <>
-        Suodattamaton lista piilotettu ({numPeople} henkilö
-        {numPeople === 1 ? "" : "ä"} ja {numInvolvements}{" "}
-        {numInvolvements === 1 ? "osallistuminen" : "osallistumista"}). Tarkenna
-        hakua nähdäksesi tulokset.
+        Suodattamaton lista piilotettu. Tarkenna hakua nähdäksesi tulokset tai{" "}
+        <ForceLink>käytä Voimaa</ForceLink>.
       </>
     ),
   },

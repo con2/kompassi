@@ -19,7 +19,7 @@ ViewHeading.Sub = function Sub({ children }: Props) {
 export function ViewHeadingActionsWrapper({ children, className = "" }: Props) {
   return (
     <div
-      className={`d-flex justify-content-between align-items-baseline ${className}`}
+      className={`d-flex justify-content-between align-items-top ${className}`}
     >
       {children}
     </div>

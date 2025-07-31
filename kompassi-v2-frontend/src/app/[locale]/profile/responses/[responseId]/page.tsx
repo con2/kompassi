@@ -6,7 +6,7 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import SignInRequired from "@/components/errors/SignInRequired";
 import { validateFields } from "@/components/forms/models";
-import { ResponseHistory } from "@/components/forms/ResponseHistory";
+import { ResponseHistoryBanner } from "@/components/response/ResponseHistoryBanner";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import TransferConsentForm from "@/components/involvement/TransferConsentForm";
@@ -28,22 +28,15 @@ const query = graphql(`
 
       forms {
         response(id: $responseId) {
+          ...ProfileResponseHistoryBanner
+
           id
           revisionCreatedAt
           canEdit(mode: OWNER)
           values
 
-          supersededBy {
-            id
-            revisionCreatedAt
-          }
-
           dimensions {
             ...DimensionBadge
-          }
-
-          oldVersions {
-            ...ResponseRevision
           }
 
           form {
@@ -117,7 +110,7 @@ export default async function ProfileSurveyResponsePage(props: Props) {
 
   const response = data.profile.forms.response;
   const { profile, userRegistry } = data;
-  const { form, canEdit, oldVersions, supersededBy } = response;
+  const { form, canEdit } = response;
   const { survey, event } = form;
 
   const { fields } = form;
@@ -148,10 +141,9 @@ export default async function ProfileSurveyResponsePage(props: Props) {
         </ViewHeadingActions>
       </ViewHeadingActionsWrapper>
 
-      <ResponseHistory
+      <ResponseHistoryBanner
         basePath="/profile/responses"
-        supersededBy={supersededBy}
-        oldVersions={oldVersions}
+        response={response}
         messages={translations.Survey}
         locale={locale}
         scope={event}

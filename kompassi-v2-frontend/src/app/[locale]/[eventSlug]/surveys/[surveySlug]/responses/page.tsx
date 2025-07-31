@@ -22,7 +22,10 @@ import { validateFields } from "@/components/forms/models";
 import UploadedFileLink from "@/components/forms/UploadedFileLink";
 import ModalButton from "@/components/ModalButton";
 import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import ViewHeading, {
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@/components/ViewHeading";
 import { kompassiBaseUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
@@ -253,12 +256,12 @@ export default async function FormResponsesPage(props: Props) {
         &lt; {t.actions.returnToSurveyList}
       </Link>
 
-      <div className="d-flex align-items-middle">
+      <ViewHeadingActionsWrapper>
         <ViewHeading>
           {t.responseListTitle}
           <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
         </ViewHeading>
-        <div className="ms-auto">
+        <ViewHeadingActions>
           <ResponseListActions
             isSubscribed={isSubscribed}
             onToggleSubscription={toggleSurveyResponseSubscription.bind(
@@ -298,8 +301,8 @@ export default async function FormResponsesPage(props: Props) {
                 : cannotRemoveResponsesReason}
             </ModalButton>
           </ResponseListActions>
-        </div>
-      </div>
+        </ViewHeadingActions>
+      </ViewHeadingActionsWrapper>
 
       <DimensionFilters dimensions={listFilters} />
       <ResponseTabs
