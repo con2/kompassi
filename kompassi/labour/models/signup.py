@@ -61,7 +61,7 @@ class StateTransition:
     disabled_reason: str = ""
 
     def __post_init__(self):
-        self.disabled_reason = self._determine_disabled_reason()
+        self.disabled_reason = self._determine_disabled_reason()  # type: ignore # django translations
 
     @property
     def from_state(self):
@@ -158,8 +158,15 @@ class SignupMixin:
 class Signup(CsvExportMixin, SignupMixin, models.Model):
     id: int
 
-    person = models.ForeignKey("core.Person", on_delete=models.CASCADE, related_name="signups")
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
+    person: models.ForeignKey[Person] = models.ForeignKey(
+        Person,
+        on_delete=models.CASCADE,
+        related_name="signups",
+    )
+    event: models.ForeignKey[Event] = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+    )
 
     personnel_classes = models.ManyToManyField(
         "labour.PersonnelClass",
@@ -554,6 +561,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         if self.signup_extra is not None:
             self.signup_extra.apply_state()
 
+        self.apply_state_ensure_involvement()
         self.apply_state_create_badges()
 
     def _apply_state(self):
@@ -619,6 +627,14 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
 
             personnel_class = self.some_accepted_job_category.personnel_classes.first()
             self.personnel_classes.add(personnel_class)
+
+    def apply_state_ensure_involvement(self):
+        """
+        Bridge from Labour V1 to Involvement (V2)
+        """
+        from kompassi.involvement.models.involvement import Involvement
+
+        Involvement.from_legacy_signup(self)
 
     def apply_state_create_badges(self):
         if self.event.badges_event_meta is None:
@@ -741,7 +757,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     def state_times(self):
         return [
             (
-                self._meta.get_field(field_name).verbose_name,
+                self._meta.get_field(field_name).verbose_name,  # type: ignore
                 getattr(self, field_name, None),
             )
             for field_name in STATE_TIME_FIELDS
@@ -751,7 +767,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     @property
     def person_messages(self):
         if getattr(self, "_person_messages", None) is None:
-            self._person_messages = self.person.personmessage_set.filter(
+            self._person_messages = self.person.personmessage_set.filter(  # type: ignore
                 message__recipient__event=self.event,
                 message__recipient__app_label="labour",
             ).order_by("-created_at")
@@ -910,7 +926,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
 
         signup_extra_model = self.signup_extra_model
         if signup_extra_model:
-            related[signup_extra_model] = self.signup_extra
+            related[signup_extra_model] = self.signup_extra  # type: ignore
 
         try:
             jv_kortti = JVKortti.objects.get(personqualification__person=self.person)

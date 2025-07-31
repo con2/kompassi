@@ -590,6 +590,18 @@ wheels = [
 ]
 
 [[package]]
+name = "django-enum"
+version = "2.2.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f5/d9/d77d41c8c557b507b0a607dcb049859c3c521ba6c4c91e6146ae9614bf85/django_enum-2.2.3.tar.gz", hash = "sha256:5b1dbf8fd9a88aab29b571c3ce4315432e48e9e1d95fdd88c6555e449f7f67a4", size = 573332, upload-time = "2025-04-28T22:22:05.22Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f5/8c/ea3ddae94793d37a77dc62182dd707b8d6f7630f90c4b36a5e3c42fc2bd9/django_enum-2.2.3-py3-none-any.whl", hash = "sha256:ddd14cfef9d0a196128fbe220aa54675695604040d976aff7d5841c6d03a1342", size = 34791, upload-time = "2025-04-28T22:22:03.349Z" },
+]
+
+[[package]]
 name = "django-environ"
 version = "0.12.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1201,6 +1213,7 @@ dependencies = [
     { name = "django-cors-headers" },
     { name = "django-crispy-forms" },
     { name = "django-csp" },
+    { name = "django-enum" },
     { name = "django-environ" },
     { name = "django-ipware" },
     { name = "django-localflavor" },
@@ -1262,6 +1275,7 @@ requires-dist = [
     { name = "django-cors-headers" },
     { name = "django-crispy-forms" },
     { name = "django-csp" },
+    { name = "django-enum", specifier = ">=2.2.3" },
     { name = "django-environ" },
     { name = "django-ipware" },
     { name = "django-localflavor" },

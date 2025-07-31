@@ -5,7 +5,6 @@ import graphene_django
 from graphene.types.generic import GenericScalar
 
 from kompassi.forms.graphql.response_limited import LimitedResponseType
-from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.involvement.models.involvement import Involvement
 from kompassi.program_v2.graphql.program_limited import LimitedProgramType
 
@@ -28,6 +27,7 @@ class LimitedInvolvementType(graphene_django.DjangoObjectType):
             "response",
             "type",
             "app",
+            "title",
             "cached_dimensions",
         )
 
@@ -38,10 +38,5 @@ class LimitedInvolvementType(graphene_django.DjangoObjectType):
     type = graphene.NonNull(InvolvementTypeType)
     app = graphene.NonNull(InvolvementAppType)
 
-    @staticmethod
-    def resolve_title(involvement: Involvement, info, lang: str = DEFAULT_LANGUAGE) -> str | None:
-        return involvement.get_title(lang)
-
-    title = graphene.String(lang=graphene.String())
     admin_link = graphene.String()
     cached_dimensions = graphene.NonNull(GenericScalar)

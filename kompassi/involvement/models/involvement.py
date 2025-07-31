@@ -4,12 +4,15 @@ import logging
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
+from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models, transaction
+from django_enum import EnumField
 
 from kompassi.badges.models import Badge
 from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
+from kompassi.core.utils.model_utils import slugify
 from kompassi.dimensions.models.cached_dimensions import (
     CachedDimensions,
     StrictCachedDimensions,
@@ -22,11 +25,11 @@ from kompassi.dimensions.utils.build_cached_dimensions import build_cached_dimen
 from kompassi.dimensions.utils.dimension_cache import DimensionCache
 from kompassi.dimensions.utils.set_dimension_values import set_dimension_values
 from kompassi.forms.models.enums import SurveyPurpose
-from kompassi.graphql_api.language import DEFAULT_LANGUAGE
-from kompassi.involvement.models.involvement_to_group import InvolvementToGroupMapping
+from kompassi.labour.models.signup import Signup
 
-from .enums import InvolvementApp, InvolvementType, ProgramHostRole
+from .enums import INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS, InvolvementApp, InvolvementType, ProgramHostRole
 from .invitation import Invitation
+from .involvement_to_group import InvolvementToGroupMapping
 from .profile_field_selector import ProfileFieldSelector
 
 if TYPE_CHECKING:
@@ -34,6 +37,7 @@ if TYPE_CHECKING:
     from kompassi.program_v2.models.program import Program
 
     from .involvement_dimension_value import InvolvementDimensionValue
+    from .meta import InvolvementEventMeta
 
 from .registry import Registry
 
@@ -58,6 +62,11 @@ class Involvement(models.Model):
         on_delete=models.CASCADE,
         related_name="involvements",
     )
+
+    app: InvolvementApp = EnumField(InvolvementApp)  # type: ignore
+    type: InvolvementType = EnumField(InvolvementType)  # type: ignore
+
+    title = models.TextField(default="")
 
     registry: models.ForeignKey[Registry] = models.ForeignKey(
         Registry,
@@ -102,6 +111,10 @@ class Involvement(models.Model):
         default=dict,
         blank=True,
     )
+    annotations = models.JSONField(
+        default=dict,
+        blank=True,
+    )
 
     dimensions: models.QuerySet[InvolvementDimensionValue]
     id: int
@@ -111,6 +124,7 @@ class Involvement(models.Model):
         indexes = [
             # covers most program_v2 queries
             models.Index(fields=["universe", "person", "program", "response"]),
+            models.Index(fields=["universe", "person", "app", "type"]),
             # get contents of a registry
             # is this person in this registry?
             models.Index(fields=["registry", "person"]),
@@ -142,17 +156,6 @@ class Involvement(models.Model):
             raise ValueError(f"Scope of universe {self.universe} has no event")
         return event
 
-    # TODO Ephemeral dimensions
-    # Hoist app and type from kompassi.dimensions to the Involvement table
-    # but make them behave like dimensions for purposes of filtering
-    @property
-    def app(self) -> InvolvementApp:
-        return InvolvementApp(self.cached_dimensions["app"][0])
-
-    @property
-    def type(self) -> InvolvementType:
-        return InvolvementType(self.cached_dimensions["type"][0])
-
     @property
     def description(self) -> str:
         return f"{self.type.title_en}: {self.get_title() or 'No title'}"
@@ -161,6 +164,11 @@ class Involvement(models.Model):
     def profile_field_selector(self) -> ProfileFieldSelector:
         match self.type:
             case InvolvementType.PROGRAM_HOST:
+                return ProfileFieldSelector.all_fields()
+            case InvolvementType.LEGACY_SIGNUP:
+                return ProfileFieldSelector.all_fields()
+            case InvolvementType.COMBINED_PERKS:
+                # TODO in rare edge cases, might reveal information that shouldn't be
                 return ProfileFieldSelector.all_fields()
             case _ if self.response is not None:
                 return self.response.survey.profile_field_selector
@@ -185,30 +193,57 @@ class Involvement(models.Model):
             case _:
                 return None
 
-    def get_title(self, lang: str = DEFAULT_LANGUAGE) -> str | None:
+    @property
+    def meta(self) -> InvolvementEventMeta:
+        meta = self.event.involvement_event_meta
+        if meta is None:
+            raise AssertionError("Involvement without InvolvementEventMeta")
+        return meta
+
+    @cached_property
+    def signup(self):
+        return Signup.objects.filter(event=self.event, person=self.person).first()
+
+    def get_title(self) -> str | None:
+        """
+        Used to populate `title`.
+        """
         match self.type:
             case InvolvementType.PROGRAM_HOST if self.program:
                 return self.program.title
             case InvolvementType.PROGRAM_OFFER if self.response:
                 return self.response.cached_key_fields.get("title")
             case InvolvementType.SURVEY_RESPONSE if self.response and self.response.survey:
-                return self.response.survey.get_title(lang)
+                return self.response.form.title
+            case InvolvementType.LEGACY_SIGNUP if self.signup:
+                return self.signup.some_job_title
+            case InvolvementType.COMBINED_PERKS:
+                # up to the emperkelator, can't figure out here
+                return None
             case _:
                 raise TypeError(f"get_title(): Invalid involvement {self.id}")
+
+    def with_computed_fields(self) -> Self:
+        if title := self.get_title():
+            self.title = title
+
+        return self
 
     @property
     def admin_link(self) -> str:
         match self.type:
             case InvolvementType.PROGRAM_OFFER if self.response:
-                path = f"program-offers/{self.response.id}/"
+                return f"/{self.scope.slug}/program-offers/{self.response.id}/"
             case InvolvementType.PROGRAM_HOST if self.program:
-                path = f"program-admin/{self.program.slug}/hosts"
+                return f"/{self.scope.slug}/program-admin/{self.program.slug}/hosts"
             case InvolvementType.SURVEY_RESPONSE if self.response:
-                path = f"{self.response.survey.slug}/responses/{self.response.id}/"
+                return f"/{self.scope.slug}/{self.response.survey.slug}/responses/{self.response.id}/"
+            case InvolvementType.LEGACY_SIGNUP if self.signup:
+                return f"{settings.KOMPASSI_BASE_URL}/events/{self.event.slug}/labour/admin/signups/{self.person.id}/"
+            case InvolvementType.COMBINED_PERKS:
+                return f"/{self.scope.slug}/people/{self.person.id}"
             case _:
                 raise TypeError(f"admin_link(): Invalid involvement {self.id}")
-
-        return f"/{self.scope.slug}/{path}"
 
     @transaction.atomic
     @classmethod
@@ -270,6 +305,14 @@ class Involvement(models.Model):
             registry=[registry.slug],
         )
 
+    def refresh_dimensions(self, dimensions_to_set: CachedDimensions | None = None, *, cache: DimensionCache):
+        update_dimensions = validate_cached_dimensions(dimensions_to_set) if dimensions_to_set else {}
+        update_dimensions.update(
+            self._build_technical_dimension_values(self.app, self.type, self.is_active, self.registry)
+        )
+        self.set_dimension_values(update_dimensions, cache=cache)
+        self.refresh_cached_dimensions()
+
     @classmethod
     def from_survey_response(
         cls,
@@ -319,10 +362,8 @@ class Involvement(models.Model):
             else:
                 # make sure badges are revoked etc.
                 involvement.is_active = is_active
-                involvement.save(update_fields=["is_active"])
-                dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
-                involvement.set_dimension_values(dimensions, cache=cache)
-                involvement.refresh_cached_dimensions()
+                involvement.with_computed_fields().save()
+                involvement.refresh_dimensions(cache=cache)
                 involvement.refresh_dependents()
 
                 # deleting a program offer or response probably also means we want to
@@ -333,6 +374,8 @@ class Involvement(models.Model):
         involvement, created = cls.objects.update_or_create(
             universe=cache.universe,
             person=response.original_created_by.person,  # type: ignore
+            app=app,
+            type=involvement_type,
             program=None,
             response=response,
             defaults=dict(
@@ -341,15 +384,14 @@ class Involvement(models.Model):
             ),
         )
 
+        involvement.with_computed_fields().save()
+
         if created or override_dimensions:
-            dimensions = validate_cached_dimensions(response.survey.cached_default_involvement_dimensions)
-            dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
+            involvement.refresh_dimensions(response.survey.cached_default_involvement_dimensions, cache=cache)
         else:
             # leave non-technical dimensions untouched
-            dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
+            involvement.refresh_dimensions(cache=cache)
 
-        involvement.set_dimension_values(dimensions, cache=cache)
-        involvement.refresh_cached_dimensions()
         involvement.refresh_dependents()
 
         return involvement
@@ -370,12 +412,13 @@ class Involvement(models.Model):
         app = InvolvementApp.PROGRAM
         involvement_type = InvolvementType.PROGRAM_HOST
         is_active = program.is_active
-        registry = program.meta.default_registry
 
         # NOTE update_or_create for backfill
         involvement, created = cls.objects.update_or_create(
             universe=cache.universe,
             person=program_offer.original_created_by.person,  # type: ignore
+            app=app,
+            type=involvement_type,
             program=program,
             defaults=dict(
                 response=program_offer,
@@ -384,16 +427,16 @@ class Involvement(models.Model):
             ),
         )
 
+        involvement.with_computed_fields().save()
+
         if created or override_dimensions:
             dimensions = validate_cached_dimensions(program_offer.survey.cached_default_involvement_dimensions)
             dimensions.update(validate_cached_dimensions(dimension_values))
-            dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
+            involvement.refresh_dimensions(dimensions, cache=cache)
         else:
             # leave non-technical dimensions untouched
-            dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
+            involvement.refresh_dimensions(cache=cache)
 
-        involvement.set_dimension_values(dimensions, cache=cache)
-        involvement.refresh_cached_dimensions()
         involvement.refresh_dependents()
 
         return involvement
@@ -418,8 +461,11 @@ class Involvement(models.Model):
             raise ValueError(f"Expected response to be an invitation response, got {response.survey.purpose!r}")
 
         involvement_type = response.survey.involvement_type
-        if involvement_type is None:
-            raise ValueError(f"Survey {response.survey} does not have an involvement type")
+        if involvement_type is None or involvement_type != invitation.involvement_type:
+            raise ValueError(
+                f"Invitation {invitation} has involvement type {invitation.involvement_type}, "
+                f"but response {response} has involvement type {involvement_type}"
+            )
 
         registry = invitation.survey.registry
         if registry is None:
@@ -431,6 +477,8 @@ class Involvement(models.Model):
         involvement, created = cls.objects.update_or_create(
             universe=cache.universe,
             person=response.original_created_by.person,  # type: ignore
+            app=app,
+            type=involvement_type,
             program=invitation.program,
             defaults=dict(
                 response=response,
@@ -440,15 +488,16 @@ class Involvement(models.Model):
             ),
         )
 
+        involvement.with_computed_fields().save()
+
         if created or override_dimensions:
             dimensions = validate_cached_dimensions(response.survey.cached_default_involvement_dimensions)
             dimensions.update(validate_cached_dimensions(invitation.cached_dimensions))
-            dimensions.update(cls._build_technical_dimension_values(app, involvement_type, is_active, registry))
+            involvement.refresh_dimensions(dimensions, cache=cache)
         else:
-            dimensions = cls._build_technical_dimension_values(app, involvement_type, is_active, registry)
+            # leave non-technical dimensions untouched
+            involvement.refresh_dimensions(cache=cache)
 
-        involvement.set_dimension_values(dimensions, cache=cache)
-        involvement.refresh_cached_dimensions()
         involvement.refresh_dependents()
 
         return involvement
@@ -463,27 +512,20 @@ class Involvement(models.Model):
         if cache.universe.app_name != "involvement":
             raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app_name!r}")
 
-        app = InvolvementApp.PROGRAM
-        involvement_type = InvolvementType.PROGRAM_HOST
         is_active = not deleting and program.is_active
 
         involvements = cls.objects.filter(
             universe=cache.universe,
             program=program,
+            app=InvolvementApp.PROGRAM,
+            type=InvolvementType.PROGRAM_HOST,
         )
 
         for involvement in involvements:
-            involvement.is_active = program.is_active
-            involvement.save(update_fields=["is_active"])
+            involvement.is_active = is_active
+            involvement.with_computed_fields().save()
 
-            dimensions = cls._build_technical_dimension_values(
-                app,
-                involvement_type,
-                is_active,
-                involvement.registry,
-            )
-            involvement.set_dimension_values(dimensions, cache=cache)
-            involvement.refresh_cached_dimensions()
+            involvement.refresh_dimensions(cache=cache)
             involvement.refresh_dependents()
 
         if deleting:
@@ -498,13 +540,23 @@ class Involvement(models.Model):
         involvement: Involvement,
         cache: DimensionCache,
         override_dimensions: bool = False,
-    ) -> Self:
+    ) -> Self | None:
         """
         Helper to call again the from_* method that likely created the involvement.
         Used by backfill.
         """
-        if involvement.type != InvolvementType.PROGRAM_HOST:
-            raise NotImplementedError(f"from_involvement() not implemented for involvement type {involvement.type!r}")
+        match involvement.type:
+            case InvolvementType.COMBINED_PERKS:
+                return cls.for_combined_perks(involvement.event, involvement.person)
+            case InvolvementType.LEGACY_SIGNUP if involvement.signup:
+                return cls.from_legacy_signup(involvement.signup)
+            case InvolvementType.PROGRAM_HOST:
+                # the rest of the method :)
+                pass
+            case _:
+                raise NotImplementedError(
+                    f"from_involvement() not implemented for involvement type {involvement.type!r}"
+                )
 
         if involvement.response is None:
             raise ValueError("A program host involvement must have a response")
@@ -528,6 +580,124 @@ class Involvement(models.Model):
             override_dimensions=override_dimensions,
         )
 
+    @classmethod
+    def from_legacy_signup(cls, signup: Signup) -> Self | None:
+        meta = signup.event.involvement_event_meta
+        if meta is None:
+            raise ValueError(f"Event {signup.event.slug} has no InvolvementEventMeta")
+
+        app = InvolvementApp.VOLUNTEERS
+        involvement_type = InvolvementType.LEGACY_SIGNUP
+
+        universe = meta.universe
+        existing_involvement = cls.objects.filter(
+            universe=universe,
+            person=signup.person,
+            app=app,
+            type=involvement_type,
+        ).first()
+
+        # NOTE is_alive, not is_active!
+        if not signup.is_alive:
+            if existing_involvement is not None:
+                # We won't delete it because it may have manual overrides.
+                # This way, if they are re-activated, the manual overrides are still there.
+                existing_involvement.is_active = False
+                existing_involvement.with_computed_fields().save()
+                existing_involvement.refresh_dimensions(cache=meta.dimension_cache)
+                existing_involvement.refresh_dependents()
+            return existing_involvement
+
+        involvement, _created = cls.objects.update_or_create(
+            universe=universe,
+            person=signup.person,
+            app=app,
+            type=involvement_type,
+            defaults=dict(
+                registry=meta.default_registry,
+                is_active=True,
+            ),
+        )
+
+        involvement.with_computed_fields().save()
+
+        dimensions = {
+            "v1-personnel-class": [slugify(pc.slug) for pc in signup.personnel_classes.all()],
+        }
+
+        involvement.refresh_dimensions(
+            dimensions_to_set=dimensions,
+            cache=meta.dimension_cache,
+        )
+        involvement.refresh_dependents()
+
+        return involvement
+
+    @classmethod
+    def for_combined_perks(cls, event: Event, person: Person) -> Self | None:
+        """
+        Implements the Automatic Combining of Accrued Perks (ACAB), also known as Emperkelate v2.
+        When a person multiclasses in an event, they may receive perks (such as free entry, meal vouchers,
+        swag etc) from multiple sources. This method creates or updates an Involvement for the person in the event,
+        which represents the combined perks they have accrued.
+
+        There may be complex rules as to how these perks are combined.
+        These rules may be event specific, or a generic (dumb) set of rules may be used.
+
+        For events that print badges, this Involvement is used to determine the type of badge to print.
+        """
+        meta = event.involvement_event_meta
+        if meta is None:
+            raise ValueError(f"Event {event.slug} has no InvolvementEventMeta")
+
+        app = InvolvementApp.INVOLVEMENT
+        involvement_type = InvolvementType.COMBINED_PERKS
+
+        universe = meta.universe
+        involvements = cls.objects.filter(universe=universe, person=person)
+        existing_combined_perks = involvements.filter(app=app, type=involvement_type).first()
+        active_involvements = involvements.filter(is_active=True).exclude(app=app, type=involvement_type)
+        Emperkelator = meta.emperkelator_class
+
+        if Emperkelator is None or not active_involvements.exists():
+            if existing_combined_perks is not None:
+                # We won't delete it because it may have manual overrides.
+                # This way, if they are re-activated, the manual overrides are still there.
+                existing_combined_perks.is_active = False
+                existing_combined_perks.with_computed_fields().save()
+                existing_combined_perks.refresh_dimensions(cache=meta.dimension_cache)
+                existing_combined_perks.refresh_dependents()
+            return existing_combined_perks
+
+        emperkelator = Emperkelator(
+            universe=universe,
+            person=person,
+            involvements=list(active_involvements),
+            existing_combined_perks=existing_combined_perks,
+        )
+
+        involvement, created = cls.objects.update_or_create(
+            universe=universe,
+            person=person,
+            app=app,
+            type=involvement_type,
+            defaults=dict(
+                registry=meta.default_registry,
+                is_active=True,
+                annotations=emperkelator.get_annotations(),
+                title=emperkelator.get_title(),  # with_computed_fields() has no access to emperkelator
+            ),
+        )
+
+        # involvement.with_computed_fields().save()
+
+        # TODO filter out manually overridden dimensions
+        dimension_values = emperkelator.get_dimensions()
+        involvement.refresh_dimensions(dimension_values, cache=meta.dimension_cache)
+        involvement.refresh_dependents()
+
+        return involvement
+
     def refresh_dependents(self):
         if self.program:
             self.program.refresh_cached_fields()
@@ -535,6 +705,9 @@ class Involvement(models.Model):
         if self.event.badges_event_meta:
             # ITB
             Badge.ensure(self.event, self.person)
+
+        if self.type in INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS and self.meta.emperkelator_class:
+            Involvement.for_combined_perks(self.event, self.person)
 
         InvolvementToGroupMapping.ensure(self.universe, self.person)
 

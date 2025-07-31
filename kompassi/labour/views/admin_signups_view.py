@@ -47,7 +47,7 @@ def admin_signups_view(request, vars, event, format="screen"):
         num_all_signups = signups.count()
 
     job_categories = event.jobcategory_set.all()
-    personnel_classes = event.personnelclass_set.filter(app_label="labour")
+    personnel_classes = event.personnel_classes.filter(app_label="labour")
 
     if archive_mode:
         signups = archived_signups

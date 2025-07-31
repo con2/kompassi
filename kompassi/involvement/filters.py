@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from django.db.models import QuerySet, TextField, Value
 from django.db.models.functions import Concat, Lower
@@ -8,7 +9,8 @@ from django.db.models.functions import Concat, Lower
 from kompassi.dimensions.filters import DimensionFilters
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 
-from .models.involvement import Involvement
+if TYPE_CHECKING:
+    from .models.involvement import Involvement
 
 
 @dataclass

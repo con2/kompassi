@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from kompassi.core.models.event import Event
+from kompassi.core.utils.model_utils import slugify
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.dimension_value_dto import DimensionValueDTO
 from kompassi.dimensions.models.enums import DimensionApp
@@ -18,6 +19,7 @@ DIMENSIONS = [
             sv="App",
         ),
         is_technical=True,
+        can_values_be_added=False,
         order=-9100,
         choices=[
             DimensionValueDTO(
@@ -36,6 +38,7 @@ DIMENSIONS = [
             sv="Typ",
         ),
         is_technical=True,
+        can_values_be_added=False,
         order=-9000,
         choices=[
             DimensionValueDTO(
@@ -54,6 +57,7 @@ DIMENSIONS = [
             sv="Status",
         ),
         is_technical=True,
+        can_values_be_added=False,
         is_key_dimension=True,
         order=9000,
         choices=[
@@ -89,6 +93,7 @@ def get_registry_dimension(event: Event) -> DimensionDTO:
             sv="Register",
         ),
         is_technical=True,
+        can_values_be_added=False,
         order=-9200,
         choices=[
             DimensionValueDTO(
@@ -114,9 +119,38 @@ def get_involvement_universe(event: Event) -> Universe:
     return universe
 
 
+def get_v1_personnel_class_dimension(event: Event) -> DimensionDTO | None:
+    meta = event.labour_event_meta
+    if meta is None:
+        return None
+
+    return DimensionDTO(
+        slug="v1-personnel-class",
+        title=dict(
+            en="Personnel class (V1)",
+            fi="Henkilöstöluokka (V1)",
+        ),
+        is_technical=True,
+        can_values_be_added=False,
+        order=-9300,
+        choices=[
+            DimensionValueDTO(
+                slug=slugify(pc.slug),
+                title=dict(fi=pc.name),
+                is_technical=True,
+            )
+            for pc in event.personnel_classes.all()
+        ],
+    )
+
+
 def setup_involvement_dimensions(universe: Universe, event: Event) -> None:
     dimensions = [
         *DIMENSIONS,
         get_registry_dimension(event),
     ]
+
+    if personnel_class_dimension := get_v1_personnel_class_dimension(event):
+        dimensions.append(personnel_class_dimension)
+
     DimensionDTO.save_many(universe, dimensions, override_order=True)

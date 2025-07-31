@@ -4,7 +4,6 @@ from kompassi.core.models import Event
 from kompassi.forms.graphql.meta import FormsEventMetaType
 from kompassi.forms.models.meta import FormsEventMetaPlaceholder
 from kompassi.involvement.graphql.meta import InvolvementEventMetaType
-from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.program_v2.graphql.meta import ProgramV2EventMetaType
 from kompassi.tickets_v2.graphql.meta import TicketsV2EventMetaType
 
@@ -44,4 +43,4 @@ class FullEventType(LimitedEventType):
 
     @staticmethod
     def resolve_involvement(event: Event, info):
-        return InvolvementEventMeta(event)
+        return event.involvement_event_meta

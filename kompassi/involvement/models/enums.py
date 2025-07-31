@@ -10,6 +10,7 @@ class InvolvementApp(Enum):
     FORMS = "forms", "forms", "Surveys V2", "Kyselyt V2", "Enkät V2"
     PROGRAM = "program", "program_v2", "Program V2", "Ohjelma V2", "Program V2"
     INVOLVEMENT = "involvement", "involvement", "Involvement", "Osallistuminen", "Deltagande"
+    VOLUNTEERS = "volunteers", "volunteers", "Volunteers V2", "Vapaaehtoiset V2", "Volontärer V2"
 
     value: str
     app_name: str
@@ -59,6 +60,14 @@ class InvolvementType(Enum):
         "Kombinerade förmåner",
     )
 
+    LEGACY_SIGNUP = (
+        "legacy-signup",
+        InvolvementApp.VOLUNTEERS,
+        "Signup (V1)",
+        "Vänkäri-ilmoittautuminen (V1)",
+        "Anmälan (V1)",
+    )
+
     value: str
     app: InvolvementApp
 
@@ -82,6 +91,13 @@ class InvolvementType(Enum):
             for language_code in SUPPORTED_LANGUAGE_CODES
             if (title := getattr(self, f"title_{language_code}"))
         }
+
+
+# Order matters here, as the emperkelator will use the first one it finds for job title / badge type
+INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS = (
+    InvolvementType.LEGACY_SIGNUP,
+    InvolvementType.PROGRAM_HOST,
+)
 
 
 class NameDisplayStyle(Enum):

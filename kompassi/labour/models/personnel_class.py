@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import logging
 from typing import Any
 
@@ -11,7 +13,11 @@ logger = logging.getLogger(__name__)
 
 
 class PersonnelClass(models.Model):
-    event = models.ForeignKey("core.Event", on_delete=models.CASCADE)
+    event: models.ForeignKey[Event] = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name="personnel_classes",
+    )
     app_label = models.CharField(max_length=63, blank=True, default="labour")
     name = models.CharField(max_length=63)
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore

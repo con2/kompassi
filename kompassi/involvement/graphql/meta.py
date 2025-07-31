@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import graphene
 from django.http import HttpRequest
+from graphene_django import DjangoObjectType
 
 from kompassi.access.cbac import graphql_check_instance, graphql_check_model
 from kompassi.core.utils.text_utils import normalize_whitespace
@@ -15,7 +16,10 @@ from .invitation_full import FullInvitationType
 from .profile_with_involvement import ProfileWithInvolvementType
 
 
-class InvolvementEventMetaType(graphene.ObjectType):
+class InvolvementEventMetaType(DjangoObjectType):
+    class Meta:
+        model = InvolvementEventMeta
+
     @staticmethod
     def resolve_invitation(
         meta: InvolvementEventMeta,
@@ -40,6 +44,7 @@ class InvolvementEventMetaType(graphene.ObjectType):
         info,
         filters: list[DimensionFilterInput] | None = None,
         search: str = "",
+        return_none: bool = False,
     ):
         """
         List of people involved in the event, filtered by dimensions.
@@ -52,6 +57,9 @@ class InvolvementEventMetaType(graphene.ObjectType):
             request,
         )
 
+        if return_none:
+            return []
+
         involvement_filters = InvolvementFilters.from_graphql(filters=filters, search=search)
         return meta.get_people(involvement_filters)
 
@@ -61,6 +69,7 @@ class InvolvementEventMetaType(graphene.ObjectType):
         ),
         filters=graphene.List(DimensionFilterInput, required=False),
         search=graphene.String(default_value=""),
+        return_none=graphene.Boolean(default_value=False),
         description=normalize_whitespace(resolve_people.__doc__ or ""),
     )
 

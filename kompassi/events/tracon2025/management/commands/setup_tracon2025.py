@@ -28,6 +28,7 @@ from kompassi.forms.models.projection import Projection
 from kompassi.forms.models.splat import Splat
 from kompassi.forms.models.survey import Survey
 from kompassi.intra.models import IntraEventMeta, Team
+from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
 from kompassi.labour.models.alternative_signup_forms import AlternativeSignupForm
 from kompassi.labour.models.info_link import InfoLink
@@ -323,6 +324,8 @@ class Setup:
         )
 
     def setup_program_v2(self):
+        InvolvementEventMeta.ensure(self.event)
+
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
         meta, _ = ProgramV2EventMeta.objects.update_or_create(
             event=self.event,

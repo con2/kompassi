@@ -21,6 +21,6 @@ class Command(BaseCommand):
             event = Event.objects.get(slug=event_slug)
 
             for signup in event.signup_set.all():
-                signup.apply_state_create_badges()
+                signup.apply_state_sync()
                 stderr.write(".")
                 stderr.flush()

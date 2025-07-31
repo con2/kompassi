@@ -9,6 +9,7 @@ from kompassi.forms.models.enums import Anonymity
 from kompassi.forms.models.survey import Survey
 from kompassi.involvement.dimensions import setup_involvement_dimensions
 from kompassi.involvement.models.involvement import Involvement
+from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
 
 from ..dimensions import get_program_universe, setup_program_dimensions
@@ -110,6 +111,7 @@ def backfill(
         ScheduleItem.refresh_cached_fields_qs(meta.schedule_items.all())
 
     # Involvements
+    InvolvementEventMeta.ensure(event)
     with transaction.atomic():
         involvement_universe = event.involvement_universe
         setup_involvement_dimensions(involvement_universe, event)

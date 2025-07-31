@@ -62,6 +62,7 @@ dependencies = [
     "weasyprint",
     "XlsxWriter",
     "zxcvbn",
+    "django-enum>=2.2.3",
 ]
 
 [tool.black]

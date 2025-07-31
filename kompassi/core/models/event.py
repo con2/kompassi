@@ -23,6 +23,8 @@ if typing.TYPE_CHECKING:
     from kompassi.dimensions.models.universe import Universe
     from kompassi.forms.models.survey import Survey
     from kompassi.involvement.models.involvement import Involvement
+    from kompassi.involvement.models.meta import InvolvementEventMeta
+    from kompassi.labour.models.personnel_class import PersonnelClass
     from kompassi.labour.models.signup import Signup
     from kompassi.program_v2.models import Program, ProgramV2EventMeta, ScheduleItem
     from kompassi.tickets_v2.models import TicketsV2EventMeta
@@ -138,6 +140,7 @@ class Event(models.Model):
     schedule_items: models.QuerySet[ScheduleItem]
     signup_set: models.QuerySet[Signup]
     surveys: models.QuerySet[Survey]
+    personnel_classes: models.QuerySet[PersonnelClass]
 
     class Meta:
         verbose_name = "Tapahtuma"
@@ -326,6 +329,20 @@ class Event(models.Model):
             try:
                 self._tickets_v2_event_meta = meta = TicketsV2EventMeta.objects.get(event=self)
             except TicketsV2EventMeta.DoesNotExist:
+                meta = None
+
+        return meta
+
+    @property
+    def involvement_event_meta(self) -> InvolvementEventMeta | None:
+        from kompassi.involvement.models.meta import InvolvementEventMeta
+
+        # NOTE: Do not cache None
+        meta = getattr(self, "_involvement_event_meta", None)
+        if meta is None:
+            try:
+                self._involvement_event_meta = meta = InvolvementEventMeta.objects.get(event=self)
+            except InvolvementEventMeta.DoesNotExist:
                 meta = None
 
         return meta
