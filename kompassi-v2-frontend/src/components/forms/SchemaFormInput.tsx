@@ -201,7 +201,7 @@ function SchemaFormInput({
                   disabled={readOnly}
                   id={choiceId}
                   name={name}
-                />
+                />{" "}
                 <label htmlFor={choiceId} className="form-check-label">
                   {choice.title}
                 </label>
