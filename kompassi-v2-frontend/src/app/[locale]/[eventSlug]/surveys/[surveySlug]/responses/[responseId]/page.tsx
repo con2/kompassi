@@ -31,8 +31,6 @@ graphql(`
       survey {
         title(lang: $locale)
         slug
-        cachedDefaultResponseDimensions
-        cachedDefaultInvolvementDimensions
         profileFieldSelector {
           ...FullProfileFieldSelector
         }
@@ -57,12 +55,6 @@ const query = graphql(`
       slug
       name
       timezone
-
-      involvement {
-        dimensions(publicOnly: false) {
-          ...DimensionValueSelect
-        }
-      }
 
       forms {
         survey(slug: $surveySlug) {
@@ -159,9 +151,6 @@ export default async function SurveyResponsePage(props: Props) {
 
   validateCachedDimensions(response.cachedDimensions);
   const surveyDimensions = data.event.forms.survey.dimensions;
-  const defaultSurveyDimensions =
-    response.form.survey.cachedDefaultResponseDimensions ?? {};
-  validateCachedDimensions(defaultSurveyDimensions);
   const dimensionsReadOnly = !!supersededBy;
 
   return (
