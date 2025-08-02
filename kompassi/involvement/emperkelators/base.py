@@ -1,5 +1,6 @@
 from kompassi.core.models.person import Person
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
+from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.universe import Universe
 from kompassi.program_v2.models.cached_annotations import CachedAnnotations
 
@@ -30,6 +31,13 @@ class BaseEmperkelator:
         self.universe = universe
         self.involvements = involvements
         self.existing_combined_perks = existing_combined_perks
+
+    @classmethod
+    def get_dimension_dtos(cls) -> list[DimensionDTO]:
+        """
+        These dimensions will be initialized for events using this emperkelator.
+        """
+        return []
 
     def get_dimensions(self) -> CachedDimensions:
         return {}

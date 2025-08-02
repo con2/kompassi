@@ -634,13 +634,16 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         """
         from kompassi.involvement.models.involvement import Involvement
 
+        if self.event.involvement_event_meta is None:
+            return
+
         Involvement.from_legacy_signup(self)
 
     def apply_state_create_badges(self):
+        from kompassi.badges.models import Badge
+
         if self.event.badges_event_meta is None:
             return
-
-        from kompassi.badges.models import Badge
 
         Badge.ensure(event=self.event, person=self.person)
 

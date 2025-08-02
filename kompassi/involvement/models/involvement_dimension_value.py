@@ -12,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class InvolvementDimensionValue(models.Model):
-    subject = models.ForeignKey(
+    subject: models.ForeignKey[Involvement] = models.ForeignKey(
         Involvement,
         on_delete=models.CASCADE,
         related_name="dimensions",
     )
-    value = models.ForeignKey(
+    value: models.ForeignKey[DimensionValue] = models.ForeignKey(
         DimensionValue,
         on_delete=models.CASCADE,
         related_name="+",

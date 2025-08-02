@@ -111,8 +111,8 @@ def backfill(
         ScheduleItem.refresh_cached_fields_qs(meta.schedule_items.all())
 
     # Involvements
-    InvolvementEventMeta.ensure(event)
     with transaction.atomic():
+        InvolvementEventMeta.ensure(event)
         involvement_universe = event.involvement_universe
         setup_involvement_dimensions(involvement_universe, event)
         involvement_cache = involvement_universe.preload_dimensions()

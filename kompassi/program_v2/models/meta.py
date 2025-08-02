@@ -19,6 +19,7 @@ from kompassi.forms.models.enums import SurveyPurpose
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
 from kompassi.involvement.models.involvement import Involvement
+from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
 
 from .annotation import Annotation
@@ -97,6 +98,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     @classmethod
     def get_or_create_dummy(cls):
         event, _ = Event.get_or_create_dummy()
+
         meta, created = cls.objects.get_or_create(
             event=event,
             defaults=dict(
@@ -223,6 +225,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         """
         Idempotent way to ensure all required structures are set up for this event.
         """
+        InvolvementEventMeta.ensure(self.event)
         EventAnnotation.ensure(self)
 
 

@@ -9,6 +9,7 @@ from django.db import models
 
 from kompassi.core.models.event import Event
 from kompassi.core.utils.log_utils import log_get_or_create
+from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.universe import Universe
 from kompassi.involvement.dimensions import get_involvement_universe
 
@@ -90,7 +91,16 @@ class InvolvementEventMeta(models.Model):
 
         log_get_or_create(logger, meta, created)
 
+        Emperkelator = meta.emperkelator_class
+        if Emperkelator is not None:
+            DimensionDTO.save_many(universe=universe, dimension_dtos=Emperkelator.get_dimension_dtos())
+
         return meta
+
+    @classmethod
+    def get_or_create_dummy(cls) -> tuple[InvolvementEventMeta, bool]:
+        event, created = Event.get_or_create_dummy()
+        return cls.ensure(event), created
 
     def get_people(self, filters: InvolvementFilters | None = None) -> list[Profile]:
         if filters is None:
