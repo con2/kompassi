@@ -1,5 +1,11 @@
 import { PaymentStatus } from "@/__generated__/graphql";
 import { ticketsApiKey, ticketsBaseUrl } from "@/config";
+import {
+  defaultLanguage,
+  SupportedLanguage,
+  supportedLanguages,
+} from "@/translations";
+import { validate as uuidValidate } from "uuid";
 
 const headers = {
   "x-api-key": ticketsApiKey,
@@ -9,6 +15,15 @@ const postHeaders = {
   "content-type": "application/json",
   "x-api-key": ticketsApiKey,
 };
+
+const slugRegex = /^[a-z0-9-]+$/;
+export function isValidSlug(slug: string): boolean {
+  return slugRegex.test(slug);
+}
+
+export function isValidOrderId(orderId: string): boolean {
+  return uuidValidate(orderId);
+}
 
 export interface Product {
   id: number;
@@ -31,6 +46,13 @@ export async function getProducts(
   locale: string,
   eventSlug: string,
 ): Promise<GetProductsResponse> {
+  if (!supportedLanguages.includes(locale as SupportedLanguage)) {
+    locale = defaultLanguage;
+  }
+  if (!isValidSlug(eventSlug)) {
+    throw new Error(`Invalid event slug: ${eventSlug}`);
+  }
+
   const url = `${ticketsBaseUrl}/api/tickets-v2/${eventSlug}/products/?language=${locale}`;
   const response = await fetch(url, { headers });
   if (response.ok) {
@@ -108,6 +130,10 @@ export async function createOrder(
   eventSlug: string,
   order: CreateOrderRequest,
 ): Promise<OrderResponse> {
+  if (!isValidSlug(eventSlug)) {
+    throw new Error(`Invalid event slug: ${eventSlug}`);
+  }
+
   const response = await fetch(
     `${ticketsBaseUrl}/api/tickets-v2/${eventSlug}/orders/`,
     {
@@ -157,6 +183,13 @@ export async function getOrder(
   eventSlug: string,
   orderId: string,
 ): Promise<GetOrderResponse> {
+  if (!isValidSlug(eventSlug)) {
+    throw new Error(`Invalid event slug: ${eventSlug}`);
+  }
+  if (!isValidOrderId(orderId)) {
+    throw new Error(`Invalid order ID: ${orderId}`);
+  }
+
   const response = await fetch(
     `${ticketsBaseUrl}/api/tickets-v2/${eventSlug}/orders/${orderId}/`,
     { headers },
@@ -172,6 +205,13 @@ export async function payOrder(
   eventSlug: string,
   orderId: string,
 ): Promise<PayOrderResponse> {
+  if (!isValidSlug(eventSlug)) {
+    throw new Error(`Invalid event slug: ${eventSlug}`);
+  }
+  if (!isValidOrderId(orderId)) {
+    throw new Error(`Invalid order ID: ${orderId}`);
+  }
+
   const response = await fetch(
     `${ticketsBaseUrl}/api/tickets-v2/${eventSlug}/orders/${orderId}/payment/`,
     { method: "POST", headers: postHeaders },

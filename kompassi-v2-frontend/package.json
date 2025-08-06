@@ -27,7 +27,8 @@
     "react": "19.1.1",
     "react-bootstrap": "^2.10.10",
     "react-dom": "19.1.1",
-    "tsx": "^4.19.4"
+    "tsx": "^4.19.4",
+    "uuid": "^11.1.0"
   },
   "license": "MIT",
   "devDependencies": {
@@ -36,12 +37,12 @@
     "@graphql-codegen/client-preset": "^4.1.0",
     "@parcel/watcher": "^2.5.1",
     "@types/node": "^22.0.0",
-    "@types/react-dom": "19.1.7",
     "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.7",
     "concurrently": "^9.0.0",
+    "eslint": "^9",
     "eslint-config-next": "15.4.5",
     "eslint-config-prettier": "^10.1.8",
-    "eslint": "^9",
     "prettier": "^3.6.2",
     "sass": "^1.69.5",
     "typescript": "^5.2.2"
