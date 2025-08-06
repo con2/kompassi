@@ -26,8 +26,8 @@ const query = graphql(`
       name
       slug
 
-      involvement {
-        dimensions(publicOnly: false) {
+      program {
+        involvementDimensions(publicOnly: false) {
           ...DimensionValueSelect
         }
       }
@@ -118,7 +118,7 @@ export default async function ProgramFormDimensionDefaults(props: Props) {
   const event = data.event;
   const survey = data.event.forms.survey;
   const programDimensions = data.event.forms.survey.dimensions;
-  const involvementDimensions = data.event.involvement?.dimensions ?? [];
+  const involvementDimensions = data.event.program?.involvementDimensions ?? [];
 
   validateCachedDimensions(survey.cachedDefaultResponseDimensions);
   validateCachedDimensions(survey.cachedDefaultInvolvementDimensions);

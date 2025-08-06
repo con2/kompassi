@@ -76,13 +76,11 @@ const query = graphql(`
       slug
       timezone
 
-      involvement {
-        dimensions(publicOnly: false) {
+      program {
+        involvementDimensions(publicOnly: false) {
           ...DimensionValueSelect
         }
-      }
 
-      program {
         dimensions(publicOnly: false) {
           ...DimensionValueSelect
         }
@@ -199,7 +197,7 @@ export default async function ProgramOfferPage(props: Props) {
       "program_dimensions",
     );
 
-  const involvementDimensions = data.event.involvement?.dimensions ?? [];
+  const involvementDimensions = data.event.program.involvementDimensions ?? [];
   const defaultInvolvementDimensions =
     response.form.survey.cachedDefaultInvolvementDimensions ?? {};
   validateCachedDimensions(defaultInvolvementDimensions);

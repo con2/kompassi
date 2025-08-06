@@ -194,6 +194,56 @@ class ProgramV2EventMetaType(DjangoObjectType):
     )
 
     @staticmethod
+    def resolve_involvement_dimensions(
+        meta: ProgramV2EventMeta,
+        info,
+        # TODO unify naming
+        is_list_filter: bool = False,
+        is_shown_in_detail: bool = False,
+        public_only: bool = True,
+        key_dimensions_only: bool = False,
+    ):
+        """
+        Like `dimensions` but returns dimensions from the Involvement universe.
+        Differs from `event.involvement.dimensions` in that permissions are checked
+        based on the Program V2 application privileges, not Involvement.
+
+        `is_list_filter` - only return dimensions that are shown in the list filter.
+        `is_shown_in_detail` - only return dimensions that are shown in the detail view.
+        If you supply both, you only get their intersection.
+        """
+        if public_only:
+            dimensions = meta.event.involvement_universe.dimensions.filter(is_public=True)
+        else:
+            graphql_check_instance(
+                meta.universe,  # type: ignore
+                info,
+                field="dimensions",
+                app="program_v2",
+            )
+            dimensions = meta.event.involvement_universe.dimensions.all()
+
+        if is_list_filter:
+            dimensions = dimensions.filter(is_list_filter=True)
+
+        if is_shown_in_detail:
+            dimensions = dimensions.filter(is_shown_in_detail=True)
+
+        if key_dimensions_only:
+            dimensions = dimensions.filter(is_key_dimension=True)
+
+        return dimensions.select_related("universe").order_by("order")
+
+    involvement_dimensions = graphene.NonNull(
+        graphene.List(graphene.NonNull(FullDimensionType)),
+        is_list_filter=graphene.Boolean(),
+        is_shown_in_detail=graphene.Boolean(),
+        public_only=graphene.Boolean(),
+        key_dimensions_only=graphene.Boolean(),
+        description=normalize_whitespace(resolve_involvement_dimensions.__doc__ or ""),
+    )
+
+    @staticmethod
     def resolve_calendar_export_link(meta: ProgramV2EventMeta, info):
         """
         Returns a link to the calendar export view for the event.

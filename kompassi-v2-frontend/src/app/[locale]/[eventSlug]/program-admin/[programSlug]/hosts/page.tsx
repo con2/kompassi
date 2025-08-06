@@ -75,13 +75,6 @@ const query = graphql(`
       slug
       timezone
 
-      involvement {
-        dimensions(publicOnly: false) {
-          ...ColoredDimensionTableCell
-          ...DimensionValueSelect
-        }
-      }
-
       forms {
         inviteForms: surveys(
           includeInactive: true
@@ -95,6 +88,10 @@ const query = graphql(`
       }
 
       program {
+        involvementDimensions(publicOnly: false) {
+          ...ColoredDimensionTableCell
+          ...DimensionValueSelect
+        }
         annotations(slug: $annotationSlugs, publicOnly: false) {
           ...AnnotationsFormAnnotation
         }
@@ -182,7 +179,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
   const annotations = data.event.program.annotations;
   const defaultProgramForm = data.event.forms?.inviteForms[0];
 
-  const involvementDimensions = data.event.involvement?.dimensions ?? [];
+  const involvementDimensions = data.event.program.involvementDimensions ?? [];
   const involvementDimensionColumns = buildKeyDimensionColumns(
     involvementDimensions.filter((dimension) => dimension.slug !== "state"),
   );
