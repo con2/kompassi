@@ -4,7 +4,7 @@ from typing import Annotated, Any
 import pydantic
 from pydantic_core import SchemaValidator, core_schema
 
-from ..models.annotation import Annotation
+from .annotation import Annotation
 
 AnnotationSlug = Annotated[
     str,

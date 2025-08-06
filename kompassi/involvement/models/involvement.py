@@ -608,6 +608,10 @@ class Involvement(models.Model):
                 existing_involvement.refresh_dependents()
             return existing_involvement
 
+        annotations = {
+            "kompassi:workingHours": signup.working_hours,
+        }
+
         involvement, _created = cls.objects.update_or_create(
             universe=universe,
             person=signup.person,
@@ -616,6 +620,7 @@ class Involvement(models.Model):
             defaults=dict(
                 registry=meta.default_registry,
                 is_active=True,
+                annotations=annotations,
             ),
         )
 
@@ -692,7 +697,7 @@ class Involvement(models.Model):
         # involvement.with_computed_fields().save()
 
         # TODO filter out manually overridden dimensions
-        dimension_values = emperkelator.get_dimensions()
+        dimension_values = emperkelator.get_dimension_values()
         involvement.refresh_dimensions(dimension_values, cache=meta.dimension_cache)
         involvement.refresh_dependents()
 

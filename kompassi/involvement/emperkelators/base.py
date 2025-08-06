@@ -1,8 +1,8 @@
 from kompassi.core.models.person import Person
+from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.universe import Universe
-from kompassi.program_v2.models.cached_annotations import CachedAnnotations
 
 from ..models.enums import INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS
 from ..models.involvement import Involvement
@@ -39,10 +39,16 @@ class BaseEmperkelator:
         """
         return []
 
-    def get_dimensions(self) -> CachedDimensions:
+    def get_dimension_values(self) -> CachedDimensions:
+        """
+        These dimension values will be set on the Combined Perks Involvement.
+        """
         return {}
 
     def get_annotations(self) -> CachedAnnotations:
+        """
+        These annotations will be set on the Combined Perks Involvement.
+        """
         return {}
 
     def get_title(self) -> str:

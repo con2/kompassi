@@ -9,8 +9,10 @@ from kompassi.access.cbac import graphql_check_instance, graphql_check_model, gr
 from kompassi.core.models import Event
 from kompassi.core.utils.text_utils import normalize_whitespace
 from kompassi.dimensions.filters import DimensionFilters
+from kompassi.dimensions.graphql.annotation import AnnotationType
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
+from kompassi.dimensions.graphql.universe_annotation_limited import LimitedUniverseAnnotationType
 from kompassi.forms.graphql.response_full import FullResponseType
 from kompassi.forms.graphql.response_profile import ProfileResponseType
 from kompassi.forms.models.response import Response
@@ -22,7 +24,6 @@ from ..models import (
     ScheduleItem,
 )
 from ..models.meta import ProgramV2ProfileMeta
-from .annotation import AnnotationType, EventAnnotationType
 from .program_full import FullProgramType
 from .program_host_full import FullProgramHostType, ProgramHost
 from .schedule_item_full import FullScheduleItemType
@@ -140,10 +141,10 @@ class ProgramV2EventMetaType(DjangoObjectType):
         Used for admin purposes changing settings of annotations in events.
         Usually you should use `event.program.annotations` instead.
         """
-        return meta.all_event_annotations.all().select_related("annotation").order_by("annotation__slug")
+        return meta.universe.all_universe_annotations.all().select_related("annotation").order_by("annotation__slug")
 
     event_annotations = graphene.NonNull(
-        graphene.List(graphene.NonNull(EventAnnotationType)),
+        graphene.List(graphene.NonNull(LimitedUniverseAnnotationType)),
         description=normalize_whitespace(resolve_event_annotations.__doc__ or ""),
     )
 

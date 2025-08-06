@@ -19,6 +19,8 @@ class Profile(pydantic.BaseModel, populate_by_name=True, frozen=True, arbitrary_
     NOTE: Must match Profile in frontend/src/components/involvement/models.ts.
     """
 
+    id: int | None = None
+
     first_name: str = pydantic.Field(
         default="",
         validation_alias="firstName",
@@ -52,6 +54,12 @@ class Profile(pydantic.BaseModel, populate_by_name=True, frozen=True, arbitrary_
     involvements: list[Involvement] = pydantic.Field(
         default_factory=list,
         description="List of involvements associated with this profile.",
+    )
+
+    profile_field_selector: ProfileFieldSelector = pydantic.Field(
+        default_factory=ProfileFieldSelector,
+        validation_alias="profileFieldSelector",
+        serialization_alias="profileFieldSelector",
     )
 
     @pydantic.computed_field

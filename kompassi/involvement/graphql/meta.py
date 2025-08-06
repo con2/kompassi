@@ -5,6 +5,7 @@ from django.http import HttpRequest
 from graphene_django import DjangoObjectType
 
 from kompassi.access.cbac import graphql_check_instance, graphql_check_model
+from kompassi.core.models.person import Person
 from kompassi.core.utils.text_utils import normalize_whitespace
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
@@ -71,6 +72,31 @@ class InvolvementEventMetaType(DjangoObjectType):
         search=graphene.String(default_value=""),
         return_none=graphene.Boolean(default_value=False),
         description=normalize_whitespace(resolve_people.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_person(
+        meta: InvolvementEventMeta,
+        info,
+        id: int,
+    ):
+        request: HttpRequest = info.context
+
+        graphql_check_model(
+            Involvement,
+            meta.event.scope,
+            request,
+        )
+
+        try:
+            return meta.get_person(id)
+        except Person.DoesNotExist:
+            return None
+
+    person = graphene.Field(
+        ProfileWithInvolvementType,
+        id=graphene.Int(required=True),
+        description=normalize_whitespace(resolve_person.__doc__ or ""),
     )
 
     @staticmethod

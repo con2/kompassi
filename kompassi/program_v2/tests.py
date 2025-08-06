@@ -5,20 +5,20 @@ from django.db import transaction
 
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
 from kompassi.core.models.person import Person
+from kompassi.dimensions.models.annotation import Annotation
 from kompassi.dimensions.models.enums import DimensionApp
+from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 from kompassi.forms.models.enums import SurveyPurpose
 from kompassi.forms.models.form import Form
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
 from kompassi.involvement.models.involvement import Involvement
 
+from ..forms.utils.extract_annotations import extract_annotations_from_responses
 from .filters import ProgramFilters
-from .models.annotation import Annotation
-from .models.event_annotation import EventAnnotation
 from .models.meta import ProgramV2EventMeta
 from .models.program import Program
 from .models.schedule_item import ScheduleItem
-from .utils.extract_annotations import extract_annotations_from_responses
 
 
 @pytest.mark.django_db
@@ -171,12 +171,10 @@ def test_program_hosts():
 
 @pytest.mark.django_db
 def test_extract_annotations():
-    Annotation.ensure()
+    meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
 
     with transaction.atomic():
-        meta, _ = ProgramV2EventMeta.get_or_create_dummy()
-        event = meta.event
-
         person, _ = Person.get_or_create_dummy()
         person2, _ = Person.get_or_create_dummy(another=True, superuser=False)
 
@@ -265,11 +263,12 @@ def test_extract_annotations():
     with transaction.atomic():
         offer_program.workflow.handle_new_response_phase2(program_offer)
 
-    ea, created = EventAnnotation.objects.update_or_create(
-        meta=meta,
+    ea, created = UniverseAnnotation.objects.update_or_create(
+        universe=meta.universe,
         annotation=Annotation.objects.get(slug="konsti:maxAttendance"),
         defaults=dict(
-            program_form_fields=[
+            is_active=True,
+            form_fields=[
                 "this_field_does_not_exist",
                 "max_participants",
                 "also_this_field_does_not_exist",
@@ -278,11 +277,12 @@ def test_extract_annotations():
     )
     assert not created
 
-    ea2, created = EventAnnotation.objects.update_or_create(
-        meta=meta,
+    ea2, created = UniverseAnnotation.objects.update_or_create(
+        universe=meta.universe,
         annotation=Annotation.objects.get(slug="ropecon:isRevolvingDoor"),
         defaults=dict(
-            program_form_fields=[
+            is_active=True,
+            form_fields=[
                 "this_field_does_not_exist",
                 "is_revolving_door",
                 "also_this_field_does_not_exist",
@@ -355,7 +355,7 @@ def test_extract_annotations():
     # isolated test: our test annotation is extracted from responses as expected
     actual_annotations2 = extract_annotations_from_responses(
         responses=[program_offer2, accept_invitation_response],
-        event_annotations=[ea, ea2],
+        universe_annotations=[ea, ea2],
     )
     assert actual_annotations2 == expected_annotations2
 

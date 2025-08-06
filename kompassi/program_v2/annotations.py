@@ -1,71 +1,8 @@
-from __future__ import annotations
-
-from typing import Any
-
-from pydantic import BaseModel, Field
-
 from kompassi.core.utils.text_utils import normalize_whitespace
+from kompassi.dimensions.models.annotation_dto import AnnotationDTO
+from kompassi.dimensions.models.enums import AnnotationDataType
 
-from .annotation import Annotation
-from .enums import AnnotationDataType
-
-
-class AnnotationDTO(BaseModel, populate_by_name=True):
-    """
-    Legacy model from when Annotation schemas used to live in the code only.
-    Now they have been migrated to the database, and this model is only used to
-    bootstrap them.
-
-    For everything else, use the `Annotation` model.
-    """
-
-    slug: str
-    title: dict[str, str]
-    description: dict[str, str] = Field(default_factory=dict)
-    type: AnnotationDataType = Field(default=AnnotationDataType.STRING)
-
-    is_applicable_to_program_items: bool = True
-    is_applicable_to_schedule_items: bool = False
-
-    is_public: bool = True
-    is_shown_in_detail: bool = True
-    is_computed: bool = False
-
-    def to_django(self) -> Annotation:
-        return Annotation(
-            slug=self.slug,
-            title=self.title,
-            description=self.description,
-            type_slug=self.type.value,
-            is_applicable_to_program_items=self.is_applicable_to_program_items,
-            is_applicable_to_schedule_items=self.is_applicable_to_schedule_items,
-            is_public=self.is_public,
-            is_shown_in_detail=self.is_shown_in_detail,
-            is_computed=self.is_computed,
-        )
-
-    def save(self) -> Annotation:
-        return self.save_many([self])[0]
-
-    @classmethod
-    def save_many(cls, annotations: list[AnnotationDTO]) -> list[Annotation]:
-        update_fields = set(cls.model_fields.keys()) - {"slug", "type"}
-        update_fields |= {"type_slug"}
-
-        return Annotation.objects.bulk_create(
-            [dto.to_django() for dto in annotations],
-            unique_fields=["slug"],
-            update_fields=update_fields,
-            update_conflicts=True,
-        )
-
-
-class ProgramAnnotation(BaseModel):
-    annotation: AnnotationDTO
-    value: Any
-
-
-ANNOTATIONS = [
+PROGRAM_ANNOTATIONS = [
     AnnotationDTO(
         slug="ropecon:gameSlogan",
         title=dict(

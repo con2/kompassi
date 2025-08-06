@@ -12,18 +12,17 @@ from kompassi.core.models.event import Event
 from kompassi.core.models.event_meta_base import EventMetaBase
 from kompassi.core.models.person import Person
 from kompassi.dimensions.filters import DimensionFilters
+from kompassi.dimensions.models.annotation import Annotation
 from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.dimensions.models.scope import Scope
 from kompassi.dimensions.models.universe import Universe
+from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 from kompassi.forms.models.enums import SurveyPurpose
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
 from kompassi.involvement.models.involvement import Involvement
 from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
-
-from .annotation import Annotation
-from .event_annotation import EventAnnotation
 
 
 class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
@@ -65,25 +64,18 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     use_cbac = True
 
     event: models.ForeignKey[Event]
-    all_event_annotations: models.QuerySet[EventAnnotation]
 
     def __str__(self):
         return str(self.event)
 
     @property
     def annotations(self) -> models.QuerySet[Annotation]:
-        annotation_ids = self.active_event_annotations.values_list("annotation_id", flat=True)
-        return Annotation.objects.filter(id__in=annotation_ids)
-
-    @property
-    def active_event_annotations(self) -> models.QuerySet[EventAnnotation]:
-        return self.all_event_annotations.filter(is_active=True)
+        return self.universe.annotations
 
     @property
     def annotations_with_fallback(self) -> models.QuerySet[Annotation]:
-        if self.all_event_annotations.exists():
-            annotation_ids = self.active_event_annotations.all().values_list("annotation_id", flat=True)
-            queryset = Annotation.objects.filter(id__in=annotation_ids)
+        if self.universe.all_universe_annotations.exists():
+            return self.universe.annotations
         else:
             # Legacy event without event annotations
             # TODO Backfill them and remove this
@@ -226,7 +218,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         Idempotent way to ensure all required structures are set up for this event.
         """
         InvolvementEventMeta.ensure(self.event)
-        EventAnnotation.ensure(self)
+        UniverseAnnotation.ensure(self.universe)
 
 
 @dataclass

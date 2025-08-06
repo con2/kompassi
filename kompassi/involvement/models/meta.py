@@ -116,3 +116,15 @@ class InvolvementEventMeta(models.Model):
             Profile.from_person_involvements(person, list(person_involvements))
             for person, person_involvements in groupby(involvements, key=lambda inv: inv.person)
         ]
+
+    def get_person(self, person_id: int) -> Profile:
+        from kompassi.core.models.person import Person
+
+        person = Person.objects.get(id=person_id)
+        involvements = (
+            self.event.involvements.filter(person=person)
+            .select_related("program", "response")
+            .order_by("-is_active", "type", "id")
+        )
+
+        return Profile.from_person_involvements(person, list(involvements))

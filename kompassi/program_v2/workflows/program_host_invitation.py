@@ -3,7 +3,7 @@ from kompassi.forms.models.response import Response
 from kompassi.forms.models.workflow import Workflow
 from kompassi.involvement.models.involvement import Involvement
 
-from ..utils.extract_annotations import extract_annotations_from_responses
+from ...forms.utils.extract_annotations import extract_annotations_from_responses
 
 
 class ProgramHostInvitationWorkflow(Workflow):
@@ -50,7 +50,7 @@ class ProgramHostInvitationWorkflow(Workflow):
         program.refresh_annotations(
             extract_annotations_from_responses(
                 program.responses.all(),
-                program.meta.active_event_annotations.all(),
+                program.universe.active_universe_annotations.all(),
             )
         )
         program.refresh_dependents()

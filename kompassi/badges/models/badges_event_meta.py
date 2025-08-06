@@ -46,25 +46,12 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
 
     @property
     def emperkelator(self):
-        from ..emperkelators.desucon2025 import DesumPerkelator
+        """
+        Deprecated. Use Involvement instead.
+        """
         from ..emperkelators.noop import NoopEmperkelator
-        from ..emperkelators.simple import SimpleEmperkelator
-        from ..emperkelators.tracon2024 import TraconEmperkelator
-        from ..emperkelators.tracon2025 import Tracon2025Emperkelator
 
-        match self.emperkelator_name:
-            case "noop":
-                return NoopEmperkelator
-            case "simple":
-                return SimpleEmperkelator
-            case "tracon2024":
-                return TraconEmperkelator
-            case "tracon2025":
-                return Tracon2025Emperkelator
-            case "desucon2025":
-                return DesumPerkelator
-            case _:
-                raise NotImplementedError(f"Unknown emperkelator: {self.emperkelator_name}")
+        return NoopEmperkelator
 
     @classmethod
     def get_or_create_dummy(

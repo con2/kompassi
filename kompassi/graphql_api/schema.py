@@ -9,6 +9,7 @@ from kompassi.dimensions.graphql.mutations.delete_dimension import DeleteDimensi
 from kompassi.dimensions.graphql.mutations.delete_dimension_value import DeleteDimensionValue
 from kompassi.dimensions.graphql.mutations.put_dimension import PutDimension
 from kompassi.dimensions.graphql.mutations.put_dimension_value import PutDimensionValue
+from kompassi.dimensions.graphql.mutations.put_universe_annotation import PutUniverseAnnotation
 from kompassi.forms.graphql.mutations.create_survey import CreateSurvey
 from kompassi.forms.graphql.mutations.create_survey_language import CreateSurveyLanguage
 from kompassi.forms.graphql.mutations.create_survey_response import CreateSurveyResponse
@@ -46,7 +47,6 @@ from kompassi.program_v2.graphql.mutations.favorites import (
 )
 from kompassi.program_v2.graphql.mutations.feedback import CreateProgramFeedback
 from kompassi.program_v2.graphql.mutations.invite_program_host import InviteProgramHost
-from kompassi.program_v2.graphql.mutations.put_event_annotation import PutEventAnnotation
 from kompassi.program_v2.graphql.mutations.put_schedule_item import PutScheduleItem
 from kompassi.program_v2.graphql.mutations.restore_program import RestoreProgram
 from kompassi.program_v2.graphql.mutations.update_program import UpdateProgram
@@ -151,6 +151,8 @@ class Mutation(graphene.ObjectType):
     put_dimension_value = PutDimensionValue.Field()
     delete_dimension_value = DeleteDimensionValue.Field()
 
+    put_universe_annotation = PutUniverseAnnotation.Field()
+
     # Involvement
     accept_invitation = AcceptInvitation.Field()
     delete_invitation = DeleteInvitation.Field()
@@ -187,8 +189,6 @@ class Mutation(graphene.ObjectType):
 
     put_schedule_item = PutScheduleItem.Field()
     delete_schedule_item = DeleteScheduleItem.Field()
-
-    put_event_annotation = PutEventAnnotation.Field()
 
     # Tickets v2
     create_product = CreateProduct.Field()

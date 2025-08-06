@@ -12,16 +12,15 @@ from typing import TYPE_CHECKING, Self
 
 import pydantic
 
+from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
-from kompassi.labour.models.signup import Signup
-from kompassi.program_v2.models.cached_annotations import CachedAnnotations
 
 from ..models.enums import InvolvementType
 from .base import BaseEmperkelator
 
 if TYPE_CHECKING:
-    from kompassi.involvement.models.involvement import Involvement
+    from ..models.involvement import Involvement
 
 
 THIRD_MEAL_MIN_HOURS = 12
@@ -135,43 +134,37 @@ class Perks(pydantic.BaseModel):
         return f"{self.ticket_type.title_fi}, {meals}, {swag}{extra_swag}"
 
     @classmethod
-    def for_legacy_signup(cls, signup: Signup) -> Perks:
-        personnel_class_slug = pc.slug if (pc := signup.personnel_class) else ""
-        match personnel_class_slug:
-            case "conitea":
-                return Perks(
-                    override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
-                )
-            case "duniitti":
-                perks = Perks(
-                    ticket_type=TicketType.SUPER_INTERNAL_BADGE,
-                    meals=2,
-                    swag=True,
-                )
-            case "vuorovastaava":
-                perks = Perks(
-                    ticket_type=TicketType.SUPER_INTERNAL_BADGE,
-                    meals=2,
-                    swag=True,
-                )
-            case "tyovoima":
-                perks = Perks(
-                    ticket_type=TicketType.INTERNAL_BADGE,
-                    meals=2,
-                    swag=True,
-                )
-            case _:
-                return Perks()
+    def for_legacy_signup(cls, involvement: Involvement) -> Perks:
+        personnel_classes = set(involvement.cached_dimensions.get("v1-personnel-class", []))
+        working_hours: int = involvement.annotations.get("kompassi:workingHours", 10)
+
+        if "coniitti" in personnel_classes:
+            return Perks(
+                override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
+            )
+        elif "duniitti" in personnel_classes or "vuorovastaava" in personnel_classes:
+            perks = Perks(
+                ticket_type=TicketType.SUPER_INTERNAL_BADGE,
+                meals=2,
+                swag=True,
+            )
+        elif "tyovoima" in personnel_classes:
+            perks = Perks(
+                ticket_type=TicketType.INTERNAL_BADGE,
+                meals=2,
+                swag=True,
+            )
+        else:
+            return Perks()
 
         # Grant extra perks based on working hours
         extra_meal_voucher = Perks(meals=1)
         extra_swag = Perks(extra_swag=True)
-        hours = signup.working_hours
-        if hours >= THIRD_MEAL_MIN_HOURS:
+        if working_hours >= THIRD_MEAL_MIN_HOURS:
             perks.imbibe(extra_meal_voucher)
-        if hours >= FOURTH_MEAL_MIN_HOURS:
+        if working_hours >= FOURTH_MEAL_MIN_HOURS:
             perks.imbibe(extra_meal_voucher)
-        if hours >= EXTRA_SWAG_MIN_HOURS:
+        if working_hours >= EXTRA_SWAG_MIN_HOURS:
             perks.imbibe(extra_swag)
 
         return perks
@@ -210,7 +203,7 @@ class Perks(pydantic.BaseModel):
     def for_involvement(cls, involvement: Involvement) -> Perks:
         match involvement.type:
             case InvolvementType.LEGACY_SIGNUP if involvement.signup:
-                return Perks.for_legacy_signup(involvement.signup)
+                return Perks.for_legacy_signup(involvement)
 
             case InvolvementType.PROGRAM_HOST:
                 return Perks.for_program_host(involvement)
@@ -247,7 +240,7 @@ class TraconEmperkelator(BaseEmperkelator):
             PROGRAM_HOST_ROLE_DIMENSION_DTO,
         ]
 
-    def get_dimensions(self) -> CachedDimensions:
+    def get_dimension_values(self) -> CachedDimensions:
         return {
             "ticket-type": [self.perks.ticket_type.value],
         }

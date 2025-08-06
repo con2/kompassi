@@ -6,7 +6,6 @@ This should be thought of an escape hatch and most admin functions provided in e
 from django import forms
 from django.contrib import admin
 
-from .models.annotation import Annotation
 from .models.meta import ProgramV2EventMeta
 from .models.program import Program
 from .models.schedule_item import ScheduleItem
@@ -48,8 +47,3 @@ class ProgramV2EventMetaForm(forms.ModelForm):
 class InlineProgramV2EventMetaAdmin(admin.StackedInline):
     model = ProgramV2EventMeta
     form = ProgramV2EventMetaForm
-
-
-@admin.register(Annotation)
-class AnnotationAdmin(admin.ModelAdmin):
-    model = Annotation
