@@ -12,6 +12,7 @@ from ..models.involvement import Involvement
 
 class BaseEmperkelator:
     universe: Universe
+    person: Person
     existing_combined_perks: Involvement | None
     involvements: list[Involvement]
 
@@ -31,6 +32,7 @@ class BaseEmperkelator:
         existing_combined_perks: Involvement | None = None,
     ):
         self.universe = universe
+        self.person = person
         self.involvements = involvements
         self.existing_combined_perks = existing_combined_perks
 
