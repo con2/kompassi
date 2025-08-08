@@ -3,16 +3,16 @@ from datetime import timedelta
 from crispy_forms.layout import Fieldset, Layout
 from django import forms
 from django.utils.translation import gettext_lazy as _
-from zombies.hitpoint2017.forms import (
-    APPROXIMATE_LENGTH_HELP_TEXT,
-)
-from zombies.hitpoint2017.forms import (
-    DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT,
-)
 
 from kompassi.core.utils import horizontal_form_helper, indented_without_label
 from kompassi.labour.forms import AlternativeFormMixin
 from kompassi.labour.models import JobCategory, Signup
+from kompassi.zombies.hitpoint2017.forms import (
+    APPROXIMATE_LENGTH_HELP_TEXT,
+)
+from kompassi.zombies.hitpoint2017.forms import (
+    DESCRIPTION_HELP_TEXT as RPG_DESCRIPTION_HELP_TEXT,
+)
 from kompassi.zombies.programme.models import AlternativeProgrammeFormMixin, Category, Programme
 
 from .models import SignupExtra
