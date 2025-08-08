@@ -13,6 +13,7 @@ from kompassi.dimensions.graphql.annotation import AnnotationType
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
 from kompassi.dimensions.graphql.universe_annotation_limited import LimitedUniverseAnnotationType
+from kompassi.dimensions.models.enums import AnnotationFlags
 from kompassi.forms.graphql.response_full import FullResponseType
 from kompassi.forms.graphql.response_profile import ProfileResponseType
 from kompassi.forms.models.response import Response
@@ -118,7 +119,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         queryset = meta.annotations_with_fallback.all()
 
         if public_only:
-            queryset = queryset.filter(is_public=True)
+            queryset = queryset.filter(flags__has_all=AnnotationFlags.PUBLIC)
 
         if slug is not None:
             queryset = queryset.filter(slug__in=slug)

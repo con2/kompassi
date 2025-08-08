@@ -1,7 +1,7 @@
 import graphene
 from graphene_django import DjangoObjectType
 
-from kompassi.graphql_api.utils import resolve_localized_field
+from kompassi.graphql_api.utils import resolve_localized_field_getattr
 
 from ..models.annotation import Annotation
 from ..models.enums import AnnotationDataType
@@ -16,10 +16,10 @@ class AnnotationType(DjangoObjectType):
 
     type = graphene.NonNull(AnnotationDataTypeType)
 
-    resolve_title = resolve_localized_field("title")
+    resolve_title = resolve_localized_field_getattr("title")
     title = graphene.NonNull(graphene.String, lang=graphene.String())
 
-    resolve_description = resolve_localized_field("description")
+    resolve_description = resolve_localized_field_getattr("description")
     description = graphene.NonNull(graphene.String, lang=graphene.String())
 
     is_internal = graphene.NonNull(graphene.Boolean)

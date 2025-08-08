@@ -13,6 +13,7 @@ from kompassi.core.models.event_meta_base import EventMetaBase
 from kompassi.core.models.person import Person
 from kompassi.dimensions.filters import DimensionFilters
 from kompassi.dimensions.models.annotation import Annotation
+from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.dimensions.models.scope import Scope
 from kompassi.dimensions.models.universe import Universe
@@ -23,6 +24,7 @@ from kompassi.forms.models.survey import Survey
 from kompassi.involvement.models.involvement import Involvement
 from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
+from kompassi.program_v2.annotations import PROGRAM_ANNOTATIONS
 
 
 class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
@@ -89,6 +91,8 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
 
     @classmethod
     def get_or_create_dummy(cls):
+        AnnotationDTO.save_many(PROGRAM_ANNOTATIONS)
+
         event, _ = Event.get_or_create_dummy()
 
         meta, created = cls.objects.get_or_create(
