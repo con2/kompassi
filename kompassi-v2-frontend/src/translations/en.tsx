@@ -2026,7 +2026,7 @@ const translations = {
       isShownInDetail: {
         title: "Shown in program guide",
       },
-      programFormFields: {
+      formFields: {
         title: "Program form fields",
         description: (
           <>

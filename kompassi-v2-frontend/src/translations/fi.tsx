@@ -1974,7 +1974,7 @@ const translations: Translations = {
       isInternal: {
         title: "Sisäinen",
       },
-      programFormFields: {
+      formFields: {
         title: "Lähdekentät ohjelmalomakkeilla",
         description: (
           <>

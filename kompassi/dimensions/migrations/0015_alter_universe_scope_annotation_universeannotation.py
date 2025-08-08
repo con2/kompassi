@@ -42,7 +42,6 @@ def populate_annotations(apps, schema_editor):
     )
 
     program_universes_by_event_slug = {univ.scope.slug: univ for univ in Universe.objects.filter(slug="program")}
-    print(program_universes_by_event_slug)
     annotations_by_slug = {ann.slug: ann for ann in Annotation.objects.all()}
 
     UniverseAnnotation.objects.bulk_create(
