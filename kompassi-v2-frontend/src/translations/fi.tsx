@@ -27,6 +27,7 @@ const translations: Translations = {
     },
   },
   Profile: {
+    singleTitle: "Profiili",
     attributes: {
       displayName: "Nimi",
       firstName: "Etunimi",
@@ -1973,7 +1974,7 @@ const translations: Translations = {
       isInternal: {
         title: "Sisäinen",
       },
-      programFormFields: {
+      formFields: {
         title: "Lähdekentät ohjelmalomakkeilla",
         description: (
           <>
@@ -2640,6 +2641,16 @@ const translations: Translations = {
           active: "Aktiivinen",
           inactive: "Ei aktiivinen",
         },
+      },
+      combinedPerks: {
+        title: "Yhdistetyt edut",
+        message: (
+          <>
+            Henkilö voi saada etuja useista lähteistä. Tässä näet
+            automaattisesti yhdistetyt edut. Voit myös yliajaa automaattisesti
+            yhdistetyt edut valitsemillasi.
+          </>
+        ),
       },
     },
     messages: {},

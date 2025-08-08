@@ -29,48 +29,8 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         related_name="as_onboarding_access_group_for",
     )
 
-    emperkelator_name = models.CharField(
-        max_length=63,
-        default="noop",
-        verbose_name=_("Emperkelator"),
-        choices=[
-            ("noop", "Noop (no perks)"),
-            ("simple", "Simple (perks from personnel class)"),
-            ("tracon2024", "Tracon (2024)"),
-            ("desucon2025", "Desucon (2025)"),
-        ],
-        help_text=_(
-            "The emperkelator defines the perks of a volunteer in the event based on their involvement with the event."
-        ),
-    )
-
-    @property
-    def emperkelator(self):
-        from ..emperkelators.desucon2025 import DesumPerkelator
-        from ..emperkelators.noop import NoopEmperkelator
-        from ..emperkelators.simple import SimpleEmperkelator
-        from ..emperkelators.tracon2024 import TraconEmperkelator
-        from ..emperkelators.tracon2025 import Tracon2025Emperkelator
-
-        match self.emperkelator_name:
-            case "noop":
-                return NoopEmperkelator
-            case "simple":
-                return SimpleEmperkelator
-            case "tracon2024":
-                return TraconEmperkelator
-            case "tracon2025":
-                return Tracon2025Emperkelator
-            case "desucon2025":
-                return DesumPerkelator
-            case _:
-                raise NotImplementedError(f"Unknown emperkelator: {self.emperkelator_name}")
-
     @classmethod
-    def get_or_create_dummy(
-        cls,
-        emperkelator_name: str = "noop",
-    ):
+    def get_or_create_dummy(cls):
         from kompassi.core.models import Event
 
         event, unused = Event.get_or_create_dummy()
@@ -79,7 +39,6 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
             event=event,
             defaults=dict(
                 admin_group=group,
-                emperkelator_name=emperkelator_name,
             ),
         )
 

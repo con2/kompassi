@@ -1,7 +1,9 @@
 from django.core.management.base import BaseCommand
 
+from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.scope import Scope
 
+from ...emperkelators.tracon2025 import TraconEmperkelator
 from ...models.registry import Registry
 
 
@@ -19,3 +21,5 @@ class Command(BaseCommand):
                 policy_url_fi="https://ry.tracon.fi/tietosuoja/rekisteriselosteet/kompassi",
             ),
         )
+
+        AnnotationDTO.save_many(TraconEmperkelator.get_annotation_dtos())

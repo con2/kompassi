@@ -1,5 +1,6 @@
 from django.contrib import admin
 
+from .models.annotation import Annotation
 from .models.dimension import Dimension
 from .models.dimension_value import DimensionValue
 from .models.scope import Scope
@@ -31,3 +32,8 @@ class UniverseAdmin(admin.ModelAdmin):
     model = Universe
     list_display = ("slug", "scope", "app_name")
     list_filter = ("scope", "app_name")
+
+
+@admin.register(Annotation)
+class AnnotationAdmin(admin.ModelAdmin):
+    model = Annotation

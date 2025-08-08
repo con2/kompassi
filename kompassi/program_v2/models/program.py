@@ -17,6 +17,12 @@ from django.utils.timezone import now
 from kompassi.access.cbac import is_graphql_allowed_for_model
 from kompassi.core.models import Event
 from kompassi.core.utils.model_utils import slugify, validate_slug
+from kompassi.dimensions.models.cached_annotations import (
+    CachedAnnotations,
+    CachedAnnotationsUpdate,
+    compact_annotations,
+    validate_annotations,
+)
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions, validate_cached_dimensions
 from kompassi.dimensions.models.scope import Scope
 from kompassi.dimensions.utils.build_cached_dimensions import build_cached_dimensions
@@ -24,15 +30,14 @@ from kompassi.dimensions.utils.dimension_cache import DimensionCache
 from kompassi.dimensions.utils.set_dimension_values import set_dimension_values
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
+from kompassi.forms.utils.extract_annotations import extract_annotations_from_responses
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.involvement.models.enums import InvolvementType
 from kompassi.involvement.models.invitation import Invitation
 from kompassi.involvement.models.involvement import Involvement
-from kompassi.program_v2.utils.extract_annotations import extract_annotations_from_responses
 
 from ..dimensions import get_scheduled_dimension_value
 from ..integrations.konsti import get_konsti_signup_url
-from .cached_annotations import CachedAnnotations, CachedAnnotationsUpdate, compact_annotations, validate_annotations
 
 if TYPE_CHECKING:
     from dimensions.models.universe import Universe
@@ -378,7 +383,7 @@ class Program(models.Model):
 
         annotations = extract_annotations_from_responses(
             [program_offer],
-            meta.active_event_annotations.all(),
+            meta.universe.active_universe_annotations.all(),
         )
 
         program = cls(

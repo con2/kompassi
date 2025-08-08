@@ -13,7 +13,6 @@ from django.utils.timezone import now
 from kompassi.access.models import GroupEmailAliasGrant, GroupPrivilege, Privilege
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
 from kompassi.access.models.email_alias_type import EmailAliasVariant
-from kompassi.badges.emperkelators.tracon2024 import TicketType, TraconEmperkelator
 from kompassi.badges.models.badges_event_meta import BadgesEventMeta
 from kompassi.badges.models.survey_to_badge import SurveyToBadgeMapping
 from kompassi.core.models.event import Event
@@ -136,39 +135,31 @@ class Setup:
                 "Coniitti",
                 "coniitti",
                 "labour",
-                TraconEmperkelator(
-                    override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
-                ),
             ),
             (
                 "Duniitti",
                 "duniitti",
                 "labour",
-                TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
             ),
             (
                 "Vuorovastaava",
                 "vuorovastaava",
                 "labour",
-                TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
             ),
             (
                 "Työvoima",
                 "tyovoima",
                 "labour",
-                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=2, swag=True),
             ),
             (
                 "Ohjelma",
                 "ohjelma",
                 "program_v2",
-                TraconEmperkelator(),  # handled in programme.Role
             ),
             (
                 "Guest of Honour",
                 "goh",
                 "programme",
-                "GoH-tiimi hoitaa (ei jaeta ovelta)",
             ),
             ("Media", "media", "badges", "Badge (external)"),
             ("Myyjä", "myyja", "badges", "Myyjäranneke"),
@@ -184,16 +175,9 @@ class Setup:
             ("Yhdistyspöydät", "yhdistyspoydat", "tickets", "?"),
         ]:
             if len(pc_data) == 4:
-                pc_name, pc_slug, pc_app_label, pc_perks = pc_data
-                perks = (
-                    pc_perks
-                    if isinstance(pc_perks, TraconEmperkelator)
-                    else TraconEmperkelator(override_formatted_perks=pc_perks)
-                )
-
+                pc_name, pc_slug, pc_app_label, _pc_perks = pc_data
             else:
                 pc_name, pc_slug, pc_app_label = pc_data
-                perks = TraconEmperkelator()
 
             PersonnelClass.objects.update_or_create(
                 event=self.event,
@@ -202,7 +186,6 @@ class Setup:
                     name=pc_name,
                     app_label=pc_app_label,
                     priority=self.get_ordering_number(),
-                    perks=perks.model_dump(),
                 ),
             )
 
@@ -319,7 +302,6 @@ class Setup:
             defaults=dict(
                 admin_group=badge_admin_group,
                 real_name_must_be_visible=True,
-                emperkelator_name="tracon2025",
             ),
         )
 

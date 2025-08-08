@@ -3,6 +3,7 @@ import graphene
 from kompassi.core.utils.text_utils import normalize_whitespace
 
 from ..models.profile import Profile
+from .profile_field_selector import ProfileFieldSelectorType
 
 
 class SelectedProfileType(graphene.ObjectType):
@@ -11,6 +12,7 @@ class SelectedProfileType(graphene.ObjectType):
     NOTE: Must match Profile in frontend/src/components/involvement/models.ts.
     """
 
+    id = graphene.NonNull(graphene.Int)
     first_name = graphene.NonNull(graphene.String)
     last_name = graphene.NonNull(graphene.String)
     nick = graphene.NonNull(graphene.String)
@@ -27,3 +29,5 @@ class SelectedProfileType(graphene.ObjectType):
         graphene.String,
         description=normalize_whitespace(Profile.full_name.__doc__ or ""),
     )
+
+    profile_field_selector = graphene.NonNull(ProfileFieldSelectorType)

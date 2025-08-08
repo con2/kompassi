@@ -8,6 +8,7 @@ import { buildDimensionField } from "@/components/dimensions/DimensionValueSelec
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import type { Translations } from "@/translations/en";
+import { isValidSlug } from "@/services/tickets";
 
 interface Props {
   event: {
@@ -24,6 +25,10 @@ export function buildScheduleItemForm(
   roomDimension: DimensionValueSelectFragment | "pass-through" | "omit",
   translations?: Translations,
 ) {
+  if (!isValidSlug(eventSlug)) {
+    throw new Error("Invalid event slug");
+  }
+
   const t = translations?.Program.ScheduleItem;
 
   const DimensionsLink = ({ children }: { children: ReactNode }) => (

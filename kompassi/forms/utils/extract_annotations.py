@@ -1,27 +1,27 @@
 import logging
 from collections.abc import Iterable
 
-from kompassi.forms.models.response import Response
-from kompassi.program_v2.models.annotation import Annotation
-from kompassi.program_v2.models.event_annotation import EventAnnotation
+from kompassi.dimensions.models.annotation import Annotation
+from kompassi.dimensions.models.cached_annotations import CachedAnnotations
+from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 
-from ..models.cached_annotations import CachedAnnotations
+from ..models.response import Response
 
 logger = logging.getLogger(__name__)
 
 
 def extract_annotations_from_responses(
     responses: Iterable[Response],
-    event_annotations: Iterable[EventAnnotation],
+    universe_annotations: Iterable[UniverseAnnotation],
 ) -> CachedAnnotations:
     schema: list[Annotation] = []
     field_mapping: dict[str, list[str]] = {}
     interesting_fields: set[str] = set()
 
-    for ea in event_annotations:
+    for ea in universe_annotations:
         schema.append(ea.annotation)
-        field_mapping[ea.annotation.slug] = ea.program_form_fields
-        interesting_fields.update(ea.program_form_fields)
+        field_mapping[ea.annotation.slug] = ea.form_fields
+        interesting_fields.update(ea.form_fields)
 
     result: CachedAnnotations = {}
 

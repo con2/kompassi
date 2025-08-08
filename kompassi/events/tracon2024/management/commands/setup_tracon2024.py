@@ -59,7 +59,6 @@ class Setup:
     def setup_labour(self):
         from django.contrib.contenttypes.models import ContentType
 
-        from kompassi.badges.emperkelators.tracon2024 import TicketType, TraconEmperkelator
         from kompassi.core.models import Event, Person
         from kompassi.labour.models import (
             AlternativeSignupForm,
@@ -115,33 +114,31 @@ class Setup:
                 "Coniitti",
                 "coniitti",
                 "labour",
-                TraconEmperkelator(
-                    override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
-                ),
+                # TraconEmperkelator(override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi"),
             ),
             (
                 "Duniitti",
                 "duniitti",
                 "labour",
-                TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
+                # TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
             ),
             (
                 "Vuorovastaava",
                 "vuorovastaava",
                 "labour",
-                TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
+                # TraconEmperkelator(ticket_type=TicketType.SUPER_INTERNAL_BADGE, meals=2, swag=True),
             ),
             (
                 "Työvoima",
                 "tyovoima",
                 "labour",
-                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=2, swag=True),
+                # TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=2, swag=True),
             ),
             (
                 "Ohjelma",
                 "ohjelma",
                 "programme",
-                TraconEmperkelator(),  # handled in programme.Role
+                # TraconEmperkelator(),  # handled in programme.Role
             ),
             (
                 "Guest of Honour",
@@ -163,16 +160,15 @@ class Setup:
             ("Yhdistyspöydät", "yhdistyspoydat", "tickets", "?"),
         ]:
             if len(pc_data) == 4:
-                pc_name, pc_slug, pc_app_label, pc_perks = pc_data
-                perks = (
-                    pc_perks
-                    if isinstance(pc_perks, TraconEmperkelator)
-                    else TraconEmperkelator(override_formatted_perks=pc_perks)
-                )
+                pc_name, pc_slug, pc_app_label, _pc_perks = pc_data
+            #     perks = (
+            #         pc_perks
+            #         if isinstance(pc_perks, TraconEmperkelator)
+            #         else TraconEmperkelator(override_formatted_perks=pc_perks)
+            #     )
 
             else:
                 pc_name, pc_slug, pc_app_label = pc_data
-                perks = TraconEmperkelator()
 
             PersonnelClass.objects.update_or_create(
                 event=self.event,
@@ -181,7 +177,7 @@ class Setup:
                     name=pc_name,
                     app_label=pc_app_label,
                     priority=self.get_ordering_number(),
-                    perks=perks.model_dump(),
+                    # perks=perks.model_dump(),
                 ),
             )
 
@@ -300,7 +296,6 @@ class Setup:
             defaults=dict(
                 admin_group=badge_admin_group,
                 real_name_must_be_visible=True,
-                emperkelator_name="tracon2024",
             ),
         )
 
@@ -532,7 +527,6 @@ class Setup:
                 product.save()
 
     def setup_programme(self):
-        from kompassi.badges.emperkelators.tracon2024 import TicketType, TraconEmperkelator
         from kompassi.core.utils import full_hours_between
         from kompassi.labour.models import PersonnelClass
         from kompassi.zombies.programme.models import (
@@ -564,40 +558,40 @@ class Setup:
             programme_event_meta.accepting_cold_offers_until = now() + timedelta(days=60)
             programme_event_meta.save()
 
-        for pc_slug, role_title, role_is_default, perks in [
+        for pc_slug, role_title, role_is_default in [
             (
                 "ohjelma",
                 "Ohjelmanjärjestäjä",
                 True,
-                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=True),
+                # TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=True),
             ),
             (
                 "ohjelma",
                 "Esiintyjä",
                 False,
-                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=True),
+                # TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=True),
             ),
             (
                 "ohjelma",
                 "Keskustelunvetäjä",
                 False,
-                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=False),
+                # TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=False),
             ),
             (
                 "ohjelma",
                 "Työpajanvetäjä",
                 False,
-                TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=False),
+                # TraconEmperkelator(ticket_type=TicketType.INTERNAL_BADGE, meals=1, swag=False),
             ),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
-            perks_dict = perks.model_dump()
+            # perks_dict = perks.model_dump()
             Role.objects.update_or_create(
                 personnel_class=personnel_class,
                 title=role_title,
                 defaults=dict(
                     is_default=role_is_default,
-                    perks=perks_dict,
+                    # perks=perks_dict,
                 ),
             )
 
@@ -608,7 +602,7 @@ class Setup:
                     override_public_title=role_title,
                     is_default=False,
                     is_public=False,
-                    perks=perks_dict,
+                    # perks=perks_dict,
                 ),
             )
 

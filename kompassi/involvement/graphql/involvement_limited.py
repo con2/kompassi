@@ -40,3 +40,8 @@ class LimitedInvolvementType(graphene_django.DjangoObjectType):
 
     admin_link = graphene.String()
     cached_dimensions = graphene.NonNull(GenericScalar)
+    cached_annotations = graphene.NonNull(GenericScalar)
+
+    @staticmethod
+    def resolve_cached_annotations(parent: Involvement, info):
+        return parent.annotations or {}

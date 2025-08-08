@@ -21,6 +21,7 @@ class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=Tru
     For "all fields selected", use `ProfileFieldSelector.all_fields()`.
     """
 
+    id: bool = pydantic.Field(default=False)
     first_name: bool = pydantic.Field(
         default=False,
         validation_alias="firstName",
@@ -67,6 +68,7 @@ class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=Tru
             raise TypeError(f"Cannot __or__ ProfileFieldSelector with {type(other)}")
 
         return ProfileFieldSelector(
+            id=self.id or other.id,
             first_name=self.first_name or other.first_name,
             last_name=self.last_name or other.last_name,
             nick=self.nick or other.nick,
@@ -89,12 +91,14 @@ class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=Tru
         Returns a Profile with only the selected fields populated.
         """
         return dict(
+            id=person.id if self.id else None,
             first_name=person.first_name if self.first_name else "",
             last_name=person.surname if self.last_name else "",
             nick=person.nick if self.nick else "",
             email=person.email if self.email else "",
             phone_number=person.normalized_phone_number if self.phone_number else "",
             discord_handle=person.discord_handle if self.discord_handle else "",
+            profile_field_selector=self,
             name_display_style=NameDisplayStyle(person.preferred_name_display_style)
             if person.preferred_name_display_style
             else NameDisplayStyle.FIRSTNAME_NICK_LASTNAME,
@@ -103,6 +107,7 @@ class ProfileFieldSelector(pydantic.BaseModel, populate_by_name=True, frozen=Tru
     @classmethod
     def all_fields(cls) -> Self:
         return cls(
+            id=True,
             first_name=True,
             last_name=True,
             nick=True,

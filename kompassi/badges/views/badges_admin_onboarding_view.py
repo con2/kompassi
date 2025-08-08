@@ -56,7 +56,7 @@ def badges_admin_onboarding_view(request, event):
                 for badge in badges:
                     badge._signup_extra = signup_extras_by_person_id.get(badge.person_id)
 
-        is_perks_column_shown = meta.emperkelator_name != "noop"
+        is_perks_column_shown = True
 
         vars = dict(
             event=event,

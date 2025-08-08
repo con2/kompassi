@@ -2,14 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
-import { PutEventAnnotationAction } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { decodeBoolean } from "@/helpers/decodeBoolean";
+import { PutUniverseAnnotationAction } from "@/__generated__/graphql";
+
+const universeSlug = "program";
 
 const mutation = graphql(`
-  mutation PutEventAnnotation($input: PutEventAnnotationInput!) {
-    putEventAnnotation(input: $input) {
-      eventAnnotation {
+  mutation PutEventAnnotation($input: PutUniverseAnnotationInput!) {
+    putUniverseAnnotation(input: $input) {
+      universeAnnotation {
         annotation {
           slug
         }
@@ -24,26 +26,25 @@ export async function putEventAnnotation(
   formData: FormData,
 ) {
   const action =
-    formData.get("action") === PutEventAnnotationAction.SaveAndRefresh
-      ? PutEventAnnotationAction.SaveAndRefresh
-      : PutEventAnnotationAction.SaveWithoutRefresh;
+    formData.get("action") === PutUniverseAnnotationAction.SaveAndRefresh
+      ? PutUniverseAnnotationAction.SaveAndRefresh
+      : PutUniverseAnnotationAction.SaveWithoutRefresh;
 
   const isActive = annotationSlug.startsWith("internal:")
     ? true
     : decodeBoolean((formData.get("isActive") as string | null) || "false");
 
-  const programFormFields = (
-    (formData.get("programFormFields") as string | null) || ""
-  )
+  const formFields = ((formData.get("formFields") as string | null) || "")
     .split("\n")
     .map((field) => field.trim())
     .filter(Boolean);
 
   const input = {
-    eventSlug,
+    scopeSlug: eventSlug,
+    universeSlug,
     annotationSlug,
     isActive,
-    programFormFields,
+    formFields,
     action,
   };
 

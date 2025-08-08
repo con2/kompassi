@@ -5,9 +5,12 @@ from django.http import HttpRequest
 from graphene_django import DjangoObjectType
 
 from kompassi.access.cbac import graphql_check_instance, graphql_check_model
+from kompassi.core.models.person import Person
 from kompassi.core.utils.text_utils import normalize_whitespace
+from kompassi.dimensions.graphql.annotation import AnnotationType
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
+from kompassi.dimensions.models.enums import AnnotationFlags
 from kompassi.involvement.filters import InvolvementFilters
 
 from ..models.involvement import Involvement
@@ -74,6 +77,31 @@ class InvolvementEventMetaType(DjangoObjectType):
     )
 
     @staticmethod
+    def resolve_person(
+        meta: InvolvementEventMeta,
+        info,
+        id: int,
+    ):
+        request: HttpRequest = info.context
+
+        graphql_check_model(
+            Involvement,
+            meta.event.scope,
+            request,
+        )
+
+        try:
+            return meta.get_person(id)
+        except Person.DoesNotExist:
+            return None
+
+    person = graphene.Field(
+        ProfileWithInvolvementType,
+        id=graphene.Int(required=True),
+        description=normalize_whitespace(resolve_person.__doc__ or ""),
+    )
+
+    @staticmethod
     def resolve_dimensions(
         meta: InvolvementEventMeta,
         info,
@@ -117,4 +145,33 @@ class InvolvementEventMetaType(DjangoObjectType):
         public_only=graphene.Boolean(),
         key_dimensions_only=graphene.Boolean(),
         description=normalize_whitespace(resolve_dimensions.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_annotations(
+        meta: InvolvementEventMeta,
+        info,
+        public_only: bool = True,
+        perks_only: bool = False,
+    ):
+        request: HttpRequest = info.context
+
+        graphql_check_model(
+            Involvement,
+            meta.event.scope,
+            request,
+        )
+
+        return meta.universe.annotations.filter(
+            flags__has_all=AnnotationFlags.from_kwargs(
+                is_public=public_only,
+                is_perk=perks_only,
+            ),
+        )
+
+    annotations = graphene.NonNull(
+        graphene.List(graphene.NonNull(AnnotationType)),
+        public_only=graphene.Boolean(default_value=True),
+        perks_only=graphene.Boolean(default_value=False),
+        description=normalize_whitespace(resolve_annotations.__doc__ or ""),
     )

@@ -8,7 +8,7 @@ import { putEventAnnotation } from "./actions";
 import { graphql } from "@/__generated__";
 import {
   ProgramAdminEventAnnotationFragment,
-  PutEventAnnotationAction,
+  PutUniverseAnnotationAction,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -24,7 +24,7 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 graphql(`
-  fragment ProgramAdminEventAnnotation on EventAnnotationType {
+  fragment ProgramAdminEventAnnotation on LimitedUniverseAnnotationType {
     annotation {
       slug
       title(lang: $locale)
@@ -38,7 +38,7 @@ graphql(`
       isApplicableToScheduleItems
     }
     isActive
-    programFormFields
+    formFields
   }
 `);
 
@@ -161,6 +161,7 @@ export default async function ProgramAdminAnnotationsPage(props: Props) {
       className: "col-6 py-3",
       getCellContents: (row) => {
         const slug = mangleAnnotationSlug(row.annotation.slug);
+        const formFields = row.formFields as string[];
         const fields: Field[] = [
           {
             slug: "isActive",
@@ -169,15 +170,15 @@ export default async function ProgramAdminAnnotationsPage(props: Props) {
             readOnly: row.annotation.slug.startsWith("internal:"),
           },
           {
-            slug: "programFormFields",
+            slug: "formFields",
             type: "MultiLineText",
             rows: 5,
-            title: t.attributes.programFormFields.title,
+            title: t.attributes.formFields.title,
           },
         ];
         const values = {
           ...row,
-          programFormFields: row.programFormFields?.join("\n") || "",
+          formFields: formFields.join("\n") || "",
         };
         return (
           <form
@@ -202,7 +203,7 @@ export default async function ProgramAdminAnnotationsPage(props: Props) {
             <SubmitButton
               className="mt-1 ms-2 btn btn-sm btn-warning"
               name="action"
-              value={PutEventAnnotationAction.SaveAndRefresh}
+              value={PutUniverseAnnotationAction.SaveAndRefresh}
               confirmationMessage={
                 t.eventAnnotationsAdmin.actions.saveAndRefresh
                   .confirmationMessage
@@ -232,8 +233,8 @@ export default async function ProgramAdminAnnotationsPage(props: Props) {
             {t.attributes.isActive.description}
           </p>
           <p>
-            <em>{t.attributes.programFormFields.title}:</em>{" "}
-            {t.attributes.programFormFields.description}
+            <em>{t.attributes.formFields.title}:</em>{" "}
+            {t.attributes.formFields.description}
           </p>
           <p>
             <em>{t.eventAnnotationsAdmin.actions.saveWithoutRefresh.title}:</em>{" "}

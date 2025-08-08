@@ -24,7 +24,14 @@ def get_kind_and_scope(line_lower: str) -> tuple[str, str]:
         return "", ""
 
 
-keywords = ["excise", "regression", "fix test", "wow"]  # :)
+keywords = [
+    "excise",
+    "regression",
+    "fix test",
+    "fix trans",
+    "wow",
+    "fuck",
+]  # :)
 kind_synonyms = {
     "style": "chore",
 }
@@ -32,7 +39,7 @@ kind_synonyms = {
 
 @cache
 def get_events() -> list[str]:
-    events = [event for event in os.listdir("events") if os.path.isdir(os.path.join("events", event))]
+    events = [event for event in os.listdir("kompassi/events") if os.path.isdir(os.path.join("kompassi/events", event))]
 
     # some but not all folders under zombies are events
     # also some events have been excised
@@ -73,6 +80,7 @@ class Command(BaseCommand):
             if scope:
                 for scope in scope.split(","):
                     scope = scope.split("/", 1)[0]
+                    scope = scope.strip().replace(" ", "")
 
                     if is_event(scope):
                         event_stats[scope] += 1

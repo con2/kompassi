@@ -15,7 +15,9 @@ if TYPE_CHECKING:
     from kompassi.involvement.models.involvement import Involvement
 
     from ..utils.dimension_cache import DimensionCache
+    from .annotation import Annotation
     from .dimension import Dimension
+    from .universe_annotation import UniverseAnnotation
 
 
 class Universe(models.Model):
@@ -29,7 +31,11 @@ class Universe(models.Model):
     hence, multiple Universes per Scope.
     """
 
-    scope: models.ForeignKey[Scope] = models.ForeignKey(Scope, on_delete=models.CASCADE)
+    scope: models.ForeignKey[Scope] = models.ForeignKey(
+        Scope,
+        on_delete=models.CASCADE,
+        related_name="universes",
+    )
     slug = make_slug_field(unique=False)
 
     app_name = models.CharField(
@@ -38,6 +44,7 @@ class Universe(models.Model):
     )
 
     all_involvements: models.QuerySet[Involvement]
+    all_universe_annotations: models.QuerySet[UniverseAnnotation]
     dimensions: models.QuerySet[Dimension]
 
     id: int
@@ -51,10 +58,18 @@ class Universe(models.Model):
 
     @property
     def active_involvements(self) -> models.QuerySet[Involvement]:
-        """
-        Returns all Involvements in this Universe that are active.
-        """
         return self.all_involvements.filter(is_active=True)
+
+    @property
+    def active_universe_annotations(self) -> models.QuerySet[UniverseAnnotation]:
+        return self.all_universe_annotations.filter(is_active=True)
+
+    @property
+    def annotations(self) -> models.QuerySet[Annotation]:
+        from .annotation import Annotation
+
+        annotation_ids = self.active_universe_annotations.values_list("annotation_id", flat=True)
+        return Annotation.objects.filter(id__in=annotation_ids)
 
     @property
     def app(self) -> DimensionApp:

@@ -191,8 +191,11 @@ class Badge(models.Model, CsvExportMixin):
         return self.printed_at if self.printed_at is not None else ""
 
     @property
-    def formatted_perks(self):
-        return str(self.meta.emperkelator.model_validate(self.perks))
+    def formatted_perks(self) -> str:
+        """
+        Delegates combined perks to Emperkelate v2 in the Involvement app.
+        """
+        return self.perks.get("internal:formattedPerks", "")
 
     @property
     def full_name(self):
@@ -272,26 +275,27 @@ class Badge(models.Model, CsvExportMixin):
 
     def reemperkelate(self, commit=True):
         """
-        Refresh the perks on the badge based on the current state of the event and the person.
+        Delegates combined perks to Emperkelate v2 in the Involvement app.
         """
-        Emperkelator = self.meta.emperkelator
-        if self.person:
-            perks = Emperkelator.emperkelate(self)
-            perks_dict = perks.model_dump()
-        else:
-            perks_dict = self.personnel_class.perks
-            perks = Emperkelator.model_validate(perks_dict)
+        from kompassi.involvement.models.enums import InvolvementApp, InvolvementType
+        from kompassi.involvement.models.involvement import Involvement
 
-        if self.perks == perks_dict:
-            # Up to date
-            return perks, False
+        combined_perks = Involvement.objects.filter(
+            universe=self.event.involvement_universe,
+            person=self.person,
+            app=InvolvementApp.INVOLVEMENT,
+            type=InvolvementType.COMBINED_PERKS,
+        ).first()
 
-        # Needs refresh
-        self.perks = perks_dict
-        if commit:
-            self.save(update_fields=["perks"])
+        if combined_perks and (formatted_perks := combined_perks.annotations.get("internal:formattedPerks", "")):
+            self.perks = {"internal:formattedPerks": formatted_perks}
 
-        return perks, True
+            if commit:
+                self.save(update_fields=["perks"])
+
+            return self.perks, True
+
+        return self.perks, False
 
     @classmethod
     def get_csv_fields(cls, event):

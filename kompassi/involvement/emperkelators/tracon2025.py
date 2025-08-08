@@ -6,24 +6,27 @@ Swag is granted based on working hours, with an extra swag item for working more
 
 from __future__ import annotations
 
+import logging
 from enum import Enum
 from functools import cached_property, reduce
 from typing import TYPE_CHECKING, Self
 
 import pydantic
 
+from kompassi.dimensions.models.annotation_dto import AnnotationDTO
+from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
-from kompassi.labour.models.signup import Signup
-from kompassi.program_v2.models.cached_annotations import CachedAnnotations
+from kompassi.dimensions.models.enums import AnnotationDataType
+from kompassi.forms.models.response import Response
 
 from ..models.enums import InvolvementType
 from .base import BaseEmperkelator
 
 if TYPE_CHECKING:
-    from kompassi.involvement.models.involvement import Involvement
+    from ..models.involvement import Involvement
 
-
+logger = logging.getLogger(__name__)
 THIRD_MEAL_MIN_HOURS = 12
 FOURTH_MEAL_MIN_HOURS = 16
 EXTRA_SWAG_MIN_HOURS = 14
@@ -76,6 +79,67 @@ class TicketType(Enum):
     def __lt__(self, other: TicketType) -> bool:
         return self.index < other.index
 
+
+class ShirtSize(Enum):
+    NONE = "none", "NO_SHIRT", "Nothing", "Ei työvoimatuotetta"
+    UNISEX_XS = "unisex-xs", "XS", "XS Unisex", "XS Unisex"
+    UNISEX_S = "unisex-s", "S", "S Unisex", "S Unisex"
+    UNISEX_M = "unisex-m", "M", "M Unisex", "M Unisex"
+    UNISEX_L = "unisex-l", "L", "L Unisex", "L Unisex"
+    UNISEX_XL = "unisex-xl", "XL", "XL Unisex", "XL Unisex"
+    UNISEX_2XL = "unisex-2xl", "XXL", "2XL Unisex", "2XL Unisex"
+    UNISEX_3XL = "unisex-3xl", "3XL", "3XL Unisex", "3XL Unisex"
+    UNISEX_4XL = "unisex-4xl", "4XL", "4XL Unisex", "4XL Unisex"
+    UNISEX_5XL = "unisex-5xl", "5XL", "5XL Unisex", "5XL Unisex"
+    LADYFIT_XS = "ladyfit-xs", "LF_XS", "XS Ladyfit", "XS Ladyfit"
+    LADYFIT_S = "ladyfit-s", "LF_S", "S Ladyfit", "S Ladyfit"
+    LADYFIT_M = "ladyfit-m", "LF_M", "M Ladyfit", "M Ladyfit"
+    LADYFIT_L = "ladyfit-l", "LF_L", "L Ladyfit", "L Ladyfit"
+    LADYFIT_XL = "ladyfit-xl", "LF_XL", "XL Ladyfit", "XL Ladyfit"
+    LADYFIT_2XL = "ladyfit-2xl", "LF_XXL", "2XL Ladyfit", "2XL Ladyfit"
+    LADYFIT_3XL = "ladyfit-3xl", "LF_3XL", "3XL Ladyfit", "3XL Ladyfit"
+    BAG = "bag", "BAG", "Tote bag", "Kangaskassi"
+    BOTTLE = "bottle", "BOTTLE", "Water bottle", "Juomapullo"
+
+    v1_slug: str
+    title_fi: str
+    title_en: str
+
+    def __new__(cls, value: str, v1_slug: str, title_en: str, title_fi: str):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.v1_slug = v1_slug
+        obj.title_en = title_en
+        obj.title_fi = title_fi
+
+        return obj
+
+    @classmethod
+    def from_v1(cls, v1_shirt_size: str) -> ShirtSize:
+        return SHIRT_SIZES_BY_V1.get(v1_shirt_size, cls.NONE)
+
+    @classmethod
+    def as_dimension_dto(cls) -> DimensionDTO:
+        return DimensionDTO(
+            slug="shirt-size",
+            title=dict(
+                en="Shirt size",
+                fi="Paitakoko",
+            ),
+            choices=[
+                DimensionValueDTO(
+                    slug=tt.value,
+                    title=dict(
+                        en=tt.title_en,
+                        fi=tt.title_fi,
+                    ),
+                )
+                for tt in cls
+            ],
+        )
+
+
+SHIRT_SIZES_BY_V1: dict[str, ShirtSize] = {ss.v1_slug: ss for ss in ShirtSize}
 
 PROGRAM_HOST_ROLE_DIMENSION_DTO = DimensionDTO(
     slug="program-host-role",
@@ -135,43 +199,41 @@ class Perks(pydantic.BaseModel):
         return f"{self.ticket_type.title_fi}, {meals}, {swag}{extra_swag}"
 
     @classmethod
-    def for_legacy_signup(cls, signup: Signup) -> Perks:
-        personnel_class_slug = pc.slug if (pc := signup.personnel_class) else ""
-        match personnel_class_slug:
-            case "conitea":
-                return Perks(
-                    override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
-                )
-            case "duniitti":
-                perks = Perks(
-                    ticket_type=TicketType.SUPER_INTERNAL_BADGE,
-                    meals=2,
-                    swag=True,
-                )
-            case "vuorovastaava":
-                perks = Perks(
-                    ticket_type=TicketType.SUPER_INTERNAL_BADGE,
-                    meals=2,
-                    swag=True,
-                )
-            case "tyovoima":
-                perks = Perks(
-                    ticket_type=TicketType.INTERNAL_BADGE,
-                    meals=2,
-                    swag=True,
-                )
-            case _:
-                return Perks()
+    def for_legacy_signup(cls, involvement: Involvement) -> Perks:
+        personnel_classes = set(involvement.cached_dimensions.get("v1-personnel-class", []))
+        working_hours: int = involvement.annotations.get("kompassi:workingHours", 10)
+
+        if "coniitti" in personnel_classes:
+            return Perks(
+                override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
+                ticket_type=TicketType.SUPER_INTERNAL_BADGE,
+                meals=MAX_MEALS,
+                swag=True,
+                extra_swag=True,
+            )
+        elif "duniitti" in personnel_classes or "vuorovastaava" in personnel_classes:
+            perks = Perks(
+                ticket_type=TicketType.SUPER_INTERNAL_BADGE,
+                meals=2,
+                swag=True,
+            )
+        elif "tyovoima" in personnel_classes:
+            perks = Perks(
+                ticket_type=TicketType.INTERNAL_BADGE,
+                meals=2,
+                swag=True,
+            )
+        else:
+            return Perks()
 
         # Grant extra perks based on working hours
         extra_meal_voucher = Perks(meals=1)
         extra_swag = Perks(extra_swag=True)
-        hours = signup.working_hours
-        if hours >= THIRD_MEAL_MIN_HOURS:
+        if working_hours >= THIRD_MEAL_MIN_HOURS:
             perks.imbibe(extra_meal_voucher)
-        if hours >= FOURTH_MEAL_MIN_HOURS:
+        if working_hours >= FOURTH_MEAL_MIN_HOURS:
             perks.imbibe(extra_meal_voucher)
-        if hours >= EXTRA_SWAG_MIN_HOURS:
+        if working_hours >= EXTRA_SWAG_MIN_HOURS:
             perks.imbibe(extra_swag)
 
         return perks
@@ -210,7 +272,7 @@ class Perks(pydantic.BaseModel):
     def for_involvement(cls, involvement: Involvement) -> Perks:
         match involvement.type:
             case InvolvementType.LEGACY_SIGNUP if involvement.signup:
-                return Perks.for_legacy_signup(involvement.signup)
+                return Perks.for_legacy_signup(involvement)
 
             case InvolvementType.PROGRAM_HOST:
                 return Perks.for_program_host(involvement)
@@ -244,19 +306,62 @@ class TraconEmperkelator(BaseEmperkelator):
     def get_dimension_dtos(cls) -> list[DimensionDTO]:
         return [
             TicketType.as_dimension_dto(),
+            ShirtSize.as_dimension_dto(),
             PROGRAM_HOST_ROLE_DIMENSION_DTO,
         ]
 
-    def get_dimensions(self) -> CachedDimensions:
+    def get_dimension_values(self) -> CachedDimensions:
         return {
             "ticket-type": [self.perks.ticket_type.value],
+            "shirt-size": [self.get_shirt_size().value],
         }
 
-    def get_annotations(self) -> CachedAnnotations:
+    @classmethod
+    def get_annotation_dtos(cls) -> list[AnnotationDTO]:
+        perks = [
+            AnnotationDTO(
+                slug="tracon:swag",
+                type=AnnotationDataType.BOOLEAN,
+                title=dict(
+                    en="Swag included",
+                    fi="Saa työvoimatuotteen",
+                ),
+            ),
+            AnnotationDTO(
+                slug="tracon:extraSwag",
+                type=AnnotationDataType.BOOLEAN,
+                title=dict(
+                    en="Extra swag included",
+                    fi="Saa ylimääräisen työvoimatuotteen",
+                ),
+            ),
+            AnnotationDTO(
+                slug="tracon:mealVouchers",
+                type=AnnotationDataType.NUMBER,
+                title=dict(
+                    en="Number of meal vouchers",
+                    fi="Ruokalippujen määrä",
+                ),
+            ),
+        ]
+
+        for perk in perks:
+            perk.is_applicable_to_program_items = False
+            perk.is_applicable_to_schedule_items = False
+            perk.is_applicable_to_involvements = True
+            perk.is_perk = True
+
+        return [*super().get_annotation_dtos(), *perks]
+
+    def get_annotation_values(self) -> CachedAnnotations:
         return self.perks.model_dump(mode="json", exclude_none=True, by_alias=True, exclude={"ticket_type"})
 
+    @cached_property
+    def signup(self):
+        return next((involvement.signup for involvement in self.involvements if involvement.signup), None)
+
     def get_title(self) -> str:
-        if signup := next((involvement.signup for involvement in self.involvements if involvement.signup), None):
+        if signup := self.signup:
             return signup.some_job_title
 
         if program_hostage := next(
@@ -267,3 +372,41 @@ class TraconEmperkelator(BaseEmperkelator):
                 return role_idv.value.title_fi
 
         return ""
+
+    def get_shirt_size(self) -> ShirtSize:
+        if (signup := self.signup) and (extra := signup.signup_extra):
+            return ShirtSize.from_v1(extra.shirt_size)
+
+        for response in Response.objects.filter(
+            form__survey__event=self.event,
+            form__survey__slug__in=["program-swag", "programhost"],
+            original_created_by=self.person.user,
+        ):
+            values, warnings = response.get_processed_form_data(field_slugs=["swag"])
+            if "swag" in warnings:
+                logger.warning(
+                    "Cowardly refusing to emperkelate shirt size with warnings: %s",
+                    dict(
+                        person=self.person.id,
+                        response=response.id,
+                    ),
+                )
+
+            shirt_size = values.get("swag", "")
+            if not shirt_size:
+                continue
+
+            try:
+                return ShirtSize(shirt_size)
+            except ValueError:
+                logger.warning(
+                    "Invalid shirt size value: %s",
+                    dict(
+                        person=self.person.id,
+                        response=response.id,
+                        shirt_size=shirt_size,
+                    ),
+                )
+                continue
+
+        return ShirtSize.NONE

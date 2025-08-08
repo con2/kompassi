@@ -5,8 +5,8 @@ from graphene.types.generic import GenericScalar
 
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.models.event import Event
+from kompassi.dimensions.models.cached_annotations import cached_annotations_update_adapter, validate_annotations
 
-from ...models.cached_annotations import cached_annotations_update_adapter, validate_annotations
 from ...models.program import Program
 from ..program_full import FullProgramType
 

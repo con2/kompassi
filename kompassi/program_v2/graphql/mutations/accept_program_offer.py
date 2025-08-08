@@ -74,8 +74,6 @@ class AcceptProgramOffer(graphene.Mutation):
         if warnings:
             raise ValueError(warnings)
 
-        print("form_data", form_data)
-
         program_dimensions = process_dimension_value_selection_form(
             list(event.program_universe.dimensions.filter(is_technical=False)),
             form_data,
@@ -86,9 +84,6 @@ class AcceptProgramOffer(graphene.Mutation):
             form_data,
             slug_prefix="involvement_dimensions",
         )
-
-        print("program_dimensions", program_dimensions)
-        print("involvement_dimensions", involvement_dimensions)
 
         program = Program.from_program_offer(
             program_offer,

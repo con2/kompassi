@@ -212,12 +212,6 @@ class SignupExtra(SignupExtraBase):
 
         return SignupExtraForm
 
-    @classmethod
-    def get_programme_form_class(cls):
-        from .forms import ProgrammeSignupExtraForm
-
-        return ProgrammeSignupExtraForm
-
     @property
     def formatted_lodging_needs(self):
         return "\n".join(

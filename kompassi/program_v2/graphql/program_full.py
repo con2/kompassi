@@ -3,11 +3,12 @@ import graphene
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.graphql.event_limited import LimitedEventType
 from kompassi.core.utils.text_utils import normalize_whitespace
+from kompassi.dimensions.models.enums import AnnotationFlags
 from kompassi.forms.graphql.response_limited import LimitedResponseType
 from kompassi.involvement.graphql.invitation_limited import LimitedInvitationType
 
 from ..models import Program
-from .annotation import ProgramAnnotationType
+from .program_annotation import ProgramAnnotationType
 from .program_dimension_value import ProgramDimensionValueType
 from .program_host_limited import LimitedProgramHostType
 from .program_limited import LimitedProgramType
@@ -37,18 +38,23 @@ class FullProgramType(LimitedProgramType):
         if meta is None:
             raise ValueError("Program without ProgramV2EventMeta, unpossible?!?")
 
+        required_flags: AnnotationFlags = AnnotationFlags.NONE
+        schema = meta.annotations_with_fallback.all()
+
         if public_only:
-            schema = meta.annotations_with_fallback.filter(is_public=True)
+            required_flags |= AnnotationFlags.PUBLIC
         else:
             graphql_check_instance(
                 program,
                 info,
                 field="annotations",
             )
-            schema = meta.annotations_with_fallback.all()
 
         if is_shown_in_detail:
-            schema = schema.filter(is_shown_in_detail=True)
+            required_flags |= AnnotationFlags.SHOWN_IN_DETAIL
+
+        if required_flags != AnnotationFlags.NONE:
+            schema = schema.filter(flags__has_all=required_flags)
 
         return [
             ProgramAnnotationType(

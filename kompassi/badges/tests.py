@@ -13,7 +13,6 @@ from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
 from kompassi.labour.models import JobCategory, LabourEventMeta, PersonnelClass, Signup
 
-from .emperkelators.tracon2024 import TicketType, TraconEmperkelator
 from .models.badge import Badge
 from .models.badges_event_meta import BadgesEventMeta
 from .models.batch import Batch
@@ -208,66 +207,6 @@ class BadgesTestCase(TestCase):
         badge, created = Badge.ensure(person=self.person, event=self.event)
         assert not created
         assert badge is None
-
-
-@pytest.mark.django_db
-def test_tracon2024_perks():
-    person, _ = Person.get_or_create_dummy()
-
-    meta, _ = BadgesEventMeta.get_or_create_dummy(emperkelator_name="tracon2024")
-    event = meta.event
-
-    # Programme V1 no longer supported by Badges
-    # role, _ = Role.get_or_create_dummy(
-    #     event=event,
-    #     perks=TraconEmperkelator(
-    #         ticket_type=TicketType.WEEKEND_TICKET,
-    #         swag=True,
-    #         meals=1,
-    #     ).model_dump(),
-    # )
-
-    # weekend ticket, one meal, normal swag
-    # ProgrammeRole.get_or_create_dummy(
-    #     event=event,
-    #     person=person,
-    #     role=role,
-    # )
-
-    # internal badge, three meals, normal swag
-    personnel_class, _ = PersonnelClass.get_or_create_dummy(
-        event=event,
-        app_label="labour",
-        perks=TraconEmperkelator(
-            ticket_type=TicketType.INTERNAL_BADGE,
-            swag=True,
-            meals=3,
-        ).model_dump(),
-    )
-    job_category, _ = JobCategory.get_or_create_dummy(
-        event=event,
-        personnel_class=personnel_class,
-    )
-
-    Signup.get_or_create_dummy(
-        person=person,
-        event=event,
-        accepted=True,
-        override_working_hours=12,
-        job_category=job_category,
-    )
-
-    badge, created = Badge.ensure(person=person, event=event)
-    assert badge
-    assert not created
-    assert badge.personnel_class.slug == "smallfolk"
-
-    perks = TraconEmperkelator.model_validate(badge.perks)
-    assert perks.ticket_type == TicketType.INTERNAL_BADGE
-    assert perks.meals == 3 + 1, "Meal coupons should stack up to four"
-    assert perks.swag
-    assert not perks.extra_swag, "Two sources of normal swag should not an extra swag make"
-    assert str(perks) == "Badge (internal), 4 ruokalippua, valittu työvoimatuote"
 
 
 @pytest.mark.django_db

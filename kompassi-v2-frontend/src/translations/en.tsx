@@ -19,6 +19,7 @@ const translations = {
     },
   },
   Profile: {
+    singleTitle: "Profile",
     attributes: {
       displayName: "Name",
       firstName: "First name",
@@ -2025,7 +2026,7 @@ const translations = {
       isShownInDetail: {
         title: "Shown in program guide",
       },
-      programFormFields: {
+      formFields: {
         title: "Program form fields",
         description: (
           <>
@@ -2683,6 +2684,16 @@ const translations = {
           active: "Active",
           inactive: "Inactive",
         },
+      },
+      combinedPerks: {
+        title: "Combined perks",
+        message: (
+          <>
+            A person may receive perks from multiple sources. Here you can see
+            the perks combined automatically. An admin may have overridden some
+            or all of them.
+          </>
+        ),
       },
     },
     messages: {},
