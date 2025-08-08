@@ -139,8 +139,6 @@ function CombinedPerksCard({
 }) {
   const t = translations.Involvement;
 
-  console.log("CombinedPerksCard", { annotations });
-
   validateCachedDimensions(involvement.cachedDimensions);
   validateCachedAnnotations(annotations, involvement.cachedAnnotations);
 

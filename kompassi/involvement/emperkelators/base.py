@@ -74,6 +74,10 @@ class BaseEmperkelator:
                     en="Override perks",
                     fi="Ylikirjoita edut",
                 ),
+                description=dict(
+                    en="If set, this will override the displayed perks",
+                    fi="Jos asetettu, tämä ylikirjoittaa näytettävät edut",
+                ),
                 type=AnnotationDataType.STRING,
                 is_perk=True,
             ),
