@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
+
 from django.db import models
 
 from .annotation import Annotation
@@ -36,9 +38,9 @@ class UniverseAnnotation(models.Model):
         return f"{self.universe} - {self.annotation}"
 
     @classmethod
-    def ensure(cls, universe: Universe):
-        # TODO only select basic annotations that should be enabled for all events
-        annotations = Annotation.objects.all()
+    def ensure(cls, universe: Universe, annotations: Iterable[Annotation] | None = None):
+        if annotations is None:
+            annotations = Annotation.objects.all()
 
         # not returning the result because caveats with ignore_conflicts (see doc)
         cls.objects.bulk_create(

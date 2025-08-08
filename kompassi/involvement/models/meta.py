@@ -9,8 +9,10 @@ from django.db import models
 
 from kompassi.core.models.event import Event
 from kompassi.core.utils.log_utils import log_get_or_create
+from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.universe import Universe
+from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 from kompassi.involvement.dimensions import get_involvement_universe
 
 from ..filters import InvolvementFilters
@@ -94,6 +96,9 @@ class InvolvementEventMeta(models.Model):
         Emperkelator = meta.emperkelator_class
         if Emperkelator is not None:
             DimensionDTO.save_many(universe=universe, dimension_dtos=Emperkelator.get_dimension_dtos())
+
+            annotations = AnnotationDTO.save_many(Emperkelator.get_annotation_dtos())
+            UniverseAnnotation.ensure(universe, annotations)
 
         return meta
 

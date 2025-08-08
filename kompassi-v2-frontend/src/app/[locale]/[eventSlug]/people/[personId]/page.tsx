@@ -1,5 +1,6 @@
 import { graphql } from "@/__generated__";
 import {
+  AnnotationsFormAnnotationFragment,
   DimensionValueSelectFragment,
   InvolvedPersonDetailInvolvementFragment,
   InvolvementType,
@@ -18,6 +19,7 @@ import { notFound } from "next/navigation";
 import { Card, CardBody, CardText, CardTitle } from "react-bootstrap";
 import { updateCombinedPerks } from "./actions";
 import AnnotationsForm from "@/components/annotations/AnnotationsForm";
+import { validateCachedAnnotations } from "@/components/annotations/models";
 
 graphql(`
   fragment InvolvedPersonDetailInvolvement on LimitedInvolvementType {
@@ -65,6 +67,10 @@ const query = graphql(`
         dimensions(publicOnly: false, isShownInDetail: true) {
           ...CachedDimensionsBadges
           ...DimensionValueSelect
+        }
+
+        annotations(publicOnly: false, perksOnly: true) {
+          ...AnnotationsFormAnnotation
         }
 
         person(id: $personId) {
@@ -122,16 +128,23 @@ function CombinedPerksCard({
   involvement,
   translations,
   dimensions,
+  annotations,
   onChange,
 }: {
   involvement: InvolvedPersonDetailInvolvementFragment;
   translations: Translations;
   dimensions: DimensionValueSelectFragment[];
+  annotations: AnnotationsFormAnnotationFragment[];
   onChange: (formData: FormData) => Promise<void>;
 }) {
   const t = translations.Involvement;
 
+  console.log("CombinedPerksCard", { annotations });
+
   validateCachedDimensions(involvement.cachedDimensions);
+  validateCachedAnnotations(annotations, involvement.cachedAnnotations);
+
+  annotations = annotations.filter((annotation) => !annotation.isComputed);
 
   return (
     <Card className="mb-3">
@@ -145,7 +158,7 @@ function CombinedPerksCard({
           onChange={onChange}
         />
         <AnnotationsForm
-          schema={[]}
+          schema={annotations}
           values={involvement.cachedAnnotations}
           messages={translations.SchemaForm}
         />
@@ -177,7 +190,7 @@ export default async function PersonPage(props: Props) {
   }
 
   const { event } = data;
-  const { person, dimensions } = data.event.involvement;
+  const { person, dimensions, annotations } = data.event.involvement;
 
   const combinedPerksInvolvement = person.involvements.find(
     (i) => i.type === InvolvementType.CombinedPerks,
@@ -207,6 +220,7 @@ export default async function PersonPage(props: Props) {
       {combinedPerksInvolvement && (
         <CombinedPerksCard
           dimensions={dimensions}
+          annotations={annotations}
           involvement={combinedPerksInvolvement}
           translations={translations}
           onChange={updateCombinedPerks.bind(

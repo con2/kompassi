@@ -689,7 +689,7 @@ class Involvement(models.Model):
             defaults=dict(
                 registry=meta.default_registry,
                 is_active=True,
-                annotations=emperkelator.get_annotations(),
+                annotations=emperkelator.get_annotation_values(),
                 title=emperkelator.get_title(),  # with_computed_fields() has no access to emperkelator
             ),
         )

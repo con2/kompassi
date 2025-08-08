@@ -12,9 +12,11 @@ from typing import TYPE_CHECKING, Self
 
 import pydantic
 
+from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
+from kompassi.dimensions.models.enums import AnnotationDataType
 
 from ..models.enums import InvolvementType
 from .base import BaseEmperkelator
@@ -141,6 +143,10 @@ class Perks(pydantic.BaseModel):
         if "coniitti" in personnel_classes:
             return Perks(
                 override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
+                ticket_type=TicketType.SUPER_INTERNAL_BADGE,
+                meals=MAX_MEALS,
+                swag=True,
+                extra_swag=True,
             )
         elif "duniitti" in personnel_classes or "vuorovastaava" in personnel_classes:
             perks = Perks(
@@ -245,7 +251,44 @@ class TraconEmperkelator(BaseEmperkelator):
             "ticket-type": [self.perks.ticket_type.value],
         }
 
-    def get_annotations(self) -> CachedAnnotations:
+    @classmethod
+    def get_annotation_dtos(cls) -> list[AnnotationDTO]:
+        perks = [
+            AnnotationDTO(
+                slug="tracon:swag",
+                type=AnnotationDataType.BOOLEAN,
+                title=dict(
+                    en="Swag included",
+                    fi="Saa työvoimatuotteen",
+                ),
+            ),
+            AnnotationDTO(
+                slug="tracon:extraSwag",
+                type=AnnotationDataType.BOOLEAN,
+                title=dict(
+                    en="Extra swag included",
+                    fi="Saa ylimääräisen työvoimatuotteen",
+                ),
+            ),
+            AnnotationDTO(
+                slug="tracon:mealVouchers",
+                type=AnnotationDataType.NUMBER,
+                title=dict(
+                    en="Number of meal vouchers",
+                    fi="Ruokalippujen määrä",
+                ),
+            ),
+        ]
+
+        for perk in perks:
+            perk.is_applicable_to_program_items = False
+            perk.is_applicable_to_schedule_items = False
+            perk.is_applicable_to_involvements = True
+            perk.is_perk = True
+
+        return [*super().get_annotation_dtos(), *perks]
+
+    def get_annotation_values(self) -> CachedAnnotations:
         return self.perks.model_dump(mode="json", exclude_none=True, by_alias=True, exclude={"ticket_type"})
 
     def get_title(self) -> str:
