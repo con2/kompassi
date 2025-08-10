@@ -2657,6 +2657,7 @@ const translations = {
     attributes: {
       involvement: {
         title: "Involvement",
+        involvementInThisEvent: "Involvement in this event",
       },
       count: (numPeople: number, numInvolvements: number) => (
         <>

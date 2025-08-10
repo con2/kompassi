@@ -6,6 +6,7 @@ from graphene.types.generic import GenericScalar
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.models.event import Event
 from kompassi.dimensions.models.cached_annotations import cached_annotations_update_adapter, validate_annotations
+from kompassi.dimensions.models.enums import AnnotationFlags
 
 from ...models.program import Program
 from ..program_full import FullProgramType
@@ -51,7 +52,7 @@ class UpdateProgramAnnotations(graphene.Mutation):
 
         # validate only the annotations we are setting (do not contain "" or None)
         set_annotations = {k: v for (k, v) in input_annotations.items() if v not in (None, "")}
-        schema = meta.annotations_with_fallback.filter(is_computed=False)
+        schema = meta.annotations_with_fallback.exclude(flags__has_all=AnnotationFlags.COMPUTED)
         validate_annotations(set_annotations, schema)
 
         program.refresh_annotations(input_annotations)

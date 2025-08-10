@@ -1,9 +1,8 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { ReactNode } from "react";
-import { Alert } from "react-bootstrap";
 import { graphql } from "@/__generated__";
-import { InvolvedPersonFragment } from "@/__generated__/graphql";
+import {
+  InvolvedPersonFragment,
+  InvolvedPersonInvolvementFragment,
+} from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
@@ -12,10 +11,28 @@ import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import { validateCachedDimensions } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
+import { textMutedWhenInactive } from "@/components/involvement/helpers";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
+import MaybeExternalLink from "@/components/MaybeExternalLink";
+import { decodeBoolean } from "@/helpers/decodeBoolean";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
-import { decodeBoolean } from "@/helpers/decodeBoolean";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { ReactNode } from "react";
+import { Alert } from "react-bootstrap";
+
+graphql(`
+  fragment InvolvedPersonInvolvement on LimitedInvolvementType {
+    id
+    type
+    title
+    adminLink
+    isActive
+    cachedDimensions
+    cachedAnnotations
+  }
+`);
 
 graphql(`
   fragment InvolvedPerson on ProfileWithInvolvementType {
@@ -26,12 +43,7 @@ graphql(`
     isActive
 
     involvements {
-      id
-      type
-      title
-      adminLink
-      isActive
-      cachedDimensions
+      ...InvolvedPersonInvolvement
     }
   }
 `);
@@ -105,26 +117,26 @@ export async function generateMetadata(props: Props) {
   };
 }
 
-function textMutedWhenInactive(
-  this: Column<InvolvedPersonFragment>,
-  row: InvolvedPersonFragment,
-  children?: ReactNode,
-) {
-  const className = row.isActive
-    ? this.className
-    : `${this.className} text-muted`;
-
-  return (
-    <td scope={this.scope} className={className}>
-      {children}
-    </td>
-  );
-}
-
 function hideStatusActive(cachedDimensions: unknown) {
   validateCachedDimensions(cachedDimensions);
   const { state = [], ...rest } = cachedDimensions;
   return { ...rest, state: state.filter((s) => s !== "active") };
+}
+
+function AdminLink({
+  involvement,
+  children,
+}: {
+  involvement: InvolvedPersonInvolvementFragment;
+  children: ReactNode;
+}) {
+  return involvement.adminLink ? (
+    <MaybeExternalLink className="link-subtle" href={involvement.adminLink}>
+      {children}
+    </MaybeExternalLink>
+  ) : (
+    <>{children}</>
+  );
 }
 
 export default async function PeoplePage(props: Props) {
@@ -209,28 +221,6 @@ export default async function PeoplePage(props: Props) {
             </>
           );
 
-          let link: ReactNode | null = null;
-          if (involvement.adminLink) {
-            if (involvement.adminLink.startsWith("/")) {
-              link = (
-                <Link className="link-subtle" href={involvement.adminLink}>
-                  {title}
-                </Link>
-              );
-            } else {
-              link = (
-                <a
-                  className="link-subtle"
-                  href={involvement.adminLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {title}
-                </a>
-              );
-            }
-          }
-
           return (
             <div key={involvement.id} className={className}>
               <>
@@ -238,7 +228,7 @@ export default async function PeoplePage(props: Props) {
                   involvement.type}
                 :{" "}
               </>
-              {link}
+              <AdminLink involvement={involvement}>{title}</AdminLink>
               <CachedDimensionBadges
                 dimensions={keyDimensions}
                 cachedDimensions={hideStatusActive(

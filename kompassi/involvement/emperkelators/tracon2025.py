@@ -240,33 +240,11 @@ class Perks(pydantic.BaseModel):
 
     @classmethod
     def for_program_host(cls, involvement: Involvement) -> Perks:
-        match involvement.cached_dimensions.get("program-host-role", ""):
-            case "program-organizer":
-                return Perks(
-                    ticket_type=TicketType.INTERNAL_BADGE,
-                    meals=1,
-                    swag=True,
-                )
-            case "performer":
-                return Perks(
-                    ticket_type=TicketType.INTERNAL_BADGE,
-                    meals=1,
-                    swag=True,
-                )
-            case "discussion-host":
-                return Perks(
-                    ticket_type=TicketType.INTERNAL_BADGE,
-                    meals=1,
-                    swag=False,
-                )
-            case "workshop-host":
-                return Perks(
-                    ticket_type=TicketType.INTERNAL_BADGE,
-                    meals=1,
-                    swag=False,
-                )
-            case _:
-                return Perks()
+        return Perks(
+            ticket_type=TicketType.INTERNAL_BADGE,
+            meals=1,
+            swag=True,
+        )
 
     @classmethod
     def for_involvement(cls, involvement: Involvement) -> Perks:
@@ -364,12 +342,9 @@ class TraconEmperkelator(BaseEmperkelator):
         if signup := self.signup:
             return signup.some_job_title
 
-        if program_hostage := next(
-            (involvement for involvement in self.involvements if involvement.type == InvolvementType.PROGRAM_HOST), None
-        ):
-            role_idv = program_hostage.dimensions.filter(value__dimension__slug="program-host-role").first()
-            if role_idv:
-                return role_idv.value.title_fi
+        for involvement in self.involvements:
+            if involvement.type == InvolvementType.PROGRAM_HOST:
+                return "Ohjelmanpitäjä"
 
         return ""
 

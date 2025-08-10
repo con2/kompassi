@@ -1,0 +1,12 @@
+.CombinedPerks {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.CombinedPerks dt {
+  margin-bottom: 0.5rem;
+}
+
+.CombinedPerks dd {
+  margin-bottom: 1rem;
+}

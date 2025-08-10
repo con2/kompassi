@@ -1,3 +1,5 @@
+from functools import cached_property
+
 from kompassi.core.models.person import Person
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
@@ -23,6 +25,10 @@ class BaseEmperkelator:
     @property
     def event(self):
         return self.universe.scope.event
+
+    @cached_property
+    def cache(self):
+        return self.universe.preload_dimensions()
 
     def __init__(
         self,

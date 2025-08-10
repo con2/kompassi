@@ -15,7 +15,7 @@ graphql(`
   }
 `);
 
-export type CachedAnnotations = Record<string, unknown>;
+export type CachedAnnotations = Record<string, string | boolean | number>;
 
 export function isValidCachedAnnotations(
   schema: AnnotationsFormAnnotationFragment[],

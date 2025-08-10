@@ -7,6 +7,8 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
+import AnnotationsForm from "@/components/annotations/AnnotationsForm";
+import { validateCachedAnnotations } from "@/components/annotations/models";
 import DimensionValueSelectionForm from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
@@ -18,8 +20,13 @@ import { Translations } from "@/translations/en";
 import { notFound } from "next/navigation";
 import { Card, CardBody, CardText, CardTitle } from "react-bootstrap";
 import { updateCombinedPerks } from "./actions";
-import AnnotationsForm from "@/components/annotations/AnnotationsForm";
-import { validateCachedAnnotations } from "@/components/annotations/models";
+
+import "./page.css";
+import { Column } from "@/components/ReorderableDataTable";
+import { DataTable } from "@/components/DataTable";
+import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
+import { textMutedWhenInactive } from "@/components/involvement/helpers";
+import MaybeExternalLink from "@/components/MaybeExternalLink";
 
 graphql(`
   fragment InvolvedPersonDetailInvolvement on LimitedInvolvementType {
@@ -64,9 +71,12 @@ const query = graphql(`
       timezone
 
       involvement {
-        dimensions(publicOnly: false, isShownInDetail: true) {
+        dimensions(publicOnly: false) {
           ...CachedDimensionsBadges
           ...DimensionValueSelect
+
+          isKeyDimension
+          isShownInDetail
         }
 
         annotations(publicOnly: false, perksOnly: true) {
@@ -124,7 +134,8 @@ export async function generateMetadata(props: Props) {
   };
 }
 
-function CombinedPerksCard({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function CombinedPerksCardWIP({
   involvement,
   translations,
   dimensions,
@@ -165,6 +176,39 @@ function CombinedPerksCard({
   );
 }
 
+// Readonly version for now
+function CombinedPerksCard({
+  involvement,
+  translations,
+  annotations,
+}: {
+  involvement: InvolvedPersonDetailInvolvementFragment;
+  translations: Translations;
+  dimensions: DimensionValueSelectFragment[];
+  annotations: AnnotationsFormAnnotationFragment[];
+  onChange: (formData: FormData) => Promise<void>;
+}) {
+  const t = translations.Involvement;
+
+  validateCachedAnnotations(annotations, involvement.cachedAnnotations);
+
+  return (
+    <Card className="mb-3">
+      <CardBody>
+        <CardTitle>{t.attributes.combinedPerks.title}</CardTitle>
+
+        <dl className="CombinedPerks">
+          <dt>{t.attributes.title.title}</dt>
+          <dd>{involvement.title}</dd>
+
+          <dt>{t.attributes.combinedPerks.title}</dt>
+          <dd>{involvement.cachedAnnotations["internal:formattedPerks"]}</dd>
+        </dl>
+      </CardBody>
+    </Card>
+  );
+}
+
 export default async function PersonPage(props: Props) {
   const searchParams = await props.searchParams;
   const params = await props.params;
@@ -172,6 +216,7 @@ export default async function PersonPage(props: Props) {
   const personId = parseInt(params.personId, 10);
   const translations = getTranslations(locale);
   const profileT = translations.Profile;
+  const t = translations.Involvement;
 
   const session = await auth();
   if (!session) {
@@ -193,6 +238,36 @@ export default async function PersonPage(props: Props) {
   const combinedPerksInvolvement = person.involvements.find(
     (i) => i.type === InvolvementType.CombinedPerks,
   );
+  const otherInvolvements = person.involvements.filter(
+    (i) => i.type !== InvolvementType.CombinedPerks,
+  );
+
+  const columns: Column<InvolvedPersonDetailInvolvementFragment>[] = [
+    {
+      slug: "type",
+      title: t.attributes.type.title,
+      getCellElement: textMutedWhenInactive,
+      getCellContents: (involvement) =>
+        t.attributes.type.choices[involvement.type] || involvement.type,
+    },
+    {
+      slug: "title",
+      title: t.attributes.title.title,
+      getCellElement: textMutedWhenInactive,
+      getCellContents: (involvement) =>
+        involvement.adminLink ? (
+          <MaybeExternalLink
+            href={involvement.adminLink}
+            className="link-subtle"
+          >
+            {involvement.title}
+          </MaybeExternalLink>
+        ) : (
+          <>{involvement.title}</>
+        ),
+    },
+    ...buildKeyDimensionColumns(dimensions),
+  ];
 
   return (
     <InvolvementAdminView
@@ -229,6 +304,15 @@ export default async function PersonPage(props: Props) {
           )}
         />
       )}
+
+      <Card className="mb-3">
+        <CardBody>
+          <CardTitle>
+            {t.attributes.involvement.involvementInThisEvent}
+          </CardTitle>
+          <DataTable columns={columns} rows={otherInvolvements} />
+        </CardBody>
+      </Card>
     </InvolvementAdminView>
   );
 }

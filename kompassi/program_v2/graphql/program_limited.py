@@ -4,6 +4,7 @@ from graphene_django import DjangoObjectType
 
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.utils.text_utils import normalize_whitespace
+from kompassi.dimensions.models.enums import AnnotationFlags
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.graphql_api.utils import get_message_in_language, resolve_local_datetime_field
 
@@ -97,18 +98,23 @@ class LimitedProgramType(DjangoObjectType):
         if meta is None:
             raise ValueError("Program without ProgramV2EventMeta, unpossible?!?")
 
+        required_flags = AnnotationFlags.NONE
+        schema = meta.annotations_with_fallback.all()
+
         if public_only:
-            schema = meta.annotations_with_fallback.filter(is_public=True)
+            required_flags |= AnnotationFlags.PUBLIC
         else:
             graphql_check_instance(
                 program,
                 info,
                 field="annotations",
             )
-            schema = meta.annotations_with_fallback.all()
 
         if is_shown_in_detail:
-            schema = schema.filter(is_shown_in_detail=True)
+            required_flags |= AnnotationFlags.SHOWN_IN_DETAIL
+
+        if required_flags != AnnotationFlags.NONE:
+            schema = schema.filter(flags__has_all=required_flags)
 
         return {
             annotation.slug: value
