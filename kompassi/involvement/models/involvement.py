@@ -12,7 +12,6 @@ from django_enum import EnumField
 from kompassi.badges.models import Badge
 from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
-from kompassi.core.utils.model_utils import slugify
 from kompassi.dimensions.models.cached_dimensions import (
     CachedDimensions,
     StrictCachedDimensions,
@@ -626,9 +625,10 @@ class Involvement(models.Model):
 
         involvement.with_computed_fields().save()
 
-        dimensions = {
-            "v1-personnel-class": [slugify(pc.slug) for pc in signup.personnel_classes.all()],
-        }
+        if Emperkelator := meta.emperkelator_class:
+            dimensions = Emperkelator.get_dimension_values_for_legacy_signup(signup)
+        else:
+            dimensions = {}
 
         involvement.refresh_dimensions(
             dimensions_to_set=dimensions,

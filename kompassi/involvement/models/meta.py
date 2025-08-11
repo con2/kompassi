@@ -95,7 +95,7 @@ class InvolvementEventMeta(models.Model):
 
         Emperkelator = meta.emperkelator_class
         if Emperkelator is not None:
-            DimensionDTO.save_many(universe=universe, dimension_dtos=Emperkelator.get_dimension_dtos())
+            DimensionDTO.save_many(universe=universe, dimension_dtos=Emperkelator.get_dimension_dtos(event))
 
             annotations = AnnotationDTO.save_many(Emperkelator.get_annotation_dtos())
             UniverseAnnotation.ensure(universe, annotations)

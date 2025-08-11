@@ -134,7 +134,6 @@ export async function generateMetadata(props: Props) {
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function CombinedPerksCardWIP({
   involvement,
   translations,
@@ -291,7 +290,7 @@ export default async function PersonPage(props: Props) {
       </Card>
 
       {combinedPerksInvolvement && (
-        <CombinedPerksCard
+        <CombinedPerksCardWIP
           dimensions={dimensions}
           annotations={annotations}
           involvement={combinedPerksInvolvement}

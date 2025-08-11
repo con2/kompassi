@@ -1,12 +1,15 @@
 from functools import cached_property
 
+from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
+from kompassi.core.utils.model_utils import slugify
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
-from kompassi.dimensions.models.dimension_dto import DimensionDTO
+from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from kompassi.dimensions.models.enums import AnnotationDataType
 from kompassi.dimensions.models.universe import Universe
+from kompassi.labour.models.signup import Signup
 
 from ..models.enums import INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS
 from ..models.involvement import Involvement
@@ -43,11 +46,41 @@ class BaseEmperkelator:
         self.existing_combined_perks = existing_combined_perks
 
     @classmethod
-    def get_dimension_dtos(cls) -> list[DimensionDTO]:
+    def get_dimension_dtos(cls, event: Event) -> list[DimensionDTO]:
         """
         These dimensions will be initialized for events using this emperkelator.
         """
-        return []
+        dimension_dtos = []
+
+        if event.labour_event_meta:
+            dimension_dtos.append(
+                DimensionDTO(
+                    slug="v1-personnel-class",
+                    title=dict(
+                        en="Personnel class (V1)",
+                        fi="Henkilöstöluokka (V1)",
+                    ),
+                    is_technical=True,
+                    can_values_be_added=False,
+                    order=-9300,
+                    choices=[
+                        DimensionValueDTO(
+                            slug=slugify(pc.slug),
+                            title=dict(fi=pc.name),
+                            is_technical=True,
+                        )
+                        for pc in event.personnel_classes.all()
+                    ],
+                )
+            )
+
+        return dimension_dtos
+
+    @classmethod
+    def get_dimension_values_for_legacy_signup(cls, signup: Signup):
+        return {
+            "v1-personnel-class": [slugify(pc.slug) for pc in signup.personnel_classes.all()],
+        }
 
     def get_dimension_values(self) -> CachedDimensions:
         """

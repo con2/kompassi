@@ -13,12 +13,14 @@ from typing import TYPE_CHECKING, Self
 
 import pydantic
 
+from kompassi.core.models.event import Event
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from kompassi.dimensions.models.enums import AnnotationDataType
 from kompassi.forms.models.response import Response
+from kompassi.labour.models.signup import Signup
 
 from ..models.enums import InvolvementType
 from .base import BaseEmperkelator
@@ -136,6 +138,8 @@ class ShirtSize(Enum):
                 )
                 for tt in cls
             ],
+            is_list_filter=False,
+            is_shown_in_detail=True,
         )
 
 
@@ -249,7 +253,7 @@ class Perks(pydantic.BaseModel):
     @classmethod
     def for_involvement(cls, involvement: Involvement) -> Perks:
         match involvement.type:
-            case InvolvementType.LEGACY_SIGNUP if involvement.signup:
+            case InvolvementType.LEGACY_SIGNUP:
                 return Perks.for_legacy_signup(involvement)
 
             case InvolvementType.PROGRAM_HOST:
@@ -281,8 +285,9 @@ class TraconEmperkelator(BaseEmperkelator):
         return reduce(Perks.imbibe, (Perks.for_involvement(inv) for inv in self.involvements), Perks())
 
     @classmethod
-    def get_dimension_dtos(cls) -> list[DimensionDTO]:
+    def get_dimension_dtos(cls, event: Event) -> list[DimensionDTO]:
         return [
+            *super().get_dimension_dtos(event),
             TicketType.as_dimension_dto(),
             ShirtSize.as_dimension_dto(),
             PROGRAM_HOST_ROLE_DIMENSION_DTO,
@@ -290,8 +295,16 @@ class TraconEmperkelator(BaseEmperkelator):
 
     def get_dimension_values(self) -> CachedDimensions:
         return {
+            "v1-personnel-class": self.v1_personnel_class_dimension_values,
             "ticket-type": [self.perks.ticket_type.value],
-            "shirt-size": [self.get_shirt_size().value],
+            "shirt-size": self.shirt_size_dimension_values,
+        }
+
+    @classmethod
+    def get_dimension_values_for_legacy_signup(cls, signup: Signup) -> CachedDimensions:
+        return {
+            "shirt-size": [ShirtSize.from_v1(signup.signup_extra.shirt_size).value] if signup.signup_extra else [],
+            **super().get_dimension_values_for_legacy_signup(signup),
         }
 
     @classmethod
@@ -335,12 +348,30 @@ class TraconEmperkelator(BaseEmperkelator):
         return self.perks.model_dump(mode="json", exclude_none=True, by_alias=True, exclude={"ticket_type"})
 
     @cached_property
-    def signup(self):
-        return next((involvement.signup for involvement in self.involvements if involvement.signup), None)
+    def active_volunteer_involvement(self):
+        return next(
+            (
+                involvement
+                for involvement in self.involvements
+                if involvement.type == InvolvementType.LEGACY_SIGNUP and involvement.is_active
+            ),
+            None,
+        )
+
+    @property
+    def v1_personnel_class_dimension_values(self):
+        if inv := self.active_volunteer_involvement:
+            return inv.cached_dimensions.get("v1-personnel-class", [])
+
+        for inv in self.involvements:
+            if inv.type == InvolvementType.PROGRAM_HOST:
+                return ["ohjelma"]
+
+        return []
 
     def get_title(self) -> str:
-        if signup := self.signup:
-            return signup.some_job_title
+        if inv := self.active_volunteer_involvement:
+            return inv.title
 
         for involvement in self.involvements:
             if involvement.type == InvolvementType.PROGRAM_HOST:
@@ -348,10 +379,12 @@ class TraconEmperkelator(BaseEmperkelator):
 
         return ""
 
-    def get_shirt_size(self) -> ShirtSize:
-        if (signup := self.signup) and (extra := signup.signup_extra):
-            return ShirtSize.from_v1(extra.shirt_size)
+    @property
+    def shirt_size_dimension_values(self) -> list[str]:
+        if inv := self.active_volunteer_involvement:
+            return inv.cached_dimensions.get("shirt-size", [])
 
+        # TODO in future events, make sure this is a dimension in source data
         for response in Response.objects.filter(
             form__survey__event=self.event,
             form__survey__slug__in=["program-swag", "programhost"],
@@ -367,21 +400,23 @@ class TraconEmperkelator(BaseEmperkelator):
                     ),
                 )
 
-            shirt_size = values.get("swag", "")
-            if not shirt_size:
+            shirt_size_str = values.get("swag", "")
+            if not shirt_size_str:
                 continue
 
             try:
-                return ShirtSize(shirt_size)
+                shirt_size = ShirtSize(shirt_size_str)
             except ValueError:
                 logger.warning(
                     "Invalid shirt size value: %s",
                     dict(
                         person=self.person.id,
                         response=response.id,
-                        shirt_size=shirt_size,
+                        shirt_size=shirt_size_str,
                     ),
                 )
                 continue
 
-        return ShirtSize.NONE
+            return [shirt_size.value]
+
+        return []
