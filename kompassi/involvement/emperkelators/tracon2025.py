@@ -77,6 +77,7 @@ class TicketType(Enum):
                 for tt in cls
                 if tt != cls.NONE
             ],
+            value_ordering=ValueOrdering.MANUAL,
         )
 
     def __lt__(self, other: TicketType) -> bool:
