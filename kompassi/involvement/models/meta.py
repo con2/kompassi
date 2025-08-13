@@ -98,7 +98,6 @@ class InvolvementEventMeta(models.Model):
             DimensionDTO.save_many(
                 universe=universe,
                 dimension_dtos=Emperkelator.get_dimension_dtos(event),
-                remove_other_values=True,  # TODO remove
             )
 
             annotations = AnnotationDTO.save_many(Emperkelator.get_annotation_dtos())
