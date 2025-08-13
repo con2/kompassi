@@ -2716,6 +2716,11 @@ const translations = {
     listTitle: "Registries",
   },
 
+  Report: {
+    singleTitle: "Report",
+    listTitle: "Reports",
+  },
+
   SignInRequired: {
     metadata: {
       title: "Sign-in required – Kompassi",

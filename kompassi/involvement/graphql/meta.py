@@ -11,7 +11,9 @@ from kompassi.dimensions.graphql.annotation import AnnotationType
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
 from kompassi.dimensions.models.enums import AnnotationFlags
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.involvement.filters import InvolvementFilters
+from kompassi.reports.graphql.report import ReportType
 
 from ..models.involvement import Involvement
 from ..models.meta import InvolvementEventMeta
@@ -174,4 +176,26 @@ class InvolvementEventMetaType(DjangoObjectType):
         public_only=graphene.Boolean(default_value=True),
         perks_only=graphene.Boolean(default_value=False),
         description=normalize_whitespace(resolve_annotations.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_reports(
+        meta: InvolvementEventMeta,
+        info,
+        lang: str = DEFAULT_LANGUAGE,
+    ):
+        request: HttpRequest = info.context
+
+        graphql_check_model(
+            Involvement,
+            meta.event.scope,
+            request,
+        )
+
+        return meta.get_reports(lang)
+
+    reports = graphene.NonNull(
+        graphene.List(graphene.NonNull(ReportType)),
+        lang=graphene.String(default_value=DEFAULT_LANGUAGE),
+        description=normalize_whitespace(resolve_reports.__doc__ or ""),
     )

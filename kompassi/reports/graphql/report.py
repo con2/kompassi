@@ -6,7 +6,9 @@ from graphene_pydantic import PydanticObjectType
 
 from kompassi.graphql_api.utils import DEFAULT_LANGUAGE, resolve_localized_field
 
-from ..models.reports import Column, Report, TypeOfColumn
+from ..models.column import Column
+from ..models.enums import TypeOfColumn
+from ..models.report import Report
 
 TypeOfColumnType = graphene.Enum.from_enum(TypeOfColumn)
 

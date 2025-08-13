@@ -1,24 +1,23 @@
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
-import { PaymentProvider, ReportFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import SignInRequired from "@/components/errors/SignInRequired";
+import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
 import Report from "@/components/reports/Report";
-import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import { timezone as defaultTimezone } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
-  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {
+  query InvolvementAdminReportsPage($eventSlug: String!, $locale: String) {
     event(slug: $eventSlug) {
       name
       slug
       timezone
 
-      tickets {
+      involvement {
         reports(lang: $locale) {
           ...Report
         }
@@ -38,7 +37,6 @@ export async function generateMetadata(props: Props) {
   const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const t = translations.Tickets;
 
   // TODO encap
   const session = await auth();
@@ -51,13 +49,13 @@ export async function generateMetadata(props: Props) {
     variables: { locale, eventSlug },
   });
 
-  if (!data.event?.tickets) {
+  if (!data.event?.involvement) {
     notFound();
   }
 
   const title = getPageTitle({
     event: data.event,
-    viewTitle: t.admin.tabs.reports,
+    viewTitle: translations.Report.listTitle,
     translations,
   });
 
@@ -84,35 +82,20 @@ export default async function ReportsPage(props: Props) {
     variables: { locale, eventSlug },
   });
 
-  if (!data.event?.tickets) {
+  if (!data.event?.involvement) {
     notFound();
   }
 
   const event = data.event;
   const timezone = event.timezone || defaultTimezone;
-
-  // HACK Translate provider id clientside
-  const reports = JSON.parse(
-    JSON.stringify(data.event.tickets.reports),
-  ) as ReportFragment[];
-  const salesByProviderReport = reports.find(
-    (report) => report.slug === "sales_by_payment_provider",
-  );
-  if (salesByProviderReport) {
-    salesByProviderReport.rows = salesByProviderReport.rows.map((row) => {
-      const [provider_id, ...rest]: [PaymentProvider, ...any[]] = row as any;
-      return [
-        translations.Tickets.Order.attributes.provider.choices[provider_id],
-        ...rest,
-      ];
-    });
-  }
+  const { reports } = data.event.involvement;
 
   return (
-    <TicketsAdminView
+    <InvolvementAdminView
       translations={translations}
       event={event}
       active="reports"
+      searchParams={{}}
     >
       {reports.map((report) => (
         <Report
@@ -122,6 +105,6 @@ export default async function ReportsPage(props: Props) {
           locale={locale}
         />
       ))}
-    </TicketsAdminView>
+    </InvolvementAdminView>
   );
 }

@@ -26,6 +26,7 @@ type Documents = {
     "\n  mutation PutInvolvementDimensionValue($input: PutDimensionValueInput!) {\n    putDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n": typeof types.PutInvolvementDimensionValueDocument,
     "\n  mutation DeleteInvolvementDimensionValue($input: DeleteDimensionValueInput!) {\n    deleteDimensionValue(input: $input) {\n      slug\n    }\n  }\n": typeof types.DeleteInvolvementDimensionValueDocument,
     "\n  query InvolvementDimensionsList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        dimensions(publicOnly: false) {\n          ...DimensionEditor\n        }\n      }\n    }\n  }\n": typeof types.InvolvementDimensionsListDocument,
+    "\n  query InvolvementAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      involvement {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": typeof types.InvolvementAdminReportsPageDocument,
     "\n  mutation ResendOrderConfirmation($input: ResendOrderConfirmationInput!) {\n    resendOrderConfirmation(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": typeof types.ResendOrderConfirmationDocument,
     "\n  mutation UpdateOrder($input: UpdateOrderInput!) {\n    updateOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": typeof types.UpdateOrderDocument,
     "\n  mutation CancelAndRefundOrder($input: CancelAndRefundOrderInput!) {\n    cancelAndRefundOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": typeof types.CancelAndRefundOrderDocument,
@@ -165,7 +166,6 @@ type Documents = {
     "\n  mutation CreateSurvey($input: CreateSurveyInput!) {\n    createSurvey(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": typeof types.CreateSurveyDocument,
     "\n  fragment Survey on FullSurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n    countResponses\n\n    languages {\n      language\n    }\n  }\n": typeof types.SurveyFragmentDoc,
     "\n  query Surveys($eventSlug: String!, $locale: String) {\n    profile {\n      forms {\n        surveys(relation: ACCESSIBLE) {\n          event {\n            slug\n            name\n          }\n          slug\n          title(lang: $locale)\n        }\n      }\n    }\n\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys(includeInactive: true, app: FORMS) {\n          ...Survey\n        }\n      }\n    }\n  }\n": typeof types.SurveysDocument,
-    "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n": typeof types.ReportFragmentDoc,
     "\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": typeof types.TicketsAdminReportsPageDocument,
     "\n  mutation GenerateKeyPair($password: String!) {\n    generateKeyPair(password: $password) {\n      id\n    }\n  }\n": typeof types.GenerateKeyPairDocument,
     "\n  mutation RevokeKeyPair($id: String!) {\n    revokeKeyPair(id: $id) {\n      id\n    }\n  }\n": typeof types.RevokeKeyPairDocument,
@@ -197,6 +197,7 @@ type Documents = {
     "\n  fragment FullLimitedProfile on LimitedProfileType {\n    firstName\n    lastName\n    nick\n    email\n    phoneNumber\n    discordHandle\n  }\n": typeof types.FullLimitedProfileFragmentDoc,
     "\n  fragment FullProfileFieldSelector on ProfileFieldSelectorType {\n    firstName\n    lastName\n    nick\n    email\n    phoneNumber\n    discordHandle\n  }\n": typeof types.FullProfileFieldSelectorFragmentDoc,
     "\n  fragment ProgramDimensionBadge on ProgramDimensionValueType {\n    dimension {\n      slug\n      title(lang: $locale)\n    }\n\n    value {\n      slug\n      title(lang: $locale)\n      color\n    }\n  }\n": typeof types.ProgramDimensionBadgeFragmentDoc,
+    "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n": typeof types.ReportFragmentDoc,
     "\n  fragment ResponseRevision on LimitedResponseType {\n    id\n    revisionCreatedAt\n    revisionCreatedBy {\n      displayName\n    }\n  }\n": typeof types.ResponseRevisionFragmentDoc,
     "\n  fragment ResponseHistoryBanner on FullResponseType {\n    id\n    supersededBy {\n      ...ResponseRevision\n    }\n    oldVersions {\n      ...ResponseRevision\n    }\n    originalCreatedAt\n  }\n": typeof types.ResponseHistoryBannerFragmentDoc,
     "\n  fragment ProfileResponseHistoryBanner on ProfileResponseType {\n    id\n    supersededBy {\n      ...ResponseRevision\n    }\n    oldVersions {\n      ...ResponseRevision\n    }\n    originalCreatedAt\n  }\n": typeof types.ProfileResponseHistoryBannerFragmentDoc,
@@ -215,6 +216,7 @@ const documents: Documents = {
     "\n  mutation PutInvolvementDimensionValue($input: PutDimensionValueInput!) {\n    putDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n": types.PutInvolvementDimensionValueDocument,
     "\n  mutation DeleteInvolvementDimensionValue($input: DeleteDimensionValueInput!) {\n    deleteDimensionValue(input: $input) {\n      slug\n    }\n  }\n": types.DeleteInvolvementDimensionValueDocument,
     "\n  query InvolvementDimensionsList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        dimensions(publicOnly: false) {\n          ...DimensionEditor\n        }\n      }\n    }\n  }\n": types.InvolvementDimensionsListDocument,
+    "\n  query InvolvementAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      involvement {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": types.InvolvementAdminReportsPageDocument,
     "\n  mutation ResendOrderConfirmation($input: ResendOrderConfirmationInput!) {\n    resendOrderConfirmation(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.ResendOrderConfirmationDocument,
     "\n  mutation UpdateOrder($input: UpdateOrderInput!) {\n    updateOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.UpdateOrderDocument,
     "\n  mutation CancelAndRefundOrder($input: CancelAndRefundOrderInput!) {\n    cancelAndRefundOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.CancelAndRefundOrderDocument,
@@ -354,7 +356,6 @@ const documents: Documents = {
     "\n  mutation CreateSurvey($input: CreateSurveyInput!) {\n    createSurvey(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.CreateSurveyDocument,
     "\n  fragment Survey on FullSurveyType {\n    slug\n    title(lang: $locale)\n    isActive\n    activeFrom\n    activeUntil\n    countResponses\n\n    languages {\n      language\n    }\n  }\n": types.SurveyFragmentDoc,
     "\n  query Surveys($eventSlug: String!, $locale: String) {\n    profile {\n      forms {\n        surveys(relation: ACCESSIBLE) {\n          event {\n            slug\n            name\n          }\n          slug\n          title(lang: $locale)\n        }\n      }\n    }\n\n    event(slug: $eventSlug) {\n      name\n\n      forms {\n        surveys(includeInactive: true, app: FORMS) {\n          ...Survey\n        }\n      }\n    }\n  }\n": types.SurveysDocument,
-    "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n": types.ReportFragmentDoc,
     "\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": types.TicketsAdminReportsPageDocument,
     "\n  mutation GenerateKeyPair($password: String!) {\n    generateKeyPair(password: $password) {\n      id\n    }\n  }\n": types.GenerateKeyPairDocument,
     "\n  mutation RevokeKeyPair($id: String!) {\n    revokeKeyPair(id: $id) {\n      id\n    }\n  }\n": types.RevokeKeyPairDocument,
@@ -386,6 +387,7 @@ const documents: Documents = {
     "\n  fragment FullLimitedProfile on LimitedProfileType {\n    firstName\n    lastName\n    nick\n    email\n    phoneNumber\n    discordHandle\n  }\n": types.FullLimitedProfileFragmentDoc,
     "\n  fragment FullProfileFieldSelector on ProfileFieldSelectorType {\n    firstName\n    lastName\n    nick\n    email\n    phoneNumber\n    discordHandle\n  }\n": types.FullProfileFieldSelectorFragmentDoc,
     "\n  fragment ProgramDimensionBadge on ProgramDimensionValueType {\n    dimension {\n      slug\n      title(lang: $locale)\n    }\n\n    value {\n      slug\n      title(lang: $locale)\n      color\n    }\n  }\n": types.ProgramDimensionBadgeFragmentDoc,
+    "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n": types.ReportFragmentDoc,
     "\n  fragment ResponseRevision on LimitedResponseType {\n    id\n    revisionCreatedAt\n    revisionCreatedBy {\n      displayName\n    }\n  }\n": types.ResponseRevisionFragmentDoc,
     "\n  fragment ResponseHistoryBanner on FullResponseType {\n    id\n    supersededBy {\n      ...ResponseRevision\n    }\n    oldVersions {\n      ...ResponseRevision\n    }\n    originalCreatedAt\n  }\n": types.ResponseHistoryBannerFragmentDoc,
     "\n  fragment ProfileResponseHistoryBanner on ProfileResponseType {\n    id\n    supersededBy {\n      ...ResponseRevision\n    }\n    oldVersions {\n      ...ResponseRevision\n    }\n    originalCreatedAt\n  }\n": types.ProfileResponseHistoryBannerFragmentDoc,
@@ -454,6 +456,10 @@ export function graphql(source: "\n  mutation DeleteInvolvementDimensionValue($i
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query InvolvementDimensionsList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        dimensions(publicOnly: false) {\n          ...DimensionEditor\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query InvolvementDimensionsList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        dimensions(publicOnly: false) {\n          ...DimensionEditor\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query InvolvementAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      involvement {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query InvolvementAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      involvement {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -1013,10 +1019,6 @@ export function graphql(source: "\n  query Surveys($eventSlug: String!, $locale:
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n"): (typeof documents)["\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
 export function graphql(source: "\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query TicketsAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      tickets {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -1138,6 +1140,10 @@ export function graphql(source: "\n  fragment FullProfileFieldSelector on Profil
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  fragment ProgramDimensionBadge on ProgramDimensionValueType {\n    dimension {\n      slug\n      title(lang: $locale)\n    }\n\n    value {\n      slug\n      title(lang: $locale)\n      color\n    }\n  }\n"): (typeof documents)["\n  fragment ProgramDimensionBadge on ProgramDimensionValueType {\n    dimension {\n      slug\n      title(lang: $locale)\n    }\n\n    value {\n      slug\n      title(lang: $locale)\n      color\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n"): (typeof documents)["\n  fragment Report on ReportType {\n    slug\n    title(lang: $locale)\n    footer(lang: $locale)\n    columns {\n      slug\n      title(lang: $locale)\n      type\n    }\n    rows\n    totalRow\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

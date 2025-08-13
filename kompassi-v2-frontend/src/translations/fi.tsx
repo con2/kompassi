@@ -2736,6 +2736,11 @@ const translations: Translations = {
     },
   },
 
+  Report: {
+    singleTitle: "Raportti",
+    listTitle: "Raportit",
+  },
+
   SignInRequired: {
     metadata: {
       title: "Kirjautuminen vaaditaan – Kompassi",

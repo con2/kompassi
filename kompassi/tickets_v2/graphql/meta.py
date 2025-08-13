@@ -6,17 +6,17 @@ from kompassi.access.cbac import graphql_query_cbac_required
 from kompassi.core.utils.text_utils import normalize_whitespace
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
+from kompassi.reports.graphql.report import ReportType
 
 from ..models.meta import TicketsV2EventMeta, TicketsV2ProfileMeta
 from ..models.order import Order
 from ..models.product import Product
 from ..models.quota import Quota
-from ..models.reports import get_report, get_reports
+from ..reports import get_report, get_reports
 from .order_full import FullOrderType
 from .order_profile import ProfileOrderType
 from .product_full import FullProductType
 from .quota_full import FullQuotaType
-from .report import ReportType
 
 
 class TicketsV2EventMetaType(DjangoObjectType):

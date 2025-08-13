@@ -3,7 +3,7 @@ import { Translations } from "@/translations/en";
 
 export interface InvolvementAdminTabsProps {
   eventSlug: string;
-  active: "people" | "dimensions" | "registries";
+  active: "people" | "dimensions" | "registries" | "reports";
   translations: Translations;
   searchParams?: Record<string, string>;
 }
@@ -17,6 +17,7 @@ export default function InvolvementAdminTabs({
   const t = translations.Involvement;
   const regisTry = translations.Registry;
   const dimensionT = translations.Dimension;
+  const reporT = translations.Report;
 
   // Strip non-dimension search parameters from the query string
   // to avoid passing them to the tabs, as they are not relevant there.
@@ -46,6 +47,11 @@ export default function InvolvementAdminTabs({
       title: regisTry.listTitle,
       href: `/${eventSlug}/registries`,
       disabled: true,
+    },
+    {
+      slug: "reports",
+      title: reporT.listTitle,
+      href: `/${eventSlug}/involvement-reports`,
     },
   ];
 
