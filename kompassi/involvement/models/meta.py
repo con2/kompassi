@@ -13,11 +13,7 @@ from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.universe import Universe
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
-from kompassi.dimensions.reports.dimension_report import get_dimension_reports
-from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.involvement.dimensions import get_involvement_universe
-from kompassi.involvement.models.involvement_dimension_value import InvolvementDimensionValue
-from kompassi.tickets_v2.reports import Report
 
 from ..filters import InvolvementFilters
 from .invitation import Invitation
@@ -99,7 +95,11 @@ class InvolvementEventMeta(models.Model):
 
         Emperkelator = meta.emperkelator_class
         if Emperkelator is not None:
-            DimensionDTO.save_many(universe=universe, dimension_dtos=Emperkelator.get_dimension_dtos(event))
+            DimensionDTO.save_many(
+                universe=universe,
+                dimension_dtos=Emperkelator.get_dimension_dtos(event),
+                remove_other_values=True,  # TODO remove
+            )
 
             annotations = AnnotationDTO.save_many(Emperkelator.get_annotation_dtos())
             UniverseAnnotation.ensure(universe, annotations)
@@ -137,6 +137,3 @@ class InvolvementEventMeta(models.Model):
         )
 
         return Profile.from_person_involvements(person, list(involvements))
-
-    def get_reports(self, lang: str = DEFAULT_LANGUAGE) -> list[Report]:
-        return get_dimension_reports(InvolvementDimensionValue, self.universe, lang)

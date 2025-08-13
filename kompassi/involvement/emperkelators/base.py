@@ -69,7 +69,12 @@ class BaseEmperkelator:
                             title=dict(fi=pc.name),
                             is_technical=True,
                         )
-                        for pc in event.personnel_classes.all()
+                        for pc in event.personnel_classes.filter(
+                            app_label__in=[
+                                "program_v2",
+                                "labour",
+                            ]
+                        )
                     ],
                 )
             )

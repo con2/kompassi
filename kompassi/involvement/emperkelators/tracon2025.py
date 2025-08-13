@@ -18,7 +18,7 @@ from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
-from kompassi.dimensions.models.enums import AnnotationDataType
+from kompassi.dimensions.models.enums import AnnotationDataType, ValueOrdering
 from kompassi.forms.models.response import Response
 from kompassi.labour.models.signup import Signup
 
@@ -37,10 +37,10 @@ MAX_MEALS = 4
 
 class TicketType(Enum):
     NONE = "none", "Ei lippuetua", "No ticket"
-    MAY_BUY = "may-buy", "Voi ostaa lipun", "May buy a ticket"
-    DAY_TICKET = "day-ticket", "Päivälippu", "Day ticket"
-    WEEKEND_TICKET = "weekend-ticket", "Viikonloppulippu", "Weekend ticket"
-    EXTERNAL_BADGE = "external-badge", "Badge (external)", "Badge (external)"
+    # MAY_BUY = "may-buy", "Voi ostaa lipun", "May buy a ticket"
+    # DAY_TICKET = "day-ticket", "Päivälippu", "Day ticket"
+    # WEEKEND_TICKET = "weekend-ticket", "Viikonloppulippu", "Weekend ticket"
+    # EXTERNAL_BADGE = "external-badge", "Badge (external)", "Badge (external)"
     INTERNAL_BADGE = "internal-badge", "Badge (internal)", "Badge (internal)"
     SUPER_INTERNAL_BADGE = "super-internal-badge", "Badge (super internal)", "Badge (super internal)"
 
@@ -75,6 +75,7 @@ class TicketType(Enum):
                     ),
                 )
                 for tt in cls
+                if tt != cls.NONE
             ],
         )
 
@@ -140,6 +141,7 @@ class ShirtSize(Enum):
             ],
             is_list_filter=False,
             is_shown_in_detail=True,
+            value_ordering=ValueOrdering.MANUAL,
         )
 
 
@@ -296,7 +298,7 @@ class TraconEmperkelator(BaseEmperkelator):
     def get_dimension_values(self) -> CachedDimensions:
         return {
             "v1-personnel-class": self.v1_personnel_class_dimension_values,
-            "ticket-type": [self.perks.ticket_type.value],
+            "ticket-type": [self.perks.ticket_type.value] if self.perks.ticket_type != TicketType.NONE else [],
             "shirt-size": self.shirt_size_dimension_values,
         }
 

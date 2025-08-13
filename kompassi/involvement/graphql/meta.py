@@ -13,6 +13,7 @@ from kompassi.dimensions.graphql.dimension_full import FullDimensionType
 from kompassi.dimensions.models.enums import AnnotationFlags
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.involvement.filters import InvolvementFilters
+from kompassi.involvement.reports.combined_perks_reports import get_combined_perks_reports
 from kompassi.reports.graphql.report import ReportType
 
 from ..models.involvement import Involvement
@@ -192,7 +193,7 @@ class InvolvementEventMetaType(DjangoObjectType):
             request,
         )
 
-        return meta.get_reports(lang)
+        return get_combined_perks_reports(meta.universe, lang)
 
     reports = graphene.NonNull(
         graphene.List(graphene.NonNull(ReportType)),
