@@ -7,7 +7,7 @@ from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
-from kompassi.dimensions.models.enums import AnnotationDataType
+from kompassi.dimensions.models.enums import AnnotationDataType, ValueOrdering
 from kompassi.dimensions.models.universe import Universe
 from kompassi.labour.models.signup import Signup
 
@@ -74,8 +74,9 @@ class BaseEmperkelator:
                                 "program_v2",
                                 "labour",
                             ]
-                        )
+                        ).order_by("priority")
                     ],
+                    value_ordering=ValueOrdering.MANUAL,
                 )
             )
 
