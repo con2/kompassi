@@ -72,7 +72,16 @@ class InvolvementToBadgeMapping(models.Model):
                 for value_slug in value_slugs
             }
 
-            if self.required_pairs.issubset(present_pairs):
-                matches.append((involvement, self.personnel_class, self.some_job_title))
+            if not self.required_pairs.issubset(present_pairs):
+                continue
+
+            if involvement.title:
+                job_title = involvement.title
+            elif self.job_title:
+                job_title = self.job_title
+            else:
+                job_title = self.personnel_class.name
+
+            matches.append((involvement, self.personnel_class, job_title))
 
         return matches

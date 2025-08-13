@@ -27,6 +27,7 @@ from kompassi.forms.models.projection import Projection
 from kompassi.forms.models.splat import Splat
 from kompassi.forms.models.survey import Survey
 from kompassi.intra.models import IntraEventMeta, Team
+from kompassi.involvement.models.involvement_to_badge import InvolvementToBadgeMapping
 from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
 from kompassi.labour.models.alternative_signup_forms import AlternativeSignupForm
@@ -322,6 +323,23 @@ class Setup:
             ),
         )
         meta.ensure()
+
+        universe = self.event.involvement_universe
+
+        ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
+        InvolvementToBadgeMapping.objects.update_or_create(
+            universe=universe,
+            personnel_class=ohjelma,
+            defaults=dict(
+                required_dimensions={
+                    "state": ["active"],
+                    "type": ["combined-perks"],
+                    "v1-personnel-class": ["ohjelma"],
+                },
+                job_title="Ohjelmanpitäjä",
+                priority=self.get_ordering_number(),
+            ),
+        )
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack

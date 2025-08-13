@@ -288,7 +288,11 @@ class Badge(models.Model, CsvExportMixin):
         ).first()
 
         if combined_perks and (formatted_perks := combined_perks.annotations.get("internal:formattedPerks", "")):
-            self.perks = {"internal:formattedPerks": formatted_perks}
+            new_perks = {"internal:formattedPerks": formatted_perks}
+            if self.perks == new_perks:
+                return self.perks, False
+
+            self.perks = new_perks
 
             if commit:
                 self.save(update_fields=["perks"])
