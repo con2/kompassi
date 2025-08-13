@@ -193,7 +193,13 @@ class InvolvementEventMetaType(DjangoObjectType):
             request,
         )
 
-        return get_combined_perks_reports(meta.universe, lang)
+        reports = get_combined_perks_reports(meta.universe, lang)
+
+        Emperkelator = meta.emperkelator_class
+        if Emperkelator is not None:
+            reports.extend(Emperkelator.get_reports(meta.event, lang))
+
+        return reports
 
     reports = graphene.NonNull(
         graphene.List(graphene.NonNull(ReportType)),

@@ -9,7 +9,9 @@ from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from kompassi.dimensions.models.enums import AnnotationDataType, ValueOrdering
 from kompassi.dimensions.models.universe import Universe
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.labour.models.signup import Signup
+from kompassi.reports.models.report import Report
 
 from ..models.enums import INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS
 from ..models.involvement import Involvement
@@ -153,3 +155,7 @@ class BaseEmperkelator:
             ),
             "",
         )
+
+    @classmethod
+    def get_reports(cls, event: Event, lang: str = DEFAULT_LANGUAGE) -> list[Report]:
+        return []

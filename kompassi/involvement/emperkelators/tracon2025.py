@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from enum import Enum
 from functools import cached_property, reduce
-from typing import TYPE_CHECKING, Self
+from typing import Self
 
 import pydantic
 
@@ -20,13 +20,14 @@ from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from kompassi.dimensions.models.enums import AnnotationDataType, ValueOrdering
 from kompassi.forms.models.response import Response
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE
+from kompassi.graphql_api.utils import get_message_in_language
 from kompassi.labour.models.signup import Signup
+from kompassi.reports.graphql.report import Column, Report, TypeOfColumn
 
 from ..models.enums import InvolvementType
+from ..models.involvement import Involvement
 from .base import BaseEmperkelator
-
-if TYPE_CHECKING:
-    from ..models.involvement import Involvement
 
 logger = logging.getLogger(__name__)
 THIRD_MEAL_MIN_HOURS = 12
@@ -423,3 +424,63 @@ class TraconEmperkelator(BaseEmperkelator):
             return [shirt_size.value]
 
         return []
+
+    @classmethod
+    def get_reports(cls, event: Event, lang: str = DEFAULT_LANGUAGE) -> list[Report]:
+        """
+        TODO Generalize this
+        Use AnnotationFlags.PERK to filter and count all countable annotations (int or boolean)
+        """
+        annotation_dtos = cls.get_annotation_dtos()
+
+        annotationsies = Involvement.objects.filter(
+            universe=event.involvement_universe,
+            type=InvolvementType.COMBINED_PERKS,
+            is_active=True,
+        ).values_list("annotations", flat=True)
+
+        meal_vouchers_annotation_dto = next(dto for dto in annotation_dtos if dto.slug == "tracon:mealVouchers")
+        meal_vouchers_title = get_message_in_language(meal_vouchers_annotation_dto.title, lang)
+        total_meal_vouchers = sum(
+            annotations.get("tracon:mealVouchers", 0) for annotations in annotationsies if isinstance(annotations, dict)
+        )
+
+        extra_swag_annotation_dto = next(dto for dto in annotation_dtos if dto.slug == "tracon:extraSwag")
+        extra_swag_title = get_message_in_language(extra_swag_annotation_dto.title, lang)
+        total_extra_swag = sum(
+            annotations.get("tracon:extraSwag", False)
+            for annotations in annotationsies
+            if isinstance(annotations, dict)
+        )
+
+        return [
+            Report(
+                slug="tracon2025_specific",
+                title=dict(
+                    fi="Tracon 2025: Muut edut",
+                    en="Tracon 2025: Other perks",
+                ),
+                columns=[
+                    Column(
+                        slug="perk",
+                        title=dict(
+                            en="Perk",
+                            fi="Etu",
+                        ),
+                        type=TypeOfColumn.STRING,
+                    ),
+                    Column(
+                        slug="count",
+                        title=dict(
+                            en="Count",
+                            fi="Lukumäärä",
+                        ),
+                        type=TypeOfColumn.INT,
+                    ),
+                ],
+                rows=[
+                    [extra_swag_title, total_extra_swag],
+                    [meal_vouchers_title, total_meal_vouchers],
+                ],
+            ),
+        ]
