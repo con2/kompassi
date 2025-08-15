@@ -167,6 +167,7 @@ class Setup:
             ("Artesaani", "artesaani", "badges", "?"),
             ("Vieras", "vieras", "badges", "Badge (external)"),
             ("Vapaalippu, viikonloppu", "vapaalippu-vkl", "tickets", "Viikonloppuranneke"),
+            ("Vapaalippu, perjantai", "vapaalippu-pe", "tickets", "Perjantairanneke"),
             ("Vapaalippu, lauantai", "vapaalippu-la", "tickets", "Lauantairanneke"),
             ("Vapaalippu, sunnuntai", "vapaalippu-su", "tickets", "Sunnuntairanneke"),
             ("Cosplaykisaaja", "cosplay", "tickets", "?"),
