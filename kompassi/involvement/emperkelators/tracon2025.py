@@ -124,6 +124,13 @@ class ShirtSize(Enum):
         return SHIRT_SIZES_BY_V1.get(v1_shirt_size, cls.NONE)
 
     @classmethod
+    def from_v2(cls, v2_shirt_size: str) -> ShirtSize:
+        if v2_shirt_size == "bag":
+            return cls.BOTTLE
+
+        return cls(v2_shirt_size)
+
+    @classmethod
     def as_dimension_dto(cls) -> DimensionDTO:
         return DimensionDTO(
             slug="shirt-size",
@@ -288,6 +295,74 @@ class TraconEmperkelator(BaseEmperkelator):
     def perks(self) -> Perks:
         return reduce(Perks.imbibe, (Perks.for_involvement(inv) for inv in self.involvements), Perks())
 
+    @cached_property
+    def active_legacy_signup_involvement(self):
+        return next(
+            (
+                involvement
+                for involvement in self.involvements
+                if involvement.type == InvolvementType.LEGACY_SIGNUP and involvement.is_active
+            ),
+            None,
+        )
+
+    @property
+    def v1_personnel_class_dimension_values(self):
+        if inv := self.active_legacy_signup_involvement:
+            return inv.cached_dimensions.get("v1-personnel-class", [])
+
+        for inv in self.involvements:
+            if inv.type == InvolvementType.PROGRAM_HOST:
+                return ["ohjelma"]
+
+        return []
+
+    @property
+    def ticket_type_dimension_values(self) -> list[str]:
+        return [self.perks.ticket_type.value] if self.perks.ticket_type != TicketType.NONE else []
+
+    @property
+    def shirt_size_dimension_values(self) -> list[str]:
+        if inv := self.active_legacy_signup_involvement:
+            return inv.cached_dimensions.get("shirt-size", [])
+
+        # TODO in future events, make sure this is a dimension in source data
+        for response in Response.objects.filter(
+            form__survey__event=self.event,
+            form__survey__slug__in=["program-swag", "programhost"],
+            original_created_by=self.person.user,
+        ):
+            values, warnings = response.get_processed_form_data(field_slugs=["swag"])
+            if "swag" in warnings:
+                logger.warning(
+                    "Cowardly refusing to emperkelate shirt size with warnings: %s",
+                    dict(
+                        person=self.person.id,
+                        response=response.id,
+                    ),
+                )
+
+            shirt_size_str = values.get("swag", "")
+            if not shirt_size_str:
+                continue
+
+            try:
+                shirt_size = ShirtSize.from_v2(shirt_size_str)
+            except ValueError:
+                logger.warning(
+                    "Invalid shirt size value: %s",
+                    dict(
+                        person=self.person.id,
+                        response=response.id,
+                        shirt_size=shirt_size_str,
+                    ),
+                )
+                continue
+
+            return [shirt_size.value]
+
+        return []
+
     @classmethod
     def get_dimension_dtos(cls, event: Event) -> list[DimensionDTO]:
         return [
@@ -300,7 +375,7 @@ class TraconEmperkelator(BaseEmperkelator):
     def get_dimension_values(self) -> CachedDimensions:
         return {
             "v1-personnel-class": self.v1_personnel_class_dimension_values,
-            "ticket-type": [self.perks.ticket_type.value] if self.perks.ticket_type != TicketType.NONE else [],
+            "ticket-type": self.ticket_type_dimension_values,
             "shirt-size": self.shirt_size_dimension_values,
         }
 
@@ -351,30 +426,8 @@ class TraconEmperkelator(BaseEmperkelator):
     def get_annotation_values(self) -> CachedAnnotations:
         return self.perks.model_dump(mode="json", exclude_none=True, by_alias=True, exclude={"ticket_type"})
 
-    @cached_property
-    def active_volunteer_involvement(self):
-        return next(
-            (
-                involvement
-                for involvement in self.involvements
-                if involvement.type == InvolvementType.LEGACY_SIGNUP and involvement.is_active
-            ),
-            None,
-        )
-
-    @property
-    def v1_personnel_class_dimension_values(self):
-        if inv := self.active_volunteer_involvement:
-            return inv.cached_dimensions.get("v1-personnel-class", [])
-
-        for inv in self.involvements:
-            if inv.type == InvolvementType.PROGRAM_HOST:
-                return ["ohjelma"]
-
-        return []
-
     def get_title(self) -> str:
-        if inv := self.active_volunteer_involvement:
+        if inv := self.active_legacy_signup_involvement:
             return inv.title
 
         for involvement in self.involvements:
@@ -382,48 +435,6 @@ class TraconEmperkelator(BaseEmperkelator):
                 return "Ohjelmanpitäjä"
 
         return ""
-
-    @property
-    def shirt_size_dimension_values(self) -> list[str]:
-        if inv := self.active_volunteer_involvement:
-            return inv.cached_dimensions.get("shirt-size", [])
-
-        # TODO in future events, make sure this is a dimension in source data
-        for response in Response.objects.filter(
-            form__survey__event=self.event,
-            form__survey__slug__in=["program-swag", "programhost"],
-            original_created_by=self.person.user,
-        ):
-            values, warnings = response.get_processed_form_data(field_slugs=["swag"])
-            if "swag" in warnings:
-                logger.warning(
-                    "Cowardly refusing to emperkelate shirt size with warnings: %s",
-                    dict(
-                        person=self.person.id,
-                        response=response.id,
-                    ),
-                )
-
-            shirt_size_str = values.get("swag", "")
-            if not shirt_size_str:
-                continue
-
-            try:
-                shirt_size = ShirtSize(shirt_size_str)
-            except ValueError:
-                logger.warning(
-                    "Invalid shirt size value: %s",
-                    dict(
-                        person=self.person.id,
-                        response=response.id,
-                        shirt_size=shirt_size_str,
-                    ),
-                )
-                continue
-
-            return [shirt_size.value]
-
-        return []
 
     @classmethod
     def get_reports(cls, event: Event, lang: str = DEFAULT_LANGUAGE) -> list[Report]:
