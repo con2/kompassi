@@ -6,6 +6,7 @@ from decimal import Decimal
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
@@ -28,6 +29,7 @@ from kompassi.forms.models.splat import Splat
 from kompassi.forms.models.survey import Survey
 from kompassi.intra.models import IntraEventMeta, Team
 from kompassi.involvement.models.involvement_to_badge import InvolvementToBadgeMapping
+from kompassi.involvement.models.involvement_to_group import InvolvementToGroupMapping
 from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
 from kompassi.labour.models.alternative_signup_forms import AlternativeSignupForm
@@ -340,6 +342,16 @@ class Setup:
                 job_title="Ohjelmanpitäjä",
                 priority=self.get_ordering_number(),
             ),
+        )
+
+        group, _ = Group.objects.get_or_create(name="tracon2025-program-hosts")
+        InvolvementToGroupMapping.objects.get_or_create(
+            universe=universe,
+            required_dimensions={
+                "state": ["active"],
+                "type": ["program-host"],
+            },
+            group=group,
         )
 
     def setup_access(self):
