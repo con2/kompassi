@@ -66,10 +66,10 @@ class Setup:
         self.setup_labour()
         self.setup_badges()
         self.setup_intra()
-        self.setup_access()
         self.setup_tickets_v2()
         self.setup_forms()
         self.setup_program_v2()
+        self.setup_access()
 
     def setup_core(self):
         self.organization, unused = Organization.objects.get_or_create(
@@ -344,7 +344,7 @@ class Setup:
             ),
         )
 
-        group, _ = Group.objects.get_or_create(name="tracon2025-program-hosts")
+        group, _ = Group.objects.get_or_create(name=f"{self.event.slug}-program-hosts")
         InvolvementToGroupMapping.objects.get_or_create(
             universe=universe,
             required_dimensions={
@@ -359,7 +359,7 @@ class Setup:
         privilege = Privilege.objects.get(slug="tracon-slack")
         for group in [
             self.event.labour_event_meta.get_group("accepted"),
-            # self.event.programme_event_meta.get_group("hosts"), # TODO program_v2 equivalent
+            Group.objects.get(name=f"{self.event.slug}-program-hosts"),
         ]:
             GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
