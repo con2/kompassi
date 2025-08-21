@@ -14,6 +14,7 @@ from kompassi.core.models import Event, Organization, Venue
 from kompassi.forms.models.meta import FormsEventMeta
 from kompassi.forms.models.survey import SurveyDTO
 from kompassi.intra.models import IntraEventMeta, Team
+from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
 from kompassi.labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Survey
 from kompassi.program_v2.models.meta import ProgramV2EventMeta
@@ -286,6 +287,8 @@ class Setup:
             survey.save(self.event)
 
     def setup_program_v2(self):
+        InvolvementEventMeta.ensure(self.event)
+
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
 
         # TODO(Kotae Expo): Define your volunteer registry
