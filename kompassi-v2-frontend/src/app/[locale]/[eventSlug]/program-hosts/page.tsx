@@ -1,6 +1,3 @@
-// TODO Filter program hosts by dimensions
-// Should these be program dimensions or involvement dimensions? Probably program.
-
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -43,6 +40,8 @@ const query = graphql(`
       timezone
 
       program {
+        programHostsExcelExportLink
+
         dimensions(isListFilter: true, publicOnly: false) {
           ...DimensionFilter
         }
@@ -107,6 +106,9 @@ export default async function ProgramAdminHostsPage(props: Props) {
 
   const event = data.event;
   const programHosts = data.event.program.programHosts;
+  const excelExportLink = `${
+    data.event.program.programHostsExcelExportLink
+  }?${new URLSearchParams(searchParams).toString()}`;
 
   // TODO ugly. showing active only
   const dimensions = data.event.program.dimensions.filter(
@@ -155,7 +157,15 @@ export default async function ProgramAdminHostsPage(props: Props) {
       translations={translations}
       active={"programHosts"}
       searchParams={searchParams}
+      actions={
+        excelExportLink && (
+          <a href={excelExportLink} className="btn btn-outline-primary">
+            {t.actions.exportAsExcel.title}
+          </a>
+        )
+      }
     >
+      {/* TODO also support filtering by involvement dimensions (or delegate this view to Involvement entirely?) */}
       <DimensionFilters
         dimensions={dimensions}
         className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1"

@@ -11,6 +11,8 @@ from kompassi.dimensions.models.dimension import Dimension
 from kompassi.forms.excel_export import write_responses_as_excel
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
+from kompassi.involvement.models.profile_field_selector import ProfileFieldSelector
+from kompassi.program_v2.graphql.program_host_full import ProgramHost
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +37,41 @@ def write_program_offers_as_excel(
             program_form.combined_fields,
             list(program_offers),
             output,
+        )
+
+    output.close()
+
+
+def write_program_hosts_as_excel(
+    hosts: Iterable[ProgramHost],
+    output_stream: BinaryIO | HttpResponse,
+):
+    output = XlsxWriter(output_stream)
+
+    field_slugs = list(ProfileFieldSelector.all_fields())
+    field_slugs.remove("id")
+    # move last_name to front
+    field_slugs.remove("last_name")
+    field_slugs.insert(0, "last_name")
+
+    output.writerow(
+        [
+            *field_slugs,
+            "program_items",
+        ]
+    )
+
+    for host in hosts:
+        profile_field_selector = ProfileFieldSelector.union(
+            *[involvement.profile_field_selector for involvement in host.involvements]
+        )
+        profile_fields = profile_field_selector.select(host.person)
+
+        output.writerow(
+            [
+                *[profile_fields.get(field_slug, "") for field_slug in field_slugs],
+                "\n".join(involvement.title for involvement in host.involvements if involvement.program),
+            ]
         )
 
     output.close()

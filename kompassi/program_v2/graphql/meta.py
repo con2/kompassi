@@ -291,6 +291,18 @@ class ProgramV2EventMetaType(DjangoObjectType):
     )
 
     @staticmethod
+    def resolve_program_hosts_excel_export_link(meta: ProgramV2EventMeta, info):
+        request: HttpRequest = info.context
+        return request.build_absolute_uri(
+            reverse("program_v2:program_hosts_excel_export_view", kwargs={"event_slug": meta.event.slug})
+        )
+
+    program_hosts_excel_export_link = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_program_hosts_excel_export_link.__doc__ or ""),
+    )
+
+    @staticmethod
     def resolve_program_offers(
         meta: ProgramV2EventMeta,
         info,

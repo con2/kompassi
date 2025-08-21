@@ -21,6 +21,7 @@ from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 from kompassi.forms.models.enums import SurveyPurpose
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
+from kompassi.involvement.models.enums import InvolvementApp, InvolvementType
 from kompassi.involvement.models.involvement import Involvement
 from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
@@ -173,12 +174,14 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
             program_ids = program_filters.filter(self.programs.all()).values_list("id", flat=True)
             program_criteria = {"program__in": program_ids}
         else:
-            program_criteria = {"program__isnull": False}
+            program_criteria = {}
 
         involvements = (
             Involvement.objects.filter(
                 universe=self.event.involvement_universe,
                 is_active=True,
+                app=InvolvementApp.PROGRAM,
+                type=InvolvementType.PROGRAM_HOST,
                 **program_criteria,
             )
             .select_related(

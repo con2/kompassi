@@ -17,6 +17,10 @@ from .program_limited import LimitedProgramType
 
 @dataclass
 class ProgramHost:
+    """
+    TODO ProgramHost looks awfully lot like Profile. Unify?
+    """
+
     person: Person
     involvements: list[Involvement]
 

@@ -1786,6 +1786,9 @@ const translations: Translations = {
             cancel: "Sulje tallentamatta",
           },
         },
+        exportAsExcel: {
+          title: "Lataa Excel-tiedostona",
+        },
       },
     },
 

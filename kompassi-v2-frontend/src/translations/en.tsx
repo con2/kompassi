@@ -1778,6 +1778,9 @@ const translations = {
             cancel: "Close without saving",
           },
         },
+        exportAsExcel: {
+          title: "Download as Excel",
+        },
       },
     },
 

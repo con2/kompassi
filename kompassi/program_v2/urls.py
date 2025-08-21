@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views.calendar_export_view import calendar_export_view, single_program_calendar_export_view
+from .views.program_hosts_excel_export_view import program_hosts_excel_export_view
 from .views.program_offers_excel_export_view import program_offers_excel_export_view
 
 app_name = "program_v2"
@@ -19,5 +20,10 @@ urlpatterns = [
         "events/<slug:event_slug>/program-offers.xlsx",
         program_offers_excel_export_view,
         name="program_offers_excel_export_view",
+    ),
+    path(
+        "events/<slug:event_slug>/program-hosts.xlsx",
+        program_hosts_excel_export_view,
+        name="program_hosts_excel_export_view",
     ),
 ]
