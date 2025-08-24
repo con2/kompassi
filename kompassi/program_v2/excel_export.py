@@ -7,12 +7,17 @@ from django.db import models
 from django.http import HttpResponse
 
 from kompassi.core.excel_export import XlsxWriter
+from kompassi.core.models.event import Event
+from kompassi.core.utils.locale_utils import get_message_in_language
 from kompassi.dimensions.models.dimension import Dimension
 from kompassi.forms.excel_export import write_responses_as_excel
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.involvement.models.profile_field_selector import ProfileFieldSelector
-from kompassi.program_v2.graphql.program_host_full import ProgramHost
+
+from .graphql.program_host_full import ProgramHost
+from .models.schedule_item import ScheduleItem
 
 logger = logging.getLogger(__name__)
 
@@ -73,5 +78,44 @@ def write_program_hosts_as_excel(
                 "\n".join(involvement.title for involvement in host.involvements if involvement.program),
             ]
         )
+
+    output.close()
+
+
+def write_schedule_items_as_excel(
+    event: Event,
+    schedule_items: Iterable[ScheduleItem],
+    output_stream: BinaryIO | HttpResponse,
+    dimensions: models.QuerySet[Dimension],
+    lang: str = DEFAULT_LANGUAGE,
+):
+    output = XlsxWriter(output_stream)
+
+    header_row = [
+        "start_time",
+        "end_time",
+        "length_minutes",
+        "location",
+        "title",
+    ]
+
+    header_row.extend(kd.slug for kd in dimensions)
+    output.writerow(header_row)
+
+    timezone = event.timezone
+
+    for item in schedule_items:
+        row = [
+            item.start_time.astimezone(timezone).replace(tzinfo=None),
+            item.cached_end_time.astimezone(timezone).replace(tzinfo=None),
+            item.duration.total_seconds() // 60,
+            get_message_in_language(item.cached_location, lang),
+            item.title,
+        ]
+
+        for dimension in dimensions:
+            row.append(", ".join(item.cached_combined_dimensions.get(dimension.slug, [])))
+
+        output.writerow(row)
 
     output.close()

@@ -1326,6 +1326,11 @@ const translations = {
           cancel: "Close without restoring",
         },
       },
+      exportAsExcel: {
+        title: "Download as Excel",
+        scheduleItems: "Schedule items",
+        programItems: "Program items",
+      },
     },
     messages: {
       failedToCreateProgram: "Failed to create program item.",

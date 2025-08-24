@@ -4,6 +4,7 @@ import { ReactNode, MouseEvent, useCallback, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
 import type { Translations } from "@/translations/en";
+import { createPortal } from "react-dom";
 
 interface Props {
   title: string;
@@ -50,37 +51,40 @@ export default function ModalButton({
       >
         {label ?? `${title}…`}
       </button>
-      {!disabled && (
-        <Modal show={isVisible} onHide={close} size="lg">
-          <Modal.Header closeButton>
-            <Modal.Title>{title}</Modal.Title>
-          </Modal.Header>
+      {!disabled &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <Modal show={isVisible} onHide={close} size="lg">
+            <Modal.Header closeButton>
+              <Modal.Title>{title}</Modal.Title>
+            </Modal.Header>
 
-          {action ? (
-            <form action={action} onSubmit={close}>
-              <Modal.Body>{children}</Modal.Body>
+            {action ? (
+              <form action={action} onSubmit={close}>
+                <Modal.Body>{children}</Modal.Body>
 
-              <Modal.Footer>
-                <Button variant="outline-secondary" onClick={close}>
-                  {messages.cancel}
-                </Button>
-                <Button variant={submitButtonVariant} type="submit">
-                  {messages.submit}
-                </Button>
-              </Modal.Footer>
-            </form>
-          ) : (
-            <>
-              <Modal.Body>{children}</Modal.Body>
-              <Modal.Footer>
-                <Button variant="outline-primary" onClick={close}>
-                  {messages.cancel}
-                </Button>
-              </Modal.Footer>
-            </>
-          )}
-        </Modal>
-      )}
+                <Modal.Footer>
+                  <Button variant="outline-secondary" onClick={close}>
+                    {messages.cancel}
+                  </Button>
+                  <Button variant={submitButtonVariant} type="submit">
+                    {messages.submit}
+                  </Button>
+                </Modal.Footer>
+              </form>
+            ) : (
+              <>
+                <Modal.Body>{children}</Modal.Body>
+                <Modal.Footer>
+                  <Button variant="outline-primary" onClick={close}>
+                    {messages.cancel}
+                  </Button>
+                </Modal.Footer>
+              </>
+            )}
+          </Modal>,
+          document.body,
+        )}
     </>
   );
 }

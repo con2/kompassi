@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Collection, Mapping
-from datetime import timedelta, tzinfo
+from datetime import datetime, timedelta, tzinfo
 from functools import cached_property
 from typing import TYPE_CHECKING, ClassVar, Self
 
@@ -41,8 +41,8 @@ class ScheduleItem(models.Model):
         related_name="schedule_items",
     )
 
-    start_time = models.DateTimeField()
-    duration = models.DurationField()
+    start_time: datetime = models.DateTimeField()  # type: ignore
+    duration: timedelta = models.DurationField()  # type: ignore
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -1325,6 +1325,11 @@ const translations: Translations = {
           cancel: "Sulje palauttamatta",
         },
       },
+      exportAsExcel: {
+        title: "Lataa Excel-tiedostona",
+        scheduleItems: "Aikataulumerkinnät",
+        programItems: "Ohjelmanumerot",
+      },
     },
     messages: {
       failedToCreateProgram: "Ohjelmanumeron luonti epäonnistui.",

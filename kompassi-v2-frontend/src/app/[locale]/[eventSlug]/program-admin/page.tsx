@@ -18,6 +18,7 @@ import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { ButtonGroup, DropdownButton, DropdownItem } from "react-bootstrap";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
@@ -41,6 +42,7 @@ const query = graphql(`
       slug
       name
       program {
+        scheduleItemsExcelExportLink
         dimensions(publicOnly: false) {
           slug
           title(lang: $locale)
@@ -200,6 +202,11 @@ export default async function FormResponsesPage(props: Props) {
     );
   }
 
+  const baseExcelExportLink = data.event.program.scheduleItemsExcelExportLink;
+  const excelExportLink = `${baseExcelExportLink}?${new URLSearchParams(
+    searchParams,
+  )}`;
+
   return (
     <ProgramAdminView
       translations={translations}
@@ -207,19 +214,36 @@ export default async function FormResponsesPage(props: Props) {
       active="programItems"
       searchParams={searchParams}
       actions={
-        <ModalButton
-          className="btn btn-outline-primary"
-          label={t.actions.create.title + "…"}
-          title={t.actions.create.title}
-          messages={t.actions.create.modalActions}
-          action={createProgram.bind(null, locale, eventSlug)}
-        >
-          <SchemaForm
-            fields={createProgramFields}
-            messages={translations.SchemaForm}
-            headingLevel="h4"
-          />
-        </ModalButton>
+        <ButtonGroup>
+          {excelExportLink && (
+            <DropdownButton
+              title={t.actions.exportAsExcel.title}
+              variant="outline-primary"
+            >
+              <DropdownItem
+                as={"a"}
+                href={excelExportLink}
+                target="_blank"
+                rel="noopener noreferer"
+              >
+                {t.actions.exportAsExcel.scheduleItems}
+              </DropdownItem>
+            </DropdownButton>
+          )}
+          <ModalButton
+            className="btn btn-outline-primary"
+            label={t.actions.create.title + "…"}
+            title={t.actions.create.title}
+            messages={t.actions.create.modalActions}
+            action={createProgram.bind(null, locale, eventSlug)}
+          >
+            <SchemaForm
+              fields={createProgramFields}
+              messages={translations.SchemaForm}
+              headingLevel="h4"
+            />
+          </ModalButton>
+        </ButtonGroup>
       }
     >
       <DimensionFilters
