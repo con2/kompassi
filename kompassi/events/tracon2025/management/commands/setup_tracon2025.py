@@ -384,7 +384,13 @@ class Setup:
         )
         log_get_or_create(logger, room_dimension_value, created)
 
-        dimensions = {"konsti": ["fleamarket"], "room": ["sopraano"]}
+        dimensions = {
+            "konsti": ["fleamarket"],
+            "room": ["sopraano"],
+        }
+        annotations = {
+            "internal:links:signup": "https://ropekonsti.fi",  # TODO
+        }
         cache = meta.universe.preload_dimensions()
 
         for program_slug, program_title, day, start_time, end_time, max_attendance in [
@@ -417,12 +423,13 @@ class Setup:
             prog_start_dt = datetime.combine(date, start_time, tzinfo=self.tz)
             prog_end_dt = datetime.combine(date, end_time, tzinfo=self.tz)
 
-            program, created = Program.objects.get_or_create(
+            program, created = Program.objects.update_or_create(
                 slug=program_slug,
                 event=self.event,
                 defaults=dict(
                     title=program_title,
                     description=KIRPPUTORI_KONSTI_DESCRIPTION,
+                    annotations=annotations,
                 ),
             )
             log_get_or_create(logger, program, created)
@@ -435,15 +442,17 @@ class Setup:
 
                 sched_max_attendance = 50 if sched_end_dt == prog_end_dt else max_attendance
 
-                sched, created = ScheduleItem.objects.get_or_create(
+                sched, created = ScheduleItem.objects.update_or_create(
                     program=program,
                     slug=f"{program_slug}-{formatted_start_dt.replace(':', '')}",
                     # FMH can't use .with… with get_or_create
                     defaults=dict(
                         start_time=sched_start_dt,
                         duration=slot_duration,
-                        subtitle=f"Saapuminen klo {formatted_start_dt}–{formatted_end_dt}",
-                        annotations={"konsti:maxAttendance": sched_max_attendance},
+                        annotations={
+                            "konsti:maxAttendance": sched_max_attendance,
+                            "internal:subtitle": f"Saapuminen klo {formatted_start_dt}–{formatted_end_dt}",
+                        },
                         cached_end_time=sched_end_dt,
                         cached_event_id=self.event.id,
                     ),
