@@ -60,7 +60,7 @@ Ilmoittaudu enintään kolmeen sinulle sopivaan aikaan per arvontablokki. Jos si
 
 Jos haluat varata kirpputoriajan ryhmänä, teidän on ensin muodostettava ryhmä Konstin Ryhmä-näkymässä. Yksi jäsen luo ryhmän ja saa liittymiskoodin, jonka avulla muut jäsenet liittyvät ryhmään. Tämän jälkeen ryhmän perustaja ilmoittautuu arvontaan tai varaa ajan koko ryhmän puolesta. Tarkemmat ohjeet löytyvät Konstin ohjeista.
 
-🚨 HUOM! Teknisistä syistä tämän ohjelmanumeron kellonaikana näkyy koko arvottava aikaväli. Arvonnassa arvotaan kuitenkin 30 min ajanvarauksia, joiden kellonajat näkyvät ohjelmanumeroiden otsikoissa. Voit kaikissa kolmessa arvonnassa ilmoittautua kolmeen sinulle sopivaan aikaikkunaan, ja jokaisessa arvonnassa voit päästä niistä yhteen.
+🚨 HUOM! Arvonnassa arvotaan 30 min ajanvarauksia. Voit kaikissa kolmessa arvonnassa ilmoittautua kolmeen sinulle sopivaan aikaikkunaan, ja jokaisessa arvonnassa voit päästä niistä yhteen.
 """.strip()
 
 
