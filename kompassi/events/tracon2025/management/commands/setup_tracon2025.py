@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import datetime, timedelta
+from datetime import time as time_type
 from decimal import Decimal
 
 from dateutil.tz import tzlocal
@@ -20,6 +21,7 @@ from kompassi.core.models.event import Event
 from kompassi.core.models.organization import Organization
 from kompassi.core.models.person import Person
 from kompassi.core.models.venue import Venue
+from kompassi.core.utils.log_utils import log_get_or_create
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.dimension_value_dto import DimensionValueDTO
 from kompassi.dimensions.models.enums import ValueOrdering
@@ -40,6 +42,9 @@ from kompassi.labour.models.personnel_class import PersonnelClass
 from kompassi.labour.models.qualifications import Qualification
 from kompassi.labour.models.survey import Survey as LabourSurvey
 from kompassi.program_v2.models.meta import ProgramV2EventMeta
+from kompassi.program_v2.models.program import Program
+from kompassi.program_v2.models.schedule_item import ScheduleItem
+from kompassi.program_v2.utils.backfill import backfill
 from kompassi.tickets_v2.models.meta import TicketsV2EventMeta
 from kompassi.tickets_v2.models.product import Product
 from kompassi.tickets_v2.models.quota import Quota
@@ -48,6 +53,15 @@ from kompassi.tickets_v2.optimized_server.models.enums import PaymentProvider
 from ...models import Night, SignupExtra
 
 logger = logging.getLogger(__name__)
+KIRPPUTORI_KONSTI_DESCRIPTION = """
+Traconin kirpputorille pääsee ostoksille pe klo 16–22 ja la klo 9:30–14 ainoastaan ajanvarauksella. Muina aikoina kirpputori palvelee asiakkaita jonosta. Ajanvaraus tapahtuu käyttäen Konstia, johon kirjaudutaan Kompassi-tunnuksilla. Molempien päivien ajanvarausajoille voi ilmoittautua alkaen pe klo 08:00. Koska halukkaita voi olla enemmän kuin kirpputorin ajanvarausaikoihin mahtuu, ajat arvotaan. Arvonnat tapahtuvat perjantaina kello 14:00 ja 17:00 sekä lauantaina kello 7:30. Kunkin arvonnan jälkeen niille ajanvarausajoille, joille on vielä tilaa, voi ilmoittautua Konstissa suoraan.
+
+Ilmoittaudu enintään kolmeen sinulle sopivaan aikaan per arvontablokki. Jos sinua onnistaa arvonnassa, saat yhden puolen tunnin mittaisen saapumisajan jonka kuluessa voit saapua jonoon koska tahansa. Saapuessasi kirpputorille avaa lippu älypuhelimeesi ja näytä se järjestyksenvalvojalle. Lipun avaaminen onnistuu kätevimmin avaamalla älypuhelimessa osoite kirpputori.tracon.fi ja valitsemalla avautuvasta näkymästä kirpputorin ajanvarauksen kohdalta ”Avaa pääsylippu”. Huomaathan että voittamasi aika takaa pääsyn kirpputorijonoon, mutta saatat silti joutua jonottamaan kirpputorille pääsyä.
+
+Jos haluat varata kirpputoriajan ryhmänä, teidän on ensin muodostettava ryhmä Konstin Ryhmä-näkymässä. Yksi jäsen luo ryhmän ja saa liittymiskoodin, jonka avulla muut jäsenet liittyvät ryhmään. Tämän jälkeen ryhmän perustaja ilmoittautuu arvontaan tai varaa ajan koko ryhmän puolesta. Tarkemmat ohjeet löytyvät Konstin ohjeista.
+
+🚨 HUOM! Teknisistä syistä tämän ohjelmanumeron kellonaikana näkyy koko arvottava aikaväli. Arvonnassa arvotaan kuitenkin 30 min ajanvarauksia, joiden kellonajat näkyvät ohjelmanumeroiden otsikoissa. Voit kaikissa kolmessa arvonnassa ilmoittautua kolmeen sinulle sopivaan aikaikkunaan, ja jokaisessa arvonnassa voit päästä niistä yhteen.
+""".strip()
 
 
 class Setup:
@@ -69,6 +83,7 @@ class Setup:
         self.setup_tickets_v2()
         self.setup_forms()
         self.setup_program_v2()
+        self.setup_kirpputori()
         self.setup_access()
 
     def setup_core(self):
@@ -353,6 +368,94 @@ class Setup:
             },
             group=group,
         )
+
+    def setup_kirpputori(self, slot_duration=timedelta(minutes=30)):
+        meta = self.event.program_v2_event_meta
+        if not meta:
+            raise AssertionError("No (appease typechecker)")
+
+        if not meta.universe.dimensions.filter(slug="konsti").exists():
+            backfill(self.event)
+
+        room_dimension = meta.universe.dimensions.get(slug="room")
+        room_dimension_value, created = room_dimension.values.get_or_create(
+            slug="sopraano",
+            defaults=dict(title_fi="Sopraano", title_en="Sopraano"),
+        )
+        log_get_or_create(logger, room_dimension_value, created)
+
+        dimensions = {"konsti": ["fleamarket"], "room": ["sopraano"]}
+        cache = meta.universe.preload_dimensions()
+
+        for program_slug, program_title, day, start_time, end_time, max_attendance in [
+            (
+                "kirpputori-perjantai-alkuilta",
+                "Kirpputorin ajanvaraus: Perjantai klo 16–19",
+                0,
+                time_type(16, 0),
+                time_type(19, 0),
+                100,
+            ),
+            (
+                "kirpputori-perjantai-loppuilta",
+                "Kirpputorin ajanvaraus: Perjantai klo 19–22",
+                0,
+                time_type(19, 0),
+                time_type(22, 0),
+                130,
+            ),
+            (
+                "kirpputori-lauantai",
+                "Kirpputorin ajanvaraus: Lauantai klo 9:30–14",
+                1,
+                time_type(9, 30),
+                time_type(14, 0),
+                130,
+            ),
+        ]:
+            date = self.event.start_time + timedelta(days=day)
+            prog_start_dt = datetime.combine(date, start_time, tzinfo=self.tz)
+            prog_end_dt = datetime.combine(date, end_time, tzinfo=self.tz)
+
+            program, created = Program.objects.get_or_create(
+                slug=program_slug,
+                event=self.event,
+                defaults=dict(
+                    title=program_title,
+                    description=KIRPPUTORI_KONSTI_DESCRIPTION,
+                ),
+            )
+            log_get_or_create(logger, program, created)
+
+            sched_start_dt = prog_start_dt
+            while sched_start_dt < prog_end_dt:
+                sched_end_dt = sched_start_dt + slot_duration
+                formatted_start_dt = sched_start_dt.strftime("%H:%M")
+                formatted_end_dt = sched_end_dt.strftime("%H:%M")
+
+                sched_max_attendance = 50 if sched_end_dt == prog_end_dt else max_attendance
+
+                sched, created = ScheduleItem.objects.get_or_create(
+                    program=program,
+                    slug=f"{program_slug}-{formatted_start_dt.replace(':', '')}",
+                    # FMH can't use .with… with get_or_create
+                    defaults=dict(
+                        start_time=sched_start_dt,
+                        duration=slot_duration,
+                        subtitle=f"Saapuminen klo {formatted_start_dt}–{formatted_end_dt}",
+                        annotations={"konsti:maxAttendance": sched_max_attendance},
+                        cached_end_time=sched_end_dt,
+                        cached_event_id=self.event.id,
+                    ),
+                )
+                log_get_or_create(logger, sched, created)
+                sched.refresh_cached_fields()
+
+                sched_start_dt += slot_duration
+
+            program.set_dimension_values(dimensions, cache)
+            program.refresh_cached_fields()
+            program.refresh_dependents()
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack

@@ -295,6 +295,14 @@ class Program(models.Model):
 
         ScheduleItem.refresh_cached_fields_qs(self.schedule_items.all())
 
+    @property
+    def _effective_annotations(self):
+        """
+        For use by resolve_cached_annotations, to allow treating Program and ScheduleItem the same.
+        Other users should usually query .annotations directly.
+        """
+        return self.annotations
+
     @cached_property
     def meta(self) -> ProgramV2EventMeta:
         if (meta := self.event.program_v2_event_meta) is None:

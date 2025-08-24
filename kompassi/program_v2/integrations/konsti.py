@@ -27,12 +27,11 @@ KONSTI_DIMENSION_DTO = DimensionDTO(
             ),
         )
         for slug, title_fi, title_en in [
-            # note: camelCase slugs defined by Konsti, pending discussion for consistency in later events
-            ("tabletopRPG", "Pöytäroolipeli", "Tabletop RPG"),
+            ("tabletoprpg", "Pöytäroolipeli", "Tabletop RPG"),
             ("larp", "Larppi", "LARP"),
             ("tournament", "Turnaus", "Tournament"),
             ("workshop", "Työpaja", "Workshop"),
-            ("experiencePoint", "Kokemuspiste", "Experience Point"),
+            ("experiencepoint", "Kokemuspiste", "Experience Point"),
             ("other", "Muu", "Other"),
             ("fleamarket", "Kirpputori", "Flea market"),
         ]

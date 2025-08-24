@@ -58,6 +58,10 @@ class UniverseCache:
     def dimension_cache(self) -> DimensionCache:
         return self.universe.preload_dimensions()
 
+    @cached_property
+    def annotations(self):
+        return self.universe.annotations.all()
+
 
 class RequestLocalCache:
     request: HttpRequest

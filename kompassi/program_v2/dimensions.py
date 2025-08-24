@@ -9,6 +9,8 @@ from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.dimensions.models.universe import Universe
 from kompassi.graphql_api.language import SUPPORTED_LANGUAGE_CODES
 
+from .integrations.konsti import KONSTI_DIMENSION_DTO
+
 logger = logging.getLogger(__name__)
 
 DATE_DIMENSION_TITLE_LOCALIZED = dict(
@@ -188,6 +190,7 @@ def setup_program_dimensions(universe: Universe) -> Sequence[Dimension]:
             # other technical dimensions after user specified dimensions
             ROOM_DIMENSION_DTO.model_copy(update=dict(order=9000)),
             get_form_dimension_dto(universe).model_copy(update=dict(order=9100)),
+            KONSTI_DIMENSION_DTO.model_copy(update=dict(order=9150)),
             STATE_DIMENSION_DTO.model_copy(update=dict(order=9200)),
             SCHEDULED_DIMENSION_DTO.model_copy(update=dict(order=9300)),
         ],

@@ -59,7 +59,9 @@ class ScheduleItem(models.Model):
 
     # TODO internal:formattedLocation:fi etc. annotations?
     cached_location = models.JSONField(blank=True, default=dict)
+
     annotations = models.JSONField(blank=True, default=dict)
+    cached_combined_annotations = models.JSONField(blank=True, default=dict)  # lol precalc
 
     favorited_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="favorite_schedule_items", blank=True)
 
@@ -113,6 +115,14 @@ class ScheduleItem(models.Model):
     @property
     def freeform_location(self) -> str:
         return self.annotations.get("internal:freeformLocation", "")
+
+    @property
+    def _effective_annotations(self):
+        """
+        For use by resolve_cached_annotations, to allow treating Program and ScheduleItem the same.
+        Other users should usually query .annotations directly.
+        """
+        return self.cached_combined_annotations
 
     @freeform_location.setter
     def freeform_location(self, value: str):
@@ -180,8 +190,14 @@ class ScheduleItem(models.Model):
 
         return self
 
+    def with_annotations(self) -> Self:
+        self.cached_combined_annotations = self.program.annotations.copy()
+        self.cached_combined_annotations.update(self.annotations)
+        return self
+
     def with_cached_fields(self) -> Self:
         self.with_mandatory_fields()
+        self.with_annotations()
         self.refresh_technical_dimensions()
 
         self.cached_dimensions = build_cached_dimensions(self.dimensions.all())
@@ -198,6 +214,7 @@ class ScheduleItem(models.Model):
                 "cached_location",
                 "cached_dimensions",
                 "cached_combined_dimensions",
+                "cached_combined_annotations",
                 "updated_at",
             ]
         )

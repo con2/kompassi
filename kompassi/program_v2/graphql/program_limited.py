@@ -1,10 +1,7 @@
 import graphene
-from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.utils.text_utils import normalize_whitespace
-from kompassi.dimensions.models.enums import AnnotationFlags
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.graphql_api.utils import get_message_in_language, resolve_local_datetime_field
 
@@ -24,7 +21,8 @@ class LimitedProgramType(DjangoObjectType):
     `cachedDimensions` is still provided.
     """
 
-    from ..graphql.cached_dimensions import cached_dimensions, resolve_cached_dimensions
+    from .cached_annotations import cached_annotations, resolve_cached_annotations
+    from .cached_dimensions import cached_dimensions, resolve_cached_dimensions
 
     @staticmethod
     def resolve_cached_hosts(parent: Program, info):
@@ -81,57 +79,6 @@ class LimitedProgramType(DjangoObjectType):
         types=graphene.List(ProgramLinkType),
         lang=graphene.String(),
         include_expired=graphene.Boolean(),
-    )
-
-    @staticmethod
-    def resolve_cached_annotations(
-        program: Program,
-        info,
-        is_shown_in_detail: bool = False,
-        public_only: bool = True,
-        slug: list[str] | None = None,
-    ):
-        """
-        A mapping of program annotation slug to annotation value. Only public annotations are returned.
-        """
-        meta = program.event.program_v2_event_meta
-        if meta is None:
-            raise ValueError("Program without ProgramV2EventMeta, unpossible?!?")
-
-        required_flags = AnnotationFlags.NONE
-        schema = meta.annotations_with_fallback.all()
-
-        if public_only:
-            required_flags |= AnnotationFlags.PUBLIC
-        else:
-            graphql_check_instance(
-                program,
-                info,
-                field="annotations",
-            )
-
-        if is_shown_in_detail:
-            required_flags |= AnnotationFlags.SHOWN_IN_DETAIL
-
-        if required_flags != AnnotationFlags.NONE:
-            schema = schema.filter(flags__has_all=required_flags)
-
-        return {
-            annotation.slug: value
-            for annotation in schema
-            if (value := program.annotations.get(annotation.slug, None)) not in (None, "")
-            and (slug is None or annotation.slug in slug)
-        }
-
-    cached_annotations = graphene.NonNull(
-        GenericScalar,
-        description=normalize_whitespace(resolve_cached_annotations.__doc__ or ""),
-        is_shown_in_detail=graphene.Boolean(description="Only return annotations that are shown in the detail view."),
-        public_only=graphene.Boolean(description="Only return public annotations. Requires authorization if false."),
-        slug=graphene.List(
-            graphene.NonNull(graphene.String),
-            description="Only return annotations with the given slugs.",
-        ),
     )
 
     @staticmethod

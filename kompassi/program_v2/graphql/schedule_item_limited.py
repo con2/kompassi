@@ -17,6 +17,7 @@ class LimitedScheduleItemType(DjangoObjectType):
             "updated_at",
         )
 
+    from .cached_annotations import cached_annotations, resolve_cached_annotations
     from .cached_dimensions import cached_dimensions, resolve_cached_dimensions
 
     @staticmethod
