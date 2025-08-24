@@ -4,6 +4,7 @@ from django.utils.timezone import now
 
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.models import Event
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE, to_supported_language
 from kompassi.program_v2.filters import ProgramFilters
 
 from ..excel_export import write_schedule_items_as_excel
@@ -33,7 +34,10 @@ def schedule_items_excel_export_view(
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
 
-    schedule_items = ProgramFilters.from_query_dict(request.GET).filter_schedule_items(meta.schedule_items)
+    params = request.GET.copy()
+    lang = params.pop("lang", [])
+    lang = to_supported_language(lang[0]) if lang else DEFAULT_LANGUAGE
+    schedule_items = ProgramFilters.from_query_dict(params).filter_schedule_items(meta.schedule_items)
     dimensions = meta.universe.dimensions.filter(is_key_dimension=True).order_by("order")
 
     write_schedule_items_as_excel(
@@ -41,6 +45,7 @@ def schedule_items_excel_export_view(
         schedule_items,
         response,
         dimensions,
+        lang=lang,
     )
 
     return response

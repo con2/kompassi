@@ -203,9 +203,9 @@ export default async function FormResponsesPage(props: Props) {
   }
 
   const baseExcelExportLink = data.event.program.scheduleItemsExcelExportLink;
-  const excelExportLink = `${baseExcelExportLink}?${new URLSearchParams(
-    searchParams,
-  )}`;
+  const exportParams = new URLSearchParams(searchParams);
+  exportParams.set("lang", locale);
+  const excelExportLink = `${baseExcelExportLink}?${exportParams}`;
 
   return (
     <ProgramAdminView
