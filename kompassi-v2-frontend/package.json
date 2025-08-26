@@ -38,7 +38,7 @@
     "@parcel/watcher": "^2.5.1",
     "@types/node": "^22.0.0",
     "@types/react": "19.1.11",
-    "@types/react-dom": "19.1.7",
+    "@types/react-dom": "19.1.8",
     "concurrently": "^9.0.0",
     "eslint": "^9",
     "eslint-config-next": "15.4.7",
@@ -50,6 +50,6 @@
   "prettier": {},
   "overrides": {
     "@types/react": "19.1.11",
-    "@types/react-dom": "19.1.7"
+    "@types/react-dom": "19.1.8"
   }
 }
