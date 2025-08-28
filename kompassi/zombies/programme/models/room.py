@@ -1,11 +1,9 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from django.db import models
-from django.db.transaction import atomic
 from django.utils.translation import gettext_lazy as _
 
 from kompassi.core.models import Event
@@ -79,41 +77,6 @@ class Room(models.Model):
     @property
     def can_delete(self):
         return not self.programmes.exists() and not self.view_rooms.exists()
-
-    @property
-    def has_paikkala_schema(self):
-        return self.paikkala_schema_path.exists()
-
-    @property
-    def paikkala_schema_path(self) -> Path:
-        if not self.event:
-            raise ValueError("Room %s has no event", self)
-
-        return Path(__file__).parent / "paikkala_data" / self.event.venue.slug / f"{self.slug}.csv"
-
-    @atomic
-    def paikkalize(self):
-        from uuid import uuid4
-
-        from paikkala.models import Room as PaikkalaRoom
-        from paikkala.utils.importer import import_zones, read_csv
-
-        if self.paikkala_room:
-            logger.info("Room %s is alredy paikkalized, not re-paikkalizing", self)
-            return self.paikkala_room
-
-        # hack: dun wanna mess up with same-named rooms
-        paikkala_room_name = str(uuid4())
-
-        with self.paikkala_schema_path.open(encoding="UTF-8") as infp:
-            import_zones(row_csv_list=list(read_csv(infp)), default_room_name=paikkala_room_name)
-
-        self.paikkala_room = PaikkalaRoom.objects.get(name=paikkala_room_name)
-        self.paikkala_room.name = self.name
-        self.paikkala_room.save()
-        self.save()
-
-        return self.paikkala_room
 
     def save(self, *args, **kwargs):
         if self.name and not self.slug:

@@ -68,6 +68,7 @@ export type AcceptProgramOfferInput = {
 /** An enumeration. */
 export enum AnnotationDataType {
   Boolean = 'BOOLEAN',
+  Datetime = 'DATETIME',
   Number = 'NUMBER',
   String = 'STRING'
 }

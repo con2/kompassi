@@ -9,7 +9,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator, RegexVa
 from django.db import models
 from django.db.models import Q
 from django.db.transaction import atomic
-from django.utils.timezone import get_default_timezone, now
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from kompassi.core.csv_export import CsvExportMixin
@@ -1963,59 +1963,15 @@ class Programme(models.Model, CsvExportMixin):
 
     @property
     def can_paikkalize(self):
-        return (
-            self.room is not None
-            and self.room.has_paikkala_schema
-            and self.start_time is not None
-            and self.length is not None
-        )
+        return False
 
     @atomic
     def paikkalize(self, **paikkalkwargs):
-        if not self.is_using_paikkala:
-            return None
-        if self.paikkala_program:
-            return self.paikkala_program
-
-        if not self.can_paikkalize:
-            raise AssertionError("self.can_paikkalize")
-
-        from django.template.defaultfilters import truncatechars
-        from paikkala.models import Program as PaikkalaProgram
-        from paikkala.models import Row
-
-        paikkala_room = self.room.paikkalize()  # type: ignore
-        meta = self.event.programme_event_meta
-        tz = get_default_timezone()
-
-        paikkala_program_kwargs = dict(
-            event_name=self.event.name,
-            name=truncatechars(self.title, PaikkalaProgram._meta.get_field("name").max_length),  # type: ignore
-            room=paikkala_room,
-            require_user=True,
-            reservation_start=self.start_time.replace(hour=9, minute=0, tzinfo=tz),  # type: ignore
-            reservation_end=self.end_time,
-            invalid_after=self.end_time,
-            max_tickets=0,
-            automatic_max_tickets=True,
-            max_tickets_per_user=meta.paikkala_default_max_tickets_per_user,
-            max_tickets_per_batch=meta.paikkala_default_max_tickets_per_batch,
-        )
-        paikkala_program_kwargs.update(paikkalkwargs)
-
-        self.paikkala_program = PaikkalaProgram.objects.create(**paikkala_program_kwargs)
-
-        self.save()
-
-        self.paikkala_program.rows.set(Row.objects.filter(zone__room=paikkala_room))
-        self.paikkala_program.full_clean()
-        self.paikkala_program.save()
-
-        return self.paikkala_program
+        return None
 
     @property
     def is_open_for_seat_reservations(self):
-        return self.is_using_paikkala and self.paikkala_program and self.paikkala_program.is_reservable
+        return False
 
     def get_csv_fields(self, event):
         fields = super().get_csv_fields(event)

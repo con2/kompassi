@@ -80,7 +80,8 @@ export function getFormFieldForAnnotation(
   annotation: AnnotationsFormAnnotationFragment,
 ): Field {
   const { slug, title, description, isComputed } = annotation;
-  let type: "Tristate" | "NumberField" | "SingleLineText" = "SingleLineText";
+  let type: "Tristate" | "NumberField" | "SingleLineText" | "DateTimeField" =
+    "SingleLineText";
   switch (annotation.type) {
     case AnnotationDataType.Boolean:
       type = "Tristate";
@@ -90,6 +91,9 @@ export function getFormFieldForAnnotation(
       break;
     case AnnotationDataType.String:
       type = "SingleLineText";
+      break;
+    case AnnotationDataType.Datetime:
+      type = "DateTimeField";
       break;
     default:
       const exhaustiveCheck: never = annotation.type;

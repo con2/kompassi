@@ -8,6 +8,7 @@ from django.http import HttpRequest
 from django.utils.timezone import now
 
 from kompassi.core.utils.locale_utils import get_message_in_language
+from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 
 from ..models import Program
@@ -72,6 +73,39 @@ DEFAULT_LINK_TITLES = dict(
         ProgramLinkType.GUIDE_V2_EMBEDDED: "Detta program på evenemangets webbsida",
     },
 )
+
+PROGRAM_LINKS_ANNOTATION_DTOS = [
+    AnnotationDTO(
+        slug="internal:links:signup",
+        title=dict(
+            fi="Ilmoittautumislinkki",
+            en="Signup link",
+            sv="Anmälningslänk",
+        ),
+        is_public=False,
+        is_shown_in_detail=False,
+    ),
+    AnnotationDTO(
+        slug="internal:links:tickets",
+        title=dict(
+            fi="Lipunmyyntilinkki",
+            en="Ticket sales link",
+            sv="Biljettförsäljningslänk",
+        ),
+        is_public=False,
+        is_shown_in_detail=False,
+    ),
+    AnnotationDTO(
+        slug="internal:links:recording",
+        title=dict(
+            fi="Nauhoitelinkki",
+            en="Recording link",
+            sv="Inspelningslänk",
+        ),
+        is_public=False,
+        is_shown_in_detail=False,
+    ),
+]
 
 
 class ProgramLink(graphene.ObjectType):
@@ -142,6 +176,7 @@ class ProgramLink(graphene.ObjectType):
         title = (
             program.annotations.get(f"{link_annotation}:title:{language}")
             or program.annotations.get(f"{link_annotation}:title:{DEFAULT_LANGUAGE}")
+            or program.annotations.get(f"{link_annotation}:title")
             or titles.get(link_type_str, "")
         )
 

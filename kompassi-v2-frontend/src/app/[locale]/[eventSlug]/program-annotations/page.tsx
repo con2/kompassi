@@ -162,6 +162,10 @@ export default async function ProgramAdminAnnotationsPage(props: Props) {
       getCellContents: (row) => {
         const slug = mangleAnnotationSlug(row.annotation.slug);
         const formFields = row.formFields as string[];
+        console.log({
+          annotation: row.annotation.slug,
+          formFields: formFields,
+        });
         const fields: Field[] = [
           {
             slug: "isActive",
