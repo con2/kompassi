@@ -72,7 +72,7 @@ class Event(models.Model):
         help_text="Esimerkki: Susiconissa",
     )
 
-    venue = models.ForeignKey(
+    venue: models.ForeignKey[Venue] = models.ForeignKey(
         Venue,
         on_delete=models.CASCADE,
         verbose_name="Tapahtumapaikka",

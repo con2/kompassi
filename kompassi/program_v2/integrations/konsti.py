@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO, ValueOrdering
+from kompassi.dimensions.models.enums import AnnotationDataType
 
 if TYPE_CHECKING:
     from kompassi.program_v2.models.program import Program
@@ -37,6 +39,67 @@ KONSTI_DIMENSION_DTO = DimensionDTO(
         ]
     ],
 )
+
+KONSTI_ANNOTATION_DTOS = [
+    AnnotationDTO(
+        slug="konsti:rpgSystem",
+        title=dict(
+            fi="Pelisysteemi",
+            en="RPG system",
+            sv="Rollspelssystem",
+        ),
+    ),
+    AnnotationDTO(
+        slug="konsti:minAttendance",
+        title=dict(
+            fi="Minimiosallistujamäärä",
+            en="Minimum attendance",
+            sv="Minsta antal deltagare",
+        ),
+        type=AnnotationDataType.NUMBER,
+    ),
+    AnnotationDTO(
+        slug="konsti:maxAttendance",
+        title=dict(
+            fi="Maksimiosallistujamäärä",
+            en="Maximum attendance",
+            sv="Högsta antal deltagare",
+        ),
+        type=AnnotationDataType.NUMBER,
+    ),
+    AnnotationDTO(
+        slug="konsti:isPlaceholder",
+        type=AnnotationDataType.BOOLEAN,
+        is_shown_in_detail=False,
+        title=dict(
+            fi="Näytetään Konstissa ilman ilmoittautumista",
+            en="Shown in Konsti without signup",
+            sv="Visas i Konsti utan anmälan",
+        ),
+        description=dict(
+            en=(
+                "If set, the program item will be shown in Konsti without signup. "
+                "This is useful to communicate to visitors that are looking for "
+                "programs of a type that often uses Konsti signup that "
+                "this program exists but does not require signup."
+            ),
+            fi=(
+                "Jos tämä on valittuna ohjelmanumerolle, se näytetään Konstissa siten, "
+                "että siihen ei voi ilmoittautua. Tämä on hyödyllistä, jos haluat viestiä "
+                "vieraille, että tällainen ohjelma on olemassa, mutta siihen ei tarvitse ilmoittautua tai "
+                "ilmoittautuminen on hoidettu jotain muuta kautta."
+            ),
+        ),
+    ),
+    AnnotationDTO(
+        slug="konsti:workshopFee",
+        title=dict(
+            fi="Työpajamaksu",
+            en="Workshop fee",
+            sv="Workshopavgift",
+        ),
+    ),
+]
 
 
 def get_konsti_signup_url(program: Program) -> str:

@@ -295,6 +295,10 @@ class Program(models.Model):
 
         ScheduleItem.refresh_cached_fields_qs(self.schedule_items.all())
 
+        if self.cached_combined_dimensions.get("paikkala", []):
+            for item in self.schedule_items.all():
+                item.ensure_paikkala()
+
     @property
     def _effective_annotations(self):
         """

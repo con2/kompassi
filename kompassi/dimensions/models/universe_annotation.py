@@ -27,7 +27,7 @@ class UniverseAnnotation(models.Model):
 
     is_active = models.BooleanField(default=True)
     form_fields = models.JSONField(
-        default=dict,
+        default=list,
         help_text="Slugs of form fields to extract values from.",
     )
 

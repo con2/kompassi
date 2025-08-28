@@ -6,7 +6,7 @@ from typing import Any
 
 from django.db import models
 from pydantic_core import CoreSchema, SchemaValidator
-from pydantic_core.core_schema import bool_schema, float_schema, str_schema
+from pydantic_core.core_schema import bool_schema, datetime_schema, float_schema, str_schema
 
 
 class ValueOrdering(models.TextChoices):
@@ -25,6 +25,7 @@ class AnnotationDataType(Enum):
     STRING = "string", str_schema()
     NUMBER = "number", float_schema()
     BOOLEAN = "boolean", bool_schema()
+    DATETIME = "datetime", datetime_schema()
 
     core_schema: CoreSchema
 

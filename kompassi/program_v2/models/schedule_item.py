@@ -23,6 +23,8 @@ from kompassi.graphql_api.language import SUPPORTED_LANGUAGE_CODES
 from .program import Program
 
 if TYPE_CHECKING:
+    from paikkala.models.programs import Program as PaikkalaProgram
+
     from .schedule_item_dimension_value import ScheduleItemDimensionValue
 
 logger = logging.getLogger(__name__)
@@ -64,6 +66,13 @@ class ScheduleItem(models.Model):
     cached_combined_annotations = models.JSONField(blank=True, default=dict)  # lol precalc
 
     favorited_by = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="favorite_schedule_items", blank=True)
+
+    paikkala_program: models.OneToOneField[PaikkalaProgram] | None = models.OneToOneField(
+        "paikkala.Program",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="kompassi_v2_program",
+    )
 
     dimensions: models.QuerySet[ScheduleItemDimensionValue]
 
@@ -262,6 +271,15 @@ class ScheduleItem(models.Model):
 
     def refresh_dependents(self):
         self.program.refresh_cached_fields()
+        self.ensure_paikkala()
+
+    def ensure_paikkala(self) -> PaikkalaProgram | None:
+        from ..integrations.paikkala_integration import paikkalize_schedule_item
+
+        if not self.cached_combined_annotations.get("paikkala", []):
+            return None
+
+        return paikkalize_schedule_item(self)
 
     @property
     def is_cancelled(self) -> bool:
