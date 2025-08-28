@@ -56,11 +56,9 @@ logger = logging.getLogger(__name__)
 KIRPPUTORI_KONSTI_DESCRIPTION = """
 Traconin kirpputorille pääsee ostoksille pe klo 16–22 ja la klo 9:30–14 ainoastaan ajanvarauksella. Muina aikoina kirpputori palvelee asiakkaita jonosta. Ajanvaraus tapahtuu käyttäen Konstia, johon kirjaudutaan Kompassi-tunnuksilla. Molempien päivien ajanvarausajoille voi ilmoittautua alkaen pe klo 08:00. Koska halukkaita voi olla enemmän kuin kirpputorin ajanvarausaikoihin mahtuu, ajat arvotaan. Arvonnat tapahtuvat perjantaina kello 14:00 ja 17:00 sekä lauantaina kello 7:30. Kunkin arvonnan jälkeen niille ajanvarausajoille, joille on vielä tilaa, voi ilmoittautua Konstissa suoraan.
 
-Ilmoittaudu enintään kolmeen sinulle sopivaan aikaan per arvontablokki. Jos sinua onnistaa arvonnassa, saat yhden puolen tunnin mittaisen saapumisajan jonka kuluessa voit saapua jonoon koska tahansa. Saapuessasi kirpputorille avaa lippu älypuhelimeesi ja näytä se järjestyksenvalvojalle. Lipun avaaminen onnistuu kätevimmin avaamalla älypuhelimessa osoite kirpputori.tracon.fi ja valitsemalla avautuvasta näkymästä kirpputorin ajanvarauksen kohdalta ”Avaa pääsylippu”. Huomaathan että voittamasi aika takaa pääsyn kirpputorijonoon, mutta saatat silti joutua jonottamaan kirpputorille pääsyä.
+Jos sinua onnistaa arvonnassa, saat yhden puolen tunnin mittaisen saapumisajan, jonka kuluessa voit tulla jonoon koska tahansa. Saapuessasi kirpputorille avaa lippu älypuhelimeesi ja näytä se jonon valvojalle. Lipun avaaminen onnistuu kätevimmin avaamalla älypuhelimessa osoite kirpputori.tracon.fi ja valitsemalla avautuvasta näkymästä kirpputorin ajanvarauksen kohdalta ”Avaa pääsylippu”. Huomaathan että voittamasi aika takaa pääsyn kirpputorijonoon, mutta saatat silti joutua jonottamaan kirpputorille pääsyä.
 
-Jos haluat varata kirpputoriajan ryhmänä, teidän on ensin muodostettava ryhmä Konstin Ryhmä-näkymässä. Yksi jäsen luo ryhmän ja saa liittymiskoodin, jonka avulla muut jäsenet liittyvät ryhmään. Tämän jälkeen ryhmän perustaja ilmoittautuu arvontaan tai varaa ajan koko ryhmän puolesta. Tarkemmat ohjeet löytyvät Konstin ohjeista.
-
-🚨 HUOM! Arvonnassa arvotaan 30 min ajanvarauksia. Voit kaikissa kolmessa arvonnassa ilmoittautua kolmeen sinulle sopivaan aikaikkunaan, ja jokaisessa arvonnassa voit päästä niistä yhteen.
+Jos haluat osallistua arvontaan ryhmänä, teidän on ensin muodostettava ryhmä Konstin Ryhmä-näkymässä. Yksi jäsenistä luo ryhmän ja saa liittymiskoodin, jonka avulla muut liittyvät ryhmään. Tämän jälkeen ryhmän perustaja ilmoittautuu arvontaan. Vapaille ajoille ilmoittautuessa ryhmä hajoaa. Tarkemmat ohjeet löytyvät Konstin ohjeista.
 """.strip()
 
 
@@ -84,6 +82,7 @@ class Setup:
         self.setup_forms()
         self.setup_program_v2()
         self.setup_kirpputori()
+        self.setup_konsti()
         self.setup_access()
 
     def setup_core(self):
@@ -390,6 +389,9 @@ class Setup:
         }
         annotations = {
             "internal:links:signup": "https://ropekonsti.fi",  # TODO
+            "internal:links:other": "https://ropekonsti.fi/about/help",
+            "internal:links:other:title:en": "Konsti instructions",
+            "internal:links:other:title:fi": "Konstin ohjeet",
         }
         cache = meta.universe.preload_dimensions()
 
@@ -467,6 +469,25 @@ class Setup:
                 sched_start_dt += slot_duration
 
             program.set_dimension_values(dimensions, cache)
+            program.refresh_cached_fields()
+            program.refresh_dependents()
+
+    def setup_konsti(self):
+        if Program.objects.filter(event=self.event, cached_dimensions__konsti=["tabletoprpg"]).exists():
+            return
+
+        meta = self.event.program_v2_event_meta
+        if not meta:
+            raise AssertionError("No (appease typechecker)")
+
+        cache = meta.universe.preload_dimensions()
+
+        for program in Program.objects.filter(
+            event=self.event,
+            cached_dimensions__form=["offer-program-rpg"],
+            cached_dimensions__state=["accepted"],
+        ):
+            program.set_dimension_values(dict(konsti=["tabletoprpg"]), cache=cache)
             program.refresh_cached_fields()
             program.refresh_dependents()
 
