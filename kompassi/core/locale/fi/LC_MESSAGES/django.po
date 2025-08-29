@@ -174,7 +174,7 @@ msgstr "Yksityisyys"
 msgid "Privacy policy"
 msgstr "Tietosuojaseloste"
 
-#: views/profile_views.py
+#: views/profile_views.py templates/core_profile_view.pug
 msgid "Profile"
 msgstr "Omat tiedot"
 
@@ -189,6 +189,26 @@ msgstr "Mitätöity"
 #: templates/core_personify_view.pug templates/core_profile_view.pug
 msgid "Save changes"
 msgstr "Tallenna muutokset"
+
+#: templates/core_profile_view.pug
+msgid "Username"
+msgstr "Käyttäjänimi"
+
+#: templates/core_profile_view.pug
+msgid "You can also use your email address to log in. Please note that username is separate from your visible nick name. Your username is not displayed anywhere. Changing your username is not currently possible."
+msgstr "Voit kirjautua sisään myös sähköposti&shy;osoitteella käyttäjänimen asemesta. Huomaathan, että käyttäjänimi on erillinen nick- eli kutsumanimikentästä. Käyttäjänimi ei näy mihinkään ulkoisesti. Käyttäjänimeä ei voi tällä hetkellä vaihtaa."
+
+#: templates/core_profile_view.pug
+msgid "Desu Profile"
+msgstr "Desuprofiili"
+
+#: templates/core_profile_view.pug
+msgid "Desu Profile username is missing. It will be saved the next time you log in with your Desu Profile."
+msgstr "Desuprofiilin käyttäjänimi puuttuu. Se tallennetaan, kun seuraavan kerran kirjaudut sisään Desuprofiilillasi."
+
+#: templates/core_profile_view.pug
+msgid "You have connected your Desu Profile to your Kompassi account. If you wish to disconnect your Desu Profile from your Kompassi account, please contact Kompassi admin."
+msgstr "Olet yhdistänyt Desuprofiilisi Kompassi-tunnukseen. Mikäli haluat irrottaa Desuprofiilisi Kompassi-tunnuksestasi, ota yhteyttä ylläpitoon."
 
 #: templates/core_event_box.pug
 msgid "Schedule"
