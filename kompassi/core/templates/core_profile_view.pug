@@ -11,7 +11,7 @@ block profile_content
         label.control-label.col-md-3 Käyttäjänimi
         .controls.col-md-9
           label.control-label(style='font-weight: normal; font-style: italic') {{ request.user.username }}
-          p.help-block Voit kirjautua sisään myös sähköposti&shy;osoitteella käyttäjänimen asemesta. Käyttäjänimeä ei voi vaihtaa itse. Jos kuitenkin haluat vaihtaa käyttäjä&shy;nimeäsi, älä rekisteröi uutta tunnusta, vaan ota yhteyttä ylläpitoon: <a href='mailto:{{ settings.DEFAULT_FROM_EMAIL }}'>{{ settings.DEFAULT_FROM_EMAIL }}</a>
+          p.help-block Voit kirjautua sisään myös sähköposti&shy;osoitteella käyttäjänimen asemesta. Huomaathan, että käyttäjänimi on erillinen nick- eli kutsumanimikentästä. Käyttäjänimi ei näy mihinkään ulkoisesti. Käyttäjänimeä ei voi tällä hetkellä vaihtaa.
       if request.user.person.desuprofile_connection
         - with request.user.person.desuprofile_connection as connection
           .form-group
