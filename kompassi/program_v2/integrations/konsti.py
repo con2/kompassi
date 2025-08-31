@@ -10,6 +10,14 @@ if TYPE_CHECKING:
     from kompassi.program_v2.models.program import Program
 
 
+def UNSURE(x: str) -> str:
+    """
+    This function is used to mark machine translated or otherwise uncertain strings
+    for review by a professional translator.
+    """
+    return x
+
+
 KONSTI_DIMENSION_DTO = DimensionDTO(
     slug="konsti",
     is_list_filter=False,
@@ -97,6 +105,33 @@ KONSTI_ANNOTATION_DTOS = [
             fi="Työpajamaksu",
             en="Workshop fee",
             sv="Workshopavgift",
+        ),
+    ),
+    AnnotationDTO(
+        slug="konsti:entryConditionK16",
+        type=AnnotationDataType.BOOLEAN,
+        is_shown_in_detail=False,
+        title=dict(
+            fi="Ikäraja 16 vuotta",
+            en="Age limit 16 years",
+            sv="Åldersgräns 16 år",
+        ),
+        description=dict(
+            en=(
+                "If set, Konsti will display a warning stating that the program has an age limit of 16 years "
+                "due to heavy content. The user will be required to acknowledge this and confirm they are of "
+                "required age before proceeding."
+            ),
+            fi=(
+                "Jos tämä on valittuna ohjelmanumerolle, Konsti näyttää ohjelmanumeron yhteydessä varoituksen, "
+                "jossa kerrotaan, että ohjelmalla on 16 vuoden ikäraja raskaan sisällön vuoksi. Käyttäjän on "
+                "vahvistettava, että hän on vaaditun ikäinen, ennen kuin hän voi ilmoittautua ohjelmanumeroon."
+            ),
+            sv=UNSURE(
+                "Om detta är valt för programnumret kommer Konsti att visa en varning i samband med programnumret, "
+                "som anger att programmet har en åldersgräns på 16 år på grund av tungt innehåll. Användaren måste "
+                "bekräfta att de är av erforderlig ålder innan de kan anmäla sig till programnumret."
+            ),
         ),
     ),
 ]
