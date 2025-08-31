@@ -96,4 +96,4 @@ class PutUniverseAnnotation(graphene.Mutation):
             case _:
                 raise NotImplementedError(action)
 
-        return PutUniverseAnnotation(event_annotation=universe_annotation)  # type: ignore
+        return PutUniverseAnnotation(universe_annotation=universe_annotation)  # type: ignore
