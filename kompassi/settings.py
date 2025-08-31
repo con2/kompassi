@@ -381,6 +381,8 @@ KOMPASSI_INSTALLATION_NAME_PARTITIVE = "Kompassin kehitys\u00adinstanssia" if DE
 KOMPASSI_INSTALLATION_SLUG = env("KOMPASSI_INSTALLATION_SLUG", default="turskadev")
 KOMPASSI_PRIVACY_POLICY_URL = "https://tracon.fi/tietosuoja"
 FEEDBACK_PRIVACY_POLICY_URL = "https://tracon.fi/tietosuoja"
+KOMPASSI_CONTACT_ACCOUNT_NAME = "suunnistajat"  # @kompassi.eu
+KOMPASSI_CONTACT_ACCOUNT_EMAIL = "kompassi@con2.fi"  # where to forward to
 
 # Confluence & co. require a group of users
 KOMPASSI_NEW_USER_GROUPS = ["users"]

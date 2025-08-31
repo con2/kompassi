@@ -12,7 +12,8 @@ from .email_alias_mixin import EmailAliasMixin
 logger = logging.getLogger(__name__)
 
 
-INTERNAL_CONTACT_ACCOUNT_NAME = "suunnistajat"  # @kompassi.eu
+CONTACT_ACCOUNT_NAME: str = settings.KOMPASSI_CONTACT_ACCOUNT_NAME  # @kompassi.eu
+CONTACT_ACCOUNT_EMAIL: str = settings.KOMPASSI_CONTACT_ACCOUNT_EMAIL  # where to forward to
 APP_ALIAS_TEMPLATES = dict(
     labour=["{event_slug}-tyovoima", "{event_slug}-volunteers"],
     program_v2=["{event_slug}-ohjelma", "{event_slug}-program"],
@@ -83,10 +84,10 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
 
         alias, created = cls.objects.update_or_create(
             domain=domain,
-            account_name=INTERNAL_CONTACT_ACCOUNT_NAME,
+            account_name=CONTACT_ACCOUNT_NAME,
             defaults=dict(
                 app_label="core",
-                target_emails="\n".join(email for (name, email) in settings.ADMINS),
+                target_emails=CONTACT_ACCOUNT_EMAIL,
             ),
         )
 
