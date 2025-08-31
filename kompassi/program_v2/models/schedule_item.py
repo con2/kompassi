@@ -215,18 +215,28 @@ class ScheduleItem(models.Model):
 
         return self
 
+    update_cached_fields: ClassVar[list[str]] = [
+        "cached_combined_annotations",
+        "cached_combined_dimensions",
+        "cached_dimensions",
+        "cached_end_time",
+        "cached_event",
+        "cached_location",
+        "updated_at",
+    ]
+
     def refresh_cached_fields(self) -> None:
-        self.with_cached_fields().save(
-            update_fields=[
-                "cached_end_time",
-                "cached_event",
-                "cached_location",
-                "cached_dimensions",
-                "cached_combined_dimensions",
-                "cached_combined_annotations",
-                "updated_at",
-            ]
+        self.with_cached_fields().save(update_fields=self.update_cached_fields)
+
+    @classmethod
+    def refresh_cached_fields_qs(cls, qs: models.QuerySet[Self], batch_size=400) -> None:
+        bulk_update = [item.with_cached_fields() for item in qs]
+        cls.objects.bulk_update(
+            bulk_update,
+            fields=cls.update_cached_fields,
+            batch_size=batch_size,
         )
+        logger.info("Refreshed cached fields for %d schedule items", len(bulk_update))
 
     date_cutoff_time: ClassVar[timedelta] = timedelta(hours=4)  # 04:00 local time
 
@@ -251,23 +261,6 @@ class ScheduleItem(models.Model):
             },
             cache=cache,
         )
-
-    @classmethod
-    def refresh_cached_fields_qs(cls, qs: models.QuerySet[Self], batch_size=400) -> None:
-        bulk_update = [item.with_cached_fields() for item in qs]
-        cls.objects.bulk_update(
-            bulk_update,
-            [
-                "cached_end_time",
-                "cached_event",
-                "cached_location",
-                "cached_dimensions",
-                "cached_combined_dimensions",
-                "updated_at",
-            ],
-            batch_size=batch_size,
-        )
-        logger.info("Refreshed cached fields for %d schedule items", len(bulk_update))
 
     def refresh_dependents(self):
         self.program.refresh_cached_fields()
