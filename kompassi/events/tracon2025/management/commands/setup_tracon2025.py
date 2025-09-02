@@ -315,11 +315,13 @@ class Setup:
         )
 
     def setup_badges(self):
-        (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
+        (badge_admin_group, onboarding_group) = BadgesEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
+        self.onboarding_access_group = onboarding_group
         meta, unused = BadgesEventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
+                onboarding_access_group=onboarding_group,
                 real_name_must_be_visible=True,
             ),
         )
@@ -512,6 +514,9 @@ class Setup:
             ],
         )
 
+        if "2026" in self.event.slug:
+            raise AssertionError("2026 event detected. Clean up setup_access properly.")
+
         # Give temp permissions from Thursday to Sunday
         temp_permission_valid_from = (self.event.start_time - timedelta(days=1)).replace(
             hour=0, minute=0, second=0, tzinfo=self.tz
@@ -546,6 +551,50 @@ class Setup:
                     ),
                 )
                 log_get_or_create(logger, entry, created)
+
+        # Lipunvaihto
+        id = 20672
+        person = Person.objects.filter(id=id).first()
+        if person and person.user:
+            entry, created = CBACEntry.objects.get_or_create(
+                user=person.user,
+                claims=dict(
+                    event=self.event.slug,
+                    app="tickets_v2",
+                    view="pos_view",
+                ),
+                defaults=dict(
+                    valid_from=temp_permission_valid_from,
+                    valid_until=temp_permission_valid_until,
+                ),
+            )
+            log_get_or_create(logger, entry, created)
+        else:
+            logger.warning("setup_tracon2025.setup_access: Tickets POS user with person id %d not found, skipping", id)
+
+        # Sisäänkirjaus
+        id = 20675
+        person = Person.objects.filter(id=id).first()
+        if person and person.user:
+            self.onboarding_access_group.user_set.add(person.user)  # type: ignore
+        else:
+            logger.warning("setup_tracon2025.setup_access: Onboarding user with person id %d not found, skipping", id)
+
+        # Info
+        id = 7102
+        person = Person.objects.filter(id=id).first()
+        if person and person.user:
+            infotv_group, created = Group.objects.get_or_create(name="infotv-staff")
+            log_get_or_create(logger, infotv_group, created)
+            infotv_group.user_set.add(person.user)  # type: ignore
+
+            infokala_group, created = Group.objects.get_or_create(name=f"infokala-{self.event.slug}-users")
+            log_get_or_create(logger, infokala_group, created)
+            infokala_group.user_set.add(person.user)  # type: ignore
+
+            outline_group, created = Group.objects.get_or_create(name="outline-tracon-users")
+            log_get_or_create(logger, outline_group, created)
+            outline_group.user_set.add(person.user)  # type: ignore
 
     def setup_intra(self):
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
