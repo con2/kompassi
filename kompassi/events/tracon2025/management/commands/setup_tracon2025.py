@@ -16,6 +16,7 @@ from kompassi.access.models import GroupEmailAliasGrant, GroupPrivilege, Privile
 from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
 from kompassi.access.models.email_alias_type import EmailAliasVariant
+from kompassi.badges.models.badge import Badge
 from kompassi.badges.models.badges_event_meta import BadgesEventMeta
 from kompassi.badges.models.survey_to_badge import SurveyToBadgeMapping
 from kompassi.core.models.event import Event
@@ -325,6 +326,32 @@ class Setup:
                 real_name_must_be_visible=True,
             ),
         )
+
+        # fix badges with perks in job title
+        for badge in Badge.objects.filter(
+            personnel_class__event=self.event,
+            person=None,
+            job_title__contains="(",
+        ):
+            job_title, formatted_perks = badge.job_title.split("(", 1)
+            badge.job_title = job_title.strip()
+            badge.perks = {"internal:formattedPerks": formatted_perks.strip(" )")}
+            badge.save(update_fields=["job_title", "perks"])
+        for key, formatted_perks in [
+            ("myyjäranneke", "Myyjäranneke"),
+            ("myyjärannake", "Myyjäranneke"),
+            ("- Viikonloppu", "Viikonloppulippu"),
+            ("- Perjantailipup", "Perjantailippu"),
+            ("Perjantailippu + AVEC", "Perjantailippu + AVEC"),
+        ]:
+            for badge in Badge.objects.filter(
+                personnel_class__event=self.event,
+                person=None,
+                job_title__contains=key,
+            ):
+                badge.job_title = badge.job_title.removesuffix(key).strip()
+                badge.perks = {"internal:formattedPerks": formatted_perks}
+                badge.save(update_fields=["job_title", "perks"])
 
     def setup_program_v2(self):
         InvolvementEventMeta.ensure(self.event)
@@ -685,7 +712,7 @@ class Setup:
                         defaults=dict(
                             personnel_class=personnel_class,
                             job_title=location.title_fi,
-                            annotations={"tracon2025:formattedPerks": ticket_type.title_fi},
+                            annotations={"internal:formattedPerks": ticket_type.title_fi},
                         ),
                     )
 

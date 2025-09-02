@@ -29,6 +29,7 @@ def badges_admin_create_view(request, vars, event, personnel_class_slug=None):
             badge.is_first_name_visible = bool(badge.first_name)
             badge.is_surname_visible = bool(badge.surname)
             badge.is_nick_visible = bool(badge.nick)
+            badge.perks = {"internal:formattedPerks": form.cleaned_data["formatted_perks"]}
 
             badge.created_by = request.user
 

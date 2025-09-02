@@ -280,6 +280,12 @@ class Badge(models.Model, CsvExportMixin):
         from kompassi.involvement.models.enums import InvolvementApp, InvolvementType
         from kompassi.involvement.models.involvement import Involvement
 
+        from .survey_to_badge import SurveyToBadgeMapping
+
+        if self.person is None:
+            return self.perks, False
+
+        new_perks = self.perks
         combined_perks = Involvement.objects.filter(
             universe=self.event.involvement_universe,
             person=self.person,
@@ -287,16 +293,30 @@ class Badge(models.Model, CsvExportMixin):
             type=InvolvementType.COMBINED_PERKS,
         ).first()
 
-        if combined_perks and (formatted_perks := combined_perks.annotations.get("internal:formattedPerks", "")):
-            new_perks = {"internal:formattedPerks": formatted_perks}
-            if self.perks == new_perks:
-                return self.perks, False
+        if combined_perks:
+            # formatted_perks = combined_perks.annotations.get("internal:formattedPerks", "")
+            # shirt_size_dvss = combined_perks.cached_dimensions.get("shirt-size", [])
+            # shirt_size = ShirtSize.from_v2(shirt_size_dvss[0]) if shirt_size_dvss else ShirtSize.NONE
 
+            # new_perks = {
+            #     "internal:formattedPerks": formatted_perks,
+            #     "tracon:shirtSize": shirt_size.title_fi,
+            # }
+            new_perks = combined_perks.annotations
+        else:
+            # HACK SurveyToBadge must die in favour of InvolvementToBadge so that we can use COMBINED_PERKS for this
+            for survey_mapping in SurveyToBadgeMapping.objects.filter(
+                survey__event=self.event,
+            ).order_by("priority"):
+                if survey_mapping.match(self.person) and (
+                    formatted_perks := survey_mapping.annotations.get("internal:formattedPerks", "")
+                ):
+                    new_perks = {"internal:formattedPerks": formatted_perks}
+                    break
+
+        if self.perks != new_perks and commit:
             self.perks = new_perks
-
-            if commit:
-                self.save(update_fields=["perks"])
-
+            self.save(update_fields=["perks"])
             return self.perks, True
 
         return self.perks, False
@@ -447,7 +467,8 @@ class Badge(models.Model, CsvExportMixin):
 
     @cached_property
     def _shirt_size(self):
-        if perks_shirt_size := self.perks.get("shirt_size"):
+        print(self.perks)
+        if perks_shirt_size := self.perks.get("tracon:shirtSize"):
             return perks_shirt_size
         elif self.signup_extra and hasattr(self.signup_extra, "shirt_size"):
             return self.signup_extra.get_shirt_size_display()
@@ -463,10 +484,12 @@ class Badge(models.Model, CsvExportMixin):
 
     @cached_property
     def _shirt_type(self):
-        if perks_shirt_type := self.perks.get("shirt_type"):
+        if perks_shirt_type := self.perks.get("desucon:shirtType"):
             return perks_shirt_type
         elif self.signup_extra and hasattr(self.signup_extra, "shirt_type"):
             return self.signup_extra.get_shirt_type_display()
+        elif self._shirt_size:
+            return "Työvoimapaita"
         else:
             return "Ei paitaa"
 

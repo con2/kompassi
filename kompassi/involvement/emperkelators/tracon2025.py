@@ -413,6 +413,16 @@ class TraconEmperkelator(BaseEmperkelator):
                     fi="Ruokalippujen määrä",
                 ),
             ),
+            # Annotations are passed to Badge but dimensions are not.
+            # So put formatted shirt size in an annotation.
+            AnnotationDTO(
+                slug="tracon:shirtSize",
+                type=AnnotationDataType.STRING,
+                title=dict(
+                    en="Shirt size",
+                    fi="T-paidan koko",
+                ),
+            ),
         ]
 
         for perk in perks:
@@ -424,7 +434,19 @@ class TraconEmperkelator(BaseEmperkelator):
         return [*super().get_annotation_dtos(), *perks]
 
     def get_annotation_values(self) -> CachedAnnotations:
-        return self.perks.model_dump(mode="json", exclude_none=True, by_alias=True, exclude={"ticket_type"})
+        annotations = self.perks.model_dump(
+            mode="json",
+            exclude_none=True,
+            by_alias=True,
+            exclude={"ticket_type"},
+        )
+
+        dimension_values = self.get_dimension_values()
+        shirt_size_dvss = dimension_values.get("shirt-size", [])
+        shirt_size = ShirtSize.from_v2(next(iter(shirt_size_dvss))) if shirt_size_dvss else ShirtSize.NONE
+        annotations["tracon:shirtSize"] = shirt_size.title_fi
+
+        return annotations
 
     def get_title(self) -> str:
         if inv := self.active_legacy_signup_involvement:

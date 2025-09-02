@@ -291,3 +291,6 @@ msgstr "Raportit"
 
 msgid "Perks"
 msgstr "Edut"
+
+msgid "Will be shown in the onboarding view to instruct the onboarding desk what to give this person."
+msgstr "Näytetään sisäänkirjausnäkymässä kertomaan sisäänkirjaajalle mitä tälle henkilölle kuuluu antaa."

@@ -40,10 +40,17 @@ class CreateBatchForm(forms.Form):
 
         super().__init__(*args, **kwargs)
 
-        self.fields["personnel_class"].queryset = PersonnelClass.objects.filter(event=event)
+        self.fields["personnel_class"].queryset = PersonnelClass.objects.filter(event=event)  # type: ignore
 
 
 class BadgeForm(forms.ModelForm):
+    formatted_perks = forms.CharField(
+        label=_("Perks"),
+        help_text=_("Will be shown in the onboarding view to instruct the onboarding desk what to give this person."),
+        widget=forms.Textarea(attrs={"rows": 3}),
+        required=False,
+    )
+
     def __init__(self, *args, **kwargs):
         event = kwargs.pop("event")
 
@@ -51,12 +58,12 @@ class BadgeForm(forms.ModelForm):
 
         self.helper = horizontal_form_helper()
         self.helper.form_tag = False
-        self.fields["personnel_class"].queryset = PersonnelClass.objects.filter(event=event)
+        self.fields["personnel_class"].queryset = PersonnelClass.objects.filter(event=event)  # type: ignore
 
     def clean(self):
         cleaned_data = super().clean()
 
-        if not any(cleaned_data.get(key) for key in ("first_name", "surname", "nick")):
+        if cleaned_data and not any(cleaned_data.get(key) for key in ("first_name", "surname", "nick")):
             raise ValidationError(_("At least one of first name, surname and nick must be provided."))
 
         return cleaned_data
@@ -69,7 +76,6 @@ class BadgeForm(forms.ModelForm):
             "surname",
             "nick",
             "job_title",
-            "notes",
         ]
 
 
