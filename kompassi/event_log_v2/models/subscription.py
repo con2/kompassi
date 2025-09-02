@@ -1,9 +1,13 @@
+import logging
+
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.db import models
 from django.template.loader import render_to_string
 
 from .entry import Entry
+
+logger = logging.getLogger(__name__)
 
 
 class Subscription(models.Model):
@@ -19,6 +23,10 @@ class Subscription(models.Model):
         subscription_send_update_for_entry.delay(self.id, entry.id)  # type: ignore
 
     def _send_update_for_entry(self, entry: Entry):
+        if not self.user.is_active:
+            logger.info("Not sending email to inactive user %r", self.user)
+            return
+
         subject = self.get_email_subject(entry)
         body = self.get_email_body(entry)
 

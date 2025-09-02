@@ -13,6 +13,7 @@ from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
 from kompassi.access.models import GroupEmailAliasGrant, GroupPrivilege, Privilege
+from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
 from kompassi.access.models.email_alias_type import EmailAliasVariant
 from kompassi.badges.models.badges_event_meta import BadgesEventMeta
@@ -510,6 +511,41 @@ class Setup:
                 EmailAliasVariant.CUSTOM,
             ],
         )
+
+        # Give temp permissions from Thursday to Sunday
+        temp_permission_valid_from = (self.event.start_time - timedelta(days=1)).replace(
+            hour=0, minute=0, second=0, tzinfo=self.tz
+        )
+        temp_permission_valid_until = self.event.end_time.replace(hour=23, minute=59, second=59, tzinfo=self.tz)
+        for person_id, app_labels in [
+            # Lipunvaihdon vuorovastaavat
+            (2087, ("tickets_v2",)),
+            (1168, ("tickets_v2",)),
+            (4016, ("tickets_v2",)),
+            (324, ("tickets_v2",)),
+            # Johtokeskuspäivystäjät
+            (2413, ("tickets_v2", "labour", "program_v2", "badges")),
+            (362, ("tickets_v2", "labour", "program_v2", "badges")),
+            (1092, ("tickets_v2", "labour", "program_v2", "badges")),
+        ]:
+            person = Person.objects.filter(id=person_id).first()
+            if not person:
+                logger.warning("setup_tracon2025.setup_access: Person with id %d not found, skipping", person_id)
+                continue
+
+            for app_label in app_labels:
+                entry, created = CBACEntry.objects.get_or_create(
+                    user=person.user,  # type: ignore
+                    claims=dict(
+                        event=self.event.slug,
+                        app=app_label,
+                    ),
+                    defaults=dict(
+                        valid_from=temp_permission_valid_from,
+                        valid_until=temp_permission_valid_until,
+                    ),
+                )
+                log_get_or_create(logger, entry, created)
 
     def setup_intra(self):
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
