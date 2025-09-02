@@ -2,27 +2,26 @@ extends core_profile_base
 - load crispy_forms_tags
 - load trans from i18n
 block title
-  | Omat tiedot
+  | {% trans "Profile" %}
 block profile_content
-  h3 Omat tiedot
+  h3 {% trans "Profile" %}
   form(method='POST').form-horizontal
     fieldset
       .form-group
-        label.control-label.col-md-3 Käyttäjänimi
+        label.control-label.col-md-3 {% trans "Username" %}
         .controls.col-md-9
           label.control-label(style='font-weight: normal; font-style: italic') {{ request.user.username }}
-          p.help-block Voit kirjautua sisään myös sähköposti&shy;osoitteella käyttäjänimen asemesta. Käyttäjänimeä ei voi vaihtaa itse. Jos kuitenkin haluat vaihtaa käyttäjä&shy;nimeäsi, älä rekisteröi uutta tunnusta, vaan ota yhteyttä ylläpitoon: <a href='mailto:{{ settings.DEFAULT_FROM_EMAIL }}'>{{ settings.DEFAULT_FROM_EMAIL }}</a>
+          p.help-block {% trans "You can also use your email address to log in. Please note that username is separate from your visible nick name. Your username is not displayed anywhere. Changing your username is not currently possible." %}
       if request.user.person.desuprofile_connection
         - with request.user.person.desuprofile_connection as connection
           .form-group
-            label.control-label.col-md-3 Desuprofiili
+            label.control-label.col-md-3 {% trans "Desu Profile" %}
             .controls.col-md-9
               if connection.desuprofile_username
                 label.control-label(style='font-weight: normal; font-style: italic') {{ connection.desuprofile_username }}
               else
-                p(style='font-weight: normal; font-style: italic') Desuprofiilin käyttäjänimi puuttuu. Se tallennetaan, kun seuraavan kerran kirjaudut sisään Desuprofiilillasi.
-              p.help-block Olet yhdistänyt Desuprofiilisi Kompassi-tunnukseen. Mikäli haluat irrottaa Desuprofiilisi Kompassi-tunnuksestasi, ota yhteyttä ylläpitoon.
-
+                p(style='font-weight: normal; font-style: italic') {% trans "Desu Profile username is missing. It will be saved the next time you log in with your Desu Profile." %}
+              p.help-block {% trans "You have connected your Desu Profile to your Kompassi account. If you wish to disconnect your Desu Profile from your Kompassi account, please contact Kompassi admin." %}
     - crispy form
     .col-md-9.col-md-offset-3
       button.btn.btn-success(type='submit')
