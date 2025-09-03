@@ -20,15 +20,15 @@ block profile_content
         for ticket in valid_tickets
           tr
             th(scope='row')
-              a(href="{% url 'programme:paikkala_inspection_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id ticket.key %}")
-                | {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
+              a(href="{% url 'program_v2:paikkala_inspection_view' ticket.program.kompassi_v2_schedule_item.event.slug ticket.program.kompassi_v2_schedule_item.slug ticket.id ticket.key %}")
+                | {{ ticket.program.kompassi_v2_schedule_item.event }}: {{ ticket.program.kompassi_v2_schedule_item.title }}
 
-            if ticket.program.kompassi_programme.is_paikkala_time_visible
-              td {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+            if ticket.program.kompassi_v2_schedule_item.is_paikkala_time_visible
+              td {{ ticket.program.kompassi_v2_schedule_item.start_time|date:"SHORT_DATETIME_FORMAT" }}
             else
-              td {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATE_FORMAT" }}
+              td {{ ticket.program.kompassi_v2_schedule_item.start_time|date:"SHORT_DATE_FORMAT" }}
 
-            td= ticket.program.kompassi_programme.room.name
+            td= ticket.program.kompassi_v2_schedule_item.location_in_v1_active_language
             td
               | {{ ticket.zone.name }}
               if ticket.program.numbered_seats
@@ -41,9 +41,9 @@ block profile_content
 
     for ticket in valid_tickets
       .list-group.visible-sm.visible-xs
-        a.list-group-item(href="{% url 'programme:paikkala_inspection_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id ticket.key %}", style='cursor: pointer')
-          h4.list-group-item-heading {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
-          p.list-group-item-text {{ ticket.program.kompassi_programme.room.name }} {% if ticket.program.kompassi_programme.is_paikkala_time_visible %}{{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
+        a.list-group-item(href="{% url 'program_v2:paikkala_inspection_view' ticket.program.kompassi_v2_schedule_item.event.slug ticket.program.kompassi_v2_schedule_item.id ticket.id ticket.key %}", style='cursor: pointer')
+          h4.list-group-item-heading {{ ticket.program.kompassi_v2_schedule_item.event }}: {{ ticket.program.kompassi_v2_schedule_item.title }}
+          p.list-group-item-text {{ ticket.program.kompassi_v2_schedule_item.location_in_v1_active_language }} {% if ticket.program.kompassi_v2_schedule_item.is_paikkala_time_visible %}{{ ticket.program.kompassi_v2_schedule_item.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ ticket.program.kompassi_v2_schedule_item.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
           p.list-group-item-text {{ ticket.zone.name }}{% if ticket.program.numbered_seats %}, {% trans "row" %} {{ ticket.row.name }}, {% trans "seat" %} {{ ticket.number }}{% endif %}
 
         button.btn.btn-block.btn-danger(type='button', data-toggle='modal', data-target='#confirm-relinguish-{{ ticket.pk }}')
@@ -57,7 +57,7 @@ block profile_content
             .modal-header
               button.close(type='button', data-dismiss='modal', aria-hidden='true') &times;
               h4 {% trans "Confirmation" %}
-            form(method='POST', action="{% url 'programme:paikkala_relinquish_view' ticket.program.kompassi_programme.event.slug ticket.program.kompassi_programme.id ticket.id %}")
+            form(method='POST', action="{% url 'program_v2:paikkala_relinquish_view' ticket.program.kompassi_v2_schedule_item.event.slug ticket.program.kompassi_v2_schedule_item.id ticket.id %}")
               {% csrf_token %}
               input(type='hidden', name='key', value='{{ ticket.key }}')
               div
@@ -72,14 +72,14 @@ block profile_content
                       th(scope='column') {% trans "Seat" %}
                   tbody
                     tr
-                      td: {{ ticket.program.kompassi_programme.event }}: {{ ticket.program.kompassi_programme.title }}
+                      td: {{ ticket.program.kompassi_v2_schedule_item.event }}: {{ ticket.program.kompassi_v2_schedule_item.title }}
 
-                      if ticket.program.kompassi_programme.is_paikkala_time_visible
-                        td {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+                      if ticket.program.kompassi_v2_schedule_item.is_paikkala_time_visible
+                        td {{ ticket.program.kompassi_v2_schedule_item.start_time|date:"SHORT_DATETIME_FORMAT" }}
                       else
-                        td {{ ticket.program.kompassi_programme.start_time|date:"SHORT_DATE_FORMAT" }}
+                        td {{ ticket.program.kompassi_v2_schedule_item.start_time|date:"SHORT_DATE_FORMAT" }}
 
-                      td= ticket.program.kompassi_programme.room.name
+                      td= ticket.program.kompassi_v2_schedule_item.location_in_v1_active_language
                       td
                         | {{ ticket.zone.name }}
                         if ticket.program.numbered_seats
@@ -99,7 +99,7 @@ block profile_content
 
 
   h3 {% trans "Reservable programmes" %}
-  if reservable_programmes.exists
+  if reservable_schedule_items.exists
     p {% trans "Here are the programmes you can currently reserve seats for. Please click the name of the programme to reserve seats. If the programme is currently booked full, seats may become available as visitors release reservations they do not need, so check back later." %}
     table.table.table-striped.hidden-sm.hidden-xs
       thead
@@ -108,34 +108,34 @@ block profile_content
           th(scope='column') {% trans "Start time" %}
           th(scope='column') {% trans "Room" %}
       tbody
-        for programme in reservable_programmes
+        for schedule_item in reservable_schedule_items
           tr
             th(scope='row')
-              if programme.paikkala_program.remaining_tickets
-                a(href='{% url "programme:paikkala_reservation_view" programme.event.slug programme.id %}') {{ programme.event }}: {{ programme.title }}
+              if schedule_item.paikkala_program.remaining_tickets
+                a(href='{% url "program_v2:paikkala_reservation_view" schedule_item.event.slug schedule_item.slug %}') {{ schedule_item.event }}: {{ schedule_item.title }}
               else
-                span.text-muted.kompassi-icon-space-right {{ programme.event }}: {{ programme.title }}
+                span.text-muted.kompassi-icon-space-right {{ schedule_item.event }}: {{ schedule_item.title }}
                 span.label.label-default {% trans "Full" %}
 
-            if programme.is_paikkala_time_visible
-              td {{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}
+            if schedule_item.is_paikkala_time_visible
+              td {{ schedule_item.start_time|date:"SHORT_DATETIME_FORMAT" }}
             else
-              td {{ programme.start_time|date:"SHORT_DATE_FORMAT" }}
+              td {{ schedule_item.start_time|date:"SHORT_DATE_FORMAT" }}
 
-            td= programme.room.name
+            td= schedule_item.location_in_v1_active_language
 
     .list-group.visible-sm.visible-xs
-      for programme in reservable_programmes
-        if programme.paikkala_program.remaining_tickets
-          a.list-group-item(href='{% url "programme:paikkala_reservation_view" programme.event.slug programme.id %}')
-            h4.list-group-item-heading= programme.title
-            p.list-group-item-text {{ programme.room.name }}, {% if programme.is_paikkala_time_visible %}{{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ programme.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
+      for schedule_item in reservable_schedule_items
+        if schedule_item.paikkala_program.remaining_tickets
+          a.list-group-item(href='{% url "program_v2:paikkala_reservation_view" schedule_item.event.slug schedule_item.id %}')
+            h4.list-group-item-heading= schedule_item.title
+            p.list-group-item-text {{ schedule_item.location_in_v1_active_language }}, {% if schedule_item.is_paikkala_time_visible %}{{ schedule_item.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ schedule_item.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
         else
           .list-group-item
             h4.list-group-item-heading.text-muted
-              | {{ programme.title }}
+              | {{ schedule_item.title }}
               .label.label-default {% trans "Full" %}
-            p.list-group-item-text.text-muted {{ programme.room.name }}, {% if programme.is_paikkala_time_visible %}{{ programme.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ programme.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
+            p.list-group-item-text.text-muted {{ schedule_item.location_in_v1_active_language }}, {% if schedule_item.is_paikkala_time_visible %}{{ schedule_item.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ schedule_item.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
 
 
   else

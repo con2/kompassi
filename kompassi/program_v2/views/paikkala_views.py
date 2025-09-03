@@ -17,6 +17,7 @@ from paikkala.excs import (
     Unreservable,
     UserRequired,
 )
+from paikkala.models import Ticket
 from paikkala.views import (
     InspectionView as BaseInspectionView,
 )
@@ -27,12 +28,11 @@ from paikkala.views import (
     ReservationView as BaseReservationView,
 )
 
+from kompassi.core.models.event import Event
 from kompassi.core.utils import horizontal_form_helper
-from kompassi.zombies.programme.models.special_reservation import SpecialReservation
+from kompassi.program_v2.models.schedule_item import ScheduleItem
 
-from ..forms import ReservationForm
-from ..helpers import programme_event_required
-from ..models import Programme
+from ..integrations.paikkala_integration import FakeTicket, ReservationForm
 
 logger = logging.getLogger(__name__)
 
@@ -46,23 +46,22 @@ class PaikkalAdapterMixin:
         """
         Kompassi `base.pug` template needs `event`.
         """
-        context = super().get_context_data(**kwargs)
-        context["event"] = self.kwargs["event"]
+        context = super().get_context_data(**kwargs)  # type: ignore
+        context["event"] = get_object_or_404(Event, slug=self.kwargs["event_slug"])  # type: ignore
         return context
 
-    def get_programme(self):
-        event = self.kwargs["event"]
-        programme_id = self.kwargs["programme_id"]  # NOTE: programme.Programme, not paikkala.Program
+    def get_schedule_item(self):
+        event = get_object_or_404(Event, slug=self.kwargs["event_slug"])  # type: ignore
+        schedule_item_slug = self.kwargs["schedule_item_slug"]  # type: ignore
         return get_object_or_404(
-            Programme,
-            id=int(programme_id),
-            category__event=event,
-            is_using_paikkala=True,
-            paikkala_program__isnull=False,
+            ScheduleItem,
+            program__event=event,
+            slug=schedule_item_slug,
+            cached_combined_dimensions__contains=dict(paikkala=[]),
         )
 
     def get_success_url(self):
-        return reverse("programme:profile_reservations_view")
+        return reverse("program_v2:paikkala_profile_reservations_view")
 
 
 def handle_errors(view_func):
@@ -86,22 +85,22 @@ def handle_errors(view_func):
             return redirect(request.path)
 
         except MaxTicketsReached:
-            message = _("This programme is currently full.")
+            message = _("This schedule_item is currently full.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect("programme:profile_reservations_view")
+            return redirect("program_v2:profile_reservations_view")
 
         except MaxTicketsPerUserReached:
-            message = _("You cannot reserve any more tickets for this programme.")
+            message = _("You cannot reserve any more tickets for this schedule_item.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect("programme:profile_reservations_view")
+            return redirect("program_v2:profile_reservations_view")
 
         except Unreservable:
-            message = _("This programme does not allow reservations at this time.")
+            message = _("This schedule_item does not allow reservations at this time.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect("programme:profile_reservations_view")
+            return redirect("program_v2:profile_reservations_view")
 
         except PermissionDenied:
             message = _("Permission denied.")
@@ -121,7 +120,7 @@ def handle_errors(view_func):
 
 
 class InspectionView(PaikkalAdapterMixin, BaseInspectionView):
-    template_name = "programme_paikkala_inspection_view.pug"
+    template_name = "program_v2_paikkala_inspection_view.pug"
     require_same_user = True
     require_same_zone = True
 
@@ -133,16 +132,11 @@ class RelinquishView(PaikkalAdapterMixin, BaseRelinquishView):
 class ReservationView(PaikkalAdapterMixin, BaseReservationView):
     success_message_template = _("Seats successfully reserved.")
     form_class = ReservationForm
-    template_name = "programme_paikkala_reservation_view.pug"
+    template_name = "program_v2_paikkala_reservation_view.pug"
 
     def get_object(self, queryset=None):
-        """
-        The `programme_event_required` decorator adds `event` to kwargs.
-        `programme_id`, referring to `programme.Programme`, comes from the URL.
-        Using these, resolve and inject the `pk`, referring to `paikkala.Program`.
-        """
-        programme = self.get_programme()
-        self.kwargs["pk"] = programme.paikkala_program_id
+        schedule_item = self.get_schedule_item()
+        self.kwargs["pk"] = schedule_item.paikkala_program_id
         return super().get_object(queryset)
 
     def get_form(self, *args, **kwargs):
@@ -152,22 +146,47 @@ class ReservationView(PaikkalAdapterMixin, BaseReservationView):
         return form
 
 
-paikkala_inspection_view = login_required(programme_event_required(InspectionView.as_view()))
-paikkala_relinquish_view = login_required(programme_event_required(handle_errors(RelinquishView.as_view())))
-paikkala_reservation_view = login_required(programme_event_required(handle_errors(ReservationView.as_view())))
+paikkala_inspection_view = login_required(InspectionView.as_view())
+paikkala_relinquish_view = login_required(handle_errors(RelinquishView.as_view()))
+paikkala_reservation_view = login_required(handle_errors(ReservationView.as_view()))
 
 
 def paikkala_special_reservation_view(request, code):
-    special_reservation = get_object_or_404(SpecialReservation, code=code)
-
-    if special_reservation.program.invalid_after and now() >= special_reservation.program.invalid_after:
-        messages.error(request, _("This ticket is no longer valid."))
-        return redirect("programme:profile_reservations_view")
-
-    vars = dict(
-        event=special_reservation.program.kompassi_programme.event,
-        ticket=special_reservation,  # HAX!
-        tickets=special_reservation.get_fake_tickets(),
+    schedule_item = get_object_or_404(
+        ScheduleItem,
+        paikkala_special_reservation_code=code,
+        cached_dimensions__contains=dict(paikkala=[]),
     )
 
-    return render(request, "programme_paikkala_inspection_view.pug", vars)
+    if schedule_item.cached_end_time >= now():
+        messages.error(request, _("This ticket is no longer valid."))
+        return redirect("program_v2:profile_reservations_view")
+
+    vars = dict(
+        event=schedule_item.event,
+        ticket=schedule_item,  # HAX!
+        tickets=FakeTicket.come_into_being(),
+    )
+
+    return render(request, "program_v2_paikkala_inspection_view.pug", vars)
+
+
+@login_required
+def paikkala_profile_reservations_view(request):
+    t = now()
+    valid_tickets = Ticket.objects.valid().filter(user=request.user)  # type: ignore
+    past_tickets = Ticket.objects.filter(user=request.user).exclude(id__in=valid_tickets)
+    reservable_schedule_items = ScheduleItem.objects.filter(
+        cached_combined_dimensions__contains=dict(paikkala=[]),
+        paikkala_program__reservation_start__lte=t,
+        paikkala_program__reservation_end__gt=t,
+    )
+    print(reservable_schedule_items)
+
+    vars = dict(
+        valid_tickets=valid_tickets,
+        past_tickets=past_tickets,
+        reservable_schedule_items=reservable_schedule_items,
+    )
+
+    return render(request, "program_v2_paikkala_profile_reservations_view.pug", vars)

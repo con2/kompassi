@@ -296,7 +296,9 @@ class Program(models.Model):
         ScheduleItem.refresh_cached_fields_qs(self.schedule_items.all())
 
         if self.cached_combined_dimensions.get("paikkala", []):
+            print("Program.refresh_dependants: paikkala", self)
             for item in self.schedule_items.all():
+                print(item.slug, item.cached_combined_dimensions)
                 item.ensure_paikkala()
 
     @property

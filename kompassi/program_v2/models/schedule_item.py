@@ -9,8 +9,10 @@ from typing import TYPE_CHECKING, ClassVar, Self
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models, transaction
+from django.utils.translation import get_language
 
 from kompassi.core.models.event import Event
+from kompassi.core.utils.locale_utils import get_message_in_language
 from kompassi.core.utils.model_utils import make_slug_field, slugify
 from kompassi.dimensions.models.dimension_value import DimensionValue
 from kompassi.dimensions.models.scope import Scope
@@ -71,8 +73,13 @@ class ScheduleItem(models.Model):
         "paikkala.Program",
         on_delete=models.SET_NULL,
         null=True,
-        related_name="kompassi_v2_program",
+        related_name="kompassi_v2_schedule_item",
     )
+    paikkala_program_id: int | None
+
+    # actual field instead of annotation because it is used to find the ScheduleItem
+    # in the special reservation view
+    paikkala_special_reservation_code = models.UUIDField(null=True, unique=True)
 
     dimensions: models.QuerySet[ScheduleItemDimensionValue]
 
@@ -125,6 +132,13 @@ class ScheduleItem(models.Model):
     def freeform_location(self) -> str:
         return self.annotations.get("internal:freeformLocation", "")
 
+    @freeform_location.setter
+    def freeform_location(self, value: str):
+        if value:
+            self.annotations["internal:freeformLocation"] = value
+        else:
+            self.annotations.pop("internal:freeformLocation", None)
+
     @property
     def _effective_annotations(self):
         """
@@ -132,13 +146,6 @@ class ScheduleItem(models.Model):
         Other users should usually query .annotations directly.
         """
         return self.cached_combined_annotations
-
-    @freeform_location.setter
-    def freeform_location(self, value: str):
-        if value:
-            self.annotations["internal:freeformLocation"] = value
-        else:
-            self.annotations.pop("internal:freeformLocation", None)
 
     @cached_property
     def timezone(self):
@@ -174,6 +181,11 @@ class ScheduleItem(models.Model):
             return room_dimension_value.title_dict
         else:
             return dict.fromkeys(SUPPORTED_LANGUAGE_CODES, freeform_location)
+
+    @cached_property
+    def location_in_v1_active_language(self):
+        v1_active_language = get_language()
+        return get_message_in_language(self.cached_location, v1_active_language)
 
     @transaction.atomic
     def set_dimension_values(self, values_to_set: Mapping[str, Collection[str]], cache: DimensionCache):
@@ -269,10 +281,14 @@ class ScheduleItem(models.Model):
     def ensure_paikkala(self) -> PaikkalaProgram | None:
         from ..integrations.paikkala_integration import paikkalize_schedule_item
 
-        if not self.cached_combined_annotations.get("paikkala", []):
+        if not self.cached_combined_dimensions.get("paikkala", []):
             return None
 
         return paikkalize_schedule_item(self)
+
+    @property
+    def is_paikkala_time_visible(self):
+        return not self.cached_combined_annotations.get("paikkala:hideStartAndEndTime", False)
 
     @property
     def is_cancelled(self) -> bool:

@@ -209,7 +209,7 @@ class Perks(pydantic.BaseModel):
 
         meals = f"{self.meals} ruokalippua" if self.meals else "ei ruokalippuja"
         swag = "valittu työvoimatuote" if self.swag else "ei työvoimatuotteita"
-        extra_swag = " ja ekstrakangaskassi" if self.extra_swag else ""
+        extra_swag = " ja ekstrajuomapullo" if self.extra_swag else ""
 
         return f"{self.ticket_type.title_fi}, {meals}, {swag}{extra_swag}"
 
@@ -220,7 +220,7 @@ class Perks(pydantic.BaseModel):
 
         if "coniitti" in personnel_classes:
             return Perks(
-                override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrakangaskassi",
+                override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrajuomapullo",
                 ticket_type=TicketType.SUPER_INTERNAL_BADGE,
                 meals=MAX_MEALS,
                 swag=True,

@@ -1,8 +1,6 @@
 from django.urls import re_path
 from django.views.generic import RedirectView
 
-from kompassi.zombies.programme.views.paikkala_views import paikkala_special_reservation_view
-
 from .views.admin_detail_view import admin_detail_view
 from .views.admin_feedback_view import admin_feedback_view
 from .views.admin_mail_editor_view import admin_mail_editor_view
@@ -12,10 +10,8 @@ from .views.admin_reservation_status_view import admin_reservation_status_view
 from .views.admin_reservations_export_view import admin_reservations_export_view
 from .views.admin_rooms_view import admin_rooms_view
 from .views.admin_views import admin_email_list_view, admin_view
-from .views.paikkala_views import paikkala_inspection_view, paikkala_relinquish_view, paikkala_reservation_view
 from .views.profile_detail_view import profile_detail_view
 from .views.profile_feedback_view import profile_feedback_view
-from .views.profile_reservations_view import profile_reservations_view
 from .views.profile_view import profile_view
 from .views.schedule_redirect_view import schedule_redirect_view
 
@@ -35,26 +31,6 @@ urlpatterns = [
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/special/?$",
         schedule_redirect_view,
         name="schedule_redirect_view_special",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/reservations/(?P<pk>\d+)/relinquish/?$",
-        paikkala_relinquish_view,
-        name="paikkala_relinquish_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/reservations/(?P<pk>\d+)/inspect/(?P<key>.+?)/?$",
-        paikkala_inspection_view,
-        name="paikkala_inspection_view",
-    ),
-    re_path(
-        r"^events/(?P<event_slug>[a-z0-9-]+)/programme/(?P<programme_id>\d+)/reservations/?$",
-        paikkala_reservation_view,
-        name="paikkala_reservation_view",
-    ),
-    re_path(
-        r"^reservations/(?P<code>[a-z0-9-]+)/?$",
-        paikkala_special_reservation_view,
-        name="paikkala_special_reservation_view",
     ),
     re_path(
         r"^events/(?P<event_slug>[a-z0-9-]+)/programme/admin/?$",
@@ -131,10 +107,5 @@ urlpatterns = [
         r"^profile/programmes/(?P<programme_id>\d+)/feedback/?$",
         profile_feedback_view,
         name="profile_feedback_view",
-    ),
-    re_path(
-        r"^profile/reservations/?",
-        profile_reservations_view,
-        name="profile_reservations_view",
     ),
 ]

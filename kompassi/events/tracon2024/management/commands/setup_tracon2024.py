@@ -853,8 +853,8 @@ class Setup:
             "osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen "
             '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
         )
-        outward_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, outward_coach.id))
-        return_coach_url = reverse("programme:paikkala_reservation_view", args=(self.event.slug, return_coach.id))
+        outward_coach_url = reverse("program_v2:paikkala_reservation_view", args=(self.event.slug, outward_coach.id))
+        return_coach_url = reverse("program_v2:paikkala_reservation_view", args=(self.event.slug, return_coach.id))
         kaatoilmo, unused = Survey.objects.get_or_create(
             event=self.event,
             slug="kaatoilmo",
@@ -867,7 +867,7 @@ class Setup:
                     "<strong>HUOM!</strong> Paikat kaatobusseihin varataan erikseen. Varaa paikkasi "
                     f'<a href="{outward_coach_url}" target="_blank" rel="noopener noreferrer">menobussiin täältä</a> ja '
                     f'<a href="{return_coach_url}" target="_blank" rel="noopener noreferrer">paluubussiin täältä</a>. '
-                    f'Näet bussivarauksesi <a href="{reverse("programme:profile_reservations_view")}" target="_blank" rel="noopener noreferrer">paikkalippusivulta</a>.'
+                    f'Näet bussivarauksesi <a href="{reverse("program_v2:paikkala_profile_reservations_view")}" target="_blank" rel="noopener noreferrer">paikkalippusivulta</a>.'
                 ),
                 override_does_not_apply_message=kaatoilmo_override_does_not_apply_message,
                 form_class_path="events.tracon2024.forms:AfterpartyParticipationSurvey",

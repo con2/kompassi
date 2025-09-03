@@ -25,7 +25,7 @@ block admin_content
               a(href='{% url "programme:admin_detail_view" event.slug programme.id %}')= programme.title
               if programme.paikkala_program.is_reservable
                 .label.label-primary
-                  a(href='{% url "programme:paikkala_reservation_view" programme.event.slug programme.id %}') {% trans "Reservable" %}
+                  a(href='{% url "program_v2:paikkala_reservation_view" programme.event.slug programme.id %}') {% trans "Reservable" %}
             td.kompassi-numeric-column= total_reservation_status.total_reserved
             td.kompassi-numeric-column= total_reservation_status.total_remaining
             td.kompassi-numeric-column= total_reservation_status.total_capacity

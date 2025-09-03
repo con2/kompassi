@@ -29,6 +29,6 @@
             i.fa.fa-pencil.kompassi-icon-space-right
             {% trans "Sign up for this programme" %}
         if programme.is_open_for_seat_reservations
-          a.btn.btn-success.btn-xs(href='{% url "programme:paikkala_reservation_view" event.slug programme.id %}', target='_blank')
+          a.btn.btn-success.btn-xs(href='{% url "program_v2:paikkala_reservation_view" event.slug programme.id %}', target='_blank')
             i.fa.fa-pencil.kompassi-icon-space-right
             {% trans "Reserve seats" %}

@@ -15,11 +15,6 @@ from .misc_forms import (
     PublishForm,
     ScheduleForm,
 )
-from .paikkala_forms import (
-    IsUsingPaikkalaForm,
-    PaikkalaProgramForm,
-    ReservationForm,
-)
 from .schedule_admin_forms import (
     AddRoomForm,
     DeleteRoomForm,

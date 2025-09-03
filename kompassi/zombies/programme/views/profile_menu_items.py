@@ -8,7 +8,7 @@ def programme_profile_menu_items(request):
     programme_active = request.path.startswith(programme_url)
     programme_text = _("Programmes")
 
-    reservations_url = url("programme:profile_reservations_view")
+    reservations_url = url("program_v2:paikkala_profile_reservations_view")
     reservations_active = request.path.startswith(reservations_url)
     reservations_text = _("Seat reservations")
 

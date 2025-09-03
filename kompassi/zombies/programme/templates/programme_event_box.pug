@@ -10,7 +10,7 @@ else
 if event.programme_event_meta.has_open_reservations
   h4 {% trans "The event has programme with reservations open" %}
 
-  p: a.btn.btn-primary(href='{% url "programme:profile_reservations_view" %}') {% trans "Go to reservations" %}
+  p: a.btn.btn-primary(href='{% url "program_v2:paikkala_profile_reservations_view" %}') {% trans "Go to reservations" %}
 
 if is_programme_admin
   h4 {% trans "You have programme admin privileges for this event" %}

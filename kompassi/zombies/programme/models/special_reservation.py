@@ -43,7 +43,7 @@ class SpecialReservation(models.Model):
         return [FakeTicket(row=FakeRow(self.row_name), number=self.seat_number)]
 
     def get_absolute_url(self):
-        return reverse("programme:paikkala_special_reservation_view", kwargs=dict(code=self.code))
+        return reverse("program_v2:paikkala_special_reservation_view", kwargs=dict(code=self.code))
 
     @property
     def event(self):

@@ -85,6 +85,7 @@ class Setup:
         self.setup_program_v2()
         self.setup_kirpputori()
         self.setup_konsti()
+        self.setup_paikkala()
         self.setup_access()
 
     def setup_core(self):
@@ -398,13 +399,20 @@ class Setup:
             group=group,
         )
 
+        if not all(
+            meta.universe.dimensions.filter(slug=dimension_slug).exists()
+            for dimension_slug in [
+                "konsti",
+                "paikkala",
+            ]
+        ):
+            logger.info("Backfill required due to missing integration dimensions")
+            backfill(self.event)
+
     def setup_kirpputori(self, slot_duration=timedelta(minutes=30)):
         meta = self.event.program_v2_event_meta
         if not meta:
             raise AssertionError("No (appease typechecker)")
-
-        if not meta.universe.dimensions.filter(slug="konsti").exists():
-            backfill(self.event)
 
         room_dimension = meta.universe.dimensions.get(slug="room")
         room_dimension_value, created = room_dimension.values.get_or_create(
@@ -520,6 +528,19 @@ class Setup:
             program.set_dimension_values(dict(konsti=["tabletoprpg"]), cache=cache)
             program.refresh_cached_fields()
             program.refresh_dependents()
+
+    def setup_paikkala(self):
+        cache = self.event.program_universe.preload_dimensions()
+
+        for room_slug in ["iso-sali", "pieni-sali"]:
+            programs = Program.objects.filter(
+                event=self.event,
+                cached_combined_dimensions__contains=dict(room=[room_slug]),
+            )
+            for program in programs:
+                program.set_dimension_values(dict(paikkala=[room_slug]), cache=cache)
+                program.refresh_cached_fields()
+                program.refresh_dependents()
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack
