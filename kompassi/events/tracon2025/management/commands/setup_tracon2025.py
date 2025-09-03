@@ -536,6 +536,8 @@ class Setup:
             programs = Program.objects.filter(
                 event=self.event,
                 cached_combined_dimensions__contains=dict(room=[room_slug]),
+            ).exclude(
+                slug="paattajaiset",
             )
             for program in programs:
                 program.set_dimension_values(dict(paikkala=[room_slug]), cache=cache)
