@@ -36,12 +36,11 @@ logger = logging.getLogger(__name__)
 
 
 def get_schema_path(venue_slug: str, room_slug: str) -> Path:
+    # guard against path traversal attacks
     _venue_slug = slugify(venue_slug)
-    _room_slug = slugify(room_slug)
-
     if _venue_slug != venue_slug:
         raise ValueError("Invalid venue slug")
-
+    _room_slug = slugify(room_slug)
     if _room_slug != room_slug:
         raise ValueError("Invalid room slug")
 

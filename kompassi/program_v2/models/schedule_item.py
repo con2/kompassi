@@ -4,11 +4,13 @@ import logging
 from collections.abc import Collection, Mapping
 from datetime import datetime, timedelta, tzinfo
 from functools import cached_property
+from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar, Self
 
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models, transaction
+from django.templatetags.static import static
 from django.utils.translation import get_language
 
 from kompassi.core.models.event import Event
@@ -304,6 +306,30 @@ class ScheduleItem(models.Model):
     @property
     def is_paikkala_time_visible(self):
         return self.cached_combined_annotations.get("paikkala:isStartTimeDisplayed", True)
+
+    @cached_property
+    def paikkala_icon_url(self) -> str | None:
+        """
+        HACK We have trouble with storing media into S3.
+        So work around for Tracon 2025 by storing icons as static instead.
+        """
+        if self.paikkala_icon:
+            return self.paikkala_icon.url
+
+        # guard against path traversal attacks
+        _event_slug = slugify(self.event.slug)
+        if _event_slug != self.event.slug:
+            return None
+        _slug = slugify(self.slug)
+        if _slug != self.slug:
+            return None
+
+        static_path = f"paikkala_icons/{_event_slug}/{_slug}.png"
+        path = Path(__file__).parent.parent / "static" / static_path
+        if path.exists():
+            return static(static_path)
+
+        return None
 
     @property
     def is_cancelled(self) -> bool:

@@ -11,8 +11,8 @@ html
     .paikkala-inspection-view
       p.text-muted {{ ticket.program.kompassi_v2_schedule_item.event.name }}
 
-      if ticket.program.kompassi_v2_schedule_item.paikkala_icon
-        img.paikkala-programme-icon(src='{{ ticket.program.kompassi_v2_schedule_item.paikkala_icon.url }}', alt='')
+      if ticket.program.kompassi_v2_schedule_item.paikkala_icon_url
+        img.paikkala-programme-icon(src='{{ ticket.program.kompassi_v2_schedule_item.paikkala_icon_url }}', alt='')
 
       h1 {{ ticket.program.name }}
 
