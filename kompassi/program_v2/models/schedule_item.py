@@ -21,6 +21,7 @@ from kompassi.dimensions.utils.build_cached_dimensions import build_cached_dimen
 from kompassi.dimensions.utils.dimension_cache import DimensionCache
 from kompassi.dimensions.utils.set_dimension_values import set_dimension_values
 from kompassi.graphql_api.language import SUPPORTED_LANGUAGE_CODES
+from kompassi.program_v2.dimensions import get_event_dates
 
 from .program import Program
 
@@ -44,6 +45,8 @@ class ScheduleItem(models.Model):
         on_delete=models.CASCADE,
         related_name="schedule_items",
     )
+
+    is_public = models.BooleanField(default=True)
 
     start_time: datetime = models.DateTimeField()  # type: ignore
     duration: timedelta = models.DurationField()  # type: ignore
@@ -260,10 +263,15 @@ class ScheduleItem(models.Model):
         Use this to make the wee hours of the night belong to the previous day.
         """
         tz = tz or self.program.event.timezone
-        return {
-            (self.start_time.astimezone(tz) - self.date_cutoff_time).date().isoformat(),
-            (self.cached_end_time.astimezone(tz) - self.date_cutoff_time).date().isoformat(),
-        }
+
+        dates = get_event_dates(self.event).intersection(
+            {
+                (self.start_time.astimezone(tz) - self.date_cutoff_time).date(),
+                (self.cached_end_time.astimezone(tz) - self.date_cutoff_time).date(),
+            }
+        )
+
+        return {d.isoformat() for d in dates}
 
     def refresh_technical_dimensions(self):
         cache = self.program.meta.universe.preload_dimensions(["date"])
@@ -288,7 +296,7 @@ class ScheduleItem(models.Model):
 
     @property
     def is_paikkala_time_visible(self):
-        return not self.cached_combined_annotations.get("paikkala:hideStartAndEndTime", False)
+        return self.cached_combined_annotations.get("paikkala:isStartTimeDisplayed", True)
 
     @property
     def is_cancelled(self) -> bool:

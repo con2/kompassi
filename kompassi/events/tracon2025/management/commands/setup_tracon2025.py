@@ -86,6 +86,7 @@ class Setup:
         self.setup_kirpputori()
         self.setup_konsti()
         self.setup_paikkala()
+        self.setup_kaatobussi()
         self.setup_access()
 
     def setup_core(self):
@@ -474,6 +475,11 @@ class Setup:
             )
             log_get_or_create(logger, program, created)
 
+            if created:
+                program.set_dimension_values(dimensions, cache)
+                program.refresh_cached_fields()
+                program.refresh_dependents()
+
             sched_start_dt = prog_start_dt
             while sched_start_dt < prog_end_dt:
                 sched_end_dt = sched_start_dt + slot_duration
@@ -502,13 +508,12 @@ class Setup:
                     ),
                 )
                 log_get_or_create(logger, sched, created)
-                sched.refresh_cached_fields()
+
+                if created:
+                    sched.refresh_cached_fields()
+                    sched.refresh_dependents()
 
                 sched_start_dt += slot_duration
-
-            program.set_dimension_values(dimensions, cache)
-            program.refresh_cached_fields()
-            program.refresh_dependents()
 
     def setup_konsti(self):
         if Program.objects.filter(event=self.event, cached_dimensions__konsti=["tabletoprpg"]).exists():
@@ -543,6 +548,76 @@ class Setup:
                 program.set_dimension_values(dict(paikkala=[room_slug]), cache=cache)
                 program.refresh_cached_fields()
                 program.refresh_dependents()
+
+                # refresh_dependents is not transitive
+                for schedule_item in program.schedule_items.all():
+                    if schedule_item.start_time.date() == self.event.start_time.date():
+                        # On Friday, reservations start at 12:00
+                        # On Saturday & Sunday, the default (09:00)
+                        schedule_item.annotations.setdefault(
+                            "paikkala:reservationStartsAt",
+                            schedule_item.start_time.replace(hour=12, minute=0, second=0, tzinfo=self.tz).isoformat(),
+                        )
+                        schedule_item.refresh_cached_fields()
+
+                    schedule_item.ensure_paikkala()
+
+    def setup_kaatobussi(self):
+        meta = self.event.program_v2_event_meta
+        if not meta:
+            raise AssertionError("No (appease typechecker)")
+
+        program, created = Program.objects.get_or_create(
+            event=self.event,
+            slug="kaatobussi",
+            defaults=dict(
+                title="Kaatobussin paikkavaraus",
+                description="Kaatajaisten bussikuljetukseen ilmoittautuminen.",
+            ),
+        )
+        log_get_or_create(logger, program, created)
+
+        if created:
+            program.refresh_cached_fields()
+            program.refresh_dependents()
+
+        cache = meta.universe.preload_dimensions()
+        duration = timedelta(hours=4)
+
+        year = self.event.start_time.year
+        month = self.event.start_time.month
+        annotations = {
+            "paikkala:reservationStartsAt": datetime(year, month, 1, tzinfo=self.tz).isoformat(),
+            "paikkala:maxTicketsPerBatch": 1,
+            "paikkala:maxTicketsPerUser": 1,
+        }
+
+        for slug, subtitle, hour in [
+            ("kaatobussi-meno", "Menomatka", 14),
+            ("kaatobussi-paluu", "Paluumatka", 21),
+        ]:
+            start_time = self.event.start_time.replace(hour=hour) + timedelta(days=15)
+            end_time = start_time + duration
+
+            schedule_item, created = ScheduleItem.objects.get_or_create(
+                program=program,
+                slug=slug,
+                defaults=dict(
+                    is_public=False,
+                    subtitle=subtitle,
+                    start_time=start_time,
+                    duration=duration,
+                    cached_end_time=end_time,
+                    cached_event_id=self.event.id,
+                    annotations=annotations,
+                ),
+            )
+            log_get_or_create(logger, schedule_item, created)
+
+            if created:
+                schedule_item.set_dimension_values(dict(paikkala=[slug]), cache=cache)
+                schedule_item.refresh_cached_fields()
+                schedule_item.refresh_dependents()  # paikkalizes
 
     def setup_access(self):
         # Grant accepted workers access to Tracon Slack

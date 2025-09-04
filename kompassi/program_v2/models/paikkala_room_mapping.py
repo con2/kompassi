@@ -5,7 +5,7 @@ from kompassi.dimensions.models.dimension_value import DimensionValue
 
 
 class PaikkalaRoomMapping(models.Model):
-    room_dimension_value: models.OneToOneField[DimensionValue] = models.OneToOneField(
+    paikkala_dimension_value: models.OneToOneField[DimensionValue] = models.OneToOneField(
         DimensionValue,
         on_delete=models.CASCADE,
         related_name="paikkala_room_mapping",

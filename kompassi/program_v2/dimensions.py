@@ -1,5 +1,6 @@
 import logging
 from collections.abc import Iterable, Sequence
+from datetime import date as date_type
 from datetime import timedelta
 
 from kompassi.core.models.event import Event
@@ -237,6 +238,22 @@ def get_form_dimension_dto(universe: Universe) -> DimensionDTO:
     )
 
 
+def get_event_dates(event: Event) -> set[date_type]:
+    tz = event.timezone
+    dates = set()
+    if event.start_time is None or event.end_time is None:
+        return dates
+
+    cur_date = event.start_time.astimezone(tz).date()
+    end_date = event.end_time.astimezone(tz).date()
+
+    while cur_date <= end_date:
+        dates.add(cur_date)
+        cur_date += timedelta(days=1)
+
+    return dates
+
+
 def get_date_dimension_values(universe: Universe) -> Iterable[DimensionValueDTO]:
     """
     Return a list of DimensionValueDTOs for the date dimension.
@@ -245,17 +262,7 @@ def get_date_dimension_values(universe: Universe) -> Iterable[DimensionValueDTO]
     if event is None:
         raise ValueError("Program universe scope has no event")
 
-    tz = event.timezone
-
-    if not event.start_time:
-        raise ValueError(f"Event {event} has no start time")
-    if not event.end_time:
-        raise ValueError(f"Event {event} has no end time")
-
-    cur_date = event.start_time.astimezone(tz).date()
-    end_date = event.end_time.astimezone(tz).date()
-
-    while cur_date <= end_date:
+    for cur_date in get_event_dates(event):
         yield DimensionValueDTO(
             slug=cur_date.isoformat(),
             title={
@@ -263,7 +270,6 @@ def get_date_dimension_values(universe: Universe) -> Iterable[DimensionValueDTO]
             },
             is_technical=True,
         )
-        cur_date += timedelta(days=1)
 
 
 def get_date_dimension_dto(universe: Universe) -> DimensionDTO:

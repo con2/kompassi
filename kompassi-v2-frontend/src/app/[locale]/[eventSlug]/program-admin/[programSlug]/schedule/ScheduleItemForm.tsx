@@ -68,6 +68,11 @@ export function buildScheduleItemForm(
       required: true,
       ...t?.attributes.durationMinutes,
     },
+    {
+      slug: "isPublic",
+      type: "SingleCheckbox",
+      ...t?.attributes.isPublic,
+    },
   ];
 
   switch (roomDimension) {

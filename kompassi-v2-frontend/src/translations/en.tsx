@@ -1872,6 +1872,16 @@ const translations = {
             </>
           ),
         },
+        isPublic: {
+          title: "Public",
+          helpText: (
+            <>
+              If unchecked, this schedule item will not be visible to the
+              public.
+            </>
+          ),
+          notPublic: "This schedule item is not public.",
+        },
       },
       actions: {
         edit: {

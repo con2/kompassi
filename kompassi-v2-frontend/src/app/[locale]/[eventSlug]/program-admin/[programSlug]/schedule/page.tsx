@@ -17,6 +17,7 @@ graphql(`
     durationMinutes
     room
     freeformLocation
+    isPublic
   }
 `);
 

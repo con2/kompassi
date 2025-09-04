@@ -43,6 +43,7 @@ class ProgramFilters:
     updated_after: datetime | None = None
     dimension_filters: DimensionFilters = field(default_factory=DimensionFilters)
     user_relation: ProgramUserRelation | None = None
+    public_only: bool = False
 
     @classmethod
     def from_query_dict(
@@ -91,12 +92,14 @@ class ProgramFilters:
         hide_past: bool = False,
         user_relation: ProgramUserRelation | None = None,
         updated_after: datetime | None = None,
+        public_only: bool = False,
     ):
         return cls(
             dimension_filters=DimensionFilters.from_graphql(filters),
             user_relation=user_relation,
             hide_past=hide_past,
             updated_after=ensure_aware(updated_after) if updated_after else None,
+            public_only=public_only,
         )
 
     def filter_program(
@@ -182,6 +185,9 @@ class ProgramFilters:
 
         if self.updated_after:
             schedule_items = schedule_items.filter(updated_at__gt=self.updated_after)
+
+        if self.public_only:
+            schedule_items = schedule_items.filter(is_public=True)
 
         return (
             schedule_items.distinct()

@@ -176,12 +176,13 @@ def paikkala_profile_reservations_view(request):
     t = now()
     valid_tickets = Ticket.objects.valid().filter(user=request.user)  # type: ignore
     past_tickets = Ticket.objects.filter(user=request.user).exclude(id__in=valid_tickets)
+
     reservable_schedule_items = ScheduleItem.objects.filter(
         cached_combined_dimensions__contains=dict(paikkala=[]),
         paikkala_program__reservation_start__lte=t,
         paikkala_program__reservation_end__gt=t,
+        is_public=True,
     )
-    print(reservable_schedule_items)
 
     vars = dict(
         valid_tickets=valid_tickets,

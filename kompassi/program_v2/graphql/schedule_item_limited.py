@@ -15,6 +15,7 @@ class LimitedScheduleItemType(DjangoObjectType):
             "start_time",
             "created_at",
             "updated_at",
+            "is_public",
         )
 
     from .cached_annotations import cached_annotations, resolve_cached_annotations

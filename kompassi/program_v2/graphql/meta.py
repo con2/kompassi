@@ -79,10 +79,20 @@ class ProgramV2EventMetaType(DjangoObjectType):
         info,
         filters: list[DimensionFilterInput] | None = None,
         favorites_only: bool = False,
+        public_only: bool = True,
         hide_past: bool = False,
         updated_after: datetime | None = None,
     ):
         request: HttpRequest = info.context
+
+        if not public_only:
+            graphql_check_model(
+                ScheduleItem,
+                meta.event.scope,
+                request,
+                app="program_v2",
+            )
+
         schedule_items = ScheduleItem.objects.filter(cached_event=meta.event).select_related(
             "program",
             "program__event",
@@ -92,6 +102,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
             user_relation=ProgramUserRelation.FAVORITED if favorites_only else None,
             hide_past=hide_past,
             updated_after=updated_after,
+            public_only=public_only,
         ).filter_schedule_items(schedule_items, user=request.user)
 
     schedule_items = graphene.NonNull(

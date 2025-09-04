@@ -27,6 +27,7 @@ from kompassi.dimensions.models.dimension_value import DimensionValue
 from kompassi.dimensions.models.enums import AnnotationDataType
 from kompassi.program_v2.models.paikkala_room_mapping import PaikkalaRoomMapping
 
+from ..filters import parse_datetime
 from ..models.schedule_item import ScheduleItem
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,21 @@ def get_paikkala_dimension(event: Event) -> DimensionDTO | None:
     if not available_room_slugs:
         return None
 
+    # HACK get names of the rooms from the room dimension
+    # this might not work the first time as the room dimension is not yet loaded
+    # so fallback to slug is needed
+    if (
+        (meta := event.program_v2_event_meta)
+        and (cache := meta.universe.preload_dimensions())
+        and (room_dvs_by_slug := cache.values_by_dimension.get("room"))
+    ):
+        room_names = {
+            slug: room_dvs_by_slug[slug].title_dict if slug in room_dvs_by_slug else {"fi": slug}
+            for slug in available_room_slugs
+        }
+    else:
+        room_names = {slug: {"fi": slug} for slug in available_room_slugs}
+
     # TODO yeet another special kind of technical dimension:
     # it may be specified on a program by an admin user, BUT
     # its values may not be touched by them
@@ -77,28 +93,30 @@ def get_paikkala_dimension(event: Event) -> DimensionDTO | None:
             DimensionValueDTO(
                 slug=slug,
                 is_technical=True,
-                title=dict(
-                    fi=slug,
-                    en=slug,
-                ),
+                title=room_names[slug],
             )
             for slug in available_room_slugs
         ],
     )
 
 
-def paikkalize_room(event: Event, room: DimensionValue) -> PaikkalaRoom:
+def paikkalize_room(
+    event: Event,
+    paikkala_dimension_value: DimensionValue,
+) -> PaikkalaRoom:
     """
     Note: Always creates a new PaikkalaRoom.
     Only call when you are actually initializing a PaikkalaProgram.
     """
-    paikkala_room_mapping = PaikkalaRoomMapping.objects.filter(room_dimension_value=room).first()
+    paikkala_room_mapping = PaikkalaRoomMapping.objects.filter(
+        paikkala_dimension_value=paikkala_dimension_value
+    ).first()
     if paikkala_room_mapping:
         paikkala_room = paikkala_room_mapping.paikkala_room
         log_get_or_create(logger, paikkala_room, False)
         return paikkala_room
 
-    with get_schema_path(event.venue.slug, room.slug).open(encoding="UTF-8") as f:
+    with get_schema_path(event.venue.slug, paikkala_dimension_value.slug).open(encoding="UTF-8") as f:
         row_csv_list = list(read_csv(f))
 
     # hack: dun wanna mess up with same-named rooms
@@ -109,10 +127,13 @@ def paikkalize_room(event: Event, room: DimensionValue) -> PaikkalaRoom:
         default_room_name=room_name,
     )
     paikkala_room = zones[0].room
-    paikkala_room.name = room.get_title("fi")
+    paikkala_room.name = paikkala_dimension_value.get_title("fi")
     paikkala_room.save(update_fields=["name"])
 
-    PaikkalaRoomMapping.objects.create(room_dimension_value=room, paikkala_room=paikkala_room)
+    PaikkalaRoomMapping.objects.create(
+        paikkala_dimension_value=paikkala_dimension_value,
+        paikkala_room=paikkala_room,
+    )
 
     log_get_or_create(logger, paikkala_room, True)
     return paikkala_room
@@ -127,12 +148,17 @@ def paikkalize_schedule_item(schedule_item: ScheduleItem) -> PaikkalaProgram:
     if not room_slug:
         raise ValueError("paikkalize_schedule_item a schedule item that is not using Paikkala?!? Preposterous!!!")
 
-    # TODO configure reservation start time via annotations
-    # reservation_start = schedule_item.cached_combined_annotations.get("paikkala:reservationStartDateTime")
-    if settings.DEBUG:
+    if reservation_start_str := schedule_item.cached_combined_annotations.get("paikkala:reservationStartsAt"):
+        reservation_start = parse_datetime(reservation_start_str)
+    elif settings.DEBUG:
         reservation_start = now()
     else:
         reservation_start = schedule_item.start_time.replace(hour=9, minute=0, tzinfo=tz)
+
+    annotations = schedule_item.cached_combined_annotations
+    numbered_seats = annotations.get("paikkala:haveNumberedSeats", True)
+    max_per_user = annotations.get("paikkala:maxTicketsPerUser", meta.paikkala_default_max_tickets_per_user)
+    max_per_batch = annotations.get("paikkala:maxTicketsPerBatch", meta.paikkala_default_max_tickets_per_batch)
 
     attrs = dict(
         event_name=schedule_item.event.name,
@@ -143,8 +169,9 @@ def paikkalize_schedule_item(schedule_item: ScheduleItem) -> PaikkalaProgram:
         invalid_after=schedule_item.cached_end_time,
         max_tickets=0,
         automatic_max_tickets=True,
-        max_tickets_per_user=meta.paikkala_default_max_tickets_per_user,
-        max_tickets_per_batch=meta.paikkala_default_max_tickets_per_batch,
+        max_tickets_per_user=max_per_user,
+        max_tickets_per_batch=max_per_batch,
+        numbered_seats=numbered_seats,
     )
 
     paikkala_program = PaikkalaProgram.objects.filter(kompassi_v2_schedule_item=schedule_item).first()
@@ -157,8 +184,9 @@ def paikkalize_schedule_item(schedule_item: ScheduleItem) -> PaikkalaProgram:
 
         return paikkala_program
 
-    room_sdv = schedule_item.dimensions.get(value__dimension__slug="room")
-    paikkala_room = paikkalize_room(schedule_item.event, room_sdv.value)
+    cache = meta.universe.preload_dimensions()
+    paikkala_dimension_value = cache.values_by_dimension["paikkala"][room_slug]
+    paikkala_room = paikkalize_room(schedule_item.event, paikkala_dimension_value)
     paikkala_program = PaikkalaProgram(room=paikkala_room, **attrs)
     paikkala_program.save()
     log_get_or_create(logger, paikkala_program, True)
@@ -179,9 +207,43 @@ PAIKKALA_ANNOTATION_DTOS = [
         slug="paikkala:reservationStartsAt",
         type=AnnotationDataType.DATETIME,
         title=dict(
-            fi="Varauksen alkamisaika",
-            en="Reservation start time",
-            sv="Början av reservation",
+            fi="Varauksen alkamisaika (Paikkala)",
+            en="Reservation start time (Paikkala)",
+            sv="Början av reservation (Paikkala)",
+        ),
+    ),
+    AnnotationDTO(
+        slug="paikkala:isStartTimeDisplayed",
+        type=AnnotationDataType.BOOLEAN,
+        title=dict(
+            fi="Alkuaika näkyvissä (Paikkala)",
+            en="Start time is displayed (Paikkala)",
+        ),
+        # NOTE default=True
+    ),
+    AnnotationDTO(
+        slug="paikkala:haveNumberedSeats",
+        type=AnnotationDataType.BOOLEAN,
+        title=dict(
+            fi="Numeroidut paikat (Paikkala)",
+            en="Numbered seats (Paikkala)",
+        ),
+        # NOTE default=True
+    ),
+    AnnotationDTO(
+        slug="paikkala:maxTicketsPerBatch",
+        type=AnnotationDataType.NUMBER,
+        title=dict(
+            fi="Maksimimäärä lippuja per varaus (Paikkala)",
+            en="Maximum number of tickets per reservation (Paikkala)",
+        ),
+    ),
+    AnnotationDTO(
+        slug="paikkala:maxTicketsPerUser",
+        type=AnnotationDataType.NUMBER,
+        title=dict(
+            fi="Maksimimäärä lippuja per käyttäjä (Paikkala)",
+            en="Maximum number of tickets per user (Paikkala)",
         ),
     ),
 ]

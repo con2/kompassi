@@ -1881,6 +1881,11 @@ const translations: Translations = {
             </>
           ),
         },
+        isPublic: {
+          title: "Julkinen",
+          helpText: <>Näkyy yleisölle vain jos tämä on ruksattu.</>,
+          notPublic: "Tämä aikataulumerkintä ei ole julkinen.",
+        },
       },
       actions: {
         edit: {

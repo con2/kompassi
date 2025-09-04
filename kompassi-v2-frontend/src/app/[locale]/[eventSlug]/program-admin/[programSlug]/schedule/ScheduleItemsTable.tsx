@@ -44,12 +44,25 @@ export default async function ScheduleItemTable({
     {
       slug: "subtitle",
       title: t.attributes.subtitle.title,
-      getCellContents: (row) =>
-        row.subtitle ? (
+      getCellContents: (row) => {
+        const title = row.subtitle ? (
           <>{row.subtitle}</>
         ) : (
           <em>{t.attributes.subtitle.noSubtitle}</em>
-        ),
+        );
+        const lock = row.isPublic ? null : (
+          <>
+            {" "}
+            <span title={t.attributes.isPublic.notPublic}>🔒</span>
+          </>
+        );
+        return (
+          <>
+            {title}
+            {lock}
+          </>
+        );
+      },
     },
     {
       slug: "startTime",
