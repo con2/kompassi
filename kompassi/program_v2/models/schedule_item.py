@@ -84,6 +84,13 @@ class ScheduleItem(models.Model):
     # in the special reservation view
     paikkala_special_reservation_code = models.UUIDField(null=True, unique=True)
 
+    paikkala_icon = models.FileField(
+        upload_to="paikkala_icons_v2",
+        blank=True,
+        verbose_name="Paikkala icon",
+        help_text="The programme icon is used to make it harder to mix up reservations of different programmes during inspection.",
+    )
+
     dimensions: models.QuerySet[ScheduleItemDimensionValue]
 
     class Meta:
