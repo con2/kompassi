@@ -946,6 +946,7 @@ class Setup:
                     is_public=False,
                     default_language_code="fi",
                     splats=[splat.model_dump(mode="json", by_alias=True) for splat in splats],
+                    special_fields=["responseId", "createdAt", "updatedAt"],
                 ),
             )
 

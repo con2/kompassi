@@ -111,6 +111,12 @@ class Projection(models.Model):
         help_text="List of resulting (projected) field names to order the projection results by.",
     )
 
+    special_fields = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="Which special fields to include. Supported: responseId, createdAt, updatedAt.",
+    )
+
     class Meta:
         unique_together = (("scope", "slug"),)
 
@@ -282,8 +288,16 @@ class Projection(models.Model):
                     )
                     del values[source_field]
 
+        special_fields = {
+            "responseId": response.id,
+            "createdAt": response.original_created_at.isoformat() if response.original_created_at else None,
+            "updatedAt": response.revision_created_at.isoformat() if response.revision_created_at else None,
+        }
+        special_fields = {k: v for k, v in special_fields.items() if k in self.special_fields}
+
         for item in Splat.project(validated.splats, values):
             yield dict(
+                **special_fields,
                 **item,
                 **item_dimensions,
             )
