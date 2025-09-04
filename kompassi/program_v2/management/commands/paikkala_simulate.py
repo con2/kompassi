@@ -9,7 +9,10 @@ from paikkala.models.zones import ZoneReservationStatus
 from tabulate import tabulate
 
 from kompassi.core.models import Event
-from kompassi.zombies.programme.models import Category, Programme, Room
+from kompassi.program_v2.integrations.paikkala_integration import paikkalize_schedule_item
+
+from ...models.program import Program
+from ...models.schedule_item import ScheduleItem
 
 logger = logging.getLogger(__name__)
 
@@ -35,33 +38,39 @@ class Command(BaseCommand):
         )
 
     def handle(*args, **options):
+        event_slug = options["event_slug"]
+        room_slug = options["room_slug"]
+
         try:
             with transaction.atomic():
-                event = Event.objects.get(slug=options["event_slug"])
-                room, unused = Room.objects.get_or_create(
-                    event=event,
-                    slug=options["room_slug"],
-                    defaults=dict(
-                        name=options["room_slug"],
-                    ),
-                )
-                category = Category.objects.filter(event=event).first()
-                kompassi_programme = Programme.objects.create(
-                    category=category,
-                    title="Paikkala simulation programme",
-                    start_time=event.start_time,
-                    length=60,
-                    room=room,
-                    is_using_paikkala=True,
-                )
+                event = Event.objects.get(slug=event_slug)
+                meta = event.program_v2_event_meta
+                if not meta:
+                    raise ValueError("Event is not using Program V2")
+                cache = meta.universe.preload_dimensions()
 
-                paikkala_program = kompassi_programme.paikkalize(
-                    reservation_start=now(),
-                    reservation_end=now() + timedelta(minutes=5),
+                kompassi_program = Program.objects.create(
+                    event=event,
+                    title="Paikkala simulation programme",
+                )
+                kompassi_program.set_dimension_values(dict(room=[room_slug], paikkala=[room_slug]), cache=cache)
+                kompassi_program.refresh_cached_fields()
+
+                schedule_item = ScheduleItem(
+                    program=kompassi_program,
+                    start_time=now(),
+                    duration=timedelta(minutes=60),
+                    annotations={
+                        "paikkala:reservationStartsAt": now().isoformat(),
+                    },
+                ).with_mandatory_fields()
+                schedule_item.save()
+                schedule_item.refresh_cached_fields()
+
+                paikkala_program = paikkalize_schedule_item(
+                    schedule_item,
                     require_user=False,
                 )
-
-                assert paikkala_program
 
                 for zone in paikkala_program.zones:
                     print(zone)

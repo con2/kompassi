@@ -12,9 +12,10 @@ from django.template.defaultfilters import truncatechars
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from paikkala.forms import ReservationForm as PaikkalaReservationForm
-from paikkala.models import Program as PaikkalaProgram
-from paikkala.models import Room as PaikkalaRoom
-from paikkala.models import Row
+from paikkala.models.programs import Program as PaikkalaProgram
+from paikkala.models.rooms import Room as PaikkalaRoom
+from paikkala.models.rows import Row
+from paikkala.models.zones import Zone as PaikkalaZone
 from paikkala.utils.importer import import_zones, read_csv
 
 from kompassi.core.models.event import Event
@@ -140,7 +141,10 @@ def paikkalize_room(
 
 
 @transaction.atomic
-def paikkalize_schedule_item(schedule_item: ScheduleItem) -> PaikkalaProgram:
+def paikkalize_schedule_item(
+    schedule_item: ScheduleItem,
+    **paikkalkwargs,
+) -> PaikkalaProgram:
     meta = schedule_item.program.meta
     tz = schedule_item.event.timezone
 
@@ -173,6 +177,7 @@ def paikkalize_schedule_item(schedule_item: ScheduleItem) -> PaikkalaProgram:
         max_tickets_per_batch=max_per_batch,
         numbered_seats=numbered_seats,
     )
+    attrs.update(paikkalkwargs)
 
     paikkala_program = PaikkalaProgram.objects.filter(kompassi_v2_schedule_item=schedule_item).first()
     if paikkala_program:
@@ -200,6 +205,42 @@ def paikkalize_schedule_item(schedule_item: ScheduleItem) -> PaikkalaProgram:
     paikkala_program.save()
 
     return paikkala_program
+
+
+def repaikkalize_event(event: Event):
+    logger.info("Repaikkalizing event %s", event)
+    meta = event.program_v2_event_meta
+    if not meta:
+        raise ValueError("Event is not using Program V2")
+
+    schedule_items = meta.schedule_items.filter(cached_combined_dimensions__contains=dict(paikkala=[]))
+    num_schedule_items = schedule_items.distinct().count()
+    schedule_item_ids = set(schedule_items.values_list("id", flat=True))
+
+    logger.info("There are %d schedule items using Paikkala", num_schedule_items)
+
+    paikkala_programs = PaikkalaProgram.objects.filter(kompassi_v2_schedule_item__in=schedule_items)
+    paikkala_rooms = PaikkalaRoom.objects.filter(program__in=paikkala_programs)
+    paikkala_zones = PaikkalaZone.objects.filter(room__in=paikkala_rooms)
+    paikkala_room_mappings = PaikkalaRoomMapping.objects.filter(
+        paikkala_dimension_value__dimension__universe=meta.universe
+    )
+
+    logger.info("Clearing old Paikkala data")
+    schedule_items.update(paikkala_program=None)
+    paikkala_room_mappings.delete()
+    paikkala_programs.delete()
+    paikkala_zones.delete()
+    paikkala_rooms.delete()
+
+    # I am paranoid about runaway cascades
+    schedule_items = ScheduleItem.objects.filter(id__in=schedule_item_ids)
+    if schedule_items.distinct().count() != num_schedule_items:
+        raise AssertionError("ps.distinct().count() == num_ps")
+
+    for schedule_item in schedule_items.all():
+        logger.info("Repaikkalizing %s", schedule_item)
+        paikkalize_schedule_item(schedule_item)
 
 
 PAIKKALA_ANNOTATION_DTOS = [

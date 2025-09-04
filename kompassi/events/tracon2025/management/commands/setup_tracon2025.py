@@ -11,6 +11,7 @@ from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
+from paikkala.models.blocks import PerProgramBlock
 
 from kompassi.access.models import GroupEmailAliasGrant, GroupPrivilege, Privilege
 from kompassi.access.models.cbac_entry import CBACEntry
@@ -551,7 +552,10 @@ class Setup:
 
                 # refresh_dependents is not transitive
                 for schedule_item in program.schedule_items.all():
-                    if schedule_item.start_time.date() == self.event.start_time.date():
+                    is_friday = schedule_item.start_time.date() == self.event.start_time.date()
+                    is_sunday = schedule_item.start_time.date() == self.event.end_time.date()
+
+                    if is_friday:
                         # On Friday, reservations start at 12:00
                         # On Saturday & Sunday, the default (09:00)
                         schedule_item.annotations.setdefault(
@@ -560,7 +564,20 @@ class Setup:
                         )
                         schedule_item.refresh_cached_fields()
 
-                    schedule_item.ensure_paikkala()
+                    paikkala_program = schedule_item.ensure_paikkala()
+                    if not paikkala_program:
+                        raise AssertionError("No (appease typechecker)")
+
+                    # The upper floor of the Main Auditorium is only available on Saturday
+                    if room_slug == "iso-sali" and (is_friday or is_sunday):
+                        for zone in paikkala_program.zones.filter(name__contains="parveke"):
+                            for row in zone.rows.all():  # type: ignore
+                                block, created = PerProgramBlock.objects.get_or_create(
+                                    program=paikkala_program,
+                                    row=row,
+                                    excluded_numbers=f"{row.start_number}-{row.end_number}",
+                                )
+                                log_get_or_create(logger, block, created)
 
     def setup_kaatobussi(self):
         meta = self.event.program_v2_event_meta

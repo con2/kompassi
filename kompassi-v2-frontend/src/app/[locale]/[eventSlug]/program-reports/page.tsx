@@ -19,7 +19,7 @@ const query = graphql(`
       timezone
 
       program {
-        reports {
+        reports(lang: $locale) {
           ...Report
         }
       }

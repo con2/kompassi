@@ -17,7 +17,7 @@ from kompassi.dimensions.models.enums import AnnotationFlags
 from kompassi.forms.graphql.response_full import FullResponseType
 from kompassi.forms.graphql.response_profile import ProfileResponseType
 from kompassi.forms.models.response import Response
-from kompassi.program_v2.reports.paikkala_reports import ReservationsByZone, ReservationStatus
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.reports.graphql.report import ReportType
 
 from ..filters import ProgramFilters, ProgramUserRelation
@@ -27,6 +27,7 @@ from ..models import (
     ScheduleItem,
 )
 from ..models.meta import ProgramV2ProfileMeta
+from ..reports.paikkala_reports import ReservationsByZone, ReservationStatus
 from .program_full import FullProgramType
 from .program_host_full import FullProgramHostType, ProgramHost
 from .schedule_item_full import FullScheduleItemType
@@ -422,6 +423,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
     def resolve_reports(
         meta: ProgramV2EventMeta,
         info,
+        lang: str = DEFAULT_LANGUAGE,
     ):
         request: HttpRequest = info.context
 
@@ -434,7 +436,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         return [
             ReservationStatus.report(meta.event),
             *(
-                ReservationsByZone.report(schedule_item)
+                ReservationsByZone.report(schedule_item, lang=lang)
                 for schedule_item in meta.schedule_items.filter(
                     cached_combined_dimensions__contains=dict(paikkala=[]),
                 )
@@ -443,6 +445,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     reports = graphene.NonNull(
         graphene.List(graphene.NonNull(ReportType)),
+        lang=graphene.String(required=False),
         description=normalize_whitespace(resolve_reports.__doc__ or ""),
     )
 

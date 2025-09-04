@@ -4,8 +4,11 @@ from collections.abc import Iterable
 from typing import Self
 
 import pydantic
+from django.utils import translation
 
 from kompassi.core.models.event import Event
+from kompassi.core.utils.time_utils import format_datetime
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.program_v2.models.schedule_item import ScheduleItem
 from kompassi.reports.models.report import Column, Report, TypeOfColumn
 
@@ -125,10 +128,25 @@ class ReservationsByZone(pydantic.BaseModel):
         ]
 
     @classmethod
-    def report(cls, schedule_item: ScheduleItem) -> Report:
+    def report(
+        cls,
+        schedule_item: ScheduleItem,
+        lang: str = DEFAULT_LANGUAGE,
+    ) -> Report:
+        room_sdv = schedule_item.dimensions.filter(value__dimension__slug="room").first()
+        if room_sdv:
+            room = f"{room_sdv.value.get_title(lang)} "
+        else:
+            room = ""
+
+        with translation.override(lang):
+            formatted_start_time = format_datetime(schedule_item.start_time)
+
         return Report(
             slug=f"reservations_by_zone_{schedule_item.slug}",
-            title=dict(fi=schedule_item.title),
+            title=dict(
+                fi=f"{schedule_item.title} ({room}{formatted_start_time})",
+            ),
             columns=[
                 Column(
                     slug="zone_name",
