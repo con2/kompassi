@@ -10,7 +10,8 @@ export interface ProgramAdminTabsProps {
     | "programHosts"
     | "dimensions"
     | "annotations"
-    | "preferences";
+    | "preferences"
+    | "reports";
   translations: Translations;
   searchParams?: Record<string, string>;
 }
@@ -65,6 +66,11 @@ export default function ProgramAdminTabs({
       slug: "annotations",
       title: translations.Annotation.listTitle,
       href: `/${eventSlug}/program-annotations`,
+    },
+    {
+      slug: "reports",
+      title: translations.Report.listTitle,
+      href: `/${eventSlug}/program-reports`,
     },
     {
       slug: "preview",

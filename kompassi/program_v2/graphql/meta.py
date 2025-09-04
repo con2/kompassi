@@ -17,6 +17,8 @@ from kompassi.dimensions.models.enums import AnnotationFlags
 from kompassi.forms.graphql.response_full import FullResponseType
 from kompassi.forms.graphql.response_profile import ProfileResponseType
 from kompassi.forms.models.response import Response
+from kompassi.program_v2.reports.paikkala_reports import ReservationsByZone, ReservationStatus
+from kompassi.reports.graphql.report import ReportType
 
 from ..filters import ProgramFilters, ProgramUserRelation
 from ..models import (
@@ -414,6 +416,34 @@ class ProgramV2EventMetaType(DjangoObjectType):
     program_hosts = graphene.NonNull(
         graphene.List(graphene.NonNull(FullProgramHostType)),
         program_filters=graphene.List(DimensionFilterInput),
+    )
+
+    @staticmethod
+    def resolve_reports(
+        meta: ProgramV2EventMeta,
+        info,
+    ):
+        request: HttpRequest = info.context
+
+        graphql_check_model(
+            ScheduleItem,
+            meta.event.scope,
+            request,
+        )
+
+        return [
+            ReservationStatus.report(meta.event),
+            *(
+                ReservationsByZone.report(schedule_item)
+                for schedule_item in meta.schedule_items.filter(
+                    cached_combined_dimensions__contains=dict(paikkala=[]),
+                )
+            ),
+        ]
+
+    reports = graphene.NonNull(
+        graphene.List(graphene.NonNull(ReportType)),
+        description=normalize_whitespace(resolve_reports.__doc__ or ""),
     )
 
 
