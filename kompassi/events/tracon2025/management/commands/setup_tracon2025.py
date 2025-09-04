@@ -928,6 +928,29 @@ class Setup:
 
             projection.surveys.set([survey])
 
+        survey = Survey.objects.filter(event=self.event, slug="vikailmoitus").first()
+        if survey:
+            splats = [
+                Splat(
+                    target_field=slug,
+                    source_fields=[slug],
+                    required=False,
+                )
+                for slug in ["issue", "location", "contacts"]
+            ]
+
+            projection, _created = Projection.objects.update_or_create(
+                scope=survey.scope,
+                slug="vikailmoitus",
+                defaults=dict(
+                    is_public=False,
+                    default_language_code="fi",
+                    splats=[splat.model_dump(mode="json", by_alias=True) for splat in splats],
+                ),
+            )
+
+            projection.surveys.set([survey])
+
     def setup_tickets_v2(self):
         if self.dev_tickets:
             logger.warning("--dev-tickets mode active! Tickets have zero price and no payment provider is configured.")
