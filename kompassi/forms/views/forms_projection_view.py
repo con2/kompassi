@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 
 from kompassi.access.cbac import graphql_check_instance
+from kompassi.api.utils import http_basic_auth
 from kompassi.dimensions.filters import DimensionFilters
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, to_supported_language
 
@@ -14,6 +15,7 @@ from ..excel_export import write_projection_as_excel
 from ..models.projection import Projection
 
 
+@http_basic_auth
 def forms_projection_view(
     request: HttpRequest,
     scope_slug: str,
