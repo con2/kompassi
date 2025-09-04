@@ -44,6 +44,10 @@ from kompassi.labour.models.labour_event_meta import LabourEventMeta
 from kompassi.labour.models.personnel_class import PersonnelClass
 from kompassi.labour.models.qualifications import Qualification
 from kompassi.labour.models.survey import Survey as LabourSurvey
+from kompassi.program_v2.integrations.paikkala_integration import (
+    get_paikkala_room_slugs,
+    get_paikkala_special_reservation_url,
+)
 from kompassi.program_v2.models.meta import ProgramV2EventMeta
 from kompassi.program_v2.models.program import Program
 from kompassi.program_v2.models.schedule_item import ScheduleItem
@@ -537,8 +541,9 @@ class Setup:
 
     def setup_paikkala(self):
         cache = self.event.program_universe.preload_dimensions()
+        room_slugs = get_paikkala_room_slugs(self.event.venue.slug)
 
-        for room_slug in ["iso-sali", "pieni-sali"]:
+        for room_slug in room_slugs:
             programs = Program.objects.filter(
                 event=self.event,
                 cached_combined_dimensions__contains=dict(room=[room_slug]),
@@ -578,6 +583,13 @@ class Setup:
                                     excluded_numbers=f"{row.start_number}-{row.end_number}",
                                 )
                                 log_get_or_create(logger, block, created)
+
+        logger.info("Special reservation URLs:")
+        for room_slug in room_slugs:
+            for schedule_item in ScheduleItem.objects.filter(
+                cached_combined_dimensions__contains=dict(paikkala=[room_slug])
+            ):
+                logger.info("%s -> %s", schedule_item.slug, get_paikkala_special_reservation_url(schedule_item))
 
     def setup_kaatobussi(self):
         meta = self.event.program_v2_event_meta

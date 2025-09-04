@@ -9,12 +9,13 @@ import pydantic
 from django.conf import settings
 from django.db import transaction
 from django.template.defaultfilters import truncatechars
+from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from paikkala.forms import ReservationForm as PaikkalaReservationForm
 from paikkala.models.programs import Program as PaikkalaProgram
 from paikkala.models.rooms import Room as PaikkalaRoom
-from paikkala.models.rows import Row
+from paikkala.models.rows import Row as PaikkalaRow
 from paikkala.models.zones import Zone as PaikkalaZone
 from paikkala.utils.importer import import_zones, read_csv
 
@@ -47,7 +48,7 @@ def get_schema_path(venue_slug: str, room_slug: str) -> Path:
     return Path(__file__).parent / "paikkala_data" / _venue_slug / f"{_room_slug}.csv"
 
 
-def get_available_room_slugs(venue_slug: str):
+def get_paikkala_room_slugs(venue_slug: str):
     """
     >>> get_available_room_slugs("tampere-talo")
     ['iso-sali']
@@ -56,7 +57,7 @@ def get_available_room_slugs(venue_slug: str):
 
 
 def get_paikkala_dimension(event: Event) -> DimensionDTO | None:
-    available_room_slugs = get_available_room_slugs(event.venue.slug)
+    available_room_slugs = get_paikkala_room_slugs(event.venue.slug)
     if not available_room_slugs:
         return None
 
@@ -198,9 +199,9 @@ def paikkalize_schedule_item(
 
     schedule_item.paikkala_program = paikkala_program
     schedule_item.paikkala_special_reservation_code = uuid4()
-    schedule_item.save(update_fields=["paikkala_program"])
+    schedule_item.save(update_fields=["paikkala_program", "paikkala_special_reservation_code"])
 
-    paikkala_program.rows.set(Row.objects.filter(zone__room=paikkala_room))
+    paikkala_program.rows.set(PaikkalaRow.objects.filter(zone__room=paikkala_room))
     paikkala_program.full_clean()
     paikkala_program.save()
 
@@ -241,6 +242,13 @@ def repaikkalize_event(event: Event):
     for schedule_item in schedule_items.all():
         logger.info("Repaikkalizing %s", schedule_item)
         paikkalize_schedule_item(schedule_item)
+
+
+def get_paikkala_special_reservation_url(schedule_item: ScheduleItem) -> str:
+    return settings.KOMPASSI_BASE_URL + reverse(
+        "program_v2:paikkala_special_reservation_view",
+        args=[schedule_item.paikkala_special_reservation_code],
+    )
 
 
 PAIKKALA_ANNOTATION_DTOS = [
@@ -306,15 +314,21 @@ class ReservationForm(PaikkalaReservationForm):
         self.helper.form_tag = False
 
 
-# for ”special” tickets
 class FakeRow(pydantic.BaseModel):
-    name: str = "Rivi 1"
+    name: str = "1"
 
 
-class FakeTicket(pydantic.BaseModel):
+class FakeTicket(pydantic.BaseModel, arbitrary_types_allowed=True):
+    program: PaikkalaProgram
     row: FakeRow
+    zone: PaikkalaZone | None
     number: str = "Numeroimaton"
 
     @classmethod
-    def come_into_being(cls) -> list[Self]:
-        return [cls(row=FakeRow())]
+    def for_paikkala_program(cls, program: PaikkalaProgram) -> Self:
+        # HACK: Tampere Hall (Tracon/Tampere kuplii) colour code entrances
+        # This needs to be a zone that has row number 1
+        # Main Auditorium: eg. Etupermanto vasen
+        # Small Auditorium: prefer Permanto vasen
+        zone = program.zones.filter(name__contains="ermanto vasen").order_by("id").first()
+        return cls(program=program, row=FakeRow(), zone=zone)

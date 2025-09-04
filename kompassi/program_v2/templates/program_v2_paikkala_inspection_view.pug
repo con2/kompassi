@@ -9,10 +9,10 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
   body(class='paikkala-zone-{{ ticket.zone.name|slugify }}')
     .paikkala-inspection-view
-      p.text-muted {{ ticket.program.kompassi_programme.event.name }}
+      p.text-muted {{ ticket.program.kompassi_v2_schedule_item.event.name }}
 
-      if ticket.program.kompassi_programme.paikkala_icon
-        img.paikkala-programme-icon(src='{{ ticket.program.kompassi_programme.paikkala_icon.url }}', alt='')
+      if ticket.program.kompassi_v2_schedule_item.paikkala_icon
+        img.paikkala-programme-icon(src='{{ ticket.program.kompassi_v2_schedule_item.paikkala_icon.url }}', alt='')
 
       h1 {{ ticket.program.name }}
 

@@ -155,17 +155,27 @@ def paikkala_special_reservation_view(request, code):
     schedule_item = get_object_or_404(
         ScheduleItem,
         paikkala_special_reservation_code=code,
-        cached_dimensions__contains=dict(paikkala=[]),
+        cached_combined_dimensions__contains=dict(paikkala=[]),
     )
 
-    if schedule_item.cached_end_time >= now():
+    paikkala_program = schedule_item.paikkala_program
+    if not paikkala_program:
+        logger.error(
+            f"ScheduleItem {schedule_item.id} has no PaikkalaProgram despite having a special reservation code ({code})"
+        )
         messages.error(request, _("This ticket is no longer valid."))
-        return redirect("program_v2:profile_reservations_view")
+        return redirect("program_v2:paikkala_profile_reservations_view")
+
+    if schedule_item.cached_end_time < now():
+        messages.error(request, _("This ticket is no longer valid."))
+        return redirect("program_v2:paikkala_profile_reservations_view")
+
+    ticket = FakeTicket.for_paikkala_program(paikkala_program)
 
     vars = dict(
         event=schedule_item.event,
-        ticket=schedule_item,  # HAX!
-        tickets=FakeTicket.come_into_being(),
+        ticket=ticket,  # HAX!
+        tickets=[ticket],
     )
 
     return render(request, "program_v2_paikkala_inspection_view.pug", vars)
