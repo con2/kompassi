@@ -19,6 +19,7 @@ from kompassi.forms.graphql.response_profile import ProfileResponseType
 from kompassi.forms.models.response import Response
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.reports.graphql.report import ReportType
+from kompassi.reports.models.report import Report
 
 from ..filters import ProgramFilters, ProgramUserRelation
 from ..models import (
@@ -433,15 +434,15 @@ class ProgramV2EventMetaType(DjangoObjectType):
             request,
         )
 
-        return [
-            ReservationStatus.report(meta.event),
-            *(
-                ReservationsByZone.report(schedule_item, lang=lang)
-                for schedule_item in meta.schedule_items.filter(
-                    cached_combined_dimensions__contains=dict(paikkala=[]),
-                )
-            ),
-        ]
+        reports: list[Report] = []
+        reports.extend(ReservationStatus.report(meta.event))
+        reports.extend(
+            ReservationsByZone.report(schedule_item, lang=lang)
+            for schedule_item in meta.schedule_items.filter(
+                cached_combined_dimensions__contains=dict(paikkala=[]),
+            )
+        )
+        return reports
 
     reports = graphene.NonNull(
         graphene.List(graphene.NonNull(ReportType)),
