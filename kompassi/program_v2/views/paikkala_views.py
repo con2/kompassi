@@ -85,22 +85,22 @@ def handle_errors(view_func):
             return redirect(request.path)
 
         except MaxTicketsReached:
-            message = _("This schedule_item is currently full.")
+            message = _("This program is currently full.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect("program_v2:profile_reservations_view")
+            return redirect("program_v2:paikkala_profile_reservations_view")
 
         except MaxTicketsPerUserReached:
             message = _("You cannot reserve any more tickets for this schedule_item.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect("program_v2:profile_reservations_view")
+            return redirect("program_v2:paikkala_profile_reservations_view")
 
         except Unreservable:
-            message = _("This schedule_item does not allow reservations at this time.")
+            message = _("This program does not allow reservations at this time.")
             messages.error(request, message)
             logger.warning(message, exc_info=True)
-            return redirect("program_v2:profile_reservations_view")
+            return redirect("program_v2:paikkala_profile_reservations_view")
 
         except PermissionDenied:
             message = _("Permission denied.")

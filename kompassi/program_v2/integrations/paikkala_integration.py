@@ -213,13 +213,12 @@ def repaikkalize_event(event: Event):
     if not meta:
         raise ValueError("Event is not using Program V2")
 
-    schedule_items = meta.schedule_items.filter(cached_combined_dimensions__contains=dict(paikkala=[]))
-    num_schedule_items = schedule_items.distinct().count()
-    schedule_item_ids = set(schedule_items.values_list("id", flat=True))
+    schedule_items = meta.schedule_items.filter(cached_combined_dimensions__contains=dict(paikkala=[])).distinct()
+    num_schedule_items = schedule_items.count()
 
     logger.info("There are %d schedule items using Paikkala", num_schedule_items)
 
-    paikkala_programs = PaikkalaProgram.objects.filter(kompassi_v2_schedule_item__in=schedule_items)
+    paikkala_programs = PaikkalaProgram.objects.filter(event_name=event.name)
     paikkala_rooms = PaikkalaRoom.objects.filter(program__in=paikkala_programs)
     paikkala_zones = PaikkalaZone.objects.filter(room__in=paikkala_rooms)
     paikkala_room_mappings = PaikkalaRoomMapping.objects.filter(
@@ -234,13 +233,16 @@ def repaikkalize_event(event: Event):
     paikkala_rooms.delete()
 
     # I am paranoid about runaway cascades
-    schedule_items = ScheduleItem.objects.filter(id__in=schedule_item_ids)
-    if schedule_items.distinct().count() != num_schedule_items:
-        raise AssertionError("ps.distinct().count() == num_ps")
+    schedule_items = meta.schedule_items.filter(cached_combined_dimensions__contains=dict(paikkala=[])).distinct()
+    if schedule_items.count() != num_schedule_items:
+        raise AssertionError("number of schedule items changed during repaikkalize")
 
     for schedule_item in schedule_items.all():
         logger.info("Repaikkalizing %s", schedule_item)
         paikkalize_schedule_item(schedule_item)
+
+    if paikkala_programs.all().count() != num_schedule_items:
+        raise AssertionError("number of paikkala programs does not match number of schedule items after repaikkalize")
 
 
 def get_paikkala_special_reservation_url(schedule_item: ScheduleItem) -> str:

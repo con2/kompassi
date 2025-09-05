@@ -561,11 +561,11 @@ class Setup:
                     is_sunday = schedule_item.start_time.date() == self.event.end_time.date()
 
                     if is_friday:
-                        # On Friday, reservations start at 12:00
+                        # On Friday, reservations start at 13:00
                         # On Saturday & Sunday, the default (09:00)
                         schedule_item.annotations.setdefault(
                             "paikkala:reservationStartsAt",
-                            schedule_item.start_time.replace(hour=12, minute=0, second=0, tzinfo=self.tz).isoformat(),
+                            schedule_item.start_time.replace(hour=13, minute=0, second=0, tzinfo=self.tz).isoformat(),
                         )
                         schedule_item.refresh_cached_fields()
 
