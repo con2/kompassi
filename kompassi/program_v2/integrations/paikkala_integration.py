@@ -171,7 +171,6 @@ def paikkalize_schedule_item(
         reservation_start=reservation_start,
         reservation_end=schedule_item.cached_end_time,
         invalid_after=schedule_item.cached_end_time,
-        max_tickets=0,
         automatic_max_tickets=True,
         max_tickets_per_user=max_per_user,
         max_tickets_per_batch=max_per_batch,
@@ -192,7 +191,7 @@ def paikkalize_schedule_item(
     cache = meta.universe.preload_dimensions()
     paikkala_dimension_value = cache.values_by_dimension["paikkala"][room_slug]
     paikkala_room = paikkalize_room(schedule_item.event, paikkala_dimension_value)
-    paikkala_program = PaikkalaProgram(room=paikkala_room, **attrs)
+    paikkala_program = PaikkalaProgram(room=paikkala_room, max_tickets=0, **attrs)
     paikkala_program.save()
     log_get_or_create(logger, paikkala_program, True)
 
@@ -201,7 +200,7 @@ def paikkalize_schedule_item(
     schedule_item.save(update_fields=["paikkala_program", "paikkala_special_reservation_code"])
 
     paikkala_program.rows.set(PaikkalaRow.objects.filter(zone__room=paikkala_room))
-    paikkala_program.full_clean()
+    paikkala_program.full_clean()  # IMPORTANT: Populates max_tickets
     paikkala_program.save()
 
     return paikkala_program
