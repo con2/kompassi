@@ -109,7 +109,9 @@ class AlternativeProgrammeForm(models.Model):
     @cached_property
     def programme_form_class(self):
         cp = self.programme_form_code
-        if not cp.startswith("kompassi."):
+        if cp.startswith("programme."):
+            cp = f"kompassi.zombies.{cp}"
+        elif not cp.startswith("kompassi."):
             cp = f"kompassi.{cp}"
         return get_code(cp)
 
