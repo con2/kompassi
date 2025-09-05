@@ -706,27 +706,29 @@ class Setup:
                 )
                 log_get_or_create(logger, entry, created)
 
-        # Lipunvaihto
-        id = 20672
-        person = Person.objects.filter(id=id).first()
-        if person and person.user:
-            entry, created = CBACEntry.objects.get_or_create(
-                user=person.user,
-                claims=dict(
-                    event=self.event.slug,
-                    app="tickets_v2",
-                    view="pos_view",
-                ),
-                defaults=dict(
-                    valid_from=temp_permission_valid_from,
-                    valid_until=temp_permission_valid_until,
-                ),
-            )
-            log_get_or_create(logger, entry, created)
-        else:
-            logger.warning("setup_tracon2025.setup_access: Tickets POS user with person id %d not found, skipping", id)
+        # Lipunvaihto-oikeudet lipunvaihdon ja sisäänkirjauksen tunnuksille
+        for id in [20672, 20675]:
+            person = Person.objects.filter(id=id).first()
+            if person and person.user:
+                entry, created = CBACEntry.objects.get_or_create(
+                    user=person.user,
+                    claims=dict(
+                        event=self.event.slug,
+                        app="tickets_v2",
+                        view="pos_view",
+                    ),
+                    defaults=dict(
+                        valid_from=temp_permission_valid_from,
+                        valid_until=temp_permission_valid_until,
+                    ),
+                )
+                log_get_or_create(logger, entry, created)
+            else:
+                logger.warning(
+                    "setup_tracon2025.setup_access: Tickets POS user with person id %d not found, skipping", id
+                )
 
-        # Sisäänkirjaus
+        # Sisäänkirjausoikeus vain sisäänkirjauksen tunnukselle
         id = 20675
         person = Person.objects.filter(id=id).first()
         if person and person.user:
