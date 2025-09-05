@@ -127,7 +127,7 @@ block profile_content
     .list-group.visible-sm.visible-xs
       for schedule_item in reservable_schedule_items
         if schedule_item.paikkala_program.remaining_tickets
-          a.list-group-item(href='{% url "program_v2:paikkala_reservation_view" schedule_item.event.slug schedule_item.id %}')
+          a.list-group-item(href='{% url "program_v2:paikkala_reservation_view" schedule_item.event.slug schedule_item.slug %}')
             h4.list-group-item-heading= schedule_item.title
             p.list-group-item-text {{ schedule_item.location_in_v1_active_language }}, {% if schedule_item.is_paikkala_time_visible %}{{ schedule_item.start_time|date:"SHORT_DATETIME_FORMAT" }}{% else %}{{ schedule_item.start_time|date:"SHORT_DATE_FORMAT" }}{% endif %}
         else
