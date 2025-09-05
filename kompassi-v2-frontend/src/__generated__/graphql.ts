@@ -2540,6 +2540,7 @@ export type RevokeKeyPair = {
 export type ScheduleItemInput = {
   durationMinutes: Scalars['Int']['input'];
   freeformLocation?: InputMaybe<Scalars['String']['input']>;
+  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
   room?: InputMaybe<Scalars['String']['input']>;
   slug: Scalars['String']['input'];
   startTime: Scalars['DateTime']['input'];

@@ -15,6 +15,7 @@ class ScheduleItemDTO(pydantic.BaseModel, populate_by_name=True, frozen=True):
     duration_minutes: int = pydantic.Field(validation_alias="lengthMinutes")
     room: str = pydantic.Field(default="")
     freeform_location: str = pydantic.Field(validation_alias="freeformLocation", default="")
+    is_public: bool = pydantic.Field(default=True)
 
     @property
     def duration(self) -> timedelta:
@@ -35,6 +36,7 @@ class ScheduleItemDTO(pydantic.BaseModel, populate_by_name=True, frozen=True):
         if schedule_item is not None:
             schedule_item.start_time = self.start_time
             schedule_item.duration = self.duration
+            schedule_item.is_public = self.is_public
             schedule_item.annotations.update(
                 {
                     "internal:subtitle": self.subtitle,
@@ -47,6 +49,7 @@ class ScheduleItemDTO(pydantic.BaseModel, populate_by_name=True, frozen=True):
                 slug=slug,
                 start_time=self.start_time,
                 duration=timedelta(minutes=self.duration_minutes),
+                is_public=self.is_public,
                 annotations={
                     "internal:subtitle": self.subtitle,
                     "internal:freeformLocation": self.freeform_location,

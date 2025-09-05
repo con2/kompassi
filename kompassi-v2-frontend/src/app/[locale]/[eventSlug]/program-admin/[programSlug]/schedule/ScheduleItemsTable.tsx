@@ -144,6 +144,7 @@ export default async function ScheduleItemTable({
     scheduleItems.length > 0 ? `-${scheduleItems.length + 1}` : "";
   const newScheduleItem: Partial<ProgramAdminDetailScheduleItemFragment> = {
     slug: `${program.slug}${uniquenessInsurance}`,
+    isPublic: true,
   };
 
   return (
