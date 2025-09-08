@@ -418,6 +418,9 @@ class Setup:
 
         survey = Survey.objects.filter(event=self.event, slug="program-feedback").first()
         if survey:
+            survey.key_fields = ["program"]
+            survey.save(update_fields=["key_fields"])
+
             DimensionDTO(
                 slug="program",
                 title=dict(
