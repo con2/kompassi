@@ -370,6 +370,7 @@ class Setup:
                 admin_group=admin_group,
                 guide_v2_embedded_url="https://2025.tracon.fi/opas/",
                 contact_email="Traconin ohjelmatiimi <ohjelma@tracon.fi>",
+                is_accepting_feedback=True,
                 default_registry=Registry.objects.get(
                     scope=self.event.organization.scope,
                     slug="volunteers",

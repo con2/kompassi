@@ -45,13 +45,16 @@ def resolve_cached_annotations(
         schema = [annotation for annotation in schema if annotation.flags & required_flags == required_flags]
 
     effective_annotations = subject._effective_annotations
+    print("effective_annotations", effective_annotations)
 
-    return {
+    result = {
         annotation.slug: value
         for annotation in schema
         if (value := effective_annotations.get(annotation.slug, None)) not in (None, "")
         and (only_slugs is None or annotation.slug in only_slugs)
     }
+    print("cached_annotations", result)
+    return result
 
 
 cached_annotations = graphene.NonNull(

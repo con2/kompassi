@@ -105,6 +105,15 @@ PROGRAM_LINKS_ANNOTATION_DTOS = [
         is_public=False,
         is_shown_in_detail=False,
     ),
+    AnnotationDTO(
+        slug="internal:links:feedback",
+        title=dict(
+            fi="Palautelinkki",
+            en="Feedback link",
+        ),
+        is_public=False,
+        is_shown_in_detail=False,
+    ),
 ]
 
 
@@ -154,12 +163,9 @@ class ProgramLink(graphene.ObjectType):
                     href = program.annotations.get(link_annotation, "")
             case ProgramLinkType.FEEDBACK:
                 if program.is_accepting_feedback:
-                    href = program.annotations.get(
-                        link_annotation,
-                        settings.KOMPASSI_V2_BASE_URL + f"/events/{event.slug}/programs/{program.slug}/feedback",
-                    )
+                    href = program.annotations.get(link_annotation, "")
                 else:
-                    href = ""
+                    href = None
             case ProgramLinkType.GUIDE_V2_LIGHT:
                 href = settings.KOMPASSI_V2_BASE_URL + f"/{event.slug}/programs/{program.slug}"
             case ProgramLinkType.GUIDE_V2_EMBEDDED:
