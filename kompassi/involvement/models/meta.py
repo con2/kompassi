@@ -13,7 +13,7 @@ from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.universe import Universe
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
-from kompassi.involvement.dimensions import get_involvement_universe
+from kompassi.involvement.dimensions import get_involvement_universe, setup_involvement_dimensions
 
 from ..filters import InvolvementFilters
 from .invitation import Invitation
@@ -75,6 +75,7 @@ class InvolvementEventMeta(models.Model):
     @classmethod
     def ensure(cls, event: Event) -> InvolvementEventMeta:
         universe = get_involvement_universe(event)
+        setup_involvement_dimensions(universe, event)
 
         meta, created = cls.objects.get_or_create(
             event=event,
