@@ -418,10 +418,11 @@ class Setup:
 
         survey = Survey.objects.filter(event=self.event, slug="program-feedback").first()
         if survey:
-            survey.key_fields = ["program"]
+            # derp
+            survey.key_fields = []
             survey.save(update_fields=["key_fields"])
 
-            DimensionDTO(
+            dimension = DimensionDTO(
                 slug="program",
                 title=dict(
                     fi="Ohjelmanumero",
@@ -430,6 +431,7 @@ class Setup:
                 is_technical=True,
                 is_list_filter=True,
                 is_shown_in_detail=True,
+                is_key_dimension=True,
                 can_values_be_added=False,
                 value_ordering=ValueOrdering.TITLE,
                 choices=[
@@ -445,17 +447,13 @@ class Setup:
             ).save(survey.universe, remove_other_values=True)
 
             for program in Program.objects.filter(event=self.event):
-                url = f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/{survey.slug}?program={program.slug}"
-                program.annotations.update(
-                    {
-                        "internal:links:feedback": url,
-                    }
-                )
+                url = f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/{survey.slug}?{dimension.slug}={program.slug}"
+                program.annotations["internal:links:feedback"] = url
                 program.refresh_cached_fields()
                 program.refresh_dependents()
 
             for form in survey.languages.all():
-                field_dict = next((d for d in form.fields if d.get("slug") == "program"), None)
+                field_dict = next((d for d in form.fields if d.get("slug") == dimension.slug), None)
                 if field_dict:
                     field_dict["presentation"] = "dropdown"
                     form.save()
