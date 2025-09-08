@@ -56,7 +56,6 @@ from kompassi.tickets_v2.models.meta import TicketsV2EventMeta
 from kompassi.tickets_v2.models.product import Product
 from kompassi.tickets_v2.models.quota import Quota
 from kompassi.tickets_v2.optimized_server.models.enums import PaymentProvider
-from kompassi.forms.models.form import Form
 
 from ...models import Night, SignupExtra
 
@@ -428,6 +427,7 @@ class Setup:
                 is_list_filter=True,
                 is_shown_in_detail=True,
                 can_values_be_added=False,
+                value_ordering=ValueOrdering.TITLE,
                 choices=[
                     DimensionValueDTO(
                         slug=program.slug,
@@ -437,18 +437,25 @@ class Setup:
                         is_technical=True,
                     )
                     for program in Program.objects.filter(event=self.event)
-                ]
+                ],
             ).save(survey.universe, remove_other_values=True)
 
             for program in Program.objects.filter(event=self.event):
                 url = f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/{survey.slug}?program={program.slug}"
-                program.annotations.update({
-                    "internal:links:feedback": url,
-                })
+                program.annotations.update(
+                    {
+                        "internal:links:feedback": url,
+                    }
+                )
                 program.refresh_cached_fields()
                 program.refresh_dependents()
 
-            Form.refresh_cached_fields_qs(survey.languages.all())
+            for form in survey.languages.all():
+                field_dict = next((d for d in form.fields if d.get("slug") == "program"), None)
+                if field_dict:
+                    field_dict["presentation"] = "dropdown"
+                    form.save()
+                form.refresh_cached_fields()
 
     def setup_kirpputori(self, slot_duration=timedelta(minutes=30)):
         meta = self.event.program_v2_event_meta

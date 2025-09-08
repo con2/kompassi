@@ -195,6 +195,11 @@ export default async function SurveyPage(props: Props) {
     fields.filter((field) => field.type != "FileUpload"),
     formData,
   );
+  let queryString = urlSearchParams.toString();
+  if (queryString) {
+    queryString = `?${queryString}`;
+  }
+
   return (
     <ViewContainer>
       <ViewHeading>
@@ -205,7 +210,7 @@ export default async function SurveyPage(props: Props) {
       <AlsoAvailableInLanguage
         language={language}
         languages={languages}
-        path={`/${eventSlug}/${surveySlug}`}
+        path={`/${eventSlug}/${surveySlug}${queryString}`}
       />
 
       {/* TODO No good way currently to separate "not logged in" and "not active and not admin" from "not active and admin override" */}
