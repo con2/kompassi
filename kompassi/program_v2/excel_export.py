@@ -5,6 +5,7 @@ from typing import BinaryIO
 
 from django.db import models
 from django.http import HttpResponse
+from paikkala.models.tickets import Ticket as PaikkalaTicket
 
 from kompassi.core.excel_export import XlsxWriter
 from kompassi.core.models.event import Event
@@ -116,6 +117,41 @@ def write_schedule_items_as_excel(
         for dimension in dimensions:
             row.append(", ".join(item.cached_combined_dimensions.get(dimension.slug, [])))
 
+        output.writerow(row)
+
+    output.close()
+
+
+def write_reservations_as_excel(
+    tickets: models.QuerySet[PaikkalaTicket],
+    output_stream: BinaryIO | HttpResponse,
+):
+    output = XlsxWriter(output_stream)
+
+    header_row = [
+        "zone",
+        "row",
+        "number",
+        "surname",
+        "first_name",
+        "nick",
+        "normalized_phone_number",
+        "email",
+    ]
+
+    output.writerow(header_row)
+
+    for ticket in tickets:
+        row = [
+            ticket.zone.name,
+            ticket.row.name,
+            ticket.number,
+            ticket.user.person.surname,
+            ticket.user.person.first_name,
+            ticket.user.person.nick,
+            ticket.user.person.normalized_phone_number,
+            ticket.user.person.email,
+        ]
         output.writerow(row)
 
     output.close()

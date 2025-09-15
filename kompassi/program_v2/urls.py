@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 
 from .views.calendar_export_view import calendar_export_view, single_program_calendar_export_view
+from .views.paikkala_admin_export_view import paikkala_admin_export_view
 from .views.paikkala_views import (
     paikkala_inspection_view,
     paikkala_profile_reservations_view,
@@ -54,6 +55,11 @@ urlpatterns = [
         r"^events/(?P<event_slug>[a-z0-9-]+)/reservations/(?P<schedule_item_slug>[a-z0-9-]+)/?$",
         paikkala_reservation_view,  # type: ignore
         name="paikkala_reservation_view",
+    ),
+    re_path(
+        r"^events/(?P<event_slug>[a-z0-9-]+)/reservations/(?P<schedule_item_slug>[a-z0-9-]+)\.xlsx$",
+        paikkala_admin_export_view,  # type: ignore
+        name="paikkala_admin_export_view",
     ),
     re_path(
         r"^reservations/(?P<code>[a-z0-9-]+)/?$",

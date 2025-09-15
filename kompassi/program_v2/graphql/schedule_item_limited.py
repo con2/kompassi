@@ -1,4 +1,6 @@
 import graphene
+from django.http import HttpRequest
+from django.urls import reverse
 from graphene_django import DjangoObjectType
 
 from kompassi.core.utils.text_utils import normalize_whitespace
@@ -114,3 +116,21 @@ class LimitedScheduleItemType(DjangoObjectType):
         return schedule_item.is_cancelled
 
     is_cancelled = graphene.NonNull(graphene.Boolean)
+
+    @staticmethod
+    def resolve_reservations_excel_export_link(meta: ScheduleItem, info):
+        request: HttpRequest = info.context
+        return request.build_absolute_uri(
+            reverse(
+                "program_v2:paikkala_admin_export_link",
+                kwargs=dict(
+                    event_slug=meta.event.slug,
+                    schedule_item_slug=meta.slug,
+                ),
+            )
+        )
+
+    reservations_excel_export_link = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_reservations_excel_export_link.__doc__ or ""),
+    )

@@ -854,6 +854,7 @@ export type FullScheduleItemType = {
   lengthMinutes: Scalars['Int']['output'];
   location?: Maybe<Scalars['String']['output']>;
   program: LimitedProgramType;
+  reservationsExcelExportLink: Scalars['String']['output'];
   /** Convenience helper to get the value slug of the `room` dimension. NOTE: You should usually display `location` to users instead. */
   room: Scalars['String']['output'];
   /** NOTE: Slug must be unique within Event. It does not suffice to be unique within Program. */
@@ -1439,6 +1440,7 @@ export type LimitedScheduleItemType = {
   /** Deprecated alias for `duration_minutes`. */
   lengthMinutes: Scalars['Int']['output'];
   location?: Maybe<Scalars['String']['output']>;
+  reservationsExcelExportLink: Scalars['String']['output'];
   /** Convenience helper to get the value slug of the `room` dimension. NOTE: You should usually display `location` to users instead. */
   room: Scalars['String']['output'];
   /** NOTE: Slug must be unique within Event. It does not suffice to be unique within Program. */
