@@ -6,7 +6,6 @@ from django.core.management.base import BaseCommand
 from kompassi.access.models import AccessOrganizationMeta, EmailAliasDomain, EmailAliasType, SMTPServer
 from kompassi.access.models.email_alias_type import EmailAliasVariant
 from kompassi.core.models import Organization
-from kompassi.intra.models import IntraEventMeta
 from kompassi.involvement.models.registry import Registry
 from kompassi.membership.models import MembershipOrganizationMeta, Term
 from kompassi.payments.models import PaymentsOrganizationMeta
@@ -22,7 +21,6 @@ class Setup:
         self.setup_membership()
         self.setup_access()
         self.setup_payments()
-        self.setup_intra()
         self.setup_involvement()
 
     def setup_core(self):
@@ -134,15 +132,6 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
         PaymentsOrganizationMeta.objects.get_or_create(
             organization=self.organization,
             defaults=META_DEFAULTS,
-        )
-
-    def setup_intra(self):
-        # tracon-ry events since 2016 have dynamic organizer list in tracon/wp
-        IntraEventMeta.objects.filter(
-            event__organization=self.organization,
-            event__start_time__gte=date(2016, 1, 1),
-        ).update(
-            is_organizer_list_public=True,
         )
 
     def setup_involvement(self):
