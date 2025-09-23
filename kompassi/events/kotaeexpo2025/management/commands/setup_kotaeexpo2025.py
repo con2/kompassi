@@ -229,6 +229,7 @@ class Setup:
             defaults=dict(
                 admin_group=admin_group,
                 organizer_group=organizer_group,
+                is_organizer_list_public=True,
             ),
         )
 
