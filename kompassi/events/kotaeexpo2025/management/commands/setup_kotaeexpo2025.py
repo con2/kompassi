@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
@@ -14,6 +15,8 @@ from kompassi.core.models import Event, Organization, Venue
 from kompassi.forms.models.meta import FormsEventMeta
 from kompassi.forms.models.survey import SurveyDTO
 from kompassi.intra.models import IntraEventMeta, Team
+from kompassi.involvement.models.involvement_to_badge import InvolvementToBadgeMapping
+from kompassi.involvement.models.involvement_to_group import InvolvementToGroupMapping
 from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
 from kompassi.labour.models import AlternativeSignupForm, JobCategory, LabourEventMeta, PersonnelClass, Survey
@@ -309,6 +312,32 @@ class Setup:
                 default_registry=registry,
                 contact_email="Kotae Expon ohjelmatiimi <ohjelma@kotae.fi>",
             ),
+        )
+
+        universe = self.event.involvement_universe
+
+        ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
+        InvolvementToBadgeMapping.objects.update_or_create(
+            universe=universe,
+            personnel_class=ohjelma,
+            defaults=dict(
+                required_dimensions={
+                    "state": ["active"],
+                    "type": ["program-host"],
+                },
+                job_title="Ohjelmanjärjestäjä",
+                priority=self.get_ordering_number(),
+            ),
+        )
+
+        group, _ = Group.objects.get_or_create(name=f"{self.event.slug}-program-hosts")
+        InvolvementToGroupMapping.objects.get_or_create(
+            universe=universe,
+            required_dimensions={
+                "state": ["active"],
+                "type": ["program-host"],
+            },
+            group=group,
         )
 
 
