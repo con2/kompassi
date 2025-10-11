@@ -227,7 +227,10 @@ class ShiftWishesSurvey(forms.ModelForm):
 
     class Meta:
         model = SignupExtra
-        fields = ("shift_wishes", "accommodation",)
+        fields = (
+            "shift_wishes",
+            "accommodation",
+        )
         widgets = dict(
             accommodation=forms.CheckboxSelectMultiple,
         )
