@@ -99,8 +99,15 @@ class Setup:
             ("Vastaava", "vastaava", "labour"),
             ("Vapaaehtoinen", "vapaaehtoinen", "labour"),
             ("Ohjelmanjärjestäjä", "ohjelma", "program_v2"),
+            ("Ohjelmanpitäjä lauantai", "ohjelmanpitaja-la", "program_v2"),
+            ("Ohjelmanpitäjä sunnuntai", "ohjelmanpitaja-su", "program_v2"),
+            ("Ohjelmanpitäjä viikonloppu", "ohjelmanpitaja-viikonloppu", "program_v2"),
+            ("Artesaani", "artesaani", "badges"),
+            ("Taidekuja lauantai", "taidekuja-la", "badges"),
+            ("Taidekuja sunnuntai", "taidekuja-su", "badges"),
+            ("Näytteilleasettaja", "naytteilleasettaja", "badges"),
         ]:
-            personnel_class, created = PersonnelClass.objects.get_or_create(
+            PersonnelClass.objects.update_or_create(
                 event=self.event,
                 slug=pc_slug,
                 defaults=dict(
