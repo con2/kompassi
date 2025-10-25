@@ -215,7 +215,8 @@ class Setup:
         for team_slug, team_name in [
             ("talous", "Talous"),
             ("peliohjelma", "Peliohjelma"),
-            ("ohjelma", "Puhe- ja muu ohjelma"),
+            ("puheohjelma", "Puheohjelma"),
+            ("ohjelma", "Muu ohjelma"),
             ("viestinta", "Viestintä"),
             ("tilat", "Tilat"),
             ("tekniikka", "Tekniikka"),
