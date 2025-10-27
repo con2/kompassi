@@ -218,8 +218,7 @@ class Setup:
             ("puheohjelma", "Puheohjelma"),
             ("ohjelma", "Muu ohjelma"),
             ("viestinta", "Viestintä"),
-            ("tilat", "Tilat"),
-            ("tekniikka", "Tekniikka"),
+            ("infra", "Infra"),
             ("vapaaehtoiset", "Vapaaehtoiset"),
             ("kavijapalvelut", "Kävijäpalvelut"),
         ]:
