@@ -22,7 +22,7 @@
     "bootstrap": "^5.3.5",
     "motion": "^12.0.0",
     "next": "15.5.4",
-    "next-auth": "^4.24.11",
+    "next-auth": "^4.24.12",
     "next-intl": "^4.3.4",
     "react": "19.1.1",
     "react-bootstrap": "^2.10.10",
