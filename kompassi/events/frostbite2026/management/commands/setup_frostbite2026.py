@@ -49,7 +49,6 @@ class Setup:
         self.tz = tzlocal()
         self.setup_core()
         self.setup_labour()
-        self.setup_access()
         self.setup_badges()
         self.setup_intra()
         self.setup_forms()
@@ -262,6 +261,12 @@ class Setup:
             ),
         )
 
+        GroupPrivilege.objects.get_or_create(
+            group=self.event.labour_event_meta.get_group("accepted"),
+            privilege=Privilege.objects.get(slug="desuslack"),
+            defaults=dict(event=self.event),
+        )
+
     def setup_badges(self):
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.update_or_create(
@@ -271,15 +276,6 @@ class Setup:
                 real_name_must_be_visible=True,
             ),
         )
-
-    def setup_access(self):
-        # Grant accepted workers and programme hosts access to Desucon Slack
-        privilege = Privilege.objects.get(slug="desuslack")
-        for group in [
-            self.event.labour_event_meta.get_group("accepted"),
-            # self.event.programme_event_meta.get_group("hosts"),
-        ]:
-            GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
     def setup_intra(self):
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
@@ -413,6 +409,7 @@ class Setup:
 
         group, created = Group.objects.get_or_create(name=f"{self.event.slug}-program-hosts")
         log_get_or_create(logger, group, created)
+
         InvolvementToGroupMapping.objects.get_or_create(
             universe=universe,
             required_dimensions={
@@ -420,6 +417,12 @@ class Setup:
                 "type": ["program-host"],
             },
             group=group,
+        )
+
+        GroupPrivilege.objects.get_or_create(
+            group=group,
+            privilege=Privilege.objects.get(slug="desuslack"),
+            defaults=dict(event=self.event),
         )
 
 
