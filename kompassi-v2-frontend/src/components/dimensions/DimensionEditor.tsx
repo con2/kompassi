@@ -265,7 +265,7 @@ export function DimensionEditor({
       return (
         <tr style={{ borderWidth: "3px 0 3px 0" }}>
           <DimensionCells dimension={dimension} />
-          {!dimension.isTechnical && <AddValueCell dimension={dimension} />}
+          {dimension.canAddValues && <AddValueCell dimension={dimension} />}
         </tr>
       );
     }
