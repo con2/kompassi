@@ -30,6 +30,7 @@ kompassi_csp_allowed_login_redirects:
   - localhost:8000
   - ropekonsti.fi
   - wp.ropecon.fi
+  - dev.larpit.fi
 
 # kompassi_readiness_probe: !Void
 # kompassi_liveness_probe: !Void

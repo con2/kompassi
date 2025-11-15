@@ -48,6 +48,7 @@ kompassi_csp_allowed_login_redirects:
   - "conikuvat.fi"
   - "larppikuvat.fi"
   - "ropekonsti.fi"
+  - "larpit.fi"
 
 kompassi_readiness_probe: !Void
 kompassi_liveness_probe: !Void
