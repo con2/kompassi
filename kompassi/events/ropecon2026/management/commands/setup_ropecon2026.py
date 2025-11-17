@@ -252,7 +252,8 @@ class Setup:
             defaults=dict(
                 admin_group=admin_group,
                 contact_email="Ropeconin ohjelmatiimi <ohjelma@ropecon.fi>",
-                guide_v2_embedded_url="https://ropecon.fi/opas/",
+                # NOTE: setting this shows guide as published
+                # guide_v2_embedded_url="https://ropecon.fi/opas/",
                 is_accepting_feedback=False,
                 default_registry=Registry.objects.get(
                     scope=self.organization.scope,
