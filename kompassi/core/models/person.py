@@ -557,6 +557,10 @@ class Person(models.Model):
         vcard.add("fn")
         vcard.fn.value = self.firstname_surname
 
+        if self.nick:
+            vcard.add("nickname")
+            vcard.nickname.value = self.nick
+
         vcard.add("email")
         vcard.email.value = self.get_email_for_event(event) if event is not None else self.email
         vcard.email.type_param = "INTERNET"
