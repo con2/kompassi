@@ -223,7 +223,7 @@ class Setup:
             ("kavijapalvelut", "Kävijäpalvelut"),
         ]:
             (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
-            Team.objects.get_or_create(
+            Team.objects.update_or_create(
                 event=self.event,
                 slug=team_slug,
                 defaults=dict(
