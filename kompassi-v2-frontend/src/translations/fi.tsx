@@ -1463,7 +1463,7 @@ const translations: Translations = {
 
     ProgramForm: {
       singleTitle: "Ohjelmalomake",
-      listTitle: "Ohjelmalomakkeet",
+      listTitle: "Lomakkeet",
       programFormForEvent: (eventName: string) => (
         <>Ohjelmalomake tapahtumalle {eventName}</>
       ),
@@ -1557,7 +1557,7 @@ const translations: Translations = {
 
     ProgramOffer: {
       singleTitle: "Ohjelmatarjous",
-      listTitle: "Ohjelmatarjoukset",
+      listTitle: "Tarjoukset",
 
       attributes: {
         programs: {

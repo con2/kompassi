@@ -8,6 +8,7 @@ export interface ProgramAdminTabsProps {
     | "programOffers"
     | "programItems"
     | "programHosts"
+    | "invitations"
     | "dimensions"
     | "annotations"
     | "preferences"
@@ -56,6 +57,11 @@ export default function ProgramAdminTabs({
       slug: "programHosts",
       title: t.ProgramHost.listTitle,
       href: `/${eventSlug}/program-hosts${queryString}`,
+    },
+    {
+      slug: "invitations",
+      title: translations.Invitation.listTitle,
+      href: `/${eventSlug}/program-invitations${queryString}`,
     },
     {
       slug: "dimensions",

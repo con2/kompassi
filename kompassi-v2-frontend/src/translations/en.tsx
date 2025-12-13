@@ -1463,7 +1463,7 @@ const translations = {
 
     ProgramForm: {
       singleTitle: "Program form",
-      listTitle: "Program forms",
+      listTitle: "Forms",
       tableFooter: (numForms: number) =>
         `${numForms} form${numForms === 1 ? "" : "s"}.`,
       programFormForEvent: (eventName: string) => (
@@ -1553,7 +1553,7 @@ const translations = {
 
     ProgramOffer: {
       singleTitle: "Program offer",
-      listTitle: "Program offers",
+      listTitle: "Offers",
 
       attributes: {
         programs: {

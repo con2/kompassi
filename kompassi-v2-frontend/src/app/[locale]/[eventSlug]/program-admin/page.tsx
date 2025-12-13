@@ -154,6 +154,7 @@ export default async function FormResponsesPage(props: Props) {
       title: t.attributes.title,
       getCellContents: (program) => (
         <Link
+          className="link-subtle"
           href={`/${event.slug}/program-admin/${program.slug}?${queryString}`}
         >
           {program.title}

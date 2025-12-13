@@ -13,11 +13,13 @@ from kompassi.dimensions.graphql.annotation import AnnotationType
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
 from kompassi.dimensions.graphql.universe_annotation_limited import LimitedUniverseAnnotationType
-from kompassi.dimensions.models.enums import AnnotationFlags
+from kompassi.dimensions.models.enums import AnnotationFlags, DimensionApp
 from kompassi.forms.graphql.response_full import FullResponseType
 from kompassi.forms.graphql.response_profile import ProfileResponseType
 from kompassi.forms.models.response import Response
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
+from kompassi.involvement.graphql.invitation_full import FullInvitationType
+from kompassi.involvement.models.invitation import Invitation
 from kompassi.reports.graphql.report import ReportType
 from kompassi.reports.models.report import Report
 
@@ -449,6 +451,22 @@ class ProgramV2EventMetaType(DjangoObjectType):
         lang=graphene.String(required=False),
         description=normalize_whitespace(resolve_reports.__doc__ or ""),
     )
+
+    @staticmethod
+    def resolve_invitations(meta: ProgramV2EventMeta, info):
+        graphql_check_model(
+            Invitation,
+            meta.event.scope,
+            info,
+            app=DimensionApp.PROGRAM_V2,
+        )
+
+        return Invitation.objects.filter(
+            program__event=meta.event,
+            used_at__isnull=True,
+        ).order_by("id")
+
+    invitations = graphene.NonNull(graphene.List(graphene.NonNull(FullInvitationType)))
 
 
 ProgramUserRelationType = graphene.Enum.from_enum(ProgramUserRelation)
