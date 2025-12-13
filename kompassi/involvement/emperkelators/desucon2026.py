@@ -249,8 +249,6 @@ class Perks(pydantic.BaseModel):
         job_categories = [jc.slug for jc in signup.job_categories_accepted.all()]
         job_title_lower = (signup.job_title or "").lower()
 
-        # TODO: Kyuu ja Siika
-
         if "jarjestyksenvalvoja" in job_categories or "jv" in job_categories or "turvallisuus" in job_title_lower:
             shirt_type = ShirtType.DESURITY
         elif "valokuvaaja" in job_categories or "valokuvaus" in job_categories or "valokuvaus" in job_title_lower:
@@ -260,29 +258,22 @@ class Perks(pydantic.BaseModel):
         else:
             shirt_type = ShirtType.STAFF
 
-        if "vastaava" in personnel_classes:
-            return Perks(
-                ticket_type=TicketType.ORGANIZER_BADGE,
-                meals=3,
-                shirt_type=shirt_type,
-                shirt_size=shirt_size,
-            )
-        elif "ylikuutti" in personnel_classes or "vuorovastaava" in personnel_classes:
-            return Perks(
-                ticket_type=TicketType.OVERSEER_BADGE,
-                meals=2,
-                shirt_type=shirt_type,
-                shirt_size=shirt_size,
-            )
-        elif "tyovoima" in personnel_classes:
-            return Perks(
-                ticket_type=TicketType.VOLUNTEER_BADGE,
-                meals=2,
-                shirt_type=shirt_type,
-                shirt_size=shirt_size,
-            )
+        meals = 2
+        ticket_type = TicketType.VOLUNTEER_BADGE
 
-        return Perks()
+        if "vastaava" in personnel_classes:
+            ticket_type = TicketType.ORGANIZER_BADGE
+            meals = 3
+        elif "ylikuutti" in personnel_classes or "vuorovastaava" in personnel_classes:
+            ticket_type = TicketType.OVERSEER_BADGE
+
+        return Perks(
+            ticket_type=ticket_type,
+            shirt_type=shirt_type,
+            shirt_size=shirt_size,
+            meals=meals,
+            override_formatted_perks=signup.override_formatted_perks,
+        )
 
     @classmethod
     def for_program_host(cls, involvement: Involvement) -> Perks:
