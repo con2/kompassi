@@ -21,7 +21,7 @@ services:
     build: sql
     init: true
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     environment:
       POSTGRES_USER: kompassi
       POSTGRES_PASSWORD: secret
