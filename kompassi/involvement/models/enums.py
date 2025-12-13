@@ -175,3 +175,16 @@ class ProgramHostRole(Enum):
             for language_code in SUPPORTED_LANGUAGE_CODES
             if (title := getattr(self, f"title_{language_code}"))
         }
+
+
+class JobTitleMode(Enum):
+    FALLBACK = "fallback", "By default use involvement title; if empty, fall back to mapping job title"
+    OVERRIDE = "override", "Always use mapping job title"
+
+    description: str
+
+    def __new__(cls, value: str, description: str):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.description = description
+        return obj

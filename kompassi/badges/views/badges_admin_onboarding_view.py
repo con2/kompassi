@@ -35,7 +35,8 @@ def badges_admin_onboarding_view(request, event):
         shirt_size_field = None
 
         lem = event.labour_event_meta
-        if lem:
+        emp = event.involvement_event_meta.emperkelator_class if event.involvement_event_meta else None
+        if lem and not emp:
             SignupExtra = event.labour_event_meta.signup_extra_model
 
             if SignupExtra:

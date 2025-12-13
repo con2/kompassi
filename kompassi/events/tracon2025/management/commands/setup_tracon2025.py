@@ -416,6 +416,8 @@ class Setup:
             logger.info("Backfill required due to missing integration dimensions")
             backfill(self.event)
 
+        # adhoc program feedback implementation
+        return
         survey = Survey.objects.filter(event=self.event, slug="program-feedback").first()
         if survey:
             # derp

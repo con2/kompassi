@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 def backfill(
     event: Event,
+    *,
     override_involvement_dimensions: bool = False,
 ):
     """

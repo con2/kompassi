@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+import re
 from functools import cached_property
 from itertools import groupby
 from typing import TYPE_CHECKING
@@ -64,13 +65,22 @@ class InvolvementEventMeta(models.Model):
 
     @cached_property
     def emperkelator_class(self) -> type[BaseEmperkelator] | None:
+        from kompassi.involvement.emperkelators.desucon2026 import DesuconEmperkelator
         from kompassi.involvement.emperkelators.tracon2025 import TraconEmperkelator
 
-        match self.event.slug:
-            case "tracon2025":
-                return TraconEmperkelator
-            case _:
-                return None
+        match = re.match(r"^([a-z-]+)(\d{4})$", self.event.slug)
+        if not match:
+            return None
+
+        base_slug = match.group(1)
+        year = int(match.group(2))
+
+        if base_slug == "tracon" and year >= 2025:
+            return TraconEmperkelator
+        elif base_slug in ("desucon", "frostbite") and year >= 2026:
+            return DesuconEmperkelator
+        else:
+            return None
 
     @classmethod
     def ensure(cls, event: Event) -> InvolvementEventMeta:

@@ -2,6 +2,8 @@ from sys import stderr
 
 from django.core.management.base import BaseCommand
 
+from kompassi.core.models import Event
+
 
 class Command(BaseCommand):
     args = "[event_slug...]"
@@ -15,8 +17,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        from kompassi.core.models import Event
-
         for event_slug in options["event_slugs"]:
             event = Event.objects.get(slug=event_slug)
 

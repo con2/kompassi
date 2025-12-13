@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.scope import Scope
 
+from ...emperkelators.desucon2026 import DesuconEmperkelator
 from ...emperkelators.tracon2025 import TraconEmperkelator
 from ...models.registry import Registry
 
@@ -23,3 +24,4 @@ class Command(BaseCommand):
         )
 
         AnnotationDTO.save_many(TraconEmperkelator.get_annotation_dtos())
+        AnnotationDTO.save_many(DesuconEmperkelator.get_annotation_dtos())

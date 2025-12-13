@@ -626,7 +626,11 @@ class Involvement(models.Model):
         involvement.with_computed_fields().save()
 
         if Emperkelator := meta.emperkelator_class:
-            dimensions = Emperkelator.get_dimension_values_for_legacy_signup(signup)
+            dimensions = Emperkelator(
+                universe=universe,
+                person=signup.person,
+                involvements=[involvement],
+            ).get_dimension_values()
         else:
             dimensions = {}
 
@@ -707,12 +711,12 @@ class Involvement(models.Model):
         if self.program:
             self.program.refresh_cached_fields()
 
+        if self.type in INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS and self.meta.emperkelator_class:
+            Involvement.for_combined_perks(self.event, self.person)
+
         if self.event.badges_event_meta:
             # ITB
             Badge.ensure(self.event, self.person)
-
-        if self.type in INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS and self.meta.emperkelator_class:
-            Involvement.for_combined_perks(self.event, self.person)
 
         InvolvementToGroupMapping.ensure(self.universe, self.person)
 

@@ -4,9 +4,11 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from django.db import models
+from django_enum import EnumField
 
 from kompassi.dimensions.models.universe import Universe
 
+from .enums import JobTitleMode
 from .involvement import Involvement
 
 if TYPE_CHECKING:
@@ -32,6 +34,10 @@ class InvolvementToBadgeMapping(models.Model):
         related_name="involvement_to_badge_mappings",
     )
     job_title = models.CharField(max_length=255, blank=True, default="")
+    job_title_mode: EnumField[JobTitleMode] = EnumField(  # type: ignore
+        JobTitleMode,
+        default=JobTitleMode.FALLBACK,
+    )
     priority = models.IntegerField(default=0, help_text="smallest number is the highest priority")
     annotations = models.JSONField(default=dict, blank=True)
 
@@ -75,12 +81,15 @@ class InvolvementToBadgeMapping(models.Model):
             if not self.required_pairs.issubset(present_pairs):
                 continue
 
-            if involvement.title:
-                job_title = involvement.title
-            elif self.job_title:
-                job_title = self.job_title
-            else:
-                job_title = self.personnel_class.name
+            match self.job_title_mode:
+                case JobTitleMode.FALLBACK:
+                    candidate_titles = [involvement.title, self.job_title, self.personnel_class.name]
+                case JobTitleMode.OVERRIDE:
+                    candidate_titles = [self.job_title, self.personnel_class.name]
+                case _:
+                    raise NotImplementedError(f"Unknown JobTitleMode: {self.job_title_mode}")
+
+            job_title = next((title for title in candidate_titles if title), "")
 
             matches.append((involvement, self.personnel_class, job_title))
 

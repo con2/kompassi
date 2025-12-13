@@ -10,15 +10,14 @@ from django.utils.timezone import now
 
 from kompassi.access.models import GroupPrivilege, Privilege
 from kompassi.badges.models.badges_event_meta import BadgesEventMeta
-from kompassi.badges.models.survey_to_badge import SurveyToBadgeMapping
 from kompassi.core.models.event import Event
 from kompassi.core.models.organization import Organization
 from kompassi.core.models.person import Person
 from kompassi.core.models.venue import Venue
 from kompassi.core.utils.log_utils import log_get_or_create
 from kompassi.forms.models.meta import FormsEventMeta
-from kompassi.forms.models.survey import Survey
 from kompassi.intra.models import IntraEventMeta, Team
+from kompassi.involvement.models.enums import JobTitleMode
 from kompassi.involvement.models.involvement_to_badge import InvolvementToBadgeMapping
 from kompassi.involvement.models.involvement_to_group import InvolvementToGroupMapping
 from kompassi.involvement.models.meta import InvolvementEventMeta
@@ -112,56 +111,30 @@ class Setup:
             defaults=labour_event_meta_defaults,
         )
 
-        for pc_name, pc_slug, pc_app_label, pc_perks in [
-            (
-                "Vastaava",
-                "vastaava",
-                "labour",
-                "3 ruokalippua, paita (tarkista paitakoko!), badge",
-            ),
-            (
-                "Vuorovastaava",
-                "vuorovastaava",
-                "labour",
-                "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-            ),
-            (
-                "Työvoima",
-                "tyovoima",
-                "labour",
-                "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-            ),
-            (
-                "Ohjelmanjärjestäjä",
-                "ohjelma",
-                "programme",
-                "Määräytyy ohjelmatyypin perusteella (SINUN EI PITÄISI NÄHDÄ TÄTÄ TEKSTIÄ!)",
-            ),
-            (
-                "Ohjelmanjärjestäjä (2. lk)",
-                "ohjelma-2lk",
-                "programme",
-                "Määräytyy ohjelmatyypin perusteella (SINUN EI PITÄISI NÄHDÄ TÄTÄ TEKSTIÄ!)",
-            ),
-            ("Guest of Honour", "goh", "programme", "Badge"),
-            ("Media", "media", "badges", "Badge"),
-            ("Myyjä", "myyja", "badges", ""),
-            ("Vieras", "vieras", "badges", ""),
+        for pc_name, pc_slug, pc_app_label in [
+            ("Vastaava", "vastaava", "labour"),
+            ("Vuorovastaava", "vuorovastaava", "labour"),
+            ("Työvoima", "tyovoima", "labour"),
+            ("Ohjelmanjärjestäjä", "ohjelma", "program_v2"),
+            ("Esiintyjä", "esiintyja", "program_v2"),
+            ("Guest of Honour", "goh", "program_v2"),
+            ("Media", "media", "badges"),
+            ("Myyjä", "myyja", "badges"),
+            ("Vieras", "vieras", "badges"),
         ]:
-            personnel_class, created = PersonnelClass.objects.update_or_create(
+            PersonnelClass.objects.update_or_create(
                 event=self.event,
                 slug=pc_slug,
                 defaults=dict(
                     name=pc_name,
                     app_label=pc_app_label,
                     priority=self.get_ordering_number(),
-                    override_formatted_perks=pc_perks,
                 ),
             )
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(
-                source_event=Event.objects.get(slug="frostbite2024"),
+                source_event=Event.objects.get(slug="frostbite2025"),
                 target_event=self.event,
             )
 
@@ -310,69 +283,6 @@ class Setup:
             ),
         )
 
-        survey = Survey.objects.filter(event=self.event, slug="program-host-signup").first()
-        if survey:
-            ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
-
-            SurveyToBadgeMapping.objects.filter(required_dimensions={}).delete()
-            for value_slug, job_title, perks in [
-                (
-                    "ohjelmanpitaja",
-                    "Ohjelmanjärjestäjä",
-                    "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-                ),
-                (
-                    "muu",
-                    "Ohjelmanjärjestäjä",
-                    "2 ruokalippua, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-                ),
-                (
-                    "visaohjelma",
-                    "Ohjelmanjärjestäjä",
-                    "2 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-                ),
-                (
-                    "panelisti",
-                    "Ohjelmanjärjestäjä",
-                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-                ),
-                (
-                    "piirinvetaja",
-                    "Ohjelmanjärjestäjä",
-                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-                ),
-                (
-                    "pajanpitaja",
-                    "Ohjelmanjärjestäjä",
-                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-                ),
-                (
-                    "esiintyja",
-                    "Esiintyjä",
-                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-                ),
-                (
-                    "tuomari",
-                    "Tuomari",
-                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-                ),
-                (
-                    "juontaja",
-                    "Juontaja",
-                    "1 ruokalippu, paita (tarkista paitakoko!), badge. Kasauksen ruokalippu pe ennen klo 12.",
-                ),
-            ]:
-                SurveyToBadgeMapping.objects.update_or_create(
-                    survey=survey,
-                    required_dimensions={"personnel-class": [value_slug]},
-                    personnel_class=ohjelma,
-                    defaults=dict(
-                        job_title=job_title,
-                        priority=self.get_ordering_number(),
-                        annotations={"frostbite2026:formattedPerks": perks},
-                    ),
-                )
-
     def setup_program_v2(self):
         InvolvementEventMeta.ensure(self.event)
 
@@ -393,19 +303,34 @@ class Setup:
         universe = self.event.involvement_universe
 
         ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
-        InvolvementToBadgeMapping.objects.update_or_create(
+
+        # old mapping
+        InvolvementToBadgeMapping.objects.filter(
             universe=universe,
             personnel_class=ohjelma,
-            defaults=dict(
+            required_dimensions={
+                "state": ["active"],
+                "type": ["combined-perks"],
+                "v1-personnel-class": ["ohjelma"],
+            },
+        ).delete()
+
+        for personnel_class_slug in ["vastaava", "vuorovastaava", "tyovoima", "ohjelma", "esiintyja"]:
+            pc = PersonnelClass.objects.get(event=self.event, slug=personnel_class_slug)
+            InvolvementToBadgeMapping.objects.update_or_create(
+                universe=universe,
+                personnel_class=pc,
                 required_dimensions={
                     "state": ["active"],
                     "type": ["combined-perks"],
-                    "v1-personnel-class": ["ohjelma"],
+                    "v1-personnel-class": [personnel_class_slug],
                 },
-                job_title="Ohjelmanpitäjä",
-                priority=self.get_ordering_number(),
-            ),
-        )
+                defaults=dict(
+                    job_title_mode=JobTitleMode.OVERRIDE,
+                    job_title=pc.name,
+                    priority=self.get_ordering_number(),
+                ),
+            )
 
         group, created = Group.objects.get_or_create(name=f"{self.event.slug}-program-hosts")
         log_get_or_create(logger, group, created)

@@ -22,7 +22,6 @@ from kompassi.dimensions.models.enums import AnnotationDataType, ValueOrdering
 from kompassi.forms.models.response import Response
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.graphql_api.utils import get_message_in_language
-from kompassi.labour.models.signup import Signup
 from kompassi.reports.graphql.report import Column, Report, TypeOfColumn
 
 from ..models.enums import InvolvementType
@@ -377,13 +376,6 @@ class TraconEmperkelator(BaseEmperkelator):
             "v1-personnel-class": self.v1_personnel_class_dimension_values,
             "ticket-type": self.ticket_type_dimension_values,
             "shirt-size": self.shirt_size_dimension_values,
-        }
-
-    @classmethod
-    def get_dimension_values_for_legacy_signup(cls, signup: Signup) -> CachedDimensions:
-        return {
-            "shirt-size": [ShirtSize.from_v1(signup.signup_extra.shirt_size).value] if signup.signup_extra else [],
-            **super().get_dimension_values_for_legacy_signup(signup),
         }
 
     @classmethod

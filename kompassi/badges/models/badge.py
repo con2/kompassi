@@ -117,7 +117,7 @@ class Badge(models.Model, CsvExportMixin):
     )
 
     job_title = models.CharField(
-        max_length=63,
+        max_length=255,
         blank=True,
         default="",
         verbose_name=_("Job title"),
@@ -277,7 +277,6 @@ class Badge(models.Model, CsvExportMixin):
         """
         Delegates combined perks to Emperkelate v2 in the Involvement app.
         """
-        from kompassi.involvement.emperkelators.tracon2025 import ShirtSize
         from kompassi.involvement.models.enums import InvolvementApp, InvolvementType
         from kompassi.involvement.models.involvement import Involvement
 
@@ -295,14 +294,8 @@ class Badge(models.Model, CsvExportMixin):
         ).first()
 
         if combined_perks:
-            formatted_perks = combined_perks.annotations.get("internal:formattedPerks", "")
-            shirt_size_dvss = combined_perks.cached_dimensions.get("shirt-size", [])
-            shirt_size = ShirtSize.from_v2(shirt_size_dvss[0]) if shirt_size_dvss else ShirtSize.NONE
-
-            new_perks = {
-                "internal:formattedPerks": formatted_perks,
-                "tracon:shirtSize": shirt_size.title_fi,
-            }
+            if formatted_perks := combined_perks.annotations.get("internal:formattedPerks", ""):
+                new_perks = {"internal:formattedPerks": formatted_perks}
         else:
             # HACK SurveyToBadge must die in favour of InvolvementToBadge so that we can use COMBINED_PERKS for this
             for survey_mapping in SurveyToBadgeMapping.objects.filter(

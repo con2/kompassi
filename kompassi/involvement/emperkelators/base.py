@@ -10,7 +10,6 @@ from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValu
 from kompassi.dimensions.models.enums import AnnotationDataType, ValueOrdering
 from kompassi.dimensions.models.universe import Universe
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
-from kompassi.labour.models.signup import Signup
 from kompassi.reports.models.report import Report
 
 from ..models.enums import INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS
@@ -84,12 +83,6 @@ class BaseEmperkelator:
 
         return dimension_dtos
 
-    @classmethod
-    def get_dimension_values_for_legacy_signup(cls, signup: Signup):
-        return {
-            "v1-personnel-class": [slugify(pc.slug) for pc in signup.personnel_classes.all()],
-        }
-
     def get_dimension_values(self) -> CachedDimensions:
         """
         These dimension values will be set on the Combined Perks Involvement.
@@ -126,6 +119,19 @@ class BaseEmperkelator:
                 description=dict(
                     en="If set, this will override the displayed perks",
                     fi="Jos asetettu, tämä ylikirjoittaa näytettävät edut",
+                ),
+                type=AnnotationDataType.STRING,
+                is_perk=True,
+            ),
+            AnnotationDTO(
+                slug="internal:overrideBadgeJobTitle",
+                title=dict(
+                    en="Override badge job title",
+                    fi="Ylikirjoita badgeen tuleva tehtävänimike",
+                ),
+                description=dict(
+                    en="If set, this will override the job title shown on the badge. Useful e.g. if the program organizer's badge should not show their program item title (which is normally in the title field of the involvement).",
+                    fi="Jos asetettu, tämä ylikirjoittaa badgeen tulevan tehtävänimikkeen. Hyödyllinen esim. jos ohjelmanjärjestäjän badgeen ei haluta hänen ohjelmanumeronsa otsikkoa (joka normaalisti on osallistumisen otsikkokentässä).",
                 ),
                 type=AnnotationDataType.STRING,
                 is_perk=True,
