@@ -12,8 +12,8 @@ from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterIn
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
 from kompassi.dimensions.models.enums import AnnotationFlags
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
+from kompassi.involvement.emperkelators.base import BaseEmperkelator
 from kompassi.involvement.filters import InvolvementFilters
-from kompassi.involvement.reports.combined_perks_reports import get_combined_perks_reports
 from kompassi.reports.graphql.report import ReportType
 
 from ..models.involvement import Involvement
@@ -193,13 +193,8 @@ class InvolvementEventMetaType(DjangoObjectType):
             request,
         )
 
-        reports = get_combined_perks_reports(meta.universe, lang)
-
-        Emperkelator = meta.emperkelator_class
-        if Emperkelator is not None:
-            reports.extend(Emperkelator.get_reports(meta.event, lang))
-
-        return reports
+        Emperkelator = meta.emperkelator_class or BaseEmperkelator
+        return Emperkelator.get_reports(meta.event, lang)
 
     reports = graphene.NonNull(
         graphene.List(graphene.NonNull(ReportType)),

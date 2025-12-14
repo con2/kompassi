@@ -11,9 +11,12 @@ from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from kompassi.dimensions.models.enums import AnnotationDataType, ValueOrdering
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE
+from kompassi.reports.models.report import Report
 
 from ..models.enums import InvolvementType
 from ..models.involvement import Involvement
+from ..reports.shirt_sizes_by_shirt_type_report import get_shirt_sizes_by_shirt_type_report
 from .base import BaseEmperkelator
 
 logger = logging.getLogger(__name__)
@@ -416,3 +419,10 @@ class DesuconEmperkelator(BaseEmperkelator):
             "internal:formattedPerks": self.perks.formatted_perks,
             "tracon:mealVouchers": self.perks.meals,
         }
+
+    @classmethod
+    def get_reports(cls, event: Event, lang: str = DEFAULT_LANGUAGE) -> list[Report]:
+        return [
+            get_shirt_sizes_by_shirt_type_report(event, lang),
+            *(report for report in super().get_reports(event, lang) if "shirt" not in report.slug),
+        ]

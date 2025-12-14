@@ -14,15 +14,16 @@ from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.universe import Universe
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
-from kompassi.involvement.dimensions import get_involvement_universe, setup_involvement_dimensions
 
+from ..dimensions import get_involvement_universe, setup_involvement_dimensions
 from ..filters import InvolvementFilters
 from .invitation import Invitation
 from .profile import Profile
 from .registry import Registry
 
 if TYPE_CHECKING:
-    from kompassi.involvement.emperkelators.base import BaseEmperkelator
+    from ..emperkelators.base import BaseEmperkelator
+    from .involvement import Involvement
 
 logger = logging.getLogger(__name__)
 
@@ -147,3 +148,9 @@ class InvolvementEventMeta(models.Model):
         )
 
         return Profile.from_person_involvements(person, list(involvements))
+
+    @property
+    def active_involvements(self) -> models.QuerySet[Involvement]:
+        from .involvement import Involvement
+
+        return Involvement.objects.filter(universe=self.universe, is_active=True)
