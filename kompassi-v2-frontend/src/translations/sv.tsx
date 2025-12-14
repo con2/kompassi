@@ -1,4 +1,4 @@
-// Translators: Kirsi Västi, Calle Tengman, Santtu Pajukanta
+// Translators: Kirsi Västi, Calle Tengman, Luka Pajukanta
 
 import { ReactNode, JSX } from "react";
 import en, { Translations } from "./en";

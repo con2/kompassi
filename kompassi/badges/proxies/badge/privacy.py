@@ -37,11 +37,11 @@ class BadgePrivacyAdapter:
     def nick_or_first_name(self):
         if self.badge.is_nick_visible:
             # JAPSU <- this
-            # Santtu Pajukanta
+            # Luka Pajukanta
             # Chief Technology Officer
             return self.badge.nick
         elif self.badge.is_first_name_visible:
-            # SANTTU <- this
+            # LUKA <- this
             # Pajukanta
             # Chief Technology Officer
             return self.badge.first_name
@@ -52,7 +52,7 @@ class BadgePrivacyAdapter:
     def surname_or_full_name(self):
         if self.badge.is_nick_visible:
             # JAPSU
-            # Santtu Pajukanta <- this
+            # Luka Pajukanta <- this
             # Chief Technology Officer
             if self.badge.is_surname_visible:
                 if self.badge.is_first_name_visible:
@@ -62,7 +62,7 @@ class BadgePrivacyAdapter:
             else:
                 return ""
         elif self.badge.is_surname_visible:
-            # SANTTU
+            # LUKA
             # Pajukanta <- this
             # Chief Technology Officer
             return self.badge.surname

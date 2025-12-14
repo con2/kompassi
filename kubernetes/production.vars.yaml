@@ -25,7 +25,7 @@ kompassi_base_url: https://kompassi.eu
 kompassi_v2_base_url: https://v2.kompassi.eu
 kompassi_tickets_v2_api_url: http://uvicorn.kompassi-production.svc.cluster.local:7998
 kompassi_admins:
-  - Santtu Pajukanta <santtu@pajukanta.fi>
+  - Luka Pajukanta <santtu@pajukanta.fi>
 kompassi_allowed_hosts: !Concat
   - !Var ingress_public_hostnames
   - !Var backup_ingress_public_hostnames

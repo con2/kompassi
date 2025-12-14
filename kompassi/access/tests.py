@@ -14,14 +14,14 @@ from .utils import emailify
 
 
 class FakePerson:
-    first_name = "Santtu"
+    first_name = "Luka"
     surname = "Pajukanta"
 
 
 class EmailifyTestCase(NonDatabaseTestCase):
     def test_emailify(self):
         assert emailify("") == ""
-        assert emailify("Santtu Pajukanta") == "santtu.pajukanta"
+        assert emailify("Luka Pajukanta") == "luka.pajukanta"
         assert emailify("Kalle-Jooseppi Mäki-Kangas-Ketelä") == "kalle-jooseppi.maki-kangas-ketela"
 
     def test_firstname_surname(self):
@@ -30,7 +30,7 @@ class EmailifyTestCase(NonDatabaseTestCase):
                 FakePerson(),  # type: ignore
                 None,  # type: ignore
             )
-            == "santtu.pajukanta"
+            == "luka.pajukanta"
         )
 
 
