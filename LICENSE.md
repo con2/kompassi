@@ -2,7 +2,7 @@
 
     The MIT License (MIT)
 
-    Copyright © 2009–2025 Santtu Pajukanta
+    Copyright © 2009–2025 Luka Pajukanta
     Copyright © 2024 Tracon ry
     Copyright © 2012–2025 Meeri Panula
     Copyright © 2019–2025 Mikko Hänninen
@@ -45,15 +45,15 @@ Regarding the following copyright statement above:
     Copyright © 2024 Tracon ry
 ```
 
-The work of Santtu Pajukanta during December 2024 was paid for by Tracon and executed through his employer, Polar Squad Oy. Intellectual property rights to the work produced by Santtu Pajukanta during December 2024 belongs to Tracon ry as stipulated in the contract between Tracon ry and Polar Squad Oy.
+The work of Luka Pajukanta during December 2024 was paid for by Tracon and executed through his employer, Polar Squad Oy. Intellectual property rights to the work produced by Luka Pajukanta during December 2024 belongs to Tracon ry as stipulated in the contract between Tracon ry and Polar Squad Oy.
 
-Santtu Pajukanta personally retains intellectual property rights to works produced outside December 2024, and the copyright of works produced by other contributors is retained by the respective contributors.
+Luka Pajukanta personally retains intellectual property rights to works produced outside December 2024, and the copyright of works produced by other contributors is retained by the respective contributors.
 
 ## Lippukala (E-ticket system)
 
     The MIT License (MIT)
 
-    Copyright © 2013-2015 Aarni Koskela, Santtu Pajukanta
+    Copyright © 2013-2015 Aarni Koskela, Luka Pajukanta
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
