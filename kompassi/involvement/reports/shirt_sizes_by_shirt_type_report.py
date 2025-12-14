@@ -63,7 +63,7 @@ def get_shirt_sizes_by_shirt_type_report(event: Event, lang: str = DEFAULT_LANGU
             Column(
                 slug="size",
                 title=shirt_size_dimension.title_dict,
-                type=TypeOfColumn.INT,
+                type=TypeOfColumn.STRING,
             ),
             *[
                 Column(
