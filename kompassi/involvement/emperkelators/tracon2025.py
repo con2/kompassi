@@ -479,6 +479,7 @@ class TraconEmperkelator(BaseEmperkelator):
         )
 
         return [
+            *super().get_reports(event, lang),
             Report(
                 slug="tracon2025_specific",
                 title=dict(
