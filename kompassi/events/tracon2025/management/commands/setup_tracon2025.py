@@ -88,10 +88,10 @@ class Setup:
         self.setup_tickets_v2()
         self.setup_forms()
         self.setup_program_v2()
-        self.setup_kirpputori()
-        self.setup_konsti()
-        self.setup_paikkala()
-        self.setup_kaatobussi()
+        # self.setup_kirpputori()
+        # self.setup_konsti()
+        # self.setup_paikkala()
+        # self.setup_kaatobussi()
         self.setup_access()
 
     def setup_core(self):
@@ -588,6 +588,9 @@ class Setup:
     def setup_paikkala(self):
         cache = self.event.program_universe.preload_dimensions()
         room_slugs = get_paikkala_room_slugs(self.event.venue.slug)
+        meta = self.event.program_v2_event_meta
+        if not meta:
+            raise AssertionError("No (appease typechecker)")
 
         for room_slug in room_slugs:
             programs = Program.objects.filter(
@@ -632,8 +635,9 @@ class Setup:
 
         logger.info("Special reservation URLs:")
         for room_slug in room_slugs:
-            for schedule_item in ScheduleItem.objects.filter(
-                cached_combined_dimensions__contains=dict(paikkala=[room_slug])
+            for schedule_item in meta.schedule_items.filter(
+                cached_combined_dimensions__contains=dict(paikkala=[room_slug]),
+                paikkala_special_reservation_code__isnull=False,
             ):
                 logger.info("%s -> %s", schedule_item.slug, get_paikkala_special_reservation_url(schedule_item))
 
