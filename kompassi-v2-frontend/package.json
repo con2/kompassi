@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.8",
-    "@apollo/client-integration-nextjs": "^0.12.2",
+    "@apollo/client-integration-nextjs": "^0.14.0",
     "@graphql-typed-document-node/core": "^3.2.0",
     "@js-temporal/polyfill": "^0.5.1",
     "bootstrap": "^5.3.5",
