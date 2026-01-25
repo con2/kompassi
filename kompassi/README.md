@@ -37,9 +37,9 @@ Kompassi uses the standard Django DB migration facility. However, due to the dev
 
 ### The Hard Way
 
-**NOTE:** Python 3.13 or greater is required. Python 2.7 is not supported.
+**NOTE:** Python 3.14 or greater is required.
 
-    python3.13 -m venv venv3-kompassi
+    python3.14 -m venv venv3-kompassi
     source venv3-kompassi/bin/activate
     git clone https://github.com/tracon/kompassi.git
     cd kompassi

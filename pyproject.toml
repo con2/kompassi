@@ -3,7 +3,7 @@ name = "kompassi"
 version = "2.0.0"
 description = "Event management system for volunteer-run conventions"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 dependencies = [
     "lippukala @ git+https://github.com/kcsry/lippukala@v2.0.0",
     "paikkala @ git+https://github.com/kcsry/paikkala@v0.2.0",

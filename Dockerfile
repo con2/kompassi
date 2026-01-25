@@ -1,4 +1,4 @@
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm AS builder
+FROM ghcr.io/astral-sh/uv:python3.14-bookworm AS builder
 ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 ENV UV_PYTHON_DOWNLOADS=0
@@ -18,7 +18,7 @@ RUN env DEBUG=1 python manage.py collectstatic --noinput && \
     chmod 755 manage.py scripts/*.sh
 
 
-FROM python:3.13-slim-bookworm
+FROM python:3.14-slim-bookworm
 
 RUN groupadd -g 998 -r kompassi && useradd -r -g kompassi -u 998 kompassi && apt-get update && apt-get -y install libpq5 libpango-1.0-0 libharfbuzz0b libpangoft2-1.0-0 && rm -rf /var/lib/apt/lists
 COPY --from=builder --chown=root:root /usr/src/app /usr/src/app
