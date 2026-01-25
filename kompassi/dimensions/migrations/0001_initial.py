@@ -208,7 +208,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="scope",
             constraint=models.CheckConstraint(
-                check=models.Q(("event__isnull", False), ("organization", None), _negated=True),
+                condition=models.Q(("event__isnull", False), ("organization", None), _negated=True),
                 name="scope_disallow_event_without_organization",
             ),
         ),

@@ -90,7 +90,7 @@ class Scope(models.Model):
                 name="scope_unique_organization_event",
             ),
             models.CheckConstraint(
-                check=~models.Q(organization=None, event__isnull=False),
+                condition=~models.Q(organization=None, event__isnull=False),
                 name="scope_disallow_event_without_organization",
             ),
         ]
