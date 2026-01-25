@@ -2,9 +2,6 @@ import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import ModalButton from "../../../../components/ModalButton";
-import { createSurvey } from "./actions";
-import getAnonymityDropdown from "./getAnonymityDropdown";
 import { graphql } from "@/__generated__";
 import { SurveyFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -22,6 +19,9 @@ import ViewHeading, {
 } from "@/components/ViewHeading";
 import { publicUrl } from "@/config";
 import { getTranslations } from "@/translations";
+import ModalButton from "../../../../components/ModalButton";
+import { createSurvey } from "./actions";
+import { getAnonymityDropdown, getCopyFromDropdown } from "./fields";
 
 graphql(`
   fragment Survey on FullSurveyType {
@@ -38,17 +38,23 @@ graphql(`
   }
 `);
 
+graphql(`
+  fragment ProfileSurvey on FullSurveyType {
+    event {
+      slug
+      name
+    }
+    slug
+    title(lang: $locale)
+  }
+`);
+
 const query = graphql(`
   query Surveys($eventSlug: String!, $locale: String) {
     profile {
       forms {
         surveys(relation: ACCESSIBLE) {
-          event {
-            slug
-            name
-          }
-          slug
-          title(lang: $locale)
+          ...ProfileSurvey
         }
       }
     }
@@ -227,17 +233,7 @@ export default async function SurveysPage(props: Props) {
       ...t.attributes.slug,
     },
     getAnonymityDropdown(t),
-    {
-      slug: "copyFrom",
-      type: "SingleSelect",
-      presentation: "dropdown",
-      required: false,
-      choices: data.profile!.forms.surveys.map((survey) => ({
-        slug: `${survey.event.slug}/${survey.slug}`,
-        title: `${survey.event.name}: ${survey.title}`,
-      })),
-      ...t.attributes.cloneFrom,
-    },
+    getCopyFromDropdown(t, data.profile?.forms.surveys || []),
   ];
 
   return (

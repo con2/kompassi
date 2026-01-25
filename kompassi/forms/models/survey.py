@@ -442,10 +442,6 @@ class Survey(models.Model):
 
         survey.save()
 
-        # TODO(#585)
-        # for dimension in self.dimensions.all():
-        #     dimension.clone(self.universe)
-
         for form in self.languages.all():
             form.clone(survey, created_by=created_by)
 

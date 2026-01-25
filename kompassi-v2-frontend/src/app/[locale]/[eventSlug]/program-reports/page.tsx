@@ -4,12 +4,11 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import SignInRequired from "@/components/errors/SignInRequired";
-import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
+import ProgramAdminView from "@/components/program/ProgramAdminView";
 import Report from "@/components/reports/Report";
 import { timezone as defaultTimezone } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
-import ProgramAdminView from "@/components/program/ProgramAdminView";
 
 const query = graphql(`
   query ProgramAdminReportsPage($eventSlug: String!, $locale: String) {

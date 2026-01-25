@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 
-import getAnonymityDropdown from "../../getAnonymityDropdown";
+import { getAnonymityDropdown } from "../../fields";
 import { updateSurvey } from "./actions";
 import SurveyEditorView from "./SurveyEditorView";
 import { graphql } from "@/__generated__";

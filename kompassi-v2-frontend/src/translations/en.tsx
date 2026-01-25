@@ -2233,8 +2233,12 @@ const translations = {
       ),
       cloneFrom: {
         title: "Clone from",
-        helpText:
-          "If selected, the new form will be created as a copy of an existing one. Dimensions and language versions along with their fields and texts will be copied, but responses will not.",
+        helpText: (
+          <>
+            If selected, the new form will be created as a copy of an existing
+            one. Responses will not be copied.
+          </>
+        ),
       },
     },
     actions: {

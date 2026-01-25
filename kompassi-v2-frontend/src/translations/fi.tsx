@@ -2246,8 +2246,12 @@ const translations: Translations = {
       ),
       cloneFrom: {
         title: "Kopioi olemassaolevasta",
-        helpText:
-          "Jos tämä on valittuna, uusi kysely luodaan kopiona valitusta kyselystä. Dimensiot sekä kieliversiot teksteineen ja kentteineen kopioidaan, mutta vastauksia ei.",
+        helpText: (
+          <>
+            Jos tämä on valittuna, uusi kysely luodaan kopiona valitusta
+            kyselystä. Vastauksia ei kopioida.
+          </>
+        ),
       },
     },
     actions: {

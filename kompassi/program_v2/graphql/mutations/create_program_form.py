@@ -70,6 +70,7 @@ class CreateProgramForm(graphene.Mutation):
                 slug=input.survey_slug,
                 app=app,
                 purpose=purpose,
+                created_by=request.user,  # type: ignore
             ).with_mandatory_fields()
             survey.full_clean()
             survey.save()

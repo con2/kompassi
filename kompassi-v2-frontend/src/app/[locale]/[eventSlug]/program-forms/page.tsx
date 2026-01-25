@@ -19,6 +19,7 @@ import ProgramAdminView from "@/components/program/ProgramAdminView";
 import { publicUrl } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { getCopyFromDropdown } from "../surveys/fields";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
@@ -39,6 +40,14 @@ graphql(`
 
 const query = graphql(`
   query ProgramFormsPage($eventSlug: String!, $locale: String) {
+    profile {
+      forms {
+        surveys(relation: ACCESSIBLE) {
+          ...ProfileSurvey
+        }
+      }
+    }
+
     event(slug: $eventSlug) {
       slug
       name
@@ -274,6 +283,7 @@ export default async function ProgramFormsPage(props: Props) {
         },
       ],
     },
+    getCopyFromDropdown(surveyT, data.profile?.forms.surveys || []),
   ];
 
   const createOfferFormDefaults = {

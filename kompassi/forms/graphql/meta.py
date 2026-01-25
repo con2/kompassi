@@ -157,10 +157,21 @@ class FormsProfileMetaType(graphene.ObjectType):
             raise SuspiciousOperation("User mismatch")
 
         surveys = Survey.objects.all()
-        if relation == SurveyRelation.SUBSCRIBED:
-            surveys = surveys.filter(subscribers=meta.person.user)
+
+        match relation:
+            case SurveyRelation.SUBSCRIBED:
+                surveys = surveys.filter(subscribers=meta.person.user)
+            case SurveyRelation.ACCESSIBLE:
+                # access check done below regardless
+                pass
+            case _:
+                raise NotImplementedError(f"Unknown SurveyRelation: {relation}")
+
         if event_slug:
             surveys = surveys.filter(event__slug=event_slug)
+
+        # some ordering to have a consistent result
+        surveys = surveys.order_by("universe__scope__slug", "universe__slug", "slug")
 
         # TODO(#324)
         return [

@@ -43,11 +43,11 @@ ACCOMMODATION_CHOICES = [
     ("whole_weekend", "Majoitun koko viikonlopun"),
 ]
 
-TOTAL_WORK_CHOICES = [
-    ("12h", "12h"),
-    ("14h", "14h"),
-    ("16h", "16h"),
-]
+# TOTAL_WORK_CHOICES = [
+#     ("12h", "12h"),
+#     ("14h", "14h"),
+#     ("16h", "16h"),
+# ]
 
 
 class SpecialDiet(models.Model):
@@ -72,14 +72,14 @@ class SignupExtra(SignupExtraBase):
         choices=SHIFT_TYPE_CHOICES,
     )
 
-    total_work = models.CharField(
-        max_length=max(len(c) for (c, t) in TOTAL_WORK_CHOICES),
-        verbose_name="Toivottu kokonaistyömäärä",
-        help_text=(
-            "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti kymmenen tuntia."
-        ),
-        choices=TOTAL_WORK_CHOICES,
-    )
+    # total_work = models.CharField(
+    #     max_length=max(len(c) for (c, t) in TOTAL_WORK_CHOICES),
+    #     verbose_name="Toivottu kokonaistyömäärä",
+    #     help_text=(
+    #         "Kuinka paljon haluat tehdä töitä yhteensä tapahtuman aikana? Minimi on pääsääntöisesti kymmenen tuntia."
+    #     ),
+    #     choices=TOTAL_WORK_CHOICES,
+    # )
 
     prior_experience = models.TextField(
         blank=True,
