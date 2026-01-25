@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
@@ -28,7 +28,7 @@ jobs:
       - uses: pre-commit/action@v3.0.1
 
   eslint:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 

@@ -34,7 +34,7 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     env:
       DOCKER_BUILDKIT: "1"
       COMPOSE_DOCKER_CLI_BUILD: "1"
@@ -45,7 +45,7 @@ jobs:
       - run: docker compose -f docker-compose.test.yml up --exit-code-from test
 
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
     env:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
@@ -93,7 +93,7 @@ jobs:
 
   # TODO DRY
   deploy_staging:
-    runs-on: self-hosted
+    runs-on: qb-arc-runners
     needs: build
     environment: staging
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -127,7 +127,7 @@ jobs:
           uv run --no-project --with emskaffolden==0.3.0 emskaffolden -E staging -- deploy -n kompassi-staging -a build.json
 
   deploy_production:
-    runs-on: self-hosted
+    runs-on: qb-arc-runners
     needs: build
     environment: production
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}

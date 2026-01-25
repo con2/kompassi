@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
     env:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
@@ -61,7 +61,7 @@ jobs:
           path: kompassi-v2-frontend/build.json
 
   deploy_staging:
-    runs-on: self-hosted
+    runs-on: qb-arc-runners
     needs: build
     environment: Staging
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -99,7 +99,7 @@ jobs:
         working-directory: kompassi-v2-frontend
 
   deploy_production:
-    runs-on: self-hosted
+    runs-on: qb-arc-runners
     needs: build
     environment: Production
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
