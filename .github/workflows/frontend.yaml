@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-24.02
+    runs-on: ubuntu-24.04
     env:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
