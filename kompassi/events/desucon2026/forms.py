@@ -18,7 +18,7 @@ class SignupExtraForm(forms.ModelForm):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             "shift_type",
-            # "total_work",
+            "total_work",
             indented_without_label("night_work"),
             Fieldset(
                 "Lisätiedot",
@@ -34,7 +34,7 @@ class SignupExtraForm(forms.ModelForm):
         model = SignupExtra
         fields = (
             "shift_type",
-            # "total_work",
+            "total_work",
             "shirt_size",
             "special_diet",
             "special_diet_other",
@@ -136,7 +136,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             "shift_type",
-            # "total_work",
+            "total_work",
             indented_without_label("night_work"),
             Fieldset(
                 "Lisätiedot",
@@ -152,7 +152,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
         model = SignupExtra
         fields = (
             "shift_type",
-            # "total_work",
+            "total_work",
             "shirt_size",
             "special_diet",
             "special_diet_other",
