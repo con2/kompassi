@@ -19,6 +19,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SupportedLanguageCode
+from kompassi.zombies.tickets.utils import format_date
 
 from ..utils import calculate_age, format_phone_number, phone_number_validator, pick_attrs
 from .constants import (
@@ -588,3 +589,23 @@ class Person(models.Model):
 
             self._privacy_adapter = BadgePrivacyAdapter(self)
         return self._privacy_adapter
+
+    def dump_own_data(self, language: SupportedLanguageCode) -> dict:
+        # TODO how do we localize this?
+        return {
+            "ID": self.id,
+            "Etunimi": self.first_name,
+            "Sukunimi": self.surname,
+            "Nick": self.nick,
+            "Syntymäaika": format_date(self.birth_date) if self.birth_date else None,
+            "Sähköposti": self.email,
+            "Puhelin": self.normalized_phone_number,
+            "Discord": self.discord_handle,
+            "Kotikunta": self.muncipality,
+            "Viralliset etunimet": self.official_first_names,
+            "Sähköposti vahvistettu": self.is_email_verified,
+            "Saa lähettää tietoa tulevista tapahtumista": self.may_send_info,
+            "Työskentelyhistorian saa jakaa muiden tapahtumien kanssa": self.allow_work_history_sharing,
+            "Nimen esitystapa listauksissa": self.get_name_display_style_display(),  # type: ignore
+            "Nimen esitystapa badgeissa": self.get_badge_name_display_style_display(),  # type: ignore
+        }
