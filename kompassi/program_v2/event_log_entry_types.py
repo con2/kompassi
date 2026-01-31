@@ -15,6 +15,11 @@ registry.register(
     message="A program item in {event} was cancelled by {actor}: {program}",
 )
 
+registry.register(
+    name="program_v2.program_offer.deleted",
+    message="{count_deleted} program offers were deleted by {actor} in {event}",
+)
+
 # program offer created -> forms.response.created
 # program host invited -> involvement.invitation.created
 # program host invitation accepted -> involvement.invitation.accepted

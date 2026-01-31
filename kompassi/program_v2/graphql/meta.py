@@ -468,6 +468,12 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     invitations = graphene.NonNull(graphene.List(graphene.NonNull(FullInvitationType)))
 
+    @staticmethod
+    def resolve_can_delete_program_offers(meta: ProgramV2EventMeta, info):
+        return meta.can_program_offers_be_deleted_by(info.context)
+
+    can_delete_program_offers = graphene.NonNull(graphene.Boolean)
+
 
 ProgramUserRelationType = graphene.Enum.from_enum(ProgramUserRelation)
 

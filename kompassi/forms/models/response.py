@@ -93,6 +93,7 @@ class Response(models.Model):
         "self",
         null=True,
         blank=True,
+        # TODO CASCADE? it's reasonable to delete old versions when the current one is deleted
         on_delete=models.SET_NULL,
         related_name="+",
     )

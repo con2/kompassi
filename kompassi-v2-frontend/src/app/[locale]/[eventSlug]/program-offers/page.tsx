@@ -22,6 +22,9 @@ import UploadedFileLink from "@/components/forms/UploadedFileLink";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import ModalButton from "@/components/ModalButton";
+import { deleteProgramOffers } from "./actions";
+import { ButtonGroup } from "react-bootstrap";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
@@ -66,6 +69,7 @@ const query = graphql(`
       name
       program {
         programOffersExcelExportLink
+        canDeleteProgramOffers
 
         listFilters: dimensions(isListFilter: true, publicOnly: false) {
           ...ProgramOfferDimension
@@ -142,7 +146,8 @@ export default async function ProgramOffersPage(props: Props) {
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const surveyT = translations.Survey;
-  const t = translations.Program;
+  const programT = translations.Program;
+  const t = translations.Program.ProgramOffer;
   const session = await auth();
 
   // TODO encap
@@ -176,7 +181,7 @@ export default async function ProgramOffersPage(props: Props) {
     {
       slug: "title",
       type: "SingleLineText",
-      title: t.attributes.title,
+      title: programT.attributes.title,
     },
   ];
 
@@ -276,6 +281,7 @@ export default async function ProgramOffersPage(props: Props) {
   const excelExportLink = data.event.program.programOffersExcelExportLink
     ? `${data.event.program.programOffersExcelExportLink}${queryString}`
     : null;
+  const { canDeleteProgramOffers } = data.event.program;
 
   // TODO When Dimension.appliesTo is implemented, .filter can be removed
   const listFilters = data.event.program.listFilters.filter(
@@ -290,11 +296,33 @@ export default async function ProgramOffersPage(props: Props) {
       active="programOffers"
       searchParams={searchParams}
       actions={
-        excelExportLink && (
-          <a href={excelExportLink} className="btn btn-outline-primary">
-            {surveyT.actions.exportDropdown.excel}
-          </a>
-        )
+        <ButtonGroup>
+          <ModalButton
+            title={t.actions.deleteVisibleProgramOffers.title}
+            messages={t.actions.deleteVisibleProgramOffers.modalActions}
+            action={
+              canDeleteProgramOffers
+                ? deleteProgramOffers.bind(
+                    null,
+                    locale,
+                    eventSlug,
+                    programOffers.map((offer) => offer.id),
+                    searchParams,
+                  )
+                : undefined
+            }
+            className="btn btn-outline-danger"
+          >
+            {t.actions.deleteVisibleProgramOffers.confirmation(
+              programOffers.length,
+            )}
+          </ModalButton>
+          {excelExportLink && (
+            <a href={excelExportLink} className="btn btn-outline-primary">
+              {surveyT.actions.exportDropdown.excel}
+            </a>
+          )}
+        </ButtonGroup>
       }
     >
       <DimensionFilters dimensions={listFilters} />

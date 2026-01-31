@@ -38,6 +38,7 @@ from kompassi.program_v2.graphql.mutations.cancel_program_offer import CancelPro
 from kompassi.program_v2.graphql.mutations.create_program import CreateProgram
 from kompassi.program_v2.graphql.mutations.create_program_form import CreateProgramForm
 from kompassi.program_v2.graphql.mutations.delete_program_host import DeleteProgramHost
+from kompassi.program_v2.graphql.mutations.delete_program_offers import DeleteProgramOffers
 from kompassi.program_v2.graphql.mutations.delete_schedule_item import DeleteScheduleItem
 from kompassi.program_v2.graphql.mutations.favorites import (
     MarkProgramAsFavorite,
@@ -176,6 +177,7 @@ class Mutation(graphene.ObjectType):
 
     accept_program_offer = AcceptProgramOffer.Field()
     cancel_program_offer = CancelProgramOffer.Field()
+    delete_program_offers = DeleteProgramOffers.Field()
 
     create_program = CreateProgram.Field()
     update_program = UpdateProgram.Field()
