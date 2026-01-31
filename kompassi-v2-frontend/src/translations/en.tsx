@@ -1681,6 +1681,28 @@ const translations = {
             },
           },
         },
+        deleteVisibleProgramOffers: {
+          title: "Delete these program offers",
+          confirmation(count: number) {
+            return (
+              <div>
+                <p>
+                  Are you sure you want to delete all {count} program offer
+                  {count === 1 ? "" : "s"} currently shown? This action cannot
+                  be undone.
+                </p>
+                <p>
+                  <strong>NOTE:</strong> Deleting program offers will not delete
+                  program items created from those offers.
+                </p>
+              </div>
+            );
+          },
+          modalActions: {
+            submit: "Delete program offers",
+            cancel: "Close without deleting",
+          },
+        },
       },
 
       OldVersionAlert: {

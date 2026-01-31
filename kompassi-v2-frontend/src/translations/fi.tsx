@@ -1689,6 +1689,28 @@ const translations: Translations = {
             },
           },
         },
+        deleteVisibleProgramOffers: {
+          title: "Poista nämä ohjelmatarjoukset",
+          confirmation(count: number) {
+            return (
+              <div>
+                <p>
+                  Haluatko varmasti poistaa kaikki {count} tällä hetkellä
+                  näkyvissä olevaa ohjelmatarjousta? Tätä toimintoa ei voi
+                  perua.
+                </p>
+                <p>
+                  <strong>HUOM:</strong> Ohjelmatarjousten poistaminen ei poista
+                  hyväksytyistä ohjelmatarjouksista luotuja ohjelmanumeroita.
+                </p>
+              </div>
+            );
+          },
+          modalActions: {
+            submit: "Poista ohjelmatarjoukset",
+            cancel: "Sulje poistamatta",
+          },
+        },
       },
 
       OldVersionAlert: {

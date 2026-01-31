@@ -6,7 +6,9 @@ from typing import Any
 
 from django.conf import settings
 from django.db import models
+from django.http import HttpRequest
 
+from kompassi.access.cbac import is_graphql_allowed_for_model
 from kompassi.core.models.contact_email_mixin import ContactEmailMixin, contact_email_validator
 from kompassi.core.models.event import Event
 from kompassi.core.models.event_meta_base import EventMetaBase
@@ -229,6 +231,18 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         """
         InvolvementEventMeta.ensure(self.event)
         UniverseAnnotation.ensure(self.universe)
+
+    def can_program_offers_be_deleted_by(
+        self,
+        request: HttpRequest,
+    ) -> bool:
+        return is_graphql_allowed_for_model(
+            request.user,
+            instance=self,  # type: ignore
+            app="program_v2",
+            operation="delete",
+            field="program_offers",
+        )
 
 
 @dataclass

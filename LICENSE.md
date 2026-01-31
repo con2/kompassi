@@ -2,7 +2,7 @@
 
     The MIT License (MIT)
 
-    Copyright © 2009–2025 Luka Pajukanta
+    Copyright © 2009–2026 Luka Pajukanta
     Copyright © 2024 Tracon ry
     Copyright © 2012–2025 Meeri Panula
     Copyright © 2019–2025 Mikko Hänninen
