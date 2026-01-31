@@ -255,12 +255,12 @@ const translations: Translations = {
       choices: {
         title: "Vaihtoehdot",
         helpText:
-          'Kullakin rivillä tulisi olla yksi vaihtoehto muodossa "tekninen-nimi: Käyttäjälle näytettävä vaihtoehto".',
+          'Joka rivillä tulee olla yksi vaihtoehto muodossa "rivin-tekninen-nimi: Käyttäjälle näytettävä vaihtoehto". Teknisessä nimessä saa käyttää pieniä kirjaimia a-z, numeroita sekä väliviivaa (-). Joka rivillä pitää olla eri tekninen nimi.',
       },
       questions: {
         title: "Kysymykset",
         helpText:
-          'Kullakin rivillä tulisi olla yksi kysymys muodossa "tekninen-nimi: Käyttäjälle näytettävä kysymys".',
+          'Joka rivillä tulee olla yksi kysymys muodossa "rivin-tekninen-nimi: Käyttäjälle näytettävä teksti". Teknisessä nimessä saa käyttää pieniä kirjaimia a-z, numeroita sekä väliviivaa (-). Joka rivillä pitää olla eri tekninen nimi.',
       },
       dimension: {
         title: "Dimensio",
