@@ -249,12 +249,12 @@ const translations = {
       choices: {
         title: "Choices",
         helpText:
-          'Each line should contain one choice in the form of "slug: Choice shown to the user".',
+          'Each line must contain a choice in the form "row-slug: Choice shown to the user". The slug can contain lower-case letters a-z, numbers and dashes (-). Each row must have a different slug.',
       },
       questions: {
         title: "Questions",
         helpText:
-          'Each line should contain one question in the form of "slug: Question shown to the user".',
+          'Each line must contain a question in the form "row-slug: Text shown to the user". The slug can contain lower-case letters a-z, numbers and dashes (-). Each row must have a different slug.',
       },
       dimension: {
         title: "Dimension",
