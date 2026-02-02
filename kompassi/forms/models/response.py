@@ -17,6 +17,7 @@ from kompassi.dimensions.models.scope import Scope
 from kompassi.dimensions.utils.build_cached_dimensions import build_cached_dimensions
 from kompassi.dimensions.utils.dimension_cache import DimensionCache
 from kompassi.dimensions.utils.set_dimension_values import set_dimension_values
+from kompassi.forms.models.enums import SurveyPurpose
 from kompassi.graphql_api.language import SUPPORTED_LANGUAGES
 
 from .attachment import Attachment
@@ -100,7 +101,7 @@ class Response(models.Model):
 
     # related fields
     dimensions: models.QuerySet[ResponseDimensionValue]
-    programs: models.QuerySet[Program]
+    programs_created_from_this_offer: models.QuerySet[Program]
 
     class Meta:
         indexes = [
@@ -327,3 +328,22 @@ class Response(models.Model):
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
             case _:
                 raise ValueError(f"Unknown app type: {self.survey.app_name}")
+
+    @property
+    def programs(self) -> models.QuerySet[Program]:
+        # TODO horribly inefficient (O(N) queries)
+        from kompassi.involvement.models.involvement import Involvement
+        from kompassi.program_v2.models.program import Program
+
+        match (self.survey.app, self.survey.purpose):
+            case (DimensionApp.PROGRAM_V2, SurveyPurpose.DEFAULT):
+                return self.programs_created_from_this_offer.all()
+            case (DimensionApp.PROGRAM_V2, SurveyPurpose.INVITE):
+                involvement = Involvement.objects.filter(
+                    universe=self.event.involvement_universe,
+                    response=self,
+                ).first()
+                if involvement is not None and involvement.program is not None:
+                    return Program.objects.filter(id=involvement.program.id)
+
+        return Program.objects.none()

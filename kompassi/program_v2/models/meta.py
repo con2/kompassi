@@ -165,7 +165,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
                 "revision_created_by",
             )
             .prefetch_related(
-                "programs",
+                "programs_created_from_this_offer",
             )
             .order_by("-original_created_at")
         )

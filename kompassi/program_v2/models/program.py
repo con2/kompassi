@@ -93,7 +93,7 @@ class Program(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="programs",
+        related_name="programs_created_from_this_offer",
         help_text="If this program was created from a program offer, this field will be set to the program offer.",
     )
     program_offer_id: UUID | None

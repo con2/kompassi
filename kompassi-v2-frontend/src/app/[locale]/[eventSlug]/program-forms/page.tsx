@@ -216,7 +216,17 @@ export default async function ProgramFormsPage(props: Props) {
         );
 
         if (programForm.purpose !== SurveyPurpose.Default) {
-          return <ButtonGroup>{editButton}</ButtonGroup>;
+          return (
+            <ButtonGroup>
+              {editButton}{" "}
+              <Link
+                href={`${adminUrl}/responses`}
+                className="btn btn-sm btn-outline-primary"
+              >
+                {surveyT.actions.viewResponses}…
+              </Link>{" "}
+            </ButtonGroup>
+          );
         }
 
         return (

@@ -297,26 +297,24 @@ export default async function ProgramOffersPage(props: Props) {
       searchParams={searchParams}
       actions={
         <ButtonGroup>
-          <ModalButton
-            title={t.actions.deleteVisibleProgramOffers.title}
-            messages={t.actions.deleteVisibleProgramOffers.modalActions}
-            action={
-              canDeleteProgramOffers
-                ? deleteProgramOffers.bind(
-                    null,
-                    locale,
-                    eventSlug,
-                    programOffers.map((offer) => offer.id),
-                    searchParams,
-                  )
-                : undefined
-            }
-            className="btn btn-outline-danger"
-          >
-            {t.actions.deleteVisibleProgramOffers.confirmation(
-              programOffers.length,
-            )}
-          </ModalButton>
+          {canDeleteProgramOffers && (
+            <ModalButton
+              title={t.actions.deleteVisibleProgramOffers.title}
+              messages={t.actions.deleteVisibleProgramOffers.modalActions}
+              action={deleteProgramOffers.bind(
+                null,
+                locale,
+                eventSlug,
+                programOffers.map((offer) => offer.id),
+                searchParams,
+              )}
+              className="btn btn-outline-danger"
+            >
+              {t.actions.deleteVisibleProgramOffers.confirmation(
+                programOffers.length,
+              )}
+            </ModalButton>
+          )}
           {excelExportLink && (
             <a href={excelExportLink} className="btn btn-outline-primary">
               {surveyT.actions.exportDropdown.excel}

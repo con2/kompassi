@@ -8,6 +8,7 @@ from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.graphql_api.utils import resolve_local_datetime_field
 from kompassi.involvement.graphql.profile_selected import SelectedProfileType
 from kompassi.involvement.models.profile import Profile
+from kompassi.program_v2.graphql.program_limited import LimitedProgramType
 
 from ..models.enums import EditMode
 from ..models.response import Response
@@ -227,6 +228,23 @@ class LimitedResponseType(DjangoObjectType):
     can_delete = graphene.NonNull(
         graphene.Boolean,
         description="Whether the response can be deleted by the user.",
+    )
+
+    @staticmethod
+    def resolve_programs(parent: Response, info):
+        """
+        For program offers, returns a list of programs created from the offer.
+
+        For program host invitation form responses, returns a list containing the program the host
+        was invited to.
+
+        For forms managed by an app other than Program V2, returns an empty list.
+        """
+        return parent.programs.all()
+
+    programs = graphene.NonNull(
+        graphene.List(graphene.NonNull(LimitedProgramType)),
+        description=normalize_whitespace(resolve_programs.__doc__ or ""),
     )
 
     class Meta:

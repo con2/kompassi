@@ -1,7 +1,5 @@
 import graphene
 
-from kompassi.program_v2.graphql.program_limited import LimitedProgramType
-
 from ..models.response import Response
 from .form import FormType
 from .response_dimension_value import ResponseDimensionValueType
@@ -29,18 +27,6 @@ class FullResponseType(LimitedResponseType):
             graphene.NonNull(ResponseDimensionValueType),
         ),
         key_dimensions_only=graphene.Boolean(),
-    )
-
-    @staticmethod
-    def resolve_programs(parent: Response, info):
-        return parent.programs.all()
-
-    programs = graphene.NonNull(
-        graphene.List(graphene.NonNull(LimitedProgramType)),
-        description=(
-            "If this response is a program offer, this field returns the program items created from this program offer. "
-            "If this response is not to a program offer form, this will always be empty."
-        ),
     )
 
     @staticmethod

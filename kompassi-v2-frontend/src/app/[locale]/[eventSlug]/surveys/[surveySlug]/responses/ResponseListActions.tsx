@@ -5,6 +5,7 @@ import { ButtonGroup } from "react-bootstrap";
 import Dropdown from "react-bootstrap/Dropdown";
 import SubscriptionButton from "./SubscriptionButton";
 import type { Translations } from "@/translations/en";
+import ExportDropdown, { ExportUrls } from "./ExportDropdown";
 
 interface Messages {
   toggleSubscription: string;
@@ -14,10 +15,7 @@ interface Messages {
 interface Props {
   isSubscribed: boolean;
   onToggleSubscription(): Promise<void>;
-  exportUrls: {
-    excel: string;
-    zip: string;
-  };
+  exportUrls: ExportUrls;
   messages: Messages;
   children: ReactNode;
 }
@@ -40,18 +38,10 @@ export function ResponseListActions({
 
       {children}
 
-      <Dropdown.Toggle variant="outline-primary" id="dropdown-basic">
-        {messages.exportDropdown.dropdownHeader}…
-      </Dropdown.Toggle>
-
-      <Dropdown.Menu>
-        <Dropdown.Item href={exportUrls.excel}>
-          {messages.exportDropdown.excel}
-        </Dropdown.Item>
-        <Dropdown.Item href={exportUrls.zip}>
-          {messages.exportDropdown.zip}
-        </Dropdown.Item>
-      </Dropdown.Menu>
+      <ExportDropdown
+        messages={messages.exportDropdown}
+        exportUrls={exportUrls}
+      />
     </Dropdown>
   );
 }
