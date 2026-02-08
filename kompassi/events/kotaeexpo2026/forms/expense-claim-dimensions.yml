@@ -1,0 +1,118 @@
+- slug: account
+  title:
+    fi: Tiliöinti
+    en: Account
+  is_key_dimension: false
+  choices:
+    - slug: rent
+      title:
+        fi: 4100 Tilavuokrat
+        en: 4100 Venue rent
+    - slug: equipment-rental
+      title:
+        fi: 4200 Kalustevuokraus
+        en: 4200 Equipment rental
+    - slug: restaurants
+      title:
+        fi: 4300 Ravintolakulut
+        en: 4300 Restaurant expenses
+    - slug: performers
+      title:
+        fi: 5100 Esiintyjät
+        en: 5100 Performers
+    - slug: program
+      title:
+        fi: 5200 Ohjelma
+        en: 5200 Program
+    - slug: supplies
+      title:
+        fi: 5400 Tarvikkeet
+        en: 5400 Supplies
+    - slug: technology
+      title:
+        fi: 5500 Tekniikka
+        en: 5500 Technology
+    - slug: meeting-expenses
+      title:
+        fi: 6100 Kokouskulut
+        en: 6100 Meeting expenses
+    - slug: travel-and-accommodation-expenses
+      title:
+        fi: 6200 Matka- ja majoituskulut
+        en: 6200 Travel and accommodation expenses
+    - slug: advertising-and-marketing-expenses
+      title:
+        fi: 8100 Ilmoitus ja markkinointikulut
+        en: 8100 Advertising and marketing expenses
+    - slug: representation-expenses
+      title:
+        fi: 8200 Edustuskulut
+        en: 8200 Representation expenses
+    - slug: multi-year-acquisitions
+      title:
+        fi: 9100 Monivuotiset hankinnat
+        en: 9100 Multi-year acquisitions
+    - slug: other-event-expenses
+      title:
+        fi: 9200 Tapahtuman muut kulut
+        en: 9200 Other event expenses
+    - slug: financial-transaction-expenses
+      title:
+        fi: 9500 Rahaliikenteen kulut
+        en: 9500 Financial transaction expenses
+    - slug: loans-from-individuals
+      title:
+        fi: 9550 Lainat yksityishenkilöiltä
+        en: 9550 Loans from individuals
+    - slug: loans-from-associations
+      title:
+        fi: 9560 Lainat yhdistyksiltä
+        en: 9560 Loans from associations
+    - slug: loans-from-banks
+      title:
+        fi: 9570 Lainat pankilta
+        en: 9570 Loans from banks
+    - slug: insurances
+      title:
+        fi: 9700 Vakuutukset
+        en: 9700 Insurances
+    - slug: phone-connections
+      title:
+        fi: 9800 Puhelinliittymät
+        en: 9800 Phone connections
+    - slug: other-operating-expenses
+      title:
+        fi: 9900 Muut toiminnan menot
+        en: 9900 Other operating expenses
+
+- slug: status
+  title:
+    fi: Maksun tila
+    en: Payment status
+  is_key_dimension: true
+  choices:
+    - slug: new
+      color: blue
+      title:
+        fi: Uusi
+        en: New
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+        en: Accepted
+    - slug: paid
+      color: teal
+      title:
+        fi: Maksettu
+        en: Paid
+    - slug: info-requested
+      color: yellow
+      title:
+        fi: Lisätietoja pyydetty
+        en: Further details requested
+    - slug: rejected
+      color: red
+      title:
+        fi: Hylätty
+        en: Rejected
