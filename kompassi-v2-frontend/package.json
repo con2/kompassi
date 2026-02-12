@@ -28,7 +28,7 @@
     "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.1",
     "tsx": "^4.19.4",
-    "uuid": "^11.1.0"
+    "uuid": "^13.0.0"
   },
   "license": "MIT",
   "devDependencies": {
