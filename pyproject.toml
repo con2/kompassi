@@ -24,7 +24,7 @@ dependencies = [
     "django-redis",
     "django-storages",
     "django-stubs",
-    "Django",
+    "django[argon2]",
     "fastapi[standard-no-fastapi-cloud-cli]",
     "flake8",
     "graphene-django",
