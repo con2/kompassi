@@ -400,6 +400,14 @@ AUTHENTICATION_BACKENDS = (
     "oauth2_provider.backends.OAuth2Backend",
 )
 
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
+]
+
 
 # Default region for parsing phone numbers
 # Passed as the second argument to python-phonenumbers' .parse
