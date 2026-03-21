@@ -1,11 +1,10 @@
-import { Temporal } from "@js-temporal/polyfill";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import makeInputId from "./makeInputId";
 import type { Choice, Field, SingleSelectPresentation } from "./models";
 import { SchemaForm } from "./SchemaForm";
 import UploadedFileCards from "./UploadedFileCards";
-import { timezone } from "@/config";
+import DateTimeInput from "./DateTimeInput";
 import type { Translations } from "@/translations/en";
 import { Fragment } from "react";
 
@@ -16,18 +15,10 @@ interface SchemaFormInputProps {
   value?: any;
   readOnly?: boolean;
   messages: Translations["SchemaForm"];
+  locale?: string;
 }
 
 const defaultRows = 8;
-
-/// Full ISO 8601 to YYYY-MM-DDTHH:MM in local time.
-/// This is used to render the value attribute of <input type="datetime-local">.
-function dateTimeToHtml(value: string) {
-  return Temporal.Instant.from(value)
-    .toZonedDateTimeISO(timezone)
-    .toString()
-    .slice(0, 16);
-}
 
 /** SchemaFormInput is responsible for rendering the actual input component. */
 function SchemaFormInput({
@@ -37,6 +28,7 @@ function SchemaFormInput({
   idPrefix = "",
   namePrefix = "",
   readOnly: elementReadOnly = false,
+  locale,
 }: SchemaFormInputProps) {
   const { type, required, htmlType, readOnly: fieldReadOnly = false } = field;
   const readOnly = elementReadOnly || fieldReadOnly;
@@ -291,14 +283,14 @@ function SchemaFormInput({
       );
     case "DateTimeField":
       return (
-        <input
-          className="form-control"
-          type="datetime-local"
-          defaultValue={value ? dateTimeToHtml(value) : undefined}
-          required={required}
-          readOnly={readOnly}
+        <DateTimeInput
           id={id}
           name={slug}
+          defaultValue={value}
+          locale={locale ?? "fi"}
+          required={required}
+          readOnly={readOnly}
+          dateRange={field.dateRange}
           key={value}
         />
       );

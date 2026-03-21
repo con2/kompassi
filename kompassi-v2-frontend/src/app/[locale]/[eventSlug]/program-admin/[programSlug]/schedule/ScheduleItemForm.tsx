@@ -17,6 +17,8 @@ interface Props {
   scheduleItem?: Partial<ProgramAdminDetailScheduleItemFragment>;
   dimensions: DimensionValueSelectFragment[];
   translations: Translations;
+  locale?: string;
+  dateRange?: { start: string; end: string };
 }
 
 export function buildScheduleItemForm(
@@ -24,6 +26,7 @@ export function buildScheduleItemForm(
   editingExisting: boolean,
   roomDimension: DimensionValueSelectFragment | "pass-through" | "omit",
   translations?: Translations,
+  dateRange?: { start: string; end: string },
 ) {
   if (!isValidSlug(eventSlug)) {
     throw new Error("Invalid event slug");
@@ -60,6 +63,7 @@ export function buildScheduleItemForm(
       slug: "startTime",
       type: "DateTimeField",
       required: true,
+      dateRange,
       ...t?.attributes.startTime,
     },
     {
@@ -108,6 +112,8 @@ export default function ScheduleItemForm({
   scheduleItem,
   dimensions,
   translations,
+  locale,
+  dateRange,
 }: Props) {
   const editingExisting = !!scheduleItem?.startTime;
   const roomDimension = dimensions.find((d) => d.slug === "room");
@@ -117,6 +123,7 @@ export default function ScheduleItemForm({
     editingExisting,
     roomDimension || "omit",
     translations,
+    dateRange,
   );
 
   return (
@@ -124,6 +131,7 @@ export default function ScheduleItemForm({
       fields={fields}
       values={scheduleItem}
       messages={translations.SchemaForm}
+      locale={locale}
       highlightReadOnlyFields
     />
   );
