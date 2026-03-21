@@ -1,7 +1,8 @@
 "use client";
 
 import { Temporal } from "@js-temporal/polyfill";
-import { useCallback, useState } from "react";
+import { useCallback, useState, type ComponentProps } from "react";
+import type { DayButtonProps } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 import { timezone } from "@/config";
 import type { Translations } from "@/translations/en";
@@ -43,6 +44,29 @@ function toHiddenValue(date: Date | undefined, time: string): string {
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}T${time || "00:00"}`;
+}
+
+// Custom DayButton so we can apply btn-primary + text-white directly on the
+// <button> element when selected. The `selected` classNames key targets the
+// parent <td>, where Bootstrap's .btn re-declares --bs-btn-color (black),
+// overriding any inherited value — so we must style the button itself.
+function CalendarDayButton({
+  day: _day,
+  modifiers,
+  className,
+  ...props
+}: DayButtonProps) {
+  return (
+    <button
+      {...props}
+      className={[
+        className, // day_button base classes from classNames
+        modifiers.selected ? "btn-primary text-white" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+    />
+  );
 }
 
 export default function DateTimeInput({
@@ -174,9 +198,10 @@ export default function DateTimeInput({
                   year: "numeric",
                 }).format(month),
             }}
+            components={{ DayButton: CalendarDayButton }}
             classNames={{
               root: "",
-              months: "d-flex gap-2",
+              months: "",
               // position-relative so the nav can be absolutely placed over the caption
               month: "position-relative",
               // px-4 keeps the month label clear of the absolutely positioned nav buttons
@@ -187,12 +212,11 @@ export default function DateTimeInput({
               button_previous: "btn btn-sm btn-outline-secondary",
               button_next: "btn btn-sm btn-outline-secondary",
               weeks: "",
-              week: "d-flex",
-              weekdays: "d-flex",
+              week: "",
+              weekdays: "",
               weekday: "text-center text-muted small",
               day: "",
               day_button: "btn btn-sm",
-              selected: "btn btn-primary btn-sm",
               today: "fw-bold",
               outside: "text-muted opacity-50",
               disabled: "text-muted opacity-25",
@@ -210,7 +234,7 @@ export default function DateTimeInput({
               },
               // Fixed cell widths so every column lines up regardless of content
               weekday: { width: "2.25rem", textAlign: "center" },
-              day: { width: "2.25rem", textAlign: "center" },
+              day: { width: "2.25rem", textAlign: "center", padding: 0 },
               day_button: { width: "2.25rem", padding: 0, aspectRatio: "1" },
             }}
           />
