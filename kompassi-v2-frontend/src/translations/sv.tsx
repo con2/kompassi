@@ -1,4 +1,4 @@
-// Translators: Kirsi Västi, Calle Tengman, Luka Pajukanta
+// Translators: Kirsi Västi, Calle Tengman, Luka Pajukanta, Claude Sonnet 4.6
 
 import { ReactNode, JSX } from "react";
 import en, { Translations } from "./en";
