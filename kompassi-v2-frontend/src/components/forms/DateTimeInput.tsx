@@ -223,7 +223,9 @@ export default function DateTimeInput({
               hidden: "invisible",
             }}
             styles={{
-              // Float the nav over the caption row, buttons at opposite ends
+              // Float the nav over the caption row, buttons at opposite ends.
+              // zIndex: 1 ensures the nav stacks above the caption (a normal-flow
+              // sibling rendered later in the DOM) so the buttons are fully clickable.
               nav: {
                 position: "absolute",
                 top: 0,
@@ -231,6 +233,7 @@ export default function DateTimeInput({
                 right: 0,
                 display: "flex",
                 justifyContent: "space-between",
+                zIndex: 1,
               },
               // Fixed cell widths so every column lines up regardless of content
               weekday: { width: "2.25rem", textAlign: "center" },
