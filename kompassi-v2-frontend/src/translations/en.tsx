@@ -1948,6 +1948,20 @@ const translations = {
     admin: {
       title: "Program admin",
     },
+
+    preferencesAdmin: {
+      title: "Program preferences",
+      attributes: {
+        publicFrom: {
+          title: "Schedule public from",
+          helpText:
+            "When set to a past time, the program schedule is publicly visible. Leave empty to keep the schedule private. Set to the current time to publish immediately.",
+        },
+        isSchedulePublic: {
+          title: "Schedule is currently public",
+        },
+      },
+    },
   },
 
   Dimension: {

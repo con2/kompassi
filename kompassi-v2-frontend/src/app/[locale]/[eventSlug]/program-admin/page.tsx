@@ -58,7 +58,7 @@ const query = graphql(`
           }
         }
 
-        programs(filters: $filters) {
+        programs(filters: $filters, publicOnly: false) {
           ...ProgramAdmin
         }
       }

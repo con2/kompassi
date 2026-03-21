@@ -54,6 +54,7 @@ from kompassi.program_v2.graphql.mutations.update_program import UpdateProgram
 from kompassi.program_v2.graphql.mutations.update_program_annotations import UpdateProgramAnnotations
 from kompassi.program_v2.graphql.mutations.update_program_dimensions import UpdateProgramDimensions
 from kompassi.program_v2.graphql.mutations.update_program_form import UpdateProgramForm
+from kompassi.program_v2.graphql.mutations.update_program_v2_event_meta import UpdateProgramV2EventMeta
 from kompassi.tickets_v2.graphql.mutations.cancel_and_refund_order import CancelAndRefundOrder
 from kompassi.tickets_v2.graphql.mutations.cancel_own_unpaid_order import CancelOwnUnpaidOrder
 from kompassi.tickets_v2.graphql.mutations.create_order import CreateOrder
@@ -174,6 +175,7 @@ class Mutation(graphene.ObjectType):
 
     create_program_form = CreateProgramForm.Field()
     update_program_form = UpdateProgramForm.Field()
+    update_program_v2_event_meta = UpdateProgramV2EventMeta.Field()
 
     accept_program_offer = AcceptProgramOffer.Field()
     cancel_program_offer = CancelProgramOffer.Field()
