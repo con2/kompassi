@@ -4,12 +4,14 @@ import { Temporal } from "@js-temporal/polyfill";
 import { useCallback, useState } from "react";
 import { DayPicker } from "react-day-picker";
 import { timezone } from "@/config";
+import type { Translations } from "@/translations/en";
 
 interface DateTimeInputProps {
   id?: string;
   name: string;
   defaultValue?: string;
   locale: string;
+  messages: Translations["SchemaForm"];
   required?: boolean;
   readOnly?: boolean;
   dateRange?: { start: string; end: string };
@@ -48,6 +50,7 @@ export default function DateTimeInput({
   name,
   defaultValue,
   locale,
+  messages,
   required,
   readOnly,
   dateRange,
@@ -186,7 +189,7 @@ export default function DateTimeInput({
 
       {isOutOfRange && (
         <div className="text-warning small mt-1">
-          Selected date is outside the event date range.
+          {messages.warnings.dateOutOfRange}
         </div>
       )}
     </div>

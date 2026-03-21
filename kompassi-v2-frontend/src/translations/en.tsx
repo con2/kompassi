@@ -179,6 +179,7 @@ const translations = {
     submit: "Submit",
     warnings: {
       noFileUploaded: "No file uploaded.",
+      dateOutOfRange: "Selected date is outside the event date range.",
     },
     boolean: {
       true: "Yes",

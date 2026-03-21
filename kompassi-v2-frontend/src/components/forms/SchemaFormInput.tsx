@@ -288,6 +288,7 @@ function SchemaFormInput({
           name={slug}
           defaultValue={value}
           locale={locale ?? "fi"}
+          messages={t}
           required={required}
           readOnly={readOnly}
           dateRange={field.dateRange}

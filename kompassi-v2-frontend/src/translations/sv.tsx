@@ -67,6 +67,8 @@ const translations: Translations = {
     submit: "Skicka",
     warnings: {
       noFileUploaded: "Inga filer.",
+      dateOutOfRange:
+        "Det valda datumet är utanför evenemangets datumintervall.",
     },
     boolean: {
       true: "Ja",

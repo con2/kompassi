@@ -151,6 +151,8 @@ Admin views under `*-admin` routes are server components that fetch via Apollo a
 
 Translations are in `src/translations/` as TypeScript objects (not i18n library files). `getTranslations(locale)` returns the typed translation tree for the current locale (`fi`, `en`, `sv`). The type is derived from `en.tsx`, so all locales must have the same keys — `fi.tsx` has full translations, `sv.tsx` uses `UNTRANSLATED(en.X)` helpers for untranslated sections. **When adding a new translation key, add it to all three files** or the TypeScript build will fail.
 
+**Never hardcode user-visible strings in V2 frontend components.** All user-visible text must go through the translation system. Pass a `messages` prop (a slice of the `Translations` type) to any component that renders text, and add new keys to all three translation files (`en.tsx`, `fi.tsx`, `sv.tsx`) — including a real Swedish translation, not `UNTRANSLATED(...)`.
+
 ### GraphQL access control
 
 The backend uses CBAC (claims-based access control) via `graphql_check_instance` / `graphql_check_model` from `kompassi/access/cbac.py`. Key patterns:

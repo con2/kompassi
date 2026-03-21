@@ -185,6 +185,8 @@ const translations: Translations = {
     submit: "Lähetä",
     warnings: {
       noFileUploaded: "Ei tiedostoja.",
+      dateOutOfRange:
+        "Valittu päivämäärä on tapahtuman päivämäärävälin ulkopuolella.",
     },
     boolean: {
       true: "Kyllä",
