@@ -13,6 +13,7 @@ import ViewHeading from "@/components/ViewHeading";
 import { decodeBoolean } from "@/helpers/decodeBoolean";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { Alert } from "react-bootstrap";
 
 graphql(`
   fragment ScheduleProgram on LimitedProgramType {
@@ -139,7 +140,7 @@ export default async function ProgramListPage(props: Props) {
           {t.listTitle}
           <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
         </ViewHeading>
-        <p className="mt-4">{t.scheduleNotPublic}</p>
+        <Alert variant="warning">{t.scheduleNotPublic}</Alert>
       </ViewContainer>
     );
   }

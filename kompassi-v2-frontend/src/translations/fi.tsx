@@ -1371,7 +1371,7 @@ const translations: Translations = {
       signInToAddFavorites:
         "Kirjautumalla sisään voit merkitä ohjelmanumeroita suosikeiksi, suodattaa näkymää näyttämään vain suosikit ja lisätä suosikkiohjelmanumerot kalenteriisi.",
     },
-    scheduleNotPublic: "Ohjelma ei ole vielä julkaistu.",
+    scheduleNotPublic: "Tämän tapahtuman ohjelmaa ei ole vielä julkaistu.",
     filters: {
       showOnlyFavorites: "Näytä vain suosikit",
       hidePastPrograms: "Piilota menneet ohjelmat",

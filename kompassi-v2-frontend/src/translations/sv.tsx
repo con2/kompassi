@@ -238,7 +238,8 @@ const translations: Translations = {
       signInToAddFavorites:
         "Genom att logga in kan du markera program som favoriter, filtrera program efter favoriter och lägga till dina favoritprogram i kalendern.",
     },
-    scheduleNotPublic: "Programschemat har inte publicerats ännu.",
+    scheduleNotPublic:
+      "Programschemat för detta evenemang har inte publicerats ännu.",
     filters: {
       showOnlyFavorites: "Visa endast favoriter",
       hidePastPrograms: "Dölj förflutna program",

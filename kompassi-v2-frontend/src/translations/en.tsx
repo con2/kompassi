@@ -1372,7 +1372,8 @@ const translations = {
       signInToAddFavorites:
         "By logging in, you can mark program items as favorites, filter this view to show only favorites and add favorite program items to your calendar.",
     },
-    scheduleNotPublic: "The program schedule has not been published yet.",
+    scheduleNotPublic:
+      "The program schedule for this event has not been published yet.",
     filters: {
       showOnlyFavorites: "Show only favorites",
       hidePastPrograms: "Hide past program items",
