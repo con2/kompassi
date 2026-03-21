@@ -5,9 +5,9 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 
 const mutation = graphql(`
-  mutation UpdateProgramV2EventMeta($input: UpdateProgramV2EventMetaInput!) {
-    updateProgramV2EventMeta(input: $input) {
-      meta {
+  mutation UpdateProgramPreferences($input: UpdateProgramPreferencesInput!) {
+    updateProgramPreferences(input: $input) {
+      preferences {
         publicFrom
         isSchedulePublic
       }
