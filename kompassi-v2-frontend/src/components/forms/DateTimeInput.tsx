@@ -126,9 +126,11 @@ export default function DateTimeInput({
   return (
     <div style={{ position: "relative" }}>
       <div className="input-group">
+        {/* Styled as a form-control so border colour and text colour match other inputs */}
         <button
           type="button"
-          className="btn btn-outline-secondary"
+          className="form-control text-start"
+          style={{ width: "auto", flexGrow: 0, cursor: "pointer" }}
           onClick={() => setCalendarOpen((o) => !o)}
           disabled={readOnly}
           aria-expanded={calendarOpen}
@@ -160,13 +162,28 @@ export default function DateTimeInput({
             selected={selectedDate}
             onSelect={handleDaySelect}
             defaultMonth={defaultMonth}
+            ISOWeek
+            formatters={{
+              formatWeekdayName: (weekday) =>
+                new Intl.DateTimeFormat(locale, { weekday: "short" }).format(
+                  weekday,
+                ),
+              formatCaption: (month) =>
+                new Intl.DateTimeFormat(locale, {
+                  month: "long",
+                  year: "numeric",
+                }).format(month),
+            }}
             classNames={{
               root: "",
               months: "d-flex gap-2",
-              month: "",
-              month_caption: "d-flex justify-content-center mb-2 fw-semibold",
+              // position-relative so the nav can be absolutely placed over the caption
+              month: "position-relative",
+              // px-4 keeps the month label clear of the absolutely positioned nav buttons
+              month_caption: "text-center fw-semibold mb-2 px-4",
               caption_label: "",
-              nav: "d-flex justify-content-between mb-1",
+              // nav is styled via the `styles` prop; reset class to avoid conflict
+              nav: "",
               button_previous: "btn btn-sm btn-outline-secondary",
               button_next: "btn btn-sm btn-outline-secondary",
               weeks: "",
@@ -180,6 +197,21 @@ export default function DateTimeInput({
               outside: "text-muted opacity-50",
               disabled: "text-muted opacity-25",
               hidden: "invisible",
+            }}
+            styles={{
+              // Float the nav over the caption row, buttons at opposite ends
+              nav: {
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                display: "flex",
+                justifyContent: "space-between",
+              },
+              // Fixed cell widths so every column lines up regardless of content
+              weekday: { width: "2.25rem", textAlign: "center" },
+              day: { width: "2.25rem", textAlign: "center" },
+              day_button: { width: "2.25rem", padding: 0, aspectRatio: "1" },
             }}
           />
         </div>
