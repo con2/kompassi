@@ -2230,6 +2230,7 @@ export type ProgramV2EventMetaType = {
   /** Returns a link to the the program offers Excel export view for the event. The program offers Excel export view returns all or filtered program offers in an Excel file, grouped into worksheets by the program form. `favorited` - set to a truthy value to receive only favorites, `slug` - include only these programmes (can be multi-valued or separated by commas), `language` - the language to use when resolving dimensions. Further GET parameters are used to filter by dimensions. */
   programOffersExcelExportLink: Scalars['String']['output'];
   programs: Array<FullProgramType>;
+  /** The program schedule becomes publicly visible at this point in time. Leave unset to keep the schedule private. */
   publicFrom?: Maybe<Scalars['DateTime']['output']>;
   reports: Array<ReportType>;
   scheduleItem?: Maybe<FullScheduleItemType>;
