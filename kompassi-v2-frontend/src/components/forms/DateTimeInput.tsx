@@ -153,8 +153,7 @@ export default function DateTimeInput({
         {/* Styled as a form-control so border colour and text colour match other inputs */}
         <button
           type="button"
-          className="form-control text-start"
-          style={{ width: "auto", flexGrow: 0, cursor: "pointer" }}
+          className="form-control text-end"
           onClick={() => setCalendarOpen((o) => !o)}
           disabled={readOnly}
           aria-expanded={calendarOpen}
@@ -170,7 +169,6 @@ export default function DateTimeInput({
           onChange={(e) => setTime(e.target.value)}
           required={required && !selectedDate}
           readOnly={readOnly}
-          style={{ maxWidth: "8em" }}
         />
       </div>
 
