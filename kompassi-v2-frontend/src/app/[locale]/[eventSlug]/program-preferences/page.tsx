@@ -79,17 +79,17 @@ export default async function ProgramPreferencesPage(props: Props) {
     variables: { eventSlug },
   });
 
-  if (!data.event?.program) {
+  const event = data.event;
+  const program = data.event?.program;
+
+  if (!event || !program) {
     notFound();
   }
-
-  const { event } = data;
-  const { program } = event;
 
   const fields: Field[] = [
     {
       slug: "publicFrom",
-      type: "DateTime",
+      type: "DateTimeField",
       title: t.attributes.publicFrom.title,
       helpText: t.attributes.publicFrom.helpText,
       required: false,
@@ -112,8 +112,8 @@ export default async function ProgramPreferencesPage(props: Props) {
           <p>
             <strong>{t.attributes.isSchedulePublic.title}:</strong>{" "}
             {program.isSchedulePublic
-              ? translations.Common.boolean.true
-              : translations.Common.boolean.false}
+              ? translations.SchemaForm.boolean.true
+              : translations.SchemaForm.boolean.false}
           </p>
           <form action={updateProgramPreferences.bind(null, locale, eventSlug)}>
             <SchemaForm
