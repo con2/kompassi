@@ -1959,7 +1959,7 @@ const translations: Translations = {
         publicFrom: {
           title: "Ohjelmakartta julkinen alkaen",
           helpText:
-            "Kun tähän asetetaan mennyt aika, ohjelmakartta on julkisesti nähtävillä. Jätä tyhjäksi pitääksesi ohjelmakartan piilossa. Aseta nykyiseksi ajaksi julkaistaksesi heti.",
+            "Ohjelmakartta tulee julkisesti nähtäville tänä ajankohtana. Jätä tyhjäksi pitääksesi ohjelmakartan piilossa.",
         },
         isSchedulePublic: {
           title: "Ohjelmakartta on tällä hetkellä julkinen",

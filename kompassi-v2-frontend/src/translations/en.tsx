@@ -1955,7 +1955,7 @@ const translations = {
         publicFrom: {
           title: "Schedule public from",
           helpText:
-            "When set to a past time, the program schedule is publicly visible. Leave empty to keep the schedule private. Set to the current time to publish immediately.",
+            "The program schedule becomes publicly visible at this point in time. Leave empty to keep the schedule private.",
         },
         isSchedulePublic: {
           title: "Schedule is currently public",

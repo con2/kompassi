@@ -71,8 +71,8 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         null=True,
         blank=True,
         help_text=(
-            "When set to a past datetime, the program schedule is publicly visible. "
-            "Unset or future datetime means the schedule is not public."
+            "The program schedule becomes publicly visible at this point in time. "
+            "Leave unset to keep the schedule private."
         ),
     )
 
