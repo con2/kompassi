@@ -1952,6 +1952,20 @@ const translations: Translations = {
     admin: {
       title: "Ohjelmanhallinta",
     },
+
+    preferencesAdmin: {
+      title: "Ohjelma-asetukset",
+      attributes: {
+        publicFrom: {
+          title: "Ohjelmakartta julkinen alkaen",
+          helpText:
+            "Ohjelmakartta tulee julkisesti nähtäville tänä ajankohtana. Jätä tyhjäksi pitääksesi ohjelmakartan piilossa.",
+        },
+        isSchedulePublic: {
+          title: "Ohjelmakartta on tällä hetkellä julkinen",
+        },
+      },
+    },
   },
 
   Dimension: {

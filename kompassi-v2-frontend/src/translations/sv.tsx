@@ -286,6 +286,8 @@ const translations: Translations = {
     admin: {
       title: "Program admin",
     },
+
+    preferencesAdmin: UNTRANSLATED(en.Program.preferencesAdmin),
   }),
 
   Dimension: {
