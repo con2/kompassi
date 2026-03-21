@@ -35,12 +35,10 @@ npm run dev   # starts Next.js at localhost:3000 with GraphQL codegen watch
 All backend commands assume the virtualenv is active (`source .venv/bin/activate`) or are run via Docker.
 
 ```bash
-# Run backend tests (uses --reuse-db by default, skips integration_test marker)
-pytest
-
-# Run a single test file or test
-pytest kompassi/forms/tests.py
-pytest kompassi/forms/tests.py::TestSurveyResponses::test_create_response
+# Run backend tests — must use docker-compose.test.yml (no local DB)
+# The default command is pytest --reuse-db; append path args to target specific tests
+docker compose -f docker-compose.test.yml run --rm test
+docker compose -f docker-compose.test.yml run --rm test pytest kompassi/program_v2/tests.py
 
 # Lint and format
 ruff check --fix .
@@ -68,7 +66,20 @@ npm run test      # lint + prettier check
 npm run format    # prettier write
 ```
 
-GraphQL types are auto-generated into `src/__generated__/`. After changing any GraphQL query/fragment/mutation in `.ts`/`.tsx` files, codegen must run (it runs automatically with `npm run dev`).
+GraphQL types are auto-generated into `src/__generated__/`. After changing any GraphQL query/fragment/mutation in `.ts`/`.tsx` files, codegen must run (it runs automatically with `npm run dev`). The generated files are committed to the repo so the production Docker build (`Dockerfile`) can run `next build` without a live backend. **Never add codegen to the `build` script** — it requires a live backend and breaks CI.
+
+To run codegen + build against the local backend via docker-compose (e.g. to verify types after schema changes):
+
+```bash
+docker compose up -d router backend postgres redis minio
+docker compose run --rm frontend sh -c "graphql-codegen && next build"
+```
+
+To verify the production Docker image builds correctly (no backend required):
+
+```bash
+docker build -f kompassi-v2-frontend/Dockerfile kompassi-v2-frontend
+```
 
 ## Toolchain conventions
 
@@ -138,4 +149,12 @@ Admin views under `*-admin` routes are server components that fetch via Apollo a
 
 ### Translations
 
-Translations are in `src/translations/` as TypeScript objects (not i18n library files). `getTranslations(locale)` returns the typed translation tree for the current locale (`fi`, `en`).
+Translations are in `src/translations/` as TypeScript objects (not i18n library files). `getTranslations(locale)` returns the typed translation tree for the current locale (`fi`, `en`, `sv`). The type is derived from `en.tsx`, so all locales must have the same keys — `fi.tsx` has full translations, `sv.tsx` uses `UNTRANSLATED(en.X)` helpers for untranslated sections. **When adding a new translation key, add it to all three files** or the TypeScript build will fail.
+
+### GraphQL access control
+
+The backend uses CBAC (claims-based access control) via `graphql_check_instance` / `graphql_check_model` from `kompassi/access/cbac.py`. Key patterns:
+
+- `public_only=True` (default) on resolvers — no auth required, but data may be filtered
+- `public_only=False` — must call `graphql_check_model` or `graphql_check_instance` before returning data
+- Admin frontend pages should query with `publicOnly: false`; public pages omit the argument (defaults to `true`)
