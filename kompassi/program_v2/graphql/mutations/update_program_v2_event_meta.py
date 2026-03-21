@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import graphene
+from django.utils.timezone import is_naive, make_aware
 
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.program_v2.graphql.meta import ProgramV2EventMetaType
@@ -34,6 +35,8 @@ class UpdateProgramV2EventMeta(graphene.Mutation):
         )
 
         public_from: datetime | None = input.public_from  # type: ignore
+        if public_from is not None and is_naive(public_from):
+            public_from = make_aware(public_from)
         meta.public_from = public_from
         meta.save(update_fields=["public_from"])
 
