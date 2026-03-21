@@ -157,6 +157,7 @@ export default async function EditSurveyPage(props: Props) {
           fields={fields}
           values={survey}
           messages={translations.SchemaForm}
+          locale={locale}
         />
         <SubmitButton>{surveyT.actions.saveProperties}</SubmitButton>
       </form>

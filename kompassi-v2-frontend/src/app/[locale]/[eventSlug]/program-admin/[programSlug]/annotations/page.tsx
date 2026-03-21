@@ -124,6 +124,7 @@ export default async function ProgramAdminDetailAnnotationsPage(props: Props) {
               schema={editableAnnotations}
               values={program.cachedAnnotations}
               messages={translations.SchemaForm}
+              locale={locale}
             />
             <SubmitButton className="btn btn-primary mt-3">
               {translations.Common.standardActions.save}

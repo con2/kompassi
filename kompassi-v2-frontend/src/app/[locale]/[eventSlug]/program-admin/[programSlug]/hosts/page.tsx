@@ -277,6 +277,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
                 fields={fields}
                 values={values}
                 messages={translations.SchemaForm}
+                locale={locale}
               />
             </ModalButton>
             <ModalButton
@@ -449,6 +450,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
                   fields={inviteProgramHostFields}
                   values={inviteProgramHostDefaults}
                   messages={translations.SchemaForm}
+                  locale={locale}
                   headingLevel="h5"
                 />
               </ModalButton>
@@ -488,6 +490,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
               schema={annotations}
               values={program.cachedAnnotations}
               messages={translations.SchemaForm}
+              locale={locale}
             />
             <SubmitButton>
               {translations.Common.standardActions.save}

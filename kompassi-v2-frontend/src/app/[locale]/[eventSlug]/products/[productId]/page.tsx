@@ -275,6 +275,7 @@ export default async function AdminProductDetailPage(props: Props) {
                 fields={baseFields}
                 values={product}
                 messages={translations.SchemaForm}
+                locale={locale}
                 readOnly
               />
             </ModalButton>
@@ -327,6 +328,7 @@ export default async function AdminProductDetailPage(props: Props) {
               fields={fields}
               values={currentVersion}
               messages={translations.SchemaForm}
+              locale={locale}
               headingLevel="h5"
             />
             <SubmitButton>{t.actions.saveProduct}</SubmitButton>
