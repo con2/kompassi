@@ -44,17 +44,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     class Meta:
         model = ProgramV2EventMeta
-        fields = ()
-
-    @staticmethod
-    def resolve_public_from(meta: ProgramV2EventMeta, info):
-        return meta.public_from
-
-    public_from = graphene.DateTime()
-
-    @staticmethod
-    def resolve_is_schedule_public(meta: ProgramV2EventMeta, info):
-        return meta.is_schedule_public
+        fields = ("public_from",)
 
     is_schedule_public = graphene.NonNull(graphene.Boolean)
 
