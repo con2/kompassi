@@ -63,6 +63,7 @@ const query = graphql(`
 
       program {
         calendarExportLink
+        isSchedulePublic
 
         listFilters: dimensions(isListFilter: true) {
           ...DimensionFilter
@@ -127,6 +128,20 @@ export default async function ProgramListPage(props: Props) {
 
   if (!event?.program?.scheduleItems) {
     notFound();
+  }
+
+  const isSchedulePublic = event.program.isSchedulePublic;
+
+  if (!isSchedulePublic) {
+    return (
+      <ViewContainer>
+        <ViewHeading>
+          {t.listTitle}
+          <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
+        </ViewHeading>
+        <p className="mt-4">{t.scheduleNotPublic}</p>
+      </ViewContainer>
+    );
   }
 
   const session = await auth();
