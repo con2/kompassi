@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from enum import Enum
+from enum import StrEnum
 from typing import Literal
 
 import pydantic
@@ -8,7 +8,7 @@ import pydantic
 from kompassi.dimensions.models.dimension import Dimension
 
 
-class FieldType(str, Enum):
+class FieldType(StrEnum):
     SINGLE_LINE_TEXT = "SingleLineText"
     MULTI_LINE_TEXT = "MultiLineText"
     SINGLE_CHECKBOX = "SingleCheckbox"
@@ -24,7 +24,7 @@ class FieldType(str, Enum):
     DECIMAL_FIELD = "DecimalField"
     DATE_FIELD = "DateField"
     TIME_FIELD = "TimeField"
-    DATE_TIME_FIELD = "DateField"
+    DATE_TIME_FIELD = "DateTimeField"
     DIMENSION_SINGLE_SELECT = "DimensionSingleSelect"
     DIMENSION_MULTI_SELECT = "DimensionMultiSelect"
     DIMENSION_SINGLE_CHECKBOX = "DimensionSingleCheckbox"

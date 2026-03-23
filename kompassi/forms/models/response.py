@@ -222,8 +222,20 @@ class Response(models.Model):
                 "dimensions__value__slug",
             )
         ):
-            response.cached_dimensions = response._build_cached_dimensions()
-            response.cached_key_fields = response._build_cached_key_fields()
+            try:
+                response.cached_dimensions = response._build_cached_dimensions()
+                response.cached_key_fields = response._build_cached_key_fields()
+            except Exception as e:
+                logger.error(
+                    "Error refreshing cached fields for %s",
+                    dict(
+                        response=response.id,
+                        language=response.form.language,
+                        survey=response.form.survey.slug,
+                    ),
+                    exc_info=e,
+                )
+                continue
 
             if response.original_created_by is None:
                 response.original_created_by = response.original.revision_created_by

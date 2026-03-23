@@ -36,7 +36,7 @@ const query = graphql(`
           languages {
             language
           }
-          dimensions {
+          dimensions(publicOnly: false) {
             ...DimensionEditor
           }
         }

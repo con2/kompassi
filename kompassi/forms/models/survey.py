@@ -491,13 +491,17 @@ class Survey(models.Model):
     ):
         bulk_update = []
         for survey in surveys:
-            survey.cached_default_response_dimensions = build_cached_dimensions(
-                survey.default_response_dimensions.all()
-            )
-            survey.cached_default_involvement_dimensions = build_cached_dimensions(
-                survey.default_involvement_dimensions.all()
-            )
-            bulk_update.append(survey)
+            try:
+                survey.cached_default_response_dimensions = build_cached_dimensions(
+                    survey.default_response_dimensions.all()
+                )
+                survey.cached_default_involvement_dimensions = build_cached_dimensions(
+                    survey.default_involvement_dimensions.all()
+                )
+            except Exception as e:
+                logger.error(f"Error refreshing cached dimensions for survey {survey}", exc_info=e)
+            else:
+                bulk_update.append(survey)
         Survey.objects.bulk_update(
             bulk_update,
             [
