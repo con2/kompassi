@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.core.validators import MaxValueValidator, MinValueValidator
 from kompassi.labour.models import SignupExtraBase
 
 #Based on the  2023 form, with the addition of a age and color wish for the shirt
@@ -98,9 +98,12 @@ class SignupExtra(SignupExtraBase):
         ),
     )
 
-
     ika = models.IntegerField(
-        default=21,
+        validators=[
+            MinValueValidator(15, message="Sinun täytyy olla vähintään 15-vuotias."),
+            MaxValueValidator(117, message="Maailmassa on uusi vanhin ihminen!(... valitse numero mikä on alle 117)")
+        ],
+        default=42,
         verbose_name="Ikä tapahtuman aikana",
     )
 
