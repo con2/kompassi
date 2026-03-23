@@ -5,20 +5,32 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('finncon2026', '0001_initial'),
+        ("finncon2026", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='signupextra',
-            name='color_wish',
-            field=models.TextField(blank=True, help_text='Keräämme toivomuksia paidan pohjavärille!(graaffikkomme valitsee suosituimpien värien kesken työvoimapaidan ja conipaidan pohjavärit.)', verbose_name='Ehdota pohjaväriä työvoimapaille:'),
+            model_name="signupextra",
+            name="color_wish",
+            field=models.TextField(
+                blank=True,
+                help_text="Keräämme toivomuksia paidan pohjavärille!(graaffikkomme valitsee suosituimpien värien kesken työvoimapaidan ja conipaidan pohjavärit.)",
+                verbose_name="Ehdota pohjaväriä työvoimapaille:",
+            ),
         ),
         migrations.AddField(
-            model_name='signupextra',
-            name='ika',
-            field=models.IntegerField(default=42, validators=[django.core.validators.MinValueValidator(15, message='Sinun täytyy olla vähintään 15-vuotias.'), django.core.validators.MaxValueValidator(117, message='Maailmassa on uusi vanhin ihminen!(... valitse numero mikä on alle 117)')], verbose_name='Ikä tapahtuman aikana'),
+            model_name="signupextra",
+            name="ika",
+            field=models.IntegerField(
+                default=42,
+                validators=[
+                    django.core.validators.MinValueValidator(15, message="Sinun täytyy olla vähintään 15-vuotias."),
+                    django.core.validators.MaxValueValidator(
+                        117, message="Maailmassa on uusi vanhin ihminen!(... valitse numero mikä on alle 117)"
+                    ),
+                ],
+                verbose_name="Ikä tapahtuman aikana",
+            ),
         ),
     ]

@@ -1,8 +1,9 @@
-from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+
 from kompassi.labour.models import SignupExtraBase
 
-#Based on the  2023 form, with the addition of a age and color wish for the shirt
+# Based on the  2023 form, with the addition of a age and color wish for the shirt
 
 SHIFT_TYPE_CHOICES = [
     ("2h", "2 tunnin vuoroja"),
@@ -16,7 +17,6 @@ TOTAL_WORK_CHOICES = [
     ("8h", "8 tuntia"),
     ("yli8h", "Yli 8 tuntia"),
 ]
-
 
 
 SHIRT_SIZES = [
@@ -40,10 +40,6 @@ SHIRT_SIZES = [
 ]
 
 
-
-
-
-
 class SpecialDiet(models.Model):
     name = models.CharField(max_length=63)
 
@@ -52,7 +48,6 @@ class SpecialDiet(models.Model):
 
 
 class SignupExtra(SignupExtraBase):
-
     shift_type = models.CharField(
         max_length=15,
         verbose_name="Toivottu työvuoron pituus",
@@ -78,7 +73,6 @@ class SignupExtra(SignupExtraBase):
         ),
     )
 
-
     dead_dog = models.BooleanField(
         default=False,
         verbose_name="Osallistun dead dogeihin",
@@ -87,7 +81,6 @@ class SignupExtra(SignupExtraBase):
             "kaikille täysikäisille työvoimaan kuuluville. Ilmoittautuminen ei ole sitova."
         ),
     )
-
 
     color_wish = models.TextField(
         blank=True,
@@ -101,13 +94,11 @@ class SignupExtra(SignupExtraBase):
     ika = models.IntegerField(
         validators=[
             MinValueValidator(15, message="Sinun täytyy olla vähintään 15-vuotias."),
-            MaxValueValidator(117, message="Maailmassa on uusi vanhin ihminen!(... valitse numero mikä on alle 117)")
+            MaxValueValidator(117, message="Maailmassa on uusi vanhin ihminen!(... valitse numero mikä on alle 117)"),
         ],
         default=42,
         verbose_name="Ikä tapahtuman aikana",
     )
-
-
 
     special_diet = models.ManyToManyField(SpecialDiet, blank=True, verbose_name="Erikoisruokavalio")
 
@@ -152,4 +143,3 @@ class SignupExtra(SignupExtraBase):
         from .forms import SignupExtraForm
 
         return SignupExtraForm
-
