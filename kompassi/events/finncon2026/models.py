@@ -2,7 +2,7 @@ from django.db import models
 
 from kompassi.labour.models import SignupExtraBase
 
-#Pohjusttettu 2023 lomakkeesta
+#Based on the  2023 form, with the addition of a age and color wish for the shirt
 
 SHIFT_TYPE_CHOICES = [
     ("2h", "2 tunnin vuoroja"),
@@ -41,29 +41,6 @@ SHIRT_SIZES = [
 
 
 
-"""
-(Sisään rakennettu)
-Etunimi:
-Sukunimi:
-Nimimerkki/kutsumanimi:
-Sähköposti:
-(*)JV-Kortti () on () haluan suorittaa () ei ole
-(*)Hygieniapassi () on () ei ole
-(*)Ajokortti () on () ei ole
-(Sisään rakennettu)
-
-Ikä:
-(?)
-Puhelinnumero: (vapaaehtoinen)
-(?)
-*Ensisijaiset tehtävätoiveet: (monivalinta)
-*Muut tehtävätoiveet: (monivalinta)
-(!)Erikoisruokavaliot ja allergiat:
-*Paitakoko:
-*Paidan toiveväri:
-
-
-"""
 
 
 
@@ -122,13 +99,12 @@ class SignupExtra(SignupExtraBase):
     )
 
 
-    ika = models.BooleanField(
-        default=False,
-        verbose_name="Oletko yli 15 vuotias?",
-        help_text=(
-            "Vapaaehtoistyöhön vaadimme Blaa blaa blaa"
-        ),
+    ika = models.IntegerField(
+        default=21,
+        verbose_name="Ikä tapahtuman aikana",
     )
+
+
 
     special_diet = models.ManyToManyField(SpecialDiet, blank=True, verbose_name="Erikoisruokavalio")
 
