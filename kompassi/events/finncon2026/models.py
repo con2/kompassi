@@ -111,6 +111,26 @@ class SignupExtra(SignupExtraBase):
         ),
     )
 
+    """
+    color_wish = models.TextField(
+        blank=True,
+        default="",
+        verbose_name="Ehdota pohjaväriä työvoimapaille:",
+        help_text=(
+            "Keräämme toivomuksia paidan pohjavärille!"
+            "(graaffikkomme valitsee suosituimpien värien kesken työvoimapaidan ja conipaidan pohjavärit.)"
+        ),
+    )
+
+
+    ika = models.BooleanField(
+        default=False,
+        verbose_name="Oletko yli 15 vuotias?",
+        help_text=(
+            "Vapaaehtoistyöhön vaadimme Blaa blaa blaa"
+        ),
+    )
+    """
     special_diet = models.ManyToManyField(SpecialDiet, blank=True, verbose_name="Erikoisruokavalio")
 
     special_diet_other = models.TextField(
