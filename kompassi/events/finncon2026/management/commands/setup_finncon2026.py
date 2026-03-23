@@ -27,15 +27,15 @@ class Setup:
         self.tz = tzlocal()
 
 
-        self.setup_core()# Tapahtuma info
+        self.setup_core()# Event info
 
 
-        self.setup_labour()# Vänkärit ja Vastaavat // hakulomake
-        self.setup_intra() # Perähallinta käyttäjä ryhmät
+        self.setup_labour()# Volunteer init // Form setup
+        self.setup_intra() # Background admin
 
 
 
-        self.setup_program_v2()# Ohjelma databaasi merkintä
+        self.setup_program_v2()# Program database
 
 
 
@@ -134,7 +134,7 @@ class Setup:
 
 
 
-        ## organizers -- vastaavat PersonnelClass
+        ## organizers -- Responsible PersonnelClass
         organizers_personnel_class, created = PersonnelClass.objects.get_or_create(
             event=self.event,
             slug="vastaava",
@@ -146,7 +146,7 @@ class Setup:
         )
 
 
-        ## Vapaaehtoinen työkategoria
+        ## Volunteer category
         volunteer_pc, _ = PersonnelClass.objects.get_or_create(
             event=self.event,
             slug="vapaaehtoinen",
@@ -159,7 +159,7 @@ class Setup:
 
 
 
-        ## Vapaaehtoinen työkategoria
+        ## Basic volunteer code
 #        voluntary_gategory, v_created = JobCategory.objects.update_or_create(
 #            event=self.event,
 #            slug="vapaaehtoinen",
@@ -187,7 +187,6 @@ class Setup:
                 slug=slug,
                 defaults=dict(
                     name=name,
-                    app_label="vapaaehtoinen",
                     description=description,
                     public=True,
                 ),
@@ -198,7 +197,7 @@ class Setup:
 
 
 
-        ## Finncon 2026 työryhmä JobCategory
+        ## Finncon 2026 working group JobCategory
         conitea_job_category, created = JobCategory.objects.update_or_create(
             event=self.event,
             slug="conitea",
@@ -215,7 +214,7 @@ class Setup:
 
 
 
-        ## taika koodi??? ## Vaatii aiemman iteraation
+        ## "Standard" magic code to initialize the entry ## Needs a older iteration (as most events do inherit from previous)
 #        for jc_name, qualification_name in [
 #            ("Järjestyksenvalvoja", "JV-kortti"),
 #        ]:
@@ -256,7 +255,7 @@ class Setup:
 
 
 
-        labour_event_meta.create_groups() ## Pitää kutsua luonnin jälkeen
+        labour_event_meta.create_groups() ## Must be called
 
 
 
@@ -283,7 +282,7 @@ class Setup:
         from kompassi.program_v2.models.meta import ProgramV2EventMeta
 
 
-        ## Vänkäri rekisteri
+        ## Volunteer registry ### Fairly certain I have actually done this wrong and it does nothing
         registry, _created = Registry.objects.get_or_create(
             scope=self.organization.scope,
             slug="volunteers",
@@ -294,6 +293,7 @@ class Setup:
         )
 
 
+        # Need to do something to make the program just be a link until/unless something is added
         (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
         meta, _ = ProgramV2EventMeta.objects.update_or_create(
             event=self.event,
