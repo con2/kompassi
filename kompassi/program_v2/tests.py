@@ -2,6 +2,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 from django.db import transaction
+from django.utils.timezone import now
 
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
 from kompassi.core.models.person import Person
@@ -362,3 +363,37 @@ def test_extract_annotations():
     # integration test: our test annotation is extracted as part of program workflow as expected
     program2.refresh_from_db()
     assert set(program2.validated_annotations.items()).issuperset(expected_annotations2.items())
+
+
+@pytest.mark.django_db
+def test_schedule_public_from():
+    meta, _ = ProgramV2EventMeta.get_or_create_dummy()
+    event = meta.event
+
+    program = Program(event=event, title="Test program")
+    program.save()
+
+    schedule_item = ScheduleItem(
+        program=program,
+        start_time=now(),
+        duration=timedelta(hours=1),
+    ).with_mandatory_fields()
+    schedule_item.save()
+
+    # public_from unset → schedule is not public
+    meta.public_from = None
+    meta.save(update_fields=["public_from"])
+    meta.refresh_from_db()
+    assert not meta.is_schedule_public
+
+    # public_from in the future → schedule is not public
+    meta.public_from = now() + timedelta(hours=1)
+    meta.save(update_fields=["public_from"])
+    meta.refresh_from_db()
+    assert not meta.is_schedule_public
+
+    # public_from in the past → schedule is public
+    meta.public_from = now() - timedelta(seconds=1)
+    meta.save(update_fields=["public_from"])
+    meta.refresh_from_db()
+    assert meta.is_schedule_public

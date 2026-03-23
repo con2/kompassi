@@ -65,6 +65,13 @@ dependencies = [
     "django-enum>=2.2.3",
 ]
 
+[tool.uv]
+constraint-dependencies = [
+    # ics 0.7.2 passes buffer_class to tatsu's ParserConfig, which was removed in tatsu 5.8+
+    # See: https://github.com/con2/kompassi/issues/944
+    "tatsu<5.8",
+]
+
 [tool.black]
 line-length = 120
 
