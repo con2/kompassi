@@ -89,7 +89,6 @@ export default function ProgramAdminTabs({
       slug: "preferences",
       title: t.actions.preferences,
       href: `/${eventSlug}/program-preferences`,
-      disabled: true,
     },
   ];
 

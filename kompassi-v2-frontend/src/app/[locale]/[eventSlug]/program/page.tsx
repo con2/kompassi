@@ -13,6 +13,7 @@ import ViewHeading from "@/components/ViewHeading";
 import { decodeBoolean } from "@/helpers/decodeBoolean";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import { Alert } from "react-bootstrap";
 
 graphql(`
   fragment ScheduleProgram on LimitedProgramType {
@@ -63,6 +64,7 @@ const query = graphql(`
 
       program {
         calendarExportLink
+        isSchedulePublic
 
         listFilters: dimensions(isListFilter: true) {
           ...DimensionFilter
@@ -127,6 +129,20 @@ export default async function ProgramListPage(props: Props) {
 
   if (!event?.program?.scheduleItems) {
     notFound();
+  }
+
+  const isSchedulePublic = event.program.isSchedulePublic;
+
+  if (!isSchedulePublic) {
+    return (
+      <ViewContainer>
+        <ViewHeading>
+          {t.listTitle}
+          <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
+        </ViewHeading>
+        <Alert variant="warning">{t.scheduleNotPublic}</Alert>
+      </ViewContainer>
+    );
   }
 
   const session = await auth();

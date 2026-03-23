@@ -188,7 +188,7 @@ export default async function ProgramOffersPage(props: Props) {
   const columns: Column<ProgramOfferFragment>[] = [
     {
       slug: "originalCreatedAt",
-      title: <>{surveyT.attributes.currentVersionCreatedAt} 🔼</>,
+      title: <>{surveyT.attributes.originalCreatedAt} 🔼</>,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/program-offers/${row.id}${queryString}`}>
           <FormattedDateTime

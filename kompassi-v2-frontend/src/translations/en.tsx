@@ -1372,6 +1372,8 @@ const translations = {
       signInToAddFavorites:
         "By logging in, you can mark program items as favorites, filter this view to show only favorites and add favorite program items to your calendar.",
     },
+    scheduleNotPublic:
+      "The program schedule for this event has not been published yet.",
     filters: {
       showOnlyFavorites: "Show only favorites",
       hidePastPrograms: "Hide past program items",
@@ -1947,6 +1949,20 @@ const translations = {
 
     admin: {
       title: "Program admin",
+    },
+
+    preferencesAdmin: {
+      title: "Program preferences",
+      attributes: {
+        publicFrom: {
+          title: "Schedule public from",
+          helpText:
+            "The program schedule becomes publicly visible at this point in time. Leave empty to keep the schedule private.",
+        },
+        isSchedulePublic: {
+          title: "Schedule is currently public",
+        },
+      },
     },
   },
 

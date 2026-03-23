@@ -44,7 +44,9 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     class Meta:
         model = ProgramV2EventMeta
-        fields = ()
+        fields = ("public_from",)
+
+    is_schedule_public = graphene.NonNull(graphene.Boolean)
 
     @staticmethod
     def resolve_programs(
@@ -54,7 +56,19 @@ class ProgramV2EventMetaType(DjangoObjectType):
         favorites_only: bool = False,  # TODO use user_relation instead
         hide_past: bool = False,
         updated_after: datetime | None = None,
+        public_only: bool = True,
     ):
+        if public_only and not meta.is_schedule_public:
+            return Program.objects.none()
+
+        if not public_only:
+            graphql_check_model(
+                Program,
+                meta.event.scope,
+                info,
+                app="program_v2",
+            )
+
         request: HttpRequest = info.context
         programs = Program.objects.filter(event=meta.event).select_related("event")
         return ProgramFilters.from_graphql(
@@ -70,6 +84,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         favorites_only=graphene.Boolean(),
         hide_past=graphene.Boolean(),
         updated_after=graphene.DateTime(),
+        public_only=graphene.Boolean(),
         description=normalize_whitespace(resolve_programs.__doc__ or ""),
     )
 
@@ -90,6 +105,9 @@ class ProgramV2EventMetaType(DjangoObjectType):
         updated_after: datetime | None = None,
     ):
         request: HttpRequest = info.context
+
+        if public_only and not meta.is_schedule_public:
+            return ScheduleItem.objects.none()
 
         if not public_only:
             graphql_check_model(

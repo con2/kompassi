@@ -67,6 +67,15 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     paikkala_default_max_tickets_per_batch: int = models.IntegerField(default=5)  # type: ignore
     paikkala_default_max_tickets_per_user: int = models.IntegerField(default=5)  # type: ignore
 
+    public_from = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text=(
+            "The program schedule becomes publicly visible at this point in time. "
+            "Leave unset to keep the schedule private."
+        ),
+    )
+
     use_cbac = True
 
     event: models.ForeignKey[Event]
@@ -140,6 +149,12 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     @property
     def all_program_offers(self):
         return self._get_program_offers()
+
+    @property
+    def is_schedule_public(self) -> bool:
+        from django.utils.timezone import now
+
+        return self.public_from is not None and self.public_from <= now()
 
     @property
     def is_program_published(self) -> bool:
