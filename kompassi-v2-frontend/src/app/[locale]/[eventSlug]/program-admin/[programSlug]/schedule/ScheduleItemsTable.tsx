@@ -20,6 +20,8 @@ interface Props {
   event: {
     slug: string;
     timezone: string;
+    startTime?: string | null;
+    endTime?: string | null;
   };
   dimensions: DimensionValueSelectFragment[];
   scheduleItems: ProgramAdminDetailScheduleItemFragment[];
@@ -35,6 +37,10 @@ export default async function ScheduleItemTable({
   const translations = getTranslations(locale);
   const t = translations.Program.ScheduleItem;
   const session = await auth();
+  const dateRange =
+    event.startTime && event.endTime
+      ? { start: event.startTime, end: event.endTime }
+      : undefined;
 
   const columns: Column<ProgramAdminDetailScheduleItemFragment>[] = [
     // {
@@ -117,6 +123,8 @@ export default async function ScheduleItemTable({
               scheduleItem={row}
               dimensions={dimensions}
               translations={translations}
+              locale={locale}
+              dateRange={dateRange}
             />
           </ModalButton>
           <ModalButton
@@ -172,6 +180,8 @@ export default async function ScheduleItemTable({
                   translations={translations}
                   scheduleItem={newScheduleItem}
                   dimensions={dimensions}
+                  locale={locale}
+                  dateRange={dateRange}
                 />
               </ModalButton>
             </ButtonGroup>

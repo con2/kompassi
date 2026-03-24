@@ -31,6 +31,8 @@ const query = graphql(`
       name
       slug
       timezone
+      startTime
+      endTime
 
       program {
         dimensions {

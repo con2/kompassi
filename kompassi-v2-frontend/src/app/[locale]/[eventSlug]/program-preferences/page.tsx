@@ -120,6 +120,7 @@ export default async function ProgramPreferencesPage(props: Props) {
               fields={fields}
               values={values}
               messages={translations.SchemaForm}
+              locale={locale}
             />
             <SubmitButton>
               {translations.Common.standardActions.save}

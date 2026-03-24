@@ -126,6 +126,7 @@ export interface TimeField extends BaseField {
 
 export interface DateTimeField extends BaseField {
   type: "DateTimeField";
+  dateRange?: { start: string; end: string };
 }
 
 export interface SingleCheckbox extends BaseField {

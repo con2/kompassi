@@ -176,6 +176,7 @@ export default async function TransferConsentForm({
             fields={fields}
             values={{}}
             messages={translations.SchemaForm}
+            locale={locale}
           />
         )}
       </CardBody>

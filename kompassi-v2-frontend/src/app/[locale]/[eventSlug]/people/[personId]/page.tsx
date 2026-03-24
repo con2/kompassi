@@ -139,12 +139,14 @@ function CombinedPerksCardWIP({
   translations,
   dimensions,
   annotations,
+  locale,
   onChange,
 }: {
   involvement: InvolvedPersonDetailInvolvementFragment;
   translations: Translations;
   dimensions: DimensionValueSelectFragment[];
   annotations: AnnotationsFormAnnotationFragment[];
+  locale: string;
   onChange: (formData: FormData) => Promise<void>;
 }) {
   const t = translations.Involvement;
@@ -169,6 +171,7 @@ function CombinedPerksCardWIP({
           schema={annotations}
           values={involvement.cachedAnnotations}
           messages={translations.SchemaForm}
+          locale={locale}
         />
       </CardBody>
     </Card>
@@ -295,6 +298,7 @@ export default async function PersonPage(props: Props) {
           annotations={annotations}
           involvement={combinedPerksInvolvement}
           translations={translations}
+          locale={locale}
           onChange={updateCombinedPerks.bind(
             null,
             locale,

@@ -11,9 +11,15 @@ interface Props {
   schema: AnnotationsFormAnnotationFragment[];
   values: CachedAnnotations;
   messages: Translations["SchemaForm"];
+  locale: string;
 }
 
-export default function AnnotationsForm({ schema, values, messages }: Props) {
+export default function AnnotationsForm({
+  schema,
+  values,
+  messages,
+  locale,
+}: Props) {
   const fields = schema.map(getFormFieldForAnnotation);
   const mangledValues = Object.fromEntries(
     schema.map((annotation) => [
@@ -22,6 +28,11 @@ export default function AnnotationsForm({ schema, values, messages }: Props) {
     ]),
   );
   return (
-    <SchemaForm fields={fields} values={mangledValues} messages={messages} />
+    <SchemaForm
+      fields={fields}
+      values={mangledValues}
+      messages={messages}
+      locale={locale}
+    />
   );
 }

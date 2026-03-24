@@ -13,6 +13,7 @@ interface SchemaFormProps {
   className?: string;
   labelClassName?: string;
   fieldMargin?: string;
+  locale?: string;
 
   /// Display a lock icon next to read-only fields
   highlightReadOnlyFields?: boolean;
@@ -34,6 +35,7 @@ export function SchemaForm(props: SchemaFormProps) {
     className = "",
     fieldMargin,
     labelClassName,
+    locale,
     idPrefix,
     namePrefix,
     highlightReadOnlyFields,
@@ -66,6 +68,7 @@ export function SchemaForm(props: SchemaFormProps) {
               value={values?.[field.slug]}
               messages={messages}
               readOnly={readOnly}
+              locale={locale}
               idPrefix={idPrefix}
               namePrefix={namePrefix}
             />

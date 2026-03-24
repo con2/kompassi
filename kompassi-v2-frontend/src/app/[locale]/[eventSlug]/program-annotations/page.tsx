@@ -192,6 +192,7 @@ export default async function ProgramAdminAnnotationsPage(props: Props) {
               fields={fields}
               values={values}
               messages={translations.SchemaForm}
+              locale={locale}
               idPrefix={slug}
               className="m-0 p-0"
               labelClassName="form-label"
