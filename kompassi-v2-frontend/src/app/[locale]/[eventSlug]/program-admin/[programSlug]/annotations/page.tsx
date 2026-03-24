@@ -93,8 +93,13 @@ export default async function ProgramAdminDetailAnnotationsPage(props: Props) {
 
   validateCachedAnnotations(schema, program.cachedAnnotations);
 
+  // NOTE keep in sync with updateProgramAnnotations mutation
   const editableAnnotations = schema.filter(
-    (ann) => !ann.isComputed && ann.isApplicableToProgramItems,
+    (ann) =>
+      !ann.isComputed &&
+      ann.isApplicableToProgramItems &&
+      // TODO(#951) Timezone handling for DATETIME annotations is broken
+      ann.type !== "DATETIME",
   );
 
   // need to tell updateProgramAnnotationsFromFormData which annotations

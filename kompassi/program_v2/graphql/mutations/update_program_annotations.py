@@ -6,7 +6,7 @@ from graphene.types.generic import GenericScalar
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.models.event import Event
 from kompassi.dimensions.models.cached_annotations import cached_annotations_update_adapter, validate_annotations
-from kompassi.dimensions.models.enums import AnnotationFlags
+from kompassi.dimensions.models.enums import AnnotationAppliesTo, AnnotationDataType, AnnotationFlags
 
 from ...models.program import Program
 from ..program_full import FullProgramType
@@ -52,9 +52,23 @@ class UpdateProgramAnnotations(graphene.Mutation):
 
         # validate only the annotations we are setting (do not contain "" or None)
         set_annotations = {k: v for (k, v) in input_annotations.items() if v not in (None, "")}
-        schema = meta.annotations_with_fallback.exclude(flags__has_all=AnnotationFlags.COMPUTED)
+        schema = (
+            meta.annotations_with_fallback.filter(
+                applies_to__has_all=AnnotationAppliesTo.PROGRAM_ITEM,
+            )
+            .exclude(
+                # Value of computed annotations cannot be set directly
+                flags__has_all=AnnotationFlags.COMPUTED,
+            )
+            .exclude(
+                # TODO(#951) Timezone handling for DATETIME annotations is broken
+                type=AnnotationDataType.DATETIME,
+            )
+        )
         validate_annotations(set_annotations, schema)
 
+        # yes, use input_annotations here instead of set_annotations,
+        # because we want to remove annotations with empty values
         program.refresh_annotations(input_annotations)
         program.refresh_dependents()
 
