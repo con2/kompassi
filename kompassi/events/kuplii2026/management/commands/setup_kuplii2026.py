@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import logging
 from datetime import datetime, timedelta
 
 from django.conf import settings
@@ -5,19 +8,24 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.utils.timezone import get_current_timezone, now
 
-from kompassi.core.models import Event, Organization, Person, Venue
+from kompassi.core.models.event import Event
+from kompassi.core.models.organization import Organization
+from kompassi.core.models.person import Person
+from kompassi.core.models.venue import Venue
+from kompassi.intra.models import IntraEventMeta, Team
 from kompassi.involvement.models.registry import Registry
-from kompassi.labour.models import (
-    AlternativeSignupForm,
-    InfoLink,
-    JobCategory,
-    LabourEventMeta,
-    PersonnelClass,
-    Qualification,
-)
+from kompassi.labour.models.alternative_signup_forms import AlternativeSignupForm
+from kompassi.labour.models.info_link import InfoLink
+from kompassi.labour.models.job_category import JobCategory
+from kompassi.labour.models.labour_event_meta import LabourEventMeta
+from kompassi.labour.models.personnel_class import PersonnelClass
+from kompassi.labour.models.qualifications import Qualification
 from kompassi.program_v2.models.meta import ProgramV2EventMeta
+from kompassi.program_v2.models.program import Program
 
 from ...models import SignupExtra, SpecialDiet
+
+logger = logging.getLogger(__name__)
 
 
 class Setup:
@@ -34,6 +42,7 @@ class Setup:
         self.setup_core()
         self.setup_labour()
         self.setup_program_v2()
+        self.setup_paikkala()
         self.setup_badges()
         self.setup_intra()
 
@@ -191,6 +200,42 @@ class Setup:
         )
         meta.ensure()
 
+    def setup_paikkala(self):
+        cache = self.event.program_universe.preload_dimensions()
+        meta = self.event.program_v2_event_meta
+        if not meta:
+            raise AssertionError("No (appease typechecker)")
+
+        programs = Program.objects.filter(
+            event=self.event,
+            slug__in=[
+                "norttikuoro-pikselit-vaihtoehtoinen-tulevaisuus",
+                "amvplus-kilpailu",
+                "cosplay",
+                "cosplaydeitti",
+                "amv-jonnet",
+            ],
+        )
+
+        for program in programs:
+            program.set_dimension_values(dict(paikkala=["pieni-sali"]), cache=cache)
+            program.refresh_cached_fields()
+            program.refresh_dependents()
+
+            # refresh_dependents is not transitive
+            for schedule_item in program.schedule_items.all():
+                if settings.DEBUG:
+                    reservation_starts_at = now()
+                else:
+                    reservation_starts_at = schedule_item.start_time.replace(hour=9, minute=0, second=0, tzinfo=self.tz)
+
+                schedule_item.annotations.setdefault("paikkala:reservationStartsAt", reservation_starts_at.isoformat())
+                schedule_item.refresh_cached_fields()
+
+                paikkala_program = schedule_item.ensure_paikkala()
+                if not paikkala_program:
+                    raise AssertionError("No (appease typechecker)")
+
     def setup_badges(self):
         from kompassi.badges.models import BadgesEventMeta
 
@@ -203,7 +248,6 @@ class Setup:
         )
 
     def setup_intra(self):
-        from kompassi.intra.models import IntraEventMeta, Team
 
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("kuplitea")
