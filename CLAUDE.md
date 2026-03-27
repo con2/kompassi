@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Terminology
+
+- The **concom** (Finnish: preferred _conitea_, official _järjestelytoimikunta_) means the organizing committee, a team of volunteers organizing a convention.
+
 ## Repository structure
 
 This is a monorepo with two main components:
