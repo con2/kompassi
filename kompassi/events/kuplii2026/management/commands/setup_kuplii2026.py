@@ -248,7 +248,6 @@ class Setup:
         )
 
     def setup_intra(self):
-
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("kuplitea")
         meta, unused = IntraEventMeta.objects.get_or_create(
