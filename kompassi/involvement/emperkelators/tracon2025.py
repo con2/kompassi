@@ -104,6 +104,7 @@ class ShirtSize(Enum):
     LADYFIT_3XL = "ladyfit-3xl", "LF_3XL", "3XL Ladyfit", "3XL Ladyfit"
     BAG = "bag", "BAG", "Tote bag", "Kangaskassi"
     BOTTLE = "bottle", "BOTTLE", "Water bottle", "Juomapullo"
+    MUG = "mug", "MUG", "Thermos mug", "Termosmuki"
 
     v1_slug: str
     title_fi: str
@@ -124,8 +125,8 @@ class ShirtSize(Enum):
 
     @classmethod
     def from_v2(cls, v2_shirt_size: str) -> ShirtSize:
-        if v2_shirt_size == "bag":
-            return cls.BOTTLE
+        if v2_shirt_size.lower() in ("bag", "bottle"):
+            return cls.MUG
 
         return cls(v2_shirt_size)
 

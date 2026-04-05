@@ -23,7 +23,8 @@ SHIRT_SIZES = [
     ("LF_XL", "XL Ladyfit"),
     ("LF_XXL", "2XL Ladyfit"),
     ("LF_3XL", "3XL Ladyfit"),
-    ("BAG", "Kangaskassi"),
+    # ("BAG", "Kangaskassi"),
+    ("MUG", "Termosmuki"),
 ]
 
 SHIFT_TYPE_CHOICES = [
