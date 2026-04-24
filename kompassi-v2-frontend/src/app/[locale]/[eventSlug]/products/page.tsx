@@ -184,6 +184,17 @@ export default async function ProductsPage(props: Props) {
       ...t.clientAttributes.unitPrice,
     },
     {
+      slug: "vatPercentage",
+      type: "SingleSelect",
+      choices: [
+        { slug: "0.00", title: "0%" },
+        { slug: "10.00", title: "10%" },
+        { slug: "13.50", title: "13.5%" },
+        { slug: "25.50", title: "25.5%" },
+      ],
+      ...t.clientAttributes.vatPercentage,
+    },
+    {
       slug: "quota",
       type: "NumberField",
       ...t.clientAttributes.newProductQuota,
