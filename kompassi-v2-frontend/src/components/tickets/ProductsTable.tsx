@@ -102,7 +102,7 @@ export default function ProductsTable({
         {vatBreakdown.map(({ rate, vat }) => (
           <tr key={rate} className="text-muted">
             <td className="col-8 small">
-              {t.Product.clientAttributes.vatIncluded(
+              {t.Product.serverAttributes.vatIncluded(
                 formatVatRate(rate, locale),
               )}
             </td>
