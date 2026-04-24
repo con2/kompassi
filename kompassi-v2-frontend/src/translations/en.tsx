@@ -535,7 +535,6 @@ const translations = {
           helpText:
             "The VAT rate that applies to this product. Prices are VAT-inclusive.",
         },
-        vatIncluded: (rate: string) => `incl. ${rate}% VAT`,
         vatBreakdown: "VAT breakdown",
         dragToReorder: "Drag to reorder",
         newProductQuota: {
@@ -545,6 +544,7 @@ const translations = {
         },
       },
       serverAttributes: {
+        vatIncluded: (rate: string) => `incl. ${rate}% VAT`,
         isAvailable: {
           untilFurtherNotice: "Available until further notice",
           untilTime: (formattedTime: string) =>
