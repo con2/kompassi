@@ -30,6 +30,7 @@ export interface Product {
   title: string;
   description: string;
   price: string;
+  vatPercentage: string;
   maxPerOrder: number;
   available?: boolean;
 }
@@ -169,6 +170,7 @@ export interface Order {
     title: string;
     price: string;
     quantity: number;
+    vatPercentage: string;
   }[];
 }
 

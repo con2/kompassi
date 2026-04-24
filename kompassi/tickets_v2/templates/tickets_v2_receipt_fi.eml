@@ -8,7 +8,9 @@ Vahvistamme maksetuiksi seuraavat lipputuotteet:
 {% for op in products %}{{ op.quantity }} kpl  {{ op.title }}
     {{ op.quantity }} x {{ op.price|format_money }}
 {% endfor %}
-Yhteensä: {{ total_price|format_money }} (ALV 0%){% if have_etickets %}
+Yhteensä: {{ total_price|format_money }} (sis. ALV)
+{% for vb in vat_breakdown %}ALV {{ vb.rate }}%: {{ vb.vat|format_money }} (sisältyy summaan {{ vb.gross|format_money }})
+{% endfor %}{% if have_etickets %}
 
 Löydät tilaamasi sähköiset liput liitetiedostosta. Sähköinen lippu
 vaihdetaan rannekkeeseen lipunvaihtopisteessä saapuessasi tapahtumaan. Voit

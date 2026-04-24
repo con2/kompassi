@@ -28,6 +28,7 @@ class CreateProductForm(django_forms.ModelForm):
             "title",
             "description",
             "price",
+            "vat_percentage",
         ]
 
 

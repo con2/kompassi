@@ -31,6 +31,7 @@ class ProductForm(django_forms.ModelForm):
             "title",
             "description",
             "price",
+            "vat_percentage",
             "max_per_order",
             "etickets_per_product",
             "available_from",

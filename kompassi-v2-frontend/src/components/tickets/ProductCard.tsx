@@ -25,6 +25,9 @@ export default function ProductCard({ product, messages: t, children }: Props) {
 
         <div className={`col-md m-md-0 mb-3 fs-4 text-md-end`}>
           {formatMoney(product.price)}
+          <div className="text-muted fs-6">
+            {t.clientAttributes.vatIncluded(product.vatPercentage)}
+          </div>
         </div>
 
         <div className={`col-md fs-4`}>

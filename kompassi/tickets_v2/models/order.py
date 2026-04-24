@@ -25,7 +25,7 @@ from kompassi.event_log_v2.utils.monthly_partitions import UUID7Mixin
 from kompassi.graphql_api.language import SUPPORTED_LANGUAGES
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStampType, PaymentStatus, RefundType
-from ..optimized_server.models.order import OrderProduct
+from ..optimized_server.models.order import OrderProduct, VatBreakdownLine
 from ..optimized_server.utils.formatting import format_order_number
 from ..optimized_server.utils.uuid7 import uuid7
 from ..utils.event_partitions import EventPartitionsMixin
@@ -70,6 +70,7 @@ class OrderMixin:
                 "title",
                 "description",
                 "price",
+                "vat_percentage",
                 "etickets_per_product",
             )
         }
@@ -83,10 +84,26 @@ class OrderMixin:
                 title=product.title,
                 price=product.price,
                 quantity=quantity,
+                vat_percentage=product.vat_percentage,
             )
             for product_id, quantity in self.product_data.items()  # type: ignore
             if quantity > 0 and (product := self._get_product(self.event_id, product_id))  # type: ignore
         ]
+
+    @cached_property
+    def vat_breakdown(self) -> list[VatBreakdownLine]:
+        from collections import defaultdict
+
+        totals: dict[Decimal, Decimal] = defaultdict(Decimal)
+        for op in self.products:
+            totals[op.vat_percentage] += op.price * op.quantity
+        result = []
+        for rate in sorted(totals):
+            gross = totals[rate]
+            vat = (gross * rate / (100 + rate)).quantize(Decimal("0.01"))
+            net = gross - vat
+            result.append(VatBreakdownLine(rate=rate, gross=gross, vat=vat, net=net))
+        return result
 
     @cached_property
     def etickets(self) -> list[Product]:
@@ -204,6 +221,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                 title=product.title,
                 price=product.price,
                 quantity=quantity,
+                vat_percentage=product.vat_percentage,
             )
             for (product_id, quantity) in self.product_data.items()
             if (product := products_by_id[int(product_id)]) and quantity > 0

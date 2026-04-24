@@ -125,6 +125,14 @@ class OrderProduct(pydantic.BaseModel):
     title: str
     price: Decimal
     quantity: int
+    vat_percentage: Decimal
+
+
+class VatBreakdownLine(pydantic.BaseModel):
+    rate: Decimal
+    gross: Decimal
+    vat: Decimal
+    net: Decimal
 
 
 class Order(pydantic.BaseModel, populate_by_name=True):
@@ -176,8 +184,10 @@ class Order(pydantic.BaseModel, populate_by_name=True):
             order_number = 0
             language_ = ""
 
-            async for total_, order_number_, language_, title, price, quantity, status_ in cursor:
-                order_products.append(OrderProduct(title=title, price=price, quantity=quantity))
+            async for total_, order_number_, language_, title, price, quantity, vat_percentage, status_ in cursor:
+                order_products.append(
+                    OrderProduct(title=title, price=price, quantity=quantity, vat_percentage=vat_percentage)
+                )
                 total_price, order_number, language, status = total_, order_number_, language_, status_
 
             if not order_products:
@@ -228,13 +238,16 @@ class OrderWithCustomer(Order):
                 title,
                 price,
                 quantity,
+                vat_percentage,
                 status_,
                 first_name_,
                 last_name_,
                 email_,
                 phone_,
             ) in cursor:
-                order_products.append(OrderProduct(title=title, price=price, quantity=quantity))
+                order_products.append(
+                    OrderProduct(title=title, price=price, quantity=quantity, vat_percentage=vat_percentage)
+                )
                 total_price, order_number, language, status = total_, order_number_, language_, status_
                 first_name, last_name, email, phone = first_name_, last_name_, email_, phone_
 
