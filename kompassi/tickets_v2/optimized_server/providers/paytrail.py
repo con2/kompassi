@@ -5,7 +5,6 @@ import logging
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from decimal import Decimal
 from enum import Enum
 from typing import Any, ClassVar, Literal, Self
 from uuid import UUID, uuid4
@@ -90,7 +89,7 @@ class PaytrailItem(pydantic.BaseModel):
 
     unit_price: int = pydantic.Field(serialization_alias="unitPrice")
     units: int
-    vat_percentage: Decimal = pydantic.Field(serialization_alias="vatPercentage")
+    vat_percentage: float = pydantic.Field(serialization_alias="vatPercentage")
     product_code: str = pydantic.Field(serialization_alias="productCode")
     description: str
 
