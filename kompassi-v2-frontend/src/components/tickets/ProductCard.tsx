@@ -3,16 +3,23 @@ import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardTitle from "react-bootstrap/CardTitle";
 import formatMoney from "@/helpers/formatMoney";
+import formatVatRate from "@/helpers/formatVatRate";
 import { Product } from "@/services/tickets";
 import { Translations } from "@/translations/en";
 
 interface Props {
   product: Product;
+  locale: string;
   messages: Translations["Tickets"]["Product"];
   children?: ReactNode;
 }
 
-export default function ProductCard({ product, messages: t, children }: Props) {
+export default function ProductCard({
+  product,
+  locale,
+  messages: t,
+  children,
+}: Props) {
   const className = product.available ? "" : "text-muted";
   return (
     <Card key={product.id} className="mb-3">
@@ -26,7 +33,9 @@ export default function ProductCard({ product, messages: t, children }: Props) {
         <div className={`col-md m-md-0 mb-3 fs-4 text-md-end`}>
           {formatMoney(product.price)}
           <div className="text-muted fs-6">
-            {t.clientAttributes.vatIncluded(product.vatPercentage)}
+            {t.clientAttributes.vatIncluded(
+              formatVatRate(product.vatPercentage, locale),
+            )}
           </div>
         </div>
 

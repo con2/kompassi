@@ -1,5 +1,6 @@
 import { Column, DataTable } from "../DataTable";
 import formatMoney from "@/helpers/formatMoney";
+import formatVatRate from "@/helpers/formatVatRate";
 import type { Translations } from "@/translations/en";
 
 interface Product {
@@ -16,6 +17,7 @@ interface Order {
 
 interface Props {
   order: Order;
+  locale: string;
   messages: Translations["Tickets"];
   className?: string;
   compact?: boolean;
@@ -41,6 +43,7 @@ function computeVatBreakdown(
 
 export default function ProductsTable({
   order,
+  locale,
   messages: t,
   className,
   compact,
@@ -99,7 +102,9 @@ export default function ProductsTable({
         {vatBreakdown.map(({ rate, vat }) => (
           <tr key={rate} className="text-muted">
             <td className="col-8 small">
-              {t.Product.clientAttributes.vatIncluded(rate)}
+              {t.Product.clientAttributes.vatIncluded(
+                formatVatRate(rate, locale),
+              )}
             </td>
             <td className="col text-end"></td>
             <td className="col text-end small">{formatMoney(vat)}</td>
