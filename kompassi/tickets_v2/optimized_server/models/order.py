@@ -125,7 +125,7 @@ class OrderProduct(pydantic.BaseModel):
     title: str
     price: Decimal
     quantity: int
-    vat_percentage: Decimal
+    vat_percentage: Decimal = pydantic.Field(serialization_alias="vatPercentage")
 
 
 class VatBreakdownLine(pydantic.BaseModel):
