@@ -315,6 +315,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             order_number=self.order_number,
             products=self.products,
             total_price=self.total_price,
+            vat_breakdown=self.vat_breakdown,
             have_etickets=self.have_etickets,
             is_refund=self.receipt_type == ReceiptType.REFUNDED,
             first_name=self.first_name,

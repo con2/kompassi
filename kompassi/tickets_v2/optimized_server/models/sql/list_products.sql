@@ -22,6 +22,7 @@ select
   p.description,
   p.price,
   p.max_per_order,
+  p.vat_percentage,
   bool_and(qa.available) as available
 from
   tickets_v2_product p
@@ -32,5 +33,5 @@ where
   and p.superseded_by_id is null
   and p.available_from <= now()
   and (p.available_until is null or p.available_until > now())
-group by 1, 2, 3, 4, 5
+group by 1, 2, 3, 4, 5, 6
 order by p.ordering;
