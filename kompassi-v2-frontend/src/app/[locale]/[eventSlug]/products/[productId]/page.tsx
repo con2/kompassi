@@ -20,6 +20,7 @@ import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import formatMoney from "@/helpers/formatMoney";
+import formatVatRate from "@/helpers/formatVatRate";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -311,7 +312,9 @@ export default async function AdminProductDetailPage(props: Props) {
       slug: "vatPercentage",
       title: t.clientAttributes.vatPercentage.title,
       getCellContents: (product) =>
-        t.clientAttributes.vatIncluded(product.vatPercentage),
+        t.clientAttributes.vatIncluded(
+          formatVatRate(product.vatPercentage, locale),
+        ),
       className: "col-1 align-middle",
     },
   ];

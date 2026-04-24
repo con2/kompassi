@@ -8,7 +8,7 @@ Tilaus sisälsi seuraavat tuotteet:
     {{ op.quantity }} x {{ op.price|format_money }}
 {% endfor %}
 Yhteensä: {{ total_price|format_money }} (sis. ALV)
-{% for vb in vat_breakdown %}ALV {{ vb.rate|format_vat_rate }}%: {{ vb.vat|format_money }} (sisältyy summaan {{ vb.gross|format_money }})
+{% for vb in vat_breakdown %}ALV {{ vb.rate|format_vat_rate:"fi" }}%: {{ vb.vat|format_money }} (sisältyy summaan {{ vb.gross|format_money }})
 {% endfor %}
 
 Jos epäilet, että tilauksesi on peruuntunut virheellisesti,
