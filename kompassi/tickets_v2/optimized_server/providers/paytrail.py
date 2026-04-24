@@ -138,6 +138,13 @@ class CreatePaymentRequest(pydantic.BaseModel):
     redirect_urls: CallbackUrls = pydantic.Field(serialization_alias="redirectUrls")
     callback_urls: CallbackUrls | None = pydantic.Field(serialization_alias="callbackUrls")
 
+    @pydantic.model_validator(mode="after")
+    def validate_items_sum(self) -> Self:
+        items_sum = sum(item.unit_price * item.units for item in self.items)
+        if items_sum != self.amount_cents:
+            raise ValueError(f"Items sum {items_sum} does not match amount {self.amount_cents}")
+        return self
+
     @pydantic.field_validator("language", mode="before")
     @staticmethod
     def validate_language(value: str):
