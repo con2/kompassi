@@ -523,7 +523,7 @@ const translations: Translations = {
           helpText:
             "Den momssats som gäller för denna produkt. Priserna inkluderar moms.",
         },
-        vatIncluded: (rate: string) => `inkl. ${parseFloat(rate)}% moms`,
+        vatIncluded: (rate: string) => `inkl. ${rate}% moms`,
         vatBreakdown: "Momsspecifikation",
         dragToReorder: "Dra för att sortera om",
         newProductQuota: {
