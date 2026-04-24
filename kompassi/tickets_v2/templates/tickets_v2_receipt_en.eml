@@ -9,7 +9,7 @@ We confirm the following products have been paid for:
     {{ op.quantity }} x {{ op.price|format_money }}
 {% endfor %}
 Total: {{ total_price|format_money }} (incl. VAT)
-{% for vb in vat_breakdown %}VAT {{ vb.rate }}%: {{ vb.vat|format_money }} (of {{ vb.gross|format_money }})
+{% for vb in vat_breakdown %}VAT {{ vb.rate|format_vat_rate }}%: {{ vb.vat|format_money }} (of {{ vb.gross|format_money }})
 {% endfor %}{% if have_etickets %}
 
 Please find attached your electronic tickets. The electronic ticket will be
