@@ -6,6 +6,7 @@ from graphene.types.generic import GenericScalar
 
 from kompassi.access.cbac import graphql_check_model
 from kompassi.core.models import Event
+from kompassi.core.utils.form_utils import camel_case_keys_to_snake_case
 from kompassi.event_log_v2.utils.emit import emit
 
 from ...models.product import Product
@@ -49,7 +50,7 @@ class CreateProduct(graphene.Mutation):
         event = Event.objects.get(slug=input.event_slug)
         graphql_check_model(Product, event.scope, info, operation="create")
 
-        form = CreateProductForm(data=input.form_data)  # type: ignore
+        form = CreateProductForm(data=camel_case_keys_to_snake_case(input.form_data))  # type: ignore
         if not form.is_valid():
             raise ValueError(form.errors)
 
