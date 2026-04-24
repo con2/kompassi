@@ -312,7 +312,7 @@ export default async function AdminProductDetailPage(props: Props) {
       slug: "vatPercentage",
       title: t.clientAttributes.vatPercentage.title,
       getCellContents: (product) =>
-        t.clientAttributes.vatIncluded(
+        t.serverAttributes.vatIncluded(
           formatVatRate(product.vatPercentage, locale),
         ),
       className: "col-1 align-middle",
