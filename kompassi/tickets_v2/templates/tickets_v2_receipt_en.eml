@@ -8,7 +8,9 @@ We confirm the following products have been paid for:
 {% for op in products %}{{ op.quantity }} pcs  {{ op.title }}
     {{ op.quantity }} x {{ op.price|format_money }}
 {% endfor %}
-Total: {{ total_price|format_money }} (VAT 0%){% if have_etickets %}
+Total: {{ total_price|format_money }} (incl. VAT)
+{% for vb in vat_breakdown %}VAT {{ vb.rate }}%: {{ vb.vat|format_money }} (of {{ vb.gross|format_money }})
+{% endfor %}{% if have_etickets %}
 
 Please find attached your electronic tickets. The electronic ticket will be
 exchanged for a wristband at the ticket exchange when you arrive at the event.

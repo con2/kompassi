@@ -8,7 +8,9 @@ Contents of the order:
 {% for op in products %}{{ op.quantity }} pcs  {{ op.title }}
     {{ op.quantity }} x {{ op.price|format_money }}
 {% endfor %}
-Total: {{ total_price|format_money }} (VAT 0%)
+Total: {{ total_price|format_money }} (incl. VAT)
+{% for vb in vat_breakdown %}VAT {{ vb.rate }}%: {{ vb.vat|format_money }} (of {{ vb.gross|format_money }})
+{% endfor %}
 
 If you suspect this is in error, please contact us by replying to this message.{% if is_refund %}
 
