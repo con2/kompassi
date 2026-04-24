@@ -104,7 +104,10 @@ async def create_order(
     try:
         async with db.transaction():
             result = await order.save(db, event.id)
-            request, request_stamp = provider.prepare_for_new_order(order, result)
+            fetched_order = await Order.get(db, event.id, result.order_id)
+            request, request_stamp = provider.prepare_for_new_order(
+                order, result, fetched_order.products if fetched_order else []
+            )
             await request_stamp.save(db)
     except NotEnoughTickets as e:
         raise HTTPException(409, "NOT_ENOUGH_TICKETS") from e

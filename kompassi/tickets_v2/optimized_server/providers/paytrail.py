@@ -5,6 +5,7 @@ import logging
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from decimal import Decimal
 from enum import Enum
 from typing import Any, ClassVar, Literal, Self
 from uuid import UUID, uuid4
@@ -19,7 +20,7 @@ from ..excs import ProviderCannot
 from ..models.customer import Customer
 from ..models.enums import PaymentProvider, PaymentStampType, PaymentStatus
 from ..models.event import Event
-from ..models.order import CreateOrderRequest, CreateOrderResult, Order, OrderWithCustomer
+from ..models.order import CreateOrderRequest, CreateOrderResult, Order, OrderProduct, OrderWithCustomer
 from ..models.payment_stamp import PaymentStamp
 from ..utils.paytrail_hmac import calculate_hmac
 
@@ -79,6 +80,34 @@ class CallbackUrls(pydantic.BaseModel):
         )
 
 
+class PaytrailItem(pydantic.BaseModel):
+    """
+    A line item in a Paytrail payment request.
+    Including items enables per-rate VAT breakdown in Paytrail reports.
+
+    Docs: https://docs.paytrail.com/#/?id=item
+    """
+
+    unit_price: int = pydantic.Field(serialization_alias="unitPrice")
+    units: int
+    vat_percentage: Decimal = pydantic.Field(serialization_alias="vatPercentage")
+    product_code: str = pydantic.Field(serialization_alias="productCode")
+    description: str
+
+    @classmethod
+    def from_order_products(cls, order_products: list[OrderProduct]) -> list[PaytrailItem]:
+        return [
+            cls(
+                unit_price=int(op.price * 100),
+                units=op.quantity,
+                vat_percentage=op.vat_percentage,
+                product_code=str(i + 1),
+                description=op.title,
+            )
+            for i, op in enumerate(order_products)
+        ]
+
+
 class CreatePaymentResponse(pydantic.BaseModel):
     transaction_id: str = pydantic.Field(
         validation_alias="transactionId",
@@ -105,6 +134,7 @@ class CreatePaymentRequest(pydantic.BaseModel):
     currency: Literal["EUR"] = "EUR"
     language: str
     customer: Customer
+    items: list[PaytrailItem]
     redirect_urls: CallbackUrls = pydantic.Field(serialization_alias="redirectUrls")
     callback_urls: CallbackUrls | None = pydantic.Field(serialization_alias="callbackUrls")
 
@@ -124,12 +154,14 @@ class CreatePaymentRequest(pydantic.BaseModel):
         event: Event,
         request: CreateOrderRequest,
         result: CreateOrderResult,
+        order_products: list[OrderProduct],
     ) -> CreatePaymentRequest:
         return cls(
             reference=result.reference,
             amount_cents=int(result.total_price * 100),
             language=request.language,
             customer=request.customer,
+            items=PaytrailItem.from_order_products(order_products),
             redirect_urls=CallbackUrls.for_payment_redirect(event.slug, result.order_id),
             callback_urls=None if DEBUG else CallbackUrls.for_payment_callback(event.slug, result.order_id),
         )
@@ -145,6 +177,7 @@ class CreatePaymentRequest(pydantic.BaseModel):
             amount_cents=int(order.total_price * 100),
             language=order.language,
             customer=order.customer,
+            items=PaytrailItem.from_order_products(order.products),
             redirect_urls=CallbackUrls.for_payment_redirect(event.slug, order.id),
             callback_urls=None if DEBUG else CallbackUrls.for_payment_callback(event.slug, order.id),
         )
@@ -397,6 +430,7 @@ class PaytrailProvider:
         self,
         order: CreateOrderRequest,
         result: CreateOrderResult,
+        order_products: list[OrderProduct],
     ) -> tuple[PreparedCreatePaymentRequest | None, PaymentStamp]:
         if result.total_price == 0:
             return None, PaymentStamp.for_zero_price_order(
@@ -411,6 +445,7 @@ class PaytrailProvider:
             self.event,
             order,
             result,
+            order_products,
         ).prepare(
             self.event,
             result.order_id,
