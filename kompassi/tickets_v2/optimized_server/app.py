@@ -10,7 +10,7 @@ from starlette.responses import PlainTextResponse, RedirectResponse
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, getattr_message_in_language
 
 from .db import DB, lifespan
-from .excs import InvalidProducts, NotEnoughTickets, ProviderCannot
+from .excs import InvalidProducts, NotEnoughTickets, ProviderCannot, UnsaneSituation
 from .models.enums import PaymentStampType
 from .models.event import Event
 from .models.order import CreateOrderRequest, Order, OrderWithCustomer
@@ -105,9 +105,9 @@ async def create_order(
         async with db.transaction():
             result = await order.save(db, event.id)
             fetched_order = await Order.get(db, event.id, result.order_id)
-            request, request_stamp = provider.prepare_for_new_order(
-                order, result, fetched_order.products if fetched_order else []
-            )
+            if fetched_order is None:
+                raise UnsaneSituation("Order not found after creation")
+            request, request_stamp = provider.prepare_for_new_order(order, result, fetched_order.products)
             await request_stamp.save(db)
     except NotEnoughTickets as e:
         raise HTTPException(409, "NOT_ENOUGH_TICKETS") from e

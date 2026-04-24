@@ -536,7 +536,7 @@ const translations = {
           helpText:
             "The VAT rate that applies to this product. Prices are VAT-inclusive.",
         },
-        vatIncluded: (rate: string) => `incl. ${rate}% VAT`,
+        vatIncluded: (rate: string) => `incl. ${parseFloat(rate)}% VAT`,
         vatBreakdown: "VAT breakdown",
         dragToReorder: "Drag to reorder",
         newProductQuota: {
