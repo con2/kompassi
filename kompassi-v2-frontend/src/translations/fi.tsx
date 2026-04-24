@@ -526,6 +526,13 @@ const translations: Translations = {
         selectedQuotas: "Valitut kiintiöt",
         soldOut: "Loppuunmyyty",
         isAvailable: "Saatavuusaika",
+        vatPercentage: {
+          title: "ALV-prosentti",
+          helpText:
+            "Tähän tuotteeseen sovellettava arvonlisäveroprosentti. Hinnat sisältävät ALV:n.",
+        },
+        vatIncluded: (rate: string) => `sis. ${rate}% ALV`,
+        vatBreakdown: "ALV-erittely",
         dragToReorder: "Vedä ja pudota järjestääksesi tuotteita",
         newProductQuota: {
           title: "Kiintiö",
