@@ -531,7 +531,6 @@ const translations: Translations = {
           helpText:
             "Tähän tuotteeseen sovellettava arvonlisäveroprosentti. Hinnat sisältävät ALV:n.",
         },
-        vatIncluded: (rate: string) => `sis. ${rate}% ALV`,
         vatBreakdown: "ALV-erittely",
         dragToReorder: "Vedä ja pudota järjestääksesi tuotteita",
         newProductQuota: {
@@ -541,6 +540,7 @@ const translations: Translations = {
         },
       },
       serverAttributes: {
+        vatIncluded: (rate: string) => `sis. ${rate}% ALV`,
         isAvailable: {
           untilFurtherNotice: "Saatavilla toistaiseksi",
           untilTime: (formattedTime: string) =>

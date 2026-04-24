@@ -33,7 +33,7 @@ export default function ProductCard({
         <div className={`col-md m-md-0 mb-3 fs-4 text-md-end`}>
           {formatMoney(product.price)}
           <div className="text-muted fs-6">
-            {t.clientAttributes.vatIncluded(
+            {t.serverAttributes.vatIncluded(
               formatVatRate(product.vatPercentage, locale),
             )}
           </div>
