@@ -9,7 +9,7 @@ from ..models.payment_stamp import PaymentStamp
 
 if TYPE_CHECKING:
     from ..models.event import Event
-    from ..models.order import CreateOrderRequest, CreateOrderResult, OrderWithCustomer
+    from ..models.order import CreateOrderRequest, CreateOrderResult, OrderProduct, OrderWithCustomer
 
 
 @dataclass
@@ -22,6 +22,7 @@ class NullProvider:
         self,
         _order: CreateOrderRequest,
         result: CreateOrderResult,
+        _order_products: list[OrderProduct],
     ) -> tuple[None, PaymentStamp]:
         if result.total_price != 0:
             raise ProviderCannot("Null provider cannot handle non-zero price orders")
