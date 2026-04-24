@@ -531,7 +531,7 @@ const translations: Translations = {
           helpText:
             "Tähän tuotteeseen sovellettava arvonlisäveroprosentti. Hinnat sisältävät ALV:n.",
         },
-        vatIncluded: (rate: string) => `sis. ${rate}% ALV`,
+        vatIncluded: (rate: string) => `sis. ${parseFloat(rate)}% ALV`,
         vatBreakdown: "ALV-erittely",
         dragToReorder: "Vedä ja pudota järjestääksesi tuotteita",
         newProductQuota: {
