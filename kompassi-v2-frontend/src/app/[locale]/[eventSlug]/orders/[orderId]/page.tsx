@@ -49,7 +49,7 @@ export default async function OrderPage(props: Props) {
     <ViewContainer>
       <OrderHeader order={order} messages={t} locale={locale} event={event} />
 
-      <ProductsTable order={order} messages={t} />
+      <ProductsTable order={order} locale={locale} messages={t} />
 
       {showPayButton && (
         <Section>
