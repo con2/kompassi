@@ -5,6 +5,7 @@ select
   p2.title,
   p2.price,
   p2.quantity,
+  p2.vat_percentage,
   o.cached_status as status,
   o.last_name,
   o.first_name,
@@ -16,7 +17,8 @@ from
     select
       p.title,
       p.price,
-      cast(pd.value as int) as quantity
+      cast(pd.value as int) as quantity,
+      p.vat_percentage
     from
       tickets_v2_product p
       join jsonb_each(o.product_data) pd on (cast(pd.key as int) = p.id)

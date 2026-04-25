@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from pathlib import Path
 from typing import ClassVar
 
@@ -88,6 +89,12 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    vat_percentage = models.DecimalField(
+        max_digits=4,
+        decimal_places=2,
+        default=Decimal("0"),
+        help_text="VAT percentage applied to this product. Prices are inclusive of VAT.",
+    )
     title = models.TextField()
     description = models.TextField()
 

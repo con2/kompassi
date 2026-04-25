@@ -20,6 +20,7 @@ class LimitedProductType(DjangoObjectType):
             "title",
             "description",
             "price",
+            "vat_percentage",
             "available_from",
             "available_until",
             "max_per_order",

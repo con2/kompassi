@@ -1,5 +1,4 @@
 import { JSX, ReactNode } from "react";
-
 const translations = {
   Common: {
     ok: "OK",
@@ -531,6 +530,12 @@ const translations = {
         selectedQuotas: "Selected quotas",
         soldOut: "Sold out",
         isAvailable: "Availability schedule",
+        vatPercentage: {
+          title: "VAT rate",
+          helpText:
+            "The VAT rate that applies to this product. Prices are VAT-inclusive.",
+        },
+        vatBreakdown: "VAT breakdown",
         dragToReorder: "Drag to reorder",
         newProductQuota: {
           title: "Quota",
@@ -539,6 +544,7 @@ const translations = {
         },
       },
       serverAttributes: {
+        vatIncluded: (rate: string) => `incl. ${rate}% VAT`,
         isAvailable: {
           untilFurtherNotice: "Available until further notice",
           untilTime: (formattedTime: string) =>

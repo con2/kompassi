@@ -518,6 +518,12 @@ const translations: Translations = {
         selectedQuotas: "Valda kvoter",
         soldOut: "Slutsåld",
         isAvailable: "Tillgänglighetsschema",
+        vatPercentage: {
+          title: "Momssats",
+          helpText:
+            "Den momssats som gäller för denna produkt. Priserna inkluderar moms.",
+        },
+        vatBreakdown: "Momsspecifikation",
         dragToReorder: "Dra för att sortera om",
         newProductQuota: {
           title: "Kvot",
@@ -526,6 +532,7 @@ const translations: Translations = {
         },
       },
       serverAttributes: {
+        vatIncluded: (rate: string) => `inkl. ${rate}% moms`,
         isAvailable: {
           untilFurtherNotice: "Tillgänglig tills vidare",
           untilTime: (formattedTime: string) =>

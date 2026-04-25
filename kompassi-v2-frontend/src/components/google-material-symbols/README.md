@@ -16,7 +16,6 @@ Current approach is as follows:
 
 3. Download the SVG
 4. Using eg. OpenInNewTab.tsx as a template, make the SVG into a React component
-
    - You may need to tweak the vertical translate to make the icon align with text.
 
 The `.material-symbol` class lives in `globals.scss`.
