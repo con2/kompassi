@@ -813,7 +813,7 @@ class Setup:
         ]:
             survey.save(self.event)
 
-        survey = Survey.objects.filter(event=self.event, slug="artist-alley-application").first()
+        survey = Survey.objects.filter(event=self.event, slug="taidekuja-ja-taidepolkuhaku").first()
         if survey:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug="taidekuja")
             cache = survey.universe.preload_dimensions(["location", "lipputyyppi"])
@@ -868,11 +868,11 @@ class Setup:
                                     en=f"{location_en}, table {i}",
                                 ),
                             )
-                            for location_character, location_color, location_fi, location_en in [
-                                ("T", "SkyBlue", "Taidekuja", "Artist Alley"),
-                                ("P", "SpringGreen", "Taidepolku", "Art Trail"),
+                            for location_character, location_color, location_fi, location_en, max_number_incl in [
+                                ("T", "SkyBlue", "Taidekuja", "Artist Alley", 30),
+                                ("P", "SpringGreen", "Taidepolku", "Art Trail", 20),
                             ]
-                            for i in range(1, 41)
+                            for i in range(1, max_number_incl + 1)
                         ],
                     ),
                 ],
