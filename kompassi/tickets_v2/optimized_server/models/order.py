@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
+from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Annotated, Any, ClassVar
+from typing import Annotated, Any, ClassVar, Self
 from uuid import UUID
 
 import pydantic
@@ -128,11 +129,28 @@ class OrderProduct(pydantic.BaseModel):
     vat_percentage: Decimal = pydantic.Field(serialization_alias="vatPercentage")
 
 
+CENT = Decimal("0.01")
+
+
 class VatBreakdownLine(pydantic.BaseModel):
     rate: Decimal
     gross: Decimal
     vat: Decimal
     net: Decimal
+
+    @classmethod
+    def from_order_products(cls, order_products: list[OrderProduct]) -> list[Self]:
+        totals: dict[Decimal, Decimal] = defaultdict(Decimal)
+        for op in order_products:
+            totals[op.vat_percentage] += op.price * op.quantity
+
+        breakdown: list[Self] = []
+        for rate in sorted(totals):
+            gross = totals[rate]
+            vat = (gross * rate / (100 + rate)).quantize(CENT)
+            net = gross - vat
+            breakdown.append(cls(rate=rate, gross=gross, vat=vat, net=net))
+        return breakdown
 
 
 class Order(pydantic.BaseModel, populate_by_name=True):
