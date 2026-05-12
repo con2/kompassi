@@ -13,7 +13,7 @@ from .db import DB, lifespan
 from .excs import InvalidProducts, NotEnoughTickets, ProviderCannot, UnsaneSituation
 from .models.enums import PaymentStampType
 from .models.event import Event
-from .models.order import CreateOrderRequest, Order, OrderWithCustomer
+from .models.order import CreateOrderRequest, Order, OrderProduct, OrderWithCustomer
 from .models.product import Product
 from .providers.paytrail import PaymentCallback
 
@@ -104,10 +104,15 @@ async def create_order(
     try:
         async with db.transaction():
             result = await order.save(db, event.id)
-            fetched_order = await Order.get(db, event.id, result.order_id)
-            if fetched_order is None:
-                raise UnsaneSituation("Order not found after creation")
-            request, request_stamp = provider.prepare_for_new_order(order, result, fetched_order.products)
+            # Providers short-circuit zero-price orders without using products,
+            # so skip the extra Order.get round trip in that case.
+            order_products: list[OrderProduct] = []
+            if result.total_price > 0:
+                fetched_order = await Order.get(db, event.id, result.order_id)
+                if fetched_order is None:
+                    raise UnsaneSituation("Order not found after creation")
+                order_products = fetched_order.products
+            request, request_stamp = provider.prepare_for_new_order(order, result, order_products)
             await request_stamp.save(db)
     except NotEnoughTickets as e:
         raise HTTPException(409, "NOT_ENOUGH_TICKETS") from e
