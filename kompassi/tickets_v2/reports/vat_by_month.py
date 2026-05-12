@@ -8,7 +8,7 @@ from django.db import connection
 from kompassi.core.models.event import Event
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.reports.models.column import Column
-from kompassi.reports.models.enums import TotalBy, TypeOfColumn
+from kompassi.reports.models.enums import TypeOfColumn
 from kompassi.reports.models.report import Report
 
 from ..optimized_server.utils.formatting import format_vat_rate
@@ -52,7 +52,8 @@ class VatByMonth:
                 slug="month",
                 title=MONTH_COLUMN_TITLE,
                 type=TypeOfColumn.STRING,
-                total_by=TotalBy.NONE,
+                # NOTE: total_by defaults to SUM, which is what makes the total
+                # row label show "Total" in column 0 (see Report.get_total_row).
             ),
             *(
                 Column(
