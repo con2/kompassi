@@ -64,15 +64,12 @@ class UniverseCache:
 
 
 class RequestLocalCache:
-    request: HttpRequest
-    _event_cache: dict[str, EventCache] = {}
-    _universe_cache: dict[int, UniverseCache] = {}
-
-    # event id -> UniverseCache
-    _program_universe_cache: dict[int, UniverseCache] = {}
-
     def __init__(self, request: HttpRequest):
         self.request = request
+        self._event_cache: dict[str, EventCache] = {}
+        self._universe_cache: dict[int, UniverseCache] = {}
+        # event id -> UniverseCache
+        self._program_universe_cache: dict[int, UniverseCache] = {}
 
     def for_event(self, event: Event) -> EventCache:
         if event.slug not in self._event_cache:
