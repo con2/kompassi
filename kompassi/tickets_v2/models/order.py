@@ -92,18 +92,7 @@ class OrderMixin:
 
     @cached_property
     def vat_breakdown(self) -> list[VatBreakdownLine]:
-        from collections import defaultdict
-
-        totals: dict[Decimal, Decimal] = defaultdict(Decimal)
-        for op in self.products:
-            totals[op.vat_percentage] += op.price * op.quantity
-        result = []
-        for rate in sorted(totals):
-            gross = totals[rate]
-            vat = (gross * rate / (100 + rate)).quantize(Decimal("0.01"))
-            net = gross - vat
-            result.append(VatBreakdownLine(rate=rate, gross=gross, vat=vat, net=net))
-        return result
+        return VatBreakdownLine.from_order_products(self.products)
 
     @cached_property
     def etickets(self) -> list[Product]:
