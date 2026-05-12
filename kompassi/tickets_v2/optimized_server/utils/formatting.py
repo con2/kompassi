@@ -22,6 +22,9 @@ def format_vat_rate(rate: Decimal, language: str = "en") -> str:
     Format a VAT rate for display, stripping unnecessary trailing zeros.
     Uses comma as decimal separator for Finnish and Swedish locales.
 
+    Decimal.normalize() is unsuitable here because it produces scientific
+    notation for values like Decimal('10.00') -> Decimal('1E+1').
+
     >>> format_vat_rate(Decimal('25.50'))
     '25.5'
     >>> format_vat_rate(Decimal('25.50'), 'fi')
@@ -32,10 +35,16 @@ def format_vat_rate(rate: Decimal, language: str = "en") -> str:
     '10'
     >>> format_vat_rate(Decimal('0'))
     '0'
+    >>> format_vat_rate(Decimal('0.00'))
+    '0'
     >>> format_vat_rate(Decimal('13.50'), 'sv')
     '13,5'
+    >>> format_vat_rate(Decimal('0.50'), 'fi')
+    '0,5'
     """
-    result = str(rate.normalize())
+    result = f"{rate:f}"
+    if "." in result:
+        result = result.rstrip("0").rstrip(".")
     if language in ("fi", "sv"):
         result = result.replace(".", ",")
     return result
