@@ -544,7 +544,7 @@ const translations = {
         },
       },
       serverAttributes: {
-        vatIncluded: (rate: string) => `incl. ${rate}% VAT`,
+        vatIncluded: (rate: string) => `incl. VAT ${rate}%`,
         isAvailable: {
           untilFurtherNotice: "Available until further notice",
           untilTime: (formattedTime: string) =>
