@@ -18,5 +18,6 @@ where
   o.event_id = %(event_id)s
   and o.cached_status = 3
   and pd.quantity::int > 0
+  and p.vat_percentage > 0
 group by 1, 2
 order by 1, 2
