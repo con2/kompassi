@@ -540,7 +540,7 @@ const translations: Translations = {
         },
       },
       serverAttributes: {
-        vatIncluded: (rate: string) => `sis. ${rate}% ALV`,
+        vatIncluded: (rate: string) => `sis. ALV ${rate}%`,
         isAvailable: {
           untilFurtherNotice: "Saatavilla toistaiseksi",
           untilTime: (formattedTime: string) =>
