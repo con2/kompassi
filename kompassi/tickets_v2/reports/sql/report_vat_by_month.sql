@@ -9,7 +9,7 @@ select
     'YYYY-MM'
   ) as year_month,
   p.vat_percentage,
-  sum(p.price * pd.quantity::numeric) as gross_sales
+  sum(p.price * pd.quantity::numeric * p.vat_percentage / (100 + p.vat_percentage)) as vat_amount
 from
   tickets_v2_order o
   join lateral jsonb_each_text(o.product_data) as pd(product_id, quantity) on true
