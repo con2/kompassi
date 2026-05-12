@@ -9,6 +9,7 @@ from .payment_attempts_by_payment_method import payment_attempts_by_payment_meth
 from .sales_by_payment_provider import sales_by_payment_provider
 from .ticket_exchange_by_hour import TicketExchangeByHour
 from .ticket_exchange_by_product import ticket_exchange_by_product
+from .vat_by_month import VatByMonth
 
 REPORTS = dict(
     orders_by_payment_status=OrdersByPaymentStatus.report,
@@ -16,6 +17,7 @@ REPORTS = dict(
     sales_by_payment_provider=sales_by_payment_provider,
     ticket_exchange_by_product=ticket_exchange_by_product,
     ticket_exchange_by_hour=TicketExchangeByHour.report,
+    vat_by_month=VatByMonth.report,
 )
 
 
