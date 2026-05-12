@@ -94,12 +94,12 @@ class PaytrailItem(pydantic.BaseModel):
     description: str
 
     @classmethod
-    def from_order_products(cls, order_products: list[OrderProduct]) -> list[PaytrailItem]:
+    def from_order_products(cls, order_products: list[OrderProduct]) -> list[Self]:
         return [
             cls(
                 unit_price=int(op.price * 100),
                 units=op.quantity,
-                vat_percentage=op.vat_percentage,
+                vat_percentage=float(op.vat_percentage),
                 product_code=str(i + 1),
                 description=op.title,
             )
