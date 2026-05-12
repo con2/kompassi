@@ -26,6 +26,7 @@ graphql(`
     title
     description
     price
+    vatPercentage
     isAvailable
     availableFrom
     availableUntil
@@ -172,7 +173,12 @@ export default async function OrdersPage(props: Props) {
         onSubmit={adminCreateOrder.bind(null, locale, eventSlug)}
       >
         {products.map((product) => (
-          <ProductCard key={product.id} product={product} messages={producT}>
+          <ProductCard
+            key={product.id}
+            product={product}
+            locale={locale}
+            messages={producT}
+          >
             <div className="form-text">
               <span className="me-3">
                 {producT.clientAttributes.countReserved.title}:{" "}
