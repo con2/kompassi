@@ -26,6 +26,8 @@ type Documents = {
     "\n  mutation PutInvolvementDimensionValue($input: PutDimensionValueInput!) {\n    putDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n": typeof types.PutInvolvementDimensionValueDocument,
     "\n  mutation DeleteInvolvementDimensionValue($input: DeleteDimensionValueInput!) {\n    deleteDimensionValue(input: $input) {\n      slug\n    }\n  }\n": typeof types.DeleteInvolvementDimensionValueDocument,
     "\n  query InvolvementDimensionsList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        dimensions(publicOnly: false) {\n          ...DimensionEditor\n        }\n      }\n    }\n  }\n": typeof types.InvolvementDimensionsListDocument,
+    "\n  mutation UpdateInvolvementPreferences(\n    $input: UpdateInvolvementPreferencesInput!\n  ) {\n    updateInvolvementPreferences(input: $input) {\n      preferences {\n        shirtsFrozenAt\n      }\n    }\n  }\n": typeof types.UpdateInvolvementPreferencesDocument,
+    "\n  query InvolvementPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        shirtsFrozenAt\n      }\n    }\n  }\n": typeof types.InvolvementPreferencesDocument,
     "\n  query InvolvementAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      involvement {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": typeof types.InvolvementAdminReportsPageDocument,
     "\n  mutation ResendOrderConfirmation($input: ResendOrderConfirmationInput!) {\n    resendOrderConfirmation(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": typeof types.ResendOrderConfirmationDocument,
     "\n  mutation UpdateOrder($input: UpdateOrderInput!) {\n    updateOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": typeof types.UpdateOrderDocument,
@@ -223,6 +225,8 @@ const documents: Documents = {
     "\n  mutation PutInvolvementDimensionValue($input: PutDimensionValueInput!) {\n    putDimensionValue(input: $input) {\n      value {\n        slug\n      }\n    }\n  }\n": types.PutInvolvementDimensionValueDocument,
     "\n  mutation DeleteInvolvementDimensionValue($input: DeleteDimensionValueInput!) {\n    deleteDimensionValue(input: $input) {\n      slug\n    }\n  }\n": types.DeleteInvolvementDimensionValueDocument,
     "\n  query InvolvementDimensionsList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        dimensions(publicOnly: false) {\n          ...DimensionEditor\n        }\n      }\n    }\n  }\n": types.InvolvementDimensionsListDocument,
+    "\n  mutation UpdateInvolvementPreferences(\n    $input: UpdateInvolvementPreferencesInput!\n  ) {\n    updateInvolvementPreferences(input: $input) {\n      preferences {\n        shirtsFrozenAt\n      }\n    }\n  }\n": types.UpdateInvolvementPreferencesDocument,
+    "\n  query InvolvementPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        shirtsFrozenAt\n      }\n    }\n  }\n": types.InvolvementPreferencesDocument,
     "\n  query InvolvementAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      involvement {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": types.InvolvementAdminReportsPageDocument,
     "\n  mutation ResendOrderConfirmation($input: ResendOrderConfirmationInput!) {\n    resendOrderConfirmation(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.ResendOrderConfirmationDocument,
     "\n  mutation UpdateOrder($input: UpdateOrderInput!) {\n    updateOrder(input: $input) {\n      order {\n        id\n      }\n    }\n  }\n": types.UpdateOrderDocument,
@@ -470,6 +474,14 @@ export function graphql(source: "\n  mutation DeleteInvolvementDimensionValue($i
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query InvolvementDimensionsList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        dimensions(publicOnly: false) {\n          ...DimensionEditor\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query InvolvementDimensionsList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        dimensions(publicOnly: false) {\n          ...DimensionEditor\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateInvolvementPreferences(\n    $input: UpdateInvolvementPreferencesInput!\n  ) {\n    updateInvolvementPreferences(input: $input) {\n      preferences {\n        shirtsFrozenAt\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateInvolvementPreferences(\n    $input: UpdateInvolvementPreferencesInput!\n  ) {\n    updateInvolvementPreferences(input: $input) {\n      preferences {\n        shirtsFrozenAt\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query InvolvementPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        shirtsFrozenAt\n      }\n    }\n  }\n"): (typeof documents)["\n  query InvolvementPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        shirtsFrozenAt\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

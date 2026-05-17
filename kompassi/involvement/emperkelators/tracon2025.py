@@ -324,7 +324,8 @@ class TraconEmperkelator(BaseEmperkelator):
     @property
     def shirt_size_dimension_values(self) -> list[str]:
         if inv := self.active_legacy_signup_involvement:
-            return inv.cached_dimensions.get("shirt-size", [])
+            existing_shirt_size = inv.cached_dimensions.get("shirt-size", [])
+            return self.get_frozen_shirt_size_values(existing_shirt_size)
 
         # TODO in future events, make sure this is a dimension in source data
         for response in Response.objects.filter(
@@ -359,9 +360,9 @@ class TraconEmperkelator(BaseEmperkelator):
                 )
                 continue
 
-            return [shirt_size.value]
+            return self.get_frozen_shirt_size_values([shirt_size.value])
 
-        return []
+        return self.get_frozen_shirt_size_values([])
 
     @classmethod
     def get_dimension_dtos(cls, event: Event) -> list[DimensionDTO]:

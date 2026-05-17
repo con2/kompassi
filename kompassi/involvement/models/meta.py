@@ -7,6 +7,7 @@ from itertools import groupby
 from typing import TYPE_CHECKING
 
 from django.db import models
+from django.utils.timezone import now
 
 from kompassi.core.models.event import Event
 from kompassi.core.utils.log_utils import log_get_or_create
@@ -48,8 +49,21 @@ class InvolvementEventMeta(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    shirts_frozen_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When shirts were ordered, the shirt sizes in COMBINED_PERKS involvements are frozen. After this timestamp, only changing to ShirtSize.NONE is allowed.",
+    )
+
     def __str__(self):
         return self.event.slug if self.event else None
+
+    def are_shirts_frozen(self) -> bool:
+        """Check if shirt sizes are frozen due to shirts having been ordered."""
+        if self.shirts_frozen_at is None:
+            return False
+
+        return now() >= self.shirts_frozen_at
 
     @property
     def invitations(self):
@@ -59,6 +73,10 @@ class InvolvementEventMeta(models.Model):
             "survey",
             "program",
         )
+
+    @cached_property
+    def scope(self):
+        return self.event.scope
 
     @cached_property
     def dimension_cache(self):

@@ -2710,6 +2710,15 @@ const translations: Translations = {
         ),
       },
     },
+    preferencesAdmin: {
+      title: "Asetukset",
+      attributes: {
+        shirtsFrozenAt: {
+          title: "Paitojen jäädytysaika",
+          helpText: "Kun paidat on tilattu, paitakoot jäädytetään.",
+        },
+      },
+    },
     messages: {},
     filters: {
       searchPlaceholder: "Hae nimellä tai sähköpostilla",

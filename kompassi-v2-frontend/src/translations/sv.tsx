@@ -2636,6 +2636,17 @@ const translations: Translations = {
         ),
       },
     },
+    preferencesAdmin: {
+      title: "Inställningar",
+      attributes: {
+        shirtsFrozenAt: {
+          title: "Skjortor frysning vid",
+          helpText: UNTRANSLATED(
+            en.Involvement.preferencesAdmin.attributes.shirtsFrozenAt.helpText,
+          ),
+        },
+      },
+    },
     messages: {},
     filters: {
       searchPlaceholder: "Sök på namn eller e-post",

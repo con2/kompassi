@@ -367,11 +367,28 @@ PROGRAM_HOST_TYPE_DIMENSION_DTO = DimensionDTO(
 class DesuconEmperkelator(BaseEmperkelator):
     @cached_property
     def perks(self) -> Perks:
-        return reduce(
+        perks = reduce(
             Perks.imbibe,
             (Perks.for_involvement(inv) for inv in self.involvements),
             Perks(),
         )
+
+        # Apply shirt freeze directly to computed perks so display text and dimensions stay in sync.
+        perks.shirt_size = self._get_frozen_shirt_size(perks.shirt_size)
+        return perks
+
+    def _get_frozen_shirt_size(self, computed_shirt_size: ShirtSize) -> ShirtSize:
+        """Get the existing shirt size if shirts are frozen, otherwise return computed value."""
+        computed_shirt_size_values = [] if computed_shirt_size == ShirtSize.NONE else [computed_shirt_size.value]
+        frozen_shirt_size_values = self.get_frozen_shirt_size_values(computed_shirt_size_values)
+
+        if not frozen_shirt_size_values:
+            return ShirtSize.NONE
+
+        try:
+            return ShirtSize(frozen_shirt_size_values[0])
+        except (ValueError, KeyError):
+            return computed_shirt_size
 
     @classmethod
     def get_dimension_dtos(cls, event: Event) -> list[DimensionDTO]:

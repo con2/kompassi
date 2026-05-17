@@ -30,6 +30,7 @@ from kompassi.involvement.graphql.mutations.accept_invitation import AcceptInvit
 from kompassi.involvement.graphql.mutations.delete_invitation import DeleteInvitation
 from kompassi.involvement.graphql.mutations.resend_invitation import ResendInvitation
 from kompassi.involvement.graphql.mutations.update_involvement_dimensions import UpdateInvolvementDimensions
+from kompassi.involvement.graphql.mutations.update_involvement_preferences import UpdateInvolvementPreferences
 from kompassi.involvement.graphql.registry_limited import LimitedRegistryType
 from kompassi.involvement.models.registry import Registry
 from kompassi.program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
@@ -161,6 +162,7 @@ class Mutation(graphene.ObjectType):
     resend_invitation = ResendInvitation.Field()
 
     update_involvement_dimensions = UpdateInvolvementDimensions.Field()
+    update_involvement_preferences = UpdateInvolvementPreferences.Field()
 
     # Program v2
     mark_program_as_favorite = MarkProgramAsFavorite.Field()

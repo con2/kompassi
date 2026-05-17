@@ -3,7 +3,7 @@ import { Translations } from "@/translations/en";
 
 export interface InvolvementAdminTabsProps {
   eventSlug: string;
-  active: "people" | "dimensions" | "registries" | "reports";
+  active: "people" | "dimensions" | "registries" | "reports" | "preferences";
   translations: Translations;
   searchParams?: Record<string, string>;
 }
@@ -52,6 +52,11 @@ export default function InvolvementAdminTabs({
       slug: "reports",
       title: reporT.listTitle,
       href: `/${eventSlug}/involvement-reports`,
+    },
+    {
+      slug: "preferences",
+      title: t.preferencesAdmin.title,
+      href: `/${eventSlug}/involvement-preferences`,
     },
   ];
 
