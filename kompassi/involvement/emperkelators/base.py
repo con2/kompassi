@@ -15,6 +15,7 @@ from kompassi.reports.models.report import Report
 
 from ..models.enums import INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS
 from ..models.involvement import Involvement
+from ..models.meta import InvolvementEventMeta
 
 
 class BaseEmperkelator:
@@ -27,9 +28,23 @@ class BaseEmperkelator:
     def scope(self):
         return self.universe.scope
 
-    @property
+    @cached_property
     def event(self):
-        return self.universe.scope.event
+        event = self.universe.scope.event
+
+        if event is None:
+            raise ValueError("Instantiated an emperkelator on a universe with no event (this should not happen)")
+
+        return event
+
+    @cached_property
+    def meta(self) -> InvolvementEventMeta:
+        meta = self.event.involvement_event_meta
+
+        if meta is None:
+            raise ValueError(f"Event {self.event.slug} has no involvement event meta (this should not happen)")
+
+        return meta
 
     @cached_property
     def cache(self):
@@ -151,6 +166,31 @@ class BaseEmperkelator:
         These annotations will be set on the Combined Perks Involvement.
         """
         return {}
+
+    def get_frozen_shirt_size_values(self, computed_shirt_size_values: list[str]) -> list[str]:
+        """
+        Freeze shirt-size dimension values after shirt order.
+
+        - New combined perks created after freeze get no shirt.
+        - Existing combined perks keep their old value, unless explicitly cleared.
+        """
+        if not self.meta.are_shirts_frozen():
+            return computed_shirt_size_values
+
+        if self.existing_combined_perks is None:
+            return []
+
+        existing_dimensions = self.existing_combined_perks.cached_dimensions
+        existing_shirt_sizes = existing_dimensions.get("shirt-size", [])
+
+        if not existing_shirt_sizes:
+            return computed_shirt_size_values
+
+        # Empty or explicit NONE clears shirt size even after freeze.
+        if not computed_shirt_size_values or "none" in computed_shirt_size_values:
+            return []
+
+        return existing_shirt_sizes
 
     def get_title(self) -> str:
         return next(

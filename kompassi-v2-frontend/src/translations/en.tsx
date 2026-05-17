@@ -2758,6 +2758,15 @@ const translations = {
         ),
       },
     },
+    preferencesAdmin: {
+      title: "Preferences",
+      attributes: {
+        shirtsFrozenAt: {
+          title: "Shirts frozen at",
+          helpText: "When shirts are ordered, the shirt sizes are frozen.",
+        },
+      },
+    },
     messages: {},
     filters: {
       searchPlaceholder: "Search by name or email",
