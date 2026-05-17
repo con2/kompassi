@@ -285,6 +285,7 @@ class Perks(pydantic.BaseModel):
             logger.warning("Program host %d has no response", involvement.id)
             return Perks()
 
+        # TODO this should be a dimension on involvement so that we need not look at involvement.response
         values, warnings = response.get_processed_form_data(field_slugs=["shirt_size"])
         if "shirt-size" in warnings:
             logger.warning(
@@ -304,30 +305,29 @@ class Perks(pydantic.BaseModel):
             shirt_type=ShirtType.STAFF,
         )
 
-        program_host_type_values = involvement.cached_dimensions.get("program-host-type", [])
-        for program_host_type_value in program_host_type_values:
-            match program_host_type_value:
-                case "talk-program":
-                    perks.imbibe(
-                        Perks(
-                            ticket_type=TicketType.PROGRAM_BADGE,
-                            meals=2,
-                        )
+        # TODO this should be a dimension on involvement
+        match response.form.survey.slug:
+            case "ohjelmanpitajalomake":
+                perks.imbibe(
+                    Perks(
+                        ticket_type=TicketType.PROGRAM_BADGE,
+                        meals=2,
                     )
-                case "performance":
-                    perks.imbibe(
-                        Perks(
-                            ticket_type=TicketType.PERFORMER_BADGE,
-                            meals=1,
-                        )
+                )
+            case "esiintyjalomake":
+                perks.imbibe(
+                    Perks(
+                        ticket_type=TicketType.PERFORMER_BADGE,
+                        meals=1,
                     )
-                case _:
-                    perks.imbibe(
-                        Perks(
-                            ticket_type=TicketType.PROGRAM_BADGE,
-                            meals=1,
-                        )
+                )
+            case _:
+                perks.imbibe(
+                    Perks(
+                        ticket_type=TicketType.PROGRAM_BADGE,
+                        meals=1,
                     )
+                )
 
         return perks
 
