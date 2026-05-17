@@ -19,6 +19,10 @@ class Product(pydantic.BaseModel, populate_by_name=True):
         validation_alias="maxPerOrder",
         serialization_alias="maxPerOrder",
     )
+    vat_percentage: Decimal = pydantic.Field(
+        validation_alias="vatPercentage",
+        serialization_alias="vatPercentage",
+    )
     available: bool | None
 
     list_query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "list_products.sql").read_bytes()
@@ -30,7 +34,7 @@ class Product(pydantic.BaseModel, populate_by_name=True):
 
             products = []
             async for row in cursor:
-                id, title, description, price, max_per_order, available = row
+                id, title, description, price, max_per_order, vat_percentage, available = row
                 products.append(
                     cls(
                         id=id,
@@ -38,6 +42,7 @@ class Product(pydantic.BaseModel, populate_by_name=True):
                         description=description,
                         price=price,
                         max_per_order=max_per_order,
+                        vat_percentage=vat_percentage,
                         available=available,
                     )
                 )

@@ -94,6 +94,7 @@ const query = graphql(`
             title
             quantity
             price
+            vatPercentage
           }
           paymentStamps {
             ...AdminOrderPaymentStamp
@@ -542,6 +543,7 @@ export default async function AdminOrderPage(props: Props) {
           <AccordionBody>
             <ProductsTable
               order={order}
+              locale={locale}
               messages={translations.Tickets}
               compact
               className="m-0"

@@ -1,11 +1,13 @@
 import { Column, DataTable } from "../DataTable";
 import formatMoney from "@/helpers/formatMoney";
+import formatVatRate from "@/helpers/formatVatRate";
 import type { Translations } from "@/translations/en";
 
 interface Product {
   title: string;
   quantity: number;
   price: string;
+  vatPercentage: string;
 }
 
 interface Order {
@@ -15,13 +17,33 @@ interface Order {
 
 interface Props {
   order: Order;
+  locale: string;
   messages: Translations["Tickets"];
   className?: string;
   compact?: boolean;
 }
 
+function computeVatBreakdown(
+  products: Product[],
+): { rate: string; vat: string }[] {
+  const totals = new Map<string, number>();
+  for (const p of products) {
+    const gross = parseFloat(p.price) * p.quantity;
+    const prev = totals.get(p.vatPercentage) ?? 0;
+    totals.set(p.vatPercentage, prev + gross);
+  }
+  return Array.from(totals.entries())
+    .sort(([a], [b]) => parseFloat(a) - parseFloat(b))
+    .map(([rate, gross]) => {
+      const r = parseFloat(rate);
+      const vat = (gross * r) / (100 + r);
+      return { rate, vat: vat.toFixed(2) };
+    });
+}
+
 export default function ProductsTable({
   order,
+  locale,
   messages: t,
   className,
   compact,
@@ -63,6 +85,8 @@ export default function ProductsTable({
 
   className = "table table-striped " + (className ?? "mb-5");
 
+  const vatBreakdown = computeVatBreakdown(order.products);
+
   return (
     <DataTable className={className} rows={order.products} columns={columns}>
       <tfoot>
@@ -75,6 +99,17 @@ export default function ProductsTable({
             <strong>{formatMoney(order.totalPrice)}</strong>
           </td>
         </tr>
+        {vatBreakdown.map(({ rate, vat }) => (
+          <tr key={rate} className="text-muted">
+            <td className="col-8 small">
+              {t.Product.serverAttributes.vatIncluded(
+                formatVatRate(rate, locale),
+              )}
+            </td>
+            <td className="col text-end"></td>
+            <td className="col text-end small">{formatMoney(vat)}</td>
+          </tr>
+        ))}
       </tfoot>
     </DataTable>
   );

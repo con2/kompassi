@@ -32,6 +32,7 @@ const query = graphql(`
             title
             quantity
             price
+            vatPercentage
           }
 
           event {
@@ -122,7 +123,11 @@ export default async function ProfileOrderPage(props: Props) {
         event={order.event}
       />
 
-      <ProductsTable order={order} messages={translations.Tickets} />
+      <ProductsTable
+        order={order}
+        locale={locale}
+        messages={translations.Tickets}
+      />
 
       {order.canPay && (
         <form action={payOrder.bind(null, locale, eventSlug, orderId)}>

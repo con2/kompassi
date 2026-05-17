@@ -74,6 +74,7 @@ export default async function TicketsPage(props: Props) {
             <ProductCard
               key={product.id}
               product={product}
+              locale={locale}
               messages={producT}
             />
           );

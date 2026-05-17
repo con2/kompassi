@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import json
+from collections import defaultdict
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
-from typing import Annotated, Any, ClassVar
+from typing import Annotated, Any, ClassVar, Self
 from uuid import UUID
 
 import pydantic
@@ -125,6 +126,31 @@ class OrderProduct(pydantic.BaseModel):
     title: str
     price: Decimal
     quantity: int
+    vat_percentage: Decimal = pydantic.Field(serialization_alias="vatPercentage")
+
+
+CENT = Decimal("0.01")
+
+
+class VatBreakdownLine(pydantic.BaseModel):
+    rate: Decimal
+    gross: Decimal
+    vat: Decimal
+    net: Decimal
+
+    @classmethod
+    def from_order_products(cls, order_products: list[OrderProduct]) -> list[Self]:
+        totals: dict[Decimal, Decimal] = defaultdict(Decimal)
+        for op in order_products:
+            totals[op.vat_percentage] += op.price * op.quantity
+
+        breakdown: list[Self] = []
+        for rate in sorted(totals):
+            gross = totals[rate]
+            vat = (gross * rate / (100 + rate)).quantize(CENT)
+            net = gross - vat
+            breakdown.append(cls(rate=rate, gross=gross, vat=vat, net=net))
+        return breakdown
 
 
 class Order(pydantic.BaseModel, populate_by_name=True):
@@ -176,8 +202,10 @@ class Order(pydantic.BaseModel, populate_by_name=True):
             order_number = 0
             language_ = ""
 
-            async for total_, order_number_, language_, title, price, quantity, status_ in cursor:
-                order_products.append(OrderProduct(title=title, price=price, quantity=quantity))
+            async for total_, order_number_, language_, title, price, quantity, vat_percentage, status_ in cursor:
+                order_products.append(
+                    OrderProduct(title=title, price=price, quantity=quantity, vat_percentage=vat_percentage)
+                )
                 total_price, order_number, language, status = total_, order_number_, language_, status_
 
             if not order_products:
@@ -228,13 +256,16 @@ class OrderWithCustomer(Order):
                 title,
                 price,
                 quantity,
+                vat_percentage,
                 status_,
                 first_name_,
                 last_name_,
                 email_,
                 phone_,
             ) in cursor:
-                order_products.append(OrderProduct(title=title, price=price, quantity=quantity))
+                order_products.append(
+                    OrderProduct(title=title, price=price, quantity=quantity, vat_percentage=vat_percentage)
+                )
                 total_price, order_number, language, status = total_, order_number_, language_, status_
                 first_name, last_name, email, phone = first_name_, last_name_, email_, phone_
 

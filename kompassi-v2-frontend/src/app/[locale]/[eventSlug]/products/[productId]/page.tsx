@@ -20,6 +20,7 @@ import SubmitButton from "@/components/forms/SubmitButton";
 import ModalButton from "@/components/ModalButton";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import formatMoney from "@/helpers/formatMoney";
+import formatVatRate from "@/helpers/formatVatRate";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -29,6 +30,7 @@ graphql(`
     title
     description
     price
+    vatPercentage
     eticketsPerProduct
     maxPerOrder
   }
@@ -41,6 +43,7 @@ graphql(`
     title
     description
     price
+    vatPercentage
     eticketsPerProduct
     maxPerOrder
     availableFrom
@@ -184,6 +187,17 @@ export default async function AdminProductDetailPage(props: Props) {
       ...t.clientAttributes.unitPrice,
     },
     {
+      slug: "vatPercentage",
+      type: "SingleSelect",
+      choices: [
+        { slug: "0.00", title: "0%" },
+        { slug: "10.00", title: "10%" },
+        { slug: "13.50", title: "13.5%" },
+        { slug: "25.50", title: "25.5%" },
+      ],
+      ...t.clientAttributes.vatPercentage,
+    },
+    {
       slug: "eticketsPerProduct",
       type: "NumberField",
       ...t.clientAttributes.eticketsPerProduct,
@@ -292,6 +306,15 @@ export default async function AdminProductDetailPage(props: Props) {
       slug: "price",
       title: t.clientAttributes.unitPrice.title,
       getCellContents: (product) => formatMoney(product.price),
+      className: "col-1 align-middle",
+    },
+    {
+      slug: "vatPercentage",
+      title: t.clientAttributes.vatPercentage.title,
+      getCellContents: (product) =>
+        t.serverAttributes.vatIncluded(
+          formatVatRate(product.vatPercentage, locale),
+        ),
       className: "col-1 align-middle",
     },
   ];
