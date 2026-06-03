@@ -2358,6 +2358,7 @@ export type ProgramV2EventMetaTypeScheduleItemsArgs = {
   favoritesOnly?: InputMaybe<Scalars['Boolean']['input']>;
   filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
   hidePast?: InputMaybe<Scalars['Boolean']['input']>;
+  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
   updatedAfter?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
