@@ -133,6 +133,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
         graphene.List(graphene.NonNull(FullScheduleItemType)),
         filters=graphene.List(DimensionFilterInput),
         favorites_only=graphene.Boolean(),
+        public_only=graphene.Boolean(),
         hide_past=graphene.Boolean(),
         updated_after=graphene.DateTime(),
         description=normalize_whitespace(resolve_schedule_items.__doc__ or ""),
