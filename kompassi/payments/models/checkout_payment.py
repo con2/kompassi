@@ -30,8 +30,8 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-CHECKOUT_API_BASE_URL = "https://api.checkout.fi"
-CHECKOUT_PAYMENT_WALL_ORIGIN = "pay.checkout.fi"
+CHECKOUT_API_BASE_URL = "https://services.paytrail.com"
+CHECKOUT_PAYMENT_WALL_ORIGIN = "payment.paytrail.com"
 CHECKOUT_STATUSES = [
     ("new", _("New")),
     ("ok", _("OK")),
@@ -236,7 +236,13 @@ class CheckoutPayment(models.Model):
         if not settings.DEBUG and self.meta.checkout_merchant == META_DEFAULTS["checkout_merchant"]:
             raise ValueError(f"Event {self.event} has testing merchant in production, please change this in admin")
 
-        language = "FI" if get_language() == "fi" else "EN"
+        lang = get_language()
+        if lang == "fi":
+            language = "FI"
+        elif lang == "sv":
+            language = "SV"
+        else:
+            language = "EN"
 
         body = {
             "stamp": str(self.stamp),
@@ -244,7 +250,6 @@ class CheckoutPayment(models.Model):
             "amount": self.price_cents,
             "currency": "EUR",
             "language": language,
-            "items": self.items,
             "customer": self.customer,
             "redirectUrls": {
                 "success": request.build_absolute_uri(reverse("payments_checkout_success_view")),
@@ -263,7 +268,7 @@ class CheckoutPayment(models.Model):
 
         headers = self.meta.get_checkout_params()
         headers["signature"] = calculate_hmac(self.meta.checkout_password, headers, body)
-        headers["content-type"] = "application/json"
+        headers["content-type"] = "application/json; charset=utf-8"
 
         url = f"{CHECKOUT_API_BASE_URL}/payments"
 
