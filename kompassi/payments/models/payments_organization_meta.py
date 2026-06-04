@@ -38,5 +38,6 @@ class PaymentsOrganizationMeta(models.Model):
             "checkout-algorithm": "sha256",
             "checkout-method": method,
             "checkout-nonce": str(uuid4()),
-            "checkout-timestamp": t.isoformat(),
+            "checkout-timestamp": t.isoformat(timespec="milliseconds").replace("+00:00", "Z"),
+            "platform-name": "kompassi",
         }
