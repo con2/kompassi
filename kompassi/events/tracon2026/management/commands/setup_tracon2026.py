@@ -861,7 +861,7 @@ class Setup:
                         is_key_dimension=True,
                         choices=[
                             DimensionValueDTO(
-                                slug=f"{location_character}{i}",
+                                slug=f"{location_character.lower()}{i}",
                                 color=location_color,
                                 title=dict(
                                     fi=f"{location_fi}, pöytä {i}",
@@ -876,6 +876,7 @@ class Setup:
                         ],
                     ),
                 ],
+                remove_other_values=True,
             )
 
             splats = [
