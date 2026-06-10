@@ -91,15 +91,14 @@ export interface StaticText extends BaseField {
 
 export interface SingleLineText extends BaseField {
   type: "SingleLineText";
+  pattern?: string;
+  patternDescription?: string;
+  maxLength?: number;
 }
 
 export interface MultiLineText extends BaseField {
   type: "MultiLineText";
   rows?: number;
-}
-
-export interface SingleLineText extends BaseField {
-  type: "SingleLineText";
 }
 
 export interface NumberField extends BaseField {

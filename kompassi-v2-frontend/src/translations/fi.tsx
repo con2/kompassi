@@ -652,6 +652,8 @@ const translations: Translations = {
         lastName: {
           title: "Sukunimi",
         },
+        invalidNameMessage:
+          "Nimi ei saa sisältää pistettä (.) tai muita erikoismerkkejä.",
         displayName: {
           title: "Asiakkaan nimi",
         },
