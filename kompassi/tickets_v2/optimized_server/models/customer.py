@@ -1,5 +1,9 @@
 import pydantic
 
+# Paytrail documents max 50 chars for firstName/lastName.
+# Dots and pipes are known to cause Paytrail API errors (pipe is documented; dot empirical).
+CUSTOMER_NAME_PATTERN = r"[^|.\x00-\x1f\x7f]+"
+
 
 class Customer(pydantic.BaseModel, frozen=True, populate_by_name=True):
     """
@@ -10,12 +14,14 @@ class Customer(pydantic.BaseModel, frozen=True, populate_by_name=True):
     first_name: str = pydantic.Field(
         validation_alias="firstName",
         serialization_alias="firstName",
-        max_length=100,
+        max_length=50,
+        pattern=CUSTOMER_NAME_PATTERN,
     )
     last_name: str = pydantic.Field(
         validation_alias="lastName",
         serialization_alias="lastName",
-        max_length=200,
+        max_length=50,
+        pattern=CUSTOMER_NAME_PATTERN,
     )
     email: pydantic.EmailStr = pydantic.Field(
         validation_alias="email",

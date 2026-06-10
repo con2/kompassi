@@ -1,3 +1,5 @@
+"use client";
+
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import makeInputId from "./makeInputId";
@@ -55,6 +57,25 @@ function SchemaFormInput({
           readOnly={readOnly}
           id={id}
           name={slug}
+          pattern={field.pattern}
+          maxLength={field.maxLength}
+          title={field.patternDescription}
+          onInvalid={
+            field.patternDescription
+              ? (e) => {
+                  if (e.currentTarget.validity.patternMismatch) {
+                    e.currentTarget.setCustomValidity(
+                      field.patternDescription!,
+                    );
+                  }
+                }
+              : undefined
+          }
+          onChange={
+            field.patternDescription
+              ? (e) => e.currentTarget.setCustomValidity("")
+              : undefined
+          }
         />
       );
     case "MultiLineText":

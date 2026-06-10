@@ -25,18 +25,26 @@ function getContactFormFields(
   isAdmin: boolean,
   termsAndConditionsUrl?: string,
 ): Field[] {
+  // Paytrail documents max 50 chars for names; dots and pipes are known to cause API errors.
+  const namePattern = "[^|.\\x00-\\x1f\\x7f]+";
   const fields: Field[] = [
     {
       slug: "firstName",
       type: "SingleLineText",
       required: true,
       title: t.attributes.firstName.title,
+      pattern: namePattern,
+      patternDescription: t.attributes.invalidNameMessage,
+      maxLength: 50,
     },
     {
       slug: "lastName",
       type: "SingleLineText",
       required: true,
       title: t.attributes.lastName.title,
+      pattern: namePattern,
+      patternDescription: t.attributes.invalidNameMessage,
+      maxLength: 50,
     },
     {
       slug: "email",

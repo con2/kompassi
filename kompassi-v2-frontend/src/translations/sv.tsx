@@ -640,6 +640,8 @@ const translations: Translations = {
         ),
         firstName: { title: "Förnamn" },
         lastName: { title: "Efternamn" },
+        invalidNameMessage:
+          "Namnet får inte innehålla punkt (.) eller andra specialtecken.",
         displayName: { title: "Kundnamn" },
         email: {
           title: "E-postadress",

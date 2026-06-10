@@ -658,6 +658,8 @@ const translations = {
         lastName: {
           title: "Last name",
         },
+        invalidNameMessage:
+          "Name must not contain dots (.) or other special characters.",
         displayName: {
           title: "Customer name",
         },
