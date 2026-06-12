@@ -26,7 +26,7 @@ function getContactFormFields(
   termsAndConditionsUrl?: string,
 ): Field[] {
   // Paytrail documents max 50 chars for names; dots and pipes are known to cause API errors.
-  const namePattern = "[^|.\\x00-\\x1f\\x7f]+";
+  const namePattern = "[^\\|.\\x00-\\x1f\\x7f]+";
   const fields: Field[] = [
     {
       slug: "firstName",
