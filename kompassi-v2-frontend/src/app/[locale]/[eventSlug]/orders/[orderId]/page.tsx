@@ -7,6 +7,7 @@ import Messages from "@/components/errors/Messages";
 import Section from "@/components/Section";
 import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
+import RequestCancellationSection from "@/components/tickets/RequestCancellationSection";
 import SellerSection from "@/components/tickets/SellerSection";
 import ViewContainer from "@/components/ViewContainer";
 import { getOrder } from "@/services/tickets";
@@ -71,24 +72,12 @@ export default async function OrderPage(props: Props) {
         </Section>
       )}
 
-      {order.canRequestCancellation && (
-        <Section>
-          <div className="d-grid gap-2">
-            <Link
-              className="btn btn-outline-danger"
-              href={`/${eventSlug}/orders/${orderId}/cancel`}
-            >
-              {t.Order.actions.requestCancellation.title}…
-            </Link>
-          </div>
-        </Section>
-      )}
-
-      {!order.canRequestCancellation && order.status === PaymentStatus.Paid && (
-        <p>
-          {t.Order.actions.requestCancellation.contactTicketSales(seller.email)}
-        </p>
-      )}
+      <RequestCancellationSection
+        order={order}
+        cancelHref={`/${eventSlug}/orders/${orderId}/cancel`}
+        contactEmail={seller.email}
+        messages={t.Order.actions.requestCancellation}
+      />
 
       {showProfileMessage && <p>{t.Order.profileMessage(ProfileLink)}</p>}
     </ViewContainer>

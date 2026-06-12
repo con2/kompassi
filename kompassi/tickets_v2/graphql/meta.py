@@ -22,14 +22,29 @@ from .quota_full import FullQuotaType
 class TicketsV2EventMetaType(DjangoObjectType):
     class Meta:
         model = TicketsV2EventMeta
+        # NOTE: T&C URLs and the cancellation period are public information
+        # (already served to anonymous users via the REST API and order pages).
         fields = (
             "provider_id",
-            "contact_email",
             "terms_and_conditions_url_en",
             "terms_and_conditions_url_fi",
             "terms_and_conditions_url_sv",
             "cancellation_period_days",
         )
+
+    @graphql_query_cbac_required
+    @staticmethod
+    def resolve_contact_email(meta: TicketsV2EventMeta, info):
+        """
+        Ticket sales contact email in the Name Surname <email@example.com> format.
+        Admin oriented view; customers get the plain seller email via the order API.
+        """
+        return meta.contact_email
+
+    contact_email = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_contact_email.__doc__ or ""),
+    )
 
     @graphql_query_cbac_required
     @staticmethod

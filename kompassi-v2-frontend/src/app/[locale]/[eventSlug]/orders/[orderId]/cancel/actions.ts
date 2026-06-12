@@ -59,7 +59,10 @@ export async function confirmOrderCancellation(
   orderId: string,
   code: string,
 ) {
-  let success = false;
+  // "cancelled": order cancelled, refund (if any) initiated
+  // "refundFailed": order cancelled, but the provider rejected the refund request
+  // "error": nothing happened (eg. invalid or expired code)
+  let outcome: "cancelled" | "refundFailed" | "error" = "error";
   try {
     const response = await getClient().mutate({
       mutation: confirmOrderCancellationMutation,
@@ -71,17 +74,27 @@ export async function confirmOrderCancellation(
         },
       },
     });
-    success = !!response.data?.confirmOrderCancellation?.success;
+    if (response.data?.confirmOrderCancellation) {
+      outcome = response.data.confirmOrderCancellation.success
+        ? "cancelled"
+        : "refundFailed";
+    }
   } catch (error) {
     console.error("confirmOrderCancellation failed", error);
   }
 
-  if (success) {
-    revalidatePath(`/${locale}/${eventSlug}/orders/${orderId}`);
-    return void redirect(`/${eventSlug}/orders/${orderId}?success=cancelled`);
-  } else {
-    return void redirect(
-      `/${eventSlug}/orders/${orderId}/cancel/${code}?error=cancellationFailed`,
-    );
+  switch (outcome) {
+    case "cancelled":
+      revalidatePath(`/${locale}/${eventSlug}/orders/${orderId}`);
+      return void redirect(`/${eventSlug}/orders/${orderId}?success=cancelled`);
+    case "refundFailed":
+      revalidatePath(`/${locale}/${eventSlug}/orders/${orderId}`);
+      return void redirect(
+        `/${eventSlug}/orders/${orderId}?error=refundFailed`,
+      );
+    default:
+      return void redirect(
+        `/${eventSlug}/orders/${orderId}/cancel/${code}?error=cancellationFailed`,
+      );
   }
 }

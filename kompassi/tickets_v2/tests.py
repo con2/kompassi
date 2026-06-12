@@ -19,7 +19,7 @@ from kompassi.tickets_v2.models.order import Order
 from kompassi.tickets_v2.models.order_cancellation_token import OrderCancellationToken
 from kompassi.tickets_v2.models.payment_stamp import PaymentStamp
 from kompassi.tickets_v2.models.product import Product
-from kompassi.tickets_v2.models.receipt import EVENT_CACHE, PendingReceipt
+from kompassi.tickets_v2.models.receipt import PendingReceipt
 from kompassi.tickets_v2.optimized_server.models.api import CreateOrderResponse, GetOrderResponse, GetProductsResponse
 from kompassi.tickets_v2.optimized_server.models.customer import Customer
 from kompassi.tickets_v2.optimized_server.models.enums import (
@@ -706,7 +706,16 @@ def test_request_order_cancellation(cancellation_event: Event):
     assert message.to == ["Test Customer <test@example.com>"]
     assert message.reply_to == ["Test Ticket Sales <tickets@example.com>"]
 
-    # requesting again revokes the previous token and sends a new one
+    # requesting again right away is throttled (email bombing prevention)
+    with pytest.raises(ValueError):
+        RequestOrderCancellation.mutate(None, None, _request_input(event, order_id))
+    token.refresh_from_db()
+    assert token.state == "valid"
+    assert len(mail.outbox) == 1
+
+    # once the throttle period has passed, requesting again
+    # revokes the previous token and sends a new one
+    OrderCancellationToken.objects.filter(pk=token.pk).update(created_at=datetime.now(UTC) - timedelta(minutes=2))
     RequestOrderCancellation.mutate(None, None, _request_input(event, order_id))
     token.refresh_from_db()
     assert token.state == "revoked"
@@ -794,7 +803,6 @@ def test_receipt_cancellation_link(cancellation_event: Event):
     _add_provider_paid_stamp(event, order_id)
     order = _get_order(event, order_id)
 
-    EVENT_CACHE.clear()
     PendingReceipt.event_cache_refreshed_at = None
     receipt = PendingReceipt.from_order(order)
     assert receipt.is_customer_cancellable
@@ -805,8 +813,27 @@ def test_receipt_cancellation_link(cancellation_event: Event):
     meta.cancellation_period_days = 0
     meta.save(update_fields=["cancellation_period_days"])
 
-    EVENT_CACHE.clear()
     PendingReceipt.event_cache_refreshed_at = None
     receipt = PendingReceipt.from_order(order)
     assert not receipt.is_customer_cancellable
     assert "/cancel" not in receipt.body
+
+
+@pytest.mark.django_db
+def test_confirm_order_cancellation_expired_token(cancellation_event: Event):
+    """
+    A confirmation link can only be used for a limited time after it was
+    requested, even if the order remains cancellable. A new link can always
+    be requested.
+    """
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PAID)
+
+    RequestOrderCancellation.mutate(None, None, _request_input(event, order_id))
+    token = OrderCancellationToken.objects.get(event=event, order_id=order_id, state="valid")
+    OrderCancellationToken.objects.filter(pk=token.pk).update(created_at=datetime.now(UTC) - timedelta(hours=25))
+
+    with pytest.raises(ValueError):
+        ConfirmOrderCancellation.mutate(None, None, _confirm_input(event, order_id, token.code))
+
+    assert _get_order(event, order_id).status == PaymentStatus.PAID

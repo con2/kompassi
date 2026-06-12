@@ -8,7 +8,6 @@ Current approach is as follows:
 
 1. Find a symbol you want in the [icon search](https://fonts.google.com/icons)
 2. Configure the following settings:
-
    - **Weight**: 400
    - **Grade**: 0
    - **Style**: Material Symbols (New), Outlined

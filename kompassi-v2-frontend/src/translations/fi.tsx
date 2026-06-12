@@ -654,6 +654,12 @@ const translations: Translations = {
             lipunmyyntiin.
           </>
         ),
+        refundFailed: (
+          <>
+            Tilauksesi on peruttu, mutta maksun palautusta ei voitu käynnistää.
+            Ota yhteyttä lipunmyyntiin saadaksesi maksunpalautuksen.
+          </>
+        ),
       },
       cancelPage: {
         title: "Peruuta tilaus",

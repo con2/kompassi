@@ -195,9 +195,9 @@ export type ConfirmEmailInput = {
  * May be called without authentication: the one-time code proves control of
  * the email address of the order.
  *
- * If the provider refund request fails after the code is consumed, the order
- * is left in REFUND_FAILED state for ticket sales to resolve with the
- * existing admin refund tooling.
+ * Returns success=False if the order was cancelled but the provider rejected
+ * the refund request (order left in REFUND_FAILED for ticket sales to resolve
+ * with the existing admin refund tooling).
  *
  * NOTE: Must not return any PII (the caller may be anonymous).
  */
@@ -1606,9 +1606,9 @@ export type Mutation = {
    * May be called without authentication: the one-time code proves control of
    * the email address of the order.
    *
-   * If the provider refund request fails after the code is consumed, the order
-   * is left in REFUND_FAILED state for ticket sales to resolve with the
-   * existing admin refund tooling.
+   * Returns success=False if the order was cancelled but the provider rejected
+   * the refund request (order left in REFUND_FAILED for ticket sales to resolve
+   * with the existing admin refund tooling).
    *
    * NOTE: Must not return any PII (the caller may be anonymous).
    */
@@ -1690,6 +1690,7 @@ export type Mutation = {
   updateSurveyDefaultDimensions?: Maybe<UpdateSurveyDefaultDimensions>;
   /**
    * Updates the tickets settings that are exposed to event admins.
+   * Fields omitted from the input are left unchanged (clear with an empty value).
    * NOTE: provider_id is deliberately not settable here (super admin only).
    */
   updateTicketsPreferences?: Maybe<UpdateTicketsPreferences>;
@@ -2744,7 +2745,7 @@ export type TicketsV2EventMetaType = {
   __typename?: 'TicketsV2EventMetaType';
   /** Number of days from order creation during which the customer can cancel a paid order themselves. The period is further capped at event start. 0 = customer self-service cancellation disabled. */
   cancellationPeriodDays: Scalars['Int']['output'];
-  /** Foo Bar &lt;foo.bar@example.com&gt; */
+  /** Ticket sales contact email in the Name Surname <email@example.com> format. Admin oriented view; customers get the plain seller email via the order API. */
   contactEmail: Scalars['String']['output'];
   /** Returns the total number of orders made to this event. Admin oriented view; customers will access order information through `profile.tickets`. */
   countTotalOrders: Scalars['Int']['output'];
@@ -3032,6 +3033,7 @@ export type UpdateSurveyInput = {
 
 /**
  * Updates the tickets settings that are exposed to event admins.
+ * Fields omitted from the input are left unchanged (clear with an empty value).
  * NOTE: provider_id is deliberately not settable here (super admin only).
  */
 export type UpdateTicketsPreferences = {

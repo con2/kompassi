@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from collections import defaultdict
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Annotated, Any, ClassVar, Self
@@ -14,6 +14,7 @@ from psycopg.errors import NotNullViolation
 
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 
+from ...optimized_server.utils.cancellation import get_cancellation_deadline, is_cancellable_by_customer
 from ...optimized_server.utils.uuid7 import uuid7, uuid7_to_datetime
 from ..config import KOMPASSI_V2_BASE_URL
 from ..excs import InvalidProducts, UnsaneSituation
@@ -255,23 +256,17 @@ class Order(pydantic.BaseModel, populate_by_name=True):
         return f"{KOMPASSI_V2_BASE_URL}/{event_slug}/orders/{self.id}"
 
     def populate_cancellation(self, event: Event) -> None:
-        """
-        Keep in sync with the Django side:
-        kompassi.tickets_v2.models.order.Order.cancellation_deadline
-        and can_be_cancelled_by_customer.
-        """
-        if not event.cancellation_period_days:
-            return
-
-        deadline = self.created_at + timedelta(days=event.cancellation_period_days)
-        if event.start_time is not None:
-            deadline = min(deadline, event.start_time)
-
-        self.cancellation_deadline = deadline
-        self.can_request_cancellation = (
-            self.status == PaymentStatus.PAID
-            and datetime.now(UTC) < deadline
-            and (self.total_price == 0 or self.paid_by_provider)
+        self.cancellation_deadline = get_cancellation_deadline(
+            order_created_at=self.created_at,
+            cancellation_period_days=event.cancellation_period_days,
+            event_start_time=event.start_time,
+        )
+        self.can_request_cancellation = is_cancellable_by_customer(
+            status=self.status,
+            cancellation_deadline=self.cancellation_deadline,
+            now=datetime.now(UTC),
+            total_price=self.total_price,
+            is_paid_by_provider=lambda: self.paid_by_provider,
         )
 
 
