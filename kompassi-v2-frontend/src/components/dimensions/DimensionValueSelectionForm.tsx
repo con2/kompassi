@@ -55,7 +55,7 @@ export function buildDimensionField(
     type = "MultiSelect";
   }
 
-  const value = type === "SingleSelect" ? (valueList[0] ?? "") : valueList;
+  const value = type === "SingleSelect" ? valueList[0] ?? "" : valueList;
   const readOnly = technicalDimensions === "readonly" && dimension.isTechnical;
 
   const title = dimension.title || dimension.slug;
