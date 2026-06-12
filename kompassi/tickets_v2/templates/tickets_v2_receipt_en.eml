@@ -2,6 +2,7 @@
 
 Thank you for your order at the {{ event_name }} online shop!
 Your order number is {{ order_number|format_order_number }}.
+Date of purchase: {{ order_date|date:"Y-m-d" }}
 
 We confirm the following products have been paid for:
 

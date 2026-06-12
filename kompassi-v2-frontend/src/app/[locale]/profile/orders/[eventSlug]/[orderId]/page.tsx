@@ -10,6 +10,7 @@ import SignInRequired from "@/components/errors/SignInRequired";
 import ModalButton from "@/components/ModalButton";
 import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
+import SellerSection from "@/components/tickets/SellerSection";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -28,6 +29,7 @@ const query = graphql(`
           eticketsLink
           canPay
           canCancel
+          ticketsContactEmail
           products {
             title
             quantity
@@ -38,6 +40,10 @@ const query = graphql(`
           event {
             slug
             name
+            organization {
+              name
+              businessId
+            }
           }
         }
       }
@@ -127,6 +133,15 @@ export default async function ProfileOrderPage(props: Props) {
         order={order}
         locale={locale}
         messages={translations.Tickets}
+      />
+
+      <SellerSection
+        seller={{
+          name: order.event.organization.name,
+          email: order.ticketsContactEmail,
+          businessId: order.event.organization.businessId,
+        }}
+        messages={t.attributes.seller}
       />
 
       {order.canPay && (

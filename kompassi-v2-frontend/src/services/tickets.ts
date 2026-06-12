@@ -179,6 +179,11 @@ export interface GetOrderResponse {
     name: string;
   };
   order: Order;
+  seller: {
+    name: string;
+    email: string | null;
+    businessId: string | null;
+  };
 }
 
 export async function getOrder(

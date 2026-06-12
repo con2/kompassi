@@ -10,6 +10,7 @@ class LimitedOrganizationType(DjangoObjectType):
         fields = (
             "slug",
             "name",
+            "business_id",
         )
 
     timezone = graphene.NonNull(graphene.String)

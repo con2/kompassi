@@ -190,10 +190,14 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
         EVENT_CACHE.update(
             {
                 event.id: event
-                for event in Event.objects.filter(ticketsv2eventmeta__isnull=False).only(
+                for event in Event.objects.filter(ticketsv2eventmeta__isnull=False)
+                .select_related("organization")
+                .only(
                     "name",
                     "slug",
                     "timezone_name",
+                    "organization__name",
+                    "organization__business_id",
                 )
             }
         )
@@ -310,9 +314,11 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             case _:
                 raise ValueError("Unknown receipt type")
 
+        organization = self.event.organization
         vars = dict(
             event_name=self.event.name,
             order_number=self.order_number,
+            order_date=self.order_date,
             products=self.products,
             total_price=self.total_price,
             vat_breakdown=self.vat_breakdown,
@@ -322,6 +328,9 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             last_name=self.last_name,
             email=self.email,
             phone=self.phone,
+            seller_name=organization.name,
+            seller_email=self.meta.contact_email,
+            seller_business_id=organization.business_id,
         )
         return render_to_string(template_name, vars)
 

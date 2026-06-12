@@ -3,4 +3,6 @@ Ystävällisin terveisin
 {{ event_name }} -tapahtuman puolesta
 Kompassi-tapahtumanhallintajärjestelmä
 
-Yleishyödyllisenä yhteisönä myyjä ei ole arvonlisäverovelvollinen.
+Myyjä: {{ seller_name }}{% if seller_email %}
+Sähköposti: {{ seller_email }}{% endif %}{% if seller_business_id %}
+Y-tunnus: {{ seller_business_id }}{% endif %}
