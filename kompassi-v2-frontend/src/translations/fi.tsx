@@ -624,6 +624,79 @@ const translations: Translations = {
           <>Sähköpostin vahvistaminen epäonnistui. Yritä myöhemmin uudelleen.</>
         ),
       },
+      cancelMessages: {
+        cancelled: (
+          <>
+            Tilauksesi on peruttu. Jos tilaus oli maksettu, maksu palautetaan
+            alkuperäiselle maksutavalle.
+          </>
+        ),
+        failedToCancel: (
+          <>Tilauksen peruminen epäonnistui. Yritä myöhemmin uudelleen.</>
+        ),
+        cancellationRequested: (
+          <>
+            Peruutuslinkki on lähetetty tilauksen sähköpostiosoitteeseen.
+            Tarkista sähköpostisi ja vahvista peruutus avaamalla viestissä oleva
+            linkki.
+          </>
+        ),
+        cancellationRequestFailed: (
+          <>
+            Peruutuslinkin lähettäminen epäonnistui. Yritä myöhemmin uudelleen
+            tai ota yhteyttä lipunmyyntiin.
+          </>
+        ),
+        cancellationFailed: (
+          <>
+            Tilauksen peruminen epäonnistui. Peruutuslinkki on saattanut
+            vanhentua tai se on jo käytetty. Yritä uudelleen tai ota yhteyttä
+            lipunmyyntiin.
+          </>
+        ),
+      },
+      cancelPage: {
+        title: "Peruuta tilaus",
+        explanation: (
+          <>
+            <p>
+              Tilauksen peruminen täytyy vahvistaa sillä sähköpostiosoitteella,
+              jolla tilaus on tehty. Alla olevaa nappia painamalla tilauksen
+              sähköpostiosoitteeseen lähetetään peruutuslinkki.
+            </p>
+            <p>
+              Tilauksesi pysyy voimassa, ellet avaa viestissä olevaa linkkiä ja
+              vahvista peruutusta.
+            </p>
+          </>
+        ),
+        deadline: (deadline: ReactNode) => (
+          <>Tilauksen voi peruuttaa {deadline} saakka.</>
+        ),
+        notCancellable: "Tätä tilausta ei voi peruuttaa.",
+        actions: {
+          sendConfirmationEmail: "Lähetä peruutuslinkki",
+          returnToOrderPage: "Palaa tilaussivulle",
+        },
+        confirm: {
+          title: "Vahvista tilauksen peruutus",
+          warning: (
+            <>
+              <p>Olet peruuttamassa tilaustasi.</p>
+              <p>
+                Tilaukseen sisältyvät liput mitätöidään, ja mahdolliset maksut
+                palautetaan alkuperäiselle maksutavalle.
+              </p>
+              <p>
+                <strong>Tilauksen peruutusta ei voi perua.</strong>
+              </p>
+            </>
+          ),
+          actions: {
+            cancelOrder: "Peruuta tilaus",
+          },
+        },
+      },
       showingOrders: (numOrdersShown: number, numTotalOrders: number) => (
         <>
           Näytetään {numOrdersShown} tilaus{numOrdersShown === 1 ? "" : "ta"}{" "}
@@ -881,6 +954,21 @@ const translations: Translations = {
             submit: "Peruuta tilaus",
             cancel: "Sulje peruuttamatta",
           },
+        },
+        requestCancellation: {
+          title: "Peruuta tilaus",
+          contactTicketSales: (email: string | null) => (
+            <>
+              Jos haluat peruuttaa tämän tilauksen, ota yhteyttä lipunmyyntiin
+              {email ? (
+                <>
+                  : <a href={`mailto:${email}`}>{email}</a>
+                </>
+              ) : (
+                "."
+              )}
+            </>
+          ),
         },
         resendOrderConfirmation: {
           title: "Lähetä uudelleen",
@@ -1165,8 +1253,29 @@ const translations: Translations = {
         products: "Tuotteet",
         quotas: "Kiintiöt",
         reports: "Raportit",
+        preferences: "Asetukset",
         ticketControl: "Lipuntarkastus",
         webShop: "Lippukauppaan",
+      },
+      preferences: {
+        title: "Lippukaupan asetukset",
+        attributes: {
+          contactEmail: {
+            title: "Yhteysosoite",
+            helpText:
+              "Muoto: Nimi <osoite@example.com>. Vastaukset tilausvahvistuksiin ja muihin asiakkaille lähetettyihin sähköposteihin ohjataan tähän osoitteeseen.",
+          },
+          termsAndConditionsUrl: {
+            en: "Toimitusehtojen osoite (englanniksi)",
+            fi: "Toimitusehtojen osoite (suomeksi)",
+            sv: "Toimitusehtojen osoite (ruotsiksi)",
+          },
+          cancellationPeriodDays: {
+            title: "Peruutusaika (päivää)",
+            helpText:
+              "Kuinka monta päivää tilauksen tekemisestä asiakas voi itse peruuttaa maksetun tilauksen. Peruutusaika päättyy viimeistään tapahtuman alkaessa. Aseta arvoksi 0 poistaaksesi omatoimisen peruutuksen käytöstä.",
+          },
+        },
       },
       messages: {
         orderCreated: (

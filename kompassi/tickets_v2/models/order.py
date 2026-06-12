@@ -14,6 +14,7 @@ from django.db.models.functions import Concat, Lower
 from django.http import HttpRequest
 from django.urls import reverse
 from django.utils.timezone import get_current_timezone
+from django.utils.timezone import now as django_now
 from lippukala.models.code import Code as LippukalaCode
 from lippukala.models.order import Order as LippukalaOrder
 
@@ -329,6 +330,42 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         return (
             self.status.is_owner_cancelable and self.owner is not None and user.is_authenticated and user == self.owner
         )
+
+    @property
+    def cancellation_deadline(self) -> datetime | None:
+        """
+        Deadline for customer self-service cancellation, or None if disabled for the event.
+        The cancellation period starts at order creation and is capped at event start.
+        """
+        period_days = self.meta.cancellation_period_days
+        if not period_days:
+            return None
+
+        deadline = self.timestamp + timedelta(days=period_days)
+
+        if (start_time := self.event.start_time) is not None:
+            deadline = min(deadline, start_time)
+
+        return deadline
+
+    def can_be_cancelled_by_customer(self) -> bool:
+        """
+        Customer self-service cancellation (confirmed via email) is allowed for paid orders
+        within the cancellation period, provided that any money paid can be automatically
+        refunded via the payment provider. Customers holding orders that fail these criteria
+        are directed to contact ticket sales instead.
+        """
+        if self.status != PaymentStatus.PAID:
+            return False
+
+        deadline = self.cancellation_deadline
+        if deadline is None or django_now() >= deadline:
+            return False
+
+        if self.cached_price == 0:
+            return True
+
+        return self.payment_stamps.filter(status=PaymentStatus.PAID).exclude(provider_id=PaymentProvider.NONE).exists()
 
     def can_be_provider_refunded_by(self, request: HttpRequest):
         # TODO should this method do all the same checks that cancel_and_refund does?

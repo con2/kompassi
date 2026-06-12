@@ -71,6 +71,32 @@ class ProfileOrderType(LimitedOrderType):
     )
 
     @staticmethod
+    def resolve_can_request_cancellation(order: Order, info):
+        """
+        Returns true if the customer can cancel this order themselves
+        via the email confirmed cancellation flow.
+        """
+        return order.can_be_cancelled_by_customer()
+
+    can_request_cancellation = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_request_cancellation.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_cancellation_deadline(order: Order, info):
+        """
+        The customer may cancel their order themselves until this deadline.
+        Null if customer self-service cancellation is not enabled for the event.
+        """
+        return order.cancellation_deadline
+
+    cancellation_deadline = graphene.Field(
+        graphene.DateTime,
+        description=normalize_whitespace(resolve_cancellation_deadline.__doc__ or ""),
+    )
+
+    @staticmethod
     def resolve_tickets_contact_email(order: Order, info):
         """
         Contact email for the ticket seller (from the event's tickets meta).

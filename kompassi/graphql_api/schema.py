@@ -58,6 +58,7 @@ from kompassi.program_v2.graphql.mutations.update_program_form import UpdateProg
 from kompassi.program_v2.graphql.mutations.update_program_preferences import UpdateProgramPreferences
 from kompassi.tickets_v2.graphql.mutations.cancel_and_refund_order import CancelAndRefundOrder
 from kompassi.tickets_v2.graphql.mutations.cancel_own_unpaid_order import CancelOwnUnpaidOrder
+from kompassi.tickets_v2.graphql.mutations.confirm_order_cancellation import ConfirmOrderCancellation
 from kompassi.tickets_v2.graphql.mutations.create_order import CreateOrder
 from kompassi.tickets_v2.graphql.mutations.create_product import CreateProduct
 from kompassi.tickets_v2.graphql.mutations.create_quota import CreateQuota
@@ -65,10 +66,12 @@ from kompassi.tickets_v2.graphql.mutations.delete_product import DeleteProduct
 from kompassi.tickets_v2.graphql.mutations.delete_quota import DeleteQuota
 from kompassi.tickets_v2.graphql.mutations.mark_order_as_paid import MarkOrderAsPaid
 from kompassi.tickets_v2.graphql.mutations.reorder_products import ReorderProducts
+from kompassi.tickets_v2.graphql.mutations.request_order_cancellation import RequestOrderCancellation
 from kompassi.tickets_v2.graphql.mutations.resend_order_confirmation import ResendOrderConfirmation
 from kompassi.tickets_v2.graphql.mutations.update_order import UpdateOrder
 from kompassi.tickets_v2.graphql.mutations.update_product import UpdateProduct
 from kompassi.tickets_v2.graphql.mutations.update_quota import UpdateQuota
+from kompassi.tickets_v2.graphql.mutations.update_tickets_preferences import UpdateTicketsPreferences
 
 from .language import DEFAULT_LANGUAGE, Language
 
@@ -212,6 +215,10 @@ class Mutation(graphene.ObjectType):
     cancel_and_refund_order = CancelAndRefundOrder.Field()
     cancel_own_unpaid_order = CancelOwnUnpaidOrder.Field()
     mark_order_as_paid = MarkOrderAsPaid.Field()
+
+    request_order_cancellation = RequestOrderCancellation.Field()
+    confirm_order_cancellation = ConfirmOrderCancellation.Field()
+    update_tickets_preferences = UpdateTicketsPreferences.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

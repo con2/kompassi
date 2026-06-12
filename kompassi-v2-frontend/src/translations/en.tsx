@@ -630,6 +630,79 @@ const translations = {
           <>Email confirmation failed. Please try again later.</>
         ),
       },
+      cancelMessages: {
+        cancelled: (
+          <>
+            Your order has been cancelled. If the order was paid, the payment
+            will be refunded to the original payment method.
+          </>
+        ),
+        failedToCancel: (
+          <>Failed to cancel the order. Please try again later.</>
+        ),
+        cancellationRequested: (
+          <>
+            A cancellation link has been sent to the email address of the order.
+            Please check your inbox and open the link in the message to confirm
+            the cancellation.
+          </>
+        ),
+        cancellationRequestFailed: (
+          <>
+            Failed to send the cancellation link. Please try again later or
+            contact ticket sales.
+          </>
+        ),
+        cancellationFailed: (
+          <>
+            Failed to cancel the order. The cancellation link may have expired
+            or already been used. Please try again or contact ticket sales.
+          </>
+        ),
+      },
+      cancelPage: {
+        title: "Cancel order",
+        explanation: (
+          <>
+            <p>
+              In order to cancel your order, the cancellation needs to be
+              confirmed using the email address the order was placed with.
+              Pressing the button below will send a cancellation link to the
+              email address of the order.
+            </p>
+            <p>
+              Your order will remain valid unless you open the link in the
+              message and confirm the cancellation there.
+            </p>
+          </>
+        ),
+        deadline: (deadline: ReactNode) => (
+          <>The order can be cancelled until {deadline}.</>
+        ),
+        notCancellable: "This order cannot be cancelled.",
+        actions: {
+          sendConfirmationEmail: "Send cancellation link",
+          returnToOrderPage: "Return to the order page",
+        },
+        confirm: {
+          title: "Confirm order cancellation",
+          warning: (
+            <>
+              <p>You are about to cancel your order.</p>
+              <p>
+                Any tickets contained in the order will be invalidated, and any
+                payments will be refunded to the original payment method.
+              </p>
+              <p>
+                <strong>This action cannot be undone.</strong>
+              </p>
+            </>
+          ),
+          actions: {
+            cancelOrder: "Cancel order",
+          },
+        },
+      },
       showingOrders: (numOrdersShown: number, numTotalOrders: number) => (
         <>
           Showing {numOrdersShown} order{numOrdersShown === 1 ? "" : "s"} (total{" "}
@@ -885,6 +958,21 @@ const translations = {
             submit: "Cancel order",
             cancel: "Close without cancelling",
           },
+        },
+        requestCancellation: {
+          title: "Cancel order",
+          contactTicketSales: (email: string | null) => (
+            <>
+              If you wish to cancel this order, please contact ticket sales
+              {email ? (
+                <>
+                  : <a href={`mailto:${email}`}>{email}</a>
+                </>
+              ) : (
+                "."
+              )}
+            </>
+          ),
         },
         saveContactInformation: "Save contact information",
         resendOrderConfirmation: {
@@ -1170,8 +1258,29 @@ const translations = {
         products: "Products",
         quotas: "Quotas",
         reports: "Reports",
+        preferences: "Settings",
         ticketControl: "Ticket control",
         webShop: "Web shop",
+      },
+      preferences: {
+        title: "Ticket shop settings",
+        attributes: {
+          contactEmail: {
+            title: "Contact email",
+            helpText:
+              "Format: Name <email@example.com>. Replies to order confirmations and other emails sent to customers are directed to this address.",
+          },
+          termsAndConditionsUrl: {
+            en: "Terms and conditions URL (English)",
+            fi: "Terms and conditions URL (Finnish)",
+            sv: "Terms and conditions URL (Swedish)",
+          },
+          cancellationPeriodDays: {
+            title: "Cancellation period (days)",
+            helpText:
+              "Number of days from placing the order during which the customer can cancel a paid order themselves. The cancellation period ends when the event starts at the latest. Set to 0 to disable customer self-service cancellation.",
+          },
+        },
       },
       messages: {
         orderCreated: (

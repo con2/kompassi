@@ -1,0 +1,18 @@
+{% load tickets_v2_tags %}Hyvä vastaanottaja,
+
+{{ event_name }} -verkkokaupassa tehdylle tilaukselle numero
+{{ order_number|format_order_number }} on pyydetty peruutusta.
+
+Vahvista peruutus avaamalla seuraava linkki:
+
+{{ confirmation_url }}
+
+Tilauksen peruutusta ei voi perua. Tilaukseen sisältyvät liput mitätöidään,
+ja mahdolliset maksut palautetaan alkuperäiselle maksutavalle.{% if deadline %}
+
+Tilauksen voi peruuttaa {{ deadline|date:"d.m.Y" }} klo {{ deadline|date:"H:i" }} saakka.{% endif %}
+
+Jos et pyytänyt peruutusta, voit jättää tämän viestin huomiotta,
+jolloin tilauksesi pysyy voimassa.
+
+{% include "tickets_v2_footer_fi.eml" %}

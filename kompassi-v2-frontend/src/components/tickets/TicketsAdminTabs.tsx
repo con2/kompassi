@@ -10,6 +10,7 @@ export interface TicketsAdminTabsProps {
     | "products"
     | "quotas"
     | "reports"
+    | "preferences"
     | "ticketControl";
   translations: Translations;
   searchParams: Record<string, string>;
@@ -48,6 +49,11 @@ export default function TicketsAdminTabs({
       slug: "reports",
       title: t.tabs.reports,
       href: `/${eventSlug}/tickets-reports`,
+    },
+    {
+      slug: "preferences",
+      title: t.tabs.preferences,
+      href: `/${eventSlug}/tickets-preferences`,
     },
     {
       slug: "webShop",

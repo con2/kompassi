@@ -26,6 +26,11 @@ The contact information you supplied:
 {{ email }}
 
 If there are any errors in the details above, please contact us without delay
-by replying to this message.
+by replying to this message.{% if cancellation_deadline %}
+
+If you wish to cancel your order, you may do so until
+{{ cancellation_deadline|date:"Y-m-d H:i" }} at the following address:
+
+{{ cancellation_url }}{% endif %}
 
 {% include "tickets_v2_footer_en.eml" %}

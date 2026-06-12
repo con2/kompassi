@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 
 import { payOrder } from "./actions";
 import { PaymentStatus } from "@/__generated__/graphql";
+import Messages from "@/components/errors/Messages";
 import Section from "@/components/Section";
 import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
@@ -17,6 +18,7 @@ interface Props {
     eventSlug: string;
     orderId: string;
   }>;
+  searchParams: Promise<Record<string, string>>;
 }
 
 export const revalidate = 0;
@@ -26,6 +28,7 @@ export const revalidate = 0;
 /// so absolutely no PII.
 export default async function OrderPage(props: Props) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const { locale, eventSlug, orderId } = params;
   const { order, event, seller } = await getOrder(eventSlug, orderId);
   const translations = getTranslations(locale);
@@ -50,6 +53,8 @@ export default async function OrderPage(props: Props) {
     <ViewContainer>
       <OrderHeader order={order} messages={t} locale={locale} event={event} />
 
+      <Messages messages={t.Order.cancelMessages} searchParams={searchParams} />
+
       <ProductsTable order={order} locale={locale} messages={t} />
 
       <SellerSection seller={seller} messages={t.Order.attributes.seller} />
@@ -64,6 +69,25 @@ export default async function OrderPage(props: Props) {
             </div>
           </form>
         </Section>
+      )}
+
+      {order.canRequestCancellation && (
+        <Section>
+          <div className="d-grid gap-2">
+            <Link
+              className="btn btn-outline-danger"
+              href={`/${eventSlug}/orders/${orderId}/cancel`}
+            >
+              {t.Order.actions.requestCancellation.title}…
+            </Link>
+          </div>
+        </Section>
+      )}
+
+      {!order.canRequestCancellation && order.status === PaymentStatus.Paid && (
+        <p>
+          {t.Order.actions.requestCancellation.contactTicketSales(seller.email)}
+        </p>
       )}
 
       {showProfileMessage && <p>{t.Order.profileMessage(ProfileLink)}</p>}

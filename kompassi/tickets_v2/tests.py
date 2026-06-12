@@ -1,20 +1,32 @@
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from functools import cached_property
+from types import SimpleNamespace
 from typing import Any, Literal
 from uuid import UUID, uuid4
 
 import pydantic
 import pytest
 import requests
+from django.core import mail
 
 from kompassi.core.models.event import Event
+from kompassi.tickets_v2.graphql.mutations.confirm_order_cancellation import ConfirmOrderCancellation
+from kompassi.tickets_v2.graphql.mutations.request_order_cancellation import RequestOrderCancellation
+from kompassi.tickets_v2.models.meta import TicketsV2EventMeta
 from kompassi.tickets_v2.models.order import Order
+from kompassi.tickets_v2.models.order_cancellation_token import OrderCancellationToken
+from kompassi.tickets_v2.models.payment_stamp import PaymentStamp
 from kompassi.tickets_v2.models.product import Product
+from kompassi.tickets_v2.models.receipt import EVENT_CACHE, PendingReceipt
 from kompassi.tickets_v2.optimized_server.models.api import CreateOrderResponse, GetOrderResponse, GetProductsResponse
 from kompassi.tickets_v2.optimized_server.models.customer import Customer
-from kompassi.tickets_v2.optimized_server.models.enums import PaymentStatus
+from kompassi.tickets_v2.optimized_server.models.enums import (
+    PaymentProvider,
+    PaymentStampType,
+    PaymentStatus,
+)
 from kompassi.tickets_v2.optimized_server.models.order import CreateOrderRequest, OrderProduct, VatBreakdownLine
 from kompassi.tickets_v2.optimized_server.providers.paytrail import PaymentCallback, PaytrailStatus
 from kompassi.tickets_v2.optimized_server.utils.formatting import format_vat_rate
@@ -241,6 +253,11 @@ def test_make_order(tickets_v2_client: TicketsV2Client):
     get_order_response = tickets_v2_client.get_order(order_response.order_id)
     assert get_order_response.order.status == PaymentStatus.PAID
 
+    # the dev environment event has cancellation_period_days = 0 (the default),
+    # so customer self-service cancellation is not offered
+    assert get_order_response.order.can_request_cancellation is False
+    assert get_order_response.order.cancellation_deadline is None
+
 
 # ---------------------------------------------------------------------------
 # VAT formatting / breakdown unit tests
@@ -324,6 +341,7 @@ def _make_order(
     when: datetime,
     product_data: dict[int, int],
     status: PaymentStatus = PaymentStatus.PAID,
+    total_price: Decimal = Decimal(0),
 ) -> UUID:
     """
     Insert a tickets_v2_order row directly via SQL.
@@ -349,7 +367,7 @@ def _make_order(
                 str(order_id),
                 event.id,
                 status.value,
-                "0",
+                str(total_price),
                 "en",
                 json.dumps({str(pid): qty for pid, qty in product_data.items()}),
                 "Test",
@@ -516,3 +534,279 @@ def test_vat_by_month_report_localized_titles(vat_report_event: Event):
     vat_col_fi = next(c for c in fi_report.columns if c.slug == "vat_25.50")
     assert vat_col_en.title["en"] == "25.5%"
     assert vat_col_fi.title["fi"] == "25,5%"
+
+
+# ---------------------------------------------------------------------------
+# Customer self-service cancellation tests
+# ---------------------------------------------------------------------------
+
+
+def _add_provider_paid_stamp(event: Event, order_id: UUID):
+    """
+    Simulate a successful payment via a payment provider. The payment stamp
+    trigger updates the cached status of the order to PAID.
+    """
+    PaymentStamp(
+        event=event,
+        order_id=order_id,
+        correlation_id=uuid7(),
+        provider_id=PaymentProvider.PAYTRAIL,
+        type=PaymentStampType.PAYMENT_CALLBACK,
+        status=PaymentStatus.PAID,
+        data={},
+    ).save()
+
+
+def _request_input(event: Event, order_id: UUID):
+    return SimpleNamespace(event_slug=event.slug, order_id=str(order_id))
+
+
+def _confirm_input(event: Event, order_id: UUID, code: str):
+    return SimpleNamespace(event_slug=event.slug, order_id=str(order_id), code=code)
+
+
+@pytest.fixture
+def cancellation_event(db):
+    from kompassi.event_log_v2.models.entry import Entry
+
+    event, _ = Event.get_or_create_dummy(name="Cancellation test event")
+    (admin_group,) = TicketsV2EventMeta.get_or_create_groups(event, ["admins"])
+    meta, _ = TicketsV2EventMeta.objects.update_or_create(
+        event=event,
+        defaults=dict(
+            admin_group=admin_group,
+            contact_email="Test Ticket Sales <tickets@example.com>",
+            cancellation_period_days=14,
+        ),
+    )
+    meta.ensure_partitions()
+    Entry.ensure_partitions()
+    return event
+
+
+def _get_order(event: Event, order_id: UUID) -> Order:
+    return Order.objects.get(event=event, id=order_id)
+
+
+@pytest.mark.django_db
+def test_can_be_cancelled_by_customer_zero_price(cancellation_event: Event):
+    event = cancellation_event
+    now = datetime.now(UTC)
+
+    order_id = _make_order(event, now, {}, status=PaymentStatus.PAID)
+    order = _get_order(event, order_id)
+
+    # event starts in 60 days, so the deadline comes from the cancellation period
+    assert order.cancellation_deadline == order.timestamp + timedelta(days=14)
+    assert order.can_be_cancelled_by_customer()
+
+
+@pytest.mark.django_db
+def test_can_be_cancelled_by_customer_provider_paid(cancellation_event: Event):
+    event = cancellation_event
+    now = datetime.now(UTC)
+
+    order_id = _make_order(event, now, {}, status=PaymentStatus.PENDING, total_price=Decimal("10.00"))
+    _add_provider_paid_stamp(event, order_id)
+
+    order = _get_order(event, order_id)
+    assert order.status == PaymentStatus.PAID
+    assert order.can_be_cancelled_by_customer()
+
+
+@pytest.mark.django_db
+def test_can_be_cancelled_by_customer_manually_paid(cancellation_event: Event):
+    """
+    A paid order with money paid outside a payment provider (eg. marked as paid
+    by an admin) cannot be self-service cancelled because the money cannot be
+    automatically refunded.
+    """
+    event = cancellation_event
+    now = datetime.now(UTC)
+
+    order_id = _make_order(event, now, {}, status=PaymentStatus.PAID, total_price=Decimal("10.00"))
+    assert not _get_order(event, order_id).can_be_cancelled_by_customer()
+
+
+@pytest.mark.django_db
+def test_can_be_cancelled_by_customer_period_expired(cancellation_event: Event):
+    event = cancellation_event
+    when = datetime.now(UTC) - timedelta(days=15)
+
+    order_id = _make_order(event, when, {}, status=PaymentStatus.PAID)
+    assert not _get_order(event, order_id).can_be_cancelled_by_customer()
+
+
+@pytest.mark.django_db
+def test_can_be_cancelled_by_customer_event_started(cancellation_event: Event):
+    event = cancellation_event
+    event.start_time = datetime.now(UTC) - timedelta(hours=1)
+    event.save(update_fields=["start_time"])
+
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PAID)
+    assert not _get_order(event, order_id).can_be_cancelled_by_customer()
+
+
+@pytest.mark.django_db
+def test_can_be_cancelled_by_customer_no_start_time(cancellation_event: Event):
+    event = cancellation_event
+    event.start_time = None
+    event.end_time = None
+    event.save(update_fields=["start_time", "end_time"])
+
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PAID)
+    order = _get_order(event, order_id)
+    assert order.cancellation_deadline == order.timestamp + timedelta(days=14)
+    assert order.can_be_cancelled_by_customer()
+
+
+@pytest.mark.django_db
+def test_can_be_cancelled_by_customer_disabled(cancellation_event: Event):
+    event = cancellation_event
+    meta = TicketsV2EventMeta.objects.get(event=event)
+    meta.cancellation_period_days = 0
+    meta.save(update_fields=["cancellation_period_days"])
+
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PAID)
+    order = _get_order(event, order_id)
+    assert order.cancellation_deadline is None
+    assert not order.can_be_cancelled_by_customer()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "status",
+    [
+        PaymentStatus.NOT_STARTED,
+        PaymentStatus.PENDING,
+        PaymentStatus.FAILED,
+        PaymentStatus.CANCELLED,
+        PaymentStatus.REFUND_REQUESTED,
+        PaymentStatus.REFUND_FAILED,
+        PaymentStatus.REFUNDED,
+    ],
+)
+def test_can_be_cancelled_by_customer_wrong_status(cancellation_event: Event, status: PaymentStatus):
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=status)
+    assert not _get_order(event, order_id).can_be_cancelled_by_customer()
+
+
+@pytest.mark.django_db
+def test_request_order_cancellation(cancellation_event: Event):
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PAID)
+
+    RequestOrderCancellation.mutate(None, None, _request_input(event, order_id))
+
+    token = OrderCancellationToken.objects.get(event=event, order_id=order_id, state="valid")
+    assert len(mail.outbox) == 1
+    message = mail.outbox[0]
+    assert token.confirmation_url in message.body
+    assert message.to == ["Test Customer <test@example.com>"]
+    assert message.reply_to == ["Test Ticket Sales <tickets@example.com>"]
+
+    # requesting again revokes the previous token and sends a new one
+    RequestOrderCancellation.mutate(None, None, _request_input(event, order_id))
+    token.refresh_from_db()
+    assert token.state == "revoked"
+    assert OrderCancellationToken.objects.filter(event=event, order_id=order_id, state="valid").count() == 1
+    assert len(mail.outbox) == 2
+
+
+@pytest.mark.django_db
+def test_request_order_cancellation_ineligible(cancellation_event: Event):
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PENDING)
+
+    with pytest.raises(ValueError):
+        RequestOrderCancellation.mutate(None, None, _request_input(event, order_id))
+
+    assert not OrderCancellationToken.objects.filter(event=event, order_id=order_id).exists()
+    assert len(mail.outbox) == 0
+
+
+@pytest.mark.django_db
+def test_confirm_order_cancellation(cancellation_event: Event):
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PAID)
+
+    RequestOrderCancellation.mutate(None, None, _request_input(event, order_id))
+    token = OrderCancellationToken.objects.get(event=event, order_id=order_id, state="valid")
+
+    # wrong code is rejected
+    with pytest.raises(OrderCancellationToken.DoesNotExist):
+        ConfirmOrderCancellation.mutate(None, None, _confirm_input(event, order_id, "bogus"))
+
+    ConfirmOrderCancellation.mutate(None, None, _confirm_input(event, order_id, token.code))
+
+    token.refresh_from_db()
+    assert token.state == "used"
+    assert _get_order(event, order_id).status == PaymentStatus.CANCELLED
+
+    # the token cannot be used again
+    with pytest.raises(OrderCancellationToken.DoesNotExist):
+        ConfirmOrderCancellation.mutate(None, None, _confirm_input(event, order_id, token.code))
+
+
+@pytest.mark.django_db
+def test_confirm_order_cancellation_no_longer_eligible(cancellation_event: Event):
+    """
+    Eligibility is re-checked at confirmation time. If the order is no longer
+    eligible (eg. the cancellation period was changed or the event has started),
+    the token is rejected and remains valid (so that nothing happened is clear).
+    """
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PAID)
+
+    RequestOrderCancellation.mutate(None, None, _request_input(event, order_id))
+    token = OrderCancellationToken.objects.get(event=event, order_id=order_id, state="valid")
+
+    meta = TicketsV2EventMeta.objects.get(event=event)
+    meta.cancellation_period_days = 0
+    meta.save(update_fields=["cancellation_period_days"])
+
+    with pytest.raises(ValueError):
+        ConfirmOrderCancellation.mutate(None, None, _confirm_input(event, order_id, token.code))
+
+    token.refresh_from_db()
+    assert token.state == "valid"
+    assert _get_order(event, order_id).status == PaymentStatus.PAID
+
+
+@pytest.mark.django_db
+def test_receipt_cancellation_link(cancellation_event: Event):
+    event = cancellation_event
+    product = Product.objects.create(
+        event=event,
+        title="Test ticket",
+        description="",
+        price=Decimal("10.00"),
+        vat_percentage=Decimal("25.50"),
+    )
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {product.id: 1},
+        status=PaymentStatus.PENDING,
+        total_price=Decimal("10.00"),
+    )
+    _add_provider_paid_stamp(event, order_id)
+    order = _get_order(event, order_id)
+
+    EVENT_CACHE.clear()
+    PendingReceipt.event_cache_refreshed_at = None
+    receipt = PendingReceipt.from_order(order)
+    assert receipt.is_customer_cancellable
+    assert f"/orders/{order_id}/cancel" in receipt.body
+
+    # when self-service cancellation is disabled, the receipt has no cancellation link
+    meta = TicketsV2EventMeta.objects.get(event=event)
+    meta.cancellation_period_days = 0
+    meta.save(update_fields=["cancellation_period_days"])
+
+    EVENT_CACHE.clear()
+    PendingReceipt.event_cache_refreshed_at = None
+    receipt = PendingReceipt.from_order(order)
+    assert not receipt.is_customer_cancellable
+    assert "/cancel" not in receipt.body

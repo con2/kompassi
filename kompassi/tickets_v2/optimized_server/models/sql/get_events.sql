@@ -10,7 +10,9 @@ select
   coalesce(p.checkout_password, '') as paytrail_password,
   o.name as organization_name,
   coalesce(m.contact_email, '') as contact_email,
-  o.business_id as organization_business_id
+  o.business_id as organization_business_id,
+  m.cancellation_period_days,
+  e.start_time
 from
   core_event e
   join tickets_v2_ticketsv2eventmeta m on (e.id = m.event_id)

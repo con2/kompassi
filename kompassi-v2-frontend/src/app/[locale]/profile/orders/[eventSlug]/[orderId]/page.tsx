@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { payOrder } from "../../actions";
 import { graphql } from "@/__generated__";
+import { PaymentStatus } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { cancelOrder } from "@/app/[locale]/[eventSlug]/orders/[orderId]/actions";
 import { auth } from "@/auth";
@@ -29,6 +30,7 @@ const query = graphql(`
           eticketsLink
           canPay
           canCancel
+          canRequestCancellation
           ticketsContactEmail
           products {
             title
@@ -174,6 +176,25 @@ export default async function ProfileOrderPage(props: Props) {
             {t.actions.ownerCancel.message}
           </ModalButton>
         </div>
+      )}
+
+      {order.canRequestCancellation && (
+        <div className="d-grid gap-2 mb-4">
+          <Link
+            className="btn btn-outline-danger"
+            href={`/${order.event.slug}/orders/${order.id}/cancel`}
+          >
+            {t.actions.requestCancellation.title}…
+          </Link>
+        </div>
+      )}
+
+      {!order.canRequestCancellation && order.status === PaymentStatus.Paid && (
+        <p>
+          {t.actions.requestCancellation.contactTicketSales(
+            order.ticketsContactEmail,
+          )}
+        </p>
       )}
     </ViewContainer>
   );

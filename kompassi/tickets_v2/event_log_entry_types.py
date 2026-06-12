@@ -21,6 +21,11 @@ registry.register(
 )
 
 registry.register(
+    name="tickets_v2.order.cancellation_requested",
+    message="Cancellation of order {order_number} in {event} was requested by the customer",
+)
+
+registry.register(
     name="tickets_v2.order.refunded.provider",
     message="Order {order_number} in {event} was provider refunded by {actor_type} {actor}",
 )

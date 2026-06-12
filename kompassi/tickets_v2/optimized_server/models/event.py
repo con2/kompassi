@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from asyncio import Future, ensure_future
+from datetime import UTC, datetime, timedelta
 from functools import cached_property
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar
@@ -38,14 +39,25 @@ class Event(pydantic.BaseModel):
     contact_email: str
     organization_business_id: str
 
+    cancellation_period_days: int
+    start_time: datetime | None
+
     cache: ClassVar[dict[str | int, Event]] = {}
     cache_refresh: ClassVar[Future[dict[str | int, Event]] | None] = None
+    cache_refreshed_at: ClassVar[datetime | None] = None
+
+    # The admin can change settings that affect eg. customer cancellation eligibility
+    # at any time, so the cache needs to expire on its own.
+    cache_ttl: ClassVar[timedelta] = timedelta(minutes=5)
 
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_events.sql").read_bytes()
 
     @classmethod
     async def get(cls, db: AsyncConnection, slug: str) -> Event | None:
-        if cls.cache is None or slug not in cls.cache:
+        cache_is_fresh = (
+            cls.cache_refreshed_at is not None and datetime.now(UTC) - cls.cache_refreshed_at < cls.cache_ttl
+        )
+        if slug not in cls.cache or not cache_is_fresh:
             cls.cache = await cls._refresh_cache(db)
 
         return cls.cache.get(slug)
@@ -75,6 +87,8 @@ class Event(pydantic.BaseModel):
             async for row in cursor:
                 event = cls(**dict(zip(cls.model_fields, row, strict=True)))  # type: ignore
                 cls.cache[event.slug] = cls.cache[event.id] = event
+
+        cls.cache_refreshed_at = datetime.now(UTC)
 
         return cls.cache
 

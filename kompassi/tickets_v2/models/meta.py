@@ -35,6 +35,15 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
         help_text="Foo Bar &lt;foo.bar@example.com&gt;",
     )
 
+    cancellation_period_days = models.PositiveSmallIntegerField(
+        default=0,
+        help_text=(
+            "Number of days from order creation during which the customer can cancel "
+            "a paid order themselves. The period is further capped at event start. "
+            "0 = customer self-service cancellation disabled."
+        ),
+    )
+
     use_cbac = True
 
     def __str__(self):

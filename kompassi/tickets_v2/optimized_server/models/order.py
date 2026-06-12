@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from collections import defaultdict
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from pathlib import Path
 from typing import Annotated, Any, ClassVar, Self
@@ -20,6 +20,7 @@ from ..excs import InvalidProducts, UnsaneSituation
 from ..utils.formatting import format_order_number, order_number_to_reference
 from .customer import Customer
 from .enums import PaymentStatus
+from .event import Event
 from .ticket import reserve_tickets
 
 
@@ -167,6 +168,19 @@ class Order(pydantic.BaseModel, populate_by_name=True):
     language: str
     products: list[OrderProduct]
 
+    can_request_cancellation: bool = pydantic.Field(
+        default=False,
+        serialization_alias="canRequestCancellation",
+        validation_alias="canRequestCancellation",
+    )
+    cancellation_deadline: datetime | None = pydantic.Field(
+        default=None,
+        serialization_alias="cancellationDeadline",
+        validation_alias="cancellationDeadline",
+    )
+
+    paid_by_provider: bool = pydantic.Field(default=False, exclude=True)
+
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_order.sql").read_bytes()
 
     @pydantic.computed_field(alias="formattedOrderNumber")
@@ -200,13 +214,25 @@ class Order(pydantic.BaseModel, populate_by_name=True):
             total_price = Decimal(0)
             status = PaymentStatus.NOT_STARTED
             order_number = 0
-            language_ = ""
+            language = ""
+            paid_by_provider = False
 
-            async for total_, order_number_, language_, title, price, quantity, vat_percentage, status_ in cursor:
+            async for (
+                total_,
+                order_number_,
+                language_,
+                title,
+                price,
+                quantity,
+                vat_percentage,
+                status_,
+                paid_by_provider_,
+            ) in cursor:
                 order_products.append(
                     OrderProduct(title=title, price=price, quantity=quantity, vat_percentage=vat_percentage)
                 )
                 total_price, order_number, language, status = total_, order_number_, language_, status_
+                paid_by_provider = paid_by_provider_
 
             if not order_products:
                 return None
@@ -218,6 +244,7 @@ class Order(pydantic.BaseModel, populate_by_name=True):
                 status=status,
                 order_number=order_number,
                 products=order_products,
+                paid_by_provider=paid_by_provider,
             )
 
     @property
@@ -226,6 +253,26 @@ class Order(pydantic.BaseModel, populate_by_name=True):
 
     def get_url(self, event_slug: str):
         return f"{KOMPASSI_V2_BASE_URL}/{event_slug}/orders/{self.id}"
+
+    def populate_cancellation(self, event: Event) -> None:
+        """
+        Keep in sync with the Django side:
+        kompassi.tickets_v2.models.order.Order.cancellation_deadline
+        and can_be_cancelled_by_customer.
+        """
+        if not event.cancellation_period_days:
+            return
+
+        deadline = self.created_at + timedelta(days=event.cancellation_period_days)
+        if event.start_time is not None:
+            deadline = min(deadline, event.start_time)
+
+        self.cancellation_deadline = deadline
+        self.can_request_cancellation = (
+            self.status == PaymentStatus.PAID
+            and datetime.now(UTC) < deadline
+            and (self.total_price == 0 or self.paid_by_provider)
+        )
 
 
 class OrderWithCustomer(Order):

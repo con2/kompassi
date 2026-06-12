@@ -616,6 +616,81 @@ const translations: Translations = {
           <>E-postbekräftelse misslyckades. Försök igen senare.</>
         ),
       },
+      cancelMessages: {
+        cancelled: (
+          <>
+            Din beställning har avbokats. Om beställningen var betald
+            återbetalas betalningen till det ursprungliga betalningssättet.
+          </>
+        ),
+        failedToCancel: (
+          <>Avbokningen av beställningen misslyckades. Försök igen senare.</>
+        ),
+        cancellationRequested: (
+          <>
+            En avbokningslänk har skickats till beställningens e-postadress.
+            Kontrollera din inkorg och bekräfta avbokningen genom att öppna
+            länken i meddelandet.
+          </>
+        ),
+        cancellationRequestFailed: (
+          <>
+            Det gick inte att skicka avbokningslänken. Försök igen senare eller
+            kontakta biljettförsäljningen.
+          </>
+        ),
+        cancellationFailed: (
+          <>
+            Avbokningen av beställningen misslyckades. Avbokningslänken kan ha
+            gått ut eller redan ha använts. Försök igen eller kontakta
+            biljettförsäljningen.
+          </>
+        ),
+      },
+      cancelPage: {
+        title: "Avboka beställning",
+        explanation: (
+          <>
+            <p>
+              För att avboka beställningen måste avbokningen bekräftas med den
+              e-postadress som beställningen gjordes med. Genom att trycka på
+              knappen nedan skickas en avbokningslänk till beställningens
+              e-postadress.
+            </p>
+            <p>
+              Din beställning förblir giltig om du inte öppnar länken i
+              meddelandet och bekräftar avbokningen där.
+            </p>
+          </>
+        ),
+        deadline: (deadline: ReactNode) => (
+          <>Beställningen kan avbokas fram till {deadline}.</>
+        ),
+        notCancellable: "Denna beställning kan inte avbokas.",
+        actions: {
+          sendConfirmationEmail: "Skicka avbokningslänk",
+          returnToOrderPage: "Tillbaka till beställningssidan",
+        },
+        confirm: {
+          title: "Bekräfta avbokning av beställning",
+          warning: (
+            <>
+              <p>Du håller på att avboka din beställning.</p>
+              <p>
+                Alla biljetter som ingår i beställningen ogiltigförklaras, och
+                eventuella betalningar återbetalas till det ursprungliga
+                betalningssättet.
+              </p>
+              <p>
+                <strong>Denna åtgärd kan inte ångras.</strong>
+              </p>
+            </>
+          ),
+          actions: {
+            cancelOrder: "Avboka beställning",
+          },
+        },
+      },
       showingOrders: (numOrdersShown: number, numTotalOrders: number) => (
         <>
           Visar {numOrdersShown} beställning
@@ -862,6 +937,21 @@ const translations: Translations = {
             submit: "Avboka beställning",
             cancel: "Stäng utan att avboka",
           },
+        },
+        requestCancellation: {
+          title: "Avboka beställning",
+          contactTicketSales: (email: string | null) => (
+            <>
+              Om du vill avboka denna beställning, kontakta biljettförsäljningen
+              {email ? (
+                <>
+                  : <a href={`mailto:${email}`}>{email}</a>
+                </>
+              ) : (
+                "."
+              )}
+            </>
+          ),
         },
         saveContactInformation: "Spara kontaktinformation",
         resendOrderConfirmation: {
@@ -1149,8 +1239,29 @@ const translations: Translations = {
         products: "Produkter",
         quotas: "Kvoter",
         reports: "Rapporter",
+        preferences: "Inställningar",
         ticketControl: "Biljettkontroll",
         webShop: "Webbshop",
+      },
+      preferences: {
+        title: "Biljettbutikens inställningar",
+        attributes: {
+          contactEmail: {
+            title: "Kontaktadress",
+            helpText:
+              "Format: Namn <adress@example.com>. Svar på orderbekräftelser och andra e-postmeddelanden som skickas till kunder styrs till denna adress.",
+          },
+          termsAndConditionsUrl: {
+            en: "Adress till leveransvillkoren (på engelska)",
+            fi: "Adress till leveransvillkoren (på finska)",
+            sv: "Adress till leveransvillkoren (på svenska)",
+          },
+          cancellationPeriodDays: {
+            title: "Avbokningstid (dagar)",
+            helpText:
+              "Antal dagar från beställningen under vilka kunden själv kan avboka en betald beställning. Avbokningstiden går ut senast när evenemanget börjar. Ange 0 för att inaktivera självbetjäningsavbokning.",
+          },
+        },
       },
       messages: {
         orderCreated: (
