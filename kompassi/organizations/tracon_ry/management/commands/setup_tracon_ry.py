@@ -40,13 +40,15 @@ Yhdistys toimii läheisessä yhteistyössä muiden tamperelaisten alan kerhojen 
 Tracon ry:n yhdistysrekisteritunnus on 194.820.
                 """.strip(),
                 panel_css_class="panel-danger",
+                muncipality="Tampere",
+                public=True,
             ),
         )
 
-        # v10
-        self.organization.muncipality = "Tampere"
-        self.organization.public = True
-        self.organization.save()
+        # v44
+        if not self.organization.business_id:
+            self.organization.business_id = "2886274-5"
+            self.organization.save(update_fields=["business_id"])
 
     def setup_membership(self):
         (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
