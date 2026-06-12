@@ -33,13 +33,15 @@ Kotae ry:hyn voi liittyä myös kannattajajäsenenä. Kannattajajäsenmaksu kaud
 
 Kotae ry:n Y-tunnus on 3364741-7.
                 """.strip(),
+                muncipality="Tampere",
+                public=True,
             ),
         )
 
-        # v10
-        self.organization.muncipality = "Tampere"
-        self.organization.public = True
-        self.organization.save()
+        # v44
+        if not self.organization.business_id:
+            self.organization.business_id = "3364741-7"
+            self.organization.save(update_fields=["business_id"])
 
     def setup_membership(self):
         (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
