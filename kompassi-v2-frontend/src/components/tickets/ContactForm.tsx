@@ -26,7 +26,11 @@ function getContactFormFields(
   termsAndConditionsUrl?: string,
 ): Field[] {
   // Paytrail documents max 50 chars for names; dots and pipes are known to cause API errors.
-  const namePattern = "[^\\|.\\x00-\\x1f\\x7f]+";
+  // Block all ASCII punctuation except space, apostrophe and hyphen, plus control chars and DEL.
+  // Hex escapes avoid Chrome v-flag escaping pitfalls. Keep in sync with CUSTOMER_NAME_PATTERN
+  // in tickets_v2/optimized_server/models/customer.py (which adds anchors; HTML pattern is auto-anchored).
+  const namePattern =
+    "[^\\x00-\\x1f\\x21-\\x26\\x28-\\x2c\\x2e\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\x7f]+";
   const fields: Field[] = [
     {
       slug: "firstName",
