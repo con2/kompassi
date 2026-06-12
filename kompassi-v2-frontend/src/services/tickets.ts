@@ -166,6 +166,8 @@ export interface Order {
   status: PaymentStatus;
   createdAt: string;
   totalPrice: string;
+  canRequestCancellation: boolean;
+  cancellationDeadline: string | null;
   products: {
     title: string;
     price: string;

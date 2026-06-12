@@ -27,6 +27,11 @@ Antamasi yhteystiedot:
 {{ email }}
 
 Jos yllä olevissa tiedoissa on virheitä, otathan välittömästi yhteyttä
-lipunmyyntiin vastaamalla tähän viestiin.
+lipunmyyntiin vastaamalla tähän viestiin.{% if cancellation_deadline %}
+
+Mikäli haluat peruuttaa tilauksesi, voit tehdä sen
+{{ cancellation_deadline|date:"d.m.Y" }} klo {{ cancellation_deadline|date:"H:i" }} saakka osoitteessa:
+
+{{ cancellation_url }}{% endif %}
 
 {% include "tickets_v2_footer_fi.eml" %}

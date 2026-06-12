@@ -5,3 +5,4 @@ class ActorType(Enum):
     ADMIN = "admin"
     OWNER = "owner"
     SYSTEM = "system"
+    CUSTOMER = "customer"

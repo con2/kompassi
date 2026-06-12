@@ -22,7 +22,14 @@ from .quota_full import FullQuotaType
 class TicketsV2EventMetaType(DjangoObjectType):
     class Meta:
         model = TicketsV2EventMeta
-        fields = ("provider_id",)
+        fields = (
+            "provider_id",
+            "contact_email",
+            "terms_and_conditions_url_en",
+            "terms_and_conditions_url_fi",
+            "terms_and_conditions_url_sv",
+            "cancellation_period_days",
+        )
 
     @graphql_query_cbac_required
     @staticmethod

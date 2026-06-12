@@ -144,6 +144,8 @@ async def get_order(
     order: _Order,
     _api_key_verified: _ApiKeyVerified,
 ):
+    order.populate_cancellation(event)
+
     return {
         "event": {
             "name": event.name,

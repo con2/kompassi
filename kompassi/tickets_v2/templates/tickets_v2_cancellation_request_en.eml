@@ -1,0 +1,19 @@
+{% load tickets_v2_tags %}Dear recipient,
+
+Cancellation of order {{ order_number|format_order_number }} in the {{ event_name }}
+online shop was requested.
+
+To confirm the cancellation, open the following link:
+
+{{ confirmation_url }}
+
+Cancelling the order cannot be undone. Any tickets contained in the order will
+be invalidated, and any payments will be refunded to the original payment
+method.{% if deadline %}
+
+The order can be cancelled until {{ deadline|date:"Y-m-d H:i" }}.{% endif %}
+
+If you did not request the cancellation, you can safely ignore this message,
+and your order will remain valid.
+
+{% include "tickets_v2_footer_en.eml" %}
