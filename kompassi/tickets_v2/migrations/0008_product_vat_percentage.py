@@ -2,6 +2,7 @@
 
 from decimal import Decimal
 
+import django.core.validators
 from django.db import migrations, models
 
 
@@ -19,6 +20,7 @@ class Migration(migrations.Migration):
                 default=Decimal("0"),
                 help_text="VAT percentage applied to this product. Prices are inclusive of VAT.",
                 max_digits=4,
+                validators=[django.core.validators.MinValueValidator(Decimal(0))],
             ),
         ),
     ]

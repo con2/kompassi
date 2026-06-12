@@ -74,9 +74,10 @@ class ProfileOrderType(LimitedOrderType):
     def resolve_tickets_contact_email(order: Order, info):
         """
         Contact email for the ticket seller (from the event's tickets meta).
+        Plain email address without the display name.
         """
         meta = order.event.tickets_v2_event_meta
-        return meta.contact_email if meta else ""
+        return meta.plain_contact_email if meta else ""
 
     tickets_contact_email = graphene.NonNull(
         graphene.String,

@@ -531,7 +531,6 @@ const translations: Translations = {
           helpText:
             "Tähän tuotteeseen sovellettava arvonlisäveroprosentti. Hinnat sisältävät ALV:n.",
         },
-        vatBreakdown: "ALV-erittely",
         dragToReorder: "Vedä ja pudota järjestääksesi tuotteita",
         newProductQuota: {
           title: "Kiintiö",

@@ -6,6 +6,7 @@ from typing import ClassVar
 
 import pydantic
 from django.conf import settings
+from django.core.validators import MinValueValidator
 from django.db import connection, models
 from django.http import HttpRequest
 from django.utils.timezone import now
@@ -93,6 +94,7 @@ class Product(models.Model):
         max_digits=4,
         decimal_places=2,
         default=Decimal("0"),
+        validators=[MinValueValidator(Decimal(0))],
         help_text="VAT percentage applied to this product. Prices are inclusive of VAT.",
     )
     title = models.TextField()

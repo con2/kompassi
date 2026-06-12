@@ -189,6 +189,7 @@ export default async function AdminProductDetailPage(props: Props) {
     {
       slug: "vatPercentage",
       type: "SingleSelect",
+      required: true,
       choices: [
         { slug: "0.00", title: "0%" },
         { slug: "10.00", title: "10%" },

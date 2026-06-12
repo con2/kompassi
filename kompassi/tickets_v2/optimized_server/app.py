@@ -151,7 +151,7 @@ async def get_order(
         "order": order.model_dump(mode="json", by_alias=True),
         "seller": {
             "name": event.organization_name,
-            "email": event.contact_email or None,
+            "email": event.plain_contact_email or None,
             "businessId": event.organization_business_id or None,
         },
     }

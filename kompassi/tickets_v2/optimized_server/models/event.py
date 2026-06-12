@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from asyncio import Future, ensure_future
 from functools import cached_property
 from pathlib import Path
@@ -11,6 +12,10 @@ from .enums import PaymentProvider
 
 if TYPE_CHECKING:
     from psycopg import AsyncConnection
+
+# Keep in sync with kompassi.core.models.contact_email_mixin.CONTACT_EMAIL_RE
+# (not imported to keep the optimized server free of Django imports)
+CONTACT_EMAIL_RE = re.compile(r"(?P<name>.+) <(?P<email>.+@.+\..+)>")
 
 
 class Event(pydantic.BaseModel):
@@ -75,6 +80,16 @@ class Event(pydantic.BaseModel):
 
     def model_dump(self, *args, **kwargs) -> Any:
         raise NotImplementedError("contains secrets, please don't")
+
+    @property
+    def plain_contact_email(self) -> str:
+        """
+        contact_email is stored in the "Name Surname <email@example.com>" format.
+        Return the plain email address only (or the raw value if it is not in that format).
+        """
+        if match := CONTACT_EMAIL_RE.match(self.contact_email):
+            return match.group("email")
+        return self.contact_email
 
     @cached_property
     def provider(self):
