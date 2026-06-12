@@ -7,7 +7,10 @@ select
   m.terms_and_conditions_url_fi,
   m.terms_and_conditions_url_sv,
   coalesce(p.checkout_merchant, '') as paytrail_merchant,
-  coalesce(p.checkout_password, '') as paytrail_password
+  coalesce(p.checkout_password, '') as paytrail_password,
+  o.name as organization_name,
+  coalesce(m.contact_email, '') as contact_email,
+  o.business_id as organization_business_id
 from
   core_event e
   join tickets_v2_ticketsv2eventmeta m on (e.id = m.event_id)

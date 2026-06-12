@@ -69,3 +69,16 @@ class ProfileOrderType(LimitedOrderType):
         graphene.Boolean,
         description=normalize_whitespace(resolve_can_cancel.__doc__ or ""),
     )
+
+    @staticmethod
+    def resolve_tickets_contact_email(order: Order, info):
+        """
+        Contact email for the ticket seller (from the event's tickets meta).
+        """
+        meta = order.event.tickets_v2_event_meta
+        return meta.contact_email if meta else ""
+
+    tickets_contact_email = graphene.NonNull(
+        graphene.String,
+        description=normalize_whitespace(resolve_tickets_contact_email.__doc__ or ""),
+    )

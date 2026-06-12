@@ -647,6 +647,11 @@ const translations: Translations = {
         createdAt: "Tilausaika",
         eventName: "Tapahtuma",
         totalPrice: "Yhteensä",
+        seller: {
+          title: "Myyjä",
+          email: "Sähköposti",
+          businessId: "Y-tunnus",
+        },
         actions: "Toiminnot",
         totalOrders: (numOrders: number) => (
           <>

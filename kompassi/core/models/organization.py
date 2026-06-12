@@ -48,6 +48,14 @@ class Organization(models.Model):
         help_text="Voi olla paikallinen (alkaa /-merkillä) tai absoluuttinen (alkaa http/https)",
     )
 
+    business_id = models.CharField(
+        blank=True,
+        default="",
+        max_length=16,
+        verbose_name="Y-tunnus",
+        help_text="Finnish business ID (Y-tunnus), eg. 1234567-8.",
+    )
+
     panel_css_class = models.CharField(
         blank=True,
         max_length=255,

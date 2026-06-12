@@ -4,6 +4,8 @@ from graphene_django import DjangoObjectType
 from kompassi.core.models import Event
 from kompassi.graphql_api.utils import resolve_local_datetime_field
 
+from .organization_limited import LimitedOrganizationType
+
 
 class LimitedEventType(DjangoObjectType):
     class Meta:
@@ -26,3 +28,9 @@ class LimitedEventType(DjangoObjectType):
         return event.timezone_name
 
     timezone = graphene.NonNull(graphene.String)
+
+    @staticmethod
+    def resolve_organization(event: Event, info):
+        return event.organization
+
+    organization = graphene.NonNull(LimitedOrganizationType)

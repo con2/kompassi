@@ -652,6 +652,11 @@ const translations = {
         createdAt: "Order date",
         eventName: "Event",
         totalPrice: "Total price",
+        seller: {
+          title: "Seller",
+          email: "Email",
+          businessId: "Business ID",
+        },
         actions: "Actions",
         totalOrders: (numOrders: number) => (
           <>

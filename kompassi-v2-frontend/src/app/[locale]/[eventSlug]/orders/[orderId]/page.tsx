@@ -6,6 +6,7 @@ import { PaymentStatus } from "@/__generated__/graphql";
 import Section from "@/components/Section";
 import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
+import SellerSection from "@/components/tickets/SellerSection";
 import ViewContainer from "@/components/ViewContainer";
 import { getOrder } from "@/services/tickets";
 import { getTranslations } from "@/translations";
@@ -26,7 +27,7 @@ export const revalidate = 0;
 export default async function OrderPage(props: Props) {
   const params = await props.params;
   const { locale, eventSlug, orderId } = params;
-  const { order, event } = await getOrder(eventSlug, orderId);
+  const { order, event, seller } = await getOrder(eventSlug, orderId);
   const translations = getTranslations(locale);
   const t = translations.Tickets;
 
@@ -50,6 +51,8 @@ export default async function OrderPage(props: Props) {
       <OrderHeader order={order} messages={t} locale={locale} event={event} />
 
       <ProductsTable order={order} locale={locale} messages={t} />
+
+      <SellerSection seller={seller} messages={t.Order.attributes.seller} />
 
       {showPayButton && (
         <Section>

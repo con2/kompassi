@@ -2,6 +2,7 @@
 
 Kiitos tilauksestasi {{ event_name }} -tapahtuman verkkokaupassa!
 Tilauksesi numero on {{ order_number|format_order_number }}.
+Ostopäivä: {{ order_date|date:"d.m.Y" }}
 
 Vahvistamme maksetuiksi seuraavat lipputuotteet:
 

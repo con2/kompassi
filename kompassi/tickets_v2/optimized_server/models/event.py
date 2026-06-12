@@ -29,6 +29,10 @@ class Event(pydantic.BaseModel):
     paytrail_merchant: str
     paytrail_password: str
 
+    organization_name: str
+    contact_email: str
+    organization_business_id: str
+
     cache: ClassVar[dict[str | int, Event]] = {}
     cache_refresh: ClassVar[Future[dict[str | int, Event]] | None] = None
 
