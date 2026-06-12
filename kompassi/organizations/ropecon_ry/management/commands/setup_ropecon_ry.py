@@ -26,6 +26,11 @@ class Setup:
             ),
         )
 
+        # v44
+        if not self.organization.business_id:
+            self.organization.business_id = "1859716-7"
+            self.organization.save(update_fields=["business_id"])
+
     def setup_payments(self):
         PaymentsOrganizationMeta.objects.get_or_create(
             organization=self.organization,
