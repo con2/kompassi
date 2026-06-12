@@ -445,6 +445,34 @@ def test_vat_by_month_report_basic(vat_report_event: Event):
 
 
 @pytest.mark.django_db
+def test_vat_by_month_report_refund_does_not_change_history(vat_report_event: Event):
+    """
+    Once an order has been paid, its VAT belongs to the month of the sale even if
+    the order is later refunded — the VAT for that month may already have been
+    filed, so the report must not change retroactively. (The footer tells the
+    reader that refunds are not subtracted.)
+    """
+    product = Product.objects.create(
+        event=vat_report_event,
+        title="Standard",
+        description="",
+        price=Decimal("125.50"),
+        vat_percentage=Decimal("25.50"),
+    )
+
+    _make_order(vat_report_event, datetime(2026, 1, 15, 12, 0, tzinfo=UTC), {product.id: 1})
+    for status in (
+        PaymentStatus.REFUND_REQUESTED,
+        PaymentStatus.REFUND_FAILED,
+        PaymentStatus.REFUNDED,
+    ):
+        _make_order(vat_report_event, datetime(2026, 1, 20, 12, 0, tzinfo=UTC), {product.id: 1}, status=status)
+
+    report = VatByMonth.report(vat_report_event, "en")
+    assert report.rows == [["2026-01", 4 * 25.50, 4 * 25.50]]
+
+
+@pytest.mark.django_db
 def test_vat_by_month_report_timezone_boundary(vat_report_event: Event):
     """
     An order at 23:30 UTC on Jan 31 falls on Feb 1 in Helsinki (UTC+2),

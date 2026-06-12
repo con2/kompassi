@@ -16,7 +16,7 @@ from
   join tickets_v2_product p on p.id = pd.product_id::int
 where
   o.event_id = %(event_id)s
-  and o.cached_status = 3
+  and o.cached_status = any(%(paid_statuses)s)
   and pd.quantity::int > 0
   and p.vat_percentage > 0
 group by 1, 2

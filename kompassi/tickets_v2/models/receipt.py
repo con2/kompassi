@@ -329,7 +329,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             email=self.email,
             phone=self.phone,
             seller_name=organization.name,
-            seller_email=self.meta.contact_email,
+            seller_email=self.meta.plain_contact_email,
             seller_business_id=organization.business_id,
         )
         return render_to_string(template_name, vars)

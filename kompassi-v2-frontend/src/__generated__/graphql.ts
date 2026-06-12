@@ -2059,7 +2059,7 @@ export type ProfileOrderType = {
   /** Returns a link at which the user can view their electronic tickets. They need to be the owner of the order (or an admin) to access that link. Returns null if the order does not contain electronic tickets. */
   products: Array<OrderProductType>;
   status: PaymentStatus;
-  /** Contact email for the ticket seller (from the event's tickets meta). */
+  /** Contact email for the ticket seller (from the event's tickets meta). Plain email address without the display name. */
   ticketsContactEmail: Scalars['String']['output'];
   totalPrice: Scalars['Decimal']['output'];
 };

@@ -11,6 +11,7 @@ from kompassi.reports.models.column import Column
 from kompassi.reports.models.enums import TypeOfColumn
 from kompassi.reports.models.report import Report
 
+from ..optimized_server.models.enums import PaymentStatus
 from ..optimized_server.utils.formatting import format_vat_rate
 
 SQL_DIR = Path(__file__).parent / "sql"
@@ -23,11 +24,30 @@ TITLE = dict(
 MONTH_COLUMN_TITLE = dict(fi="Kuukausi", en="Month", sv="Månad")
 TOTAL_COLUMN_TITLE = dict(fi="Yhteensä", en="Total", sv="Totalt")
 FOOTER = dict(
-    fi="Vain maksetut tilaukset on laskettu mukaan. Hyvitykset eivät sisälly raporttiin.",
-    en="Only paid orders are included. Refunds are not reflected in this report.",
-    sv="Endast betalda beställningar ingår. Återbetalningar visas inte i rapporten.",
+    fi=(
+        "Vain maksetut tilaukset on laskettu mukaan. Hyvitetyt tilaukset näkyvät "
+        "alkuperäisen myyntikuukauden kohdalla; hyvityksiä ei vähennetä."
+    ),
+    en=(
+        "Only paid orders are included. Refunded orders are shown in the month of "
+        "the original sale; refunds are not subtracted."
+    ),
+    sv=(
+        "Endast betalda beställningar ingår. Återbetalda beställningar visas under "
+        "den ursprungliga försäljningsmånaden; återbetalningar dras inte av."
+    ),
 )
 CENT = Decimal("0.01")
+
+# Orders in these statuses have been paid at some point. A later refund must not
+# retroactively remove the sale from the month it was made in, as the VAT for
+# that month may already have been filed.
+EVER_PAID_STATUSES = [
+    PaymentStatus.PAID,
+    PaymentStatus.REFUND_REQUESTED,
+    PaymentStatus.REFUND_FAILED,
+    PaymentStatus.REFUNDED,
+]
 
 
 def _vat_column_title(rate: Decimal) -> dict[str, str]:
@@ -40,7 +60,14 @@ class VatByMonth:
     @classmethod
     def report(cls, event: Event, lang: str = DEFAULT_LANGUAGE) -> Report:
         with connection.cursor() as cursor:
-            cursor.execute(cls.query, dict(event_id=event.id, event_timezone=event.timezone_name))
+            cursor.execute(
+                cls.query,
+                dict(
+                    event_id=event.id,
+                    event_timezone=event.timezone_name,
+                    paid_statuses=[status.value for status in EVER_PAID_STATUSES],
+                ),
+            )
             raw_rows = cursor.fetchall()
 
         vat_rates: list[Decimal] = sorted({row[1] for row in raw_rows})
