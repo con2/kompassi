@@ -27,6 +27,7 @@ from kompassi.graphql_api.language import SUPPORTED_LANGUAGES
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStampType, PaymentStatus, RefundType
 from ..optimized_server.models.order import OrderProduct, VatBreakdownLine
+from ..optimized_server.utils.cancellation import get_cancellation_deadline, is_cancellable_by_customer
 from ..optimized_server.utils.formatting import format_order_number
 from ..optimized_server.utils.uuid7 import uuid7
 from ..utils.event_partitions import EventPartitionsMixin
@@ -332,47 +333,36 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         )
 
     @property
+    def provider_paid_stamps(self) -> models.QuerySet[PaymentStamp]:
+        """
+        PAID stamps recorded by an actual payment provider (as opposed to eg.
+        an admin marking the order as paid). Only these can be provider refunded.
+        """
+        return self.payment_stamps.filter(status=PaymentStatus.PAID).exclude(provider_id=PaymentProvider.NONE)
+
+    @property
     def cancellation_deadline(self) -> datetime | None:
-        """
-        Deadline for customer self-service cancellation, or None if disabled for the event.
-        The cancellation period starts at order creation and is capped at event start.
-        """
-        period_days = self.meta.cancellation_period_days
-        if not period_days:
-            return None
-
-        deadline = self.timestamp + timedelta(days=period_days)
-
-        if (start_time := self.event.start_time) is not None:
-            deadline = min(deadline, start_time)
-
-        return deadline
+        return get_cancellation_deadline(
+            order_created_at=self.timestamp,
+            cancellation_period_days=self.meta.cancellation_period_days,
+            event_start_time=self.event.start_time,
+        )
 
     def can_be_cancelled_by_customer(self) -> bool:
-        """
-        Customer self-service cancellation (confirmed via email) is allowed for paid orders
-        within the cancellation period, provided that any money paid can be automatically
-        refunded via the payment provider. Customers holding orders that fail these criteria
-        are directed to contact ticket sales instead.
-        """
-        if self.status != PaymentStatus.PAID:
-            return False
-
-        deadline = self.cancellation_deadline
-        if deadline is None or django_now() >= deadline:
-            return False
-
-        if self.cached_price == 0:
-            return True
-
-        return self.payment_stamps.filter(status=PaymentStatus.PAID).exclude(provider_id=PaymentProvider.NONE).exists()
+        return is_cancellable_by_customer(
+            status=self.status,
+            cancellation_deadline=self.cancellation_deadline,
+            now=django_now(),
+            total_price=self.cached_price,
+            is_paid_by_provider=self.provider_paid_stamps.exists,
+        )
 
     def can_be_provider_refunded_by(self, request: HttpRequest):
         # TODO should this method do all the same checks that cancel_and_refund does?
         return (
             self.status.is_refundable
             and self.cached_price > 0
-            and self.payment_stamps.filter(status=PaymentStatus.PAID).exclude(provider_id=PaymentProvider.NONE).exists()
+            and self.provider_paid_stamps.exists()
             and is_graphql_allowed_for_model(
                 request.user,
                 instance=self,
@@ -473,9 +463,12 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                 if self.cached_status == PaymentStatus.REFUNDED:
                     raise ValueError("Order is already refunded")
 
-                paid_stamp = self.payment_stamps.filter(status=PaymentStatus.PAID).order_by("-id").first()
+                # NOTE: must be a provider stamp — the order may additionally have been
+                # marked as paid by an admin, recording a PAID stamp with provider NONE
+                # that cannot be refunded via the provider.
+                paid_stamp = self.provider_paid_stamps.order_by("-id").first()
                 if not paid_stamp:
-                    raise ValueError("Cannot refund an order that has not been paid")
+                    raise ValueError("Cannot refund an order that has not been paid via a payment provider")
 
                 prepared_request = self.meta.provider.prepare_refund(paid_stamp)
                 request_stamp = prepared_request.request_stamp

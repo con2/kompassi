@@ -659,6 +659,12 @@ const translations = {
             or already been used. Please try again or contact ticket sales.
           </>
         ),
+        refundFailed: (
+          <>
+            Your order has been cancelled, but the refund could not be
+            initiated. Please contact ticket sales to receive your refund.
+          </>
+        ),
       },
       cancelPage: {
         title: "Cancel order",

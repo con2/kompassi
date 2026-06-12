@@ -1,12 +1,7 @@
-import Link from "next/link";
-
 import { requestOrderCancellation } from "./actions";
-import { PaymentStatus } from "@/__generated__/graphql";
-import Messages from "@/components/errors/Messages";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import SubmitButton from "@/components/forms/SubmitButton";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import OrderCancellationView from "@/components/tickets/OrderCancellationView";
 import { getOrder } from "@/services/tickets";
 import { getTranslations } from "@/translations";
 
@@ -21,74 +16,48 @@ interface Props {
 
 export const revalidate = 0;
 
-/// NOTE: This page can be accessed without authentication (ie. we don't know the accessor
-/// is the person who ordered) so absolutely no PII. In particular, the email address of
-/// the order must not be shown.
+/// Order cancellation request page. See OrderCancellationView for PII concerns.
 export default async function OrderCancellationPage(props: Props) {
   const { locale, eventSlug, orderId } = await props.params;
   const searchParams = await props.searchParams;
-  const { order, event, seller } = await getOrder(eventSlug, orderId);
+  const data = await getOrder(eventSlug, orderId);
   const translations = getTranslations(locale);
   const t = translations.Tickets.Order;
   const cancelT = t.cancelPage;
 
   return (
-    <ViewContainer>
-      <ViewHeading>
-        {cancelT.title}
-        <ViewHeading.Sub>
-          {t.singleTitle(
-            order.formattedOrderNumber,
-            t.attributes.status.choices[order.status].shortTitle,
+    <OrderCancellationView
+      title={cancelT.title}
+      eventSlug={eventSlug}
+      orderId={orderId}
+      data={data}
+      messages={t}
+      searchParams={searchParams}
+    >
+      {cancelT.explanation}
+
+      {data.order.cancellationDeadline && (
+        <p>
+          {cancelT.deadline(
+            <FormattedDateTime
+              value={data.order.cancellationDeadline}
+              locale={locale}
+              scope={undefined}
+              session={undefined}
+            />,
           )}
-          {", "}
-          {event.name}
-        </ViewHeading.Sub>
-      </ViewHeading>
-
-      <Messages messages={t.cancelMessages} searchParams={searchParams} />
-
-      {order.canRequestCancellation ? (
-        <>
-          {cancelT.explanation}
-
-          {order.cancellationDeadline && (
-            <p>
-              {cancelT.deadline(
-                <FormattedDateTime
-                  value={order.cancellationDeadline}
-                  locale={locale}
-                  scope={undefined}
-                  session={undefined}
-                />,
-              )}
-            </p>
-          )}
-
-          <form
-            action={requestOrderCancellation.bind(
-              null,
-              locale,
-              eventSlug,
-              orderId,
-            )}
-          >
-            <div className="d-grid gap-2 mb-4">
-              <SubmitButton className="btn btn-danger btn-lg">
-                {cancelT.actions.sendConfirmationEmail}
-              </SubmitButton>
-            </div>
-          </form>
-        </>
-      ) : order.status === PaymentStatus.Paid ? (
-        <p>{t.actions.requestCancellation.contactTicketSales(seller.email)}</p>
-      ) : (
-        <p>{cancelT.notCancellable}</p>
+        </p>
       )}
 
-      <Link href={`/${eventSlug}/orders/${orderId}`}>
-        {cancelT.actions.returnToOrderPage}
-      </Link>
-    </ViewContainer>
+      <form
+        action={requestOrderCancellation.bind(null, locale, eventSlug, orderId)}
+      >
+        <div className="d-grid gap-2 mb-4">
+          <SubmitButton className="btn btn-danger btn-lg">
+            {cancelT.actions.sendConfirmationEmail}
+          </SubmitButton>
+        </div>
+      </form>
+    </OrderCancellationView>
   );
 }

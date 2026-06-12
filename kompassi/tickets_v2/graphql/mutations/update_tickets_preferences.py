@@ -7,6 +7,13 @@ from kompassi.core.models.contact_email_mixin import contact_email_validator
 from ...models.meta import TicketsV2EventMeta
 from ..meta import TicketsV2EventMetaType
 
+TEXT_FIELDS = [
+    "contact_email",
+    "terms_and_conditions_url_en",
+    "terms_and_conditions_url_fi",
+    "terms_and_conditions_url_sv",
+]
+
 
 class UpdateTicketsPreferencesInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
@@ -20,6 +27,7 @@ class UpdateTicketsPreferencesInput(graphene.InputObjectType):
 class UpdateTicketsPreferences(graphene.Mutation):
     """
     Updates the tickets settings that are exposed to event admins.
+    Fields omitted from the input are left unchanged (clear with an empty value).
     NOTE: provider_id is deliberately not settable here (super admin only).
     """
 
@@ -43,30 +51,32 @@ class UpdateTicketsPreferences(graphene.Mutation):
             operation="update",
         )
 
-        contact_email = (input.contact_email or "").strip()  # type: ignore
-        if contact_email:
-            try:
-                contact_email_validator(contact_email)
-            except ValidationError as e:
-                raise ValueError("Invalid contact email (expected format: Name <email@example.com>)") from e
+        update_fields = []
 
-        cancellation_period_days: int = input.cancellation_period_days or 0  # type: ignore
-        if cancellation_period_days < 0:
-            raise ValueError("Cancellation period cannot be negative")
+        for field in TEXT_FIELDS:
+            if (value := getattr(input, field)) is None:
+                continue
 
-        meta.contact_email = contact_email
-        meta.terms_and_conditions_url_en = input.terms_and_conditions_url_en or ""  # type: ignore
-        meta.terms_and_conditions_url_fi = input.terms_and_conditions_url_fi or ""  # type: ignore
-        meta.terms_and_conditions_url_sv = input.terms_and_conditions_url_sv or ""  # type: ignore
-        meta.cancellation_period_days = cancellation_period_days
-        meta.save(
-            update_fields=[
-                "contact_email",
-                "terms_and_conditions_url_en",
-                "terms_and_conditions_url_fi",
-                "terms_and_conditions_url_sv",
-                "cancellation_period_days",
-            ]
-        )
+            value = value.strip()
+
+            if field == "contact_email" and value:
+                try:
+                    contact_email_validator(value)
+                except ValidationError as e:
+                    raise ValueError("Invalid contact email (expected format: Name <email@example.com>)") from e
+
+            setattr(meta, field, value)
+            update_fields.append(field)
+
+        cancellation_period_days: int | None = input.cancellation_period_days  # type: ignore
+        if cancellation_period_days is not None:
+            if cancellation_period_days < 0:
+                raise ValueError("Cancellation period cannot be negative")
+
+            meta.cancellation_period_days = cancellation_period_days
+            update_fields.append("cancellation_period_days")
+
+        if update_fields:
+            meta.save(update_fields=update_fields)
 
         return UpdateTicketsPreferences(preferences=meta)  # type: ignore

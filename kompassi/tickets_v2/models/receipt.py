@@ -15,17 +15,19 @@ from django.core.mail import EmailMessage
 from django.db import connection, models, transaction
 from django.template.loader import render_to_string
 from django.utils.timezone import now as django_now
+from django.utils.timezone import override as timezone_override
 from lippukala.models import Code
 from lippukala.models import Order as LippukalaOrder
 from lippukala.printing import OrderPrinter
 
 from kompassi.core.models.event import Event
 from kompassi.event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7, uuid7_to_datetime
-from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 from kompassi.tickets_v2.lippukala_integration import Queue as LippukalaQueue
 
-from ..optimized_server.models.enums import PaymentProvider, PaymentStatus, ReceiptStatus, ReceiptType
+from ..optimized_server.models.enums import PaymentStatus, ReceiptStatus, ReceiptType
+from ..optimized_server.utils.cancellation import get_cancellation_deadline, is_cancellable_by_customer
 from ..utils.event_partitions import EventPartitionsMixin
+from ..utils.mail import email_template_language, tickets_from_email
 from .meta import TicketsV2EventMeta
 from .order import Order, OrderMixin
 from .product import Product
@@ -48,10 +50,8 @@ CANCELLED_SUBJECT = dict(
     en="Order cancelled",
 )
 
-FROM_EMAIL: str = settings.DEFAULT_FROM_EMAIL
 KOMPASSI_V2_BASE_URL: str = settings.KOMPASSI_V2_BASE_URL
 SHOP_HOSTNAME = urlparse(KOMPASSI_V2_BASE_URL).hostname  # 'v2.kompassi.eu'
-MAIL_DOMAIN = FROM_EMAIL.split("@", 1)[1].rstrip(">")
 LIPPUKALA_PREFIX = LippukalaQueue.ONE_QUEUE
 ETICKET_FILENAME = "e-ticket.pdf"
 
@@ -130,13 +130,6 @@ class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
         return self.event.timezone
 
 
-EVENT_CACHE: dict[int, Event] = {}
-
-# The cached Event also reaches TicketsV2EventMeta (eg. cancellation_period_days),
-# which the admin can change at any time, so the cache needs to expire on its own.
-EVENT_CACHE_TTL = timedelta(minutes=5)
-
-
 class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=True, frozen=True):
     """
     Responsible for sending email receipts and generating eticket PDFs.
@@ -157,12 +150,17 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
     product_data: dict[int, int]
     order_number: int
     total_price: Decimal
+    paid_by_provider: bool = False
 
     # NOTE: fields and their order must match fields returned by the query
     query: ClassVar[str] = (Path(__file__).parent / "sql" / "claim_pending_receipts.sql").read_text()
     batch_size: ClassVar[int] = 100
 
+    # The cached Event also reaches TicketsV2EventMeta (eg. cancellation_period_days),
+    # which the admin can change at any time, so the cache needs to expire on its own.
+    event_cache: ClassVar[dict[int, Event]] = {}
     event_cache_refreshed_at: ClassVar[datetime | None] = None
+    event_cache_ttl: ClassVar[timedelta] = timedelta(minutes=5)
 
     @property
     def order_date(self):
@@ -171,16 +169,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
     @pydantic.field_validator("language", mode="before")
     @staticmethod
     def validate_language(value: str):
-        value = value.lower()
-
-        # TODO Missing Swedish message template
-        if value == "sv":
-            return "en"
-
-        if value not in SUPPORTED_LANGUAGE_CODES:
-            return DEFAULT_LANGUAGE
-
-        return value
+        return email_template_language(value)
 
     @pydantic.field_validator("product_data", mode="before")
     @staticmethod
@@ -194,13 +183,13 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
     def _get_event(cls, event_id: int):
         now = django_now()
         cache_is_fresh = (
-            cls.event_cache_refreshed_at is not None and now - cls.event_cache_refreshed_at < EVENT_CACHE_TTL
+            cls.event_cache_refreshed_at is not None and now - cls.event_cache_refreshed_at < cls.event_cache_ttl
         )
-        if cache_is_fresh and (found := EVENT_CACHE.get(event_id)):
+        if cache_is_fresh and (found := cls.event_cache.get(event_id)):
             return found
 
-        EVENT_CACHE.clear()
-        EVENT_CACHE.update(
+        cls.event_cache.clear()
+        cls.event_cache.update(
             {
                 event.id: event
                 for event in Event.objects.filter(ticketsv2eventmeta__isnull=False)
@@ -217,7 +206,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
         )
         cls.event_cache_refreshed_at = now
 
-        return EVENT_CACHE[event_id]
+        return cls.event_cache[event_id]
 
     @cached_property
     def event(self) -> Event:
@@ -232,45 +221,23 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
 
     @cached_property
     def cancellation_deadline(self) -> datetime | None:
-        """
-        Keep in sync with Order.cancellation_deadline.
-        """
-        period_days = self.meta.cancellation_period_days
-        if not period_days:
-            return None
-
-        deadline = self.order_date + timedelta(days=period_days)
-
-        if (start_time := self.event.start_time) is not None:
-            deadline = min(deadline, start_time)
-
-        return deadline
+        return get_cancellation_deadline(
+            order_created_at=self.order_date,
+            cancellation_period_days=self.meta.cancellation_period_days,
+            event_start_time=self.event.start_time,
+        )
 
     @property
     def is_customer_cancellable(self) -> bool:
-        """
-        Keep in sync with Order.can_be_cancelled_by_customer.
-        """
-        from .payment_stamp import PaymentStamp
-
         if self.receipt_type != ReceiptType.PAID:
             return False
 
-        deadline = self.cancellation_deadline
-        if deadline is None or django_now() >= deadline:
-            return False
-
-        if self.total_price == 0:
-            return True
-
-        return (
-            PaymentStamp.objects.filter(
-                event_id=self.event_id,
-                order_id=self.order_id,
-                status=PaymentStatus.PAID,
-            )
-            .exclude(provider_id=PaymentProvider.NONE)
-            .exists()
+        return is_cancellable_by_customer(
+            status=PaymentStatus.PAID,
+            cancellation_deadline=self.cancellation_deadline,
+            now=django_now(),
+            total_price=self.total_price,
+            is_paid_by_provider=lambda: self.paid_by_provider,
         )
 
     @classmethod
@@ -373,11 +340,8 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
                 raise ValueError("Unknown receipt type")
 
         organization = self.event.organization
-        cancellation_deadline = self.cancellation_deadline if self.is_customer_cancellable else None
         vars = dict(
-            cancellation_deadline=(
-                cancellation_deadline.astimezone(self.event.timezone) if cancellation_deadline else None
-            ),
+            cancellation_deadline=self.cancellation_deadline if self.is_customer_cancellable else None,
             cancellation_url=f"{KOMPASSI_V2_BASE_URL}/{self.language}/{self.event.slug}/orders/{self.order_id}/cancel",
             event_name=self.event.name,
             order_number=self.order_number,
@@ -395,7 +359,11 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             seller_email=self.meta.plain_contact_email,
             seller_business_id=organization.business_id,
         )
-        return render_to_string(template_name, vars)
+
+        # NOTE: the |date template filter renders aware datetimes in the active
+        # timezone, so deadlines etc. must be rendered in the event timezone.
+        with timezone_override(self.event.timezone):
+            return render_to_string(template_name, vars)
 
     @property
     def subject(self) -> str:
@@ -411,10 +379,8 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
 
         return f"{self.event.name}: {subject} ({self.formatted_order_number})"
 
-    def send_receipt(self, from_email: str = FROM_EMAIL, mail_domain: str = MAIL_DOMAIN):
-        from_email = (
-            f"{self.event.name} ({settings.KOMPASSI_INSTALLATION_NAME}) <{self.event.slug}-tickets@{mail_domain}>"
-        )
+    def send_receipt(self):
+        from_email = tickets_from_email(self.event)
         reply_to_emails = (contact_email,) if (contact_email := self.meta.contact_email) else ()
         to_emails = (f"{self.first_name} {self.last_name} <{self.email}>",)
 
@@ -457,6 +423,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             product_data=order.product_data,
             order_number=order.order_number,
             total_price=order.cached_price,
+            paid_by_provider=order.provider_paid_stamps.exists(),
         )
 
 

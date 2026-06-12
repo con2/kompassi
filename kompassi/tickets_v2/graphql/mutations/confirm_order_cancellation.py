@@ -1,11 +1,22 @@
+import logging
+from datetime import timedelta
+
 import graphene
 from django.db import transaction
+from django.utils.timezone import now
 
 from kompassi.core.models.event import Event
 
 from ...models.enums import ActorType
+from ...models.order import Order
 from ...models.order_cancellation_token import OrderCancellationToken
-from ...optimized_server.models.enums import RefundType
+from ...optimized_server.models.enums import PaymentStatus, RefundType
+
+logger = logging.getLogger(__name__)
+
+# An emailed confirmation link can be used for this long after it was requested.
+# (A new link can always be requested as long as the order remains cancellable.)
+TOKEN_VALIDITY = timedelta(hours=24)
 
 
 class ConfirmOrderCancellationInput(graphene.InputObjectType):
@@ -23,9 +34,9 @@ class ConfirmOrderCancellation(graphene.Mutation):
     May be called without authentication: the one-time code proves control of
     the email address of the order.
 
-    If the provider refund request fails after the code is consumed, the order
-    is left in REFUND_FAILED state for ticket sales to resolve with the
-    existing admin refund tooling.
+    Returns success=False if the order was cancelled but the provider rejected
+    the refund request (order left in REFUND_FAILED for ticket sales to resolve
+    with the existing admin refund tooling).
 
     NOTE: Must not return any PII (the caller may be anonymous).
     """
@@ -53,6 +64,9 @@ class ConfirmOrderCancellation(graphene.Mutation):
                 state="valid",
             )
 
+            if token.created_at < now() - TOKEN_VALIDITY:
+                raise ValueError("The cancellation link has expired. Please request a new one.")
+
             order = token.order
             if not order.can_be_cancelled_by_customer():
                 raise ValueError("This order can no longer be cancelled.")
@@ -62,10 +76,31 @@ class ConfirmOrderCancellation(graphene.Mutation):
         # NOTE: cancel_and_refund manages its own transactions and performs an
         # external HTTP call to the payment provider, so it must stay outside
         # the token transaction.
-        order.cancel_and_refund(
-            RefundType.PROVIDER if order.cached_price > 0 else RefundType.NONE,
-            actor_type=ActorType.CUSTOMER,
-            actor_user=None,
-        )
+        try:
+            order.cancel_and_refund(
+                RefundType.PROVIDER if order.cached_price > 0 else RefundType.NONE,
+                actor_type=ActorType.CUSTOMER,
+                actor_user=None,
+            )
+        except Exception:
+            # If the order was left untouched, give the token back so that the
+            # customer can retry with the same link instead of hitting a dead end.
+            fresh_order = Order.objects.get(event=event, id=order.id)
+            if fresh_order.status == PaymentStatus.PAID:
+                logger.warning(
+                    "Customer cancellation of order %s failed without changing the order. Restoring token.",
+                    order.id,
+                    exc_info=True,
+                )
+                token.state = "valid"
+                token.used_at = None
+                token.save(update_fields=["state", "used_at"])
+            raise
 
-        return ConfirmOrderCancellation(success=True)  # type: ignore
+        # The refund request may have been rejected by the provider without raising
+        # (recorded as a REFUND_FAILED payment stamp). The customer must not be told
+        # that the refund is on its way when it is not.
+        fresh_order = Order.objects.get(event=event, id=order.id)
+        refund_failed = fresh_order.status == PaymentStatus.REFUND_FAILED
+
+        return ConfirmOrderCancellation(success=not refund_failed)  # type: ignore

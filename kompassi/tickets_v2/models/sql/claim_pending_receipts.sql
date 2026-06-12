@@ -41,7 +41,16 @@ select
   o.phone,
   o.product_data,
   o.order_number,
-  o.cached_price as total_price
+  o.cached_price as total_price,
+  exists (
+    select 1
+    from tickets_v2_paymentstamp ps
+    where
+      ps.event_id = o.event_id
+      and ps.order_id = o.id
+      and ps.status = 3 -- PaymentStatus.PAID
+      and ps.provider_id <> 0 -- PaymentProvider.NONE
+  ) as paid_by_provider
 from
   claimed_receipts cr
   join tickets_v2_order o on (cr.order_id = o.id)

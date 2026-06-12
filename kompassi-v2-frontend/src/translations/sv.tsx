@@ -646,6 +646,13 @@ const translations: Translations = {
             biljettförsäljningen.
           </>
         ),
+        refundFailed: (
+          <>
+            Din beställning har avbokats, men återbetalningen kunde inte
+            påbörjas. Kontakta biljettförsäljningen för att få din
+            återbetalning.
+          </>
+        ),
       },
       cancelPage: {
         title: "Avboka beställning",
