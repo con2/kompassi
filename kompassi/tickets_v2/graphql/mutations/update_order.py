@@ -11,6 +11,7 @@ from kompassi.core.utils.form_utils import camel_case_keys_to_snake_case
 from kompassi.event_log_v2.utils.emit import emit
 
 from ...models.order import Order
+from ...optimized_server.models.customer import Customer
 from ..order_limited import LimitedOrderType
 
 
@@ -22,7 +23,6 @@ class OrderForm(django_forms.ModelForm):
     @classmethod
     def from_form_data(cls, order: Order, form_data: dict[str, str]) -> Self:
         form_data = camel_case_keys_to_snake_case(form_data)
-        print(form_data)
         return cls(form_data, instance=order)
 
 
@@ -58,6 +58,10 @@ class UpdateOrder(graphene.Mutation):
         # XXX for some reason, form.save(commit=True) tries to save all fields, not only those changed by the form
         # this in turn fails on django.db.utils.ProgrammingError: column "order_number" can only be updated to DEFAULT
         order: Order = form.save(commit=False)
+
+        # apply the same validation as the public order flow (eg. Paytrail-unsafe characters in names)
+        Customer.model_validate(order, from_attributes=True)
+
         order.save(update_fields=["first_name", "last_name", "email", "phone"])
 
         emit(
