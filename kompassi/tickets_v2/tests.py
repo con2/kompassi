@@ -925,3 +925,112 @@ def test_optimized_server_event_cache_refresh_survives_waiter_cancellation():
     # The waiters that did not cancel still got a valid result.
     survivors = results[:25]
     assert all(not isinstance(result, BaseException) and result is not None for result in survivors)
+
+
+@pytest.mark.django_db
+def test_confirm_order_cancellation_creates_cancellation_receipt(cancellation_event: Event):
+    """
+    Confirming a customer cancellation must leave a final "order cancelled" receipt
+    in the Receipt table, which the receipt worker emails to the customer and the
+    admin UI shows. (The confirmation-request email is sent directly and is
+    deliberately not a receipt.)
+    """
+    from kompassi.tickets_v2.models.receipt import Receipt
+    from kompassi.tickets_v2.optimized_server.models.enums import ReceiptType
+
+    event = cancellation_event
+    # A free (zero-price) order: paid via a NONE-provider stamp, refunded via NONE.
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.NOT_STARTED)
+    PaymentStamp(
+        event=event,
+        order_id=order_id,
+        correlation_id=uuid7(),
+        provider_id=PaymentProvider.NONE,
+        type=PaymentStampType.PAYMENT_CALLBACK,
+        status=PaymentStatus.PAID,
+        data={},
+    ).save()
+
+    RequestOrderCancellation.mutate(None, None, _request_input(event, order_id))
+    token = OrderCancellationToken.objects.get(event=event, order_id=order_id, state="valid")
+    ConfirmOrderCancellation.mutate(None, None, _confirm_input(event, order_id, token.code))
+
+    assert _get_order(event, order_id).status == PaymentStatus.CANCELLED
+
+    cancellation_receipts = Receipt.objects.filter(
+        event=event,
+        order_id=order_id,
+        type=ReceiptType.CANCELLED,
+    )
+    assert cancellation_receipts.count() == 1
+
+
+@pytest.mark.django_db
+def test_auto_cancelled_unpaid_order_creates_no_receipt(cancellation_event: Event):
+    """
+    The cron that auto-cancels abandoned *unpaid* orders must not create a receipt
+    (and thus must not email the customer). Only orders that were actually paid get
+    a cancellation receipt. Guards the intent of migration 0007.
+    """
+    from kompassi.tickets_v2.models.enums import ActorType
+    from kompassi.tickets_v2.models.receipt import Receipt
+    from kompassi.tickets_v2.optimized_server.models.enums import RefundType
+
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.NOT_STARTED)
+
+    _get_order(event, order_id).cancel_and_refund(RefundType.NONE, actor_type=ActorType.SYSTEM)
+
+    assert _get_order(event, order_id).status == PaymentStatus.CANCELLED
+    assert not Receipt.objects.filter(event=event, order_id=order_id).exists()
+
+
+@pytest.mark.django_db
+def test_provider_refund_creates_single_refunded_receipt(cancellation_event: Event):
+    """
+    A provider refund records CREATE_REFUND_SUCCESS synchronously (status
+    REFUND_REQUESTED) and a REFUNDED stamp later via Paytrail's async refund
+    callback, both sharing one correlation_id. The customer must get exactly one
+    REFUNDED receipt, created as soon as the refund is accepted rather than being
+    deferred to the callback (which never arrives in dev).
+    """
+    from kompassi.tickets_v2.models.receipt import Receipt
+    from kompassi.tickets_v2.optimized_server.models.enums import ReceiptType
+
+    event = cancellation_event
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {},
+        status=PaymentStatus.NOT_STARTED,
+        total_price=Decimal("10.00"),
+    )
+    _add_provider_paid_stamp(event, order_id)
+    refund_correlation = uuid7()
+
+    # Provider accepted the refund (recorded synchronously at confirmation time).
+    PaymentStamp(
+        event=event,
+        order_id=order_id,
+        correlation_id=refund_correlation,
+        provider_id=PaymentProvider.PAYTRAIL,
+        type=PaymentStampType.CREATE_REFUND_SUCCESS,
+        status=PaymentStatus.REFUND_REQUESTED,
+        data={},
+    ).save()
+
+    refunded_receipts = Receipt.objects.filter(event=event, order_id=order_id, type=ReceiptType.REFUNDED)
+    assert refunded_receipts.count() == 1
+
+    # The async refund callback (same correlation_id) must not create a second receipt.
+    PaymentStamp(
+        event=event,
+        order_id=order_id,
+        correlation_id=refund_correlation,
+        provider_id=PaymentProvider.PAYTRAIL,
+        type=PaymentStampType.REFUND_CALLBACK,
+        status=PaymentStatus.REFUNDED,
+        data={},
+    ).save()
+
+    assert refunded_receipts.count() == 1
