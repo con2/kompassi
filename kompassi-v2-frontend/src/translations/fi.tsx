@@ -682,6 +682,7 @@ const translations: Translations = {
         notCancellable: "Tätä tilausta ei voi peruuttaa.",
         actions: {
           sendConfirmationEmail: "Lähetä peruutuslinkki",
+          cancellationLinkSent: "Peruutuslinkki lähetetty sähköpostiisi",
           returnToOrderPage: "Palaa tilaussivulle",
         },
         confirm: {

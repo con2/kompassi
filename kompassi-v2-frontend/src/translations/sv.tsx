@@ -676,6 +676,7 @@ const translations: Translations = {
         notCancellable: "Denna beställning kan inte avbokas.",
         actions: {
           sendConfirmationEmail: "Skicka avbokningslänk",
+          cancellationLinkSent: "Avbokningslänk skickad till din e-post",
           returnToOrderPage: "Tillbaka till beställningssidan",
         },
         confirm: {
