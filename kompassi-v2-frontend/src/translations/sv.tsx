@@ -1257,7 +1257,7 @@ const translations: Translations = {
           contactEmail: {
             title: "Kontaktadress",
             helpText:
-              "Format: Namn <adress@example.com>. Svar på orderbekräftelser och andra e-postmeddelanden som skickas till kunder styrs till denna adress.",
+              "Format: Namn &lt;adress@example.com&gt;. Svar på orderbekräftelser och andra e-postmeddelanden som skickas till kunder styrs till denna adress.",
           },
           termsAndConditionsUrl: {
             en: "Adress till leveransvillkoren (på engelska)",
