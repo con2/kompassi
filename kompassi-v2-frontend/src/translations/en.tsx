@@ -1275,7 +1275,7 @@ const translations = {
           contactEmail: {
             title: "Contact email",
             helpText:
-              "Format: Name <email@example.com>. Replies to order confirmations and other emails sent to customers are directed to this address.",
+              "Format: Name &lt;email@example.com&gt;. Replies to order confirmations and other emails sent to customers are directed to this address.",
           },
           termsAndConditionsUrl: {
             en: "Terms and conditions URL (English)",

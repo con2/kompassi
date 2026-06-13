@@ -1270,7 +1270,7 @@ const translations: Translations = {
           contactEmail: {
             title: "Yhteysosoite",
             helpText:
-              "Muoto: Nimi <osoite@example.com>. Vastaukset tilausvahvistuksiin ja muihin asiakkaille lähetettyihin sähköposteihin ohjataan tähän osoitteeseen.",
+              "Muoto: Nimi &lt;osoite@example.com&gt;. Vastaukset tilausvahvistuksiin ja muihin asiakkaille lähetettyihin sähköposteihin ohjataan tähän osoitteeseen.",
           },
           termsAndConditionsUrl: {
             en: "Toimitusehtojen osoite (englanniksi)",
