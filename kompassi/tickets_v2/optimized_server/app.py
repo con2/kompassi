@@ -26,8 +26,8 @@ OrderId = Annotated[UUID, Path()]
 API_KEY = os.getenv("KOMPASSI_TICKETS_V2_API_KEY")
 
 
-async def _event(event_slug: EventSlug, db: DB) -> Event:
-    event = await Event.get(db, event_slug)
+async def _event(event_slug: EventSlug) -> Event:
+    event = await Event.get(event_slug)
     if event is None:
         raise HTTPException(status_code=400, detail="EVENT_NOT_FOUND")
     return event
