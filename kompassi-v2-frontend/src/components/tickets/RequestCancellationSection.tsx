@@ -25,7 +25,13 @@ export default function RequestCancellationSection({
   if (order.canRequestCancellation) {
     return (
       <div className="d-grid gap-2 mb-4">
-        <Link className="btn btn-outline-danger" href={cancelHref}>
+        {/* prefetch disabled: only a small fraction of visitors ever open the
+            cancellation page, so prefetching it from every order view is wasteful. */}
+        <Link
+          className="btn btn-outline-danger"
+          href={cancelHref}
+          prefetch={false}
+        >
           {t.title}…
         </Link>
       </div>
