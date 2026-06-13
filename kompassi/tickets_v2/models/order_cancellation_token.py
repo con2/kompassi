@@ -1,15 +1,18 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 from functools import cached_property
 
 from django.conf import settings
 from django.db import models
 from django.template.loader import render_to_string
+from django.utils.timezone import now
 from django.utils.timezone import override as timezone_override
 
 from kompassi.core.models.event import Event
 from kompassi.core.models.one_time_code import ONE_TIME_CODE_STATE_CHOICES, OneTimeCodeMixin
+from kompassi.core.utils.cleanup import register_cleanup
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 
 from ..utils.mail import email_template_language, tickets_from_email
@@ -22,6 +25,11 @@ CANCELLATION_REQUEST_SUBJECT = dict(
 )
 
 
+# Safe to delete old tokens: a token is unusable past TOKEN_VALIDITY (24h), nothing
+# references it by FK, and the cancellation itself is recorded in the event log. We
+# filter on created_at (not used_at) so that expired-but-never-clicked valid tokens
+# and revoked tokens are swept too, not just used ones. 30 days leaves a debug window.
+@register_cleanup(lambda qs: qs.filter(created_at__lt=now() - timedelta(days=30)))
 class OrderCancellationToken(models.Model, OneTimeCodeMixin):
     """
     A one-time code sent to the email address of an order to confirm

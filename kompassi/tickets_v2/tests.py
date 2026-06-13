@@ -1034,3 +1034,26 @@ def test_provider_refund_creates_single_refunded_receipt(cancellation_event: Eve
     ).save()
 
     assert refunded_receipts.count() == 1
+
+
+@pytest.mark.django_db
+def test_order_cancellation_token_cleanup(cancellation_event: Event):
+    """
+    Expired cancellation tokens are swept by the scheduled cleanup. Filtering on
+    created_at (not used_at) means even never-clicked valid tokens are removed once
+    they are long past their 24h validity; recent tokens are kept.
+    """
+    from kompassi.core.utils.cleanup import perform_cleanup
+
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PAID)
+
+    recent = OrderCancellationToken.objects.create(event=event, order_id=order_id, language="en")
+    old = OrderCancellationToken.objects.create(event=event, order_id=order_id, language="en")
+    # auto_now_add prevents setting created_at on create, so backdate it afterwards.
+    OrderCancellationToken.objects.filter(pk=old.pk).update(created_at=datetime.now(UTC) - timedelta(days=31))
+
+    perform_cleanup()
+
+    assert OrderCancellationToken.objects.filter(pk=recent.pk).exists()
+    assert not OrderCancellationToken.objects.filter(pk=old.pk).exists()
