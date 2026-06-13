@@ -837,3 +837,92 @@ def test_confirm_order_cancellation_expired_token(cancellation_event: Event):
         ConfirmOrderCancellation.mutate(None, None, _confirm_input(event, order_id, token.code))
 
     assert _get_order(event, order_id).status == PaymentStatus.PAID
+
+
+def test_optimized_server_event_cache_single_flight():
+    """
+    The optimized server serves hundreds of requests concurrently on a single event
+    loop. When the event cache TTL expires, only the first request that notices should
+    refresh the cache from the database; the rest must await that one refresh rather
+    than each kicking off its own (a cache stampede).
+    """
+    import asyncio
+    from unittest.mock import patch
+
+    from kompassi.tickets_v2.optimized_server.models.event import Event as OptimizedEvent
+
+    async def scenario():
+        refresh_calls = 0
+
+        async def fake_refresh(db):
+            nonlocal refresh_calls
+            refresh_calls += 1
+            # Yield control to let every other queued request pile up while this one
+            # is "hitting the database"; a broken lock would let them refresh too.
+            await asyncio.sleep(0.05)
+            OptimizedEvent.cache = {"tracon": object()}
+            OptimizedEvent.cache_refreshed_at = datetime.now(UTC)
+            return OptimizedEvent.cache
+
+        # Start from an empty, never-refreshed cache and a lock bound to this loop.
+        OptimizedEvent.cache = {}
+        OptimizedEvent.cache_refreshed_at = None
+        OptimizedEvent.cache_lock = asyncio.Lock()
+
+        with patch.object(OptimizedEvent, "_do_refresh_cache", staticmethod(fake_refresh)):
+            results = await asyncio.gather(*(OptimizedEvent.get(None, "tracon") for _ in range(200)))
+
+        return refresh_calls, results
+
+    refresh_calls, results = asyncio.run(scenario())
+
+    assert refresh_calls == 1
+    assert all(result is not None for result in results)
+
+
+def test_optimized_server_event_cache_refresh_survives_waiter_cancellation():
+    """
+    A request that gives up while waiting for an in-flight cache refresh (e.g. the
+    client disconnected, cancelling the asyncio task) must not abort that refresh for
+    the requests still waiting on it, nor cause a duplicate refresh. The earlier
+    shared-Future approach broke here: cancelling any waiter cancelled the single
+    shared refresh task, failing every other in-flight request.
+    """
+    import asyncio
+    from unittest.mock import patch
+
+    from kompassi.tickets_v2.optimized_server.models.event import Event as OptimizedEvent
+
+    async def scenario():
+        refresh_calls = 0
+
+        async def fake_refresh(db):
+            nonlocal refresh_calls
+            refresh_calls += 1
+            await asyncio.sleep(0.05)
+            OptimizedEvent.cache = {"tracon": object()}
+            OptimizedEvent.cache_refreshed_at = datetime.now(UTC)
+            return OptimizedEvent.cache
+
+        OptimizedEvent.cache = {}
+        OptimizedEvent.cache_refreshed_at = None
+        OptimizedEvent.cache_lock = asyncio.Lock()
+
+        with patch.object(OptimizedEvent, "_do_refresh_cache", staticmethod(fake_refresh)):
+            tasks = [asyncio.ensure_future(OptimizedEvent.get(None, "tracon")) for _ in range(50)]
+            # Let the first task acquire the lock and start refreshing while the rest queue up.
+            await asyncio.sleep(0.01)
+            # The latter half of the waiters "disconnect" and give up mid-refresh.
+            for task in tasks[25:]:
+                task.cancel()
+            results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        return refresh_calls, results
+
+    refresh_calls, results = asyncio.run(scenario())
+
+    # Exactly one refresh, despite half the waiters bailing out.
+    assert refresh_calls == 1
+    # The waiters that did not cancel still got a valid result.
+    survivors = results[:25]
+    assert all(not isinstance(result, BaseException) and result is not None for result in survivors)

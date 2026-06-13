@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from asyncio import Future, ensure_future
+from asyncio import Lock
 from datetime import UTC, datetime, timedelta
 from functools import cached_property
 from pathlib import Path
@@ -43,8 +43,12 @@ class Event(pydantic.BaseModel):
     start_time: datetime | None
 
     cache: ClassVar[dict[str | int, Event]] = {}
-    cache_refresh: ClassVar[Future[dict[str | int, Event]] | None] = None
     cache_refreshed_at: ClassVar[datetime | None] = None
+
+    # Serializes cache refreshes within a single worker process (one event loop).
+    # The optimized server handles hundreds of concurrent requests, so without this
+    # an expired cache would let every in-flight request kick off its own refresh.
+    cache_lock: ClassVar[Lock] = Lock()
 
     # The admin can change settings that affect eg. customer cancellation eligibility
     # at any time, so the cache needs to expire on its own.
@@ -53,41 +57,39 @@ class Event(pydantic.BaseModel):
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_events.sql").read_bytes()
 
     @classmethod
-    async def get(cls, db: AsyncConnection, slug: str) -> Event | None:
-        cache_is_fresh = (
-            cls.cache_refreshed_at is not None and datetime.now(UTC) - cls.cache_refreshed_at < cls.cache_ttl
-        )
-        if slug not in cls.cache or not cache_is_fresh:
-            cls.cache = await cls._refresh_cache(db)
-
-        return cls.cache.get(slug)
+    def _cache_is_fresh(cls) -> bool:
+        return cls.cache_refreshed_at is not None and datetime.now(UTC) - cls.cache_refreshed_at < cls.cache_ttl
 
     @classmethod
-    async def _refresh_cache(cls, db: AsyncConnection) -> dict[str | int, Event]:
-        """
-        Ensure only one refresh is running at a time.
-        """
-        if cls.cache_refresh is None:
-            cls.cache_refresh = ensure_future(cls._do_refresh_cache(db))
+    async def get(cls, db: AsyncConnection, slug: str) -> Event | None:
+        if cls._cache_is_fresh() and slug in cls.cache:
+            return cls.cache.get(slug)
 
-        try:
-            return await cls.cache_refresh
-        finally:
-            cls.cache_refresh = None
+        async with cls.cache_lock:
+            # Another request may have refreshed the cache while we waited for the lock.
+            # Re-check under the lock so only the first arrival actually hits the database;
+            # the rest fall straight through to the fresh cache.
+            if not (cls._cache_is_fresh() and slug in cls.cache):
+                await cls._do_refresh_cache(db)
+
+        return cls.cache.get(slug)
 
     @classmethod
     async def _do_refresh_cache(cls, db: AsyncConnection):
         """
         Actually refresh the cache.
         """
+        cache: dict[str | int, Event] = {}
         async with db.cursor() as cursor:
             await cursor.execute(cls.query)
 
-            cls.cache.clear()
             async for row in cursor:
                 event = cls(**dict(zip(cls.model_fields, row, strict=True)))  # type: ignore
-                cls.cache[event.slug] = cls.cache[event.id] = event
+                cache[event.slug] = cache[event.id] = event
 
+        # Swap in the fully-built cache atomically so concurrent readers never observe
+        # a half-populated dict mid-refresh.
+        cls.cache = cache
         cls.cache_refreshed_at = datetime.now(UTC)
 
         return cls.cache
