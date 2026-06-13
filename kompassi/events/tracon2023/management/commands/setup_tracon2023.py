@@ -2,9 +2,45 @@ from datetime import datetime, timedelta
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
 from django.urls import reverse
 from django.utils.timezone import now
+
+from kompassi.access.models import (
+    EmailAliasType,
+    GroupEmailAliasGrant,
+    GroupPrivilege,
+    Privilege,
+)
+from kompassi.badges.models import BadgesEventMeta
+from kompassi.core.models import Event, Organization, Person, Venue
+from kompassi.core.utils import full_hours_between
+from kompassi.emprinten.models import Project
+from kompassi.intra.models import IntraEventMeta, Team
+from kompassi.labour.models import (
+    AlternativeSignupForm,
+    InfoLink,
+    JobCategory,
+    LabourEventMeta,
+    PersonnelClass,
+    Qualification,
+    Survey,
+)
+from kompassi.zombies.programme.models import (
+    AlternativeProgrammeForm,
+    Category,
+    Programme,
+    ProgrammeEventMeta,
+    Role,
+    Room,
+    SpecialStartTime,
+    Tag,
+    TimeBlock,
+)
+from kompassi.zombies.tickets.models import LimitGroup, Product, TicketsEventMeta
+
+from ...models import AccessibilityWarning, Night, Poison, SignupExtra, TimeSlot
 
 
 class Setup:
@@ -28,8 +64,6 @@ class Setup:
         # self.setup_kaatoilmo()
 
     def setup_core(self):
-        from kompassi.core.models import Event, Organization, Venue
-
         self.organization, unused = Organization.objects.get_or_create(
             slug="tracon-ry",
             defaults=dict(
@@ -54,26 +88,11 @@ class Setup:
         )
 
     def setup_labour(self):
-        from django.contrib.contenttypes.models import ContentType
-
-        from kompassi.core.models import Event, Person
-        from kompassi.labour.models import (
-            AlternativeSignupForm,
-            InfoLink,
-            JobCategory,
-            LabourEventMeta,
-            PersonnelClass,
-            Qualification,
-            Survey,
-        )
-
-        from ...models import Night, SignupExtra
-
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
             person, unused = Person.get_or_create_dummy()
-            labour_admin_group.user_set.add(person.user)
+            labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
@@ -88,8 +107,8 @@ class Setup:
         if self.test:
             t = now()
             labour_event_meta_defaults.update(
-                registration_opens=t - timedelta(days=60),
-                registration_closes=t + timedelta(days=60),
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
             )
         else:
             pass
@@ -251,17 +270,12 @@ class Setup:
             ),
         )
 
-        if settings.DEBUG:
-            from kompassi.emprinten.models import Project
-
-            project = Project.objects.get(slug="example_pdf")
+        if settings.DEBUG and (project := Project.objects.filter(slug="example_pdf").first()):
             meta = self.event.labour_event_meta
             meta.work_certificate_pdf_project = project
             meta.save()
 
     def setup_badges(self):
-        from kompassi.badges.models import BadgesEventMeta
-
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
         meta, unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
@@ -272,8 +286,6 @@ class Setup:
         )
 
     def setup_tickets(self):
-        from kompassi.zombies.tickets.models import LimitGroup, Product, TicketsEventMeta
-
         tickets_admin_group, pos_access_group = TicketsEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
 
         defaults = dict(
@@ -299,8 +311,8 @@ class Setup:
         if self.test:
             t = now()
             defaults.update(
-                ticket_sales_starts=t - timedelta(days=60),
-                ticket_sales_ends=t + timedelta(days=60),
+                ticket_sales_starts=t - timedelta(days=60),  # type: ignore
+                ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
         meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
@@ -401,24 +413,10 @@ class Setup:
             product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
-                product.limit_groups.set(limit_groups)
+                product.limit_groups.set(limit_groups)  # type: ignore
                 product.save()
 
     def setup_programme(self):
-        from kompassi.core.utils import full_hours_between
-        from kompassi.labour.models import PersonnelClass
-        from kompassi.zombies.programme.models import (
-            AlternativeProgrammeForm,
-            Category,
-            ProgrammeEventMeta,
-            Role,
-            SpecialStartTime,
-            Tag,
-            TimeBlock,
-        )
-
-        from ...models import AccessibilityWarning, TimeSlot
-
         programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
         programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
@@ -576,13 +574,6 @@ class Setup:
         self.event.programme_event_meta.create_groups()
 
     def setup_access(self):
-        from kompassi.access.models import (
-            EmailAliasType,
-            GroupEmailAliasGrant,
-            GroupPrivilege,
-            Privilege,
-        )
-
         # Grant accepted workers access to Tracon Slack
         privilege = Privilege.objects.get(slug="tracon-slack")
         for group in [
@@ -607,8 +598,6 @@ class Setup:
             )
 
     def setup_intra(self):
-        from kompassi.intra.models import IntraEventMeta, Team
-
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("conitea")
         meta, unused = IntraEventMeta.objects.get_or_create(
@@ -651,11 +640,6 @@ class Setup:
             team.save()
 
     def setup_kaatoilmo(self):
-        from kompassi.labour.models import Survey
-        from kompassi.zombies.programme.models import Category, Programme, Room
-
-        from ...models import Poison
-
         saturday = self.event.start_time + timedelta(days=1)
 
         coaches = []
