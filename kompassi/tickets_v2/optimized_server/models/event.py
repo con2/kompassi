@@ -1,22 +1,23 @@
 from __future__ import annotations
 
 import re
-from asyncio import Lock
-from datetime import UTC, datetime, timedelta
+from datetime import datetime
 from functools import cached_property
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import Any, ClassVar
 
 import pydantic
+from async_lru import alru_cache
 
 from .enums import PaymentProvider
-
-if TYPE_CHECKING:
-    from psycopg import AsyncConnection
 
 # Keep in sync with kompassi.core.models.contact_email_mixin.CONTACT_EMAIL_RE
 # (not imported to keep the optimized server free of Django imports)
 CONTACT_EMAIL_RE = re.compile(r"(?P<name>.+) <(?P<email>.+@.+\..+)>")
+
+# The admin can change settings that affect eg. customer cancellation eligibility
+# at any time, so the cache needs to expire on its own.
+CACHE_TTL_SECONDS = 5 * 60
 
 
 class Event(pydantic.BaseModel):
@@ -42,57 +43,45 @@ class Event(pydantic.BaseModel):
     cancellation_period_days: int
     start_time: datetime | None
 
-    cache: ClassVar[dict[str | int, Event]] = {}
-    cache_refreshed_at: ClassVar[datetime | None] = None
-
-    # Serializes cache refreshes within a single worker process (one event loop).
-    # The optimized server handles hundreds of concurrent requests, so without this
-    # an expired cache would let every in-flight request kick off its own refresh.
-    cache_lock: ClassVar[Lock] = Lock()
-
-    # The admin can change settings that affect eg. customer cancellation eligibility
-    # at any time, so the cache needs to expire on its own.
-    cache_ttl: ClassVar[timedelta] = timedelta(minutes=5)
-
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_events.sql").read_bytes()
 
     @classmethod
-    def _cache_is_fresh(cls) -> bool:
-        return cls.cache_refreshed_at is not None and datetime.now(UTC) - cls.cache_refreshed_at < cls.cache_ttl
+    async def get(cls, slug: str) -> Event | None:
+        events = await cls._load_all()
+        return events.get(slug)
 
-    @classmethod
-    async def get(cls, db: AsyncConnection, slug: str) -> Event | None:
-        if cls._cache_is_fresh() and slug in cls.cache:
-            return cls.cache.get(slug)
-
-        async with cls.cache_lock:
-            # Another request may have refreshed the cache while we waited for the lock.
-            # Re-check under the lock so only the first arrival actually hits the database;
-            # the rest fall straight through to the fresh cache.
-            if not (cls._cache_is_fresh() and slug in cls.cache):
-                await cls._do_refresh_cache(db)
-
-        return cls.cache.get(slug)
-
-    @classmethod
-    async def _do_refresh_cache(cls, db: AsyncConnection):
+    @staticmethod
+    @alru_cache(maxsize=1, ttl=CACHE_TTL_SECONDS)
+    async def _load_all() -> dict[str | int, Event]:
         """
-        Actually refresh the cache.
+        Load all events into a slug/id-keyed dict, cached for CACHE_TTL_SECONDS.
+
+        alru_cache gives us both TTL expiry and single-flight within a worker process:
+        when the entry is missing or expired, concurrent callers coalesce into one
+        execution and the rest await its result (a cancelled waiter does not abort it).
+
+        It takes no arguments on purpose: alru_cache keys on call arguments, and a
+        per-request pooled connection would be a different object every call, so the
+        cache would never hit. The loader owns its own pooled connection instead
+        (which also keeps the refresh independent of any single request's lifecycle).
+
+        The DB work lives in _do_load() so tests can stub it while still exercising
+        the real caching/single-flight behaviour through this wrapper.
         """
+        return await Event._do_load()
+
+    @staticmethod
+    async def _do_load() -> dict[str | int, Event]:
+        from ..db import get_connection_pool
+
         cache: dict[str | int, Event] = {}
-        async with db.cursor() as cursor:
-            await cursor.execute(cls.query)
-
+        async with get_connection_pool().connection() as conn, conn.cursor() as cursor:
+            await cursor.execute(Event.query)
             async for row in cursor:
-                event = cls(**dict(zip(cls.model_fields, row, strict=True)))  # type: ignore
+                event = Event(**dict(zip(Event.model_fields, row, strict=True)))  # type: ignore
                 cache[event.slug] = cache[event.id] = event
 
-        # Swap in the fully-built cache atomically so concurrent readers never observe
-        # a half-populated dict mid-refresh.
-        cls.cache = cache
-        cls.cache_refreshed_at = datetime.now(UTC)
-
-        return cls.cache
+        return cache
 
     def model_dump(self, *args, **kwargs) -> Any:
         raise NotImplementedError("contains secrets, please don't")

@@ -839,12 +839,21 @@ def test_confirm_order_cancellation_expired_token(cancellation_event: Event):
     assert _get_order(event, order_id).status == PaymentStatus.PAID
 
 
+# The optimized server's event cache is an async-lru (alru_cache) wrapped loader.
+# These tests stub the DB loader (_do_load) and drive the cache through Event.get(),
+# so they exercise alru_cache's real TTL/single-flight machinery. alru_cache binds to
+# the running event loop, so asyncio.run()'s throwaway loop triggers a (harmless)
+# AlruCacheLoopResetWarning we silence here.
+_ALRU_LOOP_RESET_WARNING = "ignore:alru_cache detected event loop change"
+
+
+@pytest.mark.filterwarnings(_ALRU_LOOP_RESET_WARNING)
 def test_optimized_server_event_cache_single_flight():
     """
     The optimized server serves hundreds of requests concurrently on a single event
-    loop. When the event cache TTL expires, only the first request that notices should
-    refresh the cache from the database; the rest must await that one refresh rather
-    than each kicking off its own (a cache stampede).
+    loop. When the event cache is cold or its TTL has expired, only one request should
+    load it from the database; the rest must coalesce onto that single load rather than
+    each kicking off its own (a cache stampede).
     """
     import asyncio
     from unittest.mock import patch
@@ -852,41 +861,36 @@ def test_optimized_server_event_cache_single_flight():
     from kompassi.tickets_v2.optimized_server.models.event import Event as OptimizedEvent
 
     async def scenario():
-        refresh_calls = 0
+        load_calls = 0
 
-        async def fake_refresh(db):
-            nonlocal refresh_calls
-            refresh_calls += 1
+        async def fake_load():
+            nonlocal load_calls
+            load_calls += 1
             # Yield control to let every other queued request pile up while this one
-            # is "hitting the database"; a broken lock would let them refresh too.
+            # is "hitting the database"; without single-flight they would each load too.
             await asyncio.sleep(0.05)
-            OptimizedEvent.cache = {"tracon": object()}
-            OptimizedEvent.cache_refreshed_at = datetime.now(UTC)
-            return OptimizedEvent.cache
+            return {"tracon": object()}
 
-        # Start from an empty, never-refreshed cache and a lock bound to this loop.
-        OptimizedEvent.cache = {}
-        OptimizedEvent.cache_refreshed_at = None
-        OptimizedEvent.cache_lock = asyncio.Lock()
+        OptimizedEvent._load_all.cache_clear()  # type: ignore[attr-defined]  # alru_cache wrapper
+        with patch.object(OptimizedEvent, "_do_load", staticmethod(fake_load)):
+            results = await asyncio.gather(*(OptimizedEvent.get("tracon") for _ in range(200)))
 
-        with patch.object(OptimizedEvent, "_do_refresh_cache", staticmethod(fake_refresh)):
-            results = await asyncio.gather(*(OptimizedEvent.get(None, "tracon") for _ in range(200)))
+        return load_calls, results
 
-        return refresh_calls, results
+    load_calls, results = asyncio.run(scenario())
 
-    refresh_calls, results = asyncio.run(scenario())
-
-    assert refresh_calls == 1
+    assert load_calls == 1
     assert all(result is not None for result in results)
 
 
+@pytest.mark.filterwarnings(_ALRU_LOOP_RESET_WARNING)
 def test_optimized_server_event_cache_refresh_survives_waiter_cancellation():
     """
-    A request that gives up while waiting for an in-flight cache refresh (e.g. the
-    client disconnected, cancelling the asyncio task) must not abort that refresh for
-    the requests still waiting on it, nor cause a duplicate refresh. The earlier
-    shared-Future approach broke here: cancelling any waiter cancelled the single
-    shared refresh task, failing every other in-flight request.
+    A request that gives up while waiting for an in-flight cache load (e.g. the client
+    disconnected, cancelling the asyncio task) must not abort that load for the requests
+    still waiting on it, nor cause a duplicate load. An earlier hand-rolled shared-Future
+    approach broke here: cancelling any waiter cancelled the single shared task, failing
+    every other in-flight request. This guards that alru_cache does not regress that.
     """
     import asyncio
     from unittest.mock import patch
@@ -894,35 +898,30 @@ def test_optimized_server_event_cache_refresh_survives_waiter_cancellation():
     from kompassi.tickets_v2.optimized_server.models.event import Event as OptimizedEvent
 
     async def scenario():
-        refresh_calls = 0
+        load_calls = 0
 
-        async def fake_refresh(db):
-            nonlocal refresh_calls
-            refresh_calls += 1
+        async def fake_load():
+            nonlocal load_calls
+            load_calls += 1
             await asyncio.sleep(0.05)
-            OptimizedEvent.cache = {"tracon": object()}
-            OptimizedEvent.cache_refreshed_at = datetime.now(UTC)
-            return OptimizedEvent.cache
+            return {"tracon": object()}
 
-        OptimizedEvent.cache = {}
-        OptimizedEvent.cache_refreshed_at = None
-        OptimizedEvent.cache_lock = asyncio.Lock()
-
-        with patch.object(OptimizedEvent, "_do_refresh_cache", staticmethod(fake_refresh)):
-            tasks = [asyncio.ensure_future(OptimizedEvent.get(None, "tracon")) for _ in range(50)]
-            # Let the first task acquire the lock and start refreshing while the rest queue up.
+        OptimizedEvent._load_all.cache_clear()  # type: ignore[attr-defined]  # alru_cache wrapper
+        with patch.object(OptimizedEvent, "_do_load", staticmethod(fake_load)):
+            tasks = [asyncio.ensure_future(OptimizedEvent.get("tracon")) for _ in range(50)]
+            # Let the first task start the load while the rest coalesce behind it.
             await asyncio.sleep(0.01)
-            # The latter half of the waiters "disconnect" and give up mid-refresh.
+            # The latter half of the waiters "disconnect" and give up mid-load.
             for task in tasks[25:]:
                 task.cancel()
             results = await asyncio.gather(*tasks, return_exceptions=True)
 
-        return refresh_calls, results
+        return load_calls, results
 
-    refresh_calls, results = asyncio.run(scenario())
+    load_calls, results = asyncio.run(scenario())
 
-    # Exactly one refresh, despite half the waiters bailing out.
-    assert refresh_calls == 1
+    # Exactly one load, despite half the waiters bailing out.
+    assert load_calls == 1
     # The waiters that did not cancel still got a valid result.
     survivors = results[:25]
     assert all(not isinstance(result, BaseException) and result is not None for result in survivors)

@@ -31,6 +31,12 @@ async def lifespan(app: FastAPI):
         _pool = None
 
 
+def get_connection_pool() -> AsyncConnectionPool:
+    if _pool is None:
+        raise RuntimeError("connection pool not initialised (lifespan not entered)")
+    return _pool
+
+
 async def db() -> AsyncIterator[AsyncConnection]:
     async with _pool.connection() as conn:  # type: ignore
         yield conn
