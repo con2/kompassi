@@ -688,6 +688,7 @@ const translations = {
         notCancellable: "This order cannot be cancelled.",
         actions: {
           sendConfirmationEmail: "Send cancellation link",
+          cancellationLinkSent: "Cancellation link sent to your email",
           returnToOrderPage: "Return to the order page",
         },
         confirm: {

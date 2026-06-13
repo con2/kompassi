@@ -25,6 +25,11 @@ export default async function OrderCancellationPage(props: Props) {
   const t = translations.Tickets.Order;
   const cancelT = t.cancelPage;
 
+  // A link was just sent. Requesting another one immediately is throttled by
+  // design, so disable the button to avoid an inevitable failure.
+  const cancellationRequested =
+    searchParams.success === "cancellationRequested";
+
   return (
     <OrderCancellationView
       title={cancelT.title}
@@ -53,8 +58,17 @@ export default async function OrderCancellationPage(props: Props) {
         action={requestOrderCancellation.bind(null, locale, eventSlug, orderId)}
       >
         <div className="d-grid gap-2 mb-4">
-          <SubmitButton className="btn btn-danger btn-lg">
-            {cancelT.actions.sendConfirmationEmail}
+          <SubmitButton
+            className={
+              cancellationRequested
+                ? "btn btn-secondary btn-lg"
+                : "btn btn-danger btn-lg"
+            }
+            disabled={cancellationRequested}
+          >
+            {cancellationRequested
+              ? cancelT.actions.cancellationLinkSent
+              : cancelT.actions.sendConfirmationEmail}
           </SubmitButton>
         </div>
       </form>
