@@ -9,7 +9,7 @@
  *   (colon -> `-`, camelCase -> kebab-case, lowercased)
  */
 
-export const MANUAL_PERKS_OVERRIDE_SLUG = "manual-perks-override";
+export const manualPerksOverrideSlug = "manual-perks-override";
 
 export function dimensionOverrideValue(dimensionSlug: string): string {
   return `d-${dimensionSlug}`;
