@@ -2837,6 +2837,11 @@ const translations: Translations = {
             yhdistetyt edut valitsemillasi.
           </>
         ),
+        override: "Yliaja",
+        automatic: "automaattinen",
+        manuallyOverridden: "käsin yliajettu",
+        saveButton:
+          "Tallenna etujen yliajot ja laske automaattiset edut uudelleen",
       },
     },
     preferencesAdmin: {

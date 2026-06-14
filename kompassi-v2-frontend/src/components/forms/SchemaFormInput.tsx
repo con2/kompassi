@@ -1,9 +1,8 @@
-"use client";
-
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import makeInputId from "./makeInputId";
 import type { Choice, Field, SingleSelectPresentation } from "./models";
+import PatternTextInput from "./PatternTextInput";
 import { SchemaForm } from "./SchemaForm";
 import UploadedFileCards from "./UploadedFileCards";
 import DateTimeInput from "./DateTimeInput";
@@ -47,37 +46,32 @@ function SchemaFormInput({
     case "Divider":
     case "StaticText":
       return null;
-    case "SingleLineText":
-      return (
-        <input
-          className="form-control"
-          type={htmlType ?? "text"}
-          defaultValue={value}
-          required={required}
-          readOnly={readOnly}
-          id={id}
-          name={slug}
-          pattern={field.pattern}
-          maxLength={field.maxLength}
-          title={field.patternDescription}
-          onInvalid={
-            field.patternDescription
-              ? (e) => {
-                  if (e.currentTarget.validity.patternMismatch) {
-                    e.currentTarget.setCustomValidity(
-                      field.patternDescription!,
-                    );
-                  }
-                }
-              : undefined
-          }
-          onChange={
-            field.patternDescription
-              ? (e) => e.currentTarget.setCustomValidity("")
-              : undefined
-          }
-        />
-      );
+    case "SingleLineText": {
+      const textInputProps = {
+        className: "form-control",
+        type: htmlType ?? "text",
+        defaultValue: value,
+        required,
+        readOnly,
+        id,
+        name: slug,
+        pattern: field.pattern,
+        maxLength: field.maxLength,
+      };
+
+      // Only the custom validity message for pattern validation needs client-side
+      // event handlers, so reach for the client component only when it is actually used.
+      if (field.patternDescription) {
+        return (
+          <PatternTextInput
+            {...textInputProps}
+            patternDescription={field.patternDescription}
+          />
+        );
+      }
+
+      return <input {...textInputProps} />;
+    }
     case "MultiLineText":
       return (
         <textarea
