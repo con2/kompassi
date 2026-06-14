@@ -125,9 +125,14 @@ class InvolvementEventMeta(models.Model):
 
         Emperkelator = meta.emperkelator_class
         if Emperkelator is not None:
+            from ..perks import get_manual_perks_override_dimension
+
             DimensionDTO.save_many(
                 universe=universe,
-                dimension_dtos=Emperkelator.get_dimension_dtos(event),
+                dimension_dtos=[
+                    *Emperkelator.get_dimension_dtos(event),
+                    get_manual_perks_override_dimension(),
+                ],
             )
 
             annotations = AnnotationDTO.save_many(Emperkelator.get_annotation_dtos())

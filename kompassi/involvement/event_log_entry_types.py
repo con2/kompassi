@@ -22,3 +22,8 @@ registry.register(
     name="involvement.involvement.deleted",
     message="The involvement of {involvement_person} in {event} was deleted by {actor}: {involvement_description}",
 )
+
+registry.register(
+    name="involvement.perks.overridden",
+    message="The perks of {person} in {event} were manually overridden by {actor}: {perks_overridden}",
+)

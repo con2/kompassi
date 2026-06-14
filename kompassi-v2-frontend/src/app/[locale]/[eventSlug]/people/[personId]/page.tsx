@@ -7,19 +7,22 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import AnnotationsForm from "@/components/annotations/AnnotationsForm";
 import { validateCachedAnnotations } from "@/components/annotations/models";
-import DimensionValueSelectionForm from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
 import SignInRequired from "@/components/errors/SignInRequired";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
+import PerksForm from "@/components/involvement/PerksForm";
+import {
+  MANUAL_PERKS_OVERRIDE_SLUG,
+  PerksOverridePayload,
+} from "@/components/involvement/perks";
 import { ProfileFields } from "@/components/profile/ProfileFields";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 import { Translations } from "@/translations/en";
 import { notFound } from "next/navigation";
 import { Card, CardBody, CardText, CardTitle } from "react-bootstrap";
-import { updateCombinedPerks } from "./actions";
+import { updateInvolvementPerks } from "./actions";
 
 import "./page.css";
 import { Column } from "@/components/ReorderableDataTable";
@@ -134,78 +137,42 @@ export async function generateMetadata(props: Props) {
   };
 }
 
-function CombinedPerksCardWIP({
+function CombinedPerksCard({
   involvement,
   translations,
   dimensions,
   annotations,
-  locale,
-  onChange,
+  onSubmit,
 }: {
   involvement: InvolvedPersonDetailInvolvementFragment;
   translations: Translations;
   dimensions: DimensionValueSelectFragment[];
   annotations: AnnotationsFormAnnotationFragment[];
-  locale: string;
-  onChange: (formData: FormData) => Promise<void>;
+  onSubmit: (payload: PerksOverridePayload) => Promise<void>;
 }) {
   const t = translations.Involvement;
 
   validateCachedDimensions(involvement.cachedDimensions);
   validateCachedAnnotations(annotations, involvement.cachedAnnotations);
 
-  annotations = annotations.filter((annotation) => !annotation.isComputed);
+  const manualPerksOverride =
+    involvement.cachedDimensions[MANUAL_PERKS_OVERRIDE_SLUG] ?? [];
 
   return (
     <Card className="mb-3">
       <CardBody>
         <CardTitle>{t.attributes.combinedPerks.title}</CardTitle>
         <CardText>{t.attributes.combinedPerks.message}</CardText>
-        <DimensionValueSelectionForm
+        <PerksForm
           dimensions={dimensions}
+          annotations={annotations}
           cachedDimensions={involvement.cachedDimensions}
-          translations={translations}
-          onChange={onChange}
+          cachedAnnotations={involvement.cachedAnnotations}
+          manualPerksOverride={manualPerksOverride}
+          messages={t.attributes.combinedPerks}
+          schemaFormMessages={translations.SchemaForm}
+          onSubmit={onSubmit}
         />
-        <AnnotationsForm
-          schema={annotations}
-          values={involvement.cachedAnnotations}
-          messages={translations.SchemaForm}
-          locale={locale}
-        />
-      </CardBody>
-    </Card>
-  );
-}
-
-// Readonly version for now
-function CombinedPerksCard({
-  involvement,
-  translations,
-  annotations,
-}: {
-  involvement: InvolvedPersonDetailInvolvementFragment;
-  translations: Translations;
-  dimensions: DimensionValueSelectFragment[];
-  annotations: AnnotationsFormAnnotationFragment[];
-  onChange: (formData: FormData) => Promise<void>;
-}) {
-  const t = translations.Involvement;
-
-  validateCachedAnnotations(annotations, involvement.cachedAnnotations);
-
-  return (
-    <Card className="mb-3">
-      <CardBody>
-        <CardTitle>{t.attributes.combinedPerks.title}</CardTitle>
-
-        <dl className="CombinedPerks">
-          <dt>{t.attributes.title.title}</dt>
-          <dd>{involvement.title}</dd>
-
-          <dt>{t.attributes.combinedPerks.title}</dt>
-          <dd>{involvement.cachedAnnotations["internal:formattedPerks"]}</dd>
-        </dl>
       </CardBody>
     </Card>
   );
@@ -293,17 +260,17 @@ export default async function PersonPage(props: Props) {
       </Card>
 
       {combinedPerksInvolvement && (
-        <CombinedPerksCardWIP
+        <CombinedPerksCard
           dimensions={dimensions}
           annotations={annotations}
           involvement={combinedPerksInvolvement}
           translations={translations}
-          locale={locale}
-          onChange={updateCombinedPerks.bind(
+          onSubmit={updateInvolvementPerks.bind(
             null,
             locale,
             event.slug,
             person.id,
+            combinedPerksInvolvement.id,
           )}
         />
       )}
