@@ -2885,6 +2885,10 @@ const translations = {
             or all of them.
           </>
         ),
+        override: "Override",
+        automatic: "automatic",
+        manuallyOverridden: "manually overridden",
+        saveButton: "Save perk overrides and recompute automatic perks",
       },
     },
     preferencesAdmin: {

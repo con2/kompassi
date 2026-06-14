@@ -12,6 +12,7 @@ from django_enum import EnumField
 from kompassi.badges.models import Badge
 from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
+from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import (
     CachedDimensions,
     StrictCachedDimensions,
@@ -685,6 +686,18 @@ class Involvement(models.Model):
             existing_combined_perks=existing_combined_perks,
         )
 
+        # Perks that the admin has manually overridden must not be clobbered by the
+        # automatically computed values. This is implemented once here so that
+        # event-specific Emperkelators need not take overrides into account.
+        annotation_values = emperkelator.get_annotation_values()
+        dimension_values = emperkelator.get_dimension_values()
+        cls._preserve_manual_perk_overrides(
+            universe,
+            existing_combined_perks,
+            dimension_values,
+            annotation_values,
+        )
+
         involvement, created = cls.objects.update_or_create(
             universe=universe,
             person=person,
@@ -693,19 +706,56 @@ class Involvement(models.Model):
             defaults=dict(
                 registry=meta.default_registry,
                 is_active=True,
-                annotations=emperkelator.get_annotation_values(),
+                annotations=annotation_values,
                 title=emperkelator.get_title(),  # with_computed_fields() has no access to emperkelator
             ),
         )
 
         # involvement.with_computed_fields().save()
 
-        # TODO filter out manually overridden dimensions
-        dimension_values = emperkelator.get_dimension_values()
         involvement.refresh_dimensions(dimension_values, cache=meta.dimension_cache)
         involvement.refresh_dependents()
 
         return involvement
+
+    @staticmethod
+    def _preserve_manual_perk_overrides(
+        universe: Universe,
+        existing_combined_perks: Involvement | None,
+        dimension_values: CachedDimensions,
+        annotation_values: CachedAnnotations,
+    ):
+        """
+        Mutate the computed ``dimension_values``/``annotation_values`` in place so that
+        any perk listed in the existing combined perks' ``manual-perks-override`` keeps
+        its manually set value instead of the automatically computed one.
+
+        Note: ``manual-perks-override`` is technical and never present in the computed
+        dimension values, so ``refresh_dimensions()`` (which only touches dimensions
+        present in the dict) preserves the override list itself across recompute.
+        """
+        from ..perks import MANUAL_PERKS_OVERRIDE_SLUG, get_perk_keys
+
+        if existing_combined_perks is None:
+            return
+
+        overrides = existing_combined_perks.cached_dimensions.get(MANUAL_PERKS_OVERRIDE_SLUG, [])
+        if not overrides:
+            return
+
+        perk_keys = get_perk_keys(universe)
+        for override_value in overrides:
+            perk_key = perk_keys.get(override_value)
+            if perk_key is None:
+                # Stale override: the dimension/annotation it referred to no longer exists.
+                continue
+
+            if perk_key.kind == "dimension":
+                dimension_values[perk_key.slug] = existing_combined_perks.cached_dimensions.get(perk_key.slug, [])
+            elif perk_key.slug in existing_combined_perks.annotations:
+                annotation_values[perk_key.slug] = existing_combined_perks.annotations[perk_key.slug]
+            else:
+                annotation_values.pop(perk_key.slug, None)
 
     def refresh_dependents(self):
         if self.program:

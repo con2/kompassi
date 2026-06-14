@@ -2766,6 +2766,11 @@ const translations: Translations = {
             eller alla av dem.
           </>
         ),
+        override: "Åsidosätt",
+        automatic: "automatisk",
+        manuallyOverridden: "manuellt åsidosatt",
+        saveButton:
+          "Spara åsidosättningar och beräkna automatiska förmåner på nytt",
       },
     },
     preferencesAdmin: {
