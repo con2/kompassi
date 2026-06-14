@@ -13,7 +13,7 @@ import SignInRequired from "@/components/errors/SignInRequired";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
 import PerksForm from "@/components/involvement/PerksForm";
 import {
-  MANUAL_PERKS_OVERRIDE_SLUG,
+  manualPerksOverrideSlug,
   PerksOverridePayload,
 } from "@/components/involvement/perks";
 import { ProfileFields } from "@/components/profile/ProfileFields";
@@ -156,7 +156,7 @@ function CombinedPerksCard({
   validateCachedAnnotations(annotations, involvement.cachedAnnotations);
 
   const manualPerksOverride =
-    involvement.cachedDimensions[MANUAL_PERKS_OVERRIDE_SLUG] ?? [];
+    involvement.cachedDimensions[manualPerksOverrideSlug] ?? [];
 
   return (
     <Card className="mb-3">
