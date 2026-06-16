@@ -8,6 +8,7 @@ import { signIn, signOut } from "next-auth/react";
 import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
+import { kompassiBaseUrl } from "@/config";
 import type { Translations } from "@/translations/en";
 
 interface Props {
@@ -84,7 +85,12 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
             </NavDropdown.Item>
           ))}
           <NavDropdown.Divider />
-          <NavDropdown.Item onClick={() => signOut()}>
+          <NavDropdown.Item
+            onClick={async () => {
+              await signOut({ redirect: false });
+              window.location.href = `${kompassiBaseUrl}/logout`;
+            }}
+          >
             {messages.UserMenu.signOut}
           </NavDropdown.Item>
         </NavDropdown>
