@@ -2932,7 +2932,7 @@ const translations = {
   Brand: {
     appName: (
       <>
-        Kompassi<sup>v2 BETA</sup>
+        Kompassi<sup>v2</sup>
       </>
     ),
     plainAppName: "Kompassi",
