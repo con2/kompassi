@@ -2833,15 +2833,15 @@ const translations: Translations = {
         message: (
           <>
             Henkilö voi saada etuja useista lähteistä. Tässä näet
-            automaattisesti yhdistetyt edut. Voit myös yliajaa automaattisesti
-            yhdistetyt edut valitsemillasi.
+            automaattisesti yhdistetyt edut. Voit myös ylikirjoittaa
+            automaattisesti yhdistetyt edut valitsemillasi.
           </>
         ),
-        override: "Yliaja",
+        override: "Ylikirjoita",
         automatic: "automaattinen",
-        manuallyOverridden: "käsin yliajettu",
+        manuallyOverridden: "ylikirjoitettu",
         saveButton:
-          "Tallenna etujen yliajot ja laske automaattiset edut uudelleen",
+          "Tallenna ylikirjoitetut edut ja laske automaattiset edut uudelleen",
       },
     },
     preferencesAdmin: {
