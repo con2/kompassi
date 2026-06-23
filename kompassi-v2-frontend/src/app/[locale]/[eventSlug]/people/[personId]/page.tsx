@@ -269,7 +269,7 @@ export default async function PersonPage(props: Props) {
             null,
             locale,
             event.slug,
-            person.id,
+            personId,
             combinedPerksInvolvement.id,
           )}
         />
