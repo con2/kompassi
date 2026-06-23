@@ -2228,7 +2228,7 @@ export type ProfileWithInvolvementType = {
   firstName: Scalars['String']['output'];
   /** The full name is similar to display name, but includes the last name if it is available. The full name generally should not be displayed to the public (use display name instead), but is used internally for identification purposes. */
   fullName: Scalars['String']['output'];
-  id: Scalars['Int']['output'];
+  id?: Maybe<Scalars['Int']['output']>;
   involvements: Array<LimitedInvolvementType>;
   /** Returns True if the user has at least one active involvement in the event. */
   isActive: Scalars['Boolean']['output'];
@@ -2720,7 +2720,7 @@ export type SelectedProfileType = {
   firstName: Scalars['String']['output'];
   /** The full name is similar to display name, but includes the last name if it is available. The full name generally should not be displayed to the public (use display name instead), but is used internally for identification purposes. */
   fullName: Scalars['String']['output'];
-  id: Scalars['Int']['output'];
+  id?: Maybe<Scalars['Int']['output']>;
   lastName: Scalars['String']['output'];
   nick: Scalars['String']['output'];
   phoneNumber: Scalars['String']['output'];
@@ -3293,7 +3293,7 @@ export type UpdateInvolvementPerksMutation = { __typename?: 'Mutation', updateIn
 
 export type InvolvedPersonDetailInvolvementFragment = { __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown };
 
-export type InvolvedPersonDetailFragment = { __typename?: 'ProfileWithInvolvementType', id: number, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, fullName: string, isActive: boolean, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, involvements: Array<{ __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> };
+export type InvolvedPersonDetailFragment = { __typename?: 'ProfileWithInvolvementType', id?: number | null, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, fullName: string, isActive: boolean, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, involvements: Array<{ __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> };
 
 export type PersonPageQueryVariables = Exact<{
   eventSlug: Scalars['String']['input'];
@@ -3302,7 +3302,7 @@ export type PersonPageQueryVariables = Exact<{
 }>;
 
 
-export type PersonPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, timezone: string, involvement?: { __typename?: 'InvolvementEventMetaType', dimensions: Array<{ __typename?: 'FullDimensionType', isKeyDimension: boolean, isShownInDetail: boolean, slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, annotations: Array<{ __typename?: 'AnnotationType', slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }>, person?: { __typename?: 'ProfileWithInvolvementType', id: number, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, fullName: string, isActive: boolean, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, involvements: Array<{ __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> } | null } | null } | null };
+export type PersonPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, timezone: string, involvement?: { __typename?: 'InvolvementEventMetaType', dimensions: Array<{ __typename?: 'FullDimensionType', isKeyDimension: boolean, isShownInDetail: boolean, slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, annotations: Array<{ __typename?: 'AnnotationType', slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }>, person?: { __typename?: 'ProfileWithInvolvementType', id?: number | null, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, fullName: string, isActive: boolean, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, involvements: Array<{ __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> } | null } | null } | null };
 
 export type InvolvedPersonInvolvementFragment = { __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown };
 

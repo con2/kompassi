@@ -10,6 +10,7 @@ export function getAnonymityDropdown(
     Anonymity.Hard,
     Anonymity.Soft,
     Anonymity.NameAndEmail,
+    Anonymity.FullProfile,
   ];
 
   return {

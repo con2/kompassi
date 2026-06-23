@@ -12,7 +12,7 @@ class SelectedProfileType(graphene.ObjectType):
     NOTE: Must match Profile in frontend/src/components/involvement/models.ts.
     """
 
-    id = graphene.NonNull(graphene.Int)
+    id = graphene.Int()
     first_name = graphene.NonNull(graphene.String)
     last_name = graphene.NonNull(graphene.String)
     nick = graphene.NonNull(graphene.String)

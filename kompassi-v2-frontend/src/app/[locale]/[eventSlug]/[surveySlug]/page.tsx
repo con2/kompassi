@@ -11,6 +11,7 @@ import processFormData from "@/components/forms/processFormData";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import SubmitButton from "@/components/forms/SubmitButton";
 import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
+import { AnonymityNotice } from "@/components/forms/AnonymityNotice";
 import TransferConsentForm from "@/components/involvement/TransferConsentForm";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
@@ -139,6 +140,7 @@ export default async function SurveyPage(props: Props) {
     maxResponsesPerUser,
     countResponsesByCurrentUser,
     purpose,
+    anonymity,
     profileFieldSelector,
     isActive,
     registry: targetRegistry,
@@ -223,7 +225,7 @@ export default async function SurveyPage(props: Props) {
 
       <ParagraphsDangerousHtml html={description} />
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
-        {targetRegistry && profile && (
+        {targetRegistry && profile ? (
           <TransferConsentForm
             profileFieldSelector={profileFieldSelector}
             profile={profile}
@@ -232,6 +234,13 @@ export default async function SurveyPage(props: Props) {
             translations={translations}
             scope={event}
             locale={locale}
+          />
+        ) : (
+          <AnonymityNotice
+            anonymity={anonymity}
+            profileFieldSelector={profileFieldSelector}
+            profile={profile}
+            messages={translations}
           />
         )}
         <SchemaForm
