@@ -6,6 +6,8 @@ from django.template.loader import render_to_string
 from django.utils.timezone import now
 
 from kompassi.core.utils.cleanup import register_cleanup
+from kompassi.graphql_api.language import SupportedLanguageCode
+from kompassi.involvement.dumpers.section import section
 
 from ..utils import url
 from .one_time_code import OneTimeCode
@@ -46,3 +48,13 @@ class PasswordResetToken(OneTimeCode):
             user.keypairs.all().delete()
 
         return user
+
+    def dump_own_data(self, language: SupportedLanguageCode) -> dict:
+        # TODO how do we localize this?
+        return section(
+            title="Salasanan palautuskoodi",
+            content={
+                "IP-osoite": self.ip_address,
+                **super().dump_own_data(language),
+            },
+        )
