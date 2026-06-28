@@ -303,6 +303,7 @@ base_ingress_annotations:
   nginx.org/client-max-body-size: "100m"
   nginx.ingress.kubernetes.io/proxy-send-timeout: !Format "{kompassi_timeout_seconds}"
   nginx.ingress.kubernetes.io/proxy-read-timeout: !Format "{kompassi_timeout_seconds}"
+  nginx.ingress.kubernetes.io/enable-access-log: "false"
 
 # Default annotations work for nginx ingress with or without LetsEncrypt TLS. Override if you need something else.
 ingress_annotations: !Merge

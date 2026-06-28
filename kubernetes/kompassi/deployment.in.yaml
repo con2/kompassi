@@ -39,7 +39,7 @@ spec:
             - gunicorn
             - !Format "--workers={kompassi_workers}"
             - --bind=0.0.0.0:8000
-            - --access-logfile=-
+            - --access-logfile=/dev/null
             - --capture-output
             - !Format "--timeout={kompassi_timeout_seconds}"
             - kompassi.wsgi
