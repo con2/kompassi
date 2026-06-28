@@ -2334,9 +2334,9 @@ const translations: Translations = {
             HARD: "Vastaukset ovat anonyymejä. Et voi palata katsomaan tai muokkaamaan vastauksiasi.",
             SOFT: "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi, jotta voit palata katsomaan tai muokkaamaan vastauksiasi, mutta käyttäjäprofiiliasi ei jaeta kyselyn omistajan kanssa.",
             NAME_AND_EMAIL:
-              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Nimesi ja sähköpostiosoitteesi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
+              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Voit palata katsomaan tai muokkaamaan vastauksiasi. Seuraavat tiedot jaetaan kyselyn omistajan kanssa:",
             FULL_PROFILE:
-              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Koko käyttäjäprofiilisi jaetaan kyselyn omistajan kanssa. Voit palata katsomaan tai muokkaamaan vastauksiasi.",
+              "Jos vastaat tähän kyselyyn kirjautuneena, se yhdistetään käyttäjätiliisi. Voit palata katsomaan tai muokkaamaan vastauksiasi. Seuraavat tiedot jaetaan kyselyn omistajan kanssa:",
           },
         },
         thirdPerson: {

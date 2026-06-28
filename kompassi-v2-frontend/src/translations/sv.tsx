@@ -2275,9 +2275,9 @@ const translations: Translations = {
             HARD: "Svaren är anonyma. Du kan inte återvända för att se eller redigera dina svar.",
             SOFT: "Om du svarar på den här enkäten medan du är inloggad kopplas den till ditt användarkonto så att du kan återvända för att se eller redigera dina svar, men din identitet delas inte med enkätägaren.",
             NAME_AND_EMAIL:
-              "Om du svarar på den här enkäten medan du är inloggad kopplas den till ditt användarkonto. Ditt namn och din e-postadress delas med enkätägaren. Du kan återvända för att se eller redigera dina svar.",
+              "Om du svarar på den här enkäten medan du är inloggad kopplas den till ditt användarkonto. Du kan återvända för att se eller redigera dina svar. Följande information delas med enkätägaren:",
             FULL_PROFILE:
-              "Om du svarar på den här enkäten medan du är inloggad kopplas den till ditt användarkonto. Din fullständiga profilinformation delas med enkätägaren. Du kan återvända för att se eller redigera dina svar.",
+              "Om du svarar på den här enkäten medan du är inloggad kopplas den till ditt användarkonto. Du kan återvända för att se eller redigera dina svar. Följande information delas med enkätägaren:",
           },
         },
         thirdPerson: {
