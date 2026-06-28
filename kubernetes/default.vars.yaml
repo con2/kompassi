@@ -257,6 +257,9 @@ kompassi_environment:
         name: kompassi
         key: oidcRsaPrivateKey
 
+  - name: FONTCONFIG_CACHE
+    value: /tmp
+
 # Common volumes for kompassi, celery and nginx pods.
 kompassi_volume_mounts:
   - mountPath: /usr/src/app/media
