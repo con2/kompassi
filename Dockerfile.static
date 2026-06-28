@@ -3,3 +3,4 @@ FROM $KOMPASSI_IMAGE
 
 FROM nginx:1-alpine
 COPY --from=0 /usr/src/app/kompassi/static /usr/share/nginx/html/static
+COPY nginx.conf /etc/nginx/conf.d/default.conf
