@@ -5,6 +5,9 @@ const bodySizeLimit = "100mb";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  logging: {
+    incomingRequests: false,
+  },
   experimental: {
     middlewareClientMaxBodySize: bodySizeLimit,
     serverActions: {
