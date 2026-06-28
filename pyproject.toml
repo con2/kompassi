@@ -64,6 +64,7 @@ dependencies = [
     "zxcvbn",
     "django-enum>=2.2.3",
     "async-lru>=2.3.0",
+    "python-json-logger>=4.1.0",
 ]
 
 [tool.uv]
