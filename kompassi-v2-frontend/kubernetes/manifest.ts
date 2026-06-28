@@ -207,6 +207,7 @@ const tls = tlsEnabled
 const defaultIngressAnnotations = {
   "nginx.ingress.kubernetes.io/proxy-body-size": "100m",
   "nginx.org/client-max-body-size": "100m",
+  "nginx.ingress.kubernetes.io/enable-access-log": "false",
 };
 const ingressAnnotations = tlsEnabled
   ? {
