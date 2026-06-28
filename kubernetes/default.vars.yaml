@@ -257,7 +257,7 @@ kompassi_environment:
         name: kompassi
         key: oidcRsaPrivateKey
 
-  - name: FONTCONFIG_CACHE
+  - name: XDG_CACHE_HOME
     value: /tmp
 
 # Common volumes for kompassi, celery and nginx pods.

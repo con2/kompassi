@@ -27,8 +27,9 @@ ENV PATH="/usr/src/app/.venv/bin:$PATH"
 USER kompassi
 WORKDIR /usr/src/app
 ENV PATH="/usr/src/app/.venv/bin:$PATH"
-# mount tmpfs at /tmp to silence "FontConfig: No writable cache directories" warnings
-ENV HOME=/tmp
+# XDG_CACHE_HOME set to /tmp (mounted as emptyDir in Kubernetes) so fontconfig
+# can write its cache there and not log "No writable cache directories" errors.
+ENV XDG_CACHE_HOME=/tmp
 
 ENTRYPOINT ["/usr/src/app/scripts/docker-entrypoint.sh"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
