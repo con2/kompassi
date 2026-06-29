@@ -895,6 +895,11 @@ class Setup:
                     source_fields=["file-artist_avatar1", "file-artist_avatar2", "file-artist_avatar3"],
                     required=False,
                 ),
+                Splat(
+                    target_field="description",
+                    source_fields=["artist_description1", "artist_description2", "artist_description3"],
+                    required=False,
+                ),
             ]
 
             projection, _created = Projection.objects.update_or_create(
