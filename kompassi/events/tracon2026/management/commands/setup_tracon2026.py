@@ -892,7 +892,7 @@ class Setup:
                 ),
                 Splat(
                     target_field="avatar",
-                    source_fields=["fixed_artist_avatar1", "fixed_artist_avatar2", "fixed_artist_avatar3"],
+                    source_fields=["file-artist_avatar1", "file-artist_avatar2", "file-artist_avatar3"],
                     required=False,
                 ),
             ]
