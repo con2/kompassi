@@ -1036,7 +1036,7 @@ class Setup:
                                     en=f"Artisan {i}",
                                 ),
                             )
-                            for i in range(26, 50 + 1)
+                            for i in range(1, 25 + 1)
                         ],
                     ),
                 ],
@@ -1073,7 +1073,10 @@ class Setup:
                     # cache_seconds=0 if settings.DEBUG else 300,
                     default_language_code="fi",
                     splats=[splat.model_dump(mode="json", by_alias=True) for splat in splats],
-                    required_dimensions=dict(status=["accepted"]),
+                    required_dimensions=dict(
+                        status=["accepted"],
+                        area=["hall-dealer"],
+                    ),
                     projected_dimensions=dict(
                         tableNumber="table-number",
                     ),
