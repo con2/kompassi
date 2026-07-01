@@ -947,6 +947,142 @@ class Setup:
 
             projection.surveys.set([survey])
 
+        survey = Survey.objects.filter(event=self.event, slug="myyjahaku").first()
+        if survey:
+            DimensionDTO.save_many(
+                survey.universe,
+                [
+                    DimensionDTO(
+                        slug="table-number",
+                        title=dict(
+                            fi="Pöytänumero",
+                            en="Table number",
+                        ),
+                        value_ordering=ValueOrdering.MANUAL,
+                        is_key_dimension=True,
+                        choices=[
+                            DimensionValueDTO(
+                                slug=f"vendor-{i}",
+                                title=dict(
+                                    fi=f"Myyjä {i}",
+                                    en=f"Vendor {i}",
+                                ),
+                            )
+                            for i in range(26, 50 + 1)
+                        ],
+                    ),
+                ],
+                remove_other_values=True,
+            )
+
+            splats = [
+                Splat(
+                    target_field="name",
+                    source_fields=["vendor_web_name"],
+                    required=True,
+                ),
+                Splat(
+                    target_field="website",
+                    source_fields=["vendor_web_www"],
+                    required=False,
+                ),
+                Splat(
+                    target_field="avatar",
+                    source_fields=["file-vendor_web_avatar"],
+                    required=False,
+                ),
+                Splat(
+                    target_field="description",
+                    source_fields=["vendor_description"],
+                    required=False,
+                ),
+            ]
+            projection, _created = Projection.objects.update_or_create(
+                scope=survey.scope,
+                slug="vendors",
+                defaults=dict(
+                    is_public=True,
+                    # cache_seconds=0 if settings.DEBUG else 300,
+                    default_language_code="fi",
+                    splats=[splat.model_dump(mode="json", by_alias=True) for splat in splats],
+                    required_dimensions=dict(status=["accepted"]),
+                    projected_dimensions=dict(
+                        tableNumber="table-number",
+                    ),
+                    order_by=["tableNumber", "name"],
+                ),
+            )
+
+            projection.surveys.set([survey])
+
+        survey = Survey.objects.filter(event=self.event, slug="artesaanihaku").first()
+        if survey:
+            DimensionDTO.save_many(
+                survey.universe,
+                [
+                    DimensionDTO(
+                        slug="table-number",
+                        title=dict(
+                            fi="Pöytänumero",
+                            en="Table number",
+                        ),
+                        value_ordering=ValueOrdering.MANUAL,
+                        is_key_dimension=True,
+                        choices=[
+                            DimensionValueDTO(
+                                slug=f"artisan-{i}",
+                                title=dict(
+                                    fi=f"Artesaani {i}",
+                                    en=f"Artisan {i}",
+                                ),
+                            )
+                            for i in range(26, 50 + 1)
+                        ],
+                    ),
+                ],
+                remove_other_values=True,
+            )
+
+            splats = [
+                Splat(
+                    target_field="name",
+                    source_fields=["artisan_web_name"],
+                    required=True,
+                ),
+                Splat(
+                    target_field="website",
+                    source_fields=["artisan_web_www"],
+                    required=False,
+                ),
+                Splat(
+                    target_field="avatar",
+                    source_fields=["file_artisan_web_avatar"],
+                    required=False,
+                ),
+                Splat(
+                    target_field="description",
+                    source_fields=["web_artisan_description"],
+                    required=False,
+                ),
+            ]
+            projection, _created = Projection.objects.update_or_create(
+                scope=survey.scope,
+                slug="artisans",
+                defaults=dict(
+                    is_public=True,
+                    # cache_seconds=0 if settings.DEBUG else 300,
+                    default_language_code="fi",
+                    splats=[splat.model_dump(mode="json", by_alias=True) for splat in splats],
+                    required_dimensions=dict(status=["accepted"]),
+                    projected_dimensions=dict(
+                        tableNumber="table-number",
+                    ),
+                    order_by=["tableNumber", "name"],
+                ),
+            )
+
+            projection.surveys.set([survey])
+
     def setup_tickets_v2(self):
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
         meta, _ = TicketsV2EventMeta.objects.update_or_create(
