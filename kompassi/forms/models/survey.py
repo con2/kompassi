@@ -306,6 +306,7 @@ class Survey(models.Model):
         so the flag is also synced to the other language versions.
         """
         key_field_slugs = [field["slug"] for field in form.fields if field.get("isKeyField")]
+        key_fields_changed = self.cached_key_fields != key_field_slugs
 
         self.cached_key_fields = key_field_slugs
         self.save(update_fields=["cached_key_fields"])
@@ -322,6 +323,11 @@ class Survey(models.Model):
                     changed = True
             if changed:
                 other_form.save(update_fields=["fields", "cached_enriched_fields"])
+
+        if key_fields_changed:
+            from .response import Response
+
+            Response.refresh_cached_fields_qs(self.current_responses)
 
     def get_form(self, requested_language: str) -> Form | None:
         from .form import Form

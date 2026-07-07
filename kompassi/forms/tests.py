@@ -836,6 +836,7 @@ def test_refresh_cached_key_fields():
     """
     cached_key_fields is denormalized from the isKeyField flag of the form fields of the
     language version being edited, and the flag is synced to the other language versions.
+    Existing responses should also have their cached_key_fields refreshed.
     """
     event, _created = Event.get_or_create_dummy()
     survey = Survey.objects.create(event=event, slug="key-fields-survey")
@@ -859,6 +860,14 @@ def test_refresh_cached_key_fields():
         ],
     )
 
+    response = Response.objects.create(
+        form=en,
+        form_data={
+            "title": "Existing title",
+            "description": "Existing description",
+        },
+    )
+
     survey.refresh_cached_key_fields(en)
 
     survey.refresh_from_db()
@@ -868,6 +877,20 @@ def test_refresh_cached_key_fields():
     fi.refresh_from_db()
     assert next(field for field in fi.fields if field["slug"] == "title").get("isKeyField") is True
     assert all(not field.get("isKeyField") for field in fi.fields if field["slug"] != "title")
+
+    # Existing responses get refreshed when key field selection changes.
+    en.fields = [
+        dict(slug="title", type="SingleLineText"),
+        dict(slug="description", type="MultiLineText", isKeyField=True),
+    ]
+    en.save(update_fields=["fields", "cached_enriched_fields"])
+
+    survey.refresh_cached_key_fields(en)
+
+    survey.refresh_from_db()
+    response.refresh_from_db()
+    assert survey.cached_key_fields == ["description"]
+    assert response.cached_key_fields == {"description": "Existing description"}
 
 
 @pytest.mark.django_db
