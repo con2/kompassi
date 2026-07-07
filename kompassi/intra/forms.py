@@ -149,15 +149,15 @@ class PrivilegesForm(django_forms.Form):
         label=_("Intra admin"),
         help_text=_("The Intra admin can assign organizers to teams and manage these privileges."),
     )
-    involvement = django_forms.BooleanField(
-        required=False,
-        label=_("Involvement admin"),
-        help_text=_("The Involvement admin can view and manage the people involved in the event."),
-    )
     forms = django_forms.BooleanField(
         required=False,
         label=_("Surveys admin"),
         help_text=_("The Surveys admin can manage surveys and view survey responses."),
+    )
+    involvement = django_forms.BooleanField(
+        required=False,
+        label=_("Involvement admin"),
+        help_text=_("The Involvement admin can view and manage the people involved in the event."),
     )
 
     def __init__(self, *args, **kwargs):

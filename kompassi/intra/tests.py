@@ -49,6 +49,12 @@ class InvolvementPrivilegeTestCase(TestCase):
             claims__organization=self.event.organization.slug,
         )
 
+    def test_field_order_matches_active_apps(self):
+        # The privileges template pairs column headers (get_active_apps() order) with
+        # checkboxes (form field iteration order) positionally, so the two must agree.
+        form = PrivilegesForm(event=self.event, user=self.user)
+        assert [bound_field.name for bound_field in form] == self.meta.get_active_apps()
+
     def test_grant_and_revoke_involvement_privilege(self):
         admin_group = self.event.involvement_event_meta.admin_group
 
