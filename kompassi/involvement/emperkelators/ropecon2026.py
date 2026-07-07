@@ -80,7 +80,7 @@ class BadgeType(Enum):
     title_en: str
 
     NONE = "none", None, "Ei badgea", "No badge"
-    PROGRAM_BADGE = "program", "ohjelma", "Ohjelmanpitäjäbadge", "Program host badge"
+    PROGRAM_BADGE = "program", "ohjelma", "Ohjelmabadge", "Program host badge"
     VOLUNTEER_BADGE = "volunteer", "tyovoima", "Vapaaehtoisbadge", "Volunteer badge"
     OVERSEER_BADGE = "overseer", "ylivankari", "Ylivänkäribadge", "Overseer badge"
     ORGANIZER_BADGE = "organizer", "conitea", "Coniteabadge", "Organizer badge"
