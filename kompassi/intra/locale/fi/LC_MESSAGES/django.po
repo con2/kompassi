@@ -258,3 +258,12 @@ msgstr "Liput v2"
 
 msgid "Program v2"
 msgstr "Ohjelma v2"
+
+msgid "Involvement"
+msgstr "Osallistuminen"
+
+msgid "Involvement admin"
+msgstr "Osallistumisen ylläpitäjä"
+
+msgid "The Involvement admin can view and manage the people involved in the event."
+msgstr "Osallistumisen ylläpitäjä voi tarkastella ja hallita tapahtumaan osallistuvia henkilöitä."
