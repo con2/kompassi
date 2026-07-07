@@ -21,9 +21,9 @@ logger = logging.getLogger(__name__)
 
 
 class QuotaCounters(pydantic.BaseModel):
-    count_paid: int
-    count_reserved: int
-    count_available: int
+    count_paid: int = 0
+    count_reserved: int = 0
+    count_available: int = 0
 
     @pydantic.computed_field
     @property
@@ -135,7 +135,9 @@ class Quota(models.Model):
         )
 
     def get_counters(self, request: HttpRequest) -> QuotaCounters:
-        return QuotaCounters.get_for_event(self.event_id, request)[self.id]
+        if found := QuotaCounters.get_for_event(self.event_id, request).get(self.id):
+            return found
+        return QuotaCounters()
 
     def can_be_deleted_by(self, request: HttpRequest) -> bool:
         return not self.products.exists() and is_graphql_allowed_for_model(
