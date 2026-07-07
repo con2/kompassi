@@ -690,7 +690,7 @@ class Involvement(models.Model):
         # automatically computed values. This is implemented once here so that
         # event-specific Emperkelators need not take overrides into account.
         annotation_values = emperkelator.get_annotation_values()
-        dimension_values = emperkelator.get_dimension_values()
+        dimension_values = validate_cached_dimensions(emperkelator.get_dimension_values())
         cls._preserve_manual_perk_overrides(
             universe,
             existing_combined_perks,
@@ -722,7 +722,7 @@ class Involvement(models.Model):
     def _preserve_manual_perk_overrides(
         universe: Universe,
         existing_combined_perks: Involvement | None,
-        dimension_values: CachedDimensions,
+        dimension_values: StrictCachedDimensions,
         annotation_values: CachedAnnotations,
     ):
         """
