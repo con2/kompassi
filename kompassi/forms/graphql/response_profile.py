@@ -74,6 +74,25 @@ class ProfileResponseType(LimitedResponseType):
 
     old_versions = graphene.NonNull(graphene.List(graphene.NonNull(LimitedResponseType)))
 
+    @staticmethod
+    def resolve_edited_by_another(response: Response, info) -> bool:
+        """
+        True if the current version of this response was created by someone other than
+        the original creator (eg. an admin edited a response on behalf of the respondent).
+        The response is still listed for the original creator, but this flag allows the UI
+        to indicate that it was last edited by someone else.
+        """
+        return (
+            response.original_created_by_id is not None
+            and response.revision_created_by_id is not None
+            and response.original_created_by_id != response.revision_created_by_id
+        )
+
+    edited_by_another = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_edited_by_another.__doc__ or ""),
+    )
+
     superseded_by = graphene.Field(
         LimitedResponseType,
         description="If this response is an old version, this field will point to the current version.",

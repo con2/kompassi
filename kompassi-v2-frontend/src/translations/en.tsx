@@ -2368,6 +2368,11 @@ const translations = {
       originalCreatedBy: "Created by (original)",
       currentVersionCreatedAt: "Created at (current version)",
       currentVersionCreatedBy: "Created by (current version)",
+      editedByAnother: {
+        shortTitle: "Edited by an administrator",
+        title:
+          "The most recent version of this response was edited by an administrator",
+      },
       versionHistory: "Version history",
       event: "Event",
       formTitle: "Survey title",

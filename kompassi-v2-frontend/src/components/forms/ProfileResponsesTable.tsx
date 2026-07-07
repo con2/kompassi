@@ -28,14 +28,24 @@ export default async function ProfileResponsesTable({
       slug: "revisionCreatedAt",
       title: t.attributes.currentVersionCreatedAt,
       getCellContents: (row) => (
-        <Link href={`/profile/responses/${row.id}`} className="link-subtle">
-          <FormattedDateTime
-            value={row.revisionCreatedAt}
-            locale={locale}
-            scope={row.form.event}
-            session={session}
-          />
-        </Link>
+        <>
+          <Link href={`/profile/responses/${row.id}`} className="link-subtle">
+            <FormattedDateTime
+              value={row.revisionCreatedAt}
+              locale={locale}
+              scope={row.form.event}
+              session={session}
+            />
+          </Link>
+          {row.editedByAnother && (
+            <span
+              className="badge bg-secondary ms-2"
+              title={t.attributes.editedByAnother.title}
+            >
+              {t.attributes.editedByAnother.shortTitle}
+            </span>
+          )}
+        </>
       ),
     },
     {

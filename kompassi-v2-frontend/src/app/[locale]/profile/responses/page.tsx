@@ -15,6 +15,7 @@ graphql(`
   fragment ProfileResponsesTableRow on ProfileResponseType {
     id
     revisionCreatedAt
+    editedByAnother
     canEdit(mode: OWNER)
 
     values(keyFieldsOnly: true)

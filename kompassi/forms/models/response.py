@@ -98,6 +98,10 @@ class Response(models.Model):
         related_name="+",
     )
 
+    # FK id fields (annotated for the type checker)
+    revision_created_by_id: int | None
+    original_created_by_id: int | None
+
     # related fields
     dimensions: models.QuerySet[ResponseDimensionValue]
     programs: models.QuerySet[Program]

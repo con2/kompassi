@@ -2318,6 +2318,11 @@ const translations: Translations = {
       sequenceNumber: "Sekvensnummer",
       versionHistory: "Versionshistorik",
       currentVersionCreatedAt: "Den aktuella versionen skapades",
+      editedByAnother: {
+        shortTitle: "Redigerad av en administratör",
+        title:
+          "Den senaste versionen av det här svaret har redigerats av en administratör",
+      },
       currentVersionCreatedBy: "Den aktuella versionen skapades av",
       originalCreatedAt: "Inlämnad",
       originalCreatedBy: "Avsändare",

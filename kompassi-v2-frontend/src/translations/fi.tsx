@@ -2381,6 +2381,10 @@ const translations: Translations = {
       originalCreatedBy: "Lähettäjä (alkuperäinen versio)",
       currentVersionCreatedAt: "Luotu (uusin versio)",
       currentVersionCreatedBy: "Lähettäjä (uusin versio)",
+      editedByAnother: {
+        shortTitle: "Ylläpitäjän muokkaama",
+        title: "Tämän vastauksen uusinta versiota on muokannut ylläpitäjä",
+      },
       versionHistory: "Versiohistoria",
       event: "Tapahtuma",
       formTitle: "Kyselyn otsikko",
