@@ -121,9 +121,9 @@ class Perks(pydantic.BaseModel):
             parts.append(self.badge_type.title_fi.lower())
 
         if self.meals == 1:
-            parts.append("1 ruokalippu")
+            parts.append("1 ruokalippu")
         elif self.meals > 1:
-            parts.append(f"{self.meals} ruokalippua")
+            parts.append(f"{self.meals} ruokalippua")
 
         return ", ".join(parts)
 
