@@ -16,6 +16,7 @@ from kompassi.core.models import Event, Organization, Person, Venue
 from kompassi.forms.models.meta import FormsEventMeta
 from kompassi.intra.models import IntraEventMeta, Team
 from kompassi.involvement.models import Registry
+from kompassi.involvement.models.enums import JobTitleMode
 from kompassi.involvement.models.involvement_to_badge import InvolvementToBadgeMapping
 from kompassi.involvement.models.involvement_to_group import InvolvementToGroupMapping
 from kompassi.labour.models import (
@@ -276,6 +277,7 @@ class Setup:
                     "v1-personnel-class": ["ohjelma"],
                 },
                 job_title="Ohjelmanjärjestäjä",
+                job_title_mode=JobTitleMode.OVERRIDE,
                 priority=self.get_ordering_number(),
             ),
         )
