@@ -33,7 +33,7 @@ To fix this, and to update the translations when you change them (`django.po` fi
 
 Kompassi uses the standard Django DB migration facility. However, due to the development environment running under `docker compose`, you need to hop through extra hoops to run the `manage.py makemigrations` command: namely, run it inside a container, and run it as `root` to be able to write migration files:
 
-    docker compose exec --user=root web python manage.py makemigrations
+    docker compose exec --user=root backend python manage.py makemigrations
 
 ### The Hard Way
 

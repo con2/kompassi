@@ -49,7 +49,7 @@ ruff check --fix .
 ruff format .
 
 # Migrations (must run as root inside Docker to write files)
-docker compose exec --user=root web python manage.py makemigrations
+docker compose exec --user=root backend python manage.py makemigrations
 
 # Apply migrations
 python manage.py migrate

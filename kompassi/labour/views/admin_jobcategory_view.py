@@ -7,7 +7,7 @@ from kompassi.core.utils import initialize_form
 
 from ..forms import JobCategoryForm
 from ..helpers import labour_admin_required
-from ..proxies.job_category.management import JobCategoryManagementProxy
+from ..models import JobCategory
 
 
 @labour_admin_required
@@ -17,10 +17,10 @@ def admin_jobcategory_view(request, vars, event, job_category_slug=None):
 
     if job_category_slug is not None:
         # Edit existing
-        job_category = get_object_or_404(JobCategoryManagementProxy, event=event, slug=job_category_slug)
+        job_category = get_object_or_404(JobCategory, event=event, slug=job_category_slug)
     else:
         # Add new
-        job_category = JobCategoryManagementProxy(event=event, app_label="labour")
+        job_category = JobCategory(event=event, app_label="labour")
 
     form = initialize_form(JobCategoryForm, request, instance=job_category, event=event)
 

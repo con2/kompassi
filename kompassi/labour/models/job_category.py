@@ -152,6 +152,14 @@ class JobCategory(models.Model):
         return self.name
 
     @property
+    def show_remove_button(self):
+        return self.pk is not None
+
+    @property
+    def can_remove(self):
+        return self.pk is not None and not self.signup_set.exists()
+
+    @property
     def title(self):
         return self.name
 
