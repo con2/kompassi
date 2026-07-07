@@ -16,6 +16,7 @@ from kompassi.core.models import Event, Organization, Person, Venue
 from kompassi.forms.models.meta import FormsEventMeta
 from kompassi.intra.models import IntraEventMeta, Team
 from kompassi.involvement.models import Registry
+from kompassi.involvement.models.involvement_to_badge import InvolvementToBadgeMapping
 from kompassi.involvement.models.involvement_to_group import InvolvementToGroupMapping
 from kompassi.labour.models import (
     AlternativeSignupForm,
@@ -265,21 +266,19 @@ class Setup:
 
         universe = self.event.involvement_universe
 
-        # TODO Use combined perks instead
-        # ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
-        # InvolvementToBadgeMapping.objects.update_or_create(
-        #     universe=universe,
-        #     personnel_class=ohjelma,
-        #     defaults=dict(
-        #         required_dimensions={
-        #             "state": ["active"],
-        #             "type": ["program-host"],
-        #             "program-host-has-badge": ["yes"],
-        #         },
-        #         job_title="Ohjelmanjärjestäjä",
-        #         priority=self.get_ordering_number(),
-        #     ),
-        # )
+        ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
+        InvolvementToBadgeMapping.objects.update_or_create(
+            universe=universe,
+            personnel_class=ohjelma,
+            defaults=dict(
+                required_dimensions={
+                    "state": ["active"],
+                    "v1-personnel-class": ["ohjelma"],
+                },
+                job_title="Ohjelmanjärjestäjä",
+                priority=self.get_ordering_number(),
+            ),
+        )
 
         group, _ = Group.objects.get_or_create(name=f"{self.event.slug}-program-hosts")
         InvolvementToGroupMapping.objects.get_or_create(
