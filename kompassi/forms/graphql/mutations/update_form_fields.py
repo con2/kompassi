@@ -1,5 +1,6 @@
 import graphene
 import pydantic
+from django.db import transaction
 from graphene.types.generic import GenericScalar
 
 from kompassi.access.cbac import graphql_check_instance
@@ -32,21 +33,22 @@ class UpdateFormFields(graphene.Mutation):
         info,
         input: UpdateFormFieldsInput,
     ):
-        survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-        form = survey.languages.get(language=input.language)
-        fields = Fields.model_validate(dict(fields=input.fields))
+        with transaction.atomic():
+            survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
+            form = survey.languages.get(language=input.language)
+            fields = Fields.model_validate(dict(fields=input.fields))
 
-        graphql_check_instance(
-            survey,
-            info,
-            app=survey.app_name,
-            field="languages",
-            operation="update",
-        )
+            graphql_check_instance(
+                survey,
+                info,
+                app=survey.app_name,
+                field="languages",
+                operation="update",
+            )
 
-        form.fields = [field.model_dump(mode="json", by_alias=True) for field in fields.fields]
-        form.save(update_fields=["fields", "cached_enriched_fields"])
+            form.fields = [field.model_dump(mode="json", by_alias=True) for field in fields.fields]
+            form.save(update_fields=["fields", "cached_enriched_fields"])
 
-        survey.refresh_cached_key_fields(form)
+            survey.refresh_cached_key_fields(form)
 
-        return UpdateFormFields(survey=survey)  # type: ignore
+            return UpdateFormFields(survey=survey)  # type: ignore

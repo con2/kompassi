@@ -953,7 +953,7 @@ export type FullSurveyType = {
   /** Will attempt to give the form in the requested language, falling back to another language if that language is not available. */
   form?: Maybe<FormType>;
   isActive: Scalars['Boolean']['output'];
-  /** Key fields will be shown in the response list. */
+  /** The slugs of the fields that are designated as key fields (isKeyField). Key fields are shown in the response list. */
   keyFields: Array<Scalars['String']['output']>;
   languages: Array<FormType>;
   loginRequired: Scalars['Boolean']['output'];

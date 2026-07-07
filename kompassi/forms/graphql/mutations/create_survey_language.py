@@ -1,4 +1,5 @@
 import graphene
+from django.db import transaction
 
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.dimensions.models.enums import DimensionApp
@@ -30,39 +31,40 @@ class CreateSurveyLanguage(graphene.Mutation):
         info,
         input: CreateSurveyLanguageInput,
     ):
-        survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-        graphql_check_instance(
-            survey,
-            info,
-            app=survey.app_name,
-            field="languages",
-            operation="create",
-        )
-
-        language: str = input.language  # type: ignore
-        if language not in SUPPORTED_LANGUAGE_CODES:
-            raise ValueError(f"Unsupported language: {language}")
-
-        if input.copy_from:
-            form = survey.languages.get(language=input.copy_from)
-            form.pk = None
-            form.language = input.language
-            form.created_by = info.context.user
-            form.save()
-        else:
-            if survey.app == DimensionApp.PROGRAM_V2 and survey.purpose == SurveyPurpose.DEFAULT:
-                fields = get_program_offer_form_default_fields(language)
-            else:
-                fields = []
-
-            form = Form.objects.create(
-                event=survey.event,
-                survey=survey,
-                language=input.language,
-                created_by=info.context.user,
-                fields=fields,
+        with transaction.atomic():
+            survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
+            graphql_check_instance(
+                survey,
+                info,
+                app=survey.app_name,
+                field="languages",
+                operation="create",
             )
 
-        survey.refresh_cached_key_fields(form)
-        survey.workflow.handle_form_update()
-        return CreateSurveyLanguage(form=form)  # type: ignore
+            language: str = input.language  # type: ignore
+            if language not in SUPPORTED_LANGUAGE_CODES:
+                raise ValueError(f"Unsupported language: {language}")
+
+            if input.copy_from:
+                form = survey.languages.get(language=input.copy_from)
+                form.pk = None
+                form.language = input.language
+                form.created_by = info.context.user
+                form.save()
+            else:
+                if survey.app == DimensionApp.PROGRAM_V2 and survey.purpose == SurveyPurpose.DEFAULT:
+                    fields = get_program_offer_form_default_fields(language)
+                else:
+                    fields = []
+
+                form = Form.objects.create(
+                    event=survey.event,
+                    survey=survey,
+                    language=input.language,
+                    created_by=info.context.user,
+                    fields=fields,
+                )
+
+            survey.refresh_cached_key_fields(form)
+            survey.workflow.handle_form_update()
+            return CreateSurveyLanguage(form=form)  # type: ignore
