@@ -190,7 +190,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
                 program.slug,
               )}
             >
-              <p>{t.actions.restore.message}</p>
+              {t.actions.restore.message}
             </ModalButton>
           ) : undefined}
           {canCancel && canDelete ? (
@@ -207,7 +207,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
                 program.slug,
               )}
             >
-              <p>{t.actions.cancel.message}</p>
+              {t.actions.cancel.message}
               <SchemaForm
                 fields={cancelProgramItemFields}
                 messages={translations.SchemaForm}
@@ -229,7 +229,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
                 ProgramItemResolution.Delete,
               )}
             >
-              <p>{t.actions.delete.message}</p>
+              {t.actions.delete.message}
             </ModalButton>
           ) : undefined}
         </ButtonGroup>
