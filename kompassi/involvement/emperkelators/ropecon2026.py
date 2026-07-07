@@ -139,11 +139,7 @@ class Perks(pydantic.BaseModel):
             ticket_type = TicketType.WEEKEND_TICKET
             badge_type = BadgeType.ORGANIZER_BADGE
             meals = 2
-        elif "ylivankari" in personnel_classes or "ylityovoima" in personnel_classes:
-            ticket_type = TicketType.WEEKEND_TICKET
-            badge_type = BadgeType.OVERSEER_BADGE
-            meals = 2
-        elif "tyovoima" in personnel_classes:
+        elif "tyovoima" in personnel_classes or "ylivankari" in personnel_classes or "ylityovoima" in personnel_classes:
             ticket_type = TicketType.WEEKEND_TICKET
             badge_type = BadgeType.VOLUNTEER_BADGE
             meals = 2
