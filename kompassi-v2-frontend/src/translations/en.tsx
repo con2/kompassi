@@ -247,6 +247,10 @@ const translations = {
       required: {
         title: "Required",
       },
+      isKeyField: {
+        title: "Key field",
+        helpText: "Key fields are shown in the response list.",
+      },
       choices: {
         title: "Choices",
         helpText:

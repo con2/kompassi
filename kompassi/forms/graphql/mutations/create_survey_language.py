@@ -63,5 +63,6 @@ class CreateSurveyLanguage(graphene.Mutation):
                 fields=fields,
             )
 
+        survey.refresh_cached_key_fields(form)
         survey.workflow.handle_form_update()
         return CreateSurveyLanguage(form=form)  # type: ignore

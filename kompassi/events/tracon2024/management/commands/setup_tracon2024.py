@@ -895,15 +895,15 @@ class Setup:
         for survey in [
             SurveyDTO(
                 slug="artisan-application",
-                key_fields=["name", "email", "helper"],
+                cached_key_fields=["name", "email", "helper"],
             ),
             SurveyDTO(
                 slug="artist-alley-application",
-                key_fields=["name", "email", "artist_name1", "location", "reserve"],
+                cached_key_fields=["name", "email", "artist_name1", "location", "reserve"],
             ),
             SurveyDTO(
                 slug="expense-claim",
-                key_fields=["title", "amount"],
+                cached_key_fields=["title", "amount"],
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),
@@ -911,15 +911,15 @@ class Setup:
             SurveyDTO(slug="jv-kertauskurssi"),
             SurveyDTO(
                 slug="opening-closing-performer-application",
-                key_fields=["performer-name"],
+                cached_key_fields=["performer-name"],
             ),
             SurveyDTO(
                 slug="vendor-application",
-                key_fields=["name"],
+                cached_key_fields=["name"],
             ),
             SurveyDTO(
                 slug="cosplay-jury-application",
-                key_fields=["performer_name"],
+                cached_key_fields=["performer_name"],
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),
@@ -930,7 +930,7 @@ class Setup:
             ),
             SurveyDTO(
                 slug="geekjam-signup",
-                key_fields=["nick", "instruments"],
+                cached_key_fields=["nick", "instruments"],
             ),
         ]:
             survey.save(self.event)

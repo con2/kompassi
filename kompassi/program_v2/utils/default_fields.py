@@ -15,6 +15,7 @@ def get_program_offer_form_default_fields(language: str) -> list[dict[str, Any]]
             slug="title",
             type=FieldType.SINGLE_LINE_TEXT,
             required=True,
+            is_key_field=True,
             title=get_message_in_language(TITLE, language),
         ),
         Field(

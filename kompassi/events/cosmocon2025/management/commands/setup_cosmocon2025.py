@@ -397,7 +397,7 @@ class Setup:
                 active_from=datetime(2024, 10, 21, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2024, 11, 8, 0, 0, tzinfo=self.tz),
                 max_responses_per_user=1,
-                key_fields=["name", "email", "day", "reserve"],
+                cached_key_fields=["name", "email", "day", "reserve"],
                 login_required=True,
             ),
         )
@@ -421,7 +421,7 @@ class Setup:
                 active_from=datetime(2024, 11, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2024, 12, 16, 0, 0, tzinfo=self.tz),
                 max_responses_per_user=1,
-                key_fields=["name", "email", "character", "reserve"],
+                cached_key_fields=["name", "email", "character", "reserve"],
                 login_required=True,
             ),
         )

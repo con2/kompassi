@@ -244,6 +244,10 @@ const translations: Translations = {
       required: {
         title: "Obligatoriskt",
       },
+      isKeyField: {
+        title: "Nyckelfält",
+        helpText: "Nyckelfält visas i svarslistan.",
+      },
       choices: {
         title: "Val",
         helpText:

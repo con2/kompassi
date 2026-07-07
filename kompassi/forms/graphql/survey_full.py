@@ -56,7 +56,7 @@ class FullSurveyType(LimitedSurveyType):
         fields = parent.get_combined_fields(lang)
 
         if key_fields_only:
-            fields = (field for field in fields if field.slug in parent.key_fields)
+            fields = (field for field in fields if field.slug in parent.cached_key_fields)
 
         return [
             field.model_dump(
@@ -71,6 +71,19 @@ class FullSurveyType(LimitedSurveyType):
         lang=graphene.String(),
         key_fields_only=graphene.Boolean(),
         description=normalize_whitespace(resolve_fields.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_key_fields(survey: Survey, info):
+        """
+        The slugs of the fields that are designated as key fields (isKeyField).
+        Key fields are shown in the response list.
+        """
+        return survey.cached_key_fields
+
+    key_fields = graphene.NonNull(
+        graphene.List(graphene.NonNull(graphene.String)),
+        description=normalize_whitespace(resolve_key_fields.__doc__ or ""),
     )
 
     @staticmethod
@@ -266,7 +279,6 @@ class FullSurveyType(LimitedSurveyType):
             "active_until",
             "responses_editable_until",
             "languages",
-            "key_fields",
             "login_required",
             "anonymity",
             "max_responses_per_user",

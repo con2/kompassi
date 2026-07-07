@@ -47,4 +47,6 @@ class UpdateFormFields(graphene.Mutation):
         form.fields = [field.model_dump(mode="json", by_alias=True) for field in fields.fields]
         form.save(update_fields=["fields", "cached_enriched_fields"])
 
+        survey.refresh_cached_key_fields(form)
+
         return UpdateFormFields(survey=survey)  # type: ignore
