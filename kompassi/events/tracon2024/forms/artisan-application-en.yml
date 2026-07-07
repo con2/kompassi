@@ -11,16 +11,19 @@ fields:
     slug: basic_info_title
 
   - slug: name
+    isKeyField: true
     title: Contact person's first name and surname
     type: SingleLineText
     required: true
 
   - slug: email
+    isKeyField: true
     title: Contact person's email
     type: SingleLineText
     required: true
 
   - slug: helper_name
+    isKeyField: true
     title: Helper's name
     type: SingleLineText
 

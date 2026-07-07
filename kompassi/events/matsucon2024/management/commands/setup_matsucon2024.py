@@ -407,7 +407,6 @@ class Setup:
             slug="artist-alley-application",
             defaults=dict(
                 active_from=now(),
-                cached_key_fields=["name", "email", "artist_name1", "table_size", "experience", "reserve"],
                 login_required=True,
             ),
         )
@@ -432,6 +431,8 @@ class Setup:
             defaults=data,
         )
 
+        artist_alley_application.refresh_cached_key_fields(artist_alley_application_fi)
+
         with resource_stream("events.matsucon2024", "forms/artist-alley-application-dimensions.yml") as f:
             data = yaml.safe_load(f)
 
@@ -444,14 +445,6 @@ class Setup:
             slug="vendor-application",
             defaults=dict(
                 active_from=now(),
-                cached_key_fields=[
-                    "name",
-                    "email",
-                    "website",
-                    "id",
-                    "businessname",
-                    "days",
-                ],
                 login_required=True,
             ),
         )
@@ -475,6 +468,8 @@ class Setup:
             language="fi",
             defaults=data,
         )
+
+        vendor_application.refresh_cached_key_fields(vendor_application_fi)
 
         with resource_stream("events.matsucon2024", "forms/vendor-application-dimensions.yml") as f:
             data = yaml.safe_load(f)

@@ -800,13 +800,11 @@ class Setup:
         for survey in [
             SurveyDTO(
                 slug="expense-claim",
-                cached_key_fields=["title", "amount"],
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),
             SurveyDTO(
                 slug="car-usage",
-                cached_key_fields=["title", "kilometers"],
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
             ),

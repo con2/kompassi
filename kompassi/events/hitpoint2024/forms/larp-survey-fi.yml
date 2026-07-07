@@ -15,6 +15,7 @@ fields:
     slug: background
 
   - slug: participated_in_tracon_hitpoint
+    isKeyField: true
     title: Montako kertaa olet osallistunut Tracon Hitpointiin?
     helpText: "Tracon Hitpoint on järjestetty neljä kertaa: vuosina 2015, 2017, 2019 ja 2024."
     type: NumberField

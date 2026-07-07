@@ -11,16 +11,19 @@ fields:
     slug: basic_info_title
 
   - slug: name
+    isKeyField: true
     title: Vastuuhenkilön etu- ja sukunimi
     type: SingleLineText
     required: true
 
   - slug: email
+    isKeyField: true
     title: Vastuuhenkilön sähköposti
     type: SingleLineText
     required: true
 
   - slug: helper_name
+    isKeyField: true
     title: Apumyyjän nimi
     type: SingleLineText
 

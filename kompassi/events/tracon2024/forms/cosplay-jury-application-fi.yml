@@ -7,6 +7,7 @@ description: |
   Ongelmatilanteissa, ota yhteyttä <em>cosplay@tracon.fi</em> tai suoraan cosplayvastaavaan <em>chamira@tracon.fi</em>
 fields:
   - slug: performer_name
+    isKeyField: true
     type: SingleLineText
     title: Nimi / Nick, jota haluat käyttää julkisesti
     required: true

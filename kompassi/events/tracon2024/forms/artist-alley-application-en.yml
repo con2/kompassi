@@ -12,11 +12,13 @@ fields:
     slug: basic_info_title
 
   - slug: name
+    isKeyField: true
     title: First name and surname
     type: SingleLineText
     required: true
 
   - slug: email
+    isKeyField: true
     title: Contact person's email
     type: SingleLineText
     required: true
@@ -57,6 +59,7 @@ fields:
     required: true
 
   - slug: reserve
+    isKeyField: true
     title: Reserve list
     helpText: "Choose if you want to be on the reserve list if tables become available. We will make a reserve list of people and send an email to those who said yes if a table frees up. We will not publish a list of people on the reserve list. In the free comment section you can specify how soon before the event you will be able to accept a table."
     type: SingleSelect
@@ -84,6 +87,7 @@ fields:
         title: First time at the Tracon event
 
   - slug: location
+    isKeyField: true
     title: Are you coming to the event from Finland or abroad
     type: SingleSelect
     required: true
@@ -109,6 +113,7 @@ fields:
     slug: artist_info1
 
   - slug: artist_name1
+    isKeyField: true
     title: Artist name
     type: SingleLineText
     required: true

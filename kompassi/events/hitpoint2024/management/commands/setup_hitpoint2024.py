@@ -572,16 +572,14 @@ class Setup:
         with resource_stream("events.hitpoint2024", "forms/larp-survey-en.yml") as f:
             data = yaml.safe_load(f)
 
-        Form.objects.update_or_create(
+        en_form, _ = Form.objects.update_or_create(
             event=self.event,
             survey=survey,
             language="en",
             defaults=data,
         )
 
-        if not survey.cached_key_fields:
-            survey.cached_key_fields = ["participated_in_tracon_hitpoint"]
-            survey.save()
+        survey.refresh_cached_key_fields(en_form)
 
 
 class Command(BaseCommand):

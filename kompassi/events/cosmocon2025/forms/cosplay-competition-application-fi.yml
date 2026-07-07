@@ -12,11 +12,13 @@ description: |
 
 fields:
   - slug: name
+    isKeyField: true
     title: Kilpailijan nimi tai nimimerkki
     type: SingleLineText
     required: true
 
   - slug: email
+    isKeyField: true
     title: Sähköpostiosoite
     type: SingleLineText
     required: true
@@ -27,6 +29,7 @@ fields:
     required: true
 
   - slug: character
+    isKeyField: true
     title: Cossattavan hahmon nimi
     type: SingleLineText
     required: true
@@ -75,6 +78,7 @@ fields:
         title: Kyllä
 
   - slug: reserve
+    isKeyField: true
     title: Mikäli en tule heti valituksi, haluan jäädä varasijalle siltä varalta, että joku valituista kisaajista jää kisasta pois.
     type: SingleSelect
     required: true

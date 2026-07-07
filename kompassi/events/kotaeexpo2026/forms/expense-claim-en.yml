@@ -11,6 +11,7 @@ description: |
 
 fields:
   - slug: title
+    isKeyField: true
     type: SingleLineText
     title: Title
     required: true
@@ -23,6 +24,7 @@ fields:
       If the title does not tell everything essential, you can provide additional information here.
 
   - slug: amount
+    isKeyField: true
     type: DecimalField
     minValue: 0
     decimalPlaces: 2

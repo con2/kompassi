@@ -5,11 +5,13 @@ description: |
   Know how to play a (portable) instrument? Like to play together? Bring yourself and your instrument(s) to the park! We'll play geek music (possibly mixed with some Irish and other trad music) together. Some (but not all) songs may also be sing-along and there may be an electric piano. We'll prefer D whistle compatible keys (D major, G major, E minor, B minor) to allow whistles & simple system flutes to participate. Sign-up is not mandatory, but you can also use this form to suggest songs! You're also welcome to just listen.
 fields:
   - slug: nick
+    isKeyField: true
     type: SingleLineText
     title: Nick name
     required: true
 
   - slug: instruments
+    isKeyField: true
     type: MultiLineText
     title: Instrument(s)
     helpText: |

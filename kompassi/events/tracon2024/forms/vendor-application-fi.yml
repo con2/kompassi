@@ -12,6 +12,7 @@ fields:
     type: StaticText
 
   - slug: public_name
+    isKeyField: true
     type: SingleLineText
     title: Kauppanimi
     required: true

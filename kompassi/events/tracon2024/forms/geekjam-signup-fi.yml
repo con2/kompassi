@@ -5,10 +5,12 @@ description: |
   Soitatko jotain (mukana kuljetettavaa) soitinta? Haluaisitko soittaa porukalla? Tuo itsesi ja soittimesi puistoon! Soittelemme yhdessä matalalla kynnyksellä nörttimusiikkia (mahdollisesti höystettynä irlantilaisella ym. trad-musiikilla). Osaan biiseistä voinee yhtyä myös yhteislauluna ja saatamme tarjota myös sähköpianon. Suosimme D-pillin kanssa yhteensopivia sävellajeja (D- ja G-duuri, E- ja H-molli) jotta pilleillä ja avaimettomilla huiluilla voi soittaa mukana. Ilmoittautuminen ei ole pakollista, mutta tällä lomakkeella voit myös ehdottaa biisejä! Saa tulla myös mukaan vain kuuntelemaan.
 fields:
   - slug: nick
+    isKeyField: true
     type: SingleLineText
     title: Lempinimi
     required: true
   - slug: instruments
+    isKeyField: true
     type: MultiLineText
     title: Soittimet
     helpText: |

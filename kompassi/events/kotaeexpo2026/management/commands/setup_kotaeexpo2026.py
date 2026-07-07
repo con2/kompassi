@@ -314,7 +314,6 @@ class Setup:
         for survey in [
             SurveyDTO(
                 slug="expense-claim",
-                cached_key_fields=["title", "amount"],
                 login_required=True,
                 anonymity="NAME_AND_EMAIL",
                 active_from=datetime(2026, 1, 1, 0, 0, tzinfo=self.tz),
