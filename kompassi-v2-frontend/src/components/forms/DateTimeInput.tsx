@@ -1,7 +1,7 @@
 "use client";
 
 import { Temporal } from "@js-temporal/polyfill";
-import { useCallback, useState, type ComponentProps } from "react";
+import { useCallback, useState } from "react";
 import type { DayButtonProps } from "react-day-picker";
 import { DayPicker } from "react-day-picker";
 import { timezone } from "@/config";

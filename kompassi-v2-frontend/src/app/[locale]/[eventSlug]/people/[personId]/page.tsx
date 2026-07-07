@@ -24,7 +24,6 @@ import { notFound } from "next/navigation";
 import { Card, CardBody, CardText, CardTitle } from "react-bootstrap";
 import { updateInvolvementPerks } from "./actions";
 
-import "./page.css";
 import { Column } from "@/components/ReorderableDataTable";
 import { DataTable } from "@/components/DataTable";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
@@ -108,7 +107,6 @@ export async function generateMetadata(props: Props) {
   const { locale, eventSlug } = params;
   const personId = parseInt(params.personId, 10);
   const translations = getTranslations(locale);
-  const t = translations.Involvement;
   const profileT = translations.Profile;
 
   const session = await auth();
