@@ -6,10 +6,12 @@ from functools import cached_property
 from itertools import groupby
 from typing import TYPE_CHECKING
 
+from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.timezone import now
 
 from kompassi.core.models.event import Event
+from kompassi.core.models.group_management_mixin import GroupManagementMixin
 from kompassi.core.utils.log_utils import log_get_or_create
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
@@ -29,12 +31,19 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-class InvolvementEventMeta(models.Model):
+class InvolvementEventMeta(models.Model, GroupManagementMixin):
     event: models.OneToOneField[Event] = models.OneToOneField(
         Event,
         on_delete=models.CASCADE,
         related_name="+",  # reverse being None throws DoesNotExist, we don't want that
     )
+
+    admin_group: models.ForeignKey[Group] = models.ForeignKey(
+        "auth.Group",
+        on_delete=models.CASCADE,
+        related_name="+",
+    )
+    admin_group_id: int
 
     universe: models.OneToOneField[Universe] = models.OneToOneField(
         Universe,
@@ -109,10 +118,13 @@ class InvolvementEventMeta(models.Model):
         universe = get_involvement_universe(event)
         setup_involvement_dimensions(universe, event)
 
+        (admin_group,) = cls.get_or_create_groups(event, ["admins"])
+
         meta, created = cls.objects.get_or_create(
             event=event,
             defaults=dict(
                 universe=universe,
+                admin_group=admin_group,
                 default_registry=Registry.objects.get_or_create(
                     scope=event.organization.scope,
                     slug="volunteers",
@@ -125,6 +137,10 @@ class InvolvementEventMeta(models.Model):
         )
 
         log_get_or_create(logger, meta, created)
+
+        if not created and meta.admin_group_id is None:
+            meta.admin_group = admin_group
+            meta.save(update_fields=["admin_group"])
 
         Emperkelator = meta.emperkelator_class
         if Emperkelator is not None:

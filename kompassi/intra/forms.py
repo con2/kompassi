@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 from crispy_forms.layout import Fieldset, Layout
-from django import forms
+from django import forms as django_forms
 from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 
@@ -16,8 +16,8 @@ from .constants import SUPPORTED_APPS
 from .models import Team, TeamMember
 
 
-class TeamMemberForm(forms.ModelForm):
-    job_title = forms.CharField(
+class TeamMemberForm(django_forms.ModelForm):
+    job_title = django_forms.CharField(
         max_length=JOB_TITLE_LENGTH,
         label=_("Job title"),
         required=False,
@@ -107,49 +107,54 @@ class TeamMemberForm(forms.ModelForm):
         )
 
 
-class PrivilegesForm(forms.Form):
-    labour = forms.BooleanField(
+class PrivilegesForm(django_forms.Form):
+    labour = django_forms.BooleanField(
         required=False,
         label=_("Labour admin"),
         help_text=_(
             "The Labour admin can approve or reject volunteer worker applications, assign workers to shifts etc."
         ),
     )
-    programme = forms.BooleanField(
+    programme = django_forms.BooleanField(
         required=False,
         label=_("Programme admin"),
         help_text=_(
             "The Programme admin can approve or reject programme offers, modify the event programme schedule etc."
         ),
     )
-    program_v2 = forms.BooleanField(
+    program_v2 = django_forms.BooleanField(
         required=False,
         label=_("Program v2 admin"),
         help_text=_(
             "The Program admin can approve or reject program offers, modify the event program schedule etc. in Program V2."
         ),
     )
-    tickets = forms.BooleanField(
+    tickets = django_forms.BooleanField(
         required=False,
         label=_("Tickets admin"),
         help_text=_("The Tickets admin can view, cancel and modify ticket orders and exchange electronic tickets."),
     )
-    tickets_v2 = forms.BooleanField(
+    tickets_v2 = django_forms.BooleanField(
         required=False,
         label=_("Tickets v2 admin"),
         help_text=_("The Tickets admin can view, cancel and modify ticket orders and exchange electronic tickets."),
     )
-    badges = forms.BooleanField(
+    badges = django_forms.BooleanField(
         required=False,
         label=_("Badges admin"),
         help_text=_("The Badges admin can add and revoke badges and export entrance lists."),
     )
-    intra = forms.BooleanField(
+    intra = django_forms.BooleanField(
         required=False,
         label=_("Intra admin"),
         help_text=_("The Intra admin can assign organizers to teams and manage these privileges."),
     )
-    forms = forms.BooleanField(
+    involvement = django_forms.BooleanField(
+        required=False,
+        label=_("Involvement admin"),
+        help_text=_("The Involvement admin can view and manage the people involved in the event."),
+    )
+    forms = django_forms.BooleanField(
         required=False,
         label=_("Surveys admin"),
         help_text=_("The Surveys admin can manage surveys and view survey responses."),
