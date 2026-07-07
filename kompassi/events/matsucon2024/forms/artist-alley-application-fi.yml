@@ -14,11 +14,13 @@ fields:
     slug: basic_info_title
 
   - slug: name
+    isKeyField: true
     title: Etunimi ja sukunimi
     type: SingleLineText
     required: true
 
   - slug: email
+    isKeyField: true
     title: Vastuuhenkilön sähköposti
     type: SingleLineText
     required: true

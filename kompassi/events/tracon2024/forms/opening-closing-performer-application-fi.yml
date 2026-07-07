@@ -50,6 +50,7 @@ fields:
     dimension: program
 
   - slug: performer-name
+    isKeyField: true
     type: SingleLineText
     title: Taiteilijanimi tai ryhmän nimi
     required: true

@@ -18,6 +18,7 @@ fields:
     dimension: event
 
   - slug: title
+    isKeyField: true
     type: SingleLineText
     title: Title
     required: true
@@ -30,6 +31,7 @@ fields:
       Extra information about the travel, e.g. where you drove from and to, who was with you, etc.
 
   - slug: kilometers
+    isKeyField: true
     type: DecimalField
     minValue: 0
     decimalPlaces: 0

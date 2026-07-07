@@ -17,6 +17,7 @@ fields:
     dimension: event
 
   - slug: title
+    isKeyField: true
     type: SingleLineText
     title: Otsikko
     required: true
@@ -29,6 +30,7 @@ fields:
       Jos otsikko ei kerro kaikkea olennaista, voit antaa tässä lisätietoja.
 
   - slug: amount
+    isKeyField: true
     type: DecimalField
     minValue: 0
     decimalPlaces: 2

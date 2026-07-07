@@ -397,18 +397,18 @@ class Setup:
                 active_from=datetime(2024, 10, 21, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2024, 11, 8, 0, 0, tzinfo=self.tz),
                 max_responses_per_user=1,
-                cached_key_fields=["name", "email", "day", "reserve"],
                 login_required=True,
             ),
         )
 
         forms_path = Path(__file__).parent.parent.parent / "forms"
-        Form.objects.get_or_create(
+        artist_alley_application_fi, _ = Form.objects.get_or_create(
             event=self.event,
             survey=artist_alley_application,
             language="fi",
             defaults=yaml.safe_load((forms_path / "artist-alley-application-fi.yml").read_text()),
         )
+        artist_alley_application.refresh_cached_key_fields(artist_alley_application_fi)
 
         for dimension in yaml.safe_load((forms_path / "artist-alley-application-dimensions.yml").read_text()):
             DimensionDTO.model_validate(dimension).save(artist_alley_application.universe)
@@ -421,16 +421,16 @@ class Setup:
                 active_from=datetime(2024, 11, 1, 0, 0, tzinfo=self.tz),
                 active_until=datetime(2024, 12, 16, 0, 0, tzinfo=self.tz),
                 max_responses_per_user=1,
-                cached_key_fields=["name", "email", "character", "reserve"],
                 login_required=True,
             ),
         )
-        Form.objects.get_or_create(
+        cosplay_competition_application_fi, _ = Form.objects.get_or_create(
             event=self.event,
             survey=cosplay_competition_application,
             language="fi",
             defaults=yaml.safe_load((forms_path / "cosplay-competition-application-fi.yml").read_text()),
         )
+        cosplay_competition_application.refresh_cached_key_fields(cosplay_competition_application_fi)
 
         for dimension in yaml.safe_load((forms_path / "cosplay-competition-application-dimensions.yml").read_text()):
             DimensionDTO.model_validate(dimension).save(cosplay_competition_application.universe)

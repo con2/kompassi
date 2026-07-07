@@ -14,16 +14,19 @@ fields:
     slug: basic_info_title
 
   - slug: name
+    isKeyField: true
     title: First and surname
     type: SingleLineText
     required: true
 
   - slug: email
+    isKeyField: true
     title: Contact person's email
     type: SingleLineText
     required: true
 
   - slug: table_size
+    isKeyField: true
     title: Table size
     type: MultiSelect
     required: false
@@ -40,6 +43,7 @@ fields:
     required: true
 
   - slug: reserve
+    isKeyField: true
     title: Reserve list
     helpText: "Choose if you want a table if they become available. We make a list of people and send an email to those who said yes, if a table frees up. We do not publish a list of people on the list. In the free comment section you can specify how soon before the event you're able to accept a spot."
     type: SingleSelect
@@ -57,6 +61,7 @@ fields:
     slug: background_info
 
   - slug: experience
+    isKeyField: true
     title: Experience
     type: MultiSelect
     choices:
@@ -106,6 +111,7 @@ fields:
     slug: artist_info1
 
   - slug: artist_name1
+    isKeyField: true
     title: Artist name
     type: SingleLineText
     required: true

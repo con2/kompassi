@@ -461,7 +461,6 @@ class Survey(models.Model):
             anonymity=self.anonymity if anonymity is None else anonymity,
             login_required=self.login_required,
             max_responses_per_user=self.max_responses_per_user,
-            cached_key_fields=self.cached_key_fields,
             protect_responses=self.protect_responses,
             created_by=created_by,
             registry=self.registry if registry is None else registry,
@@ -469,8 +468,11 @@ class Survey(models.Model):
 
         survey.save()
 
-        for form in self.languages.all():
-            form.clone(survey, created_by=created_by)
+        cloned_forms = [form.clone(survey, created_by=created_by) for form in self.languages.all()]
+
+        # cached_key_fields is denormalized from the isKeyField flag of the (cloned) form fields.
+        if cloned_forms:
+            survey.refresh_cached_key_fields(cloned_forms[0])
 
         return survey
 
@@ -560,7 +562,6 @@ class SurveyDTO:
     login_required: bool = False
     max_responses_per_user: int = 0
     anonymity: str = "SOFT"
-    cached_key_fields: list[str] = dataclasses.field(default_factory=list)
     active_from: datetime | None = None
     active_until: datetime | None = None
 
@@ -586,6 +587,7 @@ class SurveyDTO:
             dimensions = [DimensionDTO.model_validate(dimension) for dimension in data]
             DimensionDTO.save_many(survey.universe, dimensions)
 
+        last_form: Form | None = None
         for language in SUPPORTED_LANGUAGES:
             try:
                 with resource_stream(f"kompassi.events.{event.slug}", f"forms/{slug}-{language.code}.yml") as f:
@@ -600,5 +602,10 @@ class SurveyDTO:
                 defaults=data,
             )
             log_get_or_create(logger, form, created)
+            last_form = form
+
+        # cached_key_fields is denormalized from the isKeyField flag of the form fields.
+        if last_form is not None:
+            survey.refresh_cached_key_fields(last_form)
 
         return survey

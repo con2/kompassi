@@ -17,6 +17,7 @@ description: |
 
 fields:
   - slug: name
+    isKeyField: true
     title: Nimi ja nimimerkki
     type: SingleLineText
     required: true
@@ -61,6 +62,7 @@ fields:
     required: true
 
   - slug: day
+    isKeyField: true
     title: Haen
     type: SingleSelect
     required: true
@@ -83,6 +85,7 @@ fields:
     required: false
 
   - slug: email
+    isKeyField: true
     title: Sähköpostiosoitteesi, josta tavoitamme sinut mikäli tulet valituksi taidekujalle
     type: SingleLineText
     required: true
@@ -93,6 +96,7 @@ fields:
     required: true
 
   - slug: reserve
+    isKeyField: true
     title: Oletko valmis ottamaan vastaan peruutuspaikan varasijalta?
     type: SingleSelect
     required: true

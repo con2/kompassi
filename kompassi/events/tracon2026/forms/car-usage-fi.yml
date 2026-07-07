@@ -18,6 +18,7 @@ fields:
     dimension: event
 
   - slug: title
+    isKeyField: true
     type: SingleLineText
     title: Otsikko
     required: true
@@ -30,6 +31,7 @@ fields:
       Lisätietoja matkasta, esimerkiksi mistä minne ajoit, kuka oli mukana jne.
 
   - slug: kilometers
+    isKeyField: true
     type: DecimalField
     minValue: 0
     decimalPlaces: 0
