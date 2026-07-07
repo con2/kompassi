@@ -254,6 +254,10 @@ const translations: Translations = {
       required: {
         title: "Pakollinen",
       },
+      isKeyField: {
+        title: "Avainkenttä",
+        helpText: "Avainkentät näytetään vastauslistassa.",
+      },
       choices: {
         title: "Vaihtoehdot",
         helpText:

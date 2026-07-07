@@ -407,7 +407,7 @@ class Setup:
             slug="artist-alley-application",
             defaults=dict(
                 active_from=now(),
-                key_fields=["name", "email", "artist_name1", "table_size", "experience", "reserve"],
+                cached_key_fields=["name", "email", "artist_name1", "table_size", "experience", "reserve"],
                 login_required=True,
             ),
         )
@@ -444,7 +444,7 @@ class Setup:
             slug="vendor-application",
             defaults=dict(
                 active_from=now(),
-                key_fields=[
+                cached_key_fields=[
                     "name",
                     "email",
                     "website",

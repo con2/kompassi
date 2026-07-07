@@ -73,6 +73,7 @@ interface BaseField {
   helpText?: ReactNode;
   required?: boolean;
   readOnly?: boolean;
+  isKeyField?: boolean;
   htmlType?: HtmlType;
   encryptTo?: string[];
 }

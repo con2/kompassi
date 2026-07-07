@@ -832,6 +832,45 @@ def test_survey_without_forms():
 
 
 @pytest.mark.django_db
+def test_refresh_cached_key_fields():
+    """
+    cached_key_fields is denormalized from the isKeyField flag of the form fields of the
+    language version being edited, and the flag is synced to the other language versions.
+    """
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="key-fields-survey")
+
+    en = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[
+            dict(slug="title", type="SingleLineText", isKeyField=True),
+            dict(slug="description", type="MultiLineText"),
+        ],
+    )
+    fi = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="fi",
+        fields=[
+            dict(slug="title", type="SingleLineText"),
+            dict(slug="description", type="MultiLineText"),
+        ],
+    )
+
+    survey.refresh_cached_key_fields(en)
+
+    survey.refresh_from_db()
+    assert survey.cached_key_fields == ["title"]
+
+    # the isKeyField flag is synced to the other language version
+    fi.refresh_from_db()
+    assert next(field for field in fi.fields if field["slug"] == "title").get("isKeyField") is True
+    assert all(not field.get("isKeyField") for field in fi.fields if field["slug"] != "title")
+
+
+@pytest.mark.django_db
 def test_promote_field_to_dimension():
     with transaction.atomic():
         event, _created = Event.get_or_create_dummy()

@@ -40,6 +40,12 @@ export function getFieldEditorFields(
       required: false,
       ...t.required,
     },
+    {
+      type: "SingleCheckbox",
+      slug: "isKeyField",
+      required: false,
+      ...t.isKeyField,
+    },
   ]);
 
   const choicesField: Field = {

@@ -421,8 +421,8 @@ class Setup:
         survey = Survey.objects.filter(event=self.event, slug="program-feedback").first()
         if survey:
             # derp
-            survey.key_fields = []
-            survey.save(update_fields=["key_fields"])
+            survey.cached_key_fields = []
+            survey.save(update_fields=["cached_key_fields"])
 
             dimension = DimensionDTO(
                 slug="program",
@@ -864,13 +864,13 @@ class Setup:
             # ),
             # SurveyDTO(
             #     slug="expense-claim",
-            #     key_fields=["title", "amount"],
+            #     cached_key_fields=["title", "amount"],
             #     login_required=True,
             #     anonymity="NAME_AND_EMAIL",
             # ),
             # SurveyDTO(
             #     slug="car-usage",
-            #     key_fields=["title", "kilometers"],
+            #     cached_key_fields=["title", "kilometers"],
             #     login_required=True,
             #     anonymity="NAME_AND_EMAIL",
             # ),

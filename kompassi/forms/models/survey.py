@@ -121,12 +121,16 @@ class Survey(models.Model):
         ),
     )
 
-    key_fields = ArrayField(
+    cached_key_fields = ArrayField(
         models.CharField(max_length=255),
         blank=True,
         default=list,
         verbose_name=_("key fields"),
-        help_text=_("Key fields will be shown in the response list."),
+        help_text=_(
+            "Key fields will be shown in the response list. "
+            "This field is denormalized from the isKeyField flag of the form fields "
+            "and should not be edited directly."
+        ),
     )
 
     subscribers = models.ManyToManyField(
@@ -295,6 +299,30 @@ class Survey(models.Model):
 
         return merge_fields(languages)
 
+    def refresh_cached_key_fields(self, form: Form) -> None:
+        """
+        cached_key_fields is denormalized from the isKeyField flag of the fields of the
+        language version (Form) being edited. Key field status is a survey-level concept,
+        so the flag is also synced to the other language versions.
+        """
+        key_field_slugs = [field["slug"] for field in form.fields if field.get("isKeyField")]
+
+        self.cached_key_fields = key_field_slugs
+        self.save(update_fields=["cached_key_fields"])
+
+        for other_form in self.languages.exclude(pk=form.pk):
+            changed = False
+            for field in other_form.fields:
+                desired = field["slug"] in key_field_slugs
+                if bool(field.get("isKeyField")) != desired:
+                    if desired:
+                        field["isKeyField"] = True
+                    else:
+                        field.pop("isKeyField", None)
+                    changed = True
+            if changed:
+                other_form.save(update_fields=["fields", "cached_enriched_fields"])
+
     def get_form(self, requested_language: str) -> Form | None:
         from .form import Form
 
@@ -398,7 +426,6 @@ class Survey(models.Model):
                 if self.purpose == SurveyPurpose.DEFAULT:
                     # The program offer workflow uses a dimension to lock responses from editing.
                     self.responses_editable_until = self.event.end_time
-                    self.key_fields = ["title"]
 
             case DimensionApp.FORMS:
                 if self.purpose == SurveyPurpose.INVITE:
@@ -434,7 +461,7 @@ class Survey(models.Model):
             anonymity=self.anonymity if anonymity is None else anonymity,
             login_required=self.login_required,
             max_responses_per_user=self.max_responses_per_user,
-            key_fields=self.key_fields,
+            cached_key_fields=self.cached_key_fields,
             protect_responses=self.protect_responses,
             created_by=created_by,
             registry=self.registry if registry is None else registry,
@@ -533,7 +560,7 @@ class SurveyDTO:
     login_required: bool = False
     max_responses_per_user: int = 0
     anonymity: str = "SOFT"
-    key_fields: list[str] = dataclasses.field(default_factory=list)
+    cached_key_fields: list[str] = dataclasses.field(default_factory=list)
     active_from: datetime | None = None
     active_until: datetime | None = None
 

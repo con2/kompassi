@@ -579,8 +579,8 @@ class Setup:
             defaults=data,
         )
 
-        if not survey.key_fields:
-            survey.key_fields = ["participated_in_tracon_hitpoint"]
+        if not survey.cached_key_fields:
+            survey.cached_key_fields = ["participated_in_tracon_hitpoint"]
             survey.save()
 
 

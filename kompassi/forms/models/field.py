@@ -118,6 +118,12 @@ class Field(pydantic.BaseModel, populate_by_name=True):
         serialization_alias="readOnly",
         repr=False,
     )
+    is_key_field: bool | None = pydantic.Field(
+        default=None,
+        validation_alias="isKeyField",
+        serialization_alias="isKeyField",
+        repr=False,
+    )
 
     # TODO silly union of all field types. refactor this into proper (GraphQL?) types
     # dimension and subsetValues only make sense for DimensionSingleSelect, DimensionMultiSelect

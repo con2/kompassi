@@ -194,11 +194,11 @@ class Response(models.Model):
         if fields is None:
             raise AssertionError("This should never happen (appease type checker)")
 
-        values, warnings = self.get_processed_form_data(fields, field_slugs=self.survey.key_fields)
+        values, warnings = self.get_processed_form_data(fields, field_slugs=self.survey.cached_key_fields)
         return {
             field_slug: field_value
             for field_slug, field_value in values.items()
-            if field_slug in self.survey.key_fields and field_slug not in warnings and field_value is not None
+            if field_slug in self.survey.cached_key_fields and field_slug not in warnings and field_value is not None
         }
 
     def _build_cached_dimensions(self) -> dict[str, list[str]]:
