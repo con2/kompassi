@@ -85,6 +85,7 @@ class InvolvementEventMeta(models.Model):
     @cached_property
     def emperkelator_class(self) -> type[BaseEmperkelator] | None:
         from kompassi.involvement.emperkelators.desucon2026 import DesuconEmperkelator
+        from kompassi.involvement.emperkelators.ropecon2026 import RopeconEmperkelator
         from kompassi.involvement.emperkelators.tracon2025 import TraconEmperkelator
 
         match = re.match(r"^([a-z-]+)(\d{4})$", self.event.slug)
@@ -98,6 +99,8 @@ class InvolvementEventMeta(models.Model):
             return TraconEmperkelator
         elif base_slug in ("desucon", "frostbite") and year >= 2026:
             return DesuconEmperkelator
+        elif base_slug == "ropecon" and year >= 2026:
+            return RopeconEmperkelator
         else:
             return None
 
