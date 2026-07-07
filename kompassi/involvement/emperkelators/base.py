@@ -129,8 +129,8 @@ class BaseEmperkelator:
             AnnotationDTO(
                 slug="internal:overrideFormattedPerks",
                 title=dict(
-                    en="Override perks",
-                    fi="Ylikirjoita edut",
+                    en="Override perks as displayed",
+                    fi="Ylikirjoita koko etulitania",
                 ),
                 description=dict(
                     en="If set, this will override the displayed perks",
