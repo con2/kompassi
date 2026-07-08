@@ -20,7 +20,7 @@ batch_size = 400
 logger = logging.getLogger(__name__)
 
 
-class QuotaCounters(pydantic.BaseModel):
+class QuotaCounters(pydantic.BaseModel, frozen=True):
     count_paid: int = 0
     count_reserved: int = 0
     count_available: int = 0
@@ -61,6 +61,11 @@ class QuotaCounters(pydantic.BaseModel):
 
         cache[event_id] = counters
         return counters
+
+    ALL_ZERO: ClassVar[QuotaCounters]
+
+
+QuotaCounters.ALL_ZERO = QuotaCounters(count_paid=0, count_reserved=0, count_available=0)
 
 
 class Quota(models.Model):
@@ -135,9 +140,7 @@ class Quota(models.Model):
         )
 
     def get_counters(self, request: HttpRequest) -> QuotaCounters:
-        if found := QuotaCounters.get_for_event(self.event_id, request).get(self.id):
-            return found
-        return QuotaCounters()
+        return QuotaCounters.get_for_event(self.event_id, request).get(self.id, QuotaCounters.ALL_ZERO)
 
     def can_be_deleted_by(self, request: HttpRequest) -> bool:
         return not self.products.exists() and is_graphql_allowed_for_model(
