@@ -12,6 +12,9 @@ spec:
       labels:
         stack: kompassi
         component: kompassi
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8000"
     spec:
       affinity: !With
         vars:
