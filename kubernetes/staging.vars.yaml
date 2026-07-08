@@ -49,5 +49,3 @@ ingress_letsencrypt_cluster_issuer: letsencrypt-prod
 
 minio_bucket_name: kompassidev
 minio_endpoint_url: https://minio.con2.fi
-
-kompassi_prometheus_enabled: true
