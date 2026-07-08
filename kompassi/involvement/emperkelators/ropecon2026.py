@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from datetime import timedelta
 from enum import Enum
 from functools import cached_property
 
@@ -176,7 +177,12 @@ class RopeconEmperkelator(BaseEmperkelator):
         main_involvements = [
             i for i in program_involvements if i.response and i.response.survey.slug != "offer-program-hosts"
         ]
-        main_program_host_involvements_over6h = [i for i in main_involvements if i.program and i.program]
+        six_hours = timedelta(hours=6)
+        main_program_host_involvements_over6h = [
+            i
+            for i in main_involvements
+            if i.program and i.program.schedule_items.filter(duration__gte=six_hours).exists()
+        ]
         helper_involvements = [
             i for i in program_involvements if i.response and i.response.survey.slug == "offer-program-hosts"
         ]
