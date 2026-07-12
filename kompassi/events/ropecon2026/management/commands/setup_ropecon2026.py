@@ -276,7 +276,7 @@ class Setup:
                     "state": ["active"],
                     "v1-personnel-class": ["ohjelma"],
                 },
-                job_title="Ohjelmanjärjestäjä",
+                job_title="Ohjelma",
                 job_title_mode=JobTitleMode.OVERRIDE,
                 priority=self.get_ordering_number(),
             ),
