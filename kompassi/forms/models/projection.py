@@ -268,7 +268,10 @@ class Projection(models.Model):
                 item_dimensions[target_field_name] = dimension_values[0]
 
             formatted_dimension_values = ", ".join(
-                cache.values_by_dimension[dimension_slug][value_slug].get_title(lang) for value_slug in dimension_values
+                value.get_title(lang)
+                if (value := cache.values_by_dimension[dimension_slug].get(value_slug))
+                else value_slug
+                for value_slug in dimension_values
             )
             item_dimensions[formatted_field_name] = formatted_dimension_values
 
