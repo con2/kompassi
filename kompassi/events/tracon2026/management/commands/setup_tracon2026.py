@@ -1073,7 +1073,7 @@ class Setup:
                     splats=[splat.model_dump(mode="json", by_alias=True) for splat in splats],
                     required_dimensions=dict(
                         status=["accepted"],
-                        area=["hall-dealer"],
+                        area=["hall-artisan"],
                     ),
                     projected_dimensions=dict(
                         tableNumber="table-number",
