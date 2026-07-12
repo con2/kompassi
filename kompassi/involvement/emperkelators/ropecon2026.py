@@ -165,6 +165,14 @@ class Perks(pydantic.BaseModel):
         )
 
 
+def extract_schedule_items_from_involvements(involvements: list[Involvement]) -> list:
+    schedule_items = []
+    for involvement in involvements:
+        if involvement.program:
+            schedule_items.extend(involvement.program.schedule_items.all())
+    return schedule_items
+
+
 class RopeconEmperkelator(BaseEmperkelator):
     @cached_property
     def perks(self) -> Perks:
@@ -177,36 +185,42 @@ class RopeconEmperkelator(BaseEmperkelator):
         main_involvements = [
             i for i in program_involvements if i.response and i.response.survey.slug != "offer-program-hosts"
         ]
+        main_schedule_items = extract_schedule_items_from_involvements(main_involvements)
+
         six_hours = timedelta(hours=6)
         main_program_host_involvements_over6h = [
             i
             for i in main_involvements
             if i.program and i.program.schedule_items.filter(duration__gte=six_hours).exists()
         ]
+        main_program_host_schedule_items_over6h = extract_schedule_items_from_involvements(
+            main_program_host_involvements_over6h
+        )
         helper_involvements = [
             i for i in program_involvements if i.response and i.response.survey.slug == "offer-program-hosts"
         ]
+        helper_schedule_items = extract_schedule_items_from_involvements(helper_involvements)
 
         # päävastuullinen vähintään 2 aikataulumerkinnässä TAI
         # päävastuullinen yhdessä aikataulumerkinnässä, joka kestää 6 h tai enemmän TAI
         # päävastuullinen yhdessä aikataulumerkinnässä ja ohjelma-apuri jossain muussa ohjelmassa -> viikonloppulippu + 1 ruokalippu
         if (
-            len(main_involvements) >= 2
-            or len(main_program_host_involvements_over6h) > 0
-            or (len(main_involvements) == 1 and len(helper_involvements) > 0)
+            len(main_schedule_items) >= 2
+            or len(main_program_host_schedule_items_over6h) > 0
+            or (len(main_schedule_items) == 1 and len(helper_schedule_items) > 0)
         ):
             return Perks.for_program_host(ticket_type=TicketType.WEEKEND_TICKET, meals=1)
 
         # päävastuullinen yhdessä aikataulumerkinnässä -> päivälippu + 1 ruokalippu
-        if len(main_involvements) == 1:
+        if len(main_schedule_items) == 1:
             return Perks.for_program_host(ticket_type=TicketType.DAY_TICKET, meals=1)
 
         # ohjelma-apuri vähintään 2 aikataulumerkinnässä -> viikonloppulippu (ei ruokaa)
-        if len(helper_involvements) >= 2:
+        if len(helper_schedule_items) >= 2:
             return Perks.for_program_host(ticket_type=TicketType.WEEKEND_TICKET, meals=0)
 
         # ohjelma-apuri yhdessä aikataulumerkinnässä -> päivälippu (ei ruokaa)
-        if len(helper_involvements) == 1:
+        if len(helper_schedule_items) == 1:
             return Perks.for_program_host(ticket_type=TicketType.DAY_TICKET, meals=0)
 
         if program_involvements:
