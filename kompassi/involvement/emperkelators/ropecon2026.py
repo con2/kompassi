@@ -102,11 +102,96 @@ class BadgeType(Enum):
 BADGE_TYPES = list(BadgeType)
 
 
+class Rule(Enum):
+    """
+    Explains to the user why they have the perks they have.
+    This is not used for any logic, only for display purposes.
+    """
+
+    title_fi: str
+    title_en: str
+
+    NONE = "none", "Ei sääntöä", "No rule"
+    V1_CONCOM = "v1-concom", "Työvoima V1: Conitea", "Labour V1: Concom"
+    V1_OVERSEER = "v1-overseer", "Työvoima V1: Ylivänkäri", "Labour V1: Overseer"
+    V1_VOLUNTEER = "v1-volunteer", "Työvoima V1: Vapaaehtoinen", "Labour V1: Volunteer"
+    V1_NO_MATCH = "v1-no-match", "Työvoima V1: Mikään sääntö ei sovellu", "Labour V1: No rule matches"
+    PROGRAM_HOST_2_OR_MORE = (
+        "program-host-2-or-more",
+        "Päävastuullinen väh. 2 aikataulumerkinnässä",
+        "Main program host in two or more schedule items",
+    )
+    PROGRAM_HOST_1_OVER_6H = (
+        "program-host-1-over-6h",
+        "Päävastuullinen 1 aikataulumerkinnässä, joka kestää väh. 6h",
+        "Main program host in one schedule item of 6 hours or more",
+    )
+    PROGRAM_HOST_1_AND_HELPER_1 = (
+        "program-host-1-and-helper-1",
+        "Päävastuullinen 1 aikataulumerkinnässä ja ohjelma-apuri toisessa",
+        "Main program host in one schedule item and helper in another",
+    )
+    PROGRAM_HOST_1 = (
+        "program-host-1",
+        "Päävastuullinen 1 aikataulumerkinnässä",
+        "Main program host in one schedule item",
+    )
+    PROGRAM_HELPER_2_OR_MORE = (
+        "program-helper-2-or-more",
+        "Ohjelma-apuri väh. 2 aikataulumerkinnässä",
+        "Program helper in two or more schedule items",
+    )
+    PROGRAM_HELPER_1 = (
+        "program-helper-1",
+        "Ohjelma-apuri 1 aikataulumerkinnässä",
+        "Program helper in one schedule item",
+    )
+    PROGRAM_NO_MATCH = (
+        "program-no-match",
+        "Ohjelmanjärjestäjä, johon mikään tarkempi sääntö ei sovellu",
+        "Program host that does not match any more specific rule",
+    )
+
+    @classmethod
+    def as_dimension_dto(cls) -> DimensionDTO:
+        return DimensionDTO(
+            slug="perks-rule",
+            title=dict(
+                en="Perks rule",
+                fi="Etusääntö",
+            ),
+            # description=dict(
+            #     en="Identifies the rule that was used to determine the perks for this person",
+            #     fi="Kertoo säännön, jota käytettiin tämän henkilön etujen määrittämiseen",
+            # ),
+            choices=[
+                DimensionValueDTO(
+                    slug=tt.value,
+                    title=dict(
+                        en=tt.title_en,
+                        fi=tt.title_fi,
+                    ),
+                )
+                for tt in cls
+                if tt != cls.NONE
+            ],
+            value_ordering=ValueOrdering.MANUAL,
+        )
+
+    def __new__(cls, value: str, title_fi: str, title_en: str):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.title_fi = title_fi
+        obj.title_en = title_en
+        return obj
+
+
 class Perks(pydantic.BaseModel):
     badge_type: BadgeType = BadgeType.NONE
     ticket_type: TicketType = TicketType.NONE
     meals: int = 0
     override_formatted_perks: str = ""
+    rule: Rule = Rule.NONE
 
     @property
     def formatted_perks(self) -> str:
@@ -129,7 +214,7 @@ class Perks(pydantic.BaseModel):
         return ", ".join(parts)
 
     @classmethod
-    def for_legacy_signup(cls, involvement: Involvement) -> Perks:
+    def for_v1_signup(cls, involvement: Involvement) -> Perks:
         if involvement.type != InvolvementType.LEGACY_SIGNUP:
             raise ValueError(f"Expected involvement type {InvolvementType.LEGACY_SIGNUP}, got {involvement.type}")
         if involvement.signup is None:
@@ -140,28 +225,33 @@ class Perks(pydantic.BaseModel):
             ticket_type = TicketType.WEEKEND_TICKET
             badge_type = BadgeType.ORGANIZER_BADGE
             meals = 2
+            rule = Rule.V1_CONCOM
         elif "tyovoima" in personnel_classes or "ylivankari" in personnel_classes or "ylityovoima" in personnel_classes:
             ticket_type = TicketType.WEEKEND_TICKET
             badge_type = BadgeType.VOLUNTEER_BADGE
             meals = 2
+            rule = Rule.V1_VOLUNTEER
         else:
             ticket_type = TicketType.NONE
             badge_type = BadgeType.NONE
             meals = 0
+            rule = Rule.V1_NO_MATCH
 
         return Perks(
             ticket_type=ticket_type,
             badge_type=badge_type,
             meals=meals,
             override_formatted_perks=involvement.signup.override_formatted_perks,
+            rule=rule,
         )
 
     @classmethod
-    def for_program_host(cls, ticket_type: TicketType, meals: int) -> Perks:
+    def for_program_host(cls, ticket_type: TicketType, meals: int, rule: Rule) -> Perks:
         return Perks(
             badge_type=BadgeType.PROGRAM_BADGE,
             ticket_type=ticket_type,
             meals=meals,
+            rule=rule,
         )
 
 
@@ -179,7 +269,7 @@ class RopeconEmperkelator(BaseEmperkelator):
         if (
             v1_signup := next((i for i in self.involvements if i.type == InvolvementType.LEGACY_SIGNUP), None)
         ) is not None:
-            return Perks.for_legacy_signup(v1_signup)
+            return Perks.for_v1_signup(v1_signup)
 
         program_involvements = [i for i in self.involvements if i.type == InvolvementType.PROGRAM_HOST]
         main_involvements = [
@@ -209,23 +299,41 @@ class RopeconEmperkelator(BaseEmperkelator):
             or len(main_program_host_schedule_items_over6h) > 0
             or (len(main_schedule_items) == 1 and len(helper_schedule_items) > 0)
         ):
-            return Perks.for_program_host(ticket_type=TicketType.WEEKEND_TICKET, meals=1)
+            return Perks.for_program_host(
+                ticket_type=TicketType.WEEKEND_TICKET,
+                meals=1,
+                rule=Rule.PROGRAM_HOST_2_OR_MORE,
+            )
 
         # päävastuullinen yhdessä aikataulumerkinnässä -> päivälippu + 1 ruokalippu
         if len(main_schedule_items) == 1:
-            return Perks.for_program_host(ticket_type=TicketType.DAY_TICKET, meals=1)
+            return Perks.for_program_host(
+                ticket_type=TicketType.DAY_TICKET,
+                meals=1,
+                rule=Rule.PROGRAM_HOST_1,
+            )
 
         # ohjelma-apuri vähintään 2 aikataulumerkinnässä -> viikonloppulippu (ei ruokaa)
         if len(helper_schedule_items) >= 2:
-            return Perks.for_program_host(ticket_type=TicketType.WEEKEND_TICKET, meals=0)
+            return Perks.for_program_host(
+                ticket_type=TicketType.WEEKEND_TICKET,
+                meals=0,
+                rule=Rule.PROGRAM_HELPER_2_OR_MORE,
+            )
 
         # ohjelma-apuri yhdessä aikataulumerkinnässä -> päivälippu (ei ruokaa)
         if len(helper_schedule_items) == 1:
-            return Perks.for_program_host(ticket_type=TicketType.DAY_TICKET, meals=0)
+            return Perks.for_program_host(
+                ticket_type=TicketType.DAY_TICKET,
+                meals=0,
+                rule=Rule.PROGRAM_HELPER_1,
+            )
 
         if program_involvements:
-            raise ValueError(
-                f"Unexpected program involvements that do not match any perk rules for person {self.person.id}: {program_involvements}"
+            return Perks.for_program_host(
+                ticket_type=TicketType.DAY_TICKET,
+                meals=0,
+                rule=Rule.PROGRAM_NO_MATCH,
             )
 
         return Perks()
@@ -235,6 +343,7 @@ class RopeconEmperkelator(BaseEmperkelator):
         return [
             *super().get_dimension_dtos(event),
             TicketType.as_dimension_dto(),
+            Rule.as_dimension_dto(),
         ]
 
     @classmethod
@@ -264,6 +373,7 @@ class RopeconEmperkelator(BaseEmperkelator):
             if self.perks.badge_type.v1_personnel_class_slug
             else [],
             "ticket-type": [self.perks.ticket_type.value] if self.perks.ticket_type != TicketType.NONE else [],
+            "perks-rule": [self.perks.rule.value] if self.perks.rule != Rule.NONE else [],
         }
 
     def get_annotation_values(self) -> dict[str, str | int | float | bool]:
