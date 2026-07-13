@@ -7,7 +7,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from kompassi.graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SupportedLanguageCode, get_language_choices
 
 logger = logging.getLogger(__name__)
 
@@ -110,3 +110,12 @@ class OneTimeCode(models.Model, OneTimeCodeMixin):
         indexes = [
             models.Index(fields=["person", "state"]),
         ]
+
+    def dump_own_data(self, language: SupportedLanguageCode) -> dict:
+        return {
+            "Koodi": self.code,
+            "Lähetetty": self.created_at.isoformat(),
+            "Käytetty": self.used_at.isoformat() if self.used_at else None,
+            "Tila": self.get_state_display(),  # type: ignore
+            "Kieli": self.get_language_display(),  # type: ignore
+        }
