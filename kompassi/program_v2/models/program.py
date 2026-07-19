@@ -37,7 +37,6 @@ from kompassi.involvement.models.invitation import Invitation
 from kompassi.involvement.models.involvement import Involvement
 
 from ..dimensions import get_scheduled_dimension_value
-from ..integrations.konsti import get_konsti_signup_url
 
 if TYPE_CHECKING:
     from dimensions.models.universe import Universe
@@ -265,10 +264,6 @@ class Program(models.Model):
                 "internal:formattedHosts": formatted_hosts,
             }
         )
-
-        # TODO(#801) Should be separately on each schedule item
-        if not self.annotations.get("internal:links:signup") and (konsti_url := get_konsti_signup_url(self)):
-            self.annotations["internal:links:signup"] = konsti_url
 
         self.annotations = compact_annotations(self.annotations)
 

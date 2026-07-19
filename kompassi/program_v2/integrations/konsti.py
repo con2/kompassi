@@ -7,7 +7,7 @@ from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValu
 from kompassi.dimensions.models.enums import AnnotationDataType
 
 if TYPE_CHECKING:
-    from kompassi.program_v2.models.program import Program
+    from kompassi.program_v2.models.program import ScheduleItem
 
 
 def UNSURE(x: str) -> str:
@@ -140,32 +140,21 @@ KONSTI_ANNOTATION_DTOS = [
 DEFAULT_KONSTI_URL = "https://ropekonsti.fi"
 
 
-def get_konsti_base_url(meta) -> str:
+def get_konsti_signup_url(schedule_item: ScheduleItem) -> str:
     """
-    Base URL of the Konsti signup application for the event, used to form signup links.
-    Falls back to the default Konsti deployment if the event has not overridden it.
+    Returns the Konsti signup URL for this schedule item if it is set up for Konsti.
     """
-    return meta.konsti_url or DEFAULT_KONSTI_URL
+    meta = schedule_item.meta
+    konsti_base_url = meta.konsti_url or DEFAULT_KONSTI_URL
 
-
-def get_konsti_signup_url(program: Program) -> str:
-    """
-    Returns the Konsti signup URL for this program if it is set up for Konsti
-    and has a single schedule item. It will be put in the `internal:links:signup` annotation.
-
-    TODO(#801) Should be separately on each schedule item
-    """
     if not (
         # is already saved (cannot have annotations or dimensions otherwise)
-        program.pk
+        schedule_item.pk
         # this event is using Konsti
-        and program.cached_dimensions.get("konsti", "")
+        and schedule_item.program.cached_dimensions.get("konsti", "")
         # this program is not a placeholder in Konsti
-        and not program.annotations.get("konsti:isPlaceholder", False)
-        # it has exactly one schedule item to determine the slug in Konsti
-        and program.schedule_items.count() == 1
+        and not schedule_item.program.annotations.get("konsti:isPlaceholder", False)
     ):
         return ""
 
-    sole_schedule_item = program.schedule_items.get()
-    return f"{get_konsti_base_url(program.meta)}/program/item/{sole_schedule_item.slug}"
+    return f"{konsti_base_url}/program/item/{schedule_item.slug}"
