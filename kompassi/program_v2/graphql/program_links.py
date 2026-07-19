@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Self
+from typing import TYPE_CHECKING, Self
 
 import graphene
 from django.conf import settings
@@ -13,8 +13,8 @@ from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 
 from ..models import Program
 
-# imported for side effects (register object type used by django object type fields)
-from .schedule_item_limited import LimitedScheduleItemType  # noqa: F401
+if TYPE_CHECKING:
+    from ..models import ScheduleItem
 
 
 class ProgramLinkType(graphene.Enum):
@@ -123,6 +123,34 @@ class ProgramLink(graphene.ObjectType):
     title = graphene.NonNull(graphene.String)
 
     @classmethod
+    def _build(
+        cls,
+        link_type: ProgramLinkType,
+        href: str | None,
+        annotations: dict,
+        language: str,
+    ) -> Self | None:
+        """
+        Shared tail of `from_program` / `from_schedule_item`: given a resolved `href`
+        and the annotation source to read titles from, build the link (or None).
+        """
+        if not href:
+            return None
+
+        link_type_str = link_type.value  # type: ignore[attr-defined]
+        link_annotation = f"internal:links:{link_type_str.lower()}"
+
+        titles = get_message_in_language(DEFAULT_LINK_TITLES, language) or {}
+        title = (
+            annotations.get(f"{link_annotation}:title:{language}")
+            or annotations.get(f"{link_annotation}:title:{DEFAULT_LANGUAGE}")
+            or annotations.get(f"{link_annotation}:title")
+            or titles.get(link_type_str, "")
+        )
+
+        return cls(type=link_type, href=href, title=title)  # type: ignore[call-arg]
+
+    @classmethod
     def from_program(
         cls,
         request: HttpRequest,
@@ -143,7 +171,6 @@ class ProgramLink(graphene.ObjectType):
             return None
 
         link_type_str = link_type.value  # type: ignore[attr-defined]
-        title_specifier = ""
         link_annotation = f"internal:links:{link_type_str.lower()}"
 
         match link_type:
@@ -175,18 +202,61 @@ class ProgramLink(graphene.ObjectType):
             case _:
                 href = program.annotations.get(link_annotation, "")
 
-        if not href:
+        return cls._build(link_type, href, program.annotations, language)
+
+    @classmethod
+    def from_schedule_item(
+        cls,
+        request: HttpRequest,
+        schedule_item: ScheduleItem,
+        link_type: ProgramLinkType,
+        language: str = DEFAULT_LANGUAGE,
+        include_expired: bool = False,
+        own_only: bool = False,
+    ) -> Self | None:
+        """
+        Schedule-item-specific counterpart of `from_program`. The signup link is
+        generated on the fly from the Konsti dimension when it is not otherwise set.
+
+        With `own_only`, only links set directly on the schedule item (its own
+        `annotations`) are considered; otherwise links inherited from the program
+        (via `cached_combined_annotations`) are included as well.
+        """
+        from ..integrations.konsti import get_konsti_base_url
+
+        event = schedule_item.event
+        meta = event.program_v2_event_meta
+
+        if meta is None:
+            # This should not happen, but appease the type checker
             return None
 
-        titles = get_message_in_language(DEFAULT_LINK_TITLES, language) or {}
-        title = (
-            program.annotations.get(f"{link_annotation}:title:{language}")
-            or program.annotations.get(f"{link_annotation}:title:{DEFAULT_LANGUAGE}")
-            or program.annotations.get(f"{link_annotation}:title")
-            or titles.get(link_type_str, "")
-        )
+        annotations = schedule_item.annotations if own_only else schedule_item.cached_combined_annotations
+        link_type_str = link_type.value  # type: ignore[attr-defined]
+        link_annotation = f"internal:links:{link_type_str.lower()}"
 
-        if title_specifier:
-            title = f"{title} ({title_specifier})"
+        # Do not show time-sensitive links if the schedule item has ended
+        expired = not include_expired and schedule_item.cached_end_time and now() > schedule_item.cached_end_time
 
-        return cls(type=link_type, href=href, title=title)  # type: ignore[call-arg]
+        match link_type:
+            case ProgramLinkType.SIGNUP:
+                if expired:
+                    href = ""
+                else:
+                    href = annotations.get(link_annotation, "")
+                    if not href and schedule_item.cached_combined_dimensions.get("konsti"):
+                        href = f"{get_konsti_base_url(meta)}/program/item/{schedule_item.slug}"
+            case ProgramLinkType.RESERVATION | ProgramLinkType.TICKETS | ProgramLinkType.REMOTE:
+                href = "" if expired else annotations.get(link_annotation, "")
+            case (
+                ProgramLinkType.CALENDAR
+                | ProgramLinkType.GUIDE_V2_LIGHT
+                | ProgramLinkType.GUIDE_V2_EMBEDDED
+                | ProgramLinkType.FEEDBACK
+            ):
+                # These links are only meaningful at the program level.
+                href = ""
+            case _:
+                href = annotations.get(link_annotation, "")
+
+        return cls._build(link_type, href, annotations, language)
