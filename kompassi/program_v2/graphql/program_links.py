@@ -10,6 +10,7 @@ from django.utils.timezone import now
 from kompassi.core.utils.locale_utils import get_message_in_language
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
+from kompassi.program_v2.integrations.konsti import get_konsti_signup_url
 
 from ..models import Program
 
@@ -227,7 +228,6 @@ class ProgramLink(graphene.ObjectType):
         `annotations`) are considered; otherwise links inherited from the program
         (via `cached_combined_annotations`) are included as well.
         """
-        from ..integrations.konsti import get_konsti_base_url
 
         event = schedule_item.event
         meta = event.program_v2_event_meta
@@ -250,7 +250,7 @@ class ProgramLink(graphene.ObjectType):
                 else:
                     href = annotations.get(link_annotation, "")
                     if not href and schedule_item.cached_combined_dimensions.get("konsti"):
-                        href = f"{get_konsti_base_url(meta)}/program/item/{schedule_item.slug}"
+                        href = get_konsti_signup_url(schedule_item)
             case ProgramLinkType.RESERVATION | ProgramLinkType.TICKETS | ProgramLinkType.REMOTE:
                 href = "" if expired else annotations.get(link_annotation, "")
             case (
