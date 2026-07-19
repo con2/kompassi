@@ -537,6 +537,47 @@ def test_vat_by_month_report_localized_titles(vat_report_event: Event):
 
 
 # ---------------------------------------------------------------------------
+# Order filtering tests
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_filter_orders_by_product_includes_superseded_versions(vat_report_event: Event):
+    """
+    Editing a product creates a new revision (superseded_by), but old orders keep
+    referencing the old product id in product_data. Filtering orders by the
+    current product id must still return orders made against an older, superseded
+    version of that product (see update_product.py:137-155 for how revisions are created).
+    """
+    old_product = Product.objects.create(
+        event=vat_report_event,
+        title="Seminar ticket",
+        description="",
+        price=Decimal("10.00"),
+        vat_percentage=Decimal("25.50"),
+    )
+    old_order_id = _make_order(vat_report_event, datetime(2026, 1, 1, 12, 0, tzinfo=UTC), {old_product.id: 1})
+
+    new_product = Product.objects.create(
+        event=vat_report_event,
+        title="Seminar ticket",
+        description="",
+        price=Decimal("12.00"),
+        vat_percentage=Decimal("25.50"),
+    )
+    old_product.superseded_by = new_product
+    old_product.save()
+    new_order_id = _make_order(vat_report_event, datetime(2026, 2, 1, 12, 0, tzinfo=UTC), {new_product.id: 1})
+
+    filters = [SimpleNamespace(dimension="product", values=[str(new_product.id)])]
+    filtered_order_ids = set(
+        Order.filter_orders(Order.objects.filter(event=vat_report_event), filters=filters).values_list("id", flat=True)
+    )
+
+    assert filtered_order_ids == {old_order_id, new_order_id}
+
+
+# ---------------------------------------------------------------------------
 # Customer self-service cancellation tests
 # ---------------------------------------------------------------------------
 
