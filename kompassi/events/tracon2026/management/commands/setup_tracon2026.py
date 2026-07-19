@@ -352,6 +352,7 @@ class Setup:
                 admin_group=admin_group,
                 # NOTE: setting this shows program as published
                 # guide_v2_embedded_url="https://2026.tracon.fi/opas/",
+                konsti_url="https://konsti.tracon.fi",
                 contact_email="Traconin ohjelmatiimi <ohjelma@tracon.fi>",
                 is_accepting_feedback=True,
                 default_registry=Registry.objects.get(

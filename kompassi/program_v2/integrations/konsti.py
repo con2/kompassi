@@ -137,6 +137,17 @@ KONSTI_ANNOTATION_DTOS = [
 ]
 
 
+DEFAULT_KONSTI_URL = "https://ropekonsti.fi"
+
+
+def get_konsti_base_url(meta) -> str:
+    """
+    Base URL of the Konsti signup application for the event, used to form signup links.
+    Falls back to the default Konsti deployment if the event has not overridden it.
+    """
+    return meta.konsti_url or DEFAULT_KONSTI_URL
+
+
 def get_konsti_signup_url(program: Program) -> str:
     """
     Returns the Konsti signup URL for this program if it is set up for Konsti
@@ -147,8 +158,6 @@ def get_konsti_signup_url(program: Program) -> str:
     if not (
         # is already saved (cannot have annotations or dimensions otherwise)
         program.pk
-        # the event is set up for Konsti
-        and program.meta.konsti_url
         # this event is using Konsti
         and program.cached_dimensions.get("konsti", "")
         # this program is not a placeholder in Konsti
@@ -159,4 +168,4 @@ def get_konsti_signup_url(program: Program) -> str:
         return ""
 
     sole_schedule_item = program.schedule_items.get()
-    return f"{program.meta.konsti_url}/program/item/{sole_schedule_item.slug}"
+    return f"{get_konsti_base_url(program.meta)}/program/item/{sole_schedule_item.slug}"

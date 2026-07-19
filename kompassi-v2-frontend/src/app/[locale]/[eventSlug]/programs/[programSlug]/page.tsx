@@ -89,6 +89,11 @@ const query = graphql(`
             location(lang: $locale)
             startTime
             endTime
+            links(ownOnly: true, lang: $locale) {
+              type
+              href
+              title
+            }
           }
         }
       }
@@ -143,6 +148,31 @@ function getLinkEmoji(type: ProgramLinkType) {
     default:
       return "🔗";
   }
+}
+
+interface ProgramLinkFields {
+  type: ProgramLinkType;
+  href: string;
+  title: string;
+}
+
+/// Renders a single program/schedule item link, internal links via next/link.
+function ProgramLinkAnchor({ link }: { link: ProgramLinkFields }) {
+  const label = `${getLinkEmoji(link.type)} ${link.title}…`;
+  return link.href.startsWith(publicUrl) ? (
+    <Link href={link.href.slice(publicUrl.length)} className="link-subtle">
+      {label}
+    </Link>
+  ) : (
+    <a
+      href={link.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="link-subtle"
+    >
+      {label}
+    </a>
+  );
 }
 
 export default async function NewProgramPage(props: Props) {
@@ -222,6 +252,11 @@ export default async function NewProgramPage(props: Props) {
                 <FavoriteButton scheduleItem={scheduleItem} />
               </FavoriteContextProvider>
             )}
+            {scheduleItem.links.map((link, linkIndex) => (
+              <span key={linkIndex} className="ms-2 fst-normal">
+                <ProgramLinkAnchor link={link} />
+              </span>
+            ))}
           </div>
         ))}
       </div>
@@ -229,25 +264,7 @@ export default async function NewProgramPage(props: Props) {
       <div className="mb-3 mt-3">
         {program.links.map((link, index) => (
           <div key={index}>
-            {link.href.startsWith(publicUrl) ? (
-              <Link
-                href={link.href.slice(publicUrl.length)}
-                className="link-subtle"
-              >
-                {getLinkEmoji(link.type) + " "}
-                {link.title}…
-              </Link>
-            ) : (
-              <a
-                href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-subtle"
-              >
-                {getLinkEmoji(link.type) + " "}
-                {link.title}…
-              </a>
-            )}
+            <ProgramLinkAnchor link={link} />
           </div>
         ))}
       </div>

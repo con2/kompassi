@@ -4,9 +4,11 @@ from django.urls import reverse
 from graphene_django import DjangoObjectType
 
 from kompassi.core.utils.text_utils import normalize_whitespace
+from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.graphql_api.utils import resolve_local_datetime_field, resolve_localized_field, resolve_unix_seconds_field
 
 from ..models import ScheduleItem
+from .program_links import ProgramLink, ProgramLinkType
 
 
 class LimitedScheduleItemType(DjangoObjectType):
@@ -22,6 +24,47 @@ class LimitedScheduleItemType(DjangoObjectType):
 
     from .cached_annotations import cached_annotations, resolve_cached_annotations
     from .cached_dimensions import cached_dimensions, resolve_cached_dimensions
+
+    @staticmethod
+    def resolve_links(
+        parent: ScheduleItem,
+        info,
+        types: list[ProgramLinkType] | None = None,
+        lang=DEFAULT_LANGUAGE,
+        include_expired: bool = False,
+        own_only: bool = False,
+    ):
+        """
+        Get the links associated with the schedule item. If types are not specified, all links are
+        returned. With `ownOnly`, only links set directly on the schedule item are returned;
+        otherwise links inherited from the program are included as well.
+        """
+        if types is None:
+            types = list(ProgramLinkType)
+
+        return [
+            schedule_item_link
+            for link_type in types
+            if (
+                schedule_item_link := ProgramLink.from_schedule_item(
+                    info.context,
+                    parent,
+                    link_type,
+                    lang,
+                    include_expired=include_expired,
+                    own_only=own_only,
+                )
+            )
+        ]
+
+    links = graphene.NonNull(
+        graphene.List(graphene.NonNull(ProgramLink)),
+        description=normalize_whitespace(resolve_links.__doc__ or ""),
+        types=graphene.List(ProgramLinkType),
+        lang=graphene.String(),
+        include_expired=graphene.Boolean(),
+        own_only=graphene.Boolean(),
+    )
 
     @staticmethod
     def resolve_duration_minutes(parent: ScheduleItem, info):
