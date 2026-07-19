@@ -202,7 +202,12 @@ class ProgramLink(graphene.ObjectType):
             case _:
                 href = program.annotations.get(link_annotation, "")
 
-        return cls._build(link_type, href, program.annotations, language)
+        return cls._build(
+            link_type,  # type: ignore
+            href,
+            program.annotations,
+            language,
+        )
 
     @classmethod
     def from_schedule_item(
@@ -259,4 +264,9 @@ class ProgramLink(graphene.ObjectType):
             case _:
                 href = annotations.get(link_annotation, "")
 
-        return cls._build(link_type, href, annotations, language)
+        return cls._build(
+            link_type,  # type: ignore
+            href,
+            annotations,
+            language,
+        )
