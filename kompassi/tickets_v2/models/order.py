@@ -238,7 +238,24 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                         values = [PaymentStatus[value.upper()].value for value in values]
                         orders = orders.filter(cached_status__in=values)
                     case "product":
-                        orders = orders.filter(product_data__has_keys=values)
+                        product_ids = [int(value) for value in values]
+                        old_versions_by_current: dict[int, list[int]] = {}
+                        for old_id, current_id in Product.objects.filter(superseded_by_id__in=product_ids).values_list(
+                            "id", "superseded_by_id"
+                        ):
+                            old_versions_by_current.setdefault(current_id, []).append(old_id)
+
+                        query = models.Q()
+                        for product_id in product_ids:
+                            keys = [
+                                str(product_id),
+                                *(str(old_id) for old_id in old_versions_by_current.get(product_id, [])),
+                            ]
+                            sub_query = models.Q()
+                            for key in keys:
+                                sub_query |= models.Q(product_data__has_key=key)
+                            query &= sub_query
+                        orders = orders.filter(query)
 
         if search:
             # in case search is a formatted order number
