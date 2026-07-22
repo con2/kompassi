@@ -94,10 +94,22 @@ class Setup:
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
 
+        start_time = self.event.start_time
+        if not start_time:
+            raise ValueError("Event start_time is not set (shouldn't happen, appease typechecker)")
+        start_time = start_time.astimezone(self.tz)
+        work_begins = (start_time - timedelta(days=1)).replace(hour=8, minute=0)
+
+        end_time = self.event.end_time
+        if not end_time:
+            raise ValueError("Event end_time is not set (shouldn't happen, appease typechecker)")
+        end_time = end_time.astimezone(self.tz)
+        work_ends = (end_time + timedelta(days=2)).replace(hour=2, minute=0)
+
         labour_event_meta_defaults = dict(
             signup_extra_content_type=content_type,
-            work_begins=(self.event.start_time - timedelta(days=1)).replace(hour=8, minute=0, tzinfo=self.tz),  # type: ignore
-            work_ends=self.event.end_time.replace(hour=23, minute=0, tzinfo=self.tz),  # type: ignore
+            work_begins=work_begins,
+            work_ends=work_ends,
             admin_group=labour_admin_group,
             contact_email="Ropeconin vapaaehtoisvastaava <vapaaehtoiset@ropecon.fi>",
         )
