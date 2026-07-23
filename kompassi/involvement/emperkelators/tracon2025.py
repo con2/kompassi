@@ -202,17 +202,6 @@ class Perks(pydantic.BaseModel):
     extra_swag: bool = pydantic.Field(default=False, serialization_alias="tracon:extraSwag")
     override_formatted_perks: str = pydantic.Field(default="", serialization_alias="internal:overrideFormattedPerks")
 
-    @pydantic.computed_field(alias="internal:formattedPerks")
-    def formatted_perks(self) -> str:
-        if self.override_formatted_perks:
-            return self.override_formatted_perks
-
-        meals = f"{self.meals} ruokalippua" if self.meals else "ei ruokalippuja"
-        swag = "valittu työvoimatuote" if self.swag else "ei työvoimatuotteita"
-        extra_swag = " ja ekstrajuomapullo" if self.extra_swag else ""
-
-        return f"{self.ticket_type.title_fi}, {meals}, {swag}{extra_swag}"
-
     @classmethod
     def for_legacy_signup(cls, involvement: Involvement) -> Perks:
         personnel_classes = set(involvement.cached_dimensions.get("v1-personnel-class", []))
@@ -441,6 +430,21 @@ class TraconEmperkelator(BaseEmperkelator):
         annotations["tracon:shirtSize"] = shirt_size.title_fi
 
         return annotations
+
+    @classmethod
+    def _format_computed_perks(cls, dimension_values: CachedDimensions, annotation_values: CachedAnnotations) -> str:
+        ticket_type_values = dimension_values.get("ticket-type", [])
+        ticket_type = TicketType(next(iter(ticket_type_values))) if ticket_type_values else TicketType.NONE
+
+        meals = int(annotation_values.get("tracon:mealVouchers", 0) or 0)
+        swag = bool(annotation_values.get("tracon:swag", False))
+        extra_swag = bool(annotation_values.get("tracon:extraSwag", False))
+
+        meals_str = f"{meals} ruokalippua" if meals else "ei ruokalippuja"
+        swag_str = "valittu työvoimatuote" if swag else "ei työvoimatuotteita"
+        extra_swag_str = " ja ekstrajuomapullo" if extra_swag else ""
+
+        return f"{ticket_type.title_fi}, {meals_str}, {swag_str}{extra_swag_str}"
 
     def get_title(self) -> str:
         if inv := self.active_legacy_signup_involvement:

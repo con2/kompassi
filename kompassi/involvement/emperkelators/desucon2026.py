@@ -8,6 +8,7 @@ import pydantic
 
 from kompassi.core.models.event import Event
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
+from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from kompassi.dimensions.models.enums import AnnotationDataType, ValueOrdering
@@ -220,25 +221,6 @@ class Perks(pydantic.BaseModel):
     meals: int = 0
     override_formatted_perks: str = ""
 
-    @property
-    def formatted_perks(self) -> str:
-        if self.override_formatted_perks:
-            return self.override_formatted_perks
-
-        parts = []
-
-        if self.shirt_type == ShirtType.NONE or self.shirt_size == ShirtSize.NONE:
-            parts.append("Ei paitaa")
-        else:
-            parts.append(f"{self.shirt_type.title_fi} ({self.shirt_size.title_fi})")
-
-        if self.meals == 1:
-            parts.append("1 ruokalippu")
-        elif self.meals > 1:
-            parts.append(f"{self.meals} ruokalippua")
-
-        return ", ".join(parts)
-
     @classmethod
     def for_legacy_signup(cls, involvement: Involvement) -> Perks:
         signup = involvement.signup
@@ -433,9 +415,32 @@ class DesuconEmperkelator(BaseEmperkelator):
 
     def get_annotation_values(self) -> dict[str, str | int | float | bool]:
         return {
-            "internal:formattedPerks": self.perks.formatted_perks,
+            "internal:overrideFormattedPerks": self.perks.override_formatted_perks,
             "tracon:mealVouchers": self.perks.meals,
         }
+
+    @classmethod
+    def _format_computed_perks(cls, dimension_values: CachedDimensions, annotation_values: CachedAnnotations) -> str:
+        shirt_type_values = dimension_values.get("shirt-type", [])
+        shirt_size_values = dimension_values.get("shirt-size", [])
+        shirt_type = ShirtType(next(iter(shirt_type_values))) if shirt_type_values else ShirtType.NONE
+        shirt_size = ShirtSize(next(iter(shirt_size_values))) if shirt_size_values else ShirtSize.NONE
+
+        meals = int(annotation_values.get("tracon:mealVouchers", 0) or 0)
+
+        parts = []
+
+        if shirt_type == ShirtType.NONE or shirt_size == ShirtSize.NONE:
+            parts.append("Ei paitaa")
+        else:
+            parts.append(f"{shirt_type.title_fi} ({shirt_size.title_fi})")
+
+        if meals == 1:
+            parts.append("1 ruokalippu")
+        elif meals > 1:
+            parts.append(f"{meals} ruokalippua")
+
+        return ", ".join(parts)
 
     @classmethod
     def get_reports(cls, event: Event, lang: str = DEFAULT_LANGUAGE) -> list[Report]:

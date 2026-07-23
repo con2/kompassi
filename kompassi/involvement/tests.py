@@ -1,10 +1,16 @@
 import pytest
 
+from kompassi.core.models.event import Event
+from kompassi.core.models.person import Person
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from kompassi.dimensions.models.enums import AnnotationDataType
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 
+from .emperkelators.desucon2026 import DesuconEmperkelator
+from .emperkelators.ropecon2026 import RopeconEmperkelator
+from .emperkelators.tracon2025 import TraconEmperkelator
+from .models.enums import InvolvementApp, InvolvementType
 from .models.involvement import Involvement
 from .models.meta import InvolvementEventMeta
 from .perks import (
@@ -124,3 +130,162 @@ def test_non_overridden_perks_are_not_preserved():
     # With no overrides recorded, the automatically computed values stand.
     assert dimension_values["ticket-type"] == ["basic"]
     assert annotation_values["tracon:mealVouchers"] == 1
+
+
+def test_tracon_get_formatted_perks_computed():
+    dimension_values = {"ticket-type": ["internal-badge"]}
+    annotation_values = {"tracon:mealVouchers": 2, "tracon:swag": True, "tracon:extraSwag": False}
+
+    assert (
+        TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        == "Badge (internal), 2 ruokalippua, valittu työvoimatuote"
+    )
+
+
+def test_tracon_get_formatted_perks_no_meals_no_swag():
+    dimension_values = {"ticket-type": []}
+    annotation_values = {"tracon:mealVouchers": 0, "tracon:swag": False, "tracon:extraSwag": False}
+
+    assert (
+        TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        == "Ei lippuetua, ei ruokalippuja, ei työvoimatuotteita"
+    )
+
+
+def test_tracon_get_formatted_perks_extra_swag():
+    dimension_values = {"ticket-type": ["super-internal-badge"]}
+    annotation_values = {"tracon:mealVouchers": 4, "tracon:swag": True, "tracon:extraSwag": True}
+
+    assert (
+        TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        == "Badge (super internal), 4 ruokalippua, valittu työvoimatuote ja ekstrajuomapullo"
+    )
+
+
+def test_tracon_get_formatted_perks_override():
+    dimension_values = {"ticket-type": ["internal-badge"]}
+    annotation_values = {
+        "tracon:mealVouchers": 2,
+        "internal:overrideFormattedPerks": "Coniitin kirjekuori, valittu työvoimatuote, ekstrajuomapullo",
+    }
+
+    assert (
+        TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        == "Coniitin kirjekuori, valittu työvoimatuote, ekstrajuomapullo"
+    )
+
+
+def test_desucon_get_formatted_perks_computed():
+    dimension_values = {"shirt-type": ["staff"], "shirt-size": ["m-unisex"]}
+    annotation_values = {"tracon:mealVouchers": 1}
+
+    assert (
+        DesuconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        == "STAFF-paita (M Unisex), 1 ruokalippu"
+    )
+
+
+def test_desucon_get_formatted_perks_no_shirt():
+    dimension_values = {}
+    annotation_values = {"tracon:mealVouchers": 2}
+
+    assert DesuconEmperkelator.get_formatted_perks(dimension_values, annotation_values) == "Ei paitaa, 2 ruokalippua"
+
+
+def test_desucon_get_formatted_perks_override():
+    dimension_values = {"shirt-type": ["staff"], "shirt-size": ["m-unisex"]}
+    annotation_values = {"tracon:mealVouchers": 1, "internal:overrideFormattedPerks": "Custom perks"}
+
+    assert DesuconEmperkelator.get_formatted_perks(dimension_values, annotation_values) == "Custom perks"
+
+
+def test_ropecon_get_formatted_perks_computed():
+    dimension_values = {"ticket-type": ["weekend-ticket"], "v1-personnel-class": ["conitea"]}
+    annotation_values = {"tracon:mealVouchers": 2}
+
+    assert (
+        RopeconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        == "Viikonloppulippu, coniteabadge, 2\xa0ruokalippua"
+    )
+
+
+def test_ropecon_get_formatted_perks_single_meal():
+    dimension_values = {"ticket-type": ["day-ticket"], "v1-personnel-class": ["ohjelma"]}
+    annotation_values = {"tracon:mealVouchers": 1}
+
+    assert (
+        RopeconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        == "Päivälippu, ohjelmabadge, 1\xa0ruokalippu"
+    )
+
+
+def test_ropecon_get_formatted_perks_override():
+    dimension_values = {"ticket-type": ["day-ticket"]}
+    annotation_values = {"tracon:mealVouchers": 1, "internal:overrideFormattedPerks": "Custom override"}
+
+    assert RopeconEmperkelator.get_formatted_perks(dimension_values, annotation_values) == "Custom override"
+
+
+@pytest.mark.django_db
+def test_for_combined_perks_respects_manual_perk_override():
+    """
+    Regression test: a manually overridden perk must be reflected in the
+    internal:formattedPerks stored on the recomputed combined perks involvement,
+    not the auto-computed value that TraconEmperkelator would otherwise produce.
+    """
+    from kompassi.labour.models.labour_event_meta import LabourEventMeta
+    from kompassi.labour.models.personnel_class import PersonnelClass
+
+    person, _ = Person.get_or_create_dummy()
+    event, _ = Event.get_or_create_dummy(name="Formatted Perks Test 2099")
+    event.slug = "tracon2099"
+    event.save(update_fields=["slug"])
+
+    # TraconEmperkelator only registers the v1-personnel-class dimension (and the
+    # PROGRAM_HOST involvement path hardcodes its value to "ohjelma") if the event
+    # has a LabourEventMeta and a matching PersonnelClass.
+    LabourEventMeta.get_or_create_dummy(event=event)
+    PersonnelClass.objects.create(event=event, name="Ohjelma", slug="ohjelma", app_label="program_v2")
+
+    # ensure() registers the "registry" dimension's values from the scope's existing
+    # registries before it creates the default "volunteers" registry, so the first
+    # call never has "volunteers" as a choice. Calling it again picks it up.
+    InvolvementEventMeta.ensure(event)
+    meta = InvolvementEventMeta.ensure(event)
+    universe = meta.universe
+
+    # An active involvement so for_combined_perks has something to compute from.
+    # Perks.for_program_host always grants INTERNAL_BADGE, regardless of the
+    # involvement's program/response.
+    Involvement.objects.create(
+        universe=universe,
+        person=person,
+        app=InvolvementApp.PROGRAM,
+        type=InvolvementType.PROGRAM_HOST,
+        registry=meta.default_registry,
+        is_active=True,
+    )
+
+    # Existing combined perks with ticket-type manually overridden to a higher tier
+    # than what the auto-computation (INTERNAL_BADGE) would produce.
+    Involvement.objects.create(
+        universe=universe,
+        person=person,
+        app=InvolvementApp.INVOLVEMENT,
+        type=InvolvementType.COMBINED_PERKS,
+        registry=meta.default_registry,
+        is_active=True,
+        cached_dimensions={
+            MANUAL_PERKS_OVERRIDE_SLUG: [dimension_override_value("ticket-type")],
+            "ticket-type": ["super-internal-badge"],
+        },
+    )
+
+    result = Involvement.for_combined_perks(event, person)
+
+    assert result is not None
+    assert result.cached_dimensions["ticket-type"] == ["super-internal-badge"]
+
+    formatted_perks = result.annotations["internal:formattedPerks"]
+    assert "Badge (super internal)" in formatted_perks
+    assert "Badge (internal)," not in formatted_perks

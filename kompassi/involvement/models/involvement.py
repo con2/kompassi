@@ -698,6 +698,11 @@ class Involvement(models.Model):
             annotation_values,
         )
 
+        annotation_values["internal:formattedPerks"] = Emperkelator.get_formatted_perks(
+            dimension_values,
+            annotation_values,
+        )
+
         involvement, created = cls.objects.update_or_create(
             universe=universe,
             person=person,

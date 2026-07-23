@@ -167,6 +167,22 @@ class BaseEmperkelator:
         """
         return {}
 
+    @classmethod
+    def get_formatted_perks(cls, dimension_values: CachedDimensions, annotation_values: CachedAnnotations) -> str:
+        """
+        Produce the human-readable Finnish string shown at the gate, from the final
+        (post-override) dimension/annotation state. Call this after manual perk
+        overrides have been applied so the result reflects what is actually granted.
+        """
+        override = annotation_values.get("internal:overrideFormattedPerks") or ""
+        if override:
+            return str(override)
+        return cls._format_computed_perks(dimension_values, annotation_values)
+
+    @classmethod
+    def _format_computed_perks(cls, dimension_values: CachedDimensions, annotation_values: CachedAnnotations) -> str:
+        return ""
+
     def get_frozen_shirt_size_values(self, computed_shirt_size_values: list[str]) -> list[str]:
         """
         Freeze shirt-size dimension values after shirt order.

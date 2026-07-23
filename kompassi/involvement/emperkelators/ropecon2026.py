@@ -9,6 +9,7 @@ import pydantic
 
 from kompassi.core.models.event import Event
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
+from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import CachedDimensions
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.dimension_value_dto import DimensionValueDTO
@@ -101,6 +102,10 @@ class BadgeType(Enum):
 # for use only by __lt__, others should iterate over BadgeType
 BADGE_TYPES = list(BadgeType)
 
+BADGE_TYPES_BY_V1: dict[str, BadgeType] = {
+    bt.v1_personnel_class_slug: bt for bt in BadgeType if bt.v1_personnel_class_slug
+}
+
 
 class Rule(Enum):
     """
@@ -192,26 +197,6 @@ class Perks(pydantic.BaseModel):
     meals: int = 0
     override_formatted_perks: str = ""
     rule: Rule = Rule.NONE
-
-    @property
-    def formatted_perks(self) -> str:
-        if self.override_formatted_perks:
-            return self.override_formatted_perks
-
-        parts = []
-
-        if self.ticket_type != TicketType.NONE:
-            parts.append(self.ticket_type.title_fi)
-
-        if self.badge_type != BadgeType.NONE:
-            parts.append(self.badge_type.title_fi.lower())
-
-        if self.meals == 1:
-            parts.append("1 ruokalippu")
-        elif self.meals > 1:
-            parts.append(f"{self.meals} ruokalippua")
-
-        return ", ".join(parts)
 
     @classmethod
     def for_v1_signup(cls, involvement: Involvement) -> Perks:
@@ -378,6 +363,35 @@ class RopeconEmperkelator(BaseEmperkelator):
 
     def get_annotation_values(self) -> dict[str, str | int | float | bool]:
         return {
-            "internal:formattedPerks": self.perks.formatted_perks,
+            "internal:overrideFormattedPerks": self.perks.override_formatted_perks,
             "tracon:mealVouchers": self.perks.meals,
         }
+
+    @classmethod
+    def _format_computed_perks(cls, dimension_values: CachedDimensions, annotation_values: CachedAnnotations) -> str:
+        ticket_type_values = dimension_values.get("ticket-type", [])
+        ticket_type = TicketType(next(iter(ticket_type_values))) if ticket_type_values else TicketType.NONE
+
+        v1_personnel_class_values = dimension_values.get("v1-personnel-class", [])
+        badge_type = (
+            BADGE_TYPES_BY_V1.get(next(iter(v1_personnel_class_values)), BadgeType.NONE)
+            if v1_personnel_class_values
+            else BadgeType.NONE
+        )
+
+        meals = int(annotation_values.get("tracon:mealVouchers", 0) or 0)
+
+        parts = []
+
+        if ticket_type != TicketType.NONE:
+            parts.append(ticket_type.title_fi)
+
+        if badge_type != BadgeType.NONE:
+            parts.append(badge_type.title_fi.lower())
+
+        if meals == 1:
+            parts.append("1\xa0ruokalippu")
+        elif meals > 1:
+            parts.append(f"{meals}\xa0ruokalippua")
+
+        return ", ".join(parts)
