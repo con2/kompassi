@@ -16,6 +16,9 @@ valid_username = RegexValidator(
 
 PASSWORD_HELP_TEXT = _("Please use a strong password.")
 
+# zxcvbn (used by validate_password) does not accept passwords longer than 72 characters.
+PASSWORD_MAX_LENGTH = 72
+
 
 class LoginForm(forms.Form):
     username = forms.CharField(required=True, max_length=EMAIL_LENGTH, label=_("User name or e-mail address"))
@@ -210,14 +213,14 @@ class RegistrationForm(forms.Form):
 
     password = forms.CharField(
         required=True,
-        max_length=1023,
+        max_length=PASSWORD_MAX_LENGTH,
         label=_("Password"),
         widget=forms.PasswordInput,
         validators=[validate_password],
     )
     password_again = forms.CharField(
         required=True,
-        max_length=1023,
+        max_length=PASSWORD_MAX_LENGTH,
         label=_("Password (again)"),
         widget=forms.PasswordInput,
         help_text=PASSWORD_HELP_TEXT,
@@ -276,7 +279,7 @@ class PasswordForm(forms.Form):
 
     new_password = forms.CharField(
         required=True,
-        max_length=1023,
+        max_length=PASSWORD_MAX_LENGTH,
         label=_("New password"),
         widget=forms.PasswordInput,
         validators=[validate_password],
@@ -284,7 +287,7 @@ class PasswordForm(forms.Form):
 
     new_password_again = forms.CharField(
         required=True,
-        max_length=1023,
+        max_length=PASSWORD_MAX_LENGTH,
         label=_("New password (again)"),
         widget=forms.PasswordInput,
         help_text=PASSWORD_HELP_TEXT,
@@ -349,7 +352,7 @@ class PasswordResetForm(forms.Form):
     # XXX BEGIN UGLY COPYPASTA
     new_password = forms.CharField(
         required=True,
-        max_length=1023,
+        max_length=PASSWORD_MAX_LENGTH,
         label=_("New password"),
         widget=forms.PasswordInput,
         validators=[validate_password],
@@ -357,7 +360,7 @@ class PasswordResetForm(forms.Form):
 
     new_password_again = forms.CharField(
         required=True,
-        max_length=1023,
+        max_length=PASSWORD_MAX_LENGTH,
         label=_("New password (again)"),
         widget=forms.PasswordInput,
         help_text=PASSWORD_HELP_TEXT,
