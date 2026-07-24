@@ -36,7 +36,7 @@ from .model_utils import (
     slugify,
     validate_slug,
 )
-from .password_utils import validate_password
+from .password_utils import MAX_PASSWORD_LENGTH, validate_password
 from .properties import alias_property, event_meta_property, time_bool_property
 from .text_utils import normalize_whitespace
 from .time_utils import (

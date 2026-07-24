@@ -1,5 +1,7 @@
+import re
 from datetime import date, datetime
 
+import pytest
 from babel import Locale
 from dateutil.tz import tzlocal
 from django.test import TestCase
@@ -7,7 +9,7 @@ from django.utils.timezone import get_current_timezone
 
 from kompassi.core.utils.time_utils import format_date_range
 
-from .utils import format_interval, full_hours_between, slugify
+from .utils import MAX_PASSWORD_LENGTH, format_interval, full_hours_between, slugify
 
 
 class PersonTestCase(TestCase):
@@ -122,3 +124,35 @@ class UtilsTestCase(TestCase):
         assert format_interval(d0, d1, locale=locale) == "ke 27.4. 21.00–23.00"
 
         assert format_interval(d0, d2, locale=locale) == "ke 27.4. 21.00 – to 28.4. 1.00"
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "The password limit cannot be unified between client and server with plain markup. "
+        "zxcvbn and Django's max_length both count Unicode code points (len()), but the HTML "
+        "maxlength attribute is counted by browsers in UTF-16 code units. For a password of "
+        "exactly MAX_PASSWORD_LENGTH code points containing an astral character (e.g. an emoji), "
+        "the server accepts it while the browser would block it one character early. Making the "
+        "input honour the code-point limit requires a custom widget with JavaScript. Deferred: "
+        "sign-in is moving to a third-party product, at which point this becomes its concern."
+    ),
+)
+def test_password_maxlength_unified_with_zxcvbn_for_astral_characters():
+    """The client-side input limit should accept exactly what zxcvbn/the server accepts."""
+    from kompassi.core.forms import RegistrationForm
+
+    rendered = str(RegistrationForm()["password"])
+    match = re.search(r'maxlength="(\d+)"', rendered)
+    assert match, "password field should render a maxlength attribute"
+    browser_maxlength = int(match.group(1))
+
+    # Exactly MAX_PASSWORD_LENGTH code points, one of which is an astral character.
+    password = "a" * (MAX_PASSWORD_LENGTH - 1) + "😀"
+    # zxcvbn and Django count code points, so the server accepts this password.
+    assert len(password) == MAX_PASSWORD_LENGTH
+
+    # Browsers count the maxlength attribute in UTF-16 code units (the emoji is 2 units),
+    # so a browser honouring maxlength would refuse this otherwise-valid password.
+    utf16_units = len(password.encode("utf-16-le")) // 2
+    assert utf16_units <= browser_maxlength

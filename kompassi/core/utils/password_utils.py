@@ -12,6 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 ZXCVBN_MINIMUM_SCORE = 3
+
+# zxcvbn refuses passwords longer than this many Unicode characters (raising ValueError).
+# Measured in code points via len(), same as Django's CharField.max_length / MaxLengthValidator.
+MAX_PASSWORD_LENGTH = 72
+
 HIBP_PREFIX_LENGTH = 5
 HIBP_BASE_URL = "https://api.pwnedpasswords.com/range"
 HIBP_CACHE_EXPIRY_SECONDS = 7 * 24 * 60 * 60
@@ -30,7 +35,15 @@ def validate_password(password, user_inputs=None):
     """
     if user_inputs is None:
         user_inputs = []
-    result = zxcvbn(password, user_inputs=user_inputs)
+
+    # zxcvbn raises a bare ValueError past its max length; turn it into a form-friendly
+    # ValidationError so an over-long password yields a validation error, not a 500.
+    if len(password) > MAX_PASSWORD_LENGTH:
+        raise ValidationError(
+            _("Password too long. Please use at most %(max_length)d characters.") % {"max_length": MAX_PASSWORD_LENGTH}
+        )
+
+    result = zxcvbn(password, user_inputs=user_inputs, max_length=MAX_PASSWORD_LENGTH)
 
     if ZXCVBN_MINIMUM_SCORE is not None and result["score"] < ZXCVBN_MINIMUM_SCORE:
         raise ValidationError(_("Password too weak. Please use a stronger password."))

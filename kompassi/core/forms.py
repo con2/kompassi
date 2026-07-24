@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from kompassi.core.utils import DateField, indented_without_label
 
 from .models import BIRTH_DATE_HELP_TEXT, EMAIL_LENGTH, Person
-from .utils import horizontal_form_helper, validate_password
+from .utils import MAX_PASSWORD_LENGTH, horizontal_form_helper, validate_password
 
 valid_username = RegexValidator(
     regex=r"^[a-z0-9_]{4,30}$",
@@ -15,9 +15,6 @@ valid_username = RegexValidator(
 )
 
 PASSWORD_HELP_TEXT = _("Please use a strong password.")
-
-# zxcvbn (used by validate_password) does not accept passwords longer than 72 characters.
-PASSWORD_MAX_LENGTH = 72
 
 
 class LoginForm(forms.Form):
@@ -213,14 +210,14 @@ class RegistrationForm(forms.Form):
 
     password = forms.CharField(
         required=True,
-        max_length=PASSWORD_MAX_LENGTH,
+        max_length=MAX_PASSWORD_LENGTH,
         label=_("Password"),
         widget=forms.PasswordInput,
         validators=[validate_password],
     )
     password_again = forms.CharField(
         required=True,
-        max_length=PASSWORD_MAX_LENGTH,
+        max_length=MAX_PASSWORD_LENGTH,
         label=_("Password (again)"),
         widget=forms.PasswordInput,
         help_text=PASSWORD_HELP_TEXT,
@@ -279,7 +276,7 @@ class PasswordForm(forms.Form):
 
     new_password = forms.CharField(
         required=True,
-        max_length=PASSWORD_MAX_LENGTH,
+        max_length=MAX_PASSWORD_LENGTH,
         label=_("New password"),
         widget=forms.PasswordInput,
         validators=[validate_password],
@@ -287,7 +284,7 @@ class PasswordForm(forms.Form):
 
     new_password_again = forms.CharField(
         required=True,
-        max_length=PASSWORD_MAX_LENGTH,
+        max_length=MAX_PASSWORD_LENGTH,
         label=_("New password (again)"),
         widget=forms.PasswordInput,
         help_text=PASSWORD_HELP_TEXT,
@@ -352,7 +349,7 @@ class PasswordResetForm(forms.Form):
     # XXX BEGIN UGLY COPYPASTA
     new_password = forms.CharField(
         required=True,
-        max_length=PASSWORD_MAX_LENGTH,
+        max_length=MAX_PASSWORD_LENGTH,
         label=_("New password"),
         widget=forms.PasswordInput,
         validators=[validate_password],
@@ -360,7 +357,7 @@ class PasswordResetForm(forms.Form):
 
     new_password_again = forms.CharField(
         required=True,
-        max_length=PASSWORD_MAX_LENGTH,
+        max_length=MAX_PASSWORD_LENGTH,
         label=_("New password (again)"),
         widget=forms.PasswordInput,
         help_text=PASSWORD_HELP_TEXT,
