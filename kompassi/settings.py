@@ -46,6 +46,22 @@ DATABASES = {
     },
 }
 
+# Optional read-only connection to a side instance (eg. a PITR restore) used by one-off data
+# recovery management commands such as program_v2_restore_deleted_program_offers. Only wired up
+# when PITR_POSTGRES_HOSTNAME is set, so it has no effect on normal deployments.
+if PITR_POSTGRES_HOSTNAME := env("PITR_POSTGRES_HOSTNAME", default=""):
+    DATABASES["pitr"] = {
+        "HOST": PITR_POSTGRES_HOSTNAME,
+        "NAME": env("PITR_POSTGRES_DATABASE", default="kompassi"),
+        "USER": env("PITR_POSTGRES_USERNAME", default="kompassi"),
+        "PORT": env("PITR_POSTGRES_PORT", default="5432"),
+        "PASSWORD": env("PITR_POSTGRES_PASSWORD", default="secret"),
+        "OPTIONS": {
+            "sslmode": env("PITR_POSTGRES_SSLMODE", default="allow"),
+        },
+        "ENGINE": "django.db.backends.postgresql",
+    }
+
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
