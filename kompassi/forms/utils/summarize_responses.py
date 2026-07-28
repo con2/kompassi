@@ -4,7 +4,7 @@ See ../tests.py:test_summarize_responses for examples.
 """
 
 from collections import Counter
-from enum import Enum
+from enum import StrEnum
 from typing import Any, Literal, Self
 
 import pydantic
@@ -16,7 +16,7 @@ from ..models.field import BOOLEAN_CHOICES, Field, FieldType
 Values = dict[str, Any]
 
 
-class SummaryType(str, Enum):
+class SummaryType(StrEnum):
     TEXT = "Text"
     SINGLE_CHECKBOX = "SingleCheckbox"
     SELECT = "Select"
@@ -115,6 +115,7 @@ def summarize_responses(fields: list[Field], valuesies: list[Values]) -> Summary
                 FieldType.SINGLE_LINE_TEXT
                 | FieldType.DECIMAL_FIELD
                 | FieldType.MULTI_LINE_TEXT
+                | FieldType.MARKDOWN_TEXT
                 | FieldType.DATE_FIELD
                 | FieldType.TIME_FIELD
                 | FieldType.DATE_TIME_FIELD

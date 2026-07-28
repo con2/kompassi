@@ -11,6 +11,7 @@ from kompassi.dimensions.models.dimension import Dimension
 class FieldType(StrEnum):
     SINGLE_LINE_TEXT = "SingleLineText"
     MULTI_LINE_TEXT = "MultiLineText"
+    MARKDOWN_TEXT = "MarkdownText"
     SINGLE_CHECKBOX = "SingleCheckbox"
     TRISTATE = "Tristate"
     STATIC_TEXT = "StaticText"
