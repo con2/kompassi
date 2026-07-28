@@ -20,6 +20,11 @@ from kompassi.forms.models.response import Response
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.involvement.graphql.invitation_full import FullInvitationType
 from kompassi.involvement.models.invitation import Invitation
+from kompassi.involvement.models.involvement import Involvement
+from kompassi.messages_v2.graphql.message import MessageType
+from kompassi.messages_v2.graphql.message_reply_to import MessageReplyToType
+from kompassi.messages_v2.models.message import Message
+from kompassi.messages_v2.models.message_reply_to import MessageReplyTo
 from kompassi.reports.graphql.report import ReportType
 from kompassi.reports.models.report import Report
 
@@ -492,6 +497,67 @@ class ProgramV2EventMetaType(DjangoObjectType):
         return meta.can_program_offers_be_deleted_by(info.context)
 
     can_delete_program_offers = graphene.NonNull(graphene.Boolean)
+
+    @staticmethod
+    def resolve_messages(
+        meta: ProgramV2EventMeta,
+        info,
+        include_drafts: bool = True,
+    ):
+        """
+        Messages V2: messages of this event's involvement universe.
+        """
+        graphql_check_model(Involvement, meta.event.scope, info, app="program_v2", field="messages")
+
+        messages = Message.objects.filter(universe=meta.event.involvement_universe)
+        if not include_drafts:
+            messages = messages.exclude(sent_at__isnull=True)
+
+        return messages
+
+    messages = graphene.NonNull(
+        graphene.List(graphene.NonNull(MessageType)),
+        include_drafts=graphene.Boolean(default_value=True),
+        description=normalize_whitespace(resolve_messages.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_message(meta: ProgramV2EventMeta, info, id: str):
+        graphql_check_model(Involvement, meta.event.scope, info, app="program_v2", field="messages")
+
+        return Message.objects.filter(universe=meta.event.involvement_universe, id=id).first()
+
+    message = graphene.Field(MessageType, id=graphene.String(required=True))
+
+    @staticmethod
+    def resolve_reply_to_addresses(meta: ProgramV2EventMeta, info):
+        """
+        Messages V2: reply-to addresses configured for this event, offered in the
+        compose view and managed on the Program V2 admin preferences page.
+        """
+        graphql_check_model(Involvement, meta.event.scope, info, app="program_v2", field="message_reply_to")
+
+        return MessageReplyTo.objects.filter(universe=meta.event.involvement_universe)
+
+    reply_to_addresses = graphene.NonNull(
+        graphene.List(graphene.NonNull(MessageReplyToType)),
+        description=normalize_whitespace(resolve_reply_to_addresses.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_recipient_dimensions(meta: ProgramV2EventMeta, info):
+        """
+        Messages V2: involvement dimensions (including the technical type/state
+        dimensions) available for building a message's recipient filters.
+        """
+        graphql_check_model(Involvement, meta.event.scope, info, app="program_v2", field="messages")
+
+        return meta.event.involvement_universe.dimensions.all().select_related("universe").order_by("order")
+
+    recipient_dimensions = graphene.NonNull(
+        graphene.List(graphene.NonNull(FullDimensionType)),
+        description=normalize_whitespace(resolve_recipient_dimensions.__doc__ or ""),
+    )
 
 
 ProgramUserRelationType = graphene.Enum.from_enum(ProgramUserRelation)

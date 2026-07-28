@@ -74,6 +74,7 @@ function getSummaryChoices(
     case "SingleLineText":
     case "Divider":
     case "MultiLineText":
+    case "MarkdownText":
     case "Spacer":
     case "StaticText":
     case "FileUpload":

@@ -24,6 +24,7 @@ export default function processFormData(
 
       case "SingleLineText":
       case "MultiLineText":
+      case "MarkdownText":
       case "SingleSelect":
       case "DimensionSingleSelect":
       case "DateTimeField":

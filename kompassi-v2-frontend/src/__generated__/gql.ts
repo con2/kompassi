@@ -113,6 +113,16 @@ type Documents = {
     "\n  query ProgramAdminHosts(\n    $eventSlug: String!\n    $filters: [DimensionFilterInput!]\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      program {\n        programHostsExcelExportLink\n\n        dimensions(isListFilter: true, publicOnly: false) {\n          ...DimensionFilter\n        }\n        programHosts(programFilters: $filters) {\n          ...ProgramAdminHost\n        }\n      }\n    }\n  }\n": typeof types.ProgramAdminHostsDocument,
     "\n  fragment ProgramAdminInvitation on FullInvitationType {\n    id\n    email\n    createdAt\n    cachedDimensions\n\n    program {\n      slug\n      title\n    }\n  }\n": typeof types.ProgramAdminInvitationFragmentDoc,
     "\n  query ProgramAdminInvitations($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      program {\n        invitations {\n          ...ProgramAdminInvitation\n        }\n      }\n    }\n  }\n": typeof types.ProgramAdminInvitationsDocument,
+    "\n  mutation UpdateMessage($input: UpdateMessageInput!) {\n    updateMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n": typeof types.UpdateMessageDocument,
+    "\n  mutation SendMessage($input: SendMessageInput!) {\n    sendMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n": typeof types.SendMessageDocument,
+    "\n  mutation ExpireMessage($input: ExpireMessageInput!) {\n    expireMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n": typeof types.ExpireMessageDocument,
+    "\n  mutation DeleteMessage($input: DeleteMessageInput!) {\n    deleteMessage(input: $input) {\n      messageId\n    }\n  }\n": typeof types.DeleteMessageDocument,
+    "\n  fragment MessageCompose on MessageType {\n    id\n    subject\n    body\n    dispatch\n    state\n    createdAt\n    sentAt\n    expiredAt\n    recipientFilters\n    recipientCount\n    replyTo {\n      id\n    }\n  }\n": typeof types.MessageComposeFragmentDoc,
+    "\n  query ProgramMessageComposePage(\n    $eventSlug: String!\n    $messageId: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        message(id: $messageId) {\n          ...MessageCompose\n        }\n        replyToAddresses {\n          id\n          name\n          email\n        }\n        recipientDimensions {\n          ...DimensionValueSelect\n        }\n      }\n    }\n  }\n": typeof types.ProgramMessageComposePageDocument,
+    "\n  mutation CreateMessage($input: CreateMessageInput!) {\n    createMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n": typeof types.CreateMessageDocument,
+    "\n  query ProgramMessageNewPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        replyToAddresses {\n          id\n          name\n          email\n        }\n        recipientDimensions {\n          ...DimensionValueSelect\n        }\n      }\n    }\n  }\n": typeof types.ProgramMessageNewPageDocument,
+    "\n  fragment ProgramMessageListRow on MessageType {\n    id\n    subject\n    state\n    dispatch\n    createdAt\n    sentAt\n    recipientCount\n  }\n": typeof types.ProgramMessageListRowFragmentDoc,
+    "\n  query ProgramMessagesPage($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        messages {\n          ...ProgramMessageListRow\n        }\n      }\n    }\n  }\n": typeof types.ProgramMessagesPageDocument,
     "\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n": typeof types.AcceptProgramOfferDocument,
     "\n  mutation CancelProgramOffer($input: CancelProgramOfferInput!) {\n    cancelProgramOffer(input: $input) {\n      responseId\n    }\n  }\n": typeof types.CancelProgramOfferDocument,
     "\n  mutation EditProgramOffer($input: CreateSurveyResponseInput!) {\n    createSurveyResponse(input: $input) {\n      response {\n        id\n      }\n    }\n  }\n": typeof types.EditProgramOfferDocument,
@@ -125,7 +135,11 @@ type Documents = {
     "\n  fragment ProgramOfferDimension on FullDimensionType {\n    ...DimensionFilter\n    ...ColoredDimensionTableCell\n    ...DimensionValueSelect\n  }\n": typeof types.ProgramOfferDimensionFragmentDoc,
     "\n  query ProgramOffers(\n    $eventSlug: String!\n    $locale: String\n    $filters: [DimensionFilterInput!]\n  ) {\n    event(slug: $eventSlug) {\n      slug\n      name\n      program {\n        programOffersExcelExportLink\n        canDeleteProgramOffers\n\n        listFilters: dimensions(isListFilter: true, publicOnly: false) {\n          ...ProgramOfferDimension\n        }\n\n        keyDimensions: dimensions(keyDimensionsOnly: true, publicOnly: false) {\n          ...ProgramOfferDimension\n        }\n\n        stateDimension {\n          ...ProgramOfferDimension\n        }\n\n        countProgramOffers\n        programOffers(filters: $filters) {\n          ...ProgramOffer\n        }\n      }\n    }\n  }\n": typeof types.ProgramOffersDocument,
     "\n  mutation UpdateProgramPreferences($input: UpdateProgramPreferencesInput!) {\n    updateProgramPreferences(input: $input) {\n      preferences {\n        publicFrom\n        isSchedulePublic\n      }\n    }\n  }\n": typeof types.UpdateProgramPreferencesDocument,
-    "\n  query ProgramPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        publicFrom\n        isSchedulePublic\n      }\n    }\n  }\n": typeof types.ProgramPreferencesDocument,
+    "\n  mutation CreateMessageReplyTo($input: CreateMessageReplyToInput!) {\n    createMessageReplyTo(input: $input) {\n      replyTo {\n        id\n      }\n    }\n  }\n": typeof types.CreateMessageReplyToDocument,
+    "\n  mutation UpdateMessageReplyTo($input: UpdateMessageReplyToInput!) {\n    updateMessageReplyTo(input: $input) {\n      replyTo {\n        id\n      }\n    }\n  }\n": typeof types.UpdateMessageReplyToDocument,
+    "\n  mutation DeleteMessageReplyTo($input: DeleteMessageReplyToInput!) {\n    deleteMessageReplyTo(input: $input) {\n      replyToId\n    }\n  }\n": typeof types.DeleteMessageReplyToDocument,
+    "\n  fragment MessageReplyToRow on MessageReplyToType {\n    id\n    name\n    email\n  }\n": typeof types.MessageReplyToRowFragmentDoc,
+    "\n  query ProgramPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        publicFrom\n        isSchedulePublic\n\n        replyToAddresses {\n          ...MessageReplyToRow\n        }\n      }\n    }\n  }\n": typeof types.ProgramPreferencesDocument,
     "\n  query ProgramAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      program {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": typeof types.ProgramAdminReportsPageDocument,
     "\n  mutation MarkScheduleItemAsFavorite($input: FavoriteScheduleItemInput!) {\n    markScheduleItemAsFavorite(input: $input) {\n      success\n    }\n  }\n": typeof types.MarkScheduleItemAsFavoriteDocument,
     "\n  mutation UnmarkScheduleItemAsFavorite($input: FavoriteScheduleItemInput!) {\n    unmarkScheduleItemAsFavorite(input: $input) {\n      success\n    }\n  }\n": typeof types.UnmarkScheduleItemAsFavoriteDocument,
@@ -185,6 +199,8 @@ type Documents = {
     "\n  mutation RevokeKeyPair($id: String!) {\n    revokeKeyPair(id: $id) {\n      id\n    }\n  }\n": typeof types.RevokeKeyPairDocument,
     "\n  fragment ProfileEncryptionKeys on KeyPairType {\n    id\n    createdAt\n  }\n": typeof types.ProfileEncryptionKeysFragmentDoc,
     "\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n": typeof types.ProfileEncryptionKeysDocument,
+    "\n  fragment ProfileMessageRow on LimitedMessageType {\n    id\n    subject\n    sentAt\n    bodyHtml\n    event {\n      slug\n      name\n    }\n  }\n": typeof types.ProfileMessageRowFragmentDoc,
+    "\n  query ProfileMessages {\n    profile {\n      messages {\n        ...ProfileMessageRow\n      }\n    }\n  }\n": typeof types.ProfileMessagesDocument,
     "\n  query ProfileOrderDetail($eventSlug: String!, $orderId: String!) {\n    profile {\n      tickets {\n        order(eventSlug: $eventSlug, id: $orderId) {\n          id\n          formattedOrderNumber\n          createdAt\n          totalPrice\n          status\n          eticketsLink\n          canPay\n          canCancel\n          canRequestCancellation\n          ticketsContactEmail\n          products {\n            title\n            quantity\n            price\n            vatPercentage\n          }\n\n          event {\n            slug\n            name\n            organization {\n              name\n              businessId\n            }\n          }\n        }\n      }\n    }\n  }\n": typeof types.ProfileOrderDetailDocument,
     "\n  mutation ConfirmEmail($input: ConfirmEmailInput!) {\n    confirmEmail(input: $input) {\n      user {\n        email\n      }\n    }\n  }\n": typeof types.ConfirmEmailDocument,
     "\n  fragment ProfileOrder on ProfileOrderType {\n    id\n    formattedOrderNumber\n    createdAt\n    totalPrice\n    status\n    eticketsLink\n    canPay\n    canCancel\n\n    event {\n      slug\n      name\n    }\n  }\n": typeof types.ProfileOrderFragmentDoc,
@@ -317,6 +333,16 @@ const documents: Documents = {
     "\n  query ProgramAdminHosts(\n    $eventSlug: String!\n    $filters: [DimensionFilterInput!]\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      program {\n        programHostsExcelExportLink\n\n        dimensions(isListFilter: true, publicOnly: false) {\n          ...DimensionFilter\n        }\n        programHosts(programFilters: $filters) {\n          ...ProgramAdminHost\n        }\n      }\n    }\n  }\n": types.ProgramAdminHostsDocument,
     "\n  fragment ProgramAdminInvitation on FullInvitationType {\n    id\n    email\n    createdAt\n    cachedDimensions\n\n    program {\n      slug\n      title\n    }\n  }\n": types.ProgramAdminInvitationFragmentDoc,
     "\n  query ProgramAdminInvitations($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      program {\n        invitations {\n          ...ProgramAdminInvitation\n        }\n      }\n    }\n  }\n": types.ProgramAdminInvitationsDocument,
+    "\n  mutation UpdateMessage($input: UpdateMessageInput!) {\n    updateMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n": types.UpdateMessageDocument,
+    "\n  mutation SendMessage($input: SendMessageInput!) {\n    sendMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n": types.SendMessageDocument,
+    "\n  mutation ExpireMessage($input: ExpireMessageInput!) {\n    expireMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n": types.ExpireMessageDocument,
+    "\n  mutation DeleteMessage($input: DeleteMessageInput!) {\n    deleteMessage(input: $input) {\n      messageId\n    }\n  }\n": types.DeleteMessageDocument,
+    "\n  fragment MessageCompose on MessageType {\n    id\n    subject\n    body\n    dispatch\n    state\n    createdAt\n    sentAt\n    expiredAt\n    recipientFilters\n    recipientCount\n    replyTo {\n      id\n    }\n  }\n": types.MessageComposeFragmentDoc,
+    "\n  query ProgramMessageComposePage(\n    $eventSlug: String!\n    $messageId: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        message(id: $messageId) {\n          ...MessageCompose\n        }\n        replyToAddresses {\n          id\n          name\n          email\n        }\n        recipientDimensions {\n          ...DimensionValueSelect\n        }\n      }\n    }\n  }\n": types.ProgramMessageComposePageDocument,
+    "\n  mutation CreateMessage($input: CreateMessageInput!) {\n    createMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n": types.CreateMessageDocument,
+    "\n  query ProgramMessageNewPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        replyToAddresses {\n          id\n          name\n          email\n        }\n        recipientDimensions {\n          ...DimensionValueSelect\n        }\n      }\n    }\n  }\n": types.ProgramMessageNewPageDocument,
+    "\n  fragment ProgramMessageListRow on MessageType {\n    id\n    subject\n    state\n    dispatch\n    createdAt\n    sentAt\n    recipientCount\n  }\n": types.ProgramMessageListRowFragmentDoc,
+    "\n  query ProgramMessagesPage($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        messages {\n          ...ProgramMessageListRow\n        }\n      }\n    }\n  }\n": types.ProgramMessagesPageDocument,
     "\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n": types.AcceptProgramOfferDocument,
     "\n  mutation CancelProgramOffer($input: CancelProgramOfferInput!) {\n    cancelProgramOffer(input: $input) {\n      responseId\n    }\n  }\n": types.CancelProgramOfferDocument,
     "\n  mutation EditProgramOffer($input: CreateSurveyResponseInput!) {\n    createSurveyResponse(input: $input) {\n      response {\n        id\n      }\n    }\n  }\n": types.EditProgramOfferDocument,
@@ -329,7 +355,11 @@ const documents: Documents = {
     "\n  fragment ProgramOfferDimension on FullDimensionType {\n    ...DimensionFilter\n    ...ColoredDimensionTableCell\n    ...DimensionValueSelect\n  }\n": types.ProgramOfferDimensionFragmentDoc,
     "\n  query ProgramOffers(\n    $eventSlug: String!\n    $locale: String\n    $filters: [DimensionFilterInput!]\n  ) {\n    event(slug: $eventSlug) {\n      slug\n      name\n      program {\n        programOffersExcelExportLink\n        canDeleteProgramOffers\n\n        listFilters: dimensions(isListFilter: true, publicOnly: false) {\n          ...ProgramOfferDimension\n        }\n\n        keyDimensions: dimensions(keyDimensionsOnly: true, publicOnly: false) {\n          ...ProgramOfferDimension\n        }\n\n        stateDimension {\n          ...ProgramOfferDimension\n        }\n\n        countProgramOffers\n        programOffers(filters: $filters) {\n          ...ProgramOffer\n        }\n      }\n    }\n  }\n": types.ProgramOffersDocument,
     "\n  mutation UpdateProgramPreferences($input: UpdateProgramPreferencesInput!) {\n    updateProgramPreferences(input: $input) {\n      preferences {\n        publicFrom\n        isSchedulePublic\n      }\n    }\n  }\n": types.UpdateProgramPreferencesDocument,
-    "\n  query ProgramPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        publicFrom\n        isSchedulePublic\n      }\n    }\n  }\n": types.ProgramPreferencesDocument,
+    "\n  mutation CreateMessageReplyTo($input: CreateMessageReplyToInput!) {\n    createMessageReplyTo(input: $input) {\n      replyTo {\n        id\n      }\n    }\n  }\n": types.CreateMessageReplyToDocument,
+    "\n  mutation UpdateMessageReplyTo($input: UpdateMessageReplyToInput!) {\n    updateMessageReplyTo(input: $input) {\n      replyTo {\n        id\n      }\n    }\n  }\n": types.UpdateMessageReplyToDocument,
+    "\n  mutation DeleteMessageReplyTo($input: DeleteMessageReplyToInput!) {\n    deleteMessageReplyTo(input: $input) {\n      replyToId\n    }\n  }\n": types.DeleteMessageReplyToDocument,
+    "\n  fragment MessageReplyToRow on MessageReplyToType {\n    id\n    name\n    email\n  }\n": types.MessageReplyToRowFragmentDoc,
+    "\n  query ProgramPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        publicFrom\n        isSchedulePublic\n\n        replyToAddresses {\n          ...MessageReplyToRow\n        }\n      }\n    }\n  }\n": types.ProgramPreferencesDocument,
     "\n  query ProgramAdminReportsPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n      timezone\n\n      program {\n        reports(lang: $locale) {\n          ...Report\n        }\n      }\n    }\n  }\n": types.ProgramAdminReportsPageDocument,
     "\n  mutation MarkScheduleItemAsFavorite($input: FavoriteScheduleItemInput!) {\n    markScheduleItemAsFavorite(input: $input) {\n      success\n    }\n  }\n": types.MarkScheduleItemAsFavoriteDocument,
     "\n  mutation UnmarkScheduleItemAsFavorite($input: FavoriteScheduleItemInput!) {\n    unmarkScheduleItemAsFavorite(input: $input) {\n      success\n    }\n  }\n": types.UnmarkScheduleItemAsFavoriteDocument,
@@ -389,6 +419,8 @@ const documents: Documents = {
     "\n  mutation RevokeKeyPair($id: String!) {\n    revokeKeyPair(id: $id) {\n      id\n    }\n  }\n": types.RevokeKeyPairDocument,
     "\n  fragment ProfileEncryptionKeys on KeyPairType {\n    id\n    createdAt\n  }\n": types.ProfileEncryptionKeysFragmentDoc,
     "\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n": types.ProfileEncryptionKeysDocument,
+    "\n  fragment ProfileMessageRow on LimitedMessageType {\n    id\n    subject\n    sentAt\n    bodyHtml\n    event {\n      slug\n      name\n    }\n  }\n": types.ProfileMessageRowFragmentDoc,
+    "\n  query ProfileMessages {\n    profile {\n      messages {\n        ...ProfileMessageRow\n      }\n    }\n  }\n": types.ProfileMessagesDocument,
     "\n  query ProfileOrderDetail($eventSlug: String!, $orderId: String!) {\n    profile {\n      tickets {\n        order(eventSlug: $eventSlug, id: $orderId) {\n          id\n          formattedOrderNumber\n          createdAt\n          totalPrice\n          status\n          eticketsLink\n          canPay\n          canCancel\n          canRequestCancellation\n          ticketsContactEmail\n          products {\n            title\n            quantity\n            price\n            vatPercentage\n          }\n\n          event {\n            slug\n            name\n            organization {\n              name\n              businessId\n            }\n          }\n        }\n      }\n    }\n  }\n": types.ProfileOrderDetailDocument,
     "\n  mutation ConfirmEmail($input: ConfirmEmailInput!) {\n    confirmEmail(input: $input) {\n      user {\n        email\n      }\n    }\n  }\n": types.ConfirmEmailDocument,
     "\n  fragment ProfileOrder on ProfileOrderType {\n    id\n    formattedOrderNumber\n    createdAt\n    totalPrice\n    status\n    eticketsLink\n    canPay\n    canCancel\n\n    event {\n      slug\n      name\n    }\n  }\n": types.ProfileOrderFragmentDoc,
@@ -835,6 +867,46 @@ export function graphql(source: "\n  query ProgramAdminInvitations($eventSlug: S
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function graphql(source: "\n  mutation UpdateMessage($input: UpdateMessageInput!) {\n    updateMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMessage($input: UpdateMessageInput!) {\n    updateMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation SendMessage($input: SendMessageInput!) {\n    sendMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation SendMessage($input: SendMessageInput!) {\n    sendMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation ExpireMessage($input: ExpireMessageInput!) {\n    expireMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation ExpireMessage($input: ExpireMessageInput!) {\n    expireMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteMessage($input: DeleteMessageInput!) {\n    deleteMessage(input: $input) {\n      messageId\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteMessage($input: DeleteMessageInput!) {\n    deleteMessage(input: $input) {\n      messageId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment MessageCompose on MessageType {\n    id\n    subject\n    body\n    dispatch\n    state\n    createdAt\n    sentAt\n    expiredAt\n    recipientFilters\n    recipientCount\n    replyTo {\n      id\n    }\n  }\n"): (typeof documents)["\n  fragment MessageCompose on MessageType {\n    id\n    subject\n    body\n    dispatch\n    state\n    createdAt\n    sentAt\n    expiredAt\n    recipientFilters\n    recipientCount\n    replyTo {\n      id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProgramMessageComposePage(\n    $eventSlug: String!\n    $messageId: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        message(id: $messageId) {\n          ...MessageCompose\n        }\n        replyToAddresses {\n          id\n          name\n          email\n        }\n        recipientDimensions {\n          ...DimensionValueSelect\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgramMessageComposePage(\n    $eventSlug: String!\n    $messageId: String!\n    $locale: String\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        message(id: $messageId) {\n          ...MessageCompose\n        }\n        replyToAddresses {\n          id\n          name\n          email\n        }\n        recipientDimensions {\n          ...DimensionValueSelect\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateMessage($input: CreateMessageInput!) {\n    createMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateMessage($input: CreateMessageInput!) {\n    createMessage(input: $input) {\n      message {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProgramMessageNewPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        replyToAddresses {\n          id\n          name\n          email\n        }\n        recipientDimensions {\n          ...DimensionValueSelect\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgramMessageNewPage($eventSlug: String!, $locale: String) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        replyToAddresses {\n          id\n          name\n          email\n        }\n        recipientDimensions {\n          ...DimensionValueSelect\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ProgramMessageListRow on MessageType {\n    id\n    subject\n    state\n    dispatch\n    createdAt\n    sentAt\n    recipientCount\n  }\n"): (typeof documents)["\n  fragment ProgramMessageListRow on MessageType {\n    id\n    subject\n    state\n    dispatch\n    createdAt\n    sentAt\n    recipientCount\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProgramMessagesPage($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        messages {\n          ...ProgramMessageListRow\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgramMessagesPage($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        messages {\n          ...ProgramMessageListRow\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function graphql(source: "\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation AcceptProgramOffer($input: AcceptProgramOfferInput!) {\n    acceptProgramOffer(input: $input) {\n      program {\n        slug\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -883,7 +955,23 @@ export function graphql(source: "\n  mutation UpdateProgramPreferences($input: U
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query ProgramPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        publicFrom\n        isSchedulePublic\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgramPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        publicFrom\n        isSchedulePublic\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  mutation CreateMessageReplyTo($input: CreateMessageReplyToInput!) {\n    createMessageReplyTo(input: $input) {\n      replyTo {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateMessageReplyTo($input: CreateMessageReplyToInput!) {\n    createMessageReplyTo(input: $input) {\n      replyTo {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateMessageReplyTo($input: UpdateMessageReplyToInput!) {\n    updateMessageReplyTo(input: $input) {\n      replyTo {\n        id\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMessageReplyTo($input: UpdateMessageReplyToInput!) {\n    updateMessageReplyTo(input: $input) {\n      replyTo {\n        id\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteMessageReplyTo($input: DeleteMessageReplyToInput!) {\n    deleteMessageReplyTo(input: $input) {\n      replyToId\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteMessageReplyTo($input: DeleteMessageReplyToInput!) {\n    deleteMessageReplyTo(input: $input) {\n      replyToId\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment MessageReplyToRow on MessageReplyToType {\n    id\n    name\n    email\n  }\n"): (typeof documents)["\n  fragment MessageReplyToRow on MessageReplyToType {\n    id\n    name\n    email\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProgramPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        publicFrom\n        isSchedulePublic\n\n        replyToAddresses {\n          ...MessageReplyToRow\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProgramPreferences($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      program {\n        publicFrom\n        isSchedulePublic\n\n        replyToAddresses {\n          ...MessageReplyToRow\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -1120,6 +1208,14 @@ export function graphql(source: "\n  fragment ProfileEncryptionKeys on KeyPairTy
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProfileEncryptionKeys {\n    profile {\n      keypairs {\n        ...ProfileEncryptionKeys\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment ProfileMessageRow on LimitedMessageType {\n    id\n    subject\n    sentAt\n    bodyHtml\n    event {\n      slug\n      name\n    }\n  }\n"): (typeof documents)["\n  fragment ProfileMessageRow on LimitedMessageType {\n    id\n    subject\n    sentAt\n    bodyHtml\n    event {\n      slug\n      name\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ProfileMessages {\n    profile {\n      messages {\n        ...ProfileMessageRow\n      }\n    }\n  }\n"): (typeof documents)["\n  query ProfileMessages {\n    profile {\n      messages {\n        ...ProfileMessageRow\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -11,6 +11,7 @@ export interface ProgramAdminTabsProps {
     | "invitations"
     | "dimensions"
     | "annotations"
+    | "programMessages"
     | "preferences"
     | "reports";
   translations: Translations;
@@ -60,7 +61,7 @@ export default function ProgramAdminTabs({
     },
     {
       slug: "invitations",
-      title: translations.Invitation.listTitle,
+      title: translations.Invitation.tabHeader,
       href: `/${eventSlug}/program-invitations${queryString}`,
     },
     {
@@ -72,6 +73,11 @@ export default function ProgramAdminTabs({
       slug: "annotations",
       title: translations.Annotation.listTitle,
       href: `/${eventSlug}/program-annotations`,
+    },
+    {
+      slug: "programMessages",
+      title: t.Message.listTitle,
+      href: `/${eventSlug}/program-messages${queryString}`,
     },
     {
       slug: "reports",

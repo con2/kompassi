@@ -12,6 +12,7 @@ export default function newField(
     case "StaticText":
     case "SingleLineText":
     case "MultiLineText":
+    case "MarkdownText":
     case "NumberField":
     case "DecimalField":
     case "SingleCheckbox":

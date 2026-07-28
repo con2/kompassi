@@ -175,6 +175,7 @@ INSTALLED_APPS = (
     "kompassi.core",
     "kompassi.dimensions",
     "kompassi.involvement",
+    "kompassi.messages_v2",
     "kompassi.program_v2",
     "kompassi.labour",
     "kompassi.labour_common_qualifications",

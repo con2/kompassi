@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 export type FieldType =
   | "SingleLineText"
   | "MultiLineText"
+  | "MarkdownText"
   | "Divider"
   | "StaticText"
   | "Spacer"
@@ -25,6 +26,7 @@ export type FieldType =
 export const fieldTypes: FieldType[] = [
   "SingleLineText",
   "MultiLineText",
+  "MarkdownText",
   "SingleCheckbox",
   "Tristate",
   "DimensionSingleCheckbox",
@@ -99,6 +101,11 @@ export interface SingleLineText extends BaseField {
 
 export interface MultiLineText extends BaseField {
   type: "MultiLineText";
+  rows?: number;
+}
+
+export interface MarkdownText extends BaseField {
+  type: "MarkdownText";
   rows?: number;
 }
 
@@ -215,6 +222,7 @@ export type Values = Record<string, Value>;
 export type Field =
   | SingleLineText
   | MultiLineText
+  | MarkdownText
   | Divider
   | Spacer
   | StaticText
