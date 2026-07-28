@@ -1935,19 +1935,28 @@ const translations: Translations = {
         },
         body: {
           title: "Meddelande",
-          helpText:
-            "Begränsad Markdown-formatering stöds (rubriker, fetstil, kursiv, listor, länkar). " +
-            "Du kan använda följande platshållare, som ersätts med mottagarens egna uppgifter: " +
-            "{FIRST_NAME} (mottagarens förnamn), {EVENT_NAME} (evenemangets namn) och, när " +
-            "meddelandet skickas ett exemplar per programpunkt, {PROGRAM_TITLE} (programpunktens titel).",
+          helpText: (
+            <>
+              Begränsad Markdown-formatering stöds (rubriker, fetstil, kursiv,
+              listor, länkar). Du kan använda följande platshållare, som ersätts
+              med mottagarens egna uppgifter: {"{FIRST_NAME}"} (mottagarens
+              förnamn), {"{EVENT_NAME}"} (evenemangets namn) och, när
+              meddelandet skickas ett exemplar per programpunkt,{" "}
+              {"{PROGRAM_TITLE}"} (programpunktens titel).
+            </>
+          ),
         },
         dispatch: {
           title: "Sändningssätt",
-          helpText:
-            "Ett meddelande per person skickar ett enda exemplar till varje matchande person, även " +
-            "om de matchar via flera programpunkter. Ett meddelande per programpunkt skickar ett " +
-            "separat exemplar för varje matchande programpunkt en person är värd för, och gör " +
-            "platshållaren {PROGRAM_TITLE} tillgänglig.",
+          helpText: (
+            <>
+              Ett meddelande per person skickar ett enda exemplar till varje
+              matchande person, även om de matchar via flera programpunkter. Ett
+              meddelande per programpunkt skickar ett separat exemplar för varje
+              matchande programpunkt en person är värd för, och gör
+              platshållaren {"{PROGRAM_TITLE}"} tillgänglig.
+            </>
+          ),
           choices: {
             PER_PERSON: "Ett meddelande per person",
             PER_INVOLVEMENT: "Ett meddelande per programpunkt",
@@ -2038,12 +2047,19 @@ const translations: Translations = {
       },
       profile: {
         title: "Meddelanden",
+        description: UNTRANSLATED(en.Program.Message.profile.description),
         noSubject: "(inget ämne)",
         attributes: {
           sentAt: "Datum",
           event: "Evenemang",
           subject: "Ämne",
         },
+        tableFooter: (numMessages: number) =>
+          numMessages === 1 ? (
+            <>Ett meddelande.</>
+          ) : (
+            <>{numMessages} meddelanden.</>
+          ),
       },
       ReplyTo: {
         listTitle: "Svarsadresser",

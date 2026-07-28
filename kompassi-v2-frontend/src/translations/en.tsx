@@ -1964,19 +1964,28 @@ const translations = {
         },
         body: {
           title: "Message",
-          helpText:
-            "Limited Markdown formatting is supported (headings, bold, italics, lists, links). " +
-            "You can use the following placeholders, which will be replaced with the recipient's own data: " +
-            "{FIRST_NAME} (recipient's first name), {EVENT_NAME} (name of the event), and, " +
-            "when sending one message per program item, {PROGRAM_TITLE} (title of the program item).",
+          helpText: (
+            <>
+              Limited Markdown formatting is supported (headings, bold, italics,
+              lists, links). You can use the following placeholders, which will
+              be replaced with the appropriate values: {"{FIRST_NAME}"} (first
+              name of the recipient), {"{EVENT_NAME}"} (name of the event), and,
+              when sending one message per program item, {"{PROGRAM_TITLE}"}{" "}
+              (title of the program item).
+            </>
+          ),
         },
         dispatch: {
           title: "Sending mode",
-          helpText:
-            "One message per person sends a single copy to each matching person, even if they " +
-            "match via multiple program items. One message per program item sends a separate " +
-            "copy for each matching program item a person hosts, and makes the {PROGRAM_TITLE} " +
-            "placeholder available.",
+          helpText: (
+            <>
+              One message per person sends a single copy to each matching
+              person, even if they match via multiple program items. One message
+              per program item sends a separate copy for each matching program
+              item a person hosts, and makes the {"{PROGRAM_TITLE}"} placeholder
+              available.
+            </>
+          ),
           choices: {
             PER_PERSON: "One message per person",
             PER_INVOLVEMENT: "One message per program item",
@@ -2067,12 +2076,33 @@ const translations = {
       },
       profile: {
         title: "Messages",
+        description: (
+          VolunteerMessagesLink: React.ComponentType<{
+            children: React.ReactNode;
+          }>,
+        ) => (
+          <>
+            <p>
+              When you host program items in an event and the program manager
+              sends you messages, you will see them here.
+            </p>
+            <p>
+              When you volunteer in an event and the volunteer manager sends you
+              messages, those messages can be found in{" "}
+              <VolunteerMessagesLink>Messages V1</VolunteerMessagesLink>. The
+              volunteer experience is being migrated to Kompassi V2, so in the
+              future all messages will be found here.
+            </p>
+          </>
+        ),
         noSubject: "(no subject)",
         attributes: {
           sentAt: "Date",
           event: "Event",
           subject: "Subject",
         },
+        tableFooter: (numMessages: number) =>
+          numMessages === 1 ? <>One message.</> : <>{numMessages} messages.</>,
       },
       ReplyTo: {
         listTitle: "Reply-to addresses",
