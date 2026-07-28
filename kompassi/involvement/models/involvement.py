@@ -775,6 +775,19 @@ class Involvement(models.Model):
 
         InvolvementToGroupMapping.ensure(self.universe, self.person)
 
+        self.enqueue_matching_messages()
+
+    def enqueue_matching_messages(self):
+        """
+        Async hook for Messages V2 auto-send: whenever an involvement is created or its
+        dimensions/is_active change, check active Messages of this event for a newly
+        matching recipient and send to them incrementally. Dispatched async so as not
+        to slow down the request path that got us here.
+        """
+        from kompassi.messages_v2.tasks import send_matching_messages
+
+        send_matching_messages.delay(self.id)
+
     @cached_property
     def dimensions_pairs(self) -> set[tuple[str, str]]:
         """

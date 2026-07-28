@@ -34,6 +34,14 @@ from kompassi.involvement.graphql.mutations.update_involvement_perks import Upda
 from kompassi.involvement.graphql.mutations.update_involvement_preferences import UpdateInvolvementPreferences
 from kompassi.involvement.graphql.registry_limited import LimitedRegistryType
 from kompassi.involvement.models.registry import Registry
+from kompassi.messages_v2.graphql.mutations.create_message import CreateMessage
+from kompassi.messages_v2.graphql.mutations.create_message_reply_to import CreateMessageReplyTo
+from kompassi.messages_v2.graphql.mutations.delete_message import DeleteMessage
+from kompassi.messages_v2.graphql.mutations.delete_message_reply_to import DeleteMessageReplyTo
+from kompassi.messages_v2.graphql.mutations.expire_message import ExpireMessage
+from kompassi.messages_v2.graphql.mutations.send_message import SendMessage
+from kompassi.messages_v2.graphql.mutations.update_message import UpdateMessage
+from kompassi.messages_v2.graphql.mutations.update_message_reply_to import UpdateMessageReplyTo
 from kompassi.program_v2.graphql.mutations.accept_program_offer import AcceptProgramOffer
 from kompassi.program_v2.graphql.mutations.cancel_program import CancelProgram
 from kompassi.program_v2.graphql.mutations.cancel_program_offer import CancelProgramOffer
@@ -197,6 +205,17 @@ class Mutation(graphene.ObjectType):
 
     invite_program_host = InviteProgramHost.Field()
     delete_program_host = DeleteProgramHost.Field()
+
+    # Messages v2
+    create_message = CreateMessage.Field()
+    update_message = UpdateMessage.Field()
+    send_message = SendMessage.Field()
+    expire_message = ExpireMessage.Field()
+    delete_message = DeleteMessage.Field()
+
+    create_message_reply_to = CreateMessageReplyTo.Field()
+    update_message_reply_to = UpdateMessageReplyTo.Field()
+    delete_message_reply_to = DeleteMessageReplyTo.Field()
 
     put_schedule_item = PutScheduleItem.Field()
     delete_schedule_item = DeleteScheduleItem.Field()

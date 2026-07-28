@@ -50,6 +50,7 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
     { href: "/profile/orders", title: messages.UserMenu.tickets },
     { href: "/profile/program", title: messages.UserMenu.program },
     { href: "/profile/responses", title: messages.UserMenu.responses },
+    { href: "/profile/messages", title: messages.UserMenu.messages },
     // { href: "/profile/keys", title: messages.UserMenu.keys },
   ];
 

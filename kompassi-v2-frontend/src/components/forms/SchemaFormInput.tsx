@@ -1,6 +1,7 @@
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import makeInputId from "./makeInputId";
+import MarkdownEditor from "./MarkdownEditor";
 import type { Choice, Field, SingleSelectPresentation } from "./models";
 import PatternTextInput from "./PatternTextInput";
 import { SchemaForm } from "./SchemaForm";
@@ -84,6 +85,17 @@ function SchemaFormInput({
           name={slug}
         />
       );
+    case "MarkdownText":
+      return (
+        <MarkdownEditor
+          id={id}
+          name={slug}
+          defaultValue={value}
+          required={required}
+          readOnly={readOnly}
+          rows={field.rows ?? defaultRows}
+        />
+      );
     case "NumberField":
     case "DecimalField":
       return (
@@ -134,7 +146,9 @@ function SchemaFormInput({
 
       switch (presentation) {
         case "dropdown":
-          choices = [{ slug: "", title: "" }, ...choices];
+          if (!field.required) {
+            choices = [{ slug: "", title: "" }, ...choices];
+          }
 
           // FIXME React 19 / Next 15 regression?
           // On AutoSelectForms, when onChange calls requestSubmit, defaultValue={value} does receive the new value

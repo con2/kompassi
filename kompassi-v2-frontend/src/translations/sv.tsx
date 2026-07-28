@@ -163,6 +163,7 @@ const translations: Translations = {
     responses: "Enkätsvar",
     keys: "Krypteringsnycklar",
     program: "Program",
+    messages: "Meddelanden",
     signIn: "Logga in",
     signOut: "Logga ut",
   },
@@ -272,6 +273,7 @@ const translations: Translations = {
     fieldTypes: {
       SingleLineText: "Textfält med en rad",
       MultiLineText: "Textfält med flera rader",
+      MarkdownText: "Textfält med flera rader (Markdown)",
       Divider: "Separatorlinje",
       StaticText: "Statisk text",
       Spacer: "Tomt utrymme",
@@ -1918,6 +1920,165 @@ const translations: Translations = {
       },
     },
 
+    Message: {
+      singleTitle: "Meddelande",
+      listTitle: "Meddelanden",
+      attributes: {
+        count: (numMessages: number) => (
+          <>
+            Visar {numMessages} meddelande{numMessages === 1 ? "" : "n"}.
+          </>
+        ),
+        subject: {
+          title: "Ämne",
+          noSubject: "(inget ämne)",
+        },
+        body: {
+          title: "Meddelande",
+          helpText:
+            "Begränsad Markdown-formatering stöds (rubriker, fetstil, kursiv, listor, länkar). " +
+            "Du kan använda följande platshållare, som ersätts med mottagarens egna uppgifter: " +
+            "{FIRST_NAME} (mottagarens förnamn), {EVENT_NAME} (evenemangets namn) och, när " +
+            "meddelandet skickas ett exemplar per programpunkt, {PROGRAM_TITLE} (programpunktens titel).",
+        },
+        dispatch: {
+          title: "Sändningssätt",
+          helpText:
+            "Ett meddelande per person skickar ett enda exemplar till varje matchande person, även " +
+            "om de matchar via flera programpunkter. Ett meddelande per programpunkt skickar ett " +
+            "separat exemplar för varje matchande programpunkt en person är värd för, och gör " +
+            "platshållaren {PROGRAM_TITLE} tillgänglig.",
+          choices: {
+            PER_PERSON: "Ett meddelande per person",
+            PER_INVOLVEMENT: "Ett meddelande per programpunkt",
+          },
+        },
+        replyTo: {
+          title: "Svarsadress",
+          helpText:
+            "Svar riktas till denna adress istället för evenemangets standardkontaktadress. " +
+            "Hantera de tillgängliga adresserna nedan på denna sida.",
+          useDefault: "Evenemangets standardkontaktadress",
+        },
+        state: {
+          title: "Status",
+          choices: {
+            DRAFT: "Utkast",
+            ACTIVE: "Aktivt",
+            EXPIRED: "Utgånget",
+          },
+        },
+        createdAt: {
+          title: "Skapat",
+        },
+        sentAt: {
+          title: "Skickat",
+        },
+        recipientCount: {
+          title: "Mottagare",
+          value: (numRecipients: number) => `(${numRecipients} mottagare)`,
+          notYetKnown: "(antalet mottagare visas efter att du sparat)",
+        },
+      },
+      actions: {
+        newMessage: {
+          title: "Nytt meddelande",
+        },
+        editRecipients: {
+          title: "Redigera mottagare",
+        },
+        saveDraft: "Spara utkast",
+        saveDraftHelpText:
+          "Detta sparar meddelandet som ett utkast. Det skickas inte till någon förrän du trycker på Skicka.",
+        saveChanges: "Spara ändringar",
+        send: {
+          title: "Skicka",
+          confirmation:
+            "Är du säker på att du vill skicka detta meddelande till dess nuvarande mottagare? " +
+            "Du kan fortfarande redigera och skicka det igen senare; de som redan fått det kommer " +
+            "inte att få det igen om de inte på nytt matchar mottagarfiltren.",
+          confirmationResend:
+            "Detta meddelande har redan skickats. Att skicka det igen levererar det aktuella " +
+            "innehållet till alla som matchar mottagarfiltren och som ännu inte fått det. De som " +
+            "redan fått det får inte det igen och ser inte dessa ändringar.",
+          modalActions: {
+            submit: "Skicka",
+            cancel: "Avbryt",
+          },
+        },
+        expire: {
+          title: "Låt gå ut",
+          confirmation:
+            "Är du säker på att du vill låta detta meddelande gå ut? Det skickas inte längre till " +
+            "nya matchande mottagare. De som redan fått det påverkas inte.",
+          modalActions: {
+            submit: "Låt gå ut",
+            cancel: "Avbryt",
+          },
+        },
+        delete: {
+          title: "Ta bort utkast",
+          confirmation: "Är du säker på att du vill ta bort detta utkast?",
+          modalActions: {
+            submit: "Ta bort",
+            cancel: "Avbryt",
+          },
+        },
+        alreadySentWarning:
+          "Detta meddelande har redan skickats. Dina ändringar gäller endast mottagare som får " +
+          "meddelandet från nu och framåt; de som redan fått det ser det ursprungliga innehållet.",
+      },
+      recipientEditor: {
+        currentSelection: "Nuvarande val",
+        noFiltersYet: "Inga mottagare valda ännu.",
+        addGroup: "Lägg till alternativ mottagargrupp (ELLER)",
+        removeGroup: "Ta bort denna grupp",
+        orSeparator: "ELLER uppfyller alla av:",
+        confirm: "Klart",
+      },
+      profile: {
+        title: "Meddelanden",
+        noSubject: "(inget ämne)",
+        attributes: {
+          sentAt: "Datum",
+          event: "Evenemang",
+          subject: "Ämne",
+        },
+      },
+      ReplyTo: {
+        listTitle: "Svarsadresser",
+        description:
+          "Konfigurera de svarsadresser som kan väljas när ett meddelande skrivs. " +
+          "Avsändaradressen är alltid evenemangets kontaktadress.",
+        attributes: {
+          name: {
+            title: "Namn",
+          },
+          email: {
+            title: "E-postadress",
+          },
+        },
+        actions: {
+          create: {
+            title: "Ny svarsadress",
+          },
+          edit: {
+            title: "Redigera svarsadress",
+          },
+          delete: {
+            title: "Ta bort svarsadress",
+            confirmation: (name: string) => (
+              <>
+                Är du säker på att du vill ta bort svarsadressen{" "}
+                <strong>{name}</strong>? Meddelanden som använder den återgår
+                till evenemangets standardkontaktadress.
+              </>
+            ),
+          },
+        },
+      },
+    },
+
     ScheduleItem: {
       singleTitle: "Schemapunkt",
       listTitle: "Schemapunkter",
@@ -2809,6 +2970,7 @@ const translations: Translations = {
   },
 
   Invitation: {
+    tabHeader: "Inbjudningar",
     listTitle: "Öppna inbjudningar",
     listDescription: (
       <>

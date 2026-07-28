@@ -155,8 +155,8 @@ const translations: Translations = {
     dataToBeTransferred: "Luovutettavat henkilötiedot",
   },
   Modal: {
-    submit: "Submit",
-    cancel: "Cancel",
+    submit: "Lähetä",
+    cancel: "Peruuta",
   },
   DataTable: {
     create: "Luo uusi",
@@ -173,6 +173,7 @@ const translations: Translations = {
     responses: "Kyselyvastaukset",
     keys: "Salausavaimet",
     program: "Ohjelmanumerot ja -tarjoukset",
+    messages: "Viestit",
     signIn: "Kirjaudu sisään",
     signOut: "Kirjaudu ulos",
   },
@@ -282,6 +283,7 @@ const translations: Translations = {
     fieldTypes: {
       SingleLineText: "Yksirivinen tekstikenttä",
       MultiLineText: "Monirivinen tekstikenttä",
+      MarkdownText: "Monirivinen tekstikenttä (Markdown)",
       Divider: "Erotinviiva",
       StaticText: "Kiinteä teksti",
       Spacer: "Tyhjä tila",
@@ -1955,6 +1957,166 @@ const translations: Translations = {
       },
     },
 
+    Message: {
+      singleTitle: "Viesti",
+      listTitle: "Viestit",
+      attributes: {
+        count: (numMessages: number) => (
+          <>
+            Näytetään {numMessages} viesti{numMessages === 1 ? "" : "ä"}.
+          </>
+        ),
+        subject: {
+          title: "Otsikko",
+          noSubject: "(ei otsikkoa)",
+        },
+        body: {
+          title: "Viesti",
+          helpText:
+            "Rajoitettu Markdown-muotoilu on tuettu (otsikot, lihavointi, kursivointi, listat, linkit). " +
+            "Voit käyttää seuraavia paikanpitäjiä, jotka korvataan vastaanottajan omilla tiedoilla: " +
+            "{FIRST_NAME} (vastaanottajan etunimi), {EVENT_NAME} (tapahtuman nimi) ja, kun viesti " +
+            "lähetetään yksi kappale per ohjelmanumero, {PROGRAM_TITLE} (ohjelmanumeron nimi).",
+        },
+        dispatch: {
+          title: "Lähetystapa",
+          helpText:
+            "Yksi viesti per henkilö lähettää yhden kappaleen kullekin osuvalle henkilölle, vaikka " +
+            "hän osuisi useamman ohjelmanumeron kautta. Yksi viesti per ohjelmanumero lähettää oman " +
+            "kappaleensa kustakin osuvasta ohjelmanumerosta, jota henkilö pitää, ja tekee " +
+            "{PROGRAM_TITLE}-paikanpitäjän käytettäväksi.",
+          choices: {
+            PER_PERSON: "Yksi viesti per henkilö",
+            PER_INVOLVEMENT: "Yksi viesti per ohjelmanumero",
+          },
+        },
+        replyTo: {
+          title: "Vastausosoite",
+          helpText:
+            "Vastaukset ohjataan tähän osoitteeseen tapahtuman oletusyhteysosoitteen sijaan. " +
+            "Hallitse käytettävissä olevia osoitteita tällä sivulla alempana.",
+          useDefault: "Tapahtuman oletusyhteysosoite",
+        },
+        state: {
+          title: "Tila",
+          choices: {
+            DRAFT: "Luonnos",
+            ACTIVE: "Aktiivinen",
+            EXPIRED: "Vanhentunut",
+          },
+        },
+        createdAt: {
+          title: "Luotu",
+        },
+        sentAt: {
+          title: "Lähetetty",
+        },
+        recipientCount: {
+          title: "Vastaanottajat",
+          value: (numRecipients: number) =>
+            `(${numRecipients} vastaanottaja${numRecipients === 1 ? "" : "a"})`,
+          notYetKnown: "(vastaanottajien määrä näkyy tallentamisen jälkeen)",
+        },
+      },
+      actions: {
+        newMessage: {
+          title: "Uusi viesti",
+        },
+        editRecipients: {
+          title: "Muokkaa vastaanottajia",
+        },
+        saveDraft: "Tallenna luonnos",
+        saveDraftHelpText:
+          "Tämä tallentaa viestin luonnoksena. Sitä ei lähetetä kenellekään ennen kuin painat Lähetä.",
+        saveChanges: "Tallenna muutokset",
+        send: {
+          title: "Lähetä",
+          confirmation:
+            "Haluatko varmasti lähettää tämän viestin sen nykyisille vastaanottajille? " +
+            "Voit muokata ja lähettää sen uudelleen myöhemmin; ne, jotka ovat sen jo saaneet, " +
+            "eivät saa sitä uudelleen, elleivät he täytä vastaanottajaehtoja uudelleen.",
+          confirmationResend:
+            "Tämä viesti on jo lähetetty. Sen lähettäminen uudelleen toimittaa nykyisen sisällön " +
+            "kaikille vastaanottajaehdot täyttäville, jotka eivät ole sitä vielä saaneet. Ne, jotka " +
+            "ovat sen jo saaneet, eivät saa sitä uudelleen eivätkä näe näitä muutoksia.",
+          modalActions: {
+            submit: "Lähetä",
+            cancel: "Peruuta",
+          },
+        },
+        expire: {
+          title: "Vanhenna",
+          confirmation:
+            "Haluatko varmasti vanhentaa tämän viestin? Sitä ei enää lähetetä uusille osuville " +
+            "vastaanottajille. Ne, jotka ovat sen jo saaneet, eivät ole tähän vaikutuksen alaisia.",
+          modalActions: {
+            submit: "Vanhenna",
+            cancel: "Peruuta",
+          },
+        },
+        delete: {
+          title: "Poista luonnos",
+          confirmation: "Haluatko varmasti poistaa tämän viestiluonnoksen?",
+          modalActions: {
+            submit: "Poista",
+            cancel: "Peruuta",
+          },
+        },
+        alreadySentWarning:
+          "Tämä viesti on jo lähetetty. Muutoksesi koskevat vain vastaanottajia, jotka saavat " +
+          "viestin tästä eteenpäin; ne, jotka ovat sen jo saaneet, näkevät alkuperäisen sisällön.",
+      },
+      recipientEditor: {
+        currentSelection: "Nykyinen valinta",
+        noFiltersYet: "Vastaanottajia ei ole vielä valittu.",
+        addGroup: "Lisää vaihtoehtoinen vastaanottajaryhmä (TAI)",
+        removeGroup: "Poista tämä ryhmä",
+        orSeparator: "TAI täyttää kaikki näistä:",
+        confirm: "Valmis",
+      },
+      profile: {
+        title: "Viestit",
+        noSubject: "(ei otsikkoa)",
+        attributes: {
+          sentAt: "Päivämäärä",
+          event: "Tapahtuma",
+          subject: "Otsikko",
+        },
+      },
+      ReplyTo: {
+        listTitle: "Vastausosoitteet",
+        description:
+          "Määritä vastausosoitteet, joita voidaan valita viestiä laadittaessa. " +
+          "Lähettäjän osoite on aina tapahtuman yhteysosoite.",
+        attributes: {
+          name: {
+            title: "Nimi",
+          },
+          email: {
+            title: "Sähköpostiosoite",
+          },
+        },
+        actions: {
+          create: {
+            title: "Uusi vastausosoite",
+          },
+          edit: {
+            title: "Muokkaa vastausosoitetta",
+          },
+          delete: {
+            title: "Poista vastausosoite",
+            confirmation: (name: string) => (
+              <>
+                Haluatko varmasti poistaa vastausosoitteen{" "}
+                <strong>{name}</strong>? Sitä käyttävät viestit palaavat
+                käyttämään tapahtuman oletusyhteysosoitetta.
+              </>
+            ),
+          },
+        },
+      },
+    },
+
     ScheduleItem: {
       singleTitle: "Aikataulumerkintä",
       listTitle: "Aikataulumerkinnät",
@@ -2881,6 +3043,7 @@ const translations: Translations = {
   },
 
   Invitation: {
+    tabHeader: "Kutsut",
     listTitle: "Avoimet kutsut",
     listDescription: (
       <>

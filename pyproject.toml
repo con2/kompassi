@@ -38,6 +38,7 @@ dependencies = [
     "jsonschema",
     "jwskate",
     "markdown",
+    "nh3",
     "paramiko",
     "passlib",
     "phonenumberslite",

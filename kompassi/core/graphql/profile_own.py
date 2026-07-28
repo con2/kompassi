@@ -6,6 +6,8 @@ from kompassi.forms.graphql.keypair import KeyPairType
 from kompassi.forms.graphql.meta import FormsProfileMetaType
 from kompassi.forms.models.keypair import KeyPair
 from kompassi.forms.models.meta import FormsProfileMeta
+from kompassi.messages_v2.graphql.message_limited import LimitedMessageType
+from kompassi.messages_v2.models.message_recipient import MessageRecipient
 from kompassi.program_v2.graphql.meta import ProgramV2ProfileMetaType
 from kompassi.program_v2.models.meta import ProgramV2ProfileMeta
 from kompassi.tickets_v2.graphql.meta import TicketsV2ProfileMetaType
@@ -62,4 +64,16 @@ class OwnProfileType(LimitedProfileType):
     keypairs = graphene.List(
         graphene.NonNull(KeyPairType),
         description=normalize_whitespace(resolve_keypairs.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_messages(person: Person, info):
+        """
+        Messages V2: messages sent to the current user, most recent first.
+        """
+        return MessageRecipient.objects.filter(person=person).select_related("message__universe__scope__event", "body")
+
+    messages = graphene.NonNull(
+        graphene.List(graphene.NonNull(LimitedMessageType)),
+        description=normalize_whitespace(resolve_messages.__doc__ or ""),
     )

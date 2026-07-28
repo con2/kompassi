@@ -1,0 +1,25 @@
+from __future__ import annotations
+
+from typing import Any
+
+import pydantic
+
+
+class RecipientFilterItem(pydantic.BaseModel):
+    dimension: str
+    values: list[str] | None = None
+
+
+RecipientFilterGroup = list[RecipientFilterItem]
+RecipientFilters = list[RecipientFilterGroup]
+
+_adapter = pydantic.TypeAdapter(RecipientFilters)
+
+
+def validate_recipient_filters(input: Any) -> list[list[dict[str, Any]]]:
+    """
+    Return recipientFilters (OR of AND-groups of {dimension, values}) coerced into
+    plain JSON-serializable form, or raise pydantic.ValidationError on invalid input.
+    """
+    validated = _adapter.validate_python(input)
+    return [[item.model_dump(exclude_none=True) for item in group] for group in validated]

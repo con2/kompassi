@@ -16,6 +16,13 @@ interface Props {
   disabled?: boolean;
   className?: string;
   submitButtonVariant?: "primary" | "danger" | "success";
+  /// When set (and no `action` is given), the modal gets a primary button with this
+  /// label that just closes the modal, instead of the plain "cancel"-only close
+  /// button. Use for modals whose content is a client-side widget that is already
+  /// live-synced to state elsewhere (eg. an outer form via a `form` attribute) and so
+  /// has no separate submit step of its own - the button just confirms "I'm done
+  /// selecting", it does not discard anything on close either way.
+  confirmLabel?: string;
 }
 
 /// Renders a button that opens a modal. Pass modal contents as children
@@ -29,6 +36,7 @@ export default function ModalButton({
   disabled,
   className = "btn btn-link p-0 link-subtle",
   submitButtonVariant = "primary",
+  confirmLabel,
 }: Props) {
   const [isVisible, setIsVisible] = useState(false);
   const close = useCallback(() => {
@@ -76,8 +84,11 @@ export default function ModalButton({
               <>
                 <Modal.Body>{children}</Modal.Body>
                 <Modal.Footer>
-                  <Button variant="outline-primary" onClick={close}>
-                    {messages.cancel}
+                  <Button
+                    variant={confirmLabel ? "primary" : "outline-primary"}
+                    onClick={close}
+                  >
+                    {confirmLabel ?? messages.cancel}
                   </Button>
                 </Modal.Footer>
               </>

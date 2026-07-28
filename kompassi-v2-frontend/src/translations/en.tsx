@@ -167,6 +167,7 @@ const translations = {
     responses: "Survey responses",
     keys: "Encryption keys",
     program: "Program items and offers",
+    messages: "Messages",
     signIn: "Sign in",
     signOut: "Sign out",
   },
@@ -275,6 +276,7 @@ const translations = {
     fieldTypes: {
       SingleLineText: "Single line text",
       MultiLineText: "Multi-line text",
+      MarkdownText: "Multi-line text (Markdown)",
       Divider: "Divider",
       StaticText: "Static text",
       Spacer: "Empty space",
@@ -1947,6 +1949,165 @@ const translations = {
       },
     },
 
+    Message: {
+      singleTitle: "Message",
+      listTitle: "Messages",
+      attributes: {
+        count: (numMessages: number) => (
+          <>
+            Showing {numMessages} message{numMessages === 1 ? "" : "s"}.
+          </>
+        ),
+        subject: {
+          title: "Subject",
+          noSubject: "(no subject)",
+        },
+        body: {
+          title: "Message",
+          helpText:
+            "Limited Markdown formatting is supported (headings, bold, italics, lists, links). " +
+            "You can use the following placeholders, which will be replaced with the recipient's own data: " +
+            "{FIRST_NAME} (recipient's first name), {EVENT_NAME} (name of the event), and, " +
+            "when sending one message per program item, {PROGRAM_TITLE} (title of the program item).",
+        },
+        dispatch: {
+          title: "Sending mode",
+          helpText:
+            "One message per person sends a single copy to each matching person, even if they " +
+            "match via multiple program items. One message per program item sends a separate " +
+            "copy for each matching program item a person hosts, and makes the {PROGRAM_TITLE} " +
+            "placeholder available.",
+          choices: {
+            PER_PERSON: "One message per person",
+            PER_INVOLVEMENT: "One message per program item",
+          },
+        },
+        replyTo: {
+          title: "Reply-to address",
+          helpText:
+            "Replies will be directed to this address instead of the event's default contact address. " +
+            "Manage the available addresses on this page, below.",
+          useDefault: "Event's default contact address",
+        },
+        state: {
+          title: "State",
+          choices: {
+            DRAFT: "Draft",
+            ACTIVE: "Active",
+            EXPIRED: "Expired",
+          },
+        },
+        createdAt: {
+          title: "Created",
+        },
+        sentAt: {
+          title: "Sent",
+        },
+        recipientCount: {
+          title: "Recipients",
+          value: (numRecipients: number) =>
+            `(${numRecipients} recipient${numRecipients === 1 ? "" : "s"})`,
+          notYetKnown: "(recipient count will be shown after saving)",
+        },
+      },
+      actions: {
+        newMessage: {
+          title: "New message",
+        },
+        editRecipients: {
+          title: "Edit recipients",
+        },
+        saveDraft: "Save draft",
+        saveDraftHelpText:
+          "This saves the message as a draft. It will not be sent to anyone until you press Send.",
+        saveChanges: "Save changes",
+        send: {
+          title: "Send",
+          confirmation:
+            "Are you sure you want to send this message to its current recipients? " +
+            "You can still edit and resend it later; people who already received it will not receive it again unless they newly match the recipient filters.",
+          confirmationResend:
+            "This message has already been sent. Sending it again will deliver the current content " +
+            "to anyone matching the recipient filters who has not yet received it. People who already " +
+            "received it will not receive it again, and will not see these changes.",
+          modalActions: {
+            submit: "Send",
+            cancel: "Cancel",
+          },
+        },
+        expire: {
+          title: "Expire",
+          confirmation:
+            "Are you sure you want to expire this message? It will no longer be sent to newly matching recipients. " +
+            "People who already received it are not affected.",
+          modalActions: {
+            submit: "Expire",
+            cancel: "Cancel",
+          },
+        },
+        delete: {
+          title: "Delete draft",
+          confirmation: "Are you sure you want to delete this draft message?",
+          modalActions: {
+            submit: "Delete",
+            cancel: "Cancel",
+          },
+        },
+        alreadySentWarning:
+          "This message has already been sent. Your changes will only apply to recipients who receive it " +
+          "from now on; people who already received it keep the original.",
+      },
+      recipientEditor: {
+        currentSelection: "Current selection",
+        noFiltersYet: "No recipients selected yet.",
+        addGroup: "Add alternative recipient group (OR)",
+        removeGroup: "Remove this group",
+        orSeparator: "OR match all of:",
+        confirm: "Done",
+      },
+      profile: {
+        title: "Messages",
+        noSubject: "(no subject)",
+        attributes: {
+          sentAt: "Date",
+          event: "Event",
+          subject: "Subject",
+        },
+      },
+      ReplyTo: {
+        listTitle: "Reply-to addresses",
+        description:
+          "Configure the reply-to addresses that can be selected when composing a message. " +
+          "The sender address itself is always the event's contact address.",
+        attributes: {
+          name: {
+            title: "Name",
+          },
+          email: {
+            title: "Email address",
+          },
+        },
+        actions: {
+          create: {
+            title: "New reply-to address",
+          },
+          edit: {
+            title: "Edit reply-to address",
+          },
+          delete: {
+            title: "Delete reply-to address",
+            confirmation: (name: string) => (
+              <>
+                Are you sure you want to delete the reply-to address{" "}
+                <strong>{name}</strong>? Messages using it will fall back to the
+                event&apos;s default contact address.
+              </>
+            ),
+          },
+        },
+      },
+    },
+
     ScheduleItem: {
       singleTitle: "Schedule item",
       listTitle: "Schedule items",
@@ -2785,6 +2946,7 @@ const translations = {
   },
 
   Invitation: {
+    tabHeader: "Invitations",
     listTitle: "Open invitations",
     listDescription: (
       <>
