@@ -1972,19 +1972,28 @@ const translations: Translations = {
         },
         body: {
           title: "Viesti",
-          helpText:
-            "Rajoitettu Markdown-muotoilu on tuettu (otsikot, lihavointi, kursivointi, listat, linkit). " +
-            "Voit käyttää seuraavia paikanpitäjiä, jotka korvataan vastaanottajan omilla tiedoilla: " +
-            "{FIRST_NAME} (vastaanottajan etunimi), {EVENT_NAME} (tapahtuman nimi) ja, kun viesti " +
-            "lähetetään yksi kappale per ohjelmanumero, {PROGRAM_TITLE} (ohjelmanumeron nimi).",
+          helpText: (
+            <>
+              Voit käyttää seuraavia Markdown-muotoiluja: otsikot, lihavointi,
+              kursivointi, listat ja linkit. Seuraavat paikkamerkit korvataan
+              vastaanottajan omilla tiedoilla: {"{FIRST_NAME}"} (vastaanottajan
+              etunimi), {"{EVENT_NAME}"} (tapahtuman nimi) ja, kun viesti
+              lähetetään yksi kappale per ohjelmanumero, {"{PROGRAM_TITLE}"}{" "}
+              (ohjelmanumeron nimi).
+            </>
+          ),
         },
         dispatch: {
           title: "Lähetystapa",
-          helpText:
-            "Yksi viesti per henkilö lähettää yhden kappaleen kullekin osuvalle henkilölle, vaikka " +
-            "hän osuisi useamman ohjelmanumeron kautta. Yksi viesti per ohjelmanumero lähettää oman " +
-            "kappaleensa kustakin osuvasta ohjelmanumerosta, jota henkilö pitää, ja tekee " +
-            "{PROGRAM_TITLE}-paikanpitäjän käytettäväksi.",
+          helpText: (
+            <>
+              Yksi viesti per henkilö lähettää yhden kappaleen kullekin osuvalle
+              henkilölle, vaikka hän osuisi useamman ohjelmanumeron kautta. Yksi
+              viesti per ohjelmanumero lähettää oman kappaleensa kustakin
+              osuvasta ohjelmanumerosta, jota henkilö pitää, ja tekee{" "}
+              {"{PROGRAM_TITLE}"}-paikkamerkin käytettäväksi.
+            </>
+          ),
           choices: {
             PER_PERSON: "Yksi viesti per henkilö",
             PER_INVOLVEMENT: "Yksi viesti per ohjelmanumero",
@@ -2076,12 +2085,33 @@ const translations: Translations = {
       },
       profile: {
         title: "Viestit",
+        description: (
+          VolunteerMessagesLink: React.ComponentType<{
+            children: React.ReactNode;
+          }>,
+        ) => (
+          <>
+            <p>
+              Kun järjestät ohjelmaa tapahtumassa ja tapahtuman ohjelmavastaava
+              lähettää sinulle viestejä, löydät ne täältä.
+            </p>
+            <p>
+              Kun teet tapahtumassa vapaaehtoistyötä ja vapaaehtoisvastaava
+              lähettää sinulle viestejä, löydät ne toistaiseksi{" "}
+              <VolunteerMessagesLink>V1-puolelta</VolunteerMessagesLink>.
+              Vapaaehtoisten Kompassi-toiminnot ovat siirtymässä Kompassi
+              V2:een, joten tulevaisuudessa kaikki viestit löytyvät täältä.
+            </p>
+          </>
+        ),
         noSubject: "(ei otsikkoa)",
         attributes: {
           sentAt: "Päivämäärä",
           event: "Tapahtuma",
           subject: "Otsikko",
         },
+        tableFooter: (numMessages: number) =>
+          numMessages === 1 ? <>Yksi viesti.</> : <>{numMessages} viestiä.</>,
       },
       ReplyTo: {
         listTitle: "Vastausosoitteet",

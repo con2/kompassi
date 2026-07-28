@@ -2,11 +2,13 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
+import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import ModalButton from "@/components/ModalButton";
 import ViewContainer from "@/components/ViewContainer";
 import ViewHeading from "@/components/ViewHeading";
+import { kompassiBaseUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
 graphql(`
@@ -36,6 +38,7 @@ interface Props {
   params: Promise<{
     locale: string;
   }>;
+  searchParams: Promise<Record<string, string>>;
 }
 
 export const revalidate = 0;
@@ -53,6 +56,7 @@ export async function generateMetadata(props: Props) {
 
 export default async function ProfileMessagesPage(props: Props) {
   const params = await props.params;
+  const searchParams = await props.searchParams;
   const { locale } = params;
   const translations = getTranslations(locale);
   const t = translations.Program.Message.profile;
@@ -63,7 +67,31 @@ export default async function ProfileMessagesPage(props: Props) {
   }
 
   const { data } = await getClient().query({ query });
-  const messages = data.profile?.messages ?? [];
+  const allMessages = data.profile?.messages ?? [];
+
+  // "event" isn't a real dimension of a message, but reusing DimensionFilters gives
+  // us a familiar filter dropdown (and URL search param) for free.
+  const eventChoicesBySlug = new Map(
+    allMessages.map((message) => [
+      message.event.slug,
+      { slug: message.event.slug, title: message.event.name },
+    ]),
+  );
+  const eventFilter = {
+    slug: "event",
+    title: t.attributes.event,
+    isMultiValue: false,
+    isListFilter: true,
+    isKeyDimension: false,
+    values: [...eventChoicesBySlug.values()].sort((a, b) =>
+      a.title.localeCompare(b.title),
+    ),
+  };
+
+  const selectedEventSlug = searchParams.event;
+  const messages = selectedEventSlug
+    ? allMessages.filter((message) => message.event.slug === selectedEventSlug)
+    : allMessages;
 
   const columns: Column<(typeof messages)[number]>[] = [
     {
@@ -100,10 +128,32 @@ export default async function ProfileMessagesPage(props: Props) {
     },
   ];
 
+  const VolunteerMessagesLink = ({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) => (
+    <a
+      href={`${kompassiBaseUrl}/profile/signups`}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {children}
+    </a>
+  );
+
   return (
     <ViewContainer>
       <ViewHeading>{t.title}</ViewHeading>
-      <DataTable columns={columns} rows={messages} />
+      {t.description(VolunteerMessagesLink)}
+      <DimensionFilters dimensions={[eventFilter]} />
+      <DataTable columns={columns} rows={messages}>
+        <tfoot>
+          <tr>
+            <td colSpan={columns.length}>{t.tableFooter(messages.length)}</td>
+          </tr>
+        </tfoot>
+      </DataTable>
     </ViewContainer>
   );
 }
