@@ -269,6 +269,7 @@ class FileUploadFieldProcessor(FieldProcessor):
 FIELD_PROCESSORS: dict[FieldType, FieldProcessor] = {
     FieldType.SINGLE_LINE_TEXT: FieldProcessor(),
     FieldType.MULTI_LINE_TEXT: FieldProcessor(),
+    FieldType.MARKDOWN_TEXT: FieldProcessor(),
     FieldType.SINGLE_CHECKBOX: SingleCheckboxFieldProcessor(),
     FieldType.TRISTATE: TristateFieldProcessor(),
     FieldType.DIMENSION_SINGLE_CHECKBOX: SingleCheckboxFieldProcessor(),
