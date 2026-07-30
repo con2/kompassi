@@ -1,4 +1,5 @@
 import Tabs, { Tab } from "@/components/ServerTabs";
+import { isProduction } from "@/config";
 import { Translations } from "@/translations/en";
 
 export interface ProgramAdminTabsProps {
@@ -78,6 +79,9 @@ export default function ProgramAdminTabs({
       slug: "programMessages",
       title: t.Message.listTitle,
       href: `/${eventSlug}/program-messages${queryString}`,
+
+      // discourage use as we perform extensive testing
+      disabled: isProduction,
     },
     {
       slug: "reports",
