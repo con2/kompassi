@@ -85,7 +85,7 @@ line-length = 120
 extend-select = [
     "B",
     "C",
-    "I", # import sorting
+    "I",  # import sorting
     "PERF",
     "G010",  # .warn is deprecated
     "PGH004",  # specific noqa
@@ -99,30 +99,30 @@ extend-select = [
     "S101",  # asserts
 ]
 extend-ignore = [
-    "PLR0913",  # too many args
+    "BLE001",  # Do not catch blind exception: `Exception`
+    "C408",  # unnecessary dict call (these are likely stylistic)
+    "C901",  # function is too complex
+    "DTZ005",  # `datetime.datetime.now()` called without a `tz` argument
+    "DTZ007",  # Naive datetime constructed using `datetime.datetime.strptime()` without %z
+    "DTZ011",  # `datetime.date.today()` used
+    "E401",  # multiple imports on one line (handled by I)
+    "E731",  # do not assign a lambda expression, use a def
+    "N999",  # Invalid module name (especially LEGACY_V1_…)
+    "PERF401",  # manual-list-comprehension
+    "PLC0415",  # import must be at the top of the file (but we have circulars)
     "PLR0911",  # too many returns
     "PLR0912",  # too many branches
+    "PLR0913",  # too many args
     "PLR0915",  # too many statements
-    "C901",  # function is too complex
-    "TRY002", # Create your own exception
-    "PERF401", # manual-list-comprehension
-    "DTZ011", # `datetime.date.today()` used
-    "PLR0917", # Too many positional arguments (6 > 5)
-    "SIM108",  # ternary operators can be less readable
-    "E401",  # multiple imports on one line (handled by I)
-    "N999", # Invalid module name (especially LEGACY_V1_…)
-    "E731",  # do not assign a lambda expression, use a def
-    "SIM105",  # contextlib.suppress has a performance cost
-    "RET505",  # Unnecessary `else` after `return` statement
-    "TRY004", # Prefer `TypeError` exception for invalid type
-    "RET507",  # Unnecessary `elif` after `continue` statement
-    "C408",  # unnecessary dict call (these are likely stylistic)
-    "DTZ005", # `datetime.datetime.now()` called without a `tz` argument
-    "PLW2901",  # for loop variable overwritten (too many false positives)
-    "PLC0415",  # import must be at the top of the file (but we have circulars)
+    "PLR0917",  # Too many positional arguments (6 > 5)
     "PLR2004",  # I will not, for the love of God, write AMOUNT_OF_MONTHS_IN_YEAR = 12
-    "DTZ007", # Naive datetime constructed using `datetime.datetime.strptime()` without %z
-    "BLE001", # Do not catch blind exception: `Exception`
+    "PLW2901",  # for loop variable overwritten (too many false positives)
+    "RET505",  # Unnecessary `else` after `return` statement
+    "RET507",  # Unnecessary `elif` after `continue` statement
+    "SIM105",  # contextlib.suppress has a performance cost
+    "SIM108",  # ternary operators can be less readable
+    "TRY002",  # Create your own exception
+    "TRY004",  # Prefer `TypeError` exception for invalid type
 ]
 
 [tool.ruff.lint.extend-per-file-ignores]
