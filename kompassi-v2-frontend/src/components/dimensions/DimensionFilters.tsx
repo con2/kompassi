@@ -43,7 +43,7 @@ type Props = PropsWithoutProgramFilters | PropsWithProgramFilters;
 export function DimensionFilters(props: Props) {
   const { dimensions, programFilters, search, messages } = props;
   const searchParams = useSearchParams();
-  const searchTerm = search ? searchParams.get("search") ?? "" : "";
+  const searchTerm = search ? (searchParams.get("search") ?? "") : "";
   const { replace } = useRouter();
 
   const onChange = useCallback(

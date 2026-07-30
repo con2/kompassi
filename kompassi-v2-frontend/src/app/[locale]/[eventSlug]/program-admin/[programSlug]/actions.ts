@@ -67,16 +67,12 @@ export async function cancelProgramItem(
     resolution,
   };
 
-  const { data, errors } = await getClient().mutate({
+  const { data } = await getClient().mutate({
     mutation: cancelProgramItemMutation,
     variables: {
       input,
     },
   });
-
-  if (errors) {
-    throw new Error(errors[0].message);
-  }
 
   revalidatePath(`/${locale}/${eventSlug}/program-admin`);
 
@@ -125,16 +121,12 @@ export async function restoreProgramItem(
     programSlug,
   };
 
-  const { data, errors } = await getClient().mutate({
+  const { data } = await getClient().mutate({
     mutation: restoreProgramItemMutation,
     variables: {
       input,
     },
   });
-
-  if (errors) {
-    throw new Error(errors[0].message);
-  }
 
   const restoredProgramSlug = data?.restoreProgram?.programSlug;
   if (!restoredProgramSlug) {

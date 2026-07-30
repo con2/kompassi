@@ -2,11 +2,7 @@ import Tabs, { Tab } from "@/components/ServerTabs";
 import { Translations } from "@/translations/en";
 
 export type ProgramAdminTab =
-  | "basicInfo"
-  | "scheduleItems"
-  | "programHosts"
-  | "dimensions"
-  | "annotations";
+  "basicInfo" | "scheduleItems" | "programHosts" | "dimensions" | "annotations";
 
 export interface ProgramAdminTabsProps {
   eventSlug: string;

@@ -50,8 +50,7 @@ graphql(`
 interface Props {
   basePath: string;
   response:
-    | ResponseHistoryBannerFragment
-    | ProfileResponseHistoryBannerFragment;
+    ResponseHistoryBannerFragment | ProfileResponseHistoryBannerFragment;
   messages: {
     ResponseHistory: Translations["Survey"]["ResponseHistory"];
     OldVersionAlert: Translations["Survey"]["OldVersionAlert"];

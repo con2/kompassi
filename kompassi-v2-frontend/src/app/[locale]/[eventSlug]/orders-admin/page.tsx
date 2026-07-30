@@ -104,7 +104,10 @@ function getDimensions(
       isMultiValue: false,
       isListFilter: true,
       isKeyDimension: true,
-      values: products.map(({ id, title }) => ({ slug: "" + id, title })),
+      values: products.map(({ id, title }) => ({
+        slug: "" + id,
+        title,
+      })),
     },
   ];
 }

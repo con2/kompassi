@@ -23,7 +23,7 @@ export async function createProgram(
   let slug: string;
 
   try {
-    const { data, errors } = await getClient().mutate({
+    const { data } = await getClient().mutate({
       mutation,
       variables: {
         input: {
@@ -33,8 +33,8 @@ export async function createProgram(
       },
     });
 
-    if (errors || !data?.createProgram?.program) {
-      console.error("GraphQL error creating program:", errors);
+    if (!data?.createProgram?.program) {
+      console.error("GraphQL mutation returned no program");
       return void redirect(
         `/${eventSlug}/program-admin?error=failedToCreateProgram`,
       );

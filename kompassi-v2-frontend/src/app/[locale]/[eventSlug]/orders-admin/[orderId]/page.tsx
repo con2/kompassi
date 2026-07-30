@@ -39,6 +39,7 @@ import {
 
 graphql(`
   fragment AdminOrderPaymentStamp on LimitedPaymentStampType {
+    __typename
     id
     createdAt
     correlationId

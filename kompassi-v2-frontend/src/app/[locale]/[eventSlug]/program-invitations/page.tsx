@@ -6,7 +6,6 @@ import { ProgramAdminInvitationFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { Column, DataTable } from "@/components/DataTable";
-import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import SignInRequired from "@/components/errors/SignInRequired";
 import FormattedDateTime from "@/components/FormattedDateTime";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
@@ -54,14 +53,12 @@ interface Props {
 export const revalidate = 0;
 
 export async function generateMetadata(props: Props) {
-  const searchParams = await props.searchParams;
   const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
-  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale, filters },
+    variables: { eventSlug },
   });
   const title = getPageTitle({
     translations,
@@ -88,7 +85,7 @@ export default async function ProgramAdminInvitationsPage(props: Props) {
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale },
+    variables: { eventSlug },
   });
   if (!data.event?.program?.invitations) {
     notFound();

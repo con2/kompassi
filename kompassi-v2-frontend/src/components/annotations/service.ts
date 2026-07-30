@@ -20,7 +20,7 @@ export async function updateProgramAnnotations(
   programSlug: string,
   annotations: Record<string, unknown>,
 ) {
-  const { data, errors } = await getClient().mutate({
+  const { data } = await getClient().mutate({
     mutation: updateProgramAnnotationsMutation,
     variables: {
       input: {
@@ -30,11 +30,6 @@ export async function updateProgramAnnotations(
       },
     },
   });
-
-  if (errors) {
-    console.error(errors);
-    throw new Error(errors.map((e) => e.message).join(", "));
-  }
 
   if (!data?.updateProgramAnnotations?.program) {
     throw new Error("No program found");
@@ -65,7 +60,7 @@ export async function getProgramAnnotationSchema(
   eventSlug: string,
   annotationSlugs?: string[],
 ) {
-  const { data, errors } = await getClient().query({
+  const { data } = await getClient().query({
     query: getProgramAnnotationSchemaQuery,
     variables: {
       locale,
@@ -74,11 +69,6 @@ export async function getProgramAnnotationSchema(
       publicOnly: false,
     },
   });
-
-  if (errors) {
-    console.error(errors);
-    throw new Error(errors.map((e) => e.message).join(", "));
-  }
 
   const annotations = data?.event?.program?.annotations;
   if (!annotations) {
