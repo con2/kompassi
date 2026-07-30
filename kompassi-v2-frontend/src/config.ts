@@ -21,5 +21,6 @@ export const kompassiOidc = {
 };
 
 export const publicUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+export const isProduction = publicUrl === "https://kompassi.eu";
 
 export const timezone = process.env.KOMPASSI_TIMEZONE || "Europe/Helsinki";
