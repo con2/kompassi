@@ -91,7 +91,7 @@ export default function MessageComposeCard({
       helpText: t.attributes.replyTo.helpText,
       required: true,
       choices: [
-        { slug: "", title: t.attributes.replyTo.useDefault },
+        { slug: "DEFAULT", title: t.attributes.replyTo.useDefault },
         ...replyToAddresses.map((replyTo) => ({
           slug: replyTo.id,
           title: `${replyTo.name} <${replyTo.email}>`,

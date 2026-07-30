@@ -9,6 +9,7 @@ from kompassi.event_log_v2.utils.emit import emit
 from kompassi.involvement.models.involvement import Involvement
 
 from ...models.message import Message
+from ...models.message_reply_to import MessageReplyTo
 from ..enums import MessageDispatchType
 from ..message import MessageType
 
@@ -40,16 +41,20 @@ class CreateMessage(graphene.Mutation):
     def mutate(_root, info, input: CreateMessageInput):
         request: HttpRequest = info.context
         event = Event.objects.get(slug=input.event_slug)
+        universe = event.involvement_universe
 
         graphql_check_model(Involvement, event.scope, info, app="program_v2", field="messages", operation="create")
 
         message = Message(
-            universe=event.involvement_universe,
+            universe=universe,
             created_by=request.user,
             subject=input.subject,
             body=input.body,
             dispatch=input.dispatch,
-            reply_to_id=input.reply_to_id or None,
+            reply_to=MessageReplyTo.from_untrusted(
+                universe,
+                input.reply_to_id,  # type: ignore
+            ),
             recipient_filters=input.recipient_filters or [],
         )
         message.clean_recipient_filters()
@@ -59,7 +64,7 @@ class CreateMessage(graphene.Mutation):
             "messages_v2.message.created",
             request=request,
             event=event,
-            other_fields=dict(message_subject=message.subject or "(no subject)"),
+            other_fields=dict(message_id=message.id),
         )
 
         return CreateMessage(message=message)  # type: ignore

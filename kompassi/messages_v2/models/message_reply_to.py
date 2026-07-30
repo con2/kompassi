@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
 from django.db import models
 from django_enum import EnumField
@@ -57,3 +57,14 @@ class MessageReplyTo(models.Model):
         if event is None:
             raise ValueError(f"Scope of universe {self.universe} has no event")
         return event
+
+    @classmethod
+    def from_untrusted(cls, universe: Universe, input: str | None) -> Self | None:
+        """
+        When untrusted input is used to select a reply-to address, use this method
+        to process "DEFAULT" and make sure the address is in the correct Universe.
+        """
+        if input in ("DEFAULT", "", None):
+            return None
+
+        return cls.objects.get(universe=universe, id=input)

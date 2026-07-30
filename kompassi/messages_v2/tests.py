@@ -65,7 +65,7 @@ def test_compose_and_send_message():
 
     event, meta = _setup_event("Messages V2 Send Test")
     universe = event.involvement_universe
-    registry = event.involvement_event_meta.default_registry
+    registry = meta.default_registry
 
     offerer, _ = Person.get_or_create_dummy()
     offerer.first_name = "Ada"
@@ -119,7 +119,7 @@ def test_compose_and_send_message():
     message.clean_recipient_filters()
     message.save()
 
-    emit("messages_v2.message.created", event=event, other_fields=dict(message_subject=message.subject))
+    emit("messages_v2.message.created", event=event, other_fields=dict(message_id=message.id))
 
     assert message.state == MessageState.DRAFT
     assert message.resolve_recipient_count() == 3
@@ -130,7 +130,10 @@ def test_compose_and_send_message():
     emit(
         "messages_v2.message.sent",
         event=event,
-        other_fields=dict(message_subject=message.subject, initial_recipients=initial_recipients),
+        other_fields=dict(
+            message_id=message.id,
+            initial_recipients=initial_recipients,
+        ),
     )
 
     message.refresh_from_db()
@@ -149,6 +152,7 @@ def test_compose_and_send_message():
 
     injected_email = sent_by_email[injected.name_and_email]
     html_body = next(content for content, mimetype in injected_email.alternatives if mimetype == "text/html")
+    assert isinstance(html_body, str)
 
     # The author's own Markdown formatting is rendered ...
     assert "<strong>Welcome</strong>" in html_body
@@ -178,7 +182,7 @@ def test_compose_and_send_message():
     assert profile_messages[0].subject == "Hello Ada"
 
     created_entry = Entry.objects.get(entry_type="messages_v2.message.created")
-    assert created_entry.other_fields["message_subject"] == "Hello {FIRST_NAME}"
+    assert created_entry.other_fields["message_id"] == str(message.id)
 
     sent_entry = Entry.objects.get(entry_type="messages_v2.message.sent")
     assert sent_entry.other_fields["initial_recipients"] == 3
@@ -187,9 +191,9 @@ def test_compose_and_send_message():
 
 @pytest.mark.django_db
 def test_auto_send_and_non_retroactive_edit():
-    event, _meta = _setup_event("Messages V2 Auto Send Test")
+    event, meta = _setup_event("Messages V2 Auto Send Test")
     universe = event.involvement_universe
-    registry = event.involvement_event_meta.default_registry
+    registry = meta.default_registry
 
     message = Message.objects.create(
         universe=universe,

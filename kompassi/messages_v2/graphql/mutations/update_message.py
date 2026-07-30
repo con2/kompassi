@@ -7,6 +7,7 @@ from kompassi.access.cbac import graphql_check_model
 from kompassi.core.models.event import Event
 from kompassi.event_log_v2.utils.emit import emit
 from kompassi.involvement.models.involvement import Involvement
+from kompassi.messages_v2.models import MessageReplyTo
 
 from ...models.message import Message
 from ..enums import MessageDispatchType
@@ -43,6 +44,7 @@ class UpdateMessage(graphene.Mutation):
     def mutate(_root, info, input: UpdateMessageInput):
         request: HttpRequest = info.context
         event = Event.objects.get(slug=input.event_slug)
+        universe = event.involvement_universe
 
         graphql_check_model(Involvement, event.scope, info, app="program_v2", field="messages", operation="update")
 
@@ -51,7 +53,10 @@ class UpdateMessage(graphene.Mutation):
         message.subject = input.subject
         message.body = input.body
         message.dispatch = input.dispatch
-        message.reply_to_id = input.reply_to_id or None
+        message.reply_to = MessageReplyTo.from_untrusted(
+            universe,
+            input.reply_to_id,  # type: ignore
+        )
         message.recipient_filters = input.recipient_filters or []
         message.clean_recipient_filters()
         message.save()
@@ -60,7 +65,7 @@ class UpdateMessage(graphene.Mutation):
             "messages_v2.message.edited",
             request=request,
             event=event,
-            other_fields=dict(message_subject=message.subject or "(no subject)"),
+            other_fields=dict(message_id=message.id),
         )
 
         return UpdateMessage(message=message)  # type: ignore

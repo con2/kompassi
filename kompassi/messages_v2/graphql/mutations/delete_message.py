@@ -39,7 +39,6 @@ class DeleteMessage(graphene.Mutation):
         if message.state != MessageState.DRAFT:
             raise ValueError("Only draft messages can be deleted")
 
-        message_subject = message.subject
         message_id = message.id
         message.delete()
 
@@ -47,7 +46,7 @@ class DeleteMessage(graphene.Mutation):
             "messages_v2.message.deleted",
             request=request,
             event=event,
-            other_fields=dict(message_subject=message_subject or "(no subject)"),
+            other_fields=dict(message_id=message_id),
         )
 
         return DeleteMessage(message_id=str(message_id))  # type: ignore

@@ -51,6 +51,7 @@ class MessageRecipient(models.Model):
 
     id: int
     pk: int
+    body_id: int
 
     class Meta:
         ordering = ("-sent_at",)

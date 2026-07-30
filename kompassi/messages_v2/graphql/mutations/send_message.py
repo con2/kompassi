@@ -50,7 +50,7 @@ class SendMessage(graphene.Mutation):
                 request=request,
                 event=event,
                 other_fields=dict(
-                    message_subject=message.subject or "(no subject)",
+                    message_id=message.id,
                     initial_recipients=initial_recipients,
                 ),
             )

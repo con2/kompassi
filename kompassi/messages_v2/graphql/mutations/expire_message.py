@@ -42,7 +42,7 @@ class ExpireMessage(graphene.Mutation):
             "messages_v2.message.expired",
             request=request,
             event=event,
-            other_fields=dict(message_subject=message.subject or "(no subject)"),
+            other_fields=dict(message_id=message.id),
         )
 
         return ExpireMessage(message=message)  # type: ignore
