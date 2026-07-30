@@ -70,7 +70,7 @@ class BadgeForm(forms.ModelForm):
 
     class Meta:
         model = Badge
-        fields = [
+        fields = [  # noqa: RUF012
             "personnel_class",
             "first_name",
             "surname",

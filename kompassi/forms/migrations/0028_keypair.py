@@ -9,12 +9,12 @@ import kompassi.tickets_v2.optimized_server.utils.uuid7
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0027_alter_form_layout"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="KeyPair",
             fields=[

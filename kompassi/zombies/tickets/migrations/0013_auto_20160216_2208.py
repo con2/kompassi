@@ -5,11 +5,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets", "0012_shirtorder"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="shirtorder",
             name="count",

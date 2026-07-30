@@ -3,11 +3,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0063_remove_view_rooms"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="room",
             options={"ordering": ["event", "name"], "verbose_name": "Room", "verbose_name_plural": "Rooms"},

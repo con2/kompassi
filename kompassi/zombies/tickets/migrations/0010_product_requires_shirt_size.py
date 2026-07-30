@@ -5,11 +5,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets", "0009_accom_limit_group_refactor"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="product",
             name="requires_shirt_size",

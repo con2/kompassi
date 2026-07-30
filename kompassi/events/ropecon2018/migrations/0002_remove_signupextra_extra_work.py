@@ -3,11 +3,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("ropecon2018", "0001_initial"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RemoveField(
             model_name="signupextra",
             name="extra_work",

@@ -4,12 +4,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("ropecon2019", "0001_initial"),
         ("programme", "0080_alternativeprogrammeform_is_active"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="programme",
             name="is_family_program",

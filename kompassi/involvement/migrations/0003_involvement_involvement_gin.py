@@ -5,7 +5,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0043_emailverificationtoken_language_and_more"),
         ("dimensions", "0011_dimensionvalue_is_subject_locked"),
         ("forms", "0046_rename_response_responsedimensionvalue_subject_and_more"),
@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         ("program_v2", "0039_programv2eventmeta_default_registry"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddIndex(
             model_name="involvement",
             index=django.contrib.postgres.indexes.GinIndex(

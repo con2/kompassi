@@ -6,11 +6,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0051_auto_20170212_2203"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="tag",
             name="slug",

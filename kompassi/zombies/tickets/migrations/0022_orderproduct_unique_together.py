@@ -3,11 +3,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets", "0021_auto_20161211_1549"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterUniqueTogether(
             name="orderproduct",
             unique_together={("order", "product")},

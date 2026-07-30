@@ -6,11 +6,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0026_merge"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="shift",
             options={"ordering": ("job", "start_time"), "verbose_name": "shift", "verbose_name_plural": "shifts"},

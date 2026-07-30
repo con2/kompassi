@@ -4,11 +4,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0009_remove_eventform_active_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="eventform",
             name="thank_you_message",

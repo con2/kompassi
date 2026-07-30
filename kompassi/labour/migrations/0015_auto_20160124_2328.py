@@ -5,11 +5,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0014_auto_20151108_1906"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="SignupOnboardingProxy",
             fields=[],

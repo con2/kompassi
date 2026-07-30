@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("emprinten", "0001_initial"),
         ("labour", "0037_rename_personnelclass_event_app_label_labour_pers_event_i_49de47_idx"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="laboureventmeta",
             name="work_certificate_pdf_project",

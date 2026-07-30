@@ -25,7 +25,7 @@ class CreateProductForm(django_forms.ModelForm):
 
     class Meta:
         model = Product
-        fields = [
+        fields = [  # noqa: RUF012
             "title",
             "description",
             "price",

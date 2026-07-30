@@ -215,7 +215,7 @@ class CallbackView(View):
         return respond_with_connection(request, next_url, connection)
 
     def respond_with_existing_user(self, request, next_url, desuprofile, user):
-        code, created = ConfirmationCode.objects.get_or_create(
+        code, _created = ConfirmationCode.objects.get_or_create(
             person=user.person,
             state="valid",
             desuprofile_id=int(desuprofile.id),

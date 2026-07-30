@@ -4,11 +4,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0064_auto_20171125_1326"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RemoveField(
             model_name="room",
             name="active",

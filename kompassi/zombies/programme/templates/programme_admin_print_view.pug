@@ -12,7 +12,7 @@ html
       h1 {{ title|safe }}
       p Tulostettu {{ now }}.
 
-      for start_time, unused, programmes in programmes_by_start_time
+      for start_time, _unused, programmes in programmes_by_start_time
         h3 {{ start_time|date:"l H:i"|capfirst }}
         for programme, rowspan in programmes
           .programme(class='{{ programme.css_classes }}', id='p{{ programme.id }}')

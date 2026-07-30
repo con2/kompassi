@@ -10,11 +10,11 @@ def populate_badge_name_display_style(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0030_auto_20180926_1252"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="person",
             name="badge_name_display_style",

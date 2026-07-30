@@ -6,11 +6,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour_common_qualifications", "0002_auto_20150521_1557"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="jvkortti",
             name="card_number",

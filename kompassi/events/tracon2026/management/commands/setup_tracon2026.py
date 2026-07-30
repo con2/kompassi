@@ -93,15 +93,15 @@ class Setup:
         # self.setup_station_access()
 
     def setup_core(self):
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="tracon-ry",
             defaults=dict(
                 name="Tracon ry",
                 homepage_url="https://ry.tracon.fi",
             ),
         )
-        self.venue, unused = Venue.objects.get_or_create(name="Tampere-talo")
-        self.event, unused = Event.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(name="Tampere-talo")
+        self.event, _unused = Event.objects.get_or_create(
             slug="tracon2026",
             defaults=dict(
                 name="Tracon (2026)",
@@ -145,7 +145,7 @@ class Setup:
         else:
             pass
 
-        labour_event_meta, unused = LabourEventMeta.objects.update_or_create(
+        labour_event_meta, _unused = LabourEventMeta.objects.update_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
         )
@@ -322,7 +322,7 @@ class Setup:
     def setup_badges(self):
         (badge_admin_group, onboarding_group) = BadgesEventMeta.get_or_create_groups(self.event, ["admins", "pos"])
         self.onboarding_access_group = onboarding_group
-        meta, unused = BadgesEventMeta.objects.update_or_create(
+        _meta, _unused = BadgesEventMeta.objects.update_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,

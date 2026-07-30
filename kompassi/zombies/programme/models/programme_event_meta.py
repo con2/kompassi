@@ -101,7 +101,7 @@ class ProgrammeEventMeta(ContactEmailMixin, EventMetaBase):
 
         from kompassi.core.models import Event
 
-        event, unused = Event.get_or_create_dummy()
+        event, _unused = Event.get_or_create_dummy()
         (admin_group,) = cls.get_or_create_groups(event, ["admins"])
 
         meta, created = cls.objects.get_or_create(

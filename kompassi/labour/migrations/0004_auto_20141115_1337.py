@@ -2,11 +2,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0003_populate_pclasses"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="signup",
             name="personnel_classes",

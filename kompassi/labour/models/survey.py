@@ -83,7 +83,7 @@ class Survey(models.Model):
     class Meta:
         verbose_name = _("Survey")
         verbose_name_plural = _("Surveys")
-        unique_together = [
+        unique_together = [  # noqa: RUF012
             ("event", "slug"),
         ]
 

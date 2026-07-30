@@ -139,7 +139,7 @@ class Dimension(models.Model):
 
     class Meta:
         ordering = ("universe", "order", "slug")
-        constraints = [
+        constraints = [  # noqa: RUF012
             models.UniqueConstraint(
                 fields=["universe", "slug"],
                 name="dimension_unique_universe_slug",

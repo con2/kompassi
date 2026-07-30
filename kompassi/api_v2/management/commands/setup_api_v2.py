@@ -13,19 +13,14 @@ logger = logging.getLogger(__name__)
 class Command(BaseCommand):
     def handle(*args, **options):
         if settings.DEBUG:
-            person, unused = Person.get_or_create_dummy()
+            person, _unused = Person.get_or_create_dummy()
 
             try:
                 Application.objects.get_or_create(
                     client_id="kompassi_insecure_test_client_id",
                     defaults=dict(
                         user=person.user,
-                        redirect_uris="\n".join(
-                            [
-                                # kompassi2, edegal etc.
-                                "http://localhost:3000/api/auth/callback/kompassi",
-                            ]
-                        ),
+                        redirect_uris="http://localhost:3000/api/auth/callback/kompassi",
                         client_type="confidential",  # hah
                         authorization_grant_type="authorization-code",
                         client_secret="kompassi_insecure_test_client_secret",
@@ -37,4 +32,3 @@ class Command(BaseCommand):
             except IntegrityError:
                 # get_or_create fails to recognize collision on hash_client_secret
                 logger.exception("Failed to create insecure test application")
-                pass

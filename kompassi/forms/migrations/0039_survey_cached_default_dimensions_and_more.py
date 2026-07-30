@@ -32,12 +32,12 @@ def populate_survey_default_dimensions(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0008_alter_dimension_slug_alter_dimensionvalue_slug"),
         ("forms", "0038_survey_created_at_survey_created_by_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="survey",
             name="cached_default_dimensions",

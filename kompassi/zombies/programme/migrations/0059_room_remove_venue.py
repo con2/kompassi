@@ -3,11 +3,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0058_populate_room_event"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="room",
             options={"ordering": ["event", "order"], "verbose_name": "tila", "verbose_name_plural": "tilat"},

@@ -9,12 +9,12 @@ import kompassi.labour.models.signup_extras
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0030_auto_20180926_1252"),
         ("enrollment", "0005_auto_20170928_1334"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="Night",
             fields=[

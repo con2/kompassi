@@ -4,11 +4,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("desucon2019", "0002_auto_20190102_1625"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="signupextra",
             name="free_text",

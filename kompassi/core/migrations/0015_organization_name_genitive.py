@@ -14,11 +14,11 @@ def populate_name_genitive(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0014_auto_20151011_2016"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="organization",
             name="name_genitive",

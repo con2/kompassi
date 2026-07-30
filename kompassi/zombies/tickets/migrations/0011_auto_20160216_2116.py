@@ -7,12 +7,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0022_auto_20160202_2235"),
         ("tickets", "0010_product_requires_shirt_size"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="ShirtSize",
             fields=[

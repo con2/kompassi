@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0036_alter_survey_event"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameIndex(
             model_name="personnelclass",
             new_name="labour_pers_event_i_49de47_idx",

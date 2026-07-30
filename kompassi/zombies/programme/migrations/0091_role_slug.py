@@ -11,11 +11,11 @@ def populate_slug(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0090_alternativeprogrammeform_role"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="role",
             name="slug",

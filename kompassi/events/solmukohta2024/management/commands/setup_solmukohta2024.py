@@ -29,20 +29,20 @@ class Setup:
     def setup_core(self):
         from kompassi.core.models import Event, Organization, Venue
 
-        self.venue, unused = Venue.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(
             name="Scandic Rosendahl (Tampere)",
             defaults=dict(
                 name_inessive="Scandic Rosendahlissa Tampereella",
             ),
         )
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="ropecon-ry",
             defaults=dict(
                 name="Ropecon ry",
                 homepage_url="https://ry.ropecon.fi",
             ),
         )
-        self.event, unused = Event.objects.get_or_create(
+        self.event, _unused = Event.objects.get_or_create(
             slug="solmukohta2024",
             defaults=dict(
                 name="Solmukohta 2024",
@@ -76,8 +76,8 @@ class Setup:
         assert self.event.start_time
         assert self.event.end_time
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+        programme_admin_group, _hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_event_meta, _unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 public=False,
@@ -281,10 +281,10 @@ class Setup:
                 ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
-        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+        _meta, _unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
 
         def limit_group(description, limit):
-            limit_group, unused = LimitGroup.objects.get_or_create(
+            limit_group, _unused = LimitGroup.objects.get_or_create(
                 event=self.event,
                 description=description,
                 defaults=dict(limit=limit),
@@ -498,7 +498,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, _unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)  # type: ignore

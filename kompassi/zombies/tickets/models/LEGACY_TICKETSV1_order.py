@@ -390,10 +390,10 @@ class Order(models.Model):
         from .LEGACY_TICKETSV1_customer import Customer
 
         if event is None:
-            meta, unused = TicketsEventMeta.get_or_create_dummy()
+            meta, _unused = TicketsEventMeta.get_or_create_dummy()
             event = meta.event
 
-        customer, unused = Customer.get_or_create_dummy()
+        customer, _unused = Customer.get_or_create_dummy()
 
         return cls.objects.get_or_create(
             event=event,

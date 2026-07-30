@@ -175,7 +175,7 @@ class ReverseCheckResult:
     email: str
     result: Result
 
-    HEADER_ROW = ["Order number", "Email", "Result"]
+    HEADER_ROW = ["Order number", "Email", "Result"]  # noqa: RUF012
 
     def as_row(self):
         return [format_order_number(self.order_number), self.email, self.result.value]

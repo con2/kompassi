@@ -12,11 +12,11 @@ def default_to_program(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0003_remove_dimension_is_shown_to_subject_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(
             default_to_program,
             reverse_code=migrations.RunPython.noop,

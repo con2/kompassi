@@ -16,12 +16,12 @@ def set_program_form_attributes(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0030_delete_offerform"),
         ("forms", "0036_alter_form_unique_together_remove_survey_languages_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(
             code=set_program_form_attributes,
             reverse_code=migrations.RunPython.noop,

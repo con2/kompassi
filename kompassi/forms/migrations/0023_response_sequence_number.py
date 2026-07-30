@@ -18,11 +18,11 @@ def number_existing_responses(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0022_dimension_is_shown_to_respondent"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="response",
             name="sequence_number",

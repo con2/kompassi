@@ -2,12 +2,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0016_person_allow_work_history_sharing"),
         ("access", "0007_accessorganizationmeta"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="SMTPPassword",
             fields=[

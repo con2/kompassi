@@ -49,7 +49,7 @@ class OrderProductInline(admin.TabularInline):
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
     model = Order
-    inlines = [
+    inlines = [  # noqa: RUF012
         OrderProductInline,
         #        CustomerInline
     ]

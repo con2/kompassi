@@ -35,7 +35,7 @@ class Command(BaseCommand):
                 ),
             ),
         ]:
-            listing, created = Listing.objects.get_or_create(
+            _listing, _created = Listing.objects.get_or_create(
                 hostname=hostname,
                 defaults=dict(
                     title=title,

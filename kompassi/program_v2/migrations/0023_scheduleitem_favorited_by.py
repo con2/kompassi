@@ -15,12 +15,12 @@ def populate_favorited_by(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0022_remove_programv2eventmeta_primary_dimension"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="scheduleitem",
             name="favorited_by",

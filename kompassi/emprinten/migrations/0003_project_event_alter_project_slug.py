@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0040_rename_emailverificationtoken_person_state_core_emailv_person__722147_idx_and_more"),
         ("emprinten", "0002_alter_projectfile_file_name_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="project",
             name="event",

@@ -29,15 +29,15 @@ class Setup:
     def setup_core(self):
         from kompassi.core.models import Event, Organization, Venue
 
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="tracon-ry",
             defaults=dict(
                 name="Tracon ry",
                 homepage_url="https://ry.tracon.fi",
             ),
         )
-        self.venue, unused = Venue.objects.get_or_create(name="Tampere-talo")
-        self.event, unused = Event.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(name="Tampere-talo")
+        self.event, _unused = Event.objects.get_or_create(
             slug="tracon2018",
             defaults=dict(
                 name="Tracon (2018)",
@@ -72,7 +72,7 @@ class Setup:
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
-            person, unused = Person.get_or_create_dummy()
+            person, _unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
@@ -94,7 +94,7 @@ class Setup:
         else:
             pass
 
-        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
+        labour_event_meta, _unused = LabourEventMeta.objects.get_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
         )
@@ -122,7 +122,7 @@ class Setup:
             ("Taidekuja", "taidekuja", "tickets", False),
             ("Yhdistyspöydät", "yhdistyspoydat", "tickets", False),
         ]:
-            personnel_class, created = PersonnelClass.objects.get_or_create(
+            _personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
                 slug=pc_slug,
                 defaults=dict(
@@ -152,15 +152,19 @@ class Setup:
             ("Conitea", "Tapahtuman järjestelytoimikunnan jäsen eli coniitti", [coniitti]),
             (
                 "Järjestyksenvalvoja",
-                "Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa "
-                "JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole "
-                "täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet).",
+                (
+                    "Kävijöiden turvallisuuden valvominen conipaikalla ja yömajoituksessa. Edellyttää voimassa olevaa "
+                    "JV-korttia ja asiakaspalveluasennetta. HUOM! Et voi valita tätä tehtävää hakemukseesi, ellet ole "
+                    "täyttänyt tietoihisi JV-kortin numeroa (oikealta ylhäältä oma nimesi &gt; Pätevyydet)."
+                ),
                 [tyovoima],
             ),
             (
                 "Info",
-                "Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman "
-                "aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä.",
+                (
+                    "Infopisteen henkilökunta vastaa kävijöiden kysymyksiin ja ratkaisee heidän ongelmiaan tapahtuman "
+                    "aikana. Tehtävä edellyttää asiakaspalveluasennetta, tervettä järkeä ja ongelmanratkaisukykyä."
+                ),
                 [tyovoima],
             ),
         ]:
@@ -247,7 +251,7 @@ class Setup:
             "osallistumaan kaatoon, ole hyvä ja ota sähköpostitse yhteyttä osoitteeseen "
             '<a href="mailto:kaatajaiset@tracon.fi">kaatajaiset@tracon.fi</a>.'
         )
-        kaatoilmo, unused = Survey.objects.get_or_create(
+        _kaatoilmo, _unused = Survey.objects.get_or_create(
             event=self.event,
             slug="kaatoilmo",
             defaults=dict(
@@ -280,7 +284,7 @@ class Setup:
         from kompassi.badges.models import BadgesEventMeta
 
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, unused = BadgesEventMeta.objects.get_or_create(
+        _meta, _unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
@@ -323,7 +327,7 @@ class Setup:
             defaults.update(
                 ticket_sales_starts=datetime(2018, 7, 1, 18, 0, 0, tzinfo=self.tz),
             )
-        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+        meta, _unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
 
         # migration 0024_ticketseventmeta_pos_access_group
         if meta.pos_access_group is None:
@@ -331,7 +335,7 @@ class Setup:
             meta.save()
 
         def limit_group(description, limit):
-            limit_group, unused = LimitGroup.objects.get_or_create(
+            limit_group, _unused = LimitGroup.objects.get_or_create(
                 event=self.event,
                 description=description,
                 defaults=dict(limit=limit),
@@ -433,7 +437,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, _unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -455,8 +459,8 @@ class Setup:
             View,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+        programme_admin_group, _hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_event_meta, _unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 public=False,
@@ -477,7 +481,7 @@ class Setup:
             ("ohjelma-3lk", "Ohjelmanjärjestäjä (3. luokka)", False),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
-            role, unused = Role.objects.get_or_create(
+            _role, _unused = Role.objects.get_or_create(
                 personnel_class=personnel_class,
                 title=role_title,
                 defaults=dict(
@@ -556,7 +560,7 @@ class Setup:
 
                 rooms = [Room.objects.get(name__iexact=room_name, event=self.event) for room_name in room_names]
 
-                view, created = View.objects.get_or_create(event=self.event, name=view_name)
+                view, _created = View.objects.get_or_create(event=self.event, name=view_name)
                 view.rooms = rooms
                 view.save()
 
@@ -586,7 +590,7 @@ class Setup:
             ),
         )
 
-        default_form, created = AlternativeProgrammeForm.objects.get_or_create(
+        default_form, _created = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
@@ -631,7 +635,7 @@ class Setup:
     #     from sms.models import SMSEventMeta
 
     #     sms_admin_group, = SMSEventMeta.get_or_create_groups(self.event, ['admins'])
-    #     meta, unused = SMSEventMeta.objects.get_or_create(
+    #     meta, _unused = SMSEventMeta.objects.get_or_create(
     #         event=self.event,
     #         defaults=dict(
     #             admin_group=sms_admin_group,
@@ -644,7 +648,7 @@ class Setup:
 
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("conitea")
-        meta, unused = IntraEventMeta.objects.get_or_create(
+        _meta, _unused = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
@@ -667,7 +671,7 @@ class Setup:
             (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
             email = f"{team_slug}@tracon.fi"
 
-            team, created = Team.objects.get_or_create(
+            _team, _created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
                 defaults=dict(name=team_name, order=self.get_ordering_number(), group=team_group, email=email),

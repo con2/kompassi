@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("hitpoint2024", "0002_alter_signupextra_shirt_size"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.DeleteModel(
             name="SignupExtra",
         ),

@@ -5,11 +5,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0050_auto_20161129_2147"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterUniqueTogether(
             name="room",
             unique_together={("venue", "slug")},

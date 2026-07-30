@@ -4,12 +4,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("ropecon2023", "0002_language_remove_signupextra_can_english_and_more"),
         ("programme", "0110_alter_specialreservation_code_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="programme",
             name="ropecon2023_accessibility_cant_use_mic",

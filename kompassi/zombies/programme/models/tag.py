@@ -44,7 +44,7 @@ class Tag(models.Model):
     class Meta:
         verbose_name = _("tag")
         verbose_name_plural = _("tags")
-        ordering = ["order"]
-        unique_together = [
+        ordering = ["order"]  # noqa: RUF012
+        unique_together = [  # noqa: RUF012
             ("event", "slug"),
         ]

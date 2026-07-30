@@ -53,7 +53,7 @@ class EmailAliasVariant(Enum):
             try:
                 return emailify(email_alias.replace(f"@{domain.domain_name}", ""))
             except Exception:
-                logger.error("Failed to emailify tracon person %s", signup, exc_info=True)
+                logger.exception("Failed to emailify tracon person %s", signup)
 
         # fallback
         return EmailAliasVariant.NICK.get_account_name(person, domain)
@@ -96,7 +96,7 @@ class EmailAliasType(models.Model):
     def get_or_create_dummy(cls, variant: EmailAliasVariant = EmailAliasVariant.FIRSTNAME_LASTNAME):
         from .email_alias_domain import EmailAliasDomain
 
-        domain, unused = EmailAliasDomain.get_or_create_dummy()
+        domain, _unused = EmailAliasDomain.get_or_create_dummy()
         return cls.objects.get_or_create(domain=domain, variant_slug=variant.name)
 
     def admin_get_organization(self):

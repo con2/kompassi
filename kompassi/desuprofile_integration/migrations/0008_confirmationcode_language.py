@@ -4,11 +4,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("desuprofile_integration", "0007_rename_confirmationcode_person_state_desuprofile_person__372366_idx"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="confirmationcode",
             name="language",

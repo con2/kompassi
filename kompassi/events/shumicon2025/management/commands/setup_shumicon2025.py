@@ -57,20 +57,20 @@ class Setup:
         self.setup_tickets_v2()
 
     def setup_core(self):
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="paakaupunkiseudun-cosplay-ry",
             defaults=dict(
                 name="Pääkaupunkiseudun Cosplay ry",
                 homepage_url="https://pkscosplay.wordpress.com/",
             ),
         )
-        self.venue, unused = Venue.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(
             name="Kulttuurikeskus Stoa",
             defaults=dict(
                 name_inessive="Kulttuurikeskus Stoassa",
             ),
         )
-        self.event, unused = Event.objects.get_or_create(
+        self.event, _unused = Event.objects.get_or_create(
             slug="shumicon2025",
             defaults=dict(
                 public=True,
@@ -108,7 +108,7 @@ class Setup:
         else:
             pass
 
-        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
+        labour_event_meta, _unused = LabourEventMeta.objects.get_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
         )
@@ -118,7 +118,7 @@ class Setup:
             (20, "Työvoima", "tyovoima", "labour"),
             (30, "Ohjelmanjärjestäjä", "ohjelma", "programme"),
         ]:
-            personnel_class, created = PersonnelClass.objects.get_or_create(
+            _personnel_class, created = PersonnelClass.objects.get_or_create(
                 event=self.event,
                 slug=pc_slug,
                 defaults=dict(
@@ -279,7 +279,7 @@ class Setup:
         from kompassi.badges.models import BadgesEventMeta
 
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, unused = BadgesEventMeta.objects.get_or_create(
+        _meta, _unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
@@ -288,8 +288,8 @@ class Setup:
         )
 
     def setup_programme(self):
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+        programme_admin_group, _hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_event_meta, _unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 public=False,
@@ -388,7 +388,7 @@ class Setup:
                 ),
             )
 
-        default_form, created = AlternativeProgrammeForm.objects.get_or_create(
+        default_form, _created = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
@@ -408,7 +408,7 @@ class Setup:
     def setup_intra(self):
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("vastaava")
-        meta, unused = IntraEventMeta.objects.get_or_create(
+        _meta, _unused = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
@@ -423,7 +423,7 @@ class Setup:
         ]:
             (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
 
-            team, created = Team.objects.get_or_create(
+            team, _created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
                 defaults=dict(

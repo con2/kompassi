@@ -187,7 +187,7 @@ def test_compose_and_send_message():
 
 @pytest.mark.django_db
 def test_auto_send_and_non_retroactive_edit():
-    event, meta = _setup_event("Messages V2 Auto Send Test")
+    event, _meta = _setup_event("Messages V2 Auto Send Test")
     universe = event.involvement_universe
     registry = event.involvement_event_meta.default_registry
 

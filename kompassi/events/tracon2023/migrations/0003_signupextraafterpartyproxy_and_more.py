@@ -6,11 +6,11 @@ import kompassi.core.csv_export
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tracon2023", "0002_accessibilitywarning_timeslot"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="SignupExtraAfterpartyProxy",
             fields=[],

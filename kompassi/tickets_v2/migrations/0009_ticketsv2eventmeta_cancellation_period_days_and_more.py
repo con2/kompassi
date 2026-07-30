@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0044_organization_business_id"),
         ("tickets_v2", "0008_product_vat_percentage"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="ticketsv2eventmeta",
             name="cancellation_period_days",

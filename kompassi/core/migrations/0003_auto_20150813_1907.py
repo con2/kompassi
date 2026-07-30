@@ -4,11 +4,11 @@ import kompassi.core.models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0002_auto_20150126_1611"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="person",
             name="birth_date",

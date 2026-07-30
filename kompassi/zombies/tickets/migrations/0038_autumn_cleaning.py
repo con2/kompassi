@@ -6,11 +6,11 @@ import kompassi.core.utils.model_utils
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets", "0037_alter_product_options_product_code_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RemoveField(
             model_name="shirtorder",
             name="order",

@@ -100,7 +100,7 @@ class FileVersion(models.Model):
     current = models.BooleanField(default=False)
 
     class Meta:
-        constraints = [
+        constraints = [  # noqa: RUF012
             models.UniqueConstraint(
                 fields=["file"],
                 condition=models.Q(current=True),

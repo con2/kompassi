@@ -154,5 +154,5 @@ def get_ip(request):
     """
     Django-ipware 2.x compatibility wrapper for django-ipware 3.x
     """
-    client_ip, is_routable = get_client_ip(request)
+    client_ip, _is_routable = get_client_ip(request)
     return client_ip

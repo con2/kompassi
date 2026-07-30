@@ -3,11 +3,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0043_remove_eventannotation_id_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.DeleteModel(
             name="EventAnnotation",
         ),

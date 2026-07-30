@@ -112,7 +112,7 @@ class SignupForm(forms.ModelForm, SignupFormMixin):
         model = Signup
         fields = ("job_categories",)
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             job_categories=forms.CheckboxSelectMultiple,
         )
 
@@ -127,7 +127,7 @@ class OverrideWorkingHoursForm(forms.ModelForm):
     class Meta:
         model = Signup
         fields = ("override_working_hours", "override_formatted_perks")
-        widgets = dict(override_formatted_perks=forms.Textarea(attrs=dict(rows=3)))
+        widgets = dict(override_formatted_perks=forms.Textarea(attrs=dict(rows=3)))  # noqa: RUF012
 
 
 class EmptySignupExtraForm(AlternativeFormMixin, forms.ModelForm):
@@ -164,7 +164,7 @@ class SignupAdminForm(forms.ModelForm):
             "xxx_interim_shifts",
             "notes",
         )
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             personnel_classes=forms.CheckboxSelectMultiple,
             job_categories_accepted=forms.CheckboxSelectMultiple,
             job_categories_rejected=forms.CheckboxSelectMultiple,
@@ -225,7 +225,7 @@ class JobCategoryForm(forms.ModelForm):
             "required_qualifications",
             "personnel_classes",
         )
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             required_qualifications=forms.CheckboxSelectMultiple,
             personnel_classes=forms.CheckboxSelectMultiple,
         )

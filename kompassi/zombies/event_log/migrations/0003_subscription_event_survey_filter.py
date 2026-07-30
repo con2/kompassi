@@ -4,12 +4,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("surveys", "0002_auto_20170321_2103"),
         ("event_log", "0002_auto_20170416_2048"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="subscription",
             name="event_survey_filter",

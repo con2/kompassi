@@ -21,12 +21,12 @@ def populate_response_dimension_value_new_value(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0002_populate"),
         ("forms", "0029_formseventmeta"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="responsedimensionvalue",
             name="new_value",

@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("payments", "0007_finalize_payments_organization_meta"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="checkoutpayment",
             options={"ordering": ("-created_at",)},

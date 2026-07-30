@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # Converts lmmz-style seat configuration to akx-style CSV
 
 import csv

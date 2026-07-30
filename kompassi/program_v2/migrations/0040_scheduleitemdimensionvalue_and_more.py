@@ -16,7 +16,7 @@ def populate_annotations(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0043_emailverificationtoken_language_and_more"),
         ("dimensions", "0011_dimensionvalue_is_subject_locked"),
         ("forms", "0046_rename_response_responsedimensionvalue_subject_and_more"),
@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="scheduleitem",
             name="annotations",

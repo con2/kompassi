@@ -13,7 +13,7 @@ class SignupExtraAfterpartyProxy(SignupExtra, CsvExportMixin):
     def personnel_class_name(self):
         from kompassi.badges.models import Badge
 
-        badge, unused = Badge.ensure(event=self.event, person=self.person)
+        badge, _unused = Badge.ensure(event=self.event, person=self.person)
         return badge.personnel_class.name if badge else ""
 
     @property

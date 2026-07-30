@@ -7,14 +7,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0043_emailverificationtoken_language_and_more"),
         ("dimensions", "0010_alter_universe_app"),
         ("forms", "0039_survey_cached_default_dimensions_and_more"),
         ("program_v2", "0038_alter_programv2eventmeta_contact_email"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="Registry",
             fields=[

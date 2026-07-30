@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0023_scheduleitem_favorited_by"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RemoveField(
             model_name="program",
             name="favorited_by",

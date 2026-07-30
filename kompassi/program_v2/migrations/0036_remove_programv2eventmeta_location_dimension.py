@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0035_remove_programv2eventmeta_importer_name"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RemoveField(
             model_name="programv2eventmeta",
             name="location_dimension",

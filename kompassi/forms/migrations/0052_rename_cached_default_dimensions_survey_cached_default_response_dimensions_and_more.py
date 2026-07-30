@@ -5,11 +5,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0051_rename_surveydefaultdimensionvalue_surveydefaultresponsedimensionvalue"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameField(
             model_name="survey",
             old_name="cached_default_dimensions",

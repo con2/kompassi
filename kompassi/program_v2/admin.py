@@ -26,7 +26,7 @@ class ProgramAdmin(admin.ModelAdmin):
     list_filter = ("event",)
     exclude = ("favorited_by",)
     autocomplete_fields = ("event",)
-    inlines = [ScheduleItemInline]
+    inlines = [ScheduleItemInline]  # noqa: RUF012
     readonly_fields = (
         "created_by",
         "cached_dimensions",

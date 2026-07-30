@@ -40,7 +40,7 @@ class CBACEntry(models.Model):
         return ", ".join(f"{key}={value}" for (key, value) in dict(user=self.user.username, **self.claims).items())
 
     class Meta:
-        indexes = [models.Index(fields=["user", "valid_until"])]
+        indexes = [models.Index(fields=["user", "valid_until"])]  # noqa: RUF012
 
     def save(self, *args, **kwargs):
         if not self.valid_from:

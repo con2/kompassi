@@ -59,14 +59,12 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         """
         Called when a new form is created for a survey using this workflow.
         """
-        pass
 
     def handle_form_update(self):
         """
         Called when a form of a survey using this workflow is created, deleted or updated.
         Not called for form field updates.
         """
-        pass
 
     def handle_new_response_phase1(
         self,

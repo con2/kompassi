@@ -7,12 +7,12 @@ import kompassi.labour.models.signup_extras
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0039_alter_person_birth_date_alter_person_email_and_more"),
         ("hitpoint2024", "0003_delete_signupextra"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="SignupExtra",
             fields=[

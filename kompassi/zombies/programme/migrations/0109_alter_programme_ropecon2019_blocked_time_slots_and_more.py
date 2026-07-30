@@ -7,7 +7,7 @@ import kompassi.access.utils
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0037_alter_organization_panel_css_class"),
         ("paikkala", "0016_zone_ordering"),
         ("ropecon2021", "0002_alter_signupextra_event_alter_signupextra_person"),
@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         ("programme", "0108_auto_20220313_1906"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="programme",
             name="ropecon2019_blocked_time_slots",

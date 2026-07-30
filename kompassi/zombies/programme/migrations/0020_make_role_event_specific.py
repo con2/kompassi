@@ -29,7 +29,7 @@ def make_role_event_specific(apps, schema_editor):
 
             old_role = programme_role.role
 
-            programme_role.role, unused = Role.objects.get_or_create(
+            programme_role.role, _unused = Role.objects.get_or_create(
                 personnel_class=personnel_class,
                 title=old_role.title,
                 defaults=dict(
@@ -45,11 +45,11 @@ def make_role_event_specific(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0016_auto_20160128_1805"),
         ("programme", "0019_auto_20160201_0003"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(make_role_event_specific, elidable=True),
     ]

@@ -36,7 +36,7 @@ class OrderProductForm(forms.ModelForm):
     @classmethod
     def get_for_order_and_product(cls, request, order, product, admin=False):
         if order.pk:
-            order_product, unused = OrderProduct.objects.get_or_create(order=order, product=product)
+            order_product, _unused = OrderProduct.objects.get_or_create(order=order, product=product)
         else:
             order_product = OrderProduct(order=order, product=product)
 
@@ -95,7 +95,7 @@ class CustomerForm(forms.ModelForm):
 
     class Meta:
         model = Customer
-        fields = [
+        fields = [  # noqa: RUF012
             "first_name",
             "last_name",
             "phone_number",

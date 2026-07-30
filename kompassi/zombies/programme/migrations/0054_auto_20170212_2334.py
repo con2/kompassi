@@ -5,11 +5,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0053_populate_tag_slug"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterUniqueTogether(
             name="tag",
             unique_together={("event", "slug")},

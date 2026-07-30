@@ -6,12 +6,12 @@ import kompassi.core.csv_export
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0001_initial"),
         ("core", "0001_initial"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="Badge",
             fields=[

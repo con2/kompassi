@@ -29,8 +29,8 @@ class PersonnelClass(models.Model):
     class Meta:
         verbose_name = _("personnel class")
         verbose_name_plural = _("personnel classes")
-        unique_together = [("event", "slug")]
-        indexes = [models.Index(fields=["event", "app_label"])]
+        unique_together = [("event", "slug")]  # noqa: RUF012
+        indexes = [models.Index(fields=["event", "app_label"])]  # noqa: RUF012
         ordering = ("event", "priority")
 
     @classmethod

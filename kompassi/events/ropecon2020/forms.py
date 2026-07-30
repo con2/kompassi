@@ -62,7 +62,7 @@ class SignupExtraForm(forms.ModelForm):
             "roster_publish_consent",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 
@@ -91,7 +91,7 @@ class ProgrammeSignupExtraForm(AlternativeFormMixin, forms.ModelForm):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 
@@ -219,7 +219,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
 
     class Meta:
         model = Programme
-        fields = [
+        fields = [  # noqa: RUF012
             "title",
             "rpg_system",
             "approximate_length",
@@ -248,7 +248,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             "notes_from_host",
         ]
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
@@ -449,7 +449,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2020_theme_dinosaurs",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             content_warnings=forms.Textarea,
             ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
@@ -675,7 +675,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "video_permission",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             ropecon2019_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
@@ -882,7 +882,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2020_theme_dinosaurs",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             content_warnings=forms.Textarea,
             ropecon2019_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
@@ -911,7 +911,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         model = Signup
         fields = ("job_title",)
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             job_categories=forms.CheckboxSelectMultiple,
         )
 
@@ -939,7 +939,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 

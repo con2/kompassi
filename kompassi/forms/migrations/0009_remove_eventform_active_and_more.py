@@ -6,12 +6,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0038_alter_person_discord_handle"),
         ("forms", "0008_eventform_language_globalform_language"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RemoveField(
             model_name="eventform",
             name="active",

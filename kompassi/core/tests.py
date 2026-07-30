@@ -64,7 +64,7 @@ class UtilsTestCase(TestCase):
             datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),
             datetime(2013, 8, 16, 3, 0, 0, tzinfo=tz),
             unless=(
-                lambda t: (datetime(2013, 8, 16, 1, 0, 0, tzinfo=tz) <= t <= datetime(2013, 8, 16, 2, 0, 0, tzinfo=tz))
+                lambda t: datetime(2013, 8, 16, 1, 0, 0, tzinfo=tz) <= t <= datetime(2013, 8, 16, 2, 0, 0, tzinfo=tz)
             ),
         ) == [
             datetime(2013, 8, 15, 23, 0, 0, tzinfo=tz),

@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0012_universe_app_name"),
         ("forms", "0052_rename_cached_default_dimensions_survey_cached_default_response_dimensions_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="SurveyDefaultInvolvementDimensionValue",
             fields=[

@@ -72,10 +72,12 @@ def admin_view(request, vars, event, format="screen"):
 
     if event.slug.startswith("ropecon"):
         miniworkshop_filters = Filter(request, "ropecon_miniworkshop")
-        miniworkshopinator = (
-            lambda is_miniworkshop: lambda programme: programme.form_used
-            and programme.form_used.slug == "tyopaja"
-            and (programme.category.slug == "workmini") == is_miniworkshop
+        miniworkshopinator = lambda is_miniworkshop: (
+            lambda programme: (
+                programme.form_used
+                and programme.form_used.slug == "tyopaja"
+                and (programme.category.slug == "workmini") == is_miniworkshop
+            )
         )
         miniworkshop_filters.add("1", "Figutyöpajat", miniworkshopinator(True))
         miniworkshop_filters.add("0", "Työpajat, ei figut", miniworkshopinator(False))

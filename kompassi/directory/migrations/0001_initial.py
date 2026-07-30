@@ -8,12 +8,12 @@ import kompassi.core.models.group_management_mixin
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0008_alter_user_username_max_length"),
         ("core", "0027_event_panel_css_class"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="DirectoryAccessGroup",
             fields=[

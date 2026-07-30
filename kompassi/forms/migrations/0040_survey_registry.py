@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0039_survey_cached_default_dimensions_and_more"),
         ("involvement", "0001_initial"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="survey",
             name="registry",

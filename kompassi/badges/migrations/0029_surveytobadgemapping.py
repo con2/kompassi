@@ -5,13 +5,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("badges", "0028_remove_badgeseventmeta_onboarding_instructions_markdown_and_more"),
         ("forms", "0038_survey_created_at_survey_created_by_and_more"),
         ("labour", "0042_signup_override_formatted_perks"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="SurveyToBadgeMapping",
             fields=[

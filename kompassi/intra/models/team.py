@@ -59,7 +59,7 @@ class Team(models.Model):
     def get_or_create_dummy(cls):
         from .intra_event_meta import IntraEventMeta
 
-        meta, unused = IntraEventMeta.get_or_create_dummy()
+        meta, _unused = IntraEventMeta.get_or_create_dummy()
         event = meta.event
 
         return cls.objects.get_or_create(
@@ -88,4 +88,4 @@ class Team(models.Model):
         verbose_name = _("Team")
         verbose_name_plural = _("Teams")
         ordering = ("event", "order", "name")
-        unique_together = [("event", "slug")]
+        unique_together = [("event", "slug")]  # noqa: RUF012

@@ -9,12 +9,12 @@ import kompassi.labour.models.signup_extras
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("enrollment", "0009_alter_enrollment_is_public_and_more"),
         ("core", "0037_alter_organization_panel_css_class"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="SignupExtra",
             fields=[

@@ -6,12 +6,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0010_alter_universe_app"),
         ("forms", "0042_survey_purpose_slug_alter_survey_anonymity"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="Projection",
             fields=[

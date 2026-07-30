@@ -4,13 +4,13 @@ import kompassi.core.models.group_management_mixin
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0016_person_allow_work_history_sharing"),
         ("auth", "0001_initial"),
         ("access", "0006_group_grant_active_until"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="AccessOrganizationMeta",
             fields=[

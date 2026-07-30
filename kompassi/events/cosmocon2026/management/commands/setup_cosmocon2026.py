@@ -151,7 +151,7 @@ class Setup:
 
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("ctora")
-        meta, _ = IntraEventMeta.objects.get_or_create(
+        _meta, _ = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,

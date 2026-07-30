@@ -28,20 +28,20 @@ class Setup:
     def setup_core(self):
         from kompassi.core.models import Event, Organization, Venue
 
-        self.venue, unused = Venue.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(
             name="Tampere-talo",
             defaults=dict(
                 name_inessive="Tampere-talossa",
             ),
         )
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="tampere-kuplii-ry",
             defaults=dict(
                 name="Tampere Kuplii ry",
                 homepage_url="http://ry.tamperekuplii.fi",
             ),
         )
-        self.event, unused = Event.objects.get_or_create(
+        self.event, _unused = Event.objects.get_or_create(
             slug="kuplii2025",
             defaults=dict(
                 name="Tampere Kuplii 2025",
@@ -74,7 +74,7 @@ class Setup:
         (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
 
         if self.test:
-            person, unused = Person.get_or_create_dummy()
+            person, _unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)  # type: ignore
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
@@ -96,7 +96,7 @@ class Setup:
         else:
             pass
 
-        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
+        labour_event_meta, _unused = LabourEventMeta.objects.get_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
         )
@@ -110,7 +110,7 @@ class Setup:
             ("Myyjä", "myyja", "badges"),
             ("Vieras", "vieras", "badges"),
         ]:
-            personnel_class, created = PersonnelClass.objects.get_or_create(
+            _personnel_class, _created = PersonnelClass.objects.get_or_create(
                 event=self.event,
                 slug=pc_slug,
                 defaults=dict(
@@ -186,8 +186,8 @@ class Setup:
             TimeBlock,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+        programme_admin_group, _hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        programme_event_meta, _unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 public=False,
@@ -206,7 +206,7 @@ class Setup:
             ("ohjelma", "Ohjelmanjärjestäjä", True),
         ]:
             personnel_class = PersonnelClass.objects.get(event=self.event, slug=pc_slug)
-            role, unused = Role.objects.get_or_create(
+            _role, _unused = Role.objects.get_or_create(
                 personnel_class=personnel_class,
                 title=role_title,
                 defaults=dict(
@@ -264,7 +264,7 @@ class Setup:
         from kompassi.badges.models import BadgesEventMeta
 
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, unused = BadgesEventMeta.objects.get_or_create(
+        _meta, _unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,
@@ -276,7 +276,7 @@ class Setup:
 
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("kuplitea")
-        meta, unused = IntraEventMeta.objects.get_or_create(
+        _meta, _unused = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
@@ -289,7 +289,7 @@ class Setup:
         ]:
             (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
 
-            team, created = Team.objects.get_or_create(
+            _team, _created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
                 defaults=dict(

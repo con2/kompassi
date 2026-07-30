@@ -214,8 +214,8 @@ class Badge(models.Model, CsvExportMixin):
         from kompassi.core.models import Person
         from kompassi.labour.models import PersonnelClass
 
-        person, unused = Person.get_or_create_dummy()
-        personnel_class, unused = PersonnelClass.get_or_create_dummy()
+        person, _unused = Person.get_or_create_dummy()
+        personnel_class, _unused = PersonnelClass.get_or_create_dummy()
 
         return cls.objects.get_or_create(
             person=person,

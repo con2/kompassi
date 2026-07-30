@@ -4,12 +4,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0008_alter_user_username_max_length"),
         ("tickets", "0023_auto_20180212_2301"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="ticketseventmeta",
             name="pos_access_group",

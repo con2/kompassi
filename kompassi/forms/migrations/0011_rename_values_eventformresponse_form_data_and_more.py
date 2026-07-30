@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0010_eventform_thank_you_message_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameField(
             model_name="eventformresponse",
             old_name="values",

@@ -10,12 +10,12 @@ import kompassi.labour.models.signup_extras
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0043_emailverificationtoken_language_and_more"),
         ("enrollment", "0009_alter_enrollment_is_public_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="AccessibilityWarning",
             fields=[

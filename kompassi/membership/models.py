@@ -154,7 +154,7 @@ class Membership(models.Model, CsvExportMixin):
         return f"{self.organization.name if self.organization else None}/{self.person.official_name if self.person else None}"
 
     @classmethod
-    def get_csv_fields(cls, unused_organization):
+    def get_csv_fields(cls, _unused_organization):
         return [
             (Person, "surname"),
             (Person, "official_first_names_or_first_name"),
@@ -250,7 +250,7 @@ class Membership(models.Model, CsvExportMixin):
     class Meta:
         verbose_name = "Jäsenyys"
         verbose_name_plural = "Jäsenyydet"
-        unique_together = [("organization", "person")]
+        unique_together = [("organization", "person")]  # noqa: RUF012
 
 
 class Term(models.Model):
@@ -413,7 +413,7 @@ class MembershipFeePayment(models.Model):
         verbose_name = "Jäsenmaksusuoritus"
         verbose_name_plural = "Jäsenmaksusuoritukset"
 
-        unique_together = [("term", "member")]
+        unique_together = [("term", "member")]  # noqa: RUF012
 
     def admin_get_organization(self):
         return self.term.organization if self.term else None

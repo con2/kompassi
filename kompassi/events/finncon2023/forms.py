@@ -44,7 +44,7 @@ class SignupExtraForm(forms.ModelForm):
             "free_text",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 
@@ -72,7 +72,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         model = Signup
         fields = ("job_title",)
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             job_categories=forms.CheckboxSelectMultiple,
         )
 
@@ -102,7 +102,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 
@@ -183,7 +183,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 

@@ -2,11 +2,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("access", "0003_slackaccess"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="slackaccess",
             options={"verbose_name": "Slack-kutsuautomaatti", "verbose_name_plural": "Slack-kutsuautomaatit"},

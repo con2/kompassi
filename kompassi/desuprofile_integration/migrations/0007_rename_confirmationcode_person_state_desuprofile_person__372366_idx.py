@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("desuprofile_integration", "0006_auto_20190909_2157"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameIndex(
             model_name="confirmationcode",
             new_name="desuprofile_person__372366_idx",

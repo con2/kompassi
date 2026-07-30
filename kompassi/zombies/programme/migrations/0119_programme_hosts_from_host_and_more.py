@@ -4,12 +4,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("solmukohta2024", "0001_initial"),
         ("programme", "0118_alter_programme_photography_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="programme",
             name="hosts_from_host",

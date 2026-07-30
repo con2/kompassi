@@ -5,13 +5,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0017_remove_annotation_dimensions_annotation_type_annotationdatatype_and_more"),
         ("paikkala", "0016_zone_ordering"),
         ("program_v2", "0048_programv2eventmeta_paikkala_default_max_tickets_per_batch_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="scheduleitem",
             name="paikkala_special_reservation_code",

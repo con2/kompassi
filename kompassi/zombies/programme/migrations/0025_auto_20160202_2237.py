@@ -36,8 +36,8 @@ def populate_slug(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0024_auto_20160202_2236"),
     ]
 
-    operations = [migrations.RunPython(populate_slug, elidable=True)]
+    operations = [migrations.RunPython(populate_slug, elidable=True)]  # noqa: RUF012

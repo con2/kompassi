@@ -21,10 +21,10 @@ def populate_payments_organization_meta(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("payments", "0005_payments_organization_meta"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(populate_payments_organization_meta),
     ]

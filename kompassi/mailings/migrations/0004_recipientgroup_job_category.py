@@ -6,12 +6,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0019_auto_20160207_2330"),
         ("mailings", "0003_message_channel_help"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="recipientgroup",
             name="job_category",

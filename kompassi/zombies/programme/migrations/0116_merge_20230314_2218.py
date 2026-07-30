@@ -4,9 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0115_alter_category_options_category_order"),
         ("programme", "0115_programme_ropecon2023_workshop_fee"),
     ]
 
-    operations = []
+    operations = []  # noqa: RUF012

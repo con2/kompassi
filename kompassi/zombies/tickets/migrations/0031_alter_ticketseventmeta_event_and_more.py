@@ -5,13 +5,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0012_alter_user_first_name_max_length"),
         ("core", "0035_person_discord_handle"),
         ("tickets", "0030_auto_20220418_1553"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="ticketseventmeta",
             name="event",

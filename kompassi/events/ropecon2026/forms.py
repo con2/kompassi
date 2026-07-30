@@ -58,7 +58,7 @@ class SignupExtraForm(forms.ModelForm):
             "roster_publish_consent",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
             languages=forms.CheckboxSelectMultiple,
         )
@@ -90,7 +90,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         model = Signup
         fields = ("job_title",)
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             job_categories=forms.CheckboxSelectMultiple,
         )
 
@@ -118,7 +118,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 
@@ -193,7 +193,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
             "roster_publish_consent",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
             languages=forms.CheckboxSelectMultiple,
         )

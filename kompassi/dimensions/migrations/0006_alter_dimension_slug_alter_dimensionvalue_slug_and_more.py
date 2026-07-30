@@ -7,11 +7,11 @@ import kompassi.dimensions.models.dimension
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0005_alter_dimension_value_ordering"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="dimension",
             name="slug",

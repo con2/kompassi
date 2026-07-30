@@ -10,11 +10,11 @@ def populate_accommodation_limit_group(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets", "0008_auto_20151108_1905"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="accommodationinformation",
             name="limit_groups",

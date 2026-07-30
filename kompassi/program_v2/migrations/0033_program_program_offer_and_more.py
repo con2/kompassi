@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0038_survey_created_at_survey_created_by_and_more"),
         ("program_v2", "0032_remove_programv2eventmeta_skip_offer_form_selection"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="program",
             name="program_offer",

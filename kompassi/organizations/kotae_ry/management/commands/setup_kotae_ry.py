@@ -19,7 +19,7 @@ class Setup:
         self.setup_access()
 
     def setup_core(self):
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="kotae-ry",
             defaults=dict(
                 name="Kotae ry",
@@ -47,7 +47,7 @@ Kotae ry:n Y-tunnus on 3364741-7.
         (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
         (members_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["members"])
 
-        self.meta, created = MembershipOrganizationMeta.objects.get_or_create(
+        self.meta, _created = MembershipOrganizationMeta.objects.get_or_create(
             organization=self.organization,
             defaults=dict(
                 admin_group=membership_admin_group,
@@ -78,7 +78,7 @@ Yhdistyksen varsinaiseksi jäseneksi voi päästä luonnollinen henkilö tai oik
     def setup_access(self):
         (admin_group,) = AccessOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
 
-        meta, created = AccessOrganizationMeta.objects.get_or_create(
+        _meta, created = AccessOrganizationMeta.objects.get_or_create(
             organization=self.organization,
             defaults=dict(
                 admin_group=admin_group,

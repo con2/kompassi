@@ -8,11 +8,11 @@ import kompassi.labour.models.signup_extras
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0033_auto_20170802_1500"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="SignupExtra",
             fields=[

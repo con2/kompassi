@@ -11,11 +11,11 @@ def populate_cached_end_time(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0012_scheduleitem_cached_end_time"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(
             populate_cached_end_time,
         ),

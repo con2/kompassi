@@ -12,11 +12,11 @@ def fix_signup_extra_form_class_paths(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0022_rename_empty_signup_extra"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="alternativesignupform",
             name="signup_extra_form_class_path",

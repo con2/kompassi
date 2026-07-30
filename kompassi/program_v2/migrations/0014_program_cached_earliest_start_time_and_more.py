@@ -29,11 +29,11 @@ def populate_cached_times(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0013_alter_scheduleitem_cached_end_time"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="program",
             name="cached_earliest_start_time",

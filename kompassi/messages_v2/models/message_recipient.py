@@ -54,7 +54,7 @@ class MessageRecipient(models.Model):
 
     class Meta:
         ordering = ("-sent_at",)
-        constraints = [
+        constraints = [  # noqa: RUF012
             models.UniqueConstraint(
                 fields=["message", "person"],
                 condition=models.Q(involvement__isnull=True),

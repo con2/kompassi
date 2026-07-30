@@ -20,7 +20,7 @@ class TicketsV2EventMetaForm(forms.ModelForm):
             "terms_and_conditions_url_fi",
             "terms_and_conditions_url_sv",
         )
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             terms_and_conditions_url_en=forms.TextInput,
             terms_and_conditions_url_fi=forms.TextInput,
             terms_and_conditions_url_sv=forms.TextInput,

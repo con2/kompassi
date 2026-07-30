@@ -12,7 +12,7 @@ from django.utils.encoding import force_str
 from django.utils.translation import templatize
 from pypugjs import Compiler, process
 
-ACCEPTABLE_FILENAMES_RE = re.compile(r"^.*\.(js|py|pug|html)$", re.I)
+ACCEPTABLE_FILENAMES_RE = re.compile(r"^.*\.(js|py|pug|html)$", re.IGNORECASE)
 
 
 def extract_template(fileobj, keywords, comment_tags, options):

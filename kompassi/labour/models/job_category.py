@@ -115,7 +115,7 @@ class JobCategory(models.Model):
                         personnel_class.slug,
                     )
 
-                    new_personnel_class, unused = PersonnelClass.objects.get_or_create(
+                    new_personnel_class, _unused = PersonnelClass.objects.get_or_create(
                         event=target_event,
                         slug=personnel_class_slug,
                         defaults=omit_keys(vars(personnel_class), "_state", "id", "event_id", "slug"),
@@ -144,7 +144,7 @@ class JobCategory(models.Model):
         verbose_name_plural = _("job categories")
         ordering = ("event", "name")
 
-        unique_together = [
+        unique_together = [  # noqa: RUF012
             ("event", "slug"),
         ]
 
@@ -171,9 +171,9 @@ class JobCategory(models.Model):
     def get_or_create_dummies(cls):
         from kompassi.core.models import Event
 
-        event, unused = Event.get_or_create_dummy()
-        jc1, unused = cls.objects.get_or_create(event=event, name="Dummy 1", slug="dummy-1")
-        jc2, unused = cls.objects.get_or_create(event=event, name="Dummy 2", slug="dummy-2")
+        event, _unused = Event.get_or_create_dummy()
+        jc1, _unused = cls.objects.get_or_create(event=event, name="Dummy 1", slug="dummy-1")
+        jc2, _unused = cls.objects.get_or_create(event=event, name="Dummy 2", slug="dummy-2")
 
         return [jc1, jc2]
 

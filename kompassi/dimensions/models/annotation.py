@@ -2,15 +2,11 @@ from __future__ import annotations
 
 from enum import Flag
 from logging import getLogger
-from typing import TYPE_CHECKING
 
 from django.db import models
 from django_enum import EnumField
 
 from .enums import AnnotationAppliesTo, AnnotationDataType, AnnotationFlags
-
-if TYPE_CHECKING:
-    pass
 
 logger = getLogger(__name__)
 

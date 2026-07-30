@@ -32,20 +32,20 @@ class Setup:
     def setup_core(self):
         from kompassi.core.models import Event, Organization, Venue
 
-        self.venue, unused = Venue.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(
             name="Kuopion musiikkikeskus",
             defaults=dict(
                 name_inessive="Kuopion musiikkikeskuksessa",
             ),
         )
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="nekocon-ry",
             defaults=dict(
                 name="Nekocon ry",
                 homepage_url="https://nekocon.fi",
             ),
         )
-        self.event, unused = Event.objects.get_or_create(
+        self.event, _unused = Event.objects.get_or_create(
             slug="nekocon2022",
             defaults=dict(
                 name="Nekocon (2022)",
@@ -81,7 +81,7 @@ class Setup:
         if self.test:
             from kompassi.core.models import Person
 
-            person, unused = Person.get_or_create_dummy()
+            person, _unused = Person.get_or_create_dummy()
             labour_admin_group.user_set.add(person.user)
 
         content_type = ContentType.objects.get_for_model(SignupExtra)
@@ -101,7 +101,7 @@ class Setup:
                 registration_closes=t + timedelta(days=60),
             )
 
-        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
+        labour_event_meta, _unused = LabourEventMeta.objects.get_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
         )
@@ -114,7 +114,7 @@ class Setup:
             ("Media", "media", "badges"),
             ("Myyjä", "myyja", "badges"),
         ]:
-            personnel_class, created = PersonnelClass.objects.get_or_create(
+            _personnel_class, _created = PersonnelClass.objects.get_or_create(
                 event=self.event,
                 slug=pc_slug,
                 defaults=dict(
@@ -232,10 +232,10 @@ class Setup:
                 ticket_sales_ends=t + timedelta(days=60),
             )
 
-        meta, unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+        _meta, _unused = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
 
         def limit_group(description, limit):
-            limit_group, unused = LimitGroup.objects.get_or_create(
+            limit_group, _unused = LimitGroup.objects.get_or_create(
                 event=self.event,
                 description=description,
                 defaults=dict(limit=limit),
@@ -304,7 +304,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, _unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)
@@ -322,8 +322,8 @@ class Setup:
             TimeBlock,
         )
 
-        programme_admin_group, hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
-        programme_event_meta, unused = ProgrammeEventMeta.objects.get_or_create(
+        programme_admin_group, _hosts_group = ProgrammeEventMeta.get_or_create_groups(self.event, ["admins", "hosts"])
+        _programme_event_meta, _unused = ProgrammeEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 public=False,
@@ -334,7 +334,7 @@ class Setup:
 
         personnel_class = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
 
-        role, unused = Role.objects.get_or_create(
+        _role, _unused = Role.objects.get_or_create(
             personnel_class=personnel_class,
             title="Ohjelmanjärjestäjä",
             defaults=dict(
@@ -382,7 +382,7 @@ class Setup:
             for hour_start_time in full_hours_between(time_block.start_time, time_block.end_time)[:-1]:
                 SpecialStartTime.objects.get_or_create(event=self.event, start_time=hour_start_time.replace(minute=30))
 
-        form, created = AlternativeProgrammeForm.objects.get_or_create(
+        _form, _created = AlternativeProgrammeForm.objects.get_or_create(
             event=self.event,
             slug="default",
             defaults=dict(
@@ -398,7 +398,7 @@ class Setup:
 
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("conitea")
-        meta, unused = IntraEventMeta.objects.get_or_create(
+        _meta, _unused = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
@@ -411,7 +411,7 @@ class Setup:
         ]:
             (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
 
-            team, created = Team.objects.get_or_create(
+            _team, _created = Team.objects.get_or_create(
                 event=self.event,
                 slug=team_slug,
                 defaults=dict(
@@ -425,7 +425,7 @@ class Setup:
         from kompassi.badges.models import BadgesEventMeta
 
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, unused = BadgesEventMeta.objects.get_or_create(
+        _meta, _unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,

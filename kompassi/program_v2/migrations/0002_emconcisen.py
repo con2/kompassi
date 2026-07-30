@@ -5,11 +5,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0001_initial"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameField(
             model_name="programdimensionvalue",
             old_name="dimension_value",

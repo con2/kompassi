@@ -6,12 +6,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0016_auto_20160128_1805"),
         ("programme", "0017_freeformorganizeradminproxy"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="role",
             options={"ordering": ("priority", "title"), "verbose_name": "role", "verbose_name_plural": "roles"},

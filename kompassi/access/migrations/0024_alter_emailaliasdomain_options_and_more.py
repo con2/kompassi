@@ -25,12 +25,12 @@ def populate_variant(app_config, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("access", "0023_alter_privilege_slug"),
         ("core", "0043_emailverificationtoken_language_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="emailaliasdomain",
             options={},

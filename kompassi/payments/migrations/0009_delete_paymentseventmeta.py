@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("payments", "0008_auto_20200723_2058"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.DeleteModel(
             name="PaymentsEventMeta",
         ),

@@ -14,11 +14,11 @@ def populate_slug(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0018_rename_other_fields_program_annotations"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="scheduleitem",
             name="slug",

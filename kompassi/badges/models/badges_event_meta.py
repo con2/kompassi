@@ -33,7 +33,7 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
     def get_or_create_dummy(cls):
         from kompassi.core.models import Event
 
-        event, unused = Event.get_or_create_dummy()
+        event, _unused = Event.get_or_create_dummy()
         (group,) = cls.get_or_create_groups(event, ["admins"])
         return cls.objects.get_or_create(
             event=event,

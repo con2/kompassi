@@ -73,12 +73,12 @@ class LimitGroup(models.Model):
     def get_or_create_dummies(cls):
         from kompassi.core.models import Event
 
-        event, unused = Event.get_or_create_dummy()
+        event, _unused = Event.get_or_create_dummy()
 
-        limit_saturday, unused = cls.objects.get_or_create(
+        limit_saturday, _unused = cls.objects.get_or_create(
             event=event, description="Testing saturday", defaults=dict(limit=5000)
         )
-        limit_sunday, unused = cls.objects.get_or_create(
+        limit_sunday, _unused = cls.objects.get_or_create(
             event=event, description="Testing sunday", defaults=dict(limit=5000)
         )
 

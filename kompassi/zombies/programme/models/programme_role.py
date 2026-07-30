@@ -47,7 +47,7 @@ class ProgrammeRole(models.Model, CsvExportMixin):
     class Meta:
         verbose_name = _("Programme host")
         verbose_name_plural = _("Programme hosts")
-        unique_together = [("person", "programme")]
+        unique_together = [("person", "programme")]  # noqa: RUF012
 
     @classmethod
     def get_or_create_dummy(
@@ -58,16 +58,16 @@ class ProgrammeRole(models.Model, CsvExportMixin):
         event: Event | None = None,
     ):
         if event is None:
-            event, unused = Event.get_or_create_dummy()
+            event, _unused = Event.get_or_create_dummy()
 
         if person is None:
-            person, unused = Person.get_or_create_dummy()
+            person, _unused = Person.get_or_create_dummy()
 
         if role is None:
-            role, unused = Role.get_or_create_dummy(event=event)
+            role, _unused = Role.get_or_create_dummy(event=event)
 
         if programme is None:
-            programme, unused = Programme.get_or_create_dummy(event=event)
+            programme, _unused = Programme.get_or_create_dummy(event=event)
 
         programme_role, created = ProgrammeRole.objects.get_or_create(
             person=person,

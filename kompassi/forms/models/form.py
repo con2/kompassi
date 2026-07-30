@@ -60,7 +60,7 @@ class Form(models.Model):
     all_responses: models.QuerySet[Response]
 
     class Meta:
-        unique_together = [("event", "survey", "language")]
+        unique_together = [("event", "survey", "language")]  # noqa: RUF012
 
     def __str__(self):
         return f"{self.event.slug if self.event else None}/{self.survey.slug}-{self.language}"

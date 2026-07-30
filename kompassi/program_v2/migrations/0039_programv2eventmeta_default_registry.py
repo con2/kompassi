@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("involvement", "0001_initial"),
         ("program_v2", "0038_alter_programv2eventmeta_contact_email"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="programv2eventmeta",
             name="default_registry",

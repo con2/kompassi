@@ -7,12 +7,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("programme", "0012_auto_20160124_1457"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="invitation",
             name="created_by",

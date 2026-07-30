@@ -18,7 +18,7 @@ class Setup:
         self.setup_involvement()
 
     def setup_core(self):
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="ropecon-ry",
             defaults=dict(
                 name="Ropecon ry",

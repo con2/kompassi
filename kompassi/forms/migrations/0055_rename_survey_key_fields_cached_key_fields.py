@@ -24,11 +24,11 @@ def backfill_is_key_field(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0054_projection_special_fields"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameField(
             model_name="survey",
             old_name="key_fields",

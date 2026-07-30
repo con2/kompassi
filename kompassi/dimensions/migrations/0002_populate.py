@@ -1,11 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from django.db import migrations
-
-if TYPE_CHECKING:
-    pass
 
 
 def old_value_ordering_to_new(old_value_ordering: str) -> int:
@@ -150,13 +145,13 @@ def populate_from_program_v2(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0029_formseventmeta"),
         ("program_v2", "0025_scheduleitem_created_at_scheduleitem_updated_at"),
         ("dimensions", "0001_initial"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(
             populate_from_forms,
             reverse_code=migrations.RunPython.noop,

@@ -33,8 +33,8 @@ def populate_recipient_group_job_category(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("mailings", "0004_recipientgroup_job_category"),
     ]
 
-    operations = [migrations.RunPython(populate_recipient_group_job_category, elidable=True)]
+    operations = [migrations.RunPython(populate_recipient_group_job_category, elidable=True)]  # noqa: RUF012

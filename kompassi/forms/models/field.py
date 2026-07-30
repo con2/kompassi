@@ -158,7 +158,7 @@ class Field(pydantic.BaseModel, populate_by_name=True):
     def from_dimension(
         cls,
         dimension: Dimension,
-        type: Literal[FieldType.DIMENSION_SINGLE_SELECT] | Literal[FieldType.DIMENSION_MULTI_SELECT],
+        type: Literal[FieldType.DIMENSION_SINGLE_SELECT, FieldType.DIMENSION_MULTI_SELECT],
         *,
         language: str | None = None,
         slug_prefix: str | None = None,

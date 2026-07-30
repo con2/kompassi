@@ -6,12 +6,12 @@ import kompassi.core.csv_export
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("paikkala", "0016_zone_ordering"),
         ("programme", "0094_programme_is_paikkala_public"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="PaikkalaTicketCsvExportProxy",
             fields=[],

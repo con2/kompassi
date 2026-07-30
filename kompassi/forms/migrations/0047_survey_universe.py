@@ -39,12 +39,12 @@ def populate_survey_universe(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0011_dimensionvalue_is_subject_locked"),
         ("forms", "0046_rename_response_responsedimensionvalue_subject_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="survey",
             name="universe",

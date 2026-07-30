@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tracon2024", "0006_alter_signupextra_email_alias"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.DeleteModel(
             name="SignupExtraAfterpartyProxy",
         ),

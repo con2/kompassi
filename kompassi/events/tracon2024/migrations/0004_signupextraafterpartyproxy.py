@@ -6,11 +6,11 @@ import kompassi.core.csv_export
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tracon2024", "0003_alter_signupextra_shirt_size"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="SignupExtraAfterpartyProxy",
             fields=[],

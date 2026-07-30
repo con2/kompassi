@@ -7,13 +7,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0007_eventform_eventformresponse_globalform_and_more"),
         ("core", "0038_alter_person_discord_handle"),
         ("program_v2", "0002_emconcisen"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="OfferForm",
             fields=[

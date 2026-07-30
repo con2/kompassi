@@ -14,10 +14,10 @@ def populate_frozen(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0036_programme_frozen"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(populate_frozen, elidable=True),
     ]

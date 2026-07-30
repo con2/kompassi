@@ -17,20 +17,20 @@ class Setup:
         self.setup_tickets_v2()
 
     def setup_core(self):
-        self.venue, unused = Venue.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(
             name="Pohjankartanon koulu",
             defaults=dict(
                 name_inessive="Pohjankartanon koululla",
             ),
         )
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="pohjoisten-conien-kyhaajat-ry",
             defaults=dict(
                 name="Pohjoisten conien kyhääjät ry",
                 homepage_url="http://matsucon.fi/pocky-ry/",
             ),
         )
-        self.event, unused = Event.objects.get_or_create(
+        self.event, _unused = Event.objects.get_or_create(
             slug="matsucon2025",
             defaults=dict(
                 name="Matsucon 2025",

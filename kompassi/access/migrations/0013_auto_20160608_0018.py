@@ -8,12 +8,12 @@ import kompassi.access.models.email_alias_mixin
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0022_auto_20160202_2235"),
         ("access", "0012_auto_20160607_2224"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="InternalEmailAlias",
             fields=[

@@ -6,12 +6,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("program_v2", "0004_offerform_languages_delete_offerformlanguage"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="program",
             name="created_by",

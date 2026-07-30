@@ -7,7 +7,7 @@ from ..models.survey_to_badge import SurveyToBadgeMapping
 
 
 def get_priority(pair):
-    personnel_class, job_title = pair
+    personnel_class, _job_title = pair
     return personnel_class.priority
 
 

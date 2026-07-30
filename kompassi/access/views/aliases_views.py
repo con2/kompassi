@@ -24,7 +24,7 @@ def access_profile_aliases_view(request):
             emailaliastype__email_aliases__person=request.user.person,
         )
 
-        newly_created_password, unused = SMTPPassword.create_for_domain_and_person(domain, request.user.person)
+        newly_created_password, _unused = SMTPPassword.create_for_domain_and_person(domain, request.user.person)
     else:
         newly_created_password = None
 

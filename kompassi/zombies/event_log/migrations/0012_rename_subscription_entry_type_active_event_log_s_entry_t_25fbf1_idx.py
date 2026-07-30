@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("event_log", "0011_remove_entry_event_survey_result_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameIndex(
             model_name="subscription",
             new_name="event_log_s_entry_t_25fbf1_idx",

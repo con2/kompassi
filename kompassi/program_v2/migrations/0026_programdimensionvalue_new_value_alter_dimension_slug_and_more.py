@@ -21,12 +21,12 @@ def populate_program_dimension_value_new_value(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0002_populate"),
         ("program_v2", "0025_scheduleitem_created_at_scheduleitem_updated_at"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="programdimensionvalue",
             name="new_value",

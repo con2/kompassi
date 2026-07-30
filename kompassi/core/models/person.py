@@ -146,7 +146,7 @@ class Person(models.Model):
     pk: int
 
     class Meta:
-        ordering = ["surname"]
+        ordering = ["surname"]  # noqa: RUF012
         verbose_name = "Henkilö"
         verbose_name_plural = "Henkilöt"
 
@@ -260,7 +260,7 @@ class Person(models.Model):
             last_name = "Mahtinen"
             nick = "Mahti"
 
-        user, unused = User.objects.get_or_create(
+        user, _unused = User.objects.get_or_create(
             username=username,
             defaults=dict(
                 first_name=first_name,

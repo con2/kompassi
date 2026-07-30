@@ -306,7 +306,7 @@ def person_qualify_view(request, qualification):
     if qualification.qualification_extra_model:
         return redirect("labour:person_qualification_view", qualification.slug)
 
-    person_qualification, created = PersonQualification.objects.get_or_create(
+    _person_qualification, created = PersonQualification.objects.get_or_create(
         person=person, qualification=qualification
     )
 
@@ -321,12 +321,9 @@ def person_disqualify_view(request, qualification):
     person = request.user.person
     qualification = get_object_or_404(Qualification, slug=qualification)
 
-    try:
-        person_qualification = get_object_or_404(PersonQualification, person=person, qualification=qualification)
-        person_qualification.delete()
-        messages.success(request, _("The qualification has been removed."))
-    except Exception:
-        pass
+    person_qualification = get_object_or_404(PersonQualification, person=person, qualification=qualification)
+    person_qualification.delete()
+    messages.success(request, _("The qualification has been removed."))
 
     return redirect("labour:qualifications_view")
 

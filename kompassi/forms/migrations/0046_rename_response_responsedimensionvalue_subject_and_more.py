@@ -6,13 +6,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0011_dimensionvalue_is_subject_locked"),
         ("forms", "0045_rename_created_at_response_revision_created_at_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameField(
             model_name="responsedimensionvalue",
             old_name="response",

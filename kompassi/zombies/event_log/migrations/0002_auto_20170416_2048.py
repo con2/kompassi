@@ -4,13 +4,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0023_auto_20160704_2155"),
         ("surveys", "0002_auto_20170321_2103"),
         ("event_log", "0001_initial"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="entry",
             name="event",

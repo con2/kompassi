@@ -46,8 +46,8 @@ def membership_admin_members_view(request, vars, organization, format="screen"):
     current_term = organization.membership_organization_meta.get_current_term()
     if current_term:
         payment_filters = Filter(request, "paid")
-        paymentinator = (
-            lambda is_paid: lambda member: (term := member.get_payment_for_term()) and term.is_paid == is_paid
+        paymentinator = lambda is_paid: (
+            lambda member: (term := member.get_payment_for_term()) and term.is_paid == is_paid
         )
         payment_filters.add("1", "Maksettu", paymentinator(True))
         payment_filters.add("0", "Ei maksettu", paymentinator(False))

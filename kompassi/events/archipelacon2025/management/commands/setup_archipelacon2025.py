@@ -12,21 +12,21 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         tz = get_current_timezone()
 
-        venue, unused = Venue.objects.get_or_create(
+        venue, _unused = Venue.objects.get_or_create(
             name="Alandica Kultur och Kongress (Mariehamn)",
             defaults=dict(
                 name_inessive="Alandicassa",
             ),
         )
 
-        organization, unused = Organization.objects.get_or_create(
+        organization, _unused = Organization.objects.get_or_create(
             slug="maa-ja-ilma-ry",
             defaults=dict(
                 name="Maa ja ilma ry",
             ),
         )
 
-        event, unused = Event.objects.update_or_create(
+        event, _unused = Event.objects.update_or_create(
             slug="archipelacon2025",
             defaults=dict(
                 name="Archipelacon 2 (2025)",

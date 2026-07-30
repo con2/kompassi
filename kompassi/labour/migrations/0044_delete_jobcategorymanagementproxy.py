@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0043_alter_personnelclass_event"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.DeleteModel(
             name="JobCategoryManagementProxy",
         ),

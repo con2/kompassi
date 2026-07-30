@@ -5,13 +5,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0039_alter_person_birth_date_alter_person_email_and_more"),
         ("enrollment", "0009_alter_enrollment_is_public_and_more"),
         ("popcult2020", "0001_initial"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="signupextra",
             name="event",

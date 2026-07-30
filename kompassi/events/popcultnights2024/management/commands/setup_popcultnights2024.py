@@ -28,20 +28,20 @@ class Setup:
     def setup_core(self):
         from kompassi.core.models import Event, Organization, Venue
 
-        self.venue, unused = Venue.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(
             name="Tiivistämö",
             defaults=dict(
                 name_inessive="Tiivistämöllä",
             ),
         )
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="finnish-fandom-conventions-ry",
             defaults=dict(
                 name="Finnish Fandom Conventions ry",
                 homepage_url="http://popcult.fi",
             ),
         )
-        self.event, unused = Event.objects.get_or_create(
+        self.event, _unused = Event.objects.get_or_create(
             slug="popcultnights2024",
             defaults=dict(
                 name="Popcult Nights: Halloween Edition (2024)",
@@ -115,7 +115,7 @@ class Setup:
             name = product_info.pop("name")
             limit_groups = product_info.pop("limit_groups")
 
-            product, unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
+            product, _unused = Product.objects.get_or_create(event=self.event, name=name, defaults=product_info)
 
             if not product.limit_groups.exists():
                 product.limit_groups.set(limit_groups)

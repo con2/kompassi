@@ -22,7 +22,7 @@ class PaymentsOrganizationMeta(models.Model):
         from kompassi.core.models import Organization
 
         if organization is None:
-            organization, uwused = Organization.get_or_create_dummy()
+            organization, _uwused = Organization.get_or_create_dummy()
 
         return cls.objects.get_or_create(
             organization=organization,

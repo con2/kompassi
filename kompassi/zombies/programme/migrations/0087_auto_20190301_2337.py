@@ -4,12 +4,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("ropecon2019", "0002_auto_20190226_2146"),
         ("programme", "0086_auto_20190301_0927"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="programme",
             name="ropecon2019_preferred_time_slots",

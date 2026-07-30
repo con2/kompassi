@@ -5,14 +5,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0012_alter_user_first_name_max_length"),
         ("dimensions", "0012_universe_app_name"),
         ("involvement", "0004_invitation_cached_dimensions"),
         ("labour", "0042_signup_override_formatted_perks"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="involvement",
             name="universe",

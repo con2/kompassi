@@ -104,7 +104,7 @@ class Product(models.Model):
 
         if limit_groups is None:
             limit_groups = []
-        meta, unused = TicketsEventMeta.get_or_create_dummy()
+        meta, _unused = TicketsEventMeta.get_or_create_dummy()
 
         dummy, created = cls.objects.get_or_create(
             event=meta.event,
@@ -129,9 +129,9 @@ class Product(models.Model):
 
         [limit_saturday, limit_sunday] = LimitGroup.get_or_create_dummies()
 
-        weekend, unused = cls.get_or_create_dummy("Weekend test product", [limit_saturday, limit_sunday])
-        saturday, unused = cls.get_or_create_dummy("Saturday test product", [limit_saturday])
-        sunday, unused = cls.get_or_create_dummy("Sunday test product", [limit_sunday])
+        weekend, _unused = cls.get_or_create_dummy("Weekend test product", [limit_saturday, limit_sunday])
+        saturday, _unused = cls.get_or_create_dummy("Saturday test product", [limit_saturday])
+        sunday, _unused = cls.get_or_create_dummy("Sunday test product", [limit_sunday])
 
         return [weekend, saturday, sunday]
 

@@ -7,17 +7,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets_v2", "0007_no_receipt_on_cancel"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="product",
             name="vat_percentage",
             field=models.DecimalField(
                 decimal_places=2,
-                default=Decimal("0"),
+                default=Decimal(0),
                 help_text="VAT percentage applied to this product. Prices are inclusive of VAT.",
                 max_digits=4,
                 validators=[django.core.validators.MinValueValidator(Decimal(0))],

@@ -19,20 +19,20 @@ class Setup:
     def setup_core(self):
         from kompassi.core.models import Event, Organization, Venue
 
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="tracon-ry",
             defaults=dict(
                 name="Tracon ry",
                 homepage_url="https://ry.tracon.fi",
             ),
         )
-        self.venue, unused = Venue.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(
             name="Pormestarisauna (Tampere)",
             defaults=dict(
                 name_inessive="Pormestarisaunalla Tampereella",  # not actually inessive lol
             ),
         )
-        self.event, unused = Event.objects.get_or_create(
+        self.event, _unused = Event.objects.get_or_create(
             slug="tracrossf2019",
             defaults=dict(
                 name="Tracross Frontier (2019)",
@@ -71,7 +71,7 @@ class Setup:
                 enrollment_closes=self.event.end_time,
             )
 
-        enrollment_event_meta, unused = EnrollmentEventMeta.objects.get_or_create(
+        _enrollment_event_meta, _unused = EnrollmentEventMeta.objects.get_or_create(
             event=self.event,
             defaults=enrollment_event_meta_defaults,
         )

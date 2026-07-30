@@ -4,12 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0039_alter_person_birth_date_alter_person_email_and_more"),
         ("forms", "0013_remove_eventsurvey_active_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameModel(
             old_name="EventSurvey",
             new_name="Survey",

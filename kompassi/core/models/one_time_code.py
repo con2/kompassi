@@ -107,6 +107,6 @@ class OneTimeCode(models.Model, OneTimeCodeMixin):
 
     class Meta:
         abstract = True
-        indexes = [
+        indexes = [  # noqa: RUF012
             models.Index(fields=["person", "state"]),
         ]

@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0037_alter_organization_panel_css_class"),
         ("tracon2022", "0002_auto_20220530_1429"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="signupextra",
             name="afterparty_policy",

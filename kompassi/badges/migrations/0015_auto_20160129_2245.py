@@ -7,12 +7,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("badges", "0014_auto_20160129_2230"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="badge",
             name="created_by",

@@ -9,11 +9,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets", "0020_auto_20160706_2207"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="customer",
             options={"verbose_name": "customer", "verbose_name_plural": "customers"},

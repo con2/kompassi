@@ -57,17 +57,17 @@ class Room(models.Model):
             return False
 
     class Meta:
-        ordering = ["event", "name"]
+        ordering = ["event", "name"]  # noqa: RUF012
         verbose_name = _("Room")
         verbose_name_plural = _("Rooms")
-        unique_together = [
+        unique_together = [  # noqa: RUF012
             ("event", "slug"),
         ]
 
     @classmethod
     def get_or_create_dummy(cls, event: Event | None = None):
         if event is None:
-            event, unused = Event.get_or_create_dummy()
+            event, _unused = Event.get_or_create_dummy()
 
         return cls.objects.get_or_create(
             event=event,

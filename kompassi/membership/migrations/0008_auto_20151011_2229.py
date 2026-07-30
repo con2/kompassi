@@ -2,12 +2,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0014_auto_20151011_2016"),
         ("membership", "0007_auto_20151011_2109"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="MembershipFeePayment",
             fields=[

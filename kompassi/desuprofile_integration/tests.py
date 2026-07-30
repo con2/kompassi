@@ -98,7 +98,7 @@ class DesuprofileValidationTestCase(TestCase):
 
 class DesuprogrammeFeedbackTestCase(TestCase):
     def test_desuprogramme_import(self):
-        programme, unused = Programme.get_or_create_dummy()
+        programme, _unused = Programme.get_or_create_dummy()
         payload = dict(
             feedback="Oli ihan kakka",
             desucon_username="japsu",
@@ -115,7 +115,7 @@ class DesuprogrammeFeedbackTestCase(TestCase):
 
     def test_hilzun_400(self):
         json = '{"feedback": "Test", "anonymous": true, "ip_address": "127.0.0.1", "desucon_username": ""}'
-        programme, unused = Programme.get_or_create_dummy()
+        programme, _unused = Programme.get_or_create_dummy()
 
         feedback = DesuprogrammeFeedback.from_json(json)
         feedback.save(programme)

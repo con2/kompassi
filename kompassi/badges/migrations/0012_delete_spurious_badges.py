@@ -10,8 +10,8 @@ def delete_spurious_badges(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("badges", "0011_make_denormalized_fields_mandatory"),
     ]
 
-    operations = [migrations.RunPython(delete_spurious_badges, elidable=True)]
+    operations = [migrations.RunPython(delete_spurious_badges, elidable=True)]  # noqa: RUF012

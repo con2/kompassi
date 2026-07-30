@@ -11,13 +11,13 @@ class Command(BaseCommand):
 
         tz = tzlocal()
         organization = Organization.objects.get(slug="ropecon-ry")
-        venue, unused = Venue.objects.get_or_create(
+        venue, _unused = Venue.objects.get_or_create(
             name="Ilmoitetaan myöhemmin",
             defaults=dict(
                 name_inessive="Ilmoitetaan myöhemmin",
             ),
         )
-        event, unused = Event.objects.get_or_create(
+        event, _unused = Event.objects.get_or_create(
             slug="ropeconjvp2021",
             defaults=dict(
                 public=False,

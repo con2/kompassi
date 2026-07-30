@@ -10,12 +10,12 @@ import kompassi.core.models.group_management_mixin
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0023_auto_20160704_2155"),
         ("auth", "0007_alter_validators_add_error_messages"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="Enrollment",
             fields=[

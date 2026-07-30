@@ -92,7 +92,7 @@ def test_recipient_group():
 
 @pytest.mark.django_db
 def test_labour_excel_export():
-    signup, exists = Signup.get_or_create_dummy()
+    signup, _exists = Signup.get_or_create_dummy()
     signups = Signup.objects.filter(id=signup.id)
 
     with BytesIO() as output_file:

@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0039_alter_person_birth_date_alter_person_email_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameIndex(
             model_name="emailverificationtoken",
             new_name="core_emailv_person__722147_idx",

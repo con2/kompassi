@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0002_populate"),
         ("forms", "0030_responsedimensionvalue_new_value_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterUniqueTogether(
             name="dimensionvalue",
             unique_together=None,

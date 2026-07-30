@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0117_programme_tracon2023_accessibility_warnings_and_more"),
         ("mailings", "0008_auto_20161026_2343"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="recipientgroup",
             name="programme_category",

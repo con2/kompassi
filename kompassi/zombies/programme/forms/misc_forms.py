@@ -52,7 +52,7 @@ class ProgrammeAdminCreateForm(forms.ModelForm):
             "tags",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             tags=forms.CheckboxSelectMultiple,
         )
 
@@ -171,7 +171,7 @@ class ScheduleForm(forms.ModelForm):
             "tags",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             tags=forms.CheckboxSelectMultiple,
         )
 

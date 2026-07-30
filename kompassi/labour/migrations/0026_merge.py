@@ -5,9 +5,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0016_auto_20151205_1321"),
         ("labour", "0025_auto_20160406_2144"),
     ]
 
-    operations = []
+    operations = []  # noqa: RUF012

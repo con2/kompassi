@@ -51,7 +51,7 @@ class Job(models.Model):
     class Meta:
         verbose_name = _("job")
         verbose_name_plural = _("jobs")
-        unique_together = [("job_category", "slug")]
+        unique_together = [("job_category", "slug")]  # noqa: RUF012
 
     def save(self, *args, **kwargs):
         if self.title and not self.slug:
@@ -254,7 +254,7 @@ SetJobRequirementsRequestBase = namedtuple("SetJobRequirementsRequest", "startTi
 
 
 class SetJobRequirementsRequest(SetJobRequirementsRequestBase, JSONSchemaObject):
-    schema = dict(
+    schema = dict(  # noqa: RUF012
         type="object",
         properties=dict(
             startTime=dict(type="string", format="date-time"),
@@ -269,7 +269,7 @@ EditJobRequestBase = namedtuple("EditJobRequest", "title")
 
 
 class EditJobRequest(EditJobRequestBase, JSONSchemaObject):
-    schema = dict(
+    schema = dict(  # noqa: RUF012
         type="object",
         properties=dict(
             title=dict(type="string", minLength=1),
@@ -284,7 +284,7 @@ EditShiftRequestBase = namedtuple("EditShiftRequest", "job startTime hours perso
 
 
 class EditShiftRequest(EditShiftRequestBase, JSONSchemaObject):
-    schema = dict(
+    schema = dict(  # noqa: RUF012
         type="object",
         properties=dict(
             hours=dict(type="integer", minimum=1, maximum=99),

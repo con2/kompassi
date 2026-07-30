@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("surveys", "0002_auto_20170321_2103"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="eventsurvey",
             name="owner",

@@ -20,6 +20,6 @@ class EnrollmentForm(forms.ModelForm):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )

@@ -118,7 +118,7 @@ class AlternativeProgrammeForm(models.Model):
     class Meta:
         verbose_name = _("alternative programme form")
         verbose_name_plural = _("alternative programme forms")
-        unique_together = [
+        unique_together = [  # noqa: RUF012
             ("event", "slug"),
         ]
         ordering = ("event", "order", "title")

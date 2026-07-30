@@ -118,7 +118,7 @@ class Program(models.Model):
 
     class Meta:
         unique_together = ("event", "slug")
-        indexes = [
+        indexes = [  # noqa: RUF012
             GinIndex(
                 fields=["cached_combined_dimensions"],
                 name="program_v2_program_gin",

@@ -4,11 +4,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0122_alter_programme_hosts_from_host"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameIndex(
             model_name="programme",
             new_name="programme_p_categor_69bbc0_idx",

@@ -7,11 +7,11 @@ import kompassi.zombies.programme.proxies.helpers
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0016_freeformorganizer"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="FreeformOrganizerAdminProxy",
             fields=[],

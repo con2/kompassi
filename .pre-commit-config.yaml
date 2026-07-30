@@ -2,11 +2,12 @@ minimum_pre_commit_version: 2.15.0
 
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.12.4
+    rev: v0.16.0
     hooks:
       - id: ruff-check
         args:
           - --fix
+        exclude: ^kompassi/zombies/
       - id: ruff-format
         args:
           - --quiet
@@ -16,17 +17,17 @@ repos:
       - id: end-of-file-fixer
         exclude: .*__generated__.*
       - id: trailing-whitespace
-  # - repo: local
-  #   hooks:
-  #     - id: prettier
-  #       name: prettier
-  #       entry: prettier
-  #       args: [--check, --ignore-unknown]
-  #       language: node
-  #       types_or: [javascript, jsx, ts, tsx]
-  #       files: ^kompassi-v2-frontend/
-  #       additional_dependencies:
-  #         - prettier@3.9.6
+  - repo: https://github.com/rbubley/mirrors-prettier
+    rev: v3.9.6
+    hooks:
+      - id: prettier
+        exclude: |
+          (?x)(
+            .*__generated__.*|
+            ^kompassi/|
+            ^kubernetes/|
+            ^.github
+          )
   # XXX somehow the typechecking still leaks to parts of the code that is not yet ready for pyrekt
   # - repo: https://github.com/RobertCraigie/pyright-python
   #   rev: v1.1.367

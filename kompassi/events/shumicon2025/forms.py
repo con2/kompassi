@@ -54,7 +54,7 @@ class SignupExtraForm(forms.ModelForm):
             "why_you",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             native_language=forms.CheckboxSelectMultiple,
             native_language_other=forms.TextInput,
             known_language=forms.CheckboxSelectMultiple,
@@ -89,7 +89,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         model = Signup
         fields = ("job_title",)
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             job_categories=forms.CheckboxSelectMultiple,
         )
 
@@ -117,7 +117,7 @@ class ProgrammeSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
             # work_days=forms.CheckboxSelectMultiple,
         )
@@ -169,7 +169,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             car_regnr=forms.TextInput,
             native_language=forms.CheckboxSelectMultiple,
             native_language_other=forms.TextInput,
@@ -291,7 +291,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "notes_from_host",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             tracon2023_accessibility_warnings=forms.CheckboxSelectMultiple,
             tracon2023_preferred_time_slots=forms.CheckboxSelectMultiple,
         )

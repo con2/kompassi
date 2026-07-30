@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0043_emailverificationtoken_language_and_more"),
         ("forms", "0035_form_survey_alter_survey_app_alter_survey_languages"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterUniqueTogether(
             name="form",
             unique_together={("event", "survey", "language")},

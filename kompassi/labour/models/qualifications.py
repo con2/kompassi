@@ -38,8 +38,8 @@ class Qualification(models.Model):
 
     @classmethod
     def get_or_create_dummies(cls):
-        qual1, unused = Qualification.objects.get_or_create(slug="dummy1", defaults=dict(name="Dummy qualification 1"))
-        qual2, unused = Qualification.objects.get_or_create(slug="dummy2", defaults=dict(name="Dummy qualification 2"))
+        qual1, _unused = Qualification.objects.get_or_create(slug="dummy1", defaults=dict(name="Dummy qualification 1"))
+        qual2, _unused = Qualification.objects.get_or_create(slug="dummy2", defaults=dict(name="Dummy qualification 2"))
         return [qual1, qual2]
 
 

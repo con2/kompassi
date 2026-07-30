@@ -256,8 +256,8 @@ class Event(models.Model):
 
         Group.objects.get_or_create(name=settings.KOMPASSI_MAY_SEND_INFO_GROUP_NAME)
 
-        venue, unused = Venue.get_or_create_dummy()
-        organization, unused = Organization.get_or_create_dummy()
+        venue, _unused = Venue.get_or_create_dummy()
+        organization, _unused = Organization.get_or_create_dummy()
         t = timezone.now()
 
         return cls.objects.get_or_create(

@@ -33,10 +33,10 @@ def populate_denormalized_fields(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("badges", "0009_add_denormalized_fields"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(populate_denormalized_fields, elidable=True),
     ]

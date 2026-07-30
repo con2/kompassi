@@ -24,7 +24,7 @@ class Setup:
         self.setup_involvement()
 
     def setup_core(self):
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="tracon-ry",
             defaults=dict(
                 name="Tracon ry",
@@ -54,7 +54,7 @@ Tracon ry:n yhdistysrekisteritunnus on 194.820.
         (membership_admin_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
         (members_group,) = MembershipOrganizationMeta.get_or_create_groups(self.organization, ["members"])
 
-        self.meta, created = MembershipOrganizationMeta.objects.get_or_create(
+        self.meta, _created = MembershipOrganizationMeta.objects.get_or_create(
             organization=self.organization,
             defaults=dict(
                 admin_group=membership_admin_group,
@@ -87,7 +87,7 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
     def setup_access(self):
         (admin_group,) = AccessOrganizationMeta.get_or_create_groups(self.organization, ["admins"])
 
-        meta, created = AccessOrganizationMeta.objects.get_or_create(
+        _meta, created = AccessOrganizationMeta.objects.get_or_create(
             organization=self.organization,
             defaults=dict(
                 admin_group=admin_group,
@@ -110,7 +110,7 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
                 variant_slug=variant.name,
             )
 
-        internals_domain, created = EmailAliasDomain.objects.get_or_create(
+        _internals_domain, created = EmailAliasDomain.objects.get_or_create(
             domain_name="kompassi.eu",
             defaults=dict(
                 organization=self.organization,
@@ -137,7 +137,7 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
         )
 
     def setup_involvement(self):
-        volunteers, _ = Registry.objects.get_or_create(
+        _volunteers, _ = Registry.objects.get_or_create(
             scope=self.organization.scope,
             slug="volunteers",
             defaults=dict(

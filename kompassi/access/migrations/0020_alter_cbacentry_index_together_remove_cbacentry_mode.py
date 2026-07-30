@@ -14,12 +14,12 @@ def forwards(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("access", "0019_auto_20211013_1702"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(forwards),
         migrations.AlterIndexTogether(
             name="cbacentry",

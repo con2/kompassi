@@ -7,13 +7,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0023_auto_20160704_2155"),
         ("hitpoint2017", "0003_timeslot"),
         ("programme", "0049_programmerole_is_active"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="AlternativeProgrammeForm",
             fields=[

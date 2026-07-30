@@ -66,7 +66,7 @@ DesuprofileBase = namedtuple("Desuprofile", "id username first_name last_name ni
 
 
 class Desuprofile(DesuprofileBase, JSONSchemaObject):
-    schema = dict(
+    schema = dict(  # noqa: RUF012
         type="object",
         properties=dict(
             id=dict(type="number"),
@@ -92,7 +92,7 @@ DesuprogrammeFeedbackBase = namedtuple("DesuprogrammeFeedback", "feedback desuco
 
 
 class DesuprogrammeFeedback(DesuprogrammeFeedbackBase, JSONSchemaObject):
-    schema = dict(
+    schema = dict(  # noqa: RUF012
         type="object",
         properties=dict(
             feedback=dict(type="string", minLength=1),

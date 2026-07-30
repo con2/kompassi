@@ -8,11 +8,11 @@ from kompassi.tickets_v2.optimized_server.utils import uuid7
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunSQL(
             sql="""
                 create table event_log_v2_entry (

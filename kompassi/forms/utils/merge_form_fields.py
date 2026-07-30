@@ -24,7 +24,7 @@ class HasSlug(Protocol):
 T = TypeVar("T", bound=HasSlug)
 
 
-def merge_choices(
+def merge_choices[T: HasSlug](
     choices: Sequence[T] | None,
     other_choices: Sequence[T] | None,
 ) -> list[T] | None:

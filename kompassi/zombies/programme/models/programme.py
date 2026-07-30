@@ -1529,8 +1529,8 @@ class Programme(models.Model, CsvExportMixin):
         from .category import Category
         from .room import Room
 
-        category, unused = Category.get_or_create_dummy(event=event)
-        room, unused = Room.get_or_create_dummy(event=event)
+        category, _unused = Category.get_or_create_dummy(event=event)
+        room, _unused = Room.get_or_create_dummy(event=event)
 
         return cls.objects.get_or_create(
             title=title,
@@ -1987,8 +1987,8 @@ class Programme(models.Model, CsvExportMixin):
     class Meta:
         verbose_name = _("programme")
         verbose_name_plural = _("programmes")
-        ordering = ["start_time", "room"]
-        indexes = [
+        ordering = ["start_time", "room"]  # noqa: RUF012
+        indexes = [  # noqa: RUF012
             models.Index(fields=["category", "state"]),
             models.Index(fields=["category", "slug"]),
         ]

@@ -37,4 +37,4 @@ class GrantedPrivilege(models.Model):
         verbose_name = _("granted privilege")
         verbose_name_plural = _("granted privileges")
 
-        unique_together = [("privilege", "person")]
+        unique_together = [("privilege", "person")]  # noqa: RUF012

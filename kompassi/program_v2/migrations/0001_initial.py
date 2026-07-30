@@ -11,12 +11,12 @@ import kompassi.core.models.group_management_mixin
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0012_alter_user_first_name_max_length"),
         ("core", "0038_alter_person_discord_handle"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="Dimension",
             fields=[

@@ -9,11 +9,11 @@ def change_bottle_to_no_shirt(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tracon2024", "0002_alter_signupextra_total_work"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="signupextra",
             name="shirt_size",

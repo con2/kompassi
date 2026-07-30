@@ -26,7 +26,7 @@ class IntraEventMeta(EventMetaBase):
     def get_or_create_dummy(cls):
         from kompassi.core.models import Event
 
-        event, unused = Event.get_or_create_dummy()
+        event, _unused = Event.get_or_create_dummy()
         admin_group, organizer_group = cls.get_or_create_groups(event, ["admins", "organizers"])
         return cls.objects.get_or_create(
             event=event,

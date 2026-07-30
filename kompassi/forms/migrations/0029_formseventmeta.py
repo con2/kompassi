@@ -7,13 +7,13 @@ import kompassi.core.models.group_management_mixin
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0012_alter_user_first_name_max_length"),
         ("core", "0040_rename_emailverificationtoken_person_state_core_emailv_person__722147_idx_and_more"),
         ("forms", "0028_keypair"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="FormsEventMeta",
             fields=[

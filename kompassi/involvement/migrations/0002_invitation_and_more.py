@@ -9,7 +9,7 @@ import kompassi.tickets_v2.optimized_server.utils.uuid7
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0043_emailverificationtoken_language_and_more"),
         ("dimensions", "0010_alter_universe_app"),
         ("forms", "0042_survey_purpose_slug_alter_survey_anonymity"),
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="Invitation",
             fields=[

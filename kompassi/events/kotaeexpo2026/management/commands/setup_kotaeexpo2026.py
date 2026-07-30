@@ -46,15 +46,15 @@ class Setup:
         self.setup_program_v2()
 
     def setup_core(self):
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="kotae-ry",
             defaults=dict(
                 name="Kotae ry",
                 homepage_url="https://www.kotae.fi",
             ),
         )
-        self.venue, unused = Venue.objects.get_or_create(name="Tampereen Messu- ja Urheilukeskus")
-        self.event, unused = Event.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(name="Tampereen Messu- ja Urheilukeskus")
+        self.event, _unused = Event.objects.get_or_create(
             slug="kotaeexpo2026",
             defaults=dict(
                 name="Kotae Expo (2026)",
@@ -91,7 +91,7 @@ class Setup:
         else:
             pass
 
-        labour_event_meta, unused = LabourEventMeta.objects.get_or_create(
+        labour_event_meta, _unused = LabourEventMeta.objects.get_or_create(
             event=self.event,
             defaults=labour_event_meta_defaults,
         )
@@ -236,7 +236,7 @@ class Setup:
 
     def setup_badges(self):
         (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
-        meta, unused = BadgesEventMeta.objects.get_or_create(
+        _meta, _unused = BadgesEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=badge_admin_group,

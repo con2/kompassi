@@ -6,12 +6,12 @@ import kompassi.zombies.programme.models.special_reservation
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0037_alter_organization_panel_css_class"),
         ("programme", "0109_alter_programme_ropecon2019_blocked_time_slots_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="specialreservation",
             name="code",

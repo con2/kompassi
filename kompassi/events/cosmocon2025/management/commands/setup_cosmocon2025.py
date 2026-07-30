@@ -218,7 +218,7 @@ class Setup:
                 ticket_sales_ends=t + timedelta(days=60),  # type: ignore
             )
 
-        meta, _ = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
+        _meta, _ = TicketsEventMeta.objects.get_or_create(event=self.event, defaults=defaults)
 
         def limit_group(description, limit):
             limit_group, _ = LimitGroup.objects.get_or_create(
@@ -355,7 +355,7 @@ class Setup:
 
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
         organizer_group = self.event.labour_event_meta.get_group("ctora")
-        meta, _ = IntraEventMeta.objects.get_or_create(
+        _meta, _ = IntraEventMeta.objects.get_or_create(
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,

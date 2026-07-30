@@ -5,11 +5,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0016_alter_universeannotation_form_fields"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RemoveConstraint(
             model_name="annotation",
             name="dimensions_Annotation_type_AnnotationDataType",

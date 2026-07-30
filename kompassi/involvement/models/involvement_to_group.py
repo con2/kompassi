@@ -2,15 +2,11 @@ from __future__ import annotations
 
 from functools import cached_property
 from itertools import groupby
-from typing import TYPE_CHECKING
 
 from django.db import models
 
 from kompassi.core.models.person import Person
 from kompassi.dimensions.models.universe import Universe
-
-if TYPE_CHECKING:
-    pass
 
 
 class InvolvementToGroupMapping(models.Model):

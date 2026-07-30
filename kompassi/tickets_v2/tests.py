@@ -267,7 +267,7 @@ def test_make_order(tickets_v2_client: TicketsV2Client):
 @pytest.mark.parametrize(
     "rate,expected_en,expected_fi",
     [
-        (Decimal("0"), "0", "0"),
+        (Decimal(0), "0", "0"),
         (Decimal("0.00"), "0", "0"),
         (Decimal("10.00"), "10", "10"),
         (Decimal("13.50"), "13.5", "13,5"),
@@ -321,11 +321,11 @@ def test_vat_breakdown_zero_rate_kept():
     zero-rated lines). Filtering of 0% is the VAT-by-month report's concern.
     """
     products = [
-        OrderProduct(title="Free", price=Decimal("5.00"), quantity=1, vat_percentage=Decimal("0")),
+        OrderProduct(title="Free", price=Decimal("5.00"), quantity=1, vat_percentage=Decimal(0)),
     ]
     breakdown = VatBreakdownLine.from_order_products(products)
     assert len(breakdown) == 1
-    assert breakdown[0].rate == Decimal("0")
+    assert breakdown[0].rate == Decimal(0)
     assert breakdown[0].gross == Decimal("5.00")
     assert breakdown[0].vat == Decimal("0.00")
     assert breakdown[0].net == Decimal("5.00")
@@ -426,7 +426,7 @@ def test_vat_by_month_report_basic(vat_report_event: Event):
         title="Free product",
         description="",
         price=Decimal("5.00"),
-        vat_percentage=Decimal("0"),
+        vat_percentage=Decimal(0),
     )
 
     # Jan 2026 (Helsinki): 1× standard → 25.5% column = 25.50

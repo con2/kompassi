@@ -59,12 +59,12 @@ def populate_annotations(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0014_alter_dimension_can_values_be_added"),
         ("program_v2", "0045_programv2eventmeta_konsti_url_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="universe",
             name="scope",

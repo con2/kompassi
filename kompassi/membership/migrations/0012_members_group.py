@@ -14,19 +14,19 @@ def populate_members_group(apps, schema_editor):
             suffix="members",
         )
 
-        group, created = Group.objects.get_or_create(name=group_name)
+        group, _created = Group.objects.get_or_create(name=group_name)
 
         meta.members_group = group
         meta.save()
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0001_initial"),
         ("membership", "0011_auto_20151020_0016"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="membershiporganizationmeta",
             name="members_group",

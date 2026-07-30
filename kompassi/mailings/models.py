@@ -266,8 +266,8 @@ class PersonMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        self.subject, unused = PersonMessageSubject.get_or_create(self.render_message(self.message.subject_template))
-        self.body, unused = PersonMessageBody.get_or_create(self.render_message(self.message.body_template))
+        self.subject, _unused = PersonMessageSubject.get_or_create(self.render_message(self.message.subject_template))
+        self.body, _unused = PersonMessageBody.get_or_create(self.render_message(self.message.body_template))
 
         return super().save(*args, **kwargs)
 

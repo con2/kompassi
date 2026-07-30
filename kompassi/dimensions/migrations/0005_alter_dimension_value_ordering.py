@@ -23,11 +23,11 @@ def wtfix_value_ordering(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0004_alter_universe_unique_together"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="dimension",
             name="value_ordering",

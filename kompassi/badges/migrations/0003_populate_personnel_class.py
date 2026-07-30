@@ -7,7 +7,7 @@ def populate_badge_personnel_class(apps, schema_editor):
 
     for badge in Badge.objects.all():
         if badge.personnel_class is None and badge.template is not None:
-            badge.personnel_class, unused = PersonnelClass.objects.get_or_create(
+            badge.personnel_class, _unused = PersonnelClass.objects.get_or_create(
                 event=badge.template.event,
                 slug=badge.template.slug,
                 defaults=dict(
@@ -24,7 +24,7 @@ def populate_batch_personnel_class(apps, schema_editor):
 
     for batch in Batch.objects.all():
         if batch.personnel_class is None and batch.template is not None:
-            batch.personnel_class, unused = PersonnelClass.objects.get_or_create(
+            batch.personnel_class, _unused = PersonnelClass.objects.get_or_create(
                 event=batch.template.event,
                 slug=batch.template.slug,
                 defaults=dict(
@@ -36,11 +36,11 @@ def populate_batch_personnel_class(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("badges", "0002_personnel_class"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(populate_badge_personnel_class, elidable=True),
         migrations.RunPython(populate_batch_personnel_class, elidable=True),
     ]

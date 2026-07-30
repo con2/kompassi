@@ -38,11 +38,11 @@ def populate_room_event(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0029_auto_20170827_1818"),
         ("programme", "0057_room_event"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(populate_room_event),
     ]

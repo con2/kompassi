@@ -5,12 +5,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0040_rename_emailverificationtoken_person_state_core_emailv_person__722147_idx_and_more"),
         ("labour", "0038_laboureventmeta_work_certificate_pdf_project"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RemoveField(
             model_name="personnelclass",
             name="perks_markdown",

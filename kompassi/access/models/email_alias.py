@@ -60,8 +60,8 @@ class EmailAlias(EmailAliasMixin, models.Model):
 
         from .email_alias_type import EmailAliasType
 
-        alias_type, unused = EmailAliasType.get_or_create_dummy(variant=variant)
-        person, unused = Person.get_or_create_dummy()
+        alias_type, _unused = EmailAliasType.get_or_create_dummy(variant=variant)
+        person, _unused = Person.get_or_create_dummy()
 
         return cls.objects.get_or_create(
             type=alias_type,
@@ -72,7 +72,7 @@ class EmailAlias(EmailAliasMixin, models.Model):
         verbose_name = _("e-mail alias")
         verbose_name_plural = _("e-mail aliases")
 
-        unique_together = [("domain", "account_name")]
+        unique_together = [("domain", "account_name")]  # noqa: RUF012
 
 
 @receiver(pre_save, sender=EmailAlias)

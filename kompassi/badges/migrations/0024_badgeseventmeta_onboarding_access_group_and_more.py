@@ -5,13 +5,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0012_alter_user_first_name_max_length"),
         ("core", "0035_person_discord_handle"),
         ("badges", "0023_remove_badgeseventmeta_is_using_fuzzy_reissuance_hack"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="badgeseventmeta",
             name="onboarding_access_group",

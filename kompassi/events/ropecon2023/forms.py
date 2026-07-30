@@ -63,7 +63,7 @@ class SignupExtraForm(forms.ModelForm):
             "roster_publish_consent",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
             languages=forms.CheckboxSelectMultiple,
         )
@@ -93,7 +93,7 @@ class ProgrammeSignupExtraForm(AlternativeFormMixin, forms.ModelForm):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 
@@ -248,7 +248,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
 
     class Meta:
         model = Programme
-        fields = [
+        fields = [  # noqa: RUF012
             "title",
             "rpg_system",
             "approximate_length",
@@ -297,7 +297,7 @@ class RpgForm(AlternativeProgrammeFormMixin, forms.ModelForm):
             "ropecon2023_other_accessibility_information",
         ]
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
@@ -515,7 +515,7 @@ class LarpForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_other_accessibility_information",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             content_warnings=forms.Textarea,
             ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
@@ -738,7 +738,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_other_accessibility_information",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
@@ -970,7 +970,7 @@ class GamingDeskForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_other_accessibility_information",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             content_warnings=forms.Textarea,
             ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
@@ -1188,7 +1188,7 @@ class WorkshopForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "ropecon2023_other_accessibility_information",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             ropecon2023_blocked_time_slots=forms.CheckboxSelectMultiple,
         )
 
@@ -1216,7 +1216,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         model = Signup
         fields = ("job_title",)
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             job_categories=forms.CheckboxSelectMultiple,
         )
 
@@ -1244,7 +1244,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 
@@ -1319,7 +1319,7 @@ class SpecialistSignupExtraForm(SignupExtraForm, AlternativeFormMixin):
             "roster_publish_consent",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
             languages=forms.CheckboxSelectMultiple,
         )

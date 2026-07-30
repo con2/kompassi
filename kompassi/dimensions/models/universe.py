@@ -51,7 +51,7 @@ class Universe(models.Model):
     pk: int
 
     class Meta:
-        unique_together = [("scope", "slug")]
+        unique_together = [("scope", "slug")]  # noqa: RUF012
 
     def __str__(self):
         return f"{self.scope}/{self.slug} ({self.app_name})"

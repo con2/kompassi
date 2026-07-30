@@ -2,11 +2,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("membership", "0008_auto_20151011_2229"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="membershipfeepayment",
             options={"verbose_name": "J\xe4senmaksusuoritus", "verbose_name_plural": "J\xe4senmaksusuoritukset"},

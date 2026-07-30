@@ -30,7 +30,7 @@ class OrderingMixin:
     def move(self, queryset, direction):
         try:
             if direction in ["left", "up", "previous", "back"]:
-                swappee, unused = get_previous_and_next(queryset, self)
+                swappee, _unused = get_previous_and_next(queryset, self)
             elif direction in ["right", "down", "next", "forward"]:
                 unused, swappee = get_previous_and_next(queryset, self)
             else:
@@ -194,7 +194,7 @@ class View(models.Model, ViewMethodsMixin, OrderingMixin):
     class Meta:
         verbose_name = _("schedule view")
         verbose_name_plural = _("schedule views")
-        ordering = ["event", "order"]
+        ordering = ["event", "order"]  # noqa: RUF012
 
 
 class ViewRoom(models.Model, OrderingMixin):
@@ -216,7 +216,7 @@ class ViewRoom(models.Model, OrderingMixin):
         return f"{self.view} / {self.room}"
 
     class Meta:
-        ordering = ["view", "order"]
+        ordering = ["view", "order"]  # noqa: RUF012
 
 
 class AllRoomsPseudoView(ViewMethodsMixin):
@@ -251,7 +251,7 @@ class SpecialStartTime(models.Model):
     class Meta:
         verbose_name = _("special start time")
         verbose_name_plural = _("special start times")
-        ordering = ["event", "start_time"]
-        unique_together = [
+        ordering = ["event", "start_time"]  # noqa: RUF012
+        unique_together = [  # noqa: RUF012
             ("event", "start_time"),
         ]

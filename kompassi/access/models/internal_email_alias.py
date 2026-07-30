@@ -51,7 +51,7 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = [("domain", "account_name")]
+        unique_together = [("domain", "account_name")]  # noqa: RUF012
 
     def __str__(self):
         return self.email_address

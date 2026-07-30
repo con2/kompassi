@@ -34,7 +34,7 @@ class SlackAccess(models.Model):
     def get_or_create_dummy(cls):
         from .privilege import Privilege
 
-        privilege, unused = Privilege.get_or_create_dummy("slack")
+        privilege, _unused = Privilege.get_or_create_dummy("slack")
 
         return cls.objects.get_or_create(
             privilege=privilege,

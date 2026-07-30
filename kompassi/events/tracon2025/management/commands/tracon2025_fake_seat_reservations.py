@@ -21,7 +21,7 @@ class Command(BaseCommand):
                 if not paikkala_program:
                     raise ValueError(f"Programme {programme} has no Paikkala program")
 
-                reservation, created = SpecialReservation.objects.get_or_create(
+                reservation, _created = SpecialReservation.objects.get_or_create(
                     program=paikkala_program,
                     defaults=dict(
                         zone=paikkala_program.zones.filter(name="Permanto vasen (2. krs)").first(),

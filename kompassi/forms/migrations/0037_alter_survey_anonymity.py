@@ -9,11 +9,11 @@ def uppercase_anomumity_choices(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("forms", "0036_alter_form_unique_together_remove_survey_languages_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="survey",
             name="anonymity",

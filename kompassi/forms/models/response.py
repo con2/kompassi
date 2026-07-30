@@ -107,7 +107,7 @@ class Response(models.Model):
     programs: models.QuerySet[Program]
 
     class Meta:
-        indexes = [
+        indexes = [  # noqa: RUF012
             GinIndex(
                 fields=["cached_dimensions"],
                 name="forms_response_gin",

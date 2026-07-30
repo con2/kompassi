@@ -35,7 +35,7 @@ class MemberForm(PersonForm):
 
     class Meta:
         model = Person
-        fields = [
+        fields = [  # noqa: RUF012
             "first_name",
             "surname",
             "nick",

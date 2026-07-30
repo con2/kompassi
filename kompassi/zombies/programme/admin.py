@@ -103,7 +103,7 @@ class RoleAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ("event", "title", "public")
     list_filter = ("event",)
-    inlines = [ProgrammeInline]
+    inlines = [ProgrammeInline]  # noqa: RUF012
 
 
 @admin.register(SpecialStartTime)
@@ -181,7 +181,7 @@ class ProgrammeFeedbackAdmin(admin.ModelAdmin):
         "hidden_at",
         "hidden_by",
     )
-    actions = [hide_selected_feedback, restore_selected_feedback]
+    actions = [hide_selected_feedback, restore_selected_feedback]  # noqa: RUF012
 
     fieldsets = (
         (

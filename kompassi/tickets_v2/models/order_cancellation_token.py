@@ -64,7 +64,7 @@ class OrderCancellationToken(models.Model, OneTimeCodeMixin):
     )
 
     class Meta:
-        indexes = [
+        indexes = [  # noqa: RUF012
             models.Index(fields=["event", "order_id", "state"]),
         ]
 

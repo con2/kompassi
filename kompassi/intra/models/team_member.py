@@ -114,8 +114,8 @@ class TeamMember(models.Model):
 
         from .team import Team
 
-        team, unused = Team.get_or_create_dummy()
-        person, unused = Person.get_or_create_dummy()
+        team, _unused = Team.get_or_create_dummy()
+        person, _unused = Person.get_or_create_dummy()
 
         return cls.objects.get_or_create(
             team=team,
@@ -147,7 +147,7 @@ class TeamMember(models.Model):
     class Meta:
         verbose_name = _("Team member")
         verbose_name_plural = _("Team members")
-        unique_together = [("team", "person")]
+        unique_together = [("team", "person")]  # noqa: RUF012
         ordering = ("team", "-is_team_leader", "person__surname", "person__first_name")
 
 

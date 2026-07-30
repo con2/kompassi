@@ -23,11 +23,11 @@ logger = logging.getLogger(__name__)
 
 class BadgesTestCase(TestCase):
     def setUp(self):
-        self.meta, unused = BadgesEventMeta.get_or_create_dummy()
+        self.meta, _unused = BadgesEventMeta.get_or_create_dummy()
         LabourEventMeta.get_or_create_dummy()
 
         self.event = self.meta.event
-        self.person, unused = Person.get_or_create_dummy()
+        self.person, _unused = Person.get_or_create_dummy()
 
     def test_condb_423(self):
         """
@@ -40,7 +40,7 @@ class BadgesTestCase(TestCase):
         self.person.preferred_badge_name_display_style = "nick"
         self.person.save()
 
-        signup, unused = Signup.get_or_create_dummy(accepted=True)
+        signup, _unused = Signup.get_or_create_dummy(accepted=True)
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
         assert badge
@@ -68,7 +68,7 @@ class BadgesTestCase(TestCase):
         should be reflected in the badge.
         """
 
-        signup, unused = Signup.get_or_create_dummy(accepted=True)
+        signup, _unused = Signup.get_or_create_dummy(accepted=True)
 
         # No explicit job title
         signup.job_title = ""
@@ -82,7 +82,7 @@ class BadgesTestCase(TestCase):
         assert jc1
         assert badge.job_title == jc1.name
 
-        jc2, unused = JobCategory.get_or_create_dummy(name="Hitman")
+        jc2, _unused = JobCategory.get_or_create_dummy(name="Hitman")
         signup.job_categories_accepted.set([jc2])
         signup.save()
         signup.apply_state()
@@ -121,7 +121,7 @@ class BadgesTestCase(TestCase):
         In this test, we arbitrarily revoke the badge of a worker who is still signed up to the event.
         Thus calling Badge.ensure again will re-create (or un-revoke) their badge.
         """
-        signup, unused = Signup.get_or_create_dummy(accepted=True)
+        _signup, _unused = Signup.get_or_create_dummy(accepted=True)
         badge, created = Badge.ensure(person=self.person, event=self.event)
         assert badge
         assert not created
@@ -164,7 +164,7 @@ class BadgesTestCase(TestCase):
         If the personnel class of the worker changes, the badge shall be revoked and a new one issued.
         """
 
-        signup, unused = Signup.get_or_create_dummy(accepted=True)
+        signup, _unused = Signup.get_or_create_dummy(accepted=True)
         pc1 = signup.personnel_classes.get()
 
         badge, created = Badge.ensure(person=self.person, event=self.event)
@@ -173,7 +173,7 @@ class BadgesTestCase(TestCase):
         assert badge.personnel_class == pc1
 
         # Create another personnel class that is guaranteed to be higher in priority than the current one.
-        pc2, unused = PersonnelClass.get_or_create_dummy(name="Sehr Wichtig Fellow", priority=pc1.priority - 10)
+        pc2, _unused = PersonnelClass.get_or_create_dummy(name="Sehr Wichtig Fellow", priority=pc1.priority - 10)
 
         self.event.labour_event_meta.create_groups()
 

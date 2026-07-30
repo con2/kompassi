@@ -55,7 +55,7 @@ class SignupExtraForm(forms.ModelForm):
             "free_text",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 
@@ -94,7 +94,7 @@ class OrganizerSignupForm(forms.ModelForm, AlternativeFormMixin):
         model = Signup
         fields = ("job_title",)
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             job_categories=forms.CheckboxSelectMultiple,
         )
 
@@ -122,7 +122,7 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
             "special_diet_other",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
         )
 
@@ -210,7 +210,7 @@ class RpgForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "is_intended_for_experienced_participants",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             hitpoint2017_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 
@@ -280,7 +280,7 @@ class FreeformForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "is_beginner_friendly",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             hitpoint2017_preferred_time_slots=forms.CheckboxSelectMultiple,
         )
 

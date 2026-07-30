@@ -39,7 +39,7 @@ def merge_selected_people(modeladmin, request, queryset):
 
 @admin.register(Person)
 class PersonAdmin(admin.ModelAdmin):
-    fieldsets = [
+    fieldsets = [  # noqa: RUF012
         ("Basic information", {"fields": [("first_name", "surname"), "nick"]}),
         ("Contact information", {"fields": ["email", "phone", "may_send_info"]}),
         ("Official information", {"fields": ["official_first_names", "muncipality"]}),
@@ -50,7 +50,7 @@ class PersonAdmin(admin.ModelAdmin):
     list_display = ("surname", "first_name", "nick", "email", "phone", "username")
     search_fields = ("surname", "first_name", "nick", "email", "user__username")
     ordering = ("surname", "first_name", "nick")
-    actions = [merge_selected_people]
+    actions = [merge_selected_people]  # noqa: RUF012
 
 
 @admin.register(Event)
@@ -109,7 +109,7 @@ class GroupForm(forms.ModelForm):
     class Meta:
         model = Group
         exclude = ()
-        widgets = {
+        widgets = {  # noqa: RUF012
             "permissions": admin.widgets.FilteredSelectMultiple("permissions", is_stacked=False),  # type: ignore
         }
 

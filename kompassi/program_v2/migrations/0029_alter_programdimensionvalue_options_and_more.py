@@ -4,12 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0002_populate"),
         ("program_v2", "0028_remove_dimensionvalue_dimension_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="programdimensionvalue",
             options={"ordering": ("value__dimension__order", "value__order")},

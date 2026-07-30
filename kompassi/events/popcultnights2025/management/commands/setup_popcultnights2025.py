@@ -29,20 +29,20 @@ class Setup:
         self.setup_tickets_v2()
 
     def setup_core(self):
-        self.venue, unused = Venue.objects.get_or_create(
+        self.venue, _unused = Venue.objects.get_or_create(
             name="Tiivistämö",
             defaults=dict(
                 name_inessive="Tiivistämöllä",
             ),
         )
-        self.organization, unused = Organization.objects.get_or_create(
+        self.organization, _unused = Organization.objects.get_or_create(
             slug="finnish-fandom-conventions-ry",
             defaults=dict(
                 name="Finnish Fandom Conventions ry",
                 homepage_url="http://popcult.fi",
             ),
         )
-        self.event, unused = Event.objects.get_or_create(
+        self.event, _unused = Event.objects.get_or_create(
             slug="popcultnights2025",
             defaults=dict(
                 name="Popcult Nights (2025)",

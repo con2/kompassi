@@ -2,16 +2,11 @@ from __future__ import annotations
 
 import logging
 from collections import defaultdict
-from typing import TYPE_CHECKING
 
 from kompassi.dimensions.utils.dimension_cache import DimensionCache
 
 from ..models.field import Field, FieldType
 from ..models.response import Response
-
-if TYPE_CHECKING:
-    pass
-
 
 logger = logging.getLogger(__name__)
 

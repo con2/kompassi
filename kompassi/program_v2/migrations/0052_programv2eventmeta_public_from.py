@@ -12,11 +12,11 @@ def set_public_from_for_existing_events(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0051_scheduleitem_paikkala_icon"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="programv2eventmeta",
             name="public_from",

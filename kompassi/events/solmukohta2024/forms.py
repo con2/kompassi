@@ -117,7 +117,7 @@ class ProgrammeForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "notes_from_host",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             solmukohta2024_technology=forms.CheckboxSelectMultiple,
             solmukohta2024_content_warnings=forms.CheckboxSelectMultiple,
             solmukohta2024_documentation=forms.CheckboxSelectMultiple,
@@ -191,7 +191,7 @@ class AForm(forms.ModelForm, AlternativeProgrammeFormMixin):
             "notes_from_host",
         )
 
-        widgets = dict(
+        widgets = dict(  # noqa: RUF012
             solmukohta2024_technology=forms.CheckboxSelectMultiple,
             solmukohta2024_content_warnings=forms.CheckboxSelectMultiple,
             solmukohta2024_documentation=forms.CheckboxSelectMultiple,

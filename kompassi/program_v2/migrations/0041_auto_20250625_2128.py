@@ -17,11 +17,11 @@ def delete_inactive_involvements(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0040_scheduleitemdimensionvalue_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(
             delete_inactive_involvements,
             reverse_code=migrations.RunPython.noop,

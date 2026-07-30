@@ -5,7 +5,7 @@ import logging
 from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from enum import Enum
+from enum import StrEnum
 from typing import Any, ClassVar, Literal, Self
 from uuid import UUID, uuid4
 
@@ -298,7 +298,7 @@ class PreparedCreatePaymentRequest(pydantic.BaseModel):
         return result, stamp
 
 
-class PaytrailStatus(str, Enum):
+class PaytrailStatus(StrEnum):
     OK = "ok"
     PENDING = "pending"
     DELAYED = "delayed"

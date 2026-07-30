@@ -10,11 +10,11 @@ def fix_form_fields(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0015_alter_universe_scope_annotation_universeannotation"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="universeannotation",
             name="form_fields",

@@ -7,11 +7,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets_v2", "0005_ticketsv2eventmeta_contact_email"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="ticketsv2eventmeta",
             name="contact_email",

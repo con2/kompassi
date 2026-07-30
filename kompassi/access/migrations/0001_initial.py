@@ -3,12 +3,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0001_initial"),
         ("core", "0003_auto_20150813_1907"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="GrantedPrivilege",
             fields=[

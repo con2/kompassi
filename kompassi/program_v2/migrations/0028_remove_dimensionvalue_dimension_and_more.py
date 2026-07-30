@@ -35,12 +35,12 @@ def populate_new_location_dimension(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0002_populate"),
         ("program_v2", "0027_alter_programdimensionvalue_options_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterUniqueTogether(
             name="dimensionvalue",
             unique_together=None,

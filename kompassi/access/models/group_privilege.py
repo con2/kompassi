@@ -16,4 +16,4 @@ class GroupPrivilege(models.Model):
         verbose_name = _("group privilege")
         verbose_name_plural = _("group privileges")
 
-        unique_together = [("privilege", "group")]
+        unique_together = [("privilege", "group")]  # noqa: RUF012

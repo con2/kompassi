@@ -124,8 +124,8 @@ class TicketsEventMeta(ContactEmailMixin, EventMetaBase):
 
         from kompassi.core.models import Event
 
-        group, unused = Group.objects.get_or_create(name="Dummy ticket admin group")
-        event, unused = Event.get_or_create_dummy()
+        group, _unused = Group.objects.get_or_create(name="Dummy ticket admin group")
+        event, _unused = Event.get_or_create_dummy()
         return cls.objects.get_or_create(event=event, defaults=dict(admin_group=group))
 
     def is_user_allowed_pos_access(self, user):

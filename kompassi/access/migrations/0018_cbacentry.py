@@ -8,13 +8,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("auth", "0011_update_proxy_permissions"),
         ("access", "0017_privilege_url"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         HStoreExtension(),
         migrations.CreateModel(
             name="CBACEntry",

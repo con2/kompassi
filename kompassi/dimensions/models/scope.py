@@ -83,7 +83,7 @@ class Scope(models.Model):
         return claims
 
     class Meta:
-        constraints = [
+        constraints = [  # noqa: RUF012
             models.UniqueConstraint(
                 fields=["organization", "event"],
                 nulls_distinct=False,

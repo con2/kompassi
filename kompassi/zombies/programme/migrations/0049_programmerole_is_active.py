@@ -15,11 +15,11 @@ def populate_programme_role_is_active(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0048_auto_20160813_1948"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="programmerole",
             name="is_active",

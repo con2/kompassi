@@ -22,7 +22,7 @@ class CreateQuotaForm(django_forms.ModelForm):
 
     class Meta:
         model = Quota
-        fields = ["name"]
+        fields = ["name"]  # noqa: RUF012
 
 
 class CreateQuota(graphene.Mutation):

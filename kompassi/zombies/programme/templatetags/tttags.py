@@ -3,7 +3,7 @@ from django.template import Library
 
 from kompassi.core.utils import slugify as core_slugify
 
-__all__ = ["strip_html", "slugify"]
+__all__ = ["slugify", "strip_html"]
 register = Library()
 
 

@@ -7,11 +7,11 @@ import kompassi.core.utils.model_utils
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets", "0018_auto_20160610_0005"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="customer",
             name="phone_number",

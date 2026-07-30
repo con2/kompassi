@@ -13,7 +13,7 @@ def forwards_func(apps, schema_editor):
         try:
             badge = Badge.objects.get(template__event=event, person=person)
         except Badge.DoesNotExist:
-            personnel_class, unused = PersonnelClass.objects.get_or_create(
+            personnel_class, _unused = PersonnelClass.objects.get_or_create(
                 event=event,
                 slug="tyovoima",
                 defaults=dict(
@@ -22,7 +22,7 @@ def forwards_func(apps, schema_editor):
                 ),
             )
         else:
-            personnel_class, unused = PersonnelClass.objects.get_or_create(
+            personnel_class, _unused = PersonnelClass.objects.get_or_create(
                 event=event,
                 slug=badge.template.slug,
                 defaults=dict(
@@ -36,11 +36,11 @@ def forwards_func(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0002_auto_20141115_1102"),
         ("badges", "0001_initial"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(forwards_func, elidable=True),
     ]

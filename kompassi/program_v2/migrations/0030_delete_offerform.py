@@ -22,12 +22,12 @@ def delete_offer_forms(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("program_v2", "0029_alter_programdimensionvalue_options_and_more"),
         ("forms", "0032_rename_new_value_responsedimensionvalue_value_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(
             delete_offer_forms,
             reverse_code=migrations.RunPython.noop,

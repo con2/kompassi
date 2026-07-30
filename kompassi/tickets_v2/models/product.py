@@ -93,7 +93,7 @@ class Product(models.Model):
     vat_percentage = models.DecimalField(
         max_digits=4,
         decimal_places=2,
-        default=Decimal("0"),
+        default=Decimal(0),
         validators=[MinValueValidator(Decimal(0))],
         help_text="VAT percentage applied to this product. Prices are inclusive of VAT.",
     )

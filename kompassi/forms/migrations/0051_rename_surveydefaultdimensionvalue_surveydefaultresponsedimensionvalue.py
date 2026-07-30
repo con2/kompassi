@@ -4,12 +4,12 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0012_universe_app_name"),
         ("forms", "0050_alter_survey_app_name"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameModel(
             old_name="SurveyDefaultDimensionValue",
             new_name="SurveyDefaultResponseDimensionValue",

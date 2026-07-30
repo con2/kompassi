@@ -176,7 +176,7 @@ class Survey(models.Model):
     universe_id: int | None
 
     class Meta:
-        unique_together = [("event", "slug")]
+        unique_together = [("event", "slug")]  # noqa: RUF012
 
     def __init__(self, *args, **kwargs) -> None:
         if purpose := kwargs.pop("purpose", None):

@@ -60,7 +60,7 @@ class JobCategoryAdmin(admin.ModelAdmin):
     list_display = ("event", "name", "public")
     list_filter = ("event", "public")
     ordering = ("event", "name")
-    actions = [make_selected_job_categories_public, make_selected_job_categories_nonpublic]
+    actions = [make_selected_job_categories_public, make_selected_job_categories_nonpublic]  # noqa: RUF012
 
 
 @admin.register(Job)

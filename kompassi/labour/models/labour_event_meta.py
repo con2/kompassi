@@ -110,7 +110,7 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         from .signup_extras import EmptySignupExtra
 
         if event is None:
-            event, unused = Event.get_or_create_dummy()
+            event, _unused = Event.get_or_create_dummy()
 
         if event.start_time is None:
             raise ValueError("Event must have a start time")

@@ -121,7 +121,7 @@ class Involvement(models.Model):
     pk: int
 
     class Meta:
-        indexes = [
+        indexes = [  # noqa: RUF012
             # covers most program_v2 queries
             models.Index(fields=["universe", "person", "program", "response"]),
             models.Index(fields=["universe", "person", "app", "type"]),
@@ -703,7 +703,7 @@ class Involvement(models.Model):
             annotation_values,
         )
 
-        involvement, created = cls.objects.update_or_create(
+        involvement, _created = cls.objects.update_or_create(
             universe=universe,
             person=person,
             app=app,

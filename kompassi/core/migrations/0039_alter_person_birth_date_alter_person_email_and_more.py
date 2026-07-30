@@ -7,11 +7,11 @@ import kompassi.core.utils.model_utils
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0038_alter_person_discord_handle"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="person",
             name="birth_date",

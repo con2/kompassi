@@ -48,7 +48,7 @@ class EntryAdmin(admin.ModelAdmin):
     raw_id_fields = ("actor",)
     fields = ENTRY_READ_ONLY_FIELDS
     readonly_fields = ENTRY_READ_ONLY_FIELDS
-    list_filter = [MonthFilter, EntryTypeFilter]
+    list_filter = [MonthFilter, EntryTypeFilter]  # noqa: RUF012
 
     def has_add_permission(self, *args, **kwargs):
         return False
@@ -70,6 +70,6 @@ class SubscriptionAdminForm(forms.ModelForm):
 @admin.register(Subscription)
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = ("user", "entry_type")
-    list_filter = ["entry_type"]
+    list_filter = ["entry_type"]  # noqa: RUF012
     form = SubscriptionAdminForm
     raw_id_fields = ("user",)

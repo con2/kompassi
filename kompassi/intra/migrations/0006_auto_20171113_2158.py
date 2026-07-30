@@ -4,11 +4,11 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("intra", "0005_teammember_override_job_title"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="team",
             options={"ordering": ("event", "order", "name"), "verbose_name": "Team", "verbose_name_plural": "Teams"},

@@ -13,12 +13,12 @@ def populate_cached_event(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0040_rename_emailverificationtoken_person_state_core_emailv_person__722147_idx_and_more"),
         ("program_v2", "0019_scheduleitem_slug"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterModelOptions(
             name="scheduleitem",
             options={"ordering": ["cached_event", "start_time"]},

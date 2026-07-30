@@ -6,11 +6,11 @@ import kompassi.tickets_v2.optimized_server.models.enums
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("tickets_v2", "0003_ticketsv2eventmeta_terms_and_conditions_url_en_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterField(
             model_name="ticketsv2eventmeta",
             name="provider_id",

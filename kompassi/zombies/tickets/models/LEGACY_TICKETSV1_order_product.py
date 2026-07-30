@@ -69,4 +69,4 @@ class OrderProduct(models.Model, CsvExportMixin):
     class Meta:
         verbose_name = "tilausrivi"
         verbose_name_plural = "tilausrivit"
-        unique_together = [("order", "product")]
+        unique_together = [("order", "product")]  # noqa: RUF012

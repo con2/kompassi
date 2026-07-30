@@ -5,10 +5,10 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("labour", "0021_auto_20160306_1125"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RenameModel("EmptySignupExtra", "ObsoleteEmptySignupExtraV1"),
     ]

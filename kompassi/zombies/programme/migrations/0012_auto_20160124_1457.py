@@ -5,11 +5,11 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("programme", "0011_auto_20160124_1448"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AlterIndexTogether(
             name="programmeedittoken",
             index_together=set(),

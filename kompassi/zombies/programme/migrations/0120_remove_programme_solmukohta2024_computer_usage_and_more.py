@@ -4,12 +4,12 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("solmukohta2024", "0002_technology"),
         ("programme", "0119_programme_hosts_from_host_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RemoveField(
             model_name="programme",
             name="solmukohta2024_computer_usage",

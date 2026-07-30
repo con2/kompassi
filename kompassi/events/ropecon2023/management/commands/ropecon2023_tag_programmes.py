@@ -24,5 +24,5 @@ class Command(BaseCommand):
             tag = Tag.objects.get(event=event, slug=tag_slug)
             for programme in Programme.objects.filter(category__event=event, **{field_name: True}):
                 programme.tags.add(tag)
-                print(".", sep="", end="", flush=True)
+                print(".", end="", flush=True)
         print()

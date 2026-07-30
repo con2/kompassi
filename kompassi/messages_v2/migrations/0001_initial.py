@@ -11,14 +11,14 @@ import kompassi.tickets_v2.optimized_server.utils.uuid7
 class Migration(migrations.Migration):
     initial = True
 
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0044_organization_business_id"),
         ("dimensions", "0017_remove_annotation_dimensions_annotation_type_annotationdatatype_and_more"),
         ("involvement", "0010_involvementeventmeta_admin_group"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="MessageBody",
             fields=[

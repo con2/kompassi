@@ -29,7 +29,7 @@ class EmailAliasDomain(models.Model):
         from kompassi.access.models.internal_email_alias import InternalEmailAlias
         from kompassi.core.models.organization import Organization
 
-        organization, unused = Organization.get_or_create_dummy()
+        organization, _unused = Organization.get_or_create_dummy()
 
         domain, created = cls.objects.get_or_create(
             domain_name=domain_name,

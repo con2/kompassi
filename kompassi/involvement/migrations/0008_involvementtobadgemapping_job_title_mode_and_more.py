@@ -5,13 +5,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("dimensions", "0017_remove_annotation_dimensions_annotation_type_annotationdatatype_and_more"),
         ("involvement", "0007_involvement_title"),
         ("labour", "0043_alter_personnelclass_event"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddField(
             model_name="involvementtobadgemapping",
             name="job_title_mode",

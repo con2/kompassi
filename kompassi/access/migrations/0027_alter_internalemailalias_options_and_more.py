@@ -8,11 +8,11 @@ def clear_existing_internal_aliases(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("access", "0026_alter_privilege_options_remove_privilege_grant_code_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.RunPython(
             clear_existing_internal_aliases,
             reverse_code=migrations.RunPython.noop,

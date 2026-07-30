@@ -9,7 +9,7 @@ def populate_organization(apps, schema_editor):
     Event = apps.get_model("core", "event")
 
     for event in Event.objects.all():
-        event.organization, created = Organization.objects.get_or_create(
+        event.organization, _created = Organization.objects.get_or_create(
             slug=slugify(event.organization_name),
             defaults=dict(
                 name=event.organization_name,
@@ -20,11 +20,11 @@ def populate_organization(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0003_auto_20150813_1907"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="Organization",
             fields=[

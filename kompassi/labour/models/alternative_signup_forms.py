@@ -92,7 +92,7 @@ class AlternativeSignupForm(models.Model):
     class Meta:
         verbose_name = _("alternative signup form")
         verbose_name_plural = _("alternative signup forms")
-        unique_together = [
+        unique_together = [  # noqa: RUF012
             ("event", "slug"),
         ]
 

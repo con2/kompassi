@@ -71,7 +71,7 @@ class ArchivedSignup(SignupMixin, models.Model):
         if signup.state in ARCHIVE_STATES:
             event_type = "labour.signup.archived"
 
-            archived_signup, created = ArchivedSignup.objects.get_or_create(
+            archived_signup, _created = ArchivedSignup.objects.get_or_create(
                 person=signup.person,
                 event=signup.event,
                 job_title=signup.some_job_title,

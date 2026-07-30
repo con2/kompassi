@@ -2,13 +2,13 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("auth", "0001_initial"),
         ("core", "0001_initial"),
         ("payments", "0001_initial"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.CreateModel(
             name="PaymentsEventMeta",
             fields=[

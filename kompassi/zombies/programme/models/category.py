@@ -29,8 +29,8 @@ class Category(models.Model):
         return self.title
 
     class Meta:
-        ordering = ["event", "order", "title"]
-        unique_together = [("event", "slug")]
+        ordering = ["event", "order", "title"]  # noqa: RUF012
+        unique_together = [("event", "slug")]  # noqa: RUF012
         verbose_name = _("category")
         verbose_name_plural = _("categories")
 
@@ -41,7 +41,7 @@ class Category(models.Model):
         if event is None:
             event, _ = Event.get_or_create_dummy()
 
-        meta, unused = ProgrammeEventMeta.get_or_create_dummy(event=event)
+        _meta, _unused = ProgrammeEventMeta.get_or_create_dummy(event=event)
 
         return cls.objects.get_or_create(
             event=event,

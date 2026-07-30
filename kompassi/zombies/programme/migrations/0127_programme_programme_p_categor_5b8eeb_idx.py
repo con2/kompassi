@@ -4,7 +4,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-    dependencies = [
+    dependencies = [  # noqa: RUF012
         ("core", "0040_rename_emailverificationtoken_person_state_core_emailv_person__722147_idx_and_more"),
         ("hitpoint2017", "0005_delete_signupextra"),
         ("hitpoint2020", "0004_alter_signupextra_signup"),
@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         ("tracon2023", "0003_signupextraafterpartyproxy_and_more"),
     ]
 
-    operations = [
+    operations = [  # noqa: RUF012
         migrations.AddIndex(
             model_name="programme",
             index=models.Index(fields=["category", "slug"], name="programme_p_categor_5b8eeb_idx"),

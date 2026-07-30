@@ -97,9 +97,9 @@ class ScheduleItem(models.Model):
     dimensions: models.QuerySet[ScheduleItemDimensionValue]
 
     class Meta:
-        ordering = ["cached_event", "start_time"]
-        unique_together = [("cached_event", "slug")]
-        indexes = [
+        ordering = ["cached_event", "start_time"]  # noqa: RUF012
+        unique_together = [("cached_event", "slug")]  # noqa: RUF012
+        indexes = [  # noqa: RUF012
             GinIndex(
                 fields=["cached_combined_dimensions"],
                 name="program_v2_scheduleitem_gin",
