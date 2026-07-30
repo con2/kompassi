@@ -24,6 +24,7 @@ repos:
         args: [--check, --ignore-unknown]
         language: node
         types_or: [javascript, jsx, ts, tsx]
+        files: ^kompassi-v2-frontend/
         additional_dependencies:
           - prettier@3.9.6
   # XXX somehow the typechecking still leaks to parts of the code that is not yet ready for pyrekt
