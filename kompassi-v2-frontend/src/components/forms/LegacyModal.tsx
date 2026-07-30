@@ -111,9 +111,11 @@ export function Modal(props: Props) {
     messages,
   } = props;
 
-  // XXX Hack
-  onSubmitRef.current = onSubmit ?? null;
-  onCloseRef.current = onClose ?? null;
+  // XXX Hack: keep the latest callbacks available to submit()/close() without stale closures
+  React.useEffect(() => {
+    onSubmitRef.current = onSubmit ?? null;
+    onCloseRef.current = onClose ?? null;
+  });
 
   return (
     <BsModal show={isOpen} onHide={hide}>

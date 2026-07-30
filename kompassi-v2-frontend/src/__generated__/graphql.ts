@@ -1,68 +1,20 @@
 /* eslint-disable */
-import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
-export type Maybe<T> = T | null;
-export type InputMaybe<T> = Maybe<T>;
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+/** Internal type. DO NOT USE DIRECTLY. */
+type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+/** Internal type. DO NOT USE DIRECTLY. */
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
-/** All built-in and custom scalars, mapped to their actual values */
-export type Scalars = {
-  ID: { input: string; output: string; }
-  String: { input: string; output: string; }
-  Boolean: { input: boolean; output: boolean; }
-  Int: { input: number; output: number; }
-  Float: { input: number; output: number; }
-  /**
-   * The `DateTime` scalar type represents a DateTime
-   * value as specified by
-   * [iso8601](https://en.wikipedia.org/wiki/ISO_8601).
-   */
-  DateTime: { input: string; output: string; }
-  /** The `Decimal` scalar type represents a python Decimal. */
-  Decimal: { input: any; output: any; }
-  /**
-   * The `GenericScalar` scalar type represents a generic
-   * GraphQL scalar value that could be:
-   * String, Boolean, Int, Float, List or Object.
-   */
-  GenericScalar: { input: unknown; output: unknown; }
-  /**
-   * Allows use of a JSON String for input / output from the GraphQL schema.
-   *
-   * Use of this type is *not recommended* as you lose the benefits of having a defined, static
-   * schema (one of the key benefits of GraphQL).
-   */
-  JSONString: { input: string; output: string; }
-  /**
-   * Leverages the internal Python implementation of UUID (uuid.UUID) to provide native UUID objects
-   * in fields, resolvers and input.
-   */
-  UUID: { input: string; output: string; }
-};
-
-export type AcceptInvitation = {
-  __typename?: 'AcceptInvitation';
-  involvement?: Maybe<LimitedInvolvementType>;
-};
-
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type AcceptInvitationInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  invitationId: Scalars['String']['input'];
-  locale: Scalars['String']['input'];
-};
-
-export type AcceptProgramOffer = {
-  __typename?: 'AcceptProgramOffer';
-  program: FullProgramType;
+  eventSlug: string;
+  formData: unknown;
+  invitationId: string;
+  locale: string;
 };
 
 export type AcceptProgramOfferInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  responseId: Scalars['UUID']['input'];
+  eventSlug: string;
+  formData: unknown;
+  responseId: string;
 };
 
 /** An enumeration. */
@@ -73,30 +25,6 @@ export enum AnnotationDataType {
   String = 'STRING'
 }
 
-export type AnnotationType = {
-  __typename?: 'AnnotationType';
-  description: Scalars['String']['output'];
-  isApplicableToProgramItems: Scalars['Boolean']['output'];
-  isApplicableToScheduleItems: Scalars['Boolean']['output'];
-  isComputed: Scalars['Boolean']['output'];
-  isInternal: Scalars['Boolean']['output'];
-  isPublic: Scalars['Boolean']['output'];
-  isShownInDetail: Scalars['Boolean']['output'];
-  slug: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  type: AnnotationDataType;
-};
-
-
-export type AnnotationTypeDescriptionArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type AnnotationTypeTitleArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
 /** An enumeration. */
 export enum Anonymity {
   FullProfile = 'FULL_PROFILE',
@@ -105,56 +33,27 @@ export enum Anonymity {
   Soft = 'SOFT'
 }
 
-export type BareQuotaType = {
-  __typename?: 'BareQuotaType';
-  countTotal: Scalars['Int']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-};
-
-export type CancelAndRefundOrder = {
-  __typename?: 'CancelAndRefundOrder';
-  order?: Maybe<LimitedOrderType>;
-};
-
 export type CancelAndRefundOrderInput = {
-  eventSlug: Scalars['String']['input'];
-  orderId: Scalars['String']['input'];
+  eventSlug: string;
+  orderId: string;
   refundType: RefundType;
 };
 
-export type CancelOwnUnpaidOrder = {
-  __typename?: 'CancelOwnUnpaidOrder';
-  order?: Maybe<LimitedOrderType>;
-};
-
 export type CancelOwnUnpaidOrderInput = {
-  eventSlug: Scalars['String']['input'];
-  orderId: Scalars['String']['input'];
-};
-
-export type CancelProgram = {
-  __typename?: 'CancelProgram';
-  programSlug: Scalars['String']['output'];
-  /** If the program item was created from a program offer, this is the offer ID. */
-  responseId?: Maybe<Scalars['UUID']['output']>;
+  eventSlug: string;
+  orderId: string;
 };
 
 export type CancelProgramInput = {
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
+  eventSlug: string;
+  programSlug: string;
   resolution: ProgramItemResolution;
 };
 
-export type CancelProgramOffer = {
-  __typename?: 'CancelProgramOffer';
-  responseId: Scalars['UUID']['output'];
-};
-
 export type CancelProgramOfferInput = {
-  eventSlug: Scalars['String']['input'];
+  eventSlug: string;
   resolution: ProgramOfferResolution;
-  responseId: Scalars['UUID']['input'];
+  responseId: string;
 };
 
 /** An enumeration. */
@@ -165,337 +64,160 @@ export enum CodeStatus {
   Used = 'USED'
 }
 
-export type ColumnType = {
-  __typename?: 'ColumnType';
-  slug: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  totalBy: TotalBy;
-  type: TypeOfColumn;
-};
-
-
-export type ColumnTypeTitleArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type ConfirmEmail = {
-  __typename?: 'ConfirmEmail';
-  user?: Maybe<LimitedUserType>;
-};
-
 export type ConfirmEmailInput = {
-  locale: Scalars['String']['input'];
-};
-
-/**
- * Customer self-service cancellation, step 2 of 2: consume the one-time code
- * from the confirmation email and cancel the order, initiating an automated
- * refund via the payment provider if money was paid.
- *
- * May be called without authentication: the one-time code proves control of
- * the email address of the order.
- *
- * Returns success=False if the order was cancelled but the provider rejected
- * the refund request (order left in REFUND_FAILED for ticket sales to resolve
- * with the existing admin refund tooling).
- *
- * NOTE: Must not return any PII (the caller may be anonymous).
- */
-export type ConfirmOrderCancellation = {
-  __typename?: 'ConfirmOrderCancellation';
-  success: Scalars['Boolean']['output'];
+  locale: string;
 };
 
 export type ConfirmOrderCancellationInput = {
-  code: Scalars['String']['input'];
-  eventSlug: Scalars['String']['input'];
-  orderId: Scalars['String']['input'];
-};
-
-/**
- * Creates a new Message with the given content. Called only when the compose view
- * for a not-yet-existing message ("new") is first saved - until then, the draft only
- * exists in the browser, never in the database.
- */
-export type CreateMessage = {
-  __typename?: 'CreateMessage';
-  message?: Maybe<MessageType>;
+  code: string;
+  eventSlug: string;
+  orderId: string;
 };
 
 export type CreateMessageInput = {
-  body: Scalars['String']['input'];
+  body: string;
   dispatch: MessageDispatch;
-  eventSlug: Scalars['String']['input'];
-  recipientFilters: Scalars['GenericScalar']['input'];
-  replyToId?: InputMaybe<Scalars['String']['input']>;
-  subject: Scalars['String']['input'];
-};
-
-export type CreateMessageReplyTo = {
-  __typename?: 'CreateMessageReplyTo';
-  replyTo?: Maybe<MessageReplyToType>;
+  eventSlug: string;
+  recipientFilters: unknown;
+  replyToId?: string | null | undefined;
+  subject: string;
 };
 
 export type CreateMessageReplyToInput = {
-  email: Scalars['String']['input'];
-  eventSlug: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-};
-
-export type CreateOrder = {
-  __typename?: 'CreateOrder';
-  order?: Maybe<FullOrderType>;
+  email: string;
+  eventSlug: string;
+  name: string;
 };
 
 export type CreateOrderInput = {
   customer: CustomerInput;
-  eventSlug: Scalars['String']['input'];
-  language?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  language?: string | null | undefined;
   products: Array<OrderProductInput>;
 };
 
-export type CreateProduct = {
-  __typename?: 'CreateProduct';
-  product?: Maybe<LimitedProductType>;
-};
-
 export type CreateProductInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-};
-
-export type CreateProgram = {
-  __typename?: 'CreateProgram';
-  program?: Maybe<FullProgramType>;
-};
-
-export type CreateProgramFeedback = {
-  __typename?: 'CreateProgramFeedback';
-  success: Scalars['Boolean']['output'];
-};
-
-export type CreateProgramForm = {
-  __typename?: 'CreateProgramForm';
-  survey?: Maybe<FullSurveyType>;
+  eventSlug: string;
+  formData: unknown;
 };
 
 export type CreateProgramFormInput = {
-  copyFrom?: InputMaybe<Scalars['String']['input']>;
-  eventSlug: Scalars['String']['input'];
-  purpose?: InputMaybe<SurveyPurpose>;
-  surveySlug: Scalars['String']['input'];
+  copyFrom?: string | null | undefined;
+  eventSlug: string;
+  purpose?: SurveyPurpose | null | undefined;
+  surveySlug: string;
 };
 
 export type CreateProgramInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-};
-
-export type CreateQuota = {
-  __typename?: 'CreateQuota';
-  quota?: Maybe<LimitedQuotaType>;
+  eventSlug: string;
+  formData: unknown;
 };
 
 export type CreateQuotaInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-};
-
-export type CreateSurvey = {
-  __typename?: 'CreateSurvey';
-  survey?: Maybe<FullSurveyType>;
+  eventSlug: string;
+  formData: unknown;
 };
 
 export type CreateSurveyInput = {
   anonymity: Anonymity;
-  copyFrom?: InputMaybe<Scalars['String']['input']>;
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-};
-
-export type CreateSurveyLanguage = {
-  __typename?: 'CreateSurveyLanguage';
-  form?: Maybe<FormType>;
+  copyFrom?: string | null | undefined;
+  eventSlug: string;
+  surveySlug: string;
 };
 
 export type CreateSurveyLanguageInput = {
-  copyFrom?: InputMaybe<Scalars['String']['input']>;
-  eventSlug: Scalars['String']['input'];
-  language: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-};
-
-export type CreateSurveyResponse = {
-  __typename?: 'CreateSurveyResponse';
-  response?: Maybe<ProfileResponseType>;
+  copyFrom?: string | null | undefined;
+  eventSlug: string;
+  language: string;
+  surveySlug: string;
 };
 
 export type CreateSurveyResponseInput = {
-  editResponseId?: InputMaybe<Scalars['String']['input']>;
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
-  surveySlug: Scalars['String']['input'];
+  editResponseId?: string | null | undefined;
+  eventSlug: string;
+  formData: unknown;
+  locale?: string | null | undefined;
+  surveySlug: string;
 };
 
 export type CustomerInput = {
-  email: Scalars['String']['input'];
-  firstName: Scalars['String']['input'];
-  lastName: Scalars['String']['input'];
-  phone?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type DeleteDimension = {
-  __typename?: 'DeleteDimension';
-  slug?: Maybe<Scalars['String']['output']>;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string | null | undefined;
 };
 
 export type DeleteDimensionInput = {
-  dimensionSlug: Scalars['String']['input'];
-  scopeSlug: Scalars['String']['input'];
-  universeSlug: Scalars['String']['input'];
-};
-
-export type DeleteDimensionValue = {
-  __typename?: 'DeleteDimensionValue';
-  slug?: Maybe<Scalars['String']['output']>;
+  dimensionSlug: string;
+  scopeSlug: string;
+  universeSlug: string;
 };
 
 export type DeleteDimensionValueInput = {
-  dimensionSlug: Scalars['String']['input'];
-  scopeSlug: Scalars['String']['input'];
-  universeSlug: Scalars['String']['input'];
-  valueSlug: Scalars['String']['input'];
-};
-
-export type DeleteInvitation = {
-  __typename?: 'DeleteInvitation';
-  invitation?: Maybe<LimitedInvitationType>;
+  dimensionSlug: string;
+  scopeSlug: string;
+  universeSlug: string;
+  valueSlug: string;
 };
 
 export type DeleteInvitationInput = {
-  eventSlug: Scalars['String']['input'];
-  invitationId: Scalars['String']['input'];
-};
-
-/**
- * Deletes a Message draft. Only drafts can be deleted - once sent, a Message is kept
- * (possibly expired) so its MessageRecipients remain visible in recipients' profiles.
- */
-export type DeleteMessage = {
-  __typename?: 'DeleteMessage';
-  messageId?: Maybe<Scalars['String']['output']>;
+  eventSlug: string;
+  invitationId: string;
 };
 
 export type DeleteMessageInput = {
-  eventSlug: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-};
-
-/**
- * Deletes a reply-to option. Messages that reference it fall back to the event's
- * default plain contact email (Message.reply_to is SET_NULL on delete).
- */
-export type DeleteMessageReplyTo = {
-  __typename?: 'DeleteMessageReplyTo';
-  replyToId?: Maybe<Scalars['String']['output']>;
+  eventSlug: string;
+  messageId: string;
 };
 
 export type DeleteMessageReplyToInput = {
-  eventSlug: Scalars['String']['input'];
-  replyToId: Scalars['String']['input'];
-};
-
-export type DeleteProduct = {
-  __typename?: 'DeleteProduct';
-  id: Scalars['String']['output'];
+  eventSlug: string;
+  replyToId: string;
 };
 
 export type DeleteProductInput = {
-  eventSlug: Scalars['String']['input'];
-  productId: Scalars['String']['input'];
-};
-
-export type DeleteProgramHost = {
-  __typename?: 'DeleteProgramHost';
-  program: FullProgramType;
+  eventSlug: string;
+  productId: string;
 };
 
 export type DeleteProgramHostInput = {
-  eventSlug: Scalars['String']['input'];
-  involvementId: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-};
-
-export type DeleteProgramOffers = {
-  __typename?: 'DeleteProgramOffers';
-  countDeleted: Scalars['Int']['output'];
+  eventSlug: string;
+  involvementId: string;
+  programSlug: string;
 };
 
 export type DeleteProgramOffersInput = {
-  eventSlug: Scalars['String']['input'];
-  programOfferIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-};
-
-export type DeleteQuota = {
-  __typename?: 'DeleteQuota';
-  id: Scalars['String']['output'];
+  eventSlug: string;
+  programOfferIds?: Array<string | null | undefined> | null | undefined;
 };
 
 export type DeleteQuotaInput = {
-  eventSlug: Scalars['String']['input'];
-  quotaId: Scalars['String']['input'];
-};
-
-export type DeleteScheduleItem = {
-  __typename?: 'DeleteScheduleItem';
-  slug?: Maybe<Scalars['String']['output']>;
+  eventSlug: string;
+  quotaId: string;
 };
 
 export type DeleteScheduleItemInput = {
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-  scheduleItemSlug: Scalars['String']['input'];
-};
-
-export type DeleteSurvey = {
-  __typename?: 'DeleteSurvey';
-  slug?: Maybe<Scalars['String']['output']>;
+  eventSlug: string;
+  programSlug: string;
+  scheduleItemSlug: string;
 };
 
 export type DeleteSurveyInput = {
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-};
-
-export type DeleteSurveyLanguage = {
-  __typename?: 'DeleteSurveyLanguage';
-  language?: Maybe<Scalars['String']['output']>;
+  eventSlug: string;
+  surveySlug: string;
 };
 
 export type DeleteSurveyLanguageInput = {
-  eventSlug: Scalars['String']['input'];
-  language: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-};
-
-export type DeleteSurveyResponses = {
-  __typename?: 'DeleteSurveyResponses';
-  countDeleted: Scalars['Int']['output'];
+  eventSlug: string;
+  language: string;
+  surveySlug: string;
 };
 
 export type DeleteSurveyResponsesInput = {
-  eventSlug: Scalars['String']['input'];
-  responseIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  surveySlug: Scalars['String']['input'];
+  eventSlug: string;
+  responseIds?: Array<string | null | undefined> | null | undefined;
+  surveySlug: string;
 };
-
-/** An enumeration. */
-export enum DimensionApp {
-  Forms = 'FORMS',
-  Involvement = 'INVOLVEMENT',
-  ProgramV2 = 'PROGRAM_V2'
-}
 
 /**
  * Used to construct dimension filters in GraphQL queries.
@@ -504,29 +226,8 @@ export enum DimensionApp {
  * The absence of the values list, or the special value "*" in the values list, means that the dimension must exist.
  */
 export type DimensionFilterInput = {
-  dimension: Scalars['String']['input'];
-  values?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
-export type DimensionValueType = {
-  __typename?: 'DimensionValueType';
-  canEdit: Scalars['Boolean']['output'];
-  canRemove: Scalars['Boolean']['output'];
-  color: Scalars['String']['output'];
-  /** If set, subjects this value is assigned to can no longer be edited by whomever submitted them. */
-  isSubjectLocked: Scalars['Boolean']['output'];
-  /** Technical values cannot be edited in the UI. They are used for internal purposes and have some assumptions about them. */
-  isTechnical: Scalars['Boolean']['output'];
-  slug: Scalars['String']['output'];
-  title?: Maybe<Scalars['String']['output']>;
-  titleEn: Scalars['String']['output'];
-  titleFi: Scalars['String']['output'];
-  titleSv: Scalars['String']['output'];
-};
-
-
-export type DimensionValueTypeTitleArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
+  dimension: string;
+  values?: Array<string> | null | undefined;
 };
 
 /** An enumeration. */
@@ -539,72 +240,14 @@ export enum DimensionsDimensionValueOrderingChoices {
   Title = 'TITLE'
 }
 
-/** An enumeration. */
-export enum EditMode {
-  Admin = 'ADMIN',
-  Owner = 'OWNER'
-}
-
-/**
- * Expires an active Message: it stops being sent to new/auto-matching recipients.
- * People who already received it are unaffected.
- */
-export type ExpireMessage = {
-  __typename?: 'ExpireMessage';
-  message?: Maybe<MessageType>;
-};
-
 export type ExpireMessageInput = {
-  eventSlug: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-};
-
-export type FavoriteInput = {
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
+  eventSlug: string;
+  messageId: string;
 };
 
 export type FavoriteScheduleItemInput = {
-  eventSlug: Scalars['String']['input'];
-  scheduleItemSlug: Scalars['String']['input'];
-};
-
-export type FormType = {
-  __typename?: 'FormType';
-  /** A form can be removed if it has no responses. */
-  canRemove: Scalars['Boolean']['output'];
-  description: Scalars['String']['output'];
-  event: LimitedEventType;
-  fields?: Maybe<Scalars['GenericScalar']['output']>;
-  language: FormsFormLanguageChoices;
-  survey: FullSurveyType;
-  thankYouMessage: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-};
-
-
-export type FormTypeFieldsArgs = {
-  enrich?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type FormsEventMetaType = {
-  __typename?: 'FormsEventMetaType';
-  survey?: Maybe<FullSurveyType>;
-  surveys: Array<FullSurveyType>;
-};
-
-
-export type FormsEventMetaTypeSurveyArgs = {
-  app?: InputMaybe<DimensionApp>;
-  purpose?: InputMaybe<SurveyPurpose>;
-  slug: Scalars['String']['input'];
-};
-
-
-export type FormsEventMetaTypeSurveysArgs = {
-  app: DimensionApp;
-  includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
-  purpose?: InputMaybe<Array<SurveyPurpose>>;
+  eventSlug: string;
+  scheduleItemSlug: string;
 };
 
 /** An enumeration. */
@@ -617,589 +260,16 @@ export enum FormsFormLanguageChoices {
   Sv = 'SV'
 }
 
-export type FormsProfileMetaType = {
-  __typename?: 'FormsProfileMetaType';
-  /** Returns a single response submitted by the current user. */
-  response?: Maybe<ProfileResponseType>;
-  /** Returns all responses submitted by the current user. */
-  responses: Array<ProfileResponseType>;
-  /** Returns all surveys accessible by the current user. To limit to surveys subscribed to, specify `relation: SUBSCRIBED`. To limit by event, specify `eventSlug: $eventSlug`. */
-  surveys: Array<FullSurveyType>;
-};
-
-
-export type FormsProfileMetaTypeResponseArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type FormsProfileMetaTypeSurveysArgs = {
-  eventSlug?: InputMaybe<Scalars['String']['input']>;
-  relation?: InputMaybe<SurveyRelation>;
-};
-
-export type FullDimensionType = {
-  __typename?: 'FullDimensionType';
-  canAddValues: Scalars['Boolean']['output'];
-  canRemove: Scalars['Boolean']['output'];
-  /** Key dimensions are shown lists of atoms. */
-  isKeyDimension: Scalars['Boolean']['output'];
-  /** Suggests to UI that this dimension should be shown as a list filter. */
-  isListFilter: Scalars['Boolean']['output'];
-  /** Multi-value dimensions allow multiple values to be selected. NOTE: In the database, all dimensions are multi-value, so this is just a UI hint. */
-  isMultiValue: Scalars['Boolean']['output'];
-  /** Suggests to UI that when this dimension is not being filtered on, all values should be selected. Intended for use cases when the user is expected to rather exclude certain values than only include some. One such use case is accessibility and content warnings. NOTE: Does not make sense without `is_multi_value`. */
-  isNegativeSelection: Scalars['Boolean']['output'];
-  /** Public dimensions are returned to non-admin users. */
-  isPublic: Scalars['Boolean']['output'];
-  /** Suggests to UI that this dimension should be shown in detail view. */
-  isShownInDetail: Scalars['Boolean']['output'];
-  isShownToSubject: Scalars['Boolean']['output'];
-  /** Technical dimensions are not editable in the UI. They are used for internal purposes have some assumptions about them (eg. their existence and that of certain values). */
-  isTechnical: Scalars['Boolean']['output'];
-  slug: Scalars['String']['output'];
-  title?: Maybe<Scalars['String']['output']>;
-  titleEn: Scalars['String']['output'];
-  titleFi: Scalars['String']['output'];
-  titleSv: Scalars['String']['output'];
-  /** In which order are the values of this dimension returned in the GraphQL API. NOTE: When using Alphabetical (localized title), the language needs to be provided to `values` and `values.title` fields separately. */
-  valueOrdering: DimensionsDimensionValueOrderingChoices;
-  values: Array<DimensionValueType>;
-};
-
-
-export type FullDimensionTypeTitleArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type FullDimensionTypeValuesArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type FullEventType = {
-  __typename?: 'FullEventType';
-  endTime?: Maybe<Scalars['DateTime']['output']>;
-  forms?: Maybe<FormsEventMetaType>;
-  involvement?: Maybe<InvolvementEventMetaType>;
-  name: Scalars['String']['output'];
-  organization: LimitedOrganizationType;
-  program?: Maybe<ProgramV2EventMetaType>;
-  /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
-  slug: Scalars['String']['output'];
-  startTime?: Maybe<Scalars['DateTime']['output']>;
-  tickets?: Maybe<TicketsV2EventMetaType>;
-  timezone: Scalars['String']['output'];
-  timezoneName: Scalars['String']['output'];
-};
-
-export type FullInvitationType = {
-  __typename?: 'FullInvitationType';
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  createdAt: Scalars['DateTime']['output'];
-  createdBy?: Maybe<LimitedUserType>;
-  email: Scalars['String']['output'];
-  id: Scalars['UUID']['output'];
-  isUsed: Scalars['Boolean']['output'];
-  /** The language of the invitation. This is used to send the invitation in the correct language. */
-  language: InvolvementInvitationLanguageChoices;
-  program?: Maybe<LimitedProgramType>;
-  survey?: Maybe<FullSurveyType>;
-  usedAt?: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type FullOrderType = {
-  __typename?: 'FullOrderType';
-  /** Returns whether the order can be marked as paid. */
-  canMarkAsPaid: Scalars['Boolean']['output'];
-  canPay: Scalars['Boolean']['output'];
-  /** Returns whether a provider refund can be initiated for this order. */
-  canRefund: Scalars['Boolean']['output'];
-  /** Returns whether the order can be refunded manually. */
-  canRefundManually: Scalars['Boolean']['output'];
-  /** Electronic ticket codes related to this order. */
-  codes: Array<LimitedCodeType>;
-  createdAt: Scalars['DateTime']['output'];
-  displayName: Scalars['String']['output'];
-  email: Scalars['String']['output'];
-  /** Returns a link at which the admin can view their electronic tickets. Returns null if the order does not contain electronic tickets. */
-  eticketsLink?: Maybe<Scalars['String']['output']>;
-  event: LimitedEventType;
-  firstName: Scalars['String']['output'];
-  formattedOrderNumber: Scalars['String']['output'];
-  id: Scalars['UUID']['output'];
-  language: TicketsV2OrderLanguageChoices;
-  lastName: Scalars['String']['output'];
-  /** Order number used in contexts where UUID cannot be used. Such places include generating reference numbers and the customer reading the order number aloud to an event rep. Prefer id (UUID) for everything else (eg. URLs). */
-  orderNumber: Scalars['Int']['output'];
-  /** Payment stamps related to this order. */
-  paymentStamps: Array<LimitedPaymentStampType>;
-  phone: Scalars['String']['output'];
-  /** Contents of the order (product x quantity). */
-  products: Array<OrderProductType>;
-  /** Receipts related to this order. */
-  receipts: Array<LimitedReceiptType>;
-  status: PaymentStatus;
-  totalPrice: Scalars['Decimal']['output'];
-};
-
-export type FullProductType = {
-  __typename?: 'FullProductType';
-  availableFrom?: Maybe<Scalars['DateTime']['output']>;
-  availableUntil?: Maybe<Scalars['DateTime']['output']>;
-  /** Returns true if the product can be deleted. A product can be deleted if it has not been sold at all. */
-  canDelete: Scalars['Boolean']['output'];
-  /** Computes the amount of available units of this product. Other versions of this product are grouped together. Null if the product has no quotas. */
-  countAvailable?: Maybe<Scalars['Int']['output']>;
-  /** Computes the amount of paid units of this product. Other versions of this product are grouped together. */
-  countPaid: Scalars['Int']['output'];
-  /** Computes the amount of reserved units of this product. Other versions of this product are grouped together. */
-  countReserved: Scalars['Int']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  description: Scalars['String']['output'];
-  eticketsPerProduct: Scalars['Int']['output'];
-  id: Scalars['Int']['output'];
-  /** Returns true if the product can currently be sold; that is, if it has not been superseded and it is within its availability window. This does not take into account if the product has been sold out; for that, consult `count_available`. */
-  isAvailable: Scalars['Boolean']['output'];
-  maxPerOrder: Scalars['Int']['output'];
-  /** Old versions of this product. */
-  oldVersions: Array<LimitedProductType>;
-  price: Scalars['Decimal']['output'];
-  quotas: Array<LimitedQuotaType>;
-  /** The product superseding this product, if any. */
-  supersededBy?: Maybe<LimitedProductType>;
-  title: Scalars['String']['output'];
-  /** VAT percentage applied to this product. Prices are inclusive of VAT. */
-  vatPercentage: Scalars['Decimal']['output'];
-};
-
-/**
- * Represents a Program Host with access to Person and all their Programs in an Event.
- * This is different from Involvement in that an Involvement is related to a single Program
- * whereas FullProgramHostType groups all Programs for a Person in an Event.
- */
-export type FullProgramHostType = {
-  __typename?: 'FullProgramHostType';
-  person: LimitedProfileType;
-  programs: Array<LimitedProgramType>;
-};
-
-export type FullProgramType = {
-  __typename?: 'FullProgramType';
-  /** Program annotation values with schema attached to them. Only public annotations are returned. NOTE: If querying a lot of program items, consider using cachedAnnotations instead for SPEED. */
-  annotations: Array<ProgramAnnotationType>;
-  /** A mapping of program annotation slug to annotation value. */
-  cachedAnnotations: Scalars['GenericScalar']['output'];
-  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a single program or schedule item, but when using the plural resolvers like `programs` or `scheduleItems`, the performance difference can be significant. By default, returns both dimensions set on the program itself and those set on its schedule items. If `own_only` is True, only returns dimensions set on this item itself. By default, returns both public and internal dimensions. This will change in near future to only return public dimensions by default and require `publicOnly: false` to get internal dimensions. At that time, the default will change to `publicOnly: true`, and setting `publicOnly: false` will require authentication. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
-  cachedEarliestStartTime?: Maybe<Scalars['DateTime']['output']>;
-  cachedHosts: Scalars['String']['output'];
-  /** The latest end time of any schedule item of this program. NOTE: This is not the same as the program's start end. The intended purpose of this field is to exclude programs that have already ended. Always use `scheduleItems` for the purpose of displaying program times. */
-  cachedLatestEndTime?: Maybe<Scalars['DateTime']['output']>;
-  canCancel: Scalars['Boolean']['output'];
-  canDelete: Scalars['Boolean']['output'];
-  canInviteProgramHost: Scalars['Boolean']['output'];
-  canRestore: Scalars['Boolean']['output'];
-  color: Scalars['String']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  description: Scalars['String']['output'];
-  /** `is_list_filter` - only return dimensions that are shown in the list filter. `is_shown_in_detail` - only return dimensions that are shown in the detail view. If you supply both, you only get their intersection. */
-  dimensions: Array<ProgramDimensionValueType>;
-  event: LimitedEventType;
-  invitations: Array<LimitedInvitationType>;
-  isAcceptingFeedback: Scalars['Boolean']['output'];
-  isCancelled: Scalars['Boolean']['output'];
-  /** Get the links associated with the program. If types are not specified, all links are returned. */
-  links: Array<ProgramLink>;
-  /** Deprecated. Use `scheduleItem.location` instead. */
-  location?: Maybe<Scalars['String']['output']>;
-  programHosts: Array<LimitedProgramHostType>;
-  programOffer?: Maybe<LimitedResponseType>;
-  scheduleItems: Array<LimitedScheduleItemType>;
-  slug: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-
-export type FullProgramTypeAnnotationsArgs = {
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type FullProgramTypeCachedAnnotationsArgs = {
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  slug?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
-
-export type FullProgramTypeCachedDimensionsArgs = {
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  listFiltersOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  ownOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type FullProgramTypeDimensionsArgs = {
-  isListFilter?: InputMaybe<Scalars['Boolean']['input']>;
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type FullProgramTypeLinksArgs = {
-  includeExpired?: InputMaybe<Scalars['Boolean']['input']>;
-  lang?: InputMaybe<Scalars['String']['input']>;
-  types?: InputMaybe<Array<InputMaybe<ProgramLinkType>>>;
-};
-
-
-export type FullProgramTypeLocationArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type FullProgramTypeProgramHostsArgs = {
-  includeInactive?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type FullQuotaType = {
-  __typename?: 'FullQuotaType';
-  /** Returns true if the product can be deleted. A product can be deleted if it has not been sold at all. */
-  canDelete: Scalars['Boolean']['output'];
-  countAvailable: Scalars['Int']['output'];
-  countPaid: Scalars['Int']['output'];
-  countReserved: Scalars['Int']['output'];
-  countTotal: Scalars['Int']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-  products: Array<LimitedProductType>;
-};
-
-export type FullResponseType = {
-  __typename?: 'FullResponseType';
-  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a response, but when operating on the plural resolver `responses`, the performance difference can be significant. By default, returns only public dimensions. If `publicOnly` is set to `false`, both public and internal dimensions will be returned. In this case, authentication is required. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  /** Returns whether the response can be accepted by the user as an administrator. Not all survey workflows have the notion of accepting a response, in which case this field will always return False. */
-  canAccept: Scalars['Boolean']['output'];
-  /** Returns whether the response can be cancelled by the user. Not all survey workflows have the notion of cancelling a response, in which case this field will always return False. */
-  canCancel: Scalars['Boolean']['output'];
-  /** Whether the response can be deleted by the user. */
-  canDelete: Scalars['Boolean']['output'];
-  /** Returns whether the response can be edited by the user in the given edit mode. The edit mode can be either ADMIN (default) or OWN. ADMIN determines CBAC edit permissions, while OWN determines if the user is the owner of the response and editing it is allowed by the survey. */
-  canEdit: Scalars['Boolean']['output'];
-  dimensions: Array<ResponseDimensionValueType>;
-  form: FormType;
-  formData: Scalars['JSONString']['output'];
-  id: Scalars['UUID']['output'];
-  /** Language code of the form used to submit this response. */
-  language: Scalars['String']['output'];
-  oldVersions: Array<LimitedResponseType>;
-  /** The date and time when the response was originally created. */
-  originalCreatedAt: Scalars['DateTime']['output'];
-  /**
-   *
-   * Returns the user who originally submitted this response.
-   * If response is to an anonymous survey, this information will not be available.
-   *
-   */
-  originalCreatedBy?: Maybe<SelectedProfileType>;
-  /** If this response is a program offer, this field returns the program items created from this program offer. If this response is not to a program offer form, this will always be empty. */
-  programs: Array<LimitedProgramType>;
-  revisionCreatedAt: Scalars['DateTime']['output'];
-  /**
-   *
-   * Returns the user who submitted this version of the response.
-   * If response is to an anonymous survey, this information will not be available.
-   *
-   */
-  revisionCreatedBy?: Maybe<SelectedProfileType>;
-  /** Sequence number of this response within the use case (eg. survey). */
-  sequenceNumber: Scalars['Int']['output'];
-  supersededBy?: Maybe<LimitedResponseType>;
-  values?: Maybe<Scalars['GenericScalar']['output']>;
-};
-
-
-export type FullResponseTypeCachedDimensionsArgs = {
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  listFiltersOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type FullResponseTypeCanEditArgs = {
-  mode?: InputMaybe<EditMode>;
-};
-
-
-export type FullResponseTypeDimensionsArgs = {
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type FullResponseTypeValuesArgs = {
-  keyFieldsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type FullScheduleItemType = {
-  __typename?: 'FullScheduleItemType';
-  /** A mapping of program annotation slug to annotation value. */
-  cachedAnnotations: Scalars['GenericScalar']['output'];
-  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a single program or schedule item, but when using the plural resolvers like `programs` or `scheduleItems`, the performance difference can be significant. By default, returns both dimensions set on the program itself and those set on its schedule items. If `own_only` is True, only returns dimensions set on this item itself. By default, returns both public and internal dimensions. This will change in near future to only return public dimensions by default and require `publicOnly: false` to get internal dimensions. At that time, the default will change to `publicOnly: true`, and setting `publicOnly: false` will require authentication. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  createdAt: Scalars['DateTime']['output'];
-  durationMinutes: Scalars['Int']['output'];
-  endTime: Scalars['DateTime']['output'];
-  endTimeUnixSeconds: Scalars['Int']['output'];
-  /** Convenience helper to get the freeform location of the schedule item. NOTE: You should usually display `location` to users instead. */
-  freeformLocation: Scalars['String']['output'];
-  isCancelled: Scalars['Boolean']['output'];
-  /** Deprecated alias for `duration_minutes`. */
-  lengthMinutes: Scalars['Int']['output'];
-  /** Get the links associated with the schedule item. If types are not specified, all links are returned. With `ownOnly`, only links set directly on the schedule item are returned; otherwise links inherited from the program are included as well. */
-  links: Array<ProgramLink>;
-  location?: Maybe<Scalars['String']['output']>;
-  program: LimitedProgramType;
-  reservationsExcelExportLink: Scalars['String']['output'];
-  /** Convenience helper to get the value slug of the `room` dimension. NOTE: You should usually display `location` to users instead. */
-  room: Scalars['String']['output'];
-  /** NOTE: Slug must be unique within Event. It does not suffice to be unique within Program. */
-  slug: Scalars['String']['output'];
-  startTime: Scalars['DateTime']['output'];
-  startTimeUnixSeconds: Scalars['Int']['output'];
-  /** Convenience helper to get the subtitle of the schedule item. NOTE: You should usually display `title` to users instead. */
-  subtitle: Scalars['String']['output'];
-  /** Returns the title of the program, with subtitle if it exists, in the format "Program title – Schedule item subtitle". */
-  title: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-
-export type FullScheduleItemTypeCachedAnnotationsArgs = {
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  slug?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
-
-export type FullScheduleItemTypeCachedDimensionsArgs = {
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  listFiltersOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  ownOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type FullScheduleItemTypeLinksArgs = {
-  includeExpired?: InputMaybe<Scalars['Boolean']['input']>;
-  lang?: InputMaybe<Scalars['String']['input']>;
-  ownOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  types?: InputMaybe<Array<InputMaybe<ProgramLinkType>>>;
-};
-
-
-export type FullScheduleItemTypeLocationArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type FullSurveyType = {
-  __typename?: 'FullSurveyType';
-  /** The form will be available from this date onwards. If not set, the form will not be available. */
-  activeFrom?: Maybe<Scalars['DateTime']['output']>;
-  /** The form will be available until this date. If not set, the form will be available indefinitely provided that active_from is set and has passed. */
-  activeUntil?: Maybe<Scalars['DateTime']['output']>;
-  anonymity: Anonymity;
-  /** Default dimension values that will be set on involvements based on responses. */
-  cachedDefaultInvolvementDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  /** Default dimension values that will be set on new responses. */
-  cachedDefaultResponseDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  /** Surveys that have language versions cannot be removed. Having language versions is also a prerequisite for a survey to have responses. */
-  canRemove: Scalars['Boolean']['output'];
-  /** Checks that the user has permission to remove responses to this survey. This requires proper CBAC permission and that `survey.protect_responses` is false. */
-  canRemoveResponses: Scalars['Boolean']['output'];
-  /** Returns the number of responses to this survey regardless of language version used. Authorization required. */
-  countResponses: Scalars['Int']['output'];
-  /** Returns the number of responses to this survey by the current user. */
-  countResponsesByCurrentUser: Scalars['Int']['output'];
-  /** `is_list_filter` - only return dimensions that are shown in the list filter. `is_shown_in_detail` - only return dimensions that are shown in the detail view. If you supply both, you only get their intersection. */
-  dimensions: Array<FullDimensionType>;
-  event: LimitedEventType;
-  /** A survey's language versions may have differing fields. This field presents them combined as a single list of fields. If a language is specified, that language is used as the base for the combined fields. Order of fields not present in the base language is not guaranteed. */
-  fields?: Maybe<Scalars['GenericScalar']['output']>;
-  /** Will attempt to give the form in the requested language, falling back to another language if that language is not available. */
-  form?: Maybe<FormType>;
-  isActive: Scalars['Boolean']['output'];
-  /** The slugs of the fields that are designated as key fields (isKeyField). Key fields are shown in the response list. */
-  keyFields: Array<Scalars['String']['output']>;
-  languages: Array<FormType>;
-  loginRequired: Scalars['Boolean']['output'];
-  /** Maximum number of responses per user. 0 = unlimited. Note that if login_required is not set, this only takes effect for logged in users.Has no effect if the survey is hard anonymous. */
-  maxResponsesPerUser: Scalars['Int']['output'];
-  profileFieldSelector: ProfileFieldSelectorType;
-  /** If enabled, responses cannot be deleted from the UI without disabling this first. */
-  protectResponses: Scalars['Boolean']['output'];
-  purpose: SurveyPurpose;
-  registry?: Maybe<LimitedRegistryType>;
-  response?: Maybe<FullResponseType>;
-  /** Returns the responses to this survey regardless of language version used. Authorization required. */
-  responses?: Maybe<Array<LimitedResponseType>>;
-  /** If set, responses to this survey can be edited by whomever sent them until this date, provided that the response is not locked by a dimension value that is set to lock subjects. If unset, responses cannnot be edited at all.  */
-  responsesEditableUntil?: Maybe<Scalars['DateTime']['output']>;
-  /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
-  slug: Scalars['String']['output'];
-  /** Returns a summary of responses to this survey. If a language is specified, that language is used as the base for the combined fields. Order of fields not present in the base language is not guaranteed. Authorization required. */
-  summary?: Maybe<Scalars['GenericScalar']['output']>;
-  title?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type FullSurveyTypeCountResponsesArgs = {
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-};
-
-
-export type FullSurveyTypeDimensionsArgs = {
-  isListFilter?: InputMaybe<Scalars['Boolean']['input']>;
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type FullSurveyTypeFieldsArgs = {
-  keyFieldsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type FullSurveyTypeFormArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type FullSurveyTypeResponseArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type FullSurveyTypeResponsesArgs = {
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-};
-
-
-export type FullSurveyTypeSummaryArgs = {
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type FullSurveyTypeTitleArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type GenerateKeyPair = {
-  __typename?: 'GenerateKeyPair';
-  id: Scalars['String']['output'];
-};
-
 export type InitFileUploadInput = {
-  fileType: Scalars['String']['input'];
-  filename: Scalars['String']['input'];
-};
-
-export type InitFileUploadResponse = {
-  __typename?: 'InitFileUploadResponse';
-  fileUrl?: Maybe<Scalars['String']['output']>;
-  uploadUrl?: Maybe<Scalars['String']['output']>;
-};
-
-export type InviteProgramHost = {
-  __typename?: 'InviteProgramHost';
-  invitation: FullInvitationType;
+  fileType: string;
+  filename: string;
 };
 
 export type InviteProgramHostInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  programSlug: Scalars['String']['input'];
+  eventSlug: string;
+  formData: unknown;
+  programSlug: string;
 };
-
-/** An enumeration. */
-export enum InvolvementApp {
-  Forms = 'FORMS',
-  Involvement = 'INVOLVEMENT',
-  Program = 'PROGRAM',
-  Volunteers = 'VOLUNTEERS'
-}
-
-export type InvolvementEventMetaType = {
-  __typename?: 'InvolvementEventMetaType';
-  annotations: Array<AnnotationType>;
-  defaultRegistry?: Maybe<LimitedRegistryType>;
-  /** `is_list_filter` - only return dimensions that are shown in the list filter. `is_shown_in_detail` - only return dimensions that are shown in the detail view. If you supply both, you only get their intersection. */
-  dimensions: Array<FullDimensionType>;
-  event: FullEventType;
-  id: Scalars['ID']['output'];
-  invitation?: Maybe<FullInvitationType>;
-  /** List of people involved in the event, filtered by dimensions. */
-  people: Array<ProfileWithInvolvementType>;
-  person?: Maybe<ProfileWithInvolvementType>;
-  reports: Array<ReportType>;
-  /** When shirts were ordered, the shirt sizes in COMBINED_PERKS involvements are frozen. After this timestamp, only changing to ShirtSize.NONE is allowed. */
-  shirtsFrozenAt?: Maybe<Scalars['DateTime']['output']>;
-};
-
-
-export type InvolvementEventMetaTypeAnnotationsArgs = {
-  perksOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type InvolvementEventMetaTypeDimensionsArgs = {
-  isListFilter?: InputMaybe<Scalars['Boolean']['input']>;
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type InvolvementEventMetaTypeInvitationArgs = {
-  invitationId: Scalars['String']['input'];
-};
-
-
-export type InvolvementEventMetaTypePeopleArgs = {
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-  returnNone?: InputMaybe<Scalars['Boolean']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type InvolvementEventMetaTypePersonArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type InvolvementEventMetaTypeReportsArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** An enumeration. */
-export enum InvolvementInvitationLanguageChoices {
-  /** English */
-  En = 'EN',
-  /** Finnish */
-  Fi = 'FI',
-  /** Swedish */
-  Sv = 'SV'
-}
 
 /** An enumeration. */
 export enum InvolvementType {
@@ -1210,515 +280,16 @@ export enum InvolvementType {
   SurveyResponse = 'SURVEY_RESPONSE'
 }
 
-export type KeyPairType = {
-  __typename?: 'KeyPairType';
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['UUID']['output'];
-  publicKey: Scalars['JSONString']['output'];
-};
-
-export type LimitedCodeType = {
-  __typename?: 'LimitedCodeType';
-  code: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  literateCode: Scalars['String']['output'];
-  productText: Scalars['String']['output'];
-  /** Status of the code. Kompassi uses the MIR state to indicate cancelled orders or otherwise revoked codes. */
-  status: CodeStatus;
-  usedOn?: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type LimitedEventType = {
-  __typename?: 'LimitedEventType';
-  endTime?: Maybe<Scalars['DateTime']['output']>;
-  name: Scalars['String']['output'];
-  organization: LimitedOrganizationType;
-  /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
-  slug: Scalars['String']['output'];
-  startTime?: Maybe<Scalars['DateTime']['output']>;
-  timezone: Scalars['String']['output'];
-};
-
-export type LimitedInvitationType = {
-  __typename?: 'LimitedInvitationType';
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  createdAt: Scalars['DateTime']['output'];
-  email: Scalars['String']['output'];
-  id: Scalars['UUID']['output'];
-  isUsed: Scalars['Boolean']['output'];
-  /** The language of the invitation. This is used to send the invitation in the correct language. */
-  language: InvolvementInvitationLanguageChoices;
-  survey?: Maybe<LimitedSurveyType>;
-};
-
-/** Represent Involvement (and the Person involved) without a way to traverse back to Person. */
-export type LimitedInvolvementType = {
-  __typename?: 'LimitedInvolvementType';
-  adminLink?: Maybe<Scalars['String']['output']>;
-  app: InvolvementApp;
-  cachedAnnotations: Scalars['GenericScalar']['output'];
-  cachedDimensions: Scalars['GenericScalar']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['ID']['output'];
-  isActive: Scalars['Boolean']['output'];
-  program?: Maybe<LimitedProgramType>;
-  programOffer?: Maybe<LimitedResponseType>;
-  response?: Maybe<LimitedResponseType>;
-  title: Scalars['String']['output'];
-  type: InvolvementType;
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-/**
- * A message as seen by its recipient in their profile: the immutable rendered
- * snapshot from MessageRecipient, not the (possibly since-edited) Message. Carries no
- * sender identity.
- */
-export type LimitedMessageType = {
-  __typename?: 'LimitedMessageType';
-  bodyHtml: Scalars['String']['output'];
-  cachedDimensions: Scalars['GenericScalar']['output'];
-  event: LimitedEventType;
-  id: Scalars['ID']['output'];
-  sentAt: Scalars['DateTime']['output'];
-  subject: Scalars['String']['output'];
-};
-
-export type LimitedOrderType = {
-  __typename?: 'LimitedOrderType';
-  canPay: Scalars['Boolean']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  displayName: Scalars['String']['output'];
-  email: Scalars['String']['output'];
-  firstName: Scalars['String']['output'];
-  formattedOrderNumber: Scalars['String']['output'];
-  id: Scalars['UUID']['output'];
-  language: TicketsV2OrderLanguageChoices;
-  lastName: Scalars['String']['output'];
-  /** Order number used in contexts where UUID cannot be used. Such places include generating reference numbers and the customer reading the order number aloud to an event rep. Prefer id (UUID) for everything else (eg. URLs). */
-  orderNumber: Scalars['Int']['output'];
-  phone: Scalars['String']['output'];
-  status: PaymentStatus;
-  totalPrice: Scalars['Decimal']['output'];
-};
-
-export type LimitedOrganizationType = {
-  __typename?: 'LimitedOrganizationType';
-  /** Finnish business ID (Y-tunnus), eg. 1234567-8. */
-  businessId: Scalars['String']['output'];
-  name: Scalars['String']['output'];
-  /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
-  slug: Scalars['String']['output'];
-  timezone: Scalars['String']['output'];
-};
-
-export type LimitedPaymentStampType = {
-  __typename?: 'LimitedPaymentStampType';
-  /** The correlation ID ties together the payment stamps related to the same payment attempt. For Paytrail, this is what they call 'stamp'. */
-  correlationId: Scalars['UUID']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  data: Scalars['GenericScalar']['output'];
-  id: Scalars['UUID']['output'];
-  provider: PaymentProvider;
-  status: PaymentStatus;
-  type: PaymentStampType;
-};
-
-export type LimitedProductType = {
-  __typename?: 'LimitedProductType';
-  availableFrom?: Maybe<Scalars['DateTime']['output']>;
-  availableUntil?: Maybe<Scalars['DateTime']['output']>;
-  /** Returns true if the product can be deleted. A product can be deleted if it has not been sold at all. */
-  canDelete: Scalars['Boolean']['output'];
-  /** Computes the amount of available units of this product. Other versions of this product are grouped together. Null if the product has no quotas. */
-  countAvailable?: Maybe<Scalars['Int']['output']>;
-  /** Computes the amount of paid units of this product. Other versions of this product are grouped together. */
-  countPaid: Scalars['Int']['output'];
-  /** Computes the amount of reserved units of this product. Other versions of this product are grouped together. */
-  countReserved: Scalars['Int']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  description: Scalars['String']['output'];
-  eticketsPerProduct: Scalars['Int']['output'];
-  id: Scalars['Int']['output'];
-  maxPerOrder: Scalars['Int']['output'];
-  price: Scalars['Decimal']['output'];
-  quotas: Array<Maybe<BareQuotaType>>;
-  title: Scalars['String']['output'];
-  /** VAT percentage applied to this product. Prices are inclusive of VAT. */
-  vatPercentage: Scalars['Decimal']['output'];
-};
-
-/** Represent Person without a way to traverse back to Event. */
-export type LimitedProfileType = {
-  __typename?: 'LimitedProfileType';
-  /** Your Discord username (NOTE: not display name). Events may use this to give you roles based on your participation. */
-  discordHandle: Scalars['String']['output'];
-  displayName: Scalars['String']['output'];
-  /** Email is the primary means of contact for event-related matters. */
-  email: Scalars['String']['output'];
-  firstName: Scalars['String']['output'];
-  fullName: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  lastName: Scalars['String']['output'];
-  /** If you go by a nick name or handle that you want printed in your badge and programme details, enter it here. */
-  nick: Scalars['String']['output'];
-  phoneNumber: Scalars['String']['output'];
-};
-
-export type LimitedProgramHostType = {
-  __typename?: 'LimitedProgramHostType';
-  cachedDimensions: Scalars['GenericScalar']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  id: Scalars['ID']['output'];
-  isActive: Scalars['Boolean']['output'];
-  person: LimitedProfileType;
-  programHostRole?: Maybe<ProgramHostRole>;
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-/**
- * "Limited" program items are returned when queried through ScheduleItem.program so as to
- * limit DoS via deep nesting. It lacks access to `scheduleItems` which might be used to
- * cause a rapid expansion of the response via deep nesting, and also lacks access to
- * some fields that may be expensive to compute such as `dimensions`; however,
- * `cachedDimensions` is still provided.
- */
-export type LimitedProgramType = {
-  __typename?: 'LimitedProgramType';
-  /** A mapping of program annotation slug to annotation value. */
-  cachedAnnotations: Scalars['GenericScalar']['output'];
-  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a single program or schedule item, but when using the plural resolvers like `programs` or `scheduleItems`, the performance difference can be significant. By default, returns both dimensions set on the program itself and those set on its schedule items. If `own_only` is True, only returns dimensions set on this item itself. By default, returns both public and internal dimensions. This will change in near future to only return public dimensions by default and require `publicOnly: false` to get internal dimensions. At that time, the default will change to `publicOnly: true`, and setting `publicOnly: false` will require authentication. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  /** The earliest start time of any schedule item of this program. NOTE: This is not the same as the program's start time. The intended purpose of this field is to exclude programs that have not yet started. Always use `scheduleItems` for the purpose of displaying program times. */
-  cachedEarliestStartTime?: Maybe<Scalars['DateTime']['output']>;
-  cachedHosts: Scalars['String']['output'];
-  /** The latest end time of any schedule item of this program. NOTE: This is not the same as the program's start end. The intended purpose of this field is to exclude programs that have already ended. Always use `scheduleItems` for the purpose of displaying program times. */
-  cachedLatestEndTime?: Maybe<Scalars['DateTime']['output']>;
-  canCancel: Scalars['Boolean']['output'];
-  canDelete: Scalars['Boolean']['output'];
-  canInviteProgramHost: Scalars['Boolean']['output'];
-  canRestore: Scalars['Boolean']['output'];
-  color: Scalars['String']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  description: Scalars['String']['output'];
-  isAcceptingFeedback: Scalars['Boolean']['output'];
-  isCancelled: Scalars['Boolean']['output'];
-  /** Get the links associated with the program. If types are not specified, all links are returned. */
-  links: Array<ProgramLink>;
-  /** Deprecated. Use `scheduleItem.location` instead. */
-  location?: Maybe<Scalars['String']['output']>;
-  slug: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-
-/**
- * "Limited" program items are returned when queried through ScheduleItem.program so as to
- * limit DoS via deep nesting. It lacks access to `scheduleItems` which might be used to
- * cause a rapid expansion of the response via deep nesting, and also lacks access to
- * some fields that may be expensive to compute such as `dimensions`; however,
- * `cachedDimensions` is still provided.
- */
-export type LimitedProgramTypeCachedAnnotationsArgs = {
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  slug?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
-
-/**
- * "Limited" program items are returned when queried through ScheduleItem.program so as to
- * limit DoS via deep nesting. It lacks access to `scheduleItems` which might be used to
- * cause a rapid expansion of the response via deep nesting, and also lacks access to
- * some fields that may be expensive to compute such as `dimensions`; however,
- * `cachedDimensions` is still provided.
- */
-export type LimitedProgramTypeCachedDimensionsArgs = {
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  listFiltersOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  ownOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/**
- * "Limited" program items are returned when queried through ScheduleItem.program so as to
- * limit DoS via deep nesting. It lacks access to `scheduleItems` which might be used to
- * cause a rapid expansion of the response via deep nesting, and also lacks access to
- * some fields that may be expensive to compute such as `dimensions`; however,
- * `cachedDimensions` is still provided.
- */
-export type LimitedProgramTypeLinksArgs = {
-  includeExpired?: InputMaybe<Scalars['Boolean']['input']>;
-  lang?: InputMaybe<Scalars['String']['input']>;
-  types?: InputMaybe<Array<InputMaybe<ProgramLinkType>>>;
-};
-
-
-/**
- * "Limited" program items are returned when queried through ScheduleItem.program so as to
- * limit DoS via deep nesting. It lacks access to `scheduleItems` which might be used to
- * cause a rapid expansion of the response via deep nesting, and also lacks access to
- * some fields that may be expensive to compute such as `dimensions`; however,
- * `cachedDimensions` is still provided.
- */
-export type LimitedProgramTypeLocationArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type LimitedQuotaType = {
-  __typename?: 'LimitedQuotaType';
-  /** Returns true if the product can be deleted. A product can be deleted if it has not been sold at all. */
-  canDelete: Scalars['Boolean']['output'];
-  countAvailable: Scalars['Int']['output'];
-  countPaid: Scalars['Int']['output'];
-  countReserved: Scalars['Int']['output'];
-  countTotal: Scalars['Int']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-};
-
-export type LimitedReceiptType = {
-  __typename?: 'LimitedReceiptType';
-  /** The correlation ID ties together the receipt stamps related to the same receipt attempt. Usually you would use the correlation ID of the payment stamp that you used to determine this order is paid. */
-  correlationId: Scalars['UUID']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  /** The email address to which the receipt was sent. */
-  email: Scalars['String']['output'];
-  status: ReceiptStatus;
-  type: ReceiptType;
-};
-
-export type LimitedRegistryType = {
-  __typename?: 'LimitedRegistryType';
-  createdAt: Scalars['DateTime']['output'];
-  organization: LimitedOrganizationType;
-  policyUrl: Scalars['String']['output'];
-  slug: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-
-export type LimitedRegistryTypePolicyUrlArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type LimitedRegistryTypeTitleArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type LimitedResponseType = {
-  __typename?: 'LimitedResponseType';
-  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a response, but when operating on the plural resolver `responses`, the performance difference can be significant. By default, returns only public dimensions. If `publicOnly` is set to `false`, both public and internal dimensions will be returned. In this case, authentication is required. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  /** Returns whether the response can be accepted by the user as an administrator. Not all survey workflows have the notion of accepting a response, in which case this field will always return False. */
-  canAccept: Scalars['Boolean']['output'];
-  /** Returns whether the response can be cancelled by the user. Not all survey workflows have the notion of cancelling a response, in which case this field will always return False. */
-  canCancel: Scalars['Boolean']['output'];
-  /** Whether the response can be deleted by the user. */
-  canDelete: Scalars['Boolean']['output'];
-  /** Returns whether the response can be edited by the user in the given edit mode. The edit mode can be either ADMIN (default) or OWN. ADMIN determines CBAC edit permissions, while OWN determines if the user is the owner of the response and editing it is allowed by the survey. */
-  canEdit: Scalars['Boolean']['output'];
-  formData: Scalars['JSONString']['output'];
-  id: Scalars['UUID']['output'];
-  /** Language code of the form used to submit this response. */
-  language: Scalars['String']['output'];
-  /** The date and time when the response was originally created. */
-  originalCreatedAt: Scalars['DateTime']['output'];
-  /**
-   *
-   * Returns the user who originally submitted this response.
-   * If response is to an anonymous survey, this information will not be available.
-   *
-   */
-  originalCreatedBy?: Maybe<SelectedProfileType>;
-  revisionCreatedAt: Scalars['DateTime']['output'];
-  /**
-   *
-   * Returns the user who submitted this version of the response.
-   * If response is to an anonymous survey, this information will not be available.
-   *
-   */
-  revisionCreatedBy?: Maybe<SelectedProfileType>;
-  /** Sequence number of this response within the use case (eg. survey). */
-  sequenceNumber: Scalars['Int']['output'];
-  values?: Maybe<Scalars['GenericScalar']['output']>;
-};
-
-
-export type LimitedResponseTypeCachedDimensionsArgs = {
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  listFiltersOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type LimitedResponseTypeCanEditArgs = {
-  mode?: InputMaybe<EditMode>;
-};
-
-
-export type LimitedResponseTypeValuesArgs = {
-  keyFieldsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type LimitedScheduleItemType = {
-  __typename?: 'LimitedScheduleItemType';
-  /** A mapping of program annotation slug to annotation value. */
-  cachedAnnotations: Scalars['GenericScalar']['output'];
-  /** Returns a mapping of dimension slugs to lists of value slugs. Using `cachedDimensions` is faster than `dimensions` as it requires less joins and database queries. The difference is negligible for a single program or schedule item, but when using the plural resolvers like `programs` or `scheduleItems`, the performance difference can be significant. By default, returns both dimensions set on the program itself and those set on its schedule items. If `own_only` is True, only returns dimensions set on this item itself. By default, returns both public and internal dimensions. This will change in near future to only return public dimensions by default and require `publicOnly: false` to get internal dimensions. At that time, the default will change to `publicOnly: true`, and setting `publicOnly: false` will require authentication. To limit the returned dimensions to key dimensions, set `keyDimensionsOnly: true` (default is `false`). To limit the returned dimensions to list filters, set `listFiltersOnly: true` (default is `false`). */
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  createdAt: Scalars['DateTime']['output'];
-  durationMinutes: Scalars['Int']['output'];
-  endTime: Scalars['DateTime']['output'];
-  endTimeUnixSeconds: Scalars['Int']['output'];
-  /** Convenience helper to get the freeform location of the schedule item. NOTE: You should usually display `location` to users instead. */
-  freeformLocation: Scalars['String']['output'];
-  isCancelled: Scalars['Boolean']['output'];
-  isPublic: Scalars['Boolean']['output'];
-  /** Deprecated alias for `duration_minutes`. */
-  lengthMinutes: Scalars['Int']['output'];
-  /** Get the links associated with the schedule item. If types are not specified, all links are returned. With `ownOnly`, only links set directly on the schedule item are returned; otherwise links inherited from the program are included as well. */
-  links: Array<ProgramLink>;
-  location?: Maybe<Scalars['String']['output']>;
-  reservationsExcelExportLink: Scalars['String']['output'];
-  /** Convenience helper to get the value slug of the `room` dimension. NOTE: You should usually display `location` to users instead. */
-  room: Scalars['String']['output'];
-  /** NOTE: Slug must be unique within Event. It does not suffice to be unique within Program. */
-  slug: Scalars['String']['output'];
-  startTime: Scalars['DateTime']['output'];
-  startTimeUnixSeconds: Scalars['Int']['output'];
-  /** Convenience helper to get the subtitle of the schedule item. NOTE: You should usually display `title` to users instead. */
-  subtitle: Scalars['String']['output'];
-  /** Returns the title of the program, with subtitle if it exists, in the format "Program title – Schedule item subtitle". */
-  title: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-
-export type LimitedScheduleItemTypeCachedAnnotationsArgs = {
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  slug?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
-
-export type LimitedScheduleItemTypeCachedDimensionsArgs = {
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  listFiltersOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  ownOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type LimitedScheduleItemTypeLinksArgs = {
-  includeExpired?: InputMaybe<Scalars['Boolean']['input']>;
-  lang?: InputMaybe<Scalars['String']['input']>;
-  ownOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  types?: InputMaybe<Array<InputMaybe<ProgramLinkType>>>;
-};
-
-
-export type LimitedScheduleItemTypeLocationArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type LimitedSurveyType = {
-  __typename?: 'LimitedSurveyType';
-  /** The form will be available from this date onwards. If not set, the form will not be available. */
-  activeFrom?: Maybe<Scalars['DateTime']['output']>;
-  /** The form will be available until this date. If not set, the form will be available indefinitely provided that active_from is set and has passed. */
-  activeUntil?: Maybe<Scalars['DateTime']['output']>;
-  anonymity: Anonymity;
-  /** Default dimension values that will be set on involvements based on responses. */
-  cachedDefaultInvolvementDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  /** Default dimension values that will be set on new responses. */
-  cachedDefaultResponseDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  isActive: Scalars['Boolean']['output'];
-  loginRequired: Scalars['Boolean']['output'];
-  /** Maximum number of responses per user. 0 = unlimited. Note that if login_required is not set, this only takes effect for logged in users.Has no effect if the survey is hard anonymous. */
-  maxResponsesPerUser: Scalars['Int']['output'];
-  profileFieldSelector: ProfileFieldSelectorType;
-  /** If enabled, responses cannot be deleted from the UI without disabling this first. */
-  protectResponses: Scalars['Boolean']['output'];
-  purpose: SurveyPurpose;
-  registry?: Maybe<LimitedRegistryType>;
-  /** If set, responses to this survey can be edited by whomever sent them until this date, provided that the response is not locked by a dimension value that is set to lock subjects. If unset, responses cannnot be edited at all.  */
-  responsesEditableUntil?: Maybe<Scalars['DateTime']['output']>;
-  /** Tekninen nimi eli "slug" näkyy URL-osoitteissa. Sallittuja merkkejä ovat pienet kirjaimet, numerot ja väliviiva. Teknistä nimeä ei voi muuttaa luomisen jälkeen. */
-  slug: Scalars['String']['output'];
-  title?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type LimitedSurveyTypeTitleArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type LimitedUniverseAnnotationType = {
-  __typename?: 'LimitedUniverseAnnotationType';
-  annotation: AnnotationType;
-  formFields?: Maybe<Scalars['GenericScalar']['output']>;
-  isActive: Scalars['Boolean']['output'];
-};
-
-/** Deprecated. Use ProfileType instead. */
-export type LimitedUserType = {
-  __typename?: 'LimitedUserType';
-  /** User's full name. */
-  displayName: Scalars['String']['output'];
-  email: Scalars['String']['output'];
-  firstName: Scalars['String']['output'];
-  lastName: Scalars['String']['output'];
-};
-
-export type MarkOrderAsPaid = {
-  __typename?: 'MarkOrderAsPaid';
-  order?: Maybe<LimitedOrderType>;
-};
-
 export type MarkOrderAsPaidInput = {
-  eventSlug: Scalars['String']['input'];
-  orderId: Scalars['String']['input'];
+  eventSlug: string;
+  orderId: string;
 };
-
-/** Deprecated. Use MarkScheduleItemAsFavorite instead. */
-export type MarkProgramAsFavorite = {
-  __typename?: 'MarkProgramAsFavorite';
-  success: Scalars['Boolean']['output'];
-};
-
-export type MarkScheduleItemAsFavorite = {
-  __typename?: 'MarkScheduleItemAsFavorite';
-  success: Scalars['Boolean']['output'];
-};
-
-/**
- *
- * Records which product owns a Message. Only PROGRAM is used for now;
- * the enum reserves room for forms/involvement/volunteers to reuse Messages V2 later.
- *
- */
-export enum MessageApp {
-  Program = 'PROGRAM'
-}
 
 /** An enumeration. */
 export enum MessageDispatch {
   PerInvolvement = 'PER_INVOLVEMENT',
   PerPerson = 'PER_PERSON'
 }
-
-export type MessageReplyToType = {
-  __typename?: 'MessageReplyToType';
-  app: MessageApp;
-  email: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  name: Scalars['String']['output'];
-};
 
 /** An enumeration. */
 export enum MessageState {
@@ -1727,591 +298,9 @@ export enum MessageState {
   Expired = 'EXPIRED'
 }
 
-/**
- * Admin-facing representation of a Message, used by the Program V2 admin compose/list
- * views. Never exposed to recipients - see LimitedMessageType for the profile view.
- */
-export type MessageType = {
-  __typename?: 'MessageType';
-  app: MessageApp;
-  body: Scalars['String']['output'];
-  createdAt: Scalars['DateTime']['output'];
-  dispatch: MessageDispatch;
-  expiredAt?: Maybe<Scalars['DateTime']['output']>;
-  id: Scalars['UUID']['output'];
-  /**
-   * Number of distinct recipients (people for PER_PERSON, involvements for
-   * PER_INVOLVEMENT) currently matching this message's recipient filters.
-   */
-  recipientCount: Scalars['Int']['output'];
-  recipientFilters: Scalars['GenericScalar']['output'];
-  replyTo?: Maybe<MessageReplyToType>;
-  sentAt?: Maybe<Scalars['DateTime']['output']>;
-  state: MessageState;
-  subject: Scalars['String']['output'];
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-export type Mutation = {
-  __typename?: 'Mutation';
-  acceptInvitation?: Maybe<AcceptInvitation>;
-  acceptProgramOffer?: Maybe<AcceptProgramOffer>;
-  cancelAndRefundOrder?: Maybe<CancelAndRefundOrder>;
-  cancelOwnUnpaidOrder?: Maybe<CancelOwnUnpaidOrder>;
-  cancelProgram?: Maybe<CancelProgram>;
-  cancelProgramOffer?: Maybe<CancelProgramOffer>;
-  confirmEmail?: Maybe<ConfirmEmail>;
-  /**
-   * Customer self-service cancellation, step 2 of 2: consume the one-time code
-   * from the confirmation email and cancel the order, initiating an automated
-   * refund via the payment provider if money was paid.
-   *
-   * May be called without authentication: the one-time code proves control of
-   * the email address of the order.
-   *
-   * Returns success=False if the order was cancelled but the provider rejected
-   * the refund request (order left in REFUND_FAILED for ticket sales to resolve
-   * with the existing admin refund tooling).
-   *
-   * NOTE: Must not return any PII (the caller may be anonymous).
-   */
-  confirmOrderCancellation?: Maybe<ConfirmOrderCancellation>;
-  /**
-   * Creates a new Message with the given content. Called only when the compose view
-   * for a not-yet-existing message ("new") is first saved - until then, the draft only
-   * exists in the browser, never in the database.
-   */
-  createMessage?: Maybe<CreateMessage>;
-  createMessageReplyTo?: Maybe<CreateMessageReplyTo>;
-  createOrder?: Maybe<CreateOrder>;
-  createProduct?: Maybe<CreateProduct>;
-  createProgram?: Maybe<CreateProgram>;
-  createProgramFeedback?: Maybe<CreateProgramFeedback>;
-  createProgramForm?: Maybe<CreateProgramForm>;
-  createQuota?: Maybe<CreateQuota>;
-  createSurvey?: Maybe<CreateSurvey>;
-  createSurveyLanguage?: Maybe<CreateSurveyLanguage>;
-  createSurveyResponse?: Maybe<CreateSurveyResponse>;
-  deleteDimension?: Maybe<DeleteDimension>;
-  deleteDimensionValue?: Maybe<DeleteDimensionValue>;
-  deleteInvitation?: Maybe<DeleteInvitation>;
-  /**
-   * Deletes a Message draft. Only drafts can be deleted - once sent, a Message is kept
-   * (possibly expired) so its MessageRecipients remain visible in recipients' profiles.
-   */
-  deleteMessage?: Maybe<DeleteMessage>;
-  /**
-   * Deletes a reply-to option. Messages that reference it fall back to the event's
-   * default plain contact email (Message.reply_to is SET_NULL on delete).
-   */
-  deleteMessageReplyTo?: Maybe<DeleteMessageReplyTo>;
-  deleteProduct?: Maybe<DeleteProduct>;
-  deleteProgramHost?: Maybe<DeleteProgramHost>;
-  deleteProgramOffers?: Maybe<DeleteProgramOffers>;
-  deleteQuota?: Maybe<DeleteQuota>;
-  deleteScheduleItem?: Maybe<DeleteScheduleItem>;
-  deleteSurvey?: Maybe<DeleteSurvey>;
-  deleteSurveyLanguage?: Maybe<DeleteSurveyLanguage>;
-  deleteSurveyResponses?: Maybe<DeleteSurveyResponses>;
-  /**
-   * Expires an active Message: it stops being sent to new/auto-matching recipients.
-   * People who already received it are unaffected.
-   */
-  expireMessage?: Maybe<ExpireMessage>;
-  generateKeyPair?: Maybe<GenerateKeyPair>;
-  initFileUpload?: Maybe<InitFileUploadResponse>;
-  inviteProgramHost?: Maybe<InviteProgramHost>;
-  markOrderAsPaid?: Maybe<MarkOrderAsPaid>;
-  /** Deprecated. Use MarkScheduleItemAsFavorite instead. */
-  markProgramAsFavorite?: Maybe<MarkProgramAsFavorite>;
-  markScheduleItemAsFavorite?: Maybe<MarkScheduleItemAsFavorite>;
-  /**
-   * Promotes a Single Select or Multiple Select field to a dimension.
-   *
-   * This is used when a field is created as a Single Select or Multiple Select
-   * and later discovered that it should be a dimension.
-   */
-  promoteFieldToDimension?: Maybe<PromoteFieldToDimension>;
-  putDimension?: Maybe<PutDimension>;
-  putDimensionValue?: Maybe<PutDimensionValue>;
-  putScheduleItem?: Maybe<PutScheduleItem>;
-  putUniverseAnnotation?: Maybe<PutUniverseAnnotation>;
-  reorderProducts?: Maybe<ReorderProducts>;
-  /**
-   * Customer self-service cancellation, step 1 of 2: send a confirmation link
-   * to the email address of the order.
-   *
-   * May be called without authentication: possession of the order UUID is considered
-   * sufficient proof of being party to the order (same trust model as the anonymous
-   * order page), and the confirmation email closes the loop.
-   *
-   * NOTE: Must not return any PII (the caller may be anonymous).
-   */
-  requestOrderCancellation?: Maybe<RequestOrderCancellation>;
-  resendInvitation?: Maybe<ResendInvitation>;
-  resendOrderConfirmation?: Maybe<ResendOrderConfirmation>;
-  /** Restore a program item that was previously cancelled. */
-  restoreProgram?: Maybe<RestoreProgram>;
-  revokeKeyPair?: Maybe<RevokeKeyPair>;
-  /**
-   * Sends a Message: on a draft, transitions it to ACTIVE and dispatches sending to all
-   * currently matching recipients. On an already ACTIVE message, this re-sends to any
-   * currently matching recipients who have not yet received it (MessageRecipient's
-   * uniqueness constraints make this idempotent for everyone else).
-   */
-  sendMessage?: Maybe<SendMessage>;
-  subscribeToSurveyResponses?: Maybe<SubscribeToSurveyResponses>;
-  /** Deprecated. Use UnmarkScheduleItemAsFavorite instead. */
-  unmarkProgramAsFavorite?: Maybe<UnmarkProgramAsFavorite>;
-  unmarkScheduleItemAsFavorite?: Maybe<UnmarkScheduleItemAsFavorite>;
-  unsubscribeFromSurveyResponses?: Maybe<UnsubscribeFromSurveyResponses>;
-  updateForm?: Maybe<UpdateForm>;
-  updateFormFields?: Maybe<UpdateFormFields>;
-  updateInvolvementDimensions?: Maybe<UpdateInvolvementDimensions>;
-  /**
-   * Manually override the automatically computed perks of a person's COMBINED_PERKS
-   * involvement, then recompute the non-overridden perks.
-   *
-   * ``form_data`` is ``{ overrides: string[], dimensions: {slug: string[]}, annotations: {slug: value} }``
-   * where ``overrides`` is the set of ticked override keys (``d-<dimension>`` / ``a-<annotation>``),
-   * and ``dimensions``/``annotations`` carry the manually set values for the overridden perks.
-   */
-  updateInvolvementPerks?: Maybe<UpdateInvolvementPerks>;
-  updateInvolvementPreferences?: Maybe<UpdateInvolvementPreferences>;
-  /**
-   * Updates a Message's subject/body/dispatch/reply-to/recipient filters. Works on a
-   * Message in any state, including ACTIVE (already sent) - edits are not retroactive:
-   * existing MessageRecipient rows keep their immutable rendered snapshot, and the
-   * updated content only applies to recipients who receive it from now on (subsequent
-   * explicit re-sends and the auto-send hook for newly-matching involvements).
-   */
-  updateMessage?: Maybe<UpdateMessage>;
-  updateMessageReplyTo?: Maybe<UpdateMessageReplyTo>;
-  updateOrder?: Maybe<UpdateOrder>;
-  updateProduct?: Maybe<UpdateProduct>;
-  updateProgram?: Maybe<UpdateProgram>;
-  updateProgramAnnotations?: Maybe<UpdateProgramAnnotations>;
-  updateProgramDimensions?: Maybe<UpdateProgramDimensions>;
-  updateProgramForm?: Maybe<UpdateProgramForm>;
-  updateProgramPreferences?: Maybe<UpdateProgramPreferences>;
-  updateQuota?: Maybe<UpdateQuota>;
-  updateResponseDimensions?: Maybe<UpdateResponseDimensions>;
-  updateSurvey?: Maybe<UpdateSurvey>;
-  updateSurveyDefaultDimensions?: Maybe<UpdateSurveyDefaultDimensions>;
-  /**
-   * Updates the tickets settings that are exposed to event admins.
-   * Fields omitted from the input are left unchanged (clear with an empty value).
-   * NOTE: provider_id is deliberately not settable here (super admin only).
-   */
-  updateTicketsPreferences?: Maybe<UpdateTicketsPreferences>;
-};
-
-
-export type MutationAcceptInvitationArgs = {
-  input: AcceptInvitationInput;
-};
-
-
-export type MutationAcceptProgramOfferArgs = {
-  input: AcceptProgramOfferInput;
-};
-
-
-export type MutationCancelAndRefundOrderArgs = {
-  input: CancelAndRefundOrderInput;
-};
-
-
-export type MutationCancelOwnUnpaidOrderArgs = {
-  input: CancelOwnUnpaidOrderInput;
-};
-
-
-export type MutationCancelProgramArgs = {
-  input: CancelProgramInput;
-};
-
-
-export type MutationCancelProgramOfferArgs = {
-  input: CancelProgramOfferInput;
-};
-
-
-export type MutationConfirmEmailArgs = {
-  input: ConfirmEmailInput;
-};
-
-
-export type MutationConfirmOrderCancellationArgs = {
-  input: ConfirmOrderCancellationInput;
-};
-
-
-export type MutationCreateMessageArgs = {
-  input: CreateMessageInput;
-};
-
-
-export type MutationCreateMessageReplyToArgs = {
-  input: CreateMessageReplyToInput;
-};
-
-
-export type MutationCreateOrderArgs = {
-  input: CreateOrderInput;
-};
-
-
-export type MutationCreateProductArgs = {
-  input: CreateProductInput;
-};
-
-
-export type MutationCreateProgramArgs = {
-  input: CreateProgramInput;
-};
-
-
-export type MutationCreateProgramFeedbackArgs = {
-  input: ProgramFeedbackInput;
-};
-
-
-export type MutationCreateProgramFormArgs = {
-  input: CreateProgramFormInput;
-};
-
-
-export type MutationCreateQuotaArgs = {
-  input: CreateQuotaInput;
-};
-
-
-export type MutationCreateSurveyArgs = {
-  input: CreateSurveyInput;
-};
-
-
-export type MutationCreateSurveyLanguageArgs = {
-  input: CreateSurveyLanguageInput;
-};
-
-
-export type MutationCreateSurveyResponseArgs = {
-  input: CreateSurveyResponseInput;
-};
-
-
-export type MutationDeleteDimensionArgs = {
-  input: DeleteDimensionInput;
-};
-
-
-export type MutationDeleteDimensionValueArgs = {
-  input: DeleteDimensionValueInput;
-};
-
-
-export type MutationDeleteInvitationArgs = {
-  input: DeleteInvitationInput;
-};
-
-
-export type MutationDeleteMessageArgs = {
-  input: DeleteMessageInput;
-};
-
-
-export type MutationDeleteMessageReplyToArgs = {
-  input: DeleteMessageReplyToInput;
-};
-
-
-export type MutationDeleteProductArgs = {
-  input: DeleteProductInput;
-};
-
-
-export type MutationDeleteProgramHostArgs = {
-  input: DeleteProgramHostInput;
-};
-
-
-export type MutationDeleteProgramOffersArgs = {
-  input: DeleteProgramOffersInput;
-};
-
-
-export type MutationDeleteQuotaArgs = {
-  input: DeleteQuotaInput;
-};
-
-
-export type MutationDeleteScheduleItemArgs = {
-  input: DeleteScheduleItemInput;
-};
-
-
-export type MutationDeleteSurveyArgs = {
-  input: DeleteSurveyInput;
-};
-
-
-export type MutationDeleteSurveyLanguageArgs = {
-  input: DeleteSurveyLanguageInput;
-};
-
-
-export type MutationDeleteSurveyResponsesArgs = {
-  input: DeleteSurveyResponsesInput;
-};
-
-
-export type MutationExpireMessageArgs = {
-  input: ExpireMessageInput;
-};
-
-
-export type MutationGenerateKeyPairArgs = {
-  password: Scalars['String']['input'];
-};
-
-
-export type MutationInitFileUploadArgs = {
-  input: InitFileUploadInput;
-};
-
-
-export type MutationInviteProgramHostArgs = {
-  input: InviteProgramHostInput;
-};
-
-
-export type MutationMarkOrderAsPaidArgs = {
-  input: MarkOrderAsPaidInput;
-};
-
-
-export type MutationMarkProgramAsFavoriteArgs = {
-  input: FavoriteInput;
-};
-
-
-export type MutationMarkScheduleItemAsFavoriteArgs = {
-  input: FavoriteScheduleItemInput;
-};
-
-
-export type MutationPromoteFieldToDimensionArgs = {
-  input: PromoteFieldToDimensionInput;
-};
-
-
-export type MutationPutDimensionArgs = {
-  input: PutDimensionInput;
-};
-
-
-export type MutationPutDimensionValueArgs = {
-  input: PutDimensionValueInput;
-};
-
-
-export type MutationPutScheduleItemArgs = {
-  input: PutScheduleItemInput;
-};
-
-
-export type MutationPutUniverseAnnotationArgs = {
-  input: PutUniverseAnnotationInput;
-};
-
-
-export type MutationReorderProductsArgs = {
-  input: ReorderProductsInput;
-};
-
-
-export type MutationRequestOrderCancellationArgs = {
-  input: RequestOrderCancellationInput;
-};
-
-
-export type MutationResendInvitationArgs = {
-  input: ResendInvitationInput;
-};
-
-
-export type MutationResendOrderConfirmationArgs = {
-  input: ResendOrderConfirmationInput;
-};
-
-
-export type MutationRestoreProgramArgs = {
-  input: RestoreProgramInput;
-};
-
-
-export type MutationRevokeKeyPairArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationSendMessageArgs = {
-  input: SendMessageInput;
-};
-
-
-export type MutationSubscribeToSurveyResponsesArgs = {
-  input: SubscriptionInput;
-};
-
-
-export type MutationUnmarkProgramAsFavoriteArgs = {
-  input: FavoriteInput;
-};
-
-
-export type MutationUnmarkScheduleItemAsFavoriteArgs = {
-  input: FavoriteScheduleItemInput;
-};
-
-
-export type MutationUnsubscribeFromSurveyResponsesArgs = {
-  input: SubscriptionInput;
-};
-
-
-export type MutationUpdateFormArgs = {
-  input: UpdateFormInput;
-};
-
-
-export type MutationUpdateFormFieldsArgs = {
-  input: UpdateFormFieldsInput;
-};
-
-
-export type MutationUpdateInvolvementDimensionsArgs = {
-  input: UpdateInvolvementDimensionsInput;
-};
-
-
-export type MutationUpdateInvolvementPerksArgs = {
-  input: UpdateInvolvementPerksInput;
-};
-
-
-export type MutationUpdateInvolvementPreferencesArgs = {
-  input: UpdateInvolvementPreferencesInput;
-};
-
-
-export type MutationUpdateMessageArgs = {
-  input: UpdateMessageInput;
-};
-
-
-export type MutationUpdateMessageReplyToArgs = {
-  input: UpdateMessageReplyToInput;
-};
-
-
-export type MutationUpdateOrderArgs = {
-  input: UpdateOrderInput;
-};
-
-
-export type MutationUpdateProductArgs = {
-  input: UpdateProductInput;
-};
-
-
-export type MutationUpdateProgramArgs = {
-  input: UpdateProgramInput;
-};
-
-
-export type MutationUpdateProgramAnnotationsArgs = {
-  input: UpdateProgramAnnotationsInput;
-};
-
-
-export type MutationUpdateProgramDimensionsArgs = {
-  input: UpdateProgramDimensionsInput;
-};
-
-
-export type MutationUpdateProgramFormArgs = {
-  input: UpdateSurveyInput;
-};
-
-
-export type MutationUpdateProgramPreferencesArgs = {
-  input: UpdateProgramPreferencesInput;
-};
-
-
-export type MutationUpdateQuotaArgs = {
-  input: UpdateQuotaInput;
-};
-
-
-export type MutationUpdateResponseDimensionsArgs = {
-  input: UpdateResponseDimensionsInput;
-};
-
-
-export type MutationUpdateSurveyArgs = {
-  input: UpdateSurveyInput;
-};
-
-
-export type MutationUpdateSurveyDefaultDimensionsArgs = {
-  input: UpdateSurveyDefaultDimensionsInput;
-};
-
-
-export type MutationUpdateTicketsPreferencesArgs = {
-  input: UpdateTicketsPreferencesInput;
-};
-
 export type OrderProductInput = {
-  productId: Scalars['Int']['input'];
-  quantity: Scalars['Int']['input'];
-};
-
-export type OrderProductType = {
-  __typename?: 'OrderProductType';
-  price: Scalars['Decimal']['output'];
-  quantity: Scalars['Int']['output'];
-  title: Scalars['String']['output'];
-  vatPercentage: Scalars['Decimal']['output'];
-};
-
-export type OwnProfileType = {
-  __typename?: 'OwnProfileType';
-  /** Your Discord username (NOTE: not display name). Events may use this to give you roles based on your participation. */
-  discordHandle: Scalars['String']['output'];
-  displayName: Scalars['String']['output'];
-  /** Email is the primary means of contact for event-related matters. */
-  email: Scalars['String']['output'];
-  firstName: Scalars['String']['output'];
-  /** Namespace for queries related to forms and the current user. */
-  forms: FormsProfileMetaType;
-  fullName: Scalars['String']['output'];
-  id: Scalars['ID']['output'];
-  keypairs?: Maybe<Array<KeyPairType>>;
-  lastName: Scalars['String']['output'];
-  /** Messages V2: messages sent to the current user, most recent first. */
-  messages: Array<LimitedMessageType>;
-  /** If you go by a nick name or handle that you want printed in your badge and programme details, enter it here. */
-  nick: Scalars['String']['output'];
-  phoneNumber: Scalars['String']['output'];
-  /** Namespace for queries related to programs and the current user. */
-  program: ProgramV2ProfileMetaType;
-  /** Namespace for queries related to tickets and the current user. */
-  tickets: TicketsV2ProfileMetaType;
+  productId: number;
+  quantity: number;
 };
 
 /** An enumeration. */
@@ -2349,162 +338,11 @@ export enum PaymentStatus {
   RefundRequested = 'REFUND_REQUESTED'
 }
 
-/**
- * Used to determine which profile fields are transferred from registry to another.
- * NOTE: Must match ProfileFieldSelector in frontend/src/components/involvement/models.ts.
- *
- * For "no fields selected", use the default constructor.
- * For "all fields selected", use `ProfileFieldSelector.all_fields()`.
- */
-export type ProfileFieldSelectorType = {
-  __typename?: 'ProfileFieldSelectorType';
-  discordHandle: Scalars['Boolean']['output'];
-  email: Scalars['Boolean']['output'];
-  firstName: Scalars['Boolean']['output'];
-  id: Scalars['Boolean']['output'];
-  lastName: Scalars['Boolean']['output'];
-  nick: Scalars['Boolean']['output'];
-  phoneNumber: Scalars['Boolean']['output'];
-};
-
-export type ProfileOrderType = {
-  __typename?: 'ProfileOrderType';
-  canCancel: Scalars['Boolean']['output'];
-  canPay: Scalars['Boolean']['output'];
-  /** Returns true if the customer can cancel this order themselves via the email confirmed cancellation flow. */
-  canRequestCancellation: Scalars['Boolean']['output'];
-  /** The customer may cancel their order themselves until this deadline. Null if customer self-service cancellation is not enabled for the event. */
-  cancellationDeadline?: Maybe<Scalars['DateTime']['output']>;
-  createdAt: Scalars['DateTime']['output'];
-  displayName: Scalars['String']['output'];
-  email: Scalars['String']['output'];
-  /** Returns a link at which the user can view their electronic tickets. They need to be the owner of the order (or an admin) to access that link. Returns null if the order does not contain electronic tickets. */
-  eticketsLink?: Maybe<Scalars['String']['output']>;
-  event: LimitedEventType;
-  firstName: Scalars['String']['output'];
-  formattedOrderNumber: Scalars['String']['output'];
-  id: Scalars['UUID']['output'];
-  language: TicketsV2OrderLanguageChoices;
-  lastName: Scalars['String']['output'];
-  /** Order number used in contexts where UUID cannot be used. Such places include generating reference numbers and the customer reading the order number aloud to an event rep. Prefer id (UUID) for everything else (eg. URLs). */
-  orderNumber: Scalars['Int']['output'];
-  phone: Scalars['String']['output'];
-  /** Returns a link at which the user can view their electronic tickets. They need to be the owner of the order (or an admin) to access that link. Returns null if the order does not contain electronic tickets. */
-  products: Array<OrderProductType>;
-  status: PaymentStatus;
-  /** Contact email for the ticket seller (from the event's tickets meta). Plain email address without the display name. */
-  ticketsContactEmail: Scalars['String']['output'];
-  totalPrice: Scalars['Decimal']['output'];
-};
-
-export type ProfileResponseType = {
-  __typename?: 'ProfileResponseType';
-  /** Returns the dimensions of the response as a dict of dimension slug -> list of dimension value slugs. If the response is not related to a survey, there will be no dimensions and an empty dict will always be returned. Using this field is more efficient than querying the dimensions field on the response, as the dimensions are cached on the response object. The respondent will only see values of dimensions that are designated as being shown to the respondent. */
-  cachedDimensions?: Maybe<Scalars['GenericScalar']['output']>;
-  /** Returns whether the response can be accepted by the user as an administrator. Not all survey workflows have the notion of accepting a response, in which case this field will always return False. */
-  canAccept: Scalars['Boolean']['output'];
-  /** Returns whether the response can be cancelled by the user. Not all survey workflows have the notion of cancelling a response, in which case this field will always return False. */
-  canCancel: Scalars['Boolean']['output'];
-  /** Whether the response can be deleted by the user. */
-  canDelete: Scalars['Boolean']['output'];
-  /** Returns whether the response can be edited by the user in the given edit mode. The edit mode can be either ADMIN (default) or OWN. ADMIN determines CBAC edit permissions, while OWN determines if the user is the owner of the response and editing it is allowed by the survey. */
-  canEdit: Scalars['Boolean']['output'];
-  dimensions: Array<ResponseDimensionValueType>;
-  /** True if the current version of this response was created by someone other than the original creator (eg. an admin edited a response on behalf of the respondent). The response is still listed for the original creator, but this flag allows the UI to indicate that it was last edited by someone else. */
-  editedByAnother: Scalars['Boolean']['output'];
-  form: FormType;
-  formData: Scalars['JSONString']['output'];
-  id: Scalars['UUID']['output'];
-  /** Language code of the form used to submit this response. */
-  language: Scalars['String']['output'];
-  oldVersions: Array<LimitedResponseType>;
-  /** The date and time when the response was originally created. */
-  originalCreatedAt: Scalars['DateTime']['output'];
-  /**
-   *
-   * Returns the user who originally submitted this response.
-   * If response is to an anonymous survey, this information will not be available.
-   *
-   */
-  originalCreatedBy?: Maybe<SelectedProfileType>;
-  revisionCreatedAt: Scalars['DateTime']['output'];
-  /**
-   *
-   * Returns the user who submitted this version of the response.
-   * If response is to an anonymous survey, this information will not be available.
-   *
-   */
-  revisionCreatedBy?: Maybe<SelectedProfileType>;
-  /** If this response is an old version, this field will point to the current version. */
-  supersededBy?: Maybe<LimitedResponseType>;
-  values?: Maybe<Scalars['GenericScalar']['output']>;
-};
-
-
-export type ProfileResponseTypeCachedDimensionsArgs = {
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type ProfileResponseTypeCanEditArgs = {
-  mode?: InputMaybe<EditMode>;
-};
-
-
-export type ProfileResponseTypeDimensionsArgs = {
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type ProfileResponseTypeValuesArgs = {
-  keyFieldsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-/**
- * Represents a user profile with fields describing the involvement
- * of the user with an event.
- */
-export type ProfileWithInvolvementType = {
-  __typename?: 'ProfileWithInvolvementType';
-  discordHandle: Scalars['String']['output'];
-  /** The display name generally follows the format Firstname "Nickname" Lastname. If some parts are missing or the user has requested not to display them, we will adjust the format accordingly. */
-  displayName: Scalars['String']['output'];
-  email: Scalars['String']['output'];
-  firstName: Scalars['String']['output'];
-  /** The full name is similar to display name, but includes the last name if it is available. The full name generally should not be displayed to the public (use display name instead), but is used internally for identification purposes. */
-  fullName: Scalars['String']['output'];
-  id?: Maybe<Scalars['Int']['output']>;
-  involvements: Array<LimitedInvolvementType>;
-  /** Returns True if the user has at least one active involvement in the event. */
-  isActive: Scalars['Boolean']['output'];
-  lastName: Scalars['String']['output'];
-  nick: Scalars['String']['output'];
-  phoneNumber: Scalars['String']['output'];
-  profileFieldSelector: ProfileFieldSelectorType;
-};
-
-export type ProgramAnnotationType = {
-  __typename?: 'ProgramAnnotationType';
-  annotation: AnnotationType;
-  value?: Maybe<Scalars['GenericScalar']['output']>;
-};
-
-
-export type ProgramAnnotationTypeValueArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type ProgramDimensionValueType = {
-  __typename?: 'ProgramDimensionValueType';
-  dimension: FullDimensionType;
-  value: DimensionValueType;
-};
-
 export type ProgramFeedbackInput = {
-  eventSlug: Scalars['String']['input'];
-  feedback: Scalars['String']['input'];
-  kissa: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
+  eventSlug: string;
+  feedback: string;
+  kissa: string;
+  programSlug: string;
 };
 
 /** An enumeration. */
@@ -2519,13 +357,6 @@ export enum ProgramItemResolution {
   CancelAndHide = 'CANCEL_AND_HIDE',
   Delete = 'DELETE'
 }
-
-export type ProgramLink = {
-  __typename?: 'ProgramLink';
-  href: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  type: ProgramLinkType;
-};
 
 export enum ProgramLinkType {
   Calendar = 'CALENDAR',
@@ -2548,278 +379,31 @@ export enum ProgramOfferResolution {
   Reject = 'REJECT'
 }
 
-/** An enumeration. */
-export enum ProgramUserRelation {
-  Favorited = 'FAVORITED',
-  Hosting = 'HOSTING'
-}
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaType = {
-  __typename?: 'ProgramV2EventMetaType';
-  annotations: Array<AnnotationType>;
-  /** Returns a link to the calendar export view for the event. The calendar export view accepts the following GET parameters, all optional: `favorited` - set to a truthy value to receive only favorites, `slug` - include only these programmes (can be multi-valued or separated by commas), `language` - the language to use when resolving dimensions. Further GET parameters are used to filter by dimensions. */
-  calendarExportLink: Scalars['String']['output'];
-  canDeleteProgramOffers: Scalars['Boolean']['output'];
-  /** Returns the total number of program offers (not taking into account filters). */
-  countProgramOffers: Scalars['Int']['output'];
-  /** `is_list_filter` - only return dimensions that are shown in the list filter. `is_shown_in_detail` - only return dimensions that are shown in the detail view. If you supply both, you only get their intersection. */
-  dimensions: Array<FullDimensionType>;
-  /** Used for admin purposes changing settings of annotations in events. Usually you should use `event.program.annotations` instead. */
-  eventAnnotations: Array<LimitedUniverseAnnotationType>;
-  invitations: Array<FullInvitationType>;
-  /** Like `dimensions` but returns dimensions from the Involvement universe. Differs from `event.involvement.dimensions` in that permissions are checked based on the Program V2 application privileges, not Involvement. `is_list_filter` - only return dimensions that are shown in the list filter. `is_shown_in_detail` - only return dimensions that are shown in the detail view. If you supply both, you only get their intersection. */
-  involvementDimensions: Array<FullDimensionType>;
-  isSchedulePublic: Scalars['Boolean']['output'];
-  message?: Maybe<MessageType>;
-  /** Messages V2: messages of this event's involvement universe. */
-  messages: Array<MessageType>;
-  program?: Maybe<FullProgramType>;
-  programHosts: Array<FullProgramHostType>;
-  programHostsExcelExportLink: Scalars['String']['output'];
-  /** Returns a single program offer. Also old versions of program offers can be retrieved by their ID. */
-  programOffer?: Maybe<FullResponseType>;
-  /** Returns all responses to all program offer forms of this event. */
-  programOffers: Array<FullResponseType>;
-  /** Returns a link to the the program offers Excel export view for the event. The program offers Excel export view returns all or filtered program offers in an Excel file, grouped into worksheets by the program form. `favorited` - set to a truthy value to receive only favorites, `slug` - include only these programmes (can be multi-valued or separated by commas), `language` - the language to use when resolving dimensions. Further GET parameters are used to filter by dimensions. */
-  programOffersExcelExportLink: Scalars['String']['output'];
-  programs: Array<FullProgramType>;
-  /** The program schedule becomes publicly visible at this point in time. Leave unset to keep the schedule private. */
-  publicFrom?: Maybe<Scalars['DateTime']['output']>;
-  /** Messages V2: involvement dimensions (including the technical type/state dimensions) available for building a message's recipient filters. */
-  recipientDimensions: Array<FullDimensionType>;
-  /** Messages V2: reply-to addresses configured for this event, offered in the compose view and managed on the Program V2 admin preferences page. */
-  replyToAddresses: Array<MessageReplyToType>;
-  reports: Array<ReportType>;
-  scheduleItem?: Maybe<FullScheduleItemType>;
-  scheduleItems: Array<FullScheduleItemType>;
-  scheduleItemsExcelExportLink: Scalars['String']['output'];
-  /** Returns the state dimension of the event, if there is one. */
-  stateDimension?: Maybe<FullDimensionType>;
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeAnnotationsArgs = {
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  slug?: InputMaybe<Array<Scalars['String']['input']>>;
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeDimensionsArgs = {
-  isListFilter?: InputMaybe<Scalars['Boolean']['input']>;
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeInvolvementDimensionsArgs = {
-  isListFilter?: InputMaybe<Scalars['Boolean']['input']>;
-  isShownInDetail?: InputMaybe<Scalars['Boolean']['input']>;
-  keyDimensionsOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeMessageArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeMessagesArgs = {
-  includeDrafts?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeProgramArgs = {
-  slug: Scalars['String']['input'];
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeProgramHostsArgs = {
-  programFilters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeProgramOfferArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeProgramOffersArgs = {
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeProgramsArgs = {
-  favoritesOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-  hidePast?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  updatedAfter?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeReportsArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeScheduleItemArgs = {
-  slug: Scalars['String']['input'];
-};
-
-
-/**
- * NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
- * Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
- */
-export type ProgramV2EventMetaTypeScheduleItemsArgs = {
-  favoritesOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-  hidePast?: InputMaybe<Scalars['Boolean']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
-  updatedAfter?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type ProgramV2ProfileMetaType = {
-  __typename?: 'ProgramV2ProfileMetaType';
-  /** Returns all current responses to all program offer forms of this event. */
-  programOffers: Array<ProfileResponseType>;
-  /** Get programs that relate to this user in some way. Currently only favorites are implemented, but in the future also signed up and hosting. Dimension filter may only be specified when event_slug is given. */
-  programs?: Maybe<Array<FullProgramType>>;
-  /** Get programs that relate to this user in some way. Currently only favorites are implemented, but in the future also signed up and hosting. Dimension filter may only be specified when event_slug is given. */
-  scheduleItems?: Maybe<Array<FullScheduleItemType>>;
-};
-
-
-export type ProgramV2ProfileMetaTypeProgramOffersArgs = {
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-};
-
-
-export type ProgramV2ProfileMetaTypeProgramsArgs = {
-  eventSlug?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-  hidePast?: InputMaybe<Scalars['Boolean']['input']>;
-  userRelation?: InputMaybe<ProgramUserRelation>;
-};
-
-
-export type ProgramV2ProfileMetaTypeScheduleItemsArgs = {
-  eventSlug?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-  hidePast?: InputMaybe<Scalars['Boolean']['input']>;
-  userRelation?: InputMaybe<ProgramUserRelation>;
-};
-
-/**
- * Promotes a Single Select or Multiple Select field to a dimension.
- *
- * This is used when a field is created as a Single Select or Multiple Select
- * and later discovered that it should be a dimension.
- */
-export type PromoteFieldToDimension = {
-  __typename?: 'PromoteFieldToDimension';
-  survey?: Maybe<FullSurveyType>;
-};
-
 export type PromoteFieldToDimensionInput = {
-  eventSlug: Scalars['String']['input'];
-  fieldSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-};
-
-export type PutDimension = {
-  __typename?: 'PutDimension';
-  dimension?: Maybe<FullDimensionType>;
+  eventSlug: string;
+  fieldSlug: string;
+  surveySlug: string;
 };
 
 export type PutDimensionInput = {
-  dimensionSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  scopeSlug: Scalars['String']['input'];
-  universeSlug: Scalars['String']['input'];
-};
-
-export type PutDimensionValue = {
-  __typename?: 'PutDimensionValue';
-  value?: Maybe<DimensionValueType>;
+  dimensionSlug: string;
+  formData: unknown;
+  scopeSlug: string;
+  universeSlug: string;
 };
 
 export type PutDimensionValueInput = {
-  dimensionSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  scopeSlug: Scalars['String']['input'];
-  universeSlug: Scalars['String']['input'];
-  valueSlug: Scalars['String']['input'];
-};
-
-export type PutScheduleItem = {
-  __typename?: 'PutScheduleItem';
-  scheduleItem?: Maybe<FullScheduleItemType>;
+  dimensionSlug: string;
+  formData: unknown;
+  scopeSlug: string;
+  universeSlug: string;
+  valueSlug: string;
 };
 
 export type PutScheduleItemInput = {
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
+  eventSlug: string;
+  programSlug: string;
   scheduleItem: ScheduleItemInput;
-};
-
-export type PutUniverseAnnotation = {
-  __typename?: 'PutUniverseAnnotation';
-  universeAnnotation?: Maybe<LimitedUniverseAnnotationType>;
 };
 
 /** An enumeration. */
@@ -2829,25 +413,12 @@ export enum PutUniverseAnnotationAction {
 }
 
 export type PutUniverseAnnotationInput = {
-  action?: InputMaybe<PutUniverseAnnotationAction>;
-  annotationSlug: Scalars['String']['input'];
-  formFields: Array<Scalars['String']['input']>;
-  isActive: Scalars['Boolean']['input'];
-  scopeSlug: Scalars['String']['input'];
-  universeSlug: Scalars['String']['input'];
-};
-
-export type Query = {
-  __typename?: 'Query';
-  event?: Maybe<FullEventType>;
-  profile?: Maybe<OwnProfileType>;
-  /** Returns the registry that hosts the personal data of all users of Kompassi. */
-  userRegistry: LimitedRegistryType;
-};
-
-
-export type QueryEventArgs = {
-  slug: Scalars['String']['input'];
+  action?: PutUniverseAnnotationAction | null | undefined;
+  annotationSlug: string;
+  formFields: Array<string>;
+  isActive: boolean;
+  scopeSlug: string;
+  universeSlug: string;
 };
 
 /** An enumeration. */
@@ -2872,155 +443,49 @@ export enum RefundType {
   Provider = 'PROVIDER'
 }
 
-export type ReorderProducts = {
-  __typename?: 'ReorderProducts';
-  products: Array<LimitedProductType>;
-};
-
 export type ReorderProductsInput = {
-  eventSlug: Scalars['String']['input'];
-  productIds: Array<Scalars['Int']['input']>;
-};
-
-export type ReportType = {
-  __typename?: 'ReportType';
-  columns: Array<ColumnType>;
-  footer: Scalars['String']['output'];
-  hasTotalRow: Scalars['Boolean']['output'];
-  lang: Scalars['String']['output'];
-  rows: Array<Array<Maybe<Scalars['GenericScalar']['output']>>>;
-  slug: Scalars['String']['output'];
-  title: Scalars['String']['output'];
-  totalRow?: Maybe<Array<Maybe<Scalars['GenericScalar']['output']>>>;
-};
-
-
-export type ReportTypeFooterArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type ReportTypeTitleArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-/**
- * Customer self-service cancellation, step 1 of 2: send a confirmation link
- * to the email address of the order.
- *
- * May be called without authentication: possession of the order UUID is considered
- * sufficient proof of being party to the order (same trust model as the anonymous
- * order page), and the confirmation email closes the loop.
- *
- * NOTE: Must not return any PII (the caller may be anonymous).
- */
-export type RequestOrderCancellation = {
-  __typename?: 'RequestOrderCancellation';
-  success: Scalars['Boolean']['output'];
+  eventSlug: string;
+  productIds: Array<number>;
 };
 
 export type RequestOrderCancellationInput = {
-  eventSlug: Scalars['String']['input'];
-  orderId: Scalars['String']['input'];
-};
-
-export type ResendInvitation = {
-  __typename?: 'ResendInvitation';
-  invitation?: Maybe<LimitedInvitationType>;
+  eventSlug: string;
+  orderId: string;
 };
 
 export type ResendInvitationInput = {
-  eventSlug: Scalars['String']['input'];
-  invitationId: Scalars['String']['input'];
-};
-
-export type ResendOrderConfirmation = {
-  __typename?: 'ResendOrderConfirmation';
-  order?: Maybe<LimitedOrderType>;
-  receipt?: Maybe<LimitedReceiptType>;
+  eventSlug: string;
+  invitationId: string;
 };
 
 export type ResendOrderConfirmationInput = {
-  eventSlug: Scalars['String']['input'];
-  orderId: Scalars['String']['input'];
-};
-
-export type ResponseDimensionValueType = {
-  __typename?: 'ResponseDimensionValueType';
-  dimension: FullDimensionType;
-  value: DimensionValueType;
-};
-
-/** Restore a program item that was previously cancelled. */
-export type RestoreProgram = {
-  __typename?: 'RestoreProgram';
-  programSlug: Scalars['String']['output'];
+  eventSlug: string;
+  orderId: string;
 };
 
 export type RestoreProgramInput = {
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-};
-
-export type RevokeKeyPair = {
-  __typename?: 'RevokeKeyPair';
-  id: Scalars['String']['output'];
+  eventSlug: string;
+  programSlug: string;
 };
 
 export type ScheduleItemInput = {
-  durationMinutes: Scalars['Int']['input'];
-  freeformLocation?: InputMaybe<Scalars['String']['input']>;
-  isPublic?: InputMaybe<Scalars['Boolean']['input']>;
-  room?: InputMaybe<Scalars['String']['input']>;
-  slug: Scalars['String']['input'];
-  startTime: Scalars['DateTime']['input'];
-  subtitle: Scalars['String']['input'];
-};
-
-/**
- * Represents a user profile with fields that can be selected for transfer.
- * NOTE: Must match Profile in frontend/src/components/involvement/models.ts.
- */
-export type SelectedProfileType = {
-  __typename?: 'SelectedProfileType';
-  discordHandle: Scalars['String']['output'];
-  /** The display name generally follows the format Firstname "Nickname" Lastname. If some parts are missing or the user has requested not to display them, we will adjust the format accordingly. */
-  displayName: Scalars['String']['output'];
-  email: Scalars['String']['output'];
-  firstName: Scalars['String']['output'];
-  /** The full name is similar to display name, but includes the last name if it is available. The full name generally should not be displayed to the public (use display name instead), but is used internally for identification purposes. */
-  fullName: Scalars['String']['output'];
-  id?: Maybe<Scalars['Int']['output']>;
-  lastName: Scalars['String']['output'];
-  nick: Scalars['String']['output'];
-  phoneNumber: Scalars['String']['output'];
-  profileFieldSelector: ProfileFieldSelectorType;
-};
-
-/**
- * Sends a Message: on a draft, transitions it to ACTIVE and dispatches sending to all
- * currently matching recipients. On an already ACTIVE message, this re-sends to any
- * currently matching recipients who have not yet received it (MessageRecipient's
- * uniqueness constraints make this idempotent for everyone else).
- */
-export type SendMessage = {
-  __typename?: 'SendMessage';
-  message?: Maybe<MessageType>;
+  durationMinutes: number;
+  freeformLocation?: string | null | undefined;
+  isPublic?: boolean | null | undefined;
+  room?: string | null | undefined;
+  slug: string;
+  startTime: string;
+  subtitle: string;
 };
 
 export type SendMessageInput = {
-  eventSlug: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-};
-
-export type SubscribeToSurveyResponses = {
-  __typename?: 'SubscribeToSurveyResponses';
-  success: Scalars['Boolean']['output'];
+  eventSlug: string;
+  messageId: string;
 };
 
 export type SubscriptionInput = {
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
+  eventSlug: string;
+  surveySlug: string;
 };
 
 /** An enumeration. */
@@ -3036,116 +501,6 @@ export enum SurveyPurpose {
 }
 
 /** An enumeration. */
-export enum SurveyRelation {
-  Accessible = 'ACCESSIBLE',
-  Subscribed = 'SUBSCRIBED'
-}
-
-export type TicketsV2EventMetaType = {
-  __typename?: 'TicketsV2EventMetaType';
-  /** Number of days from order creation during which the customer can cancel a paid order themselves. The period is further capped at event start. 0 = customer self-service cancellation disabled. */
-  cancellationPeriodDays: Scalars['Int']['output'];
-  /** Ticket sales contact email in the Name Surname <email@example.com> format. Admin oriented view; customers get the plain seller email via the order API. */
-  contactEmail: Scalars['String']['output'];
-  /** Returns the total number of orders made to this event. Admin oriented view; customers will access order information through `profile.tickets`. */
-  countTotalOrders: Scalars['Int']['output'];
-  /** Returns orders made to this event. Admin oriented view; customers will access order information through `profile.tickets`. */
-  order?: Maybe<FullOrderType>;
-  /** Returns orders made to this event. Admin oriented view; customers will access order information through `profile.tickets`. */
-  orders: Array<FullOrderType>;
-  /** Returns a product defined for this event. Admin oriented view; customers will access product information through /api/tickets-v2. */
-  product: FullProductType;
-  /** Returns products defined for this event. Admin oriented view; customers will access product information through /api/tickets-v2. */
-  products: Array<FullProductType>;
-  providerId: TicketsV2TicketsV2EventMetaProviderIdChoices;
-  /** Returns a quota defined for this event. Admin oriented view; customers will access product information through /api/tickets-v2. */
-  quota: FullQuotaType;
-  quotas: Array<FullQuotaType>;
-  /** Get single report. For available reports, see `getReports.slug`. */
-  report?: Maybe<ReportType>;
-  /** Get all the reports. */
-  reports: Array<ReportType>;
-  termsAndConditionsUrlEn: Scalars['String']['output'];
-  termsAndConditionsUrlFi: Scalars['String']['output'];
-  termsAndConditionsUrlSv: Scalars['String']['output'];
-};
-
-
-export type TicketsV2EventMetaTypeOrderArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type TicketsV2EventMetaTypeOrdersArgs = {
-  filters?: InputMaybe<Array<InputMaybe<DimensionFilterInput>>>;
-  returnNone?: InputMaybe<Scalars['Boolean']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type TicketsV2EventMetaTypeProductArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type TicketsV2EventMetaTypeQuotaArgs = {
-  id: Scalars['Int']['input'];
-};
-
-
-export type TicketsV2EventMetaTypeReportArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-  slug: Scalars['String']['input'];
-};
-
-
-export type TicketsV2EventMetaTypeReportsArgs = {
-  lang?: InputMaybe<Scalars['String']['input']>;
-};
-
-/** An enumeration. */
-export enum TicketsV2OrderLanguageChoices {
-  /** English */
-  En = 'EN',
-  /** Finnish */
-  Fi = 'FI',
-  /** Swedish */
-  Sv = 'SV'
-}
-
-export type TicketsV2ProfileMetaType = {
-  __typename?: 'TicketsV2ProfileMetaType';
-  /** Returns true if the user has unlinked orders made with the same email address. These orders can be linked to the user account by verifying the email address again. */
-  haveUnlinkedOrders: Scalars['Boolean']['output'];
-  order?: Maybe<ProfileOrderType>;
-  /** Returns the orders of the current user. Note that unlinked orders made with the same email address are not returned. They need to be linked first (ie. their email confirmed again). */
-  orders: Array<ProfileOrderType>;
-};
-
-
-export type TicketsV2ProfileMetaTypeOrderArgs = {
-  eventSlug: Scalars['String']['input'];
-  id: Scalars['String']['input'];
-};
-
-/** An enumeration. */
-export enum TicketsV2TicketsV2EventMetaProviderIdChoices {
-  /** NONE */
-  A_0 = 'A_0',
-  /** PAYTRAIL */
-  A_1 = 'A_1',
-  /** STRIPE */
-  A_2 = 'A_2'
-}
-
-/** An enumeration. */
-export enum TotalBy {
-  Average = 'AVERAGE',
-  None = 'NONE',
-  Sum = 'SUM'
-}
-
-/** An enumeration. */
 export enum TypeOfColumn {
   Currency = 'CURRENCY',
   Datetime = 'DATETIME',
@@ -3154,253 +509,122 @@ export enum TypeOfColumn {
   String = 'STRING'
 }
 
-/** Deprecated. Use UnmarkScheduleItemAsFavorite instead. */
-export type UnmarkProgramAsFavorite = {
-  __typename?: 'UnmarkProgramAsFavorite';
-  success: Scalars['Boolean']['output'];
-};
-
-export type UnmarkScheduleItemAsFavorite = {
-  __typename?: 'UnmarkScheduleItemAsFavorite';
-  success: Scalars['Boolean']['output'];
-};
-
-export type UnsubscribeFromSurveyResponses = {
-  __typename?: 'UnsubscribeFromSurveyResponses';
-  success: Scalars['Boolean']['output'];
-};
-
-export type UpdateForm = {
-  __typename?: 'UpdateForm';
-  survey?: Maybe<FullSurveyType>;
-};
-
-export type UpdateFormFields = {
-  __typename?: 'UpdateFormFields';
-  survey?: Maybe<FullSurveyType>;
-};
-
 export type UpdateFormFieldsInput = {
-  eventSlug: Scalars['String']['input'];
-  fields: Scalars['GenericScalar']['input'];
-  language: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
+  eventSlug: string;
+  fields: unknown;
+  language: string;
+  surveySlug: string;
 };
 
 export type UpdateFormInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  language: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-};
-
-export type UpdateInvolvementDimensions = {
-  __typename?: 'UpdateInvolvementDimensions';
-  involvement?: Maybe<LimitedInvolvementType>;
+  eventSlug: string;
+  formData: unknown;
+  language: string;
+  surveySlug: string;
 };
 
 export type UpdateInvolvementDimensionsInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  involvementId: Scalars['String']['input'];
-};
-
-/**
- * Manually override the automatically computed perks of a person's COMBINED_PERKS
- * involvement, then recompute the non-overridden perks.
- *
- * ``form_data`` is ``{ overrides: string[], dimensions: {slug: string[]}, annotations: {slug: value} }``
- * where ``overrides`` is the set of ticked override keys (``d-<dimension>`` / ``a-<annotation>``),
- * and ``dimensions``/``annotations`` carry the manually set values for the overridden perks.
- */
-export type UpdateInvolvementPerks = {
-  __typename?: 'UpdateInvolvementPerks';
-  involvement?: Maybe<LimitedInvolvementType>;
+  eventSlug: string;
+  formData: unknown;
+  involvementId: string;
 };
 
 export type UpdateInvolvementPerksInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  involvementId: Scalars['String']['input'];
-};
-
-export type UpdateInvolvementPreferences = {
-  __typename?: 'UpdateInvolvementPreferences';
-  preferences?: Maybe<InvolvementEventMetaType>;
+  eventSlug: string;
+  formData: unknown;
+  involvementId: string;
 };
 
 export type UpdateInvolvementPreferencesInput = {
-  eventSlug: Scalars['String']['input'];
-  shirtsFrozenAt?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-/**
- * Updates a Message's subject/body/dispatch/reply-to/recipient filters. Works on a
- * Message in any state, including ACTIVE (already sent) - edits are not retroactive:
- * existing MessageRecipient rows keep their immutable rendered snapshot, and the
- * updated content only applies to recipients who receive it from now on (subsequent
- * explicit re-sends and the auto-send hook for newly-matching involvements).
- */
-export type UpdateMessage = {
-  __typename?: 'UpdateMessage';
-  message?: Maybe<MessageType>;
+  eventSlug: string;
+  shirtsFrozenAt?: string | null | undefined;
 };
 
 export type UpdateMessageInput = {
-  body: Scalars['String']['input'];
+  body: string;
   dispatch: MessageDispatch;
-  eventSlug: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-  recipientFilters: Scalars['GenericScalar']['input'];
-  replyToId?: InputMaybe<Scalars['String']['input']>;
-  subject: Scalars['String']['input'];
-};
-
-export type UpdateMessageReplyTo = {
-  __typename?: 'UpdateMessageReplyTo';
-  replyTo?: Maybe<MessageReplyToType>;
+  eventSlug: string;
+  messageId: string;
+  recipientFilters: unknown;
+  replyToId?: string | null | undefined;
+  subject: string;
 };
 
 export type UpdateMessageReplyToInput = {
-  email: Scalars['String']['input'];
-  eventSlug: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  replyToId: Scalars['String']['input'];
-};
-
-export type UpdateOrder = {
-  __typename?: 'UpdateOrder';
-  order?: Maybe<LimitedOrderType>;
+  email: string;
+  eventSlug: string;
+  name: string;
+  replyToId: string;
 };
 
 export type UpdateOrderInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  orderId: Scalars['String']['input'];
-};
-
-export type UpdateProduct = {
-  __typename?: 'UpdateProduct';
-  product?: Maybe<LimitedProductType>;
+  eventSlug: string;
+  formData: unknown;
+  orderId: string;
 };
 
 export type UpdateProductInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  productId: Scalars['Int']['input'];
-};
-
-export type UpdateProgram = {
-  __typename?: 'UpdateProgram';
-  program?: Maybe<FullProgramType>;
-};
-
-export type UpdateProgramAnnotations = {
-  __typename?: 'UpdateProgramAnnotations';
-  program?: Maybe<FullProgramType>;
+  eventSlug: string;
+  formData: unknown;
+  productId: number;
 };
 
 export type UpdateProgramAnnotationsInput = {
-  annotations: Scalars['GenericScalar']['input'];
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-};
-
-export type UpdateProgramDimensions = {
-  __typename?: 'UpdateProgramDimensions';
-  program?: Maybe<FullProgramType>;
+  annotations: unknown;
+  eventSlug: string;
+  programSlug: string;
 };
 
 export type UpdateProgramDimensionsInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  programSlug: Scalars['String']['input'];
-};
-
-export type UpdateProgramForm = {
-  __typename?: 'UpdateProgramForm';
-  survey?: Maybe<FullSurveyType>;
+  eventSlug: string;
+  formData: unknown;
+  programSlug: string;
 };
 
 export type UpdateProgramInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  programSlug: Scalars['String']['input'];
-};
-
-export type UpdateProgramPreferences = {
-  __typename?: 'UpdateProgramPreferences';
-  preferences?: Maybe<ProgramV2EventMetaType>;
+  eventSlug: string;
+  formData: unknown;
+  programSlug: string;
 };
 
 export type UpdateProgramPreferencesInput = {
-  eventSlug: Scalars['String']['input'];
-  publicFrom?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type UpdateQuota = {
-  __typename?: 'UpdateQuota';
-  quota?: Maybe<LimitedQuotaType>;
+  eventSlug: string;
+  publicFrom?: string | null | undefined;
 };
 
 export type UpdateQuotaInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  quotaId: Scalars['String']['input'];
-};
-
-export type UpdateResponseDimensions = {
-  __typename?: 'UpdateResponseDimensions';
-  response?: Maybe<FullResponseType>;
+  eventSlug: string;
+  formData: unknown;
+  quotaId: string;
 };
 
 export type UpdateResponseDimensionsInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  responseId: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-};
-
-export type UpdateSurvey = {
-  __typename?: 'UpdateSurvey';
-  survey?: Maybe<FullSurveyType>;
-};
-
-export type UpdateSurveyDefaultDimensions = {
-  __typename?: 'UpdateSurveyDefaultDimensions';
-  survey?: Maybe<FullSurveyType>;
+  eventSlug: string;
+  formData: unknown;
+  responseId: string;
+  surveySlug: string;
 };
 
 export type UpdateSurveyDefaultDimensionsInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  surveySlug: Scalars['String']['input'];
+  eventSlug: string;
+  formData: unknown;
+  surveySlug: string;
   universe: SurveyDefaultDimensionsUniverse;
 };
 
 export type UpdateSurveyInput = {
-  eventSlug: Scalars['String']['input'];
-  formData: Scalars['GenericScalar']['input'];
-  surveySlug: Scalars['String']['input'];
-};
-
-/**
- * Updates the tickets settings that are exposed to event admins.
- * Fields omitted from the input are left unchanged (clear with an empty value).
- * NOTE: provider_id is deliberately not settable here (super admin only).
- */
-export type UpdateTicketsPreferences = {
-  __typename?: 'UpdateTicketsPreferences';
-  preferences?: Maybe<TicketsV2EventMetaType>;
+  eventSlug: string;
+  formData: unknown;
+  surveySlug: string;
 };
 
 export type UpdateTicketsPreferencesInput = {
-  cancellationPeriodDays?: InputMaybe<Scalars['Int']['input']>;
-  contactEmail?: InputMaybe<Scalars['String']['input']>;
-  eventSlug: Scalars['String']['input'];
-  termsAndConditionsUrlEn?: InputMaybe<Scalars['String']['input']>;
-  termsAndConditionsUrlFi?: InputMaybe<Scalars['String']['input']>;
-  termsAndConditionsUrlSv?: InputMaybe<Scalars['String']['input']>;
+  cancellationPeriodDays?: number | null | undefined;
+  contactEmail?: string | null | undefined;
+  eventSlug: string;
+  termsAndConditionsUrlEn?: string | null | undefined;
+  termsAndConditionsUrlFi?: string | null | undefined;
+  termsAndConditionsUrlSv?: string | null | undefined;
 };
 
 export type CreateSurveyResponseMutationVariables = Exact<{
@@ -3408,1277 +632,1277 @@ export type CreateSurveyResponseMutationVariables = Exact<{
 }>;
 
 
-export type CreateSurveyResponseMutation = { __typename?: 'Mutation', createSurveyResponse?: { __typename?: 'CreateSurveyResponse', response?: { __typename?: 'ProfileResponseType', id: string } | null } | null };
+export type CreateSurveyResponseMutation = { createSurveyResponse: { response: { id: string } | null } | null };
 
 export type InitFileUploadMutationMutationVariables = Exact<{
   input: InitFileUploadInput;
 }>;
 
 
-export type InitFileUploadMutationMutation = { __typename?: 'Mutation', initFileUpload?: { __typename?: 'InitFileUploadResponse', uploadUrl?: string | null, fileUrl?: string | null } | null };
+export type InitFileUploadMutationMutation = { initFileUpload: { uploadUrl: string | null, fileUrl: string | null } | null };
 
 export type SurveyPageQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  surveySlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type SurveyPageQueryQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, userRegistry: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } }, event?: { __typename?: 'FullEventType', slug: string, name: string, timezone: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', loginRequired: boolean, anonymity: Anonymity, maxResponsesPerUser: number, countResponsesByCurrentUser: number, isActive: boolean, purpose: SurveyPurpose, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, registry?: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } } | null, form?: { __typename?: 'FormType', language: FormsFormLanguageChoices, title: string, description: string, fields?: unknown | null } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> } | null } | null } | null };
+export type SurveyPageQueryQuery = { profile: { firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, userRegistry: { slug: string, title: string, policyUrl: string, organization: { slug: string, name: string } }, event: { slug: string, name: string, timezone: string, forms: { survey: { loginRequired: boolean, anonymity: Anonymity, maxResponsesPerUser: number, countResponsesByCurrentUser: number, isActive: boolean, purpose: SurveyPurpose, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, registry: { slug: string, title: string, policyUrl: string, organization: { slug: string, name: string } } | null, form: { language: FormsFormLanguageChoices, title: string, description: string, fields: unknown } | null, languages: Array<{ language: FormsFormLanguageChoices }> } | null } | null } | null };
 
 export type SurveyThankYouPageQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  surveySlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type SurveyThankYouPageQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', form?: { __typename?: 'FormType', title: string, thankYouMessage: string } | null } | null } | null } | null };
+export type SurveyThankYouPageQueryQuery = { event: { name: string, forms: { survey: { form: { title: string, thankYouMessage: string } | null } | null } | null } | null };
 
 export type AcceptInvitationMutationVariables = Exact<{
   input: AcceptInvitationInput;
 }>;
 
 
-export type AcceptInvitationMutation = { __typename?: 'Mutation', acceptInvitation?: { __typename?: 'AcceptInvitation', involvement?: { __typename?: 'LimitedInvolvementType', program?: { __typename?: 'LimitedProgramType', slug: string } | null } | null } | null };
+export type AcceptInvitationMutation = { acceptInvitation: { involvement: { program: { slug: string } | null } | null } | null };
 
-export type TransferConsentFormRegistryFragment = { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } };
+export type TransferConsentFormRegistryFragment = { slug: string, title: string, policyUrl: string, organization: { slug: string, name: string } };
 
 export type AcceptInvitationPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  invitationId: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  invitationId: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type AcceptInvitationPageQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, userRegistry: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } }, event?: { __typename?: 'FullEventType', slug: string, name: string, timezone: string, involvement?: { __typename?: 'InvolvementEventMetaType', invitation?: { __typename?: 'FullInvitationType', isUsed: boolean, program?: { __typename?: 'LimitedProgramType', slug: string, title: string, description: string } | null, survey?: { __typename?: 'FullSurveyType', slug: string, isActive: boolean, purpose: SurveyPurpose, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, registry?: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } } | null, form?: { __typename?: 'FormType', language: FormsFormLanguageChoices, title: string, description: string, fields?: unknown | null } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> } | null } | null } | null } | null };
+export type AcceptInvitationPageQuery = { profile: { firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, userRegistry: { slug: string, title: string, policyUrl: string, organization: { slug: string, name: string } }, event: { slug: string, name: string, timezone: string, involvement: { invitation: { isUsed: boolean, program: { slug: string, title: string, description: string } | null, survey: { slug: string, isActive: boolean, purpose: SurveyPurpose, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, registry: { slug: string, title: string, policyUrl: string, organization: { slug: string, name: string } } | null, form: { language: FormsFormLanguageChoices, title: string, description: string, fields: unknown } | null, languages: Array<{ language: FormsFormLanguageChoices }> } | null } | null } | null } | null };
 
 export type PutInvolvementDimensionMutationVariables = Exact<{
   input: PutDimensionInput;
 }>;
 
 
-export type PutInvolvementDimensionMutation = { __typename?: 'Mutation', putDimension?: { __typename?: 'PutDimension', dimension?: { __typename?: 'FullDimensionType', slug: string } | null } | null };
+export type PutInvolvementDimensionMutation = { putDimension: { dimension: { slug: string } | null } | null };
 
 export type DeleteInvolvementDimensionMutationVariables = Exact<{
   input: DeleteDimensionInput;
 }>;
 
 
-export type DeleteInvolvementDimensionMutation = { __typename?: 'Mutation', deleteDimension?: { __typename?: 'DeleteDimension', slug?: string | null } | null };
+export type DeleteInvolvementDimensionMutation = { deleteDimension: { slug: string | null } | null };
 
 export type PutInvolvementDimensionValueMutationVariables = Exact<{
   input: PutDimensionValueInput;
 }>;
 
 
-export type PutInvolvementDimensionValueMutation = { __typename?: 'Mutation', putDimensionValue?: { __typename?: 'PutDimensionValue', value?: { __typename?: 'DimensionValueType', slug: string } | null } | null };
+export type PutInvolvementDimensionValueMutation = { putDimensionValue: { value: { slug: string } | null } | null };
 
 export type DeleteInvolvementDimensionValueMutationVariables = Exact<{
   input: DeleteDimensionValueInput;
 }>;
 
 
-export type DeleteInvolvementDimensionValueMutation = { __typename?: 'Mutation', deleteDimensionValue?: { __typename?: 'DeleteDimensionValue', slug?: string | null } | null };
+export type DeleteInvolvementDimensionValueMutation = { deleteDimensionValue: { slug: string | null } | null };
 
 export type InvolvementDimensionsListQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale: Scalars['String']['input'];
+  eventSlug: string;
+  locale: string;
 }>;
 
 
-export type InvolvementDimensionsListQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, involvement?: { __typename?: 'InvolvementEventMetaType', dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, canRemove: boolean, canAddValues: boolean, title?: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string }> }> } | null } | null };
+export type InvolvementDimensionsListQuery = { event: { name: string, slug: string, involvement: { dimensions: Array<{ slug: string, canRemove: boolean, canAddValues: boolean, title: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string }> }> } | null } | null };
 
 export type UpdateInvolvementPreferencesMutationVariables = Exact<{
   input: UpdateInvolvementPreferencesInput;
 }>;
 
 
-export type UpdateInvolvementPreferencesMutation = { __typename?: 'Mutation', updateInvolvementPreferences?: { __typename?: 'UpdateInvolvementPreferences', preferences?: { __typename?: 'InvolvementEventMetaType', shirtsFrozenAt?: string | null } | null } | null };
+export type UpdateInvolvementPreferencesMutation = { updateInvolvementPreferences: { preferences: { shirtsFrozenAt: string | null } | null } | null };
 
 export type InvolvementPreferencesQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
+  eventSlug: string;
 }>;
 
 
-export type InvolvementPreferencesQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, involvement?: { __typename?: 'InvolvementEventMetaType', shirtsFrozenAt?: string | null } | null } | null };
+export type InvolvementPreferencesQuery = { event: { name: string, slug: string, involvement: { shirtsFrozenAt: string | null } | null } | null };
 
 export type InvolvementAdminReportsPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type InvolvementAdminReportsPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, involvement?: { __typename?: 'InvolvementEventMetaType', reports: Array<{ __typename?: 'ReportType', slug: string, title: string, footer: string, rows: Array<Array<unknown | null>>, totalRow?: Array<unknown | null> | null, columns: Array<{ __typename?: 'ColumnType', slug: string, title: string, type: TypeOfColumn }> }> } | null } | null };
+export type InvolvementAdminReportsPageQuery = { event: { name: string, slug: string, timezone: string, involvement: { reports: Array<{ slug: string, title: string, footer: string, rows: Array<Array<unknown>>, totalRow: Array<unknown> | null, columns: Array<{ slug: string, title: string, type: TypeOfColumn }> }> } | null } | null };
 
 export type ResendOrderConfirmationMutationVariables = Exact<{
   input: ResendOrderConfirmationInput;
 }>;
 
 
-export type ResendOrderConfirmationMutation = { __typename?: 'Mutation', resendOrderConfirmation?: { __typename?: 'ResendOrderConfirmation', order?: { __typename?: 'LimitedOrderType', id: string } | null } | null };
+export type ResendOrderConfirmationMutation = { resendOrderConfirmation: { order: { id: string } | null } | null };
 
 export type UpdateOrderMutationVariables = Exact<{
   input: UpdateOrderInput;
 }>;
 
 
-export type UpdateOrderMutation = { __typename?: 'Mutation', updateOrder?: { __typename?: 'UpdateOrder', order?: { __typename?: 'LimitedOrderType', id: string } | null } | null };
+export type UpdateOrderMutation = { updateOrder: { order: { id: string } | null } | null };
 
 export type CancelAndRefundOrderMutationVariables = Exact<{
   input: CancelAndRefundOrderInput;
 }>;
 
 
-export type CancelAndRefundOrderMutation = { __typename?: 'Mutation', cancelAndRefundOrder?: { __typename?: 'CancelAndRefundOrder', order?: { __typename?: 'LimitedOrderType', id: string } | null } | null };
+export type CancelAndRefundOrderMutation = { cancelAndRefundOrder: { order: { id: string } | null } | null };
 
 export type MarkOrderAsPaidMutationVariables = Exact<{
   input: MarkOrderAsPaidInput;
 }>;
 
 
-export type MarkOrderAsPaidMutation = { __typename?: 'Mutation', markOrderAsPaid?: { __typename?: 'MarkOrderAsPaid', order?: { __typename?: 'LimitedOrderType', id: string } | null } | null };
+export type MarkOrderAsPaidMutation = { markOrderAsPaid: { order: { id: string } | null } | null };
 
-export type AdminOrderPaymentStampFragment = { __typename?: 'LimitedPaymentStampType', id: string, createdAt: string, correlationId: string, provider: PaymentProvider, type: PaymentStampType, status: PaymentStatus, data: unknown };
+export type AdminOrderPaymentStampFragment = { __typename: 'LimitedPaymentStampType', id: string, createdAt: string, correlationId: string, provider: PaymentProvider, type: PaymentStampType, status: PaymentStatus, data: unknown };
 
-export type AdminOrderReceiptFragment = { __typename?: 'LimitedReceiptType', correlationId: string, createdAt: string, email: string, type: ReceiptType, status: ReceiptStatus };
+export type AdminOrderReceiptFragment = { correlationId: string, createdAt: string, email: string, type: ReceiptType, status: ReceiptStatus };
 
-export type AdminOrderCodeFragment = { __typename?: 'LimitedCodeType', code: string, literateCode: string, status: CodeStatus, usedOn?: string | null, productText: string };
+export type AdminOrderCodeFragment = { code: string, literateCode: string, status: CodeStatus, usedOn: string | null, productText: string };
 
 export type AdminOrderDetailQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  orderId: Scalars['String']['input'];
+  eventSlug: string;
+  orderId: string;
 }>;
 
 
-export type AdminOrderDetailQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, tickets?: { __typename?: 'TicketsV2EventMetaType', order?: { __typename?: 'FullOrderType', id: string, formattedOrderNumber: string, createdAt: string, totalPrice: any, status: PaymentStatus, eticketsLink?: string | null, firstName: string, lastName: string, email: string, phone: string, canRefund: boolean, canRefundManually: boolean, canMarkAsPaid: boolean, products: Array<{ __typename?: 'OrderProductType', title: string, quantity: number, price: any, vatPercentage: any }>, paymentStamps: Array<{ __typename?: 'LimitedPaymentStampType', id: string, createdAt: string, correlationId: string, provider: PaymentProvider, type: PaymentStampType, status: PaymentStatus, data: unknown }>, receipts: Array<{ __typename?: 'LimitedReceiptType', correlationId: string, createdAt: string, email: string, type: ReceiptType, status: ReceiptStatus }>, codes: Array<{ __typename?: 'LimitedCodeType', code: string, literateCode: string, status: CodeStatus, usedOn?: string | null, productText: string }> } | null } | null } | null };
+export type AdminOrderDetailQuery = { event: { slug: string, name: string, tickets: { order: { id: string, formattedOrderNumber: string, createdAt: string, totalPrice: string, status: PaymentStatus, eticketsLink: string | null, firstName: string, lastName: string, email: string, phone: string, canRefund: boolean, canRefundManually: boolean, canMarkAsPaid: boolean, products: Array<{ title: string, quantity: number, price: string, vatPercentage: string }>, paymentStamps: Array<{ __typename: 'LimitedPaymentStampType', id: string, createdAt: string, correlationId: string, provider: PaymentProvider, type: PaymentStampType, status: PaymentStatus, data: unknown }>, receipts: Array<{ correlationId: string, createdAt: string, email: string, type: ReceiptType, status: ReceiptStatus }>, codes: Array<{ code: string, literateCode: string, status: CodeStatus, usedOn: string | null, productText: string }> } | null } | null } | null };
 
 export type AdminCreateOrderMutationVariables = Exact<{
   input: CreateOrderInput;
 }>;
 
 
-export type AdminCreateOrderMutation = { __typename?: 'Mutation', createOrder?: { __typename?: 'CreateOrder', order?: { __typename?: 'FullOrderType', id: string, event: { __typename?: 'LimitedEventType', slug: string } } | null } | null };
+export type AdminCreateOrderMutation = { createOrder: { order: { id: string, event: { slug: string } } | null } | null };
 
-export type NewOrderProductFragment = { __typename?: 'FullProductType', id: number, title: string, description: string, price: any, vatPercentage: any, isAvailable: boolean, availableFrom?: string | null, availableUntil?: string | null, countPaid: number, countReserved: number, countAvailable?: number | null, maxPerOrder: number };
+export type NewOrderProductFragment = { id: number, title: string, description: string, price: string, vatPercentage: string, isAvailable: boolean, availableFrom: string | null, availableUntil: string | null, countPaid: number, countReserved: number, countAvailable: number | null, maxPerOrder: number };
 
 export type NewOrderPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
+  eventSlug: string;
 }>;
 
 
-export type NewOrderPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', products: Array<{ __typename?: 'FullProductType', id: number, title: string, description: string, price: any, vatPercentage: any, isAvailable: boolean, availableFrom?: string | null, availableUntil?: string | null, countPaid: number, countReserved: number, countAvailable?: number | null, maxPerOrder: number }> } | null } | null };
+export type NewOrderPageQuery = { event: { name: string, slug: string, tickets: { products: Array<{ id: number, title: string, description: string, price: string, vatPercentage: string, isAvailable: boolean, availableFrom: string | null, availableUntil: string | null, countPaid: number, countReserved: number, countAvailable: number | null, maxPerOrder: number }> } | null } | null };
 
-export type OrderListFragment = { __typename?: 'FullOrderType', id: string, formattedOrderNumber: string, displayName: string, email: string, createdAt: string, totalPrice: any, status: PaymentStatus };
+export type OrderListFragment = { id: string, formattedOrderNumber: string, displayName: string, email: string, createdAt: string, totalPrice: string, status: PaymentStatus };
 
-export type ProductChoiceFragment = { __typename?: 'FullProductType', id: number, title: string };
+export type ProductChoiceFragment = { id: number, title: string };
 
 export type AdminOrderListWithOrdersQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  filters?: InputMaybe<Array<DimensionFilterInput> | DimensionFilterInput>;
-  search?: InputMaybe<Scalars['String']['input']>;
-  returnNone?: InputMaybe<Scalars['Boolean']['input']>;
+  eventSlug: string;
+  filters?: Array<DimensionFilterInput> | DimensionFilterInput | null | undefined;
+  search?: string | null | undefined;
+  returnNone?: boolean | null | undefined;
 }>;
 
 
-export type AdminOrderListWithOrdersQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', countTotalOrders: number, products: Array<{ __typename?: 'FullProductType', id: number, title: string }>, orders: Array<{ __typename?: 'FullOrderType', id: string, formattedOrderNumber: string, displayName: string, email: string, createdAt: string, totalPrice: any, status: PaymentStatus }> } | null } | null };
+export type AdminOrderListWithOrdersQuery = { event: { name: string, slug: string, tickets: { countTotalOrders: number, products: Array<{ id: number, title: string }>, orders: Array<{ id: string, formattedOrderNumber: string, displayName: string, email: string, createdAt: string, totalPrice: string, status: PaymentStatus }> } | null } | null };
 
 export type CancelOwnOrderMutationVariables = Exact<{
   input: CancelOwnUnpaidOrderInput;
 }>;
 
 
-export type CancelOwnOrderMutation = { __typename?: 'Mutation', cancelOwnUnpaidOrder?: { __typename?: 'CancelOwnUnpaidOrder', order?: { __typename?: 'LimitedOrderType', id: string } | null } | null };
+export type CancelOwnOrderMutation = { cancelOwnUnpaidOrder: { order: { id: string } | null } | null };
 
 export type RequestOrderCancellationMutationVariables = Exact<{
   input: RequestOrderCancellationInput;
 }>;
 
 
-export type RequestOrderCancellationMutation = { __typename?: 'Mutation', requestOrderCancellation?: { __typename?: 'RequestOrderCancellation', success: boolean } | null };
+export type RequestOrderCancellationMutation = { requestOrderCancellation: { success: boolean } | null };
 
 export type ConfirmOrderCancellationMutationVariables = Exact<{
   input: ConfirmOrderCancellationInput;
 }>;
 
 
-export type ConfirmOrderCancellationMutation = { __typename?: 'Mutation', confirmOrderCancellation?: { __typename?: 'ConfirmOrderCancellation', success: boolean } | null };
+export type ConfirmOrderCancellationMutation = { confirmOrderCancellation: { success: boolean } | null };
 
 export type UpdateInvolvementPerksMutationVariables = Exact<{
   input: UpdateInvolvementPerksInput;
 }>;
 
 
-export type UpdateInvolvementPerksMutation = { __typename?: 'Mutation', updateInvolvementPerks?: { __typename?: 'UpdateInvolvementPerks', involvement?: { __typename?: 'LimitedInvolvementType', id: string } | null } | null };
+export type UpdateInvolvementPerksMutation = { updateInvolvementPerks: { involvement: { id: string } | null } | null };
 
-export type InvolvedPersonDetailInvolvementFragment = { __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown };
+export type InvolvedPersonDetailInvolvementFragment = { id: string, type: InvolvementType, title: string, adminLink: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown };
 
-export type InvolvedPersonDetailFragment = { __typename?: 'ProfileWithInvolvementType', id?: number | null, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, fullName: string, isActive: boolean, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, involvements: Array<{ __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> };
+export type InvolvedPersonDetailFragment = { id: number | null, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, fullName: string, isActive: boolean, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, involvements: Array<{ id: string, type: InvolvementType, title: string, adminLink: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> };
 
 export type PersonPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
-  personId: Scalars['Int']['input'];
+  eventSlug: string;
+  locale?: string | null | undefined;
+  personId: number;
 }>;
 
 
-export type PersonPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, timezone: string, involvement?: { __typename?: 'InvolvementEventMetaType', dimensions: Array<{ __typename?: 'FullDimensionType', isKeyDimension: boolean, isShownInDetail: boolean, slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, annotations: Array<{ __typename?: 'AnnotationType', slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }>, person?: { __typename?: 'ProfileWithInvolvementType', id?: number | null, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, fullName: string, isActive: boolean, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, involvements: Array<{ __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> } | null } | null } | null };
+export type PersonPageQuery = { event: { slug: string, name: string, timezone: string, involvement: { dimensions: Array<{ isKeyDimension: boolean, isShownInDetail: boolean, slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null, color: string }> }>, annotations: Array<{ slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }>, person: { id: number | null, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, fullName: string, isActive: boolean, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, involvements: Array<{ id: string, type: InvolvementType, title: string, adminLink: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> } | null } | null } | null };
 
-export type InvolvedPersonInvolvementFragment = { __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown };
+export type InvolvedPersonInvolvementFragment = { id: string, type: InvolvementType, title: string, adminLink: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown };
 
-export type InvolvedPersonFragment = { __typename?: 'ProfileWithInvolvementType', firstName: string, lastName: string, nick: string, isActive: boolean, involvements: Array<{ __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> };
+export type InvolvedPersonFragment = { firstName: string, lastName: string, nick: string, isActive: boolean, involvements: Array<{ id: string, type: InvolvementType, title: string, adminLink: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> };
 
 export type PeoplePageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  filters?: InputMaybe<Array<DimensionFilterInput> | DimensionFilterInput>;
-  locale?: InputMaybe<Scalars['String']['input']>;
-  search?: InputMaybe<Scalars['String']['input']>;
-  returnNone?: InputMaybe<Scalars['Boolean']['input']>;
+  eventSlug: string;
+  filters?: Array<DimensionFilterInput> | DimensionFilterInput | null | undefined;
+  locale?: string | null | undefined;
+  search?: string | null | undefined;
+  returnNone?: boolean | null | undefined;
 }>;
 
 
-export type PeoplePageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, timezone: string, involvement?: { __typename?: 'InvolvementEventMetaType', dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, people: Array<{ __typename?: 'ProfileWithInvolvementType', firstName: string, lastName: string, nick: string, isActive: boolean, involvements: Array<{ __typename?: 'LimitedInvolvementType', id: string, type: InvolvementType, title: string, adminLink?: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> }> } | null } | null };
+export type PeoplePageQuery = { event: { slug: string, name: string, timezone: string, involvement: { dimensions: Array<{ slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ slug: string, title: string | null, color: string }> }>, people: Array<{ firstName: string, lastName: string, nick: string, isActive: boolean, involvements: Array<{ id: string, type: InvolvementType, title: string, adminLink: string | null, isActive: boolean, cachedDimensions: unknown, cachedAnnotations: unknown }> }> } | null } | null };
 
 export type UpdateProductMutationVariables = Exact<{
   input: UpdateProductInput;
 }>;
 
 
-export type UpdateProductMutation = { __typename?: 'Mutation', updateProduct?: { __typename?: 'UpdateProduct', product?: { __typename?: 'LimitedProductType', id: number } | null } | null };
+export type UpdateProductMutation = { updateProduct: { product: { id: number } | null } | null };
 
 export type DeleteProductMutationVariables = Exact<{
   input: DeleteProductInput;
 }>;
 
 
-export type DeleteProductMutation = { __typename?: 'Mutation', deleteProduct?: { __typename?: 'DeleteProduct', id: string } | null };
+export type DeleteProductMutation = { deleteProduct: { id: string } | null };
 
-export type AdminProductOldVersionFragment = { __typename?: 'LimitedProductType', createdAt: string, title: string, description: string, price: any, vatPercentage: any, eticketsPerProduct: number, maxPerOrder: number };
+export type AdminProductOldVersionFragment = { createdAt: string, title: string, description: string, price: string, vatPercentage: string, eticketsPerProduct: number, maxPerOrder: number };
 
-export type AdminProductDetailFragment = { __typename?: 'FullProductType', id: number, createdAt: string, title: string, description: string, price: any, vatPercentage: any, eticketsPerProduct: number, maxPerOrder: number, availableFrom?: string | null, availableUntil?: string | null, canDelete: boolean, quotas: Array<{ __typename?: 'LimitedQuotaType', id: string }>, supersededBy?: { __typename?: 'LimitedProductType', id: number } | null, oldVersions: Array<{ __typename?: 'LimitedProductType', createdAt: string, title: string, description: string, price: any, vatPercentage: any, eticketsPerProduct: number, maxPerOrder: number }> };
+export type AdminProductDetailFragment = { id: number, createdAt: string, title: string, description: string, price: string, vatPercentage: string, eticketsPerProduct: number, maxPerOrder: number, availableFrom: string | null, availableUntil: string | null, canDelete: boolean, quotas: Array<{ id: string }>, supersededBy: { id: number } | null, oldVersions: Array<{ createdAt: string, title: string, description: string, price: string, vatPercentage: string, eticketsPerProduct: number, maxPerOrder: number }> };
 
 export type AdminProductDetailPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  productId: Scalars['String']['input'];
+  eventSlug: string;
+  productId: string;
 }>;
 
 
-export type AdminProductDetailPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', quotas: Array<{ __typename?: 'FullQuotaType', id: string, name: string, countTotal: number }>, product: { __typename?: 'FullProductType', id: number, createdAt: string, title: string, description: string, price: any, vatPercentage: any, eticketsPerProduct: number, maxPerOrder: number, availableFrom?: string | null, availableUntil?: string | null, canDelete: boolean, quotas: Array<{ __typename?: 'LimitedQuotaType', id: string }>, supersededBy?: { __typename?: 'LimitedProductType', id: number } | null, oldVersions: Array<{ __typename?: 'LimitedProductType', createdAt: string, title: string, description: string, price: any, vatPercentage: any, eticketsPerProduct: number, maxPerOrder: number }> } } | null } | null };
+export type AdminProductDetailPageQuery = { event: { name: string, slug: string, tickets: { quotas: Array<{ id: string, name: string, countTotal: number }>, product: { id: number, createdAt: string, title: string, description: string, price: string, vatPercentage: string, eticketsPerProduct: number, maxPerOrder: number, availableFrom: string | null, availableUntil: string | null, canDelete: boolean, quotas: Array<{ id: string }>, supersededBy: { id: number } | null, oldVersions: Array<{ createdAt: string, title: string, description: string, price: string, vatPercentage: string, eticketsPerProduct: number, maxPerOrder: number }> } } | null } | null };
 
 export type CreateProductMutationVariables = Exact<{
   input: CreateProductInput;
 }>;
 
 
-export type CreateProductMutation = { __typename?: 'Mutation', createProduct?: { __typename?: 'CreateProduct', product?: { __typename?: 'LimitedProductType', id: number } | null } | null };
+export type CreateProductMutation = { createProduct: { product: { id: number } | null } | null };
 
 export type ReorderProductsMutationVariables = Exact<{
   input: ReorderProductsInput;
 }>;
 
 
-export type ReorderProductsMutation = { __typename?: 'Mutation', reorderProducts?: { __typename?: 'ReorderProducts', products: Array<{ __typename?: 'LimitedProductType', id: number }> } | null };
+export type ReorderProductsMutation = { reorderProducts: { products: Array<{ id: number }> } | null };
 
-export type ProductListFragment = { __typename?: 'FullProductType', id: number, title: string, description: string, price: any, isAvailable: boolean, availableFrom?: string | null, availableUntil?: string | null, countPaid: number, countReserved: number, countAvailable?: number | null };
+export type ProductListFragment = { id: number, title: string, description: string, price: string, isAvailable: boolean, availableFrom: string | null, availableUntil: string | null, countPaid: number, countReserved: number, countAvailable: number | null };
 
 export type ProductListQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
+  eventSlug: string;
 }>;
 
 
-export type ProductListQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', products: Array<{ __typename?: 'FullProductType', id: number, title: string, description: string, price: any, isAvailable: boolean, availableFrom?: string | null, availableUntil?: string | null, countPaid: number, countReserved: number, countAvailable?: number | null }> } | null } | null };
+export type ProductListQuery = { event: { name: string, slug: string, tickets: { products: Array<{ id: number, title: string, description: string, price: string, isAvailable: boolean, availableFrom: string | null, availableUntil: string | null, countPaid: number, countReserved: number, countAvailable: number | null }> } | null } | null };
 
 export type UpdateProgramBasicInfoMutationVariables = Exact<{
   input: UpdateProgramInput;
 }>;
 
 
-export type UpdateProgramBasicInfoMutation = { __typename?: 'Mutation', updateProgram?: { __typename?: 'UpdateProgram', program?: { __typename?: 'FullProgramType', slug: string } | null } | null };
+export type UpdateProgramBasicInfoMutation = { updateProgram: { program: { slug: string } | null } | null };
 
 export type CancelProgramItemMutationVariables = Exact<{
   input: CancelProgramInput;
 }>;
 
 
-export type CancelProgramItemMutation = { __typename?: 'Mutation', cancelProgram?: { __typename?: 'CancelProgram', responseId?: string | null } | null };
+export type CancelProgramItemMutation = { cancelProgram: { responseId: string | null } | null };
 
 export type RestoreProgramItemMutationVariables = Exact<{
   input: RestoreProgramInput;
 }>;
 
 
-export type RestoreProgramItemMutation = { __typename?: 'Mutation', restoreProgram?: { __typename?: 'RestoreProgram', programSlug: string } | null };
+export type RestoreProgramItemMutation = { restoreProgram: { programSlug: string } | null };
 
 export type ProgramAdminDetailAnnotationsQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  programSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramAdminDetailAnnotationsQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, program?: { __typename?: 'ProgramV2EventMetaType', annotations: Array<{ __typename?: 'AnnotationType', isApplicableToProgramItems: boolean, slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }>, program?: { __typename?: 'FullProgramType', slug: string, title: string, cachedAnnotations: unknown, dimensions: Array<{ __typename?: 'ProgramDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }> } | null } | null } | null };
+export type ProgramAdminDetailAnnotationsQueryQuery = { event: { slug: string, name: string, program: { annotations: Array<{ isApplicableToProgramItems: boolean, slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }>, program: { slug: string, title: string, cachedAnnotations: unknown, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }> } | null } | null } | null };
 
 export type UpdateProgramDimensionsMutationVariables = Exact<{
   input: UpdateProgramDimensionsInput;
 }>;
 
 
-export type UpdateProgramDimensionsMutation = { __typename?: 'Mutation', updateProgramDimensions?: { __typename?: 'UpdateProgramDimensions', program?: { __typename?: 'FullProgramType', slug: string } | null } | null };
+export type UpdateProgramDimensionsMutation = { updateProgramDimensions: { program: { slug: string } | null } | null };
 
 export type ProgramAdminDetailDimensionsQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  programSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramAdminDetailDimensionsQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, program?: { __typename?: 'ProgramV2EventMetaType', dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, canRemove: boolean, canAddValues: boolean, title?: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string }> }>, program?: { __typename?: 'FullProgramType', slug: string, title: string, cachedDimensions?: unknown | null, dimensions: Array<{ __typename?: 'ProgramDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }> } | null } | null } | null };
+export type ProgramAdminDetailDimensionsQueryQuery = { event: { slug: string, name: string, program: { dimensions: Array<{ slug: string, canRemove: boolean, canAddValues: boolean, title: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string }> }>, program: { slug: string, title: string, cachedDimensions: unknown, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }> } | null } | null } | null };
 
 export type InviteProgramHostMutationVariables = Exact<{
   input: InviteProgramHostInput;
 }>;
 
 
-export type InviteProgramHostMutation = { __typename?: 'Mutation', inviteProgramHost?: { __typename?: 'InviteProgramHost', invitation: { __typename?: 'FullInvitationType', id: string } } | null };
+export type InviteProgramHostMutation = { inviteProgramHost: { invitation: { id: string } } | null };
 
 export type DeleteProgramHostMutationVariables = Exact<{
   input: DeleteProgramHostInput;
 }>;
 
 
-export type DeleteProgramHostMutation = { __typename?: 'Mutation', deleteProgramHost?: { __typename?: 'DeleteProgramHost', program: { __typename?: 'FullProgramType', slug: string } } | null };
+export type DeleteProgramHostMutation = { deleteProgramHost: { program: { slug: string } } | null };
 
 export type UpdateProgramHostDimensionsMutationVariables = Exact<{
   input: UpdateInvolvementDimensionsInput;
 }>;
 
 
-export type UpdateProgramHostDimensionsMutation = { __typename?: 'Mutation', updateInvolvementDimensions?: { __typename?: 'UpdateInvolvementDimensions', involvement?: { __typename?: 'LimitedInvolvementType', program?: { __typename?: 'LimitedProgramType', slug: string } | null } | null } | null };
+export type UpdateProgramHostDimensionsMutation = { updateInvolvementDimensions: { involvement: { program: { slug: string } | null } | null } | null };
 
 export type DeleteInvitationMutationVariables = Exact<{
   input: DeleteInvitationInput;
 }>;
 
 
-export type DeleteInvitationMutation = { __typename?: 'Mutation', deleteInvitation?: { __typename?: 'DeleteInvitation', invitation?: { __typename?: 'LimitedInvitationType', id: string } | null } | null };
+export type DeleteInvitationMutation = { deleteInvitation: { invitation: { id: string } | null } | null };
 
 export type ResendInvitationMutationVariables = Exact<{
   input: ResendInvitationInput;
 }>;
 
 
-export type ResendInvitationMutation = { __typename?: 'Mutation', resendInvitation?: { __typename?: 'ResendInvitation', invitation?: { __typename?: 'LimitedInvitationType', id: string } | null } | null };
+export type ResendInvitationMutation = { resendInvitation: { invitation: { id: string } | null } | null };
 
-export type ProgramAdminDetailHostFragment = { __typename?: 'LimitedProgramHostType', id: string, cachedDimensions: unknown, programHostRole?: ProgramHostRole | null, person: { __typename?: 'LimitedProfileType', fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } };
+export type ProgramAdminDetailHostFragment = { id: string, cachedDimensions: unknown, programHostRole: ProgramHostRole | null, person: { fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } };
 
-export type ProgramAdminDetailInvitationFragment = { __typename?: 'LimitedInvitationType', id: string, email: string, createdAt: string, cachedDimensions?: unknown | null };
+export type ProgramAdminDetailInvitationFragment = { id: string, email: string, createdAt: string, cachedDimensions: unknown };
 
 export type ProgramAdminDetailHostsQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-  annotationSlugs: Array<Scalars['String']['input']> | Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  programSlug: string;
+  annotationSlugs: Array<string> | string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramAdminDetailHostsQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, forms?: { __typename?: 'FormsEventMetaType', inviteForms: Array<{ __typename?: 'FullSurveyType', slug: string, title?: string | null, cachedDefaultInvolvementDimensions?: unknown | null }> } | null, program?: { __typename?: 'ProgramV2EventMetaType', involvementDimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isKeyDimension: boolean, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, annotations: Array<{ __typename?: 'AnnotationType', slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }>, program?: { __typename?: 'FullProgramType', slug: string, title: string, canInviteProgramHost: boolean, cachedAnnotations: unknown, dimensions: Array<{ __typename?: 'ProgramDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, programHosts: Array<{ __typename?: 'LimitedProgramHostType', id: string, cachedDimensions: unknown, programHostRole?: ProgramHostRole | null, person: { __typename?: 'LimitedProfileType', fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } }>, invitations: Array<{ __typename?: 'LimitedInvitationType', id: string, email: string, createdAt: string, cachedDimensions?: unknown | null }> } | null } | null } | null };
+export type ProgramAdminDetailHostsQuery = { event: { name: string, slug: string, timezone: string, forms: { inviteForms: Array<{ slug: string, title: string | null, cachedDefaultInvolvementDimensions: unknown }> } | null, program: { involvementDimensions: Array<{ slug: string, title: string | null, isKeyDimension: boolean, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null, color: string }> }>, annotations: Array<{ slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }>, program: { slug: string, title: string, canInviteProgramHost: boolean, cachedAnnotations: unknown, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, programHosts: Array<{ id: string, cachedDimensions: unknown, programHostRole: ProgramHostRole | null, person: { fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } }>, invitations: Array<{ id: string, email: string, createdAt: string, cachedDimensions: unknown }> } | null } | null } | null };
 
 export type ProgramAdminDetailQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  programSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramAdminDetailQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, program?: { __typename?: 'ProgramV2EventMetaType', calendarExportLink: string, program?: { __typename?: 'FullProgramType', slug: string, title: string, description: string, cachedHosts: string, canCancel: boolean, canDelete: boolean, canRestore: boolean, programOffer?: { __typename?: 'LimitedResponseType', id: string, values?: unknown | null } | null, links: Array<{ __typename?: 'ProgramLink', type: ProgramLinkType, href: string, title: string }>, annotations: Array<{ __typename?: 'ProgramAnnotationType', value?: unknown | null, annotation: { __typename?: 'AnnotationType', slug: string, type: AnnotationDataType, title: string } }>, dimensions: Array<{ __typename?: 'ProgramDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', slug: string, subtitle: string, location?: string | null, startTime: string, endTime: string }> } | null } | null } | null };
+export type ProgramAdminDetailQueryQuery = { event: { name: string, slug: string, timezone: string, program: { calendarExportLink: string, program: { slug: string, title: string, description: string, cachedHosts: string, canCancel: boolean, canDelete: boolean, canRestore: boolean, programOffer: { id: string, values: unknown } | null, links: Array<{ type: ProgramLinkType, href: string, title: string }>, annotations: Array<{ value: unknown, annotation: { slug: string, type: AnnotationDataType, title: string } }>, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, scheduleItems: Array<{ slug: string, subtitle: string, location: string | null, startTime: string, endTime: string }> } | null } | null } | null };
 
 export type PutScheduleItemMutationVariables = Exact<{
   input: PutScheduleItemInput;
 }>;
 
 
-export type PutScheduleItemMutation = { __typename?: 'Mutation', putScheduleItem?: { __typename?: 'PutScheduleItem', scheduleItem?: { __typename?: 'FullScheduleItemType', slug: string } | null } | null };
+export type PutScheduleItemMutation = { putScheduleItem: { scheduleItem: { slug: string } | null } | null };
 
 export type DeleteScheduleItemMutationVariables = Exact<{
   input: DeleteScheduleItemInput;
 }>;
 
 
-export type DeleteScheduleItemMutation = { __typename?: 'Mutation', deleteScheduleItem?: { __typename?: 'DeleteScheduleItem', slug?: string | null } | null };
+export type DeleteScheduleItemMutation = { deleteScheduleItem: { slug: string | null } | null };
 
-export type ProgramAdminDetailScheduleItemFragment = { __typename?: 'LimitedScheduleItemType', slug: string, title: string, subtitle: string, location?: string | null, startTime: string, durationMinutes: number, room: string, freeformLocation: string, isPublic: boolean };
+export type ProgramAdminDetailScheduleItemFragment = { slug: string, title: string, subtitle: string, location: string | null, startTime: string, durationMinutes: number, room: string, freeformLocation: string, isPublic: boolean };
 
 export type ProgramAdminDetailScheduleQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  programSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramAdminDetailScheduleQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, startTime?: string | null, endTime?: string | null, program?: { __typename?: 'ProgramV2EventMetaType', dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }>, program?: { __typename?: 'FullProgramType', slug: string, title: string, dimensions: Array<{ __typename?: 'ProgramDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', slug: string, title: string, subtitle: string, location?: string | null, startTime: string, durationMinutes: number, room: string, freeformLocation: string, isPublic: boolean }> } | null } | null } | null };
+export type ProgramAdminDetailScheduleQuery = { event: { name: string, slug: string, timezone: string, startTime: string | null, endTime: string | null, program: { dimensions: Array<{ slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null }> }>, program: { slug: string, title: string, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, scheduleItems: Array<{ slug: string, title: string, subtitle: string, location: string | null, startTime: string, durationMinutes: number, room: string, freeformLocation: string, isPublic: boolean }> } | null } | null } | null };
 
 export type CreateProgramMutationVariables = Exact<{
   input: CreateProgramInput;
 }>;
 
 
-export type CreateProgramMutation = { __typename?: 'Mutation', createProgram?: { __typename?: 'CreateProgram', program?: { __typename?: 'FullProgramType', slug: string } | null } | null };
+export type CreateProgramMutation = { createProgram: { program: { slug: string } | null } | null };
 
-export type ProgramAdminFragment = { __typename?: 'FullProgramType', slug: string, title: string, cachedDimensions?: unknown | null, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', startTime: string }> };
+export type ProgramAdminFragment = { slug: string, title: string, cachedDimensions: unknown, scheduleItems: Array<{ startTime: string }> };
 
 export type ProgramAdminListQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<Array<DimensionFilterInput> | DimensionFilterInput>;
+  eventSlug: string;
+  locale?: string | null | undefined;
+  filters?: Array<DimensionFilterInput> | DimensionFilterInput | null | undefined;
 }>;
 
 
-export type ProgramAdminListQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, program?: { __typename?: 'ProgramV2EventMetaType', scheduleItemsExcelExportLink: string, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, isKeyDimension: boolean, isListFilter: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, programs: Array<{ __typename?: 'FullProgramType', slug: string, title: string, cachedDimensions?: unknown | null, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', startTime: string }> }> } | null } | null };
+export type ProgramAdminListQuery = { event: { slug: string, name: string, program: { scheduleItemsExcelExportLink: string, dimensions: Array<{ slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, isKeyDimension: boolean, isListFilter: boolean, values: Array<{ slug: string, title: string | null, color: string }> }>, programs: Array<{ slug: string, title: string, cachedDimensions: unknown, scheduleItems: Array<{ startTime: string }> }> } | null } | null };
 
 export type PutEventAnnotationMutationVariables = Exact<{
   input: PutUniverseAnnotationInput;
 }>;
 
 
-export type PutEventAnnotationMutation = { __typename?: 'Mutation', putUniverseAnnotation?: { __typename?: 'PutUniverseAnnotation', universeAnnotation?: { __typename?: 'LimitedUniverseAnnotationType', annotation: { __typename?: 'AnnotationType', slug: string } } | null } | null };
+export type PutEventAnnotationMutation = { putUniverseAnnotation: { universeAnnotation: { annotation: { slug: string } } | null } | null };
 
-export type ProgramAdminEventAnnotationFragment = { __typename?: 'LimitedUniverseAnnotationType', isActive: boolean, formFields?: unknown | null, annotation: { __typename?: 'AnnotationType', slug: string, title: string, description: string, type: AnnotationDataType, isComputed: boolean, isPublic: boolean, isShownInDetail: boolean, isInternal: boolean, isApplicableToProgramItems: boolean, isApplicableToScheduleItems: boolean } };
+export type ProgramAdminEventAnnotationFragment = { isActive: boolean, formFields: unknown, annotation: { slug: string, title: string, description: string, type: AnnotationDataType, isComputed: boolean, isPublic: boolean, isShownInDetail: boolean, isInternal: boolean, isApplicableToProgramItems: boolean, isApplicableToScheduleItems: boolean } };
 
 export type ProgramAdminEventAnnotationsQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramAdminEventAnnotationsQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, program?: { __typename?: 'ProgramV2EventMetaType', eventAnnotations: Array<{ __typename?: 'LimitedUniverseAnnotationType', isActive: boolean, formFields?: unknown | null, annotation: { __typename?: 'AnnotationType', slug: string, title: string, description: string, type: AnnotationDataType, isComputed: boolean, isPublic: boolean, isShownInDetail: boolean, isInternal: boolean, isApplicableToProgramItems: boolean, isApplicableToScheduleItems: boolean } }> } | null } | null };
+export type ProgramAdminEventAnnotationsQuery = { event: { name: string, slug: string, timezone: string, program: { eventAnnotations: Array<{ isActive: boolean, formFields: unknown, annotation: { slug: string, title: string, description: string, type: AnnotationDataType, isComputed: boolean, isPublic: boolean, isShownInDetail: boolean, isInternal: boolean, isApplicableToProgramItems: boolean, isApplicableToScheduleItems: boolean } }> } | null } | null };
 
 export type PutProgramDimensionMutationVariables = Exact<{
   input: PutDimensionInput;
 }>;
 
 
-export type PutProgramDimensionMutation = { __typename?: 'Mutation', putDimension?: { __typename?: 'PutDimension', dimension?: { __typename?: 'FullDimensionType', slug: string } | null } | null };
+export type PutProgramDimensionMutation = { putDimension: { dimension: { slug: string } | null } | null };
 
 export type DeleteProgramDimensionMutationVariables = Exact<{
   input: DeleteDimensionInput;
 }>;
 
 
-export type DeleteProgramDimensionMutation = { __typename?: 'Mutation', deleteDimension?: { __typename?: 'DeleteDimension', slug?: string | null } | null };
+export type DeleteProgramDimensionMutation = { deleteDimension: { slug: string | null } | null };
 
 export type PutProgramDimensionValueMutationVariables = Exact<{
   input: PutDimensionValueInput;
 }>;
 
 
-export type PutProgramDimensionValueMutation = { __typename?: 'Mutation', putDimensionValue?: { __typename?: 'PutDimensionValue', value?: { __typename?: 'DimensionValueType', slug: string } | null } | null };
+export type PutProgramDimensionValueMutation = { putDimensionValue: { value: { slug: string } | null } | null };
 
 export type DeleteProgramDimensionValueMutationVariables = Exact<{
   input: DeleteDimensionValueInput;
 }>;
 
 
-export type DeleteProgramDimensionValueMutation = { __typename?: 'Mutation', deleteDimensionValue?: { __typename?: 'DeleteDimensionValue', slug?: string | null } | null };
+export type DeleteProgramDimensionValueMutation = { deleteDimensionValue: { slug: string | null } | null };
 
 export type ProgramDimensionsListQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale: Scalars['String']['input'];
+  eventSlug: string;
+  locale: string;
 }>;
 
 
-export type ProgramDimensionsListQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, program?: { __typename?: 'ProgramV2EventMetaType', dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, canRemove: boolean, canAddValues: boolean, title?: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string }> }> } | null } | null };
+export type ProgramDimensionsListQuery = { event: { name: string, slug: string, program: { dimensions: Array<{ slug: string, canRemove: boolean, canAddValues: boolean, title: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string }> }> } | null } | null };
 
 export type UpdateProgramFormDefaultDimensionsMutationVariables = Exact<{
   input: UpdateSurveyDefaultDimensionsInput;
 }>;
 
 
-export type UpdateProgramFormDefaultDimensionsMutation = { __typename?: 'Mutation', updateSurveyDefaultDimensions?: { __typename?: 'UpdateSurveyDefaultDimensions', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type UpdateProgramFormDefaultDimensionsMutation = { updateSurveyDefaultDimensions: { survey: { slug: string } | null } | null };
 
 export type DimensionDefaultsQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  locale: Scalars['String']['input'];
+  eventSlug: string;
+  surveySlug: string;
+  locale: string;
 }>;
 
 
-export type DimensionDefaultsQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, program?: { __typename?: 'ProgramV2EventMetaType', involvementDimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }> } | null, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, canRemove: boolean, purpose: SurveyPurpose, cachedDefaultResponseDimensions?: unknown | null, cachedDefaultInvolvementDimensions?: unknown | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }>, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }> } | null } | null } | null };
+export type DimensionDefaultsQuery = { event: { name: string, slug: string, program: { involvementDimensions: Array<{ slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null }> }> } | null, forms: { survey: { slug: string, title: string | null, canRemove: boolean, purpose: SurveyPurpose, cachedDefaultResponseDimensions: unknown, cachedDefaultInvolvementDimensions: unknown, languages: Array<{ language: FormsFormLanguageChoices }>, dimensions: Array<{ slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null }> }> } | null } | null } | null };
 
 export type UpdateProgramFormLanguageMutationVariables = Exact<{
   input: UpdateFormInput;
 }>;
 
 
-export type UpdateProgramFormLanguageMutation = { __typename?: 'Mutation', updateForm?: { __typename?: 'UpdateForm', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type UpdateProgramFormLanguageMutation = { updateForm: { survey: { slug: string } | null } | null };
 
 export type DeleteProgramFormLanguageMutationVariables = Exact<{
   input: DeleteSurveyLanguageInput;
 }>;
 
 
-export type DeleteProgramFormLanguageMutation = { __typename?: 'Mutation', deleteSurveyLanguage?: { __typename?: 'DeleteSurveyLanguage', language?: string | null } | null };
+export type DeleteProgramFormLanguageMutation = { deleteSurveyLanguage: { language: string | null } | null };
 
 export type UpdateFormFieldsMutationMutationVariables = Exact<{
   input: UpdateFormFieldsInput;
 }>;
 
 
-export type UpdateFormFieldsMutationMutation = { __typename?: 'Mutation', updateFormFields?: { __typename?: 'UpdateFormFields', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type UpdateFormFieldsMutationMutation = { updateFormFields: { survey: { slug: string } | null } | null };
 
 export type PromoteProgramFormFieldToDimensionMutationVariables = Exact<{
   input: PromoteFieldToDimensionInput;
 }>;
 
 
-export type PromoteProgramFormFieldToDimensionMutation = { __typename?: 'Mutation', promoteFieldToDimension?: { __typename?: 'PromoteFieldToDimension', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type PromoteProgramFormFieldToDimensionMutation = { promoteFieldToDimension: { survey: { slug: string } | null } | null };
 
 export type EditProgramFormFieldsPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  language: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  surveySlug: string;
+  language: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type EditProgramFormFieldsPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, canRemove: boolean, purpose: SurveyPurpose, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, canRemove: boolean, canAddValues: boolean, title?: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string }> }>, form?: { __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, fields?: unknown | null, canRemove: boolean } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> } | null } | null } | null };
+export type EditProgramFormFieldsPageQuery = { event: { name: string, slug: string, forms: { survey: { slug: string, title: string | null, canRemove: boolean, purpose: SurveyPurpose, dimensions: Array<{ slug: string, canRemove: boolean, canAddValues: boolean, title: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string }> }>, form: { title: string, language: FormsFormLanguageChoices, fields: unknown, canRemove: boolean } | null, languages: Array<{ language: FormsFormLanguageChoices }> } | null } | null } | null };
 
-export type EditProgramFormLanguageFragment = { __typename?: 'FullSurveyType', slug: string, title?: string | null, canRemove: boolean, purpose: SurveyPurpose, form?: { __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, description: string, thankYouMessage: string, fields?: unknown | null, canRemove: boolean } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> };
+export type EditProgramFormLanguageFragment = { slug: string, title: string | null, canRemove: boolean, purpose: SurveyPurpose, form: { title: string, language: FormsFormLanguageChoices, description: string, thankYouMessage: string, fields: unknown, canRemove: boolean } | null, languages: Array<{ language: FormsFormLanguageChoices }> };
 
 export type EditProgramFormLanguagePageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  language: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  surveySlug: string;
+  language: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type EditProgramFormLanguagePageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, canRemove: boolean, purpose: SurveyPurpose, form?: { __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, description: string, thankYouMessage: string, fields?: unknown | null, canRemove: boolean } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> } | null } | null } | null };
+export type EditProgramFormLanguagePageQuery = { event: { name: string, slug: string, forms: { survey: { slug: string, title: string | null, canRemove: boolean, purpose: SurveyPurpose, form: { title: string, language: FormsFormLanguageChoices, description: string, thankYouMessage: string, fields: unknown, canRemove: boolean } | null, languages: Array<{ language: FormsFormLanguageChoices }> } | null } | null } | null };
 
 export type CreateProgramFormLanguageMutationVariables = Exact<{
   input: CreateSurveyLanguageInput;
 }>;
 
 
-export type CreateProgramFormLanguageMutation = { __typename?: 'Mutation', createSurveyLanguage?: { __typename?: 'CreateSurveyLanguage', form?: { __typename?: 'FormType', language: FormsFormLanguageChoices } | null } | null };
+export type CreateProgramFormLanguageMutation = { createSurveyLanguage: { form: { language: FormsFormLanguageChoices } | null } | null };
 
 export type UpdateProgramFormMutationMutationVariables = Exact<{
   input: UpdateSurveyInput;
 }>;
 
 
-export type UpdateProgramFormMutationMutation = { __typename?: 'Mutation', updateProgramForm?: { __typename?: 'UpdateProgramForm', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type UpdateProgramFormMutationMutation = { updateProgramForm: { survey: { slug: string } | null } | null };
 
 export type DeleteProrgamFormMutationMutationVariables = Exact<{
   input: DeleteSurveyInput;
 }>;
 
 
-export type DeleteProrgamFormMutationMutation = { __typename?: 'Mutation', deleteSurvey?: { __typename?: 'DeleteSurvey', slug?: string | null } | null };
+export type DeleteProrgamFormMutationMutation = { deleteSurvey: { slug: string | null } | null };
 
-export type EditProgramFormFragment = { __typename?: 'FullSurveyType', slug: string, title?: string | null, activeFrom?: string | null, activeUntil?: string | null, canRemove: boolean, purpose: SurveyPurpose, languages: Array<{ __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, canRemove: boolean }> };
+export type EditProgramFormFragment = { slug: string, title: string | null, activeFrom: string | null, activeUntil: string | null, canRemove: boolean, purpose: SurveyPurpose, languages: Array<{ title: string, language: FormsFormLanguageChoices, canRemove: boolean }> };
 
 export type EditProgramFormPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  surveySlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type EditProgramFormPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, activeFrom?: string | null, activeUntil?: string | null, canRemove: boolean, purpose: SurveyPurpose, languages: Array<{ __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, canRemove: boolean }> } | null } | null } | null };
+export type EditProgramFormPageQuery = { event: { name: string, slug: string, forms: { survey: { slug: string, title: string | null, activeFrom: string | null, activeUntil: string | null, canRemove: boolean, purpose: SurveyPurpose, languages: Array<{ title: string, language: FormsFormLanguageChoices, canRemove: boolean }> } | null } | null } | null };
 
 export type CreateProgramFormMutationVariables = Exact<{
   input: CreateProgramFormInput;
 }>;
 
 
-export type CreateProgramFormMutation = { __typename?: 'Mutation', createProgramForm?: { __typename?: 'CreateProgramForm', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type CreateProgramFormMutation = { createProgramForm: { survey: { slug: string } | null } | null };
 
-export type OfferFormFragment = { __typename?: 'FullSurveyType', slug: string, title?: string | null, isActive: boolean, activeFrom?: string | null, activeUntil?: string | null, countResponses: number, purpose: SurveyPurpose, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> };
+export type OfferFormFragment = { slug: string, title: string | null, isActive: boolean, activeFrom: string | null, activeUntil: string | null, countResponses: number, purpose: SurveyPurpose, languages: Array<{ language: FormsFormLanguageChoices }> };
 
 export type ProgramFormsPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramFormsPageQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', forms: { __typename?: 'FormsProfileMetaType', surveys: Array<{ __typename?: 'FullSurveyType', slug: string, title?: string | null, event: { __typename?: 'LimitedEventType', slug: string, name: string } }> } } | null, event?: { __typename?: 'FullEventType', slug: string, name: string, forms?: { __typename?: 'FormsEventMetaType', surveys: Array<{ __typename?: 'FullSurveyType', slug: string, title?: string | null, isActive: boolean, activeFrom?: string | null, activeUntil?: string | null, countResponses: number, purpose: SurveyPurpose, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> }> } | null } | null };
+export type ProgramFormsPageQuery = { profile: { forms: { surveys: Array<{ slug: string, title: string | null, event: { slug: string, name: string } }> } } | null, event: { slug: string, name: string, forms: { surveys: Array<{ slug: string, title: string | null, isActive: boolean, activeFrom: string | null, activeUntil: string | null, countResponses: number, purpose: SurveyPurpose, languages: Array<{ language: FormsFormLanguageChoices }> }> } | null } | null };
 
-export type ProgramAdminHostFragment = { __typename?: 'FullProgramHostType', person: { __typename?: 'LimitedProfileType', firstName: string, lastName: string, nick: string }, programs: Array<{ __typename?: 'LimitedProgramType', slug: string, title: string, cachedDimensions?: unknown | null }> };
+export type ProgramAdminHostFragment = { person: { firstName: string, lastName: string, nick: string }, programs: Array<{ slug: string, title: string, cachedDimensions: unknown }> };
 
 export type ProgramAdminHostsQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  filters?: InputMaybe<Array<DimensionFilterInput> | DimensionFilterInput>;
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  filters?: Array<DimensionFilterInput> | DimensionFilterInput | null | undefined;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramAdminHostsQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, program?: { __typename?: 'ProgramV2EventMetaType', programHostsExcelExportLink: string, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }>, programHosts: Array<{ __typename?: 'FullProgramHostType', person: { __typename?: 'LimitedProfileType', firstName: string, lastName: string, nick: string }, programs: Array<{ __typename?: 'LimitedProgramType', slug: string, title: string, cachedDimensions?: unknown | null }> }> } | null } | null };
+export type ProgramAdminHostsQuery = { event: { name: string, slug: string, timezone: string, program: { programHostsExcelExportLink: string, dimensions: Array<{ slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, values: Array<{ slug: string, title: string | null }> }>, programHosts: Array<{ person: { firstName: string, lastName: string, nick: string }, programs: Array<{ slug: string, title: string, cachedDimensions: unknown }> }> } | null } | null };
 
-export type ProgramAdminInvitationFragment = { __typename?: 'FullInvitationType', id: string, email: string, createdAt: string, cachedDimensions?: unknown | null, program?: { __typename?: 'LimitedProgramType', slug: string, title: string } | null };
+export type ProgramAdminInvitationFragment = { id: string, email: string, createdAt: string, cachedDimensions: unknown, program: { slug: string, title: string } | null };
 
 export type ProgramAdminInvitationsQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
+  eventSlug: string;
 }>;
 
 
-export type ProgramAdminInvitationsQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, program?: { __typename?: 'ProgramV2EventMetaType', invitations: Array<{ __typename?: 'FullInvitationType', id: string, email: string, createdAt: string, cachedDimensions?: unknown | null, program?: { __typename?: 'LimitedProgramType', slug: string, title: string } | null }> } | null } | null };
+export type ProgramAdminInvitationsQuery = { event: { name: string, slug: string, timezone: string, program: { invitations: Array<{ id: string, email: string, createdAt: string, cachedDimensions: unknown, program: { slug: string, title: string } | null }> } | null } | null };
 
 export type UpdateMessageMutationVariables = Exact<{
   input: UpdateMessageInput;
 }>;
 
 
-export type UpdateMessageMutation = { __typename?: 'Mutation', updateMessage?: { __typename?: 'UpdateMessage', message?: { __typename?: 'MessageType', id: string } | null } | null };
+export type UpdateMessageMutation = { updateMessage: { message: { id: string } | null } | null };
 
 export type SendMessageMutationVariables = Exact<{
   input: SendMessageInput;
 }>;
 
 
-export type SendMessageMutation = { __typename?: 'Mutation', sendMessage?: { __typename?: 'SendMessage', message?: { __typename?: 'MessageType', id: string } | null } | null };
+export type SendMessageMutation = { sendMessage: { message: { id: string } | null } | null };
 
 export type ExpireMessageMutationVariables = Exact<{
   input: ExpireMessageInput;
 }>;
 
 
-export type ExpireMessageMutation = { __typename?: 'Mutation', expireMessage?: { __typename?: 'ExpireMessage', message?: { __typename?: 'MessageType', id: string } | null } | null };
+export type ExpireMessageMutation = { expireMessage: { message: { id: string } | null } | null };
 
 export type DeleteMessageMutationVariables = Exact<{
   input: DeleteMessageInput;
 }>;
 
 
-export type DeleteMessageMutation = { __typename?: 'Mutation', deleteMessage?: { __typename?: 'DeleteMessage', messageId?: string | null } | null };
+export type DeleteMessageMutation = { deleteMessage: { messageId: string | null } | null };
 
-export type MessageComposeFragment = { __typename?: 'MessageType', id: string, subject: string, body: string, dispatch: MessageDispatch, state: MessageState, createdAt: string, sentAt?: string | null, expiredAt?: string | null, recipientFilters: unknown, recipientCount: number, replyTo?: { __typename?: 'MessageReplyToType', id: string } | null };
+export type MessageComposeFragment = { id: string, subject: string, body: string, dispatch: MessageDispatch, state: MessageState, createdAt: string, sentAt: string | null, expiredAt: string | null, recipientFilters: unknown, recipientCount: number, replyTo: { id: string } | null };
 
 export type ProgramMessageComposePageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  messageId: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  messageId: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramMessageComposePageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, program?: { __typename?: 'ProgramV2EventMetaType', message?: { __typename?: 'MessageType', id: string, subject: string, body: string, dispatch: MessageDispatch, state: MessageState, createdAt: string, sentAt?: string | null, expiredAt?: string | null, recipientFilters: unknown, recipientCount: number, replyTo?: { __typename?: 'MessageReplyToType', id: string } | null } | null, replyToAddresses: Array<{ __typename?: 'MessageReplyToType', id: string, name: string, email: string }>, recipientDimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }> } | null } | null };
+export type ProgramMessageComposePageQuery = { event: { name: string, slug: string, program: { message: { id: string, subject: string, body: string, dispatch: MessageDispatch, state: MessageState, createdAt: string, sentAt: string | null, expiredAt: string | null, recipientFilters: unknown, recipientCount: number, replyTo: { id: string } | null } | null, replyToAddresses: Array<{ id: string, name: string, email: string }>, recipientDimensions: Array<{ slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null }> }> } | null } | null };
 
 export type CreateMessageMutationVariables = Exact<{
   input: CreateMessageInput;
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'CreateMessage', message?: { __typename?: 'MessageType', id: string } | null } | null };
+export type CreateMessageMutation = { createMessage: { message: { id: string } | null } | null };
 
 export type ProgramMessageNewPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramMessageNewPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, program?: { __typename?: 'ProgramV2EventMetaType', replyToAddresses: Array<{ __typename?: 'MessageReplyToType', id: string, name: string, email: string }>, recipientDimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }> } | null } | null };
+export type ProgramMessageNewPageQuery = { event: { name: string, slug: string, program: { replyToAddresses: Array<{ id: string, name: string, email: string }>, recipientDimensions: Array<{ slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null }> }> } | null } | null };
 
-export type ProgramMessageListRowFragment = { __typename?: 'MessageType', id: string, subject: string, state: MessageState, dispatch: MessageDispatch, createdAt: string, sentAt?: string | null, recipientCount: number };
+export type ProgramMessageListRowFragment = { id: string, subject: string, state: MessageState, dispatch: MessageDispatch, createdAt: string, sentAt: string | null, recipientCount: number };
 
 export type ProgramMessagesPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
+  eventSlug: string;
 }>;
 
 
-export type ProgramMessagesPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, program?: { __typename?: 'ProgramV2EventMetaType', messages: Array<{ __typename?: 'MessageType', id: string, subject: string, state: MessageState, dispatch: MessageDispatch, createdAt: string, sentAt?: string | null, recipientCount: number }> } | null } | null };
+export type ProgramMessagesPageQuery = { event: { name: string, slug: string, program: { messages: Array<{ id: string, subject: string, state: MessageState, dispatch: MessageDispatch, createdAt: string, sentAt: string | null, recipientCount: number }> } | null } | null };
 
 export type AcceptProgramOfferMutationVariables = Exact<{
   input: AcceptProgramOfferInput;
 }>;
 
 
-export type AcceptProgramOfferMutation = { __typename?: 'Mutation', acceptProgramOffer?: { __typename?: 'AcceptProgramOffer', program: { __typename?: 'FullProgramType', slug: string } } | null };
+export type AcceptProgramOfferMutation = { acceptProgramOffer: { program: { slug: string } } | null };
 
 export type CancelProgramOfferMutationVariables = Exact<{
   input: CancelProgramOfferInput;
 }>;
 
 
-export type CancelProgramOfferMutation = { __typename?: 'Mutation', cancelProgramOffer?: { __typename?: 'CancelProgramOffer', responseId: string } | null };
+export type CancelProgramOfferMutation = { cancelProgramOffer: { responseId: string } | null };
 
 export type EditProgramOfferMutationVariables = Exact<{
   input: CreateSurveyResponseInput;
 }>;
 
 
-export type EditProgramOfferMutation = { __typename?: 'Mutation', createSurveyResponse?: { __typename?: 'CreateSurveyResponse', response?: { __typename?: 'ProfileResponseType', id: string } | null } | null };
+export type EditProgramOfferMutation = { createSurveyResponse: { response: { id: string } | null } | null };
 
-export type ProgramOfferEditFragment = { __typename?: 'FullResponseType', id: string, revisionCreatedAt: string, language: string, values?: unknown | null, cachedDimensions?: unknown | null, canEdit: boolean, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, form: { __typename?: 'FormType', title: string, description: string, fields?: unknown | null, survey: { __typename?: 'FullSurveyType', slug: string, cachedDefaultResponseDimensions?: unknown | null, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> };
+export type ProgramOfferEditFragment = { id: string, revisionCreatedAt: string, language: string, values: unknown, cachedDimensions: unknown, canEdit: boolean, originalCreatedBy: { fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, form: { title: string, description: string, fields: unknown, survey: { slug: string, cachedDefaultResponseDimensions: unknown, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> };
 
 export type ProgramOfferEditPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  responseId: Scalars['String']['input'];
+  eventSlug: string;
+  responseId: string;
 }>;
 
 
-export type ProgramOfferEditPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, program?: { __typename?: 'ProgramV2EventMetaType', programOffer?: { __typename?: 'FullResponseType', id: string, revisionCreatedAt: string, language: string, values?: unknown | null, cachedDimensions?: unknown | null, canEdit: boolean, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, form: { __typename?: 'FormType', title: string, description: string, fields?: unknown | null, survey: { __typename?: 'FullSurveyType', slug: string, cachedDefaultResponseDimensions?: unknown | null, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> } | null } | null } | null };
+export type ProgramOfferEditPageQuery = { event: { name: string, slug: string, timezone: string, program: { programOffer: { id: string, revisionCreatedAt: string, language: string, values: unknown, cachedDimensions: unknown, canEdit: boolean, originalCreatedBy: { fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, form: { title: string, description: string, fields: unknown, survey: { slug: string, cachedDefaultResponseDimensions: unknown, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> } | null } | null } | null };
 
-export type ProgramOfferDetailFragment = { __typename?: 'FullResponseType', values?: unknown | null, cachedDimensions?: unknown | null, canEdit: boolean, canAccept: boolean, canCancel: boolean, canDelete: boolean, id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, form: { __typename?: 'FormType', description: string, fields?: unknown | null, survey: { __typename?: 'FullSurveyType', title?: string | null, slug: string, cachedDefaultResponseDimensions?: unknown | null, cachedDefaultInvolvementDimensions?: unknown | null, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, programs: Array<{ __typename?: 'LimitedProgramType', slug: string, title: string, cachedDimensions?: unknown | null }>, dimensions: Array<{ __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string } | null, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> };
+export type ProgramOfferDetailFragment = { values: unknown, cachedDimensions: unknown, canEdit: boolean, canAccept: boolean, canCancel: boolean, canDelete: boolean, id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, form: { description: string, fields: unknown, survey: { title: string | null, slug: string, cachedDefaultResponseDimensions: unknown, cachedDefaultInvolvementDimensions: unknown, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, programs: Array<{ slug: string, title: string, cachedDimensions: unknown }>, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, originalCreatedBy: { fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy: { fullName: string } | null, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> };
 
 export type ProgramOfferPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  responseId: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  responseId: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramOfferPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, program?: { __typename?: 'ProgramV2EventMetaType', involvementDimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }>, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }>, programOffer?: { __typename?: 'FullResponseType', values?: unknown | null, cachedDimensions?: unknown | null, canEdit: boolean, canAccept: boolean, canCancel: boolean, canDelete: boolean, id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, form: { __typename?: 'FormType', description: string, fields?: unknown | null, survey: { __typename?: 'FullSurveyType', title?: string | null, slug: string, cachedDefaultResponseDimensions?: unknown | null, cachedDefaultInvolvementDimensions?: unknown | null, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, programs: Array<{ __typename?: 'LimitedProgramType', slug: string, title: string, cachedDimensions?: unknown | null }>, dimensions: Array<{ __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string } | null, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> } | null } | null } | null };
+export type ProgramOfferPageQuery = { event: { name: string, slug: string, timezone: string, program: { involvementDimensions: Array<{ slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null }> }>, dimensions: Array<{ slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null }> }>, programOffer: { values: unknown, cachedDimensions: unknown, canEdit: boolean, canAccept: boolean, canCancel: boolean, canDelete: boolean, id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, form: { description: string, fields: unknown, survey: { title: string | null, slug: string, cachedDefaultResponseDimensions: unknown, cachedDefaultInvolvementDimensions: unknown, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, programs: Array<{ slug: string, title: string, cachedDimensions: unknown }>, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, originalCreatedBy: { fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy: { fullName: string } | null, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> } | null } | null } | null };
 
 export type DeleteProgramOffersMutationVariables = Exact<{
   input: DeleteProgramOffersInput;
 }>;
 
 
-export type DeleteProgramOffersMutation = { __typename?: 'Mutation', deleteProgramOffers?: { __typename?: 'DeleteProgramOffers', countDeleted: number } | null };
+export type DeleteProgramOffersMutation = { deleteProgramOffers: { countDeleted: number } | null };
 
-export type ProgramOfferFragment = { __typename?: 'FullResponseType', id: string, originalCreatedAt: string, sequenceNumber: number, values?: unknown | null, cachedDimensions?: unknown | null, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string } | null, form: { __typename?: 'FormType', language: FormsFormLanguageChoices, survey: { __typename?: 'FullSurveyType', title?: string | null } }, programs: Array<{ __typename?: 'LimitedProgramType', slug: string, title: string }> };
+export type ProgramOfferFragment = { id: string, originalCreatedAt: string, sequenceNumber: number, values: unknown, cachedDimensions: unknown, originalCreatedBy: { fullName: string } | null, form: { language: FormsFormLanguageChoices, survey: { title: string | null } }, programs: Array<{ slug: string, title: string }> };
 
-export type ProgramOfferDimensionFragment = { __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> };
+export type ProgramOfferDimensionFragment = { slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ slug: string, title: string | null, color: string }> };
 
 export type ProgramOffersQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<Array<DimensionFilterInput> | DimensionFilterInput>;
+  eventSlug: string;
+  locale?: string | null | undefined;
+  filters?: Array<DimensionFilterInput> | DimensionFilterInput | null | undefined;
 }>;
 
 
-export type ProgramOffersQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, program?: { __typename?: 'ProgramV2EventMetaType', programOffersExcelExportLink: string, canDeleteProgramOffers: boolean, countProgramOffers: number, listFilters: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, keyDimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, stateDimension?: { __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> } | null, programOffers: Array<{ __typename?: 'FullResponseType', id: string, originalCreatedAt: string, sequenceNumber: number, values?: unknown | null, cachedDimensions?: unknown | null, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string } | null, form: { __typename?: 'FormType', language: FormsFormLanguageChoices, survey: { __typename?: 'FullSurveyType', title?: string | null } }, programs: Array<{ __typename?: 'LimitedProgramType', slug: string, title: string }> }> } | null } | null };
+export type ProgramOffersQuery = { event: { slug: string, name: string, program: { programOffersExcelExportLink: string, canDeleteProgramOffers: boolean, countProgramOffers: number, listFilters: Array<{ slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ slug: string, title: string | null, color: string }> }>, keyDimensions: Array<{ slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ slug: string, title: string | null, color: string }> }>, stateDimension: { slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ slug: string, title: string | null, color: string }> } | null, programOffers: Array<{ id: string, originalCreatedAt: string, sequenceNumber: number, values: unknown, cachedDimensions: unknown, originalCreatedBy: { fullName: string } | null, form: { language: FormsFormLanguageChoices, survey: { title: string | null } }, programs: Array<{ slug: string, title: string }> }> } | null } | null };
 
 export type UpdateProgramPreferencesMutationVariables = Exact<{
   input: UpdateProgramPreferencesInput;
 }>;
 
 
-export type UpdateProgramPreferencesMutation = { __typename?: 'Mutation', updateProgramPreferences?: { __typename?: 'UpdateProgramPreferences', preferences?: { __typename?: 'ProgramV2EventMetaType', publicFrom?: string | null, isSchedulePublic: boolean } | null } | null };
+export type UpdateProgramPreferencesMutation = { updateProgramPreferences: { preferences: { publicFrom: string | null, isSchedulePublic: boolean } | null } | null };
 
 export type CreateMessageReplyToMutationVariables = Exact<{
   input: CreateMessageReplyToInput;
 }>;
 
 
-export type CreateMessageReplyToMutation = { __typename?: 'Mutation', createMessageReplyTo?: { __typename?: 'CreateMessageReplyTo', replyTo?: { __typename?: 'MessageReplyToType', id: string } | null } | null };
+export type CreateMessageReplyToMutation = { createMessageReplyTo: { replyTo: { id: string } | null } | null };
 
 export type UpdateMessageReplyToMutationVariables = Exact<{
   input: UpdateMessageReplyToInput;
 }>;
 
 
-export type UpdateMessageReplyToMutation = { __typename?: 'Mutation', updateMessageReplyTo?: { __typename?: 'UpdateMessageReplyTo', replyTo?: { __typename?: 'MessageReplyToType', id: string } | null } | null };
+export type UpdateMessageReplyToMutation = { updateMessageReplyTo: { replyTo: { id: string } | null } | null };
 
 export type DeleteMessageReplyToMutationVariables = Exact<{
   input: DeleteMessageReplyToInput;
 }>;
 
 
-export type DeleteMessageReplyToMutation = { __typename?: 'Mutation', deleteMessageReplyTo?: { __typename?: 'DeleteMessageReplyTo', replyToId?: string | null } | null };
+export type DeleteMessageReplyToMutation = { deleteMessageReplyTo: { replyToId: string | null } | null };
 
-export type MessageReplyToRowFragment = { __typename?: 'MessageReplyToType', id: string, name: string, email: string };
+export type MessageReplyToRowFragment = { id: string, name: string, email: string };
 
 export type ProgramPreferencesQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
+  eventSlug: string;
 }>;
 
 
-export type ProgramPreferencesQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, program?: { __typename?: 'ProgramV2EventMetaType', publicFrom?: string | null, isSchedulePublic: boolean, replyToAddresses: Array<{ __typename?: 'MessageReplyToType', id: string, name: string, email: string }> } | null } | null };
+export type ProgramPreferencesQuery = { event: { name: string, slug: string, program: { publicFrom: string | null, isSchedulePublic: boolean, replyToAddresses: Array<{ id: string, name: string, email: string }> } | null } | null };
 
 export type ProgramAdminReportsPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramAdminReportsPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, program?: { __typename?: 'ProgramV2EventMetaType', reports: Array<{ __typename?: 'ReportType', slug: string, title: string, footer: string, rows: Array<Array<unknown | null>>, totalRow?: Array<unknown | null> | null, columns: Array<{ __typename?: 'ColumnType', slug: string, title: string, type: TypeOfColumn }> }> } | null } | null };
+export type ProgramAdminReportsPageQuery = { event: { name: string, slug: string, timezone: string, program: { reports: Array<{ slug: string, title: string, footer: string, rows: Array<Array<unknown>>, totalRow: Array<unknown> | null, columns: Array<{ slug: string, title: string, type: TypeOfColumn }> }> } | null } | null };
 
 export type MarkScheduleItemAsFavoriteMutationVariables = Exact<{
   input: FavoriteScheduleItemInput;
 }>;
 
 
-export type MarkScheduleItemAsFavoriteMutation = { __typename?: 'Mutation', markScheduleItemAsFavorite?: { __typename?: 'MarkScheduleItemAsFavorite', success: boolean } | null };
+export type MarkScheduleItemAsFavoriteMutation = { markScheduleItemAsFavorite: { success: boolean } | null };
 
 export type UnmarkScheduleItemAsFavoriteMutationVariables = Exact<{
   input: FavoriteScheduleItemInput;
 }>;
 
 
-export type UnmarkScheduleItemAsFavoriteMutation = { __typename?: 'Mutation', unmarkScheduleItemAsFavorite?: { __typename?: 'UnmarkScheduleItemAsFavorite', success: boolean } | null };
+export type UnmarkScheduleItemAsFavoriteMutation = { unmarkScheduleItemAsFavorite: { success: boolean } | null };
 
-export type ScheduleProgramFragment = { __typename?: 'LimitedProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, isCancelled: boolean };
+export type ScheduleProgramFragment = { slug: string, title: string, cachedDimensions: unknown, color: string, isCancelled: boolean };
 
-export type ScheduleItemListFragment = { __typename?: 'FullScheduleItemType', slug: string, location?: string | null, subtitle: string, startTime: string, endTime: string, program: { __typename?: 'LimitedProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, isCancelled: boolean } };
+export type ScheduleItemListFragment = { slug: string, location: string | null, subtitle: string, startTime: string, endTime: string, program: { slug: string, title: string, cachedDimensions: unknown, color: string, isCancelled: boolean } };
 
 export type ProgramListQueryQueryVariables = Exact<{
-  locale?: InputMaybe<Scalars['String']['input']>;
-  eventSlug: Scalars['String']['input'];
-  filters?: InputMaybe<Array<DimensionFilterInput> | DimensionFilterInput>;
-  hidePast?: InputMaybe<Scalars['Boolean']['input']>;
+  locale?: string | null | undefined;
+  eventSlug: string;
+  filters?: Array<DimensionFilterInput> | DimensionFilterInput | null | undefined;
+  hidePast?: boolean | null | undefined;
 }>;
 
 
-export type ProgramListQueryQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', program: { __typename?: 'ProgramV2ProfileMetaType', scheduleItems?: Array<{ __typename?: 'FullScheduleItemType', slug: string, location?: string | null, subtitle: string, startTime: string, endTime: string, program: { __typename?: 'LimitedProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, isCancelled: boolean } }> | null } } | null, event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, program?: { __typename?: 'ProgramV2EventMetaType', calendarExportLink: string, isSchedulePublic: boolean, listFilters: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }>, scheduleItems: Array<{ __typename?: 'FullScheduleItemType', slug: string, location?: string | null, subtitle: string, startTime: string, endTime: string, program: { __typename?: 'LimitedProgramType', slug: string, title: string, cachedDimensions?: unknown | null, color: string, isCancelled: boolean } }> } | null } | null };
+export type ProgramListQueryQuery = { profile: { program: { scheduleItems: Array<{ slug: string, location: string | null, subtitle: string, startTime: string, endTime: string, program: { slug: string, title: string, cachedDimensions: unknown, color: string, isCancelled: boolean } }> | null } } | null, event: { name: string, slug: string, timezone: string, program: { calendarExportLink: string, isSchedulePublic: boolean, listFilters: Array<{ slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, values: Array<{ slug: string, title: string | null }> }>, scheduleItems: Array<{ slug: string, location: string | null, subtitle: string, startTime: string, endTime: string, program: { slug: string, title: string, cachedDimensions: unknown, color: string, isCancelled: boolean } }> } | null } | null };
 
 export type CreateFeedbackMutationVariables = Exact<{
   input: ProgramFeedbackInput;
 }>;
 
 
-export type CreateFeedbackMutation = { __typename?: 'Mutation', createProgramFeedback?: { __typename?: 'CreateProgramFeedback', success: boolean } | null };
+export type CreateFeedbackMutation = { createProgramFeedback: { success: boolean } | null };
 
 export type ProgramFeedbackQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
+  eventSlug: string;
+  programSlug: string;
 }>;
 
 
-export type ProgramFeedbackQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, program?: { __typename?: 'ProgramV2EventMetaType', program?: { __typename?: 'FullProgramType', title: string, isAcceptingFeedback: boolean } | null } | null } | null };
+export type ProgramFeedbackQueryQuery = { event: { name: string, program: { program: { title: string, isAcceptingFeedback: boolean } | null } | null } | null };
 
-export type ProgramDetailAnnotationFragment = { __typename?: 'ProgramAnnotationType', value?: unknown | null, annotation: { __typename?: 'AnnotationType', slug: string, type: AnnotationDataType, title: string } };
+export type ProgramDetailAnnotationFragment = { value: unknown, annotation: { slug: string, type: AnnotationDataType, title: string } };
 
 export type ProgramDetailQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  programSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  programSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type ProgramDetailQueryQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', program: { __typename?: 'ProgramV2ProfileMetaType', scheduleItems?: Array<{ __typename?: 'FullScheduleItemType', slug: string }> | null } } | null, event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, program?: { __typename?: 'ProgramV2EventMetaType', calendarExportLink: string, program?: { __typename?: 'FullProgramType', title: string, description: string, cachedHosts: string, isCancelled: boolean, links: Array<{ __typename?: 'ProgramLink', type: ProgramLinkType, href: string, title: string }>, annotations: Array<{ __typename?: 'ProgramAnnotationType', value?: unknown | null, annotation: { __typename?: 'AnnotationType', slug: string, type: AnnotationDataType, title: string } }>, dimensions: Array<{ __typename?: 'ProgramDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null } }>, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', slug: string, subtitle: string, location?: string | null, startTime: string, endTime: string, links: Array<{ __typename?: 'ProgramLink', type: ProgramLinkType, href: string, title: string }> }> } | null } | null } | null };
+export type ProgramDetailQueryQuery = { profile: { program: { scheduleItems: Array<{ slug: string }> | null } } | null, event: { name: string, slug: string, timezone: string, program: { calendarExportLink: string, program: { title: string, description: string, cachedHosts: string, isCancelled: boolean, links: Array<{ type: ProgramLinkType, href: string, title: string }>, annotations: Array<{ value: unknown, annotation: { slug: string, type: AnnotationDataType, title: string } }>, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null } }>, scheduleItems: Array<{ slug: string, subtitle: string, location: string | null, startTime: string, endTime: string, links: Array<{ type: ProgramLinkType, href: string, title: string }> }> } | null } | null } | null };
 
 export type UpdateQuotaMutationVariables = Exact<{
   input: UpdateQuotaInput;
 }>;
 
 
-export type UpdateQuotaMutation = { __typename?: 'Mutation', updateQuota?: { __typename?: 'UpdateQuota', quota?: { __typename?: 'LimitedQuotaType', id: string } | null } | null };
+export type UpdateQuotaMutation = { updateQuota: { quota: { id: string } | null } | null };
 
 export type DeleteQuotaMutationVariables = Exact<{
   input: DeleteQuotaInput;
 }>;
 
 
-export type DeleteQuotaMutation = { __typename?: 'Mutation', deleteQuota?: { __typename?: 'DeleteQuota', id: string } | null };
+export type DeleteQuotaMutation = { deleteQuota: { id: string } | null };
 
-export type QuotaProductFragment = { __typename?: 'LimitedProductType', id: number, title: string, price: any, countReserved: number };
+export type QuotaProductFragment = { id: number, title: string, price: string, countReserved: number };
 
 export type AdminQuotaDetailPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  quotaId: Scalars['Int']['input'];
+  eventSlug: string;
+  quotaId: number;
 }>;
 
 
-export type AdminQuotaDetailPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', quota: { __typename?: 'FullQuotaType', id: string, name: string, countReserved: number, canDelete: boolean, quota: number, products: Array<{ __typename?: 'LimitedProductType', id: number, title: string, price: any, countReserved: number }> } } | null } | null };
+export type AdminQuotaDetailPageQuery = { event: { name: string, slug: string, tickets: { quota: { id: string, name: string, countReserved: number, canDelete: boolean, quota: number, products: Array<{ id: number, title: string, price: string, countReserved: number }> } } | null } | null };
 
 export type CreateQuotaMutationVariables = Exact<{
   input: CreateQuotaInput;
 }>;
 
 
-export type CreateQuotaMutation = { __typename?: 'Mutation', createQuota?: { __typename?: 'CreateQuota', quota?: { __typename?: 'LimitedQuotaType', id: string } | null } | null };
+export type CreateQuotaMutation = { createQuota: { quota: { id: string } | null } | null };
 
-export type QuotaListFragment = { __typename?: 'FullQuotaType', id: string, countPaid: number, countReserved: number, countAvailable: number, countTotal: number, title: string };
+export type QuotaListFragment = { id: string, countPaid: number, countReserved: number, countAvailable: number, countTotal: number, title: string };
 
 export type QuotaListQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
+  eventSlug: string;
 }>;
 
 
-export type QuotaListQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', quotas: Array<{ __typename?: 'FullQuotaType', id: string, countPaid: number, countReserved: number, countAvailable: number, countTotal: number, title: string }> } | null } | null };
+export type QuotaListQuery = { event: { name: string, slug: string, tickets: { quotas: Array<{ id: string, countPaid: number, countReserved: number, countAvailable: number, countTotal: number, title: string }> } | null } | null };
 
 export type UpdateSurveyDefaultDimensionsMutationVariables = Exact<{
   input: UpdateSurveyDefaultDimensionsInput;
 }>;
 
 
-export type UpdateSurveyDefaultDimensionsMutation = { __typename?: 'Mutation', updateSurveyDefaultDimensions?: { __typename?: 'UpdateSurveyDefaultDimensions', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type UpdateSurveyDefaultDimensionsMutation = { updateSurveyDefaultDimensions: { survey: { slug: string } | null } | null };
 
 export type SurveyDimensionDefaultsQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  locale: Scalars['String']['input'];
+  eventSlug: string;
+  surveySlug: string;
+  locale: string;
 }>;
 
 
-export type SurveyDimensionDefaultsQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, purpose: SurveyPurpose, canRemove: boolean, cachedDefaultResponseDimensions?: unknown | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }>, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, canRemove: boolean, canAddValues: boolean, title?: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string }> }> } | null } | null } | null };
+export type SurveyDimensionDefaultsQuery = { event: { name: string, slug: string, forms: { survey: { slug: string, title: string | null, purpose: SurveyPurpose, canRemove: boolean, cachedDefaultResponseDimensions: unknown, languages: Array<{ language: FormsFormLanguageChoices }>, dimensions: Array<{ slug: string, canRemove: boolean, canAddValues: boolean, title: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string }> }> } | null } | null } | null };
 
 export type PutSurveyDimensionMutationVariables = Exact<{
   input: PutDimensionInput;
 }>;
 
 
-export type PutSurveyDimensionMutation = { __typename?: 'Mutation', putDimension?: { __typename?: 'PutDimension', dimension?: { __typename?: 'FullDimensionType', slug: string } | null } | null };
+export type PutSurveyDimensionMutation = { putDimension: { dimension: { slug: string } | null } | null };
 
 export type DeleteSurveyDimensionMutationVariables = Exact<{
   input: DeleteDimensionInput;
 }>;
 
 
-export type DeleteSurveyDimensionMutation = { __typename?: 'Mutation', deleteDimension?: { __typename?: 'DeleteDimension', slug?: string | null } | null };
+export type DeleteSurveyDimensionMutation = { deleteDimension: { slug: string | null } | null };
 
 export type PutSurveyDimensionValueMutationVariables = Exact<{
   input: PutDimensionValueInput;
 }>;
 
 
-export type PutSurveyDimensionValueMutation = { __typename?: 'Mutation', putDimensionValue?: { __typename?: 'PutDimensionValue', value?: { __typename?: 'DimensionValueType', slug: string } | null } | null };
+export type PutSurveyDimensionValueMutation = { putDimensionValue: { value: { slug: string } | null } | null };
 
 export type DeleteSurveyDimensionValueMutationVariables = Exact<{
   input: DeleteDimensionValueInput;
 }>;
 
 
-export type DeleteSurveyDimensionValueMutation = { __typename?: 'Mutation', deleteDimensionValue?: { __typename?: 'DeleteDimensionValue', slug?: string | null } | null };
+export type DeleteSurveyDimensionValueMutation = { deleteDimensionValue: { slug: string | null } | null };
 
 export type DimensionsListQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  locale: Scalars['String']['input'];
+  eventSlug: string;
+  surveySlug: string;
+  locale: string;
 }>;
 
 
-export type DimensionsListQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, canRemove: boolean, purpose: SurveyPurpose, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }>, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, canRemove: boolean, canAddValues: boolean, title?: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string }> }> } | null } | null } | null };
+export type DimensionsListQuery = { event: { name: string, forms: { survey: { slug: string, title: string | null, canRemove: boolean, purpose: SurveyPurpose, languages: Array<{ language: FormsFormLanguageChoices }>, dimensions: Array<{ slug: string, canRemove: boolean, canAddValues: boolean, title: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string }> }> } | null } | null } | null };
 
 export type UpdateFormMutationMutationVariables = Exact<{
   input: UpdateFormInput;
 }>;
 
 
-export type UpdateFormMutationMutation = { __typename?: 'Mutation', updateForm?: { __typename?: 'UpdateForm', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type UpdateFormMutationMutation = { updateForm: { survey: { slug: string } | null } | null };
 
 export type DeleteSurveyLanguageMutationVariables = Exact<{
   input: DeleteSurveyLanguageInput;
 }>;
 
 
-export type DeleteSurveyLanguageMutation = { __typename?: 'Mutation', deleteSurveyLanguage?: { __typename?: 'DeleteSurveyLanguage', language?: string | null } | null };
+export type DeleteSurveyLanguageMutation = { deleteSurveyLanguage: { language: string | null } | null };
 
 export type PromoteSurveyFieldToDimensionMutationVariables = Exact<{
   input: PromoteFieldToDimensionInput;
 }>;
 
 
-export type PromoteSurveyFieldToDimensionMutation = { __typename?: 'Mutation', promoteFieldToDimension?: { __typename?: 'PromoteFieldToDimension', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type PromoteSurveyFieldToDimensionMutation = { promoteFieldToDimension: { survey: { slug: string } | null } | null };
 
-export type EditSurveyFieldsPageFragment = { __typename?: 'FullSurveyType', slug: string, title?: string | null, canRemove: boolean, purpose: SurveyPurpose, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, canRemove: boolean, canAddValues: boolean, title?: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string }> }>, form?: { __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, fields?: unknown | null, canRemove: boolean } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> };
+export type EditSurveyFieldsPageFragment = { slug: string, title: string | null, canRemove: boolean, purpose: SurveyPurpose, dimensions: Array<{ slug: string, canRemove: boolean, canAddValues: boolean, title: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string }> }>, form: { title: string, language: FormsFormLanguageChoices, fields: unknown, canRemove: boolean } | null, languages: Array<{ language: FormsFormLanguageChoices }> };
 
 export type EditSurveyFieldsPageQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  language: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  surveySlug: string;
+  language: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type EditSurveyFieldsPageQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, canRemove: boolean, purpose: SurveyPurpose, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, canRemove: boolean, canAddValues: boolean, title?: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string }> }>, form?: { __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, fields?: unknown | null, canRemove: boolean } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> } | null } | null } | null };
+export type EditSurveyFieldsPageQueryQuery = { event: { name: string, forms: { survey: { slug: string, title: string | null, canRemove: boolean, purpose: SurveyPurpose, dimensions: Array<{ slug: string, canRemove: boolean, canAddValues: boolean, title: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string }> }>, form: { title: string, language: FormsFormLanguageChoices, fields: unknown, canRemove: boolean } | null, languages: Array<{ language: FormsFormLanguageChoices }> } | null } | null } | null };
 
-export type EditFormLanguagePageFragment = { __typename?: 'FullSurveyType', slug: string, title?: string | null, canRemove: boolean, purpose: SurveyPurpose, form?: { __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, description: string, thankYouMessage: string, fields?: unknown | null, canRemove: boolean } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> };
+export type EditFormLanguagePageFragment = { slug: string, title: string | null, canRemove: boolean, purpose: SurveyPurpose, form: { title: string, language: FormsFormLanguageChoices, description: string, thankYouMessage: string, fields: unknown, canRemove: boolean } | null, languages: Array<{ language: FormsFormLanguageChoices }> };
 
 export type EditFormLanguagePageQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  language: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  surveySlug: string;
+  language: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type EditFormLanguagePageQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, canRemove: boolean, purpose: SurveyPurpose, form?: { __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, description: string, thankYouMessage: string, fields?: unknown | null, canRemove: boolean } | null, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> } | null } | null } | null };
+export type EditFormLanguagePageQueryQuery = { event: { name: string, forms: { survey: { slug: string, title: string | null, canRemove: boolean, purpose: SurveyPurpose, form: { title: string, language: FormsFormLanguageChoices, description: string, thankYouMessage: string, fields: unknown, canRemove: boolean } | null, languages: Array<{ language: FormsFormLanguageChoices }> } | null } | null } | null };
 
 export type CreateSurveyLanguageMutationVariables = Exact<{
   input: CreateSurveyLanguageInput;
 }>;
 
 
-export type CreateSurveyLanguageMutation = { __typename?: 'Mutation', createSurveyLanguage?: { __typename?: 'CreateSurveyLanguage', form?: { __typename?: 'FormType', language: FormsFormLanguageChoices } | null } | null };
+export type CreateSurveyLanguageMutation = { createSurveyLanguage: { form: { language: FormsFormLanguageChoices } | null } | null };
 
 export type UpdateSurveyMutationMutationVariables = Exact<{
   input: UpdateSurveyInput;
 }>;
 
 
-export type UpdateSurveyMutationMutation = { __typename?: 'Mutation', updateSurvey?: { __typename?: 'UpdateSurvey', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type UpdateSurveyMutationMutation = { updateSurvey: { survey: { slug: string } | null } | null };
 
 export type DeleteSurveyMutationMutationVariables = Exact<{
   input: DeleteSurveyInput;
 }>;
 
 
-export type DeleteSurveyMutationMutation = { __typename?: 'Mutation', deleteSurvey?: { __typename?: 'DeleteSurvey', slug?: string | null } | null };
+export type DeleteSurveyMutationMutation = { deleteSurvey: { slug: string | null } | null };
 
-export type EditSurveyPageFragment = { __typename?: 'FullSurveyType', slug: string, title?: string | null, loginRequired: boolean, anonymity: Anonymity, maxResponsesPerUser: number, countResponsesByCurrentUser: number, activeFrom?: string | null, activeUntil?: string | null, responsesEditableUntil?: string | null, canRemove: boolean, purpose: SurveyPurpose, protectResponses: boolean, languages: Array<{ __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, canRemove: boolean }> };
+export type EditSurveyPageFragment = { slug: string, title: string | null, loginRequired: boolean, anonymity: Anonymity, maxResponsesPerUser: number, countResponsesByCurrentUser: number, activeFrom: string | null, activeUntil: string | null, responsesEditableUntil: string | null, canRemove: boolean, purpose: SurveyPurpose, protectResponses: boolean, languages: Array<{ title: string, language: FormsFormLanguageChoices, canRemove: boolean }> };
 
 export type EditSurveyPageQueryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  surveySlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type EditSurveyPageQueryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, loginRequired: boolean, anonymity: Anonymity, maxResponsesPerUser: number, countResponsesByCurrentUser: number, activeFrom?: string | null, activeUntil?: string | null, responsesEditableUntil?: string | null, canRemove: boolean, purpose: SurveyPurpose, protectResponses: boolean, languages: Array<{ __typename?: 'FormType', title: string, language: FormsFormLanguageChoices, canRemove: boolean }> } | null } | null } | null };
+export type EditSurveyPageQueryQuery = { event: { name: string, forms: { survey: { slug: string, title: string | null, loginRequired: boolean, anonymity: Anonymity, maxResponsesPerUser: number, countResponsesByCurrentUser: number, activeFrom: string | null, activeUntil: string | null, responsesEditableUntil: string | null, canRemove: boolean, purpose: SurveyPurpose, protectResponses: boolean, languages: Array<{ title: string, language: FormsFormLanguageChoices, canRemove: boolean }> } | null } | null } | null };
 
 export type UpdateResponseDimensionsMutationVariables = Exact<{
   input: UpdateResponseDimensionsInput;
 }>;
 
 
-export type UpdateResponseDimensionsMutation = { __typename?: 'Mutation', updateResponseDimensions?: { __typename?: 'UpdateResponseDimensions', response?: { __typename?: 'FullResponseType', id: string } | null } | null };
+export type UpdateResponseDimensionsMutation = { updateResponseDimensions: { response: { id: string } | null } | null };
 
 export type EditSurveyResponseMutationVariables = Exact<{
   input: CreateSurveyResponseInput;
 }>;
 
 
-export type EditSurveyResponseMutation = { __typename?: 'Mutation', createSurveyResponse?: { __typename?: 'CreateSurveyResponse', response?: { __typename?: 'ProfileResponseType', id: string } | null } | null };
+export type EditSurveyResponseMutation = { createSurveyResponse: { response: { id: string } | null } | null };
 
-export type EditSurveyResponsePageFragment = { __typename?: 'FullResponseType', id: string, language: string, values?: unknown | null, revisionCreatedAt: string, canEdit: boolean, originalCreatedAt: string, form: { __typename?: 'FormType', title: string, description: string, fields?: unknown | null, survey: { __typename?: 'FullSurveyType', slug: string, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string } | null, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> };
+export type EditSurveyResponsePageFragment = { id: string, language: string, values: unknown, revisionCreatedAt: string, canEdit: boolean, originalCreatedAt: string, form: { title: string, description: string, fields: unknown, survey: { slug: string, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, originalCreatedBy: { fullName: string } | null, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> };
 
 export type EditSurveyResponsePageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  responseId: Scalars['String']['input'];
+  eventSlug: string;
+  surveySlug: string;
+  responseId: string;
 }>;
 
 
-export type EditSurveyResponsePageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', response?: { __typename?: 'FullResponseType', id: string, language: string, values?: unknown | null, revisionCreatedAt: string, canEdit: boolean, originalCreatedAt: string, form: { __typename?: 'FormType', title: string, description: string, fields?: unknown | null, survey: { __typename?: 'FullSurveyType', slug: string, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string } | null, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> } | null } | null } | null } | null };
+export type EditSurveyResponsePageQuery = { event: { name: string, slug: string, timezone: string, forms: { survey: { response: { id: string, language: string, values: unknown, revisionCreatedAt: string, canEdit: boolean, originalCreatedAt: string, form: { title: string, description: string, fields: unknown, survey: { slug: string, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, originalCreatedBy: { fullName: string } | null, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> } | null } | null } | null } | null };
 
-export type SurveyResponseDetailFragment = { __typename?: 'FullResponseType', values?: unknown | null, cachedDimensions?: unknown | null, canEdit: boolean, canAccept: boolean, canCancel: boolean, canDelete: boolean, id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, form: { __typename?: 'FormType', description: string, fields?: unknown | null, survey: { __typename?: 'FullSurveyType', title?: string | null, slug: string, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string } | null, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> };
+export type SurveyResponseDetailFragment = { values: unknown, cachedDimensions: unknown, canEdit: boolean, canAccept: boolean, canCancel: boolean, canDelete: boolean, id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, form: { description: string, fields: unknown, survey: { title: string | null, slug: string, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, originalCreatedBy: { fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy: { fullName: string } | null, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> };
 
 export type SurveyResponseDetailQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  responseId: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  surveySlug: string;
+  responseId: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type SurveyResponseDetailQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', slug: string, name: string, timezone: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', title?: string | null, slug: string, anonymity: Anonymity, canRemoveResponses: boolean, protectResponses: boolean, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }>, response?: { __typename?: 'FullResponseType', values?: unknown | null, cachedDimensions?: unknown | null, canEdit: boolean, canAccept: boolean, canCancel: boolean, canDelete: boolean, id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, form: { __typename?: 'FormType', description: string, fields?: unknown | null, survey: { __typename?: 'FullSurveyType', title?: string | null, slug: string, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string } | null, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> } | null } | null } | null } | null };
+export type SurveyResponseDetailQuery = { event: { slug: string, name: string, timezone: string, forms: { survey: { title: string | null, slug: string, anonymity: Anonymity, canRemoveResponses: boolean, protectResponses: boolean, dimensions: Array<{ slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null }> }>, response: { values: unknown, cachedDimensions: unknown, canEdit: boolean, canAccept: boolean, canCancel: boolean, canDelete: boolean, id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, form: { description: string, fields: unknown, survey: { title: string | null, slug: string, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, originalCreatedBy: { fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy: { fullName: string } | null, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> } | null } | null } | null } | null };
 
 export type SubscribeToSurveyResponsesMutationVariables = Exact<{
   input: SubscriptionInput;
 }>;
 
 
-export type SubscribeToSurveyResponsesMutation = { __typename?: 'Mutation', subscribeToSurveyResponses?: { __typename?: 'SubscribeToSurveyResponses', success: boolean } | null };
+export type SubscribeToSurveyResponsesMutation = { subscribeToSurveyResponses: { success: boolean } | null };
 
 export type UnsubscribeFromSurveyResponsesMutationVariables = Exact<{
   input: SubscriptionInput;
 }>;
 
 
-export type UnsubscribeFromSurveyResponsesMutation = { __typename?: 'Mutation', unsubscribeFromSurveyResponses?: { __typename?: 'UnsubscribeFromSurveyResponses', success: boolean } | null };
+export type UnsubscribeFromSurveyResponsesMutation = { unsubscribeFromSurveyResponses: { success: boolean } | null };
 
 export type DeleteSurveyResponsesMutationVariables = Exact<{
   input: DeleteSurveyResponsesInput;
 }>;
 
 
-export type DeleteSurveyResponsesMutation = { __typename?: 'Mutation', deleteSurveyResponses?: { __typename?: 'DeleteSurveyResponses', countDeleted: number } | null };
+export type DeleteSurveyResponsesMutation = { deleteSurveyResponses: { countDeleted: number } | null };
 
-export type SurveyResponseFragment = { __typename?: 'LimitedResponseType', id: string, sequenceNumber: number, revisionCreatedAt: string, language: string, values?: unknown | null, cachedDimensions?: unknown | null, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null };
+export type SurveyResponseFragment = { id: string, sequenceNumber: number, revisionCreatedAt: string, language: string, values: unknown, cachedDimensions: unknown, revisionCreatedBy: { displayName: string } | null };
 
 export type FormResponsesQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<Array<DimensionFilterInput> | DimensionFilterInput>;
+  eventSlug: string;
+  surveySlug: string;
+  locale?: string | null | undefined;
+  filters?: Array<DimensionFilterInput> | DimensionFilterInput | null | undefined;
 }>;
 
 
-export type FormResponsesQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', forms: { __typename?: 'FormsProfileMetaType', surveys: Array<{ __typename?: 'FullSurveyType', slug: string }> } } | null, event?: { __typename?: 'FullEventType', name: string, slug: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', slug: string, title?: string | null, anonymity: Anonymity, fields?: unknown | null, countResponses: number, canRemoveResponses: boolean, protectResponses: boolean, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> }>, responses?: Array<{ __typename?: 'LimitedResponseType', id: string, sequenceNumber: number, revisionCreatedAt: string, language: string, values?: unknown | null, cachedDimensions?: unknown | null, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> | null } | null } | null } | null };
+export type FormResponsesQuery = { profile: { forms: { surveys: Array<{ slug: string }> } } | null, event: { name: string, slug: string, forms: { survey: { slug: string, title: string | null, anonymity: Anonymity, fields: unknown, countResponses: number, canRemoveResponses: boolean, protectResponses: boolean, dimensions: Array<{ slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, isTechnical: boolean, values: Array<{ slug: string, title: string | null, color: string }> }>, responses: Array<{ id: string, sequenceNumber: number, revisionCreatedAt: string, language: string, values: unknown, cachedDimensions: unknown, revisionCreatedBy: { displayName: string } | null }> | null } | null } | null } | null };
 
 export type SurveySummaryQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  surveySlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
-  filters?: InputMaybe<Array<DimensionFilterInput> | DimensionFilterInput>;
+  eventSlug: string;
+  surveySlug: string;
+  locale?: string | null | undefined;
+  filters?: Array<DimensionFilterInput> | DimensionFilterInput | null | undefined;
 }>;
 
 
-export type SurveySummaryQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', survey?: { __typename?: 'FullSurveyType', title?: string | null, fields?: unknown | null, summary?: unknown | null, countResponses: number, countFilteredResponses: number, dimensions: Array<{ __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> }> } | null } | null } | null };
+export type SurveySummaryQuery = { event: { name: string, forms: { survey: { title: string | null, fields: unknown, summary: unknown, countResponses: number, countFilteredResponses: number, dimensions: Array<{ slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, values: Array<{ slug: string, title: string | null }> }> } | null } | null } | null };
 
 export type CreateSurveyMutationVariables = Exact<{
   input: CreateSurveyInput;
 }>;
 
 
-export type CreateSurveyMutation = { __typename?: 'Mutation', createSurvey?: { __typename?: 'CreateSurvey', survey?: { __typename?: 'FullSurveyType', slug: string } | null } | null };
+export type CreateSurveyMutation = { createSurvey: { survey: { slug: string } | null } | null };
 
-export type SurveyFragment = { __typename?: 'FullSurveyType', slug: string, title?: string | null, isActive: boolean, activeFrom?: string | null, activeUntil?: string | null, countResponses: number, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> };
+export type SurveyFragment = { slug: string, title: string | null, isActive: boolean, activeFrom: string | null, activeUntil: string | null, countResponses: number, languages: Array<{ language: FormsFormLanguageChoices }> };
 
-export type ProfileSurveyFragment = { __typename?: 'FullSurveyType', slug: string, title?: string | null, event: { __typename?: 'LimitedEventType', slug: string, name: string } };
+export type ProfileSurveyFragment = { slug: string, title: string | null, event: { slug: string, name: string } };
 
 export type SurveysQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type SurveysQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', forms: { __typename?: 'FormsProfileMetaType', surveys: Array<{ __typename?: 'FullSurveyType', slug: string, title?: string | null, event: { __typename?: 'LimitedEventType', slug: string, name: string } }> } } | null, event?: { __typename?: 'FullEventType', name: string, forms?: { __typename?: 'FormsEventMetaType', surveys: Array<{ __typename?: 'FullSurveyType', slug: string, title?: string | null, isActive: boolean, activeFrom?: string | null, activeUntil?: string | null, countResponses: number, languages: Array<{ __typename?: 'FormType', language: FormsFormLanguageChoices }> }> } | null } | null };
+export type SurveysQuery = { profile: { forms: { surveys: Array<{ slug: string, title: string | null, event: { slug: string, name: string } }> } } | null, event: { name: string, forms: { surveys: Array<{ slug: string, title: string | null, isActive: boolean, activeFrom: string | null, activeUntil: string | null, countResponses: number, languages: Array<{ language: FormsFormLanguageChoices }> }> } | null } | null };
 
 export type UpdateTicketsPreferencesMutationVariables = Exact<{
   input: UpdateTicketsPreferencesInput;
 }>;
 
 
-export type UpdateTicketsPreferencesMutation = { __typename?: 'Mutation', updateTicketsPreferences?: { __typename?: 'UpdateTicketsPreferences', preferences?: { __typename?: 'TicketsV2EventMetaType', contactEmail: string, termsAndConditionsUrlEn: string, termsAndConditionsUrlFi: string, termsAndConditionsUrlSv: string, cancellationPeriodDays: number } | null } | null };
+export type UpdateTicketsPreferencesMutation = { updateTicketsPreferences: { preferences: { contactEmail: string, termsAndConditionsUrlEn: string, termsAndConditionsUrlFi: string, termsAndConditionsUrlSv: string, cancellationPeriodDays: number } | null } | null };
 
 export type TicketsPreferencesQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
+  eventSlug: string;
 }>;
 
 
-export type TicketsPreferencesQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, tickets?: { __typename?: 'TicketsV2EventMetaType', contactEmail: string, termsAndConditionsUrlEn: string, termsAndConditionsUrlFi: string, termsAndConditionsUrlSv: string, cancellationPeriodDays: number } | null } | null };
+export type TicketsPreferencesQuery = { event: { name: string, slug: string, tickets: { contactEmail: string, termsAndConditionsUrlEn: string, termsAndConditionsUrlFi: string, termsAndConditionsUrlSv: string, cancellationPeriodDays: number } | null } | null };
 
 export type TicketsAdminReportsPageQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  locale?: InputMaybe<Scalars['String']['input']>;
+  eventSlug: string;
+  locale?: string | null | undefined;
 }>;
 
 
-export type TicketsAdminReportsPageQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', name: string, slug: string, timezone: string, tickets?: { __typename?: 'TicketsV2EventMetaType', reports: Array<{ __typename?: 'ReportType', slug: string, title: string, footer: string, rows: Array<Array<unknown | null>>, totalRow?: Array<unknown | null> | null, columns: Array<{ __typename?: 'ColumnType', slug: string, title: string, type: TypeOfColumn }> }> } | null } | null };
+export type TicketsAdminReportsPageQuery = { event: { name: string, slug: string, timezone: string, tickets: { reports: Array<{ slug: string, title: string, footer: string, rows: Array<Array<unknown>>, totalRow: Array<unknown> | null, columns: Array<{ slug: string, title: string, type: TypeOfColumn }> }> } | null } | null };
 
 export type GenerateKeyPairMutationVariables = Exact<{
-  password: Scalars['String']['input'];
+  password: string;
 }>;
 
 
-export type GenerateKeyPairMutation = { __typename?: 'Mutation', generateKeyPair?: { __typename?: 'GenerateKeyPair', id: string } | null };
+export type GenerateKeyPairMutation = { generateKeyPair: { id: string } | null };
 
 export type RevokeKeyPairMutationVariables = Exact<{
-  id: Scalars['String']['input'];
+  id: string;
 }>;
 
 
-export type RevokeKeyPairMutation = { __typename?: 'Mutation', revokeKeyPair?: { __typename?: 'RevokeKeyPair', id: string } | null };
+export type RevokeKeyPairMutation = { revokeKeyPair: { id: string } | null };
 
-export type ProfileEncryptionKeysFragment = { __typename?: 'KeyPairType', id: string, createdAt: string };
+export type ProfileEncryptionKeysFragment = { id: string, createdAt: string };
 
 export type ProfileEncryptionKeysQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ProfileEncryptionKeysQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', keypairs?: Array<{ __typename?: 'KeyPairType', id: string, createdAt: string }> | null } | null };
+export type ProfileEncryptionKeysQuery = { profile: { keypairs: Array<{ id: string, createdAt: string }> | null } | null };
 
-export type ProfileMessageRowFragment = { __typename?: 'LimitedMessageType', id: string, subject: string, sentAt: string, bodyHtml: string, event: { __typename?: 'LimitedEventType', slug: string, name: string } };
+export type ProfileMessageRowFragment = { id: string, subject: string, sentAt: string, bodyHtml: string, event: { slug: string, name: string } };
 
 export type ProfileMessagesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ProfileMessagesQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', messages: Array<{ __typename?: 'LimitedMessageType', id: string, subject: string, sentAt: string, bodyHtml: string, event: { __typename?: 'LimitedEventType', slug: string, name: string } }> } | null };
+export type ProfileMessagesQuery = { profile: { messages: Array<{ id: string, subject: string, sentAt: string, bodyHtml: string, event: { slug: string, name: string } }> } | null };
 
 export type ProfileOrderDetailQueryVariables = Exact<{
-  eventSlug: Scalars['String']['input'];
-  orderId: Scalars['String']['input'];
+  eventSlug: string;
+  orderId: string;
 }>;
 
 
-export type ProfileOrderDetailQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', tickets: { __typename?: 'TicketsV2ProfileMetaType', order?: { __typename?: 'ProfileOrderType', id: string, formattedOrderNumber: string, createdAt: string, totalPrice: any, status: PaymentStatus, eticketsLink?: string | null, canPay: boolean, canCancel: boolean, canRequestCancellation: boolean, ticketsContactEmail: string, products: Array<{ __typename?: 'OrderProductType', title: string, quantity: number, price: any, vatPercentage: any }>, event: { __typename?: 'LimitedEventType', slug: string, name: string, organization: { __typename?: 'LimitedOrganizationType', name: string, businessId: string } } } | null } } | null };
+export type ProfileOrderDetailQuery = { profile: { tickets: { order: { id: string, formattedOrderNumber: string, createdAt: string, totalPrice: string, status: PaymentStatus, eticketsLink: string | null, canPay: boolean, canCancel: boolean, canRequestCancellation: boolean, ticketsContactEmail: string, products: Array<{ title: string, quantity: number, price: string, vatPercentage: string }>, event: { slug: string, name: string, organization: { name: string, businessId: string } } } | null } } | null };
 
 export type ConfirmEmailMutationVariables = Exact<{
   input: ConfirmEmailInput;
 }>;
 
 
-export type ConfirmEmailMutation = { __typename?: 'Mutation', confirmEmail?: { __typename?: 'ConfirmEmail', user?: { __typename?: 'LimitedUserType', email: string } | null } | null };
+export type ConfirmEmailMutation = { confirmEmail: { user: { email: string } | null } | null };
 
-export type ProfileOrderFragment = { __typename?: 'ProfileOrderType', id: string, formattedOrderNumber: string, createdAt: string, totalPrice: any, status: PaymentStatus, eticketsLink?: string | null, canPay: boolean, canCancel: boolean, event: { __typename?: 'LimitedEventType', slug: string, name: string } };
+export type ProfileOrderFragment = { id: string, formattedOrderNumber: string, createdAt: string, totalPrice: string, status: PaymentStatus, eticketsLink: string | null, canPay: boolean, canCancel: boolean, event: { slug: string, name: string } };
 
 export type ProfileOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ProfileOrdersQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', tickets: { __typename?: 'TicketsV2ProfileMetaType', haveUnlinkedOrders: boolean, orders: Array<{ __typename?: 'ProfileOrderType', id: string, formattedOrderNumber: string, createdAt: string, totalPrice: any, status: PaymentStatus, eticketsLink?: string | null, canPay: boolean, canCancel: boolean, event: { __typename?: 'LimitedEventType', slug: string, name: string } }> } } | null };
+export type ProfileOrdersQuery = { profile: { tickets: { haveUnlinkedOrders: boolean, orders: Array<{ id: string, formattedOrderNumber: string, createdAt: string, totalPrice: string, status: PaymentStatus, eticketsLink: string | null, canPay: boolean, canCancel: boolean, event: { slug: string, name: string } }> } } | null };
 
-export type ProfileProgramItemFragment = { __typename?: 'FullProgramType', slug: string, title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string, timezone: string }, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', slug: string, startTime: string, endTime: string, durationMinutes: number, location?: string | null, subtitle: string }> };
+export type ProfileProgramItemFragment = { slug: string, title: string, event: { slug: string, name: string, timezone: string }, scheduleItems: Array<{ slug: string, startTime: string, endTime: string, durationMinutes: number, location: string | null, subtitle: string }> };
 
 export type ProfileProgramItemListQueryVariables = Exact<{
-  locale: Scalars['String']['input'];
+  locale: string;
 }>;
 
 
-export type ProfileProgramItemListQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', program: { __typename?: 'ProgramV2ProfileMetaType', programs?: Array<{ __typename?: 'FullProgramType', slug: string, title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string, timezone: string }, scheduleItems: Array<{ __typename?: 'LimitedScheduleItemType', slug: string, startTime: string, endTime: string, durationMinutes: number, location?: string | null, subtitle: string }> }> | null, programOffers: Array<{ __typename?: 'ProfileResponseType', id: string, revisionCreatedAt: string, editedByAnother: boolean, canEdit: boolean, values?: unknown | null, dimensions: Array<{ __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, form: { __typename?: 'FormType', title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string }, survey: { __typename?: 'FullSurveyType', slug: string } } }> } } | null };
+export type ProfileProgramItemListQuery = { profile: { program: { programs: Array<{ slug: string, title: string, event: { slug: string, name: string, timezone: string }, scheduleItems: Array<{ slug: string, startTime: string, endTime: string, durationMinutes: number, location: string | null, subtitle: string }> }> | null, programOffers: Array<{ id: string, revisionCreatedAt: string, editedByAnother: boolean, canEdit: boolean, values: unknown, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, form: { title: string, event: { slug: string, name: string }, survey: { slug: string } } }> } } | null };
 
 export type ProfileSurveyEditResponseQueryVariables = Exact<{
-  locale: Scalars['String']['input'];
-  responseId: Scalars['String']['input'];
+  locale: string;
+  responseId: string;
 }>;
 
 
-export type ProfileSurveyEditResponseQuery = { __typename?: 'Query', userRegistry: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } }, profile?: { __typename?: 'OwnProfileType', firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, forms: { __typename?: 'FormsProfileMetaType', response?: { __typename?: 'ProfileResponseType', id: string, revisionCreatedAt: string, canEdit: boolean, values?: unknown | null, dimensions: Array<{ __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, form: { __typename?: 'FormType', title: string, description: string, language: FormsFormLanguageChoices, fields?: unknown | null, event: { __typename?: 'LimitedEventType', slug: string, name: string, timezone: string }, survey: { __typename?: 'FullSurveyType', slug: string, registry?: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } } | null, profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } } } | null } } | null };
+export type ProfileSurveyEditResponseQuery = { userRegistry: { slug: string, title: string, policyUrl: string, organization: { slug: string, name: string } }, profile: { firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, forms: { response: { id: string, revisionCreatedAt: string, canEdit: boolean, values: unknown, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, form: { title: string, description: string, language: FormsFormLanguageChoices, fields: unknown, event: { slug: string, name: string, timezone: string }, survey: { slug: string, registry: { slug: string, title: string, policyUrl: string, organization: { slug: string, name: string } } | null, profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } } } | null } } | null };
 
 export type ProfileSurveyResponsePageQueryVariables = Exact<{
-  locale: Scalars['String']['input'];
-  responseId: Scalars['String']['input'];
+  locale: string;
+  responseId: string;
 }>;
 
 
-export type ProfileSurveyResponsePageQuery = { __typename?: 'Query', userRegistry: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } }, profile?: { __typename?: 'OwnProfileType', firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, forms: { __typename?: 'FormsProfileMetaType', response?: { __typename?: 'ProfileResponseType', id: string, revisionCreatedAt: string, canEdit: boolean, values?: unknown | null, originalCreatedAt: string, dimensions: Array<{ __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, form: { __typename?: 'FormType', title: string, description: string, language: FormsFormLanguageChoices, fields?: unknown | null, event: { __typename?: 'LimitedEventType', slug: string, name: string, timezone: string }, survey: { __typename?: 'FullSurveyType', profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, registry?: { __typename?: 'LimitedRegistryType', slug: string, title: string, policyUrl: string, organization: { __typename?: 'LimitedOrganizationType', slug: string, name: string } } | null } }, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> } | null } } | null };
+export type ProfileSurveyResponsePageQuery = { userRegistry: { slug: string, title: string, policyUrl: string, organization: { slug: string, name: string } }, profile: { firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string, forms: { response: { id: string, revisionCreatedAt: string, canEdit: boolean, values: unknown, originalCreatedAt: string, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, form: { title: string, description: string, language: FormsFormLanguageChoices, fields: unknown, event: { slug: string, name: string, timezone: string }, survey: { profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean }, registry: { slug: string, title: string, policyUrl: string, organization: { slug: string, name: string } } | null } }, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> } | null } } | null };
 
-export type ProfileResponsesTableRowFragment = { __typename?: 'ProfileResponseType', id: string, revisionCreatedAt: string, editedByAnother: boolean, canEdit: boolean, values?: unknown | null, dimensions: Array<{ __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, form: { __typename?: 'FormType', title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string }, survey: { __typename?: 'FullSurveyType', slug: string } } };
+export type ProfileResponsesTableRowFragment = { id: string, revisionCreatedAt: string, editedByAnother: boolean, canEdit: boolean, values: unknown, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, form: { title: string, event: { slug: string, name: string }, survey: { slug: string } } };
 
 export type OwnFormResponsesQueryVariables = Exact<{
-  locale: Scalars['String']['input'];
+  locale: string;
 }>;
 
 
-export type OwnFormResponsesQuery = { __typename?: 'Query', profile?: { __typename?: 'OwnProfileType', forms: { __typename?: 'FormsProfileMetaType', responses: Array<{ __typename?: 'ProfileResponseType', id: string, revisionCreatedAt: string, editedByAnother: boolean, canEdit: boolean, values?: unknown | null, dimensions: Array<{ __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } }>, form: { __typename?: 'FormType', title: string, event: { __typename?: 'LimitedEventType', slug: string, name: string }, survey: { __typename?: 'FullSurveyType', slug: string } } }> } } | null };
+export type OwnFormResponsesQuery = { profile: { forms: { responses: Array<{ id: string, revisionCreatedAt: string, editedByAnother: boolean, canEdit: boolean, values: unknown, dimensions: Array<{ dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } }>, form: { title: string, event: { slug: string, name: string }, survey: { slug: string } } }> } } | null };
 
-export type AnnotationsFormAnnotationFragment = { __typename?: 'AnnotationType', slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean };
+export type AnnotationsFormAnnotationFragment = { slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean };
 
 export type UpdateProgramAnnotationsMutationVariables = Exact<{
   input: UpdateProgramAnnotationsInput;
 }>;
 
 
-export type UpdateProgramAnnotationsMutation = { __typename?: 'Mutation', updateProgramAnnotations?: { __typename?: 'UpdateProgramAnnotations', program?: { __typename?: 'FullProgramType', slug: string, cachedAnnotations: unknown } | null } | null };
+export type UpdateProgramAnnotationsMutation = { updateProgramAnnotations: { program: { slug: string, cachedAnnotations: unknown } | null } | null };
 
 export type GetProgramAnnotationSchemaQueryVariables = Exact<{
-  locale: Scalars['String']['input'];
-  eventSlug: Scalars['String']['input'];
-  annotationSlugs?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
-  publicOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  locale: string;
+  eventSlug: string;
+  annotationSlugs?: Array<string> | string | null | undefined;
+  publicOnly?: boolean | null | undefined;
 }>;
 
 
-export type GetProgramAnnotationSchemaQuery = { __typename?: 'Query', event?: { __typename?: 'FullEventType', program?: { __typename?: 'ProgramV2EventMetaType', annotations: Array<{ __typename?: 'AnnotationType', slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }> } | null } | null };
+export type GetProgramAnnotationSchemaQuery = { event: { program: { annotations: Array<{ slug: string, type: AnnotationDataType, title: string, description: string, isComputed: boolean }> } | null } | null };
 
-export type CachedDimensionsBadgesFragment = { __typename?: 'FullDimensionType', slug: string, title?: string | null, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> };
+export type CachedDimensionsBadgesFragment = { slug: string, title: string | null, values: Array<{ slug: string, title: string | null, color: string }> };
 
-export type ColoredDimensionTableCellFragment = { __typename?: 'FullDimensionType', slug: string, title?: string | null, isKeyDimension: boolean, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string }> };
+export type ColoredDimensionTableCellFragment = { slug: string, title: string | null, isKeyDimension: boolean, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null, color: string }> };
 
-export type DimensionBadgeFragment = { __typename?: 'ResponseDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } };
+export type DimensionBadgeFragment = { dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } };
 
-export type DimensionEditorValueFragment = { __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string };
+export type DimensionEditorValueFragment = { slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string };
 
-export type DimensionEditorFragment = { __typename?: 'FullDimensionType', slug: string, canRemove: boolean, canAddValues: boolean, title?: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ __typename?: 'DimensionValueType', slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title?: string | null, titleFi: string, titleEn: string, titleSv: string }> };
+export type DimensionEditorFragment = { slug: string, canRemove: boolean, canAddValues: boolean, title: string | null, isPublic: boolean, isKeyDimension: boolean, isMultiValue: boolean, isListFilter: boolean, isShownInDetail: boolean, isNegativeSelection: boolean, isTechnical: boolean, valueOrdering: DimensionsDimensionValueOrderingChoices, titleFi: string, titleEn: string, titleSv: string, values: Array<{ slug: string, color: string, isTechnical: boolean, isSubjectLocked: boolean, canRemove: boolean, title: string | null, titleFi: string, titleEn: string, titleSv: string }> };
 
-export type DimensionValueSelectFragment = { __typename?: 'FullDimensionType', slug: string, title?: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> };
+export type DimensionValueSelectFragment = { slug: string, title: string | null, isTechnical: boolean, isMultiValue: boolean, values: Array<{ slug: string, title: string | null }> };
 
-export type DimensionFilterValueFragment = { __typename?: 'DimensionValueType', slug: string, title?: string | null };
+export type DimensionFilterValueFragment = { slug: string, title: string | null };
 
-export type DimensionFilterFragment = { __typename?: 'FullDimensionType', slug: string, title?: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, values: Array<{ __typename?: 'DimensionValueType', slug: string, title?: string | null }> };
+export type DimensionFilterFragment = { slug: string, title: string | null, isMultiValue: boolean, isListFilter: boolean, isKeyDimension: boolean, values: Array<{ slug: string, title: string | null }> };
 
-export type FullOwnProfileFragment = { __typename?: 'OwnProfileType', firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string };
+export type FullOwnProfileFragment = { firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string };
 
-export type FullSelectedProfileFragment = { __typename?: 'SelectedProfileType', firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string };
+export type FullSelectedProfileFragment = { firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string };
 
-export type FullLimitedProfileFragment = { __typename?: 'LimitedProfileType', firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string };
+export type FullLimitedProfileFragment = { firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string };
 
-export type FullProfileFieldSelectorFragment = { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean };
+export type FullProfileFieldSelectorFragment = { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean };
 
-export type ProgramDimensionBadgeFragment = { __typename?: 'ProgramDimensionValueType', dimension: { __typename?: 'FullDimensionType', slug: string, title?: string | null }, value: { __typename?: 'DimensionValueType', slug: string, title?: string | null, color: string } };
+export type ProgramDimensionBadgeFragment = { dimension: { slug: string, title: string | null }, value: { slug: string, title: string | null, color: string } };
 
-export type ReportFragment = { __typename?: 'ReportType', slug: string, title: string, footer: string, rows: Array<Array<unknown | null>>, totalRow?: Array<unknown | null> | null, columns: Array<{ __typename?: 'ColumnType', slug: string, title: string, type: TypeOfColumn }> };
+export type ReportFragment = { slug: string, title: string, footer: string, rows: Array<Array<unknown>>, totalRow: Array<unknown> | null, columns: Array<{ slug: string, title: string, type: TypeOfColumn }> };
 
-export type ResponseRevisionFragment = { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null };
+export type ResponseRevisionFragment = { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null };
 
-export type ResponseHistoryBannerFragment = { __typename?: 'FullResponseType', id: string, originalCreatedAt: string, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> };
+export type ResponseHistoryBannerFragment = { id: string, originalCreatedAt: string, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> };
 
-export type ProfileResponseHistoryBannerFragment = { __typename?: 'ProfileResponseType', id: string, originalCreatedAt: string, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> };
+export type ProfileResponseHistoryBannerFragment = { id: string, originalCreatedAt: string, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> };
 
-export type ResponseHistorySidebarFragment = { __typename?: 'FullResponseType', id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, originalCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy?: { __typename?: 'SelectedProfileType', fullName: string } | null, form: { __typename?: 'FormType', survey: { __typename?: 'FullSurveyType', profileFieldSelector: { __typename?: 'ProfileFieldSelectorType', firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, supersededBy?: { __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null } | null, oldVersions: Array<{ __typename?: 'LimitedResponseType', id: string, revisionCreatedAt: string, revisionCreatedBy?: { __typename?: 'SelectedProfileType', displayName: string } | null }> };
+export type ResponseHistorySidebarFragment = { id: string, originalCreatedAt: string, revisionCreatedAt: string, language: string, originalCreatedBy: { fullName: string, firstName: string, lastName: string, nick: string, email: string, phoneNumber: string, discordHandle: string } | null, revisionCreatedBy: { fullName: string } | null, form: { survey: { profileFieldSelector: { firstName: boolean, lastName: boolean, nick: boolean, email: boolean, phoneNumber: boolean, discordHandle: boolean } } }, supersededBy: { id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null } | null, oldVersions: Array<{ id: string, revisionCreatedAt: string, revisionCreatedBy: { displayName: string } | null }> };
 
 export const TransferConsentFormRegistryFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"TransferConsentFormRegistry"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedRegistryType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"organization"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]},{"kind":"Field","name":{"kind":"Name","value":"policyUrl"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"lang"},"value":{"kind":"Variable","name":{"kind":"Name","value":"locale"}}}]}]}}]} as unknown as DocumentNode<TransferConsentFormRegistryFragment, unknown>;
-export const AdminOrderPaymentStampFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderPaymentStamp"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedPaymentStampType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]} as unknown as DocumentNode<AdminOrderPaymentStampFragment, unknown>;
+export const AdminOrderPaymentStampFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderPaymentStamp"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedPaymentStampType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}}]} as unknown as DocumentNode<AdminOrderPaymentStampFragment, unknown>;
 export const AdminOrderReceiptFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderReceipt"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedReceiptType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<AdminOrderReceiptFragment, unknown>;
 export const AdminOrderCodeFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderCode"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedCodeType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"literateCode"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"usedOn"}},{"kind":"Field","name":{"kind":"Name","value":"productText"}}]}}]} as unknown as DocumentNode<AdminOrderCodeFragment, unknown>;
 export const NewOrderProductFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NewOrderProduct"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"vatPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"isAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"availableFrom"}},{"kind":"Field","name":{"kind":"Name","value":"availableUntil"}},{"kind":"Field","name":{"kind":"Name","value":"countPaid"}},{"kind":"Field","name":{"kind":"Name","value":"countReserved"}},{"kind":"Field","name":{"kind":"Name","value":"countAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"maxPerOrder"}}]}}]} as unknown as DocumentNode<NewOrderProductFragment, unknown>;
@@ -4763,7 +1987,7 @@ export const ResendOrderConfirmationDocument = {"kind":"Document","definitions":
 export const UpdateOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"UpdateOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updateOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<UpdateOrderMutation, UpdateOrderMutationVariables>;
 export const CancelAndRefundOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"CancelAndRefundOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CancelAndRefundOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"cancelAndRefundOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<CancelAndRefundOrderMutation, CancelAndRefundOrderMutationVariables>;
 export const MarkOrderAsPaidDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"MarkOrderAsPaid"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MarkOrderAsPaidInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"markOrderAsPaid"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<MarkOrderAsPaidMutation, MarkOrderAsPaidMutationVariables>;
-export const AdminOrderDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AdminOrderDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"formattedOrderNumber"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"eticketsLink"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"canRefund"}},{"kind":"Field","name":{"kind":"Name","value":"canRefundManually"}},{"kind":"Field","name":{"kind":"Name","value":"canMarkAsPaid"}},{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"vatPercentage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"paymentStamps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderPaymentStamp"}}]}},{"kind":"Field","name":{"kind":"Name","value":"receipts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderReceipt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"codes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderCode"}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderPaymentStamp"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedPaymentStampType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderReceipt"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedReceiptType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderCode"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedCodeType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"literateCode"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"usedOn"}},{"kind":"Field","name":{"kind":"Name","value":"productText"}}]}}]} as unknown as DocumentNode<AdminOrderDetailQuery, AdminOrderDetailQueryVariables>;
+export const AdminOrderDetailDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AdminOrderDetail"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"orderId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"orderId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"formattedOrderNumber"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"eticketsLink"}},{"kind":"Field","name":{"kind":"Name","value":"firstName"}},{"kind":"Field","name":{"kind":"Name","value":"lastName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"phone"}},{"kind":"Field","name":{"kind":"Name","value":"canRefund"}},{"kind":"Field","name":{"kind":"Name","value":"canRefundManually"}},{"kind":"Field","name":{"kind":"Name","value":"canMarkAsPaid"}},{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"vatPercentage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"paymentStamps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderPaymentStamp"}}]}},{"kind":"Field","name":{"kind":"Name","value":"receipts"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderReceipt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"codes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"AdminOrderCode"}}]}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderPaymentStamp"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedPaymentStampType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"__typename"}},{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"data"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderReceipt"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedReceiptType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"correlationId"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"AdminOrderCode"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"LimitedCodeType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"literateCode"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"usedOn"}},{"kind":"Field","name":{"kind":"Name","value":"productText"}}]}}]} as unknown as DocumentNode<AdminOrderDetailQuery, AdminOrderDetailQueryVariables>;
 export const AdminCreateOrderDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"AdminCreateOrder"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateOrderInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"createOrder"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"order"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"slug"}}]}},{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]} as unknown as DocumentNode<AdminCreateOrderMutation, AdminCreateOrderMutationVariables>;
 export const NewOrderPageDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"NewOrderPage"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"NewOrderProduct"}}]}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"NewOrderProduct"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"vatPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"isAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"availableFrom"}},{"kind":"Field","name":{"kind":"Name","value":"availableUntil"}},{"kind":"Field","name":{"kind":"Name","value":"countPaid"}},{"kind":"Field","name":{"kind":"Name","value":"countReserved"}},{"kind":"Field","name":{"kind":"Name","value":"countAvailable"}},{"kind":"Field","name":{"kind":"Name","value":"maxPerOrder"}}]}}]} as unknown as DocumentNode<NewOrderPageQuery, NewOrderPageQueryVariables>;
 export const AdminOrderListWithOrdersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"AdminOrderListWithOrders"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filters"}},"type":{"kind":"ListType","type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"DimensionFilterInput"}}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"returnNone"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Boolean"}},"defaultValue":{"kind":"BooleanValue","value":false}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"event"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"slug"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventSlug"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"slug"}},{"kind":"Field","name":{"kind":"Name","value":"tickets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ProductChoice"}}]}},{"kind":"Field","name":{"kind":"Name","value":"orders"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filters"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filters"}}},{"kind":"Argument","name":{"kind":"Name","value":"search"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}},{"kind":"Argument","name":{"kind":"Name","value":"returnNone"},"value":{"kind":"Variable","name":{"kind":"Name","value":"returnNone"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"OrderList"}}]}},{"kind":"Field","name":{"kind":"Name","value":"countTotalOrders"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ProductChoice"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullProductType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"OrderList"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"FullOrderType"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"formattedOrderNumber"}},{"kind":"Field","name":{"kind":"Name","value":"displayName"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"totalPrice"}},{"kind":"Field","name":{"kind":"Name","value":"status"}}]}}]} as unknown as DocumentNode<AdminOrderListWithOrdersQuery, AdminOrderListWithOrdersQueryVariables>;

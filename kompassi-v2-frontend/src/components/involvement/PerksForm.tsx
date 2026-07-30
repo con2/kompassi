@@ -56,7 +56,7 @@ function initialDimensionValue(
   cachedDimensions: Record<string, string[]>,
 ): PerkValue {
   const values = cachedDimensions[dimension.slug] ?? [];
-  return dimension.isMultiValue ? values : values[0] ?? "";
+  return dimension.isMultiValue ? values : (values[0] ?? "");
 }
 
 function initialAnnotationValue(

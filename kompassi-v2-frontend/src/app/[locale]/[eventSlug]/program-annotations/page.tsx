@@ -14,7 +14,6 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { mangleAnnotationSlug } from "@/components/annotations/models";
 import { Column, DataTable } from "@/components/DataTable";
-import { buildDimensionFilters } from "@/components/dimensions/helpers";
 import SignInRequired from "@/components/errors/SignInRequired";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
@@ -69,7 +68,6 @@ interface Props {
 export const revalidate = 0;
 
 export async function generateMetadata(props: Props) {
-  const searchParams = await props.searchParams;
   const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
@@ -79,10 +77,9 @@ export async function generateMetadata(props: Props) {
     return translations.SignInRequired.metadata;
   }
 
-  const filters = buildDimensionFilters(searchParams);
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, locale, filters },
+    variables: { eventSlug, locale },
   });
   const title = getPageTitle({
     translations,

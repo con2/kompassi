@@ -74,7 +74,10 @@ export default async function ProfileMessagesPage(props: Props) {
   const eventChoicesBySlug = new Map(
     allMessages.map((message) => [
       message.event.slug,
-      { slug: message.event.slug, title: message.event.name },
+      {
+        slug: message.event.slug,
+        title: message.event.name,
+      },
     ]),
   );
   const eventFilter = {

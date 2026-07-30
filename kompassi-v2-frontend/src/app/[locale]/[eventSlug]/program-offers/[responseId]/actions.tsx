@@ -28,16 +28,12 @@ export async function acceptProgramOffer(
     formData: Object.fromEntries(formData.entries()),
   };
 
-  const { data, errors } = await getClient().mutate({
+  const { data } = await getClient().mutate({
     mutation,
     variables: {
       input,
     },
   });
-
-  if (errors) {
-    throw new Error(errors[0].message);
-  }
 
   const program = data?.acceptProgramOffer?.program;
   if (!program) {
@@ -69,16 +65,12 @@ export async function cancelProgramOffer(
     resolution: formData.get("resolution") as ProgramOfferResolution,
   };
 
-  const { data, errors } = await getClient().mutate({
+  const { data } = await getClient().mutate({
     mutation: cancelProgramOfferMutation,
     variables: {
       input,
     },
   });
-
-  if (errors) {
-    throw new Error(errors[0].message);
-  }
 
   const cancelledResponseId = data?.cancelProgramOffer?.responseId;
   if (!cancelledResponseId) {

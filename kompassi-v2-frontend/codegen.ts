@@ -17,8 +17,10 @@ const config: CodegenConfig = {
   },
   ignoreNoDocuments: true,
   config: {
+    enumType: "enum",
     scalars: {
       DateTime: "string",
+      Decimal: "string",
       GenericScalar: "unknown",
       JSONString: "string",
       UUID: "string",

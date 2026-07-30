@@ -60,7 +60,6 @@ export async function createMessageReplyTo(
     variables: {
       input: {
         eventSlug,
-        slug: String(formData.get("slug") ?? ""),
         name: String(formData.get("name") ?? ""),
         email: String(formData.get("email") ?? ""),
       },

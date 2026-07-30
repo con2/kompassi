@@ -64,10 +64,8 @@ export default function NavigationMenus({ session, locale, messages }: Props) {
         {Object.entries(supportedLanguages).map(([code, name]) => (
           <NavDropdown.Item
             key={code}
-            as={Link}
             href={`/${code}${pathname}`}
             active={code === locale}
-            prefetch={false}
           >
             {name}
           </NavDropdown.Item>

@@ -42,17 +42,12 @@ export async function adminCreateOrder(
   let orderId = "";
 
   try {
-    const { data, errors } = await getClient().mutate({
+    const { data } = await getClient().mutate({
       mutation,
       variables: { input },
     });
 
-    if (errors) {
-      console.error("GraphQL errors while creating order", { errors });
-      return void redirect(
-        `/${eventSlug}/orders-admin?error=failedToCreateOrder`,
-      );
-    } else if (!data?.createOrder?.order?.id) {
+    if (!data?.createOrder?.order?.id) {
       console.error("No order id in GraphQL response", {
         input,
         data,

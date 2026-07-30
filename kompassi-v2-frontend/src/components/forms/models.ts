@@ -61,11 +61,7 @@ export const nonValueFieldTypes: FieldType[] = [
 ];
 
 export type HtmlType =
-  | "text"
-  | "email"
-  | "password"
-  | "datetime-local"
-  | "number";
+  "text" | "email" | "password" | "datetime-local" | "number";
 
 interface BaseField {
   type: FieldType;
@@ -297,11 +293,7 @@ export function validateFields(fields: unknown): asserts fields is Field[] {
 }
 
 export type FieldSummaryType =
-  | "Text"
-  | "SingleCheckbox"
-  | "Select"
-  | "Matrix"
-  | "FileUpload";
+  "Text" | "SingleCheckbox" | "Select" | "Matrix" | "FileUpload";
 
 // NOTE: Keep in sync with backend/forms/utils/summarize_responses.py
 export interface BaseFieldSummary {
