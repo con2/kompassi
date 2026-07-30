@@ -197,6 +197,9 @@ const translations: Translations = {
       checked: "Valittu",
       unchecked: "Ei valittu",
     },
+    markdownEditor: {
+      insertHeadingLabel: "Lisää otsikko",
+    },
   },
   MainView: {
     defaultErrorMessage:

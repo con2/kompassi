@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { graphql } from "@/__generated__";
 import { MessageDispatch } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
+import parseRecipientFilters from "../parseRecipientFilters";
 
 const updateMessageMutation = graphql(`
   mutation UpdateMessage($input: UpdateMessageInput!) {
@@ -22,11 +23,9 @@ export async function updateMessage(
   messageId: string,
   formData: FormData,
 ) {
-  const recipientFiltersRaw = formData.get("recipientFilters");
-  const recipientFilters =
-    typeof recipientFiltersRaw === "string" && recipientFiltersRaw
-      ? JSON.parse(recipientFiltersRaw)
-      : [];
+  const recipientFilters = parseRecipientFilters(
+    formData.get("recipientFilters"),
+  );
 
   const replyToIdRaw = formData.get("replyToId");
   const replyToId =

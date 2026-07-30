@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
             name="MessageBody",
             fields=[
                 ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("digest", models.CharField(db_index=True, max_length=128)),
+                ("digest", models.CharField(max_length=128, unique=True)),
                 ("text", models.TextField()),
             ],
         ),

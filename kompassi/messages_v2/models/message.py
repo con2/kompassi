@@ -15,7 +15,7 @@ from kompassi.dimensions.models.universe import Universe
 from kompassi.tickets_v2.optimized_server.utils.uuid7 import uuid7, uuid7_to_datetime
 
 from .enums import MessageApp, MessageDispatch, MessageState
-from .recipient_filters import validate_recipient_filters
+from .recipient_filters import group_to_dimension_filters, validate_recipient_filters
 
 if TYPE_CHECKING:
     from kompassi.core.models.event import Event
@@ -117,21 +117,23 @@ class Message(models.Model):
 
     def resolve_involvements(self) -> models.QuerySet[Involvement]:
         """
-        Involvements matching any of the OR-of-AND recipient filter groups.
+        Involvements matching any of the OR-of-AND recipient filter groups, resolved as a
+        single OR'd query (no intermediate id set / IN clause).
         """
-        from kompassi.involvement.models.involvement import Involvement
-
         base = self.universe.all_involvements.all()
 
         if not self.recipient_filters:
             return base.none()
 
-        involvement_ids: set[int] = set()
+        combined: models.QuerySet[Involvement] | None = None
         for group in self.recipient_filters:
-            filters = {item["dimension"]: item.get("values") or ["*"] for item in group}
-            involvement_ids.update(DimensionFilters(filters=filters).filter(base).values_list("id", flat=True))
+            group_qs = DimensionFilters(filters=group_to_dimension_filters(group)).filter(base)
+            combined = group_qs if combined is None else combined | group_qs
 
-        return Involvement.objects.filter(id__in=involvement_ids)
+        if combined is None:
+            return base.none()
+
+        return combined.distinct()
 
     def resolve_recipient_count(self) -> int:
         involvements = self.resolve_involvements()
@@ -141,9 +143,21 @@ class Message(models.Model):
 
         return involvements.values("person_id").distinct().count()
 
+    def validate_sendable(self):
+        """
+        A message may be saved as a draft with empty recipient filters, but it must not
+        be *sent* with them: an empty filter set (no groups) matches nobody, and an empty
+        AND-group matches every involvement in the universe (all types, active or not).
+        Both are almost certainly mistakes, so refuse rather than mass-mail or no-op.
+        """
+        if not self.recipient_filters or any(not group for group in self.recipient_filters):
+            raise ValueError("Cannot send a message with empty recipient filters")
+
     @transaction.atomic
     def send(self):
         from ..tasks import send_message
+
+        self.validate_sendable()
 
         if self.sent_at is None:
             self.sent_at = now()

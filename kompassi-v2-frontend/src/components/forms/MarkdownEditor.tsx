@@ -17,30 +17,33 @@ interface MarkdownEditorProps {
   required?: boolean;
   readOnly?: boolean;
   rows?: number;
+  insertHeadingLabel: string;
 }
 
 // Keep the toolbar limited to the formatting we actually allow through the backend
 // sanitizer and document in the field's help text: headings, bold, italics, lists,
 // links. In particular, only offer h1-h4 (not h5/h6, which nh3 would strip), and omit
 // strikethrough, quote, code, tables, images, and horizontal rules entirely.
-const toolbarCommands = [
-  commands.group(
-    [commands.title1, commands.title2, commands.title3, commands.title4],
-    {
-      name: "title",
-      groupName: "title",
-      buttonProps: { "aria-label": "Insert heading" },
-      icon: commands.title.icon,
-    },
-  ),
-  commands.bold,
-  commands.italic,
-  commands.divider,
-  commands.unorderedListCommand,
-  commands.orderedListCommand,
-  commands.divider,
-  commands.link,
-];
+function buildToolbarCommands(insertHeadingLabel: string) {
+  return [
+    commands.group(
+      [commands.title1, commands.title2, commands.title3, commands.title4],
+      {
+        name: "title",
+        groupName: "title",
+        buttonProps: { "aria-label": insertHeadingLabel },
+        icon: commands.title.icon,
+      },
+    ),
+    commands.bold,
+    commands.italic,
+    commands.divider,
+    commands.unorderedListCommand,
+    commands.orderedListCommand,
+    commands.divider,
+    commands.link,
+  ];
+}
 
 /// A Markdown editor with a toolbar and preview restricted to the formatting the
 /// backend renders/sanitizes, backed by a hidden input so it participates in normal
@@ -52,6 +55,7 @@ export default function MarkdownEditor({
   required,
   readOnly,
   rows = 10,
+  insertHeadingLabel,
 }: MarkdownEditorProps) {
   const [value, setValue] = useState(defaultValue);
   // The toolbar (~40px) sits above the text area within `height`, so the text area's
@@ -79,7 +83,7 @@ export default function MarkdownEditor({
         // preview pane) do size to `height` correctly.
         minHeight={contentHeight}
         textareaProps={{ readOnly }}
-        commands={toolbarCommands}
+        commands={buildToolbarCommands(insertHeadingLabel)}
       />
     </div>
   );
