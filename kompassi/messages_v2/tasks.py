@@ -74,7 +74,15 @@ def send_message(message_id: str, involvement_ids: list[int] | None = None):
             reply_to=[reply_to_email] if reply_to_email else None,
         )
         email.attach_alternative(render_email_html(body_html, event=event, subject=subject), "text/html")
-        email.send(fail_silently=True)
+
+        # Only record a MessageRecipient (which doubles as the idempotency guard) once the
+        # send actually succeeds - otherwise a transient failure would permanently mark
+        # the person as sent-to and they'd never be retried on a subsequent (re-)send.
+        try:
+            email.send(fail_silently=False)
+        except Exception:
+            logger.exception("Failed to send message %s to %s", message.id, person.email)
+            continue
 
         MessageRecipient.objects.create(
             message=message,
@@ -103,6 +111,7 @@ def send_matching_messages(involvement_id: int):
     from .models.enums import MessageState
     from .models.message import Message
     from .models.message_recipient import MessageRecipient
+    from .models.recipient_filters import group_to_dimension_filters
 
     try:
         involvement = Involvement.objects.get(id=involvement_id)
@@ -131,7 +140,7 @@ def send_matching_messages(involvement_id: int):
 
         matches = False
         for group in message.recipient_filters:
-            filters = {item["dimension"]: item.get("values") or ["*"] for item in group}
+            filters = group_to_dimension_filters(group)
             if DimensionFilters(filters=filters).filter(Involvement.objects.filter(id=involvement.id)).exists():
                 matches = True
                 break

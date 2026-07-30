@@ -1,4 +1,5 @@
 import graphene
+from django.core.validators import validate_email
 from django.db import transaction
 
 from kompassi.access.cbac import graphql_check_model
@@ -29,6 +30,8 @@ class CreateMessageReplyTo(graphene.Mutation):
         graphql_check_model(
             Involvement, event.scope, info, app="program_v2", field="message_reply_to", operation="create"
         )
+
+        validate_email(input.email)
 
         reply_to = MessageReplyTo.objects.create(
             universe=event.involvement_universe,

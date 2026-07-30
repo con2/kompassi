@@ -94,6 +94,7 @@ function SchemaFormInput({
           required={required}
           readOnly={readOnly}
           rows={field.rows ?? defaultRows}
+          insertHeadingLabel={t.markdownEditor.insertHeadingLabel}
         />
       );
     case "NumberField":

@@ -190,6 +190,9 @@ const translations = {
       checked: "Checked",
       unchecked: "Not checked",
     },
+    markdownEditor: {
+      insertHeadingLabel: "Insert heading",
+    },
   },
   MainView: {
     defaultErrorMessage:

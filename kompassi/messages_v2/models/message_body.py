@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-import logging
 from hashlib import blake2b
 
 from django.db import models
-
-logger = logging.getLogger(__name__)
 
 
 class MessageBody(models.Model):
@@ -16,7 +13,7 @@ class MessageBody(models.Model):
     does not vary per recipient).
     """
 
-    digest = models.CharField(max_length=128, db_index=True)
+    digest = models.CharField(max_length=128, unique=True)
     text = models.TextField()
 
     id: int
@@ -24,10 +21,7 @@ class MessageBody(models.Model):
 
     @classmethod
     def get_or_create(cls, text: str) -> tuple[MessageBody, bool]:
+        # The unique constraint on `digest` makes get_or_create atomic under concurrent
+        # sends (it retries the get on IntegrityError), so no dedup race handling needed.
         digest = blake2b(text.encode("utf-8")).hexdigest()
-
-        try:
-            return cls.objects.get_or_create(digest=digest, defaults=dict(text=text))
-        except cls.MultipleObjectsReturned:
-            logger.warning("Multiple MessageBody returned for digest %s", digest)
-            return cls.objects.filter(digest=digest, text=text).first(), False  # type: ignore
+        return cls.objects.get_or_create(digest=digest, defaults=dict(text=text))

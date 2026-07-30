@@ -783,8 +783,24 @@ class Involvement(models.Model):
         dimensions/is_active change, check active Messages of this event for a newly
         matching recipient and send to them incrementally. Dispatched async so as not
         to slow down the request path that got us here.
+
+        As this runs on every involvement change across all events and apps, skip the
+        task dispatch entirely unless this universe actually has a sendable (active)
+        message - the common case being none.
         """
+        from django.db.models import Q
+        from django.utils.timezone import now
+
+        from kompassi.messages_v2.models.message import Message
         from kompassi.messages_v2.tasks import send_matching_messages
+
+        has_active_message = (
+            Message.objects.filter(universe_id=self.universe_id, sent_at__isnull=False)
+            .filter(Q(expired_at__isnull=True) | Q(expired_at__gt=now()))
+            .exists()
+        )
+        if not has_active_message:
+            return
 
         send_matching_messages.delay(self.id)
 

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Translators: Kirsi Västi, Calle Tengman, Luka Pajukanta, Claude Sonnet 4.6
 
-import { ReactNode, JSX } from "react";
+import { ComponentType, ReactNode, JSX } from "react";
 import en, { Translations } from "./en";
 
 /// Mark untranslated English strings with this
@@ -186,6 +186,9 @@ const translations: Translations = {
     checkbox: {
       checked: "Valt",
       unchecked: "Icke valt",
+    },
+    markdownEditor: {
+      insertHeadingLabel: "Infoga rubrik",
     },
   },
   MainView: {
@@ -2047,7 +2050,25 @@ const translations: Translations = {
       },
       profile: {
         title: "Meddelanden",
-        description: UNTRANSLATED(en.Program.Message.profile.description),
+        description: (
+          VolunteerMessagesLink: ComponentType<{
+            children: ReactNode;
+          }>,
+        ) => (
+          <>
+            <p>
+              När du arrangerar program på ett evenemang och evenemangets
+              programansvariga skickar meddelanden till dig, hittar du dem här.
+            </p>
+            <p>
+              När du gör frivilligarbete på ett evenemang och frivilligansvariga
+              skickar meddelanden till dig, hittar du dem tills vidare i{" "}
+              <VolunteerMessagesLink>Meddelanden V1</VolunteerMessagesLink>.
+              Frivilligupplevelsen håller på att migreras till Kompassi V2, så i
+              framtiden hittas alla meddelanden här.
+            </p>
+          </>
+        ),
         noSubject: "(inget ämne)",
         attributes: {
           sentAt: "Datum",

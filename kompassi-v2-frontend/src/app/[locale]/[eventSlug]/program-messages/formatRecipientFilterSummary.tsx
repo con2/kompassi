@@ -6,7 +6,8 @@ interface FilterItem {
 }
 
 /// Renders recipientFilters (OR of AND-groups) as a short human-readable summary,
-/// eg. "(Type: Program host, State: Active) OR (Type: Program offer)".
+/// eg. "(Type: Program host, State: Active) / (Type: Program offer)". Groups are joined
+/// with a language-neutral "/" so the summary needs no per-locale wording.
 export default function formatRecipientFilterSummary(
   groups: FilterItem[][],
   dimensions: DimensionValueSelectFragment[],
@@ -30,5 +31,5 @@ export default function formatRecipientFilterSummary(
     return `(${itemSummaries.join(", ")})`;
   });
 
-  return groupSummaries.join(" OR ");
+  return groupSummaries.join(" / ");
 }
