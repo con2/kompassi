@@ -17,8 +17,9 @@ const nextConfig: NextConfig = {
   sassOptions: {
     // bootstrap
     silenceDeprecations: [
-      "legacy-js-api",
       "import",
+      "if-function",
+      "legacy-js-api",
       "global-builtin",
       "color-functions",
     ],
