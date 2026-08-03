@@ -2,9 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: kompassi-backup
-  annotations: !Merge
-    - !Var base_ingress_annotations
-    - nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  annotations: !Var base_ingress_annotations
 spec:
   ingressClassName: !Var ingress_class_name
   tls:

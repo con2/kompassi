@@ -298,21 +298,27 @@ kompassi_volumes:
       name: kompassi-media
       emptyDir: {}
 
-base_ingress_annotations:
-  nginx.ingress.kubernetes.io/proxy-body-size: "100m"
-  nginx.org/client-max-body-size: "100m"
-  nginx.ingress.kubernetes.io/proxy-send-timeout: !Format "{kompassi_timeout_seconds}"
-  nginx.ingress.kubernetes.io/proxy-read-timeout: !Format "{kompassi_timeout_seconds}"
-  nginx.ingress.kubernetes.io/enable-access-log: "false"
+# The https-redirect middleware must only be attached where TLS is actually configured
+# (not local/dev without letsencrypt) - see traefik-middlewares.yaml for why this is a
+# per-app opt-in Middleware rather than a global entrypoint redirect (ACME HTTP-01 safety).
+traefik_middlewares_no_tls: default-body-100m@kubernetescrd
+traefik_middlewares_with_tls: default-https-redirect@kubernetescrd,default-body-100m@kubernetescrd
 
-# Default annotations work for nginx ingress with or without LetsEncrypt TLS. Override if you need something else.
+# kompassi-backup always has TLS (self-signed, manually managed), so it always wants the
+# "with TLS" middleware chain regardless of ingress_letsencrypt_enabled.
+base_ingress_annotations:
+  traefik.ingress.kubernetes.io/router.middlewares: !Var traefik_middlewares_with_tls
+
+# Default annotations work for Traefik ingress with or without LetsEncrypt TLS. Override if you need something else.
 ingress_annotations: !Merge
-  - !Var base_ingress_annotations
+  - traefik.ingress.kubernetes.io/router.middlewares: !If
+      test: !Var ingress_letsencrypt_enabled
+      then: !Var traefik_middlewares_with_tls
+      else: !Var traefik_middlewares_no_tls
   - !If
     test: !Var ingress_letsencrypt_enabled
     then:
       cert-manager.io/cluster-issuer: letsencrypt-prod
-      nginx.ingress.kubernetes.io/ssl-redirect: "true"
 
 ingress_tls: !If
   test: !Var ingress_letsencrypt_enabled

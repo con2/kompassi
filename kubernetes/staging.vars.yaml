@@ -1,6 +1,8 @@
 ingress_public_hostnames:
   - dev.kompassi.eu
 
+ingress_class_name: traefik
+
 postgres_managed: false
 postgres_hostname: siilo.tracon.fi
 postgres_database: kompassidev
