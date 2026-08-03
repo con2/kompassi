@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: bin
-          key: ${{ runner.os }}-bin-2
+          key: ${{ runner.os }}-bin-3
       - if: steps.cache-bin.outputs.cache-hit != 'true'
         run: |
           mkdir bin
@@ -81,7 +81,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: bin
-          key: ${{ runner.os }}-bin-2
+          key: ${{ runner.os }}-bin-3
       - if: steps.cache-bin.outputs.cache-hit != 'true'
         run: |
           mkdir bin
@@ -119,7 +119,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: bin
-          key: ${{ runner.os }}-bin-2
+          key: ${{ runner.os }}-bin-3
       - if: steps.cache-bin.outputs.cache-hit != 'true'
         run: |
           mkdir bin
