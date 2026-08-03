@@ -77,13 +77,7 @@ kompassi_uvicorn_enabled: true
 ingress_letsencrypt_enabled: false
 ingress_letsencrypt_cluster_issuer: letsencrypt-prod
 
-ingress_class_name: nginx
-# During the cluster-wide ingress-nginx -> Traefik migration, environments move to
-# Traefik one at a time (see infrastructure repo migration notes). This flag - not a
-# comparison against ingress_class_name - picks which annotation style base_ingress_annotations
-# and ingress_annotations below emit, so environments still on nginx keep their real
-# nginx-specific annotations (proxy-body-size, ssl-redirect, timeouts) working correctly.
-ingress_is_traefik: false
+ingress_class_name: traefik
 
 redis_managed: true
 redis_image: redis
@@ -304,54 +298,28 @@ kompassi_volumes:
       name: kompassi-media
       emptyDir: {}
 
-# nginx-style annotations, used while ingress_is_traefik is false (still the case for
-# production - see production.vars.yaml). Kept exactly as before so nginx's real,
-# understood annotations keep working: nginx ignores unknown annotations silently, so if
-# these were replaced by Traefik middleware refs while still on the nginx ingress class,
-# nginx would silently fall back to its own defaults (e.g. 1m body size, no redirect).
-nginx_ingress_annotations:
-  nginx.ingress.kubernetes.io/proxy-body-size: "100m"
-  nginx.org/client-max-body-size: "100m"
-  nginx.ingress.kubernetes.io/proxy-send-timeout: !Format "{kompassi_timeout_seconds}"
-  nginx.ingress.kubernetes.io/proxy-read-timeout: !Format "{kompassi_timeout_seconds}"
-  nginx.ingress.kubernetes.io/enable-access-log: "false"
-
-# Traefik middleware chain, used while ingress_is_traefik is true. The https-redirect
-# middleware must only be attached where TLS is actually configured (not local/dev
-# without letsencrypt) - see traefik-middlewares.yaml for why this is a per-app opt-in
-# Middleware rather than a global entrypoint redirect (ACME HTTP-01 safety).
+# Traefik middleware chain. The https-redirect middleware must only be attached where
+# TLS is actually configured (not local/dev without letsencrypt) - see
+# traefik-middlewares.yaml for why this is a per-app opt-in Middleware rather than a
+# global entrypoint redirect (ACME HTTP-01 safety).
 traefik_middlewares_no_tls: default-body-100m@kubernetescrd
 traefik_middlewares_with_tls: default-https-redirect@kubernetescrd,default-body-100m@kubernetescrd
 
 # kompassi-backup always has TLS (self-signed, manually managed), so it always wants the
 # "with TLS" annotations regardless of ingress_letsencrypt_enabled.
-base_ingress_annotations: !If
-  test: !Var ingress_is_traefik
-  then:
-    traefik.ingress.kubernetes.io/router.middlewares: !Var traefik_middlewares_with_tls
-  else: !Merge
-    - !Var nginx_ingress_annotations
-    - nginx.ingress.kubernetes.io/ssl-redirect: "true"
+base_ingress_annotations:
+  traefik.ingress.kubernetes.io/router.middlewares: !Var traefik_middlewares_with_tls
 
 # Default annotations work with or without LetsEncrypt TLS. Override if you need something else.
-ingress_annotations: !If
-  test: !Var ingress_is_traefik
-  then: !Merge
-    - traefik.ingress.kubernetes.io/router.middlewares: !If
-        test: !Var ingress_letsencrypt_enabled
-        then: !Var traefik_middlewares_with_tls
-        else: !Var traefik_middlewares_no_tls
-    - !If
+ingress_annotations: !Merge
+  - traefik.ingress.kubernetes.io/router.middlewares: !If
       test: !Var ingress_letsencrypt_enabled
-      then:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-  else: !Merge
-    - !Var nginx_ingress_annotations
-    - !If
-      test: !Var ingress_letsencrypt_enabled
-      then:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
-        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      then: !Var traefik_middlewares_with_tls
+      else: !Var traefik_middlewares_no_tls
+  - !If
+    test: !Var ingress_letsencrypt_enabled
+    then:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
 
 ingress_tls: !If
   test: !Var ingress_letsencrypt_enabled

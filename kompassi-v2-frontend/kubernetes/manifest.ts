@@ -7,10 +7,6 @@ interface Environment {
   tlsEnabled: boolean;
   ticketsApiUrl: string;
   livenessProbeEnabled: boolean;
-  // During the cluster-wide ingress-nginx -> Traefik migration, environments move to
-  // Traefik one at a time - see infrastructure repo migration notes. staging
-  // (v2.dev.kompassi.eu) is the canary; production stays on nginx for now.
-  ingressClassName: "nginx" | "traefik";
 }
 
 type EnvironmentName = "dev" | "staging" | "production";
@@ -25,7 +21,6 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     // as an optimization, access the tickets API directly without going through the ingress
     ticketsApiUrl: "http://uvicorn.default.svc.cluster.local:7998",
     livenessProbeEnabled: true,
-    ingressClassName: "nginx",
   },
   staging: {
     hostname: "v2.dev.kompassi.eu",
@@ -34,7 +29,6 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     tlsEnabled: true,
     ticketsApiUrl: "http://uvicorn.kompassi-staging.svc.cluster.local:7998",
     livenessProbeEnabled: true,
-    ingressClassName: "traefik",
   },
   production: {
     hostname: "v2.kompassi.eu",
@@ -43,7 +37,6 @@ const environmentConfigurations: Record<EnvironmentName, Environment> = {
     tlsEnabled: true,
     ticketsApiUrl: "http://uvicorn.kompassi-production.svc.cluster.local:7998",
     livenessProbeEnabled: false, // TODO re-enable after Hunger Games
-    ingressClassName: "nginx",
   },
 };
 
@@ -64,6 +57,7 @@ const nodeServiceName = "node";
 const clusterIssuer = "letsencrypt-prod";
 const tlsSecretName = "ingress-letsencrypt";
 const port = 3000;
+const ingressClassName = "traefik";
 
 const {
   hostname,
@@ -72,7 +66,6 @@ const {
   tlsEnabled,
   ticketsApiUrl,
   livenessProbeEnabled,
-  ingressClassName,
 } = environmentConfiguration;
 
 const ingressProtocol = tlsEnabled ? "https" : "http";
@@ -211,37 +204,18 @@ const tls = tlsEnabled
   ? [{ hosts: [hostname], secretName: tlsSecretName }]
   : [];
 
-// nginx-style annotations, used while ingressClassName is "nginx" (still the case for
-// production - see environmentConfigurations above).
-const nginxIngressAnnotations = {
-  "nginx.ingress.kubernetes.io/proxy-body-size": "100m",
-  "nginx.org/client-max-body-size": "100m",
-  "nginx.ingress.kubernetes.io/enable-access-log": "false",
-};
-
-// Traefik middleware chain, used while ingressClassName is "traefik". The https-redirect
-// middleware must only be attached where TLS is actually configured - see
-// infrastructure/kubernetes/traefik-middlewares.yaml for why this is a per-app opt-in
-// Middleware rather than a global entrypoint redirect (ACME HTTP-01 safety).
+// Traefik middleware chain. The https-redirect middleware must only be attached where
+// TLS is actually configured - see infrastructure/kubernetes/traefik-middlewares.yaml
+// for why this is a per-app opt-in Middleware rather than a global entrypoint redirect
+// (ACME HTTP-01 safety).
 const traefikMiddlewares = tlsEnabled
   ? "default-https-redirect@kubernetescrd,default-body-100m@kubernetescrd"
   : "default-body-100m@kubernetescrd";
 
-const ingressAnnotations =
-  ingressClassName === "traefik"
-    ? {
-        "traefik.ingress.kubernetes.io/router.middlewares": traefikMiddlewares,
-        ...(tlsEnabled
-          ? { "cert-manager.io/cluster-issuer": clusterIssuer }
-          : {}),
-      }
-    : tlsEnabled
-      ? {
-          "cert-manager.io/cluster-issuer": clusterIssuer,
-          "nginx.ingress.kubernetes.io/ssl-redirect": "true",
-          ...nginxIngressAnnotations,
-        }
-      : nginxIngressAnnotations;
+const ingressAnnotations = {
+  "traefik.ingress.kubernetes.io/router.middlewares": traefikMiddlewares,
+  ...(tlsEnabled ? { "cert-manager.io/cluster-issuer": clusterIssuer } : {}),
+};
 
 const ingress = {
   apiVersion: "networking.k8s.io/v1",
