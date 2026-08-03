@@ -24,16 +24,16 @@ jobs:
     env:
       SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - id: cache-bin
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: bin
           key: ${{ runner.os }}-bin-2
@@ -41,10 +41,10 @@ jobs:
         run: |
           mkdir bin
           curl -Lo bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          curl -Lo bin/kubectl https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
+          curl -Lo bin/kubectl https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
-      - uses: docker/setup-buildx-action@v3
+      - uses: docker/setup-buildx-action@v4
       - id: build
         name: skaffold build
         run: |
@@ -55,7 +55,7 @@ jobs:
           skaffold build --file-output build.json
         working-directory: kompassi-v2-frontend
       - name: Store build.json artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: build-json
           path: kompassi-v2-frontend/build.json
@@ -66,19 +66,19 @@ jobs:
     environment: Staging
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v5
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: build-json
           path: kompassi-v2-frontend/
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: kompassi-v2-frontend/package-lock.json
 
       - id: cache-bin
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: bin
           key: ${{ runner.os }}-bin-2
@@ -86,7 +86,7 @@ jobs:
         run: |
           mkdir bin
           curl -Lo bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          curl -Lo bin/kubectl https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
+          curl -Lo bin/kubectl https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
       - run: npm ci
@@ -104,19 +104,19 @@ jobs:
     environment: Production
     if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/download-artifact@v5
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
         with:
           name: build-json
           path: kompassi-v2-frontend/
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
           cache-dependency-path: kompassi-v2-frontend/package-lock.json
 
       - id: cache-bin
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: bin
           key: ${{ runner.os }}-bin-2
@@ -124,7 +124,7 @@ jobs:
         run: |
           mkdir bin
           curl -Lo bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          curl -Lo bin/kubectl https://dl.k8s.io/release/v1.22.0/bin/linux/amd64/kubectl
+          curl -Lo bin/kubectl https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
       - run: npm ci
