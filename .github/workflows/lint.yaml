@@ -25,7 +25,7 @@ jobs:
           python-version-file: ".python-version"
 
       - run: uv sync --locked
-      - uses: j178/prek-action@v3
+      - uses: j178/prek-action@v3.0.0
 
   eslint:
     runs-on: ubuntu-latest
