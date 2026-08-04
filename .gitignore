@@ -1,9 +1,5 @@
 .DS_Store
 
-# emrichen
-*.compiled.yaml
-*.local.yaml
-
 # OIDC RSA key for development
 *.key
 

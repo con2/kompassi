@@ -21,4 +21,4 @@ deploy:
   statusCheckDeadlineSeconds: 600
   kubectl:
     manifests:
-      - kubernetes/template.compiled.yaml
+      - kubernetes/*.json
