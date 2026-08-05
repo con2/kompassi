@@ -1,12 +1,14 @@
+import {
+  MarkdownEditor,
+  DateTimeInput,
+  UploadedFileCards,
+  PatternTextInput,
+} from "@con2/components";
+import { makeInputId } from "@con2/components/helpers";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
-import makeInputId from "./makeInputId";
-import MarkdownEditor from "./MarkdownEditor";
 import type { Choice, Field, SingleSelectPresentation } from "./models";
-import PatternTextInput from "./PatternTextInput";
 import { SchemaForm } from "./SchemaForm";
-import UploadedFileCards from "./UploadedFileCards";
-import DateTimeInput from "./DateTimeInput";
 import type { Translations } from "@/translations/en";
 import { Fragment } from "react";
 
@@ -94,7 +96,7 @@ function SchemaFormInput({
           required={required}
           readOnly={readOnly}
           rows={field.rows ?? defaultRows}
-          insertHeadingLabel={t.markdownEditor.insertHeadingLabel}
+          locale={locale}
         />
       );
     case "NumberField":
@@ -271,7 +273,7 @@ function SchemaFormInput({
       );
     case "FileUpload":
       if (readOnly) {
-        return <UploadedFileCards urls={value} messages={t} />;
+        return <UploadedFileCards urls={value} locale={locale} />;
       } else {
         // TODO what if readOnly or value but not both?
         return (
@@ -318,7 +320,6 @@ function SchemaFormInput({
           name={slug}
           defaultValue={value}
           locale={locale ?? "fi"}
-          messages={t}
           required={required}
           readOnly={readOnly}
           dateRange={field.dateRange}

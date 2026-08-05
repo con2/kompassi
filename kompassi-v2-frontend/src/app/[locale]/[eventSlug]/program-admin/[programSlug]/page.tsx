@@ -1,3 +1,4 @@
+import { SubmitButton, ModalButton } from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -16,8 +17,6 @@ import { ProgramItemResolution } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
-import ModalButton from "@/components/ModalButton";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";

@@ -1,3 +1,15 @@
+import {
+  Column,
+  DataTable,
+  ViewContainer,
+  ViewHeading,
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+  SignInRequired,
+  UploadedFileLink,
+  ModalButton,
+  FormattedDateTime,
+} from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Fragment, ReactNode } from "react";
@@ -12,20 +24,13 @@ import { graphql } from "@/__generated__";
 import { SurveyResponseFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
-import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
-import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
+import { DimensionFilters } from "@con2/components";
+import {
+  buildDimensionFilters,
+  toFilterableDimensions,
+} from "@/components/dimensions/helpers";
 import { validateFields } from "@/components/forms/models";
-import UploadedFileLink from "@/components/forms/UploadedFileLink";
-import ModalButton from "@/components/ModalButton";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
 import { kompassiBaseUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
@@ -140,7 +145,13 @@ export default async function FormResponsesPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const filters = buildDimensionFilters(searchParams);
@@ -174,12 +185,7 @@ export default async function FormResponsesPage(props: Props) {
       title: t.attributes.originalCreatedAt,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/surveys/${surveySlug}/responses/${row.id}`}>
-          <FormattedDateTime
-            value={row.revisionCreatedAt}
-            locale={locale}
-            scope={data.event}
-            session={session}
-          />
+          <FormattedDateTime value={row.revisionCreatedAt} locale={locale} />
         </Link>
       ),
     },
@@ -304,7 +310,10 @@ export default async function FormResponsesPage(props: Props) {
         </ViewHeadingActions>
       </ViewHeadingActionsWrapper>
 
-      <DimensionFilters dimensions={listFilters} />
+      <DimensionFilters
+        dimensions={toFilterableDimensions(listFilters)}
+        locale={locale}
+      />
       <ResponseTabs
         eventSlug={eventSlug}
         surveySlug={surveySlug}

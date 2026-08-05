@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
-import { Column } from "../DataTable";
-import { getDimensionValueTitle, makeColorTranslucent } from "./helpers";
+import { Column } from "@con2/components";
+import { makeColorTranslucent } from "@con2/components/helpers";
+import { getDimensionValueTitle } from "./helpers";
 import { validateCachedDimensions } from "./models";
 import { graphql } from "@/__generated__";
 import { ColoredDimensionTableCellFragment } from "@/__generated__/graphql";

@@ -1,3 +1,13 @@
+import {
+  Column,
+  DataTable,
+  ViewContainer,
+  ViewHeading,
+  SignInRequired,
+  SubmitButton,
+  ModalButton,
+  FormattedDateTime,
+} from "@con2/components";
 import Link from "next/link";
 
 import { graphql } from "@/__generated__";
@@ -11,16 +21,9 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import SubmitButton from "@/components/forms/SubmitButton";
-import ModalButton from "@/components/ModalButton";
 import ContactForm from "@/components/tickets/ContactForm";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 import { notFound } from "next/navigation";
@@ -177,7 +180,13 @@ export default async function AdminOrderPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({
@@ -208,12 +217,7 @@ export default async function AdminOrderPage(props: Props) {
           <ModalButton
             title={sTamp.attributes.type.choices[stamp.type]}
             label={
-              <FormattedDateTime
-                value={stamp.createdAt}
-                locale={locale}
-                scope={event}
-                session={session}
-              />
+              <FormattedDateTime value={stamp.createdAt} locale={locale} />
             }
             className="btn btn-link link-subtle m-0 p-0"
             submitButtonVariant="danger"
@@ -258,12 +262,7 @@ export default async function AdminOrderPage(props: Props) {
       slug: "createdAt",
       title: sTamp.attributes.createdAt,
       getCellContents: (receipt) => (
-        <FormattedDateTime
-          value={receipt.createdAt}
-          locale={locale}
-          scope={event}
-          session={session}
-        />
+        <FormattedDateTime value={receipt.createdAt} locale={locale} />
       ),
       className: "col-2 align-middle",
     },
@@ -321,12 +320,7 @@ export default async function AdminOrderPage(props: Props) {
           return (
             <>
               {codeT.attributes.status.choices[code.status]}{" "}
-              <FormattedDateTime
-                value={code.usedOn}
-                locale={locale}
-                scope={event}
-                session={session}
-              />
+              <FormattedDateTime value={code.usedOn} locale={locale} />
             </>
           );
         } else {

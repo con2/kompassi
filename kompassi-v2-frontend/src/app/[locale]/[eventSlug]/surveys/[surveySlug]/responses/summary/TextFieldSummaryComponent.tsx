@@ -1,5 +1,5 @@
+import { Linebreaks } from "@con2/components";
 import { TextFieldSummary } from "@/components/forms/models";
-import Linebreaks from "@/components/helpers/Linebreaks";
 import { Translations } from "@/translations/en";
 
 interface TextFieldSummaryComponentProps {

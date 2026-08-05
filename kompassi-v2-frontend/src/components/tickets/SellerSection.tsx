@@ -1,4 +1,3 @@
-import Section from "@/components/Section";
 import type { Translations } from "@/translations/en";
 
 interface Seller {
@@ -14,7 +13,7 @@ interface Props {
 
 export default function SellerSection({ seller, messages: t }: Props) {
   return (
-    <Section>
+    <section className="mb-4">
       <div>
         <strong>{t.title}</strong>: {seller.name}
       </div>
@@ -29,6 +28,6 @@ export default function SellerSection({ seller, messages: t }: Props) {
           <strong>{t.businessId}</strong>: {seller.businessId}
         </div>
       )}
-    </Section>
+    </section>
   );
 }

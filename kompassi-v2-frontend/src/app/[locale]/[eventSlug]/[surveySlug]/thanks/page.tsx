@@ -1,9 +1,8 @@
+import { ViewContainer, ViewHeading } from "@con2/components";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`

@@ -1,7 +1,7 @@
+import { FormattedDateTime } from "@con2/components";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import CardTitle from "react-bootstrap/CardTitle";
-import FormattedDateTime from "../FormattedDateTime";
 import { Field } from "../forms/models";
 import { SchemaForm } from "../forms/SchemaForm";
 import { ProfileFields } from "../profile/ProfileFields";
@@ -161,12 +161,7 @@ export default async function TransferConsentForm({
           <div className="mt-4 mb-2">
             <em>
               {t.consentAlreadyGivenAt(
-                <FormattedDateTime
-                  value={consentGivenAt}
-                  scope={scope}
-                  session={session}
-                  locale={locale}
-                />,
+                <FormattedDateTime value={consentGivenAt} locale={locale} />,
               )}
             </em>
           </div>

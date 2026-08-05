@@ -1,9 +1,8 @@
+import { FormattedDateTime, ModalButton } from "@con2/components";
 import { Translations } from "@/translations/en";
-import FormattedDateTime from "../FormattedDateTime";
 import { graphql } from "@/__generated__";
 import { ResponseHistorySidebarFragment } from "@/__generated__/graphql";
 import { Session } from "next-auth";
-import ModalButton from "../ModalButton";
 import { ProfileFields } from "../profile/ProfileFields";
 import Link from "next/link";
 
@@ -74,8 +73,6 @@ export default function ResponseHistorySidebar({
             <FormattedDateTime
               value={response.originalCreatedAt}
               locale={locale}
-              scope={event}
-              session={session}
             />
           </div>
         </div>
@@ -114,8 +111,6 @@ export default function ResponseHistorySidebar({
                 <FormattedDateTime
                   value={response.revisionCreatedAt}
                   locale={locale}
-                  scope={event}
-                  session={session}
                 />
               </div>
             </div>
@@ -143,8 +138,6 @@ export default function ResponseHistorySidebar({
                       <FormattedDateTime
                         value={version.revisionCreatedAt}
                         locale={locale}
-                        scope={event}
-                        session={session}
                       />
                       {version.revisionCreatedBy && (
                         <> ({version.revisionCreatedBy?.displayName})</>

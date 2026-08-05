@@ -1,8 +1,8 @@
+import { ParagraphsDangerousHtml } from "@con2/components";
+import { makeInputId } from "@con2/components/helpers";
 import { ReactNode } from "react";
 
-import { Heading, HeadingLevel } from "../helpers/Heading";
-import ParagraphsDangerousHtml from "../helpers/ParagraphsDangerousHtml";
-import makeInputId from "./makeInputId";
+import { Heading, HeadingLevel } from "./Heading";
 import { Field } from "./models";
 
 function Label({

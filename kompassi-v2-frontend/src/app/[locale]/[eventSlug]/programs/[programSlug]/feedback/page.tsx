@@ -1,3 +1,4 @@
+import { ViewContainer, ViewHeading, SubmitButton } from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,9 +7,6 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 

@@ -1,3 +1,11 @@
+import {
+  Column,
+  DataTable,
+  SignInRequired,
+  UploadedFileLink,
+  ModalButton,
+  FormattedDateTime,
+} from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
@@ -6,23 +14,19 @@ import { graphql } from "@/__generated__";
 import { ProgramOfferFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
 import ColoredDimensionTableCell, {
   buildKeyDimensionColumns,
 } from "@/components/dimensions/ColoredDimensionTableCell";
-import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
+import { DimensionFilters } from "@con2/components";
 import {
   buildDimensionFilters,
   getDimensionValueTitle,
+  toFilterableDimensions,
 } from "@/components/dimensions/helpers";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
-import UploadedFileLink from "@/components/forms/UploadedFileLink";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
-import ModalButton from "@/components/ModalButton";
 import { deleteProgramOffers } from "./actions";
 import { ButtonGroup } from "react-bootstrap";
 
@@ -152,7 +156,13 @@ export default async function ProgramOffersPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const filters = buildDimensionFilters(searchParams);
@@ -191,12 +201,7 @@ export default async function ProgramOffersPage(props: Props) {
       title: <>{surveyT.attributes.originalCreatedAt} 🔼</>,
       getCellContents: (row) => (
         <Link href={`/${eventSlug}/program-offers/${row.id}${queryString}`}>
-          <FormattedDateTime
-            value={row.originalCreatedAt}
-            locale={locale}
-            scope={data.event}
-            session={session}
-          />
+          <FormattedDateTime value={row.originalCreatedAt} locale={locale} />
         </Link>
       ),
     },
@@ -325,7 +330,10 @@ export default async function ProgramOffersPage(props: Props) {
         </ButtonGroup>
       }
     >
-      <DimensionFilters dimensions={listFilters} />
+      <DimensionFilters
+        dimensions={toFilterableDimensions(listFilters)}
+        locale={locale}
+      />
       <DataTable rows={programOffers} columns={columns}>
         <tfoot>
           <tr>

@@ -1,5 +1,5 @@
+import { formatDateTime } from "@con2/components";
 import { Temporal } from "@js-temporal/polyfill";
-import { formatDateTime } from "../FormattedDateTime";
 import { ProductListFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
 

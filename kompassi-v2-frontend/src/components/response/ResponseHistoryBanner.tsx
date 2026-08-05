@@ -1,3 +1,4 @@
+import { FormattedDateTime } from "@con2/components";
 import { graphql } from "@/__generated__";
 import {
   ProfileResponseHistoryBannerFragment,
@@ -8,7 +9,6 @@ import { auth } from "@/auth";
 import type { Translations } from "@/translations/en";
 import Link from "next/link";
 import { Alert } from "react-bootstrap";
-import FormattedDateTime from "../FormattedDateTime";
 import { OldVersionAlert } from "./OldVersionAlert";
 
 graphql(`
@@ -92,8 +92,6 @@ export async function ResponseHistoryBanner({
                   <FormattedDateTime
                     value={version.revisionCreatedAt}
                     locale={locale}
-                    scope={scope}
-                    session={session}
                   />
                 </Link>
               </li>

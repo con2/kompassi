@@ -1,9 +1,10 @@
-import Messages from "../errors/Messages";
-import ViewContainer from "../ViewContainer";
-import ViewHeading, {
+import {
+  Messages,
+  ViewContainer,
+  ViewHeading,
   ViewHeadingActions,
   ViewHeadingActionsWrapper,
-} from "../ViewHeading";
+} from "@con2/components";
 import TicketsAdminTabs, { TicketsAdminTabsProps } from "./TicketsAdminTabs";
 import { Translations } from "@/translations/en";
 

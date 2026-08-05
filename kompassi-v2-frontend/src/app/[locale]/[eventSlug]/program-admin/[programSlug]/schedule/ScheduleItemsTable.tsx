@@ -1,3 +1,10 @@
+import {
+  Column,
+  DataTable,
+  ModalButton,
+  FormattedDateTime,
+  formatDurationMinutes,
+} from "@con2/components";
 import { ButtonGroup } from "react-bootstrap";
 import { deleteScheduleItem, putScheduleItem } from "./actions";
 import ScheduleItemForm from "./ScheduleItemForm";
@@ -6,10 +13,6 @@ import {
   ProgramAdminDetailScheduleItemFragment,
 } from "@/__generated__/graphql";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import { formatDurationMinutes } from "@/components/FormattedDateTimeRange";
-import ModalButton from "@/components/ModalButton";
 import { getTranslations } from "@/translations";
 
 interface Props {
@@ -76,8 +79,6 @@ export default async function ScheduleItemTable({
       getCellContents: (row) => (
         <FormattedDateTime
           value={row.startTime}
-          scope={event}
-          session={session}
           locale={locale}
           options={{ dateStyle: "full", timeStyle: "short" }}
         />
@@ -88,8 +89,8 @@ export default async function ScheduleItemTable({
       title: t.attributes.duration.title,
       getCellContents: (row) => (
         <>
-          {formatDurationMinutes(row.durationMinutes, locale)} (
-          {row.durationMinutes} min)
+          {formatDurationMinutes(row.durationMinutes)} ({row.durationMinutes}
+           min)
         </>
       ),
     },

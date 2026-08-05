@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Column } from "../DataTable";
+import { Column } from "@con2/components";
 
 export function textMutedWhenInactive<T extends { isActive?: boolean }>(
   this: Column<T>,

@@ -1,12 +1,15 @@
+import {
+  Column,
+  DataTable,
+  SignInRequired,
+  FormattedDateTime,
+} from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -78,7 +81,13 @@ export default async function ProgramMessagesPage(props: Props) {
 
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({ query, variables: { eventSlug } });
@@ -111,12 +120,7 @@ export default async function ProgramMessagesPage(props: Props) {
       slug: "createdAt",
       title: t.attributes.createdAt.title,
       getCellContents: (message) => (
-        <FormattedDateTime
-          value={message.createdAt}
-          locale={locale}
-          scope={event}
-          session={session}
-        />
+        <FormattedDateTime value={message.createdAt} locale={locale} />
       ),
       className: "col-2 align-middle",
     },

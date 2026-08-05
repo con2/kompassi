@@ -1,4 +1,4 @@
-import Tabs, { Tab } from "@/components/ServerTabs";
+import { ServerTabs as Tabs, Tab } from "@con2/components";
 import { Translations } from "@/translations/en";
 
 export type ProgramTab = "cards" | "table";

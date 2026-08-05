@@ -1,7 +1,6 @@
-import AutoSubmitForm from "../AutoSubmitForm";
 import { Choice, MultiSelect, SingleSelect } from "../forms/models";
 import { SchemaForm } from "../forms/SchemaForm";
-import SubmitButton from "../forms/SubmitButton";
+import { AutoSubmitForm, SubmitButton } from "@con2/components";
 import { graphql } from "@/__generated__";
 import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";

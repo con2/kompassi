@@ -1,3 +1,11 @@
+import {
+  Column,
+  DataTable,
+  SignInRequired,
+  SubmitButton,
+  ModalButton,
+  FormattedDateTime,
+} from "@con2/components";
 import { notFound } from "next/navigation";
 
 import ButtonGroup from "react-bootstrap/ButtonGroup";
@@ -23,16 +31,11 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import AnnotationsForm from "@/components/annotations/AnnotationsForm";
 import { validateCachedAnnotations } from "@/components/annotations/models";
-import { Column, DataTable } from "@/components/DataTable";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
 import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
-import ModalButton from "@/components/ModalButton";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations, SupportedLanguage } from "@/translations";
@@ -161,7 +164,13 @@ export default async function ProgramAdminDetailPage(props: Props) {
 
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({
@@ -310,12 +319,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
       slug: "createdAt",
       title: inviT.attributes.createdAt,
       getCellContents: (row) => (
-        <FormattedDateTime
-          locale={locale}
-          value={row.createdAt}
-          scope={event}
-          session={session}
-        />
+        <FormattedDateTime locale={locale} value={row.createdAt} />
       ),
     },
     {

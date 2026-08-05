@@ -1,10 +1,10 @@
 "use client";
+import { ModalButton } from "@con2/components";
 
 import { useState } from "react";
 
 import RecipientFilterEditor, { FilterGroup } from "./RecipientFilterEditor";
 import { DimensionValueSelectFragment } from "@/__generated__/graphql";
-import ModalButton from "@/components/ModalButton";
 import type { Translations } from "@/translations/en";
 
 interface RecipientFilterItem {

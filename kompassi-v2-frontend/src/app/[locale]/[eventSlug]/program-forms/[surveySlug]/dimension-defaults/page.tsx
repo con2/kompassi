@@ -1,3 +1,4 @@
+import { SignInRequired } from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -12,7 +13,6 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import DimensionValueSelectionForm from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
-import SignInRequired from "@/components/errors/SignInRequired";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -100,7 +100,13 @@ export default async function ProgramFormDimensionDefaults(props: Props) {
   // TODO encap
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const surveyT = translations.Survey;

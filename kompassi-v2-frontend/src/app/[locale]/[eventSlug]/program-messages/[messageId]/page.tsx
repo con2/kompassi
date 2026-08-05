@@ -1,3 +1,4 @@
+import { SignInRequired, ModalButton } from "@con2/components";
 import { notFound } from "next/navigation";
 
 import {
@@ -10,8 +11,6 @@ import MessageComposeCard from "../MessageComposeCard";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/errors/SignInRequired";
-import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -105,7 +104,13 @@ export default async function ProgramMessageComposePage(props: Props) {
 
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

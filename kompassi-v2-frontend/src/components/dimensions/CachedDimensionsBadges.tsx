@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { makeBadgeBackgroundColor } from "./helpers";
+import { ColorBadge } from "@con2/components";
 import { validateCachedDimensions } from "./models";
 import { graphql } from "@/__generated__";
 import { CachedDimensionsBadgesFragment } from "@/__generated__/graphql";
@@ -45,18 +45,13 @@ export default function CachedDimensionBadges({
               }
 
               return (
-                <span
+                <ColorBadge
                   key={value.slug}
-                  className="badge ms-2"
+                  color={value.color}
                   title={dimension.title || dimension.slug}
-                  style={{
-                    backgroundColor: value.color
-                      ? makeBadgeBackgroundColor(value.color)
-                      : "var(--bs-secondary)",
-                  }}
                 >
                   {value.title || value.slug}
-                </span>
+                </ColorBadge>
               );
             })}
           </Fragment>

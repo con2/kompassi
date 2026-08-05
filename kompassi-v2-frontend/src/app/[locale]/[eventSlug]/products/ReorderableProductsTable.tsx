@@ -1,11 +1,10 @@
 "use client";
+import { Column, ReorderableDataTable } from "@con2/components";
 
 import Link from "next/link";
 import { useCallback, useState } from "react";
 
 import { PreparedProduct } from "./page";
-import { Column } from "@/components/DataTable";
-import { ReorderableDataTable } from "@/components/ReorderableDataTable";
 import formatMoney from "@/helpers/formatMoney";
 import type { Translations } from "@/translations/en";
 

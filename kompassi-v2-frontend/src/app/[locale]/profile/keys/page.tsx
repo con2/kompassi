@@ -1,18 +1,20 @@
-import ModalButton from "../../../../components/ModalButton";
+import {
+  Column,
+  DataTable,
+  ViewContainer,
+  ViewHeading,
+  SignInRequired,
+  FormattedDateTime,
+  formatDateTime,
+  ModalButton,
+} from "@con2/components";
 import { generateKeyPair, revokeKeyPair } from "./actions";
 import { graphql } from "@/__generated__";
 import { ProfileEncryptionKeysFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime, {
-  formatDateTime,
-} from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -60,7 +62,13 @@ export default async function OwnResponsesPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({ query });
@@ -75,12 +83,7 @@ export default async function OwnResponsesPage(props: Props) {
       slug: "createdAt",
       title: t.attributes.createdAt.title,
       getCellContents: (row) => (
-        <FormattedDateTime
-          value={row.createdAt}
-          locale={locale}
-          scope={undefined}
-          session={session}
-        />
+        <FormattedDateTime value={row.createdAt} locale={locale} />
       ),
     },
     {

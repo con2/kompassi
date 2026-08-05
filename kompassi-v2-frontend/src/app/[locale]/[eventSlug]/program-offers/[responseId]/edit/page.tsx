@@ -1,3 +1,9 @@
+import {
+  ParagraphsDangerousHtml,
+  SignInRequired,
+  SubmitButton,
+  FormattedDateTime,
+} from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,12 +12,8 @@ import { submit } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
 import { validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
-import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -126,7 +128,13 @@ export default async function ProgramOfferPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({
@@ -167,12 +175,7 @@ export default async function ProgramOfferPage(props: Props) {
     >
       <Alert variant="warning" className="mt-4">
         {t.actions.edit.editingOthers(
-          <FormattedDateTime
-            value={revisionCreatedAt}
-            scope={event}
-            session={session}
-            locale={locale}
-          />,
+          <FormattedDateTime value={revisionCreatedAt} locale={locale} />,
           originalCreatedBy?.fullName,
         )}
       </Alert>

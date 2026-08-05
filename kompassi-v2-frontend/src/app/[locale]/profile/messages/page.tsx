@@ -1,13 +1,16 @@
+import {
+  Column,
+  DataTable,
+  ViewContainer,
+  ViewHeading,
+  SignInRequired,
+  ModalButton,
+  FormattedDateTime,
+} from "@con2/components";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import ModalButton from "@/components/ModalButton";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
+import { DimensionFilters } from "@con2/components";
 import { kompassiBaseUrl } from "@/config";
 import { getTranslations } from "@/translations";
 
@@ -63,7 +66,13 @@ export default async function ProfileMessagesPage(props: Props) {
   const session = await auth();
 
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({ query });
@@ -104,14 +113,7 @@ export default async function ProfileMessagesPage(props: Props) {
         <ModalButton
           title={message.subject || t.noSubject}
           messages={translations.Modal}
-          label={
-            <FormattedDateTime
-              value={message.sentAt}
-              locale={locale}
-              scope={undefined}
-              session={session}
-            />
-          }
+          label={<FormattedDateTime value={message.sentAt} locale={locale} />}
         >
           <div dangerouslySetInnerHTML={{ __html: message.bodyHtml }} />
         </ModalButton>
@@ -149,7 +151,7 @@ export default async function ProfileMessagesPage(props: Props) {
     <ViewContainer>
       <ViewHeading>{t.title}</ViewHeading>
       {t.description(VolunteerMessagesLink)}
-      <DimensionFilters dimensions={[eventFilter]} />
+      <DimensionFilters dimensions={[eventFilter]} locale={locale} />
       <DataTable columns={columns} rows={messages}>
         <tfoot>
           <tr>

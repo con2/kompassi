@@ -1,5 +1,5 @@
+import { generateUniqueIdentifier } from "@con2/components/helpers";
 import { Field, FieldType } from "./models";
-import generateUniqueIdentifier from "@/helpers/generateUniqueIdentifier";
 
 export default function newField(
   type: FieldType,

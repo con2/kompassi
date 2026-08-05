@@ -1,3 +1,4 @@
+import { ViewContainer, ViewHeading, SignInRequired } from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ResponseTabs from "../ResponseTabs";
@@ -5,13 +6,13 @@ import FieldSummaryComponent from "./FieldSummaryComponent";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
-import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import SignInRequired from "@/components/errors/SignInRequired";
+import { DimensionFilters } from "@con2/components";
+import {
+  buildDimensionFilters,
+  toFilterableDimensions,
+} from "@/components/dimensions/helpers";
 import { validateFields, validateSummary } from "@/components/forms/models";
 import SchemaFormField from "@/components/forms/SchemaFormField";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -98,7 +99,13 @@ export default async function SummaryPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   // TODO: Make "from" a reserved word in the form generator
@@ -131,7 +138,10 @@ export default async function SummaryPage(props: Props) {
         {t.responseListTitle}
         <ViewHeading.Sub>{survey.title}</ViewHeading.Sub>
       </ViewHeading>
-      <DimensionFilters dimensions={dimensions} />
+      <DimensionFilters
+        dimensions={toFilterableDimensions(dimensions)}
+        locale={locale}
+      />
       <ResponseTabs
         eventSlug={eventSlug}
         surveySlug={surveySlug}

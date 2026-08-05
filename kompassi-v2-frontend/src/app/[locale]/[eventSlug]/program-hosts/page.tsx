@@ -1,3 +1,4 @@
+import { Column, DataTable, SignInRequired } from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -5,10 +6,11 @@ import { graphql } from "@/__generated__";
 import { ProgramAdminHostFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
-import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import SignInRequired from "@/components/errors/SignInRequired";
+import { DimensionFilters } from "@con2/components";
+import {
+  buildDimensionFilters,
+  toFilterableDimensions,
+} from "@/components/dimensions/helpers";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -92,7 +94,13 @@ export default async function ProgramAdminHostsPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const filters = buildDimensionFilters(searchParams);
@@ -167,8 +175,9 @@ export default async function ProgramAdminHostsPage(props: Props) {
     >
       {/* TODO also support filtering by involvement dimensions (or delegate this view to Involvement entirely?) */}
       <DimensionFilters
-        dimensions={dimensions}
+        dimensions={toFilterableDimensions(dimensions)}
         className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1"
+        locale={locale}
       />
       <DataTable rows={programHosts} columns={columns}>
         <tfoot>

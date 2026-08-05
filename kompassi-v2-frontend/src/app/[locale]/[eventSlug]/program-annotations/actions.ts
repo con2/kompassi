@@ -1,9 +1,9 @@
 "use server";
+import { decodeBoolean } from "@con2/components/helpers";
 
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import { decodeBoolean } from "@/helpers/decodeBoolean";
 import { PutUniverseAnnotationAction } from "@/__generated__/graphql";
 
 const universeSlug = "program";

@@ -1,3 +1,4 @@
+import { SignInRequired, SubmitButton } from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -10,10 +11,8 @@ import { adminCreateOrder } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/errors/SignInRequired";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
 import ContactForm from "@/components/tickets/ContactForm";
 import ProductCard from "@/components/tickets/ProductCard";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
@@ -105,7 +104,13 @@ export default async function OrdersPage(props: Props) {
   // TODO encap
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

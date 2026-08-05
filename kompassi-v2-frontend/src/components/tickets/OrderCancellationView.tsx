@@ -1,10 +1,8 @@
+import { ViewContainer, ViewHeading, Messages } from "@con2/components";
 import Link from "next/link";
 import { ReactNode } from "react";
 
 import { PaymentStatus } from "@/__generated__/graphql";
-import Messages from "@/components/errors/Messages";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import type { GetOrderResponse } from "@/services/tickets";
 import type { Translations } from "@/translations/en";
 

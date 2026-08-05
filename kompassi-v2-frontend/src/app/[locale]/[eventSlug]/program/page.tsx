@@ -1,3 +1,5 @@
+import { ViewContainer, ViewHeading } from "@con2/components";
+import { decodeBoolean } from "@con2/components/helpers";
 import { notFound } from "next/navigation";
 
 import { markScheduleItemAsFavorite, unmarkAsFavorite } from "./actions";
@@ -8,9 +10,6 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
-import { decodeBoolean } from "@/helpers/decodeBoolean";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 import { Alert } from "react-bootstrap";

@@ -1,3 +1,9 @@
+import {
+  DataTable,
+  Column,
+  MaybeExternalLink,
+  SignInRequired,
+} from "@con2/components";
 import { graphql } from "@/__generated__";
 import {
   AnnotationsFormAnnotationFragment,
@@ -9,7 +15,6 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { validateCachedAnnotations } from "@/components/annotations/models";
 import { validateCachedDimensions } from "@/components/dimensions/models";
-import SignInRequired from "@/components/errors/SignInRequired";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
 import PerksForm from "@/components/involvement/PerksForm";
 import {
@@ -24,11 +29,8 @@ import { notFound } from "next/navigation";
 import { Card, CardBody, CardText, CardTitle } from "react-bootstrap";
 import { updateInvolvementPerks } from "./actions";
 
-import { Column } from "@/components/ReorderableDataTable";
-import { DataTable } from "@/components/DataTable";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
 import { textMutedWhenInactive } from "@/components/involvement/helpers";
-import MaybeExternalLink from "@/components/MaybeExternalLink";
 
 graphql(`
   fragment InvolvedPersonDetailInvolvement on LimitedInvolvementType {
@@ -187,7 +189,13 @@ export default async function PersonPage(props: Props) {
 
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

@@ -1,9 +1,8 @@
+import { Column, DataTable, formatDateTime } from "@con2/components";
 import { Temporal } from "@js-temporal/polyfill";
 
 import { graphql } from "@/__generated__";
 import { ReportFragment, TypeOfColumn } from "@/__generated__/graphql";
-import { Column, DataTable } from "@/components/DataTable";
-import { formatDateTime } from "@/components/FormattedDateTime";
 import { timezone as defaultTimezone } from "@/config";
 import formatMoney from "@/helpers/formatMoney";
 import { defaultLanguage } from "@/translations";

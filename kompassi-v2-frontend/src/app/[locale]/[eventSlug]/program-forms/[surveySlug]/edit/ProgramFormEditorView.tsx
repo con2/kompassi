@@ -1,3 +1,10 @@
+import {
+  ViewContainer,
+  ViewHeading,
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+  ModalButton,
+} from "@con2/components";
 import Link from "next/link";
 import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
@@ -5,12 +12,6 @@ import CardBody from "react-bootstrap/CardBody";
 import { Survey } from "../../../surveys/[surveySlug]/edit/models";
 import SurveyEditorTabs from "../../../surveys/[surveySlug]/edit/SurveyEditorTabs";
 import { deleteProgramForm } from "./actions";
-import ModalButton from "@/components/ModalButton";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
 import type { Translations } from "@/translations/en";
 
 interface Props {

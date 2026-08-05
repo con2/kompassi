@@ -184,11 +184,6 @@ const translations: Translations = {
   },
   SchemaForm: {
     submit: "Lähetä",
-    warnings: {
-      noFileUploaded: "Ei tiedostoja.",
-      dateOutOfRange:
-        "Valittu päivämäärä on tapahtuman päivämäärävälin ulkopuolella.",
-    },
     boolean: {
       true: "Kyllä",
       false: "Ei",
@@ -196,9 +191,6 @@ const translations: Translations = {
     checkbox: {
       checked: "Valittu",
       unchecked: "Ei valittu",
-    },
-    markdownEditor: {
-      insertHeadingLabel: "Lisää otsikko",
     },
   },
   MainView: {
@@ -3150,7 +3142,6 @@ const translations: Translations = {
     },
     title: "Kirjautuminen vaaditaan",
     message: "Tämä sivu edellyttää sisäänkirjautumista.",
-    signIn: "Kirjaudu sisään",
   },
 
   Brand: {

@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 
-import ModalButton from "../ModalButton";
 import DimensionForm from "./DimensionForm";
 import DimensionValueForm from "./DimensionValueForm";
-import { makeColorTranslucent } from "./helpers";
+import { ModalButton } from "@con2/components";
+import { makeColorTranslucent } from "@con2/components/helpers";
 import { graphql } from "@/__generated__";
 import {
   DimensionEditorFragment,

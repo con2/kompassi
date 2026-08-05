@@ -1,3 +1,4 @@
+import { SubmitButton } from "@con2/components";
 import { notFound } from "next/navigation";
 
 import Card from "react-bootstrap/Card";
@@ -7,7 +8,6 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import AnnotationsForm from "@/components/annotations/AnnotationsForm";
 import { validateCachedAnnotations } from "@/components/annotations/models";
-import SubmitButton from "@/components/forms/SubmitButton";
 import ProgramAdminDetailView from "@/components/program/ProgramAdminDetailView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";

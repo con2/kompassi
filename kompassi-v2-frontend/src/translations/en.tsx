@@ -178,10 +178,6 @@ const translations = {
   },
   SchemaForm: {
     submit: "Submit",
-    warnings: {
-      noFileUploaded: "No file uploaded.",
-      dateOutOfRange: "Selected date is outside the event date range.",
-    },
     boolean: {
       true: "Yes",
       false: "No",
@@ -189,9 +185,6 @@ const translations = {
     checkbox: {
       checked: "Checked",
       unchecked: "Not checked",
-    },
-    markdownEditor: {
-      insertHeadingLabel: "Insert heading",
     },
   },
   MainView: {
@@ -3134,7 +3127,6 @@ const translations = {
     },
     title: "Sign-in required",
     message: "You need to sign in to access this page.",
-    signIn: "Sign in",
   },
 
   Brand: {

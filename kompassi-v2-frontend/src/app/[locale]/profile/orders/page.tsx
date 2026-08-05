@@ -1,3 +1,13 @@
+import {
+  Column,
+  DataTable,
+  ViewContainer,
+  ViewHeading,
+  Messages,
+  SignInRequired,
+  ModalButton,
+  FormattedDateTime,
+} from "@con2/components";
 import Link from "next/link";
 
 import {
@@ -9,13 +19,6 @@ import { graphql } from "@/__generated__";
 import { ProfileOrderFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import Messages from "@/components/errors/Messages";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import ModalButton from "@/components/ModalButton";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -86,7 +89,13 @@ export default async function ProfileOrdersPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({ query });
@@ -109,12 +118,7 @@ export default async function ProfileOrdersPage(props: Props) {
       slug: "createdAt",
       title: t.attributes.createdAt,
       getCellContents: (order) => (
-        <FormattedDateTime
-          value={order.createdAt}
-          locale={locale}
-          scope={order.event}
-          session={session}
-        />
+        <FormattedDateTime value={order.createdAt} locale={locale} />
       ),
     },
     {

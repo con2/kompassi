@@ -1,4 +1,4 @@
-import { Column, DataTable } from "../DataTable";
+import { Column, DataTable } from "@con2/components";
 import formatMoney from "@/helpers/formatMoney";
 import formatVatRate from "@/helpers/formatVatRate";
 import type { Translations } from "@/translations/en";

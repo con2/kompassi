@@ -1,4 +1,4 @@
-import { slugifyDash } from "./slugify";
+import { slugifyDash } from "@con2/components/helpers";
 
 const tryFields = ["slug", "title_en", "title_fi", "title_sv"];
 

@@ -1,9 +1,8 @@
 "use client";
+import { ViewContainer, ViewHeading } from "@con2/components";
 
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import { defaultLanguage } from "@/translations";
 
 // NOTE: Don't use getTranslations here, as it would bundle all the translations.

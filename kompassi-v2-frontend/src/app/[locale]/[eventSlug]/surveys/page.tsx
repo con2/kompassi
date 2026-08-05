@@ -1,3 +1,15 @@
+import {
+  Column,
+  DataTable,
+  ViewContainer,
+  ViewHeading,
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+  SignInRequired,
+  CopyButton,
+  formatDateTime,
+  ModalButton,
+} from "@con2/components";
 import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -6,20 +18,10 @@ import { graphql } from "@/__generated__";
 import { SurveyFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import CopyButton from "@/components/CopyButton";
-import { Column, DataTable } from "@/components/DataTable";
-import SignInRequired from "@/components/errors/SignInRequired";
-import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
 import { publicUrl } from "@/config";
 import { getTranslations } from "@/translations";
-import ModalButton from "../../../../components/ModalButton";
 import { createSurvey } from "./actions";
 import { getAnonymityDropdown, getCopyFromDropdown } from "./fields";
 
@@ -115,7 +117,13 @@ export default async function SurveysPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

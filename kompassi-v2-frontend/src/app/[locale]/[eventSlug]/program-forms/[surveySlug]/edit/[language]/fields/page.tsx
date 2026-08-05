@@ -1,3 +1,4 @@
+import { SignInRequired } from "@con2/components";
 import { notFound } from "next/navigation";
 
 import ProgramFormEditorView from "../../ProgramFormEditorView";
@@ -5,7 +6,6 @@ import { promoteFieldToDimension, updateSurveyFields } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/errors/SignInRequired";
 import FormEditorWrapper from "@/components/forms/FormEditorWrapper";
 import { validateFields } from "@/components/forms/models";
 import getPageTitle from "@/helpers/getPageTitle";
@@ -82,7 +82,13 @@ export default async function EditProgramFormFieldsPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

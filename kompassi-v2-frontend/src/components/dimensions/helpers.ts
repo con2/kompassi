@@ -1,6 +1,8 @@
 import { invalidDimensionSlugs } from "./consts";
 import { validateCachedDimensions } from "./models";
+import type { Dimension } from "@con2/components";
 import type {
+  DimensionFilterFragment,
   DimensionFilterInput,
   DimensionValueSelectFragment,
 } from "@/__generated__/graphql";
@@ -33,10 +35,18 @@ export function getDimensionValueTitle(
   return dimensionValues.map((value) => value.title).join(", ");
 }
 
-export function makeColorTranslucent(color: string) {
-  return `color-mix(in srgb, ${color}, transparent 85%)`;
-}
-
-export function makeBadgeBackgroundColor(color: string) {
-  return `color-mix(in srgb, ${color}, var(--bs-secondary) 50%)`;
+/// Adapts the GraphQL DimensionFilter fragment (nullable titles) into the shape
+/// required by @con2/components' generic DimensionFilters (non-nullable titles),
+/// falling back to the slug when a title is missing.
+export function toFilterableDimensions(
+  dimensions: DimensionFilterFragment[],
+): Dimension[] {
+  return dimensions.map((dimension) => ({
+    slug: dimension.slug,
+    title: dimension.title ?? dimension.slug,
+    values: dimension.values.map((value) => ({
+      slug: value.slug,
+      title: value.title ?? value.slug,
+    })),
+  }));
 }

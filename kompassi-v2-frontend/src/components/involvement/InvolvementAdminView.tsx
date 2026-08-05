@@ -1,13 +1,14 @@
+import {
+  Messages,
+  ViewContainer,
+  ViewHeading,
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+} from "@con2/components";
 import { ReactNode } from "react";
-import Messages from "../errors/Messages";
 import InvolvementAdminTabs, {
   InvolvementAdminTabsProps,
 } from "./InvolvementAdminTabs";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
 import type { Translations } from "@/translations/en";
 
 interface Props {

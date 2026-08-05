@@ -1,3 +1,9 @@
+import {
+  Column,
+  DataTable,
+  SignInRequired,
+  ModalButton,
+} from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,15 +12,15 @@ import { graphql } from "@/__generated__";
 import { ProgramAdminFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
-import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
+import { DimensionFilters } from "@con2/components";
 import { buildDimensionValueSelectionForm } from "@/components/dimensions/DimensionValueSelectionForm";
-import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import SignInRequired from "@/components/errors/SignInRequired";
+import {
+  buildDimensionFilters,
+  toFilterableDimensions,
+} from "@/components/dimensions/helpers";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -127,7 +133,13 @@ export default async function FormResponsesPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const filters = buildDimensionFilters(searchParams);
@@ -248,8 +260,9 @@ export default async function FormResponsesPage(props: Props) {
       }
     >
       <DimensionFilters
-        dimensions={listFilters}
+        dimensions={toFilterableDimensions(listFilters)}
         className="row row-cols-md-auto g-3 align-items-center mb-4 mt-1 xxx-this-is-horrible"
+        locale={locale}
       />
       <DataTable rows={programs} columns={columns}></DataTable>
     </ProgramAdminView>

@@ -1,7 +1,5 @@
-import Section from "../Section";
+import { ViewHeading, FormattedDateTime } from "@con2/components";
 import { PaymentStatus } from "@/__generated__/graphql";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import ViewHeading from "@/components/ViewHeading";
 import { Translations } from "@/translations/en";
 
 interface Props {
@@ -36,21 +34,16 @@ export default function OrderHeader({
       </ViewHeading>
       <p>{message}</p>
 
-      <Section>
+      <section className="mb-4">
         <div>
           <strong>{t.attributes.orderNumberFull}</strong>:{" "}
           {order.formattedOrderNumber}
         </div>
         <div>
           <strong>{t.attributes.createdAt}</strong>:{" "}
-          <FormattedDateTime
-            value={order.createdAt}
-            locale={locale}
-            scope={event}
-            session={session}
-          />
+          <FormattedDateTime value={order.createdAt} locale={locale} />
         </div>
-      </Section>
+      </section>
     </>
   );
 }

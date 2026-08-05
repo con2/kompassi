@@ -1,9 +1,9 @@
+import { SignInRequired } from "@con2/components";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/errors/SignInRequired";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
 import Report from "@/components/reports/Report";
 import { timezone as defaultTimezone } from "@/config";
@@ -74,7 +74,13 @@ export default async function ReportsPage(props: Props) {
   // TODO encap
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

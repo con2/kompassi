@@ -1,10 +1,9 @@
+import { Column, DataTable, FormattedDateTime } from "@con2/components";
 import { ProfileResponsesTableRowFragment } from "@/__generated__/graphql";
 import { auth } from "@/auth";
 import { Translations } from "@/translations/en";
 import Link from "next/link";
 import { ReactNode } from "react";
-import { Column, DataTable } from "../DataTable";
-import FormattedDateTime from "../FormattedDateTime";
 
 interface Props {
   responses: ProfileResponsesTableRowFragment[];
@@ -30,12 +29,7 @@ export default async function ProfileResponsesTable({
       getCellContents: (row) => (
         <>
           <Link href={`/profile/responses/${row.id}`} className="link-subtle">
-            <FormattedDateTime
-              value={row.revisionCreatedAt}
-              locale={locale}
-              scope={row.form.event}
-              session={session}
-            />
+            <FormattedDateTime value={row.revisionCreatedAt} locale={locale} />
           </Link>
           {row.editedByAnother && (
             <span

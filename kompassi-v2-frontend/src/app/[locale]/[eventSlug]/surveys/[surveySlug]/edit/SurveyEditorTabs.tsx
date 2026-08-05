@@ -1,10 +1,9 @@
+import { ServerTabs, Tab, ModalButton } from "@con2/components";
 import { createProgramFormLanguage } from "../../../program-forms/[surveySlug]/edit/actions";
 import { createSurveyLanguage } from "./actions";
 import { Survey } from "./models";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import ModalButton from "@/components/ModalButton";
-import ServerTabs, { Tab } from "@/components/ServerTabs";
 import { Translations } from "@/translations/en";
 
 interface Props {

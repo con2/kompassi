@@ -1,15 +1,13 @@
+import { ViewContainer, Messages } from "@con2/components";
 import Link from "next/link";
 import { ReactNode } from "react";
 
 import { payOrder } from "./actions";
 import { PaymentStatus } from "@/__generated__/graphql";
-import Messages from "@/components/errors/Messages";
-import Section from "@/components/Section";
 import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import RequestCancellationSection from "@/components/tickets/RequestCancellationSection";
 import SellerSection from "@/components/tickets/SellerSection";
-import ViewContainer from "@/components/ViewContainer";
 import { getOrder } from "@/services/tickets";
 import { getTranslations } from "@/translations";
 
@@ -61,7 +59,7 @@ export default async function OrderPage(props: Props) {
       <SellerSection seller={seller} messages={t.Order.attributes.seller} />
 
       {showPayButton && (
-        <Section>
+        <section className="mb-4">
           <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
             <div className="d-grid gap-2">
               <button className="btn btn-primary btn-lg" type="submit">
@@ -69,7 +67,7 @@ export default async function OrderPage(props: Props) {
               </button>
             </div>
           </form>
-        </Section>
+        </section>
       )}
 
       <RequestCancellationSection

@@ -5,6 +5,7 @@ const bodySizeLimit = "100mb";
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  transpilePackages: ["@con2/components"],
   logging: {
     incomingRequests: false,
   },

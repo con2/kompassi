@@ -1,3 +1,4 @@
+import { SignInRequired, ModalButton } from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,10 +7,8 @@ import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import DimensionValueSelectionForm from "@/components/dimensions/DimensionValueSelectionForm";
 import { validateCachedDimensions } from "@/components/dimensions/models";
-import SignInRequired from "@/components/errors/SignInRequired";
 import { validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import ModalButton from "@/components/ModalButton";
 import { OldVersionAlert } from "@/components/response/OldVersionAlert";
 import ResponseHistorySidebar from "@/components/response/ResponseHistorySidebar";
 import SurveyResponseAdminView from "@/components/response/SurveyResponseAdminView";
@@ -125,7 +124,13 @@ export default async function SurveyResponsePage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

@@ -1,3 +1,9 @@
+import {
+  ViewContainer,
+  ViewHeading,
+  Paragraphs,
+  FormattedDateTimeRange,
+} from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -14,10 +20,6 @@ import {
   ProgramLinkType,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
-import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
-import Paragraphs from "@/components/helpers/Paragraphs";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import { publicUrl } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -227,8 +229,7 @@ export default async function NewProgramPage(props: Props) {
             {scheduleItem.location && <>{scheduleItem.location}, </>}
             <FormattedDateTimeRange
               locale={locale}
-              scope={event}
-              session={null}
+              timezone={event.timezone}
               key={index}
               start={scheduleItem.startTime}
               end={scheduleItem.endTime}

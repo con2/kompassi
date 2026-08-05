@@ -1,12 +1,10 @@
+import { ViewContainer, ViewHeading, SubmitButton } from "@con2/components";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
 import { createOrder } from "./actions";
 import ProductsForm from "./ProductsForm";
-import SubmitButton from "@/components/forms/SubmitButton";
 import ContactForm from "@/components/tickets/ContactForm";
 import ProductCard from "@/components/tickets/ProductCard";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getProducts } from "@/services/tickets";
 import { getTranslations } from "@/translations";

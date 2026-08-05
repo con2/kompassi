@@ -1,6 +1,5 @@
+import { SubmitButton, FormattedDateTime } from "@con2/components";
 import { requestOrderCancellation } from "./actions";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import SubmitButton from "@/components/forms/SubmitButton";
 import OrderCancellationView from "@/components/tickets/OrderCancellationView";
 import { getOrder } from "@/services/tickets";
 import { getTranslations } from "@/translations";
@@ -47,8 +46,6 @@ export default async function OrderCancellationPage(props: Props) {
             <FormattedDateTime
               value={data.order.cancellationDeadline}
               locale={locale}
-              scope={undefined}
-              session={undefined}
             />,
           )}
         </p>

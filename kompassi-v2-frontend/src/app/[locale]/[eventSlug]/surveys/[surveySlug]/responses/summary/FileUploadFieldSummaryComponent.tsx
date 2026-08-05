@@ -1,5 +1,5 @@
+import { UploadedFileCards } from "@con2/components";
 import { FileUploadFieldSummary } from "@/components/forms/models";
-import UploadedFileCards from "@/components/forms/UploadedFileCards";
 import { Translations } from "@/translations/en";
 
 interface Props {
@@ -15,7 +15,7 @@ export default function FileUploadFieldSummaryComponent({
   const { summary, countResponses, countMissingResponses } = fieldSummary;
   return (
     <>
-      <UploadedFileCards urls={summary} messages={translations.SchemaForm} />
+      <UploadedFileCards urls={summary} />
       <p className="text-muted">
         {t.attributes.countResponses}: {countResponses}.{" "}
         {t.attributes.countMissingResponses}: {countMissingResponses}.

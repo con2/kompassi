@@ -1,3 +1,5 @@
+import { SignInRequired, ModalButton } from "@con2/components";
+import { slugifyDash as slugify } from "@con2/components/helpers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -13,15 +15,12 @@ import {
   CachedDimensions,
   validateCachedDimensions,
 } from "@/components/dimensions/models";
-import SignInRequired from "@/components/errors/SignInRequired";
 import { Field, validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import ModalButton from "@/components/ModalButton";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import { OldVersionAlert } from "@/components/response/OldVersionAlert";
 import ResponseHistorySidebar from "@/components/response/ResponseHistorySidebar";
 import getPageTitle from "@/helpers/getPageTitle";
-import slugify from "@/helpers/slugify";
 import { getTranslations } from "@/translations";
 import { ButtonGroup } from "react-bootstrap";
 import { updateResponseDimensions } from "../../surveys/[surveySlug]/responses/[responseId]/actions";
@@ -154,7 +153,13 @@ export default async function ProgramOfferPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

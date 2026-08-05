@@ -1,3 +1,10 @@
+import {
+  Column,
+  DataTable,
+  SignInRequired,
+  FormattedDateTime,
+} from "@con2/components";
+import { decodeBoolean } from "@con2/components/helpers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -10,13 +17,12 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
-import { buildDimensionFilters } from "@/components/dimensions/helpers";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
+import { DimensionFilters } from "@con2/components";
+import {
+  buildDimensionFilters,
+  toFilterableDimensions,
+} from "@/components/dimensions/helpers";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
-import { decodeBoolean } from "@/helpers/decodeBoolean";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -156,7 +162,13 @@ export default async function OrdersPage(props: Props) {
   // TODO encap
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   // XXX there should be a better way to handle this
@@ -226,12 +238,7 @@ export default async function OrdersPage(props: Props) {
       slug: "createdAt",
       title: t.attributes.createdAt,
       getCellContents: (order) => (
-        <FormattedDateTime
-          value={order.createdAt}
-          locale={locale}
-          scope={event}
-          session={session}
-        />
+        <FormattedDateTime value={order.createdAt} locale={locale} />
       ),
     },
     {
@@ -280,11 +287,12 @@ export default async function OrdersPage(props: Props) {
       }
     >
       <DimensionFilters
-        dimensions={dimensions}
+        dimensions={toFilterableDimensions(dimensions)}
         messages={{
           searchPlaceholder: t.actions.search,
         }}
         search
+        locale={locale}
       />
 
       {showResults ? (

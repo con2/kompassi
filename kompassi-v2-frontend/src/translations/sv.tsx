@@ -174,11 +174,6 @@ const translations: Translations = {
   },
   SchemaForm: {
     submit: "Skicka",
-    warnings: {
-      noFileUploaded: "Inga filer.",
-      dateOutOfRange:
-        "Det valda datumet är utanför evenemangets datumintervall.",
-    },
     boolean: {
       true: "Ja",
       false: "Nej",
@@ -186,9 +181,6 @@ const translations: Translations = {
     checkbox: {
       checked: "Valt",
       unchecked: "Icke valt",
-    },
-    markdownEditor: {
-      insertHeadingLabel: "Infoga rubrik",
     },
   },
   MainView: {
@@ -3085,7 +3077,6 @@ const translations: Translations = {
     },
     title: "Inloggning krävs",
     message: "Du måste logga in för att visa den här sidan.",
-    signIn: "Logga in",
   },
 
   Brand: {

@@ -1,3 +1,4 @@
+import { SignInRequired } from "@con2/components";
 import { notFound } from "next/navigation";
 import {
   createDimension,
@@ -13,7 +14,6 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { DimensionEditor } from "@/components/dimensions/DimensionEditor";
-import SignInRequired from "@/components/errors/SignInRequired";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
 import { getTranslations } from "@/translations";
 
@@ -50,7 +50,13 @@ export default async function PeoplePage(props: Props) {
 
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

@@ -1,10 +1,11 @@
-import { ReactNode } from "react";
-import Messages from "../errors/Messages";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
+import {
+  Messages,
+  ViewContainer,
+  ViewHeading,
   ViewHeadingActions,
   ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
+} from "@con2/components";
+import { ReactNode } from "react";
 import type { Translations } from "@/translations/en";
 import Link from "next/link";
 

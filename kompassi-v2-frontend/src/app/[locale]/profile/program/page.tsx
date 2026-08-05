@@ -1,3 +1,13 @@
+import {
+  Column,
+  DataTable,
+  ViewContainer,
+  ViewHeading,
+  SignInRequired,
+  FormattedDateTime,
+  FormattedDateTimeRange,
+  formatDurationMinutes,
+} from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -8,14 +18,6 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
-import FormattedDateTimeRange, {
-  formatDurationMinutes,
-} from "@/components/FormattedDateTimeRange";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -122,7 +124,13 @@ export default async function ProfileProgramItemList(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({
@@ -164,10 +172,9 @@ export default async function ProfileProgramItemList(props: Props) {
               start={scheduleItem.startTime}
               end={scheduleItem.endTime}
               locale={locale}
-              session={session}
-              scope={row.event}
+              timezone={row.event.timezone}
             />{" "}
-            ({formatDurationMinutes(scheduleItem.durationMinutes, locale)})
+            ({formatDurationMinutes(scheduleItem.durationMinutes)})
           </div>
         )),
     },
@@ -212,12 +219,7 @@ export default async function ProfileProgramItemList(props: Props) {
       slug: "revisionCreatedAt",
       title: surveyT.attributes.currentVersionCreatedAt,
       getCellContents: (row) => (
-        <FormattedDateTime
-          value={row.revisionCreatedAt}
-          locale={locale}
-          scope={row.form.event}
-          session={session}
-        />
+        <FormattedDateTime value={row.revisionCreatedAt} locale={locale} />
       ),
     },
     {

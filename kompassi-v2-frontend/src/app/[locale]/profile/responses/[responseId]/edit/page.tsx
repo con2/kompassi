@@ -1,3 +1,13 @@
+import {
+  ViewContainer,
+  ViewHeading,
+  ViewHeadingActions,
+  ViewHeadingActionsWrapper,
+  ParagraphsDangerousHtml,
+  SignInRequired,
+  SubmitButton,
+  FormattedDateTime,
+} from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -6,18 +16,9 @@ import { submit } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
 import { validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
-import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import TransferConsentForm from "@/components/involvement/TransferConsentForm";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading, {
-  ViewHeadingActions,
-  ViewHeadingActionsWrapper,
-} from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 const query = graphql(`
@@ -96,7 +97,13 @@ export default async function ProfileSurveyEditResponsePage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({
@@ -147,12 +154,7 @@ export default async function ProfileSurveyEditResponsePage(props: Props) {
 
       <Alert variant="warning">
         {t.actions.editResponse.editingOwn(
-          <FormattedDateTime
-            value={revisionCreatedAt}
-            scope={event}
-            session={session}
-            locale={locale}
-          />,
+          <FormattedDateTime value={revisionCreatedAt} locale={locale} />,
         )}
       </Alert>
 

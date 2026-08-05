@@ -1,6 +1,5 @@
+import { ViewContainer, ViewHeading } from "@con2/components";
 import Link from "next/link";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 import type { Translations } from "@/translations/en";
 

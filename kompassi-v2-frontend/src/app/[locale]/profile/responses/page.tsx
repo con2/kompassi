@@ -1,14 +1,16 @@
+import {
+  ViewContainer,
+  ViewHeading,
+  Messages,
+  SignInRequired,
+} from "@con2/components";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import DimensionBadge from "@/components/dimensions/DimensionBadge";
-import Messages from "@/components/errors/Messages";
-import SignInRequired from "@/components/errors/SignInRequired";
 import ProfileResponsesTable from "@/components/forms/ProfileResponsesTable";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 graphql(`
@@ -89,7 +91,13 @@ export default async function OwnResponsesPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

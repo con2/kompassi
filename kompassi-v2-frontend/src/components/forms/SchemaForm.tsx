@@ -1,4 +1,4 @@
-import type { HeadingLevel } from "../helpers/Heading";
+import { HeadingLevel } from "./Heading";
 import { Field } from "./models";
 import SchemaFormField from "./SchemaFormField";
 import SchemaFormInput from "./SchemaFormInput";

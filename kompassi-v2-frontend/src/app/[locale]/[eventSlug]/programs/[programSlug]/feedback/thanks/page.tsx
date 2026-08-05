@@ -1,9 +1,8 @@
+import { ViewContainer, ViewHeading } from "@con2/components";
 import Link from "next/link";
 
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 

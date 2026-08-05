@@ -1,3 +1,9 @@
+import {
+  ViewContainer,
+  ViewHeading,
+  SignInRequired,
+  ModalButton,
+} from "@con2/components";
 import Link from "next/link";
 
 import { notFound } from "next/navigation";
@@ -6,14 +12,10 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { cancelOrder } from "@/app/[locale]/[eventSlug]/orders/[orderId]/actions";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/errors/SignInRequired";
-import ModalButton from "@/components/ModalButton";
 import OrderHeader from "@/components/tickets/OrderHeader";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import RequestCancellationSection from "@/components/tickets/RequestCancellationSection";
 import SellerSection from "@/components/tickets/SellerSection";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 
@@ -99,7 +101,13 @@ export default async function ProfileOrderPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

@@ -1,3 +1,4 @@
+import { SignInRequired, ModalButton, formatDateTime } from "@con2/components";
 import { Temporal } from "@js-temporal/polyfill";
 import { notFound } from "next/navigation";
 
@@ -5,11 +6,8 @@ import { graphql } from "@/__generated__";
 import { ProductListFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/errors/SignInRequired";
-import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import ModalButton from "@/components/ModalButton";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -148,7 +146,13 @@ export default async function ProductsPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

@@ -1,3 +1,11 @@
+import {
+  Column,
+  DataTable,
+  SignInRequired,
+  SubmitButton,
+  ModalButton,
+  FormattedDateTime,
+} from "@con2/components";
 import { notFound, redirect } from "next/navigation";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
@@ -11,13 +19,8 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
-import ModalButton from "@/components/ModalButton";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import formatMoney from "@/helpers/formatMoney";
 import formatVatRate from "@/helpers/formatVatRate";
@@ -148,7 +151,13 @@ export default async function AdminProductDetailPage(props: Props) {
   // TODO encap
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({
@@ -262,12 +271,7 @@ export default async function AdminProductDetailPage(props: Props) {
         <>
           {product.isCurrent ? (
             <>
-              <FormattedDateTime
-                value={product.createdAt}
-                locale={locale}
-                scope={event}
-                session={session}
-              />
+              <FormattedDateTime value={product.createdAt} locale={locale} />
               <span className="badge bg-primary ms-2">
                 {t.clientAttributes.revisions.current}
               </span>
@@ -276,12 +280,7 @@ export default async function AdminProductDetailPage(props: Props) {
             <ModalButton
               title={t.actions.viewOldVersion.title}
               label={
-                <FormattedDateTime
-                  value={product.createdAt}
-                  locale={locale}
-                  scope={event}
-                  session={session}
-                />
+                <FormattedDateTime value={product.createdAt} locale={locale} />
               }
               labelTitle={t.actions.viewOldVersion.label}
               messages={t.actions.viewOldVersion.modalActions}

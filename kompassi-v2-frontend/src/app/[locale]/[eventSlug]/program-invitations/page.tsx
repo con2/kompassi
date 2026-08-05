@@ -1,3 +1,9 @@
+import {
+  Column,
+  DataTable,
+  SignInRequired,
+  FormattedDateTime,
+} from "@con2/components";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -5,9 +11,6 @@ import { graphql } from "@/__generated__";
 import { ProgramAdminInvitationFragment } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
-import SignInRequired from "@/components/errors/SignInRequired";
-import FormattedDateTime from "@/components/FormattedDateTime";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
@@ -80,7 +83,13 @@ export default async function ProgramAdminInvitationsPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({
@@ -116,12 +125,7 @@ export default async function ProgramAdminInvitationsPage(props: Props) {
       slug: "createdAt",
       title: t.attributes.createdAt,
       getCellContents: (row) => (
-        <FormattedDateTime
-          value={row.createdAt}
-          locale={locale}
-          scope={event}
-          session={session}
-        />
+        <FormattedDateTime value={row.createdAt} locale={locale} />
       ),
     },
   ];

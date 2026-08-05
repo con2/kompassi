@@ -1,18 +1,21 @@
+import {
+  Column,
+  DataTable,
+  SignInRequired,
+  CopyButton,
+  formatDateTime,
+  ModalButton,
+} from "@con2/components";
 import { Temporal } from "@js-temporal/polyfill";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { ButtonGroup } from "react-bootstrap";
-import ModalButton from "../../../../components/ModalButton";
 import { createProgramForm } from "./actions";
 import { graphql } from "@/__generated__";
 import { OfferFormFragment, SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import CopyButton from "@/components/CopyButton";
-import { Column, DataTable } from "@/components/DataTable";
-import SignInRequired from "@/components/errors/SignInRequired";
-import { formatDateTime } from "@/components/FormattedDateTime";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
 import ProgramAdminView from "@/components/program/ProgramAdminView";
@@ -116,7 +119,13 @@ export default async function ProgramFormsPage(props: Props) {
 
   // TODO encap
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

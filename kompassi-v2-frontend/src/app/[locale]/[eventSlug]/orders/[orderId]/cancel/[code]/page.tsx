@@ -1,5 +1,5 @@
+import { SubmitButton } from "@con2/components";
 import { confirmOrderCancellation } from "../actions";
-import SubmitButton from "@/components/forms/SubmitButton";
 import OrderCancellationView from "@/components/tickets/OrderCancellationView";
 import { getOrder } from "@/services/tickets";
 import { getTranslations } from "@/translations";

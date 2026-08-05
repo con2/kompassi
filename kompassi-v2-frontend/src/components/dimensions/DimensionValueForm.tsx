@@ -1,4 +1,4 @@
-import colors from "./colors";
+import { cssNamedColors } from "@con2/components/helpers";
 import { DimensionEditorValueFragment } from "@/__generated__/graphql";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
@@ -30,7 +30,7 @@ export default function DimensionValueForm({ messages, value }: Props) {
       type: "SingleSelect",
       presentation: "dropdown",
       slug: "color",
-      choices: colors.map((color) => ({
+      choices: cssNamedColors.map((color) => ({
         slug: color.toLowerCase(),
         title: color,
       })),

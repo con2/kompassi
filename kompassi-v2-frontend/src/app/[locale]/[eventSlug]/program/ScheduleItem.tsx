@@ -1,5 +1,5 @@
+import { FormattedDateTimeRange } from "@con2/components";
 import { ScheduleItemListFragment } from "@/__generated__/graphql";
-import FormattedDateTimeRange from "@/components/FormattedDateTimeRange";
 import { Scope } from "./models";
 
 interface Props {
@@ -18,8 +18,7 @@ export default function ScheduleItem({
       {scheduleItem.location && <span>{scheduleItem.location}, </span>}
       <FormattedDateTimeRange
         locale={locale}
-        scope={event}
-        session={null}
+        timezone={event.timezone}
         start={scheduleItem.startTime}
         end={scheduleItem.endTime}
         includeDuration={true}

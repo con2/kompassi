@@ -1,3 +1,10 @@
+import {
+  Column,
+  DataTable,
+  MaybeExternalLink,
+  SignInRequired,
+} from "@con2/components";
+import { decodeBoolean } from "@con2/components/helpers";
 import { graphql } from "@/__generated__";
 import {
   InvolvedPersonFragment,
@@ -5,16 +12,15 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import { Column, DataTable } from "@/components/DataTable";
 import CachedDimensionBadges from "@/components/dimensions/CachedDimensionsBadges";
-import { DimensionFilters } from "@/components/dimensions/DimensionFilters";
-import { buildDimensionFilters } from "@/components/dimensions/helpers";
+import { DimensionFilters } from "@con2/components";
+import {
+  buildDimensionFilters,
+  toFilterableDimensions,
+} from "@/components/dimensions/helpers";
 import { validateCachedDimensions } from "@/components/dimensions/models";
-import SignInRequired from "@/components/errors/SignInRequired";
 import { textMutedWhenInactive } from "@/components/involvement/helpers";
 import InvolvementAdminView from "@/components/involvement/InvolvementAdminView";
-import MaybeExternalLink from "@/components/MaybeExternalLink";
-import { decodeBoolean } from "@/helpers/decodeBoolean";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 import Link from "next/link";
@@ -149,7 +155,13 @@ export default async function PeoplePage(props: Props) {
 
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   // XXX there should be a better way to handle this
@@ -271,10 +283,11 @@ export default async function PeoplePage(props: Props) {
       searchParams={searchParams}
     >
       <DimensionFilters
-        dimensions={listFilters}
+        dimensions={toFilterableDimensions(listFilters)}
         className="mt-1"
         search={true}
         messages={t.filters}
+        locale={locale}
       />
 
       {showResults ? (

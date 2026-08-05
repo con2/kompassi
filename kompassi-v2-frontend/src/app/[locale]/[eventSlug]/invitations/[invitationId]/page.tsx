@@ -1,3 +1,11 @@
+import {
+  ViewContainer,
+  ViewHeading,
+  Linebreaks,
+  ParagraphsDangerousHtml,
+  SignInRequired,
+  SubmitButton,
+} from "@con2/components";
 import { notFound } from "next/navigation";
 
 import Card from "react-bootstrap/Card";
@@ -7,16 +15,10 @@ import { acceptInvitation } from "./actions";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
-import SignInRequired from "@/components/errors/SignInRequired";
 import { AlsoAvailableInLanguage } from "@/components/forms/AlsoAvailableInLanguage";
 import { validateFields } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
-import Linebreaks from "@/components/helpers/Linebreaks";
-import ParagraphsDangerousHtml from "@/components/helpers/ParagraphsDangerousHtml";
 import TransferConsentForm from "@/components/involvement/TransferConsentForm";
-import ViewContainer from "@/components/ViewContainer";
-import ViewHeading from "@/components/ViewHeading";
 import { getTranslations } from "@/translations";
 
 graphql(`
@@ -130,7 +132,13 @@ export default async function SurveyPage(props: Props) {
 
   const session = await auth();
   if (!session) {
-    return <SignInRequired messages={translations.SignInRequired} />;
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
   }
 
   const { data } = await getClient().query({

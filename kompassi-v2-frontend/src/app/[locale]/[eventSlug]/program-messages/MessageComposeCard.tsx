@@ -1,3 +1,4 @@
+import { SubmitButton } from "@con2/components";
 import { ReactNode } from "react";
 import Card from "react-bootstrap/Card";
 import CardBody from "react-bootstrap/CardBody";
@@ -7,7 +8,6 @@ import RecipientFilterField from "./RecipientFilterField";
 import { DimensionValueSelectFragment } from "@/__generated__/graphql";
 import { Field } from "@/components/forms/models";
 import { SchemaForm } from "@/components/forms/SchemaForm";
-import SubmitButton from "@/components/forms/SubmitButton";
 import type { Translations } from "@/translations/en";
 
 interface RecipientFilterItem {

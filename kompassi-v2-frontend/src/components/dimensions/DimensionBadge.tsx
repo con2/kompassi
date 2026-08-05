@@ -1,4 +1,4 @@
-import { makeBadgeBackgroundColor } from "./helpers";
+import { ColorBadge } from "@con2/components";
 import { graphql } from "@/__generated__";
 
 graphql(`
@@ -33,17 +33,12 @@ interface Props {
 
 export default function DimensionBadge({ subjectDimensionValue: sdv }: Props) {
   return (
-    <span
+    <ColorBadge
       key={sdv.dimension.slug}
-      className="badge ms-2"
+      color={sdv.value.color}
       title={sdv.dimension.title || sdv.dimension.slug}
-      style={{
-        backgroundColor: sdv.value.color
-          ? makeBadgeBackgroundColor(sdv.value.color)
-          : "var(--bs-secondary)",
-      }}
     >
       {sdv.value.title}
-    </span>
+    </ColorBadge>
   );
 }
