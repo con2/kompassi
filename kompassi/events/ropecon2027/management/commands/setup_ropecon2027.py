@@ -1,0 +1,336 @@
+import os
+from datetime import datetime, timedelta
+
+from dateutil.tz import tzlocal
+from django.conf import settings
+from django.contrib.auth.models import Group
+from django.contrib.contenttypes.models import ContentType
+from django.core.management.base import BaseCommand
+from django.utils.timezone import now
+
+from kompassi.access.models import GroupEmailAliasGrant
+from kompassi.access.models.email_alias_domain import EmailAliasDomain
+from kompassi.access.models.email_alias_type import EmailAliasVariant
+from kompassi.badges.models import BadgesEventMeta
+from kompassi.core.models import Event, Organization, Person, Venue
+from kompassi.forms.models.meta import FormsEventMeta
+from kompassi.intra.models import IntraEventMeta, Team
+from kompassi.involvement.models import Registry
+from kompassi.involvement.models.enums import JobTitleMode
+from kompassi.involvement.models.involvement_to_badge import InvolvementToBadgeMapping
+from kompassi.involvement.models.involvement_to_group import InvolvementToGroupMapping
+from kompassi.labour.models import (
+    AlternativeSignupForm,
+    JobCategory,
+    LabourEventMeta,
+    PersonnelClass,
+)
+from kompassi.program_v2.models.meta import ProgramV2EventMeta
+from kompassi.tickets_v2.models.meta import TicketsV2EventMeta
+from kompassi.tickets_v2.optimized_server.models.enums import PaymentProvider
+
+from ...models import Language, SignupExtra, SpecialDiet
+
+
+def mkpath(*parts):
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", *parts))
+
+
+class Setup:
+    def __init__(self):
+        self._ordering = 0
+
+    def get_ordering_number(self):
+        self._ordering += 10
+        return self._ordering
+
+    def setup(self, test=False):
+        self.test = test
+        self.tz = tzlocal()
+        self.setup_core()
+        self.setup_labour()
+        self.setup_intra()
+        self.setup_badges()
+        self.setup_access()
+        self.setup_program_v2()
+        self.setup_tickets_v2()
+        self.setup_forms()
+
+    def setup_core(self):
+        self.venue, _unused = Venue.objects.get_or_create(
+            name="Messukeskus",
+            defaults=dict(
+                name_inessive="Messukeskuksessa",
+            ),
+        )
+        self.organization, _unused = Organization.objects.get_or_create(
+            slug="ropecon-ry",
+            defaults=dict(
+                name="Ropecon ry",
+                homepage_url="http://www.ropecon.fi/hallitus",
+            ),
+        )
+        self.event, _unused = Event.objects.get_or_create(
+            slug="ropecon2027",
+            defaults=dict(
+                name="Ropecon 2027",
+                name_genitive="Ropecon 2027 -tapahtuman",
+                name_illative="Ropecon 2027 -tapahtumaan",
+                name_inessive="Ropecon 2027 -tapahtumassa",
+                homepage_url="http://ropecon.fi",
+                organization=self.organization,
+                start_time=datetime(2027, 7, 30, 15, 0, tzinfo=self.tz),
+                end_time=datetime(2027, 8, 1, 18, 0, tzinfo=self.tz),
+                venue=self.venue,
+            ),
+        )
+
+    def setup_labour(self):
+        (labour_admin_group,) = LabourEventMeta.get_or_create_groups(self.event, ["admins"])
+
+        if self.test:
+            person, _unused = Person.get_or_create_dummy()
+            labour_admin_group.user_set.add(person.user)  # type: ignore
+
+        content_type = ContentType.objects.get_for_model(SignupExtra)
+
+        start_time = self.event.start_time
+        if not start_time:
+            raise ValueError("Event start_time is not set (shouldn't happen, appease typechecker)")
+        start_time = start_time.astimezone(self.tz)
+        work_begins = (start_time - timedelta(days=1)).replace(hour=8, minute=0)
+
+        end_time = self.event.end_time
+        if not end_time:
+            raise ValueError("Event end_time is not set (shouldn't happen, appease typechecker)")
+        end_time = end_time.astimezone(self.tz)
+        work_ends = (end_time + timedelta(days=2)).replace(hour=2, minute=0)
+
+        labour_event_meta_defaults = dict(
+            signup_extra_content_type=content_type,
+            work_begins=work_begins,
+            work_ends=work_ends,
+            admin_group=labour_admin_group,
+            contact_email="Ropeconin vapaaehtoisvastaava <vapaaehtoiset@ropecon.fi>",
+        )
+
+        if self.test:
+            t = now()
+            labour_event_meta_defaults.update(
+                registration_opens=t - timedelta(days=60),  # type: ignore
+                registration_closes=t + timedelta(days=60),  # type: ignore
+            )
+
+        labour_event_meta, _unused = LabourEventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=labour_event_meta_defaults,
+        )
+
+        for pc_name, pc_slug, pc_app_label in [
+            ("Conitea", "conitea", "labour"),
+            ("Vuorovastaava", "ylivankari", "labour"),
+            ("Ylityöntekijä", "ylityovoima", "labour"),
+            ("Työvoima", "tyovoima", "labour"),
+            ("Ohjelmanjärjestäjä", "ohjelma", "program_v2"),
+            ("Guest of Honour", "goh", "program_v2"),
+            ("Media", "media", "badges"),
+            ("Myyjä", "myyja", "badges"),
+            ("Vieras", "vieras", "badges"),
+            ("Vapaalippu", "vapaalippu", "badges"),
+        ]:
+            _personnel_class, _created = PersonnelClass.objects.get_or_create(
+                event=self.event,
+                slug=pc_slug,
+                defaults=dict(
+                    name=pc_name,
+                    app_label=pc_app_label,
+                    priority=self.get_ordering_number(),
+                ),
+            )
+
+        if not JobCategory.objects.filter(event=self.event).exists():
+            JobCategory.copy_from_event(
+                source_event=Event.objects.get(slug="ropecon2026"),
+                target_event=self.event,
+            )
+
+        labour_event_meta.create_groups()
+
+        for name in ["Conitea"]:
+            JobCategory.objects.filter(event=self.event, name=name).update(public=False)
+
+        for diet_name in [
+            "Gluteeniton",
+            "Laktoositon",
+            "Maidoton",
+            "Vegaaninen",
+            "Lakto-ovo-vegetaristinen",
+        ]:
+            SpecialDiet.objects.get_or_create(name=diet_name)
+
+        for language in [
+            "suomi / Finnish",
+            "englanti / English",
+            "ruotsi / Swedish",
+            "saksa / German",
+            "japani / Japanese",
+            "eesti / Estonian",
+        ]:
+            Language.objects.get_or_create(name=language)
+
+        AlternativeSignupForm.objects.get_or_create(
+            event=self.event,
+            slug="conitea",
+            defaults=dict(
+                title="Conitean ilmoittautumislomake",
+                signup_form_class_path="events.ropecon2027.forms:OrganizerSignupForm",
+                signup_extra_form_class_path="events.ropecon2027.forms:OrganizerSignupExtraForm",
+                active_from=now(),
+                active_until=self.event.end_time,
+            ),
+        )
+
+        AlternativeSignupForm.objects.get_or_create(
+            event=self.event,
+            slug="xxlomake",
+            defaults=dict(
+                title="Erikoistehtävien ilmoittautumislomake",
+                signup_form_class_path="events.ropecon2027.forms:SpecialistSignupForm",
+                signup_extra_form_class_path="events.ropecon2027.forms:SpecialistSignupExtraForm",
+                active_from=self.event.created_at,
+                active_until=self.event.start_time,
+                signup_message=(
+                    "Täytä tämä lomake vain, "
+                    "jos joku Ropeconin vastaavista on ohjeistanut sinun ilmoittautua tällä lomakkeella."
+                ),
+            ),
+        )
+
+    def setup_badges(self):
+        (badge_admin_group,) = BadgesEventMeta.get_or_create_groups(self.event, ["admins"])
+        _meta, _unused = BadgesEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=badge_admin_group,
+            ),
+        )
+
+    def setup_intra(self):
+        (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
+        organizer_group = self.event.labour_event_meta.get_group("conitea")
+        _meta, _unused = IntraEventMeta.objects.get_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                organizer_group=organizer_group,
+            ),
+        )
+
+        for team_slug, team_name in [
+            # ("talous", "Talous"),
+            # ("peliohjelma", "Peliohjelma"),
+            # ("puheohjelma", "Puheohjelma"),
+            # ("ohjelma", "Muu ohjelma"),
+            # ("viestinta", "Viestintä"),
+            # ("infra", "Infra"),
+            # ("vapaaehtoiset", "Vapaaehtoiset"),
+            # ("kavijapalvelut", "Kävijäpalvelut"),
+        ]:
+            (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
+            Team.objects.update_or_create(
+                event=self.event,
+                slug=team_slug,
+                defaults=dict(
+                    name=team_name,
+                    order=self.get_ordering_number(),
+                    group=team_group,
+                ),
+            )
+
+    def setup_access(self):
+        cc_group = self.event.labour_event_meta.get_group("conitea")
+        domain = EmailAliasDomain.objects.get(domain_name="ropecon.fi")
+        GroupEmailAliasGrant.ensure(
+            cc_group,
+            domain,
+            [
+                EmailAliasVariant.FIRSTNAME_LASTNAME,
+                EmailAliasVariant.NICK,
+            ],
+        )
+
+    def setup_program_v2(self):
+        (admin_group,) = ProgramV2EventMeta.get_or_create_groups(self.event, ["admins"])
+        meta, _ = ProgramV2EventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                contact_email="Ropeconin ohjelmatiimi <ohjelma@ropecon.fi>",
+                # NOTE: setting this shows guide as published
+                # guide_v2_embedded_url="https://ropecon.fi/opas/",
+                is_accepting_feedback=False,
+                default_registry=Registry.objects.get(
+                    scope=self.organization.scope,
+                    slug="volunteers",
+                ),
+            ),
+        )
+        meta.ensure()
+
+        universe = self.event.involvement_universe
+
+        ohjelma = PersonnelClass.objects.get(event=self.event, slug="ohjelma")
+        InvolvementToBadgeMapping.objects.update_or_create(
+            universe=universe,
+            personnel_class=ohjelma,
+            defaults=dict(
+                required_dimensions={
+                    "state": ["active"],
+                    "v1-personnel-class": ["ohjelma"],
+                },
+                job_title="Ohjelma",
+                job_title_mode=JobTitleMode.OVERRIDE,
+                priority=self.get_ordering_number(),
+            ),
+        )
+
+        group, _ = Group.objects.get_or_create(name=f"{self.event.slug}-program-hosts")
+        InvolvementToGroupMapping.objects.get_or_create(
+            universe=universe,
+            required_dimensions={
+                "state": ["active"],
+                "type": ["program-host"],
+            },
+            group=group,
+        )
+
+    def setup_forms(self):
+        (admin_group,) = FormsEventMeta.get_or_create_groups(self.event, ["admins"])
+        FormsEventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+            ),
+        )
+
+    def setup_tickets_v2(self):
+        (admin_group,) = TicketsV2EventMeta.get_or_create_groups(self.event, ["admins"])
+        meta, _ = TicketsV2EventMeta.objects.update_or_create(
+            event=self.event,
+            defaults=dict(
+                admin_group=admin_group,
+                provider_id=PaymentProvider.PAYTRAIL.value,
+                contact_email="Ropeconin lipunmyynti <lipunmyynti@ropecon.fi>",
+                terms_and_conditions_url_en="https://ropecon.fi/en/ticket-terms-conditions/",
+                terms_and_conditions_url_fi="https://ropecon.fi/lippuehdot-2027/",
+            ),
+        )
+        meta.ensure_partitions()
+
+
+class Command(BaseCommand):
+    args = ""
+    help = "Setup ropecon2027 specific stuff"
+
+    def handle(self, *args, **opts):
+        Setup().setup(test=settings.DEBUG)
