@@ -227,14 +227,14 @@ class Setup:
         )
 
         for team_slug, team_name in [
-            ("talous", "Talous"),
-            ("peliohjelma", "Peliohjelma"),
-            ("puheohjelma", "Puheohjelma"),
-            ("ohjelma", "Muu ohjelma"),
-            ("viestinta", "Viestintä"),
-            ("infra", "Infra"),
-            ("vapaaehtoiset", "Vapaaehtoiset"),
-            ("kavijapalvelut", "Kävijäpalvelut"),
+            # ("talous", "Talous"),
+            # ("peliohjelma", "Peliohjelma"),
+            # ("puheohjelma", "Puheohjelma"),
+            # ("ohjelma", "Muu ohjelma"),
+            # ("viestinta", "Viestintä"),
+            # ("infra", "Infra"),
+            # ("vapaaehtoiset", "Vapaaehtoiset"),
+            # ("kavijapalvelut", "Kävijäpalvelut"),
         ]:
             (team_group,) = IntraEventMeta.get_or_create_groups(self.event, [team_slug])
             Team.objects.update_or_create(
