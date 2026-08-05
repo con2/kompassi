@@ -105,6 +105,11 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
         self.helper.form_tag = False
         self.helper.layout = Layout(
             Fieldset(
+                _("Language skills"),
+                "languages",
+                "other_languages",
+            ),
+            Fieldset(
                 "Lisätiedot",
                 "special_diet",
                 "special_diet_other",
@@ -114,12 +119,15 @@ class OrganizerSignupExtraForm(forms.ModelForm, AlternativeFormMixin):
     class Meta:
         model = SignupExtra
         fields = (
+            "languages",
+            "other_languages",
             "special_diet",
             "special_diet_other",
         )
 
         widgets = dict(  # noqa: RUF012
             special_diet=forms.CheckboxSelectMultiple,
+            languages=forms.CheckboxSelectMultiple,
         )
 
     def get_excluded_field_defaults(self):
