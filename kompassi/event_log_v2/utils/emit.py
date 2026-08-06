@@ -77,7 +77,7 @@ def emit(entry_type: str, **kwargs):
         kwargs = dict(attrs_from_request(request), **kwargs)
 
     kwargs, other_fields = Entry.hoist(kwargs)
-    logger.debug("event_log.utils.emit %s %s", entry_type, other_fields)
+    logger.debug("event_log.utils.emit", extra=dict(entry_type=entry_type, **other_fields))
 
     entry = Entry(entry_type=entry_type, other_fields=other_fields, **kwargs)
     entry.save()

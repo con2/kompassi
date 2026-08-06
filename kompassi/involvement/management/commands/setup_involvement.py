@@ -4,7 +4,7 @@ from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.scope import Scope
 
 from ...emperkelators.desucon2026 import DesuconEmperkelator
-from ...emperkelators.tracon2025 import TraconEmperkelator
+from ...emperkelators.tracon2026 import TraconEmperkelator
 from ...models.registry import Registry
 
 

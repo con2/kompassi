@@ -204,12 +204,16 @@ class Perks(pydantic.BaseModel):
 
     @classmethod
     def for_legacy_signup(cls, involvement: Involvement) -> Perks:
-        personnel_classes = set(involvement.cached_dimensions.get("v1-personnel-class", []))
-        working_hours: int = involvement.annotations.get("kompassi:workingHours", 10)
+        signup = involvement.signup
+        if signup is None:
+            raise ValueError("cannot for the")
+
+        personnel_classes = set(signup.personnel_classes.values_list("slug", flat=True))
+        working_hours: int = signup.working_hours
 
         if "coniitti" in personnel_classes:
             return Perks(
-                override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstrajuomapullo",
+                override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstramuki",
                 ticket_type=TicketType.SUPER_INTERNAL_BADGE,
                 meals=MAX_MEALS,
                 swag=True,
@@ -313,8 +317,11 @@ class TraconEmperkelator(BaseEmperkelator):
     @property
     def shirt_size_dimension_values(self) -> list[str]:
         if inv := self.active_legacy_signup_involvement:
-            existing_shirt_size = inv.cached_dimensions.get("shirt-size", [])
-            return self.get_frozen_shirt_size_values(existing_shirt_size)
+            signup_extra = inv.signup.signup_extra if inv.signup else None
+            if signup_extra is None:
+                raise ValueError("it no has")
+
+            return self.get_frozen_shirt_size_values([ShirtSize.from_v1(signup_extra.shirt_size).value])
 
         # TODO in future events, make sure this is a dimension in source data
         for response in Response.objects.filter(
@@ -442,7 +449,7 @@ class TraconEmperkelator(BaseEmperkelator):
 
         meals_str = f"{meals} ruokalippua" if meals else "ei ruokalippuja"
         swag_str = "valittu työvoimatuote" if swag else "ei työvoimatuotteita"
-        extra_swag_str = " ja ekstrajuomapullo" if extra_swag else ""
+        extra_swag_str = " ja ekstramuki" if extra_swag else ""
 
         return f"{ticket_type.title_fi}, {meals_str}, {swag_str}{extra_swag_str}"
 

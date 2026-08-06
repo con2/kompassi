@@ -9,7 +9,7 @@ from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 
 from .emperkelators.desucon2026 import DesuconEmperkelator
 from .emperkelators.ropecon2026 import RopeconEmperkelator
-from .emperkelators.tracon2025 import TraconEmperkelator
+from .emperkelators.tracon2026 import TraconEmperkelator
 from .models.enums import InvolvementApp, InvolvementType
 from .models.involvement import Involvement
 from .models.meta import InvolvementEventMeta
@@ -158,7 +158,7 @@ def test_tracon_get_formatted_perks_extra_swag():
 
     assert (
         TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
-        == "Badge (super internal), 4 ruokalippua, valittu työvoimatuote ja ekstrajuomapullo"
+        == "Badge (super internal), 4 ruokalippua, valittu työvoimatuote ja ekstramuki"
     )
 
 
@@ -166,12 +166,12 @@ def test_tracon_get_formatted_perks_override():
     dimension_values = {"ticket-type": ["internal-badge"]}
     annotation_values = {
         "tracon:mealVouchers": 2,
-        "internal:overrideFormattedPerks": "Coniitin kirjekuori, valittu työvoimatuote, ekstrajuomapullo",
+        "internal:overrideFormattedPerks": "Coniitin kirjekuori, valittu työvoimatuote, ekstramuki",
     }
 
     assert (
         TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
-        == "Coniitin kirjekuori, valittu työvoimatuote, ekstrajuomapullo"
+        == "Coniitin kirjekuori, valittu työvoimatuote, ekstramuki"
     )
 
 

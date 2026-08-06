@@ -95,7 +95,7 @@ class InvolvementEventMeta(models.Model, GroupManagementMixin):
     def emperkelator_class(self) -> type[BaseEmperkelator] | None:
         from kompassi.involvement.emperkelators.desucon2026 import DesuconEmperkelator
         from kompassi.involvement.emperkelators.ropecon2026 import RopeconEmperkelator
-        from kompassi.involvement.emperkelators.tracon2025 import TraconEmperkelator
+        from kompassi.involvement.emperkelators.tracon2026 import TraconEmperkelator
 
         match = re.match(r"^([a-z-]+)(\d{4})$", self.event.slug)
         if not match:
@@ -104,7 +104,7 @@ class InvolvementEventMeta(models.Model, GroupManagementMixin):
         base_slug = match.group(1)
         year = int(match.group(2))
 
-        if base_slug == "tracon" and year >= 2025:
+        if base_slug == "tracon" and year >= 2026:
             return TraconEmperkelator
         elif base_slug in ("desucon", "frostbite") and year >= 2026:
             return DesuconEmperkelator
