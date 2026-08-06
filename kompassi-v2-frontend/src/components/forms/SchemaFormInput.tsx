@@ -3,6 +3,7 @@ import {
   DateTimeInput,
   UploadedFileCards,
   PatternTextInput,
+  TextArea,
 } from "@con2/components";
 import { makeInputId } from "@con2/components/helpers";
 import Card from "react-bootstrap/Card";
@@ -76,6 +77,23 @@ function SchemaFormInput({
       return <input {...textInputProps} />;
     }
     case "MultiLineText":
+      // Only the character-count/custom-validity behavior needs client-side event
+      // handlers, so reach for the client component only when maxLength is set.
+      if (field.maxLength) {
+        return (
+          <TextArea
+            id={id}
+            name={slug}
+            rows={field.rows ?? defaultRows}
+            defaultValue={value}
+            required={required}
+            readOnly={readOnly}
+            maxLength={field.maxLength}
+            locale={locale ?? "fi"}
+          />
+        );
+      }
+
       return (
         <textarea
           className="form-control"
@@ -97,6 +115,7 @@ function SchemaFormInput({
           readOnly={readOnly}
           rows={field.rows ?? defaultRows}
           locale={locale}
+          maxLength={field.maxLength}
         />
       );
     case "NumberField":

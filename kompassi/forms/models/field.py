@@ -147,6 +147,13 @@ class Field(pydantic.BaseModel, populate_by_name=True):
         serialization_alias="decimalPlaces",
         repr=False,
     )
+    # max_length only makes sense for SingleLineText, MultiLineText, MarkdownText
+    max_length: int | None = pydantic.Field(
+        default=None,
+        validation_alias="maxLength",
+        serialization_alias="maxLength",
+        repr=False,
+    )
     encrypt_to: list[str] | None = pydantic.Field(
         default=None,
         validation_alias="encryptTo",

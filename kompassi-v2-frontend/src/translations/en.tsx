@@ -262,6 +262,11 @@ const translations = {
         title: "Dimension",
         helpText: "Which dimension should the field get its choices from?",
       },
+      maxLength: {
+        title: "Maximum length",
+        helpText:
+          "Maximum number of characters the respondent may enter. Leave empty for no limit.",
+      },
       encryptTo: {
         title: "Encrypt to",
         helpText:

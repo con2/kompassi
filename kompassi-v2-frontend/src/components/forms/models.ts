@@ -98,11 +98,13 @@ export interface SingleLineText extends BaseField {
 export interface MultiLineText extends BaseField {
   type: "MultiLineText";
   rows?: number;
+  maxLength?: number;
 }
 
 export interface MarkdownText extends BaseField {
   type: "MarkdownText";
   rows?: number;
+  maxLength?: number;
 }
 
 export interface NumberField extends BaseField {

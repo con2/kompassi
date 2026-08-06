@@ -268,6 +268,11 @@ const translations: Translations = {
         title: "Dimensio",
         helpText: "Mistä dimensiosta tämä kenttä saa vastauksensa?",
       },
+      maxLength: {
+        title: "Enimmäispituus",
+        helpText:
+          "Vastaajan syöttämän tekstin enimmäispituus merkkeinä. Jätä tyhjäksi, jos rajaa ei ole.",
+      },
       encryptTo: {
         title: "Salaa vastaukset",
         helpText:

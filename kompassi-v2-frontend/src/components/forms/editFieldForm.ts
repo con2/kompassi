@@ -74,6 +74,13 @@ export function getFieldEditorFields(
     ...t.dimension,
   };
 
+  const maxLengthField: Field = {
+    type: "NumberField",
+    slug: "maxLength",
+    required: false,
+    ...t.maxLength,
+  };
+
   // const encryptTo: Field = {
   //   type: "MultiLineText",
   //   slug: "encryptTo",
@@ -96,6 +103,9 @@ export function getFieldEditorFields(
         choicesField,
         // encryptTo,
       ]);
+    case "MultiLineText":
+    case "MarkdownText":
+      return editableFieldFields.concat([maxLengthField]);
     case "Divider":
     case "Spacer":
       return [slugField];

@@ -258,6 +258,11 @@ const translations: Translations = {
         title: "Dimension",
         helpText: "Vilken dimension ska fältet hämta sina val från?",
       },
+      maxLength: {
+        title: "Maximilängd",
+        helpText:
+          "Det maximala antalet tecken som kan anges. Lämna tomt om det inte finns någon gräns.",
+      },
       encryptTo: {
         title: "Kryptera till",
         helpText:
