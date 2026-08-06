@@ -157,7 +157,7 @@ class JobCategory(models.Model):
 
     @property
     def can_remove(self):
-        return self.pk is not None and not self.signup_set.exists()
+        return self.pk is not None and not self.signups.exists()
 
     @property
     def title(self):

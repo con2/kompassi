@@ -17,10 +17,10 @@ from ..models import (
 def admin_dashboard_view(request, vars, event):
     vars.update(
         # XXX state overhaul
-        num_pending=event.signup_set.filter(is_active=True, time_accepted__isnull=True).count(),
-        num_accepted=event.signup_set.filter(time_accepted__isnull=False).count(),
-        num_rejected=event.signup_set.filter(Q(time_rejected__isnull=False) | Q(time_cancelled__isnull=False)).count(),
-        signups=event.signup_set.order_by("-created_at")[:5],
+        num_pending=event.signups.filter(is_active=True, time_accepted__isnull=True).count(),
+        num_accepted=event.signups.filter(time_accepted__isnull=False).count(),
+        num_rejected=event.signups.filter(Q(time_rejected__isnull=False) | Q(time_cancelled__isnull=False)).count(),
+        signups=event.signups.order_by("-created_at")[:5],
     )
 
     return render(request, "labour_admin_dashboard_view.pug", vars)

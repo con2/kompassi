@@ -226,13 +226,13 @@ class LabourEventMeta(ContactEmailMixin, EventMetaBase):
         self.save()
 
     def is_person_signed_up(self, person):
-        return self.event.signup_set.filter(person=person).exists()
+        return self.event.signups.filter(person=person).exists()
 
     def get_signup_for_person(self, person):
         from .signup import Signup
 
         try:
-            return self.event.signup_set.get(person=person)
+            return self.event.signups.get(person=person)
         except Signup.DoesNotExist:
             return Signup(person=person, event=self.event)
 

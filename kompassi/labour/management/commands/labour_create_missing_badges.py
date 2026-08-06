@@ -20,7 +20,7 @@ class Command(BaseCommand):
         for event_slug in options["event_slugs"]:
             event = Event.objects.get(slug=event_slug)
 
-            for signup in event.signup_set.all():
+            for signup in event.signups.all():
                 signup.apply_state_sync()
                 stderr.write(".")
                 stderr.flush()

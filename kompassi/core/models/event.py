@@ -138,7 +138,7 @@ class Event(models.Model):
     # related fields
     programs: models.QuerySet[Program]
     schedule_items: models.QuerySet[ScheduleItem]
-    signup_set: models.QuerySet[Signup]
+    signups: models.QuerySet[Signup]
     surveys: models.QuerySet[Survey]
     personnel_classes: models.QuerySet[PersonnelClass]
 

@@ -1,3 +1,4 @@
+import logging
 import os
 from datetime import datetime, timedelta
 
@@ -30,6 +31,8 @@ from kompassi.tickets_v2.models.meta import TicketsV2EventMeta
 from kompassi.tickets_v2.optimized_server.models.enums import PaymentProvider
 
 from ...models import Language, SignupExtra, SpecialDiet
+
+logger = logging.getLogger(__name__)
 
 
 def mkpath(*parts):
@@ -126,27 +129,34 @@ class Setup:
             defaults=labour_event_meta_defaults,
         )
 
-        for pc_name, pc_slug, pc_app_label in [
-            ("Conitea", "conitea", "labour"),
-            ("Vuorovastaava", "ylivankari", "labour"),
-            ("Ylityöntekijä", "ylityovoima", "labour"),
-            ("Työvoima", "tyovoima", "labour"),
-            ("Ohjelmanjärjestäjä", "ohjelma", "program_v2"),
-            ("Guest of Honour", "goh", "program_v2"),
-            ("Media", "media", "badges"),
-            ("Myyjä", "myyja", "badges"),
-            ("Vieras", "vieras", "badges"),
-            ("Vapaalippu", "vapaalippu", "badges"),
+        for pc_name, pc_slug, pc_app_label, pc_desired_state in [
+            ("Conitea", "conitea", "labour", "PRESENT"),
+            ("Vuorovastaava", "ylivankari", "labour", "PRESENT"),
+            ("Ylityöntekijä", "ylityovoima", "labour", "ABSENT"),
+            ("Vapaaehtoinen", "tyovoima", "labour", "PRESENT"),
+            ("Ohjelmanjärjestäjä", "ohjelma", "program_v2", "PRESENT"),
+            ("Guest of Honour", "goh", "program_v2", "PRESENT"),
+            ("Media", "media", "badges", "ABSENT"),
+            ("Myyjä", "myyja", "badges", "ABSENT"),
+            ("Vieras", "vieras", "badges", "ABSENT"),
+            ("Vapaalippu", "vapaalippu", "badges", "ABSENT"),
         ]:
-            _personnel_class, _created = PersonnelClass.objects.get_or_create(
-                event=self.event,
-                slug=pc_slug,
-                defaults=dict(
-                    name=pc_name,
-                    app_label=pc_app_label,
-                    priority=self.get_ordering_number(),
-                ),
-            )
+            match pc_desired_state:
+                case "PRESENT":
+                    PersonnelClass.objects.update_or_create(
+                        event=self.event,
+                        slug=pc_slug,
+                        defaults=dict(
+                            name=pc_name,
+                            app_label=pc_app_label,
+                            priority=self.get_ordering_number(),
+                        ),
+                    )
+                case "ABSENT":
+                    pc = PersonnelClass.objects.filter(event=self.event, slug=pc_slug).first()
+                    if pc is None:
+                        continue
+                    pc.delete_unused()
 
         if not JobCategory.objects.filter(event=self.event).exists():
             JobCategory.copy_from_event(

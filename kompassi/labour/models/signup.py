@@ -166,6 +166,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
     event: models.ForeignKey[Event] = models.ForeignKey(
         Event,
         on_delete=models.CASCADE,
+        related_name="signups",
     )
 
     personnel_classes = models.ManyToManyField(
@@ -174,6 +175,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         verbose_name="Henkilöstöluokat",
         help_text="Mihin henkilöstöryhmiin tämä henkilö kuuluu? Henkilö saa valituista ryhmistä "
         "ylimmän mukaisen badgen.",
+        related_name="signups",
     )
 
     job_categories = models.ManyToManyField(
@@ -183,7 +185,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         "tapahtumassa. Huomaathan, että sinulle tarjottavia tehtäviä voi rajoittaa se, "
         "mitä pätevyyksiä olet ilmoittanut sinulla olevan. Esimerkiksi järjestyksenvalvojaksi "
         "voivat ilmoittautua ainoastaan JV-kortilliset.",
-        related_name="signup_set",
+        related_name="signups",
     )
 
     notes = models.TextField(
@@ -671,7 +673,7 @@ class Signup(CsvExportMixin, SignupMixin, models.Model):
         CBACEntry.ensure_admin_group_privileges_for_event(event)
 
     def get_previous_and_next_signup(self):
-        queryset = self.event.signup_set.order_by("person__surname", "person__first_name", "id").all()
+        queryset = self.event.signups.order_by("person__surname", "person__first_name", "id").all()
         return get_previous_and_next(queryset, self)
 
     @property

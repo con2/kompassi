@@ -13,10 +13,27 @@ def log_get_or_create(logger: logging.Logger, obj, created: bool):
     )
 
 
-def log_delete(logger: logging.Logger, delete_result: tuple[int, dict[str, int]]):
+def log_delete(
+    logger: logging.Logger,
+    delete_result: tuple[int, dict[str, int]],
+    *,
+    zero_level: int | None = logging.INFO,
+    nonzero_level: int | None = logging.INFO,
+    message: str = "Objects deleted",
+    **extra: object,
+):
     total_deleted, deleted_by_model = delete_result
-    logger.info(
-        "Deleted %s objects (%s)",
-        total_deleted,
-        ", ".join(f"{k}: {v}" for k, v in deleted_by_model.items()),
+
+    level = zero_level if total_deleted == 0 else nonzero_level
+    if level is None:
+        return
+
+    logger.log(
+        level,
+        message,
+        extra=dict(
+            total=total_deleted,
+            by_model=deleted_by_model,
+            **extra,
+        ),
     )
