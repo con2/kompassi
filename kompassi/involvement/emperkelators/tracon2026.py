@@ -102,8 +102,8 @@ class ShirtSize(Enum):
     LADYFIT_XL = "ladyfit-xl", "LF_XL", "XL Ladyfit", "XL Ladyfit"
     LADYFIT_2XL = "ladyfit-2xl", "LF_XXL", "2XL Ladyfit", "2XL Ladyfit"
     LADYFIT_3XL = "ladyfit-3xl", "LF_3XL", "3XL Ladyfit", "3XL Ladyfit"
-    BAG = "bag", "BAG", "Tote bag", "Kangaskassi"
-    BOTTLE = "bottle", "BOTTLE", "Water bottle", "Juomapullo"
+    # BAG = "bag", "BAG", "Tote bag", "Kangaskassi"
+    # BOTTLE = "bottle", "BOTTLE", "Water bottle", "Juomapullo"
     MUG = "mug", "MUG", "Thermos mug", "Termosmuki"
 
     v1_slug: str
@@ -121,6 +121,9 @@ class ShirtSize(Enum):
 
     @classmethod
     def from_v1(cls, v1_shirt_size: str) -> ShirtSize:
+        if v1_shirt_size.lower() in ("bag", "bottle"):
+            return cls.MUG
+
         return SHIRT_SIZES_BY_V1.get(v1_shirt_size, cls.NONE)
 
     @classmethod
@@ -213,7 +216,6 @@ class Perks(pydantic.BaseModel):
 
         if "coniitti" in personnel_classes:
             return Perks(
-                override_formatted_perks="Coniitin kirjekuori, valittu työvoimatuote, ekstramuki",
                 ticket_type=TicketType.SUPER_INTERNAL_BADGE,
                 meals=MAX_MEALS,
                 swag=True,
@@ -302,7 +304,11 @@ class TraconEmperkelator(BaseEmperkelator):
     @property
     def v1_personnel_class_dimension_values(self):
         if inv := self.active_legacy_signup_involvement:
-            return inv.cached_dimensions.get("v1-personnel-class", [])
+            signup = inv.signup
+            if signup is None:
+                raise ValueError("cannot for the")
+            pc = signup.personnel_class
+            return [pc.slug] if pc is not None else []
 
         for inv in self.involvements:
             if inv.type == InvolvementType.PROGRAM_HOST:
@@ -440,18 +446,35 @@ class TraconEmperkelator(BaseEmperkelator):
 
     @classmethod
     def _format_computed_perks(cls, dimension_values: CachedDimensions, annotation_values: CachedAnnotations) -> str:
+        parts: list[str] = []
+
+        v1_personnel_classes = dimension_values.get("v1-personnel-class", [])
         ticket_type_values = dimension_values.get("ticket-type", [])
         ticket_type = TicketType(next(iter(ticket_type_values))) if ticket_type_values else TicketType.NONE
+        if "coniitti" in v1_personnel_classes:
+            parts.append("Coniitin kirjekuori")
+        else:
+            parts.append(ticket_type.title_fi)
 
         meals = int(annotation_values.get("tracon:mealVouchers", 0) or 0)
+        if meals:
+            parts.append(f"{meals} ruokalippua")
+        else:
+            parts.append("ei ruokalippuja")
+
         swag = bool(annotation_values.get("tracon:swag", False))
+        shirt_size_values = dimension_values.get("shirt-size", [])
+        shirt_size = ShirtSize.from_v2(next(iter(shirt_size_values))) if shirt_size_values else ShirtSize.NONE
+        if not swag or shirt_size == ShirtSize.NONE:
+            parts.append(ShirtSize.NONE.title_fi.lower())
+        else:
+            parts.append(shirt_size.title_fi)
+
         extra_swag = bool(annotation_values.get("tracon:extraSwag", False))
+        if extra_swag:
+            parts.append("ekstramuki")
 
-        meals_str = f"{meals} ruokalippua" if meals else "ei ruokalippuja"
-        swag_str = "valittu työvoimatuote" if swag else "ei työvoimatuotteita"
-        extra_swag_str = " ja ekstramuki" if extra_swag else ""
-
-        return f"{ticket_type.title_fi}, {meals_str}, {swag_str}{extra_swag_str}"
+        return ", ".join(parts)
 
     def get_title(self) -> str:
         if inv := self.active_legacy_signup_involvement:
