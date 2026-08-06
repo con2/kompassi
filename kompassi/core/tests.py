@@ -54,6 +54,21 @@ class LoggingFormatterTestCase(TestCase):
         assert "test message" in rendered
         assert "total=5" in rendered
 
+    def test_json_formatter_extra_event_field_does_not_clobber_message(self):
+        formatter = _build_log_formatter("json")
+        rendered = json.loads(formatter.format(_make_log_record(event="tracon2026")))
+
+        assert rendered["message"] == "test message"
+        assert rendered["event"] == "tracon2026"
+
+    def test_human_formatter_extra_event_field_does_not_clobber_message(self):
+        formatter = _build_log_formatter("human")
+        rendered = _ANSI_ESCAPE.sub("", formatter.format(_make_log_record(event="tracon2026")))
+
+        assert "test message" in rendered
+        assert "event=" in rendered
+        assert "tracon2026" in rendered
+
 
 class PersonTestCase(TestCase):
     def test_normalized_phone_number(self):

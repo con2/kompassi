@@ -303,6 +303,9 @@ _structlog_foreign_pre_chain = [
     structlog.contextvars.merge_contextvars,
     structlog.stdlib.add_log_level,
     structlog.stdlib.add_logger_name,
+    # Renamed to "message" before ExtraAdder runs so that an extra field literally
+    # named "event" (eg. an event slug) cannot clobber the actual log message.
+    structlog.processors.EventRenamer("message"),
     structlog.stdlib.ExtraAdder(),
     structlog.processors.TimeStamper(fmt="iso", utc=True),
 ]
@@ -316,7 +319,6 @@ LOGGING = {
             "foreign_pre_chain": _structlog_foreign_pre_chain,
             "processors": [
                 structlog.stdlib.ProcessorFormatter.remove_processors_meta,
-                structlog.processors.EventRenamer("message"),
                 structlog.processors.JSONRenderer(),
             ],
         },
@@ -325,7 +327,7 @@ LOGGING = {
             "foreign_pre_chain": _structlog_foreign_pre_chain,
             "processors": [
                 structlog.stdlib.ProcessorFormatter.remove_processors_meta,
-                structlog.dev.ConsoleRenderer(),
+                structlog.dev.ConsoleRenderer(event_key="message"),
             ],
         },
     },
