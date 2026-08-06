@@ -35,7 +35,7 @@ class EventPartitionsMixin:
         meta: IMeta = cls._meta
         partition_name = cls.get_partition_name(event)
 
-        logger.info(f"Creating partition {partition_name}")
+        logger.info("Creating partition", extra=dict(model=cls.__name__, partition=partition_name))
 
         with connection.cursor() as cursor:
             cursor.execute(
@@ -78,9 +78,7 @@ class EventPartitionsMixin:
     def ensure_partition(cls, event: Event):
         created = False
 
-        if cls.partition_exists(event):
-            logger.debug(f"Partition {cls.get_partition_name(event)} already exists")
-        else:
+        if not cls.partition_exists(event):
             cls.create_partition(event)
             created = True
 

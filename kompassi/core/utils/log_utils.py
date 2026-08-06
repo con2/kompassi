@@ -1,14 +1,23 @@
 import logging
 
 
-def log_get_or_create(logger: logging.Logger, obj, created: bool):
-    level = logging.INFO if created else logging.DEBUG
+def log_get_or_create(
+    logger: logging.Logger,
+    obj,
+    created: bool,
+    exists_level: int | None = None,
+    created_level: int | None = logging.INFO,
+):
+    level = created_level if created else exists_level
+    if level is None:
+        return
+
     logger.log(
         level,
-        "{kind} {name} {what_done}".format(
+        "Created" if created else "Already exists",
+        extra=dict(
             kind=obj.__class__.__name__,
-            name=str(obj),
-            what_done="created" if created else "already exists",
+            what=str(obj),
         ),
     )
 

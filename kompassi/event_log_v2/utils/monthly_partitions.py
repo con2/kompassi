@@ -229,9 +229,21 @@ class MonthlyPartitionsMixin(UUID7Mixin):
         table_name = cls._meta.db_table
 
         if expired_partition_names:
-            logger.info("Expired partitions: %s", ", ".join(expired_partition_names))
+            logger.info(
+                "Found expired partitions to delete",
+                extra=dict(
+                    model=cls.__name__,
+                    expired_partitions=expired_partition_names,
+                ),
+            )
         if missing_partitions:
-            logger.info("Missing partitions: %s", ", ".join(name for (name, _, _) in missing_partitions))
+            logger.info(
+                "Need to create partitions",
+                extra=dict(
+                    model=cls.__name__,
+                    missing_partitions=[name for (name, _, _) in missing_partitions],
+                ),
+            )
 
         # move today's partition first in missing_partitions so that emit() won't fail
         todays_partition_index = next(
@@ -247,7 +259,7 @@ class MonthlyPartitionsMixin(UUID7Mixin):
 
         with connection.cursor() as cursor:
             for partition_name, year, month in missing_partitions:
-                logger.info("Creating partition %s", partition_name)
+                logger.info("Creating partition", extra=dict(model=cls.__name__, partition=partition_name))
                 with transaction.atomic():
                     start, end = uuid7_month_range_for_year_month(year, month)
                     cursor.execute(
@@ -260,7 +272,7 @@ class MonthlyPartitionsMixin(UUID7Mixin):
                     )
 
             for partition_name in expired_partition_names:
-                logger.info("Dropping partition %s", partition_name)
+                logger.info("Dropping partition", extra=dict(model=cls.__name__, partition=partition_name))
                 with transaction.atomic():
                     cursor.execute(f"drop table {partition_name}")
                     emit(

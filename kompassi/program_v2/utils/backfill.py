@@ -35,10 +35,7 @@ def backfill(
         of the form that they used to become a program host.
     """
 
-    logger.info(
-        "Backfilling program V2 settings for event %s. Note that this may take several minutes for a large event.",
-        event.slug,
-    )
+    logger.info("Backfilling…", extra=dict(event=event.slug))
 
     meta = event.program_v2_event_meta
     if meta is None:
@@ -119,7 +116,13 @@ def backfill(
         involvement_cache = involvement_universe.preload_dimensions()
 
     with transaction.atomic():
-        logger.info("Backfilling involvement for %d program offers", meta.current_program_offers.count())
+        logger.info(
+            "Backfilling involvement for program offers",
+            extra=dict(
+                event=event.slug,
+                count=meta.current_program_offers.count(),
+            ),
+        )
         for program_offer in meta.current_program_offers.all():
             program_offer.survey.workflow.ensure_involvement(
                 program_offer,
@@ -128,7 +131,13 @@ def backfill(
             )
 
     with transaction.atomic():
-        logger.info("Backfilling involvement for %d program items", meta.programs.count())
+        logger.info(
+            "Backfilling involvement for program items",
+            extra=dict(
+                event=event.slug,
+                count=meta.programs.count(),
+            ),
+        )
         for program in meta.programs.all():
             for program_host in program.all_program_hosts.all():
                 Involvement.from_involvement(
@@ -140,4 +149,4 @@ def backfill(
     with transaction.atomic():
         Program.refresh_cached_fields_qs(meta.programs.all(), cache=program_cache)
 
-    logger.info("Backfilling program V2 settings for event %s completed.", event.slug)
+    logger.info("Backfill completed.", extra=dict(event=event.slug))

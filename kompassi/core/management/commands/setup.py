@@ -90,6 +90,6 @@ class Command(BaseCommand):
         )
 
         for pargs, opts in management_commands:
-            print("** Running:", pargs[0])
+            logger.info("Setup running admin command", extra=dict(cmd=pargs[0], pargs=pargs[1:], opts=opts))
             with atomic() if pargs[0].startswith("setup") else noop_context():
                 call_command(*pargs, **opts)

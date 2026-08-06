@@ -573,13 +573,19 @@ class Setup:
                                 )
                                 log_get_or_create(logger, block, created)
 
-        logger.info("Special reservation URLs:")
         for room_slug in room_slugs:
             for schedule_item in meta.schedule_items.filter(
                 cached_combined_dimensions__contains=dict(paikkala=[room_slug]),
                 paikkala_special_reservation_code__isnull=False,
             ):
-                logger.info("%s -> %s", schedule_item.slug, get_paikkala_special_reservation_url(schedule_item))
+                logger.info(
+                    "Special reservation URL",
+                    extra=dict(
+                        event=self.event.slug,
+                        schedule_item=schedule_item.slug,
+                        special_reservation_url=get_paikkala_special_reservation_url(schedule_item),
+                    ),
+                )
 
     def setup_kaatobussi(self):
         meta = self.event.program_v2_event_meta

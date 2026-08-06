@@ -35,7 +35,7 @@ def perform_cleanup():
     Perform cleanup on all models marked with the @register_cleanup decorator.
     This will delete objects that match the filter functions defined in the decorators.
     """
-    logger.info("Performing cleanup on models registered with @register_cleanup.")
+    logger.info("Performing cleanup…")
     for Model, filter_func in _cleanup_models:
         queryset = Model.objects.all()
         queryset = filter_func(queryset)

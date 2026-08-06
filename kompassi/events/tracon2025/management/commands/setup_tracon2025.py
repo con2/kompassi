@@ -726,6 +726,10 @@ class Setup:
             hour=0, minute=0, second=0, tzinfo=self.tz
         )
         temp_permission_valid_until = self.event.end_time.replace(hour=23, minute=59, second=59, tzinfo=self.tz)
+
+        if now() > temp_permission_valid_until:
+            return
+
         for person_id, app_labels in [
             # Lipunvaihdon vuorovastaavat
             (2087, ("tickets_v2",)),

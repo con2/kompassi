@@ -80,7 +80,7 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
 
         domain = domains.get()
 
-        logger.info("Creating internal e-mail aliases in domain %s", domain)
+        logger.info("Creating internal e-mail aliases", extra=dict(domain=domain))
 
         alias, created = cls.objects.update_or_create(
             domain=domain,
@@ -105,7 +105,10 @@ class InternalEmailAlias(EmailAliasMixin, models.Model):
 
                 plain_contact_email = meta.plain_contact_email
                 if not plain_contact_email:
-                    logger.warning("Not creating %s internal alias for %s", app_label, event)
+                    logger.warning(
+                        "Not creating internal aliases (missing plain_contact_email)",
+                        extra=dict(app=app_label, event=event.slug, domain=domain),
+                    )
                     continue
 
                 for account_name_template in account_name_templates:

@@ -460,7 +460,6 @@ class Badge(models.Model, CsvExportMixin):
 
     @cached_property
     def _shirt_size(self):
-        print(self.perks)
         if perks_shirt_size := self.perks.get("tracon:shirtSize"):
             return perks_shirt_size
         elif self.signup_extra and hasattr(self.signup_extra, "shirt_size"):
