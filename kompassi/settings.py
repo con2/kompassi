@@ -3,6 +3,7 @@ from email.utils import parseaddr
 from pathlib import Path
 
 import environ
+import structlog
 from csp.constants import NONE, SELF, UNSAFE_EVAL, UNSAFE_INLINE
 from django.contrib.messages import constants as messages
 from django.utils.translation import gettext_lazy as _
@@ -298,21 +299,35 @@ INSTALLED_APPS = (
     "kompassi.zombies.hitpoint2017",
 )
 
+_structlog_foreign_pre_chain = [
+    structlog.contextvars.merge_contextvars,
+    structlog.stdlib.add_log_level,
+    structlog.stdlib.add_logger_name,
+    structlog.stdlib.ExtraAdder(),
+    structlog.processors.TimeStamper(fmt="iso", utc=True),
+]
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
         "json": {
-            "()": "pythonjsonlogger.jsonlogger.JsonFormatter",
-            "format": "%(asctime)s %(levelname)s %(name)s %(message)s",
-            "rename_fields": {
-                "asctime": "timestamp",
-                "levelname": "level",
-                "name": "logger",
-            },
+            "()": structlog.stdlib.ProcessorFormatter,
+            "foreign_pre_chain": _structlog_foreign_pre_chain,
+            "processors": [
+                structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+                structlog.processors.EventRenamer("message"),
+                structlog.processors.JSONRenderer(),
+            ],
         },
-        "verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"},
-        "simple": {"format": "%(levelname)s %(message)s"},
+        "human": {
+            "()": structlog.stdlib.ProcessorFormatter,
+            "foreign_pre_chain": _structlog_foreign_pre_chain,
+            "processors": [
+                structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+                structlog.dev.ConsoleRenderer(),
+            ],
+        },
     },
     "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
     "handlers": {
@@ -324,7 +339,7 @@ LOGGING = {
         "console": {
             "level": "DEBUG" if DEBUG else "INFO",
             "class": "logging.StreamHandler",
-            "formatter": "verbose" if DEBUG else "json",
+            "formatter": "human" if DEBUG else "json",
         },
     },
     "loggers": {

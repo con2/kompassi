@@ -1,15 +1,58 @@
+import json
+import logging
 import re
 from datetime import date, datetime
 
 import pytest
 from babel import Locale
 from dateutil.tz import tzlocal
+from django.conf import settings
 from django.test import TestCase
 from django.utils.timezone import get_current_timezone
 
 from kompassi.core.utils.time_utils import format_date_range
 
 from .utils import MAX_PASSWORD_LENGTH, format_interval, full_hours_between, slugify
+
+_ANSI_ESCAPE = re.compile(r"\x1b\[[0-9;]*m")
+
+
+def _build_log_formatter(name: str):
+    spec = dict(settings.LOGGING["formatters"][name])
+    formatter_class = spec.pop("()")
+    return formatter_class(**spec)
+
+
+def _make_log_record(**extra):
+    record = logging.LogRecord(
+        name="kompassi.test",
+        level=logging.WARNING,
+        pathname=__file__,
+        lineno=1,
+        msg="test message",
+        args=None,
+        exc_info=None,
+    )
+    for key, value in extra.items():
+        setattr(record, key, value)
+    return record
+
+
+class LoggingFormatterTestCase(TestCase):
+    def test_json_formatter_includes_extra_fields(self):
+        formatter = _build_log_formatter("json")
+        rendered = json.loads(formatter.format(_make_log_record(total=5)))
+
+        assert rendered["message"] == "test message"
+        assert rendered["total"] == 5
+        assert "event" not in rendered
+
+    def test_human_formatter_includes_extra_fields(self):
+        formatter = _build_log_formatter("human")
+        rendered = _ANSI_ESCAPE.sub("", formatter.format(_make_log_record(total=5)))
+
+        assert "test message" in rendered
+        assert "total=5" in rendered
 
 
 class PersonTestCase(TestCase):
