@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { ClientLink as Link } from "@con2/components";
 
 import {
   ScheduleItemListFragment,
