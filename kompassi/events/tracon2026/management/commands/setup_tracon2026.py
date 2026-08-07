@@ -397,7 +397,7 @@ class Setup:
                 "paikkala",
             ]
         ):
-            logger.info("Backfill required due to missing integration dimensions")
+            logger.info("Backfill required")
             backfill(self.event)
 
     def setup_kirpputori(self, slot_duration=timedelta(minutes=30)):

@@ -409,16 +409,6 @@ class TraconEmperkelator(BaseEmperkelator):
                     fi="Ruokalippujen määrä",
                 ),
             ),
-            # Annotations are passed to Badge but dimensions are not.
-            # So put formatted shirt size in an annotation.
-            AnnotationDTO(
-                slug="tracon:shirtSize",
-                type=AnnotationDataType.STRING,
-                title=dict(
-                    en="Shirt size",
-                    fi="T-paidan koko",
-                ),
-            ),
         ]
 
         for perk in perks:
