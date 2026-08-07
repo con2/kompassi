@@ -125,7 +125,12 @@ def test_non_overridden_perks_are_not_preserved():
     dimension_values = {"ticket-type": ["basic"]}
     annotation_values = {"tracon:mealVouchers": 1}
 
-    Involvement._preserve_manual_perk_overrides(universe, existing, dimension_values, annotation_values)
+    Involvement._preserve_manual_perk_overrides(
+        universe,
+        existing,
+        dimension_values,
+        annotation_values,  # type: ignore
+    )
 
     # With no overrides recorded, the automatically computed values stand.
     assert dimension_values["ticket-type"] == ["basic"]
@@ -133,12 +138,12 @@ def test_non_overridden_perks_are_not_preserved():
 
 
 def test_tracon_get_formatted_perks_computed():
-    dimension_values = {"ticket-type": ["internal-badge"]}
+    dimension_values = {"ticket-type": ["internal-badge"], "shirt-size": ["unisex-l"]}
     annotation_values = {"tracon:mealVouchers": 2, "tracon:swag": True, "tracon:extraSwag": False}
 
     assert (
         TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
-        == "Badge (internal), 2 ruokalippua, valittu työvoimatuote"
+        == "Badge (internal), 2 ruokalippua, L Unisex"
     )
 
 
@@ -148,17 +153,17 @@ def test_tracon_get_formatted_perks_no_meals_no_swag():
 
     assert (
         TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
-        == "Ei lippuetua, ei ruokalippuja, ei työvoimatuotteita"
+        == "Ei lippuetua, ei ruokalippuja, ei työvoimatuotetta"
     )
 
 
 def test_tracon_get_formatted_perks_extra_swag():
-    dimension_values = {"ticket-type": ["super-internal-badge"]}
+    dimension_values = {"ticket-type": ["super-internal-badge"], "shirt-size": ["ladyfit-xs"]}
     annotation_values = {"tracon:mealVouchers": 4, "tracon:swag": True, "tracon:extraSwag": True}
 
     assert (
         TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
-        == "Badge (super internal), 4 ruokalippua, valittu työvoimatuote ja ekstramuki"
+        == "Badge (super internal), 4 ruokalippua, XS Ladyfit, ekstramuki"
     )
 
 
@@ -166,12 +171,12 @@ def test_tracon_get_formatted_perks_override():
     dimension_values = {"ticket-type": ["internal-badge"]}
     annotation_values = {
         "tracon:mealVouchers": 2,
-        "internal:overrideFormattedPerks": "Coniitin kirjekuori, valittu työvoimatuote, ekstramuki",
+        "internal:overrideFormattedPerks": "Tässä voi lukea ihan mitä hyvänsä",
     }
 
     assert (
         TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
-        == "Coniitin kirjekuori, valittu työvoimatuote, ekstramuki"
+        == "Tässä voi lukea ihan mitä hyvänsä"
     )
 
 
@@ -180,7 +185,10 @@ def test_desucon_get_formatted_perks_computed():
     annotation_values = {"tracon:mealVouchers": 1}
 
     assert (
-        DesuconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        DesuconEmperkelator.get_formatted_perks(
+            dimension_values,
+            annotation_values,  # type: ignore
+        )
         == "STAFF-paita (M Unisex), 1 ruokalippu"
     )
 
@@ -189,7 +197,13 @@ def test_desucon_get_formatted_perks_no_shirt():
     dimension_values = {}
     annotation_values = {"tracon:mealVouchers": 2}
 
-    assert DesuconEmperkelator.get_formatted_perks(dimension_values, annotation_values) == "Ei paitaa, 2 ruokalippua"
+    assert (
+        DesuconEmperkelator.get_formatted_perks(
+            dimension_values,
+            annotation_values,  # type: ignore
+        )
+        == "Ei paitaa, 2 ruokalippua"
+    )
 
 
 def test_desucon_get_formatted_perks_override():
@@ -204,7 +218,10 @@ def test_ropecon_get_formatted_perks_computed():
     annotation_values = {"tracon:mealVouchers": 2}
 
     assert (
-        RopeconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        RopeconEmperkelator.get_formatted_perks(
+            dimension_values,
+            annotation_values,  # type: ignore
+        )
         == "Viikonloppulippu, coniteabadge, 2\xa0ruokalippua"
     )
 
@@ -214,7 +231,10 @@ def test_ropecon_get_formatted_perks_single_meal():
     annotation_values = {"tracon:mealVouchers": 1}
 
     assert (
-        RopeconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
+        RopeconEmperkelator.get_formatted_perks(
+            dimension_values,
+            annotation_values,  # type: ignore
+        )
         == "Päivälippu, ohjelmabadge, 1\xa0ruokalippu"
     )
 
