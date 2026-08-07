@@ -23,22 +23,11 @@ graphql(`
   }
 `);
 
-const defaultOptions: Intl.DateTimeFormatOptions = {
-  weekday: "short",
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-  hour: "numeric",
-  minute: "2-digit",
-  hourCycle: "h23",
-};
-
 function formatCellValue(
   value: unknown,
   type: TypeOfColumn,
   timezone: Temporal.TimeZoneLike = defaultTimezone,
   locale: string = defaultLanguage,
-  options: Intl.DateTimeFormatOptions = defaultOptions,
 ) {
   switch (type) {
     case TypeOfColumn.String:
@@ -51,7 +40,7 @@ function formatCellValue(
       return formatMoney(value as string);
     case TypeOfColumn.Datetime:
       try {
-        return formatDateTime(value as string, locale, options, timezone);
+        return formatDateTime(value as string, locale, timezone, true);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (_e) {
         return value as string;

@@ -80,7 +80,7 @@ export default async function ScheduleItemTable({
         <FormattedDateTime
           value={row.startTime}
           locale={locale}
-          options={{ dateStyle: "full", timeStyle: "short" }}
+          includeWeekday
         />
       ),
     },
