@@ -7,7 +7,6 @@ repos:
       - id: ruff-check
         args:
           - --fix
-        exclude: ^kompassi/zombies/
       - id: ruff-format
         args:
           - --quiet
