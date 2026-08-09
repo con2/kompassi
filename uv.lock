@@ -319,18 +319,6 @@ wheels = [
 ]
 
 [[package]]
-name = "bleach"
-version = "6.4.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "webencodings" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/48/3c/e12ac860709702bd5ebeb9b56a4fe334f1001246ee1b8f2b7ee28912df7d/bleach-6.4.0.tar.gz", hash = "sha256:4202482733d85cedd04e59fcb2f89f4e4c7c385a78d3c3c23c30446843a37452", size = 204857, upload-time = "2026-06-05T13:01:13.734Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/58/9d/40b6267367182187139a4000b82a3b287d84d745bccd808e75d916920e9d/bleach-6.4.0-py3-none-any.whl", hash = "sha256:4b6b6a54fff2e69a3dde9d21cc6301220bee3c3cb792187d11403fd795031081", size = 165109, upload-time = "2026-06-05T13:01:12.504Z" },
-]
-
-[[package]]
 name = "boto3"
 version = "1.43.59"
 source = { registry = "https://pypi.org/simple" }
@@ -1358,7 +1346,6 @@ dependencies = [
     { name = "aiohttp", extra = ["speedups"] },
     { name = "async-lru" },
     { name = "babel" },
-    { name = "bleach" },
     { name = "boto3" },
     { name = "celery" },
     { name = "crispy-bootstrap3" },
@@ -1422,7 +1409,6 @@ requires-dist = [
     { name = "aiohttp", extras = ["speedups"] },
     { name = "async-lru", specifier = ">=2.3.0" },
     { name = "babel" },
-    { name = "bleach" },
     { name = "boto3" },
     { name = "celery" },
     { name = "crispy-bootstrap3" },
