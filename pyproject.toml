@@ -72,6 +72,7 @@ constraint-dependencies = [
     # See: https://github.com/con2/kompassi/issues/944
     "tatsu<5.8",
 ]
+exclude-newer = "3 days"
 
 [tool.black]
 line-length = 120

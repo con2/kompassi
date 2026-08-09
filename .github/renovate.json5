@@ -5,6 +5,7 @@
     ':configMigration', // https://docs.renovatebot.com/configuration-options/#configmigration
     'abandonments:recommended', // https://docs.renovatebot.com/presets-abandonments/#abandonmentsrecommended
     'security:minimumReleaseAgeNpm', // https://docs.renovatebot.com/presets-security/#securityminimumreleaseagenpm
+    'security:minimumReleaseAgePypi', // https://docs.renovatebot.com/presets-security/#securityminimumreleaseagepypi
   ],
   packageRules: [
     {
