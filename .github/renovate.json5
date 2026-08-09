@@ -1,0 +1,21 @@
+{
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
+  extends: [
+    'config:recommended',
+    ':configMigration', // https://docs.renovatebot.com/configuration-options/#configmigration
+    'abandonments:recommended', // https://docs.renovatebot.com/presets-abandonments/#abandonmentsrecommended
+    'security:minimumReleaseAgeNpm', // https://docs.renovatebot.com/presets-security/#securityminimumreleaseagenpm
+    'security:minimumReleaseAgePypi', // https://docs.renovatebot.com/presets-security/#securityminimumreleaseagepypi
+    ':maintainLockFilesWeekly', // https://docs.renovatebot.com/presets-default/#maintainlockfilesweekly
+  ],
+  // `prCreation` and `internalChecksFilter` together with ´minimumReleaseAge`settings
+  // are use to avoid creating branches before the minimum release age has passed. See https://docs.renovatebot.com/configuration-options/(#suppress-branchpr-creation-for-x-days
+  prCreation: 'not-pending',
+  internalChecksFilter: 'strict',
+  packageRules: [
+    {
+      matchUpdateTypes: ['patch'],
+      automerge: true,
+    },
+  ],
+}
