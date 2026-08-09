@@ -3,6 +3,7 @@
   extends: [
     'config:recommended',
     ':configMigration', // https://docs.renovatebot.com/configuration-options/#configmigration
+    'abandonments:recommended', // https://docs.renovatebot.com/presets-abandonments/#abandonmentsrecommended
   ],
   packageRules: [
     {
