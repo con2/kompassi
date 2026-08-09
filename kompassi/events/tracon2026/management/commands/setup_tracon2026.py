@@ -88,7 +88,7 @@ class Setup:
         self.setup_kirpputori()
         self.setup_konsti()
         self.setup_paikkala()
-        # self.setup_kaatobussi()
+        self.setup_kaatobussi()
         self.setup_access()
         # self.setup_station_access()
 
@@ -617,6 +617,8 @@ class Setup:
             "paikkala:maxTicketsPerUser": 1,
         }
 
+        # NOTE: time here is just to determine at which time is the program active in kompassi
+        # actual times of buses are set in paikkadata (cmd+p for kaatobussi-meno.csv and kaatobussi-paluu.csv)
         for slug, subtitle, hour in [
             ("kaatobussi-meno", "Menomatka", 14),
             ("kaatobussi-paluu", "Paluumatka", 21),
