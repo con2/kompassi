@@ -30,5 +30,7 @@ jobs:
           cache-dependency-path: kompassi-v2-frontend/package-lock.json
 
       - run: uv sync --locked
+      - run: npm ci
+        working-directory: kompassi-v2-frontend
 
       - uses: j178/prek-action@v3.0.0
