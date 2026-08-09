@@ -6,6 +6,7 @@
     'abandonments:recommended', // https://docs.renovatebot.com/presets-abandonments/#abandonmentsrecommended
     'security:minimumReleaseAgeNpm', // https://docs.renovatebot.com/presets-security/#securityminimumreleaseagenpm
     'security:minimumReleaseAgePypi', // https://docs.renovatebot.com/presets-security/#securityminimumreleaseagepypi
+    ':maintainLockFilesWeekly', // https://docs.renovatebot.com/presets-default/#maintainlockfilesweekly
   ],
   packageRules: [
     {
