@@ -600,6 +600,8 @@ class Setup:
             program.refresh_dependents()
 
     def setup_paikkala(self):
+        exclude_program_slugs = ["avajaiset", "paattajaiset"]
+
         meta = self.event.program_v2_event_meta
         if not meta:
             raise AssertionError("No (appease typechecker)")
@@ -612,9 +614,17 @@ class Setup:
                 event=self.event,
                 cached_combined_dimensions__contains=dict(room=[room_slug]),
             ).exclude(
-                slug="paattajaiset",
+                slug__in=exclude_program_slugs,
             )
             for program in programs:
+                logger.info(
+                    "Enabling Paikkala for program",
+                    extra=dict(
+                        event=self.event.slug,
+                        room=room_slug,
+                        program=program.slug,
+                    ),
+                )
                 program.set_dimension_values(dict(paikkala=[room_slug]), cache=cache)
                 program.refresh_cached_fields()
                 program.refresh_dependents()
@@ -648,6 +658,23 @@ class Setup:
                                 )
                                 log_get_or_create(logger, block, created)
 
+            for program in Program.objects.filter(
+                event=self.event,
+                cached_combined_dimensions__contains=dict(room=[room_slug]),
+                slug__in=exclude_program_slugs,
+            ):
+                logger.info(
+                    "Disabling Paikkala for program",
+                    extra=dict(
+                        event=self.event.slug,
+                        room=room_slug,
+                        program=program.slug,
+                    ),
+                )
+                program.set_dimension_values(dict(paikkala=[]), cache=cache)
+                program.refresh_cached_fields()
+                program.refresh_dependents()
+
         for room_slug in room_slugs:
             for schedule_item in meta.schedule_items.filter(
                 cached_combined_dimensions__contains=dict(paikkala=[room_slug]),
@@ -657,6 +684,7 @@ class Setup:
                     "Special reservation URL",
                     extra=dict(
                         event=self.event.slug,
+                        room=room_slug,
                         schedule_item=schedule_item.slug,
                         special_reservation_url=get_paikkala_special_reservation_url(schedule_item),
                     ),
