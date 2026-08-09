@@ -85,7 +85,7 @@ class Setup:
         self.setup_tickets_v2()
         self.setup_forms()
         self.setup_program_v2()
-        # self.setup_kirpputori()
+        self.setup_kirpputori()
         self.setup_konsti()
         self.setup_paikkala()
         # self.setup_kaatobussi()
@@ -431,15 +431,15 @@ class Setup:
                 0,
                 time_type(16, 0),
                 time_type(19, 0),
-                100,
+                90,
             ),
             (
                 "kirpputori-perjantai-loppuilta",
                 "Kirpputorin ajanvaraus: Perjantai klo 19–22",
                 0,
                 time_type(19, 0),
-                time_type(22, 0),
-                130,
+                time_type(21, 30),
+                120,
             ),
             (
                 "kirpputori-lauantai",
@@ -477,7 +477,7 @@ class Setup:
                 formatted_end_dt = sched_end_dt.strftime("%H:%M")
 
                 sched_max_attendance = (
-                    50
+                    45
                     if program_slug == "kirpputori-perjantai-loppuilta" and sched_end_dt == prog_end_dt
                     else max_attendance
                 )
