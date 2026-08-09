@@ -66,6 +66,11 @@ class Choice(pydantic.BaseModel):
     title: str = ""
 
 
+class SingleSelectPresentation(StrEnum):
+    DROPDOWN = "dropdown"
+    RADIO = "radio"
+
+
 BOOLEAN_CHOICES = [
     Choice(slug="true"),
     Choice(slug="false"),
@@ -154,6 +159,9 @@ class Field(pydantic.BaseModel, populate_by_name=True):
         serialization_alias="maxLength",
         repr=False,
     )
+    # presentation only makes sense for SingleSelect
+    presentation: SingleSelectPresentation | None = pydantic.Field(default=None, repr=False)
+
     encrypt_to: list[str] | None = pydantic.Field(
         default=None,
         validation_alias="encryptTo",

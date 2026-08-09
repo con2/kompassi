@@ -416,51 +416,6 @@ class Setup:
             logger.info("Backfill required due to missing integration dimensions")
             backfill(self.event)
 
-        # adhoc program feedback implementation
-        return
-        survey = Survey.objects.filter(event=self.event, slug="program-feedback").first()
-        if survey:
-            first_form = survey.languages.order_by("pk").first()
-            if first_form is not None:
-                survey.refresh_cached_key_fields(first_form)
-
-            dimension = DimensionDTO(
-                slug="program",
-                title=dict(
-                    fi="Ohjelmanumero",
-                    en="Program item",
-                ),
-                is_technical=True,
-                is_list_filter=True,
-                is_shown_in_detail=True,
-                is_key_dimension=True,
-                can_values_be_added=False,
-                value_ordering=ValueOrdering.TITLE,
-                choices=[
-                    DimensionValueDTO(
-                        slug=program.slug,
-                        title=dict(
-                            fi=program.title,
-                        ),
-                        is_technical=True,
-                    )
-                    for program in Program.objects.filter(event=self.event)
-                ],
-            ).save(survey.universe, remove_other_values=True)
-
-            for program in Program.objects.filter(event=self.event):
-                url = f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/{survey.slug}?{dimension.slug}={program.slug}"
-                program.annotations["internal:links:feedback"] = url
-                program.refresh_cached_fields()
-                program.refresh_dependents()
-
-            for form in survey.languages.all():
-                field_dict = next((d for d in form.fields if d.get("slug") == dimension.slug), None)
-                if field_dict:
-                    field_dict["presentation"] = "dropdown"
-                    form.save()
-                form.refresh_cached_fields()
-
     def setup_kirpputori(self, slot_duration=timedelta(minutes=30)):
         meta = self.event.program_v2_event_meta
         if not meta:
