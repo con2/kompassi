@@ -211,7 +211,7 @@ class Program(models.Model):
             ],
             batch_size=cls.program_batch_size,
         )
-        logger.info("Refreshed cached dimensions for program items", extra=dict(count=num_programs_updated))
+        logger.debug("Refreshed cached dimensions for program items", extra=dict(count=num_programs_updated))
 
     def with_cached_times(self):
         earliest_schedule_item = self.schedule_items.order_by("start_time").first()
@@ -247,7 +247,7 @@ class Program(models.Model):
                 ["cached_earliest_start_time", "cached_latest_end_time", "updated_at"],
                 batch_size=cls.program_batch_size,
             )
-            logger.info("Refreshed cached times for program items", extra=dict(count=num_updated))
+            logger.debug("Refreshed cached times for program items", extra=dict(count=num_updated))
 
     def with_annotations(self, update: CachedAnnotationsUpdate | CachedAnnotations | None = None) -> Self:
         self.annotations = dict(self.annotations)
@@ -283,7 +283,7 @@ class Program(models.Model):
                 ["annotations"],
                 batch_size=cls.program_batch_size,
             )
-            logger.info("Refreshed cached annotations for program items", extra=dict(count=num_updated))
+            logger.debug("Refreshed cached annotations for program items", extra=dict(count=num_updated))
 
     def refresh_dependents(self):
         from .schedule_item import ScheduleItem

@@ -107,7 +107,7 @@ class DimensionDTO(pydantic.BaseModel):
             ),
             update_fields=update_dimension_fields,
         )
-        logger.info("Dimensions saved", extra=dict(log_context, count=len(django_dimensions)))
+        logger.debug("Dimensions saved", extra=dict(log_context, count=len(django_dimensions)))
 
         values_upsert = (
             DimensionValue(
@@ -142,7 +142,7 @@ class DimensionDTO(pydantic.BaseModel):
                 batch_size=dimension_value_batch_size,
             )
         )
-        logger.info("Dimension values saved", extra=dict(log_context, count=num_dvs))
+        logger.debug("Dimension values saved", extra=dict(log_context, count=num_dvs))
 
         if remove_other_values:
             for dim_dto, dim_dj in zip(dimension_dtos, django_dimensions, strict=True):

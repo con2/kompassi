@@ -75,8 +75,15 @@ def backfill(
             )
             offer_form.refresh_cached_default_dimensions()
 
-    # Program offer dimensions
     with transaction.atomic():
+        logger.info(
+            "Backfilling dimensions for program offers",
+            extra=dict(
+                event=event.slug,
+                count=meta.current_program_offers.count(),
+            ),
+        )
+
         for program_offer in meta.current_program_offers.all():
             existing_values = program_offer.cached_dimensions
             values_to_set = {}
@@ -91,7 +98,15 @@ def backfill(
 
     # Program dimensions
     with transaction.atomic():
-        for program in Program.objects.filter(event=event):
+        logger.info(
+            "Backfilling dimensions for program items",
+            extra=dict(
+                event=event.slug,
+                count=meta.programs.count(),
+            ),
+        )
+
+        for program in meta.programs:
             existing_values = program.cached_dimensions
             values_to_set = {}
 

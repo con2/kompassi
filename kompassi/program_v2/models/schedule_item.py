@@ -261,7 +261,7 @@ class ScheduleItem(models.Model):
             fields=cls.update_cached_fields,
             batch_size=batch_size,
         )
-        logger.info("Refreshed cached fields for schedule items", extra=dict(count=len(bulk_update)))
+        logger.debug("Refreshed cached fields for schedule items", extra=dict(count=len(bulk_update)))
 
     date_cutoff_time: ClassVar[timedelta] = timedelta(hours=4)  # 04:00 local time
 
