@@ -9,7 +9,6 @@ dependencies = [
     "paikkala @ git+https://github.com/kcsry/paikkala@v0.2.0",
     "aiohttp[speedups]",
     "Babel",
-    "bleach",
     "boto3",
     "celery",
     "crispy-bootstrap3",
