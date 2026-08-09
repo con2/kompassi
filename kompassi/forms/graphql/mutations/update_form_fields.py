@@ -46,7 +46,17 @@ class UpdateFormFields(graphene.Mutation):
                 operation="update",
             )
 
-            form.fields = [field.model_dump(mode="json", by_alias=True) for field in fields.fields]
+            # Dimension fields' choices are only ever derived from the dimension at read time
+            # (see Form._enrich_field). Persisting client-supplied choices for them would freeze
+            # stale values and translations in place, so they must never be saved.
+            form.fields = [
+                field.model_dump(
+                    mode="json",
+                    by_alias=True,
+                    exclude={"choices"} if field.type.is_dimension_field else None,
+                )
+                for field in fields.fields
+            ]
             form.save(update_fields=["fields", "cached_enriched_fields"])
 
             survey.refresh_cached_key_fields(form)

@@ -14,6 +14,7 @@ from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.graphql_api.schema import schema
 
 from .excel_export import get_header_cells, get_response_cells
+from .graphql.mutations.update_form_fields import UpdateFormFields
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from .models.enums import SurveyPurpose
 from .models.field import Choice, Field, FieldType
@@ -891,6 +892,61 @@ def test_refresh_cached_key_fields():
     response.refresh_from_db()
     assert survey.cached_key_fields == ["description"]
     assert response.cached_key_fields == {"description": "Existing description"}
+
+
+@mock.patch("kompassi.forms.graphql.mutations.update_form_fields.graphql_check_instance", autospec=True)
+@pytest.mark.django_db
+def test_update_form_fields_strips_dimension_choices(_patched_graphql_check_instance):
+    """
+    Choices for dimension fields must only ever come from live enrichment (Form._enrich_field).
+    If the editor's client-supplied choices (see injectChoices in FormEditor.tsx) were persisted
+    as-is, they would go stale and out of date with the dimension whenever it or its values
+    are edited or translated.
+    """
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="test-survey")
+
+    dimension = Dimension.objects.create(universe=survey.universe, slug="test-dimension")
+    DimensionValue.objects.create(dimension=dimension, slug="test-value", title_en="Test value")
+
+    form = Form.objects.create(event=event, survey=survey, language="en", fields=[])
+
+    UpdateFormFields.mutate(
+        None,
+        MOCK_INFO,
+        SimpleNamespace(
+            event_slug=event.slug,
+            survey_slug=survey.slug,
+            language="en",
+            fields=[
+                dict(
+                    slug="test-dimension",
+                    type="DimensionSingleSelect",
+                    dimension="test-dimension",
+                    # simulates the stale choices the editor bakes in for display purposes
+                    choices=[dict(slug="test-value", title="Stale title")],
+                ),
+            ],
+        ),  # type: ignore
+    )
+
+    form.refresh_from_db()
+
+    field = next(f for f in form.fields if f["slug"] == "test-dimension")
+    assert "choices" not in field
+
+    enriched_field = next(f for f in form.cached_enriched_fields if f["slug"] == "test-dimension")
+    assert enriched_field["choices"] == [dict(slug="test-value", title="Test value")]
+
+    # Renaming the dimension value is reflected without the form ever being re-saved.
+    dimension_value = dimension.values.get()
+    dimension_value.title_en = "Renamed value"
+    dimension_value.save()
+    dimension.refresh_dependents()
+
+    form.refresh_from_db()
+    enriched_field = next(f for f in form.cached_enriched_fields if f["slug"] == "test-dimension")
+    assert enriched_field["choices"] == [dict(slug="test-value", title="Renamed value")]
 
 
 @pytest.mark.django_db

@@ -58,6 +58,21 @@ function injectChoices(
   return field;
 }
 
+/// Inverse of injectChoices. Dimension fields' choices are only ever populated for display
+/// in the editor (see injectChoices above) or by server side enrichment (for the responder
+/// facing SchemaForm). They must never be persisted, or they will freeze stale values and
+/// translations in place until the field is next edited.
+function stripInjectedChoices(field: Field): Field {
+  if (
+    (field.type === "DimensionSingleSelect" ||
+      field.type === "DimensionMultiSelect") &&
+    field.dimension
+  ) {
+    return { ...field, choices: [] };
+  }
+  return field;
+}
+
 /** Fully controlled form editor component. */
 export default function FormEditor(props: Props) {
   const {
@@ -78,6 +93,11 @@ export default function FormEditor(props: Props) {
 
   const fields = value.map((field) => injectChoices(field, dimensions));
 
+  const handleChange = React.useCallback(
+    (newFields: Field[]) => onChange(newFields.map(stripInjectedChoices)),
+    [onChange],
+  );
+
   const handleAddField = React.useCallback(
     (fieldType: FieldType, aboveFieldSlug?: string) => {
       const usedIdentifiers = fields.map((field) => field.slug);
@@ -86,7 +106,7 @@ export default function FormEditor(props: Props) {
       if (["Divider", "Spacer"].includes(fieldType)) {
         // This field type has no options to be edited by the user,
         // so skip the edit dialog.
-        onChange(addField(fields, field, aboveFieldSlug));
+        handleChange(addField(fields, field, aboveFieldSlug));
       } else {
         setEditExisting(false);
         setTargetFieldName(aboveFieldSlug ?? "");
@@ -94,7 +114,7 @@ export default function FormEditor(props: Props) {
         setEditFieldModalOpen(true);
       }
     },
-    [fields, onChange],
+    [fields, handleChange],
   );
 
   const handleEditField = React.useCallback(
@@ -138,7 +158,7 @@ export default function FormEditor(props: Props) {
             <FormEditorControls
               value={fields}
               field={field}
-              onChange={onChange}
+              onChange={handleChange}
               onAddField={handleAddField}
               onRemoveField={handleRemoveField}
               onEditField={handleEditField}
@@ -158,7 +178,7 @@ export default function FormEditor(props: Props) {
         {...removeFieldModal}
         title={t.removeFieldModal.title}
         messages={t.removeFieldModal.actions}
-        onSubmit={() => onChange(removeField(fields, targetFieldName))}
+        onSubmit={() => handleChange(removeField(fields, targetFieldName))}
       >
         {t.removeFieldModal.message}
       </Modal>
@@ -172,7 +192,7 @@ export default function FormEditor(props: Props) {
               : addField(fields, values, targetFieldName);
 
             setEditFieldModalOpen(false);
-            onChange(newFields);
+            handleChange(newFields);
           }}
           onClose={() => setEditFieldModalOpen(false)}
           dimensions={dimensions}
