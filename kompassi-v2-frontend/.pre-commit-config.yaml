@@ -10,3 +10,5 @@ repos:
     rev: v9.39.1
     hooks:
       - id: eslint
+        files: \.[jt]sx?$
+        types: [file]
