@@ -60,6 +60,12 @@ jobs:
           name: build-json
           path: kompassi-v2-frontend/build.json
 
+  # TODO Placeholder for actual tests, so that we can require step "test" to succeed for automerge (backend actually has one)
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: "true"
+
   deploy_staging:
     runs-on: qb-arc-runners
     needs: build
