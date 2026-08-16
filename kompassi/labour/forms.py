@@ -9,14 +9,12 @@ from kompassi.core.forms import PersonForm
 from kompassi.core.models import Person
 from kompassi.core.utils import horizontal_form_helper, slugify
 
-from .models import (
-    AlternativeFormMixin,
-    EmptySignupExtra,
-    JobCategory,
-    LabourEventMeta,
-    PersonnelClass,
-    Signup,
-)
+from .models.alternative_signup_forms import AlternativeFormMixin
+from .models.job_category import JobCategory
+from .models.labour_event_meta import LabourEventMeta
+from .models.personnel_class import PersonnelClass
+from .models.signup import Signup
+from .models.signup_extras import EmptySignupExtra
 
 
 class AdminPersonForm(PersonForm):
@@ -75,7 +73,7 @@ class SignupFormMixin:
 
             if self.instance.pk is not None:
                 # Also include those the user is signed up to whether or not they are public.
-                q = q | Q(signup_set=self.instance)
+                q = q | Q(signups=self.instance)
 
         return q
 
