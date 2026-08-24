@@ -61,7 +61,7 @@ from ...models import Night, SignupExtra
 
 logger = logging.getLogger(__name__)
 KIRPPUTORI_KONSTI_DESCRIPTION = """
-Traconin kirpputorille pääsee ostoksille pe klo 16–22 ja la klo 9:30–14 ainoastaan ajanvarauksella. Muina aikoina kirpputori palvelee asiakkaita jonosta. Ajanvaraus tapahtuu käyttäen Konstia, johon kirjaudutaan Kompassi-tunnuksilla. Molempien päivien ajanvarausajoille voi ilmoittautua alkaen pe klo 08:00. Koska halukkaita voi olla enemmän kuin kirpputorin ajanvarausaikoihin mahtuu, ajat arvotaan. Arvonnat tapahtuvat perjantaina kello 14:00 ja 17:00 sekä lauantaina kello 7:30. Kunkin arvonnan jälkeen niille ajanvarausajoille, joille on vielä tilaa, voi ilmoittautua Konstissa suoraan.
+Traconin kirpputorille pääsee ostoksille pe klo 16–21:30 ja la klo 9:30–14 ainoastaan ajanvarauksella. Muina aikoina kirpputori palvelee asiakkaita jonosta. Ajanvaraus tapahtuu käyttäen Konstia, johon kirjaudutaan Kompassi-tunnuksilla. Molempien päivien ajanvarausajoille voi ilmoittautua alkaen pe klo 08:00. Koska halukkaita voi olla enemmän kuin kirpputorin ajanvarausaikoihin mahtuu, ajat arvotaan. Arvonnat tapahtuvat perjantaina kello 14:00 ja 17:00 sekä lauantaina kello 7:30. Kunkin arvonnan jälkeen niille ajanvarausajoille, joille on vielä tilaa, voi ilmoittautua Konstissa suoraan.
 
 Jos sinua onnistaa arvonnassa, saat yhden puolen tunnin mittaisen saapumisajan, jonka kuluessa voit tulla jonoon koska tahansa. Saapuessasi kirpputorille avaa lippu älypuhelimeesi ja näytä se jonon valvojalle. Lipun avaaminen onnistuu kätevimmin avaamalla älypuhelimessa osoite kirpputori.tracon.fi ja valitsemalla avautuvasta näkymästä kirpputorin ajanvarauksen kohdalta ”Avaa pääsylippu”. Huomaathan että voittamasi aika takaa pääsyn kirpputorijonoon, mutta saatat silti joutua jonottamaan kirpputorille pääsyä.
 
@@ -475,7 +475,9 @@ class Setup:
                 if need_save:
                     form.refresh_cached_fields()
 
-    def setup_kirpputori(self, slot_duration=timedelta(minutes=30)):
+    def setup_kirpputori(self):
+        slot_duration = timedelta(minutes=30)
+
         meta = self.event.program_v2_event_meta
         if not meta:
             raise AssertionError("No (appease typechecker)")
@@ -510,7 +512,7 @@ class Setup:
             ),
             (
                 "kirpputori-perjantai-loppuilta",
-                "Kirpputorin ajanvaraus: Perjantai klo 19–22",
+                "Kirpputorin ajanvaraus: Perjantai klo 19–21:30",
                 0,
                 time_type(19, 0),
                 time_type(21, 30),
