@@ -554,7 +554,7 @@ class Setup:
                 formatted_end_dt = sched_end_dt.strftime("%H:%M")
 
                 sched_max_attendance = (
-                    45
+                    50
                     if program_slug == "kirpputori-perjantai-loppuilta" and sched_end_dt == prog_end_dt
                     else max_attendance
                 )
