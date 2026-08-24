@@ -634,23 +634,22 @@ class Setup:
                 # refresh_dependents is not transitive
                 for schedule_item in program.schedule_items.all():
                     is_friday = schedule_item.start_time.date() == self.event.start_time.date()
-                    is_sunday = schedule_item.start_time.date() == self.event.end_time.date()
+                    # is_sunday = schedule_item.start_time.date() == self.event.end_time.date()
 
                     if is_friday:
-                        # On Friday, reservations start at 13:00
+                        # On Friday, reservations start at 12:00
                         # On Saturday & Sunday, the default (09:00)
-                        schedule_item.annotations.setdefault(
-                            "paikkala:reservationStartsAt",
-                            schedule_item.start_time.replace(hour=13, minute=0, second=0, tzinfo=self.tz).isoformat(),
-                        )
+                        schedule_item.annotations["paikkala:reservationStartsAt"] = schedule_item.start_time.replace(
+                            hour=12, minute=0, second=0, tzinfo=self.tz
+                        ).isoformat()
                         schedule_item.refresh_cached_fields()
 
                     paikkala_program = schedule_item.ensure_paikkala()
                     if not paikkala_program:
                         raise AssertionError("No (appease typechecker)")
 
-                    # The upper floor of the Main Auditorium is only available on Saturday
-                    if room_slug == "iso-sali" and (is_friday or is_sunday):
+                    # The upper floor of the Main Auditorium is only available on Saturday and Sunday
+                    if room_slug == "iso-sali" and is_friday:
                         for zone in paikkala_program.zones.filter(name__contains="parveke"):
                             for row in zone.rows.all():  # type: ignore
                                 block, created = PerProgramBlock.objects.get_or_create(
