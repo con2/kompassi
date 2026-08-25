@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from kompassi.core.models.event import Event
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
-from kompassi.reports.models.report import TOTAL, Column, TypeOfColumn
+from kompassi.reports.models.report import TOTAL_TITLE, Column, TypeOfColumn
 
 from .report_from_query import report_from_query
 
@@ -45,7 +45,7 @@ def ticket_exchange_by_product(
             ),
             Column(
                 slug="total",
-                title=TOTAL,
+                title=TOTAL_TITLE,
                 type=TypeOfColumn.INT,
             ),
         ],

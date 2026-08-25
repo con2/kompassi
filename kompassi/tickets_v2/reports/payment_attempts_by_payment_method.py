@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from kompassi.core.models.event import Event
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
-from kompassi.reports.models.report import TOTAL, Column, Report, TotalBy, TypeOfColumn
+from kompassi.reports.models.report import TOTAL_TITLE, Column, Report, TotalBy, TypeOfColumn
 
 from .report_from_query import report_from_query
 
@@ -54,7 +54,7 @@ def payment_attempts_by_payment_method(
             ),
             Column(
                 slug="total",
-                title=TOTAL,
+                title=TOTAL_TITLE,
                 type=TypeOfColumn.INT,
             ),
         ],

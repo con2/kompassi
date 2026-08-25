@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from ..helpers import labour_admin_required
 
-NO_SPECIAL_DIET_REPLIES = ["", "-", "N/A", "Ei ole", "Ei ole."]
+NO_SPECIAL_DIET_REPLIES = ["", ".", "-", "N/A", "Ei ole", "Ei ole."]
 
 
 @dataclass

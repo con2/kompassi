@@ -13,9 +13,13 @@ from .enums import TotalBy, TypeOfColumn, Value
 
 SQL_DIR = Path(__file__).parent / "sql"
 
-TOTAL = dict(
+TOTAL_TITLE = dict(
     fi="Yhteensä",
     en="Total",
+)
+COUNT_TITLE = dict(
+    en="Count",
+    fi="Lukumäärä",
 )
 
 
@@ -42,7 +46,7 @@ class Report(pydantic.BaseModel):
             if col.type in (TypeOfColumn.INT, TypeOfColumn.PERCENTAGE, TypeOfColumn.CURRENCY):
                 total_row.append(col.total_aggregate([row[col_ind] for row in self.rows]))
             elif col.type in (TypeOfColumn.STRING, TypeOfColumn.DATETIME):
-                total_row.append(get_message_in_language(TOTAL, self.lang) if col_ind == 0 else "")
+                total_row.append(get_message_in_language(TOTAL_TITLE, self.lang) if col_ind == 0 else "")
             else:
                 raise NotImplementedError(col.type)
         return total_row

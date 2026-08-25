@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 from enum import Enum
 from functools import cached_property, reduce
-from typing import Self
+from typing import Self, override
 
 import pydantic
 
@@ -21,8 +21,8 @@ from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValu
 from kompassi.dimensions.models.enums import AnnotationDataType, ValueOrdering
 from kompassi.forms.models.response import Response
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
-from kompassi.graphql_api.utils import get_message_in_language
-from kompassi.reports.graphql.report import Column, Report, TypeOfColumn
+from kompassi.involvement.reports.tracon2026 import report_tracon_other_benefits, report_tracon_special_diets
+from kompassi.reports.graphql.report import Report
 
 from ..models.enums import InvolvementType
 from ..models.involvement import Involvement
@@ -302,7 +302,7 @@ class TraconEmperkelator(BaseEmperkelator):
         )
 
     @property
-    def v1_personnel_class_dimension_values(self):
+    def v1_personnel_class_dimension_values(self) -> list[str]:
         if inv := self.active_legacy_signup_involvement:
             signup = inv.signup
             if signup is None:
@@ -367,6 +367,7 @@ class TraconEmperkelator(BaseEmperkelator):
         return self.get_frozen_shirt_size_values([])
 
     @classmethod
+    @override
     def get_dimension_dtos(cls, event: Event) -> list[DimensionDTO]:
         return [
             *super().get_dimension_dtos(event),
@@ -375,6 +376,7 @@ class TraconEmperkelator(BaseEmperkelator):
             PROGRAM_HOST_ROLE_DIMENSION_DTO,
         ]
 
+    @override
     def get_dimension_values(self) -> CachedDimensions:
         return {
             "v1-personnel-class": self.v1_personnel_class_dimension_values,
@@ -383,6 +385,7 @@ class TraconEmperkelator(BaseEmperkelator):
         }
 
     @classmethod
+    @override
     def get_annotation_dtos(cls) -> list[AnnotationDTO]:
         perks = [
             AnnotationDTO(
@@ -419,6 +422,7 @@ class TraconEmperkelator(BaseEmperkelator):
 
         return [*super().get_annotation_dtos(), *perks]
 
+    @override
     def get_annotation_values(self) -> CachedAnnotations:
         annotations = self.perks.model_dump(
             mode="json",
@@ -435,6 +439,7 @@ class TraconEmperkelator(BaseEmperkelator):
         return annotations
 
     @classmethod
+    @override
     def _format_computed_perks(cls, dimension_values: CachedDimensions, annotation_values: CachedAnnotations) -> str:
         parts: list[str] = []
 
@@ -466,6 +471,7 @@ class TraconEmperkelator(BaseEmperkelator):
 
         return ", ".join(parts)
 
+    @override
     def get_title(self) -> str:
         if inv := self.active_legacy_signup_involvement:
             return inv.title
@@ -477,62 +483,10 @@ class TraconEmperkelator(BaseEmperkelator):
         return ""
 
     @classmethod
+    @override
     def get_reports(cls, event: Event, lang: str = DEFAULT_LANGUAGE) -> list[Report]:
-        """
-        TODO Generalize this
-        Use AnnotationFlags.PERK to filter and count all countable annotations (int or boolean)
-        """
-        annotation_dtos = cls.get_annotation_dtos()
-
-        annotationsies = Involvement.objects.filter(
-            universe=event.involvement_universe,
-            type=InvolvementType.COMBINED_PERKS,
-            is_active=True,
-        ).values_list("annotations", flat=True)
-
-        meal_vouchers_annotation_dto = next(dto for dto in annotation_dtos if dto.slug == "tracon:mealVouchers")
-        meal_vouchers_title = get_message_in_language(meal_vouchers_annotation_dto.title, lang)
-        total_meal_vouchers = sum(
-            annotations.get("tracon:mealVouchers", 0) for annotations in annotationsies if isinstance(annotations, dict)
-        )
-
-        extra_swag_annotation_dto = next(dto for dto in annotation_dtos if dto.slug == "tracon:extraSwag")
-        extra_swag_title = get_message_in_language(extra_swag_annotation_dto.title, lang)
-        total_extra_swag = sum(
-            annotations.get("tracon:extraSwag", False)
-            for annotations in annotationsies
-            if isinstance(annotations, dict)
-        )
-
         return [
             *super().get_reports(event, lang),
-            Report(
-                slug="tracon2025_specific",
-                title=dict(
-                    fi="Tracon 2025: Muut edut",
-                    en="Tracon 2025: Other perks",
-                ),
-                columns=[
-                    Column(
-                        slug="perk",
-                        title=dict(
-                            en="Perk",
-                            fi="Etu",
-                        ),
-                        type=TypeOfColumn.STRING,
-                    ),
-                    Column(
-                        slug="count",
-                        title=dict(
-                            en="Count",
-                            fi="Lukumäärä",
-                        ),
-                        type=TypeOfColumn.INT,
-                    ),
-                ],
-                rows=[
-                    [extra_swag_title, total_extra_swag],
-                    [meal_vouchers_title, total_meal_vouchers],
-                ],
-            ),
+            report_tracon_other_benefits(event, cls.get_annotation_dtos(), lang),
+            *report_tracon_special_diets(event, lang),
         ]

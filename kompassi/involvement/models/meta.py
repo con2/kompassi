@@ -17,6 +17,7 @@ from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.universe import Universe
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
+from kompassi.involvement.models.enums import InvolvementType
 
 from ..dimensions import get_involvement_universe, setup_involvement_dimensions
 from ..filters import InvolvementFilters
@@ -196,3 +197,7 @@ class InvolvementEventMeta(models.Model, GroupManagementMixin):
         from .involvement import Involvement
 
         return Involvement.objects.filter(universe=self.universe, is_active=True)
+
+    @property
+    def active_combined_perks_involvements(self) -> models.QuerySet[Involvement]:
+        return self.active_involvements.filter(type=InvolvementType.COMBINED_PERKS)

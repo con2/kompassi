@@ -158,3 +158,10 @@ python_files = "tests.py test_*.py *_tests.py"
 markers = [
     "integration_test",
 ]
+
+[tool.pyright]
+reportPrivateLocalImportUsage = false
+reportUnknownVariableType = false
+reportUnknownArgumentType = false
+reportAny = false
+reportUnknownMemberType = false
