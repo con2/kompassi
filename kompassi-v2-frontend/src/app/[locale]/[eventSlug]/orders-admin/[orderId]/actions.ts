@@ -1,6 +1,5 @@
 "use server";
 
-import { CombinedGraphQLErrors } from "@apollo/client";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
@@ -12,7 +11,7 @@ import {
   FulfilOrderInput,
   PaymentStatus,
 } from "@/__generated__/graphql";
-import { getClient } from "@/apolloClient";
+import { getClient, graphqlErrorCode } from "@/apolloClient";
 
 /// Refusals the order state machine reports with a machine-readable
 /// extensions.code (see kompassi/tickets_v2/graphql/errors.py), mapped to the
@@ -34,13 +33,9 @@ const orderStateChangedMarker = "no longer in the expected status";
 
 /// Returns the `?error=` key to bail out to, or undefined to rethrow.
 function orderErrorKey(error: unknown): string | undefined {
-  if (CombinedGraphQLErrors.is(error)) {
-    for (const { extensions } of error.errors) {
-      const code = extensions?.code;
-      if (typeof code === "string" && errorMessageByCode[code]) {
-        return errorMessageByCode[code];
-      }
-    }
+  const code = graphqlErrorCode(error);
+  if (code && errorMessageByCode[code]) {
+    return errorMessageByCode[code];
   }
 
   if (

@@ -12,12 +12,12 @@ from typing import TYPE_CHECKING
 from django.http import HttpRequest
 
 from kompassi.access.cbac import (
-    CBACPermissionDenied,
     HasImmutableScope,
     HasScope,
     HasScopeForeignKey,
     Operation,
     make_graphql_claims,
+    raise_cbac_permission_denied,
 )
 from kompassi.core.models.event import Event
 from kompassi.dimensions.utils.dimension_cache import DimensionCache
@@ -160,7 +160,7 @@ class RequestLocalCache:
         )
 
         if not self.has_cbac_permission(claims):
-            raise CBACPermissionDenied(claims)
+            raise_cbac_permission_denied(self.request, claims)
 
 
 class RequestWithCache(HttpRequest):

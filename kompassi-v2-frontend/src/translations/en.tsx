@@ -3206,6 +3206,26 @@ const translations = {
     message: "You need to sign in to access this page.",
   },
 
+  PermissionDenied: {
+    metadata: {
+      title: "Permission denied – Kompassi",
+    },
+    title: "Permission denied",
+    message: "You do not have sufficient privileges to access this page.",
+  },
+
+  Sudo: {
+    metadata: {
+      title: "Override permission check – Kompassi",
+    },
+    title: "Override permission check",
+    warning:
+      "You can override this error using superuser privileges. If you proceed, a temporary permission with the restrictions below will be granted to you. The override is recorded in the event log.",
+    claimHeading: "Restriction",
+    valueHeading: "Value",
+    confirm: "Override",
+  },
+
   Brand: {
     appName: (
       <>

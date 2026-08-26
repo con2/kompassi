@@ -3216,6 +3216,26 @@ const translations: Translations = {
     message: "Tämä sivu edellyttää sisäänkirjautumista.",
   },
 
+  PermissionDenied: {
+    metadata: {
+      title: "Pääsy estetty – Kompassi",
+    },
+    title: "Pääsy estetty",
+    message: "Sinulla ei ole käyttöoikeutta tähän näkymään.",
+  },
+
+  Sudo: {
+    metadata: {
+      title: "Käyttöoikeustarkastuksen ohitus – Kompassi",
+    },
+    title: "Käyttöoikeustarkastuksen ohitus",
+    warning:
+      "Voit ohittaa tämän virheen pääkäyttäjän oikeuksin. Jos jatkat, sinulle kirjataan väliaikainen käyttöoikeus alla näkyvin rajauksin. Ohitus kirjataan tapahtumalokiin.",
+    claimHeading: "Rajaus",
+    valueHeading: "Arvo",
+    confirm: "Ohita",
+  },
+
   Brand: {
     appName: (
       <>

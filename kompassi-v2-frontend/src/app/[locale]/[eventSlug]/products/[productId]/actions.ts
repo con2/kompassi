@@ -55,19 +55,15 @@ export async function deleteProduct(
   eventSlug: string,
   productId: string,
 ) {
-  try {
-    await getClient().mutate({
-      mutation: deleteProductMutation,
-      variables: {
-        input: {
-          eventSlug,
-          productId,
-        },
+  await getClient().mutate({
+    mutation: deleteProductMutation,
+    variables: {
+      input: {
+        eventSlug,
+        productId,
       },
-    });
-  } catch (error: any) {
-    console.error(await error.response.json());
-  }
+    },
+  });
 
   revalidatePath(`/${locale}/${eventSlug}/products`);
   redirect(`/${eventSlug}/products`);
