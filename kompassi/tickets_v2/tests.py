@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
 from functools import cached_property
@@ -101,6 +102,10 @@ class TicketsV2Client:
     def event(self) -> Event:
         return Event.objects.get(slug=self.event_slug)
 
+    @cached_property
+    def _headers(self) -> dict[str, str]:
+        return {"x-api-key": os.environ.get("KOMPASSI_TICKETS_V2_API_KEY", "secret")}
+
     def _get_url(self, *path_components: Any):
         parts = [
             self.api_url,
@@ -112,7 +117,7 @@ class TicketsV2Client:
         return "/".join(str(part) for part in parts)
 
     def _get(self, *path_components: Any, query: dict[str, Any] | None = None):
-        response = requests.get(self._get_url(*path_components), params=query)
+        response = requests.get(self._get_url(*path_components), params=query, headers=self._headers)
         response.raise_for_status()
         return response.json()
 
@@ -120,6 +125,7 @@ class TicketsV2Client:
         response = requests.post(
             self._get_url(*path_components),
             json=body.model_dump(mode="json", by_alias=True) if body is not None else None,
+            headers=self._headers,
         )
         response.raise_for_status()
         return response.json()

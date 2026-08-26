@@ -128,11 +128,14 @@ class CreateOrderRequest(pydantic.BaseModel):
         )
 
 
-class OrderProduct(pydantic.BaseModel):
+class OrderProduct(pydantic.BaseModel, populate_by_name=True):
     title: str
     price: Decimal
     quantity: int
-    vat_percentage: Decimal = pydantic.Field(serialization_alias="vatPercentage")
+    vat_percentage: Decimal = pydantic.Field(
+        validation_alias="vatPercentage",
+        serialization_alias="vatPercentage",
+    )
 
 
 CENT = Decimal("0.01")

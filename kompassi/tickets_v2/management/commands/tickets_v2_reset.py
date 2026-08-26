@@ -18,6 +18,11 @@ class Command(BaseCommand):
         parser.add_argument("--really", default=False, action="store_true")
 
     def handle(*args, **opts):
+        if not opts["really"]:
+            raise NotReally(
+                "Use --really to actually reset the database. You probably shouldn't do this in production :))"
+            )
+
         with transaction.atomic(), connection.cursor() as cursor:
             cursor.execute(
                 """
@@ -28,15 +33,11 @@ class Command(BaseCommand):
                         tickets_v2_product,
                         tickets_v2_paymentstamp,
                         tickets_v2_receipt,
+                        tickets_v2_ordercancellationtoken,
                         tickets_v2_ticketsv2eventmeta
                     restart identity
                     cascade
                 """
             )
-
-            if not opts["really"]:
-                raise NotReally(
-                    "Use --really to actually reset the database. You probably shouldn't do this in production :))"
-                )
 
             logger.info("Resetting all tickets_v2 tables.")
