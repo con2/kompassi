@@ -12,7 +12,7 @@ from ..models.meta import TicketsV2EventMeta, TicketsV2ProfileMeta
 from ..models.order import Order
 from ..models.product import Product
 from ..models.quota import Quota
-from ..optimized_server.models.enums import PaymentStatus
+from ..optimized_server.models.enums import PaymentProvider, PaymentStatus
 from ..reports import get_report, get_reports
 from .order_full import FullOrderType
 from .order_profile import ProfileOrderType
@@ -26,13 +26,19 @@ class TicketsV2EventMetaType(DjangoObjectType):
         # NOTE: T&C URLs and the cancellation period are public information
         # (already served to anonymous users via the REST API and order pages).
         fields = (
-            "provider",
             "terms_and_conditions_url_en",
             "terms_and_conditions_url_fi",
             "terms_and_conditions_url_sv",
             "cancellation_period_days",
             "unpaid_order_cancellation_delay_minutes",
         )
+
+    # NOTE: declared explicitly rather than left to Meta.fields. graphene-django would
+    # build its own enum out of the field's choices, and serialising a PaymentProvider
+    # member against that enum's value lookup fails (members of two distinct Enum
+    # classes hash alike but never compare equal). Enum.from_enum keys the lookup on
+    # our own members, so it resolves.
+    provider = graphene.NonNull(graphene.Enum.from_enum(PaymentProvider))
 
     @graphql_query_cbac_required
     @staticmethod

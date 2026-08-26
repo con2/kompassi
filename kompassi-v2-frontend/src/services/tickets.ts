@@ -214,7 +214,15 @@ export interface SuccessfulPayOrderResponse {
 
 export interface FailedPayOrderResponse {
   success: false;
-  error: "ORDER_NOT_PAYABLE" | "INVALID_ORDER" | "UNKNOWN_ERROR";
+  /// Every `detail` the optimized server returns with a 400 or 409 on this endpoint.
+  /// Tickets.Order.errors has a message for each; the error page falls back to
+  /// UNKNOWN_ERROR for anything it does not recognise.
+  error:
+    | "ORDER_NOT_PAYABLE"
+    | "INVALID_ORDER"
+    | "ORDER_NOT_FOUND"
+    | "EVENT_NOT_FOUND"
+    | "UNKNOWN_ERROR";
 }
 
 export type PayOrderResponse =

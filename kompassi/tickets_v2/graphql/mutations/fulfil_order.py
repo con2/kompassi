@@ -5,6 +5,7 @@ from kompassi.core.models.event import Event
 
 from ...models.order import ActorType, Order
 from ...optimized_server.models.enums import PaymentStatus
+from ..errors import order_errors_as_graphql_errors
 from ..order_limited import LimitedOrderType
 
 PaymentStatusType = graphene.Enum.from_enum(PaymentStatus)
@@ -18,8 +19,8 @@ class FulfilOrderInput(graphene.InputObjectType):
         required=True,
         description=(
             "The order's status as last seen by the caller. If the order has since "
-            "moved on to a different status, the mutation fails with OrderStateChanged "
-            "rather than acting on a stale premise."
+            "moved on to a different status, the mutation fails with error code "
+            "ORDER_STATE_CHANGED rather than acting on a stale premise."
         ),
     )
 
@@ -52,10 +53,13 @@ class FulfilOrder(graphene.Mutation):
         if not order.can_be_fulfilled_by(request):
             raise ValueError("Order cannot be fulfilled")
 
-        order.fulfil(
-            from_status=PaymentStatus(input.from_payment_status),
-            actor_type=ActorType.ADMIN,
-            actor_user=request.user,  # type: ignore
-        )
+        with order_errors_as_graphql_errors():
+            order.fulfil(
+                from_status=PaymentStatus(input.from_payment_status),
+                actor_type=ActorType.ADMIN,
+                actor_user=request.user,  # type: ignore
+                request=request,
+            )
 
+        order.refresh_from_db()
         return FulfilOrder(order=order)  # type: ignore

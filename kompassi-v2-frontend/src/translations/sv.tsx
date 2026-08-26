@@ -506,11 +506,17 @@ const translations: Translations = {
             "Inkluderar förutom betalda beställningar även bekräftade men ännu obetalda beställningar.",
         },
         countUnpaid: "Obetald",
+        countFlagged: {
+          title: "Att utreda",
+          description:
+            "Enheter i beställningar som betalats efter avbokning: betalda, men utan biljetter, eftersom betalningen kom in först när beställningen redan var avbokad och kvoten inte hade några biljetter att ge tillbaka. Räknas varken som sålda eller betalda. Dessa beställningar behöver en administratör som levererar eller återbetalar dem.",
+        },
         countAvailable: "Kvar",
         countTotal: "Totalt",
         actions: "Funktioner",
         totalReserved: "Totalt såld",
         totalPaid: "Totalt betald",
+        totalFlagged: "Totalt betald efter avbokning",
         revisions: {
           title: "Revisioner av denna produkt",
           description:
@@ -1205,7 +1211,7 @@ const translations: Translations = {
             CREATE_REFUND_FAILURE: "Skapa återbetalning – Misslyckades",
             REFUND_CALLBACK: "Återbetalningsåterkoppling",
             MANUAL_REFUND: "Manuell återbetalning",
-            MANUAL_FULFILMENT: "Manuell leverans",
+            MANUAL_FULFILMENT: "Leverans",
           },
         },
       },
@@ -1323,7 +1329,7 @@ const translations: Translations = {
           unpaidOrderCancellationDelayMinutes: {
             title: "Fördröjning för avbokning av obetald beställning (minuter)",
             helpText:
-              "Antal minuter från beställningen efter vilka en obetald beställning avbokas automatiskt och dess biljetter återgår till kvoten. Ange 0 för att använda den gamla regeln, där obetalda beställningar avbokas en gång per dag, ungefär tre dagar efter att de gjordes.",
+              "Antal minuter från beställningen efter vilka en obetald beställning avbokas automatiskt och dess biljetter återgår till kvoten. Standardvärdet är 5040 (84 timmar, eller 3½ dygn). Ange 0 för att helt stänga av automatisk avbokning av obetalda beställningar — observera att deras biljetter då förblir reserverade på obestämd tid.",
           },
         },
       },
@@ -1345,6 +1351,13 @@ const translations: Translations = {
           <>
             Denna beställning ändrades av någon (eller något) annat medan den
             här sidan var öppen. Ladda om sidan och försök igen.
+          </>
+        ),
+        ticketsUnavailable: (
+          <>
+            De biljetter som beställningen har rätt till kunde inte reserveras,
+            så ingenting ändrades. Ladda om sidan och försök igen; om detta
+            upprepas, kontrollera kvoterna för produkterna i beställningen.
           </>
         ),
       },

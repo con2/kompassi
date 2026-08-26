@@ -68,6 +68,21 @@ class LimitedProductType(DjangoObjectType):
     )
 
     @staticmethod
+    def resolve_count_flagged(product: Product, info):
+        """
+        Computes the amount of units of this product in orders flagged as paid after
+        cancellation, ie. paid for but holding no tickets. Not included in countPaid
+        or countReserved. Other versions of this product are grouped together.
+        """
+        request: HttpRequest = info.context
+        return product.get_counters(request).count_flagged
+
+    count_flagged = graphene.NonNull(
+        graphene.Int,
+        description=normalize_whitespace(resolve_count_flagged.__doc__ or ""),
+    )
+
+    @staticmethod
     def resolve_count_available(product: Product, info):
         """
         Computes the amount of available units of this product.

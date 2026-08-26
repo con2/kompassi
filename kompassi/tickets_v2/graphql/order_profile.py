@@ -100,7 +100,8 @@ class ProfileOrderType(LimitedOrderType):
     def resolve_payment_deadline(order: Order, info):
         """
         Deadline by which this order must be paid before it is automatically
-        cancelled. Null if the event still uses the legacy once-a-day sweep.
+        cancelled. Null if the event has automatic cancellation of unpaid
+        orders disabled.
         """
         return order.payment_deadline
 

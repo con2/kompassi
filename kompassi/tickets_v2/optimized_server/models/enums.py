@@ -12,11 +12,16 @@ class OrderedEnum(Enum):
     of the corresponding type; test_enum_declaration_order_matches_database guards it.
     """
 
+    @functools.cached_property
+    def _ordinal(self) -> int:
+        # Enum members are singletons, so this is computed once per member. Doing the
+        # lookup per comparison instead would rebuild the member list every time.
+        return self._member_names_.index(self._name_)
+
     def __lt__(self, other):
         if other.__class__ is not self.__class__:
             return NotImplemented
-        members = list(self.__class__)
-        return members.index(self) < members.index(other)
+        return self._ordinal < other._ordinal
 
 
 class PaymentProvider(OrderedEnum):
@@ -59,18 +64,29 @@ class PaymentStatus(OrderedEnum):
     REFUND_FAILED = "REFUND_FAILED"
     REFUNDED = "REFUNDED"
 
-    def to_receipt_type(self):
+    def to_receipt_type(self) -> ReceiptType:
+        """
+        The kind of receipt an order in this status is owed, or ValueError if it is owed
+        none. This is the single authority on that question: callers should not pre-screen
+        with their own status comparison, because ordering does not decide it (both the
+        unpaid statuses below PAID and PAID_AFTER_CANCELLATION above it get no receipt).
+        """
         match self:
-            case PaymentStatus.NOT_STARTED | PaymentStatus.PENDING | PaymentStatus.FAILED:
-                raise ValueError("No receipt for unpaid orders")
             case PaymentStatus.PAID:
                 return ReceiptType.PAID
             case PaymentStatus.CANCELLED:
                 return ReceiptType.CANCELLED
             case PaymentStatus.REFUND_REQUESTED | PaymentStatus.REFUND_FAILED | PaymentStatus.REFUNDED:
                 return ReceiptType.REFUNDED
+            case PaymentStatus.NOT_STARTED | PaymentStatus.PENDING | PaymentStatus.FAILED:
+                raise ValueError("No receipt for unpaid orders")
+            case PaymentStatus.PAID_AFTER_CANCELLATION:
+                # Paid, but holding no tickets: a receipt here would email an e-ticket
+                # PDF for an order that owns nothing. Resolved by fulfilling (-> PAID)
+                # or refunding (-> REFUNDED), each of which does produce a receipt.
+                raise ValueError("No receipt for an order paid after cancellation")
             case _:
-                raise NotImplementedError(f"Unsupported status: {self}")
+                raise ValueError(f"No receipt for an order in status {self.name}")
 
     @property
     def is_refundable(self):

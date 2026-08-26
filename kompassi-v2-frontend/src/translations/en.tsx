@@ -519,11 +519,17 @@ const translations = {
             "In addition to paid orders, includes those orders that have been confirmed but not yet paid.",
         },
         countUnpaid: "Unpaid",
+        countFlagged: {
+          title: "Flagged",
+          description:
+            "Units in orders paid after cancellation: paid for, but holding no tickets, because the payment landed after the order had already been cancelled and the quota had nothing left to give back. Counted in neither sold nor paid. These orders need an admin to fulfil or refund them.",
+        },
         countAvailable: "Remaining",
         countTotal: "Total",
         actions: "Actions",
         totalReserved: "Total sold",
         totalPaid: "Total paid",
+        totalFlagged: "Total paid after cancellation",
         revisions: {
           title: "Revisions of this product",
           description:
@@ -740,7 +746,8 @@ const translations = {
         <>
           {numOrders} order{numOrders === 1 ? "" : "s"}{" "}
           {numOrders === 1 ? "is" : "are"} flagged as paid after cancellation
-          and need {numOrders === 1 ? "an admin" : "admins"} to fulfil{" "}
+          and {numOrders === 1 ? "needs" : "need"}{" "}
+          {numOrders === 1 ? "an admin" : "admins"} to fulfil{" "}
           {numOrders === 1 ? "it" : "them"}. Click here to view.
         </>
       ),
@@ -1224,7 +1231,9 @@ const translations = {
             CREATE_REFUND_FAILURE: "Create refund – Failed",
             REFUND_CALLBACK: "Refund callback",
             MANUAL_REFUND: "Manual refund",
-            MANUAL_FULFILMENT: "Manual fulfilment",
+            // Written both by an admin using Fulfil and by the cron that retries
+            // flagged orders, so the label must not claim a human did it.
+            MANUAL_FULFILMENT: "Fulfilment",
           },
         },
       },
@@ -1342,7 +1351,7 @@ const translations = {
           unpaidOrderCancellationDelayMinutes: {
             title: "Unpaid order cancellation delay (minutes)",
             helpText:
-              "Number of minutes from placing the order after which an unpaid order is automatically cancelled, releasing its tickets back into the quota. Set to 0 to use the legacy rule of cancelling unpaid orders once a day, roughly three days after they were placed.",
+              "Number of minutes from placing the order after which an unpaid order is automatically cancelled, releasing its tickets back into the quota. The default is 5040 (84 hours, or 3½ days). Set to 0 to disable automatic cancellation of unpaid orders entirely — note that their tickets then stay reserved indefinitely.",
           },
         },
       },
@@ -1361,6 +1370,13 @@ const translations = {
           <>
             This order was changed by someone (or something) else while this
             page was open. Please reload the page and try again.
+          </>
+        ),
+        ticketsUnavailable: (
+          <>
+            The tickets this order is owed could not be secured, so nothing was
+            changed. Please reload the page and try again; if this keeps
+            happening, check the quotas of the products in the order.
           </>
         ),
       },

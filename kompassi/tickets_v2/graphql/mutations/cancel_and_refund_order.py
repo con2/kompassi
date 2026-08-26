@@ -6,6 +6,7 @@ from kompassi.core.models.event import Event
 
 from ...models.order import ActorType, Order
 from ...optimized_server.models.enums import PaymentStatus, RefundType
+from ..errors import order_errors_as_graphql_errors
 from ..order_limited import LimitedOrderType
 
 RefundTypeType = graphene.Enum.from_enum(RefundType)
@@ -21,8 +22,8 @@ class CancelAndRefundOrderInput(graphene.InputObjectType):
         required=True,
         description=(
             "The order's status as last seen by the caller. If the order has since "
-            "moved on to a different status, the mutation fails with OrderStateChanged "
-            "rather than acting on a stale premise."
+            "moved on to a different status, the mutation fails with error code "
+            "ORDER_STATE_CHANGED rather than acting on a stale premise."
         ),
     )
 
@@ -48,11 +49,13 @@ class CancelAndRefundOrder(graphene.Mutation):
         refund_type = RefundType(input.refund_type)
         graphql_check_instance(order, info, operation="update")
 
-        order.cancel_and_refund(
-            refund_type,
-            from_status=PaymentStatus(input.from_payment_status),
-            actor_type=ActorType.ADMIN,
-            actor_user=request.user,  # type: ignore
-        )
+        with order_errors_as_graphql_errors():
+            order.cancel_and_refund(
+                refund_type,
+                from_status=PaymentStatus(input.from_payment_status),
+                actor_type=ActorType.ADMIN,
+                actor_user=request.user,  # type: ignore
+            )
 
+        order.refresh_from_db()
         return CancelAndRefundOrder(order=order)  # type: ignore

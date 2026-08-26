@@ -25,6 +25,13 @@ class ProductCounters(pydantic.BaseModel):
             "excluding cancelled orders."
         ),
     )
+    count_flagged: int = pydantic.Field(
+        default=0,
+        description=(
+            "Number of units of this product in orders flagged as paid after cancellation, ie. paid for "
+            "but holding no tickets. Excluded from count_paid and count_reserved."
+        ),
+    )
     count_ever_reserved: int = pydantic.Field(
         description="Total number of reservations ever made for this product including cancelled orders.",
     )
@@ -55,9 +62,10 @@ class ProductCounters(pydantic.BaseModel):
                 product_id: ProductCounters(
                     count_paid=count_paid,
                     count_reserved=count_reserved,
+                    count_flagged=count_flagged,
                     count_ever_reserved=count_ever_reserved,
                 )
-                for product_id, count_paid, count_reserved, count_ever_reserved in cursor
+                for product_id, count_paid, count_reserved, count_flagged, count_ever_reserved in cursor
             }
 
         cache[event_id] = result

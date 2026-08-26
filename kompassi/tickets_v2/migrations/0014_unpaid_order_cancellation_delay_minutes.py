@@ -11,11 +11,11 @@ class Migration(migrations.Migration):
             model_name="ticketsv2eventmeta",
             name="unpaid_order_cancellation_delay_minutes",
             field=models.PositiveIntegerField(
-                default=0,
+                default=5040,
                 help_text=(
                     "Number of minutes from order creation after which an unpaid order is "
-                    "automatically cancelled. 0 = the legacy rule: unpaid orders done before "
-                    "midnight three days ago are cancelled once a day."
+                    "automatically cancelled, releasing its tickets back into the quota. "
+                    "0 = automatic cancellation of unpaid orders disabled."
                 ),
             ),
         ),

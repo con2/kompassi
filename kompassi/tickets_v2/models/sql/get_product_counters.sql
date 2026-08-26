@@ -29,6 +29,18 @@ select
       end
     ),
   0) as count_reserved,
+  -- Paid for, but holding no tickets: the payment landed after the order had already
+  -- been cancelled and the quota had nothing left to give it back. Deliberately outside
+  -- count_paid and count_reserved (the order holds nothing, so it must not affect
+  -- availability arithmetic) but counted here so the money is not invisible.
+  coalesce(
+    sum(
+      case
+        when op.status = 'PAID_AFTER_CANCELLATION' then op.quantity
+        else 0
+      end
+    ),
+  0) as count_flagged,
   coalesce(sum(op.quantity), 0) as count_ever_reserved
 from
   tickets_v2_product p

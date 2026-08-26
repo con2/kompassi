@@ -14,7 +14,6 @@ from django.db.models import Value
 from django.db.models.functions import Concat, Lower
 from django.http import HttpRequest
 from django.urls import reverse
-from django.utils.timezone import get_current_timezone
 from django.utils.timezone import now as django_now
 from lippukala.models.code import Code as LippukalaCode
 from lippukala.models.order import Order as LippukalaOrder
@@ -61,6 +60,21 @@ class OrderStateChanged(Exception):
     def __init__(self, actual_status: PaymentStatus):
         self.actual_status = actual_status
         super().__init__(f"Order is no longer in the expected status (actual status: {actual_status.name})")
+
+
+class TicketsUnavailable(Exception):
+    """
+    Raised by Order.fulfil() when the order still does not hold its full expected
+    complement of tickets even after minting the shortfall into the quota — ie.
+    something claimed them from under us, or tickets_v2_ensure_tickets() failed.
+    The order is left as it was; the caller must not report success.
+    """
+
+    def __init__(self, actual_status: PaymentStatus):
+        self.actual_status = actual_status
+        super().__init__(
+            f"Could not secure the tickets this order is owed (status: {actual_status.name}); nothing was changed"
+        )
 
 
 class OrderMixin:
@@ -255,9 +269,9 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                 values = filter.values
                 match filter.dimension:
                     case "status":
-                        # resolve status name -> int value
-                        values = [PaymentStatus[value.upper()].value for value in values]
-                        orders = orders.filter(cached_status__in=values)
+                        # resolve filter slug (lower case) -> enum member
+                        statuses = [PaymentStatus[value.upper()] for value in values]
+                        orders = orders.filter(cached_status__in=statuses)
                     case "product":
                         product_ids = [int(value) for value in values]
                         old_versions_by_current: dict[int, list[int]] = {}
@@ -447,7 +461,13 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         *,
         actor_type: ActorType = ActorType.ADMIN,
         actor_user: User | None = None,
+        request: HttpRequest | None = None,
     ):
+        # NOTE: request only contributes ip_address (and organization) here — the fields
+        # emit() would otherwise deduce from it are all passed explicitly below, and
+        # explicit kwargs win over the request-derived ones.
+        extra = dict(request=request) if request is not None else {}
+
         return emit(
             entry_type,
             event=self.event,
@@ -456,6 +476,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             actor_type=actor_type,
             actor=actor_user,
             context=self.admin_url,
+            **extra,
         )
 
     def cancel_and_refund(
@@ -491,8 +512,14 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
 
             match refund_type:
                 case RefundType.NONE:
-                    if order.cached_status == PaymentStatus.CANCELLED:
-                        raise ValueError("Order is already cancelled")
+                    # NOTE: the trigger only ratchets cached_status forward, so a CANCELLED stamp
+                    # is silently ignored for anything at or past CANCELLED (notably
+                    # PAID_AFTER_CANCELLATION, which sorts after it). Refuse here rather than
+                    # release tickets and invalidate codes for an order that stays flagged.
+                    if order.cached_status >= PaymentStatus.CANCELLED:
+                        raise ValueError(
+                            f"Order cannot be cancelled without refund from {order.cached_status.name}",
+                        )
 
                     prepared_request = None
                     request_stamp = PaymentStamp(
@@ -573,23 +600,19 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
     ):
         """
         Cancels unpaid orders older than each event's configured cancellation
-        window (TicketsV2EventMeta.unpaid_order_cancellation_delay_minutes).
+        window (TicketsV2EventMeta.unpaid_order_cancellation_delay_minutes),
+        releasing their tickets back into the quota. Expected to run from a
+        frequent cron; the window is a precise point in time, so running more
+        often only makes cancellation more timely.
 
-        0 (the default) keeps the legacy rule: unpaid orders done before
-        midnight three days ago are cancelled, which in practice gives an
-        order a multi-day grace period since this only runs once a day. A
-        configured delay in minutes replaces that with a precise, much
-        shorter window, and is expected to run from a frequent cron.
+        An event with the delay set to 0 has automatic cancellation disabled
+        and is skipped entirely.
         """
-        tz = get_current_timezone()
         if now is None:
-            now = datetime.now(tz)
+            now = django_now()
 
-        for meta in TicketsV2EventMeta.objects.all():
-            if meta.unpaid_order_cancellation_delay_minutes:
-                threshold = now - timedelta(minutes=meta.unpaid_order_cancellation_delay_minutes)
-            else:
-                threshold = (now - timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+        for meta in TicketsV2EventMeta.objects.exclude(unpaid_order_cancellation_delay_minutes=0):
+            threshold = now - timedelta(minutes=meta.unpaid_order_cancellation_delay_minutes)
 
             orders = cls.objects.filter(
                 event_id=meta.event_id,
@@ -611,7 +634,8 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                         actor_user=actor_user,
                     )
             else:
-                logger.info(
+                # NOTE: debug, not info — this runs every few minutes for every event.
+                logger.debug(
                     "No unpaid orders older than %s to cancel in event %s",
                     threshold,
                     meta.event_id,
@@ -653,6 +677,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         from_status: PaymentStatus,
         actor_type: ActorType = ActorType.ADMIN,
         actor_user: User | None = None,
+        request: HttpRequest | None = None,
     ):
         """
         Ensures the order holds its expected tickets, minting into the quota
@@ -671,10 +696,20 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             if order.cached_status != from_status:
                 raise OrderStateChanged(order.cached_status)
 
+            # NOTE: can_be_fulfilled_by() checks this too, but on an unlocked read taken
+            # before the lock. Re-check under the lock so a caller cannot name a status
+            # the order only reaches mid-request (eg. racing a refund) and have us mint
+            # tickets for it.
+            if not order.cached_status.is_fulfillable:
+                raise ValueError(f"Order in status {order.cached_status.name} cannot be fulfilled")
+
             order._ensure_tickets()
             for quota_id, quantity in order._get_ticket_shortfall().items():
                 Quota.objects.get(id=quota_id).create_tickets(quantity)
-            order._ensure_tickets()
+            if not order._ensure_tickets():
+                # Something claimed the tickets we just minted, or the claim itself failed.
+                # Raising rolls the whole transaction back, minting included.
+                raise TicketsUnavailable(order.cached_status)
 
             data = self._build_internal_payment_stamp_data(
                 actor_type=actor_type,
@@ -694,6 +729,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                 "tickets_v2.order.fulfilled",
                 actor_type=actor_type,
                 actor_user=actor_user,
+                request=request,
             )
 
     @classmethod
@@ -722,10 +758,17 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                         order_id=locked_order.id,
                         correlation_id=uuid7(),
                         provider=PaymentProvider.NONE,
-                        type=PaymentStampType.PAYMENT_CALLBACK,
+                        # NOTE: not PAYMENT_CALLBACK — no provider called us back. The stamp
+                        # data's __actorType distinguishes this cron from an admin fulfilment.
+                        type=PaymentStampType.MANUAL_FULFILMENT,
                         status=PaymentStatus.PAID,
                         data=data,
                     ).save()
+
+                    locked_order.emit_event_log_entry(
+                        "tickets_v2.order.fulfilled",
+                        actor_type=ActorType.SYSTEM,
+                    )
                 else:
                     # Resolve everything the log line needs before set_rollback(True),
                     # since Django refuses further queries once it is called.

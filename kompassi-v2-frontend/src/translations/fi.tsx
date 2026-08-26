@@ -513,11 +513,17 @@ const translations: Translations = {
           description:
             "Tässä näytetään maksettujen tilausten lisäksi vahvistetut tilaukset, joita ei ole vielä maksettu.",
         },
+        countFlagged: {
+          title: "Selvitettävä",
+          description:
+            "Kappaleet tilauksissa, jotka on maksettu peruutuksen jälkeen: maksettu, mutta ilman lippuja, koska maksu saapui vasta kun tilaus oli jo peruttu eikä kiintiöstä löytynyt lippuja takaisin annettavaksi. Ei lasketa myytyihin eikä maksettuihin. Nämä tilaukset vaativat ylläpitäjän toimittamaan tai hyvittämään ne.",
+        },
         countAvailable: "Jäljellä",
         countTotal: "Yhteensä",
         actions: "Toiminnot",
         totalReserved: "Myyty yhteensä",
         totalPaid: "Maksettu yhteensä",
+        totalFlagged: "Maksettu peruutuksen jälkeen yhteensä",
         revisions: {
           title: "Tuotteen versiot",
           description:
@@ -1217,7 +1223,7 @@ const translations: Translations = {
             CREATE_REFUND_FAILURE: "Palautuksen luonti – Epäonnistui",
             REFUND_CALLBACK: "Jälki-ilmoitus palautuksesta",
             MANUAL_REFUND: "Manuaalinen palautus",
-            MANUAL_FULFILMENT: "Manuaalinen toimitus",
+            MANUAL_FULFILMENT: "Toimitus",
           },
         },
       },
@@ -1334,7 +1340,7 @@ const translations: Translations = {
           unpaidOrderCancellationDelayMinutes: {
             title: "Maksamattoman tilauksen peruutusviive (minuuttia)",
             helpText:
-              "Kuinka monta minuuttia tilauksen tekemisestä maksamaton tilaus perutaan automaattisesti ja sen liput palautuvat kiintiöön. Aseta arvoksi 0 käyttääksesi vanhaa sääntöä, jossa maksamattomat tilaukset perutaan kerran päivässä, noin kolme päivää tilauksen tekemisestä.",
+              "Kuinka monta minuuttia tilauksen tekemisestä maksamaton tilaus perutaan automaattisesti ja sen liput palautuvat kiintiöön. Oletusarvo on 5040 (84 tuntia eli 3½ vuorokautta). Aseta arvoksi 0 poistaaksesi maksamattomien tilausten automaattisen peruutuksen käytöstä kokonaan — huomaa, että niiden liput jäävät tällöin varatuiksi toistaiseksi.",
           },
         },
       },
@@ -1355,6 +1361,13 @@ const translations: Translations = {
           <>
             Joku (tai jokin) muu muutti tätä tilausta samaan aikaan kun tämä
             sivu oli auki. Lataa sivu uudelleen ja yritä uudelleen.
+          </>
+        ),
+        ticketsUnavailable: (
+          <>
+            Tilaukselle kuuluvia lippuja ei saatu varattua, eikä mitään
+            muutettu. Lataa sivu uudelleen ja yritä uudelleen; jos tämä toistuu,
+            tarkista tilauksen tuotteiden kiintiöt.
           </>
         ),
       },

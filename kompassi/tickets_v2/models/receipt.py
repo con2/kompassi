@@ -413,9 +413,9 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
 
     @classmethod
     def from_order(cls, order: Order) -> Self:
-        if order.cached_status < PaymentStatus.PAID:
-            raise ValueError("No receipt for unpaid orders")
-
+        # NOTE: to_receipt_type() decides whether a receipt is owed at all and raises
+        # ValueError if not. Don't pre-screen on ordering here: PAID_AFTER_CANCELLATION
+        # sorts above PAID yet is owed no receipt.
         return cls(
             order_id=order.id,
             receipt_type=order.cached_status.to_receipt_type(),

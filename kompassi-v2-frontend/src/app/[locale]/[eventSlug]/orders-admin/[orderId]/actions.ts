@@ -1,5 +1,6 @@
 "use server";
 
+import { CombinedGraphQLErrors } from "@apollo/client";
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
@@ -13,15 +14,43 @@ import {
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 
-/// Another admin, or an automatic process, already acted on this order since
-/// the caller's page was rendered. Bail out to a message rather than retrying
-/// blindly on a premise that is no longer true.
-const ORDER_STATE_CHANGED_MARKER = "no longer in the expected status";
+/// Refusals the order state machine reports with a machine-readable
+/// extensions.code (see kompassi/tickets_v2/graphql/errors.py), mapped to the
+/// `?error=` key whose message Tickets.admin.messages carries.
+///
+/// ORDER_STATE_CHANGED: another admin, or an automatic process, already acted on
+/// this order since the caller's page was rendered.
+/// TICKETS_UNAVAILABLE: the order could not be given the tickets it is owed, and
+/// nothing was changed.
+const errorMessageByCode: Record<string, string> = {
+  ORDER_STATE_CHANGED: "orderStateChanged",
+  TICKETS_UNAVAILABLE: "ticketsUnavailable",
+};
 
-function isOrderStateChanged(error: unknown): boolean {
-  return (
-    error instanceof Error && error.message.includes(ORDER_STATE_CHANGED_MARKER)
-  );
+/// Fallback for a backend older than the error codes: the prose of
+/// OrderStateChanged. Kept only so a version skew degrades to the right message
+/// rather than an unhandled 500.
+const orderStateChangedMarker = "no longer in the expected status";
+
+/// Returns the `?error=` key to bail out to, or undefined to rethrow.
+function orderErrorKey(error: unknown): string | undefined {
+  if (CombinedGraphQLErrors.is(error)) {
+    for (const { extensions } of error.errors) {
+      const code = extensions?.code;
+      if (typeof code === "string" && errorMessageByCode[code]) {
+        return errorMessageByCode[code];
+      }
+    }
+  }
+
+  if (
+    error instanceof Error &&
+    error.message.includes(orderStateChangedMarker)
+  ) {
+    return "orderStateChanged";
+  }
+
+  return undefined;
 }
 
 const resendConfirmationMutation = graphql(`
@@ -112,9 +141,10 @@ export async function cancelAndRefundOrder(
       variables: { input },
     });
   } catch (error) {
-    if (isOrderStateChanged(error)) {
+    const errorKey = orderErrorKey(error);
+    if (errorKey) {
       return void redirect(
-        `/${eventSlug}/orders-admin/${orderId}?error=orderStateChanged`,
+        `/${eventSlug}/orders-admin/${orderId}?error=${errorKey}`,
       );
     }
     throw error;
@@ -151,9 +181,10 @@ export async function fulfilOrder(
       variables: { input },
     });
   } catch (error) {
-    if (isOrderStateChanged(error)) {
+    const errorKey = orderErrorKey(error);
+    if (errorKey) {
       return void redirect(
-        `/${eventSlug}/orders-admin/${orderId}?error=orderStateChanged`,
+        `/${eventSlug}/orders-admin/${orderId}?error=${errorKey}`,
       );
     }
     throw error;

@@ -16,6 +16,10 @@ from .fields import PostgresEnumField
 
 logger = logging.getLogger(__name__)
 
+# 84 hours = 3½ days. Long enough that a bank transfer over a weekend still lands,
+# short enough that a sold-out event's abandoned reservations turn over.
+DEFAULT_UNPAID_ORDER_CANCELLATION_DELAY_MINUTES = 84 * 60
+
 
 class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
     provider = PostgresEnumField(
@@ -48,11 +52,11 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
     )
 
     unpaid_order_cancellation_delay_minutes = models.PositiveIntegerField(
-        default=0,
+        default=DEFAULT_UNPAID_ORDER_CANCELLATION_DELAY_MINUTES,
         help_text=(
             "Number of minutes from order creation after which an unpaid order is "
-            "automatically cancelled. 0 = the legacy rule: unpaid orders done before "
-            "midnight three days ago are cancelled once a day."
+            "automatically cancelled, releasing its tickets back into the quota. "
+            "0 = automatic cancellation of unpaid orders disabled."
         ),
     )
 

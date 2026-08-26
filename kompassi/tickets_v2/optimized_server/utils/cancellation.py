@@ -47,10 +47,9 @@ def get_payment_deadline(
 ) -> datetime | None:
     """
     Deadline by which an unpaid order must be paid before the automatic
-    cancellation sweep cancels it, or None when the event still uses the
-    legacy once-daily sweep (delay_minutes == 0) — that rule's actual
-    deadline depends on when the sweep next runs rather than a fixed point
-    in time, so there is nothing precise to show the customer.
+    cancellation sweep cancels it, or None when the event has automatic
+    cancellation of unpaid orders disabled (delay_minutes == 0) and there is
+    therefore no deadline to show the customer.
     """
     if not unpaid_order_cancellation_delay_minutes:
         return None
