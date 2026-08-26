@@ -64,7 +64,7 @@ class Setup:
             defaults=dict(
                 admin_group=admin_group,
                 contact_email="Popcult Helsinki <liput@popcult.fi>",
-                provider=PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.PAYTRAIL,
                 # terms_and_conditions_url_en="",
                 # terms_and_conditions_url_fi="",
             ),

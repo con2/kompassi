@@ -117,7 +117,7 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
         }
         orders = Order.objects.filter(
             event=self.event_id,
-            cached_status__lte=PaymentStatus.PAID.value,
+            cached_status__lte=PaymentStatus.PAID,
         )
 
         # May the Transaction be with us.

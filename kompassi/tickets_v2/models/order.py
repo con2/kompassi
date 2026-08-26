@@ -593,7 +593,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
 
             orders = cls.objects.filter(
                 event_id=meta.event_id,
-                cached_status__lt=PaymentStatus.PAID.value,
+                cached_status__lt=PaymentStatus.PAID,
                 id__lt=uuid7(threshold),
             )
 

@@ -140,7 +140,7 @@ class Setup:
             defaults=dict(
                 admin_group=admin_group,
                 contact_email="Cosmocon 2026 <info@cosmocon.fi>",
-                provider=PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.PAYTRAIL,
                 terms_and_conditions_url_fi="https://cosmocon.fi/liput/toimitusehdot/",
             ),
         )

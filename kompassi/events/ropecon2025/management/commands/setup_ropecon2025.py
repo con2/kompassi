@@ -307,7 +307,7 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
-                provider=PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.PAYTRAIL,
                 contact_email="Ropeconin lipunmyynti <lipunmyynti@ropecon.fi>",
                 terms_and_conditions_url_en="https://ropecon.fi/en/ticket-terms-conditions/",
                 terms_and_conditions_url_fi="https://ropecon.fi/lippuehdot-2025/",
@@ -367,7 +367,7 @@ class Setup:
             event=etkot,
             defaults=dict(
                 admin_group=admin_group,
-                provider=PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.PAYTRAIL,
                 contact_email=ropecon.tickets_v2_event_meta.contact_email,  # type: ignore
                 terms_and_conditions_url_fi=ropecon.tickets_v2_event_meta.terms_and_conditions_url_fi,  # type: ignore
                 terms_and_conditions_url_en=ropecon.tickets_v2_event_meta.terms_and_conditions_url_en,  # type: ignore

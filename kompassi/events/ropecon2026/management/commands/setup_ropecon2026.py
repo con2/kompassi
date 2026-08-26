@@ -319,7 +319,7 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
-                provider=PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.PAYTRAIL,
                 contact_email="Ropeconin lipunmyynti <lipunmyynti@ropecon.fi>",
                 terms_and_conditions_url_en="https://ropecon.fi/en/ticket-terms-conditions/",
                 terms_and_conditions_url_fi="https://ropecon.fi/lippuehdot-2026/",
