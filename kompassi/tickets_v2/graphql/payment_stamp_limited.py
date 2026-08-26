@@ -18,10 +18,6 @@ class LimitedPaymentStampType(DjangoObjectType):
 
     provider = graphene.NonNull(graphene.Enum.from_enum(PaymentProvider))
 
-    # @staticmethod
-    # def resolve_provider(payment_stamp, info):
-    #     return PaymentProvider(payment_stamp.provider_id)
-
     status = graphene.NonNull(graphene.Enum.from_enum(PaymentStatus))
     type = graphene.NonNull(graphene.Enum.from_enum(PaymentStampType))
 

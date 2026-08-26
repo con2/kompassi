@@ -22,13 +22,14 @@ class UpdateTicketsPreferencesInput(graphene.InputObjectType):
     terms_and_conditions_url_fi = graphene.String()
     terms_and_conditions_url_sv = graphene.String()
     cancellation_period_days = graphene.Int()
+    unpaid_order_cancellation_delay_minutes = graphene.Int()
 
 
 class UpdateTicketsPreferences(graphene.Mutation):
     """
     Updates the tickets settings that are exposed to event admins.
     Fields omitted from the input are left unchanged (clear with an empty value).
-    NOTE: provider_id is deliberately not settable here (super admin only).
+    NOTE: provider is deliberately not settable here (super admin only).
     """
 
     class Arguments:
@@ -75,6 +76,14 @@ class UpdateTicketsPreferences(graphene.Mutation):
 
             meta.cancellation_period_days = cancellation_period_days
             update_fields.append("cancellation_period_days")
+
+        unpaid_order_cancellation_delay_minutes: int | None = input.unpaid_order_cancellation_delay_minutes  # type: ignore
+        if unpaid_order_cancellation_delay_minutes is not None:
+            if unpaid_order_cancellation_delay_minutes < 0:
+                raise ValueError("Unpaid order cancellation delay cannot be negative")
+
+            meta.unpaid_order_cancellation_delay_minutes = unpaid_order_cancellation_delay_minutes
+            update_fields.append("unpaid_order_cancellation_delay_minutes")
 
         if update_fields:
             meta.save(update_fields=update_fields)

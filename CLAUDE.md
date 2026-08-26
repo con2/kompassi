@@ -44,9 +44,12 @@ All backend commands assume the virtualenv is active (`source .venv/bin/activate
 docker compose -f docker-compose.test.yml run --rm test
 docker compose -f docker-compose.test.yml run --rm test pytest kompassi/program_v2/tests.py
 
-# Lint and format
-ruff check --fix .
-ruff format .
+# Lint and format — prefer prek (runs the .pre-commit-config.yaml hooks, ie. what
+# `git commit` runs) over invoking ruff directly. The hooks scope each tool to the
+# file types it should touch; bare `ruff format .` also reformats Python snippets
+# inside Markdown docs and mangles the ones that are fragments rather than statements.
+prek run --all-files
+prek run --files path/to/file.py   # scoped to specific paths
 
 # Migrations (must run as root inside Docker to write files)
 docker compose exec --user=root backend python manage.py makemigrations
@@ -87,8 +90,8 @@ docker build -f kompassi-v2-frontend/Dockerfile kompassi-v2-frontend
 
 ## Toolchain conventions
 
-- Python linter/formatter: **ruff** (line length 120, configured in `pyproject.toml`)
-- Pre-commit hooks run ruff, prettier, and end-of-file/trailing-whitespace fixers
+- Python linter/formatter: **ruff** (line length 120, configured in `pyproject.toml`), driven via **prek**
+- Pre-commit hooks (`.pre-commit-config.yaml`) run ruff, prettier, eslint, and end-of-file/trailing-whitespace fixers
 - Python package manager: **uv** (`uv.lock` present)
 - The 8-8-8-8 rule: always spell out `hostname`, `database`, `username`, `password` in full — never abbreviate
 

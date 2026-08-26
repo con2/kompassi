@@ -13,8 +13,8 @@ select
     where
       ps.event_id = o.event_id
       and ps.order_id = o.id
-      and ps.status = 3 -- PaymentStatus.PAID
-      and ps.provider_id <> 0 -- PaymentProvider.NONE
+      and ps.status = 'PAID'
+      and ps.provider <> 'NONE'
   ) as paid_by_provider
 from
   tickets_v2_order o

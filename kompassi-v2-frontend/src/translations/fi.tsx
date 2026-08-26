@@ -513,11 +513,17 @@ const translations: Translations = {
           description:
             "Tässä näytetään maksettujen tilausten lisäksi vahvistetut tilaukset, joita ei ole vielä maksettu.",
         },
+        countFlagged: {
+          title: "Selvitettävä",
+          description:
+            "Kappaleet tilauksissa, jotka on maksettu peruutuksen jälkeen: maksettu, mutta ilman lippuja, koska maksu saapui vasta kun tilaus oli jo peruttu eikä kiintiöstä löytynyt lippuja takaisin annettavaksi. Ei lasketa myytyihin eikä maksettuihin. Nämä tilaukset vaativat ylläpitäjän toimittamaan tai hyvittämään ne.",
+        },
         countAvailable: "Jäljellä",
         countTotal: "Yhteensä",
         actions: "Toiminnot",
         totalReserved: "Myyty yhteensä",
         totalPaid: "Maksettu yhteensä",
+        totalFlagged: "Maksettu peruutuksen jälkeen yhteensä",
         revisions: {
           title: "Tuotteen versiot",
           description:
@@ -606,6 +612,9 @@ const translations: Translations = {
       listTitle: "Tilaukset",
       singleTitle: (orderNumber: string, paymentStatus: string) =>
         `Tilaus ${orderNumber} (${paymentStatus})`,
+      paymentDeadlineNotice: (deadline: ReactNode) => (
+        <>Maksa tilauksesi {deadline} mennessä, tai se perutaan.</>
+      ),
       contactForm: {
         title: "Yhteystiedot",
       },
@@ -726,6 +735,13 @@ const translations: Translations = {
           <ForceLink>käytä Voimaa</ForceLink> nähdäksesi tulokset.
         </>
       ),
+      paidAfterCancellationWarning: (numOrders: number) => (
+        <>
+          {numOrders} tilaus{numOrders === 1 ? "" : "ta"} on merkitty maksetuksi
+          peruutuksen jälkeen ja vaatii ylläpitäjän toimittamaan{" "}
+          {numOrders === 1 ? "sen" : "ne"}. Napsauta tästä nähdäksesi.
+        </>
+      ),
       attributes: {
         orderNumberAbbr: "Tilausnro.",
         orderNumberFull: "Tilausnumero",
@@ -826,6 +842,12 @@ const translations: Translations = {
               message:
                 "Tilauksesi on peruutettu. Jos tilauksessa oli sähköisiä lippuja, ne on mitätöity. Jos uskot tämän olevan virhe, ota yhteyttä tapahtuman järjestäjään.",
             },
+            PAID_AFTER_CANCELLATION: {
+              title: "Maksusi on vastaanotettu",
+              shortTitle: "Maksettu peruutuksen jälkeen",
+              message:
+                "Maksusi on vastaanotettu. Tilaustasi käsitellään yhä, ja saat lippusi pian.",
+            },
             REFUND_REQUESTED: {
               title: "Tilauksen maksu on palautettu",
               shortTitle: "Palautusta pyydetty",
@@ -867,6 +889,11 @@ const translations: Translations = {
           title: "Virhe tilauksen käsittelyssä",
           message:
             "Tilauksesi käsittelyssä tapahtui virhe. Ole hyvä ja yritä uudelleen.",
+        },
+        ORDER_NOT_PAYABLE: {
+          title: "Tilausta ei voi maksaa",
+          message:
+            "Tätä tilausta ei voi enää maksaa. Se on saatettu jo maksaa, perua tai hyvittää.",
         },
         ORDER_NOT_FOUND: {
           title: "Tilausta ei löydy",
@@ -1153,6 +1180,27 @@ const translations: Translations = {
             cancel: "Sulje merkitsemättä maksetuksi",
           },
         },
+        fulfilAfterCancellation: {
+          title: "Toimita peruutuksesta huolimatta",
+          message: (
+            <>
+              <p>
+                Tämä tilaus on peruutettu, mutta siihen on sittemmin saapunut
+                maksu. Haluatko toimittaa tilauksen siitä huolimatta?
+              </p>
+              <p>
+                Tämä ylittää lippukiintiön sen verran kuin tilaus tarvitsee —
+                raha on jo vastaanotettu, joten asiakkaan on saatava lippunsa.
+                Asiakkaalle lähetetään kuitti. Jos tilaus sisältää sähköisiä
+                lippuja, ne lähetetään kuitin liitteenä.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Toimita tilaus",
+            cancel: "Sulje toimittamatta",
+          },
+        },
       },
     },
     PaymentStamp: {
@@ -1175,6 +1223,7 @@ const translations: Translations = {
             CREATE_REFUND_FAILURE: "Palautuksen luonti – Epäonnistui",
             REFUND_CALLBACK: "Jälki-ilmoitus palautuksesta",
             MANUAL_REFUND: "Manuaalinen palautus",
+            MANUAL_FULFILMENT: "Toimitus",
           },
         },
       },
@@ -1288,6 +1337,11 @@ const translations: Translations = {
             helpText:
               "Kuinka monta päivää tilauksen tekemisestä asiakas voi itse peruuttaa maksetun tilauksen. Peruutusaika päättyy viimeistään tapahtuman alkaessa. Aseta arvoksi 0 poistaaksesi omatoimisen peruutuksen käytöstä.",
           },
+          unpaidOrderCancellationDelayMinutes: {
+            title: "Maksamattoman tilauksen peruutusviive (minuuttia)",
+            helpText:
+              "Kuinka monta minuuttia tilauksen tekemisestä maksamaton tilaus perutaan automaattisesti ja sen liput palautuvat kiintiöön. Oletusarvo on 5040 (84 tuntia eli 3½ vuorokautta). Aseta arvoksi 0 poistaaksesi maksamattomien tilausten automaattisen peruutuksen käytöstä kokonaan — huomaa, että niiden liput jäävät tällöin varatuiksi toistaiseksi.",
+          },
         },
       },
       messages: {
@@ -1301,6 +1355,19 @@ const translations: Translations = {
           <>
             Tilauksen luominen epäonnistui. Yritä myöhemmin uudelleen tai ota
             yhteyttä tukeen.
+          </>
+        ),
+        orderStateChanged: (
+          <>
+            Joku (tai jokin) muu muutti tätä tilausta samaan aikaan kun tämä
+            sivu oli auki. Lataa sivu uudelleen ja yritä uudelleen.
+          </>
+        ),
+        ticketsUnavailable: (
+          <>
+            Tilaukselle kuuluvia lippuja ei saatu varattua, eikä mitään
+            muutettu. Lataa sivu uudelleen ja yritä uudelleen; jos tämä toistuu,
+            tarkista tilauksen tuotteiden kiintiöt.
           </>
         ),
       },

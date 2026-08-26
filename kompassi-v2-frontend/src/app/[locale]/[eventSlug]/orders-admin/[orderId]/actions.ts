@@ -1,5 +1,7 @@
 "use server";
 
+import { CombinedGraphQLErrors } from "@apollo/client";
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
 import {
@@ -7,9 +9,49 @@ import {
   ResendOrderConfirmationInput,
   UpdateOrderInput,
   RefundType,
-  MarkOrderAsPaidInput,
+  FulfilOrderInput,
+  PaymentStatus,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
+
+/// Refusals the order state machine reports with a machine-readable
+/// extensions.code (see kompassi/tickets_v2/graphql/errors.py), mapped to the
+/// `?error=` key whose message Tickets.admin.messages carries.
+///
+/// ORDER_STATE_CHANGED: another admin, or an automatic process, already acted on
+/// this order since the caller's page was rendered.
+/// TICKETS_UNAVAILABLE: the order could not be given the tickets it is owed, and
+/// nothing was changed.
+const errorMessageByCode: Record<string, string> = {
+  ORDER_STATE_CHANGED: "orderStateChanged",
+  TICKETS_UNAVAILABLE: "ticketsUnavailable",
+};
+
+/// Fallback for a backend older than the error codes: the prose of
+/// OrderStateChanged. Kept only so a version skew degrades to the right message
+/// rather than an unhandled 500.
+const orderStateChangedMarker = "no longer in the expected status";
+
+/// Returns the `?error=` key to bail out to, or undefined to rethrow.
+function orderErrorKey(error: unknown): string | undefined {
+  if (CombinedGraphQLErrors.is(error)) {
+    for (const { extensions } of error.errors) {
+      const code = extensions?.code;
+      if (typeof code === "string" && errorMessageByCode[code]) {
+        return errorMessageByCode[code];
+      }
+    }
+  }
+
+  if (
+    error instanceof Error &&
+    error.message.includes(orderStateChangedMarker)
+  ) {
+    return "orderStateChanged";
+  }
+
+  return undefined;
+}
 
 const resendConfirmationMutation = graphql(`
   mutation ResendOrderConfirmation($input: ResendOrderConfirmationInput!) {
@@ -84,24 +126,36 @@ export async function cancelAndRefundOrder(
   eventSlug: string,
   orderId: string,
   refundType: RefundType,
+  fromPaymentStatus: PaymentStatus,
 ) {
   const input: CancelAndRefundOrderInput = {
     eventSlug,
     orderId,
     refundType,
+    fromPaymentStatus,
   };
 
-  await getClient().mutate({
-    mutation: refundOrderMutation,
-    variables: { input },
-  });
+  try {
+    await getClient().mutate({
+      mutation: refundOrderMutation,
+      variables: { input },
+    });
+  } catch (error) {
+    const errorKey = orderErrorKey(error);
+    if (errorKey) {
+      return void redirect(
+        `/${eventSlug}/orders-admin/${orderId}?error=${errorKey}`,
+      );
+    }
+    throw error;
+  }
 
   revalidatePath(`/${locale}/${eventSlug}/orders-admin/${orderId}`);
 }
 
-const markOrderAsPaidMutation = graphql(`
-  mutation MarkOrderAsPaid($input: MarkOrderAsPaidInput!) {
-    markOrderAsPaid(input: $input) {
+const fulfilOrderMutation = graphql(`
+  mutation FulfilOrder($input: FulfilOrderInput!) {
+    fulfilOrder(input: $input) {
       order {
         id
       }
@@ -109,20 +163,32 @@ const markOrderAsPaidMutation = graphql(`
   }
 `);
 
-export async function markOrderAsPaid(
+export async function fulfilOrder(
   locale: string,
   eventSlug: string,
   orderId: string,
+  fromPaymentStatus: PaymentStatus,
 ) {
-  const input: MarkOrderAsPaidInput = {
+  const input: FulfilOrderInput = {
     eventSlug,
     orderId,
+    fromPaymentStatus,
   };
 
-  await getClient().mutate({
-    mutation: markOrderAsPaidMutation,
-    variables: { input },
-  });
+  try {
+    await getClient().mutate({
+      mutation: fulfilOrderMutation,
+      variables: { input },
+    });
+  } catch (error) {
+    const errorKey = orderErrorKey(error);
+    if (errorKey) {
+      return void redirect(
+        `/${eventSlug}/orders-admin/${orderId}?error=${errorKey}`,
+      );
+    }
+    throw error;
+  }
 
   revalidatePath(`/${locale}/${eventSlug}/orders-admin/${orderId}`);
 }

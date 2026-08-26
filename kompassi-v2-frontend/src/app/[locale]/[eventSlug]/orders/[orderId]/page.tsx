@@ -1,4 +1,4 @@
-import { ViewContainer, Messages } from "@con2/components";
+import { ViewContainer, Messages, FormattedDateTime } from "@con2/components";
 import Link from "next/link";
 import { ReactNode } from "react";
 
@@ -60,6 +60,16 @@ export default async function OrderPage(props: Props) {
 
       {showPayButton && (
         <section className="mb-4">
+          {order.paymentDeadline && (
+            <p>
+              {t.Order.paymentDeadlineNotice(
+                <FormattedDateTime
+                  value={order.paymentDeadline}
+                  locale={locale}
+                />,
+              )}
+            </p>
+          )}
           <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
             <div className="d-grid gap-2">
               <button className="btn btn-primary btn-lg" type="submit">

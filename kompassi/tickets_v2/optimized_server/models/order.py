@@ -14,7 +14,11 @@ from psycopg.errors import NotNullViolation
 
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES
 
-from ...optimized_server.utils.cancellation import get_cancellation_deadline, is_cancellable_by_customer
+from ...optimized_server.utils.cancellation import (
+    get_cancellation_deadline,
+    get_payment_deadline,
+    is_cancellable_by_customer,
+)
 from ...optimized_server.utils.uuid7 import uuid7, uuid7_to_datetime
 from ..config import KOMPASSI_V2_BASE_URL
 from ..excs import InvalidProducts, UnsaneSituation
@@ -124,11 +128,14 @@ class CreateOrderRequest(pydantic.BaseModel):
         )
 
 
-class OrderProduct(pydantic.BaseModel):
+class OrderProduct(pydantic.BaseModel, populate_by_name=True):
     title: str
     price: Decimal
     quantity: int
-    vat_percentage: Decimal = pydantic.Field(serialization_alias="vatPercentage")
+    vat_percentage: Decimal = pydantic.Field(
+        validation_alias="vatPercentage",
+        serialization_alias="vatPercentage",
+    )
 
 
 CENT = Decimal("0.01")
@@ -179,6 +186,11 @@ class Order(pydantic.BaseModel, populate_by_name=True):
         serialization_alias="cancellationDeadline",
         validation_alias="cancellationDeadline",
     )
+    payment_deadline: datetime | None = pydantic.Field(
+        default=None,
+        serialization_alias="paymentDeadline",
+        validation_alias="paymentDeadline",
+    )
 
     paid_by_provider: bool = pydantic.Field(default=False, exclude=True)
 
@@ -200,11 +212,8 @@ class Order(pydantic.BaseModel, populate_by_name=True):
 
     @pydantic.field_validator("status", mode="before")
     @staticmethod
-    def validate_status(value: str | int | PaymentStatus):
-        if isinstance(value, str):
-            return PaymentStatus[value]
-        else:
-            return PaymentStatus(value)
+    def validate_status(value: str | PaymentStatus):
+        return PaymentStatus(value)
 
     @classmethod
     async def get(cls, db: AsyncConnection, event_id: int, order_id: UUID) -> Order | None:
@@ -260,6 +269,10 @@ class Order(pydantic.BaseModel, populate_by_name=True):
             order_created_at=self.created_at,
             cancellation_period_days=event.cancellation_period_days,
             event_start_time=event.start_time,
+        )
+        self.payment_deadline = get_payment_deadline(
+            order_created_at=self.created_at,
+            unpaid_order_cancellation_delay_minutes=event.unpaid_order_cancellation_delay_minutes,
         )
         self.can_request_cancellation = is_cancellable_by_customer(
             status=self.status,

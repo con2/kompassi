@@ -464,7 +464,7 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
-                provider_id=PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.PAYTRAIL,
             ),
         )
         meta.ensure_partitions()

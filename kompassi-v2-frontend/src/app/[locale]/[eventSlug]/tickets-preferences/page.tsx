@@ -25,6 +25,7 @@ const query = graphql(`
         termsAndConditionsUrlFi
         termsAndConditionsUrlSv
         cancellationPeriodDays
+        unpaidOrderCancellationDelayMinutes
       }
     }
   }
@@ -127,6 +128,13 @@ export default async function TicketsPreferencesPage(props: Props) {
       helpText: t.attributes.cancellationPeriodDays.helpText,
       required: false,
     },
+    {
+      slug: "unpaidOrderCancellationDelayMinutes",
+      type: "NumberField",
+      title: t.attributes.unpaidOrderCancellationDelayMinutes.title,
+      helpText: t.attributes.unpaidOrderCancellationDelayMinutes.helpText,
+      required: false,
+    },
   ];
 
   const values = {
@@ -135,6 +143,8 @@ export default async function TicketsPreferencesPage(props: Props) {
     termsAndConditionsUrlFi: tickets.termsAndConditionsUrlFi ?? "",
     termsAndConditionsUrlSv: tickets.termsAndConditionsUrlSv ?? "",
     cancellationPeriodDays: tickets.cancellationPeriodDays,
+    unpaidOrderCancellationDelayMinutes:
+      tickets.unpaidOrderCancellationDelayMinutes,
   };
 
   return (

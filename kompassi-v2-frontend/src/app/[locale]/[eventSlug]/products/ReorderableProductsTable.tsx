@@ -33,6 +33,11 @@ export default function ReorderableProductsTable({
     [onReorder],
   );
 
+  // Orders paid after cancellation hold no tickets, so they are in neither
+  // countReserved nor countPaid. Surface them only when there are any: an
+  // always-zero column would be noise on every normal event.
+  const haveFlagged = rows.some((product) => product.countFlagged > 0);
+
   const columns: Column<PreparedProduct>[] = [
     {
       slug: "title",
@@ -69,6 +74,25 @@ export default function ReorderableProductsTable({
       className: "text-end align-middle col-1",
       getCellContents: (quota) => quota.countReserved - quota.countPaid,
     },
+    ...(haveFlagged
+      ? [
+          {
+            slug: "countFlagged",
+            title: t.countFlagged.title,
+            getHeaderContents: () => (
+              <abbr title={t.countFlagged.description}>
+                {t.countFlagged.title}
+              </abbr>
+            ),
+            getCellContents: (product: PreparedProduct) => (
+              <span className={product.countFlagged > 0 ? "text-danger" : ""}>
+                {product.countFlagged}
+              </span>
+            ),
+            className: "text-end align-middle col-1",
+          },
+        ]
+      : []),
     {
       slug: "countAvailable",
       title: t.countAvailable,
@@ -98,6 +122,14 @@ export default function ReorderableProductsTable({
         0,
       ),
   );
+  const totalFlagged = formatMoney(
+    "" +
+      products.reduce(
+        (acc, product) =>
+          acc + product.countFlagged * parseFloat(product.price),
+        0,
+      ),
+  );
 
   return (
     <ReorderableDataTable
@@ -118,6 +150,18 @@ export default function ReorderableProductsTable({
           </th>
           <th className="text-end align-middle col-2">{totalPaid}</th>
         </tr>
+        {haveFlagged && (
+          <tr className="text-danger">
+            <th
+              colSpan={columns.length}
+              className="text-end align-middle"
+              scope="row"
+            >
+              <abbr title={t.countFlagged.description}>{t.totalFlagged}</abbr>
+            </th>
+            <th className="text-end align-middle col-2">{totalFlagged}</th>
+          </tr>
+        )}
         <tr>
           <th
             colSpan={columns.length}

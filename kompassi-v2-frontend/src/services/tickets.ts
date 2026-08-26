@@ -168,6 +168,7 @@ export interface Order {
   totalPrice: string;
   canRequestCancellation: boolean;
   cancellationDeadline: string | null;
+  paymentDeadline: string | null;
   products: {
     title: string;
     price: string;
@@ -206,9 +207,26 @@ export async function getOrder(
   return response.json();
 }
 
-interface PayOrderResponse {
+export interface SuccessfulPayOrderResponse {
+  success: true;
   paymentRedirect: string;
 }
+
+export interface FailedPayOrderResponse {
+  success: false;
+  /// Every `detail` the optimized server returns with a 400 or 409 on this endpoint.
+  /// Tickets.Order.errors has a message for each; the error page falls back to
+  /// UNKNOWN_ERROR for anything it does not recognise.
+  error:
+    | "ORDER_NOT_PAYABLE"
+    | "INVALID_ORDER"
+    | "ORDER_NOT_FOUND"
+    | "EVENT_NOT_FOUND"
+    | "UNKNOWN_ERROR";
+}
+
+export type PayOrderResponse =
+  SuccessfulPayOrderResponse | FailedPayOrderResponse;
 
 export async function payOrder(
   eventSlug: string,
@@ -226,12 +244,18 @@ export async function payOrder(
     { method: "POST", headers: postHeaders },
   );
 
-  if (!response.ok) {
-    const { detail } = await response.json();
-    throw new Error(`Unexpected status code ${response.status}`, {
-      cause: detail,
-    });
+  switch (response.status) {
+    case 200:
+    case 201:
+      const { paymentRedirect } = await response.json();
+      return { success: true, paymentRedirect };
+    case 400:
+    case 409:
+      const { detail } = await response.json();
+      return { success: false, error: detail ?? "UNKNOWN_ERROR" };
+    default:
+      throw new Error(`Unexpected status code ${response.status}`, {
+        cause: response,
+      });
   }
-
-  return response.json();
 }

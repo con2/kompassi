@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 class NullProvider:
     event: Event
 
-    provider_id: ClassVar[PaymentProvider] = PaymentProvider.NONE
+    provider: ClassVar[PaymentProvider] = PaymentProvider.NONE
 
     def prepare_for_new_order(
         self,
@@ -30,7 +30,7 @@ class NullProvider:
         return None, PaymentStamp.for_zero_price_order(
             self.event.id,
             result.order_id,
-            self.provider_id,
+            self.provider,
         )
 
     def prepare_for_existing_order(

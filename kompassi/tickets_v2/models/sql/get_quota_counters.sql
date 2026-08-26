@@ -1,9 +1,12 @@
+-- NOTE: no PAID_AFTER_CANCELLATION bin here, unlike get_product_counters.sql. These
+-- counters are derived from tickets_v2_ticket rows, and a flagged order holds none, so
+-- it cannot appear in any of them by construction.
 select
   q.id as quota_id,
   coalesce(
     sum(
       case
-        when o.cached_status = 3 then 1 -- PaymentStatus.PAID
+        when o.cached_status = 'PAID' then 1
         else 0
       end
     ),

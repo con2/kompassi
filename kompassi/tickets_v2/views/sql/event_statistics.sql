@@ -20,7 +20,10 @@ with order_data as (
     )
   where
     o.event_id = any(%s)
-    and o.cached_status = 3  -- PAID
+    -- PAID only, deliberately: this is a sales-over-time series, and an order flagged
+    -- PAID_AFTER_CANCELLATION has been paid for but holds no tickets, so it is not a
+    -- sale until an admin fulfils it (at which point it becomes PAID and appears here).
+    and o.cached_status = 'PAID'
     and item.value::int > 0
 )
 select

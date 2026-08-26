@@ -73,7 +73,7 @@ from kompassi.tickets_v2.graphql.mutations.create_product import CreateProduct
 from kompassi.tickets_v2.graphql.mutations.create_quota import CreateQuota
 from kompassi.tickets_v2.graphql.mutations.delete_product import DeleteProduct
 from kompassi.tickets_v2.graphql.mutations.delete_quota import DeleteQuota
-from kompassi.tickets_v2.graphql.mutations.mark_order_as_paid import MarkOrderAsPaid
+from kompassi.tickets_v2.graphql.mutations.fulfil_order import FulfilOrder
 from kompassi.tickets_v2.graphql.mutations.reorder_products import ReorderProducts
 from kompassi.tickets_v2.graphql.mutations.request_order_cancellation import RequestOrderCancellation
 from kompassi.tickets_v2.graphql.mutations.resend_order_confirmation import ResendOrderConfirmation
@@ -235,7 +235,7 @@ class Mutation(graphene.ObjectType):
     resend_order_confirmation = ResendOrderConfirmation.Field()
     cancel_and_refund_order = CancelAndRefundOrder.Field()
     cancel_own_unpaid_order = CancelOwnUnpaidOrder.Field()
-    mark_order_as_paid = MarkOrderAsPaid.Field()
+    fulfil_order = FulfilOrder.Field()
 
     request_order_cancellation = RequestOrderCancellation.Field()
     confirm_order_cancellation = ConfirmOrderCancellation.Field()

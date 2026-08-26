@@ -3,6 +3,7 @@ import {
   ViewHeading,
   SignInRequired,
   ModalButton,
+  FormattedDateTime,
 } from "@con2/components";
 import Link from "next/link";
 
@@ -33,6 +34,7 @@ const query = graphql(`
           canPay
           canCancel
           canRequestCancellation
+          paymentDeadline
           ticketsContactEmail
           products {
             title
@@ -155,13 +157,25 @@ export default async function ProfileOrderPage(props: Props) {
       />
 
       {order.canPay && (
-        <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
-          <div className="d-grid gap-2 mb-4">
-            <button className="btn btn-primary btn-lg" type="submit">
-              {t.actions.pay}
-            </button>
-          </div>
-        </form>
+        <>
+          {order.paymentDeadline && (
+            <p>
+              {t.paymentDeadlineNotice(
+                <FormattedDateTime
+                  value={order.paymentDeadline}
+                  locale={locale}
+                />,
+              )}
+            </p>
+          )}
+          <form action={payOrder.bind(null, locale, eventSlug, orderId)}>
+            <div className="d-grid gap-2 mb-4">
+              <button className="btn btn-primary btn-lg" type="submit">
+                {t.actions.pay}
+              </button>
+            </div>
+          </form>
+        </>
       )}
 
       {order.eticketsLink && (

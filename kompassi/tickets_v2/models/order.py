@@ -4,16 +4,16 @@ import logging
 from datetime import datetime, timedelta
 from decimal import Decimal
 from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from pathlib import Path
+from typing import TYPE_CHECKING, ClassVar, Self
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.db import models, transaction
+from django.db import connection, models, transaction
 from django.db.models import Value
 from django.db.models.functions import Concat, Lower
 from django.http import HttpRequest
 from django.urls import reverse
-from django.utils.timezone import get_current_timezone
 from django.utils.timezone import now as django_now
 from lippukala.models.code import Code as LippukalaCode
 from lippukala.models.order import Order as LippukalaOrder
@@ -27,11 +27,16 @@ from kompassi.graphql_api.language import SUPPORTED_LANGUAGES
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStampType, PaymentStatus, RefundType
 from ..optimized_server.models.order import OrderProduct, VatBreakdownLine
-from ..optimized_server.utils.cancellation import get_cancellation_deadline, is_cancellable_by_customer
+from ..optimized_server.utils.cancellation import (
+    get_cancellation_deadline,
+    get_payment_deadline,
+    is_cancellable_by_customer,
+)
 from ..optimized_server.utils.formatting import format_order_number
 from ..optimized_server.utils.uuid7 import uuid7
 from ..utils.event_partitions import EventPartitionsMixin
 from .enums import ActorType
+from .fields import PostgresEnumField
 from .meta import TicketsV2EventMeta
 from .product import Product
 
@@ -42,6 +47,34 @@ if TYPE_CHECKING:
 
 PRODUCT_CACHE: dict[int, dict[int, Product]] = {}
 logger = logging.getLogger(__name__)
+
+
+class OrderStateChanged(Exception):
+    """
+    Raised by Order.fulfil() and Order.cancel_and_refund() when the caller's
+    fromPaymentStatus no longer matches the order's actual status under
+    select_for_update — ie. another admin, or an automatic process, already
+    acted on the order since the caller last read its state.
+    """
+
+    def __init__(self, actual_status: PaymentStatus):
+        self.actual_status = actual_status
+        super().__init__(f"Order is no longer in the expected status (actual status: {actual_status.name})")
+
+
+class TicketsUnavailable(Exception):
+    """
+    Raised by Order.fulfil() when the order still does not hold its full expected
+    complement of tickets even after minting the shortfall into the quota — ie.
+    something claimed them from under us, or tickets_v2_ensure_tickets() failed.
+    The order is left as it was; the caller must not report success.
+    """
+
+    def __init__(self, actual_status: PaymentStatus):
+        self.actual_status = actual_status
+        super().__init__(
+            f"Could not secure the tickets this order is owed (status: {actual_status.name}); nothing was changed"
+        )
 
 
 class OrderMixin:
@@ -159,8 +192,10 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         related_name="+",
     )
 
-    cached_status = models.SmallIntegerField(
-        choices=[(status.value, status.name) for status in PaymentStatus],
+    cached_status = PostgresEnumField(
+        enum=PaymentStatus,
+        db_type_name="tickets_v2_paymentstatus",
+        choices=[(status.name, status.name) for status in PaymentStatus],
         default=PaymentStatus.NOT_STARTED,
         help_text="Payment status of the order. Updated by a trigger on PaymentStamp.",
     )
@@ -192,7 +227,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
 
     @property
     def status(self) -> PaymentStatus:
-        return PaymentStatus(self.cached_status)
+        return self.cached_status
 
     @cached_property
     def timezone(self):
@@ -234,9 +269,9 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                 values = filter.values
                 match filter.dimension:
                     case "status":
-                        # resolve status name -> int value
-                        values = [PaymentStatus[value.upper()].value for value in values]
-                        orders = orders.filter(cached_status__in=values)
+                        # resolve filter slug (lower case) -> enum member
+                        statuses = [PaymentStatus[value.upper()] for value in values]
+                        orders = orders.filter(cached_status__in=statuses)
                     case "product":
                         product_ids = [int(value) for value in values]
                         old_versions_by_current: dict[int, list[int]] = {}
@@ -355,7 +390,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         PAID stamps recorded by an actual payment provider (as opposed to eg.
         an admin marking the order as paid). Only these can be provider refunded.
         """
-        return self.payment_stamps.filter(status=PaymentStatus.PAID).exclude(provider_id=PaymentProvider.NONE)
+        return self.payment_stamps.filter(status=PaymentStatus.PAID).exclude(provider=PaymentProvider.NONE)
 
     @property
     def cancellation_deadline(self) -> datetime | None:
@@ -363,6 +398,13 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             order_created_at=self.timestamp,
             cancellation_period_days=self.meta.cancellation_period_days,
             event_start_time=self.event.start_time,
+        )
+
+    @property
+    def payment_deadline(self) -> datetime | None:
+        return get_payment_deadline(
+            order_created_at=self.timestamp,
+            unpaid_order_cancellation_delay_minutes=self.meta.unpaid_order_cancellation_delay_minutes,
         )
 
     def can_be_cancelled_by_customer(self) -> bool:
@@ -419,7 +461,13 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         *,
         actor_type: ActorType = ActorType.ADMIN,
         actor_user: User | None = None,
+        request: HttpRequest | None = None,
     ):
+        # NOTE: request only contributes ip_address (and organization) here — the fields
+        # emit() would otherwise deduce from it are all passed explicitly below, and
+        # explicit kwargs win over the request-derived ones.
+        extra = dict(request=request) if request is not None else {}
+
         return emit(
             entry_type,
             event=self.event,
@@ -428,15 +476,24 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             actor_type=actor_type,
             actor=actor_user,
             context=self.admin_url,
+            **extra,
         )
 
     def cancel_and_refund(
         self,
         refund_type: RefundType,
         *,
+        from_status: PaymentStatus | None = None,
         actor_type: ActorType = ActorType.ADMIN,
         actor_user: User | None = None,
     ):
+        """
+        from_status, when given, is checked against the order's status under
+        select_for_update, raising OrderStateChanged on mismatch. Pass it
+        whenever the caller's belief about the order's status can be stale by
+        the time this runs (eg. an admin page left open) — the automatic
+        cancellation sweep has no such stale belief and omits it.
+        """
         from lippukala.consts import MANUAL_INTERVENTION_REQUIRED, UNUSED
 
         from .payment_stamp import PaymentStamp
@@ -446,61 +503,73 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             actor_user=actor_user,
         )
 
-        match refund_type:
-            case RefundType.NONE:
-                if self.cached_status == PaymentStatus.CANCELLED:
-                    raise ValueError("Order is already cancelled")
-
-                prepared_request = None
-                request_stamp = PaymentStamp(
-                    event=self.event,
-                    order_id=self.id,
-                    correlation_id=uuid7(),
-                    provider_id=PaymentProvider.NONE,
-                    type=PaymentStampType.CANCEL_WITHOUT_REFUND,
-                    status=PaymentStatus.CANCELLED,
-                    data=data,
-                )
-
-            case RefundType.MANUAL:
-                if self.cached_status == PaymentStatus.REFUNDED:
-                    raise ValueError("Order is already refunded")
-
-                prepared_request = None
-                request_stamp = PaymentStamp(
-                    event=self.event,
-                    order_id=self.id,
-                    correlation_id=uuid7(),
-                    provider_id=PaymentProvider.NONE,
-                    type=PaymentStampType.MANUAL_REFUND,
-                    status=PaymentStatus.REFUNDED,
-                    data=data,
-                )
-            case RefundType.PROVIDER:
-                if self.cached_status == PaymentStatus.REFUNDED:
-                    raise ValueError("Order is already refunded")
-
-                # NOTE: must be a provider stamp — the order may additionally have been
-                # marked as paid by an admin, recording a PAID stamp with provider NONE
-                # that cannot be refunded via the provider.
-                paid_stamp = self.provider_paid_stamps.order_by("-id").first()
-                if not paid_stamp:
-                    raise ValueError("Cannot refund an order that has not been paid via a payment provider")
-
-                prepared_request = self.meta.provider.prepare_refund(paid_stamp)
-                request_stamp = prepared_request.request_stamp
-                request_stamp.data = dict(request_stamp.data or {}, **data)
-            case _:
-                raise ValueError(f"Unsupported refund type: {refund_type}")
-
         with transaction.atomic():
+            order = self
+            if from_status is not None:
+                order = Order.objects.select_for_update().get(event=self.event, id=self.id)
+                if order.cached_status != from_status:
+                    raise OrderStateChanged(order.cached_status)
+
+            match refund_type:
+                case RefundType.NONE:
+                    # NOTE: the trigger only ratchets cached_status forward, so a CANCELLED stamp
+                    # is silently ignored for anything at or past CANCELLED (notably
+                    # PAID_AFTER_CANCELLATION, which sorts after it). Refuse here rather than
+                    # release tickets and invalidate codes for an order that stays flagged.
+                    if order.cached_status >= PaymentStatus.CANCELLED:
+                        raise ValueError(
+                            f"Order cannot be cancelled without refund from {order.cached_status.name}",
+                        )
+
+                    prepared_request = None
+                    request_stamp = PaymentStamp(
+                        event=order.event,
+                        order_id=order.id,
+                        correlation_id=uuid7(),
+                        provider=PaymentProvider.NONE,
+                        type=PaymentStampType.CANCEL_WITHOUT_REFUND,
+                        status=PaymentStatus.CANCELLED,
+                        data=data,
+                    )
+
+                case RefundType.MANUAL:
+                    if order.cached_status == PaymentStatus.REFUNDED:
+                        raise ValueError("Order is already refunded")
+
+                    prepared_request = None
+                    request_stamp = PaymentStamp(
+                        event=order.event,
+                        order_id=order.id,
+                        correlation_id=uuid7(),
+                        provider=PaymentProvider.NONE,
+                        type=PaymentStampType.MANUAL_REFUND,
+                        status=PaymentStatus.REFUNDED,
+                        data=data,
+                    )
+                case RefundType.PROVIDER:
+                    if order.cached_status == PaymentStatus.REFUNDED:
+                        raise ValueError("Order is already refunded")
+
+                    # NOTE: must be a provider stamp — the order may additionally have been
+                    # marked as paid by an admin, recording a PAID stamp with provider NONE
+                    # that cannot be refunded via the provider.
+                    paid_stamp = order.provider_paid_stamps.order_by("-id").first()
+                    if not paid_stamp:
+                        raise ValueError("Cannot refund an order that has not been paid via a payment provider")
+
+                    prepared_request = order.meta.provider_implementation.prepare_refund(paid_stamp)
+                    request_stamp = prepared_request.request_stamp
+                    request_stamp.data = dict(request_stamp.data or {}, **data)
+                case _:
+                    raise ValueError(f"Unsupported refund type: {refund_type}")
+
             request_stamp.save()
 
             # Release tickets consumed from quotas
-            self.tickets.update(order_id=None)
+            order.tickets.update(order_id=None)
 
             # Invalidate electronic tickets
-            if lippukala_order := self.lippukala_order:
+            if lippukala_order := order.lippukala_order:
                 LippukalaCode.objects.filter(
                     order=lippukala_order,
                     status=UNUSED,
@@ -508,7 +577,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
                     status=MANUAL_INTERVENTION_REQUIRED,
                 )
 
-            self.emit_event_log_entry(
+            order.emit_event_log_entry(
                 refund_type.event_log_entry_type,
                 actor_type=actor_type,
                 actor_user=actor_user,
@@ -525,73 +594,192 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
     @classmethod
     def cancel_unpaid_orders(
         cls,
-        threshold: datetime | None = None,
+        now: datetime | None = None,
         actor_type: ActorType = ActorType.SYSTEM,
         actor_user: User | None = None,
     ):
         """
-        Cancels all unpaid orders that are older than the threshold.
-        If threshold is None, cancels all unpaid orders done before midnight three days ago Europe/Helsinki time.
-        This gives orders a chance to be paid before they are cancelled.
+        Cancels unpaid orders older than each event's configured cancellation
+        window (TicketsV2EventMeta.unpaid_order_cancellation_delay_minutes),
+        releasing their tickets back into the quota. Expected to run from a
+        frequent cron; the window is a precise point in time, so running more
+        often only makes cancellation more timely.
+
+        An event with the delay set to 0 has automatic cancellation disabled
+        and is skipped entirely.
         """
-        if threshold is None:
-            tz = get_current_timezone()
-            threshold = (datetime.now(tz) - timedelta(days=3)).replace(hour=0, minute=0, second=0, microsecond=0)
+        if now is None:
+            now = django_now()
 
-        orders = cls.objects.filter(
-            cached_status__lt=PaymentStatus.PAID.value,
-            id__lt=uuid7(threshold),
-        )
+        for meta in TicketsV2EventMeta.objects.exclude(unpaid_order_cancellation_delay_minutes=0):
+            threshold = now - timedelta(minutes=meta.unpaid_order_cancellation_delay_minutes)
 
-        if num_orders := orders.count():
-            logger.info("Cancelling %d unpaid orders older than %s", num_orders, threshold)
-            for order in orders:
-                order.cancel_and_refund(
-                    refund_type=RefundType.NONE,
-                    actor_type=actor_type,
-                    actor_user=actor_user,
+            orders = cls.objects.filter(
+                event_id=meta.event_id,
+                cached_status__lt=PaymentStatus.PAID,
+                id__lt=uuid7(threshold),
+            )
+
+            if num_orders := orders.count():
+                logger.info(
+                    "Cancelling %d unpaid orders older than %s in event %s",
+                    num_orders,
+                    threshold,
+                    meta.event_id,
                 )
-        else:
-            logger.info("No unpaid orders older than %s to cancel", threshold)
+                for order in orders:
+                    order.cancel_and_refund(
+                        refund_type=RefundType.NONE,
+                        actor_type=actor_type,
+                        actor_user=actor_user,
+                    )
+            else:
+                # NOTE: debug, not info — this runs every few minutes for every event.
+                logger.debug(
+                    "No unpaid orders older than %s to cancel in event %s",
+                    threshold,
+                    meta.event_id,
+                )
 
-    def can_be_marked_as_paid_by(self, request: HttpRequest):
-        return self.status.is_payable and is_graphql_allowed_for_model(
+    def can_be_fulfilled_by(self, request: HttpRequest):
+        return self.status.is_fulfillable and is_graphql_allowed_for_model(
             request.user,
             instance=self,
             operation="update",
             field="self",
         )
 
-    def mark_as_paid(
+    _ensure_tickets_query: ClassVar[str] = "select tickets_v2_ensure_tickets(%s, %s)"
+    _ticket_shortfall_query: ClassVar[str] = (
+        Path(__file__).parent / "sql" / "get_order_ticket_shortfall.sql"
+    ).read_text()
+
+    def _ensure_tickets(self) -> bool:
+        """
+        Idempotently claims from the free pool whatever this order is short of.
+        Returns whether the order now holds its full expected complement.
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(self._ensure_tickets_query, [self.event_id, self.id])
+            (result,) = cursor.fetchone()
+        return result
+
+    def _get_ticket_shortfall(self) -> dict[int, int]:
+        """
+        Returns quota id -> number of tickets this order is short of.
+        """
+        with connection.cursor() as cursor:
+            cursor.execute(self._ticket_shortfall_query, dict(event_id=self.event_id, order_id=self.id))
+            return dict(cursor.fetchall())
+
+    def fulfil(
         self,
+        from_status: PaymentStatus,
         actor_type: ActorType = ActorType.ADMIN,
         actor_user: User | None = None,
+        request: HttpRequest | None = None,
     ):
+        """
+        Ensures the order holds its expected tickets, minting into the quota
+        whatever the free pool cannot cover, then records it as paid.
+
+        For an order that already holds its tickets (NOT_STARTED, PENDING,
+        FAILED — ie. today's "mark as paid") the minting step is a no-op. For
+        a PAID_AFTER_CANCELLATION order this is the admin's "make it so":
+        overselling the quota by exactly the amount owed, deliberately.
+        """
         from .payment_stamp import PaymentStamp
-
-        if not self.status.is_payable:
-            raise ValueError("Order cannot be marked as paid")
-
-        data = self._build_internal_payment_stamp_data(
-            actor_type=actor_type,
-            actor_user=actor_user,
-        )
-
-        payment_stamp = PaymentStamp(
-            event=self.event,
-            order_id=self.id,
-            correlation_id=uuid7(),
-            provider_id=PaymentProvider.NONE,
-            type=PaymentStampType.PAYMENT_CALLBACK,
-            status=PaymentStatus.PAID,
-            data=data,
-        )
+        from .quota import Quota
 
         with transaction.atomic():
-            payment_stamp.save()
+            order = Order.objects.select_for_update().get(event=self.event, id=self.id)
+            if order.cached_status != from_status:
+                raise OrderStateChanged(order.cached_status)
 
-            self.emit_event_log_entry(
-                "tickets_v2.order.marked_as_paid",
+            # NOTE: can_be_fulfilled_by() checks this too, but on an unlocked read taken
+            # before the lock. Re-check under the lock so a caller cannot name a status
+            # the order only reaches mid-request (eg. racing a refund) and have us mint
+            # tickets for it.
+            if not order.cached_status.is_fulfillable:
+                raise ValueError(f"Order in status {order.cached_status.name} cannot be fulfilled")
+
+            order._ensure_tickets()
+            for quota_id, quantity in order._get_ticket_shortfall().items():
+                Quota.objects.get(id=quota_id).create_tickets(quantity)
+            if not order._ensure_tickets():
+                # Something claimed the tickets we just minted, or the claim itself failed.
+                # Raising rolls the whole transaction back, minting included.
+                raise TicketsUnavailable(order.cached_status)
+
+            data = self._build_internal_payment_stamp_data(
                 actor_type=actor_type,
                 actor_user=actor_user,
             )
+            PaymentStamp(
+                event=order.event,
+                order_id=order.id,
+                correlation_id=uuid7(),
+                provider=PaymentProvider.NONE,
+                type=PaymentStampType.MANUAL_FULFILMENT,
+                status=PaymentStatus.PAID,
+                data=data,
+            ).save()
+
+            order.emit_event_log_entry(
+                "tickets_v2.order.fulfilled",
+                actor_type=actor_type,
+                actor_user=actor_user,
+                request=request,
+            )
+
+    @classmethod
+    def retry_paid_after_cancellation(cls):
+        """
+        Attempts to fulfil, for free, every order flagged PAID_AFTER_CANCELLATION —
+        this becomes possible as soon as other unpaid orders are cancelled and
+        release their tickets. Unlike Order.fulfil(), this never grows a quota:
+        overselling is a decision reserved for a human, never one a cron takes.
+        Checking before stamping also keeps the insert-only PaymentStamp table
+        from accumulating a dead stamp per order on every run that finds nothing
+        to do.
+        """
+        from .payment_stamp import PaymentStamp
+
+        for order in cls.objects.filter(cached_status=PaymentStatus.PAID_AFTER_CANCELLATION):
+            with transaction.atomic():
+                locked_order = cls.objects.select_for_update().get(event=order.event, id=order.id)
+                if locked_order.cached_status != PaymentStatus.PAID_AFTER_CANCELLATION:
+                    continue
+
+                if locked_order._ensure_tickets():
+                    data = cls._build_internal_payment_stamp_data(actor_type=ActorType.SYSTEM)
+                    PaymentStamp(
+                        event=locked_order.event,
+                        order_id=locked_order.id,
+                        correlation_id=uuid7(),
+                        provider=PaymentProvider.NONE,
+                        # NOTE: not PAYMENT_CALLBACK — no provider called us back. The stamp
+                        # data's __actorType distinguishes this cron from an admin fulfilment.
+                        type=PaymentStampType.MANUAL_FULFILMENT,
+                        status=PaymentStatus.PAID,
+                        data=data,
+                    ).save()
+
+                    locked_order.emit_event_log_entry(
+                        "tickets_v2.order.fulfilled",
+                        actor_type=ActorType.SYSTEM,
+                    )
+                else:
+                    # Resolve everything the log line needs before set_rollback(True),
+                    # since Django refuses further queries once it is called.
+                    formatted_order_number = locked_order.formatted_order_number
+                    admin_url = locked_order.admin_url
+
+                    # tickets_v2_ensure_tickets() already rolled back its own claim
+                    # attempt; nothing to undo here beyond releasing the row lock.
+                    transaction.set_rollback(True)
+                    logger.warning(
+                        "Order %s remains flagged as paid after cancellation: %s",
+                        formatted_order_number,
+                        admin_url,
+                    )

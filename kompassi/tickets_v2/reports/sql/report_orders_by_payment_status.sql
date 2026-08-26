@@ -1,15 +1,17 @@
 with status_counts_by_order_id as (
   select
     order_id,
-    count(case when status <= 1 then 1 end) as num_new, -- PaymentStatus.NOT_STARTED, PaymentStatus.PENDING
-    count(case when status = 3 then 1 end) as num_ok,   -- PaymentStatus.OK
-    count(case when status = 2 then 1 end) as num_fail  -- PaymentStatus.FAILED
+    count(case when status <= 'PENDING' then 1 end) as num_new,
+    count(case when status = 'PAID' then 1 end) as num_ok,
+    count(case when status = 'FAILED' then 1 end) as num_fail
   from
     tickets_v2_paymentstamp
   where
     event_id = %(event_id)s
-    and type in (2, 3, 4, 5)  -- PaymentStampType.PAYMENT_REDIRECT, .PAYMENT_CALLBACK
-    and provider_id = 1 -- PaymentProvider.PAYTRAIL
+    and type in (
+      'CREATE_PAYMENT_SUCCESS', 'CREATE_PAYMENT_FAILURE', 'PAYMENT_REDIRECT', 'PAYMENT_CALLBACK'
+    )
+    and provider = 'PAYTRAIL'
   group by
     order_id
 )

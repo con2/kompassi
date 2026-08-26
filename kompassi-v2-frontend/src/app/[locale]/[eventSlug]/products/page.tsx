@@ -27,6 +27,7 @@ graphql(`
     availableUntil
     countPaid
     countReserved
+    countFlagged
     countAvailable
   }
 `);
@@ -99,7 +100,12 @@ export const revalidate = 0;
 // Uses markup-returning functions from i18n
 // Don't try to make a component out of this, you will regret it
 export function getAvailabilityMessage(
-  product: ProductListFragment,
+  // Only the availability fields, so callers with their own product fragment
+  // (eg. orders-admin/new) don't have to select everything ProductList does.
+  product: Pick<
+    ProductListFragment,
+    "isAvailable" | "availableFrom" | "availableUntil"
+  >,
   t: Translations["Tickets"]["Product"],
   locale: string,
 ) {

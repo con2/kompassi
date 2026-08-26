@@ -59,7 +59,7 @@ class PreparedCreateRefundRequest:
             event=self.request_stamp.event,
             order_id=self.request_stamp.order_id,
             correlation_id=self.request_stamp.correlation_id,
-            provider_id=PaymentProvider.PAYTRAIL,
+            provider=PaymentProvider.PAYTRAIL,
             type=type,
             status=status,
             data=data,
@@ -105,7 +105,7 @@ class PaytrailProvider:
 
         :param payment_stamp: The payment stamp to refund.
         """
-        if payment_stamp.provider_id != PaymentProvider.PAYTRAIL:
+        if payment_stamp.provider != PaymentProvider.PAYTRAIL:
             raise ValueError("Unsupported provider")
         if payment_stamp.status != PaymentStatus.PAID:
             raise ValueError("Payment must be in PAID status to refund")
@@ -161,7 +161,7 @@ class PaytrailProvider:
             event=order.event,
             order_id=order.id,
             correlation_id=correlation_id,
-            provider_id=PaymentProvider.PAYTRAIL,
+            provider=PaymentProvider.PAYTRAIL,
             type=PaymentStampType.CREATE_REFUND_REQUEST,
             status=PaymentStatus.REFUND_REQUESTED,
             data=data,

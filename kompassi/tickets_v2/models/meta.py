@@ -12,13 +12,20 @@ from kompassi.core.models.event_meta_base import EventMetaBase
 from kompassi.core.models.person import Person
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStatus
+from .fields import PostgresEnumField
 
 logger = logging.getLogger(__name__)
 
+# 84 hours = 3½ days. Long enough that a bank transfer over a weekend still lands,
+# short enough that a sold-out event's abandoned reservations turn over.
+DEFAULT_UNPAID_ORDER_CANCELLATION_DELAY_MINUTES = 84 * 60
+
 
 class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
-    provider_id = models.SmallIntegerField(
-        choices=[(x.value, x.name) for x in PaymentProvider],
+    provider = PostgresEnumField(
+        enum=PaymentProvider,
+        db_type_name="tickets_v2_paymentprovider",
+        choices=[(p.name, p.name) for p in PaymentProvider],
         default=PaymentProvider.NONE,
         verbose_name="Payment provider",
     )
@@ -41,6 +48,15 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
             "Number of days from order creation during which the customer can cancel "
             "a paid order themselves. The period is further capped at event start. "
             "0 = customer self-service cancellation disabled."
+        ),
+    )
+
+    unpaid_order_cancellation_delay_minutes = models.PositiveIntegerField(
+        default=DEFAULT_UNPAID_ORDER_CANCELLATION_DELAY_MINUTES,
+        help_text=(
+            "Number of minutes from order creation after which an unpaid order is "
+            "automatically cancelled, releasing its tickets back into the quota. "
+            "0 = automatic cancellation of unpaid orders disabled."
         ),
     )
 
@@ -105,7 +121,7 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
         }
         orders = Order.objects.filter(
             event=self.event_id,
-            cached_status__lte=PaymentStatus.PAID.value,
+            cached_status__lte=PaymentStatus.PAID,
         )
 
         # May the Transaction be with us.
@@ -131,17 +147,17 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
             quota.set_quota(counters.count_total)
 
     @cached_property
-    def provider(self):
+    def provider_implementation(self):
         from ..providers.null import NULL_PROVIDER
         from ..providers.paytrail import PAYTRAIL_PROVIDER
 
-        match self.provider_id:
+        match self.provider:
             case PaymentProvider.NONE:
                 return NULL_PROVIDER
             case PaymentProvider.PAYTRAIL:
                 return PAYTRAIL_PROVIDER
             case _:
-                raise NotImplementedError(f"Unsupported provider_id: {self.provider_id}")
+                raise NotImplementedError(f"Unsupported provider: {self.provider}")
 
 
 @dataclass

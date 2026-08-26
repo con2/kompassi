@@ -24,6 +24,7 @@ interface Environment {
   workers: number;
   timeoutSeconds: number;
   cronNightlySuspended: boolean;
+  cronFrequentSuspended: boolean;
   readinessProbeEnabled: boolean;
   livenessProbeEnabled: boolean;
   postgresSsl: boolean;
@@ -43,6 +44,7 @@ const base = {
   workers: 4,
   timeoutSeconds: 120,
   cronNightlySuspended: false,
+  cronFrequentSuspended: false,
   readinessProbeEnabled: true,
   livenessProbeEnabled: true,
   admins: ["Luka Pajukanta <santtu@pajukanta.fi>"],
@@ -399,6 +401,44 @@ const cronNightly = {
   },
 };
 
+const cronFrequent = {
+  apiVersion: "batch/v1",
+  kind: "CronJob",
+  metadata: { name: "cron-frequent" },
+  spec: {
+    schedule: "*/5 * * * *",
+    successfulJobsHistoryLimit: 1,
+    failedJobsHistoryLimit: 3,
+    concurrencyPolicy: "Forbid",
+    suspend: env.cronFrequentSuspended,
+    jobTemplate: {
+      spec: {
+        template: {
+          metadata: { labels: labels("cron-frequent") },
+          spec: {
+            affinity: podAffinity("kompassi"),
+            enableServiceLinks: false,
+            securityContext: kompassiPodSecurityContext,
+            restartPolicy: "OnFailure",
+            containers: [
+              {
+                name: "master",
+                image: kompassiImage,
+                ports: [{ containerPort: 8000 }],
+                env: kompassiEnvironment,
+                securityContext: kompassiContainerSecurityContext,
+                args: ["python", "manage.py", "cron_frequent"],
+                volumeMounts: kompassiVolumeMounts,
+              },
+            ],
+            volumes: kompassiVolumes,
+          },
+        },
+      },
+    },
+  },
+};
+
 const celeryDeployment = {
   apiVersion: "apps/v1",
   kind: "Deployment",
@@ -558,6 +598,7 @@ function main() {
   writeManifest("uvicorn.deployment.json", uvicornDeployment);
 
   writeManifest("cron-nightly.json", cronNightly);
+  writeManifest("cron-frequent.json", cronFrequent);
 
   writeManifest("celery.deployment.json", celeryDeployment);
 

@@ -24,7 +24,7 @@ def sales_by_payment_provider(
             fi="Myynti maksunvälittäjittäin",
         ),
         query_args=dict(
-            payment_providers=json.dumps([{"id": pm.value, "title": pm.name} for pm in PaymentProvider]),
+            payment_providers=json.dumps([{"id": pm.name, "title": pm.name} for pm in PaymentProvider]),
             event_id=event.id,
         ),
         columns=[
@@ -52,11 +52,27 @@ def sales_by_payment_provider(
                 ),
                 type=TypeOfColumn.CURRENCY,
             ),
+            Column(
+                slug="total_flagged",
+                title=dict(
+                    en="Paid after cancellation",
+                    fi="Maksettu peruutuksen jälkeen",
+                ),
+                type=TypeOfColumn.CURRENCY,
+            ),
         ],
         has_total_row=True,
         lang=lang,
         footer=dict(
-            en="Total cancelled is not included in total sold or total paid.",
-            fi="Perutut tilaukset eivät sisälly myytyihin tai maksettuihin.",
+            en=(
+                "Cancelled orders, and orders paid after cancellation, are not included in "
+                "total sold or total paid. Orders paid after cancellation have been paid for "
+                "but hold no tickets; they need either fulfilling or refunding."
+            ),
+            fi=(
+                "Perutut tilaukset ja peruutuksen jälkeen maksetut tilaukset eivät sisälly "
+                "myytyihin tai maksettuihin. Peruutuksen jälkeen maksetut tilaukset on maksettu, "
+                "mutta niillä ei ole lippuja; ne on joko toimitettava tai hyvitettävä."
+            ),
         ),
     )

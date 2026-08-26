@@ -519,11 +519,17 @@ const translations = {
             "In addition to paid orders, includes those orders that have been confirmed but not yet paid.",
         },
         countUnpaid: "Unpaid",
+        countFlagged: {
+          title: "Flagged",
+          description:
+            "Units in orders paid after cancellation: paid for, but holding no tickets, because the payment landed after the order had already been cancelled and the quota had nothing left to give back. Counted in neither sold nor paid. These orders need an admin to fulfil or refund them.",
+        },
         countAvailable: "Remaining",
         countTotal: "Total",
         actions: "Actions",
         totalReserved: "Total sold",
         totalPaid: "Total paid",
+        totalFlagged: "Total paid after cancellation",
         revisions: {
           title: "Revisions of this product",
           description:
@@ -612,6 +618,9 @@ const translations = {
       listTitle: "Orders",
       singleTitle: (orderNumber: string, paymentStatus: string) =>
         `Order ${orderNumber} (${paymentStatus})`,
+      paymentDeadlineNotice: (deadline: ReactNode) => (
+        <>Please pay for your order by {deadline} or it will be cancelled.</>
+      ),
       contactForm: {
         title: "Contact information",
       },
@@ -733,6 +742,15 @@ const translations = {
           <ForceLink>use the Force</ForceLink>.
         </>
       ),
+      paidAfterCancellationWarning: (numOrders: number) => (
+        <>
+          {numOrders} order{numOrders === 1 ? "" : "s"}{" "}
+          {numOrders === 1 ? "is" : "are"} flagged as paid after cancellation
+          and {numOrders === 1 ? "needs" : "need"}{" "}
+          {numOrders === 1 ? "an admin" : "admins"} to fulfil{" "}
+          {numOrders === 1 ? "it" : "them"}. Click here to view.
+        </>
+      ),
       attributes: {
         orderNumberAbbr: "Order #",
         orderNumberFull: "Order number",
@@ -833,6 +851,12 @@ const translations = {
               message:
                 "Your order has been cancelled. If there were electronic tickets in the order, they have been invalidated. If you believe this is an error, please contact the event organizer.",
             },
+            PAID_AFTER_CANCELLATION: {
+              title: "Payment received",
+              shortTitle: "Paid after cancellation",
+              message:
+                "Your payment has been received. Your order is still being processed; your tickets will follow shortly.",
+            },
             REFUND_REQUESTED: {
               title: "Your order has been refunded",
               shortTitle: "Refund requested",
@@ -874,6 +898,11 @@ const translations = {
           title: "Error processing order",
           message:
             "An error occurred while processing your order. Please try again later.",
+        },
+        ORDER_NOT_PAYABLE: {
+          title: "Order cannot be paid",
+          message:
+            "This order can no longer be paid for. It may have already been paid, cancelled or refunded.",
         },
         ORDER_NOT_FOUND: {
           title: "Order not found",
@@ -1158,6 +1187,28 @@ const translations = {
             cancel: "Close without marking",
           },
         },
+        fulfilAfterCancellation: {
+          title: "Fulfil despite cancellation",
+          message: (
+            <>
+              <p>
+                This order was cancelled, but a payment has since arrived for
+                it. Do you want to fulfil the order anyway?
+              </p>
+              <p>
+                This will oversell the ticket quota by however many tickets this
+                order still needs — the money has already been received, so the
+                customer must get their tickets. A receipt will be sent to the
+                customer. If the order contains electronic tickets, they will be
+                attached to the receipt.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Fulfil order",
+            cancel: "Close without fulfilling",
+          },
+        },
       },
     },
     PaymentStamp: {
@@ -1180,6 +1231,9 @@ const translations = {
             CREATE_REFUND_FAILURE: "Create refund – Failed",
             REFUND_CALLBACK: "Refund callback",
             MANUAL_REFUND: "Manual refund",
+            // Written both by an admin using Fulfil and by the cron that retries
+            // flagged orders, so the label must not claim a human did it.
+            MANUAL_FULFILMENT: "Fulfilment",
           },
         },
       },
@@ -1294,6 +1348,11 @@ const translations = {
             helpText:
               "Number of days from placing the order during which the customer can cancel a paid order themselves. The cancellation period ends when the event starts at the latest. Set to 0 to disable customer self-service cancellation.",
           },
+          unpaidOrderCancellationDelayMinutes: {
+            title: "Unpaid order cancellation delay (minutes)",
+            helpText:
+              "Number of minutes from placing the order after which an unpaid order is automatically cancelled, releasing its tickets back into the quota. The default is 5040 (84 hours, or 3½ days). Set to 0 to disable automatic cancellation of unpaid orders entirely — note that their tickets then stay reserved indefinitely.",
+          },
         },
       },
       messages: {
@@ -1306,6 +1365,19 @@ const translations = {
         ),
         failedToCreateOrder: (
           <>Order creation failed. Please try again later or contact support.</>
+        ),
+        orderStateChanged: (
+          <>
+            This order was changed by someone (or something) else while this
+            page was open. Please reload the page and try again.
+          </>
+        ),
+        ticketsUnavailable: (
+          <>
+            The tickets this order is owed could not be secured, so nothing was
+            changed. Please reload the page and try again; if this keeps
+            happening, check the quotas of the products in the order.
+          </>
         ),
       },
     },

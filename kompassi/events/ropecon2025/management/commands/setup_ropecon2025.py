@@ -307,7 +307,7 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
-                provider_id=PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.PAYTRAIL,
                 contact_email="Ropeconin lipunmyynti <lipunmyynti@ropecon.fi>",
                 terms_and_conditions_url_en="https://ropecon.fi/en/ticket-terms-conditions/",
                 terms_and_conditions_url_fi="https://ropecon.fi/lippuehdot-2025/",
@@ -362,15 +362,19 @@ class Setup:
             ),
         )
 
+        ropecon_tickets_meta = ropecon.tickets_v2_event_meta
+        if ropecon_tickets_meta is None:
+            raise ValueError("should not happen (appease typechecker)")
+
         (admin_group,) = TicketsV2EventMeta.get_or_create_groups(etkot, ["admins"])
         meta, _ = TicketsV2EventMeta.objects.update_or_create(
             event=etkot,
             defaults=dict(
                 admin_group=admin_group,
-                provider_id=PaymentProvider.PAYTRAIL.value,
-                contact_email=ropecon.tickets_v2_event_meta.contact_email,  # type: ignore
-                terms_and_conditions_url_fi=ropecon.tickets_v2_event_meta.terms_and_conditions_url_fi,  # type: ignore
-                terms_and_conditions_url_en=ropecon.tickets_v2_event_meta.terms_and_conditions_url_en,  # type: ignore
+                provider=PaymentProvider.PAYTRAIL,
+                contact_email=ropecon_tickets_meta.contact_email,  # type: ignore
+                terms_and_conditions_url_fi=ropecon_tickets_meta.terms_and_conditions_url_fi,  # type: ignore
+                terms_and_conditions_url_en=ropecon_tickets_meta.terms_and_conditions_url_en,  # type: ignore
             ),
         )
         meta.ensure_partitions()
