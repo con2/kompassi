@@ -110,7 +110,7 @@ class ProfileOrderType(LimitedOrderType):
     )
 
     @staticmethod
-    def resolve_tickets_contact_email(order: Order, info):
+    def resolve_tickets_contact_email(order: Order, info) -> str:
         """
         Contact email for the ticket seller (from the event's tickets meta).
         Plain email address without the display name.

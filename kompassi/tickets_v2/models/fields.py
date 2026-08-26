@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Any
+from typing import Any, override
 
 from django.db import models
 
@@ -19,15 +19,18 @@ class PostgresEnumField(models.Field):
         self.db_type_name = db_type_name
         super().__init__(*args, **kwargs)
 
+    @override
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
         kwargs["enum"] = self.enum
         kwargs["db_type_name"] = self.db_type_name
         return name, path, args, kwargs
 
+    @override
     def db_type(self, connection):
         return self.db_type_name
 
+    @override
     def get_prep_value(self, value):
         if value is None:
             return None
