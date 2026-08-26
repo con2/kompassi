@@ -23,11 +23,8 @@ class CreateOrderResponse(pydantic.BaseModel, populate_by_name=True):
 
     @pydantic.field_validator("status", mode="before")
     @staticmethod
-    def validate_status(value: str | int | PaymentStatus):
-        if isinstance(value, str):
-            return PaymentStatus[value]
-        else:
-            return PaymentStatus(value)
+    def validate_status(value: str | PaymentStatus):
+        return PaymentStatus(value)
 
 
 class GetOrderResponse(pydantic.BaseModel):

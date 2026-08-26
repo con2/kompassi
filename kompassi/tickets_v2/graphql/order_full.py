@@ -100,14 +100,15 @@ class FullOrderType(LimitedOrderType):
     )
 
     @staticmethod
-    def resolve_can_mark_as_paid(order: Order, info):
+    def resolve_can_fulfil(order: Order, info):
         """
-        Returns whether the order can be marked as paid.
+        Returns whether the order can be fulfilled (marked as paid, or, if it is
+        flagged paid after cancellation, made whole again).
         """
         request: HttpRequest = info.context
-        return order.can_be_marked_as_paid_by(request)
+        return order.can_be_fulfilled_by(request)
 
-    can_mark_as_paid = graphene.NonNull(
+    can_fulfil = graphene.NonNull(
         graphene.Boolean,
-        description=normalize_whitespace(resolve_can_mark_as_paid.__doc__ or ""),
+        description=normalize_whitespace(resolve_can_fulfil.__doc__ or ""),
     )

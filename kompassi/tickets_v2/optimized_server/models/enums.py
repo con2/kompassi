@@ -1,43 +1,63 @@
-from enum import Enum, IntEnum
+from __future__ import annotations
+
+import functools
+from enum import Enum
 
 
-class PaymentProvider(IntEnum):
-    NONE = 0
-    PAYTRAIL = 1
-    STRIPE = 2
+@functools.total_ordering
+class OrderedEnum(Enum):
+    """
+    Comparison follows declaration order, mirroring the PostgreSQL enum types these are
+    stored as. Declaration order is therefore load-bearing and must match the label order
+    of the corresponding type; test_enum_declaration_order_matches_database guards it.
+    """
+
+    def __lt__(self, other):
+        if other.__class__ is not self.__class__:
+            return NotImplemented
+        members = list(self.__class__)
+        return members.index(self) < members.index(other)
 
 
-class PaymentStampType(IntEnum):
-    ZERO_PRICE = 0
-
-    CREATE_PAYMENT_REQUEST = 1
-    CREATE_PAYMENT_SUCCESS = 2
-    CREATE_PAYMENT_FAILURE = 3
-
-    PAYMENT_REDIRECT = 4
-    PAYMENT_CALLBACK = 5
-
-    CANCEL_WITHOUT_REFUND = 6
-
-    CREATE_REFUND_REQUEST = 7
-    CREATE_REFUND_SUCCESS = 8
-    CREATE_REFUND_FAILURE = 9
-
-    REFUND_CALLBACK = 10
-    MANUAL_REFUND = 11
+class PaymentProvider(OrderedEnum):
+    NONE = "NONE"
+    PAYTRAIL = "PAYTRAIL"
+    STRIPE = "STRIPE"
 
 
-class PaymentStatus(IntEnum):
-    NOT_STARTED = 0
-    PENDING = 1
-    FAILED = 2
-    PAID = 3
+class PaymentStampType(OrderedEnum):
+    ZERO_PRICE = "ZERO_PRICE"
 
-    CANCELLED = 4
+    CREATE_PAYMENT_REQUEST = "CREATE_PAYMENT_REQUEST"
+    CREATE_PAYMENT_SUCCESS = "CREATE_PAYMENT_SUCCESS"
+    CREATE_PAYMENT_FAILURE = "CREATE_PAYMENT_FAILURE"
 
-    REFUND_REQUESTED = 5
-    REFUND_FAILED = 6
-    REFUNDED = 7
+    PAYMENT_REDIRECT = "PAYMENT_REDIRECT"
+    PAYMENT_CALLBACK = "PAYMENT_CALLBACK"
+
+    CANCEL_WITHOUT_REFUND = "CANCEL_WITHOUT_REFUND"
+
+    CREATE_REFUND_REQUEST = "CREATE_REFUND_REQUEST"
+    CREATE_REFUND_SUCCESS = "CREATE_REFUND_SUCCESS"
+    CREATE_REFUND_FAILURE = "CREATE_REFUND_FAILURE"
+
+    REFUND_CALLBACK = "REFUND_CALLBACK"
+    MANUAL_REFUND = "MANUAL_REFUND"
+    MANUAL_FULFILMENT = "MANUAL_FULFILMENT"
+
+
+class PaymentStatus(OrderedEnum):
+    NOT_STARTED = "NOT_STARTED"
+    PENDING = "PENDING"
+    FAILED = "FAILED"
+    PAID = "PAID"
+
+    CANCELLED = "CANCELLED"
+    PAID_AFTER_CANCELLATION = "PAID_AFTER_CANCELLATION"
+
+    REFUND_REQUESTED = "REFUND_REQUESTED"
+    REFUND_FAILED = "REFUND_FAILED"
+    REFUNDED = "REFUNDED"
 
     def to_receipt_type(self):
         match self:
@@ -55,7 +75,12 @@ class PaymentStatus(IntEnum):
     @property
     def is_refundable(self):
         match self:
-            case PaymentStatus.PAID | PaymentStatus.CANCELLED | PaymentStatus.REFUND_FAILED:
+            case (
+                PaymentStatus.PAID
+                | PaymentStatus.CANCELLED
+                | PaymentStatus.REFUND_FAILED
+                | PaymentStatus.PAID_AFTER_CANCELLATION
+            ):
                 return True
             case _:
                 return False
@@ -76,18 +101,22 @@ class PaymentStatus(IntEnum):
             case _:
                 return False
 
-
-class ReceiptType(IntEnum):
-    PAID = PaymentStatus.PAID.value
-    CANCELLED = PaymentStatus.CANCELLED.value
-    REFUNDED = PaymentStatus.REFUNDED.value
+    @property
+    def is_fulfillable(self):
+        return self.is_payable or self is PaymentStatus.PAID_AFTER_CANCELLATION
 
 
-class ReceiptStatus(IntEnum):
-    REQUESTED = 0
-    PROCESSING = 1
-    FAILURE = 2
-    SUCCESS = 3
+class ReceiptType(OrderedEnum):
+    PAID = "PAID"
+    CANCELLED = "CANCELLED"
+    REFUNDED = "REFUNDED"
+
+
+class ReceiptStatus(OrderedEnum):
+    REQUESTED = "REQUESTED"
+    PROCESSING = "PROCESSING"
+    FAILURE = "FAILURE"
+    SUCCESS = "SUCCESS"
 
     # could add:
     # BOUNCE = 4

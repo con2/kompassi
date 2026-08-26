@@ -1204,7 +1204,7 @@ class Setup:
             defaults=dict(
                 admin_group=admin_group,
                 contact_email="Traconin lipunmyynti <liput@tracon.fi>",
-                provider_id=PaymentProvider.NONE if self.dev_tickets else PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.NONE if self.dev_tickets else PaymentProvider.PAYTRAIL.value,
                 terms_and_conditions_url_en="https://tracon.fi/terms-of-use-for-tracons-ticket-shop/",
                 terms_and_conditions_url_fi="https://tracon.fi/lippukaupan-kayttoehdot/",
             ),

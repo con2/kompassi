@@ -207,7 +207,7 @@ class CreatePaymentRequest(pydantic.BaseModel):
         request_stamp = PaymentStamp(
             event_id=event.id,
             order_id=order_id,
-            provider_id=PaymentProvider.PAYTRAIL,
+            provider=PaymentProvider.PAYTRAIL,
             type=PaymentStampType.CREATE_PAYMENT_REQUEST,
             status=PaymentStatus.PENDING,
             correlation_id=self.stamp,
@@ -251,7 +251,7 @@ class PreparedCreatePaymentRequest(pydantic.BaseModel):
         return PaymentStamp(
             event_id=self.request_stamp.event_id,
             order_id=self.request_stamp.order_id,
-            provider_id=PaymentProvider.PAYTRAIL,
+            provider=PaymentProvider.PAYTRAIL,
             type=type,
             status=PaymentStatus.PENDING,
             correlation_id=self.request_stamp.correlation_id,
@@ -412,7 +412,7 @@ class PaymentCallback(pydantic.BaseModel, populate_by_name=True):
         return PaymentStamp(
             event_id=event.id,
             order_id=order.id,
-            provider_id=PaymentProvider.PAYTRAIL,
+            provider=PaymentProvider.PAYTRAIL,
             type=type,
             status=status,
             correlation_id=self.stamp,
@@ -430,7 +430,7 @@ class PaytrailProvider:
 
     event: Event
 
-    provider_id: ClassVar[PaymentProvider] = PaymentProvider.PAYTRAIL
+    provider: ClassVar[PaymentProvider] = PaymentProvider.PAYTRAIL
 
     def prepare_for_new_order(
         self,
@@ -442,7 +442,7 @@ class PaytrailProvider:
             return None, PaymentStamp.for_zero_price_order(
                 self.event.id,
                 result.order_id,
-                self.provider_id,
+                self.provider,
             )
         elif result.total_price < 0:
             raise ProviderCannot("Paytrail provider cowardly refusing negative price order")

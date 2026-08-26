@@ -16,7 +16,7 @@ from .enums import PaymentProvider, PaymentStampType, PaymentStatus
 class PaymentStamp(pydantic.BaseModel):
     event_id: int
     order_id: UUID
-    provider_id: PaymentProvider
+    provider: PaymentProvider
     type: PaymentStampType
     status: PaymentStatus
     correlation_id: UUID
@@ -32,7 +32,7 @@ class PaymentStamp(pydantic.BaseModel):
                     uuid7(),
                     self.event_id,
                     self.order_id,
-                    self.provider_id.value,
+                    self.provider.value,
                     self.type.value,
                     self.status.value,
                     self.correlation_id,
@@ -52,7 +52,7 @@ class PaymentStamp(pydantic.BaseModel):
                         uuid7(),
                         stamp.event_id,
                         stamp.order_id,
-                        stamp.provider_id.value,
+                        stamp.provider.value,
                         stamp.type.value,
                         stamp.status.value,
                         stamp.correlation_id,
@@ -67,12 +67,12 @@ class PaymentStamp(pydantic.BaseModel):
         cls,
         event_id: int,
         order_id: UUID,
-        provider_id: PaymentProvider,
+        provider: PaymentProvider,
     ) -> PaymentStamp:
         return cls(
             event_id=event_id,
             order_id=order_id,
-            provider_id=provider_id,
+            provider=provider,
             type=PaymentStampType.ZERO_PRICE,
             status=PaymentStatus.PAID,
             correlation_id=uuid7(),

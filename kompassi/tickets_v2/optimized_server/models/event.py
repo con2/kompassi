@@ -26,7 +26,7 @@ class Event(pydantic.BaseModel):
     name: str
 
     # TODO consider multiple payment providers per event in the future
-    provider_id: PaymentProvider
+    provider: PaymentProvider
 
     # NOTE SUPPORTED_LANGUAGES
     terms_and_conditions_url_en: str
@@ -41,6 +41,7 @@ class Event(pydantic.BaseModel):
     organization_business_id: str
 
     cancellation_period_days: int
+    unpaid_order_cancellation_delay_minutes: int
     start_time: datetime | None
 
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_events.sql").read_bytes()
@@ -97,14 +98,14 @@ class Event(pydantic.BaseModel):
         return self.contact_email
 
     @cached_property
-    def provider(self):
+    def provider_implementation(self):
         from ..providers.null import NullProvider
         from ..providers.paytrail import PaytrailProvider
 
-        match self.provider_id:
+        match self.provider:
             case PaymentProvider.NONE:
                 return NullProvider(self)
             case PaymentProvider.PAYTRAIL:
                 return PaytrailProvider(self)
             case _:
-                raise NotImplementedError(f"Unknown payment provider: {self.provider_id}")
+                raise NotImplementedError(f"Unknown payment provider: {self.provider}")

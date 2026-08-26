@@ -40,6 +40,11 @@ registry.register(
     message="Order {order_number} in {event} was manually marked as paid by {actor_type} {actor}",
 )
 
+registry.register(
+    name="tickets_v2.order.fulfilled",
+    message="Order {order_number} in {event} was fulfilled by {actor_type} {actor}",
+)
+
 for data_type in ["product", "quota"]:
     for action in ["created", "updated", "deleted"]:
         registry.register(

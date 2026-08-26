@@ -19,6 +19,7 @@ from kompassi.tickets_v2.models.order import Order
 from kompassi.tickets_v2.models.order_cancellation_token import OrderCancellationToken
 from kompassi.tickets_v2.models.payment_stamp import PaymentStamp
 from kompassi.tickets_v2.models.product import Product
+from kompassi.tickets_v2.models.quota import Quota
 from kompassi.tickets_v2.models.receipt import PendingReceipt
 from kompassi.tickets_v2.optimized_server.models.api import CreateOrderResponse, GetOrderResponse, GetProductsResponse
 from kompassi.tickets_v2.optimized_server.models.customer import Customer
@@ -26,6 +27,8 @@ from kompassi.tickets_v2.optimized_server.models.enums import (
     PaymentProvider,
     PaymentStampType,
     PaymentStatus,
+    ReceiptStatus,
+    ReceiptType,
 )
 from kompassi.tickets_v2.optimized_server.models.order import CreateOrderRequest, OrderProduct, VatBreakdownLine
 from kompassi.tickets_v2.optimized_server.providers.paytrail import PaymentCallback, PaytrailStatus
@@ -257,6 +260,40 @@ def test_make_order(tickets_v2_client: TicketsV2Client):
     # so customer self-service cancellation is not offered
     assert get_order_response.order.can_request_cancellation is False
     assert get_order_response.order.cancellation_deadline is None
+
+
+@pytest.mark.integration_test
+def test_pay_rejects_unpayable_order(tickets_v2_client: TicketsV2Client):
+    """
+    The payment endpoint must reject attempts to pay for an order that is not
+    payable (eg. already cancelled) with 409 ORDER_NOT_PAYABLE, rather than
+    opening a fresh payment session for it.
+    """
+    from kompassi.tickets_v2.models.order import Order as DjangoOrder
+    from kompassi.tickets_v2.optimized_server.models.enums import RefundType
+
+    products = tickets_v2_client.get_products()
+    order_request = CreateOrderRequest(
+        products={products.products[-1].id: 1},
+        customer=Customer(
+            first_name="Jane",
+            last_name="Doe",
+            email="jane.doe@example.com",
+        ),
+        language="en",
+    )
+    order_response = tickets_v2_client.create_order(order_request)
+
+    order = DjangoOrder.objects.get(event=tickets_v2_client.event, id=order_response.order_id)
+    order.cancel_and_refund(RefundType.NONE)
+
+    with pytest.raises(requests.exceptions.HTTPError) as exc_info:
+        tickets_v2_client.pay(order_response.order_id)
+
+    response = exc_info.value.response
+    assert response.status_code == 409
+    assert response.json()["detail"] == "ORDER_NOT_PAYABLE"
+    assert not order.payment_stamps.filter(type=PaymentStampType.CREATE_PAYMENT_REQUEST).exists()
 
 
 # ---------------------------------------------------------------------------
@@ -591,11 +628,52 @@ def _add_provider_paid_stamp(event: Event, order_id: UUID):
         event=event,
         order_id=order_id,
         correlation_id=uuid7(),
-        provider_id=PaymentProvider.PAYTRAIL,
+        provider=PaymentProvider.PAYTRAIL,
         type=PaymentStampType.PAYMENT_CALLBACK,
         status=PaymentStatus.PAID,
         data={},
     ).save()
+
+
+def _add_stamp(
+    event: Event,
+    order_id: UUID,
+    *,
+    status: PaymentStatus,
+    provider: PaymentProvider = PaymentProvider.PAYTRAIL,
+    type: PaymentStampType = PaymentStampType.PAYMENT_CALLBACK,
+    correlation_id: UUID | None = None,
+) -> PaymentStamp:
+    stamp = PaymentStamp(
+        event=event,
+        order_id=order_id,
+        correlation_id=correlation_id or uuid7(),
+        provider=provider,
+        type=type,
+        status=status,
+        data={},
+    )
+    stamp.save()
+    return stamp
+
+
+@pytest.fixture
+def quota_product(cancellation_event):
+    """
+    A product tied to a quota with a controllable number of free tickets, for
+    exercising tickets_v2_ensure_tickets via payment stamps and Order.fulfil().
+    """
+    event = cancellation_event
+    quota = Quota.objects.create(event=event, name="Test quota")
+    product = Product.objects.create(
+        event=event,
+        title="Test ticket",
+        description="",
+        price=Decimal("10.00"),
+        vat_percentage=Decimal("25.50"),
+    )
+    product.quotas.add(quota)
+    return event, product, quota
 
 
 def _request_input(event: Event, order_id: UUID):
@@ -986,7 +1064,7 @@ def test_confirm_order_cancellation_creates_cancellation_receipt(cancellation_ev
         event=event,
         order_id=order_id,
         correlation_id=uuid7(),
-        provider_id=PaymentProvider.NONE,
+        provider=PaymentProvider.NONE,
         type=PaymentStampType.PAYMENT_CALLBACK,
         status=PaymentStatus.PAID,
         data={},
@@ -1054,7 +1132,7 @@ def test_provider_refund_creates_single_refunded_receipt(cancellation_event: Eve
         event=event,
         order_id=order_id,
         correlation_id=refund_correlation,
-        provider_id=PaymentProvider.PAYTRAIL,
+        provider=PaymentProvider.PAYTRAIL,
         type=PaymentStampType.CREATE_REFUND_SUCCESS,
         status=PaymentStatus.REFUND_REQUESTED,
         data={},
@@ -1068,7 +1146,7 @@ def test_provider_refund_creates_single_refunded_receipt(cancellation_event: Eve
         event=event,
         order_id=order_id,
         correlation_id=refund_correlation,
-        provider_id=PaymentProvider.PAYTRAIL,
+        provider=PaymentProvider.PAYTRAIL,
         type=PaymentStampType.REFUND_CALLBACK,
         status=PaymentStatus.REFUNDED,
         data={},
@@ -1098,3 +1176,408 @@ def test_order_cancellation_token_cleanup(cancellation_event: Event):
 
     assert OrderCancellationToken.objects.filter(pk=recent.pk).exists()
     assert not OrderCancellationToken.objects.filter(pk=old.pk).exists()
+
+
+# ---------------------------------------------------------------------------
+# Native enum / declaration order guard
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "enum_class,db_type_name",
+    [
+        (PaymentProvider, "tickets_v2_paymentprovider"),
+        (PaymentStampType, "tickets_v2_paymentstamptype"),
+        (PaymentStatus, "tickets_v2_paymentstatus"),
+        (ReceiptType, "tickets_v2_receipttype"),
+        (ReceiptStatus, "tickets_v2_receiptstatus"),
+    ],
+)
+def test_enum_declaration_order_matches_database(enum_class, db_type_name):
+    """
+    OrderedEnum derives Python-side comparison (<, <=) from declaration order,
+    while the database compares the corresponding native enum type by label
+    declaration order. These must agree, or eg. `cached_status < PaymentStatus.PAID`
+    would silently disagree between Python and SQL (as used by the payment stamp
+    triggers and cancel_unpaid_orders).
+    """
+    from django.db import connection
+
+    with connection.cursor() as cursor:
+        cursor.execute(f"select enum_range(null::{db_type_name})::text[]")
+        (db_order,) = cursor.fetchone()
+
+    assert db_order == [member.name for member in enum_class]
+
+
+# ---------------------------------------------------------------------------
+# Paid-after-cancellation
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_payment_after_cancellation_with_quota_available(quota_product):
+    """
+    A PAID stamp landing on a cancelled order re-reserves its tickets from the
+    free pool when there is room: the order becomes PAID (not flagged), holds
+    its full complement, and gets exactly one PAID receipt.
+    """
+    from kompassi.tickets_v2.models.receipt import Receipt
+    from kompassi.tickets_v2.optimized_server.models.enums import ReceiptType
+
+    event, product, quota = quota_product
+    quota.create_tickets(3)
+
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {product.id: 1},
+        status=PaymentStatus.CANCELLED,
+        total_price=Decimal("10.00"),
+    )
+    _add_stamp(event, order_id, status=PaymentStatus.PAID)
+
+    order = _get_order(event, order_id)
+    assert order.status == PaymentStatus.PAID
+    assert order.tickets.count() == 1
+    assert Receipt.objects.filter(event=event, order_id=order_id, type=ReceiptType.PAID).count() == 1
+
+
+@pytest.mark.django_db
+def test_payment_after_cancellation_with_quota_exhausted(quota_product):
+    """
+    A PAID stamp landing on a cancelled order with nothing left in the free
+    pool flags it PAID_AFTER_CANCELLATION rather than PAID: it holds no
+    tickets, and — the direct regression test for the e-ticket leak this plan
+    fixes — no receipt is created, so no e-ticket PDF can be emailed for it.
+    """
+    from kompassi.tickets_v2.models.receipt import Receipt
+
+    event, product, _quota = quota_product
+    # no tickets created: the quota is exhausted
+
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {product.id: 1},
+        status=PaymentStatus.CANCELLED,
+        total_price=Decimal("10.00"),
+    )
+    _add_stamp(event, order_id, status=PaymentStatus.PAID)
+
+    order = _get_order(event, order_id)
+    assert order.status == PaymentStatus.PAID_AFTER_CANCELLATION
+    assert order.tickets.count() == 0
+    assert not Receipt.objects.filter(event=event, order_id=order_id).exists()
+
+
+@pytest.mark.django_db
+def test_payment_after_cancellation_redirect_and_callback_idempotent(quota_product):
+    """
+    A Paytrail redirect and its later callback both record a PAID stamp for
+    the same payment (sharing one correlation_id). The second must not
+    double-reserve tickets or create a second receipt.
+    """
+    from kompassi.tickets_v2.models.receipt import Receipt
+
+    event, product, quota = quota_product
+    quota.create_tickets(1)
+
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {product.id: 1},
+        status=PaymentStatus.CANCELLED,
+        total_price=Decimal("10.00"),
+    )
+
+    shared_correlation_id = uuid7()
+    _add_stamp(
+        event,
+        order_id,
+        status=PaymentStatus.PAID,
+        type=PaymentStampType.PAYMENT_REDIRECT,
+        correlation_id=shared_correlation_id,
+    )
+    _add_stamp(
+        event,
+        order_id,
+        status=PaymentStatus.PAID,
+        type=PaymentStampType.PAYMENT_CALLBACK,
+        correlation_id=shared_correlation_id,
+    )
+
+    order = _get_order(event, order_id)
+    assert order.status == PaymentStatus.PAID
+    assert order.tickets.count() == 1
+    assert Receipt.objects.filter(event=event, order_id=order_id).count() == 1
+
+
+@pytest.mark.django_db
+def test_fulfil_flagged_order_grows_quota(quota_product):
+    """
+    Order.fulfil() on a flagged order mints exactly the shortfall into the
+    quota, reaches PAID, gets its receipt, and leaves tickets_v2_fsck happy.
+    """
+    from kompassi.tickets_v2.management.commands.tickets_v2_fsck import Command as FsckCommand
+    from kompassi.tickets_v2.models.quota import QuotaCounters
+    from kompassi.tickets_v2.models.receipt import Receipt
+    from kompassi.tickets_v2.optimized_server.models.enums import ReceiptType
+
+    event, product, quota = quota_product
+    # no tickets: quota exhausted, so the payment below flags the order
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {product.id: 2},
+        status=PaymentStatus.CANCELLED,
+        total_price=Decimal("20.00"),
+    )
+    _add_stamp(event, order_id, status=PaymentStatus.PAID)
+    order = _get_order(event, order_id)
+    assert order.status == PaymentStatus.PAID_AFTER_CANCELLATION
+
+    order.fulfil(from_status=PaymentStatus.PAID_AFTER_CANCELLATION)
+
+    order = _get_order(event, order_id)
+    assert order.status == PaymentStatus.PAID
+    assert order.tickets.count() == 2
+    assert Receipt.objects.filter(event=event, order_id=order_id, type=ReceiptType.PAID).count() == 1
+
+    counters = QuotaCounters.get_for_event(event.id, None)[quota.id]
+    assert counters.count_total == 2
+
+    assert not FsckCommand.check_event(event)
+
+
+@pytest.mark.django_db
+def test_fulfil_pending_order_no_quota_growth(quota_product):
+    """
+    Order.fulfil() on a PENDING order (today's mark-as-paid) must not mint
+    anything: the order already holds its ticket, reserved at creation time.
+    """
+    from kompassi.tickets_v2.models.quota import QuotaCounters
+
+    event, product, quota = quota_product
+    quota.create_tickets(1)
+    quota.tickets.update(order_id=None)
+
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {product.id: 1},
+        status=PaymentStatus.PENDING,
+        total_price=Decimal("10.00"),
+    )
+    # Simulate the reservation create_order.sql would have made.
+    quota.tickets.update(order_id=order_id)
+
+    counters_before = QuotaCounters.get_for_event(event.id, None)[quota.id].count_total
+
+    order = _get_order(event, order_id)
+    order.fulfil(from_status=PaymentStatus.PENDING)
+
+    order = _get_order(event, order_id)
+    assert order.status == PaymentStatus.PAID
+    assert order.tickets.count() == 1
+
+    counters_after = QuotaCounters.get_for_event(event.id, None)[quota.id].count_total
+    assert counters_after == counters_before
+
+
+@pytest.mark.django_db
+def test_fulfil_stale_from_status_raises(quota_product):
+    """
+    Order.fulfil() with a stale fromPaymentStatus must raise OrderStateChanged
+    and touch nothing: not the order, not its stamps, not the quota.
+    """
+    from kompassi.tickets_v2.models.order import OrderStateChanged
+    from kompassi.tickets_v2.models.quota import QuotaCounters
+
+    event, product, quota = quota_product
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {product.id: 1},
+        status=PaymentStatus.PAID_AFTER_CANCELLATION,
+        total_price=Decimal("10.00"),
+    )
+    order = _get_order(event, order_id)
+    counters_before = QuotaCounters.get_for_event(event.id, None).get(quota.id, QuotaCounters.ALL_ZERO).count_total
+
+    with pytest.raises(OrderStateChanged):
+        order.fulfil(from_status=PaymentStatus.PENDING)
+
+    order.refresh_from_db()
+    assert order.status == PaymentStatus.PAID_AFTER_CANCELLATION
+    assert not order.payment_stamps.exists()
+    counters_after = QuotaCounters.get_for_event(event.id, None).get(quota.id, QuotaCounters.ALL_ZERO).count_total
+    assert counters_after == counters_before
+
+
+@pytest.mark.django_db
+def test_cancel_and_refund_stale_from_status_raises(cancellation_event):
+    """
+    cancel_and_refund() with a stale fromPaymentStatus must raise
+    OrderStateChanged and leave the order untouched, same as Order.fulfil().
+    """
+    from kompassi.tickets_v2.models.order import OrderStateChanged
+    from kompassi.tickets_v2.optimized_server.models.enums import RefundType
+
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PAID)
+    order = _get_order(event, order_id)
+
+    with pytest.raises(OrderStateChanged):
+        order.cancel_and_refund(RefundType.NONE, from_status=PaymentStatus.PENDING)
+
+    order.refresh_from_db()
+    assert order.status == PaymentStatus.PAID
+    assert not order.payment_stamps.exists()
+
+
+@pytest.mark.django_db
+def test_retry_paid_after_cancellation_picks_up_freed_tickets(quota_product):
+    """
+    The frequent-cron retry fulfils a flagged order for free as soon as
+    tickets free up, without ever growing the quota; until then it leaves no
+    partial reservation and no extra payment stamp behind.
+    """
+    event, product, quota = quota_product
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {product.id: 1},
+        status=PaymentStatus.CANCELLED,
+        total_price=Decimal("10.00"),
+    )
+    _add_stamp(event, order_id, status=PaymentStatus.PAID)
+    order = _get_order(event, order_id)
+    assert order.status == PaymentStatus.PAID_AFTER_CANCELLATION
+    stamps_before = order.payment_stamps.count()
+
+    # Nothing free yet: retry must be a no-op.
+    Order.retry_paid_after_cancellation()
+
+    order.refresh_from_db()
+    assert order.status == PaymentStatus.PAID_AFTER_CANCELLATION
+    assert order.payment_stamps.count() == stamps_before
+    assert order.tickets.count() == 0
+
+    # A ticket frees up (eg. another unpaid order was cancelled).
+    quota.create_tickets(1)
+
+    Order.retry_paid_after_cancellation()
+
+    order.refresh_from_db()
+    assert order.status == PaymentStatus.PAID
+    assert order.tickets.count() == 1
+
+
+@pytest.mark.django_db
+def test_provider_refund_of_flagged_order_reaches_refund_requested(quota_product):
+    """
+    Guards that PAID_AFTER_CANCELLATION was declared before REFUND_REQUESTED:
+    trigger_00_update_order only ratchets forward, so if the ordering were
+    wrong a REFUND_REQUESTED stamp landing on a PAID_AFTER_CANCELLATION order
+    would be silently ignored instead of advancing the order.
+    """
+    event, product, _quota = quota_product
+    order_id = _make_order(
+        event,
+        datetime.now(UTC),
+        {product.id: 1},
+        status=PaymentStatus.CANCELLED,
+        total_price=Decimal("10.00"),
+    )
+    _add_stamp(event, order_id, status=PaymentStatus.PAID)
+    order = _get_order(event, order_id)
+    assert order.status == PaymentStatus.PAID_AFTER_CANCELLATION
+
+    _add_stamp(event, order_id, status=PaymentStatus.REFUND_REQUESTED, type=PaymentStampType.CREATE_REFUND_REQUEST)
+
+    order.refresh_from_db()
+    assert order.status == PaymentStatus.REFUND_REQUESTED
+
+
+@pytest.mark.django_db
+def test_fulfil_writes_exactly_one_event_log_entry(cancellation_event):
+    """
+    Regression test for the double-logged mark-as-paid event: fulfilling an
+    order must write exactly one event log entry, not two.
+    """
+    from kompassi.event_log_v2.models.entry import Entry
+
+    event = cancellation_event
+    order_id = _make_order(event, datetime.now(UTC), {}, status=PaymentStatus.PENDING)
+    order = _get_order(event, order_id)
+
+    order.fulfil(from_status=PaymentStatus.PENDING)
+
+    assert (
+        Entry.objects.filter(
+            entry_type="tickets_v2.order.fulfilled",
+            other_fields__event=event.slug,
+        ).count()
+        == 1
+    )
+
+
+# ---------------------------------------------------------------------------
+# Configurable unpaid-order cancellation window
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.django_db
+def test_cancel_unpaid_orders_honours_per_event_delay(cancellation_event):
+    """
+    A configured unpaid_order_cancellation_delay_minutes replaces the legacy
+    once-a-day sweep with a precise, per-event window.
+    """
+    event = cancellation_event
+    meta = TicketsV2EventMeta.objects.get(event=event)
+    meta.unpaid_order_cancellation_delay_minutes = 30
+    meta.save(update_fields=["unpaid_order_cancellation_delay_minutes"])
+
+    now = datetime.now(UTC)
+    old_order_id = _make_order(event, now - timedelta(minutes=31), {}, status=PaymentStatus.PENDING)
+    fresh_order_id = _make_order(event, now - timedelta(minutes=10), {}, status=PaymentStatus.PENDING)
+
+    Order.cancel_unpaid_orders(now=now)
+
+    assert _get_order(event, old_order_id).status == PaymentStatus.CANCELLED
+    assert _get_order(event, fresh_order_id).status == PaymentStatus.PENDING
+
+
+def test_get_payment_deadline_disabled_by_default():
+    from kompassi.tickets_v2.optimized_server.utils.cancellation import get_payment_deadline
+
+    now = datetime.now(UTC)
+    assert get_payment_deadline(now, 0) is None
+
+
+def test_get_payment_deadline_computed_from_minutes():
+    from kompassi.tickets_v2.optimized_server.utils.cancellation import get_payment_deadline
+
+    now = datetime.now(UTC)
+    assert get_payment_deadline(now, 15) == now + timedelta(minutes=15)
+
+
+@pytest.mark.django_db
+def test_cancel_unpaid_orders_legacy_rule_when_delay_zero(cancellation_event):
+    """
+    unpaid_order_cancellation_delay_minutes = 0 (the default) keeps the
+    legacy rule: cancel orders placed before midnight three days before now.
+    """
+    event = cancellation_event
+    now = datetime(2026, 1, 10, 12, 0, tzinfo=UTC)
+    threshold = datetime(2026, 1, 7, 0, 0, tzinfo=UTC)
+
+    old_order_id = _make_order(event, threshold - timedelta(minutes=1), {}, status=PaymentStatus.PENDING)
+    fresh_order_id = _make_order(event, threshold + timedelta(minutes=1), {}, status=PaymentStatus.PENDING)
+
+    Order.cancel_unpaid_orders(now=now)
+
+    assert _get_order(event, old_order_id).status == PaymentStatus.CANCELLED
+    assert _get_order(event, fresh_order_id).status == PaymentStatus.PENDING

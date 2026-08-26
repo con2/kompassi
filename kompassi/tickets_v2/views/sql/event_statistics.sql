@@ -20,7 +20,7 @@ with order_data as (
     )
   where
     o.event_id = any(%s)
-    and o.cached_status = 3  -- PAID
+    and o.cached_status = 'PAID'
     and item.value::int > 0
 )
 select

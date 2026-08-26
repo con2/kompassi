@@ -1,21 +1,18 @@
 import graphene
 from django.http import HttpRequest
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.models.event import Event
 
 from ...models.order import ActorType, Order
-from ...optimized_server.models.enums import PaymentStatus, RefundType
+from ...optimized_server.models.enums import PaymentStatus
 from ..order_limited import LimitedOrderType
 
-RefundTypeType = graphene.Enum.from_enum(RefundType)
 PaymentStatusType = graphene.Enum.from_enum(PaymentStatus)
 
 
-class CancelAndRefundOrderInput(graphene.InputObjectType):
+class FulfilOrderInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
     order_id = graphene.String(required=True)
-    refund_type = graphene.InputField(RefundTypeType, required=True)
     from_payment_status = graphene.InputField(
         PaymentStatusType,
         required=True,
@@ -27,32 +24,38 @@ class CancelAndRefundOrderInput(graphene.InputObjectType):
     )
 
 
-class CancelAndRefundOrder(graphene.Mutation):
+class FulfilOrder(graphene.Mutation):
+    """
+    Ensures the order holds its expected tickets — minting into the quota
+    whatever is missing — and records it as paid. For an order that already
+    holds its tickets (the common case) this is today's "mark as paid". For
+    an order flagged PAID_AFTER_CANCELLATION this is the admin's "make it so":
+    the order's tickets are minted into the quota, oversold by exactly the
+    amount owed, and the customer receives their receipt and e-tickets.
+    """
+
     class Arguments:
-        input = CancelAndRefundOrderInput(required=True)
+        input = FulfilOrderInput(required=True)
 
     order = graphene.Field(LimitedOrderType)
 
-    # NOTE: cancel_and_refund manages its own transactions
-    # @transaction.atomic
     @staticmethod
     def mutate(
         root,
         info,
-        input: CancelAndRefundOrderInput,
+        input: FulfilOrderInput,
     ):
         request: HttpRequest = info.context
-
         event = Event.objects.get(slug=input.event_slug)
         order = Order.objects.get(event=event, id=input.order_id)
-        refund_type = RefundType(input.refund_type)
-        graphql_check_instance(order, info, operation="update")
 
-        order.cancel_and_refund(
-            refund_type,
+        if not order.can_be_fulfilled_by(request):
+            raise ValueError("Order cannot be fulfilled")
+
+        order.fulfil(
             from_status=PaymentStatus(input.from_payment_status),
             actor_type=ActorType.ADMIN,
             actor_user=request.user,  # type: ignore
         )
 
-        return CancelAndRefundOrder(order=order)  # type: ignore
+        return FulfilOrder(order=order)  # type: ignore

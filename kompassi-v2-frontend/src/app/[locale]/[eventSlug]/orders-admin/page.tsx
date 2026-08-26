@@ -25,6 +25,7 @@ import {
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import formatMoney from "@/helpers/formatMoney";
 import getPageTitle from "@/helpers/getPageTitle";
+import paymentStatusVariant from "@/helpers/paymentStatusVariant";
 import { getTranslations } from "@/translations";
 import { Translations } from "@/translations/en";
 import { Alert } from "react-bootstrap";
@@ -70,6 +71,7 @@ const query = graphql(`
         }
 
         countTotalOrders
+        countPaidAfterCancellationOrders
       }
     }
   }
@@ -206,6 +208,8 @@ export default async function OrdersPage(props: Props) {
   const orders = data.event.tickets.orders;
   const products = data.event.tickets.products;
   const countTotalOrders = data.event.tickets.countTotalOrders;
+  const countPaidAfterCancellationOrders =
+    data.event.tickets.countPaidAfterCancellationOrders;
 
   const dimensions = getDimensions(translations.Tickets, products);
   const queryString = new URLSearchParams(passedSearchParams).toString();
@@ -244,8 +248,15 @@ export default async function OrdersPage(props: Props) {
     {
       slug: "status",
       title: t.attributes.status.title,
-      getCellContents: (order) =>
-        t.attributes.status.choices[order.status].shortTitle,
+      getCellContents: (order) => {
+        const variant = paymentStatusVariant(order.status);
+        const shortTitle = t.attributes.status.choices[order.status].shortTitle;
+        return variant ? (
+          <span className={`text-${variant} fw-bold`}>{shortTitle}</span>
+        ) : (
+          shortTitle
+        );
+      },
     },
     {
       slug: "totalPrice",
@@ -294,6 +305,17 @@ export default async function OrdersPage(props: Props) {
         search
         locale={locale}
       />
+
+      {countPaidAfterCancellationOrders > 0 && (
+        <Alert variant="danger">
+          <Link
+            href={`/${eventSlug}/orders-admin?status=paid_after_cancellation`}
+            className="alert-link"
+          >
+            {t.paidAfterCancellationWarning(countPaidAfterCancellationOrders)}
+          </Link>
+        </Alert>
+      )}
 
       {showResults ? (
         <DataTable rows={orders} columns={columns}>

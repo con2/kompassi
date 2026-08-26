@@ -12,5 +12,11 @@ def tickets_v2_cron_nightly():
     Order.cancel_unpaid_orders()
 
 
+def tickets_v2_cron_frequent():
+    logger.info("Running frequent tasks for tickets_v2")
+    Order.cancel_unpaid_orders()
+    Order.retry_paid_after_cancellation()
+
+
 if __name__ == "__main__":
-    raise NotImplementedError("Use python manage.py cron_nightly instead.")
+    raise NotImplementedError("Use python manage.py cron_nightly or cron_frequent instead.")

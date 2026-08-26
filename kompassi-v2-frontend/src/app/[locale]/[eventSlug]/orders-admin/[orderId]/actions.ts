@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
 import {
@@ -7,9 +8,21 @@ import {
   ResendOrderConfirmationInput,
   UpdateOrderInput,
   RefundType,
-  MarkOrderAsPaidInput,
+  FulfilOrderInput,
+  PaymentStatus,
 } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
+
+/// Another admin, or an automatic process, already acted on this order since
+/// the caller's page was rendered. Bail out to a message rather than retrying
+/// blindly on a premise that is no longer true.
+const ORDER_STATE_CHANGED_MARKER = "no longer in the expected status";
+
+function isOrderStateChanged(error: unknown): boolean {
+  return (
+    error instanceof Error && error.message.includes(ORDER_STATE_CHANGED_MARKER)
+  );
+}
 
 const resendConfirmationMutation = graphql(`
   mutation ResendOrderConfirmation($input: ResendOrderConfirmationInput!) {
@@ -84,24 +97,35 @@ export async function cancelAndRefundOrder(
   eventSlug: string,
   orderId: string,
   refundType: RefundType,
+  fromPaymentStatus: PaymentStatus,
 ) {
   const input: CancelAndRefundOrderInput = {
     eventSlug,
     orderId,
     refundType,
+    fromPaymentStatus,
   };
 
-  await getClient().mutate({
-    mutation: refundOrderMutation,
-    variables: { input },
-  });
+  try {
+    await getClient().mutate({
+      mutation: refundOrderMutation,
+      variables: { input },
+    });
+  } catch (error) {
+    if (isOrderStateChanged(error)) {
+      return void redirect(
+        `/${eventSlug}/orders-admin/${orderId}?error=orderStateChanged`,
+      );
+    }
+    throw error;
+  }
 
   revalidatePath(`/${locale}/${eventSlug}/orders-admin/${orderId}`);
 }
 
-const markOrderAsPaidMutation = graphql(`
-  mutation MarkOrderAsPaid($input: MarkOrderAsPaidInput!) {
-    markOrderAsPaid(input: $input) {
+const fulfilOrderMutation = graphql(`
+  mutation FulfilOrder($input: FulfilOrderInput!) {
+    fulfilOrder(input: $input) {
       order {
         id
       }
@@ -109,20 +133,31 @@ const markOrderAsPaidMutation = graphql(`
   }
 `);
 
-export async function markOrderAsPaid(
+export async function fulfilOrder(
   locale: string,
   eventSlug: string,
   orderId: string,
+  fromPaymentStatus: PaymentStatus,
 ) {
-  const input: MarkOrderAsPaidInput = {
+  const input: FulfilOrderInput = {
     eventSlug,
     orderId,
+    fromPaymentStatus,
   };
 
-  await getClient().mutate({
-    mutation: markOrderAsPaidMutation,
-    variables: { input },
-  });
+  try {
+    await getClient().mutate({
+      mutation: fulfilOrderMutation,
+      variables: { input },
+    });
+  } catch (error) {
+    if (isOrderStateChanged(error)) {
+      return void redirect(
+        `/${eventSlug}/orders-admin/${orderId}?error=orderStateChanged`,
+      );
+    }
+    throw error;
+  }
 
   revalidatePath(`/${locale}/${eventSlug}/orders-admin/${orderId}`);
 }

@@ -52,7 +52,7 @@ class Setup:
             defaults=dict(
                 admin_group=admin_group,
                 contact_email="Matsuconin lipunmyynti <lipunmyyntivastava@matsucon.fi>",
-                provider_id=PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.PAYTRAIL.value,
             ),
         )
         meta.ensure_partitions()

@@ -13,6 +13,7 @@ const mutation = graphql(`
         termsAndConditionsUrlFi
         termsAndConditionsUrlSv
         cancellationPeriodDays
+        unpaidOrderCancellationDelayMinutes
       }
     }
   }
@@ -25,6 +26,8 @@ export async function updateTicketsPreferences(
 ) {
   const cancellationPeriodDays =
     parseInt("" + formData.get("cancellationPeriodDays"), 10) || 0;
+  const unpaidOrderCancellationDelayMinutes =
+    parseInt("" + formData.get("unpaidOrderCancellationDelayMinutes"), 10) || 0;
 
   await getClient().mutate({
     mutation,
@@ -39,6 +42,7 @@ export async function updateTicketsPreferences(
         termsAndConditionsUrlSv:
           "" + (formData.get("termsAndConditionsUrlSv") ?? ""),
         cancellationPeriodDays,
+        unpaidOrderCancellationDelayMinutes,
       },
     },
   });

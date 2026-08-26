@@ -13,7 +13,12 @@ export async function payOrder(
 ) {
   const response = await TicketService.payOrder(eventSlug, orderId);
   revalidatePath(`/${locale}/${eventSlug}/orders/${orderId}`);
-  return void redirect(response.paymentRedirect);
+
+  if (response.success) {
+    return void redirect(response.paymentRedirect);
+  } else {
+    return void redirect(`/${eventSlug}/tickets/error?error=${response.error}`);
+  }
 }
 
 const cancelOwnOrderMutation = graphql(`

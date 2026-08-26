@@ -10,6 +10,7 @@ from kompassi.event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStampType, PaymentStatus
 from ..utils.event_partitions import EventPartitionsMixin
+from .fields import PostgresEnumField
 from .order import Order
 
 
@@ -47,19 +48,25 @@ class PaymentStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
         ),
     )
 
-    provider_id = models.SmallIntegerField(
-        choices=[(p.value, p.name) for p in PaymentProvider],
+    provider = PostgresEnumField(
+        enum=PaymentProvider,
+        db_type_name="tickets_v2_paymentprovider",
+        choices=[(p.name, p.name) for p in PaymentProvider],
     )
-    type = models.SmallIntegerField(
-        choices=[(t.value, t.name) for t in PaymentStampType],
+    type = PostgresEnumField(
+        enum=PaymentStampType,
+        db_type_name="tickets_v2_paymentstamptype",
+        choices=[(t.name, t.name) for t in PaymentStampType],
     )
-    status = models.SmallIntegerField(
-        choices=[(s.value, s.name) for s in PaymentStatus],
+    status = PostgresEnumField(
+        enum=PaymentStatus,
+        db_type_name="tickets_v2_paymentstatus",
+        choices=[(s.name, s.name) for s in PaymentStatus],
     )
 
     data = models.JSONField(
         help_text=(
-            "What we sent to or received from the payment provider_id. "
+            "What we sent to or received from the payment provider. "
             "Sensitive details such as API credentials, PII etc. may be redacted. "
             "Also fields lifted to relational fields need not be repeated here."
         )
@@ -78,10 +85,6 @@ class PaymentStamp(EventPartitionsMixin, UUID7Mixin, models.Model):
     @property
     def timezone(self):
         return self.event.timezone
-
-    @property
-    def provider(self):
-        return PaymentProvider(self.provider_id)
 
     def as_paytrail_payment_callback(self):
         """

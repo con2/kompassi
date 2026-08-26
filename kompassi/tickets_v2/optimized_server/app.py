@@ -99,7 +99,7 @@ async def create_order(
     db: DB,
     _api_key_verified: _ApiKeyVerified,
 ):
-    provider = event.provider
+    provider = event.provider_implementation
 
     try:
         async with db.transaction():
@@ -166,7 +166,10 @@ async def pay(
     db: DB,
     _api_key_verified: _ApiKeyVerified,
 ):
-    provider = event.provider
+    if not order.status.is_payable:
+        raise HTTPException(409, "ORDER_NOT_PAYABLE")
+
+    provider = event.provider_implementation
 
     try:
         create_payment_request, request_stamp = provider.prepare_for_existing_order(order)

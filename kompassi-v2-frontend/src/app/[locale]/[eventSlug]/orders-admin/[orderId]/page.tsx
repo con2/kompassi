@@ -25,6 +25,7 @@ import ContactForm from "@/components/tickets/ContactForm";
 import ProductsTable from "@/components/tickets/ProductsTable";
 import TicketsAdminView from "@/components/tickets/TicketsAdminView";
 import getPageTitle from "@/helpers/getPageTitle";
+import paymentStatusVariant from "@/helpers/paymentStatusVariant";
 import { getTranslations } from "@/translations";
 import { notFound } from "next/navigation";
 import { Fragment } from "react";
@@ -35,7 +36,7 @@ import AccordionItem from "react-bootstrap/AccordionItem";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import {
   cancelAndRefundOrder,
-  markOrderAsPaid,
+  fulfilOrder,
   resendConfirmation,
   updateOrder,
 } from "./actions";
@@ -93,7 +94,7 @@ const query = graphql(`
           phone
           canRefund
           canRefundManually
-          canMarkAsPaid
+          canFulfil
           products {
             title
             quantity
@@ -334,6 +335,7 @@ export default async function AdminOrderPage(props: Props) {
   const order = data.event.tickets.order;
   const { shortTitle: paymentStatus } =
     t.attributes.status.choices[order.status];
+  const statusVariant = paymentStatusVariant(order.status);
 
   const actions = [
     {
@@ -381,16 +383,45 @@ export default async function AdminOrderPage(props: Props) {
     },
     {
       slug: "markAsPaid",
-      isShown: order.canMarkAsPaid,
+      isShown:
+        order.canFulfil && order.status !== PaymentStatus.PaidAfterCancellation,
       getElement: () => (
         <ModalButton
           title={t.actions.markAsPaid.title}
           className="btn btn-success"
           submitButtonVariant="success"
           messages={t.actions.markAsPaid.modalActions}
-          action={markOrderAsPaid.bind(null, locale, eventSlug, order.id)}
+          action={fulfilOrder.bind(
+            null,
+            locale,
+            eventSlug,
+            order.id,
+            order.status,
+          )}
         >
           {t.actions.markAsPaid.message}
+        </ModalButton>
+      ),
+    },
+    {
+      slug: "fulfilAfterCancellation",
+      isShown:
+        order.canFulfil && order.status === PaymentStatus.PaidAfterCancellation,
+      getElement: () => (
+        <ModalButton
+          title={t.actions.fulfilAfterCancellation.title}
+          className="btn btn-success"
+          submitButtonVariant="success"
+          messages={t.actions.fulfilAfterCancellation.modalActions}
+          action={fulfilOrder.bind(
+            null,
+            locale,
+            eventSlug,
+            order.id,
+            order.status,
+          )}
+        >
+          {t.actions.fulfilAfterCancellation.message}
         </ModalButton>
       ),
     },
@@ -414,6 +445,7 @@ export default async function AdminOrderPage(props: Props) {
             eventSlug,
             order.id,
             RefundType.None,
+            order.status,
           )}
         >
           {t.actions.cancelWithoutRefunding.message}
@@ -436,6 +468,7 @@ export default async function AdminOrderPage(props: Props) {
             eventSlug,
             order.id,
             RefundType.Provider,
+            order.status,
           )}
         >
           {t.actions.cancelAndRefund.message}
@@ -444,7 +477,10 @@ export default async function AdminOrderPage(props: Props) {
     },
     {
       slug: "refundCancelledOrder",
-      isShown: order.canRefund && order.status === PaymentStatus.Cancelled,
+      isShown:
+        order.canRefund &&
+        (order.status === PaymentStatus.Cancelled ||
+          order.status === PaymentStatus.PaidAfterCancellation),
       getElement: () => (
         <ModalButton
           title={t.actions.refundCancelledOrder.title}
@@ -457,6 +493,7 @@ export default async function AdminOrderPage(props: Props) {
             eventSlug,
             order.id,
             RefundType.Provider,
+            order.status,
           )}
         >
           {t.actions.refundCancelledOrder.message}
@@ -478,6 +515,7 @@ export default async function AdminOrderPage(props: Props) {
             eventSlug,
             order.id,
             RefundType.Provider,
+            order.status,
           )}
         >
           {t.actions.retryRefund.message}
@@ -499,6 +537,7 @@ export default async function AdminOrderPage(props: Props) {
             eventSlug,
             order.id,
             RefundType.Manual,
+            order.status,
           )}
         >
           {t.actions.refundManually.message}
@@ -517,7 +556,9 @@ export default async function AdminOrderPage(props: Props) {
       active="orders"
     >
       <div className="d-flex">
-        <h3 className="mt-3 mb-3">
+        <h3
+          className={`mt-3 mb-3 ${statusVariant ? `text-${statusVariant}` : ""}`}
+        >
           {t.singleTitle(order.formattedOrderNumber, paymentStatus)}
         </h3>
 

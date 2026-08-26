@@ -41,6 +41,23 @@ def get_cancellation_deadline(
     return deadline
 
 
+def get_payment_deadline(
+    order_created_at: datetime,
+    unpaid_order_cancellation_delay_minutes: int,
+) -> datetime | None:
+    """
+    Deadline by which an unpaid order must be paid before the automatic
+    cancellation sweep cancels it, or None when the event still uses the
+    legacy once-daily sweep (delay_minutes == 0) — that rule's actual
+    deadline depends on when the sweep next runs rather than a fixed point
+    in time, so there is nothing precise to show the customer.
+    """
+    if not unpaid_order_cancellation_delay_minutes:
+        return None
+
+    return order_created_at + timedelta(minutes=unpaid_order_cancellation_delay_minutes)
+
+
 def is_cancellable_by_customer(
     *,
     status: PaymentStatus,

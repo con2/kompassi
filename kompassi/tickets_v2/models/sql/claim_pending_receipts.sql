@@ -5,7 +5,7 @@ with qualifying_receipts as (
     tickets_v2_receipt r
   where
     r.event_id = %(event_id)s and
-    r.status = 0 and -- ReceiptStatus.REQUESTED
+    r.status = 'REQUESTED' and
     r.batch_id is null
   limit (%(batch_size)s)
   for update
@@ -16,7 +16,7 @@ claimed_receipts as (
   update tickets_v2_receipt r
   set
     batch_id = %(batch_id)s,
-    status = 1 -- ReceiptStatus.PROCESSING
+    status = 'PROCESSING'
   from
     qualifying_receipts qr
   where
@@ -48,8 +48,8 @@ select
     where
       ps.event_id = o.event_id
       and ps.order_id = o.id
-      and ps.status = 3 -- PaymentStatus.PAID
-      and ps.provider_id <> 0 -- PaymentProvider.NONE
+      and ps.status = 'PAID'
+      and ps.provider <> 'NONE'
   ) as paid_by_provider
 from
   claimed_receipts cr

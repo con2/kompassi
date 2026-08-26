@@ -16,7 +16,7 @@ select
   coalesce(
     sum(
       case
-        when op.status = 3 then op.quantity -- PaymentStatus.PAID
+        when op.status = 'PAID' then op.quantity
         else 0
       end
     ),
@@ -24,7 +24,7 @@ select
   coalesce(
     sum(
       case
-        when op.status <= 3 then op.quantity -- PaymentStatus.PAID
+        when op.status <= 'PAID' then op.quantity
         else 0
       end
     ),

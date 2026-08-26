@@ -28,6 +28,7 @@ from ..optimized_server.models.enums import PaymentStatus, ReceiptStatus, Receip
 from ..optimized_server.utils.cancellation import get_cancellation_deadline, is_cancellable_by_customer
 from ..utils.event_partitions import EventPartitionsMixin
 from ..utils.mail import email_template_language, tickets_from_email
+from .fields import PostgresEnumField
 from .meta import TicketsV2EventMeta
 from .order import Order, OrderMixin
 from .product import Product
@@ -101,12 +102,16 @@ class Receipt(EventPartitionsMixin, UUID7Mixin, models.Model):
         ),
     )
 
-    type = models.SmallIntegerField(
-        choices=[(t.value, t.name) for t in ReceiptType],
+    type = PostgresEnumField(
+        enum=ReceiptType,
+        db_type_name="tickets_v2_receipttype",
+        choices=[(t.name, t.name) for t in ReceiptType],
     )
 
-    status = models.SmallIntegerField(
-        choices=[(s.value, s.name) for s in ReceiptStatus],
+    status = PostgresEnumField(
+        enum=ReceiptStatus,
+        db_type_name="tickets_v2_receiptstatus",
+        choices=[(s.name, s.name) for s in ReceiptStatus],
     )
 
     email = models.EmailField(
@@ -413,7 +418,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
 
         return cls(
             order_id=order.id,
-            receipt_type=PaymentStatus(order.cached_status).to_receipt_type(),
+            receipt_type=order.cached_status.to_receipt_type(),
             event_id=order.event_id,
             language=order.language,
             first_name=order.first_name,

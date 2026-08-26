@@ -3,7 +3,7 @@ select
   coalesce(
     sum(
       case
-        when o.cached_status = 3 then 1 -- PaymentStatus.PAID
+        when o.cached_status = 'PAID' then 1
         else 0
       end
     ),

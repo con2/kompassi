@@ -285,7 +285,7 @@ class Setup:
             event=self.event,
             defaults=dict(
                 admin_group=admin_group,
-                provider_id=PaymentProvider.NONE if self.dev_tickets else PaymentProvider.PAYTRAIL.value,
+                provider=PaymentProvider.NONE if self.dev_tickets else PaymentProvider.PAYTRAIL.value,
                 terms_and_conditions_url_fi="https://cosmocon.fi/liput/toimitusehdot/",
             ),
         )

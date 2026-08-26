@@ -12,13 +12,16 @@ from kompassi.core.models.event_meta_base import EventMetaBase
 from kompassi.core.models.person import Person
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStatus
+from .fields import PostgresEnumField
 
 logger = logging.getLogger(__name__)
 
 
 class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
-    provider_id = models.SmallIntegerField(
-        choices=[(x.value, x.name) for x in PaymentProvider],
+    provider = PostgresEnumField(
+        enum=PaymentProvider,
+        db_type_name="tickets_v2_paymentprovider",
+        choices=[(p.name, p.name) for p in PaymentProvider],
         default=PaymentProvider.NONE,
         verbose_name="Payment provider",
     )
@@ -41,6 +44,15 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
             "Number of days from order creation during which the customer can cancel "
             "a paid order themselves. The period is further capped at event start. "
             "0 = customer self-service cancellation disabled."
+        ),
+    )
+
+    unpaid_order_cancellation_delay_minutes = models.PositiveIntegerField(
+        default=0,
+        help_text=(
+            "Number of minutes from order creation after which an unpaid order is "
+            "automatically cancelled. 0 = the legacy rule: unpaid orders done before "
+            "midnight three days ago are cancelled once a day."
         ),
     )
 
@@ -131,17 +143,17 @@ class TicketsV2EventMeta(ContactEmailMixin, EventMetaBase):
             quota.set_quota(counters.count_total)
 
     @cached_property
-    def provider(self):
+    def provider_implementation(self):
         from ..providers.null import NULL_PROVIDER
         from ..providers.paytrail import PAYTRAIL_PROVIDER
 
-        match self.provider_id:
+        match self.provider:
             case PaymentProvider.NONE:
                 return NULL_PROVIDER
             case PaymentProvider.PAYTRAIL:
                 return PAYTRAIL_PROVIDER
             case _:
-                raise NotImplementedError(f"Unsupported provider_id: {self.provider_id}")
+                raise NotImplementedError(f"Unsupported provider: {self.provider}")
 
 
 @dataclass

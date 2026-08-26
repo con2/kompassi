@@ -2,7 +2,7 @@ select
   e.id,
   e.slug,
   e.name,
-  m.provider_id,
+  m.provider,
   m.terms_and_conditions_url_en,
   m.terms_and_conditions_url_fi,
   m.terms_and_conditions_url_sv,
@@ -12,6 +12,7 @@ select
   coalesce(m.contact_email, '') as contact_email,
   o.business_id as organization_business_id,
   m.cancellation_period_days,
+  m.unpaid_order_cancellation_delay_minutes,
   e.start_time
 from
   core_event e

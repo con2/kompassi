@@ -97,6 +97,19 @@ class ProfileOrderType(LimitedOrderType):
     )
 
     @staticmethod
+    def resolve_payment_deadline(order: Order, info):
+        """
+        Deadline by which this order must be paid before it is automatically
+        cancelled. Null if the event still uses the legacy once-a-day sweep.
+        """
+        return order.payment_deadline
+
+    payment_deadline = graphene.Field(
+        graphene.DateTime,
+        description=normalize_whitespace(resolve_payment_deadline.__doc__ or ""),
+    )
+
+    @staticmethod
     def resolve_tickets_contact_email(order: Order, info):
         """
         Contact email for the ticket seller (from the event's tickets meta).

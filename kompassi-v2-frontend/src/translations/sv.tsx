@@ -599,6 +599,9 @@ const translations: Translations = {
       listTitle: "Beställningar",
       singleTitle: (orderNumber: string, paymentStatus: string) =>
         `Beställning ${orderNumber} (${paymentStatus})`,
+      paymentDeadlineNotice: (deadline: ReactNode) => (
+        <>Betala din beställning senast {deadline}, annars avbokas den.</>
+      ),
       contactForm: {
         title: "Kontaktinformation",
       },
@@ -722,6 +725,13 @@ const translations: Translations = {
           <ForceLink>använd Kraften</ForceLink>.
         </>
       ),
+      paidAfterCancellationWarning: (numOrders: number) => (
+        <>
+          {numOrders} beställning{numOrders === 1 ? "" : "ar"} är markerad
+          {numOrders === 1 ? "" : "e"} som betald efter avbokning och behöver en
+          administratör för att levereras. Klicka här för att visa.
+        </>
+      ),
       attributes: {
         orderNumberAbbr: "Best. #",
         orderNumberFull: "Beställningsnummer",
@@ -814,6 +824,12 @@ const translations: Translations = {
               message:
                 "Din beställning har avbokats. Om det fanns e-biljetter i beställningen har de ogiltigförklarats. Om du tror att detta är ett fel, kontakta evenemangsarrangören.",
             },
+            PAID_AFTER_CANCELLATION: {
+              title: "Betalningen har mottagits",
+              shortTitle: "Betald efter avbokning",
+              message:
+                "Din betalning har mottagits. Din beställning behandlas fortfarande, och dina biljetter kommer snart.",
+            },
             REFUND_REQUESTED: {
               title: "Din beställning har återbetalats",
               shortTitle: "Återbetalning begärd",
@@ -855,6 +871,11 @@ const translations: Translations = {
           title: "Fel vid behandling av beställning",
           message:
             "Ett fel uppstod vid behandlingen av din beställning. Försök igen senare.",
+        },
+        ORDER_NOT_PAYABLE: {
+          title: "Beställningen kan inte betalas",
+          message:
+            "Den här beställningen kan inte längre betalas. Den kan redan ha betalats, avbokats eller återbetalats.",
         },
         ORDER_NOT_FOUND: {
           title: "Beställningen hittades inte",
@@ -1140,6 +1161,28 @@ const translations: Translations = {
             cancel: "Stäng utan att markera",
           },
         },
+        fulfilAfterCancellation: {
+          title: "Leverera trots avbokning",
+          message: (
+            <>
+              <p>
+                Denna beställning har avbokats, men en betalning har ändå kommit
+                in för den. Vill du leverera beställningen trots det?
+              </p>
+              <p>
+                Detta kommer att sälja biljettkvoten över den mängd
+                beställningen fortfarande behöver — pengarna har redan
+                mottagits, så kunden måste få sina biljetter. Ett kvitto skickas
+                till kunden. Om beställningen innehåller e-biljetter bifogas de
+                i kvittot.
+              </p>
+            </>
+          ),
+          modalActions: {
+            submit: "Leverera beställningen",
+            cancel: "Stäng utan att leverera",
+          },
+        },
       },
     },
     PaymentStamp: {
@@ -1162,6 +1205,7 @@ const translations: Translations = {
             CREATE_REFUND_FAILURE: "Skapa återbetalning – Misslyckades",
             REFUND_CALLBACK: "Återbetalningsåterkoppling",
             MANUAL_REFUND: "Manuell återbetalning",
+            MANUAL_FULFILMENT: "Manuell leverans",
           },
         },
       },
@@ -1276,6 +1320,11 @@ const translations: Translations = {
             helpText:
               "Antal dagar från beställningen under vilka kunden själv kan avboka en betald beställning. Avbokningstiden går ut senast när evenemanget börjar. Ange 0 för att inaktivera självbetjäningsavbokning.",
           },
+          unpaidOrderCancellationDelayMinutes: {
+            title: "Fördröjning för avbokning av obetald beställning (minuter)",
+            helpText:
+              "Antal minuter från beställningen efter vilka en obetald beställning avbokas automatiskt och dess biljetter återgår till kvoten. Ange 0 för att använda den gamla regeln, där obetalda beställningar avbokas en gång per dag, ungefär tre dagar efter att de gjordes.",
+          },
         },
       },
       messages: {
@@ -1290,6 +1339,12 @@ const translations: Translations = {
           <>
             Skapandet av beställningen misslyckades. Försök igen eller kontakta
             support.
+          </>
+        ),
+        orderStateChanged: (
+          <>
+            Denna beställning ändrades av någon (eller något) annat medan den
+            här sidan var öppen. Ladda om sidan och försök igen.
           </>
         ),
       },

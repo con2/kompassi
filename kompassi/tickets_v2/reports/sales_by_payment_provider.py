@@ -24,7 +24,7 @@ def sales_by_payment_provider(
             fi="Myynti maksunvälittäjittäin",
         ),
         query_args=dict(
-            payment_providers=json.dumps([{"id": pm.value, "title": pm.name} for pm in PaymentProvider]),
+            payment_providers=json.dumps([{"id": pm.name, "title": pm.name} for pm in PaymentProvider]),
             event_id=event.id,
         ),
         columns=[
