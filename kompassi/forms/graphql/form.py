@@ -6,6 +6,7 @@ from graphene_django import DjangoObjectType
 
 from kompassi.core.graphql.limited_event import LimitedEventType
 from kompassi.core.utils.text_utils import normalize_whitespace
+from kompassi.graphql_api.utils import MarkdownFormat, resolve_markdown_field
 
 from ..models.form import Form
 
@@ -17,11 +18,15 @@ class FormType(DjangoObjectType):
         model = Form
         fields = (
             "title",
-            "description",
-            "thank_you_message",
             "language",
             "survey",
         )
+
+    description = graphene.String(format=graphene.Argument(MarkdownFormat))
+    resolve_description = resolve_markdown_field("description")
+
+    thank_you_message = graphene.String(format=graphene.Argument(MarkdownFormat))
+    resolve_thank_you_message = resolve_markdown_field("thank_you_message")
 
     @staticmethod
     def resolve_fields(parent: Form, info, enrich: bool = True):

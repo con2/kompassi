@@ -1,9 +1,35 @@
 from datetime import datetime, tzinfo
 from typing import Protocol
 
+import graphene
+
 from kompassi.core.utils.locale_utils import get_message_in_language
+from kompassi.core.utils.markdown_utils import render_markdown
 
 from .language import DEFAULT_LANGUAGE, getattr_message_in_language
+
+
+class MarkdownFormat(graphene.Enum):
+    """Output format for a field whose source is Markdown."""
+
+    MARKDOWN = "MARKDOWN"
+    HTML = "HTML"
+
+
+def resolve_markdown_field(field_name: str):
+    """
+    Given a TextField containing Markdown source, return a function that serves it
+    as-is (the default) or, given format: HTML, rendered into sanitized HTML.
+    Field name is required to be provided because info.field_name is in camelCase.
+    """
+
+    def _resolve(parent, info, format: MarkdownFormat = MarkdownFormat.MARKDOWN) -> str:
+        value = getattr(parent, field_name)
+        if format == MarkdownFormat.HTML:
+            return render_markdown(value)
+        return value
+
+    return _resolve
 
 
 def resolve_localized_field(field_name: str):

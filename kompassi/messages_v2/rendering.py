@@ -19,9 +19,9 @@ import uuid
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-import markdown as markdown_lib
-import nh3
 from django.template.loader import render_to_string
+
+from kompassi.core.utils.markdown_utils import render_markdown
 
 if TYPE_CHECKING:
     from kompassi.core.models.event import Event
@@ -65,25 +65,6 @@ PLACEHOLDERS = [
 PLACEHOLDERS_BY_TOKEN = {placeholder.token: placeholder for placeholder in PLACEHOLDERS}
 
 _PLACEHOLDER_RE = re.compile(r"\{(" + "|".join(re.escape(token) for token in PLACEHOLDERS_BY_TOKEN) + r")\}")
-
-_ALLOWED_TAGS = {
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "p",
-    "strong",
-    "em",
-    "ul",
-    "ol",
-    "li",
-    "a",
-    "br",
-    "blockquote",
-    "code",
-    "pre",
-}
-_ALLOWED_ATTRIBUTES = {"a": {"href"}}
 
 
 def _tokenize(source: str) -> tuple[str, dict[str, str]]:
@@ -160,8 +141,7 @@ def render_body(
         sentinel_to_token, event=event, person=person, involvement=involvement, program=program
     )
 
-    html_fragment = markdown_lib.markdown(tokenized)
-    sanitized_html = nh3.clean(html_fragment, tags=_ALLOWED_TAGS, attributes=_ALLOWED_ATTRIBUTES)
+    sanitized_html = render_markdown(tokenized)
     for sentinel, value in values.items():
         sanitized_html = sanitized_html.replace(sentinel, html.escape(value))
 

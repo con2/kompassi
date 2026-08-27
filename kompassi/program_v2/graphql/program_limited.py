@@ -3,7 +3,12 @@ from graphene_django import DjangoObjectType
 
 from kompassi.core.utils.text_utils import normalize_whitespace
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
-from kompassi.graphql_api.utils import get_message_in_language, resolve_local_datetime_field
+from kompassi.graphql_api.utils import (
+    MarkdownFormat,
+    get_message_in_language,
+    resolve_local_datetime_field,
+    resolve_markdown_field,
+)
 
 from ..models import Program
 from .program_links import ProgramLink, ProgramLinkType
@@ -29,6 +34,9 @@ class LimitedProgramType(DjangoObjectType):
         return parent.annotations.get("internal:formattedHosts", "")
 
     cached_hosts = graphene.NonNull(graphene.String)
+
+    description = graphene.String(format=graphene.Argument(MarkdownFormat))
+    resolve_description = resolve_markdown_field("description")
 
     @staticmethod
     def resolve_location(parent: Program, info, lang: str = DEFAULT_LANGUAGE):
@@ -143,7 +151,6 @@ class LimitedProgramType(DjangoObjectType):
         fields = (
             "title",
             "slug",
-            "description",
             "cached_earliest_start_time",
             "cached_latest_end_time",
             "is_accepting_feedback",

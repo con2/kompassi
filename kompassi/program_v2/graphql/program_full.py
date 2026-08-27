@@ -176,7 +176,6 @@ class FullProgramType(LimitedProgramType):
         fields = (
             "title",
             "slug",
-            "description",
             "cached_earliest_start_time",
             "cached_latest_end_time",
             "created_at",
