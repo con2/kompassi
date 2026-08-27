@@ -20,8 +20,9 @@ def get_program_offer_form_default_fields(language: str) -> list[dict[str, Any]]
         ),
         Field(
             slug="description",
-            type=FieldType.MULTI_LINE_TEXT,
+            type=FieldType.MARKDOWN_TEXT,
             title=get_message_in_language(DESCRIPTION, language),
+            max_length=1000,
         ),
     ]
 
