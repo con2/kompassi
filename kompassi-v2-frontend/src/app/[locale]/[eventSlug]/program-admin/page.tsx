@@ -200,7 +200,7 @@ export default async function FormResponsesPage(props: Props) {
     {
       slug: "description",
       title: t.attributes.description,
-      type: "MultiLineText",
+      type: "MarkdownText",
       rows: 5,
     },
   ];
@@ -254,6 +254,7 @@ export default async function FormResponsesPage(props: Props) {
               fields={createProgramFields}
               messages={translations.SchemaForm}
               headingLevel="h4"
+              locale={locale}
             />
           </ModalButton>
         </ButtonGroup>
