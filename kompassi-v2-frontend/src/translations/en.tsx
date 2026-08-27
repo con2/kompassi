@@ -3221,7 +3221,7 @@ const translations = {
     },
     title: "Override permission check",
     warning:
-      "You can override this error using superuser privileges. If you proceed, a temporary permission with the restrictions below will be granted to you. The override is recorded in the event log.",
+      "You do not have sufficient privileges to access this page. As a superuser, you can override this. If you proceed, a temporary permission with the restrictions below will be granted to you. The override is recorded in the event log.",
     claimHeading: "Restriction",
     valueHeading: "Value",
     confirm: "Override",

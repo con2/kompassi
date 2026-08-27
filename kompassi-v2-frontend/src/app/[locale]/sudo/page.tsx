@@ -1,11 +1,10 @@
-import { SignInRequired } from "@con2/components";
+import { SignInRequired, ViewContainer } from "@con2/components";
 import {
   Button,
   Card,
   CardBody,
   CardText,
   CardTitle,
-  Container,
   Table,
 } from "react-bootstrap";
 
@@ -27,6 +26,7 @@ export default async function SudoPage(props: Props) {
   const { locale } = await props.params;
   const translations = getTranslations(locale);
   const t = translations.Sudo;
+  const forbiddenT = translations.PermissionDenied;
 
   // TODO encap
   const session = await auth();
@@ -56,7 +56,7 @@ export default async function SudoPage(props: Props) {
   const confirm = sudoCbac.bind(null, next, claims);
 
   return (
-    <Container>
+    <ViewContainer>
       <Card>
         <CardBody>
           <CardTitle>{t.title}</CardTitle>
@@ -90,6 +90,6 @@ export default async function SudoPage(props: Props) {
           </form>
         </CardBody>
       </Card>
-    </Container>
+    </ViewContainer>
   );
 }

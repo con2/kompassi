@@ -1,4 +1,4 @@
-import { ReactNode, JSX } from "react";
+import { JSX, ReactNode } from "react";
 import type { Translations } from "./en";
 
 /// Mark untranslated English strings with this
@@ -1439,7 +1439,7 @@ const translations: Translations = {
       addTheseToCalendar: "Lisää nämä ohjelmanumerot kalenteriin",
       addThisToCalendar: "Lisää tämä ohjelmanumero kalenteriin",
       signUpForThisProgram: "Ilmoittaudu tähän ohjelmanumeroon",
-      preview: "Ohjelmaopas",
+      preview: "Esikatselu",
       editProgramItem: "Muokkaa ohjelmanumeroa",
       preferences: "Asetukset",
       create: {
@@ -3231,7 +3231,7 @@ const translations: Translations = {
     },
     title: "Käyttöoikeustarkastuksen ohitus",
     warning:
-      "Voit ohittaa tämän virheen pääkäyttäjän oikeuksin. Jos jatkat, sinulle kirjataan väliaikainen käyttöoikeus alla näkyvin rajauksin. Ohitus kirjataan tapahtumalokiin.",
+      "Sinulla ei ole käyttöoikeutta tähän näkymään, mutta pääkäyttäjänä voit ohittaa käyttöoikeustarkastuksen. Jos jatkat, sinulle kirjataan väliaikainen käyttöoikeus alla näkyvin rajauksin. Ohitus kirjataan tapahtumalokiin.",
     claimHeading: "Rajaus",
     valueHeading: "Arvo",
     confirm: "Ohita",

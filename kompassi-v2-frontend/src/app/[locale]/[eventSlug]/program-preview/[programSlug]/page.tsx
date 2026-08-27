@@ -1,9 +1,6 @@
 import { SignInRequired } from "@con2/components";
-import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import Card from "react-bootstrap/Card";
-import CardBody from "react-bootstrap/CardBody";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
@@ -131,28 +128,18 @@ export default async function ProgramPreviewDetailPage(props: Props) {
       translations={translations}
       active="preview"
       searchParams={searchParams}
-      actions={
-        <Link
-          href={`/${eventSlug}/program-admin/${programSlug}`}
-          className="btn btn-outline-primary"
-        >
-          {t.actions.editProgramItem}…
-        </Link>
-      }
     >
-      <Card className="mb-3 mt-3">
-        <CardBody>
-          <ProgramDetail
-            locale={locale}
-            event={event}
-            program={program}
-            isLoggedIn={!!data.profile}
-            favoriteScheduleItemSlugs={favoriteScheduleItemSlugs}
-            listUrl={`/${eventSlug}/program-preview`}
-            translations={translations}
-          />
-        </CardBody>
-      </Card>
+      <div className="mt-4">
+        <ProgramDetail
+          locale={locale}
+          event={event}
+          program={program}
+          isLoggedIn={!!data.profile}
+          favoriteScheduleItemSlugs={favoriteScheduleItemSlugs}
+          listUrl={`/${eventSlug}/program-preview`}
+          translations={translations}
+        />
+      </div>
     </ProgramAdminDetailView>
   );
 }
