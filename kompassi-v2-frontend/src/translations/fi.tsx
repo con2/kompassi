@@ -1440,6 +1440,7 @@ const translations: Translations = {
       addThisToCalendar: "Lisää tämä ohjelmanumero kalenteriin",
       signUpForThisProgram: "Ilmoittaudu tähän ohjelmanumeroon",
       preview: "Ohjelmaopas",
+      editProgramItem: "Muokkaa ohjelmanumeroa",
       preferences: "Asetukset",
       create: {
         title: "Luo ohjelmanumero",

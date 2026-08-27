@@ -6,7 +6,7 @@ import { Field } from "../forms/models";
 import { SchemaForm } from "../forms/SchemaForm";
 import { ProfileFields } from "../profile/ProfileFields";
 import { Registry } from "./models";
-import { Scope } from "@/app/[locale]/[eventSlug]/program/models";
+import { Scope } from "@/components/program/models";
 import { auth } from "@/auth";
 import { Profile, ProfileFieldSelector } from "@/components/profile/models";
 import { kompassiBaseUrl } from "@/config";

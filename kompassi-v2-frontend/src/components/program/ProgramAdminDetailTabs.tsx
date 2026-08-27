@@ -2,7 +2,12 @@ import { ServerTabs as Tabs, Tab } from "@con2/components";
 import { Translations } from "@/translations/en";
 
 export type ProgramAdminTab =
-  "basicInfo" | "scheduleItems" | "programHosts" | "dimensions" | "annotations";
+  | "basicInfo"
+  | "scheduleItems"
+  | "programHosts"
+  | "dimensions"
+  | "annotations"
+  | "preview";
 
 export interface ProgramAdminTabsProps {
   eventSlug: string;
@@ -48,9 +53,7 @@ export default function ProgramAdminDetailTabs({
     {
       slug: "preview",
       title: t.adminDetailTabs.preview,
-      href: `/${eventSlug}/programs/${programSlug}`,
-      // Program view has no admin controls, so treat it as external for now
-      external: true,
+      href: `/${eventSlug}/program-preview/${programSlug}`,
     },
   ];
 

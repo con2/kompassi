@@ -20,6 +20,7 @@ interface Props {
   scheduleItem: ScheduleItemListFragment;
   locale: string;
   isLoggedIn: boolean;
+  href: string;
   messages: Translations["Program"];
 }
 
@@ -29,6 +30,7 @@ export default function ProgramCard({
   event,
   locale,
   isLoggedIn,
+  href,
   messages: t,
 }: Props) {
   return (
@@ -41,11 +43,7 @@ export default function ProgramCard({
                 ❌ {t.attributes.cancelled.title}:
               </span>
             )}
-            <CardLink
-              as={Link}
-              href={`/${event.slug}/programs/${program.slug}`}
-              className="link-subtle"
-            >
+            <CardLink as={Link} href={href} className="link-subtle">
               {program.title}
             </CardLink>
           </CardTitle>

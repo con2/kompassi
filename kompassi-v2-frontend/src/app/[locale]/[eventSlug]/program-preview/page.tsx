@@ -1,4 +1,4 @@
-import { ViewContainer, ViewHeading } from "@con2/components";
+import { SignInRequired } from "@con2/components";
 import { decodeBoolean } from "@con2/components/helpers";
 import { notFound } from "next/navigation";
 
@@ -6,13 +6,14 @@ import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { buildDimensionFilters } from "@/components/dimensions/helpers";
+import ProgramAdminView from "@/components/program/ProgramAdminView";
 import ProgramList from "@/components/program/ProgramList";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
 import { Alert } from "react-bootstrap";
 
 const query = graphql(`
-  query ProgramListQuery(
+  query ProgramPreviewListQuery(
     $locale: String
     $eventSlug: String!
     $filters: [DimensionFilterInput!]
@@ -43,7 +44,11 @@ const query = graphql(`
           ...DimensionFilter
         }
 
-        scheduleItems(filters: $filters, hidePast: $hidePast) {
+        scheduleItems(
+          filters: $filters
+          hidePast: $hidePast
+          publicOnly: false
+        ) {
           ...ScheduleItemList
         }
       }
@@ -59,13 +64,21 @@ interface Props {
   searchParams: Promise<Record<string, string>>;
 }
 
-// TODO move favorites into a client component
 export const revalidate = 0;
 
 export async function generateMetadata(props: Props) {
-  const searchParams = await props.searchParams;
   const params = await props.params;
-  const { locale, eventSlug } = params;
+  const { locale } = params;
+  const translations = getTranslations(locale);
+
+  // TODO encap
+  const session = await auth();
+  if (!session) {
+    return translations.SignInRequired.metadata;
+  }
+
+  const searchParams = await props.searchParams;
+  const { eventSlug } = params;
   const filters = buildDimensionFilters(searchParams);
   const hidePast = !!searchParams.past && !decodeBoolean(searchParams.past);
   const { data } = await getClient().query({
@@ -73,11 +86,10 @@ export async function generateMetadata(props: Props) {
     variables: { eventSlug, locale, filters, hidePast },
   });
   const { event } = data;
-  const translations = getTranslations(locale);
   const title = getPageTitle({
     translations,
     event,
-    viewTitle: translations.Program.listTitle,
+    viewTitle: translations.Program.actions.preview,
     subject: null,
   });
   return {
@@ -85,12 +97,26 @@ export async function generateMetadata(props: Props) {
   };
 }
 
-export default async function ProgramListPage(props: Props) {
+export default async function ProgramPreviewListPage(props: Props) {
   const searchParams = await props.searchParams;
   const params = await props.params;
   const { locale, eventSlug } = params;
   const translations = getTranslations(locale);
   const t = translations.Program;
+
+  const session = await auth();
+
+  // TODO encap
+  if (!session) {
+    return (
+      <SignInRequired
+        messages={translations.SignInRequired}
+        providerId="kompassi"
+        locale={locale}
+      />
+    );
+  }
+
   const filters = buildDimensionFilters(searchParams);
   const hidePast = !!searchParams.past && !decodeBoolean(searchParams.past);
 
@@ -104,22 +130,7 @@ export default async function ProgramListPage(props: Props) {
     notFound();
   }
 
-  const isSchedulePublic = event.program.isSchedulePublic;
-
-  if (!isSchedulePublic) {
-    return (
-      <ViewContainer>
-        <ViewHeading>
-          {t.listTitle}
-          <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
-        </ViewHeading>
-        <Alert variant="warning">{t.scheduleNotPublic}</Alert>
-      </ViewContainer>
-    );
-  }
-
-  const session = await auth();
-  const favoritesOnly = session && !!searchParams.favorited;
+  const favoritesOnly = !!searchParams.favorited;
   const userScheduleItems = data.profile?.program?.scheduleItems || [];
   const scheduleItems = favoritesOnly
     ? userScheduleItems
@@ -133,23 +144,31 @@ export default async function ProgramListPage(props: Props) {
     ? `${event.program.calendarExportLink}?${queryString}`
     : event.program.calendarExportLink;
 
+  const alerts = !event.program.isSchedulePublic && (
+    <Alert variant="warning">{t.scheduleNotPublic}</Alert>
+  );
+
   return (
-    <ViewContainer>
-      <ViewHeading>
-        {t.listTitle}
-        <ViewHeading.Sub>{t.inEvent(event.name)}</ViewHeading.Sub>
-      </ViewHeading>
-      <ProgramList
-        locale={locale}
-        event={event}
-        scheduleItems={scheduleItems}
-        listFilters={listFilters}
-        favoriteScheduleItemSlugs={favoriteScheduleItemSlugs}
-        isLoggedIn={!!data.profile}
-        calendarExportLink={calendarExportLink}
-        programBaseUrl={`/${eventSlug}/programs`}
-        messages={t}
-      />
-    </ViewContainer>
+    <ProgramAdminView
+      translations={translations}
+      event={event}
+      active="preview"
+      searchParams={searchParams}
+      alerts={alerts}
+    >
+      <div className="mt-3">
+        <ProgramList
+          locale={locale}
+          event={event}
+          scheduleItems={scheduleItems}
+          listFilters={listFilters}
+          favoriteScheduleItemSlugs={favoriteScheduleItemSlugs}
+          isLoggedIn={!!data.profile}
+          calendarExportLink={calendarExportLink}
+          programBaseUrl={`/${eventSlug}/program-preview`}
+          messages={t}
+        />
+      </div>
+    </ProgramAdminView>
   );
 }

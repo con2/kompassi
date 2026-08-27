@@ -1448,6 +1448,7 @@ const translations = {
       addThisToCalendar: "Add this program item to your calendar",
       signUpForThisProgram: "Sign up for this program item",
       preview: "Preview schedule",
+      editProgramItem: "Edit program item",
       preferences: "Preferences",
       create: {
         title: "Create program item",

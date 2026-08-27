@@ -1415,6 +1415,7 @@ const translations: Translations = {
       addThisToCalendar: "Lägg till denna programpunkt i kalendern",
       signUpForThisProgram: "Anmäl dig till denna programpunkt",
       preview: "Förhandsgranska schema",
+      editProgramItem: "Redigera programpunkten",
       preferences: "Inställningar",
       create: {
         title: "Skapa programpunkt",

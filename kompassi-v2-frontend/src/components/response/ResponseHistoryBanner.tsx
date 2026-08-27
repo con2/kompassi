@@ -4,7 +4,7 @@ import {
   ProfileResponseHistoryBannerFragment,
   ResponseHistoryBannerFragment,
 } from "@/__generated__/graphql";
-import { Scope } from "@/app/[locale]/[eventSlug]/program/models";
+import { Scope } from "@/components/program/models";
 import { auth } from "@/auth";
 import type { Translations } from "@/translations/en";
 import Link from "next/link";

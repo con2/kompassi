@@ -13,8 +13,9 @@ export interface ProgramAdminTabsProps {
     | "dimensions"
     | "annotations"
     | "programMessages"
-    | "preferences"
-    | "reports";
+    | "reports"
+    | "preview"
+    | "preferences";
   translations: Translations;
   searchParams?: Record<string, string>;
 }
@@ -91,9 +92,7 @@ export default function ProgramAdminTabs({
     {
       slug: "preview",
       title: t.actions.preview,
-      href: `/${eventSlug}/program${queryString}`,
-      // Program view has no admin controls, so treat it as external for now
-      external: true,
+      href: `/${eventSlug}/program-preview${queryString}`,
     },
     {
       slug: "preferences",
