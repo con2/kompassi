@@ -138,13 +138,13 @@ export default async function EditProgramFormLanguagePage(props: Props) {
     },
     {
       slug: "description",
-      type: "MultiLineText",
+      type: "MarkdownText",
       rows,
       ...translations.FormEditor.attributes.description,
     },
     {
       slug: "thankYouMessage",
-      type: "MultiLineText",
+      type: "MarkdownText",
       rows,
       ...translations.FormEditor.attributes.thankYouMessage,
     },
@@ -174,6 +174,7 @@ export default async function EditProgramFormLanguagePage(props: Props) {
           fields={fields}
           values={form}
           messages={translations.SchemaForm}
+          locale={locale}
         />
         <div className="d-flex">
           <SubmitButton>{t.actions.saveProperties}</SubmitButton>

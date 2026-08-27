@@ -3,7 +3,7 @@ import {
   ViewHeading,
   ViewHeadingActions,
   ViewHeadingActionsWrapper,
-  ParagraphsDangerousHtml,
+  Markdown,
   SignInRequired,
   SubmitButton,
   FormattedDateTime,
@@ -158,7 +158,7 @@ export default async function ProfileSurveyEditResponsePage(props: Props) {
         )}
       </Alert>
 
-      <ParagraphsDangerousHtml html={description} />
+      <Markdown input={description} />
 
       <form
         action={submit.bind(null, locale, event.slug, survey.slug, response.id)}

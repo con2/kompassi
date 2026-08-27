@@ -1,4 +1,4 @@
-import { ViewContainer, ViewHeading } from "@con2/components";
+import { ViewContainer, ViewHeading, Markdown } from "@con2/components";
 import { notFound } from "next/navigation";
 
 import { graphql } from "@/__generated__";
@@ -71,7 +71,7 @@ export default async function SurveyPage(props: SurveyPageProps) {
   return (
     <ViewContainer>
       <ViewHeading>{t.thankYou.title}</ViewHeading>
-      <p>{message}</p>
+      <Markdown input={message} />
     </ViewContainer>
   );
 }

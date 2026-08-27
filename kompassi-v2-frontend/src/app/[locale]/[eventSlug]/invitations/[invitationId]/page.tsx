@@ -2,7 +2,7 @@ import {
   ViewContainer,
   ViewHeading,
   Linebreaks,
-  ParagraphsDangerousHtml,
+  Markdown,
   SignInRequired,
   SubmitButton,
 } from "@con2/components";
@@ -216,7 +216,7 @@ export default async function SurveyPage(props: Props) {
         </div>
       )}
 
-      <ParagraphsDangerousHtml html={description} />
+      <Markdown input={description} />
 
       {program && (
         <Card>

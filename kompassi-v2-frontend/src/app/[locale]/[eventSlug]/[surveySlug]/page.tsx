@@ -1,7 +1,7 @@
 import {
   ViewContainer,
   ViewHeading,
-  ParagraphsDangerousHtml,
+  Markdown,
   SignInRequired,
   SubmitButton,
 } from "@con2/components";
@@ -231,7 +231,7 @@ export default async function SurveyPage(props: Props) {
         </div>
       )} */}
 
-      <ParagraphsDangerousHtml html={description} />
+      <Markdown input={description} />
       <form action={submit.bind(null, locale, eventSlug, surveySlug)}>
         {targetRegistry && profile ? (
           <TransferConsentForm

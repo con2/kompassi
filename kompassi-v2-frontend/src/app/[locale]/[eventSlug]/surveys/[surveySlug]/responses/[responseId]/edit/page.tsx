@@ -1,5 +1,5 @@
 import {
-  ParagraphsDangerousHtml,
+  Markdown,
   SignInRequired,
   SubmitButton,
   FormattedDateTime,
@@ -181,7 +181,7 @@ export default async function ProgramOfferPage(props: Props) {
       </Alert>
 
       <h3 className="mb-3 mt-3">{title}</h3>
-      <ParagraphsDangerousHtml html={description} />
+      <Markdown input={description} />
 
       <form
         action={submit.bind(null, locale, event.slug, survey.slug, response.id)}

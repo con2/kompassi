@@ -3,7 +3,7 @@ import {
   ViewHeading,
   ViewHeadingActions,
   ViewHeadingActionsWrapper,
-  ParagraphsDangerousHtml,
+  Markdown,
   SignInRequired,
 } from "@con2/components";
 import Link from "next/link";
@@ -156,7 +156,7 @@ export default async function ProfileSurveyResponsePage(props: Props) {
         scope={event}
       />
 
-      <ParagraphsDangerousHtml html={form.description} />
+      <Markdown input={form.description} />
 
       {survey.registry && (
         <TransferConsentForm
