@@ -2,7 +2,7 @@ import logging
 from collections.abc import Callable
 from enum import Enum
 from functools import wraps
-from typing import Literal, Protocol
+from typing import Literal, NoReturn, Protocol
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -18,6 +18,11 @@ from .models.cbac_entry import CBACEntry, Claims
 
 logger = logging.getLogger(__name__)
 Operation = Literal["query", "create", "update", "delete", "put"]
+
+
+def raise_cbac_permission_denied(request: HttpRequest, claims: Claims) -> NoReturn:
+    emit("access.cbac.denied", request=request, other_fields={"claims": claims})
+    raise CBACPermissionDenied(claims, expose_claims=bool(request.user.is_superuser))
 
 
 def get_default_claims(request, **overrides: str):
@@ -53,8 +58,7 @@ def default_cbac_required(view_func):
         logger.debug("CBAC: Checking permissions: user=%r, claims=%s", user.username, claims)
         if not CBACEntry.is_allowed(user, claims):
             logger.warning("CBAC: Permission denied: user=%r, claims=%r", user.username, claims)
-            emit("access.cbac.denied", request=request, other_fields={"claims": claims})
-            raise CBACPermissionDenied(claims)
+            raise_cbac_permission_denied(request, claims)
 
         return view_func(request, *args, **kwargs)
 
@@ -175,13 +179,7 @@ def graphql_check_model(
     )
 
     if not CBACEntry.is_allowed(request.user, claims):
-        emit(
-            "access.cbac.denied",
-            request=request,
-            other_fields={"claims": claims},
-        )
-
-        raise CBACPermissionDenied(claims)
+        raise_cbac_permission_denied(request, claims)
 
 
 def graphql_check_instance(
@@ -213,13 +211,7 @@ def graphql_check_instance(
     )
 
     if not CBACEntry.is_allowed(request.user, claims):
-        emit(
-            "access.cbac.denied",
-            request=request,
-            other_fields={"claims": claims},
-        )
-
-        raise CBACPermissionDenied(claims)
+        raise_cbac_permission_denied(request, claims)
 
 
 def graphql_query_cbac_required(func: Callable):

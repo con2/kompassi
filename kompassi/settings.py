@@ -398,6 +398,7 @@ GRAPHENE = {
     "SCHEMA": "graphql_api.schema.schema",
     "MIDDLEWARE": [
         "kompassi.graphql_api.graphene_middleware.LoggingErrorsMiddleware",
+        "kompassi.graphql_api.graphene_middleware.NotFoundMiddleware",
     ],
 }
 

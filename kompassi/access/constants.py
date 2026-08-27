@@ -6,3 +6,6 @@ CBAC_SUDO_VALID_MINUTES = 20
 
 # these claims are used, if present, when sudoing. Note that sudo cannot give you a {} permission
 CBAC_SUDO_CLAIMS = ["organization", "event", "app"]
+
+# machine-readable code on CBACPermissionDenied.extensions, for GraphQL clients to branch on
+CBAC_PERMISSION_DENIED = "CBAC_PERMISSION_DENIED"

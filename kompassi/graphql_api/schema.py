@@ -1,5 +1,6 @@
 import graphene
 
+from kompassi.access.graphql.mutations.sudo_cbac import SudoCbac
 from kompassi.core.graphql.event_full import FullEventType
 from kompassi.core.graphql.mutations.confirm_email import ConfirmEmail
 from kompassi.core.graphql.profile_own import OwnProfileType
@@ -135,6 +136,9 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
+    # Access
+    sudo_cbac = SudoCbac.Field()
+
     # Core
     confirm_email = ConfirmEmail.Field()
 

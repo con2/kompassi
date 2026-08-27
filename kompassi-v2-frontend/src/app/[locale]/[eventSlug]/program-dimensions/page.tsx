@@ -57,16 +57,10 @@ export async function generateMetadata(props: Props) {
 
   const t = translations.Survey;
 
-  let resp;
-  try {
-    resp = await getClient().query({
-      query,
-      variables: { locale, eventSlug },
-    });
-  } catch (e) {
-    console.error(await (e as any).networkError.response.json());
-    throw e;
-  }
+  const resp = await getClient().query({
+    query,
+    variables: { locale, eventSlug },
+  });
   const data = resp.data;
 
   if (!data.event?.program?.dimensions) {

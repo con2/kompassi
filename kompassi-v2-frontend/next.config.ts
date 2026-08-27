@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit,
     },
+    // required for forbidden()/unauthorized() and the forbidden.tsx file convention
+    authInterrupts: true,
   },
   sassOptions: {
     // bootstrap

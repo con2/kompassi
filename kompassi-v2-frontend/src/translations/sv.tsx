@@ -3153,6 +3153,26 @@ const translations: Translations = {
     message: "Du måste logga in för att visa den här sidan.",
   },
 
+  PermissionDenied: {
+    metadata: {
+      title: "Åtkomst nekad – Kompassi",
+    },
+    title: "Åtkomst nekad",
+    message: "Du har inte behörighet att visa den här sidan.",
+  },
+
+  Sudo: {
+    metadata: {
+      title: "Åsidosätt behörighetskontrollen – Kompassi",
+    },
+    title: "Åsidosätt behörighetskontrollen",
+    warning:
+      "Du kan åsidosätta detta fel med superanvändarrättigheter. Om du fortsätter registreras en tillfällig behörighet med nedanstående begränsningar för dig. Åsidosättandet loggas i händelseloggen.",
+    claimHeading: "Begränsning",
+    valueHeading: "Värde",
+    confirm: "Åsidosätt",
+  },
+
   Brand: {
     appName: (
       <>
