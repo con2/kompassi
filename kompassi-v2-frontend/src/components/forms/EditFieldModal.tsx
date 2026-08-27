@@ -50,7 +50,7 @@ const EditFieldModal = ({
   const values = useMemo(() => fieldToValues(fieldToEdit), [fieldToEdit]);
 
   return (
-    <Modal show={true} onHide={onClose}>
+    <Modal show={true} onHide={onClose} size="lg">
       <Modal.Header closeButton>
         <Modal.Title>
           {t.title}: {messages.FormEditor.fieldTypes[fieldToEdit.type]}
