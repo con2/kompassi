@@ -135,7 +135,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
     {
       slug: "description",
       title: t.attributes.description,
-      type: "MultiLineText",
+      type: "MarkdownText",
       rows: 5,
     },
   ];
@@ -249,6 +249,7 @@ export default async function ProgramAdminDetailPage(props: Props) {
               fields={fields}
               values={program}
               messages={translations.SchemaForm}
+              locale={locale}
             />
             <SubmitButton>
               {translations.Common.standardActions.save}

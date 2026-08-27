@@ -1,7 +1,7 @@
 import {
   ViewContainer,
   ViewHeading,
-  Paragraphs,
+  Markdown,
   FormattedDateTimeRange,
 } from "@con2/components";
 import Link from "next/link";
@@ -271,7 +271,7 @@ export default async function NewProgramPage(props: Props) {
       </div>
 
       <article className="mb-3">
-        <Paragraphs text={program.description} />
+        <Markdown input={program.description} />
       </article>
 
       <div className="mb-3 mt-3">
