@@ -25,7 +25,7 @@ export function getFieldEditorFields(
       ...t.title,
     },
     {
-      type: "MultiLineText",
+      type: "MarkdownText",
       slug: "helpText",
       required: false,
       rows: 3,

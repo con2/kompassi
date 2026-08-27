@@ -1,4 +1,4 @@
-import { ParagraphsDangerousHtml } from "@con2/components";
+import { Markdown } from "@con2/components";
 import { makeInputId } from "@con2/components/helpers";
 import { ReactNode } from "react";
 
@@ -59,10 +59,9 @@ export default function SchemaFormField({
     title = <>{title}*</>;
   }
 
-  // FIXME(SECURITY): cannot ParagraphsDangerousHtml user content like this, use Markdown or something
   const helpText =
     typeof field.helpText === "string" ? (
-      <ParagraphsDangerousHtml html={field.helpText} />
+      <Markdown input={field.helpText} />
     ) : (
       field.helpText
     );
