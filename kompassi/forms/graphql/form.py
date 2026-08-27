@@ -22,10 +22,10 @@ class FormType(DjangoObjectType):
             "survey",
         )
 
-    description = graphene.String(format=graphene.Argument(MarkdownFormat))
+    description = graphene.NonNull(graphene.String, format=graphene.Argument(MarkdownFormat))
     resolve_description = resolve_markdown_field("description")
 
-    thank_you_message = graphene.String(format=graphene.Argument(MarkdownFormat))
+    thank_you_message = graphene.NonNull(graphene.String, format=graphene.Argument(MarkdownFormat))
     resolve_thank_you_message = resolve_markdown_field("thank_you_message")
 
     @staticmethod

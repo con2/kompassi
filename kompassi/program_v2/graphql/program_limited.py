@@ -35,7 +35,7 @@ class LimitedProgramType(DjangoObjectType):
 
     cached_hosts = graphene.NonNull(graphene.String)
 
-    description = graphene.String(format=graphene.Argument(MarkdownFormat))
+    description = graphene.NonNull(graphene.String, format=graphene.Argument(MarkdownFormat))
     resolve_description = resolve_markdown_field("description")
 
     @staticmethod
