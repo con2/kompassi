@@ -19,7 +19,7 @@ interface Props {
     zip: string;
   };
   messages: Messages;
-  children: ReactNode;
+  children?: ReactNode;
 }
 
 export function ResponseListActions({
