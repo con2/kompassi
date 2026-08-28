@@ -957,8 +957,8 @@ def test_promote_field_to_dimension():
         survey = Survey.objects.create(
             event=event,
             slug="test-survey",
-            app_name=DimensionApp.FORMS.value,
-            purpose_slug=SurveyPurpose.DEFAULT.value,
+            app=DimensionApp.FORMS,
+            purpose=SurveyPurpose.DEFAULT,
         ).with_mandatory_fields()
 
         form_en = Form.objects.create(

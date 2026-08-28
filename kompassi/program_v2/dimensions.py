@@ -171,7 +171,7 @@ def get_program_universe(event: Event) -> Universe:
     universe, created = Universe.objects.get_or_create(
         scope=event.scope,
         slug="program",
-        app_name=DimensionApp.PROGRAM_V2.value,
+        app=DimensionApp.PROGRAM,
     )
 
     if created:

@@ -51,7 +51,7 @@ class UpdateSurvey(graphene.Mutation):
         survey = Survey.objects.get(
             event__slug=input.event_slug,
             slug=input.survey_slug,
-            app_name=DimensionApp.FORMS.value,
+            app=DimensionApp.FORMS,
         )
         form_data: dict[str, str] = input.form_data  # type: ignore
 

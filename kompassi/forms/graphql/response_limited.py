@@ -125,7 +125,7 @@ class LimitedResponseType(DjangoObjectType):
         else:
             cache.check_permission(
                 instance=response,
-                app=response.survey.universe.app_name,
+                app=response.survey.universe.app,
             )
 
         if key_dimensions_only:

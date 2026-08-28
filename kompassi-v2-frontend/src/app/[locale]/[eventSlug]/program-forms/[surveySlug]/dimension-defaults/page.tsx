@@ -33,7 +33,7 @@ const query = graphql(`
       }
 
       forms {
-        survey(slug: $surveySlug, app: PROGRAM_V2) {
+        survey(slug: $surveySlug, app: PROGRAM) {
           slug
           title(lang: $locale)
           canRemove

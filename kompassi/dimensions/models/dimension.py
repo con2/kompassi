@@ -227,7 +227,7 @@ class Dimension(models.Model):
             and cache.is_allowed(
                 instance=self,
                 operation="delete",
-                app=self.universe.app_name,
+                app=self.universe.app,
             )
             and not cache.for_universe(self.universe).is_dimension_in_use(self)
         )
@@ -236,7 +236,7 @@ class Dimension(models.Model):
         return self.can_values_be_added and request.kompassi_cache.is_allowed(
             instance=self,
             operation="create",
-            app=self.universe.app_name,
+            app=self.universe.app,
             field="values",
         )
 
@@ -244,7 +244,7 @@ class Dimension(models.Model):
         return request.kompassi_cache.is_allowed(
             instance=self,
             operation="update",
-            app=self.universe.app_name,
+            app=self.universe.app,
         )
 
     def refresh_dependents(self):

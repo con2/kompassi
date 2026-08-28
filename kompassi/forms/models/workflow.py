@@ -36,17 +36,17 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
 
     @property
     def app(self) -> DimensionApp:
-        return DimensionApp(self.survey.app_name)
+        return self.survey.app
 
     @classmethod
     def get_workflow(cls, survey: Survey):
         from kompassi.program_v2.workflows.program_host_invitation import ProgramHostInvitationWorkflow
         from kompassi.program_v2.workflows.program_offer import ProgramOfferWorkflow
 
-        match DimensionApp(survey.app_name), survey.purpose:
-            case DimensionApp.PROGRAM_V2, SurveyPurpose.DEFAULT:
+        match survey.app, survey.purpose:
+            case DimensionApp.PROGRAM, SurveyPurpose.DEFAULT:
                 return ProgramOfferWorkflow(survey=survey)
-            case DimensionApp.PROGRAM_V2, SurveyPurpose.INVITE:
+            case DimensionApp.PROGRAM, SurveyPurpose.INVITE:
                 return ProgramHostInvitationWorkflow(survey=survey)
             case _:
                 return cls(survey=survey)
@@ -223,7 +223,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             if is_graphql_allowed_for_model(
                 subscriber,
                 instance=survey,
-                app=survey.app_name,
+                app=survey.app,
                 operation="query",
                 field="responses",
             )
@@ -301,7 +301,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
         return response.superseded_by is None and is_graphql_allowed_for_model(
             request.user,
             instance=response.survey,
-            app=response.survey.app_name,
+            app=response.survey.app,
             operation="update",
             field="responses",
         )
@@ -318,7 +318,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             and is_graphql_allowed_for_model(
                 request.user,
                 instance=response.survey,
-                app=response.survey.app_name,
+                app=response.survey.app,
                 operation="delete",
                 field="responses",
             )

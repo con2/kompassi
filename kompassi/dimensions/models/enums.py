@@ -8,6 +8,8 @@ from django.db import models
 from pydantic_core import CoreSchema, SchemaValidator
 from pydantic_core.core_schema import bool_schema, datetime_schema, float_schema, str_schema
 
+from kompassi.graphql_api.language import SUPPORTED_LANGUAGE_CODES
+
 
 class ValueOrdering(models.TextChoices):
     MANUAL = "MANUAL", "Manual"
@@ -16,9 +18,36 @@ class ValueOrdering(models.TextChoices):
 
 
 class DimensionApp(Enum):
-    FORMS = "forms"
-    PROGRAM_V2 = "program_v2"
-    INVOLVEMENT = "involvement"
+    # NOTE: use dashes in app names (URL slugs)
+    FORMS = "forms", "forms", "Surveys", "Kyselyt", "Enkät"
+    PROGRAM = "program", "program_v2", "Program", "Ohjelma", "Program"
+    INVOLVEMENT = "involvement", "involvement", "Involvement", "Osallistuminen", "Deltagande"
+    VOLUNTEERS = "volunteers", "volunteers", "Volunteers", "Vapaaehtoiset", "Volontärer"
+
+    value: str
+    app_name: str
+    """Legacy CBAC/Django app_label. Differs from value only for PROGRAM (kept as "program_v2")."""
+
+    # NOTE SUPPORTED_LANGUAGES
+    title_en: str
+    title_fi: str
+    title_sv: str
+
+    def __new__(cls, value: str, app_name: str, title_en: str, title_fi: str, title_sv: str):
+        obj = object.__new__(cls)
+        obj._value_ = value
+        obj.app_name = app_name
+        obj.title_en = title_en
+        obj.title_fi = title_fi
+        obj.title_sv = title_sv
+        return obj
+
+    def get_title_dict(self) -> dict[str, str]:
+        return {
+            language_code: title
+            for language_code in SUPPORTED_LANGUAGE_CODES
+            if (title := getattr(self, f"title_{language_code}"))
+        }
 
 
 class AnnotationDataType(Enum):

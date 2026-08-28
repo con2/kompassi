@@ -58,7 +58,7 @@ const query = graphql(`
       forms {
         surveys(
           includeInactive: true
-          app: PROGRAM_V2
+          app: PROGRAM
           purpose: [DEFAULT, INVITE]
         ) {
           ...OfferForm

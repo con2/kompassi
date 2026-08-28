@@ -336,10 +336,10 @@ class Response(models.Model):
 
     @property
     def admin_url(self) -> str:
-        match DimensionApp(self.survey.app_name):
+        match self.survey.app:
             case DimensionApp.FORMS:
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/surveys/{self.survey.slug}/responses/{self.id}"
-            case DimensionApp.PROGRAM_V2:
+            case DimensionApp.PROGRAM:
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
             case _:
-                raise ValueError(f"Unknown app type: {self.survey.app_name}")
+                raise ValueError(f"Unknown app type: {self.survey.app}")

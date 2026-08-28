@@ -43,8 +43,8 @@ from .schedule_item_full import FullScheduleItemType
 
 class ProgramV2EventMetaType(DjangoObjectType):
     """
-    NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM_V2`.
-    Use `event.forms.surveys(app: PROGRAM_V2)` for that instead.
+    NOTE: There is no `programForms` because a program form is a Survey with `app: PROGRAM`.
+    Use `event.forms.surveys(app: PROGRAM)` for that instead.
     """
 
     class Meta:
@@ -482,7 +482,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
             Invitation,
             meta.event.scope,
             info,
-            app=DimensionApp.PROGRAM_V2,
+            app=DimensionApp.PROGRAM,
         )
 
         return Invitation.objects.filter(

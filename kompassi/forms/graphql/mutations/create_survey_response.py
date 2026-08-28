@@ -64,7 +64,7 @@ class CreateSurveyResponse(graphene.Mutation):
                 graphql_check_instance(
                     survey,
                     request,
-                    app=survey.app_name,
+                    app=survey.app,
                     field="responses",
                     operation="create",
                 )

@@ -6,7 +6,7 @@ from kompassi.dimensions.models.dimension_value_dto import DimensionValueDTO
 from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.dimensions.models.universe import Universe
 
-from .models.enums import InvolvementApp, InvolvementType
+from .models.enums import InvolvementType
 
 # NOTE SUPPORTED_LANGUAGES
 DIMENSIONS = [
@@ -26,7 +26,7 @@ DIMENSIONS = [
                 title=app.get_title_dict(),
                 is_technical=True,
             )
-            for app in InvolvementApp
+            for app in DimensionApp
         ],
     ),
     DimensionDTO(
@@ -109,7 +109,7 @@ def get_involvement_universe(event: Event) -> Universe:
     universe, created = Universe.objects.get_or_create(
         scope=event.scope,
         slug="involvement",
-        app_name=DimensionApp.INVOLVEMENT.value,
+        app=DimensionApp.INVOLVEMENT,
     )
 
     if created:

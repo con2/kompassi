@@ -60,7 +60,7 @@ def backfill(
     # Program form settings
     Survey.objects.filter(
         event=event,
-        app_name=DimensionApp.PROGRAM_V2.value,
+        app=DimensionApp.PROGRAM,
     ).update(
         anonymity=Anonymity.FULL_PROFILE.value,
         registry=meta.default_registry,

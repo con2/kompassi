@@ -28,7 +28,7 @@ def forms_projection_view(
         graphql_check_instance(
             projection,  # type: ignore
             request,
-            app=projection.app.value,
+            app=projection.app,
         )
 
     user_filters = DimensionFilters.from_query_dict(request.GET)

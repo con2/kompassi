@@ -39,7 +39,7 @@ const query = graphql(`
       slug
 
       forms {
-        survey(slug: $surveySlug, app: PROGRAM_V2) {
+        survey(slug: $surveySlug, app: PROGRAM) {
           ...EditProgramForm
         }
       }

@@ -81,7 +81,7 @@ const query = graphql(`
       forms {
         inviteForms: surveys(
           includeInactive: true
-          app: PROGRAM_V2
+          app: PROGRAM
           purpose: INVITE
         ) {
           slug

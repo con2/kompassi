@@ -2,8 +2,10 @@ import graphene
 import graphene_django
 from graphene.types.generic import GenericScalar
 
+from kompassi.dimensions.graphql.enums import DimensionAppType
+
 from ..models.message import Message
-from .enums import MessageAppType, MessageDispatchType, MessageStateType
+from .enums import MessageDispatchType, MessageStateType
 from .message_reply_to import MessageReplyToType
 
 
@@ -24,7 +26,7 @@ class MessageType(graphene_django.DjangoObjectType):
             "expired_at",
         )
 
-    app = graphene.NonNull(MessageAppType)
+    app = graphene.NonNull(DimensionAppType)
     dispatch = graphene.NonNull(MessageDispatchType)
     state = graphene.NonNull(MessageStateType)
     reply_to = graphene.Field(MessageReplyToType)

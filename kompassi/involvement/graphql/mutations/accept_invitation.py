@@ -47,7 +47,7 @@ class AcceptInvitation(graphene.Mutation):
             graphql_check_instance(
                 survey,
                 info,
-                app=survey.app_name,
+                app=survey.app,
                 field="responses",
                 operation="create",
             )

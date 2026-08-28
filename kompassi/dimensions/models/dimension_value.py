@@ -80,7 +80,7 @@ class DimensionValue(models.Model):
                 instance=self.dimension,
                 operation="delete",
                 field="values",
-                app=self.universe.app_name,
+                app=self.universe.app,
             )
         )
 
@@ -90,7 +90,7 @@ class DimensionValue(models.Model):
             instance=self.dimension,
             operation="update",
             field="values",
-            app=self.universe.app_name,
+            app=self.universe.app,
         )
 
     class Meta:

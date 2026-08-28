@@ -126,7 +126,7 @@ class InvolvementEventMetaType(DjangoObjectType):
                 meta.universe,  # type: ignore
                 info,
                 field="dimensions",
-                app=meta.universe.app_name,
+                app=meta.universe.app,
             )
             dimensions = meta.universe.dimensions.all()
 

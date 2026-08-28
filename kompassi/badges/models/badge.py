@@ -277,7 +277,8 @@ class Badge(models.Model, CsvExportMixin):
         """
         Delegates combined perks to Emperkelate v2 in the Involvement app.
         """
-        from kompassi.involvement.models.enums import InvolvementApp, InvolvementType
+        from kompassi.dimensions.models.enums import DimensionApp
+        from kompassi.involvement.models.enums import InvolvementType
         from kompassi.involvement.models.involvement import Involvement
 
         from .survey_to_badge import SurveyToBadgeMapping
@@ -289,7 +290,7 @@ class Badge(models.Model, CsvExportMixin):
         combined_perks = Involvement.objects.filter(
             universe=self.event.involvement_universe,
             person=self.person,
-            app=InvolvementApp.INVOLVEMENT,
+            app=DimensionApp.INVOLVEMENT,
             type=InvolvementType.COMBINED_PERKS,
         ).first()
 

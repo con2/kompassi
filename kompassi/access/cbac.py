@@ -78,7 +78,7 @@ def make_graphql_claims(
     extra.update(scope.cbac_claims)
 
     if hasattr(app, "app_name"):
-        # InvolvementApp etc. that skip the _v2 madness
+        # DimensionApp etc. that skip the _v2 madness
         app_name = app.app_name  # type: ignore
     elif isinstance(app, Enum):
         app_name = app.value

@@ -10,11 +10,12 @@ from django.utils.timezone import now
 from django_enum import EnumField
 
 from kompassi.dimensions.filters import DimensionFilters
+from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.dimensions.models.scope import Scope
 from kompassi.dimensions.models.universe import Universe
 from kompassi.tickets_v2.optimized_server.utils.uuid7 import uuid7, uuid7_to_datetime
 
-from .enums import MessageApp, MessageDispatch, MessageState
+from .enums import MessageDispatch, MessageState
 from .recipient_filters import group_to_dimension_filters, validate_recipient_filters
 
 if TYPE_CHECKING:
@@ -41,9 +42,9 @@ class Message(models.Model):
         related_name="messages",
     )
 
-    app: EnumField[MessageApp] = EnumField(  # type: ignore
-        MessageApp,
-        default=MessageApp.PROGRAM,
+    app: EnumField[DimensionApp] = EnumField(  # type: ignore
+        DimensionApp,
+        default=DimensionApp.PROGRAM,
     )
 
     subject = models.CharField(max_length=255, blank=True, default="")

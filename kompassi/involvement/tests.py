@@ -4,13 +4,13 @@ from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
-from kompassi.dimensions.models.enums import AnnotationDataType
+from kompassi.dimensions.models.enums import AnnotationDataType, DimensionApp
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 
 from .emperkelators.desucon2026 import DesuconEmperkelator
 from .emperkelators.ropecon2026 import RopeconEmperkelator
 from .emperkelators.tracon2026 import TraconEmperkelator
-from .models.enums import InvolvementApp, InvolvementType
+from .models.enums import InvolvementType
 from .models.involvement import Involvement
 from .models.meta import InvolvementEventMeta
 from .perks import (
@@ -280,7 +280,7 @@ def test_for_combined_perks_respects_manual_perk_override():
     Involvement.objects.create(
         universe=universe,
         person=person,
-        app=InvolvementApp.PROGRAM,
+        app=DimensionApp.PROGRAM,
         type=InvolvementType.PROGRAM_HOST,
         registry=meta.default_registry,
         is_active=True,
@@ -291,7 +291,7 @@ def test_for_combined_perks_respects_manual_perk_override():
     Involvement.objects.create(
         universe=universe,
         person=person,
-        app=InvolvementApp.INVOLVEMENT,
+        app=DimensionApp.INVOLVEMENT,
         type=InvolvementType.COMBINED_PERKS,
         registry=meta.default_registry,
         is_active=True,

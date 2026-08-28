@@ -39,7 +39,7 @@ class PromoteFieldToDimension(graphene.Mutation):
         graphql_check_instance(
             survey,
             info,
-            app=survey.app_name,
+            app=survey.app,
             field="languages",
             operation="update",
         )

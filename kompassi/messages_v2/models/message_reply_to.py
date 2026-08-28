@@ -6,10 +6,9 @@ from typing import TYPE_CHECKING, Self
 from django.db import models
 from django_enum import EnumField
 
+from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.dimensions.models.scope import Scope
 from kompassi.dimensions.models.universe import Universe
-
-from .enums import MessageApp
 
 if TYPE_CHECKING:
     from kompassi.core.models.event import Event
@@ -29,9 +28,9 @@ class MessageReplyTo(models.Model):
         related_name="message_reply_tos",
     )
 
-    app: EnumField[MessageApp] = EnumField(  # type: ignore
-        MessageApp,
-        default=MessageApp.PROGRAM,
+    app: EnumField[DimensionApp] = EnumField(  # type: ignore
+        DimensionApp,
+        default=DimensionApp.PROGRAM,
     )
 
     name = models.CharField(max_length=255)

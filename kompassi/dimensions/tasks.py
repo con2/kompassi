@@ -17,7 +17,7 @@ def universe_annotation_refresh_values(universe_id: int, annotation_id: int):
 
     universe = Universe.objects.get(id=universe_id)
     match universe.app:
-        case DimensionApp.PROGRAM_V2:
+        case DimensionApp.PROGRAM:
             event = universe.scope.event
             if event is None:
                 raise ValueError("cannot be!")

@@ -1,8 +1,9 @@
 import graphene
 import graphene_django
 
+from kompassi.dimensions.graphql.enums import DimensionAppType
+
 from ..models.message_reply_to import MessageReplyTo
-from .enums import MessageAppType
 
 
 class MessageReplyToType(graphene_django.DjangoObjectType):
@@ -14,4 +15,4 @@ class MessageReplyToType(graphene_django.DjangoObjectType):
             "email",
         )
 
-    app = graphene.NonNull(MessageAppType)
+    app = graphene.NonNull(DimensionAppType)

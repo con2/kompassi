@@ -27,7 +27,7 @@ from kompassi.dimensions.utils.set_dimension_values import set_dimension_values
 from kompassi.forms.models.enums import SurveyPurpose
 from kompassi.labour.models.signup import Signup
 
-from .enums import INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS, InvolvementApp, InvolvementType, ProgramHostRole
+from .enums import INVOLVEMENT_TYPES_CONSIDERED_FOR_COMBINED_PERKS, InvolvementType, ProgramHostRole
 from .invitation import Invitation
 from .involvement_to_group import InvolvementToGroupMapping
 from .profile_field_selector import ProfileFieldSelector
@@ -63,7 +63,7 @@ class Involvement(models.Model):
         related_name="involvements",
     )
 
-    app: InvolvementApp = EnumField(InvolvementApp)  # type: ignore
+    app: DimensionApp = EnumField(DimensionApp)  # type: ignore
     type: InvolvementType = EnumField(InvolvementType)  # type: ignore
 
     title = models.TextField(default="")
@@ -293,7 +293,7 @@ class Involvement(models.Model):
     @classmethod
     def _build_technical_dimension_values(
         cls,
-        app: InvolvementApp,
+        app: DimensionApp,
         type: InvolvementType,
         is_active: bool,
         registry: Registry,
@@ -409,7 +409,7 @@ class Involvement(models.Model):
         if cache.universe.app != DimensionApp.INVOLVEMENT:
             raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app}")
 
-        app = InvolvementApp.PROGRAM
+        app = DimensionApp.PROGRAM
         involvement_type = InvolvementType.PROGRAM_HOST
         is_active = program.is_active
 
@@ -454,8 +454,8 @@ class Involvement(models.Model):
         Used to accept program host invitations.
         In the future perhaps also other types of Invitations.
         """
-        if cache.universe.app_name != "involvement":
-            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app_name!r}")
+        if cache.universe.app != DimensionApp.INVOLVEMENT:
+            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
 
         if response.survey.purpose != SurveyPurpose.INVITE:
             raise ValueError(f"Expected response to be an invitation response, got {response.survey.purpose!r}")
@@ -509,15 +509,15 @@ class Involvement(models.Model):
         cache: DimensionCache,
         deleting: bool = False,
     ):
-        if cache.universe.app_name != "involvement":
-            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app_name!r}")
+        if cache.universe.app != DimensionApp.INVOLVEMENT:
+            raise ValueError(f"Expected cache to belong to involvement, got {cache.universe.app!r}")
 
         is_active = not deleting and program.is_active
 
         involvements = cls.objects.filter(
             universe=cache.universe,
             program=program,
-            app=InvolvementApp.PROGRAM,
+            app=DimensionApp.PROGRAM,
             type=InvolvementType.PROGRAM_HOST,
         )
 
@@ -586,7 +586,7 @@ class Involvement(models.Model):
         if meta is None:
             raise ValueError(f"Event {signup.event.slug} has no InvolvementEventMeta")
 
-        app = InvolvementApp.VOLUNTEERS
+        app = DimensionApp.VOLUNTEERS
         involvement_type = InvolvementType.LEGACY_SIGNUP
 
         universe = meta.universe
@@ -660,7 +660,7 @@ class Involvement(models.Model):
         if meta is None:
             raise ValueError(f"Event {event.slug} has no InvolvementEventMeta")
 
-        app = InvolvementApp.INVOLVEMENT
+        app = DimensionApp.INVOLVEMENT
         involvement_type = InvolvementType.COMBINED_PERKS
 
         universe = meta.universe

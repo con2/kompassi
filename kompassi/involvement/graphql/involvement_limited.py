@@ -4,11 +4,12 @@ import graphene
 import graphene_django
 from graphene.types.generic import GenericScalar
 
+from kompassi.dimensions.graphql.enums import DimensionAppType
 from kompassi.forms.graphql.response_limited import LimitedResponseType
 from kompassi.involvement.models.involvement import Involvement
 from kompassi.program_v2.graphql.program_limited import LimitedProgramType
 
-from .enums import InvolvementAppType, InvolvementTypeType
+from .enums import InvolvementTypeType
 
 
 class LimitedInvolvementType(graphene_django.DjangoObjectType):
@@ -36,7 +37,7 @@ class LimitedInvolvementType(graphene_django.DjangoObjectType):
     program_offer = graphene.Field(LimitedResponseType)
 
     type = graphene.NonNull(InvolvementTypeType)
-    app = graphene.NonNull(InvolvementAppType)
+    app = graphene.NonNull(DimensionAppType)
 
     admin_link = graphene.String()
     cached_dimensions = graphene.NonNull(GenericScalar)

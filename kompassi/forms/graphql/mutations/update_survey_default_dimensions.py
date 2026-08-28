@@ -45,7 +45,7 @@ class UpdateSurveyDefaultDimensions(graphene.Mutation):
         graphql_check_instance(
             survey,
             info,
-            app=survey.app.value,
+            app=survey.app,
             field="default_dimensions",
             operation="update",
         )

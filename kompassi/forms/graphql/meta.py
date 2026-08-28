@@ -54,14 +54,14 @@ class FormsEventMetaType(graphene.ObjectType):
         NOTE: `app` does not currently accept `null` (for surveys of all apps)
         because access control is performed app by app (`app` CBAC claim).
         Until TODO(#324), you can as a workaround do something like
-        `surveys: surveys(app: FORMS), programForms: surveys(app: PROGRAM_V2)`.
+        `surveys: surveys(app: FORMS), programForms: surveys(app: PROGRAM)`.
         """
-        qs = Survey.objects.filter(event=meta.event, app_name=app.value)
+        qs = Survey.objects.filter(event=meta.event, app=app)
 
         if purpose:
-            qs = qs.filter(purpose_slug__in=[SurveyPurpose(p).value for p in purpose])
+            qs = qs.filter(purpose__in=[SurveyPurpose(p) for p in purpose])
         else:
-            qs = qs.filter(purpose_slug=SurveyPurpose.DEFAULT.value)
+            qs = qs.filter(purpose=SurveyPurpose.DEFAULT)
 
         if include_inactive:
             graphql_check_model(Survey, meta.event.scope, info, app=app)
@@ -91,10 +91,10 @@ class FormsEventMetaType(graphene.ObjectType):
         qs = Survey.objects.filter(event=meta.event, slug=slug)
 
         if app:
-            qs = qs.filter(app_name=app.value)
+            qs = qs.filter(app=app)
 
         if purpose:
-            qs = qs.filter(purpose_slug=purpose.value)
+            qs = qs.filter(purpose=purpose)
 
         return qs.first()
 
@@ -182,7 +182,7 @@ class FormsProfileMetaType(graphene.ObjectType):
                 instance=survey,  # type: ignore
                 operation="query",
                 field="self",
-                app=survey.app_name,  # TODO(#574) check this
+                app=survey.app,
             )
         ]
 

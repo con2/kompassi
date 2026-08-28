@@ -2,59 +2,19 @@ from __future__ import annotations
 
 from enum import Enum
 
+from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.graphql_api.language import SUPPORTED_LANGUAGE_CODES
-
-
-class InvolvementApp(Enum):
-    # NOTE: use dashes in app names (URL slugs)
-    FORMS = "forms", "forms", "Surveys V2", "Kyselyt V2", "Enkät V2"
-    PROGRAM = "program", "program_v2", "Program V2", "Ohjelma V2", "Program V2"
-    INVOLVEMENT = "involvement", "involvement", "Involvement", "Osallistuminen", "Deltagande"
-    VOLUNTEERS = "volunteers", "volunteers", "Volunteers V2", "Vapaaehtoiset V2", "Volontärer V2"
-
-    value: str
-    app_name: str
-
-    # NOTE SUPPORTED_LANGUAGES
-    title_en: str
-    title_fi: str
-    title_sv: str
-
-    def __new__(cls, value: str, app_name: str, title_en: str, title_fi: str, title_sv: str):
-        obj = object.__new__(cls)
-        obj._value_ = value
-        obj.title_en = title_en
-        obj.title_fi = title_fi
-        obj.title_sv = title_sv
-        obj.app_name = app_name
-        return obj
-
-    @classmethod
-    def from_app_name(cls, app_name: str) -> InvolvementApp:
-        """
-        Converts a legacy app name to an InvolvementApp enum.
-        """
-        if app_name == "program_v2":
-            return cls.PROGRAM
-        return cls(app_name)
-
-    def get_title_dict(self) -> dict[str, str]:
-        return {
-            language_code: title
-            for language_code in SUPPORTED_LANGUAGE_CODES
-            if (title := getattr(self, f"title_{language_code}"))
-        }
 
 
 class InvolvementType(Enum):
     # NOTE: use dashes in app names (URL slugs)
-    PROGRAM_OFFER = "program-offer", InvolvementApp.PROGRAM, "Program offer", "Ohjelmatarjous", "Programerbjudande"
-    PROGRAM_HOST = "program-host", InvolvementApp.PROGRAM, "Program item", "Ohjelmanumero", "Programvärd"
-    SURVEY_RESPONSE = "survey-response", InvolvementApp.FORMS, "Survey response", "Kyselyvastaus", "Enkätsvar"
+    PROGRAM_OFFER = "program-offer", DimensionApp.PROGRAM, "Program offer", "Ohjelmatarjous", "Programerbjudande"
+    PROGRAM_HOST = "program-host", DimensionApp.PROGRAM, "Program item", "Ohjelmanumero", "Programvärd"
+    SURVEY_RESPONSE = "survey-response", DimensionApp.FORMS, "Survey response", "Kyselyvastaus", "Enkätsvar"
 
     COMBINED_PERKS = (
         "combined-perks",
-        InvolvementApp.INVOLVEMENT,
+        DimensionApp.INVOLVEMENT,
         "Combined perks",
         "Yhdistetyt edut",
         "Kombinerade förmåner",
@@ -62,21 +22,21 @@ class InvolvementType(Enum):
 
     LEGACY_SIGNUP = (
         "legacy-signup",
-        InvolvementApp.VOLUNTEERS,
+        DimensionApp.VOLUNTEERS,
         "Signup (V1)",
         "Vänkäri-ilmoittautuminen (V1)",
         "Anmälan (V1)",
     )
 
     value: str
-    app: InvolvementApp
+    app: DimensionApp
 
     # NOTE SUPPORTED_LANGUAGES
     title_en: str
     title_fi: str
     title_sv: str
 
-    def __new__(cls, value: str, app: InvolvementApp, title_en: str, title_fi: str, title_sv: str):
+    def __new__(cls, value: str, app: DimensionApp, title_en: str, title_fi: str, title_sv: str):
         obj = object.__new__(cls)
         obj._value_ = value
         obj.app = app

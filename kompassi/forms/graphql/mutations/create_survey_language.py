@@ -36,7 +36,7 @@ class CreateSurveyLanguage(graphene.Mutation):
             graphql_check_instance(
                 survey,
                 info,
-                app=survey.app_name,
+                app=survey.app,
                 field="languages",
                 operation="create",
             )
@@ -52,7 +52,7 @@ class CreateSurveyLanguage(graphene.Mutation):
                 form.created_by = info.context.user
                 form.save()
             else:
-                if survey.app == DimensionApp.PROGRAM_V2 and survey.purpose == SurveyPurpose.DEFAULT:
+                if survey.app == DimensionApp.PROGRAM and survey.purpose == SurveyPurpose.DEFAULT:
                     fields = get_program_offer_form_default_fields(language)
                 else:
                     fields = []

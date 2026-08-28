@@ -3,8 +3,9 @@ from django.db import transaction
 from django.http import HttpRequest
 
 from kompassi.core.models.event import Event
+from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.event_log_v2.utils.emit import emit
-from kompassi.involvement.models.enums import InvolvementApp, InvolvementType
+from kompassi.involvement.models.enums import InvolvementType
 from kompassi.involvement.models.involvement import Involvement
 
 
@@ -51,7 +52,7 @@ class DeleteProgramOffers(graphene.Mutation):
         # But we want to spare the PROGRAM_HOST involvements
         Involvement.objects.filter(
             universe=event.involvement_universe,
-            app=InvolvementApp.PROGRAM,
+            app=DimensionApp.PROGRAM,
             type=InvolvementType.PROGRAM_HOST,
             response__in=program_offer_ids.union(old_version_ids),
         ).update(response=None)

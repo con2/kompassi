@@ -62,7 +62,7 @@ def test_program_hosts():
     offer_program = Survey(
         event=event,
         slug="offer-program",
-        app=DimensionApp.PROGRAM_V2,
+        app=DimensionApp.PROGRAM,
         purpose=SurveyPurpose.DEFAULT,
     ).with_mandatory_fields()
     offer_program.save()
@@ -93,7 +93,7 @@ def test_program_hosts():
     accept_invitation = Survey(
         event=event,
         slug="accept-program-invitation",
-        app=DimensionApp.PROGRAM_V2,
+        app=DimensionApp.PROGRAM,
         purpose=SurveyPurpose.INVITE,
     ).with_mandatory_fields()
     accept_invitation.save()
@@ -185,7 +185,7 @@ def test_extract_annotations():
         offer_program = Survey(
             event=event,
             slug="offer-program",
-            app=DimensionApp.PROGRAM_V2,
+            app=DimensionApp.PROGRAM,
             purpose=SurveyPurpose.DEFAULT,
         ).with_mandatory_fields()
         offer_program.save()
@@ -222,7 +222,7 @@ def test_extract_annotations():
         accept_invitation = Survey(
             event=event,
             slug="accept-program-invitation",
-            app=DimensionApp.PROGRAM_V2,
+            app=DimensionApp.PROGRAM,
             purpose=SurveyPurpose.INVITE,
         ).with_mandatory_fields()
         accept_invitation.save()

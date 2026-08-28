@@ -4,6 +4,7 @@ from collections.abc import Collection
 from typing import TYPE_CHECKING
 
 from django.db import models
+from django_enum import EnumField
 
 from kompassi.core.middleware import RequestWithCache
 from kompassi.core.utils.model_utils import make_slug_field
@@ -38,10 +39,7 @@ class Universe(models.Model):
     )
     slug = make_slug_field(unique=False)
 
-    app_name = models.CharField(
-        choices=[(app.value, app.name) for app in DimensionApp],
-        max_length=max(len(app.value) for app in DimensionApp),
-    )
+    app: DimensionApp = EnumField(DimensionApp)  # type: ignore
 
     all_involvements: models.QuerySet[Involvement]
     all_universe_annotations: models.QuerySet[UniverseAnnotation]
@@ -54,7 +52,7 @@ class Universe(models.Model):
         unique_together = [("scope", "slug")]  # noqa: RUF012
 
     def __str__(self):
-        return f"{self.scope}/{self.slug} ({self.app_name})"
+        return f"{self.scope}/{self.slug} ({self.app})"
 
     @property
     def active_involvements(self) -> models.QuerySet[Involvement]:
@@ -72,10 +70,6 @@ class Universe(models.Model):
         return Annotation.objects.filter(id__in=annotation_ids)
 
     @property
-    def app(self) -> DimensionApp:
-        return DimensionApp(self.app_name)
-
-    @property
     def surveys(self):
         from kompassi.forms.models.survey import Survey
 
@@ -84,15 +78,15 @@ class Universe(models.Model):
                 return Survey.objects.filter(
                     event=self.scope.event,
                     slug=self.slug,
-                    app_name=self.app.value,
+                    app=self.app,
                 )
-            case DimensionApp.PROGRAM_V2:
+            case DimensionApp.PROGRAM:
                 return Survey.objects.filter(
                     event=self.scope.event,
-                    app_name=self.app.value,
+                    app=self.app,
                 )
             case _:
-                raise ValueError(f"Unknown app type: {self.app_name}")
+                raise ValueError(f"Unknown app type: {self.app}")
 
     def preload_dimensions(
         self,
@@ -112,5 +106,5 @@ class Universe(models.Model):
             instance=self,
             operation="create",
             field="dimensions",
-            app=self.app_name,
+            app=self.app,
         )

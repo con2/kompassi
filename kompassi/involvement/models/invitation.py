@@ -12,12 +12,13 @@ from django.template.loader import render_to_string
 from django.utils.timezone import now
 
 from kompassi.core.models.event import Event
+from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.dimensions.models.scope import Scope
 from kompassi.event_log_v2.utils.monthly_partitions import UUID7Mixin
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, get_language_choices
 from kompassi.tickets_v2.optimized_server.utils.uuid7 import uuid7
 
-from .enums import InvolvementApp, InvolvementType
+from .enums import InvolvementType
 
 if TYPE_CHECKING:
     from kompassi.forms.models.survey import Survey
@@ -90,7 +91,7 @@ class Invitation(UUID7Mixin, models.Model):
         return involvement_type
 
     @property
-    def app(self) -> InvolvementApp:
+    def app(self) -> DimensionApp:
         return self.involvement_type.app
 
     @property
@@ -103,7 +104,7 @@ class Invitation(UUID7Mixin, models.Model):
 
     @property
     def meta(self) -> ProgramV2EventMeta:
-        if self.app != InvolvementApp.PROGRAM:
+        if self.app != DimensionApp.PROGRAM:
             raise NotImplementedError(f"Invitation not implemented for app {self.app}")
 
         return self.program.meta

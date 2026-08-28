@@ -15,6 +15,7 @@ from django.contrib.postgres.fields import ArrayField
 from django.db import models, transaction
 from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
+from django_enum import EnumField
 
 from kompassi.access.cbac import is_graphql_allowed_for_model
 from kompassi.core.models import Event
@@ -52,16 +53,14 @@ class Survey(models.Model):
     event: models.ForeignKey[Event] = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="surveys")
     slug = models.CharField(**NONUNIQUE_SLUG_FIELD_PARAMS)  # type: ignore
 
-    app_name = models.CharField(
-        choices=[(app.value, app.value) for app in DimensionApp],
-        max_length=max(len(app.value) for app in DimensionApp),
-        default=DimensionApp.FORMS.value,
+    app: DimensionApp = EnumField(  # type: ignore
+        DimensionApp,
+        default=DimensionApp.FORMS,
         help_text="Which app manages this survey?",
     )
-    purpose_slug = models.CharField(
-        choices=[(role.value, role.value) for role in SurveyPurpose],
-        max_length=max(len(role.value) for role in SurveyPurpose),
-        default=SurveyPurpose.DEFAULT.value,
+    purpose: SurveyPurpose = EnumField(  # type: ignore
+        SurveyPurpose,
+        default=SurveyPurpose.DEFAULT,
         help_text="Generic surveys and program offers are DEFAULT, program host invitations are ACCEPT_INVITATION.",
     )
 
@@ -178,21 +177,6 @@ class Survey(models.Model):
     class Meta:
         unique_together = [("event", "slug")]  # noqa: RUF012
 
-    def __init__(self, *args, **kwargs) -> None:
-        if purpose := kwargs.pop("purpose", None):
-            if isinstance(purpose, SurveyPurpose):
-                kwargs["purpose_slug"] = purpose.value
-            else:
-                kwargs["purpose_slug"] = purpose
-
-        if app := kwargs.pop("app", None):
-            if isinstance(app, DimensionApp):
-                kwargs["app_name"] = app.value
-            else:
-                kwargs["app_name"] = app
-
-        super().__init__(*args, **kwargs)
-
     def __str__(self):
         return f"{self.event.slug}/{self.slug}"
 
@@ -205,29 +189,15 @@ class Survey(models.Model):
         return ProfileFieldSelector.from_anonymity(self.anonymity)
 
     @property
-    def app(self) -> DimensionApp:
-        if not self.app_name:
-            raise ValueError("app_name must be set")
-
-        return DimensionApp(self.app_name)
-
-    @property
-    def purpose(self) -> SurveyPurpose:
-        if not self.purpose_slug:
-            raise ValueError("purpose_slug must be set")
-
-        return SurveyPurpose(self.purpose_slug)
-
-    @property
     def involvement_type(self) -> InvolvementType | None:
         # there cannot be Involvement without Registry
         if self.registry is None:
             return None
 
         match self.app, self.purpose:
-            case DimensionApp.PROGRAM_V2, SurveyPurpose.DEFAULT:
+            case DimensionApp.PROGRAM, SurveyPurpose.DEFAULT:
                 return InvolvementType.PROGRAM_OFFER
-            case DimensionApp.PROGRAM_V2, SurveyPurpose.INVITE:
+            case DimensionApp.PROGRAM, SurveyPurpose.INVITE:
                 return InvolvementType.PROGRAM_HOST
             case DimensionApp.FORMS, _:
                 return InvolvementType.SURVEY_RESPONSE
@@ -251,9 +221,9 @@ class Survey(models.Model):
                 return Universe.objects.get_or_create(
                     scope=self.scope,
                     slug=self.slug,
-                    app_name=self.app.value,
+                    app=self.app,
                 )[0]
-            case DimensionApp.PROGRAM_V2:
+            case DimensionApp.PROGRAM:
                 return self.event.program_universe
             case _:
                 raise NotImplementedError(self.app)
@@ -384,7 +354,7 @@ class Survey(models.Model):
                 instance=self,
                 operation="delete",
                 field="self",
-                app=self.app.value,
+                app=self.app,
             )
             and not self.languages.exists()
         )
@@ -397,7 +367,7 @@ class Survey(models.Model):
                 instance=self,
                 operation="delete",
                 field="responses",
-                app=self.app.value,
+                app=self.app,
             )
             and not self.protect_responses
         )
@@ -417,7 +387,7 @@ class Survey(models.Model):
             self.universe = self._get_universe()
 
         match self.app:
-            case DimensionApp.PROGRAM_V2:
+            case DimensionApp.PROGRAM:
                 meta = self.event.program_v2_event_meta
                 if meta is None:
                     raise ValueError(f"Event {self.event} does not have a program v2 event meta")

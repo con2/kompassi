@@ -59,7 +59,7 @@ class CreateSurvey(graphene.Mutation):
             graphql_check_instance(
                 source_survey,
                 info,
-                app=source_survey.app_name,  # NOTE same check as in FormsProfileMeta.surveys
+                app=source_survey.app,  # NOTE same check as in FormsProfileMeta.surveys
             )
 
             survey = source_survey.clone(

@@ -22,7 +22,7 @@ from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 from kompassi.forms.models.enums import SurveyPurpose
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
-from kompassi.involvement.models.enums import InvolvementApp, InvolvementType
+from kompassi.involvement.models.enums import InvolvementType
 from kompassi.involvement.models.involvement import Involvement
 from kompassi.involvement.models.meta import InvolvementEventMeta
 from kompassi.involvement.models.registry import Registry
@@ -168,8 +168,8 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         return (
             Response.objects.filter(
                 form__event=self.event,
-                form__survey__app_name=DimensionApp.PROGRAM_V2.value,
-                form__survey__purpose_slug=SurveyPurpose.DEFAULT.value,
+                form__survey__app=DimensionApp.PROGRAM,
+                form__survey__purpose=SurveyPurpose.DEFAULT,
                 **extra_criteria,
             )
             .select_related(
@@ -200,7 +200,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
             Involvement.objects.filter(
                 universe=self.event.involvement_universe,
                 is_active=True,
-                app=InvolvementApp.PROGRAM,
+                app=DimensionApp.PROGRAM,
                 type=InvolvementType.PROGRAM_HOST,
                 **program_criteria,
             )
@@ -224,16 +224,16 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     def program_offer_forms(self):
         return Survey.objects.filter(
             event=self.event,
-            app_name=DimensionApp.PROGRAM_V2.value,
-            purpose_slug=SurveyPurpose.DEFAULT.value,
+            app=DimensionApp.PROGRAM,
+            purpose=SurveyPurpose.DEFAULT,
         )
 
     @property
     def accept_invitation_forms(self):
         return Survey.objects.filter(
             event=self.event,
-            app_name=DimensionApp.PROGRAM_V2.value,
-            purpose_slug=SurveyPurpose.INVITE.value,
+            app=DimensionApp.PROGRAM,
+            purpose=SurveyPurpose.INVITE,
         )
 
     @property
@@ -275,8 +275,8 @@ class ProgramV2ProfileMeta:
 
         return (
             Response.objects.filter(
-                form__survey__app_name=DimensionApp.PROGRAM_V2.value,
-                form__survey__purpose_slug=SurveyPurpose.DEFAULT.value,
+                form__survey__app=DimensionApp.PROGRAM,
+                form__survey__purpose=SurveyPurpose.DEFAULT,
                 original_created_by=self.person.user,
                 superseded_by=None,
             )

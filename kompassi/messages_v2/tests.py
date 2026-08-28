@@ -5,9 +5,10 @@ from django.utils.timezone import now
 from kompassi.core.graphql.profile_own import OwnProfileType
 from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
+from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.event_log_v2.models import Entry
 from kompassi.event_log_v2.utils.emit import emit
-from kompassi.involvement.models.enums import InvolvementApp, InvolvementType
+from kompassi.involvement.models.enums import InvolvementType
 from kompassi.involvement.models.involvement import Involvement
 from kompassi.involvement.models.registry import Registry
 from kompassi.program_v2.models.meta import ProgramV2EventMeta
@@ -42,7 +43,7 @@ def _setup_event(name: str):
 
 def _make_involvement(universe, person, registry, *, type, is_active, **extra_dimensions):
     cached_dimensions = {
-        "app": [InvolvementApp.PROGRAM.value],
+        "app": [DimensionApp.PROGRAM.value],
         "type": [type.value],
         "state": ["active"] if is_active else ["inactive"],
         "registry": [registry.slug],
@@ -51,7 +52,7 @@ def _make_involvement(universe, person, registry, *, type, is_active, **extra_di
     return Involvement.objects.create(
         universe=universe,
         person=person,
-        app=InvolvementApp.PROGRAM,
+        app=DimensionApp.PROGRAM,
         type=type,
         registry=registry,
         is_active=is_active,

@@ -3,10 +3,9 @@ from django.http import HttpRequest
 
 from kompassi.access.cbac import graphql_check_instance, graphql_check_model
 from kompassi.core.models import Event
+from kompassi.forms.graphql.enums import SurveyPurposeType
 from kompassi.forms.graphql.survey_full import FullSurveyType
 from kompassi.forms.models.survey import DimensionApp, Survey, SurveyPurpose
-
-SurveyPurposeType = graphene.Enum.from_enum(SurveyPurpose)
 
 
 class CreateProgramFormInput(graphene.InputObjectType):
@@ -42,7 +41,7 @@ class CreateProgramForm(graphene.Mutation):
         )
 
         purpose = SurveyPurpose(input.purpose) if input.purpose is not None else SurveyPurpose.DEFAULT
-        app = DimensionApp.PROGRAM_V2
+        app = DimensionApp.PROGRAM
 
         if input.copy_from:
             source_event_slug, source_survey_slug = str(input.copy_from).split("/")
@@ -54,7 +53,7 @@ class CreateProgramForm(graphene.Mutation):
             graphql_check_instance(
                 source_survey,
                 info,
-                app=source_survey.app_name,  # NOTE same check as in FormsProfileMeta.surveys
+                app=source_survey.app,  # NOTE same check as in FormsProfileMeta.surveys
             )
 
             survey = source_survey.clone(
