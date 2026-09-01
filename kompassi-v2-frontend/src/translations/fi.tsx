@@ -1758,6 +1758,8 @@ const translations: Translations = {
         },
         returnToProgramFormList: (eventName: string) =>
           `Takaisin tapahtuman ${eventName} ohjelmalomakkeiden listaan`,
+        responsesProtected:
+          "Ohjelmatarjoukset ja ohjelmalomakkeiden vastaukset on suojattu. Jos haluat poistaa vastauksia, kytke ensin vastausten suojaus pois ohjelma-asetuksista.",
       },
     },
 

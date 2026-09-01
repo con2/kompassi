@@ -3,10 +3,7 @@ from django.db import transaction
 from django.http import HttpRequest
 
 from kompassi.core.models.event import Event
-from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.event_log_v2.utils.emit import emit
-from kompassi.involvement.models.enums import InvolvementType
-from kompassi.involvement.models.involvement import Involvement
 
 
 class DeleteProgramOffersInput(graphene.InputObjectType):
@@ -46,16 +43,10 @@ class DeleteProgramOffers(graphene.Mutation):
             raise ValueError("Some program offers not found")
 
         old_versions = meta.all_program_offers.filter(superseded_by__in=program_offer_ids)
-        old_version_ids = set(old_versions.values_list("id", flat=True))
 
-        # We let the delete cascade to PROGRAM_OFFER involvements
-        # But we want to spare the PROGRAM_HOST involvements
-        Involvement.objects.filter(
-            universe=event.involvement_universe,
-            app=DimensionApp.PROGRAM,
-            type=InvolvementType.PROGRAM_HOST,
-            response__in=program_offer_ids.union(old_version_ids),
-        ).update(response=None)
+        # Involvements referencing these responses (PROGRAM_OFFER and PROGRAM_HOST alike)
+        # survive the deletion with their response set to null (Involvement.response is
+        # SET_NULL); they are cleaned up when Involvement expiration is implemented.
 
         _, deleted_by_model = old_versions.delete()
         count_deleted = deleted_by_model.get("forms.Response", 0)

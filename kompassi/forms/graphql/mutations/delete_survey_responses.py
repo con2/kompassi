@@ -32,10 +32,13 @@ class DeleteSurveyResponses(graphene.Mutation):
         if not survey.can_responses_be_deleted_by(request):
             raise ValueError("Cannot delete responses")
 
-        _, deleted_by_model = survey.current_responses.filter(id__in=input.response_ids).delete()
+        # Old versions must be deleted first: deleting the current version would otherwise
+        # SET_NULL their superseded_by, making them impossible to find afterwards.
+        old_versions = survey.all_responses.filter(superseded_by__in=input.response_ids)
+        _, deleted_by_model = old_versions.delete()
         count_deleted = deleted_by_model.get("forms.Response", 0)
 
-        _, deleted_by_model = survey.current_responses.filter(superseded_by__in=input.response_ids).delete()
+        _, deleted_by_model = survey.current_responses.filter(id__in=input.response_ids).delete()
         count_deleted += deleted_by_model.get("forms.Response", 0)
 
         emit(

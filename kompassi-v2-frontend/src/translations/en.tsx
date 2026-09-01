@@ -1760,6 +1760,8 @@ const translations = {
         },
         returnToProgramFormList: (eventName: string) =>
           `Return to the list of program forms of ${eventName}`,
+        responsesProtected:
+          "Program offers and program form responses are protected. To remove, disable response protection on the program preferences page first.",
       },
     },
 

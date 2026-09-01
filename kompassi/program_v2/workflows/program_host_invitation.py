@@ -20,7 +20,7 @@ class ProgramHostInvitationWorkflow(Workflow):
         switch instead of Survey.protect_responses.
         """
         meta = self.survey.event.program_v2_event_meta
-        return meta is not None and meta.protect_responses
+        return meta is None or meta.protect_responses
 
     def ensure_involvement(
         self,

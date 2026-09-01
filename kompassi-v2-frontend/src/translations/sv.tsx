@@ -1730,6 +1730,8 @@ const translations: Translations = {
         },
         returnToProgramFormList: (eventName: string) =>
           `Tillbaka till listan över programformulär för ${eventName}`,
+        responsesProtected:
+          "Programförslag och svar på programformulär är skyddade. För att ta bort dem, avaktivera svarsskyddet på sidan för programinställningar först.",
       },
     },
 

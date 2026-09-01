@@ -258,7 +258,8 @@ class FullSurveyType(LimitedSurveyType):
     def resolve_can_remove_responses(survey: Survey, info):
         """
         Checks that the user has permission to remove responses to this survey.
-        This requires proper CBAC permission and that `survey.protect_responses` is false.
+        This requires proper CBAC permission and that responses are not protected
+        (see `Workflow.protect_responses` for what protects responses for this survey's app).
         """
         request: HttpRequest = info.context
         return survey.can_responses_be_deleted_by(request)

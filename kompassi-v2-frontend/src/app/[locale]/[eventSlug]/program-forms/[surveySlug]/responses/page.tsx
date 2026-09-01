@@ -67,6 +67,10 @@ const query = graphql(`
       name
       slug
 
+      program {
+        protectResponses
+      }
+
       forms {
         survey(slug: $surveySlug, app: PROGRAM) {
           slug
@@ -82,7 +86,6 @@ const query = graphql(`
 
           countResponses
           canRemoveResponses
-          protectResponses
 
           responses(filters: $filters) {
             ...ProgramFormResponse
@@ -256,9 +259,9 @@ export default async function ProgramFormResponsesPage(props: Props) {
 
   let cannotRemoveResponsesReason: string | ReactNode | null = null;
   if (!survey.canRemoveResponses) {
-    if (survey.protectResponses) {
+    if (data.event.program?.protectResponses) {
       cannotRemoveResponsesReason =
-        t.actions.deleteVisibleResponses.responsesProtected;
+        translations.Program.ProgramForm.actions.responsesProtected;
     } else if (responses.length < 1) {
       cannotRemoveResponsesReason =
         t.actions.deleteVisibleResponses.noResponsesToDelete;
