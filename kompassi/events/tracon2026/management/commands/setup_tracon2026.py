@@ -96,7 +96,7 @@ class Setup:
         self.setup_program_feedback()
 
         self.setup_access()
-        # self.setup_station_access()
+        self.setup_station_access()
 
     def setup_core(self):
         self.organization, _unused = Organization.objects.get_or_create(
@@ -771,25 +771,16 @@ class Setup:
         )
 
     def setup_station_access(self):
-        if "2026" in self.event.slug:
-            raise AssertionError("2026 event detected. Clean up setup_access properly.")
+        if "2027" in self.event.slug:
+            raise AssertionError("2027 event detected. Clean up setup_station_access properly.")
 
-        # Give temp permissions from Thursday to Sunday
-        temp_permission_valid_from = (self.event.start_time - timedelta(days=1)).replace(
+        # Give temp permissions from Tuesday to Sunday
+        temp_permission_valid_from = (self.event.start_time - timedelta(days=3)).replace(
             hour=0, minute=0, second=0, tzinfo=self.tz
         )
+
         temp_permission_valid_until = self.event.end_time.replace(hour=23, minute=59, second=59, tzinfo=self.tz)
-        for person_id, app_labels in [
-            # Lipunvaihdon vuorovastaavat
-            (2087, ("tickets_v2",)),
-            (1168, ("tickets_v2",)),
-            (4016, ("tickets_v2",)),
-            (324, ("tickets_v2",)),
-            # Johtokeskuspäivystäjät
-            (2413, ("tickets_v2", "labour", "program_v2", "badges")),
-            (362, ("tickets_v2", "labour", "program_v2", "badges")),
-            (1092, ("tickets_v2", "labour", "program_v2", "badges")),
-        ]:
+        for person_id, app_labels in []:
             person = Person.objects.filter(id=person_id).first()
             if not person:
                 logger.warning("setup_tracon2026.setup_access: Person with id %d not found, skipping", person_id)

@@ -53,7 +53,7 @@ class Command(BaseCommand):
                     event=event,
                     title="Paikkala simulation programme",
                 )
-                kompassi_program.set_dimension_values(dict(room=[room_slug], paikkala=[room_slug]), cache=cache)
+                kompassi_program.set_dimension_values(dict(paikkala=[room_slug]), cache=cache)
                 kompassi_program.refresh_cached_fields()
 
                 schedule_item = ScheduleItem(
