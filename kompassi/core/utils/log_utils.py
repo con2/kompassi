@@ -3,10 +3,12 @@ import logging
 
 def log_get_or_create(
     logger: logging.Logger,
-    obj,
+    obj: object,
     created: bool,
+    *,
     exists_level: int | None = None,
     created_level: int | None = logging.INFO,
+    **extra: object,
 ):
     level = created_level if created else exists_level
     if level is None:
@@ -18,6 +20,7 @@ def log_get_or_create(
         extra=dict(
             kind=obj.__class__.__name__,
             what=str(obj),
+            **extra,
         ),
     )
 

@@ -407,7 +407,9 @@ class Setup:
             backfill(self.event)
 
     def setup_program_feedback(self):
-        survey, _created = Survey.objects.get_or_create(
+        log_context = dict(event=self.event.slug)
+        logger.info("Setting up program feedback", extra=log_context)
+        survey, created = Survey.objects.get_or_create(
             event=self.event,
             slug="program-feedback",
             defaults=dict(
@@ -415,65 +417,72 @@ class Setup:
                 active_from=now() if settings.DEBUG else None,
             ),
         )
+        log_get_or_create(logger, survey, created, **log_context)
 
-        if survey:
-            first_form = survey.languages.order_by("pk").first()
-            if first_form is not None:
-                survey.refresh_cached_key_fields(first_form)
+        first_form = survey.languages.order_by("pk").first()
+        if first_form is not None:
+            survey.refresh_cached_key_fields(first_form)
 
-            dimension = DimensionDTO(
-                slug="program",
-                title=dict(
-                    fi="Ohjelmanumero",
-                    en="Program item",
-                ),
-                is_technical=True,
-                is_list_filter=True,
-                is_shown_in_detail=True,
-                is_key_dimension=True,
-                can_values_be_added=False,
-                value_ordering=ValueOrdering.TITLE,
-                choices=[
-                    DimensionValueDTO(
-                        slug=program.slug,
-                        title=dict(
-                            fi=program.title,
-                        ),
-                        is_technical=True,
-                    )
-                    for program in Program.objects.filter(event=self.event)
-                ],
-            ).save(survey.universe, remove_other_values=True)
-
-            for program in Program.objects.filter(event=self.event):
-                url = f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/{survey.slug}?{dimension.slug}={program.slug}"
-                program.annotations["internal:links:feedback"] = url
-                program.refresh_cached_fields()
-                program.refresh_dependents()
-
-            # "en" not created because concom needs to edit fields and texts first
-            for language_code in ["fi"]:
-                form, need_save = Form.objects.get_or_create(
-                    event=self.event,
-                    survey=survey,
-                    language=language_code,
-                    title=dict(en="Program feedback", fi="Ohjelmapalaute")[language_code],
+        dimension = DimensionDTO(
+            slug="program",
+            title=dict(
+                fi="Ohjelmanumero",
+                en="Program item",
+            ),
+            is_technical=True,
+            is_list_filter=True,
+            is_shown_in_detail=True,
+            is_key_dimension=True,
+            can_values_be_added=False,
+            value_ordering=ValueOrdering.TITLE,
+            choices=[
+                DimensionValueDTO(
+                    slug=program.slug,
+                    title=dict(
+                        fi=program.title,
+                    ),
+                    is_technical=True,
                 )
+                for program in Program.objects.filter(event=self.event)
+            ],
+        ).save(survey.universe, remove_other_values=True)
 
-                field_dict = next((d for d in form.fields if d.get("slug") == dimension.slug), None)
-                if not field_dict:
-                    form.fields.append(
-                        Field(
-                            slug=dimension.slug,
-                            type=FieldType.DIMENSION_SINGLE_SELECT,
-                            title=dimension.get_title(language_code),
-                            presentation=SingleSelectPresentation.DROPDOWN,
-                        ).model_dump(mode="json", by_alias=True, exclude_defaults=True, exclude_unset=True)
-                    )
-                    need_save = True
+        for program in Program.objects.filter(event=self.event):
+            url = f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/{survey.slug}?{dimension.slug}={program.slug}"
+            program.annotations["internal:links:feedback"] = url
+            program.refresh_cached_fields()
+            program.refresh_dependents()
 
-                if need_save:
-                    form.refresh_cached_fields()
+        # "en" not created because concom needs to edit fields and texts first
+        for language_code in ["fi"]:
+            form, created = Form.objects.get_or_create(
+                event=self.event,
+                survey=survey,
+                language=language_code,
+                title=dict(en="Program feedback", fi="Ohjelmapalaute")[language_code],
+            )
+            log_get_or_create(logger, form, created, **log_context)
+
+            need_save = created
+            field_dict = next((d for d in form.fields if d.get("slug") == dimension.slug), None)
+            if not field_dict:
+                field = Field(
+                    slug=dimension.slug,
+                    type=FieldType.DIMENSION_SINGLE_SELECT,
+                    required=True,
+                    is_key_field=True,
+                    title=dimension.get_title(language_code),
+                    presentation=SingleSelectPresentation.DROPDOWN,
+                    dimension=dimension.slug,
+                )
+                form.fields.append(
+                    field.model_dump(mode="json", by_alias=True, exclude_defaults=True, exclude_unset=True)
+                )
+                log_get_or_create(logger, field, True, **log_context)
+                need_save = True
+
+            if need_save:
+                form.refresh_cached_fields()
 
     def setup_kirpputori(self):
         slot_duration = timedelta(minutes=30)

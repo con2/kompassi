@@ -100,7 +100,8 @@ class Form(models.Model):
         return self
 
     def refresh_cached_fields(self):
-        self.with_cached_fields().save(update_fields=["cached_enriched_fields"])
+        # NOTE: fields included to avoid double save on programmatic editing of fields
+        self.with_cached_fields().save(update_fields=["fields", "cached_enriched_fields"])
 
     def _enrich_field(self, field: dict[str, Any]) -> dict[str, Any]:
         """
