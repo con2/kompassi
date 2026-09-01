@@ -18,6 +18,7 @@ import {
 import { ResponseListActions } from "../../../surveys/[surveySlug]/responses/ResponseListActions";
 import { graphql } from "@/__generated__";
 import {
+  CanResponsesBeDeleted,
   ProgramFormResponseFragment,
   SurveyPurpose,
 } from "@/__generated__/graphql";
@@ -67,10 +68,6 @@ const query = graphql(`
       name
       slug
 
-      program {
-        protectResponses
-      }
-
       forms {
         survey(slug: $surveySlug, app: PROGRAM) {
           slug
@@ -85,7 +82,7 @@ const query = graphql(`
           }
 
           countResponses
-          canRemoveResponses
+          responsesDeletionStatus
 
           responses(filters: $filters) {
             ...ProgramFormResponse
@@ -257,9 +254,12 @@ export default async function ProgramFormResponsesPage(props: Props) {
     (survey) => survey.slug === surveySlug,
   );
 
+  const canRemoveResponses =
+    survey.responsesDeletionStatus === CanResponsesBeDeleted.Yes;
+
   let cannotRemoveResponsesReason: string | ReactNode | null = null;
-  if (!survey.canRemoveResponses) {
-    if (data.event.program?.protectResponses) {
+  if (!canRemoveResponses) {
+    if (survey.responsesDeletionStatus === CanResponsesBeDeleted.NoProtected) {
       cannotRemoveResponsesReason =
         translations.Program.ProgramForm.actions.responsesProtected;
     } else if (responses.length < 1) {
@@ -297,7 +297,7 @@ export default async function ProgramFormResponsesPage(props: Props) {
             title={t.actions.deleteVisibleResponses.title}
             messages={t.actions.deleteVisibleResponses.modalActions}
             action={
-              survey.canRemoveResponses
+              canRemoveResponses
                 ? deleteSurveyResponses.bind(
                     null,
                     locale,
@@ -311,7 +311,7 @@ export default async function ProgramFormResponsesPage(props: Props) {
             }
             className="btn btn-outline-danger"
           >
-            {survey.canRemoveResponses
+            {canRemoveResponses
               ? t.actions.deleteVisibleResponses.confirmation(responses.length)
               : cannotRemoveResponsesReason}
           </ModalButton>

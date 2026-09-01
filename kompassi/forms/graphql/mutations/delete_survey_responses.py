@@ -29,8 +29,9 @@ class DeleteSurveyResponses(graphene.Mutation):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
 
         request: HttpRequest = info.context
-        if not survey.can_responses_be_deleted_by(request):
-            raise ValueError("Cannot delete responses")
+        status = survey.can_responses_be_deleted_by(request)
+        if not status:
+            raise ValueError(f"Cannot delete responses: {status.name}")
 
         # Old versions must be deleted first: deleting the current version would otherwise
         # SET_NULL their superseded_by, making them impossible to find afterwards.

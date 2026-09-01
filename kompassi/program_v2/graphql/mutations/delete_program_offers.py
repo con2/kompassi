@@ -31,8 +31,9 @@ class DeleteProgramOffers(graphene.Mutation):
         if meta is None:
             raise ValueError("Event does not have program V2 meta")
 
-        if not meta.can_program_offers_be_deleted_by(request):
-            raise ValueError("Cannot delete program offers")
+        status = meta.can_program_offers_be_deleted_by(request)
+        if not status:
+            raise ValueError(f"Cannot delete program offers: {status.name}")
 
         program_offer_ids: set[str] = set(input.program_offer_ids)  # type: ignore
         if len(input.program_offer_ids) != len(program_offer_ids):  # type: ignore

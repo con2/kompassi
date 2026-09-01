@@ -16,7 +16,7 @@ from kompassi.dimensions.utils.dimension_cache import DimensionCache
 from kompassi.graphql_api.utils import get_message_in_language
 
 from ..utils.lift_dimension_values import lift_dimension_values
-from .enums import SurveyPurpose
+from .enums import CanResponsesBeDeleted, SurveyPurpose
 from .response import Response
 from .survey import DimensionApp, Survey
 
@@ -315,21 +315,30 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             field="responses",
         )
 
-    def responses_can_be_deleted_by(self, request: HttpRequest) -> bool:
-        return not self.protect_responses and is_graphql_allowed_for_model(
+    def responses_can_be_deleted_by(self, request: HttpRequest) -> CanResponsesBeDeleted:
+        if self.protect_responses:
+            return CanResponsesBeDeleted.NO_PROTECTED
+
+        if not is_graphql_allowed_for_model(
             request.user,
             instance=self.survey,
             app=self.survey.app,
             operation="delete",
             field="responses",
-        )
+        ):
+            return CanResponsesBeDeleted.NO_UNAUTHORIZED
+
+        return CanResponsesBeDeleted.YES
 
     def response_can_be_deleted_by(
         self,
         response: Response,
         request: HttpRequest,
-    ) -> bool:
-        return response.is_current_version and self.responses_can_be_deleted_by(request)
+    ) -> CanResponsesBeDeleted:
+        if not response.is_current_version:
+            return CanResponsesBeDeleted.NO_OLD_VERSION
+
+        return self.responses_can_be_deleted_by(request)
 
     def response_can_be_accepted_by(
         self,

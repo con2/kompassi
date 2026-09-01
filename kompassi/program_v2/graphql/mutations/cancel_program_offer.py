@@ -79,8 +79,9 @@ class CancelProgramOffer(graphene.Mutation):
                     cache=involvement_dimensions_cache,
                 )
             case ProgramOfferResolution.DELETE:
-                if not program_offer.survey.workflow.response_can_be_deleted_by(program_offer, request):
-                    raise ValueError("Cannot delete this program offer")
+                status = program_offer.survey.workflow.response_can_be_deleted_by(program_offer, request)
+                if not status:
+                    raise ValueError(f"Cannot delete this program offer: {status.name}")
 
                 emit(
                     "forms.response.deleted",
