@@ -21,6 +21,7 @@ export async function submit(
   eventSlug: string,
   surveySlug: string,
   editResponseId: string,
+  basePath: string,
   formData: FormData,
 ) {
   const client = getClient();
@@ -42,11 +43,7 @@ export async function submit(
     throw new Error("Failed to create survey response");
   }
 
-  revalidatePath(`/${locale}/${eventSlug}/surveys/${surveySlug}/responses`);
-  revalidatePath(
-    `/${locale}/${eventSlug}/surveys/${surveySlug}/responses/${editResponseId}`,
-  );
-  return void redirect(
-    `/${eventSlug}/surveys/${surveySlug}/responses/${newResponseId}?success=responseEdited`,
-  );
+  revalidatePath(`/${locale}/${basePath}`);
+  revalidatePath(`/${locale}/${basePath}/${editResponseId}`);
+  return void redirect(`/${basePath}/${newResponseId}?success=responseEdited`);
 }
