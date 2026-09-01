@@ -5,12 +5,16 @@ import {
   SignInRequired,
   UploadedFileLink,
   FormattedDateTime,
+  ModalButton,
 } from "@con2/components";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 
-import { toggleSurveyResponseSubscription } from "../../../surveys/[surveySlug]/responses/actions";
+import {
+  deleteSurveyResponses,
+  toggleSurveyResponseSubscription,
+} from "../../../surveys/[surveySlug]/responses/actions";
 import { ResponseListActions } from "../../../surveys/[surveySlug]/responses/ResponseListActions";
 import { graphql } from "@/__generated__";
 import {
@@ -77,6 +81,8 @@ const query = graphql(`
           }
 
           countResponses
+          canRemoveResponses
+          protectResponses
 
           responses(filters: $filters) {
             ...ProgramFormResponse
@@ -248,6 +254,20 @@ export default async function ProgramFormResponsesPage(props: Props) {
     (survey) => survey.slug === surveySlug,
   );
 
+  let cannotRemoveResponsesReason: string | ReactNode | null = null;
+  if (!survey.canRemoveResponses) {
+    if (survey.protectResponses) {
+      cannotRemoveResponsesReason =
+        t.actions.deleteVisibleResponses.responsesProtected;
+    } else if (responses.length < 1) {
+      cannotRemoveResponsesReason =
+        t.actions.deleteVisibleResponses.noResponsesToDelete;
+    } else {
+      cannotRemoveResponsesReason =
+        t.actions.deleteVisibleResponses.cannotDelete;
+    }
+  }
+
   return (
     <ProgramAdminView
       translations={translations}
@@ -269,7 +289,30 @@ export default async function ProgramFormResponsesPage(props: Props) {
             toggleSubscription: t.actions.toggleSubscription,
             exportDropdown: t.actions.exportDropdown,
           }}
-        />
+        >
+          <ModalButton
+            title={t.actions.deleteVisibleResponses.title}
+            messages={t.actions.deleteVisibleResponses.modalActions}
+            action={
+              survey.canRemoveResponses
+                ? deleteSurveyResponses.bind(
+                    null,
+                    locale,
+                    eventSlug,
+                    surveySlug,
+                    responses.map((response) => response.id),
+                    searchParams,
+                    `${eventSlug}/program-forms/${surveySlug}/responses`,
+                  )
+                : undefined
+            }
+            className="btn btn-outline-danger"
+          >
+            {survey.canRemoveResponses
+              ? t.actions.deleteVisibleResponses.confirmation(responses.length)
+              : cannotRemoveResponsesReason}
+          </ModalButton>
+        </ResponseListActions>
       }
     >
       <Link className="link-subtle" href={`/${eventSlug}/program-forms`}>

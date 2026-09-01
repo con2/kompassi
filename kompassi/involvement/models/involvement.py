@@ -95,7 +95,7 @@ class Involvement(models.Model):
     )
     response: models.ForeignKey[Response] | None = models.ForeignKey(
         "forms.Response",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="involvements",
         null=True,
         blank=True,

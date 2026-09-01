@@ -295,6 +295,7 @@ export default async function FormResponsesPage(props: Props) {
                       surveySlug,
                       responses.map((response) => response.id),
                       searchParams,
+                      `${eventSlug}/surveys/${surveySlug}/responses`,
                     )
                   : undefined
               }
