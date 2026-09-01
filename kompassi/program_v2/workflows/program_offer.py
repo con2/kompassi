@@ -18,6 +18,15 @@ class ProgramOfferWorkflow(Workflow, arbitrary_types_allowed=True):
 
     survey: Survey
 
+    @property
+    def protect_responses(self) -> bool:
+        """
+        Program offers are protected by the event-wide ProgramV2EventMeta.protect_responses
+        switch instead of Survey.protect_responses.
+        """
+        meta = self.survey.event.program_v2_event_meta
+        return meta is not None and meta.protect_responses
+
     @classmethod
     def _get_default_dimension_values(cls, survey: Survey) -> dict[str, list[str]]:
         return {

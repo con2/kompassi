@@ -2360,6 +2360,11 @@ const translations: Translations = {
         isSchedulePublic: {
           title: "Ohjelmakartta on tällä hetkellä julkinen",
         },
+        protectResponses: {
+          title: "Suojaa ohjelmatarjoukset ja vastaukset",
+          helpText:
+            "Jos tämä on valittuna, ohjelmatarjouksia ja ohjelmalomakkeiden vastauksia ei voi poistaa käyttöliittymästä. Voit käyttää tätä suojaamaan tahattomalta poistolta.",
+        },
       },
     },
   },

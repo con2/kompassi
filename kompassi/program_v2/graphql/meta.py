@@ -49,7 +49,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     class Meta:
         model = ProgramV2EventMeta
-        fields = ("public_from",)
+        fields = ("public_from", "protect_responses")
 
     is_schedule_public = graphene.NonNull(graphene.Boolean)
 

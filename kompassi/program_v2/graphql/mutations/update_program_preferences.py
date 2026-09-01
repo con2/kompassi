@@ -11,6 +11,7 @@ from kompassi.program_v2.models.meta import ProgramV2EventMeta
 class UpdateProgramPreferencesInput(graphene.InputObjectType):
     event_slug = graphene.String(required=True)
     public_from = graphene.DateTime()
+    protect_responses = graphene.Boolean()
 
 
 class UpdateProgramPreferences(graphene.Mutation):
@@ -38,6 +39,10 @@ class UpdateProgramPreferences(graphene.Mutation):
         if public_from is not None and is_naive(public_from):
             public_from = make_aware(public_from)
         meta.public_from = public_from
-        meta.save(update_fields=["public_from"])
+
+        if input.protect_responses is not None:
+            meta.protect_responses = input.protect_responses
+
+        meta.save(update_fields=["public_from", "protect_responses"])
 
         return UpdateProgramPreferences(preferences=meta)

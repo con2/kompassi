@@ -359,18 +359,8 @@ class Survey(models.Model):
             and not self.languages.exists()
         )
 
-    # TODO(#714) Reconcile with Workflow.can_response_be_deleted_by
     def can_responses_be_deleted_by(self, request: HttpRequest):
-        return (
-            is_graphql_allowed_for_model(
-                request.user,
-                instance=self,
-                operation="delete",
-                field="responses",
-                app=self.app,
-            )
-            and not self.protect_responses
-        )
+        return self.workflow.responses_can_be_deleted_by(request)
 
     def get_next_sequence_number(self):
         return (self.current_responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1

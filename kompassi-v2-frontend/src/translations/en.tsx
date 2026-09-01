@@ -2361,6 +2361,11 @@ const translations = {
         isSchedulePublic: {
           title: "Schedule is currently public",
         },
+        protectResponses: {
+          title: "Protect program offers and responses",
+          helpText:
+            "If checked, program offers and program form responses cannot be removed via the user interface. Use this to protect against accidental removal.",
+        },
       },
     },
   },

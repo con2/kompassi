@@ -76,6 +76,14 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         ),
     )
 
+    protect_responses = models.BooleanField(
+        default=True,
+        help_text=(
+            "If enabled, program offers and program form responses cannot be deleted "
+            "from the UI without disabling this first."
+        ),
+    )
+
     use_cbac = True
 
     event: models.ForeignKey[Event]
@@ -251,7 +259,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         self,
         request: HttpRequest,
     ) -> bool:
-        return is_graphql_allowed_for_model(
+        return not self.protect_responses and is_graphql_allowed_for_model(
             request.user,
             instance=self,  # type: ignore
             app="program_v2",

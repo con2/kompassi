@@ -38,6 +38,15 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     def app(self) -> DimensionApp:
         return self.survey.app
 
+    @property
+    def protect_responses(self) -> bool:
+        """
+        Whether responses to this survey are currently protected from deletion.
+        Overridden by workflows whose app protects responses at a different
+        granularity than per-survey (see eg. ProgramOfferWorkflow).
+        """
+        return self.survey.protect_responses
+
     @classmethod
     def get_workflow(cls, survey: Survey):
         from kompassi.program_v2.workflows.program_host_invitation import ProgramHostInvitationWorkflow
@@ -306,23 +315,21 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             field="responses",
         )
 
-    # TODO(#714) Reconcile with Survey.can_responses_be_deleted_by
+    def responses_can_be_deleted_by(self, request: HttpRequest) -> bool:
+        return not self.protect_responses and is_graphql_allowed_for_model(
+            request.user,
+            instance=self.survey,
+            app=self.survey.app,
+            operation="delete",
+            field="responses",
+        )
+
     def response_can_be_deleted_by(
         self,
         response: Response,
         request: HttpRequest,
     ) -> bool:
-        return (
-            not response.survey.protect_responses
-            and response.is_current_version
-            and is_graphql_allowed_for_model(
-                request.user,
-                instance=response.survey,
-                app=response.survey.app,
-                operation="delete",
-                field="responses",
-            )
-        )
+        return response.is_current_version and self.responses_can_be_deleted_by(request)
 
     def response_can_be_accepted_by(
         self,

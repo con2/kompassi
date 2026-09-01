@@ -2311,6 +2311,11 @@ const translations: Translations = {
         isSchedulePublic: {
           title: "Schemat är för närvarande offentligt",
         },
+        protectResponses: {
+          title: "Skydda programförslag och svar",
+          helpText:
+            "Om markerat kan programförslag och svar på programformulär inte raderas via användargränssnittet. Använd detta för att skydda mot oavsiktlig radering.",
+        },
       },
     },
   },
