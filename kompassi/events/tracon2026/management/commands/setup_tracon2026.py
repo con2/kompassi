@@ -419,10 +419,6 @@ class Setup:
         )
         log_get_or_create(logger, survey, created, **log_context)
 
-        first_form = survey.languages.order_by("pk").first()
-        if first_form is not None:
-            survey.refresh_cached_key_fields(first_form)
-
         dimension = DimensionDTO(
             slug="program",
             title=dict(
@@ -483,6 +479,10 @@ class Setup:
 
             if need_save:
                 form.refresh_cached_fields()
+
+        first_form = survey.languages.order_by("pk").first()
+        if first_form is not None:
+            survey.refresh_cached_key_fields(first_form)
 
     def setup_kirpputori(self):
         slot_duration = timedelta(minutes=30)
