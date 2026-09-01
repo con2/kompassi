@@ -2723,10 +2723,16 @@ const translations: Translations = {
             <strong>{countResponses}</strong> vastausta?
           </>
         ),
-        responsesProtected:
-          "Tämän kyselyn vastaukset on suojattu. Jos haluat poistaa vastauksia, kytke ensin vastausten suojaus pois kyselyn asetuksista.",
-        cannotDelete: "Vastauksia ei voi poistaa.",
         noResponsesToDelete: "Ei vastauksia poistettavaksi.",
+        reasons: {
+          // Ei koskaan näytetä: poisto on sallittu, joten syytä ei tarvitse näyttää.
+          YES: "",
+          NO_PROTECTED:
+            "Tämän kyselyn vastaukset on suojattu. Jos haluat poistaa vastauksia, kytke ensin vastausten suojaus pois kyselyn asetuksista.",
+          NO_OLD_VERSION:
+            "Tämä on vastauksen vanha versio, eikä sitä voi poistaa suoraan.",
+          NO_UNAUTHORIZED: "Vastauksia ei voi poistaa.",
+        },
         modalActions: {
           submit: "Poista vastaukset",
           cancel: "Peruuta poistamatta",

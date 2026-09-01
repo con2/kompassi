@@ -257,19 +257,19 @@ export default async function ProgramFormResponsesPage(props: Props) {
   const canRemoveResponses =
     survey.responsesDeletionStatus === CanResponsesBeDeleted.Yes;
 
-  let cannotRemoveResponsesReason: string | ReactNode | null = null;
-  if (!canRemoveResponses) {
-    if (survey.responsesDeletionStatus === CanResponsesBeDeleted.NoProtected) {
-      cannotRemoveResponsesReason =
-        translations.Program.ProgramForm.actions.responsesProtected;
-    } else if (responses.length < 1) {
-      cannotRemoveResponsesReason =
-        t.actions.deleteVisibleResponses.noResponsesToDelete;
-    } else {
-      cannotRemoveResponsesReason =
-        t.actions.deleteVisibleResponses.cannotDelete;
-    }
-  }
+  // Program forms are protected by the event-wide program preferences toggle
+  // rather than a per-survey one, so the message for that reason differs.
+  const deletionStatusReasons = {
+    ...t.actions.deleteVisibleResponses.reasons,
+    NO_PROTECTED: translations.Program.ProgramForm.actions.responsesProtected,
+  };
+
+  const cannotRemoveResponsesReason: string | ReactNode | null =
+    canRemoveResponses
+      ? null
+      : responses.length < 1
+        ? t.actions.deleteVisibleResponses.noResponsesToDelete
+        : deletionStatusReasons[survey.responsesDeletionStatus];
 
   return (
     <ProgramAdminView

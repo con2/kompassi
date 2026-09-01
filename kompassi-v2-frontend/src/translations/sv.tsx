@@ -2668,9 +2668,15 @@ const translations: Translations = {
           </>
         ),
         noResponsesToDelete: "Inga svar att radera.",
-        responsesProtected:
-          "Svaren på den här enkäten är skyddade. För att ta bort dem, avaktivera svarsskyddet i enkätinställningarna först.",
-        cannotDelete: "De här svaren kan inte raderas.",
+        reasons: {
+          // Visas aldrig: radering är tillåten, så det finns ingen anledning att visa.
+          YES: "",
+          NO_PROTECTED:
+            "Svaren på den här enkäten är skyddade. För att ta bort dem, avaktivera svarsskyddet i enkätinställningarna först.",
+          NO_OLD_VERSION:
+            "Detta är en gammal version av ett svar och kan inte raderas direkt.",
+          NO_UNAUTHORIZED: "De här svaren kan inte raderas.",
+        },
         modalActions: {
           submit: "Radera svar",
           cancel: "Avbryt utan att radera",

@@ -247,19 +247,14 @@ export default async function FormResponsesPage(props: Props) {
   const canRemoveResponses =
     survey.responsesDeletionStatus === CanResponsesBeDeleted.Yes;
 
-  let cannotRemoveResponsesReason: string | ReactNode | null = null;
-  if (!canRemoveResponses) {
-    if (survey.responsesDeletionStatus === CanResponsesBeDeleted.NoProtected) {
-      cannotRemoveResponsesReason =
-        t.actions.deleteVisibleResponses.responsesProtected;
-    } else if (responses.length < 1) {
-      cannotRemoveResponsesReason =
-        t.actions.deleteVisibleResponses.noResponsesToDelete;
-    } else {
-      cannotRemoveResponsesReason =
-        t.actions.deleteVisibleResponses.cannotDelete;
-    }
-  }
+  const cannotRemoveResponsesReason: string | ReactNode | null =
+    canRemoveResponses
+      ? null
+      : responses.length < 1
+        ? t.actions.deleteVisibleResponses.noResponsesToDelete
+        : t.actions.deleteVisibleResponses.reasons[
+            survey.responsesDeletionStatus
+          ];
 
   return (
     <ViewContainer>

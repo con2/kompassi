@@ -2717,10 +2717,16 @@ const translations = {
             visible?
           </>
         ),
-        responsesProtected:
-          "The responses to this survey are protected. To remove, disable response protection from query settings first.",
-        cannotDelete: "Cannot delete responses.",
         noResponsesToDelete: "No responses to delete.",
+        reasons: {
+          // Never actually shown: deletion is allowed, so there is no reason to display.
+          YES: "",
+          NO_PROTECTED:
+            "The responses to this survey are protected. To remove, disable response protection from query settings first.",
+          NO_OLD_VERSION:
+            "This is an old version of a response and cannot be deleted directly.",
+          NO_UNAUTHORIZED: "Cannot delete responses.",
+        },
         modalActions: {
           submit: "Delete responses",
           cancel: "Cancel without deleting",
