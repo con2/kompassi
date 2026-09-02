@@ -13,6 +13,15 @@ class ProgramHostInvitationWorkflow(Workflow):
     XXX This Workflow is silly because everything is handled in accept_invitation.py.
     """
 
+    @property
+    def protect_responses(self) -> bool:
+        """
+        Program form responses are protected by the event-wide ProgramV2EventMeta.protect_responses
+        switch instead of Survey.protect_responses.
+        """
+        meta = self.survey.event.program_v2_event_meta
+        return meta is None or meta.protect_responses
+
     def ensure_involvement(
         self,
         response: Response,

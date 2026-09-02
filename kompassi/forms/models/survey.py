@@ -35,7 +35,7 @@ from kompassi.involvement.models.profile_field_selector import ProfileFieldSelec
 from kompassi.involvement.models.registry import Registry
 
 from ..utils.merge_form_fields import merge_fields
-from .enums import Anonymity, SurveyPurpose
+from .enums import Anonymity, CanResponsesBeDeleted, SurveyPurpose
 
 if TYPE_CHECKING:
     from kompassi.badges.models.survey_to_badge import SurveyToBadgeMapping
@@ -359,18 +359,8 @@ class Survey(models.Model):
             and not self.languages.exists()
         )
 
-    # TODO(#714) Reconcile with Workflow.can_response_be_deleted_by
-    def can_responses_be_deleted_by(self, request: HttpRequest):
-        return (
-            is_graphql_allowed_for_model(
-                request.user,
-                instance=self,
-                operation="delete",
-                field="responses",
-                app=self.app,
-            )
-            and not self.protect_responses
-        )
+    def can_responses_be_deleted_by(self, request: HttpRequest) -> CanResponsesBeDeleted:
+        return self.workflow.responses_can_be_deleted_by(request)
 
     def get_next_sequence_number(self):
         return (self.current_responses.all().aggregate(models.Max("sequence_number"))["sequence_number__max"] or 0) + 1

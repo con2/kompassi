@@ -31,3 +31,33 @@ class EditMode(Enum):
 
     # An admin is editing items owned by others
     ADMIN = "ADMIN"
+
+
+class CanResponsesBeDeleted(Enum):
+    """
+    The result of a responses-deletion permission check, carrying the reason for a
+    negative answer so that UI and mutations don't need to re-derive it separately
+    (and risk disagreeing with the check itself).
+    """
+
+    YES = "YES"
+
+    # Blocked by Survey.protect_responses (Forms) or ProgramV2EventMeta.protect_responses
+    # (program offers, program forms), depending on the survey's app.
+    NO_PROTECTED = "NO_PROTECTED"
+
+    # The response is not its survey's current version (an old, superseded revision).
+    NO_OLD_VERSION = "NO_OLD_VERSION"
+
+    # CBAC denied the operation.
+    NO_UNAUTHORIZED = "NO_UNAUTHORIZED"
+
+    @property
+    def can_delete(self) -> bool:
+        return self == CanResponsesBeDeleted.YES
+
+    def __bool__(self) -> bool:
+        # Plain Enum members are truthy regardless of their value, so without this,
+        # `if some_status:` would always be True, even for the NO_* members. Overriding
+        # it makes truthiness checks agree with `can_delete`/`== CanResponsesBeDeleted.YES`.
+        return self.can_delete

@@ -21,7 +21,10 @@ import {
 import { ResponseListActions } from "./ResponseListActions";
 import ResponseTabs from "./ResponseTabs";
 import { graphql } from "@/__generated__";
-import { SurveyResponseFragment } from "@/__generated__/graphql";
+import {
+  CanResponsesBeDeleted,
+  SurveyResponseFragment,
+} from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
 import { auth } from "@/auth";
 import { buildKeyDimensionColumns } from "@/components/dimensions/ColoredDimensionTableCell";
@@ -80,8 +83,7 @@ const query = graphql(`
           }
 
           countResponses
-          canRemoveResponses
-          protectResponses
+          responsesDeletionStatus
 
           responses(filters: $filters) {
             ...SurveyResponse
@@ -242,19 +244,17 @@ export default async function FormResponsesPage(props: Props) {
     (survey) => survey.slug === surveySlug,
   );
 
-  let cannotRemoveResponsesReason: string | ReactNode | null = null;
-  if (!survey.canRemoveResponses) {
-    if (survey.protectResponses) {
-      cannotRemoveResponsesReason =
-        t.actions.deleteVisibleResponses.responsesProtected;
-    } else if (responses.length < 1) {
-      cannotRemoveResponsesReason =
-        t.actions.deleteVisibleResponses.noResponsesToDelete;
-    } else {
-      cannotRemoveResponsesReason =
-        t.actions.deleteVisibleResponses.cannotDelete;
-    }
-  }
+  const canRemoveResponses =
+    survey.responsesDeletionStatus === CanResponsesBeDeleted.Yes;
+
+  const cannotRemoveResponsesReason: string | ReactNode | null =
+    canRemoveResponses
+      ? null
+      : responses.length < 1
+        ? t.actions.deleteVisibleResponses.noResponsesToDelete
+        : t.actions.deleteVisibleResponses.reasons[
+            survey.responsesDeletionStatus
+          ];
 
   return (
     <ViewContainer>
@@ -287,7 +287,7 @@ export default async function FormResponsesPage(props: Props) {
               title={t.actions.deleteVisibleResponses.title}
               messages={t.actions.deleteVisibleResponses.modalActions}
               action={
-                survey.canRemoveResponses
+                canRemoveResponses
                   ? deleteSurveyResponses.bind(
                       null,
                       locale,
@@ -295,12 +295,13 @@ export default async function FormResponsesPage(props: Props) {
                       surveySlug,
                       responses.map((response) => response.id),
                       searchParams,
+                      `${eventSlug}/surveys/${surveySlug}/responses`,
                     )
                   : undefined
               }
               className="btn btn-outline-danger"
             >
-              {survey.canRemoveResponses
+              {canRemoveResponses
                 ? t.actions.deleteVisibleResponses.confirmation(
                     responses.length,
                   )

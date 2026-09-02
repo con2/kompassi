@@ -19,7 +19,7 @@ from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.dimensions.models.scope import Scope
 from kompassi.dimensions.models.universe import Universe
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
-from kompassi.forms.models.enums import SurveyPurpose
+from kompassi.forms.models.enums import CanResponsesBeDeleted, SurveyPurpose
 from kompassi.forms.models.response import Response
 from kompassi.forms.models.survey import Survey
 from kompassi.involvement.models.enums import InvolvementType
@@ -73,6 +73,14 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         help_text=(
             "The program schedule becomes publicly visible at this point in time. "
             "Leave unset to keep the schedule private."
+        ),
+    )
+
+    protect_responses = models.BooleanField(
+        default=True,
+        help_text=(
+            "If enabled, program offers and program form responses cannot be deleted "
+            "from the UI without disabling this first."
         ),
     )
 
@@ -250,14 +258,20 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
     def can_program_offers_be_deleted_by(
         self,
         request: HttpRequest,
-    ) -> bool:
-        return is_graphql_allowed_for_model(
+    ) -> CanResponsesBeDeleted:
+        if self.protect_responses:
+            return CanResponsesBeDeleted.NO_PROTECTED
+
+        if not is_graphql_allowed_for_model(
             request.user,
             instance=self,  # type: ignore
             app="program_v2",
             operation="delete",
             field="program_offers",
-        )
+        ):
+            return CanResponsesBeDeleted.NO_UNAUTHORIZED
+
+        return CanResponsesBeDeleted.YES
 
 
 @dataclass

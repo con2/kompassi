@@ -2,18 +2,18 @@ import {
   Column,
   DataTable,
   DimensionFilters,
+  FormattedDateTime,
+  ModalButton,
   SignInRequired,
   UploadedFileLink,
-  FormattedDateTime,
 } from "@con2/components";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { Fragment } from "react";
+import { Fragment, ReactNode } from "react";
 
-import { toggleSurveyResponseSubscription } from "../../../surveys/[surveySlug]/responses/actions";
-import { ResponseListActions } from "../../../surveys/[surveySlug]/responses/ResponseListActions";
 import { graphql } from "@/__generated__";
 import {
+  CanResponsesBeDeleted,
   ProgramFormResponseFragment,
   SurveyPurpose,
 } from "@/__generated__/graphql";
@@ -29,6 +29,11 @@ import ProgramAdminView from "@/components/program/ProgramAdminView";
 import { kompassiBaseUrl } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import {
+  deleteSurveyResponses,
+  toggleSurveyResponseSubscription,
+} from "../../../surveys/[surveySlug]/responses/actions";
+import { ResponseListActions } from "../../../surveys/[surveySlug]/responses/ResponseListActions";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
@@ -77,6 +82,7 @@ const query = graphql(`
           }
 
           countResponses
+          responsesDeletionStatus
 
           responses(filters: $filters) {
             ...ProgramFormResponse
@@ -195,15 +201,12 @@ export default async function ProgramFormResponsesPage(props: Props) {
         </Link>
       ),
     },
-  ];
-
-  if (anonymity === "NAME_AND_EMAIL") {
-    columns.push({
+    {
       slug: "revisionCreatedBy",
       title: t.attributes.originalCreatedBy,
       getCellContents: (row) => row.revisionCreatedBy?.displayName || "",
-    });
-  }
+    },
+  ];
 
   keyFields.forEach((keyField) => {
     columns.push({
@@ -248,6 +251,23 @@ export default async function ProgramFormResponsesPage(props: Props) {
     (survey) => survey.slug === surveySlug,
   );
 
+  const canRemoveResponses =
+    survey.responsesDeletionStatus === CanResponsesBeDeleted.Yes;
+
+  // Program forms are protected by the event-wide program preferences toggle
+  // rather than a per-survey one, so the message for that reason differs.
+  const deletionStatusReasons = {
+    ...t.actions.deleteVisibleResponses.reasons,
+    NO_PROTECTED: translations.Program.ProgramForm.actions.responsesProtected,
+  };
+
+  const cannotRemoveResponsesReason: string | ReactNode | null =
+    canRemoveResponses
+      ? null
+      : responses.length < 1
+        ? t.actions.deleteVisibleResponses.noResponsesToDelete
+        : deletionStatusReasons[survey.responsesDeletionStatus];
+
   return (
     <ProgramAdminView
       translations={translations}
@@ -269,16 +289,32 @@ export default async function ProgramFormResponsesPage(props: Props) {
             toggleSubscription: t.actions.toggleSubscription,
             exportDropdown: t.actions.exportDropdown,
           }}
-        />
+        >
+          <ModalButton
+            title={t.actions.deleteVisibleResponses.title}
+            messages={t.actions.deleteVisibleResponses.modalActions}
+            action={
+              canRemoveResponses
+                ? deleteSurveyResponses.bind(
+                    null,
+                    locale,
+                    eventSlug,
+                    surveySlug,
+                    responses.map((response) => response.id),
+                    searchParams,
+                    `${eventSlug}/program-forms/${surveySlug}/responses`,
+                  )
+                : undefined
+            }
+            className="btn btn-outline-danger"
+          >
+            {canRemoveResponses
+              ? t.actions.deleteVisibleResponses.confirmation(responses.length)
+              : cannotRemoveResponsesReason}
+          </ModalButton>
+        </ResponseListActions>
       }
     >
-      <Link className="link-subtle" href={`/${eventSlug}/program-forms`}>
-        &lt;{" "}
-        {translations.Program.ProgramForm.actions.returnToProgramFormList(
-          data.event.name,
-        )}
-      </Link>
-
       <h3 className="mt-4">
         {t.responseListTitle}: {survey.title}
       </h3>

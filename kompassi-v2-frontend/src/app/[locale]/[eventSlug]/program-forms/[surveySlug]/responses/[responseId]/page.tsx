@@ -1,8 +1,10 @@
-import { SignInRequired } from "@con2/components";
+import { ModalButton, SignInRequired } from "@con2/components";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { ButtonGroup } from "react-bootstrap";
 import { updateResponseDimensions } from "../../../../surveys/[surveySlug]/responses/[responseId]/actions";
+import { deleteSurveyResponses } from "../../../../surveys/[surveySlug]/responses/actions";
 import { graphql } from "@/__generated__";
 import { SurveyPurpose } from "@/__generated__/graphql";
 import { getClient } from "@/apolloClient";
@@ -170,6 +172,7 @@ export default async function ProgramFormResponsePage(props: Props) {
   const surveyDimensions = survey.dimensions;
   const dimensionsReadOnly = !!supersededBy;
 
+  const { canEdit, canDelete } = response;
   const responsesBaseUrl = `/${eventSlug}/program-forms/${surveySlug}/responses`;
 
   return (
@@ -178,6 +181,36 @@ export default async function ProgramFormResponsePage(props: Props) {
       event={data.event}
       active="programForms"
       searchParams={searchParams}
+      actions={
+        <ButtonGroup>
+          <ModalButton
+            className="btn btn-outline-danger"
+            label={t.actions.deleteResponse.label + "…"}
+            title={t.actions.deleteResponse.title}
+            messages={t.actions.deleteResponse.modalActions}
+            disabled={!canDelete}
+            action={deleteSurveyResponses.bind(
+              null,
+              locale,
+              eventSlug,
+              surveySlug,
+              [responseId],
+              searchParams,
+              `${eventSlug}/program-forms/${surveySlug}/responses`,
+            )}
+          >
+            {t.actions.deleteResponse.confirmation}
+          </ModalButton>
+
+          <Link
+            className={`btn btn-outline-primary ${canEdit ? "" : "disabled"}`}
+            href={`/${locale}/${eventSlug}/program-forms/${surveySlug}/responses/${responseId}/edit`}
+            title={t.actions.editResponse.title}
+          >
+            {t.actions.editResponse.label}
+          </Link>
+        </ButtonGroup>
+      }
     >
       <Link className="link-subtle" href={responsesBaseUrl}>
         &lt; {t.responseListTitle}

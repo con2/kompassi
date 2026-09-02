@@ -16,7 +16,7 @@ from kompassi.dimensions.utils.dimension_cache import DimensionCache
 from kompassi.graphql_api.utils import get_message_in_language
 
 from ..utils.lift_dimension_values import lift_dimension_values
-from .enums import SurveyPurpose
+from .enums import CanResponsesBeDeleted, SurveyPurpose
 from .response import Response
 from .survey import DimensionApp, Survey
 
@@ -37,6 +37,15 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     @property
     def app(self) -> DimensionApp:
         return self.survey.app
+
+    @property
+    def protect_responses(self) -> bool:
+        """
+        Whether responses to this survey are currently protected from deletion.
+        Overridden by workflows whose app protects responses at a different
+        granularity than per-survey (see eg. ProgramOfferWorkflow).
+        """
+        return self.survey.protect_responses
 
     @classmethod
     def get_workflow(cls, survey: Survey):
@@ -306,23 +315,30 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             field="responses",
         )
 
-    # TODO(#714) Reconcile with Survey.can_responses_be_deleted_by
+    def responses_can_be_deleted_by(self, request: HttpRequest) -> CanResponsesBeDeleted:
+        if self.protect_responses:
+            return CanResponsesBeDeleted.NO_PROTECTED
+
+        if not is_graphql_allowed_for_model(
+            request.user,
+            instance=self.survey,
+            app=self.survey.app,
+            operation="delete",
+            field="responses",
+        ):
+            return CanResponsesBeDeleted.NO_UNAUTHORIZED
+
+        return CanResponsesBeDeleted.YES
+
     def response_can_be_deleted_by(
         self,
         response: Response,
         request: HttpRequest,
-    ) -> bool:
-        return (
-            not response.survey.protect_responses
-            and response.is_current_version
-            and is_graphql_allowed_for_model(
-                request.user,
-                instance=response.survey,
-                app=response.survey.app,
-                operation="delete",
-                field="responses",
-            )
-        )
+    ) -> CanResponsesBeDeleted:
+        if not response.is_current_version:
+            return CanResponsesBeDeleted.NO_OLD_VERSION
+
+        return self.responses_can_be_deleted_by(request)
 
     def response_can_be_accepted_by(
         self,

@@ -14,6 +14,7 @@ from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterIn
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
 from kompassi.dimensions.graphql.universe_annotation_limited import LimitedUniverseAnnotationType
 from kompassi.dimensions.models.enums import AnnotationFlags, DimensionApp
+from kompassi.forms.graphql.enums import CanResponsesBeDeletedType
 from kompassi.forms.graphql.response_full import FullResponseType
 from kompassi.forms.graphql.response_profile import ProfileResponseType
 from kompassi.forms.models.response import Response
@@ -49,7 +50,7 @@ class ProgramV2EventMetaType(DjangoObjectType):
 
     class Meta:
         model = ProgramV2EventMeta
-        fields = ("public_from",)
+        fields = ("public_from", "protect_responses")
 
     is_schedule_public = graphene.NonNull(graphene.Boolean)
 
@@ -493,8 +494,20 @@ class ProgramV2EventMetaType(DjangoObjectType):
     invitations = graphene.NonNull(graphene.List(graphene.NonNull(FullInvitationType)))
 
     @staticmethod
-    def resolve_can_delete_program_offers(meta: ProgramV2EventMeta, info):
+    def resolve_program_offers_deletion_status(meta: ProgramV2EventMeta, info):
+        """
+        Whether program offers can be removed, and the reason if not.
+        """
         return meta.can_program_offers_be_deleted_by(info.context)
+
+    program_offers_deletion_status = graphene.NonNull(
+        CanResponsesBeDeletedType,
+        description=normalize_whitespace(resolve_program_offers_deletion_status.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_can_delete_program_offers(meta: ProgramV2EventMeta, info):
+        return meta.can_program_offers_be_deleted_by(info.context).can_delete
 
     can_delete_program_offers = graphene.NonNull(graphene.Boolean)
 

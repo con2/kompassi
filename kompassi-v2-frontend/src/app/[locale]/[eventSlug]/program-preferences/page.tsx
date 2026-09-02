@@ -42,6 +42,7 @@ const query = graphql(`
       program {
         publicFrom
         isSchedulePublic
+        protectResponses
 
         replyToAddresses {
           ...MessageReplyToRow
@@ -186,10 +187,16 @@ export default async function ProgramPreferencesPage(props: Props) {
       helpText: t.attributes.publicFrom.helpText,
       required: false,
     },
+    {
+      slug: "protectResponses",
+      type: "SingleCheckbox",
+      ...t.attributes.protectResponses,
+    },
   ];
 
   const values = {
     publicFrom: program.publicFrom ?? "",
+    protectResponses: program.protectResponses,
   };
 
   return (

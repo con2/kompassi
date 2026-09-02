@@ -1,5 +1,6 @@
 "use server";
 
+import { decodeBoolean } from "@con2/components/helpers";
 import { revalidatePath } from "next/cache";
 import { graphql } from "@/__generated__";
 import { getClient } from "@/apolloClient";
@@ -10,6 +11,7 @@ const mutation = graphql(`
       preferences {
         publicFrom
         isSchedulePublic
+        protectResponses
       }
     }
   }
@@ -25,6 +27,9 @@ export async function updateProgramPreferences(
     publicFromRaw && typeof publicFromRaw === "string" && publicFromRaw !== ""
       ? publicFromRaw
       : null;
+  const protectResponses = decodeBoolean(
+    (formData.get("protectResponses") as string | null) || "false",
+  );
 
   await getClient().mutate({
     mutation,
@@ -32,6 +37,7 @@ export async function updateProgramPreferences(
       input: {
         eventSlug,
         publicFrom,
+        protectResponses,
       },
     },
   });

@@ -95,7 +95,7 @@ class Involvement(models.Model):
     )
     response: models.ForeignKey[Response] | None = models.ForeignKey(
         "forms.Response",
-        on_delete=models.CASCADE,
+        on_delete=models.SET_NULL,
         related_name="involvements",
         null=True,
         blank=True,
@@ -170,7 +170,10 @@ class Involvement(models.Model):
             case InvolvementType.COMBINED_PERKS:
                 # TODO in rare edge cases, might reveal information that shouldn't be
                 return ProfileFieldSelector.all_fields()
-            case _ if self.response is not None:
+            case InvolvementType.PROGRAM_OFFER | InvolvementType.SURVEY_RESPONSE:
+                if self.response is None:
+                    # The response that produced this involvement has been deleted.
+                    return ProfileFieldSelector()
                 return self.response.survey.profile_field_selector
             case _:
                 raise NotImplementedError(f"Profile field selector not implemented for involvement type {self.type!r}")
@@ -220,6 +223,9 @@ class Involvement(models.Model):
             case InvolvementType.COMBINED_PERKS:
                 # up to the emperkelator, can't figure out here
                 return None
+            case InvolvementType.PROGRAM_OFFER | InvolvementType.SURVEY_RESPONSE:
+                # The response that produced this involvement has been deleted.
+                return None
             case _:
                 raise TypeError(f"get_title(): Invalid involvement {self.id}")
 
@@ -241,6 +247,9 @@ class Involvement(models.Model):
             case InvolvementType.LEGACY_SIGNUP if self.signup:
                 return f"{settings.KOMPASSI_BASE_URL}/events/{self.event.slug}/labour/admin/signups/{self.person.id}/"
             case InvolvementType.COMBINED_PERKS:
+                return f"/{self.scope.slug}/people/{self.person.id}"
+            case InvolvementType.PROGRAM_OFFER | InvolvementType.SURVEY_RESPONSE:
+                # The response that produced this involvement has been deleted.
                 return f"/{self.scope.slug}/people/{self.person.id}"
             case _:
                 raise TypeError(f"admin_link(): Invalid involvement {self.id}")

@@ -222,7 +222,7 @@ class LimitedResponseType(DjangoObjectType):
         response: Response,
         info,
     ):
-        return response.survey.workflow.response_can_be_deleted_by(response, info.context)
+        return response.survey.workflow.response_can_be_deleted_by(response, info.context).can_delete
 
     can_delete = graphene.NonNull(
         graphene.Boolean,

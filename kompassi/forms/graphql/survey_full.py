@@ -13,6 +13,7 @@ from kompassi.dimensions.graphql.dimension_full import FullDimensionType
 from ..models.form import Form
 from ..models.survey import Survey
 from ..utils.summarize_responses import summarize_responses
+from .enums import CanResponsesBeDeletedType
 from .form import FormType
 from .response_full import FullResponseType
 from .response_limited import LimitedResponseType
@@ -255,13 +256,26 @@ class FullSurveyType(LimitedSurveyType):
     )
 
     @staticmethod
-    def resolve_can_remove_responses(survey: Survey, info):
+    def resolve_responses_deletion_status(survey: Survey, info):
         """
-        Checks that the user has permission to remove responses to this survey.
-        This requires proper CBAC permission and that `survey.protect_responses` is false.
+        Whether responses to this survey can be removed, and the reason if not
+        (see `Workflow.protect_responses` for what protects responses for this survey's app).
         """
         request: HttpRequest = info.context
         return survey.can_responses_be_deleted_by(request)
+
+    responses_deletion_status = graphene.NonNull(
+        CanResponsesBeDeletedType,
+        description=normalize_whitespace(resolve_responses_deletion_status.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_can_remove_responses(survey: Survey, info):
+        """
+        Checks that the user has permission to remove responses to this survey.
+        """
+        request: HttpRequest = info.context
+        return survey.can_responses_be_deleted_by(request).can_delete
 
     can_remove_responses = graphene.NonNull(
         graphene.Boolean,

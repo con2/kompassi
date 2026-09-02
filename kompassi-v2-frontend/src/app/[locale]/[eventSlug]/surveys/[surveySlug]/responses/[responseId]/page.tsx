@@ -179,6 +179,7 @@ export default async function SurveyResponsePage(props: Props) {
               surveySlug,
               [responseId],
               searchParams,
+              `${eventSlug}/surveys/${surveySlug}/responses`,
             )}
           >
             {t.actions.deleteResponse.confirmation}
