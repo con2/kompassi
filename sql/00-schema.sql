@@ -2,8 +2,10 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 17.2 (Debian 17.2-1.pgdg120+1)
--- Dumped by pg_dump version 17.2 (Debian 17.2-1.pgdg120+1)
+\restrict WBePhTVMulG4gLDQbkHlmWbLr9hVKp8wOAJRI0vAwk1Y0JADiZXqB21BjGUqbuB
+
+-- Dumped from database version 18.6 (Debian 18.6-1.pgdg13+2)
+-- Dumped by pg_dump version 18.6 (Debian 18.6-1.pgdg13+2)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -32,43 +34,189 @@ COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs
 
 
 --
--- Name: tickets_v2_paymentprovider; Type: DOMAIN; Schema: public; Owner: -
+-- Name: core_programroleretentionpolicy; Type: TYPE; Schema: public; Owner: -
 --
 
-CREATE DOMAIN public.tickets_v2_paymentprovider AS smallint
-	CONSTRAINT value_check CHECK (((VALUE >= 0) AND (VALUE <= 2)));
-
-
---
--- Name: tickets_v2_paymentstamptype; Type: DOMAIN; Schema: public; Owner: -
---
-
-CREATE DOMAIN public.tickets_v2_paymentstamptype AS smallint
-	CONSTRAINT value_check CHECK (((VALUE >= 0) AND (VALUE <= 11)));
+CREATE TYPE public.core_programroleretentionpolicy AS ENUM (
+    'REMOVE',
+    'RETAIN'
+);
 
 
 --
--- Name: tickets_v2_paymentstatus; Type: DOMAIN; Schema: public; Owner: -
+-- Name: tickets_v2_paymentprovider; Type: TYPE; Schema: public; Owner: -
 --
 
-CREATE DOMAIN public.tickets_v2_paymentstatus AS smallint
-	CONSTRAINT value_check CHECK (((VALUE >= 0) AND (VALUE <= 7)));
-
-
---
--- Name: tickets_v2_receiptstatus; Type: DOMAIN; Schema: public; Owner: -
---
-
-CREATE DOMAIN public.tickets_v2_receiptstatus AS smallint
-	CONSTRAINT value_check CHECK (((VALUE >= 0) AND (VALUE <= 3)));
+CREATE TYPE public.tickets_v2_paymentprovider AS ENUM (
+    'NONE',
+    'PAYTRAIL',
+    'STRIPE'
+);
 
 
 --
--- Name: tickets_v2_receipttype; Type: DOMAIN; Schema: public; Owner: -
+-- Name: tickets_v2_paymentstamptype; Type: TYPE; Schema: public; Owner: -
 --
 
-CREATE DOMAIN public.tickets_v2_receipttype AS smallint
-	CONSTRAINT value_check CHECK ((VALUE = ANY (ARRAY[3, 4, 7])));
+CREATE TYPE public.tickets_v2_paymentstamptype AS ENUM (
+    'ZERO_PRICE',
+    'CREATE_PAYMENT_REQUEST',
+    'CREATE_PAYMENT_SUCCESS',
+    'CREATE_PAYMENT_FAILURE',
+    'PAYMENT_REDIRECT',
+    'PAYMENT_CALLBACK',
+    'CANCEL_WITHOUT_REFUND',
+    'CREATE_REFUND_REQUEST',
+    'CREATE_REFUND_SUCCESS',
+    'CREATE_REFUND_FAILURE',
+    'REFUND_CALLBACK',
+    'MANUAL_REFUND',
+    'MANUAL_FULFILMENT'
+);
+
+
+--
+-- Name: tickets_v2_paymentstatus; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.tickets_v2_paymentstatus AS ENUM (
+    'NOT_STARTED',
+    'PENDING',
+    'FAILED',
+    'PAID',
+    'CANCELLED',
+    'PAID_AFTER_CANCELLATION',
+    'REFUND_REQUESTED',
+    'REFUND_FAILED',
+    'REFUNDED'
+);
+
+
+--
+-- Name: tickets_v2_receiptstatus; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.tickets_v2_receiptstatus AS ENUM (
+    'REQUESTED',
+    'PROCESSING',
+    'FAILURE',
+    'SUCCESS'
+);
+
+
+--
+-- Name: tickets_v2_receipttype; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.tickets_v2_receipttype AS ENUM (
+    'PAID',
+    'CANCELLED',
+    'REFUNDED'
+);
+
+
+--
+-- Name: tickets_v2_ensure_tickets(integer, uuid); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.tickets_v2_ensure_tickets(p_event_id integer, p_order_id uuid) RETURNS boolean
+    LANGUAGE plpgsql
+    AS $$
+  declare
+    v_shortfall bigint;
+    v_claimed bigint;
+    v_ok boolean;
+  begin
+    begin
+      with expected as (
+        select
+          pq.quota_id,
+          sum(cast(pd.value as int)) as quantity
+        from
+          tickets_v2_order o
+          join jsonb_each(o.product_data) pd on true
+          join tickets_v2_product_quotas pq on pq.product_id = cast(pd.key as int)
+        where
+          o.event_id = p_event_id
+          and o.id = p_order_id
+        group by
+          pq.quota_id
+      ),
+      held as (
+        select
+          quota_id,
+          count(*) as quantity
+        from
+          tickets_v2_ticket
+        where
+          event_id = p_event_id
+          and order_id = p_order_id
+        group by
+          quota_id
+      ),
+      shortfall as (
+        select
+          expected.quota_id,
+          expected.quantity - coalesce(held.quantity, 0) as quantity
+        from
+          expected
+          left join held on held.quota_id = expected.quota_id
+        where
+          expected.quantity - coalesce(held.quantity, 0) > 0
+      ),
+      claimed as (
+        update tickets_v2_ticket t
+        set
+          order_id = p_order_id
+        from
+          shortfall s
+          join lateral (
+            select
+              t2.id as ticket_id
+            from
+              tickets_v2_ticket t2
+            where
+              t2.event_id = p_event_id
+              and t2.quota_id = s.quota_id
+              and t2.order_id is null
+            limit s.quantity
+            for update
+            skip locked
+          ) rt on true
+        where
+          t.event_id = p_event_id
+          and t.id = rt.ticket_id
+        returning
+          t.id
+      )
+      select
+        coalesce((select sum(quantity) from shortfall), 0),
+        coalesce((select count(*) from claimed), 0)
+      into
+        v_shortfall,
+        v_claimed;
+
+      if v_claimed < v_shortfall then
+        -- Expected outcome, not a fault: the quota has nothing left to give.
+        -- 'TKTS1' is in the user-defined SQLSTATE space (class TK is unassigned).
+        raise exception 'tickets_v2_ensure_tickets: insufficient tickets for order % (short %, claimed %)',
+          p_order_id, v_shortfall, v_claimed
+          using errcode = 'TKTS1';
+      end if;
+
+      v_ok := true;
+    exception
+      when sqlstate 'TKTS1' then
+        v_ok := false;
+      when others then
+        raise warning 'tickets_v2_ensure_tickets failed unexpectedly for order % in event %: % (%)',
+          p_order_id, p_event_id, sqlerrm, sqlstate;
+        v_ok := false;
+    end;
+
+    return v_ok;
+  end;
+$$;
 
 
 --
@@ -78,7 +226,45 @@ CREATE DOMAIN public.tickets_v2_receipttype AS smallint
 CREATE FUNCTION public.tickets_v2_paymentstamp_create_receipt() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
+  declare
+    receipt_type tickets_v2_receipttype;
   begin
+    if new.type = 'CREATE_REFUND_SUCCESS' then
+      receipt_type := 'REFUNDED';
+    elsif new.status = 'PAID' then
+      if exists (
+        select 1
+        from tickets_v2_order o
+        where
+          o.event_id = new.event_id and
+          o.id = new.order_id and
+          o.cached_status = 'PAID'
+      ) then
+        receipt_type := 'PAID';
+      else
+        return null;
+      end if;
+    elsif new.status = 'REFUNDED' then
+      receipt_type := 'REFUNDED';
+    elsif new.status = 'CANCELLED' then
+      -- Only notify cancellations of orders that were actually paid; abandoned
+      -- unpaid orders are auto-cancelled by cron and must stay silent.
+      if exists (
+        select 1
+        from tickets_v2_paymentstamp ps
+        where
+          ps.event_id = new.event_id and
+          ps.order_id = new.order_id and
+          ps.status = 'PAID'
+      ) then
+        receipt_type := 'CANCELLED';
+      else
+        return null;
+      end if;
+    else
+      return null;
+    end if;
+
     insert into tickets_v2_receipt (
       event_id,
       id,
@@ -90,11 +276,11 @@ CREATE FUNCTION public.tickets_v2_paymentstamp_create_receipt() RETURNS trigger
     )
     select
       new.event_id,
-      new.correlation_id, -- this ensures that we only create one receipt per payment
+      new.correlation_id, -- one receipt per correlation_id (dedupes refund success vs callback)
       new.order_id,
       new.correlation_id,
-      new.status, -- PaymentStatus.PAID, CANCELLED, REFUNDED
-      0,  -- ReceiptStatus.REQUESTED
+      receipt_type,
+      'REQUESTED',
       o.email
     from
       tickets_v2_order o
@@ -119,11 +305,21 @@ CREATE FUNCTION public.tickets_v2_paymentstamp_update_order() RETURNS trigger
     update
       tickets_v2_order
     set
-      cached_status = new.status
+      cached_status = case
+        when cached_status in ('CANCELLED', 'PAID_AFTER_CANCELLATION') and new.status = 'PAID' then
+          case
+            when tickets_v2_ensure_tickets(new.event_id, new.order_id) then 'PAID'::tickets_v2_paymentstatus
+            else 'PAID_AFTER_CANCELLATION'::tickets_v2_paymentstatus
+          end
+        else new.status
+      end
     where
       event_id = new.event_id and
       id = new.order_id and
-      cached_status < new.status;
+      (
+        (cached_status in ('CANCELLED', 'PAID_AFTER_CANCELLATION') and new.status = 'PAID')
+        or cached_status < new.status
+      );
 
     return null;
   end;
@@ -357,7 +553,7 @@ ALTER TABLE public.access_groupprivilege ALTER COLUMN id ADD GENERATED BY DEFAUL
 CREATE TABLE public.access_internalemailalias (
     id integer NOT NULL,
     account_name character varying(255) NOT NULL,
-    target_emails character varying(1023) NOT NULL,
+    target_emails text NOT NULL,
     email_address character varying(511) NOT NULL,
     app_label character varying(63) NOT NULL,
     created_at timestamp with time zone NOT NULL,
@@ -686,7 +882,7 @@ CREATE TABLE public.badges_badge (
     id integer NOT NULL,
     printed_separately_at timestamp with time zone,
     revoked_at timestamp with time zone,
-    job_title character varying(63) NOT NULL,
+    job_title character varying(255) NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     batch_id integer,
@@ -729,7 +925,7 @@ CREATE TABLE public.badges_badgeseventmeta (
     admin_group_id integer NOT NULL,
     real_name_must_be_visible boolean NOT NULL,
     onboarding_access_group_id integer,
-    emperkelator_name character varying(63) NOT NULL
+    registry_id integer
 );
 
 
@@ -906,7 +1102,8 @@ CREATE TABLE public.core_organization (
     public boolean NOT NULL,
     muncipality character varying(127) NOT NULL,
     name_genitive character varying(255) NOT NULL,
-    panel_css_class character varying(255) NOT NULL
+    panel_css_class character varying(255) NOT NULL,
+    business_id character varying(16) NOT NULL
 );
 
 
@@ -974,8 +1171,9 @@ CREATE TABLE public.core_person (
     muncipality character varying(127) NOT NULL,
     official_first_names character varying(1023) NOT NULL,
     allow_work_history_sharing boolean NOT NULL,
-    preferred_badge_name_display_style character varying(31) NOT NULL,
-    discord_handle character varying(63) NOT NULL
+    preferred_badge_name_display_style character varying(31) CONSTRAINT core_person_badge_name_display_style_not_null NOT NULL,
+    discord_handle character varying(63) NOT NULL,
+    program_role_retention_policy public.core_programroleretentionpolicy
 );
 
 
@@ -1065,6 +1263,58 @@ CREATE TABLE public.cosmocon2025_signupextra_special_diet (
 
 ALTER TABLE public.cosmocon2025_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
     SEQUENCE NAME public.cosmocon2025_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: cosmocon2026_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cosmocon2026_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    special_diet_other text NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: cosmocon2026_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.cosmocon2026_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.cosmocon2026_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: cosmocon2026_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cosmocon2026_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: cosmocon2026_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.cosmocon2026_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.cosmocon2026_signupextra_special_diet_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1551,7 +1801,7 @@ ALTER TABLE public.desucon2024_signupextra ALTER COLUMN id ADD GENERATED BY DEFA
 
 CREATE TABLE public.desucon2024_signupextra_pick_your_poison (
     id integer NOT NULL,
-    signupextra_id integer NOT NULL,
+    signupextra_id integer CONSTRAINT desucon2024_signupextra_pick_your_poiso_signupextra_id_not_null NOT NULL,
     poison_id integer NOT NULL
 );
 
@@ -1684,7 +1934,7 @@ ALTER TABLE public.desucon2025_signupextra ALTER COLUMN id ADD GENERATED BY DEFA
 
 CREATE TABLE public.desucon2025_signupextra_pick_your_poison (
     id integer NOT NULL,
-    signupextra_id integer NOT NULL,
+    signupextra_id integer CONSTRAINT desucon2025_signupextra_pick_your_poiso_signupextra_id_not_null NOT NULL,
     poison_id integer NOT NULL
 );
 
@@ -1753,6 +2003,140 @@ ALTER TABLE public.desucon2025_specialdiet ALTER COLUMN id ADD GENERATED BY DEFA
 
 
 --
+-- Name: desucon2026_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.desucon2026_poison (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: desucon2026_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.desucon2026_poison ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.desucon2026_poison_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: desucon2026_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.desucon2026_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(3) NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    special_diet_other text NOT NULL,
+    shirt_size character varying(8) NOT NULL,
+    shirt_type character varying(8) NOT NULL,
+    night_work boolean NOT NULL,
+    afterparty_participation boolean NOT NULL,
+    accommodation character varying(13) NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: desucon2026_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.desucon2026_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.desucon2026_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: desucon2026_signupextra_pick_your_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.desucon2026_signupextra_pick_your_poison (
+    id integer NOT NULL,
+    signupextra_id integer CONSTRAINT desucon2026_signupextra_pick_your_poiso_signupextra_id_not_null NOT NULL,
+    poison_id integer NOT NULL
+);
+
+
+--
+-- Name: desucon2026_signupextra_pick_your_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.desucon2026_signupextra_pick_your_poison ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.desucon2026_signupextra_pick_your_poison_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: desucon2026_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.desucon2026_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: desucon2026_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.desucon2026_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.desucon2026_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: desucon2026_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.desucon2026_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: desucon2026_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.desucon2026_specialdiet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.desucon2026_specialdiet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: desuprofile_integration_confirmationcode; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1762,10 +2146,10 @@ CREATE TABLE public.desuprofile_integration_confirmationcode (
     created_at timestamp with time zone NOT NULL,
     used_at timestamp with time zone,
     state character varying(8) NOT NULL,
-    desuprofile_id integer NOT NULL,
+    desuprofile_id integer CONSTRAINT desuprofile_integration_confirmationcod_desuprofile_id_not_null NOT NULL,
     person_id integer NOT NULL,
     next_url character varying(1023) NOT NULL,
-    desuprofile_username character varying(30) NOT NULL,
+    desuprofile_username character varying(30) CONSTRAINT desuprofile_integration_confirmat_desuprofile_username_not_null NOT NULL,
     language character varying(2) NOT NULL
 );
 
@@ -1791,7 +2175,45 @@ ALTER TABLE public.desuprofile_integration_confirmationcode ALTER COLUMN id ADD 
 CREATE TABLE public.desuprofile_integration_connection (
     id integer NOT NULL,
     user_id integer NOT NULL,
-    desuprofile_username character varying(150) NOT NULL
+    desuprofile_username character varying(150) CONSTRAINT desuprofile_integration_connectio_desuprofile_username_not_null NOT NULL
+);
+
+
+--
+-- Name: dimensions_annotation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dimensions_annotation (
+    id integer NOT NULL,
+    slug character varying(50) NOT NULL,
+    title_en text NOT NULL,
+    title_fi text NOT NULL,
+    title_sv text NOT NULL,
+    description_en text NOT NULL,
+    description_fi text NOT NULL,
+    description_sv text NOT NULL,
+    type character varying(8) NOT NULL,
+    applies_to smallint NOT NULL,
+    flags smallint NOT NULL,
+    CONSTRAINT "dimensions_Annotation_applies_to_AnnotationAppliesTo" CHECK ((((applies_to >= 0) AND (applies_to <= 7)) OR (applies_to = 0))),
+    CONSTRAINT "dimensions_Annotation_flags_AnnotationFlags" CHECK ((((flags >= 0) AND (flags <= 15)) OR (flags = 0))),
+    CONSTRAINT "dimensions_Annotation_type_AnnotationDataType" CHECK (((type)::text = ANY ((ARRAY['string'::character varying, 'number'::character varying, 'boolean'::character varying, 'datetime'::character varying])::text[]))),
+    CONSTRAINT dimensions_annotation_applies_to_check CHECK ((applies_to >= 0)),
+    CONSTRAINT dimensions_annotation_flags_check CHECK ((flags >= 0))
+);
+
+
+--
+-- Name: dimensions_annotation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dimensions_annotation ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.dimensions_annotation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
 );
 
 
@@ -1814,7 +2236,8 @@ CREATE TABLE public.dimensions_dimension (
     title_sv text NOT NULL,
     universe_id integer NOT NULL,
     is_public boolean NOT NULL,
-    is_technical boolean NOT NULL
+    is_technical boolean NOT NULL,
+    can_values_be_added boolean NOT NULL
 );
 
 
@@ -1899,8 +2322,9 @@ ALTER TABLE public.dimensions_scope ALTER COLUMN id ADD GENERATED BY DEFAULT AS 
 CREATE TABLE public.dimensions_universe (
     id integer NOT NULL,
     slug character varying(255) NOT NULL,
-    app_name character varying(11) NOT NULL,
-    scope_id integer NOT NULL
+    app character varying(11) NOT NULL,
+    scope_id integer NOT NULL,
+    CONSTRAINT "dimensions_Universe_app_DimensionApp" CHECK (((app)::text = ANY ((ARRAY['forms'::character varying, 'program'::character varying, 'involvement'::character varying, 'volunteers'::character varying])::text[])))
 );
 
 
@@ -1910,6 +2334,33 @@ CREATE TABLE public.dimensions_universe (
 
 ALTER TABLE public.dimensions_universe ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
     SEQUENCE NAME public.dimensions_universe_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: dimensions_universeannotation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dimensions_universeannotation (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    form_fields jsonb NOT NULL,
+    annotation_id integer NOT NULL,
+    universe_id integer NOT NULL
+);
+
+
+--
+-- Name: dimensions_universeannotation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.dimensions_universeannotation ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.dimensions_universeannotation_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -2273,10 +2724,10 @@ CREATE TABLE public.enrollment_enrollmenteventmeta (
     enrollment_opens timestamp with time zone,
     enrollment_closes timestamp with time zone,
     admin_group_id integer NOT NULL,
-    override_enrollment_form_message text NOT NULL,
+    override_enrollment_form_message text CONSTRAINT enrollment_enrollmenteventm_override_enrollment_form_m_not_null NOT NULL,
     initial_state character varying(8) NOT NULL,
-    is_participant_list_public boolean NOT NULL,
-    is_official_name_required boolean NOT NULL
+    is_participant_list_public boolean CONSTRAINT enrollment_enrollmenteventm_is_participant_list_public_not_null NOT NULL,
+    is_official_name_required boolean CONSTRAINT enrollment_enrollmenteventme_is_official_name_required_not_null NOT NULL
 );
 
 
@@ -2780,16 +3231,16 @@ ALTER TABLE public.finncon2023_specialdiet ALTER COLUMN id ADD GENERATED BY DEFA
 --
 
 CREATE TABLE public.forms_form (
-    id integer NOT NULL,
-    title character varying(255) NOT NULL,
-    description text NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    fields jsonb NOT NULL,
+    id integer CONSTRAINT forms_eventform_id_not_null NOT NULL,
+    title character varying(255) CONSTRAINT forms_eventform_title_not_null NOT NULL,
+    description text CONSTRAINT forms_eventform_description_not_null NOT NULL,
+    created_at timestamp with time zone CONSTRAINT forms_eventform_created_at_not_null NOT NULL,
+    updated_at timestamp with time zone CONSTRAINT forms_eventform_updated_at_not_null NOT NULL,
+    fields jsonb CONSTRAINT forms_eventform_fields_not_null NOT NULL,
     created_by_id integer,
-    event_id integer NOT NULL,
-    language character varying(2) NOT NULL,
-    thank_you_message text NOT NULL,
+    event_id integer CONSTRAINT forms_eventform_event_id_not_null NOT NULL,
+    language character varying(2) CONSTRAINT forms_eventform_language_not_null NOT NULL,
+    thank_you_message text CONSTRAINT forms_eventform_thank_you_message_not_null NOT NULL,
     cached_enriched_fields jsonb NOT NULL,
     survey_id integer NOT NULL
 );
@@ -2814,26 +3265,29 @@ ALTER TABLE public.forms_form ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTI
 --
 
 CREATE TABLE public.forms_survey (
-    id integer NOT NULL,
-    login_required boolean NOT NULL,
+    id integer CONSTRAINT forms_eventsurvey_id_not_null NOT NULL,
+    login_required boolean CONSTRAINT forms_eventsurvey_login_required_not_null NOT NULL,
     active_from timestamp with time zone,
     active_until timestamp with time zone,
-    slug character varying(255) NOT NULL,
-    event_id integer NOT NULL,
-    key_fields character varying(255)[] NOT NULL,
+    slug character varying(255) CONSTRAINT forms_eventsurvey_slug_not_null NOT NULL,
+    event_id integer CONSTRAINT forms_eventsurvey_event_id_not_null NOT NULL,
+    cached_key_fields character varying(255)[] CONSTRAINT forms_survey_key_fields_not_null NOT NULL,
     anonymity character varying(14) NOT NULL,
     max_responses_per_user integer NOT NULL,
     protect_responses boolean NOT NULL,
-    app_name character varying(11) NOT NULL,
+    app character varying(11) NOT NULL,
     created_at timestamp with time zone NOT NULL,
     created_by_id integer,
     updated_at timestamp with time zone NOT NULL,
-    cached_default_response_dimensions jsonb NOT NULL,
+    cached_default_response_dimensions jsonb CONSTRAINT forms_survey_cached_default_dimensions_not_null NOT NULL,
     registry_id integer,
-    purpose_slug character varying(7) NOT NULL,
+    purpose character varying(7) CONSTRAINT forms_survey_purpose_slug_not_null NOT NULL,
     responses_editable_until timestamp with time zone,
     universe_id integer NOT NULL,
     cached_default_involvement_dimensions jsonb NOT NULL,
+    retention_period interval,
+    CONSTRAINT "forms_Survey_app_DimensionApp" CHECK (((app)::text = ANY ((ARRAY['forms'::character varying, 'program'::character varying, 'involvement'::character varying, 'volunteers'::character varying])::text[]))),
+    CONSTRAINT "forms_Survey_purpose_SurveyPurpose" CHECK (((purpose)::text = ANY ((ARRAY['DEFAULT'::character varying, 'INVITE'::character varying])::text[]))),
     CONSTRAINT forms_survey_max_responses_per_user_check CHECK ((max_responses_per_user >= 0))
 );
 
@@ -2888,7 +3342,8 @@ CREATE TABLE public.forms_projection (
     projected_dimensions jsonb NOT NULL,
     filterable_dimensions jsonb NOT NULL,
     order_by jsonb NOT NULL,
-    scope_id integer NOT NULL
+    scope_id integer NOT NULL,
+    special_fields jsonb NOT NULL
 );
 
 
@@ -2936,12 +3391,12 @@ ALTER TABLE public.forms_projection_surveys ALTER COLUMN id ADD GENERATED BY DEF
 --
 
 CREATE TABLE public.forms_response (
-    id uuid NOT NULL,
-    form_data jsonb NOT NULL,
-    revision_created_at timestamp with time zone NOT NULL,
+    id uuid CONSTRAINT forms_globalformresponse_id_not_null NOT NULL,
+    form_data jsonb CONSTRAINT forms_globalformresponse_values_not_null NOT NULL,
+    revision_created_at timestamp with time zone CONSTRAINT forms_globalformresponse_created_at_not_null NOT NULL,
     revision_created_by_id integer,
-    form_id integer NOT NULL,
-    ip_address character varying(48) NOT NULL,
+    form_id integer CONSTRAINT forms_globalformresponse_form_id_not_null NOT NULL,
+    ip_address character varying(48) CONSTRAINT forms_globalformresponse_ip_address_not_null NOT NULL,
     cached_dimensions jsonb NOT NULL,
     sequence_number integer NOT NULL,
     cached_key_fields jsonb NOT NULL,
@@ -2958,8 +3413,8 @@ CREATE TABLE public.forms_response (
 
 CREATE TABLE public.forms_responsedimensionvalue (
     id integer NOT NULL,
-    subject_id uuid NOT NULL,
-    value_id integer NOT NULL
+    subject_id uuid CONSTRAINT forms_responsedimensionvalue_response_id_not_null NOT NULL,
+    value_id integer CONSTRAINT forms_responsedimensionvalue_new_value_id_not_null NOT NULL
 );
 
 
@@ -3007,9 +3462,9 @@ ALTER TABLE public.forms_survey_subscribers ALTER COLUMN id ADD GENERATED BY DEF
 --
 
 CREATE TABLE public.forms_surveydefaultresponsedimensionvalue (
-    id integer NOT NULL,
-    subject_id integer NOT NULL,
-    value_id integer NOT NULL
+    id integer CONSTRAINT forms_surveydefaultdimensionvalue_id_not_null NOT NULL,
+    subject_id integer CONSTRAINT forms_surveydefaultdimensionvalue_survey_id_not_null NOT NULL,
+    value_id integer CONSTRAINT forms_surveydefaultdimensionvalue_value_id_not_null NOT NULL
 );
 
 
@@ -3033,7 +3488,7 @@ ALTER TABLE public.forms_surveydefaultresponsedimensionvalue ALTER COLUMN id ADD
 
 CREATE TABLE public.forms_surveydefaultinvolvementdimensionvalue (
     id integer NOT NULL,
-    subject_id integer NOT NULL,
+    subject_id integer CONSTRAINT forms_surveydefaultinvolvementdimensionvalu_subject_id_not_null NOT NULL,
     value_id integer NOT NULL
 );
 
@@ -3450,7 +3905,7 @@ ALTER TABLE public.frostbite2025_signupextra ALTER COLUMN id ADD GENERATED BY DE
 
 CREATE TABLE public.frostbite2025_signupextra_pick_your_poison (
     id integer NOT NULL,
-    signupextra_id integer NOT NULL,
+    signupextra_id integer CONSTRAINT frostbite2025_signupextra_pick_your_poi_signupextra_id_not_null NOT NULL,
     poison_id integer NOT NULL
 );
 
@@ -3510,6 +3965,273 @@ CREATE TABLE public.frostbite2025_specialdiet (
 
 ALTER TABLE public.frostbite2025_specialdiet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
     SEQUENCE NAME public.frostbite2025_specialdiet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2026_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2026_poison (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: frostbite2026_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2026_poison ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2026_poison_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2026_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2026_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    special_diet_other text NOT NULL,
+    shirt_size character varying(8) NOT NULL,
+    shirt_type character varying(8) NOT NULL,
+    night_work boolean NOT NULL,
+    afterparty_participation boolean NOT NULL,
+    accommodation character varying(13) NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: frostbite2026_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2026_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2026_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2026_signupextra_pick_your_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2026_signupextra_pick_your_poison (
+    id integer NOT NULL,
+    signupextra_id integer CONSTRAINT frostbite2026_signupextra_pick_your_poi_signupextra_id_not_null NOT NULL,
+    poison_id integer NOT NULL
+);
+
+
+--
+-- Name: frostbite2026_signupextra_pick_your_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2026_signupextra_pick_your_poison ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2026_signupextra_pick_your_poison_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2026_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2026_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: frostbite2026_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2026_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2026_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2026_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2026_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: frostbite2026_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2026_specialdiet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2026_specialdiet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2027_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2027_poison (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: frostbite2027_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2027_poison ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2027_poison_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2027_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2027_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(3) NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    special_diet_other text NOT NULL,
+    shirt_size character varying(8) NOT NULL,
+    shirt_type character varying(8) NOT NULL,
+    night_work boolean NOT NULL,
+    afterparty_participation boolean NOT NULL,
+    accommodation character varying(13) NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: frostbite2027_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2027_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2027_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2027_signupextra_pick_your_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2027_signupextra_pick_your_poison (
+    id integer NOT NULL,
+    signupextra_id integer CONSTRAINT frostbite2027_signupextra_pick_your_poi_signupextra_id_not_null NOT NULL,
+    poison_id integer NOT NULL
+);
+
+
+--
+-- Name: frostbite2027_signupextra_pick_your_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2027_signupextra_pick_your_poison ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2027_signupextra_pick_your_poison_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2027_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2027_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: frostbite2027_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2027_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2027_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: frostbite2027_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.frostbite2027_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: frostbite2027_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.frostbite2027_specialdiet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.frostbite2027_specialdiet_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -4231,7 +4953,13 @@ CREATE TABLE public.involvement_involvement (
     response_id uuid,
     universe_id integer NOT NULL,
     registry_id integer NOT NULL,
-    invitation_id uuid
+    invitation_id uuid,
+    annotations jsonb NOT NULL,
+    app character varying(11) NOT NULL,
+    type character varying(15) NOT NULL,
+    title text NOT NULL,
+    CONSTRAINT "involvement_Involvement_app_DimensionApp" CHECK (((app)::text = ANY ((ARRAY['forms'::character varying, 'program'::character varying, 'involvement'::character varying, 'volunteers'::character varying])::text[]))),
+    CONSTRAINT "involvement_Involvement_type_InvolvementType" CHECK (((type)::text = ANY ((ARRAY['program-offer'::character varying, 'program-host'::character varying, 'survey-response'::character varying, 'combined-perks'::character varying, 'legacy-signup'::character varying])::text[])))
 );
 
 
@@ -4275,17 +5003,47 @@ ALTER TABLE public.involvement_involvementdimensionvalue ALTER COLUMN id ADD GEN
 
 
 --
+-- Name: involvement_involvementeventmeta; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.involvement_involvementeventmeta (
+    id integer NOT NULL,
+    default_registry_id integer,
+    event_id integer NOT NULL,
+    universe_id integer NOT NULL,
+    shirts_frozen_at timestamp with time zone,
+    admin_group_id integer NOT NULL
+);
+
+
+--
+-- Name: involvement_involvementeventmeta_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.involvement_involvementeventmeta ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.involvement_involvementeventmeta_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: involvement_involvementtobadgemapping; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.involvement_involvementtobadgemapping (
     id integer NOT NULL,
-    required_dimensions jsonb NOT NULL,
+    required_dimensions jsonb CONSTRAINT involvement_involvementtobadgemapp_required_dimensions_not_null NOT NULL,
     job_title character varying(255) NOT NULL,
     priority integer NOT NULL,
     annotations jsonb NOT NULL,
     personnel_class_id integer,
-    universe_id integer NOT NULL
+    universe_id integer NOT NULL,
+    job_title_mode character varying(8) NOT NULL,
+    CONSTRAINT "nvolvement_InvolvementToBadgeMapping_job_title_mode_JobTitleMod" CHECK (((job_title_mode)::text = ANY ((ARRAY['fallback'::character varying, 'override'::character varying])::text[])))
 );
 
 
@@ -4309,7 +5067,7 @@ ALTER TABLE public.involvement_involvementtobadgemapping ALTER COLUMN id ADD GEN
 
 CREATE TABLE public.involvement_involvementtogroupmapping (
     id integer NOT NULL,
-    required_dimensions jsonb NOT NULL,
+    required_dimensions jsonb CONSTRAINT involvement_involvementtogroupmapp_required_dimensions_not_null NOT NULL,
     group_id integer NOT NULL,
     universe_id integer NOT NULL
 );
@@ -4344,7 +5102,8 @@ CREATE TABLE public.involvement_registry (
     policy_url_sv character varying(200) NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
-    scope_id integer NOT NULL
+    scope_id integer NOT NULL,
+    default_retention_period interval
 );
 
 
@@ -4464,7 +5223,7 @@ CREATE TABLE public.kotaeexpo2024_signupextra (
 CREATE TABLE public.kotaeexpo2024_signupextra_accommodation (
     id integer NOT NULL,
     signupextra_id integer NOT NULL,
-    accommodation_id integer NOT NULL
+    accommodation_id integer CONSTRAINT kotaeexpo2024_signupextra_accommodati_accommodation_id_not_null NOT NULL
 );
 
 
@@ -4502,8 +5261,8 @@ ALTER TABLE public.kotaeexpo2024_signupextra ALTER COLUMN id ADD GENERATED BY DE
 
 CREATE TABLE public.kotaeexpo2024_signupextra_known_language (
     id integer NOT NULL,
-    signupextra_id integer NOT NULL,
-    knownlanguage_id integer NOT NULL
+    signupextra_id integer CONSTRAINT kotaeexpo2024_signupextra_known_languag_signupextra_id_not_null NOT NULL,
+    knownlanguage_id integer CONSTRAINT kotaeexpo2024_signupextra_known_langu_knownlanguage_id_not_null NOT NULL
 );
 
 
@@ -4672,7 +5431,7 @@ CREATE TABLE public.kotaeexpo2025_signupextra (
 CREATE TABLE public.kotaeexpo2025_signupextra_accommodation (
     id integer NOT NULL,
     signupextra_id integer NOT NULL,
-    accommodation_id integer NOT NULL
+    accommodation_id integer CONSTRAINT kotaeexpo2025_signupextra_accommodati_accommodation_id_not_null NOT NULL
 );
 
 
@@ -4710,8 +5469,8 @@ ALTER TABLE public.kotaeexpo2025_signupextra ALTER COLUMN id ADD GENERATED BY DE
 
 CREATE TABLE public.kotaeexpo2025_signupextra_known_language (
     id integer NOT NULL,
-    signupextra_id integer NOT NULL,
-    knownlanguage_id integer NOT NULL
+    signupextra_id integer CONSTRAINT kotaeexpo2025_signupextra_known_languag_signupextra_id_not_null NOT NULL,
+    knownlanguage_id integer CONSTRAINT kotaeexpo2025_signupextra_known_langu_knownlanguage_id_not_null NOT NULL
 );
 
 
@@ -4770,6 +5529,263 @@ CREATE TABLE public.kotaeexpo2025_timeslot (
 
 ALTER TABLE public.kotaeexpo2025_timeslot ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
     SEQUENCE NAME public.kotaeexpo2025_timeslot_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_accessibilitywarning; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_accessibilitywarning (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_accessibilitywarning_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_accessibilitywarning ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_accessibilitywarning_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_accommodation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_accommodation (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_accommodation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_accommodation ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_accommodation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_knownlanguage; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_knownlanguage (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_knownlanguage_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_knownlanguage ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_knownlanguage_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    night_shift boolean NOT NULL,
+    overseer boolean NOT NULL,
+    want_certificate boolean NOT NULL,
+    known_language_other text NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    shift_wishes text NOT NULL,
+    email_alias character varying(32) NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_accommodation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_signupextra_accommodation (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    accommodation_id integer CONSTRAINT kotaeexpo2026_signupextra_accommodati_accommodation_id_not_null NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_accommodation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_signupextra_accommodation ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_signupextra_accommodation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_known_language; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_signupextra_known_language (
+    id integer NOT NULL,
+    signupextra_id integer CONSTRAINT kotaeexpo2026_signupextra_known_languag_signupextra_id_not_null NOT NULL,
+    knownlanguage_id integer CONSTRAINT kotaeexpo2026_signupextra_known_langu_knownlanguage_id_not_null NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_known_language_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_signupextra_known_language ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_signupextra_known_language_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_work_days; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_signupextra_work_days (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    workday_id integer NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_work_days_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_signupextra_work_days ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_signupextra_work_days_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_timeslot; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_timeslot (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_timeslot_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_timeslot ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_timeslot_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kotaeexpo2026_workday; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kotaeexpo2026_workday (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: kotaeexpo2026_workday_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kotaeexpo2026_workday ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kotaeexpo2026_workday_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -5419,6 +6435,166 @@ ALTER TABLE public.kuplii2025_specialdiet ALTER COLUMN id ADD GENERATED BY DEFAU
 
 
 --
+-- Name: kuplii2026_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2026_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: kuplii2026_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kuplii2026_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kuplii2026_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kuplii2026_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2026_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: kuplii2026_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kuplii2026_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kuplii2026_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kuplii2026_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2026_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: kuplii2026_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kuplii2026_specialdiet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kuplii2026_specialdiet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kuplii2027_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2027_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: kuplii2027_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kuplii2027_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kuplii2027_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kuplii2027_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2027_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: kuplii2027_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kuplii2027_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kuplii2027_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: kuplii2027_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.kuplii2027_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: kuplii2027_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.kuplii2027_specialdiet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.kuplii2027_specialdiet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: labour_alternativesignupform; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -5427,7 +6603,7 @@ CREATE TABLE public.labour_alternativesignupform (
     slug character varying(255) NOT NULL,
     title character varying(63) NOT NULL,
     signup_form_class_path character varying(63) NOT NULL,
-    signup_extra_form_class_path character varying(63) NOT NULL,
+    signup_extra_form_class_path character varying(63) CONSTRAINT labour_alternativesignupfor_signup_extra_form_class_pa_not_null NOT NULL,
     active_from timestamp with time zone,
     active_until timestamp with time zone,
     signup_message text,
@@ -5481,8 +6657,8 @@ ALTER TABLE public.labour_archivedsignup ALTER COLUMN id ADD GENERATED BY DEFAUL
 
 CREATE TABLE public.labour_archivedsignup_job_categories_accepted (
     id integer NOT NULL,
-    archivedsignup_id integer NOT NULL,
-    jobcategory_id integer NOT NULL
+    archivedsignup_id integer CONSTRAINT labour_archivedsignup_job_categories_archivedsignup_id_not_null NOT NULL,
+    jobcategory_id integer CONSTRAINT labour_archivedsignup_job_categories_ac_jobcategory_id_not_null NOT NULL
 );
 
 
@@ -5506,8 +6682,8 @@ ALTER TABLE public.labour_archivedsignup_job_categories_accepted ALTER COLUMN id
 
 CREATE TABLE public.labour_archivedsignup_personnel_classes (
     id integer NOT NULL,
-    archivedsignup_id integer NOT NULL,
-    personnelclass_id integer NOT NULL
+    archivedsignup_id integer CONSTRAINT labour_archivedsignup_personnel_clas_archivedsignup_id_not_null NOT NULL,
+    personnelclass_id integer CONSTRAINT labour_archivedsignup_personnel_clas_personnelclass_id_not_null NOT NULL
 );
 
 
@@ -5530,7 +6706,7 @@ ALTER TABLE public.labour_archivedsignup_personnel_classes ALTER COLUMN id ADD G
 --
 
 CREATE TABLE public.labour_common_qualifications_jvkortti (
-    personqualification_id integer NOT NULL,
+    personqualification_id integer CONSTRAINT labour_common_qualifications_jv_personqualification_id_not_null NOT NULL,
     card_number character varying(13) NOT NULL,
     expiration_date date NOT NULL
 );
@@ -5675,8 +6851,8 @@ ALTER TABLE public.labour_jobcategory_personnel_classes ALTER COLUMN id ADD GENE
 
 CREATE TABLE public.labour_jobcategory_required_qualifications (
     id integer NOT NULL,
-    jobcategory_id integer NOT NULL,
-    qualification_id integer NOT NULL
+    jobcategory_id integer CONSTRAINT labour_jobcategory_required_qualificati_jobcategory_id_not_null NOT NULL,
+    qualification_id integer CONSTRAINT labour_jobcategory_required_qualifica_qualification_id_not_null NOT NULL
 );
 
 
@@ -5746,7 +6922,7 @@ CREATE TABLE public.labour_laboureventmeta (
 --
 
 CREATE TABLE public.labour_obsoleteemptysignupextrav1 (
-    signup_id integer NOT NULL,
+    signup_id integer CONSTRAINT labour_emptysignupextra_signup_id_not_null NOT NULL,
     is_active boolean NOT NULL
 );
 
@@ -6781,8 +7957,8 @@ ALTER TABLE public.membership_membershipfeepayment ALTER COLUMN id ADD GENERATED
 CREATE TABLE public.membership_membershiporganizationmeta (
     organization_id integer NOT NULL,
     admin_group_id integer NOT NULL,
-    receiving_applications boolean NOT NULL,
-    membership_requirements text NOT NULL,
+    receiving_applications boolean CONSTRAINT membership_membershiporganizati_receiving_applications_not_null NOT NULL,
+    membership_requirements text CONSTRAINT membership_membershiporganizat_membership_requirements_not_null NOT NULL,
     members_group_id integer NOT NULL
 );
 
@@ -6799,7 +7975,7 @@ CREATE TABLE public.membership_term (
     entrance_fee_cents integer,
     membership_fee_cents integer,
     organization_id integer NOT NULL,
-    payment_method character varying(13) NOT NULL,
+    payment_method character varying(13) CONSTRAINT membership_term_payment_type_not_null NOT NULL,
     reference_number_template text NOT NULL,
     CONSTRAINT membership_term_entrance_fee_cents_check CHECK ((entrance_fee_cents >= 0)),
     CONSTRAINT membership_term_membership_fee_cents_check CHECK ((membership_fee_cents >= 0))
@@ -6812,6 +7988,112 @@ CREATE TABLE public.membership_term (
 
 ALTER TABLE public.membership_term ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
     SEQUENCE NAME public.membership_term_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: messages_v2_message; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.messages_v2_message (
+    id uuid NOT NULL,
+    app character varying(11) NOT NULL,
+    subject character varying(255) NOT NULL,
+    body text NOT NULL,
+    dispatch character varying(15) NOT NULL,
+    recipient_filters jsonb NOT NULL,
+    updated_at timestamp with time zone NOT NULL,
+    sent_at timestamp with time zone,
+    expired_at timestamp with time zone,
+    created_by_id integer,
+    universe_id integer NOT NULL,
+    reply_to_id integer,
+    CONSTRAINT "messages_v2_Message_app_DimensionApp" CHECK (((app)::text = ANY ((ARRAY['forms'::character varying, 'program'::character varying, 'involvement'::character varying, 'volunteers'::character varying])::text[]))),
+    CONSTRAINT "messages_v2_Message_dispatch_MessageDispatch" CHECK (((dispatch)::text = ANY ((ARRAY['per_person'::character varying, 'per_involvement'::character varying])::text[])))
+);
+
+
+--
+-- Name: messages_v2_messagebody; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.messages_v2_messagebody (
+    id integer NOT NULL,
+    digest character varying(128) NOT NULL,
+    text text NOT NULL
+);
+
+
+--
+-- Name: messages_v2_messagebody_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.messages_v2_messagebody ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.messages_v2_messagebody_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: messages_v2_messagerecipient; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.messages_v2_messagerecipient (
+    id integer NOT NULL,
+    email character varying(255) NOT NULL,
+    subject character varying(255) NOT NULL,
+    sent_at timestamp with time zone NOT NULL,
+    cached_dimensions jsonb NOT NULL,
+    body_id integer NOT NULL,
+    involvement_id integer,
+    message_id uuid NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: messages_v2_messagerecipient_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.messages_v2_messagerecipient ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.messages_v2_messagerecipient_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: messages_v2_messagereplyto; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.messages_v2_messagereplyto (
+    id integer NOT NULL,
+    app character varying(11) NOT NULL,
+    name character varying(255) NOT NULL,
+    email character varying(254) NOT NULL,
+    universe_id integer NOT NULL,
+    CONSTRAINT "messages_v2_MessageReplyTo_app_DimensionApp" CHECK (((app)::text = ANY ((ARRAY['forms'::character varying, 'program'::character varying, 'involvement'::character varying, 'volunteers'::character varying])::text[])))
+);
+
+
+--
+-- Name: messages_v2_messagereplyto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.messages_v2_messagereplyto ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.messages_v2_messagereplyto_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -7367,7 +8649,8 @@ CREATE TABLE public.oauth2_provider_accesstoken (
     updated timestamp with time zone NOT NULL,
     source_refresh_token_id bigint,
     id_token_id bigint,
-    token_checksum character varying(64) NOT NULL
+    token_checksum character varying(64) NOT NULL,
+    resource jsonb NOT NULL
 );
 
 
@@ -7391,10 +8674,10 @@ ALTER TABLE public.oauth2_provider_accesstoken ALTER COLUMN id ADD GENERATED BY 
 
 CREATE TABLE public.oauth2_provider_application (
     id bigint NOT NULL,
-    client_id character varying(100) NOT NULL,
+    client_id character varying(255) NOT NULL,
     redirect_uris text NOT NULL,
     client_type character varying(32) NOT NULL,
-    authorization_grant_type character varying(32) NOT NULL,
+    authorization_grant_type character varying(44) NOT NULL,
     client_secret character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
     user_id integer,
@@ -7404,7 +8687,9 @@ CREATE TABLE public.oauth2_provider_application (
     algorithm character varying(5) NOT NULL,
     post_logout_redirect_uris text NOT NULL,
     hash_client_secret boolean NOT NULL,
-    allowed_origins text NOT NULL
+    allowed_origins text NOT NULL,
+    registration_source character varying(32) NOT NULL,
+    cimd_expires_at timestamp with time zone
 );
 
 
@@ -7414,6 +8699,38 @@ CREATE TABLE public.oauth2_provider_application (
 
 ALTER TABLE public.oauth2_provider_application ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
     SEQUENCE NAME public.oauth2_provider_application_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: oauth2_provider_devicegrant; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth2_provider_devicegrant (
+    id bigint NOT NULL,
+    device_code character varying(100) NOT NULL,
+    user_code character varying(100) NOT NULL,
+    scope text NOT NULL,
+    "interval" integer NOT NULL,
+    expires timestamp with time zone NOT NULL,
+    status character varying(64) NOT NULL,
+    client_id character varying(100) NOT NULL,
+    last_checked timestamp with time zone NOT NULL,
+    user_id integer
+);
+
+
+--
+-- Name: oauth2_provider_devicegrant_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.oauth2_provider_devicegrant ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.oauth2_provider_devicegrant_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -7439,7 +8756,8 @@ CREATE TABLE public.oauth2_provider_grant (
     code_challenge character varying(128) NOT NULL,
     code_challenge_method character varying(10) NOT NULL,
     nonce character varying(255) NOT NULL,
-    claims text NOT NULL
+    claims text NOT NULL,
+    resource jsonb NOT NULL
 );
 
 
@@ -7493,14 +8811,16 @@ ALTER TABLE public.oauth2_provider_idtoken ALTER COLUMN id ADD GENERATED BY DEFA
 
 CREATE TABLE public.oauth2_provider_refreshtoken (
     id bigint NOT NULL,
-    token character varying(255) NOT NULL,
+    token text NOT NULL,
     access_token_id bigint,
     application_id bigint NOT NULL,
     user_id integer NOT NULL,
     created timestamp with time zone NOT NULL,
     updated timestamp with time zone NOT NULL,
     revoked timestamp with time zone,
-    token_family uuid
+    token_family uuid,
+    token_checksum character varying(64) NOT NULL,
+    resource jsonb NOT NULL
 );
 
 
@@ -8035,46 +9355,12 @@ ALTER TABLE public.popcultday2024_signupextra_special_diet ALTER COLUMN id ADD G
 
 
 --
--- Name: program_v2_annotation; Type: TABLE; Schema: public; Owner: -
+-- Name: program_v2_paikkalaroommapping; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.program_v2_annotation (
-    id integer NOT NULL,
-    slug character varying(50) NOT NULL,
-    title jsonb NOT NULL,
-    description jsonb NOT NULL,
-    type_slug character varying(50) NOT NULL,
-    is_applicable_to_program_items boolean NOT NULL,
-    is_applicable_to_schedule_items boolean NOT NULL,
-    is_public boolean NOT NULL,
-    is_shown_in_detail boolean NOT NULL,
-    is_computed boolean NOT NULL
-);
-
-
---
--- Name: program_v2_annotation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-ALTER TABLE public.program_v2_annotation ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
-    SEQUENCE NAME public.program_v2_annotation_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1
-);
-
-
---
--- Name: program_v2_eventannotation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.program_v2_eventannotation (
-    is_active boolean NOT NULL,
-    program_form_fields text[] NOT NULL,
-    annotation_id integer NOT NULL,
-    meta_id integer NOT NULL
+CREATE TABLE public.program_v2_paikkalaroommapping (
+    paikkala_dimension_value_id integer CONSTRAINT program_v2_paikkalaroommapping_room_dimension_value_id_not_null NOT NULL,
+    paikkala_room_id integer NOT NULL
 );
 
 
@@ -8087,7 +9373,7 @@ CREATE TABLE public.program_v2_program (
     title character varying(1023) NOT NULL,
     slug character varying(1023) NOT NULL,
     description text NOT NULL,
-    annotations jsonb NOT NULL,
+    annotations jsonb CONSTRAINT program_v2_program_other_fields_not_null NOT NULL,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     cached_dimensions jsonb NOT NULL,
@@ -8121,8 +9407,8 @@ ALTER TABLE public.program_v2_program ALTER COLUMN id ADD GENERATED BY DEFAULT A
 
 CREATE TABLE public.program_v2_programdimensionvalue (
     id integer NOT NULL,
-    subject_id integer NOT NULL,
-    value_id integer NOT NULL
+    subject_id integer CONSTRAINT program_v2_programdimensionvalue_program_id_not_null NOT NULL,
+    value_id integer CONSTRAINT program_v2_programdimensionvalue_new_value_id_not_null NOT NULL
 );
 
 
@@ -8150,7 +9436,12 @@ CREATE TABLE public.program_v2_programv2eventmeta (
     is_accepting_feedback boolean NOT NULL,
     contact_email character varying(255) NOT NULL,
     guide_v2_embedded_url character varying(255) NOT NULL,
-    default_registry_id integer
+    default_registry_id integer,
+    konsti_url character varying(255) NOT NULL,
+    paikkala_default_max_tickets_per_batch integer CONSTRAINT program_v2_programv2eventme_paikkala_default_max_ticke_not_null NOT NULL,
+    paikkala_default_max_tickets_per_user integer CONSTRAINT program_v2_programv2eventm_paikkala_default_max_ticke_not_null1 NOT NULL,
+    public_from timestamp with time zone,
+    protect_responses boolean NOT NULL
 );
 
 
@@ -8161,7 +9452,7 @@ CREATE TABLE public.program_v2_programv2eventmeta (
 CREATE TABLE public.program_v2_scheduleitem (
     id integer NOT NULL,
     start_time timestamp with time zone NOT NULL,
-    duration interval NOT NULL,
+    duration interval CONSTRAINT program_v2_scheduleitem_length_not_null NOT NULL,
     program_id integer NOT NULL,
     cached_end_time timestamp with time zone NOT NULL,
     cached_location jsonb NOT NULL,
@@ -8171,7 +9462,12 @@ CREATE TABLE public.program_v2_scheduleitem (
     updated_at timestamp with time zone NOT NULL,
     annotations jsonb NOT NULL,
     cached_combined_dimensions jsonb NOT NULL,
-    cached_dimensions jsonb NOT NULL
+    cached_dimensions jsonb NOT NULL,
+    cached_combined_annotations jsonb NOT NULL,
+    paikkala_program_id integer,
+    paikkala_special_reservation_code uuid,
+    is_public boolean NOT NULL,
+    paikkala_icon character varying(100) NOT NULL
 );
 
 
@@ -8367,7 +9663,7 @@ CREATE TABLE public.programme_programme (
     is_beginner_friendly boolean NOT NULL,
     is_children_friendly boolean NOT NULL,
     is_english_ok boolean NOT NULL,
-    is_intended_for_experienced_participants boolean NOT NULL,
+    is_intended_for_experienced_participants boolean CONSTRAINT programme_programme_is_intended_for_experienced_partic_not_null NOT NULL,
     max_players integer,
     min_players integer,
     other_author character varying(1023) NOT NULL,
@@ -8423,48 +9719,48 @@ CREATE TABLE public.programme_programme (
     paikkala_icon character varying(100) NOT NULL,
     is_paikkala_public boolean NOT NULL,
     is_paikkala_time_visible boolean NOT NULL,
-    ropecon2020_not_suitable_for_children boolean NOT NULL,
-    ropecon2020_suitable_for_children_aged_12_plus boolean NOT NULL,
-    ropecon2020_suitable_for_children_aged_7_12 boolean NOT NULL,
-    ropecon2020_suitable_for_children_under_7 boolean NOT NULL,
+    ropecon2020_not_suitable_for_children boolean CONSTRAINT programme_programme_ropecon2020_not_suitable_for_child_not_null NOT NULL,
+    ropecon2020_suitable_for_children_aged_12_plus boolean CONSTRAINT programme_programme_ropecon2020_suitable_for_children__not_null NOT NULL,
+    ropecon2020_suitable_for_children_aged_7_12 boolean CONSTRAINT programme_programme_ropecon2020_suitable_for_children_not_null1 NOT NULL,
+    ropecon2020_suitable_for_children_under_7 boolean CONSTRAINT programme_programme_ropecon2020_suitable_for_children_not_null2 NOT NULL,
     ropecon2020_theme_dinosaurs boolean NOT NULL,
     ropecon2020_theme_end_of_the_world boolean NOT NULL,
     ropecon2020_materials_language character varying(1023) NOT NULL,
     rerun_extra text NOT NULL,
     ropecon2021_gamedesk_physical_or_virtual character varying(12),
-    ropecon2021_accessibility_colourblind boolean NOT NULL,
-    ropecon2021_accessibility_flashing_lights boolean NOT NULL,
+    ropecon2021_accessibility_colourblind boolean CONSTRAINT programme_programme_ropecon2021_accessibility_colourbl_not_null NOT NULL,
+    ropecon2021_accessibility_flashing_lights boolean CONSTRAINT programme_programme_ropecon2021_accessibility_flashing_not_null NOT NULL,
     ropecon2021_accessibility_inaccessibility text,
-    ropecon2021_accessibility_irritate_skin boolean NOT NULL,
-    ropecon2021_accessibility_loud_sounds boolean NOT NULL,
-    ropecon2021_accessibility_low_lightning boolean NOT NULL,
-    ropecon2021_accessibility_moving_around boolean NOT NULL,
-    ropecon2021_accessibility_physical_contact boolean NOT NULL,
-    ropecon2021_accessibility_recording boolean NOT NULL,
-    ropecon2021_accessibility_strong_smells boolean NOT NULL,
+    ropecon2021_accessibility_irritate_skin boolean CONSTRAINT programme_programme_ropecon2021_accessibility_irritate_not_null NOT NULL,
+    ropecon2021_accessibility_loud_sounds boolean CONSTRAINT programme_programme_ropecon2021_accessibility_loud_sou_not_null NOT NULL,
+    ropecon2021_accessibility_low_lightning boolean CONSTRAINT programme_programme_ropecon2021_accessibility_low_ligh_not_null NOT NULL,
+    ropecon2021_accessibility_moving_around boolean CONSTRAINT programme_programme_ropecon2021_accessibility_moving_a_not_null NOT NULL,
+    ropecon2021_accessibility_physical_contact boolean CONSTRAINT programme_programme_ropecon2021_accessibility_physical_not_null NOT NULL,
+    ropecon2021_accessibility_recording boolean CONSTRAINT programme_programme_ropecon2021_accessibility_recordin_not_null NOT NULL,
+    ropecon2021_accessibility_strong_smells boolean CONSTRAINT programme_programme_ropecon2021_accessibility_strong_s_not_null NOT NULL,
     ropecon2021_accessibility_text boolean NOT NULL,
     ropecon2021_accessibility_video boolean NOT NULL,
     ropecon2021_programme_for_children boolean NOT NULL,
     ropecon2021_rpg_clarifications text,
-    ropecon2021_rpg_physical_or_virtual boolean NOT NULL,
+    ropecon2021_rpg_physical_or_virtual boolean CONSTRAINT programme_programme_ropecon2021_rpg_physical_or_virtua_not_null NOT NULL,
     ropecon_theme boolean NOT NULL,
     ropecon2021_larp_physical_or_virtual character varying(19),
     ropecon2021_gamedesk_materials text,
-    ropecon2022_accessibility_remaining_one_place boolean NOT NULL,
-    ropecon2022_aimed_at_adult_participants boolean NOT NULL,
-    ropecon2022_aimed_at_children_under_10 boolean NOT NULL,
-    ropecon2022_aimed_at_underage_participants boolean NOT NULL,
+    ropecon2022_accessibility_remaining_one_place boolean CONSTRAINT programme_programme_ropecon2022_accessibility_remainin_not_null NOT NULL,
+    ropecon2022_aimed_at_adult_participants boolean CONSTRAINT programme_programme_ropecon2022_aimed_at_adult_partici_not_null NOT NULL,
+    ropecon2022_aimed_at_children_under_10 boolean CONSTRAINT programme_programme_ropecon2022_aimed_at_children_unde_not_null NOT NULL,
+    ropecon2022_aimed_at_underage_participants boolean CONSTRAINT programme_programme_ropecon2022_aimed_at_underage_part_not_null NOT NULL,
     ropecon2022_content_warnings character varying(1023) NOT NULL,
-    ropecon2023_accessibility_cant_use_mic boolean NOT NULL,
-    ropecon2023_accessibility_limited_opportunities_to_move_around boolean NOT NULL,
-    ropecon2023_accessibility_long_texts boolean NOT NULL,
-    ropecon2023_accessibility_participation_requires_dexterity boolean NOT NULL,
-    ropecon2023_accessibility_participation_requires_react_quickly boolean NOT NULL,
-    ropecon2023_accessibility_programme_duration_over_2_hours boolean NOT NULL,
-    ropecon2023_accessibility_texts_not_available_as_recordings boolean NOT NULL,
-    ropecon2023_aimed_at_adult_attendees boolean NOT NULL,
-    ropecon2023_aimed_at_children_between_13_17 boolean NOT NULL,
-    ropecon2023_aimed_at_children_under_13 boolean NOT NULL,
+    ropecon2023_accessibility_cant_use_mic boolean CONSTRAINT programme_programme_ropecon2023_accessibility_cant_use_not_null NOT NULL,
+    ropecon2023_accessibility_limited_opportunities_to_move_around boolean CONSTRAINT programme_programme_ropecon2023_accessibility_limited__not_null NOT NULL,
+    ropecon2023_accessibility_long_texts boolean CONSTRAINT programme_programme_ropecon2023_accessibility_long_tex_not_null NOT NULL,
+    ropecon2023_accessibility_participation_requires_dexterity boolean CONSTRAINT programme_programme_ropecon2023_accessibility_particip_not_null NOT NULL,
+    ropecon2023_accessibility_participation_requires_react_quickly boolean CONSTRAINT programme_programme_ropecon2023_accessibility_partici_not_null1 NOT NULL,
+    ropecon2023_accessibility_programme_duration_over_2_hours boolean CONSTRAINT programme_programme_ropecon2023_accessibility_programm_not_null NOT NULL,
+    ropecon2023_accessibility_texts_not_available_as_recordings boolean CONSTRAINT programme_programme_ropecon2023_accessibility_texts_no_not_null NOT NULL,
+    ropecon2023_aimed_at_adult_attendees boolean CONSTRAINT programme_programme_ropecon2023_aimed_at_adult_attende_not_null NOT NULL,
+    ropecon2023_aimed_at_children_between_13_17 boolean CONSTRAINT programme_programme_ropecon2023_aimed_at_children_betw_not_null NOT NULL,
+    ropecon2023_aimed_at_children_under_13 boolean CONSTRAINT programme_programme_ropecon2023_aimed_at_children_unde_not_null NOT NULL,
     ropecon2023_beginner_friendly boolean NOT NULL,
     ropecon2023_celebratory_year boolean NOT NULL,
     ropecon2023_for_18_plus_only boolean NOT NULL,
@@ -8481,7 +9777,7 @@ CREATE TABLE public.programme_programme (
     tracon2023_content_warnings text NOT NULL,
     hosts_from_host character varying(1023) NOT NULL,
     solmukohta2024_areas_of_expertise text NOT NULL,
-    solmukohta2024_have_you_hosted_before character varying(6) NOT NULL,
+    solmukohta2024_have_you_hosted_before character varying(6) CONSTRAINT programme_programme_solmukohta2024_have_you_hosted_bef_not_null NOT NULL,
     solmukohta2024_other_needs text NOT NULL,
     solmukohta2024_scheduling text NOT NULL,
     solmukohta2024_ticket boolean NOT NULL,
@@ -8508,9 +9804,9 @@ CREATE TABLE public.programme_programme (
 --
 
 CREATE TABLE public.programme_programme_hitpoint2017_preferred_time_slots (
-    id integer NOT NULL,
-    programme_id integer NOT NULL,
-    timeslot_id integer NOT NULL
+    id integer CONSTRAINT programme_programme_hitpoint2017_preferred_time_slo_id_not_null NOT NULL,
+    programme_id integer CONSTRAINT programme_programme_hitpoint2017_preferre_programme_id_not_null NOT NULL,
+    timeslot_id integer CONSTRAINT programme_programme_hitpoint2017_preferred_timeslot_id_not_null NOT NULL
 );
 
 
@@ -8533,9 +9829,9 @@ ALTER TABLE public.programme_programme_hitpoint2017_preferred_time_slots ALTER C
 --
 
 CREATE TABLE public.programme_programme_hitpoint2020_preferred_time_slots (
-    id integer NOT NULL,
-    programme_id integer NOT NULL,
-    timeslot_id integer NOT NULL
+    id integer CONSTRAINT programme_programme_hitpoint2020_preferred_time_slo_id_not_null NOT NULL,
+    programme_id integer CONSTRAINT programme_programme_hitpoint2020_preferre_programme_id_not_null NOT NULL,
+    timeslot_id integer CONSTRAINT programme_programme_hitpoint2020_preferred_timeslot_id_not_null NOT NULL
 );
 
 
@@ -8572,9 +9868,9 @@ ALTER TABLE public.programme_programme ALTER COLUMN id ADD GENERATED BY DEFAULT 
 --
 
 CREATE TABLE public.programme_programme_ropecon2018_preferred_time_slots (
-    id integer NOT NULL,
-    programme_id integer NOT NULL,
-    timeslot_id integer NOT NULL
+    id integer CONSTRAINT programme_programme_ropecon2018_preferred_time_slot_id_not_null NOT NULL,
+    programme_id integer CONSTRAINT programme_programme_ropecon2018_preferred_programme_id_not_null NOT NULL,
+    timeslot_id integer CONSTRAINT programme_programme_ropecon2018_preferred__timeslot_id_not_null NOT NULL
 );
 
 
@@ -8598,8 +9894,8 @@ ALTER TABLE public.programme_programme_ropecon2018_preferred_time_slots ALTER CO
 
 CREATE TABLE public.programme_programme_ropecon2019_blocked_time_slots (
     id integer NOT NULL,
-    programme_id integer NOT NULL,
-    timeslot_id integer NOT NULL
+    programme_id integer CONSTRAINT programme_programme_ropecon2019_blocked_t_programme_id_not_null NOT NULL,
+    timeslot_id integer CONSTRAINT programme_programme_ropecon2019_blocked_ti_timeslot_id_not_null NOT NULL
 );
 
 
@@ -8622,9 +9918,9 @@ ALTER TABLE public.programme_programme_ropecon2019_blocked_time_slots ALTER COLU
 --
 
 CREATE TABLE public.programme_programme_ropecon2019_preferred_time_slots (
-    id integer NOT NULL,
-    programme_id integer NOT NULL,
-    timeslot_id integer NOT NULL
+    id integer CONSTRAINT programme_programme_ropecon2019_preferred_time_slot_id_not_null NOT NULL,
+    programme_id integer CONSTRAINT programme_programme_ropecon2019_preferred_programme_id_not_null NOT NULL,
+    timeslot_id integer CONSTRAINT programme_programme_ropecon2019_preferred__timeslot_id_not_null NOT NULL
 );
 
 
@@ -8648,8 +9944,8 @@ ALTER TABLE public.programme_programme_ropecon2019_preferred_time_slots ALTER CO
 
 CREATE TABLE public.programme_programme_ropecon2021_blocked_time_slots (
     id integer NOT NULL,
-    programme_id integer NOT NULL,
-    timeslot_id integer NOT NULL
+    programme_id integer CONSTRAINT programme_programme_ropecon2021_blocked_t_programme_id_not_null NOT NULL,
+    timeslot_id integer CONSTRAINT programme_programme_ropecon2021_blocked_ti_timeslot_id_not_null NOT NULL
 );
 
 
@@ -8673,8 +9969,8 @@ ALTER TABLE public.programme_programme_ropecon2021_blocked_time_slots ALTER COLU
 
 CREATE TABLE public.programme_programme_ropecon2023_blocked_time_slots (
     id integer NOT NULL,
-    programme_id integer NOT NULL,
-    timeslot_id integer NOT NULL
+    programme_id integer CONSTRAINT programme_programme_ropecon2023_blocked_t_programme_id_not_null NOT NULL,
+    timeslot_id integer CONSTRAINT programme_programme_ropecon2023_blocked_ti_timeslot_id_not_null NOT NULL
 );
 
 
@@ -8698,8 +9994,8 @@ ALTER TABLE public.programme_programme_ropecon2023_blocked_time_slots ALTER COLU
 
 CREATE TABLE public.programme_programme_ropecon2024_blocked_time_slots (
     id integer NOT NULL,
-    programme_id integer NOT NULL,
-    timeslot_id integer NOT NULL
+    programme_id integer CONSTRAINT programme_programme_ropecon2024_blocked_t_programme_id_not_null NOT NULL,
+    timeslot_id integer CONSTRAINT programme_programme_ropecon2024_blocked_ti_timeslot_id_not_null NOT NULL
 );
 
 
@@ -8723,8 +10019,8 @@ ALTER TABLE public.programme_programme_ropecon2024_blocked_time_slots ALTER COLU
 
 CREATE TABLE public.programme_programme_solmukohta2024_content_warnings (
     id integer NOT NULL,
-    programme_id integer NOT NULL,
-    contentwarning_id integer NOT NULL
+    programme_id integer CONSTRAINT programme_programme_solmukohta2024_conten_programme_id_not_null NOT NULL,
+    contentwarning_id integer CONSTRAINT programme_programme_solmukohta2024_c_contentwarning_id_not_null NOT NULL
 );
 
 
@@ -8748,8 +10044,8 @@ ALTER TABLE public.programme_programme_solmukohta2024_content_warnings ALTER COL
 
 CREATE TABLE public.programme_programme_solmukohta2024_documentation (
     id integer NOT NULL,
-    programme_id integer NOT NULL,
-    documentation_id integer NOT NULL
+    programme_id integer CONSTRAINT programme_programme_solmukohta2024_docume_programme_id_not_null NOT NULL,
+    documentation_id integer CONSTRAINT programme_programme_solmukohta2024_do_documentation_id_not_null NOT NULL
 );
 
 
@@ -8773,8 +10069,8 @@ ALTER TABLE public.programme_programme_solmukohta2024_documentation ALTER COLUMN
 
 CREATE TABLE public.programme_programme_solmukohta2024_mentoring (
     id integer NOT NULL,
-    programme_id integer NOT NULL,
-    mentoring_id integer NOT NULL
+    programme_id integer CONSTRAINT programme_programme_solmukohta2024_mentor_programme_id_not_null NOT NULL,
+    mentoring_id integer CONSTRAINT programme_programme_solmukohta2024_mentor_mentoring_id_not_null NOT NULL
 );
 
 
@@ -8797,9 +10093,9 @@ ALTER TABLE public.programme_programme_solmukohta2024_mentoring ALTER COLUMN id 
 --
 
 CREATE TABLE public.programme_programme_solmukohta2024_panel_participation (
-    id integer NOT NULL,
-    programme_id integer NOT NULL,
-    panelparticipation_id integer NOT NULL
+    id integer CONSTRAINT programme_programme_solmukohta2024_panel_participat_id_not_null NOT NULL,
+    programme_id integer CONSTRAINT programme_programme_solmukohta2024_panel__programme_id_not_null NOT NULL,
+    panelparticipation_id integer CONSTRAINT programme_programme_solmukohta20_panelparticipation_id_not_null NOT NULL
 );
 
 
@@ -8823,8 +10119,8 @@ ALTER TABLE public.programme_programme_solmukohta2024_panel_participation ALTER 
 
 CREATE TABLE public.programme_programme_solmukohta2024_technology (
     id integer NOT NULL,
-    programme_id integer NOT NULL,
-    technology_id integer NOT NULL
+    programme_id integer CONSTRAINT programme_programme_solmukohta2024_techno_programme_id_not_null NOT NULL,
+    technology_id integer CONSTRAINT programme_programme_solmukohta2024_techn_technology_id_not_null NOT NULL
 );
 
 
@@ -8872,9 +10168,9 @@ ALTER TABLE public.programme_programme_tags ALTER COLUMN id ADD GENERATED BY DEF
 --
 
 CREATE TABLE public.programme_programme_tracon2023_accessibility_warnings (
-    id integer NOT NULL,
-    programme_id integer NOT NULL,
-    accessibilitywarning_id integer NOT NULL
+    id integer CONSTRAINT programme_programme_tracon2023_accessibility_warnin_id_not_null NOT NULL,
+    programme_id integer CONSTRAINT programme_programme_tracon2023_accessibil_programme_id_not_null NOT NULL,
+    accessibilitywarning_id integer CONSTRAINT programme_programme_tracon2023_accessibilitywarning_id_not_null NOT NULL
 );
 
 
@@ -8898,8 +10194,8 @@ ALTER TABLE public.programme_programme_tracon2023_accessibility_warnings ALTER C
 
 CREATE TABLE public.programme_programme_tracon2023_preferred_time_slots (
     id integer NOT NULL,
-    programme_id integer NOT NULL,
-    timeslot_id integer NOT NULL
+    programme_id integer CONSTRAINT programme_programme_tracon2023_preferred__programme_id_not_null NOT NULL,
+    timeslot_id integer CONSTRAINT programme_programme_tracon2023_preferred_t_timeslot_id_not_null NOT NULL
 );
 
 
@@ -8929,8 +10225,8 @@ CREATE TABLE public.programme_programmeeventmeta (
     accepting_cold_offers_from timestamp with time zone,
     accepting_cold_offers_until timestamp with time zone,
     schedule_layout character varying(10) NOT NULL,
-    paikkala_default_max_tickets_per_batch integer NOT NULL,
-    paikkala_default_max_tickets_per_user integer NOT NULL,
+    paikkala_default_max_tickets_per_batch integer CONSTRAINT programme_programmeeventmet_paikkala_default_max_ticke_not_null NOT NULL,
+    paikkala_default_max_tickets_per_user integer CONSTRAINT programme_programmeeventme_paikkala_default_max_ticke_not_null1 NOT NULL,
     override_schedule_link character varying(200) NOT NULL
 );
 
@@ -10292,6 +11588,272 @@ ALTER TABLE public.ropecon2025_timeslot ALTER COLUMN id ADD GENERATED BY DEFAULT
 
 
 --
+-- Name: ropecon2026_language; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2026_language (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: ropecon2026_language_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2026_language ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2026_language_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: ropecon2026_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2026_signupextra (
+    id integer NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    want_certificate boolean NOT NULL,
+    other_languages text NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    shift_wishes text NOT NULL,
+    free_text text NOT NULL,
+    roster_publish_consent boolean NOT NULL,
+    is_active boolean NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: ropecon2026_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2026_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2026_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: ropecon2026_signupextra_languages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2026_signupextra_languages (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    language_id integer NOT NULL
+);
+
+
+--
+-- Name: ropecon2026_signupextra_languages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2026_signupextra_languages ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2026_signupextra_languages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: ropecon2026_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2026_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: ropecon2026_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2026_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2026_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: ropecon2026_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2026_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: ropecon2026_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2026_specialdiet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2026_specialdiet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: ropecon2027_language; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2027_language (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: ropecon2027_language_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2027_language ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2027_language_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: ropecon2027_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2027_signupextra (
+    id integer NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    want_certificate boolean NOT NULL,
+    other_languages text NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    shift_wishes text NOT NULL,
+    free_text text NOT NULL,
+    roster_publish_consent boolean NOT NULL,
+    is_active boolean NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: ropecon2027_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2027_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2027_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: ropecon2027_signupextra_languages; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2027_signupextra_languages (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    language_id integer NOT NULL
+);
+
+
+--
+-- Name: ropecon2027_signupextra_languages_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2027_signupextra_languages ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2027_signupextra_languages_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: ropecon2027_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2027_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: ropecon2027_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2027_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2027_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: ropecon2027_specialdiet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.ropecon2027_specialdiet (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: ropecon2027_specialdiet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.ropecon2027_specialdiet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.ropecon2027_specialdiet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: shumicon2023_eventday; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -10407,7 +11969,7 @@ ALTER TABLE public.shumicon2023_signupextra ALTER COLUMN id ADD GENERATED BY DEF
 CREATE TABLE public.shumicon2023_signupextra_known_language (
     id integer NOT NULL,
     signupextra_id integer NOT NULL,
-    knownlanguage_id integer NOT NULL
+    knownlanguage_id integer CONSTRAINT shumicon2023_signupextra_known_langua_knownlanguage_id_not_null NOT NULL
 );
 
 
@@ -10431,8 +11993,8 @@ ALTER TABLE public.shumicon2023_signupextra_known_language ALTER COLUMN id ADD G
 
 CREATE TABLE public.shumicon2023_signupextra_native_language (
     id integer NOT NULL,
-    signupextra_id integer NOT NULL,
-    nativelanguage_id integer NOT NULL
+    signupextra_id integer CONSTRAINT shumicon2023_signupextra_native_languag_signupextra_id_not_null NOT NULL,
+    nativelanguage_id integer CONSTRAINT shumicon2023_signupextra_native_lang_nativelanguage_id_not_null NOT NULL
 );
 
 
@@ -10642,7 +12204,7 @@ ALTER TABLE public.shumicon2025_signupextra ALTER COLUMN id ADD GENERATED BY DEF
 CREATE TABLE public.shumicon2025_signupextra_known_language (
     id integer NOT NULL,
     signupextra_id integer NOT NULL,
-    knownlanguage_id integer NOT NULL
+    knownlanguage_id integer CONSTRAINT shumicon2025_signupextra_known_langua_knownlanguage_id_not_null NOT NULL
 );
 
 
@@ -10666,8 +12228,8 @@ ALTER TABLE public.shumicon2025_signupextra_known_language ALTER COLUMN id ADD G
 
 CREATE TABLE public.shumicon2025_signupextra_native_language (
     id integer NOT NULL,
-    signupextra_id integer NOT NULL,
-    nativelanguage_id integer NOT NULL
+    signupextra_id integer CONSTRAINT shumicon2025_signupextra_native_languag_signupextra_id_not_null NOT NULL,
+    nativelanguage_id integer CONSTRAINT shumicon2025_signupextra_native_lang_nativelanguage_id_not_null NOT NULL
 );
 
 
@@ -11083,7 +12645,7 @@ CREATE TABLE public.tickets_v2_order (
     event_id integer NOT NULL,
     order_number integer NOT NULL,
     owner_id integer,
-    cached_status public.tickets_v2_paymentstatus DEFAULT 0 NOT NULL,
+    cached_status public.tickets_v2_paymentstatus DEFAULT 'NOT_STARTED'::public.tickets_v2_paymentstatus NOT NULL,
     cached_price numeric(10,2) NOT NULL,
     language text NOT NULL,
     product_data jsonb NOT NULL,
@@ -11110,6 +12672,36 @@ ALTER TABLE public.tickets_v2_order ALTER COLUMN order_number ADD GENERATED ALWA
 
 
 --
+-- Name: tickets_v2_ordercancellationtoken; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tickets_v2_ordercancellationtoken (
+    id integer NOT NULL,
+    order_id uuid NOT NULL,
+    code character varying(63) NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    used_at timestamp with time zone,
+    state character varying(8) NOT NULL,
+    language character varying(2) NOT NULL,
+    event_id integer NOT NULL
+);
+
+
+--
+-- Name: tickets_v2_ordercancellationtoken_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tickets_v2_ordercancellationtoken ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tickets_v2_ordercancellationtoken_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Name: tickets_v2_paymentstamp; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -11118,7 +12710,7 @@ CREATE TABLE public.tickets_v2_paymentstamp (
     event_id integer NOT NULL,
     order_id uuid NOT NULL,
     correlation_id uuid NOT NULL,
-    provider_id public.tickets_v2_paymentprovider NOT NULL,
+    provider public.tickets_v2_paymentprovider CONSTRAINT tickets_v2_paymentstamp_provider_id_not_null NOT NULL,
     type public.tickets_v2_paymentstamptype NOT NULL,
     status public.tickets_v2_paymentstatus NOT NULL,
     data jsonb DEFAULT '{}'::jsonb NOT NULL
@@ -11143,6 +12735,7 @@ CREATE TABLE public.tickets_v2_product (
     title text NOT NULL,
     description text NOT NULL,
     ordering smallint NOT NULL,
+    vat_percentage numeric(4,2) NOT NULL,
     CONSTRAINT tickets_v2_product_etickets_per_product_check CHECK ((etickets_per_product >= 0)),
     CONSTRAINT tickets_v2_product_max_per_order_check CHECK ((max_per_order >= 0)),
     CONSTRAINT tickets_v2_product_ordering_check CHECK ((ordering >= 0))
@@ -11224,7 +12817,7 @@ CREATE TABLE public.tickets_v2_receipt (
     correlation_id uuid NOT NULL,
     batch_id uuid,
     type public.tickets_v2_receipttype NOT NULL,
-    status public.tickets_v2_receiptstatus DEFAULT 0 NOT NULL,
+    status public.tickets_v2_receiptstatus DEFAULT 'REQUESTED'::public.tickets_v2_receiptstatus NOT NULL,
     email text DEFAULT ''::text NOT NULL
 )
 PARTITION BY LIST (event_id);
@@ -11250,11 +12843,15 @@ PARTITION BY LIST (event_id);
 CREATE TABLE public.tickets_v2_ticketsv2eventmeta (
     event_id integer NOT NULL,
     admin_group_id integer NOT NULL,
-    provider_id smallint NOT NULL,
-    terms_and_conditions_url_en text NOT NULL,
-    terms_and_conditions_url_fi text NOT NULL,
-    terms_and_conditions_url_sv text NOT NULL,
-    contact_email character varying(255) NOT NULL
+    provider public.tickets_v2_paymentprovider DEFAULT 'NONE'::public.tickets_v2_paymentprovider CONSTRAINT tickets_v2_ticketsv2eventmeta_provider_id_not_null NOT NULL,
+    terms_and_conditions_url_en text CONSTRAINT tickets_v2_ticketsv2eventme_terms_and_conditions_url_e_not_null NOT NULL,
+    terms_and_conditions_url_fi text CONSTRAINT tickets_v2_ticketsv2eventme_terms_and_conditions_url_f_not_null NOT NULL,
+    terms_and_conditions_url_sv text CONSTRAINT tickets_v2_ticketsv2eventme_terms_and_conditions_url_s_not_null NOT NULL,
+    contact_email character varying(255) NOT NULL,
+    cancellation_period_days smallint NOT NULL,
+    unpaid_order_cancellation_delay_minutes integer CONSTRAINT tickets_v2_ticketsv2eventme_unpaid_order_cancellation__not_null NOT NULL,
+    CONSTRAINT tickets_v2_ticketsv2eventmet_unpaid_order_cancellation_de_check CHECK ((unpaid_order_cancellation_delay_minutes >= 0)),
+    CONSTRAINT tickets_v2_ticketsv2eventmeta_cancellation_period_days_check CHECK ((cancellation_period_days >= 0))
 );
 
 
@@ -12704,6 +14301,215 @@ ALTER TABLE public.tracon2025_timeslot ALTER COLUMN id ADD GENERATED BY DEFAULT 
 
 
 --
+-- Name: tracon2026_accessibilitywarning; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2026_accessibilitywarning (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: tracon2026_accessibilitywarning_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tracon2026_accessibilitywarning ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tracon2026_accessibilitywarning_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: tracon2026_night; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2026_night (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: tracon2026_night_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tracon2026_night ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tracon2026_night_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: tracon2026_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2026_poison (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: tracon2026_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tracon2026_poison ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tracon2026_poison_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: tracon2026_signupextra; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2026_signupextra (
+    id integer NOT NULL,
+    is_active boolean NOT NULL,
+    shift_type character varying(15) NOT NULL,
+    total_work character varying(15) NOT NULL,
+    overseer boolean NOT NULL,
+    shirt_size character varying(8) NOT NULL,
+    special_diet_other text NOT NULL,
+    prior_experience text NOT NULL,
+    free_text text NOT NULL,
+    shift_wishes text NOT NULL,
+    email_alias character varying(32) NOT NULL,
+    afterparty_participation boolean NOT NULL,
+    afterparty_policy boolean NOT NULL,
+    afterparty_help text NOT NULL,
+    event_id integer NOT NULL,
+    person_id integer NOT NULL
+);
+
+
+--
+-- Name: tracon2026_signupextra_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tracon2026_signupextra ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tracon2026_signupextra_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: tracon2026_signupextra_lodging_needs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2026_signupextra_lodging_needs (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    night_id integer NOT NULL
+);
+
+
+--
+-- Name: tracon2026_signupextra_lodging_needs_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tracon2026_signupextra_lodging_needs ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tracon2026_signupextra_lodging_needs_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: tracon2026_signupextra_pick_your_poison; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2026_signupextra_pick_your_poison (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    poison_id integer NOT NULL
+);
+
+
+--
+-- Name: tracon2026_signupextra_pick_your_poison_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tracon2026_signupextra_pick_your_poison ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tracon2026_signupextra_pick_your_poison_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: tracon2026_signupextra_special_diet; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2026_signupextra_special_diet (
+    id integer NOT NULL,
+    signupextra_id integer NOT NULL,
+    specialdiet_id integer NOT NULL
+);
+
+
+--
+-- Name: tracon2026_signupextra_special_diet_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tracon2026_signupextra_special_diet ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tracon2026_signupextra_special_diet_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
+-- Name: tracon2026_timeslot; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.tracon2026_timeslot (
+    id integer NOT NULL,
+    name character varying(63) NOT NULL
+);
+
+
+--
+-- Name: tracon2026_timeslot_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+ALTER TABLE public.tracon2026_timeslot ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY (
+    SEQUENCE NAME public.tracon2026_timeslot_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1
+);
+
+
+--
 -- Data for Name: access_accessorganizationmeta; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -12836,14 +14642,14 @@ COPY public.auth_group_permissions (id, group_id, permission_id) FROM stdin;
 --
 
 COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
-1	Can add permission	1	add_permission
-2	Can change permission	1	change_permission
-3	Can delete permission	1	delete_permission
-4	Can view permission	1	view_permission
-5	Can add group	2	add_group
-6	Can change group	2	change_group
-7	Can delete group	2	delete_group
-8	Can view group	2	view_group
+1	Can add permission	2	add_permission
+2	Can change permission	2	change_permission
+3	Can delete permission	2	delete_permission
+4	Can view permission	2	view_permission
+5	Can add group	1	add_group
+6	Can change group	1	change_group
+7	Can delete group	1	delete_group
+8	Can view group	1	view_group
 9	Can add user	3	add_user
 10	Can change user	3	change_user
 11	Can delete user	3	delete_user
@@ -12864,591 +14670,590 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 26	Can change log entry	7	change_logentry
 27	Can delete log entry	7	delete_logentry
 28	Can view log entry	7	view_logentry
-29	Can add application	8	add_application
-30	Can change application	8	change_application
-31	Can delete application	8	delete_application
-32	Can view application	8	view_application
-33	Can add access token	9	add_accesstoken
-34	Can change access token	9	change_accesstoken
-35	Can delete access token	9	delete_accesstoken
-36	Can view access token	9	view_accesstoken
-37	Can add grant	10	add_grant
-38	Can change grant	10	change_grant
-39	Can delete grant	10	delete_grant
-40	Can view grant	10	view_grant
-41	Can add refresh token	11	add_refreshtoken
-42	Can change refresh token	11	change_refreshtoken
-43	Can delete refresh token	11	delete_refreshtoken
-44	Can view refresh token	11	view_refreshtoken
+29	Can add application	9	add_application
+30	Can change application	9	change_application
+31	Can delete application	9	delete_application
+32	Can view application	9	view_application
+33	Can add access token	8	add_accesstoken
+34	Can change access token	8	change_accesstoken
+35	Can delete access token	8	delete_accesstoken
+36	Can view access token	8	view_accesstoken
+37	Can add grant	11	add_grant
+38	Can change grant	11	change_grant
+39	Can delete grant	11	delete_grant
+40	Can view grant	11	view_grant
+41	Can add refresh token	13	add_refreshtoken
+42	Can change refresh token	13	change_refreshtoken
+43	Can delete refresh token	13	delete_refreshtoken
+44	Can view refresh token	13	view_refreshtoken
 45	Can add id token	12	add_idtoken
 46	Can change id token	12	change_idtoken
 47	Can delete id token	12	delete_idtoken
 48	Can view id token	12	view_idtoken
-49	Can add code	13	add_code
-50	Can change code	13	change_code
-51	Can delete code	13	delete_code
-52	Can view code	13	view_code
-53	Can add order	14	add_order
-54	Can change order	14	change_order
-55	Can delete order	14	delete_order
-56	Can view order	14	view_order
-57	Can add program	15	add_program
-58	Can change program	15	change_program
-59	Can delete program	15	delete_program
-60	Can view program	15	view_program
-61	Can add row	16	add_row
-62	Can change row	16	change_row
-63	Can delete row	16	delete_row
-64	Can view row	16	view_row
-65	Can add ticket	17	add_ticket
-66	Can change ticket	17	change_ticket
-67	Can delete ticket	17	delete_ticket
-68	Can view ticket	17	view_ticket
-69	Can add zone	18	add_zone
-70	Can change zone	18	change_zone
-71	Can delete zone	18	delete_zone
-72	Can view zone	18	view_zone
-73	Can add per program block	19	add_perprogramblock
-74	Can change per program block	19	change_perprogramblock
-75	Can delete per program block	19	delete_perprogramblock
-76	Can view per program block	19	view_perprogramblock
-77	Can add room	20	add_room
-78	Can change room	20	change_room
-79	Can delete room	20	delete_room
-80	Can view room	20	view_room
-81	Can add seat qualifier	21	add_seatqualifier
-82	Can change seat qualifier	21	change_seatqualifier
-83	Can delete seat qualifier	21	delete_seatqualifier
-84	Can view seat qualifier	21	view_seatqualifier
-85	Can add email verification token	22	add_emailverificationtoken
-86	Can change email verification token	22	change_emailverificationtoken
-87	Can delete email verification token	22	delete_emailverificationtoken
-88	Can view email verification token	22	view_emailverificationtoken
-89	Can add Tapahtuma	23	add_event
-90	Can change Tapahtuma	23	change_event
-91	Can delete Tapahtuma	23	delete_event
-92	Can view Tapahtuma	23	view_event
-93	Can add password reset token	24	add_passwordresettoken
-94	Can change password reset token	24	change_passwordresettoken
-95	Can delete password reset token	24	delete_passwordresettoken
-96	Can view password reset token	24	view_passwordresettoken
-97	Can add Henkilö	25	add_person
-98	Can change Henkilö	25	change_person
-99	Can delete Henkilö	25	delete_person
-100	Can view Henkilö	25	view_person
-101	Can add Tapahtumapaikka	26	add_venue
-102	Can change Tapahtumapaikka	26	change_venue
-103	Can delete Tapahtumapaikka	26	delete_venue
-104	Can view Tapahtumapaikka	26	view_venue
-105	Can add Organisaatio	27	add_organization
-1281	Can add log entry	321	add_entry
-106	Can change Organisaatio	27	change_organization
-107	Can delete Organisaatio	27	delete_organization
-108	Can view Organisaatio	27	view_organization
-109	Can add carousel slide	28	add_carouselslide
-110	Can change carousel slide	28	change_carouselslide
-111	Can delete carousel slide	28	delete_carouselslide
-112	Can view carousel slide	28	view_carouselslide
-113	Can add scope	29	add_scope
-114	Can change scope	29	change_scope
-115	Can delete scope	29	delete_scope
-116	Can view scope	29	view_scope
-117	Can add universe	30	add_universe
-118	Can change universe	30	change_universe
-119	Can delete universe	30	delete_universe
-120	Can view universe	30	view_universe
-121	Can add dimension	31	add_dimension
-122	Can change dimension	31	change_dimension
-123	Can delete dimension	31	delete_dimension
-124	Can view dimension	31	view_dimension
-125	Can add dimension value	32	add_dimensionvalue
-126	Can change dimension value	32	change_dimensionvalue
-127	Can delete dimension value	32	delete_dimensionvalue
-128	Can view dimension value	32	view_dimensionvalue
-129	Can add category	33	add_category
-130	Can change category	33	change_category
-131	Can delete category	33	delete_category
-132	Can view category	33	view_category
-133	Can add programme	34	add_programme
-134	Can change programme	34	change_programme
-135	Can delete programme	34	delete_programme
-136	Can view programme	34	view_programme
-137	Can add programme event meta	35	add_programmeeventmeta
-138	Can change programme event meta	35	change_programmeeventmeta
-139	Can delete programme event meta	35	delete_programmeeventmeta
-140	Can view programme event meta	35	view_programmeeventmeta
-141	Can add Programme host	36	add_programmerole
-142	Can change Programme host	36	change_programmerole
-143	Can delete Programme host	36	delete_programmerole
-144	Can view Programme host	36	view_programmerole
-145	Can add role	37	add_role
-146	Can change role	37	change_role
-147	Can delete role	37	delete_role
-148	Can view role	37	view_role
-149	Can add Room	38	add_room
-150	Can change Room	38	change_room
-151	Can delete Room	38	delete_room
-152	Can view Room	38	view_room
-153	Can add special start time	39	add_specialstarttime
-154	Can change special start time	39	change_specialstarttime
-155	Can delete special start time	39	delete_specialstarttime
-156	Can view special start time	39	view_specialstarttime
-157	Can add tag	40	add_tag
-158	Can change tag	40	change_tag
-159	Can delete tag	40	delete_tag
-160	Can view tag	40	view_tag
-161	Can add time block	41	add_timeblock
-162	Can change time block	41	change_timeblock
-163	Can delete time block	41	delete_timeblock
-164	Can view time block	41	view_timeblock
-165	Can add schedule view	42	add_view
-166	Can change schedule view	42	change_view
-167	Can delete schedule view	42	delete_view
-168	Can view schedule view	42	view_view
-169	Can add invitation	43	add_invitation
-170	Can change invitation	43	change_invitation
-171	Can delete invitation	43	delete_invitation
-172	Can view invitation	43	view_invitation
-173	Can add invitation	44	add_invitationadminproxy
-174	Can change invitation	44	change_invitationadminproxy
-175	Can delete invitation	44	delete_invitationadminproxy
-176	Can view invitation	44	view_invitationadminproxy
-177	Can add programme management proxy	45	add_programmemanagementproxy
-178	Can change programme management proxy	45	change_programmemanagementproxy
-179	Can delete programme management proxy	45	delete_programmemanagementproxy
-180	Can view programme management proxy	45	view_programmemanagementproxy
-181	Can add freeform organizer	46	add_freeformorganizer
-182	Can change freeform organizer	46	change_freeformorganizer
-183	Can delete freeform organizer	46	delete_freeformorganizer
-184	Can view freeform organizer	46	view_freeformorganizer
-185	Can add freeform organizer	47	add_freeformorganizeradminproxy
-186	Can change freeform organizer	47	change_freeformorganizeradminproxy
-187	Can delete freeform organizer	47	delete_freeformorganizeradminproxy
-188	Can view freeform organizer	47	view_freeformorganizeradminproxy
-189	Can add programme feedback	48	add_programmefeedback
-190	Can change programme feedback	48	change_programmefeedback
-191	Can delete programme feedback	48	delete_programmefeedback
-192	Can view programme feedback	48	view_programmefeedback
-193	Can add alternative programme form	49	add_alternativeprogrammeform
-194	Can change alternative programme form	49	change_alternativeprogrammeform
-195	Can delete alternative programme form	49	delete_alternativeprogrammeform
-196	Can view alternative programme form	49	view_alternativeprogrammeform
-197	Can add cold offers programme event meta proxy	50	add_coldoffersprogrammeeventmetaproxy
-198	Can change cold offers programme event meta proxy	50	change_coldoffersprogrammeeventmetaproxy
-199	Can delete cold offers programme event meta proxy	50	delete_coldoffersprogrammeeventmetaproxy
-200	Can view cold offers programme event meta proxy	50	view_coldoffersprogrammeeventmetaproxy
-201	Can add view room	51	add_viewroom
-202	Can change view room	51	change_viewroom
-203	Can delete view room	51	delete_viewroom
-204	Can view view room	51	view_viewroom
-205	Can add paikkala ticket csv export proxy	52	add_paikkalaticketcsvexportproxy
-206	Can change paikkala ticket csv export proxy	52	change_paikkalaticketcsvexportproxy
-207	Can delete paikkala ticket csv export proxy	52	delete_paikkalaticketcsvexportproxy
-208	Can view paikkala ticket csv export proxy	52	view_paikkalaticketcsvexportproxy
-209	Can add special reservation	53	add_specialreservation
-210	Can change special reservation	53	change_specialreservation
-211	Can delete special reservation	53	delete_specialreservation
-212	Can view special reservation	53	view_specialreservation
-213	Can add program	54	add_program
-214	Can change program	54	change_program
-215	Can delete program	54	delete_program
-216	Can view program	54	view_program
-217	Can add schedule item	55	add_scheduleitem
-218	Can change schedule item	55	change_scheduleitem
-219	Can delete schedule item	55	delete_scheduleitem
-220	Can view schedule item	55	view_scheduleitem
-221	Can add program v2 event meta	56	add_programv2eventmeta
-222	Can change program v2 event meta	56	change_programv2eventmeta
-223	Can delete program v2 event meta	56	delete_programv2eventmeta
-224	Can view program v2 event meta	56	view_programv2eventmeta
-225	Can add program dimension value	57	add_programdimensionvalue
-226	Can change program dimension value	57	change_programdimensionvalue
-227	Can delete program dimension value	57	delete_programdimensionvalue
-228	Can view program dimension value	57	view_programdimensionvalue
-229	Can add alternative signup form	58	add_alternativesignupform
-230	Can change alternative signup form	58	change_alternativesignupform
-231	Can delete alternative signup form	58	delete_alternativesignupform
-232	Can view alternative signup form	58	view_alternativesignupform
-233	Can add info link	59	add_infolink
-234	Can change info link	59	change_infolink
-235	Can delete info link	59	delete_infolink
-236	Can view info link	59	view_infolink
-237	Can add job	60	add_job
-238	Can change job	60	change_job
-239	Can delete job	60	delete_job
-240	Can view job	60	view_job
-241	Can add job category	61	add_jobcategory
-242	Can change job category	61	change_jobcategory
-243	Can delete job category	61	delete_jobcategory
-244	Can view job category	61	view_jobcategory
-245	Can add job requirement	62	add_jobrequirement
-246	Can change job requirement	62	change_jobrequirement
-247	Can delete job requirement	62	delete_jobrequirement
-248	Can view job requirement	62	view_jobrequirement
-249	Can add labour event meta	63	add_laboureventmeta
-250	Can change labour event meta	63	change_laboureventmeta
-251	Can delete labour event meta	63	delete_laboureventmeta
-252	Can view labour event meta	63	view_laboureventmeta
-253	Can add qualification holder	64	add_personqualification
-254	Can change qualification holder	64	change_personqualification
-255	Can delete qualification holder	64	delete_personqualification
-256	Can view qualification holder	64	view_personqualification
-257	Can add qualification	65	add_qualification
-258	Can change qualification	65	change_qualification
-259	Can delete qualification	65	delete_qualification
-260	Can view qualification	65	view_qualification
-261	Can add signup	66	add_signup
-262	Can change signup	66	change_signup
-263	Can delete signup	66	delete_signup
-264	Can view signup	66	view_signup
-265	Can add work period	67	add_workperiod
-266	Can change work period	67	change_workperiod
-267	Can delete work period	67	delete_workperiod
-268	Can view work period	67	view_workperiod
-269	Can add personnel class	68	add_personnelclass
-270	Can change personnel class	68	change_personnelclass
-271	Can delete personnel class	68	delete_personnelclass
-272	Can view personnel class	68	view_personnelclass
-273	Can add signup onboarding proxy	69	add_signuponboardingproxy
-274	Can change signup onboarding proxy	69	change_signuponboardingproxy
-275	Can delete signup onboarding proxy	69	delete_signuponboardingproxy
-276	Can view signup onboarding proxy	69	view_signuponboardingproxy
-277	Can add signup certificate proxy	70	add_signupcertificateproxy
-278	Can change signup certificate proxy	70	change_signupcertificateproxy
-279	Can delete signup certificate proxy	70	delete_signupcertificateproxy
-280	Can view signup certificate proxy	70	view_signupcertificateproxy
-281	Can add job category management proxy	71	add_jobcategorymanagementproxy
-282	Can change job category management proxy	71	change_jobcategorymanagementproxy
-283	Can delete job category management proxy	71	delete_jobcategorymanagementproxy
-284	Can view job category management proxy	71	view_jobcategorymanagementproxy
-285	Can add obsolete empty signup extra v1	72	add_obsoleteemptysignupextrav1
-286	Can change obsolete empty signup extra v1	72	change_obsoleteemptysignupextrav1
-287	Can delete obsolete empty signup extra v1	72	delete_obsoleteemptysignupextrav1
-288	Can view obsolete empty signup extra v1	72	view_obsoleteemptysignupextrav1
-289	Can add empty signup extra	73	add_emptysignupextra
-290	Can change empty signup extra	73	change_emptysignupextra
-291	Can delete empty signup extra	73	delete_emptysignupextra
-292	Can view empty signup extra	73	view_emptysignupextra
-293	Can add shift	74	add_shift
-294	Can change shift	74	change_shift
-295	Can delete shift	74	delete_shift
-296	Can view shift	74	view_shift
-297	Can add Survey	75	add_survey
-298	Can change Survey	75	change_survey
-299	Can delete Survey	75	delete_survey
-300	Can view Survey	75	view_survey
-301	Can add survey record	76	add_surveyrecord
-302	Can change survey record	76	change_surveyrecord
-303	Can delete survey record	76	delete_surveyrecord
-304	Can view survey record	76	view_surveyrecord
-305	Can add archived signup	77	add_archivedsignup
-306	Can change archived signup	77	change_archivedsignup
-307	Can delete archived signup	77	delete_archivedsignup
-308	Can view archived signup	77	view_archivedsignup
-309	Can add JV-kortti	78	add_jvkortti
-310	Can change JV-kortti	78	change_jvkortti
-311	Can delete JV-kortti	78	delete_jvkortti
-312	Can view JV-kortti	78	view_jvkortti
-313	Can add customer	79	add_customer
-314	Can change customer	79	change_customer
-315	Can delete customer	79	delete_customer
-316	Can view customer	79	view_customer
-317	Can add limit group	80	add_limitgroup
-318	Can change limit group	80	change_limitgroup
-319	Can delete limit group	80	delete_limitgroup
-320	Can view limit group	80	view_limitgroup
-321	Can add order	81	add_order
-322	Can change order	81	change_order
-323	Can delete order	81	delete_order
-324	Can view order	81	view_order
-325	Can add tilausrivi	82	add_orderproduct
-326	Can change tilausrivi	82	change_orderproduct
-327	Can delete tilausrivi	82	delete_orderproduct
-328	Can view tilausrivi	82	view_orderproduct
-329	Can add product	83	add_product
-330	Can change product	83	change_product
-331	Can delete product	83	delete_product
-332	Can view product	83	view_product
-333	Can add ticket sales settings for event	84	add_ticketseventmeta
-334	Can change ticket sales settings for event	84	change_ticketseventmeta
-335	Can delete ticket sales settings for event	84	delete_ticketseventmeta
-336	Can view ticket sales settings for event	84	view_ticketseventmeta
-337	Can add tickets v2 event meta	85	add_ticketsv2eventmeta
-338	Can change tickets v2 event meta	85	change_ticketsv2eventmeta
-339	Can delete tickets v2 event meta	85	delete_ticketsv2eventmeta
-340	Can view tickets v2 event meta	85	view_ticketsv2eventmeta
-341	Can add quota	86	add_quota
-342	Can change quota	86	change_quota
-343	Can delete quota	86	delete_quota
-344	Can view quota	86	view_quota
-345	Can add product	87	add_product
-346	Can change product	87	change_product
-347	Can delete product	87	delete_product
-348	Can view product	87	view_product
-349	Can add order	88	add_order
-350	Can change order	88	change_order
-351	Can delete order	88	delete_order
-352	Can view order	88	view_order
-353	Can add ticket	89	add_ticket
-354	Can change ticket	89	change_ticket
-355	Can delete ticket	89	delete_ticket
-356	Can view ticket	89	view_ticket
-357	Can add payment stamp	90	add_paymentstamp
-358	Can change payment stamp	90	change_paymentstamp
-359	Can delete payment stamp	90	delete_paymentstamp
-360	Can view payment stamp	90	view_paymentstamp
-361	Can add receipt	91	add_receipt
-362	Can change receipt	91	change_receipt
-363	Can delete receipt	91	delete_receipt
-364	Can view receipt	91	view_receipt
-365	Can add payment	92	add_payment
-366	Can change payment	92	change_payment
-367	Can delete payment	92	delete_payment
-368	Can view payment	92	view_payment
-369	Can add checkout payment	93	add_checkoutpayment
-370	Can change checkout payment	93	change_checkoutpayment
-371	Can delete checkout payment	93	delete_checkoutpayment
-372	Can view checkout payment	93	view_checkoutpayment
-373	Can add payments organization meta	94	add_paymentsorganizationmeta
-374	Can change payments organization meta	94	change_paymentsorganizationmeta
-375	Can delete payments organization meta	94	delete_paymentsorganizationmeta
-376	Can view payments organization meta	94	view_paymentsorganizationmeta
-377	Can add viesti	95	add_message
-378	Can change viesti	95	change_message
-379	Can delete viesti	95	delete_message
-380	Can view viesti	95	view_message
-381	Can add person message	96	add_personmessage
-382	Can change person message	96	change_personmessage
-383	Can delete person message	96	delete_personmessage
-384	Can view person message	96	view_personmessage
-385	Can add person message body	97	add_personmessagebody
-386	Can change person message body	97	change_personmessagebody
-387	Can delete person message body	97	delete_personmessagebody
-388	Can view person message body	97	view_personmessagebody
-389	Can add person message subject	98	add_personmessagesubject
-390	Can change person message subject	98	change_personmessagesubject
-391	Can delete person message subject	98	delete_personmessagesubject
-392	Can view person message subject	98	view_personmessagesubject
-393	Can add vastaanottajaryhmä	99	add_recipientgroup
-394	Can change vastaanottajaryhmä	99	change_recipientgroup
-395	Can delete vastaanottajaryhmä	99	delete_recipientgroup
-396	Can view vastaanottajaryhmä	99	view_recipientgroup
-397	Can add badge	100	add_badge
-398	Can change badge	100	change_badge
-399	Can delete badge	100	delete_badge
-400	Can view badge	100	view_badge
-401	Can add badges event meta	101	add_badgeseventmeta
-402	Can change badges event meta	101	change_badgeseventmeta
-403	Can delete badges event meta	101	delete_badgeseventmeta
-404	Can view badges event meta	101	view_badgeseventmeta
-405	Can add Batch	102	add_batch
-406	Can change Batch	102	change_batch
-407	Can delete Batch	102	delete_batch
-408	Can view Batch	102	view_batch
-409	Can add badge management proxy	103	add_badgemanagementproxy
-410	Can change badge management proxy	103	change_badgemanagementproxy
-411	Can delete badge management proxy	103	delete_badgemanagementproxy
-412	Can view badge management proxy	103	view_badgemanagementproxy
-413	Can add granted privilege	104	add_grantedprivilege
-414	Can change granted privilege	104	change_grantedprivilege
-415	Can delete granted privilege	104	delete_grantedprivilege
-416	Can view granted privilege	104	view_grantedprivilege
-417	Can add group privilege	105	add_groupprivilege
-418	Can change group privilege	105	change_groupprivilege
-419	Can delete group privilege	105	delete_groupprivilege
-420	Can view group privilege	105	view_groupprivilege
-421	Can add privilege	106	add_privilege
-422	Can change privilege	106	change_privilege
-423	Can delete privilege	106	delete_privilege
-424	Can view privilege	106	view_privilege
-425	Can add Slack invite automation	107	add_slackaccess
-426	Can change Slack invite automation	107	change_slackaccess
-427	Can delete Slack invite automation	107	delete_slackaccess
-428	Can view Slack invite automation	107	view_slackaccess
-429	Can add e-mail alias	108	add_emailalias
-430	Can change e-mail alias	108	change_emailalias
-431	Can delete e-mail alias	108	delete_emailalias
-432	Can view e-mail alias	108	view_emailalias
-433	Can add e-mail alias domain	109	add_emailaliasdomain
-434	Can change e-mail alias domain	109	change_emailaliasdomain
-435	Can delete e-mail alias domain	109	delete_emailaliasdomain
-436	Can view e-mail alias domain	109	view_emailaliasdomain
-437	Can add e-mail alias type	110	add_emailaliastype
-438	Can change e-mail alias type	110	change_emailaliastype
-439	Can delete e-mail alias type	110	delete_emailaliastype
-440	Can view e-mail alias type	110	view_emailaliastype
-441	Can add group e-mail alias grant	111	add_groupemailaliasgrant
-442	Can change group e-mail alias grant	111	change_groupemailaliasgrant
-443	Can delete group e-mail alias grant	111	delete_groupemailaliasgrant
-444	Can view group e-mail alias grant	111	view_groupemailaliasgrant
-445	Can add access management settings	112	add_accessorganizationmeta
-446	Can change access management settings	112	change_accessorganizationmeta
-447	Can delete access management settings	112	delete_accessorganizationmeta
-448	Can view access management settings	112	view_accessorganizationmeta
-449	Can add SMTP password	113	add_smtppassword
-450	Can change SMTP password	113	change_smtppassword
-451	Can delete SMTP password	113	delete_smtppassword
-452	Can view SMTP password	113	view_smtppassword
-453	Can add SMTP server	114	add_smtpserver
-454	Can change SMTP server	114	change_smtpserver
-455	Can delete SMTP server	114	delete_smtpserver
-456	Can view SMTP server	114	view_smtpserver
-457	Can add internal e-mail alias	115	add_internalemailalias
-458	Can change internal e-mail alias	115	change_internalemailalias
-459	Can delete internal e-mail alias	115	delete_internalemailalias
-460	Can view internal e-mail alias	115	view_internalemailalias
-461	Can add cbac entry	116	add_cbacentry
-462	Can change cbac entry	116	change_cbacentry
-463	Can delete cbac entry	116	delete_cbacentry
-464	Can view cbac entry	116	view_cbacentry
-465	Can add Jäsenyys	117	add_membership
-466	Can change Jäsenyys	117	change_membership
-467	Can delete Jäsenyys	117	delete_membership
-468	Can view Jäsenyys	117	view_membership
-469	Can add Jäsenrekisterien asetukset	118	add_membershiporganizationmeta
-470	Can change Jäsenrekisterien asetukset	118	change_membershiporganizationmeta
-471	Can delete Jäsenrekisterien asetukset	118	delete_membershiporganizationmeta
-472	Can view Jäsenrekisterien asetukset	118	view_membershiporganizationmeta
-473	Can add Jäsenmaksusuoritus	119	add_membershipfeepayment
-474	Can change Jäsenmaksusuoritus	119	change_membershipfeepayment
-475	Can delete Jäsenmaksusuoritus	119	delete_membershipfeepayment
-476	Can view Jäsenmaksusuoritus	119	view_membershipfeepayment
-477	Can add Toimikausi	120	add_term
-478	Can change Toimikausi	120	change_term
-479	Can delete Toimikausi	120	delete_term
-480	Can view Toimikausi	120	view_term
-481	Can add intra event meta	121	add_intraeventmeta
-482	Can change intra event meta	121	change_intraeventmeta
-483	Can delete intra event meta	121	delete_intraeventmeta
-484	Can view intra event meta	121	view_intraeventmeta
-485	Can add Team	122	add_team
-486	Can change Team	122	change_team
-487	Can delete Team	122	delete_team
-488	Can view Team	122	view_team
-489	Can add Team member	123	add_teammember
-490	Can change Team member	123	change_teammember
-491	Can delete Team member	123	delete_teammember
-492	Can view Team member	123	view_teammember
-493	Can add confirmation code	124	add_confirmationcode
-494	Can change confirmation code	124	change_confirmationcode
-495	Can delete confirmation code	124	delete_confirmationcode
-496	Can view confirmation code	124	view_confirmationcode
-497	Can add connection	125	add_connection
-498	Can change connection	125	change_connection
-499	Can delete connection	125	delete_connection
-500	Can view connection	125	view_connection
-501	Can add enrollment	126	add_enrollment
-502	Can change enrollment	126	change_enrollment
-503	Can delete enrollment	126	delete_enrollment
-504	Can view enrollment	126	view_enrollment
-505	Can add enrollment event meta	127	add_enrollmenteventmeta
-506	Can change enrollment event meta	127	change_enrollmenteventmeta
-507	Can delete enrollment event meta	127	delete_enrollmenteventmeta
-508	Can view enrollment event meta	127	view_enrollmenteventmeta
-509	Can add special diet	128	add_specialdiet
-510	Can change special diet	128	change_specialdiet
-511	Can delete special diet	128	delete_specialdiet
-512	Can view special diet	128	view_specialdiet
-513	Can add concon part	129	add_conconpart
-514	Can change concon part	129	change_conconpart
-515	Can delete concon part	129	delete_conconpart
-516	Can view concon part	129	view_conconpart
-517	Can add entry	130	add_entry
-518	Can change entry	130	change_entry
-519	Can delete entry	130	delete_entry
-520	Can view entry	130	view_entry
-521	Can add subscription	131	add_subscription
-522	Can change subscription	131	change_subscription
-523	Can delete subscription	131	delete_subscription
-524	Can view subscription	131	view_subscription
-525	Can add external event	132	add_externalevent
-526	Can change external event	132	change_externalevent
-527	Can delete external event	132	delete_externalevent
-528	Can view external event	132	view_externalevent
-529	Can add listing	133	add_listing
-530	Can change listing	133	change_listing
-531	Can delete listing	133	delete_listing
-532	Can view listing	133	view_listing
-533	Can add survey	134	add_survey
-534	Can change survey	134	change_survey
-535	Can delete survey	134	delete_survey
-536	Can view survey	134	view_survey
-537	Can add response	135	add_response
-538	Can change response	135	change_response
-539	Can delete response	135	delete_response
-540	Can view response	135	view_response
-541	Can add form	136	add_form
-542	Can change form	136	change_form
-543	Can delete form	136	delete_form
-544	Can view form	136	view_form
-545	Can add response dimension value	137	add_responsedimensionvalue
-546	Can change response dimension value	137	change_responsedimensionvalue
-547	Can delete response dimension value	137	delete_responsedimensionvalue
-548	Can view response dimension value	137	view_responsedimensionvalue
-549	Can add key pair	138	add_keypair
-550	Can change key pair	138	change_keypair
-551	Can delete key pair	138	delete_keypair
-552	Can view key pair	138	view_keypair
-553	Can add forms event meta	139	add_formseventmeta
-554	Can change forms event meta	139	change_formseventmeta
-555	Can delete forms event meta	139	delete_formseventmeta
-556	Can view forms event meta	139	view_formseventmeta
-557	Can add file version	140	add_fileversion
-558	Can change file version	140	change_fileversion
-559	Can delete file version	140	delete_fileversion
-560	Can view file version	140	view_fileversion
-561	Can add project	141	add_project
-562	Can change project	141	change_project
-563	Can delete project	141	delete_project
-564	Can view project	141	view_project
-565	Can add project file	142	add_projectfile
-566	Can change project file	142	change_projectfile
-567	Can delete project file	142	delete_projectfile
-568	Can view project file	142	view_projectfile
-569	Can add render result	143	add_renderresult
-570	Can change render result	143	change_renderresult
-571	Can delete render result	143	delete_renderresult
-572	Can view render result	143	view_renderresult
-573	Can add signup extra	144	add_signupextra
-574	Can change signup extra	144	change_signupextra
-575	Can delete signup extra	144	delete_signupextra
-576	Can view signup extra	144	view_signupextra
-577	Can add special diet	145	add_specialdiet
-578	Can change special diet	145	change_specialdiet
-579	Can delete special diet	145	delete_specialdiet
-580	Can view special diet	145	view_specialdiet
-581	Can add night	146	add_night
-582	Can change night	146	change_night
-583	Can delete night	146	delete_night
-584	Can view night	146	view_night
+49	Can add device grant	10	add_devicegrant
+50	Can change device grant	10	change_devicegrant
+51	Can delete device grant	10	delete_devicegrant
+52	Can view device grant	10	view_devicegrant
+53	Can add code	14	add_code
+54	Can change code	14	change_code
+55	Can delete code	14	delete_code
+56	Can view code	14	view_code
+57	Can add order	15	add_order
+58	Can change order	15	change_order
+59	Can delete order	15	delete_order
+60	Can view order	15	view_order
+61	Can add program	17	add_program
+62	Can change program	17	change_program
+63	Can delete program	17	delete_program
+64	Can view program	17	view_program
+65	Can add row	19	add_row
+66	Can change row	19	change_row
+67	Can delete row	19	delete_row
+68	Can view row	19	view_row
+69	Can add ticket	21	add_ticket
+70	Can change ticket	21	change_ticket
+71	Can delete ticket	21	delete_ticket
+72	Can view ticket	21	view_ticket
+73	Can add zone	22	add_zone
+74	Can change zone	22	change_zone
+75	Can delete zone	22	delete_zone
+76	Can view zone	22	view_zone
+77	Can add per program block	16	add_perprogramblock
+78	Can change per program block	16	change_perprogramblock
+79	Can delete per program block	16	delete_perprogramblock
+80	Can view per program block	16	view_perprogramblock
+81	Can add room	18	add_room
+82	Can change room	18	change_room
+83	Can delete room	18	delete_room
+84	Can view room	18	view_room
+85	Can add seat qualifier	20	add_seatqualifier
+86	Can change seat qualifier	20	change_seatqualifier
+87	Can delete seat qualifier	20	delete_seatqualifier
+88	Can view seat qualifier	20	view_seatqualifier
+89	Can add email verification token	24	add_emailverificationtoken
+90	Can change email verification token	24	change_emailverificationtoken
+91	Can delete email verification token	24	delete_emailverificationtoken
+92	Can view email verification token	24	view_emailverificationtoken
+93	Can add Tapahtuma	25	add_event
+94	Can change Tapahtuma	25	change_event
+95	Can delete Tapahtuma	25	delete_event
+96	Can view Tapahtuma	25	view_event
+97	Can add password reset token	27	add_passwordresettoken
+98	Can change password reset token	27	change_passwordresettoken
+99	Can delete password reset token	27	delete_passwordresettoken
+100	Can view password reset token	27	view_passwordresettoken
+101	Can add Henkilö	28	add_person
+102	Can change Henkilö	28	change_person
+103	Can delete Henkilö	28	delete_person
+104	Can view Henkilö	28	view_person
+105	Can add Tapahtumapaikka	29	add_venue
+480	Can view survey	126	view_survey
+106	Can change Tapahtumapaikka	29	change_venue
+107	Can delete Tapahtumapaikka	29	delete_venue
+108	Can view Tapahtumapaikka	29	view_venue
+109	Can add Organisaatio	26	add_organization
+110	Can change Organisaatio	26	change_organization
+111	Can delete Organisaatio	26	delete_organization
+112	Can view Organisaatio	26	view_organization
+113	Can add carousel slide	23	add_carouselslide
+114	Can change carousel slide	23	change_carouselslide
+115	Can delete carousel slide	23	delete_carouselslide
+116	Can view carousel slide	23	view_carouselslide
+117	Can add scope	33	add_scope
+118	Can change scope	33	change_scope
+119	Can delete scope	33	delete_scope
+120	Can view scope	33	view_scope
+121	Can add universe	34	add_universe
+122	Can change universe	34	change_universe
+123	Can delete universe	34	delete_universe
+124	Can view universe	34	view_universe
+125	Can add dimension	31	add_dimension
+126	Can change dimension	31	change_dimension
+127	Can delete dimension	31	delete_dimension
+128	Can view dimension	31	view_dimension
+129	Can add dimension value	32	add_dimensionvalue
+130	Can change dimension value	32	change_dimensionvalue
+131	Can delete dimension value	32	delete_dimensionvalue
+132	Can view dimension value	32	view_dimensionvalue
+133	Can add annotation	30	add_annotation
+134	Can change annotation	30	change_annotation
+135	Can delete annotation	30	delete_annotation
+136	Can view annotation	30	view_annotation
+137	Can add universe annotation	35	add_universeannotation
+138	Can change universe annotation	35	change_universeannotation
+139	Can delete universe annotation	35	delete_universeannotation
+140	Can view universe annotation	35	view_universeannotation
+141	Can add registry	42	add_registry
+142	Can change registry	42	change_registry
+143	Can delete registry	42	delete_registry
+144	Can view registry	42	view_registry
+145	Can add involvement	37	add_involvement
+146	Can change involvement	37	change_involvement
+147	Can delete involvement	37	delete_involvement
+148	Can view involvement	37	view_involvement
+149	Can add involvement dimension value	38	add_involvementdimensionvalue
+150	Can change involvement dimension value	38	change_involvementdimensionvalue
+151	Can delete involvement dimension value	38	delete_involvementdimensionvalue
+152	Can view involvement dimension value	38	view_involvementdimensionvalue
+153	Can add invitation	36	add_invitation
+154	Can change invitation	36	change_invitation
+155	Can delete invitation	36	delete_invitation
+156	Can view invitation	36	view_invitation
+157	Can add involvement to badge mapping	40	add_involvementtobadgemapping
+158	Can change involvement to badge mapping	40	change_involvementtobadgemapping
+159	Can delete involvement to badge mapping	40	delete_involvementtobadgemapping
+160	Can view involvement to badge mapping	40	view_involvementtobadgemapping
+161	Can add involvement to group mapping	41	add_involvementtogroupmapping
+162	Can change involvement to group mapping	41	change_involvementtogroupmapping
+163	Can delete involvement to group mapping	41	delete_involvementtogroupmapping
+164	Can view involvement to group mapping	41	view_involvementtogroupmapping
+165	Can add involvement event meta	39	add_involvementeventmeta
+166	Can change involvement event meta	39	change_involvementeventmeta
+167	Can delete involvement event meta	39	delete_involvementeventmeta
+168	Can view involvement event meta	39	view_involvementeventmeta
+169	Can add message body	44	add_messagebody
+170	Can change message body	44	change_messagebody
+171	Can delete message body	44	delete_messagebody
+172	Can view message body	44	view_messagebody
+173	Can add message reply to	46	add_messagereplyto
+174	Can change message reply to	46	change_messagereplyto
+175	Can delete message reply to	46	delete_messagereplyto
+176	Can view message reply to	46	view_messagereplyto
+177	Can add message	43	add_message
+178	Can change message	43	change_message
+179	Can delete message	43	delete_message
+180	Can view message	43	view_message
+181	Can add message recipient	45	add_messagerecipient
+182	Can change message recipient	45	change_messagerecipient
+183	Can delete message recipient	45	delete_messagerecipient
+184	Can view message recipient	45	view_messagerecipient
+185	Can add program	48	add_program
+186	Can change program	48	change_program
+187	Can delete program	48	delete_program
+188	Can view program	48	view_program
+189	Can add schedule item	51	add_scheduleitem
+190	Can change schedule item	51	change_scheduleitem
+191	Can delete schedule item	51	delete_scheduleitem
+192	Can view schedule item	51	view_scheduleitem
+193	Can add program v2 event meta	50	add_programv2eventmeta
+194	Can change program v2 event meta	50	change_programv2eventmeta
+195	Can delete program v2 event meta	50	delete_programv2eventmeta
+196	Can view program v2 event meta	50	view_programv2eventmeta
+197	Can add program dimension value	49	add_programdimensionvalue
+198	Can change program dimension value	49	change_programdimensionvalue
+199	Can delete program dimension value	49	delete_programdimensionvalue
+200	Can view program dimension value	49	view_programdimensionvalue
+201	Can add schedule item dimension value	52	add_scheduleitemdimensionvalue
+202	Can change schedule item dimension value	52	change_scheduleitemdimensionvalue
+203	Can delete schedule item dimension value	52	delete_scheduleitemdimensionvalue
+204	Can view schedule item dimension value	52	view_scheduleitemdimensionvalue
+205	Can add paikkala room mapping	47	add_paikkalaroommapping
+206	Can change paikkala room mapping	47	change_paikkalaroommapping
+207	Can delete paikkala room mapping	47	delete_paikkalaroommapping
+208	Can view paikkala room mapping	47	view_paikkalaroommapping
+209	Can add alternative signup form	53	add_alternativesignupform
+210	Can change alternative signup form	53	change_alternativesignupform
+211	Can delete alternative signup form	53	delete_alternativesignupform
+212	Can view alternative signup form	53	view_alternativesignupform
+213	Can add info link	56	add_infolink
+214	Can change info link	56	change_infolink
+215	Can delete info link	56	delete_infolink
+216	Can view info link	56	view_infolink
+217	Can add job	57	add_job
+218	Can change job	57	change_job
+219	Can delete job	57	delete_job
+220	Can view job	57	view_job
+221	Can add job category	58	add_jobcategory
+222	Can change job category	58	change_jobcategory
+223	Can delete job category	58	delete_jobcategory
+224	Can view job category	58	view_jobcategory
+225	Can add job requirement	59	add_jobrequirement
+226	Can change job requirement	59	change_jobrequirement
+227	Can delete job requirement	59	delete_jobrequirement
+228	Can view job requirement	59	view_jobrequirement
+229	Can add labour event meta	60	add_laboureventmeta
+230	Can change labour event meta	60	change_laboureventmeta
+231	Can delete labour event meta	60	delete_laboureventmeta
+232	Can view labour event meta	60	view_laboureventmeta
+233	Can add qualification holder	63	add_personqualification
+234	Can change qualification holder	63	change_personqualification
+235	Can delete qualification holder	63	delete_personqualification
+236	Can view qualification holder	63	view_personqualification
+237	Can add qualification	64	add_qualification
+238	Can change qualification	64	change_qualification
+239	Can delete qualification	64	delete_qualification
+240	Can view qualification	64	view_qualification
+241	Can add signup	66	add_signup
+242	Can change signup	66	change_signup
+243	Can delete signup	66	delete_signup
+244	Can view signup	66	view_signup
+245	Can add work period	71	add_workperiod
+246	Can change work period	71	change_workperiod
+247	Can delete work period	71	delete_workperiod
+248	Can view work period	71	view_workperiod
+249	Can add personnel class	62	add_personnelclass
+250	Can change personnel class	62	change_personnelclass
+251	Can delete personnel class	62	delete_personnelclass
+252	Can view personnel class	62	view_personnelclass
+253	Can add signup onboarding proxy	68	add_signuponboardingproxy
+254	Can change signup onboarding proxy	68	change_signuponboardingproxy
+255	Can delete signup onboarding proxy	68	delete_signuponboardingproxy
+256	Can view signup onboarding proxy	68	view_signuponboardingproxy
+257	Can add signup certificate proxy	67	add_signupcertificateproxy
+258	Can change signup certificate proxy	67	change_signupcertificateproxy
+259	Can delete signup certificate proxy	67	delete_signupcertificateproxy
+260	Can view signup certificate proxy	67	view_signupcertificateproxy
+261	Can add obsolete empty signup extra v1	61	add_obsoleteemptysignupextrav1
+262	Can change obsolete empty signup extra v1	61	change_obsoleteemptysignupextrav1
+263	Can delete obsolete empty signup extra v1	61	delete_obsoleteemptysignupextrav1
+264	Can view obsolete empty signup extra v1	61	view_obsoleteemptysignupextrav1
+265	Can add empty signup extra	55	add_emptysignupextra
+266	Can change empty signup extra	55	change_emptysignupextra
+267	Can delete empty signup extra	55	delete_emptysignupextra
+268	Can view empty signup extra	55	view_emptysignupextra
+269	Can add shift	65	add_shift
+270	Can change shift	65	change_shift
+271	Can delete shift	65	delete_shift
+272	Can view shift	65	view_shift
+273	Can add Survey	69	add_survey
+274	Can change Survey	69	change_survey
+275	Can delete Survey	69	delete_survey
+276	Can view Survey	69	view_survey
+277	Can add survey record	70	add_surveyrecord
+278	Can change survey record	70	change_surveyrecord
+279	Can delete survey record	70	delete_surveyrecord
+280	Can view survey record	70	view_surveyrecord
+281	Can add archived signup	54	add_archivedsignup
+282	Can change archived signup	54	change_archivedsignup
+283	Can delete archived signup	54	delete_archivedsignup
+284	Can view archived signup	54	view_archivedsignup
+285	Can add JV-kortti	72	add_jvkortti
+286	Can change JV-kortti	72	change_jvkortti
+287	Can delete JV-kortti	72	delete_jvkortti
+288	Can view JV-kortti	72	view_jvkortti
+289	Can add tickets v2 event meta	80	add_ticketsv2eventmeta
+290	Can change tickets v2 event meta	80	change_ticketsv2eventmeta
+291	Can delete tickets v2 event meta	80	delete_ticketsv2eventmeta
+292	Can view tickets v2 event meta	80	view_ticketsv2eventmeta
+293	Can add quota	77	add_quota
+294	Can change quota	77	change_quota
+295	Can delete quota	77	delete_quota
+296	Can view quota	77	view_quota
+297	Can add product	76	add_product
+298	Can change product	76	change_product
+299	Can delete product	76	delete_product
+300	Can view product	76	view_product
+301	Can add order	73	add_order
+302	Can change order	73	change_order
+303	Can delete order	73	delete_order
+304	Can view order	73	view_order
+305	Can add ticket	79	add_ticket
+306	Can change ticket	79	change_ticket
+307	Can delete ticket	79	delete_ticket
+308	Can view ticket	79	view_ticket
+309	Can add payment stamp	75	add_paymentstamp
+310	Can change payment stamp	75	change_paymentstamp
+311	Can delete payment stamp	75	delete_paymentstamp
+312	Can view payment stamp	75	view_paymentstamp
+313	Can add receipt	78	add_receipt
+314	Can change receipt	78	change_receipt
+315	Can delete receipt	78	delete_receipt
+316	Can view receipt	78	view_receipt
+317	Can add order cancellation token	74	add_ordercancellationtoken
+318	Can change order cancellation token	74	change_ordercancellationtoken
+319	Can delete order cancellation token	74	delete_ordercancellationtoken
+320	Can view order cancellation token	74	view_ordercancellationtoken
+321	Can add payment	82	add_payment
+322	Can change payment	82	change_payment
+323	Can delete payment	82	delete_payment
+324	Can view payment	82	view_payment
+325	Can add checkout payment	81	add_checkoutpayment
+326	Can change checkout payment	81	change_checkoutpayment
+327	Can delete checkout payment	81	delete_checkoutpayment
+328	Can view checkout payment	81	view_checkoutpayment
+329	Can add payments organization meta	83	add_paymentsorganizationmeta
+330	Can change payments organization meta	83	change_paymentsorganizationmeta
+331	Can delete payments organization meta	83	delete_paymentsorganizationmeta
+332	Can view payments organization meta	83	view_paymentsorganizationmeta
+333	Can add viesti	84	add_message
+334	Can change viesti	84	change_message
+335	Can delete viesti	84	delete_message
+336	Can view viesti	84	view_message
+337	Can add person message	85	add_personmessage
+338	Can change person message	85	change_personmessage
+339	Can delete person message	85	delete_personmessage
+340	Can view person message	85	view_personmessage
+341	Can add person message body	86	add_personmessagebody
+342	Can change person message body	86	change_personmessagebody
+343	Can delete person message body	86	delete_personmessagebody
+344	Can view person message body	86	view_personmessagebody
+345	Can add person message subject	87	add_personmessagesubject
+346	Can change person message subject	87	change_personmessagesubject
+347	Can delete person message subject	87	delete_personmessagesubject
+348	Can view person message subject	87	view_personmessagesubject
+349	Can add vastaanottajaryhmä	88	add_recipientgroup
+350	Can change vastaanottajaryhmä	88	change_recipientgroup
+351	Can delete vastaanottajaryhmä	88	delete_recipientgroup
+352	Can view vastaanottajaryhmä	88	view_recipientgroup
+353	Can add badge	89	add_badge
+354	Can change badge	89	change_badge
+355	Can delete badge	89	delete_badge
+356	Can view badge	89	view_badge
+357	Can add badges event meta	91	add_badgeseventmeta
+358	Can change badges event meta	91	change_badgeseventmeta
+359	Can delete badges event meta	91	delete_badgeseventmeta
+360	Can view badges event meta	91	view_badgeseventmeta
+361	Can add Batch	92	add_batch
+362	Can change Batch	92	change_batch
+363	Can delete Batch	92	delete_batch
+364	Can view Batch	92	view_batch
+365	Can add badge management proxy	90	add_badgemanagementproxy
+366	Can change badge management proxy	90	change_badgemanagementproxy
+367	Can delete badge management proxy	90	delete_badgemanagementproxy
+368	Can view badge management proxy	90	view_badgemanagementproxy
+369	Can add survey to badge mapping	93	add_surveytobadgemapping
+370	Can change survey to badge mapping	93	change_surveytobadgemapping
+371	Can delete survey to badge mapping	93	delete_surveytobadgemapping
+372	Can view survey to badge mapping	93	view_surveytobadgemapping
+373	Can add granted privilege	99	add_grantedprivilege
+374	Can change granted privilege	99	change_grantedprivilege
+375	Can delete granted privilege	99	delete_grantedprivilege
+376	Can view granted privilege	99	view_grantedprivilege
+377	Can add group privilege	101	add_groupprivilege
+378	Can change group privilege	101	change_groupprivilege
+379	Can delete group privilege	101	delete_groupprivilege
+380	Can view group privilege	101	view_groupprivilege
+381	Can add privilege	103	add_privilege
+382	Can change privilege	103	change_privilege
+383	Can delete privilege	103	delete_privilege
+384	Can view privilege	103	view_privilege
+385	Can add Slack invite automation	104	add_slackaccess
+386	Can change Slack invite automation	104	change_slackaccess
+387	Can delete Slack invite automation	104	delete_slackaccess
+388	Can view Slack invite automation	104	view_slackaccess
+389	Can add e-mail alias	96	add_emailalias
+390	Can change e-mail alias	96	change_emailalias
+391	Can delete e-mail alias	96	delete_emailalias
+392	Can view e-mail alias	96	view_emailalias
+393	Can add email alias domain	97	add_emailaliasdomain
+394	Can change email alias domain	97	change_emailaliasdomain
+395	Can delete email alias domain	97	delete_emailaliasdomain
+396	Can view email alias domain	97	view_emailaliasdomain
+397	Can add email alias type	98	add_emailaliastype
+398	Can change email alias type	98	change_emailaliastype
+399	Can delete email alias type	98	delete_emailaliastype
+400	Can view email alias type	98	view_emailaliastype
+401	Can add group e-mail alias grant	100	add_groupemailaliasgrant
+402	Can change group e-mail alias grant	100	change_groupemailaliasgrant
+403	Can delete group e-mail alias grant	100	delete_groupemailaliasgrant
+404	Can view group e-mail alias grant	100	view_groupemailaliasgrant
+405	Can add access management settings	94	add_accessorganizationmeta
+406	Can change access management settings	94	change_accessorganizationmeta
+407	Can delete access management settings	94	delete_accessorganizationmeta
+408	Can view access management settings	94	view_accessorganizationmeta
+409	Can add SMTP password	105	add_smtppassword
+410	Can change SMTP password	105	change_smtppassword
+411	Can delete SMTP password	105	delete_smtppassword
+412	Can view SMTP password	105	view_smtppassword
+413	Can add SMTP server	106	add_smtpserver
+414	Can change SMTP server	106	change_smtpserver
+415	Can delete SMTP server	106	delete_smtpserver
+416	Can view SMTP server	106	view_smtpserver
+417	Can add internal email alias	102	add_internalemailalias
+418	Can change internal email alias	102	change_internalemailalias
+419	Can delete internal email alias	102	delete_internalemailalias
+420	Can view internal email alias	102	view_internalemailalias
+421	Can add cbac entry	95	add_cbacentry
+422	Can change cbac entry	95	change_cbacentry
+423	Can delete cbac entry	95	delete_cbacentry
+424	Can view cbac entry	95	view_cbacentry
+425	Can add Jäsenyys	107	add_membership
+426	Can change Jäsenyys	107	change_membership
+427	Can delete Jäsenyys	107	delete_membership
+428	Can view Jäsenyys	107	view_membership
+429	Can add Jäsenrekisterien asetukset	109	add_membershiporganizationmeta
+430	Can change Jäsenrekisterien asetukset	109	change_membershiporganizationmeta
+431	Can delete Jäsenrekisterien asetukset	109	delete_membershiporganizationmeta
+432	Can view Jäsenrekisterien asetukset	109	view_membershiporganizationmeta
+433	Can add Jäsenmaksusuoritus	108	add_membershipfeepayment
+434	Can change Jäsenmaksusuoritus	108	change_membershipfeepayment
+435	Can delete Jäsenmaksusuoritus	108	delete_membershipfeepayment
+436	Can view Jäsenmaksusuoritus	108	view_membershipfeepayment
+437	Can add Toimikausi	110	add_term
+438	Can change Toimikausi	110	change_term
+439	Can delete Toimikausi	110	delete_term
+440	Can view Toimikausi	110	view_term
+441	Can add intra event meta	111	add_intraeventmeta
+442	Can change intra event meta	111	change_intraeventmeta
+443	Can delete intra event meta	111	delete_intraeventmeta
+444	Can view intra event meta	111	view_intraeventmeta
+445	Can add Team	112	add_team
+446	Can change Team	112	change_team
+447	Can delete Team	112	delete_team
+448	Can view Team	112	view_team
+449	Can add Team member	113	add_teammember
+450	Can change Team member	113	change_teammember
+451	Can delete Team member	113	delete_teammember
+452	Can view Team member	113	view_teammember
+453	Can add confirmation code	114	add_confirmationcode
+454	Can change confirmation code	114	change_confirmationcode
+455	Can delete confirmation code	114	delete_confirmationcode
+456	Can view confirmation code	114	view_confirmationcode
+457	Can add connection	115	add_connection
+458	Can change connection	115	change_connection
+459	Can delete connection	115	delete_connection
+460	Can view connection	115	view_connection
+461	Can add entry	116	add_entry
+462	Can change entry	116	change_entry
+463	Can delete entry	116	delete_entry
+464	Can view entry	116	view_entry
+465	Can add subscription	117	add_subscription
+466	Can change subscription	117	change_subscription
+467	Can delete subscription	117	delete_subscription
+468	Can view subscription	117	view_subscription
+469	Can add external event	118	add_externalevent
+470	Can change external event	118	change_externalevent
+471	Can delete external event	118	delete_externalevent
+472	Can view external event	118	view_externalevent
+473	Can add listing	119	add_listing
+474	Can change listing	119	change_listing
+475	Can delete listing	119	delete_listing
+476	Can view listing	119	view_listing
+477	Can add survey	126	add_survey
+478	Can change survey	126	change_survey
+479	Can delete survey	126	delete_survey
+481	Can add response	124	add_response
+482	Can change response	124	change_response
+483	Can delete response	124	delete_response
+484	Can view response	124	view_response
+485	Can add form	120	add_form
+486	Can change form	120	change_form
+487	Can delete form	120	delete_form
+488	Can view form	120	view_form
+489	Can add response dimension value	125	add_responsedimensionvalue
+490	Can change response dimension value	125	change_responsedimensionvalue
+491	Can delete response dimension value	125	delete_responsedimensionvalue
+492	Can view response dimension value	125	view_responsedimensionvalue
+493	Can add key pair	122	add_keypair
+494	Can change key pair	122	change_keypair
+495	Can delete key pair	122	delete_keypair
+496	Can view key pair	122	view_keypair
+497	Can add forms event meta	121	add_formseventmeta
+498	Can change forms event meta	121	change_formseventmeta
+499	Can delete forms event meta	121	delete_formseventmeta
+500	Can view forms event meta	121	view_formseventmeta
+501	Can add projection	123	add_projection
+502	Can change projection	123	change_projection
+503	Can delete projection	123	delete_projection
+504	Can view projection	123	view_projection
+505	Can add survey default response dimension value	128	add_surveydefaultresponsedimensionvalue
+506	Can change survey default response dimension value	128	change_surveydefaultresponsedimensionvalue
+507	Can delete survey default response dimension value	128	delete_surveydefaultresponsedimensionvalue
+508	Can view survey default response dimension value	128	view_surveydefaultresponsedimensionvalue
+509	Can add survey default involvement dimension value	127	add_surveydefaultinvolvementdimensionvalue
+510	Can change survey default involvement dimension value	127	change_surveydefaultinvolvementdimensionvalue
+511	Can delete survey default involvement dimension value	127	delete_surveydefaultinvolvementdimensionvalue
+512	Can view survey default involvement dimension value	127	view_surveydefaultinvolvementdimensionvalue
+513	Can add file version	129	add_fileversion
+514	Can change file version	129	change_fileversion
+515	Can delete file version	129	delete_fileversion
+516	Can view file version	129	view_fileversion
+517	Can add project	130	add_project
+518	Can change project	130	change_project
+519	Can delete project	130	delete_project
+520	Can view project	130	view_project
+521	Can add project file	131	add_projectfile
+522	Can change project file	131	change_projectfile
+523	Can delete project file	131	delete_projectfile
+524	Can view project file	131	view_projectfile
+525	Can add render result	132	add_renderresult
+526	Can change render result	132	change_renderresult
+527	Can delete render result	132	delete_renderresult
+528	Can view render result	132	view_renderresult
+529	Can add signup extra	133	add_signupextra
+530	Can change signup extra	133	change_signupextra
+531	Can delete signup extra	133	delete_signupextra
+532	Can view signup extra	133	view_signupextra
+533	Can add special diet	134	add_specialdiet
+534	Can change special diet	134	change_specialdiet
+535	Can delete special diet	134	delete_specialdiet
+536	Can view special diet	134	view_specialdiet
+537	Can add night	135	add_night
+538	Can change night	135	change_night
+539	Can delete night	135	delete_night
+540	Can view night	135	view_night
+541	Can add signup extra	137	add_signupextra
+542	Can change signup extra	137	change_signupextra
+543	Can delete signup extra	137	delete_signupextra
+544	Can view signup extra	137	view_signupextra
+545	Can add poison	136	add_poison
+546	Can change poison	136	change_poison
+547	Can delete poison	136	delete_poison
+548	Can view poison	136	view_poison
+549	Can add signup extra	138	add_signupextra
+550	Can change signup extra	138	change_signupextra
+551	Can delete signup extra	138	delete_signupextra
+552	Can view signup extra	138	view_signupextra
+553	Can add signup extra	139	add_signupextra
+554	Can change signup extra	139	change_signupextra
+555	Can delete signup extra	139	delete_signupextra
+556	Can view signup extra	139	view_signupextra
+557	Can add signup extra	140	add_signupextra
+558	Can change signup extra	140	change_signupextra
+559	Can delete signup extra	140	delete_signupextra
+560	Can view signup extra	140	view_signupextra
+561	Can add special diet	141	add_specialdiet
+562	Can change special diet	141	change_specialdiet
+563	Can delete special diet	141	delete_specialdiet
+564	Can view special diet	141	view_specialdiet
+565	Can add time slot	142	add_timeslot
+566	Can change time slot	142	change_timeslot
+567	Can delete time slot	142	delete_timeslot
+568	Can view time slot	142	view_timeslot
+569	Can add signup extra	143	add_signupextra
+570	Can change signup extra	143	change_signupextra
+571	Can delete signup extra	143	delete_signupextra
+572	Can view signup extra	143	view_signupextra
+573	Can add special diet	144	add_specialdiet
+574	Can change special diet	144	change_specialdiet
+575	Can delete special diet	144	delete_specialdiet
+576	Can view special diet	144	view_specialdiet
+577	Can add signup extra	145	add_signupextra
+578	Can change signup extra	145	change_signupextra
+579	Can delete signup extra	145	delete_signupextra
+580	Can view signup extra	145	view_signupextra
+581	Can add special diet	146	add_specialdiet
+582	Can change special diet	146	change_specialdiet
+583	Can delete special diet	146	delete_specialdiet
+584	Can view special diet	146	view_specialdiet
 585	Can add signup extra	147	add_signupextra
 586	Can change signup extra	147	change_signupextra
 587	Can delete signup extra	147	delete_signupextra
 588	Can view signup extra	147	view_signupextra
-589	Can add poison	148	add_poison
-590	Can change poison	148	change_poison
-591	Can delete poison	148	delete_poison
-592	Can view poison	148	view_poison
-593	Can add signup extra	149	add_signupextra
-594	Can change signup extra	149	change_signupextra
-595	Can delete signup extra	149	delete_signupextra
-596	Can view signup extra	149	view_signupextra
-597	Can add signup extra	150	add_signupextra
-598	Can change signup extra	150	change_signupextra
-599	Can delete signup extra	150	delete_signupextra
-600	Can view signup extra	150	view_signupextra
+589	Can add special diet	148	add_specialdiet
+590	Can change special diet	148	change_specialdiet
+591	Can delete special diet	148	delete_specialdiet
+592	Can view special diet	148	view_specialdiet
+593	Can add night	149	add_night
+594	Can change night	149	change_night
+595	Can delete night	149	delete_night
+596	Can view night	149	view_night
+597	Can add poison	150	add_poison
+598	Can change poison	150	change_poison
+599	Can delete poison	150	delete_poison
+600	Can view poison	150	view_poison
 601	Can add signup extra	151	add_signupextra
 602	Can change signup extra	151	change_signupextra
 603	Can delete signup extra	151	delete_signupextra
 604	Can view signup extra	151	view_signupextra
-605	Can add special diet	152	add_specialdiet
-606	Can change special diet	152	change_specialdiet
-607	Can delete special diet	152	delete_specialdiet
-608	Can view special diet	152	view_specialdiet
-609	Can add time slot	153	add_timeslot
-610	Can change time slot	153	change_timeslot
-611	Can delete time slot	153	delete_timeslot
-612	Can view time slot	153	view_timeslot
+605	Can add signup extra	152	add_signupextra
+606	Can change signup extra	152	change_signupextra
+607	Can delete signup extra	152	delete_signupextra
+608	Can view signup extra	152	view_signupextra
+609	Can add special diet	153	add_specialdiet
+610	Can change special diet	153	change_specialdiet
+611	Can delete special diet	153	delete_specialdiet
+612	Can view special diet	153	view_specialdiet
 613	Can add signup extra	154	add_signupextra
 614	Can change signup extra	154	change_signupextra
 615	Can delete signup extra	154	delete_signupextra
@@ -13457,34 +15262,34 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 618	Can change special diet	155	change_specialdiet
 619	Can delete special diet	155	delete_specialdiet
 620	Can view special diet	155	view_specialdiet
-621	Can add signup extra	156	add_signupextra
-622	Can change signup extra	156	change_signupextra
-623	Can delete signup extra	156	delete_signupextra
-624	Can view signup extra	156	view_signupextra
-625	Can add special diet	157	add_specialdiet
-626	Can change special diet	157	change_specialdiet
-627	Can delete special diet	157	delete_specialdiet
-628	Can view special diet	157	view_specialdiet
-629	Can add signup extra	158	add_signupextra
-630	Can change signup extra	158	change_signupextra
-631	Can delete signup extra	158	delete_signupextra
-632	Can view signup extra	158	view_signupextra
-633	Can add special diet	159	add_specialdiet
-634	Can change special diet	159	change_specialdiet
-635	Can delete special diet	159	delete_specialdiet
-636	Can view special diet	159	view_specialdiet
-637	Can add night	160	add_night
-638	Can change night	160	change_night
-639	Can delete night	160	delete_night
-640	Can view night	160	view_night
-641	Can add poison	161	add_poison
-642	Can change poison	161	change_poison
-643	Can delete poison	161	delete_poison
-644	Can view poison	161	view_poison
-645	Can add signup extra	162	add_signupextra
-646	Can change signup extra	162	change_signupextra
-647	Can delete signup extra	162	delete_signupextra
-648	Can view signup extra	162	view_signupextra
+621	Can add night	156	add_night
+622	Can change night	156	change_night
+623	Can delete night	156	delete_night
+624	Can view night	156	view_night
+625	Can add signup extra	157	add_signupextra
+626	Can change signup extra	157	change_signupextra
+627	Can delete signup extra	157	delete_signupextra
+628	Can view signup extra	157	view_signupextra
+629	Can add special diet	158	add_specialdiet
+630	Can change special diet	158	change_specialdiet
+631	Can delete special diet	158	delete_specialdiet
+632	Can view special diet	158	view_specialdiet
+633	Can add signup extra	159	add_signupextra
+634	Can change signup extra	159	change_signupextra
+635	Can delete signup extra	159	delete_signupextra
+636	Can view signup extra	159	view_signupextra
+637	Can add signup extra	160	add_signupextra
+638	Can change signup extra	160	change_signupextra
+639	Can delete signup extra	160	delete_signupextra
+640	Can view signup extra	160	view_signupextra
+641	Can add special diet	161	add_specialdiet
+642	Can change special diet	161	change_specialdiet
+643	Can delete special diet	161	delete_specialdiet
+644	Can view special diet	161	view_specialdiet
+645	Can add time slot	162	add_timeslot
+646	Can change time slot	162	change_timeslot
+647	Can delete time slot	162	delete_timeslot
+648	Can view time slot	162	view_timeslot
 649	Can add signup extra	163	add_signupextra
 650	Can change signup extra	163	change_signupextra
 651	Can delete signup extra	163	delete_signupextra
@@ -13493,30 +15298,30 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 654	Can change special diet	164	change_specialdiet
 655	Can delete special diet	164	delete_specialdiet
 656	Can view special diet	164	view_specialdiet
-657	Can add signup extra	165	add_signupextra
-658	Can change signup extra	165	change_signupextra
-659	Can delete signup extra	165	delete_signupextra
-660	Can view signup extra	165	view_signupextra
-661	Can add special diet	166	add_specialdiet
-662	Can change special diet	166	change_specialdiet
-663	Can delete special diet	166	delete_specialdiet
-664	Can view special diet	166	view_specialdiet
-665	Can add night	167	add_night
-666	Can change night	167	change_night
-667	Can delete night	167	delete_night
-668	Can view night	167	view_night
+657	Can add time slot	167	add_timeslot
+658	Can change time slot	167	change_timeslot
+659	Can delete time slot	167	delete_timeslot
+660	Can view time slot	167	view_timeslot
+661	Can add signup extra	165	add_signupextra
+662	Can change signup extra	165	change_signupextra
+663	Can delete signup extra	165	delete_signupextra
+664	Can view signup extra	165	view_signupextra
+665	Can add special diet	166	add_specialdiet
+666	Can change special diet	166	change_specialdiet
+667	Can delete special diet	166	delete_specialdiet
+668	Can view special diet	166	view_specialdiet
 669	Can add signup extra	168	add_signupextra
 670	Can change signup extra	168	change_signupextra
 671	Can delete signup extra	168	delete_signupextra
 672	Can view signup extra	168	view_signupextra
-673	Can add special diet	169	add_specialdiet
-674	Can change special diet	169	change_specialdiet
-675	Can delete special diet	169	delete_specialdiet
-676	Can view special diet	169	view_specialdiet
-677	Can add signup extra	170	add_signupextra
-678	Can change signup extra	170	change_signupextra
-679	Can delete signup extra	170	delete_signupextra
-680	Can view signup extra	170	view_signupextra
+673	Can add signup extra	169	add_signupextra
+674	Can change signup extra	169	change_signupextra
+675	Can delete signup extra	169	delete_signupextra
+676	Can view signup extra	169	view_signupextra
+677	Can add special diet	170	add_specialdiet
+678	Can change special diet	170	change_specialdiet
+679	Can delete special diet	170	delete_specialdiet
+680	Can view special diet	170	view_specialdiet
 681	Can add signup extra	171	add_signupextra
 682	Can change signup extra	171	change_signupextra
 683	Can delete signup extra	171	delete_signupextra
@@ -13525,58 +15330,58 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 686	Can change special diet	172	change_specialdiet
 687	Can delete special diet	172	delete_specialdiet
 688	Can view special diet	172	view_specialdiet
-689	Can add time slot	173	add_timeslot
-690	Can change time slot	173	change_timeslot
-691	Can delete time slot	173	delete_timeslot
-692	Can view time slot	173	view_timeslot
-693	Can add signup extra	174	add_signupextra
-694	Can change signup extra	174	change_signupextra
-695	Can delete signup extra	174	delete_signupextra
-696	Can view signup extra	174	view_signupextra
-697	Can add special diet	175	add_specialdiet
-698	Can change special diet	175	change_specialdiet
-699	Can delete special diet	175	delete_specialdiet
-700	Can view special diet	175	view_specialdiet
-701	Can add time slot	176	add_timeslot
-702	Can change time slot	176	change_timeslot
-703	Can delete time slot	176	delete_timeslot
-704	Can view time slot	176	view_timeslot
-705	Can add signup extra	177	add_signupextra
-706	Can change signup extra	177	change_signupextra
-707	Can delete signup extra	177	delete_signupextra
-708	Can view signup extra	177	view_signupextra
-709	Can add special diet	178	add_specialdiet
-710	Can change special diet	178	change_specialdiet
-711	Can delete special diet	178	delete_specialdiet
-712	Can view special diet	178	view_specialdiet
+689	Can add signup extra	173	add_signupextra
+690	Can change signup extra	173	change_signupextra
+691	Can delete signup extra	173	delete_signupextra
+692	Can view signup extra	173	view_signupextra
+693	Can add special diet	174	add_specialdiet
+694	Can change special diet	174	change_specialdiet
+695	Can delete special diet	174	delete_specialdiet
+696	Can view special diet	174	view_specialdiet
+697	Can add signup extra	175	add_signupextra
+698	Can change signup extra	175	change_signupextra
+699	Can delete signup extra	175	delete_signupextra
+700	Can view signup extra	175	view_signupextra
+701	Can add special diet	176	add_specialdiet
+702	Can change special diet	176	change_specialdiet
+703	Can delete special diet	176	delete_specialdiet
+704	Can view special diet	176	view_specialdiet
+705	Can add night	177	add_night
+706	Can change night	177	change_night
+707	Can delete night	177	delete_night
+708	Can view night	177	view_night
+709	Can add poison	178	add_poison
+710	Can change poison	178	change_poison
+711	Can delete poison	178	delete_poison
+712	Can view poison	178	view_poison
 713	Can add signup extra	179	add_signupextra
 714	Can change signup extra	179	change_signupextra
 715	Can delete signup extra	179	delete_signupextra
 716	Can view signup extra	179	view_signupextra
-717	Can add signup extra	180	add_signupextra
-718	Can change signup extra	180	change_signupextra
-719	Can delete signup extra	180	delete_signupextra
-720	Can view signup extra	180	view_signupextra
-721	Can add special diet	181	add_specialdiet
-722	Can change special diet	181	change_specialdiet
-723	Can delete special diet	181	delete_specialdiet
-724	Can view special diet	181	view_specialdiet
-725	Can add signup extra	182	add_signupextra
-726	Can change signup extra	182	change_signupextra
-727	Can delete signup extra	182	delete_signupextra
-728	Can view signup extra	182	view_signupextra
-729	Can add special diet	183	add_specialdiet
-730	Can change special diet	183	change_specialdiet
-731	Can delete special diet	183	delete_specialdiet
-732	Can view special diet	183	view_specialdiet
-733	Can add signup extra	184	add_signupextra
-734	Can change signup extra	184	change_signupextra
-735	Can delete signup extra	184	delete_signupextra
-736	Can view signup extra	184	view_signupextra
-737	Can add special diet	185	add_specialdiet
-738	Can change special diet	185	change_specialdiet
-739	Can delete special diet	185	delete_specialdiet
-740	Can view special diet	185	view_specialdiet
+717	Can add night	180	add_night
+718	Can change night	180	change_night
+719	Can delete night	180	delete_night
+720	Can view night	180	view_night
+721	Can add signup extra	181	add_signupextra
+722	Can change signup extra	181	change_signupextra
+723	Can delete signup extra	181	delete_signupextra
+724	Can view signup extra	181	view_signupextra
+725	Can add special diet	182	add_specialdiet
+726	Can change special diet	182	change_specialdiet
+727	Can delete special diet	182	delete_specialdiet
+728	Can view special diet	182	view_specialdiet
+729	Can add signup extra	183	add_signupextra
+730	Can change signup extra	183	change_signupextra
+731	Can delete signup extra	183	delete_signupextra
+732	Can view signup extra	183	view_signupextra
+733	Can add special diet	184	add_specialdiet
+734	Can change special diet	184	change_specialdiet
+735	Can delete special diet	184	delete_specialdiet
+736	Can view special diet	184	view_specialdiet
+737	Can add time slot	185	add_timeslot
+738	Can change time slot	185	change_timeslot
+739	Can delete time slot	185	delete_timeslot
+740	Can view time slot	185	view_timeslot
 741	Can add signup extra	186	add_signupextra
 742	Can change signup extra	186	change_signupextra
 743	Can delete signup extra	186	delete_signupextra
@@ -13585,601 +15390,742 @@ COPY public.auth_permission (id, name, content_type_id, codename) FROM stdin;
 746	Can change special diet	187	change_specialdiet
 747	Can delete special diet	187	delete_specialdiet
 748	Can view special diet	187	view_specialdiet
-749	Can add night	188	add_night
-750	Can change night	188	change_night
-751	Can delete night	188	delete_night
-752	Can view night	188	view_night
-753	Can add poison	189	add_poison
-754	Can change poison	189	change_poison
-755	Can delete poison	189	delete_poison
-756	Can view poison	189	view_poison
-757	Can add signup extra	190	add_signupextra
-758	Can change signup extra	190	change_signupextra
-759	Can delete signup extra	190	delete_signupextra
-760	Can view signup extra	190	view_signupextra
-761	Can add night	191	add_night
-762	Can change night	191	change_night
-763	Can delete night	191	delete_night
-764	Can view night	191	view_night
-765	Can add signup extra	192	add_signupextra
-766	Can change signup extra	192	change_signupextra
-767	Can delete signup extra	192	delete_signupextra
-768	Can view signup extra	192	view_signupextra
-769	Can add special diet	193	add_specialdiet
-770	Can change special diet	193	change_specialdiet
-771	Can delete special diet	193	delete_specialdiet
-772	Can view special diet	193	view_specialdiet
-773	Can add signup extra	194	add_signupextra
-774	Can change signup extra	194	change_signupextra
-775	Can delete signup extra	194	delete_signupextra
-776	Can view signup extra	194	view_signupextra
-777	Can add special diet	195	add_specialdiet
-778	Can change special diet	195	change_specialdiet
-779	Can delete special diet	195	delete_specialdiet
-780	Can view special diet	195	view_specialdiet
-781	Can add time slot	196	add_timeslot
-782	Can change time slot	196	change_timeslot
-783	Can delete time slot	196	delete_timeslot
-784	Can view time slot	196	view_timeslot
-785	Can add signup extra	197	add_signupextra
-786	Can change signup extra	197	change_signupextra
-787	Can delete signup extra	197	delete_signupextra
-788	Can view signup extra	197	view_signupextra
-789	Can add special diet	198	add_specialdiet
-790	Can change special diet	198	change_specialdiet
-791	Can delete special diet	198	delete_specialdiet
-792	Can view special diet	198	view_specialdiet
-793	Can add signup extra	199	add_signupextra
-794	Can change signup extra	199	change_signupextra
-795	Can delete signup extra	199	delete_signupextra
-796	Can view signup extra	199	view_signupextra
+749	Can add signup extra	188	add_signupextra
+750	Can change signup extra	188	change_signupextra
+751	Can delete signup extra	188	delete_signupextra
+752	Can view signup extra	188	view_signupextra
+753	Can add signup extra	189	add_signupextra
+754	Can change signup extra	189	change_signupextra
+755	Can delete signup extra	189	delete_signupextra
+756	Can view signup extra	189	view_signupextra
+757	Can add special diet	191	add_specialdiet
+758	Can change special diet	191	change_specialdiet
+759	Can delete special diet	191	delete_specialdiet
+760	Can view special diet	191	view_specialdiet
+761	Can add time slot	192	add_timeslot
+762	Can change time slot	192	change_timeslot
+763	Can delete time slot	192	delete_timeslot
+764	Can view time slot	192	view_timeslot
+765	Can add signup extra	190	add_signupextra
+766	Can change signup extra	190	change_signupextra
+767	Can delete signup extra	190	delete_signupextra
+768	Can view signup extra	190	view_signupextra
+769	Can add time slot	194	add_timeslot
+770	Can change time slot	194	change_timeslot
+771	Can delete time slot	194	delete_timeslot
+772	Can view time slot	194	view_timeslot
+773	Can add signup extra	193	add_signupextra
+774	Can change signup extra	193	change_signupextra
+775	Can delete signup extra	193	delete_signupextra
+776	Can view signup extra	193	view_signupextra
+777	Can add special diet	196	add_specialdiet
+778	Can change special diet	196	change_specialdiet
+779	Can delete special diet	196	delete_specialdiet
+780	Can view special diet	196	view_specialdiet
+781	Can add time slot	197	add_timeslot
+782	Can change time slot	197	change_timeslot
+783	Can delete time slot	197	delete_timeslot
+784	Can view time slot	197	view_timeslot
+785	Can add signup extra	195	add_signupextra
+786	Can change signup extra	195	change_signupextra
+787	Can delete signup extra	195	delete_signupextra
+788	Can view signup extra	195	view_signupextra
+789	Can add night	198	add_night
+790	Can change night	198	change_night
+791	Can delete night	198	delete_night
+792	Can view night	198	view_night
+793	Can add poison	199	add_poison
+794	Can change poison	199	change_poison
+795	Can delete poison	199	delete_poison
+796	Can view poison	199	view_poison
 797	Can add signup extra	200	add_signupextra
 798	Can change signup extra	200	change_signupextra
 799	Can delete signup extra	200	delete_signupextra
 800	Can view signup extra	200	view_signupextra
-801	Can add special diet	201	add_specialdiet
-802	Can change special diet	201	change_specialdiet
-803	Can delete special diet	201	delete_specialdiet
-804	Can view special diet	201	view_specialdiet
-805	Can add time slot	202	add_timeslot
-806	Can change time slot	202	change_timeslot
-807	Can delete time slot	202	delete_timeslot
-808	Can view time slot	202	view_timeslot
-809	Can add signup extra	203	add_signupextra
-810	Can change signup extra	203	change_signupextra
-811	Can delete signup extra	203	delete_signupextra
-812	Can view signup extra	203	view_signupextra
-813	Can add time slot	204	add_timeslot
-814	Can change time slot	204	change_timeslot
-815	Can delete time slot	204	delete_timeslot
-816	Can view time slot	204	view_timeslot
-817	Can add signup extra	205	add_signupextra
-818	Can change signup extra	205	change_signupextra
-819	Can delete signup extra	205	delete_signupextra
-820	Can view signup extra	205	view_signupextra
-821	Can add special diet	206	add_specialdiet
-822	Can change special diet	206	change_specialdiet
-823	Can delete special diet	206	delete_specialdiet
-824	Can view special diet	206	view_specialdiet
-825	Can add time slot	207	add_timeslot
-826	Can change time slot	207	change_timeslot
-827	Can delete time slot	207	delete_timeslot
-828	Can view time slot	207	view_timeslot
-829	Can add signup extra	208	add_signupextra
-830	Can change signup extra	208	change_signupextra
-831	Can delete signup extra	208	delete_signupextra
-832	Can view signup extra	208	view_signupextra
-833	Can add night	209	add_night
-834	Can change night	209	change_night
-835	Can delete night	209	delete_night
-836	Can view night	209	view_night
-837	Can add poison	210	add_poison
-838	Can change poison	210	change_poison
-839	Can delete poison	210	delete_poison
-840	Can view poison	210	view_poison
-841	Can add signup extra	211	add_signupextra
-842	Can change signup extra	211	change_signupextra
-843	Can delete signup extra	211	delete_signupextra
-844	Can view signup extra	211	view_signupextra
-845	Can add special diet	212	add_specialdiet
-846	Can change special diet	212	change_specialdiet
-847	Can delete special diet	212	delete_specialdiet
-848	Can view special diet	212	view_specialdiet
-849	Can add signup extra	213	add_signupextra
-850	Can change signup extra	213	change_signupextra
-851	Can delete signup extra	213	delete_signupextra
-852	Can view signup extra	213	view_signupextra
-853	Can add special diet	214	add_specialdiet
-854	Can change special diet	214	change_specialdiet
-855	Can delete special diet	214	delete_specialdiet
-856	Can view special diet	214	view_specialdiet
-857	Can add signup extra	215	add_signupextra
-858	Can change signup extra	215	change_signupextra
-859	Can delete signup extra	215	delete_signupextra
-860	Can view signup extra	215	view_signupextra
-861	Can add special diet	216	add_specialdiet
-862	Can change special diet	216	change_specialdiet
-863	Can delete special diet	216	delete_specialdiet
-864	Can view special diet	216	view_specialdiet
-865	Can add time slot	217	add_timeslot
-866	Can change time slot	217	change_timeslot
-867	Can delete time slot	217	delete_timeslot
-868	Can view time slot	217	view_timeslot
-869	Can add signup extra	218	add_signupextra
-870	Can change signup extra	218	change_signupextra
-871	Can delete signup extra	218	delete_signupextra
-872	Can view signup extra	218	view_signupextra
-873	Can add night	219	add_night
-874	Can change night	219	change_night
-875	Can delete night	219	delete_night
-876	Can view night	219	view_night
-877	Can add poison	220	add_poison
-878	Can change poison	220	change_poison
-879	Can delete poison	220	delete_poison
-880	Can view poison	220	view_poison
-881	Can add signup extra	221	add_signupextra
-882	Can change signup extra	221	change_signupextra
-883	Can delete signup extra	221	delete_signupextra
-884	Can view signup extra	221	view_signupextra
-885	Can add special diet	222	add_specialdiet
-886	Can change special diet	222	change_specialdiet
-887	Can delete special diet	222	delete_specialdiet
-888	Can view special diet	222	view_specialdiet
-889	Can add signup extra	223	add_signupextra
-890	Can change signup extra	223	change_signupextra
-891	Can delete signup extra	223	delete_signupextra
-892	Can view signup extra	223	view_signupextra
-893	Can add special diet	224	add_specialdiet
-894	Can change special diet	224	change_specialdiet
-895	Can delete special diet	224	delete_specialdiet
-896	Can view special diet	224	view_specialdiet
-897	Can add signup extra	225	add_signupextra
-898	Can change signup extra	225	change_signupextra
-899	Can delete signup extra	225	delete_signupextra
-900	Can view signup extra	225	view_signupextra
-901	Can add night	226	add_night
-902	Can change night	226	change_night
-903	Can delete night	226	delete_night
-904	Can view night	226	view_night
-905	Can add special diet	227	add_specialdiet
-906	Can change special diet	227	change_specialdiet
-907	Can delete special diet	227	delete_specialdiet
-908	Can view special diet	227	view_specialdiet
-909	Can add signup extra	228	add_signupextra
-910	Can change signup extra	228	change_signupextra
-911	Can delete signup extra	228	delete_signupextra
-912	Can view signup extra	228	view_signupextra
-913	Can add special diet	229	add_specialdiet
-914	Can change special diet	229	change_specialdiet
-915	Can delete special diet	229	delete_specialdiet
-916	Can view special diet	229	view_specialdiet
-917	Can add signup extra	230	add_signupextra
-918	Can change signup extra	230	change_signupextra
-919	Can delete signup extra	230	delete_signupextra
-920	Can view signup extra	230	view_signupextra
-921	Can add special diet	231	add_specialdiet
-922	Can change special diet	231	change_specialdiet
-923	Can delete special diet	231	delete_specialdiet
-924	Can view special diet	231	view_specialdiet
-925	Can add signup extra	232	add_signupextra
-926	Can change signup extra	232	change_signupextra
-927	Can delete signup extra	232	delete_signupextra
-928	Can view signup extra	232	view_signupextra
-929	Can add signup extra	233	add_signupextra
-930	Can change signup extra	233	change_signupextra
-931	Can delete signup extra	233	delete_signupextra
-932	Can view signup extra	233	view_signupextra
-933	Can add night	234	add_night
-934	Can change night	234	change_night
-935	Can delete night	234	delete_night
-936	Can view night	234	view_night
-937	Can add poison	235	add_poison
-938	Can change poison	235	change_poison
-939	Can delete poison	235	delete_poison
-940	Can view poison	235	view_poison
-941	Can add signup extra	236	add_signupextra
-942	Can change signup extra	236	change_signupextra
-943	Can delete signup extra	236	delete_signupextra
-944	Can view signup extra	236	view_signupextra
-945	Can add accessibility warning	237	add_accessibilitywarning
-946	Can change accessibility warning	237	change_accessibilitywarning
-947	Can delete accessibility warning	237	delete_accessibilitywarning
-948	Can view accessibility warning	237	view_accessibilitywarning
-949	Can add time slot	238	add_timeslot
-950	Can change time slot	238	change_timeslot
-951	Can delete time slot	238	delete_timeslot
-952	Can view time slot	238	view_timeslot
-953	Can add special diet	239	add_specialdiet
-954	Can change special diet	239	change_specialdiet
-955	Can delete special diet	239	delete_specialdiet
-956	Can view special diet	239	view_specialdiet
-957	Can add time slot	240	add_timeslot
-958	Can change time slot	240	change_timeslot
-959	Can delete time slot	240	delete_timeslot
-960	Can view time slot	240	view_timeslot
-961	Can add signup extra	241	add_signupextra
-962	Can change signup extra	241	change_signupextra
-963	Can delete signup extra	241	delete_signupextra
-964	Can view signup extra	241	view_signupextra
-965	Can add language	242	add_language
-966	Can change language	242	change_language
-967	Can delete language	242	delete_language
-968	Can view language	242	view_language
-969	Can add special diet	243	add_specialdiet
-970	Can change special diet	243	change_specialdiet
-971	Can delete special diet	243	delete_specialdiet
-972	Can view special diet	243	view_specialdiet
-973	Can add signup extra	244	add_signupextra
-974	Can change signup extra	244	change_signupextra
-975	Can delete signup extra	244	delete_signupextra
-976	Can view signup extra	244	view_signupextra
-977	Can add special diet	245	add_specialdiet
-978	Can change special diet	245	change_specialdiet
-979	Can delete special diet	245	delete_specialdiet
-980	Can view special diet	245	view_specialdiet
-981	Can add time slot	246	add_timeslot
-982	Can change time slot	246	change_timeslot
-983	Can delete time slot	246	delete_timeslot
-984	Can view time slot	246	view_timeslot
-985	Can add signup extra	247	add_signupextra
-986	Can change signup extra	247	change_signupextra
-987	Can delete signup extra	247	delete_signupextra
-988	Can view signup extra	247	view_signupextra
-989	Can add night	248	add_night
-990	Can change night	248	change_night
-991	Can delete night	248	delete_night
-992	Can view night	248	view_night
-993	Can add special diet	249	add_specialdiet
-994	Can change special diet	249	change_specialdiet
-995	Can delete special diet	249	delete_specialdiet
-996	Can view special diet	249	view_specialdiet
-997	Can add signup extra	250	add_signupextra
-998	Can change signup extra	250	change_signupextra
-999	Can delete signup extra	250	delete_signupextra
-1000	Can view signup extra	250	view_signupextra
-1001	Can add special diet	251	add_specialdiet
-1002	Can change special diet	251	change_specialdiet
-1003	Can delete special diet	251	delete_specialdiet
-1004	Can view special diet	251	view_specialdiet
-1005	Can add signup extra	252	add_signupextra
-1006	Can change signup extra	252	change_signupextra
-1007	Can delete signup extra	252	delete_signupextra
-1008	Can view signup extra	252	view_signupextra
-1009	Can add special diet	253	add_specialdiet
-1010	Can change special diet	253	change_specialdiet
-1011	Can delete special diet	253	delete_specialdiet
-1012	Can view special diet	253	view_specialdiet
+801	Can add special diet	202	add_specialdiet
+802	Can change special diet	202	change_specialdiet
+803	Can delete special diet	202	delete_specialdiet
+804	Can view special diet	202	view_specialdiet
+805	Can add signup extra	201	add_signupextra
+806	Can change signup extra	201	change_signupextra
+807	Can delete signup extra	201	delete_signupextra
+808	Can view signup extra	201	view_signupextra
+809	Can add special diet	204	add_specialdiet
+810	Can change special diet	204	change_specialdiet
+811	Can delete special diet	204	delete_specialdiet
+812	Can view special diet	204	view_specialdiet
+813	Can add signup extra	203	add_signupextra
+814	Can change signup extra	203	change_signupextra
+815	Can delete signup extra	203	delete_signupextra
+816	Can view signup extra	203	view_signupextra
+817	Can add special diet	206	add_specialdiet
+818	Can change special diet	206	change_specialdiet
+819	Can delete special diet	206	delete_specialdiet
+820	Can view special diet	206	view_specialdiet
+821	Can add time slot	207	add_timeslot
+822	Can change time slot	207	change_timeslot
+823	Can delete time slot	207	delete_timeslot
+824	Can view time slot	207	view_timeslot
+825	Can add signup extra	205	add_signupextra
+826	Can change signup extra	205	change_signupextra
+827	Can delete signup extra	205	delete_signupextra
+828	Can view signup extra	205	view_signupextra
+829	Can add night	208	add_night
+830	Can change night	208	change_night
+831	Can delete night	208	delete_night
+832	Can view night	208	view_night
+833	Can add poison	209	add_poison
+834	Can change poison	209	change_poison
+835	Can delete poison	209	delete_poison
+836	Can view poison	209	view_poison
+837	Can add signup extra	210	add_signupextra
+838	Can change signup extra	210	change_signupextra
+839	Can delete signup extra	210	delete_signupextra
+840	Can view signup extra	210	view_signupextra
+841	Can add special diet	212	add_specialdiet
+842	Can change special diet	212	change_specialdiet
+843	Can delete special diet	212	delete_specialdiet
+844	Can view special diet	212	view_specialdiet
+845	Can add signup extra	211	add_signupextra
+846	Can change signup extra	211	change_signupextra
+847	Can delete signup extra	211	delete_signupextra
+848	Can view signup extra	211	view_signupextra
+849	Can add special diet	214	add_specialdiet
+850	Can change special diet	214	change_specialdiet
+851	Can delete special diet	214	delete_specialdiet
+852	Can view special diet	214	view_specialdiet
+853	Can add signup extra	213	add_signupextra
+854	Can change signup extra	213	change_signupextra
+855	Can delete signup extra	213	delete_signupextra
+856	Can view signup extra	213	view_signupextra
+857	Can add night	215	add_night
+858	Can change night	215	change_night
+859	Can delete night	215	delete_night
+860	Can view night	215	view_night
+861	Can add special diet	217	add_specialdiet
+862	Can change special diet	217	change_specialdiet
+863	Can delete special diet	217	delete_specialdiet
+864	Can view special diet	217	view_specialdiet
+865	Can add signup extra	216	add_signupextra
+866	Can change signup extra	216	change_signupextra
+867	Can delete signup extra	216	delete_signupextra
+868	Can view signup extra	216	view_signupextra
+869	Can add special diet	219	add_specialdiet
+870	Can change special diet	219	change_specialdiet
+871	Can delete special diet	219	delete_specialdiet
+872	Can view special diet	219	view_specialdiet
+873	Can add signup extra	218	add_signupextra
+874	Can change signup extra	218	change_signupextra
+875	Can delete signup extra	218	delete_signupextra
+876	Can view signup extra	218	view_signupextra
+877	Can add special diet	221	add_specialdiet
+878	Can change special diet	221	change_specialdiet
+879	Can delete special diet	221	delete_specialdiet
+880	Can view special diet	221	view_specialdiet
+881	Can add signup extra	220	add_signupextra
+882	Can change signup extra	220	change_signupextra
+883	Can delete signup extra	220	delete_signupextra
+884	Can view signup extra	220	view_signupextra
+885	Can add signup extra	222	add_signupextra
+886	Can change signup extra	222	change_signupextra
+887	Can delete signup extra	222	delete_signupextra
+888	Can view signup extra	222	view_signupextra
+889	Can add night	224	add_night
+890	Can change night	224	change_night
+891	Can delete night	224	delete_night
+892	Can view night	224	view_night
+893	Can add poison	225	add_poison
+894	Can change poison	225	change_poison
+895	Can delete poison	225	delete_poison
+896	Can view poison	225	view_poison
+897	Can add signup extra	226	add_signupextra
+898	Can change signup extra	226	change_signupextra
+899	Can delete signup extra	226	delete_signupextra
+900	Can view signup extra	226	view_signupextra
+901	Can add accessibility warning	223	add_accessibilitywarning
+902	Can change accessibility warning	223	change_accessibilitywarning
+903	Can delete accessibility warning	223	delete_accessibilitywarning
+904	Can view accessibility warning	223	view_accessibilitywarning
+905	Can add time slot	227	add_timeslot
+906	Can change time slot	227	change_timeslot
+907	Can delete time slot	227	delete_timeslot
+908	Can view time slot	227	view_timeslot
+909	Can add special diet	230	add_specialdiet
+910	Can change special diet	230	change_specialdiet
+911	Can delete special diet	230	delete_specialdiet
+912	Can view special diet	230	view_specialdiet
+913	Can add time slot	231	add_timeslot
+914	Can change time slot	231	change_timeslot
+915	Can delete time slot	231	delete_timeslot
+916	Can view time slot	231	view_timeslot
+917	Can add signup extra	229	add_signupextra
+918	Can change signup extra	229	change_signupextra
+919	Can delete signup extra	229	delete_signupextra
+920	Can view signup extra	229	view_signupextra
+921	Can add language	228	add_language
+922	Can change language	228	change_language
+923	Can delete language	228	delete_language
+924	Can view language	228	view_language
+925	Can add special diet	233	add_specialdiet
+926	Can change special diet	233	change_specialdiet
+927	Can delete special diet	233	delete_specialdiet
+928	Can view special diet	233	view_specialdiet
+929	Can add signup extra	232	add_signupextra
+930	Can change signup extra	232	change_signupextra
+931	Can delete signup extra	232	delete_signupextra
+932	Can view signup extra	232	view_signupextra
+933	Can add special diet	235	add_specialdiet
+934	Can change special diet	235	change_specialdiet
+935	Can delete special diet	235	delete_specialdiet
+936	Can view special diet	235	view_specialdiet
+937	Can add time slot	236	add_timeslot
+938	Can change time slot	236	change_timeslot
+939	Can delete time slot	236	delete_timeslot
+940	Can view time slot	236	view_timeslot
+941	Can add signup extra	234	add_signupextra
+942	Can change signup extra	234	change_signupextra
+943	Can delete signup extra	234	delete_signupextra
+944	Can view signup extra	234	view_signupextra
+945	Can add night	237	add_night
+946	Can change night	237	change_night
+947	Can delete night	237	delete_night
+948	Can view night	237	view_night
+949	Can add special diet	239	add_specialdiet
+950	Can change special diet	239	change_specialdiet
+951	Can delete special diet	239	delete_specialdiet
+952	Can view special diet	239	view_specialdiet
+953	Can add signup extra	238	add_signupextra
+954	Can change signup extra	238	change_signupextra
+955	Can delete signup extra	238	delete_signupextra
+956	Can view signup extra	238	view_signupextra
+957	Can add special diet	241	add_specialdiet
+958	Can change special diet	241	change_specialdiet
+959	Can delete special diet	241	delete_specialdiet
+960	Can view special diet	241	view_specialdiet
+961	Can add signup extra	240	add_signupextra
+962	Can change signup extra	240	change_signupextra
+963	Can delete signup extra	240	delete_signupextra
+964	Can view signup extra	240	view_signupextra
+965	Can add special diet	243	add_specialdiet
+966	Can change special diet	243	change_specialdiet
+967	Can delete special diet	243	delete_specialdiet
+968	Can view special diet	243	view_specialdiet
+969	Can add signup extra	242	add_signupextra
+970	Can change signup extra	242	change_signupextra
+971	Can delete signup extra	242	delete_signupextra
+972	Can view signup extra	242	view_signupextra
+973	Can add event day	244	add_eventday
+974	Can change event day	244	change_eventday
+975	Can delete event day	244	delete_eventday
+976	Can view event day	244	view_eventday
+977	Can add known language	245	add_knownlanguage
+978	Can change known language	245	change_knownlanguage
+979	Can delete known language	245	delete_knownlanguage
+980	Can view known language	245	view_knownlanguage
+981	Can add native language	246	add_nativelanguage
+982	Can change native language	246	change_nativelanguage
+983	Can delete native language	246	delete_nativelanguage
+984	Can view native language	246	view_nativelanguage
+985	Can add special diet	248	add_specialdiet
+986	Can change special diet	248	change_specialdiet
+987	Can delete special diet	248	delete_specialdiet
+988	Can view special diet	248	view_specialdiet
+989	Can add signup extra	247	add_signupextra
+990	Can change signup extra	247	change_signupextra
+991	Can delete signup extra	247	delete_signupextra
+992	Can view signup extra	247	view_signupextra
+993	Can add event day	249	add_eventday
+994	Can change event day	249	change_eventday
+995	Can delete event day	249	delete_eventday
+996	Can view event day	249	view_eventday
+997	Can add known language	250	add_knownlanguage
+998	Can change known language	250	change_knownlanguage
+999	Can delete known language	250	delete_knownlanguage
+1000	Can view known language	250	view_knownlanguage
+1001	Can add native language	251	add_nativelanguage
+1002	Can change native language	251	change_nativelanguage
+1003	Can delete native language	251	delete_nativelanguage
+1004	Can view native language	251	view_nativelanguage
+1005	Can add special diet	253	add_specialdiet
+1006	Can change special diet	253	change_specialdiet
+1007	Can delete special diet	253	delete_specialdiet
+1008	Can view special diet	253	view_specialdiet
+1009	Can add signup extra	252	add_signupextra
+1010	Can change signup extra	252	change_signupextra
+1011	Can delete signup extra	252	delete_signupextra
+1012	Can view signup extra	252	view_signupextra
 1013	Can add signup extra	254	add_signupextra
 1014	Can change signup extra	254	change_signupextra
 1015	Can delete signup extra	254	delete_signupextra
 1016	Can view signup extra	254	view_signupextra
-1017	Can add event day	255	add_eventday
-1018	Can change event day	255	change_eventday
-1019	Can delete event day	255	delete_eventday
-1020	Can view event day	255	view_eventday
-1021	Can add known language	256	add_knownlanguage
-1022	Can change known language	256	change_knownlanguage
-1023	Can delete known language	256	delete_knownlanguage
-1024	Can view known language	256	view_knownlanguage
-1025	Can add native language	257	add_nativelanguage
-1026	Can change native language	257	change_nativelanguage
-1027	Can delete native language	257	delete_nativelanguage
-1028	Can view native language	257	view_nativelanguage
-1029	Can add special diet	258	add_specialdiet
-1030	Can change special diet	258	change_specialdiet
-1031	Can delete special diet	258	delete_specialdiet
-1032	Can view special diet	258	view_specialdiet
-1033	Can add signup extra	259	add_signupextra
-1034	Can change signup extra	259	change_signupextra
-1035	Can delete signup extra	259	delete_signupextra
-1036	Can view signup extra	259	view_signupextra
-1037	Can add event day	260	add_eventday
-1038	Can change event day	260	change_eventday
-1039	Can delete event day	260	delete_eventday
-1040	Can view event day	260	view_eventday
-1041	Can add known language	261	add_knownlanguage
-1042	Can change known language	261	change_knownlanguage
-1043	Can delete known language	261	delete_knownlanguage
-1044	Can view known language	261	view_knownlanguage
-1045	Can add native language	262	add_nativelanguage
-1046	Can change native language	262	change_nativelanguage
-1047	Can delete native language	262	delete_nativelanguage
-1048	Can view native language	262	view_nativelanguage
-1049	Can add special diet	263	add_specialdiet
-1050	Can change special diet	263	change_specialdiet
-1051	Can delete special diet	263	delete_specialdiet
-1052	Can view special diet	263	view_specialdiet
-1053	Can add signup extra	264	add_signupextra
-1054	Can change signup extra	264	change_signupextra
-1055	Can delete signup extra	264	delete_signupextra
-1056	Can view signup extra	264	view_signupextra
-1057	Can add signup extra	265	add_signupextra
-1058	Can change signup extra	265	change_signupextra
-1059	Can delete signup extra	265	delete_signupextra
-1060	Can view signup extra	265	view_signupextra
-1061	Can add signup extra	266	add_signupextra
-1062	Can change signup extra	266	change_signupextra
-1063	Can delete signup extra	266	delete_signupextra
-1064	Can view signup extra	266	view_signupextra
-1065	Can add accommodation	267	add_accommodation
-1066	Can change accommodation	267	change_accommodation
-1067	Can delete accommodation	267	delete_accommodation
-1068	Can view accommodation	267	view_accommodation
-1069	Can add known language	268	add_knownlanguage
-1070	Can change known language	268	change_knownlanguage
-1071	Can delete known language	268	delete_knownlanguage
-1072	Can view known language	268	view_knownlanguage
-1073	Can add accessibility warning	269	add_accessibilitywarning
-1074	Can change accessibility warning	269	change_accessibilitywarning
-1075	Can delete accessibility warning	269	delete_accessibilitywarning
-1076	Can view accessibility warning	269	view_accessibilitywarning
-1077	Can add time slot	270	add_timeslot
-1078	Can change time slot	270	change_timeslot
-1079	Can delete time slot	270	delete_timeslot
-1080	Can view time slot	270	view_timeslot
-1081	Can add special diet	271	add_specialdiet
-1082	Can change special diet	271	change_specialdiet
-1083	Can delete special diet	271	delete_specialdiet
-1084	Can view special diet	271	view_specialdiet
-1085	Can add signup extra	272	add_signupextra
-1086	Can change signup extra	272	change_signupextra
-1087	Can delete signup extra	272	delete_signupextra
-1088	Can view signup extra	272	view_signupextra
-1089	Can add special diet	273	add_specialdiet
-1090	Can change special diet	273	change_specialdiet
-1091	Can delete special diet	273	delete_specialdiet
-1092	Can view special diet	273	view_specialdiet
-1093	Can add signup extra	274	add_signupextra
-1094	Can change signup extra	274	change_signupextra
-1095	Can delete signup extra	274	delete_signupextra
-1096	Can view signup extra	274	view_signupextra
-1097	Can add poison	275	add_poison
-1098	Can change poison	275	change_poison
-1099	Can delete poison	275	delete_poison
-1100	Can view poison	275	view_poison
-1101	Can add accessibility warning	276	add_accessibilitywarning
-1102	Can change accessibility warning	276	change_accessibilitywarning
-1103	Can delete accessibility warning	276	delete_accessibilitywarning
-1104	Can view accessibility warning	276	view_accessibilitywarning
-1105	Can add night	277	add_night
-1106	Can change night	277	change_night
-1107	Can delete night	277	delete_night
-1108	Can view night	277	view_night
-1109	Can add poison	278	add_poison
-1110	Can change poison	278	change_poison
-1111	Can delete poison	278	delete_poison
-1112	Can view poison	278	view_poison
-1113	Can add time slot	279	add_timeslot
-1114	Can change time slot	279	change_timeslot
-1115	Can delete time slot	279	delete_timeslot
-1116	Can view time slot	279	view_timeslot
-1117	Can add signup extra	280	add_signupextra
-1118	Can change signup extra	280	change_signupextra
-1119	Can delete signup extra	280	delete_signupextra
-1120	Can view signup extra	280	view_signupextra
-1121	Can add signup extra afterparty proxy	281	add_signupextraafterpartyproxy
-1122	Can change signup extra afterparty proxy	281	change_signupextraafterpartyproxy
-1123	Can delete signup extra afterparty proxy	281	delete_signupextraafterpartyproxy
-1124	Can view signup extra afterparty proxy	281	view_signupextraafterpartyproxy
-1125	Can add special diet	282	add_specialdiet
-1126	Can change special diet	282	change_specialdiet
-1127	Can delete special diet	282	delete_specialdiet
-1128	Can view special diet	282	view_specialdiet
-1129	Can add signup extra	283	add_signupextra
-1130	Can change signup extra	283	change_signupextra
-1131	Can delete signup extra	283	delete_signupextra
-1132	Can view signup extra	283	view_signupextra
-1133	Can add content warning	284	add_contentwarning
-1134	Can change content warning	284	change_contentwarning
-1135	Can delete content warning	284	delete_contentwarning
-1136	Can view content warning	284	view_contentwarning
-1137	Can add documentation	285	add_documentation
-1138	Can change documentation	285	change_documentation
-1139	Can delete documentation	285	delete_documentation
-1140	Can view documentation	285	view_documentation
-1141	Can add mentoring	286	add_mentoring
-1142	Can change mentoring	286	change_mentoring
-1143	Can delete mentoring	286	delete_mentoring
-1144	Can view mentoring	286	view_mentoring
-1145	Can add panel participation	287	add_panelparticipation
-1146	Can change panel participation	287	change_panelparticipation
-1147	Can delete panel participation	287	delete_panelparticipation
-1148	Can view panel participation	287	view_panelparticipation
-1149	Can add technology	288	add_technology
-1150	Can change technology	288	change_technology
-1151	Can delete technology	288	delete_technology
-1152	Can view technology	288	view_technology
-1153	Can add special diet	289	add_specialdiet
-1154	Can change special diet	289	change_specialdiet
-1155	Can delete special diet	289	delete_specialdiet
-1156	Can view special diet	289	view_specialdiet
-1157	Can add time slot	290	add_timeslot
-1158	Can change time slot	290	change_timeslot
-1159	Can delete time slot	290	delete_timeslot
-1160	Can view time slot	290	view_timeslot
-1161	Can add signup extra	291	add_signupextra
-1162	Can change signup extra	291	change_signupextra
-1163	Can delete signup extra	291	delete_signupextra
-1164	Can view signup extra	291	view_signupextra
-1165	Can add language	292	add_language
-1166	Can change language	292	change_language
-1167	Can delete language	292	delete_language
-1168	Can view language	292	view_language
-1169	Can add special diet	293	add_specialdiet
-1170	Can change special diet	293	change_specialdiet
-1171	Can delete special diet	293	delete_specialdiet
-1172	Can view special diet	293	view_specialdiet
-1173	Can add time slot	294	add_timeslot
-1174	Can change time slot	294	change_timeslot
-1175	Can delete time slot	294	delete_timeslot
-1176	Can view time slot	294	view_timeslot
-1177	Can add signup extra	295	add_signupextra
-1178	Can change signup extra	295	change_signupextra
-1179	Can delete signup extra	295	delete_signupextra
-1180	Can view signup extra	295	view_signupextra
-1181	Can add signup extra	296	add_signupextra
-1182	Can change signup extra	296	change_signupextra
-1183	Can delete signup extra	296	delete_signupextra
-1184	Can view signup extra	296	view_signupextra
-1185	Can add signup extra	297	add_signupextra
-1186	Can change signup extra	297	change_signupextra
-1187	Can delete signup extra	297	delete_signupextra
-1188	Can view signup extra	297	view_signupextra
-1189	Can add language	298	add_language
-1190	Can change language	298	change_language
-1191	Can delete language	298	delete_language
-1192	Can view language	298	view_language
-1193	Can add special diet	299	add_specialdiet
-1194	Can change special diet	299	change_specialdiet
-1195	Can delete special diet	299	delete_specialdiet
-1196	Can view special diet	299	view_specialdiet
-1197	Can add time slot	300	add_timeslot
-1198	Can change time slot	300	change_timeslot
-1199	Can delete time slot	300	delete_timeslot
-1200	Can view time slot	300	view_timeslot
-1201	Can add signup extra	301	add_signupextra
-1202	Can change signup extra	301	change_signupextra
-1203	Can delete signup extra	301	delete_signupextra
-1204	Can view signup extra	301	view_signupextra
-1205	Can add poison	302	add_poison
-1206	Can change poison	302	change_poison
-1207	Can delete poison	302	delete_poison
-1208	Can view poison	302	view_poison
-1209	Can add special diet	303	add_specialdiet
-1210	Can change special diet	303	change_specialdiet
-1211	Can delete special diet	303	delete_specialdiet
-1212	Can view special diet	303	view_specialdiet
-1213	Can add signup extra	304	add_signupextra
-1214	Can change signup extra	304	change_signupextra
-1215	Can delete signup extra	304	delete_signupextra
-1216	Can view signup extra	304	view_signupextra
-1217	Can add poison	305	add_poison
-1218	Can change poison	305	change_poison
-1219	Can delete poison	305	delete_poison
-1220	Can view poison	305	view_poison
-1221	Can add special diet	306	add_specialdiet
-1222	Can change special diet	306	change_specialdiet
-1223	Can delete special diet	306	delete_specialdiet
-1224	Can view special diet	306	view_specialdiet
-1225	Can add signup extra	307	add_signupextra
-1226	Can change signup extra	307	change_signupextra
-1227	Can delete signup extra	307	delete_signupextra
-1228	Can view signup extra	307	view_signupextra
-1229	Can add accessibility warning	308	add_accessibilitywarning
-1230	Can change accessibility warning	308	change_accessibilitywarning
-1231	Can delete accessibility warning	308	delete_accessibilitywarning
-1232	Can view accessibility warning	308	view_accessibilitywarning
-1233	Can add accommodation	309	add_accommodation
-1234	Can change accommodation	309	change_accommodation
-1235	Can delete accommodation	309	delete_accommodation
-1236	Can view accommodation	309	view_accommodation
-1237	Can add known language	310	add_knownlanguage
-1238	Can change known language	310	change_knownlanguage
-1239	Can delete known language	310	delete_knownlanguage
-1240	Can view known language	310	view_knownlanguage
-1241	Can add time slot	311	add_timeslot
-1242	Can change time slot	311	change_timeslot
-1243	Can delete time slot	311	delete_timeslot
-1244	Can view time slot	311	view_timeslot
+1017	Can add signup extra	258	add_signupextra
+1018	Can change signup extra	258	change_signupextra
+1019	Can delete signup extra	258	delete_signupextra
+1020	Can view signup extra	258	view_signupextra
+1021	Can add accommodation	256	add_accommodation
+1022	Can change accommodation	256	change_accommodation
+1023	Can delete accommodation	256	delete_accommodation
+1024	Can view accommodation	256	view_accommodation
+1025	Can add known language	257	add_knownlanguage
+1026	Can change known language	257	change_knownlanguage
+1027	Can delete known language	257	delete_knownlanguage
+1028	Can view known language	257	view_knownlanguage
+1029	Can add accessibility warning	255	add_accessibilitywarning
+1030	Can change accessibility warning	255	change_accessibilitywarning
+1031	Can delete accessibility warning	255	delete_accessibilitywarning
+1032	Can view accessibility warning	255	view_accessibilitywarning
+1033	Can add time slot	259	add_timeslot
+1034	Can change time slot	259	change_timeslot
+1035	Can delete time slot	259	delete_timeslot
+1036	Can view time slot	259	view_timeslot
+1037	Can add special diet	261	add_specialdiet
+1038	Can change special diet	261	change_specialdiet
+1039	Can delete special diet	261	delete_specialdiet
+1040	Can view special diet	261	view_specialdiet
+1041	Can add signup extra	260	add_signupextra
+1042	Can change signup extra	260	change_signupextra
+1043	Can delete signup extra	260	delete_signupextra
+1044	Can view signup extra	260	view_signupextra
+1045	Can add special diet	264	add_specialdiet
+1046	Can change special diet	264	change_specialdiet
+1047	Can delete special diet	264	delete_specialdiet
+1048	Can view special diet	264	view_specialdiet
+1049	Can add signup extra	263	add_signupextra
+1050	Can change signup extra	263	change_signupextra
+1051	Can delete signup extra	263	delete_signupextra
+1052	Can view signup extra	263	view_signupextra
+1053	Can add poison	262	add_poison
+1054	Can change poison	262	change_poison
+1055	Can delete poison	262	delete_poison
+1056	Can view poison	262	view_poison
+1057	Can add accessibility warning	265	add_accessibilitywarning
+1058	Can change accessibility warning	265	change_accessibilitywarning
+1059	Can delete accessibility warning	265	delete_accessibilitywarning
+1060	Can view accessibility warning	265	view_accessibilitywarning
+1061	Can add night	266	add_night
+1062	Can change night	266	change_night
+1063	Can delete night	266	delete_night
+1064	Can view night	266	view_night
+1065	Can add poison	267	add_poison
+1066	Can change poison	267	change_poison
+1067	Can delete poison	267	delete_poison
+1068	Can view poison	267	view_poison
+1069	Can add time slot	269	add_timeslot
+1070	Can change time slot	269	change_timeslot
+1071	Can delete time slot	269	delete_timeslot
+1072	Can view time slot	269	view_timeslot
+1073	Can add signup extra	268	add_signupextra
+1074	Can change signup extra	268	change_signupextra
+1075	Can delete signup extra	268	delete_signupextra
+1076	Can view signup extra	268	view_signupextra
+1077	Can add special diet	271	add_specialdiet
+1078	Can change special diet	271	change_specialdiet
+1079	Can delete special diet	271	delete_specialdiet
+1080	Can view special diet	271	view_specialdiet
+1081	Can add signup extra	270	add_signupextra
+1082	Can change signup extra	270	change_signupextra
+1083	Can delete signup extra	270	delete_signupextra
+1084	Can view signup extra	270	view_signupextra
+1085	Can add content warning	272	add_contentwarning
+1086	Can change content warning	272	change_contentwarning
+1087	Can delete content warning	272	delete_contentwarning
+1088	Can view content warning	272	view_contentwarning
+1089	Can add documentation	273	add_documentation
+1090	Can change documentation	273	change_documentation
+1091	Can delete documentation	273	delete_documentation
+1092	Can view documentation	273	view_documentation
+1093	Can add mentoring	274	add_mentoring
+1094	Can change mentoring	274	change_mentoring
+1095	Can delete mentoring	274	delete_mentoring
+1096	Can view mentoring	274	view_mentoring
+1097	Can add panel participation	275	add_panelparticipation
+1098	Can change panel participation	275	change_panelparticipation
+1099	Can delete panel participation	275	delete_panelparticipation
+1100	Can view panel participation	275	view_panelparticipation
+1101	Can add technology	276	add_technology
+1102	Can change technology	276	change_technology
+1103	Can delete technology	276	delete_technology
+1104	Can view technology	276	view_technology
+1105	Can add special diet	278	add_specialdiet
+1106	Can change special diet	278	change_specialdiet
+1107	Can delete special diet	278	delete_specialdiet
+1108	Can view special diet	278	view_specialdiet
+1109	Can add time slot	279	add_timeslot
+1110	Can change time slot	279	change_timeslot
+1111	Can delete time slot	279	delete_timeslot
+1112	Can view time slot	279	view_timeslot
+1113	Can add signup extra	277	add_signupextra
+1114	Can change signup extra	277	change_signupextra
+1115	Can delete signup extra	277	delete_signupextra
+1116	Can view signup extra	277	view_signupextra
+1117	Can add language	280	add_language
+1118	Can change language	280	change_language
+1119	Can delete language	280	delete_language
+1120	Can view language	280	view_language
+1121	Can add special diet	282	add_specialdiet
+1122	Can change special diet	282	change_specialdiet
+1123	Can delete special diet	282	delete_specialdiet
+1124	Can view special diet	282	view_specialdiet
+1125	Can add time slot	283	add_timeslot
+1126	Can change time slot	283	change_timeslot
+1127	Can delete time slot	283	delete_timeslot
+1128	Can view time slot	283	view_timeslot
+1129	Can add signup extra	281	add_signupextra
+1130	Can change signup extra	281	change_signupextra
+1131	Can delete signup extra	281	delete_signupextra
+1132	Can view signup extra	281	view_signupextra
+1133	Can add signup extra	284	add_signupextra
+1134	Can change signup extra	284	change_signupextra
+1135	Can delete signup extra	284	delete_signupextra
+1136	Can view signup extra	284	view_signupextra
+1137	Can add signup extra	285	add_signupextra
+1138	Can change signup extra	285	change_signupextra
+1139	Can delete signup extra	285	delete_signupextra
+1140	Can view signup extra	285	view_signupextra
+1141	Can add language	286	add_language
+1142	Can change language	286	change_language
+1143	Can delete language	286	delete_language
+1144	Can view language	286	view_language
+1145	Can add special diet	288	add_specialdiet
+1146	Can change special diet	288	change_specialdiet
+1147	Can delete special diet	288	delete_specialdiet
+1148	Can view special diet	288	view_specialdiet
+1149	Can add time slot	289	add_timeslot
+1150	Can change time slot	289	change_timeslot
+1151	Can delete time slot	289	delete_timeslot
+1152	Can view time slot	289	view_timeslot
+1153	Can add signup extra	287	add_signupextra
+1154	Can change signup extra	287	change_signupextra
+1155	Can delete signup extra	287	delete_signupextra
+1156	Can view signup extra	287	view_signupextra
+1157	Can add poison	290	add_poison
+1158	Can change poison	290	change_poison
+1159	Can delete poison	290	delete_poison
+1160	Can view poison	290	view_poison
+1161	Can add special diet	292	add_specialdiet
+1162	Can change special diet	292	change_specialdiet
+1163	Can delete special diet	292	delete_specialdiet
+1164	Can view special diet	292	view_specialdiet
+1165	Can add signup extra	291	add_signupextra
+1166	Can change signup extra	291	change_signupextra
+1167	Can delete signup extra	291	delete_signupextra
+1168	Can view signup extra	291	view_signupextra
+1169	Can add poison	293	add_poison
+1170	Can change poison	293	change_poison
+1171	Can delete poison	293	delete_poison
+1172	Can view poison	293	view_poison
+1173	Can add special diet	295	add_specialdiet
+1174	Can change special diet	295	change_specialdiet
+1175	Can delete special diet	295	delete_specialdiet
+1176	Can view special diet	295	view_specialdiet
+1177	Can add signup extra	294	add_signupextra
+1178	Can change signup extra	294	change_signupextra
+1179	Can delete signup extra	294	delete_signupextra
+1180	Can view signup extra	294	view_signupextra
+1181	Can add accessibility warning	296	add_accessibilitywarning
+1182	Can change accessibility warning	296	change_accessibilitywarning
+1183	Can delete accessibility warning	296	delete_accessibilitywarning
+1184	Can view accessibility warning	296	view_accessibilitywarning
+1185	Can add accommodation	297	add_accommodation
+1186	Can change accommodation	297	change_accommodation
+1187	Can delete accommodation	297	delete_accommodation
+1188	Can view accommodation	297	view_accommodation
+1189	Can add known language	298	add_knownlanguage
+1190	Can change known language	298	change_knownlanguage
+1191	Can delete known language	298	delete_knownlanguage
+1192	Can view known language	298	view_knownlanguage
+1193	Can add time slot	300	add_timeslot
+1194	Can change time slot	300	change_timeslot
+1195	Can delete time slot	300	delete_timeslot
+1196	Can view time slot	300	view_timeslot
+1197	Can add signup extra	299	add_signupextra
+1198	Can change signup extra	299	change_signupextra
+1199	Can delete signup extra	299	delete_signupextra
+1200	Can view signup extra	299	view_signupextra
+1201	Can add accessibility warning	301	add_accessibilitywarning
+1202	Can change accessibility warning	301	change_accessibilitywarning
+1203	Can delete accessibility warning	301	delete_accessibilitywarning
+1204	Can view accessibility warning	301	view_accessibilitywarning
+1205	Can add night	302	add_night
+1206	Can change night	302	change_night
+1207	Can delete night	302	delete_night
+1208	Can view night	302	view_night
+1209	Can add poison	303	add_poison
+1210	Can change poison	303	change_poison
+1211	Can delete poison	303	delete_poison
+1212	Can view poison	303	view_poison
+1213	Can add time slot	305	add_timeslot
+1214	Can change time slot	305	change_timeslot
+1215	Can delete time slot	305	delete_timeslot
+1216	Can view time slot	305	view_timeslot
+1217	Can add signup extra	304	add_signupextra
+1218	Can change signup extra	304	change_signupextra
+1219	Can delete signup extra	304	delete_signupextra
+1220	Can view signup extra	304	view_signupextra
+1221	Can add signup extra	306	add_signupextra
+1222	Can change signup extra	306	change_signupextra
+1223	Can delete signup extra	306	delete_signupextra
+1224	Can view signup extra	306	view_signupextra
+1225	Can add special diet	308	add_specialdiet
+1226	Can change special diet	308	change_specialdiet
+1227	Can delete special diet	308	delete_specialdiet
+1228	Can view special diet	308	view_specialdiet
+1229	Can add signup extra	307	add_signupextra
+1230	Can change signup extra	307	change_signupextra
+1231	Can delete signup extra	307	delete_signupextra
+1232	Can view signup extra	307	view_signupextra
+1233	Can add poison	309	add_poison
+1234	Can change poison	309	change_poison
+1235	Can delete poison	309	delete_poison
+1236	Can view poison	309	view_poison
+1237	Can add special diet	311	add_specialdiet
+1238	Can change special diet	311	change_specialdiet
+1239	Can delete special diet	311	delete_specialdiet
+1240	Can view special diet	311	view_specialdiet
+1241	Can add signup extra	310	add_signupextra
+1242	Can change signup extra	310	change_signupextra
+1243	Can delete signup extra	310	delete_signupextra
+1244	Can view signup extra	310	view_signupextra
 1245	Can add signup extra	312	add_signupextra
 1246	Can change signup extra	312	change_signupextra
 1247	Can delete signup extra	312	delete_signupextra
 1248	Can view signup extra	312	view_signupextra
-1249	Can add accessibility warning	313	add_accessibilitywarning
-1250	Can change accessibility warning	313	change_accessibilitywarning
-1251	Can delete accessibility warning	313	delete_accessibilitywarning
-1252	Can view accessibility warning	313	view_accessibilitywarning
-1253	Can add night	314	add_night
-1254	Can change night	314	change_night
-1255	Can delete night	314	delete_night
-1256	Can view night	314	view_night
-1257	Can add poison	315	add_poison
-1258	Can change poison	315	change_poison
-1259	Can delete poison	315	delete_poison
-1260	Can view poison	315	view_poison
-1261	Can add time slot	316	add_timeslot
-1262	Can change time slot	316	change_timeslot
-1263	Can delete time slot	316	delete_timeslot
-1264	Can view time slot	316	view_timeslot
-1265	Can add signup extra	317	add_signupextra
-1266	Can change signup extra	317	change_signupextra
-1267	Can delete signup extra	317	delete_signupextra
-1268	Can view signup extra	317	view_signupextra
-1269	Can add signup extra	318	add_signupextra
-1270	Can change signup extra	318	change_signupextra
-1271	Can delete signup extra	318	delete_signupextra
-1272	Can view signup extra	318	view_signupextra
-1273	Can add special diet	319	add_specialdiet
-1274	Can change special diet	319	change_specialdiet
-1275	Can delete special diet	319	delete_specialdiet
-1276	Can view special diet	319	view_specialdiet
-1277	Can add signup extra	320	add_signupextra
-1278	Can change signup extra	320	change_signupextra
-1279	Can delete signup extra	320	delete_signupextra
-1280	Can view signup extra	320	view_signupextra
-1282	Can change log entry	321	change_entry
-1283	Can delete log entry	321	delete_entry
-1284	Can view log entry	321	view_entry
-1285	Can add special diet	322	add_specialdiet
-1286	Can change special diet	322	change_specialdiet
-1287	Can delete special diet	322	delete_specialdiet
-1288	Can view special diet	322	view_specialdiet
-1289	Can add time slot	323	add_timeslot
-1290	Can change time slot	323	change_timeslot
-1291	Can delete time slot	323	delete_timeslot
-1292	Can view time slot	323	view_timeslot
-1293	Can add registry	324	add_registry
-1294	Can change registry	324	change_registry
-1295	Can delete registry	324	delete_registry
-1296	Can view registry	324	view_registry
-1297	Can add involvement	325	add_involvement
-1298	Can change involvement	325	change_involvement
-1299	Can delete involvement	325	delete_involvement
-1300	Can view involvement	325	view_involvement
-1301	Can add involvement dimension value	326	add_involvementdimensionvalue
-1302	Can change involvement dimension value	326	change_involvementdimensionvalue
-1303	Can delete involvement dimension value	326	delete_involvementdimensionvalue
-1304	Can view involvement dimension value	326	view_involvementdimensionvalue
-1305	Can add invitation	327	add_invitation
-1306	Can change invitation	327	change_invitation
-1307	Can delete invitation	327	delete_invitation
-1308	Can view invitation	327	view_invitation
-1309	Can add involvement to badge mapping	328	add_involvementtobadgemapping
-1310	Can change involvement to badge mapping	328	change_involvementtobadgemapping
-1311	Can delete involvement to badge mapping	328	delete_involvementtobadgemapping
-1312	Can view involvement to badge mapping	328	view_involvementtobadgemapping
-1313	Can add involvement to group mapping	329	add_involvementtogroupmapping
-1314	Can change involvement to group mapping	329	change_involvementtogroupmapping
-1315	Can delete involvement to group mapping	329	delete_involvementtogroupmapping
-1316	Can view involvement to group mapping	329	view_involvementtogroupmapping
-1317	Can add schedule item dimension value	330	add_scheduleitemdimensionvalue
-1318	Can change schedule item dimension value	330	change_scheduleitemdimensionvalue
-1319	Can delete schedule item dimension value	330	delete_scheduleitemdimensionvalue
-1320	Can view schedule item dimension value	330	view_scheduleitemdimensionvalue
-1321	Can add annotation	331	add_annotation
-1322	Can change annotation	331	change_annotation
-1323	Can delete annotation	331	delete_annotation
-1324	Can view annotation	331	view_annotation
-1325	Can add event annotation	332	add_eventannotation
-1326	Can change event annotation	332	change_eventannotation
-1327	Can delete event annotation	332	delete_eventannotation
-1328	Can view event annotation	332	view_eventannotation
-1329	Can add survey to badge mapping	333	add_surveytobadgemapping
-1330	Can change survey to badge mapping	333	change_surveytobadgemapping
-1331	Can delete survey to badge mapping	333	delete_surveytobadgemapping
-1332	Can view survey to badge mapping	333	view_surveytobadgemapping
-1333	Can add projection	334	add_projection
-1334	Can change projection	334	change_projection
-1335	Can delete projection	334	delete_projection
-1336	Can view projection	334	view_projection
-1337	Can add survey default response dimension value	335	add_surveydefaultresponsedimensionvalue
-1338	Can change survey default response dimension value	335	change_surveydefaultresponsedimensionvalue
-1339	Can delete survey default response dimension value	335	delete_surveydefaultresponsedimensionvalue
-1340	Can view survey default response dimension value	335	view_surveydefaultresponsedimensionvalue
-1341	Can add survey default involvement dimension value	336	add_surveydefaultinvolvementdimensionvalue
-1342	Can change survey default involvement dimension value	336	change_surveydefaultinvolvementdimensionvalue
-1343	Can delete survey default involvement dimension value	336	delete_surveydefaultinvolvementdimensionvalue
-1344	Can view survey default involvement dimension value	336	view_surveydefaultinvolvementdimensionvalue
+1249	Can add language	313	add_language
+1250	Can change language	313	change_language
+1251	Can delete language	313	delete_language
+1252	Can view language	313	view_language
+1253	Can add special diet	315	add_specialdiet
+1254	Can change special diet	315	change_specialdiet
+1255	Can delete special diet	315	delete_specialdiet
+1256	Can view special diet	315	view_specialdiet
+1257	Can add signup extra	314	add_signupextra
+1258	Can change signup extra	314	change_signupextra
+1259	Can delete signup extra	314	delete_signupextra
+1260	Can view signup extra	314	view_signupextra
+1261	Can add special diet	317	add_specialdiet
+1262	Can change special diet	317	change_specialdiet
+1263	Can delete special diet	317	delete_specialdiet
+1264	Can view special diet	317	view_specialdiet
+1265	Can add signup extra	316	add_signupextra
+1266	Can change signup extra	316	change_signupextra
+1267	Can delete signup extra	316	delete_signupextra
+1268	Can view signup extra	316	view_signupextra
+1269	Can add poison	318	add_poison
+1270	Can change poison	318	change_poison
+1271	Can delete poison	318	delete_poison
+1272	Can view poison	318	view_poison
+1273	Can add special diet	320	add_specialdiet
+1274	Can change special diet	320	change_specialdiet
+1275	Can delete special diet	320	delete_specialdiet
+1276	Can view special diet	320	view_specialdiet
+1277	Can add signup extra	319	add_signupextra
+1278	Can change signup extra	319	change_signupextra
+1279	Can delete signup extra	319	delete_signupextra
+1280	Can view signup extra	319	view_signupextra
+1281	Can add accessibility warning	321	add_accessibilitywarning
+1282	Can change accessibility warning	321	change_accessibilitywarning
+1283	Can delete accessibility warning	321	delete_accessibilitywarning
+1284	Can view accessibility warning	321	view_accessibilitywarning
+1285	Can add night	322	add_night
+1286	Can change night	322	change_night
+1287	Can delete night	322	delete_night
+1288	Can view night	322	view_night
+1289	Can add poison	323	add_poison
+1290	Can change poison	323	change_poison
+1291	Can delete poison	323	delete_poison
+1292	Can view poison	323	view_poison
+1293	Can add time slot	325	add_timeslot
+1294	Can change time slot	325	change_timeslot
+1295	Can delete time slot	325	delete_timeslot
+1296	Can view time slot	325	view_timeslot
+1297	Can add signup extra	324	add_signupextra
+1298	Can change signup extra	324	change_signupextra
+1299	Can delete signup extra	324	delete_signupextra
+1300	Can view signup extra	324	view_signupextra
+1301	Can add accessibility warning	326	add_accessibilitywarning
+1302	Can change accessibility warning	326	change_accessibilitywarning
+1303	Can delete accessibility warning	326	delete_accessibilitywarning
+1304	Can view accessibility warning	326	view_accessibilitywarning
+1305	Can add accommodation	327	add_accommodation
+1306	Can change accommodation	327	change_accommodation
+1307	Can delete accommodation	327	delete_accommodation
+1308	Can view accommodation	327	view_accommodation
+1309	Can add known language	328	add_knownlanguage
+1310	Can change known language	328	change_knownlanguage
+1311	Can delete known language	328	delete_knownlanguage
+1312	Can view known language	328	view_knownlanguage
+1313	Can add time slot	330	add_timeslot
+1314	Can change time slot	330	change_timeslot
+1315	Can delete time slot	330	delete_timeslot
+1316	Can view time slot	330	view_timeslot
+1317	Can add work day	331	add_workday
+1318	Can change work day	331	change_workday
+1319	Can delete work day	331	delete_workday
+1320	Can view work day	331	view_workday
+1321	Can add signup extra	329	add_signupextra
+1322	Can change signup extra	329	change_signupextra
+1323	Can delete signup extra	329	delete_signupextra
+1324	Can view signup extra	329	view_signupextra
+1325	Can add language	332	add_language
+1326	Can change language	332	change_language
+1327	Can delete language	332	delete_language
+1328	Can view language	332	view_language
+1329	Can add special diet	334	add_specialdiet
+1330	Can change special diet	334	change_specialdiet
+1331	Can delete special diet	334	delete_specialdiet
+1332	Can view special diet	334	view_specialdiet
+1333	Can add signup extra	333	add_signupextra
+1334	Can change signup extra	333	change_signupextra
+1335	Can delete signup extra	333	delete_signupextra
+1336	Can view signup extra	333	view_signupextra
+1337	Can add poison	335	add_poison
+1338	Can change poison	335	change_poison
+1339	Can delete poison	335	delete_poison
+1340	Can view poison	335	view_poison
+1341	Can add special diet	337	add_specialdiet
+1342	Can change special diet	337	change_specialdiet
+1343	Can delete special diet	337	delete_specialdiet
+1344	Can view special diet	337	view_specialdiet
+1345	Can add signup extra	336	add_signupextra
+1346	Can change signup extra	336	change_signupextra
+1347	Can delete signup extra	336	delete_signupextra
+1348	Can view signup extra	336	view_signupextra
+1349	Can add special diet	339	add_specialdiet
+1350	Can change special diet	339	change_specialdiet
+1351	Can delete special diet	339	delete_specialdiet
+1352	Can view special diet	339	view_specialdiet
+1353	Can add signup extra	338	add_signupextra
+1354	Can change signup extra	338	change_signupextra
+1355	Can delete signup extra	338	delete_signupextra
+1356	Can view signup extra	338	view_signupextra
+1357	Can add enrollment	341	add_enrollment
+1358	Can change enrollment	341	change_enrollment
+1359	Can delete enrollment	341	delete_enrollment
+1360	Can view enrollment	341	view_enrollment
+1361	Can add enrollment event meta	342	add_enrollmenteventmeta
+1362	Can change enrollment event meta	342	change_enrollmenteventmeta
+1363	Can delete enrollment event meta	342	delete_enrollmenteventmeta
+1364	Can view enrollment event meta	342	view_enrollmenteventmeta
+1365	Can add special diet	343	add_specialdiet
+1366	Can change special diet	343	change_specialdiet
+1367	Can delete special diet	343	delete_specialdiet
+1368	Can view special diet	343	view_specialdiet
+1369	Can add concon part	340	add_conconpart
+1370	Can change concon part	340	change_conconpart
+1371	Can delete concon part	340	delete_conconpart
+1372	Can view concon part	340	view_conconpart
+1373	Can add log entry	344	add_entry
+1374	Can change log entry	344	change_entry
+1375	Can delete log entry	344	delete_entry
+1376	Can view log entry	344	view_entry
+1377	Can add category	346	add_category
+1378	Can change category	346	change_category
+1379	Can delete category	346	delete_category
+1380	Can view category	346	view_category
+1381	Can add programme	351	add_programme
+1382	Can change programme	351	change_programme
+1383	Can delete programme	351	delete_programme
+1384	Can view programme	351	view_programme
+1385	Can add programme event meta	352	add_programmeeventmeta
+1386	Can change programme event meta	352	change_programmeeventmeta
+1387	Can delete programme event meta	352	delete_programmeeventmeta
+1388	Can view programme event meta	352	view_programmeeventmeta
+1389	Can add Programme host	355	add_programmerole
+1390	Can change Programme host	355	change_programmerole
+1391	Can delete Programme host	355	delete_programmerole
+1392	Can view Programme host	355	view_programmerole
+1393	Can add role	356	add_role
+1394	Can change role	356	change_role
+1395	Can delete role	356	delete_role
+1396	Can view role	356	view_role
+1397	Can add Room	357	add_room
+1398	Can change Room	357	change_room
+1399	Can delete Room	357	delete_room
+1400	Can view Room	357	view_room
+1401	Can add special start time	359	add_specialstarttime
+1402	Can change special start time	359	change_specialstarttime
+1403	Can delete special start time	359	delete_specialstarttime
+1404	Can view special start time	359	view_specialstarttime
+1405	Can add tag	360	add_tag
+1406	Can change tag	360	change_tag
+1407	Can delete tag	360	delete_tag
+1408	Can view tag	360	view_tag
+1409	Can add time block	361	add_timeblock
+1410	Can change time block	361	change_timeblock
+1411	Can delete time block	361	delete_timeblock
+1412	Can view time block	361	view_timeblock
+1413	Can add schedule view	362	add_view
+1414	Can change schedule view	362	change_view
+1415	Can delete schedule view	362	delete_view
+1416	Can view schedule view	362	view_view
+1417	Can add programme management proxy	354	add_programmemanagementproxy
+1418	Can change programme management proxy	354	change_programmemanagementproxy
+1419	Can delete programme management proxy	354	delete_programmemanagementproxy
+1420	Can view programme management proxy	354	view_programmemanagementproxy
+1421	Can add freeform organizer	348	add_freeformorganizer
+1422	Can change freeform organizer	348	change_freeformorganizer
+1423	Can delete freeform organizer	348	delete_freeformorganizer
+1424	Can view freeform organizer	348	view_freeformorganizer
+1425	Can add freeform organizer	349	add_freeformorganizeradminproxy
+1426	Can change freeform organizer	349	change_freeformorganizeradminproxy
+1427	Can delete freeform organizer	349	delete_freeformorganizeradminproxy
+1428	Can view freeform organizer	349	view_freeformorganizeradminproxy
+1429	Can add programme feedback	353	add_programmefeedback
+1430	Can change programme feedback	353	change_programmefeedback
+1431	Can delete programme feedback	353	delete_programmefeedback
+1432	Can view programme feedback	353	view_programmefeedback
+1433	Can add alternative programme form	345	add_alternativeprogrammeform
+1434	Can change alternative programme form	345	change_alternativeprogrammeform
+1435	Can delete alternative programme form	345	delete_alternativeprogrammeform
+1436	Can view alternative programme form	345	view_alternativeprogrammeform
+1437	Can add cold offers programme event meta proxy	347	add_coldoffersprogrammeeventmetaproxy
+1438	Can change cold offers programme event meta proxy	347	change_coldoffersprogrammeeventmetaproxy
+1439	Can delete cold offers programme event meta proxy	347	delete_coldoffersprogrammeeventmetaproxy
+1440	Can view cold offers programme event meta proxy	347	view_coldoffersprogrammeeventmetaproxy
+1441	Can add view room	363	add_viewroom
+1442	Can change view room	363	change_viewroom
+1443	Can delete view room	363	delete_viewroom
+1444	Can view view room	363	view_viewroom
+1445	Can add paikkala ticket csv export proxy	350	add_paikkalaticketcsvexportproxy
+1446	Can change paikkala ticket csv export proxy	350	change_paikkalaticketcsvexportproxy
+1447	Can delete paikkala ticket csv export proxy	350	delete_paikkalaticketcsvexportproxy
+1448	Can view paikkala ticket csv export proxy	350	view_paikkalaticketcsvexportproxy
+1449	Can add special reservation	358	add_specialreservation
+1450	Can change special reservation	358	change_specialreservation
+1451	Can delete special reservation	358	delete_specialreservation
+1452	Can view special reservation	358	view_specialreservation
+1453	Can add customer	364	add_customer
+1454	Can change customer	364	change_customer
+1455	Can delete customer	364	delete_customer
+1456	Can view customer	364	view_customer
+1457	Can add limit group	365	add_limitgroup
+1458	Can change limit group	365	change_limitgroup
+1459	Can delete limit group	365	delete_limitgroup
+1460	Can view limit group	365	view_limitgroup
+1461	Can add order	366	add_order
+1462	Can change order	366	change_order
+1463	Can delete order	366	delete_order
+1464	Can view order	366	view_order
+1465	Can add tilausrivi	367	add_orderproduct
+1466	Can change tilausrivi	367	change_orderproduct
+1467	Can delete tilausrivi	367	delete_orderproduct
+1468	Can view tilausrivi	367	view_orderproduct
+1469	Can add product	368	add_product
+1470	Can change product	368	change_product
+1471	Can delete product	368	delete_product
+1472	Can view product	368	view_product
+1473	Can add ticket sales settings for event	369	add_ticketseventmeta
+1474	Can change ticket sales settings for event	369	change_ticketseventmeta
+1475	Can delete ticket sales settings for event	369	delete_ticketseventmeta
+1476	Can view ticket sales settings for event	369	view_ticketseventmeta
+1477	Can add special diet	370	add_specialdiet
+1478	Can change special diet	370	change_specialdiet
+1479	Can delete special diet	370	delete_specialdiet
+1480	Can view special diet	370	view_specialdiet
+1481	Can add time slot	371	add_timeslot
+1482	Can change time slot	371	change_timeslot
+1483	Can delete time slot	371	delete_timeslot
+1484	Can view time slot	371	view_timeslot
 \.
 
 
@@ -14219,7 +16165,7 @@ COPY public.badges_badge (id, printed_separately_at, revoked_at, job_title, crea
 -- Data for Name: badges_badgeseventmeta; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.badges_badgeseventmeta (event_id, admin_group_id, real_name_must_be_visible, onboarding_access_group_id, emperkelator_name) FROM stdin;
+COPY public.badges_badgeseventmeta (event_id, admin_group_id, real_name_must_be_visible, onboarding_access_group_id, registry_id) FROM stdin;
 \.
 
 
@@ -14267,7 +16213,7 @@ COPY public.core_event (id, slug, name, name_genitive, name_illative, name_iness
 -- Data for Name: core_organization; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.core_organization (id, slug, name, homepage_url, description, logo_url, public, muncipality, name_genitive, panel_css_class) FROM stdin;
+COPY public.core_organization (id, slug, name, homepage_url, description, logo_url, public, muncipality, name_genitive, panel_css_class, business_id) FROM stdin;
 \.
 
 
@@ -14283,7 +16229,7 @@ COPY public.core_passwordresettoken (id, code, created_at, used_at, state, ip_ad
 -- Data for Name: core_person; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.core_person (id, first_name, surname, nick, birth_date, email, phone, may_send_info, preferred_name_display_style, notes, email_verified_at, user_id, muncipality, official_first_names, allow_work_history_sharing, preferred_badge_name_display_style, discord_handle) FROM stdin;
+COPY public.core_person (id, first_name, surname, nick, birth_date, email, phone, may_send_info, preferred_name_display_style, notes, email_verified_at, user_id, muncipality, official_first_names, allow_work_history_sharing, preferred_badge_name_display_style, discord_handle, program_role_retention_policy) FROM stdin;
 \.
 
 
@@ -14308,6 +16254,22 @@ COPY public.cosmocon2025_signupextra (id, is_active, special_diet_other, skills,
 --
 
 COPY public.cosmocon2025_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: cosmocon2026_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.cosmocon2026_signupextra (id, is_active, special_diet_other, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: cosmocon2026_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.cosmocon2026_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
 \.
 
 
@@ -14512,6 +16474,46 @@ COPY public.desucon2025_specialdiet (id, name) FROM stdin;
 
 
 --
+-- Data for Name: desucon2026_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.desucon2026_poison (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: desucon2026_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.desucon2026_signupextra (id, is_active, shift_type, total_work, prior_experience, free_text, special_diet_other, shirt_size, shirt_type, night_work, afterparty_participation, accommodation, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: desucon2026_signupextra_pick_your_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.desucon2026_signupextra_pick_your_poison (id, signupextra_id, poison_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: desucon2026_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.desucon2026_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: desucon2026_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.desucon2026_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
 -- Data for Name: desuprofile_integration_confirmationcode; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -14528,10 +16530,18 @@ COPY public.desuprofile_integration_connection (id, user_id, desuprofile_usernam
 
 
 --
+-- Data for Name: dimensions_annotation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.dimensions_annotation (id, slug, title_en, title_fi, title_sv, description_en, description_fi, description_sv, type, applies_to, flags) FROM stdin;
+\.
+
+
+--
 -- Data for Name: dimensions_dimension; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.dimensions_dimension (id, "order", is_key_dimension, is_multi_value, is_list_filter, is_shown_in_detail, is_negative_selection, value_ordering, slug, title_en, title_fi, title_sv, universe_id, is_public, is_technical) FROM stdin;
+COPY public.dimensions_dimension (id, "order", is_key_dimension, is_multi_value, is_list_filter, is_shown_in_detail, is_negative_selection, value_ordering, slug, title_en, title_fi, title_sv, universe_id, is_public, is_technical, can_values_be_added) FROM stdin;
 \.
 
 
@@ -14555,7 +16565,15 @@ COPY public.dimensions_scope (id, name, slug, event_id, organization_id) FROM st
 -- Data for Name: dimensions_universe; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.dimensions_universe (id, slug, app_name, scope_id) FROM stdin;
+COPY public.dimensions_universe (id, slug, app, scope_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: dimensions_universeannotation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.dimensions_universeannotation (id, is_active, form_fields, annotation_id, universe_id) FROM stdin;
 \.
 
 
@@ -14572,342 +16590,377 @@ COPY public.django_admin_log (id, action_time, object_id, object_repr, action_fl
 --
 
 COPY public.django_content_type (id, app_label, model) FROM stdin;
-1	auth	permission
-2	auth	group
+1	auth	group
+2	auth	permission
 3	auth	user
 4	contenttypes	contenttype
 5	sessions	session
 6	sites	site
 7	admin	logentry
-8	oauth2_provider	application
-9	oauth2_provider	accesstoken
-10	oauth2_provider	grant
-11	oauth2_provider	refreshtoken
+8	oauth2_provider	accesstoken
+9	oauth2_provider	application
+10	oauth2_provider	devicegrant
+11	oauth2_provider	grant
 12	oauth2_provider	idtoken
-13	lippukala	code
-14	lippukala	order
-15	paikkala	program
-16	paikkala	row
-17	paikkala	ticket
-18	paikkala	zone
-19	paikkala	perprogramblock
-20	paikkala	room
-21	paikkala	seatqualifier
-22	core	emailverificationtoken
-23	core	event
-24	core	passwordresettoken
-25	core	person
-26	core	venue
-27	core	organization
-28	core	carouselslide
-29	dimensions	scope
-30	dimensions	universe
+13	oauth2_provider	refreshtoken
+14	lippukala	code
+15	lippukala	order
+16	paikkala	perprogramblock
+17	paikkala	program
+18	paikkala	room
+19	paikkala	row
+20	paikkala	seatqualifier
+21	paikkala	ticket
+22	paikkala	zone
+23	core	carouselslide
+24	core	emailverificationtoken
+25	core	event
+26	core	organization
+27	core	passwordresettoken
+28	core	person
+29	core	venue
+30	dimensions	annotation
 31	dimensions	dimension
 32	dimensions	dimensionvalue
-33	programme	category
-34	programme	programme
-35	programme	programmeeventmeta
-36	programme	programmerole
-37	programme	role
-38	programme	room
-39	programme	specialstarttime
-40	programme	tag
-41	programme	timeblock
-42	programme	view
-43	programme	invitation
-44	programme	invitationadminproxy
-45	programme	programmemanagementproxy
-46	programme	freeformorganizer
-47	programme	freeformorganizeradminproxy
-48	programme	programmefeedback
-49	programme	alternativeprogrammeform
-50	programme	coldoffersprogrammeeventmetaproxy
-51	programme	viewroom
-52	programme	paikkalaticketcsvexportproxy
-53	programme	specialreservation
-54	program_v2	program
-55	program_v2	scheduleitem
-56	program_v2	programv2eventmeta
-57	program_v2	programdimensionvalue
-58	labour	alternativesignupform
-59	labour	infolink
-60	labour	job
-61	labour	jobcategory
-62	labour	jobrequirement
-63	labour	laboureventmeta
-64	labour	personqualification
-65	labour	qualification
+33	dimensions	scope
+34	dimensions	universe
+35	dimensions	universeannotation
+36	involvement	invitation
+37	involvement	involvement
+38	involvement	involvementdimensionvalue
+39	involvement	involvementeventmeta
+40	involvement	involvementtobadgemapping
+41	involvement	involvementtogroupmapping
+42	involvement	registry
+43	messages_v2	message
+44	messages_v2	messagebody
+45	messages_v2	messagerecipient
+46	messages_v2	messagereplyto
+47	program_v2	paikkalaroommapping
+48	program_v2	program
+49	program_v2	programdimensionvalue
+50	program_v2	programv2eventmeta
+51	program_v2	scheduleitem
+52	program_v2	scheduleitemdimensionvalue
+53	labour	alternativesignupform
+54	labour	archivedsignup
+55	labour	emptysignupextra
+56	labour	infolink
+57	labour	job
+58	labour	jobcategory
+59	labour	jobrequirement
+60	labour	laboureventmeta
+61	labour	obsoleteemptysignupextrav1
+62	labour	personnelclass
+63	labour	personqualification
+64	labour	qualification
+65	labour	shift
 66	labour	signup
-67	labour	workperiod
-68	labour	personnelclass
-69	labour	signuponboardingproxy
-70	labour	signupcertificateproxy
-71	labour	jobcategorymanagementproxy
-72	labour	obsoleteemptysignupextrav1
-73	labour	emptysignupextra
-74	labour	shift
-75	labour	survey
-76	labour	surveyrecord
-77	labour	archivedsignup
-78	labour_common_qualifications	jvkortti
-79	tickets	customer
-80	tickets	limitgroup
-81	tickets	order
-82	tickets	orderproduct
-83	tickets	product
-84	tickets	ticketseventmeta
-85	tickets_v2	ticketsv2eventmeta
-86	tickets_v2	quota
-87	tickets_v2	product
-88	tickets_v2	order
-89	tickets_v2	ticket
-90	tickets_v2	paymentstamp
-91	tickets_v2	receipt
-92	payments	payment
-93	payments	checkoutpayment
-94	payments	paymentsorganizationmeta
-95	mailings	message
-96	mailings	personmessage
-97	mailings	personmessagebody
-98	mailings	personmessagesubject
-99	mailings	recipientgroup
-100	badges	badge
-101	badges	badgeseventmeta
-102	badges	batch
-103	badges	badgemanagementproxy
-104	access	grantedprivilege
-105	access	groupprivilege
-106	access	privilege
-107	access	slackaccess
-108	access	emailalias
-109	access	emailaliasdomain
-110	access	emailaliastype
-111	access	groupemailaliasgrant
-112	access	accessorganizationmeta
-113	access	smtppassword
-114	access	smtpserver
-115	access	internalemailalias
-116	access	cbacentry
-117	membership	membership
-118	membership	membershiporganizationmeta
-119	membership	membershipfeepayment
-120	membership	term
-121	intra	intraeventmeta
-122	intra	team
-123	intra	teammember
-124	desuprofile_integration	confirmationcode
-125	desuprofile_integration	connection
-126	enrollment	enrollment
-127	enrollment	enrollmenteventmeta
-128	enrollment	specialdiet
-129	enrollment	conconpart
-130	event_log_v2	entry
-131	event_log_v2	subscription
-132	listings	externalevent
-133	listings	listing
-134	forms	survey
-135	forms	response
-136	forms	form
-137	forms	responsedimensionvalue
-138	forms	keypair
-139	forms	formseventmeta
-140	emprinten	fileversion
-141	emprinten	project
-142	emprinten	projectfile
-143	emprinten	renderresult
-144	kuplii2018	signupextra
-145	kuplii2018	specialdiet
-146	tracon2018	night
-147	tracon2018	signupextra
-148	tracon2018	poison
-149	popcultday2018	signupextra
-150	matsucon2018	signupextra
-151	ropecon2018	signupextra
-152	ropecon2018	specialdiet
-153	ropecon2018	timeslot
-154	finncon2018	signupextra
-155	finncon2018	specialdiet
-156	frostbite2019	signupextra
-157	frostbite2019	specialdiet
-158	desucon2019	signupextra
-159	desucon2019	specialdiet
-160	tracon2019	night
-161	tracon2019	poison
-162	tracon2019	signupextra
-163	finncon2020	signupextra
-164	finncon2020	specialdiet
-165	kuplii2019	signupextra
-166	kuplii2019	specialdiet
-167	nekocon2019	night
-168	nekocon2019	signupextra
-169	nekocon2019	specialdiet
-170	popcult2019	signupextra
-171	hitpoint2019	signupextra
-172	hitpoint2019	specialdiet
-173	hitpoint2019	timeslot
-174	hypecon2019	signupextra
-175	hypecon2019	specialdiet
-176	ropecon2019	timeslot
-177	ropecon2019	signupextra
-178	ropecon2019	specialdiet
-179	matsucon2019	signupextra
-180	finncon2019	signupextra
-181	finncon2019	specialdiet
-182	frostbite2020	signupextra
-183	frostbite2020	specialdiet
-184	desucon2020	signupextra
-185	desucon2020	specialdiet
-186	kuplii2020	signupextra
-187	kuplii2020	specialdiet
-188	tracon2020	night
-189	tracon2020	poison
-190	tracon2020	signupextra
-191	nekocon2020	night
-192	nekocon2020	signupextra
-193	nekocon2020	specialdiet
-194	ropecon2020	signupextra
-195	ropecon2020	specialdiet
-196	ropecon2020	timeslot
-197	hypecon2020	signupextra
-198	hypecon2020	specialdiet
-199	popcult2020	signupextra
-200	matsucon2020	signupextra
-201	hitpoint2020	specialdiet
-202	hitpoint2020	timeslot
-203	hitpoint2020	signupextra
-204	ropecon2020vd	timeslot
-205	ropecon2020vd	signupextra
-206	ropecon2021	specialdiet
-207	ropecon2021	timeslot
-208	ropecon2021	signupextra
-209	tracon2021	night
-210	tracon2021	poison
-211	tracon2021	signupextra
-212	kuplii2021	specialdiet
-213	kuplii2021	signupextra
-214	desucon2022	specialdiet
-215	desucon2022	signupextra
-216	ropecon2022	specialdiet
-217	ropecon2022	timeslot
-218	ropecon2022	signupextra
-219	tracon2022	night
-220	tracon2022	poison
-221	tracon2022	signupextra
-222	kuplii2022	specialdiet
-223	kuplii2022	signupextra
-224	finncon2022	specialdiet
-225	finncon2022	signupextra
-226	nekocon2022	night
-227	nekocon2022	specialdiet
-228	nekocon2022	signupextra
-229	frostbite2023	specialdiet
-230	frostbite2023	signupextra
-231	desucon2023	specialdiet
-232	desucon2023	signupextra
-233	matsucon2022	signupextra
-234	tracon2023	night
-235	tracon2023	poison
-236	tracon2023	signupextra
-237	tracon2023	accessibilitywarning
-238	tracon2023	timeslot
-239	ropecon2023	specialdiet
-240	ropecon2023	timeslot
-241	ropecon2023	signupextra
-242	ropecon2023	language
-243	kuplii2023	specialdiet
-244	kuplii2023	signupextra
-245	hitpoint2023	specialdiet
-246	hitpoint2023	timeslot
-247	hitpoint2023	signupextra
-248	nekocon2023	night
-249	nekocon2023	specialdiet
-250	nekocon2023	signupextra
-251	finncon2023	specialdiet
-252	finncon2023	signupextra
-253	cosvision2023	specialdiet
-254	cosvision2023	signupextra
-255	shumicon2023	eventday
-256	shumicon2023	knownlanguage
-257	shumicon2023	nativelanguage
-258	shumicon2023	specialdiet
-259	shumicon2023	signupextra
-260	shumicon2025	eventday
-261	shumicon2025	knownlanguage
-262	shumicon2025	nativelanguage
-263	shumicon2025	specialdiet
-264	shumicon2025	signupextra
-265	matsucon2023	signupextra
-266	kotaeexpo2024	signupextra
-267	kotaeexpo2024	accommodation
-268	kotaeexpo2024	knownlanguage
-269	kotaeexpo2024	accessibilitywarning
-270	kotaeexpo2024	timeslot
-271	frostbite2024	specialdiet
-272	frostbite2024	signupextra
-273	desucon2024	specialdiet
-274	desucon2024	signupextra
-275	desucon2024	poison
-276	tracon2024	accessibilitywarning
-277	tracon2024	night
-278	tracon2024	poison
-279	tracon2024	timeslot
-280	tracon2024	signupextra
-281	tracon2024	signupextraafterpartyproxy
-282	kuplii2024	specialdiet
-283	kuplii2024	signupextra
-284	solmukohta2024	contentwarning
-285	solmukohta2024	documentation
-286	solmukohta2024	mentoring
-287	solmukohta2024	panelparticipation
-288	solmukohta2024	technology
-289	hitpoint2024	specialdiet
-290	hitpoint2024	timeslot
-291	hitpoint2024	signupextra
-292	ropecon2024	language
-293	ropecon2024	specialdiet
-294	ropecon2024	timeslot
-295	ropecon2024	signupextra
-296	popcultday2024	signupextra
-297	matsucon2024	signupextra
-298	ropecon2025	language
-299	ropecon2025	specialdiet
-300	ropecon2025	timeslot
-301	ropecon2025	signupextra
-302	frostbite2025	poison
-303	frostbite2025	specialdiet
-304	frostbite2025	signupextra
-305	desucon2025	poison
-306	desucon2025	specialdiet
-307	desucon2025	signupextra
-308	kotaeexpo2025	accessibilitywarning
-309	kotaeexpo2025	accommodation
-310	kotaeexpo2025	knownlanguage
-311	kotaeexpo2025	timeslot
-312	kotaeexpo2025	signupextra
-313	tracon2025	accessibilitywarning
-314	tracon2025	night
-315	tracon2025	poison
-316	tracon2025	timeslot
-317	tracon2025	signupextra
-318	cosmocon2025	signupextra
-319	kuplii2025	specialdiet
-320	kuplii2025	signupextra
-321	event_log	entry
-322	hitpoint2017	specialdiet
-323	hitpoint2017	timeslot
-324	involvement	registry
-325	involvement	involvement
-326	involvement	involvementdimensionvalue
-327	involvement	invitation
-328	involvement	involvementtobadgemapping
-329	involvement	involvementtogroupmapping
-330	program_v2	scheduleitemdimensionvalue
-331	program_v2	annotation
-332	program_v2	eventannotation
-333	badges	surveytobadgemapping
-334	forms	projection
-335	forms	surveydefaultresponsedimensionvalue
-336	forms	surveydefaultinvolvementdimensionvalue
+67	labour	signupcertificateproxy
+68	labour	signuponboardingproxy
+69	labour	survey
+70	labour	surveyrecord
+71	labour	workperiod
+72	labour_common_qualifications	jvkortti
+73	tickets_v2	order
+74	tickets_v2	ordercancellationtoken
+75	tickets_v2	paymentstamp
+76	tickets_v2	product
+77	tickets_v2	quota
+78	tickets_v2	receipt
+79	tickets_v2	ticket
+80	tickets_v2	ticketsv2eventmeta
+81	payments	checkoutpayment
+82	payments	payment
+83	payments	paymentsorganizationmeta
+84	mailings	message
+85	mailings	personmessage
+86	mailings	personmessagebody
+87	mailings	personmessagesubject
+88	mailings	recipientgroup
+89	badges	badge
+90	badges	badgemanagementproxy
+91	badges	badgeseventmeta
+92	badges	batch
+93	badges	surveytobadgemapping
+94	access	accessorganizationmeta
+95	access	cbacentry
+96	access	emailalias
+97	access	emailaliasdomain
+98	access	emailaliastype
+99	access	grantedprivilege
+100	access	groupemailaliasgrant
+101	access	groupprivilege
+102	access	internalemailalias
+103	access	privilege
+104	access	slackaccess
+105	access	smtppassword
+106	access	smtpserver
+107	membership	membership
+108	membership	membershipfeepayment
+109	membership	membershiporganizationmeta
+110	membership	term
+111	intra	intraeventmeta
+112	intra	team
+113	intra	teammember
+114	desuprofile_integration	confirmationcode
+115	desuprofile_integration	connection
+116	event_log_v2	entry
+117	event_log_v2	subscription
+118	listings	externalevent
+119	listings	listing
+120	forms	form
+121	forms	formseventmeta
+122	forms	keypair
+123	forms	projection
+124	forms	response
+125	forms	responsedimensionvalue
+126	forms	survey
+127	forms	surveydefaultinvolvementdimensionvalue
+128	forms	surveydefaultresponsedimensionvalue
+129	emprinten	fileversion
+130	emprinten	project
+131	emprinten	projectfile
+132	emprinten	renderresult
+133	kuplii2018	signupextra
+134	kuplii2018	specialdiet
+135	tracon2018	night
+136	tracon2018	poison
+137	tracon2018	signupextra
+138	popcultday2018	signupextra
+139	matsucon2018	signupextra
+140	ropecon2018	signupextra
+141	ropecon2018	specialdiet
+142	ropecon2018	timeslot
+143	finncon2018	signupextra
+144	finncon2018	specialdiet
+145	frostbite2019	signupextra
+146	frostbite2019	specialdiet
+147	desucon2019	signupextra
+148	desucon2019	specialdiet
+149	tracon2019	night
+150	tracon2019	poison
+151	tracon2019	signupextra
+152	finncon2020	signupextra
+153	finncon2020	specialdiet
+154	kuplii2019	signupextra
+155	kuplii2019	specialdiet
+156	nekocon2019	night
+157	nekocon2019	signupextra
+158	nekocon2019	specialdiet
+159	popcult2019	signupextra
+160	hitpoint2019	signupextra
+161	hitpoint2019	specialdiet
+162	hitpoint2019	timeslot
+163	hypecon2019	signupextra
+164	hypecon2019	specialdiet
+165	ropecon2019	signupextra
+166	ropecon2019	specialdiet
+167	ropecon2019	timeslot
+168	matsucon2019	signupextra
+169	finncon2019	signupextra
+170	finncon2019	specialdiet
+171	frostbite2020	signupextra
+172	frostbite2020	specialdiet
+173	desucon2020	signupextra
+174	desucon2020	specialdiet
+175	kuplii2020	signupextra
+176	kuplii2020	specialdiet
+177	tracon2020	night
+178	tracon2020	poison
+179	tracon2020	signupextra
+180	nekocon2020	night
+181	nekocon2020	signupextra
+182	nekocon2020	specialdiet
+183	ropecon2020	signupextra
+184	ropecon2020	specialdiet
+185	ropecon2020	timeslot
+186	hypecon2020	signupextra
+187	hypecon2020	specialdiet
+188	popcult2020	signupextra
+189	matsucon2020	signupextra
+190	hitpoint2020	signupextra
+191	hitpoint2020	specialdiet
+192	hitpoint2020	timeslot
+193	ropecon2020vd	signupextra
+194	ropecon2020vd	timeslot
+195	ropecon2021	signupextra
+196	ropecon2021	specialdiet
+197	ropecon2021	timeslot
+198	tracon2021	night
+199	tracon2021	poison
+200	tracon2021	signupextra
+201	kuplii2021	signupextra
+202	kuplii2021	specialdiet
+203	desucon2022	signupextra
+204	desucon2022	specialdiet
+205	ropecon2022	signupextra
+206	ropecon2022	specialdiet
+207	ropecon2022	timeslot
+208	tracon2022	night
+209	tracon2022	poison
+210	tracon2022	signupextra
+211	kuplii2022	signupextra
+212	kuplii2022	specialdiet
+213	finncon2022	signupextra
+214	finncon2022	specialdiet
+215	nekocon2022	night
+216	nekocon2022	signupextra
+217	nekocon2022	specialdiet
+218	frostbite2023	signupextra
+219	frostbite2023	specialdiet
+220	desucon2023	signupextra
+221	desucon2023	specialdiet
+222	matsucon2022	signupextra
+223	tracon2023	accessibilitywarning
+224	tracon2023	night
+225	tracon2023	poison
+226	tracon2023	signupextra
+227	tracon2023	timeslot
+228	ropecon2023	language
+229	ropecon2023	signupextra
+230	ropecon2023	specialdiet
+231	ropecon2023	timeslot
+232	kuplii2023	signupextra
+233	kuplii2023	specialdiet
+234	hitpoint2023	signupextra
+235	hitpoint2023	specialdiet
+236	hitpoint2023	timeslot
+237	nekocon2023	night
+238	nekocon2023	signupextra
+239	nekocon2023	specialdiet
+240	finncon2023	signupextra
+241	finncon2023	specialdiet
+242	cosvision2023	signupextra
+243	cosvision2023	specialdiet
+244	shumicon2023	eventday
+245	shumicon2023	knownlanguage
+246	shumicon2023	nativelanguage
+247	shumicon2023	signupextra
+248	shumicon2023	specialdiet
+249	shumicon2025	eventday
+250	shumicon2025	knownlanguage
+251	shumicon2025	nativelanguage
+252	shumicon2025	signupextra
+253	shumicon2025	specialdiet
+254	matsucon2023	signupextra
+255	kotaeexpo2024	accessibilitywarning
+256	kotaeexpo2024	accommodation
+257	kotaeexpo2024	knownlanguage
+258	kotaeexpo2024	signupextra
+259	kotaeexpo2024	timeslot
+260	frostbite2024	signupextra
+261	frostbite2024	specialdiet
+262	desucon2024	poison
+263	desucon2024	signupextra
+264	desucon2024	specialdiet
+265	tracon2024	accessibilitywarning
+266	tracon2024	night
+267	tracon2024	poison
+268	tracon2024	signupextra
+269	tracon2024	timeslot
+270	kuplii2024	signupextra
+271	kuplii2024	specialdiet
+272	solmukohta2024	contentwarning
+273	solmukohta2024	documentation
+274	solmukohta2024	mentoring
+275	solmukohta2024	panelparticipation
+276	solmukohta2024	technology
+277	hitpoint2024	signupextra
+278	hitpoint2024	specialdiet
+279	hitpoint2024	timeslot
+280	ropecon2024	language
+281	ropecon2024	signupextra
+282	ropecon2024	specialdiet
+283	ropecon2024	timeslot
+284	popcultday2024	signupextra
+285	matsucon2024	signupextra
+286	ropecon2025	language
+287	ropecon2025	signupextra
+288	ropecon2025	specialdiet
+289	ropecon2025	timeslot
+290	frostbite2025	poison
+291	frostbite2025	signupextra
+292	frostbite2025	specialdiet
+293	desucon2025	poison
+294	desucon2025	signupextra
+295	desucon2025	specialdiet
+296	kotaeexpo2025	accessibilitywarning
+297	kotaeexpo2025	accommodation
+298	kotaeexpo2025	knownlanguage
+299	kotaeexpo2025	signupextra
+300	kotaeexpo2025	timeslot
+301	tracon2025	accessibilitywarning
+302	tracon2025	night
+303	tracon2025	poison
+304	tracon2025	signupextra
+305	tracon2025	timeslot
+306	cosmocon2025	signupextra
+307	kuplii2025	signupextra
+308	kuplii2025	specialdiet
+309	frostbite2026	poison
+310	frostbite2026	signupextra
+311	frostbite2026	specialdiet
+312	cosmocon2026	signupextra
+313	ropecon2026	language
+314	ropecon2026	signupextra
+315	ropecon2026	specialdiet
+316	kuplii2026	signupextra
+317	kuplii2026	specialdiet
+318	desucon2026	poison
+319	desucon2026	signupextra
+320	desucon2026	specialdiet
+321	tracon2026	accessibilitywarning
+322	tracon2026	night
+323	tracon2026	poison
+324	tracon2026	signupextra
+325	tracon2026	timeslot
+326	kotaeexpo2026	accessibilitywarning
+327	kotaeexpo2026	accommodation
+328	kotaeexpo2026	knownlanguage
+329	kotaeexpo2026	signupextra
+330	kotaeexpo2026	timeslot
+331	kotaeexpo2026	workday
+332	ropecon2027	language
+333	ropecon2027	signupextra
+334	ropecon2027	specialdiet
+335	frostbite2027	poison
+336	frostbite2027	signupextra
+337	frostbite2027	specialdiet
+338	kuplii2027	signupextra
+339	kuplii2027	specialdiet
+340	enrollment	conconpart
+341	enrollment	enrollment
+342	enrollment	enrollmenteventmeta
+343	enrollment	specialdiet
+344	event_log	entry
+345	programme	alternativeprogrammeform
+346	programme	category
+347	programme	coldoffersprogrammeeventmetaproxy
+348	programme	freeformorganizer
+349	programme	freeformorganizeradminproxy
+350	programme	paikkalaticketcsvexportproxy
+351	programme	programme
+352	programme	programmeeventmeta
+353	programme	programmefeedback
+354	programme	programmemanagementproxy
+355	programme	programmerole
+356	programme	role
+357	programme	room
+358	programme	specialreservation
+359	programme	specialstarttime
+360	programme	tag
+361	programme	timeblock
+362	programme	view
+363	programme	viewroom
+364	tickets	customer
+365	tickets	limitgroup
+366	tickets	order
+367	tickets	orderproduct
+368	tickets	product
+369	tickets	ticketseventmeta
+370	hitpoint2017	specialdiet
+371	hitpoint2017	timeslot
 \.
 
 
@@ -14916,781 +16969,855 @@ COPY public.django_content_type (id, app_label, model) FROM stdin;
 --
 
 COPY public.django_migrations (id, app, name, applied) FROM stdin;
-1	contenttypes	0001_initial	2024-12-22 07:43:46.654017+00
-2	auth	0001_initial	2024-12-22 07:43:46.661847+00
-3	contenttypes	0002_remove_content_type_name	2024-12-22 07:43:46.665279+00
-4	auth	0002_alter_permission_name_max_length	2024-12-22 07:43:46.667072+00
-5	auth	0003_alter_user_email_max_length	2024-12-22 07:43:46.668985+00
-6	auth	0004_alter_user_username_opts	2024-12-22 07:43:46.671203+00
-7	auth	0005_alter_user_last_login_null	2024-12-22 07:43:46.673344+00
-8	auth	0006_require_contenttypes_0002	2024-12-22 07:43:46.67369+00
-9	auth	0007_alter_validators_add_error_messages	2024-12-22 07:43:46.675613+00
-10	auth	0008_alter_user_username_max_length	2024-12-22 07:43:46.677824+00
-11	auth	0009_alter_user_last_name_max_length	2024-12-22 07:43:46.679823+00
-12	auth	0010_alter_group_name_max_length	2024-12-22 07:43:46.682004+00
-13	auth	0011_update_proxy_permissions	2024-12-22 07:43:46.685131+00
-14	core	0001_initial	2024-12-22 07:43:46.69989+00
-15	core	0002_auto_20150126_1611	2024-12-22 07:43:46.701766+00
-16	core	0003_auto_20150813_1907	2024-12-22 07:43:46.704336+00
-17	core	0004_organization	2024-12-22 07:43:46.709547+00
-18	core	0005_auto_20151008_2225	2024-12-22 07:43:46.715241+00
-19	core	0006_organization_description	2024-12-22 07:43:46.716435+00
-20	core	0007_organization_logo_url	2024-12-22 07:43:46.717477+00
-21	core	0008_person_muncipality	2024-12-22 07:43:46.720233+00
-22	core	0009_auto_20151010_1632	2024-12-22 07:43:46.722728+00
-23	core	0010_organization_public	2024-12-22 07:43:46.723839+00
-24	core	0011_organization_muncipality	2024-12-22 07:43:46.724921+00
-25	core	0012_auto_20151011_1926	2024-12-22 07:43:46.732184+00
-26	core	0013_auto_20151011_2005	2024-12-22 07:43:46.739154+00
-27	core	0014_auto_20151011_2016	2024-12-22 07:43:46.741627+00
-28	core	0015_organization_name_genitive	2024-12-22 07:43:46.747481+00
-29	core	0016_person_allow_work_history_sharing	2024-12-22 07:43:46.750836+00
-30	core	0017_remove_event_headline	2024-12-22 07:43:46.752004+00
-31	core	0018_auto_20160124_1447	2024-12-22 07:43:46.755587+00
-32	core	0019_auto_20160129_2140	2024-12-22 07:43:46.764318+00
-33	core	0020_auto_20160131_2044	2024-12-22 07:43:46.766855+00
-34	core	0021_auto_20160202_1950	2024-12-22 07:43:46.769192+00
-35	core	0022_auto_20160202_2235	2024-12-22 07:43:46.771521+00
-36	access	0001_initial	2024-12-22 07:43:46.793462+00
-37	access	0002_grantedprivilege_state	2024-12-22 07:43:46.796491+00
-38	access	0003_slackaccess	2024-12-22 07:43:46.803587+00
-39	access	0004_descriptions	2024-12-22 07:43:46.807053+00
-40	access	0005_email_aliases	2024-12-22 07:43:46.848338+00
-41	access	0006_group_grant_active_until	2024-12-22 07:43:46.857049+00
-42	access	0007_accessorganizationmeta	2024-12-22 07:43:46.8659+00
-43	access	0008_smtp	2024-12-22 07:43:46.885739+00
-44	access	0009_privilege_disclaimers	2024-12-22 07:43:46.887749+00
-45	access	0010_auto_20151106_1500	2024-12-22 07:43:46.892089+00
-46	access	0011_auto_20160202_2235	2024-12-22 07:43:46.89407+00
-47	access	0012_auto_20160607_2224	2024-12-22 07:43:47.034401+00
-48	access	0013_auto_20160608_0018	2024-12-22 07:43:47.051827+00
-49	access	0014_emailaliastype_priority	2024-12-22 07:43:47.054808+00
-50	access	0015_auto_20170416_2044	2024-12-22 07:43:47.056247+00
-51	access	0016_auto_20190119_2213	2024-12-22 07:43:47.068863+00
-52	access	0017_privilege_url	2024-12-22 07:43:47.070471+00
-53	access	0018_cbacentry	2024-12-22 07:43:47.083247+00
-54	access	0019_auto_20211013_1702	2024-12-22 07:43:47.086519+00
-55	access	0020_alter_cbacentry_index_together_remove_cbacentry_mode	2024-12-22 07:43:47.103844+00
-56	access	0021_rename_cbacentry_user_valid_until_access_cbac_user_id_928971_idx	2024-12-22 07:43:47.110537+00
-57	access	0022_alter_privilege_slug	2024-12-22 07:43:47.111973+00
-58	admin	0001_initial	2024-12-22 07:43:47.12062+00
-59	admin	0002_logentry_remove_auto_add	2024-12-22 07:43:47.123456+00
-60	admin	0003_logentry_add_action_flag_choices	2024-12-22 07:43:47.126136+00
-61	auth	0012_alter_user_first_name_max_length	2024-12-22 07:43:47.129882+00
-62	core	0023_auto_20160704_2155	2024-12-22 07:43:47.134067+00
-63	core	0024_carouselslide	2024-12-22 07:43:47.135018+00
-64	core	0025_auto_20170722_1954	2024-12-22 07:43:47.136194+00
-65	core	0026_auto_20170722_1958	2024-12-22 07:43:47.13673+00
-66	core	0027_event_panel_css_class	2024-12-22 07:43:47.139306+00
-67	core	0028_auto_20170802_1453	2024-12-22 07:43:47.146856+00
-68	core	0029_auto_20170827_1818	2024-12-22 07:43:47.149883+00
-69	core	0030_auto_20180926_1252	2024-12-22 07:43:47.154131+00
-70	core	0031_person_badge_name_display_style	2024-12-22 07:43:47.171924+00
-71	core	0032_event_timestamps	2024-12-22 07:43:47.176784+00
-72	core	0033_auto_20191111_1851	2024-12-22 07:43:47.18112+00
-73	core	0034_event_cancelled	2024-12-22 07:43:47.18389+00
-74	core	0035_person_discord_handle	2024-12-22 07:43:47.188381+00
-75	labour	0001_initial	2024-12-22 07:43:47.458672+00
-76	labour	0002_auto_20141115_1102	2024-12-22 07:43:47.513986+00
-77	badges	0001_initial	2024-12-22 07:43:47.615919+00
-78	labour	0003_populate_pclasses	2024-12-22 07:43:47.629254+00
-79	labour	0004_auto_20141115_1337	2024-12-22 07:43:47.644932+00
-80	labour	0005_jobcategory_app_label	2024-12-22 07:43:47.652174+00
-81	labour	0006_auto_20141115_1348	2024-12-22 07:43:47.678829+00
-82	labour	0007_jobcategory_personnel_classes	2024-12-22 07:43:47.695202+00
-83	labour	0008_auto_20150419_1438	2024-12-22 07:43:47.709571+00
-84	badges	0002_personnel_class	2024-12-22 07:43:47.738439+00
-85	badges	0003_populate_personnel_class	2024-12-22 07:43:47.767542+00
-86	badges	0004_remove_template	2024-12-22 07:43:47.799831+00
-87	badges	0005_badge_layout	2024-12-22 07:43:47.830944+00
-88	badges	0006_badgeseventmeta_real_name_must_be_visible	2024-12-22 07:43:47.839501+00
-89	badges	0007_remove_badgeseventmeta_badge_factory_code	2024-12-22 07:43:47.849725+00
-90	badges	0008_auto_20160129_1838	2024-12-22 07:43:47.946154+00
-91	badges	0009_add_denormalized_fields	2024-12-22 07:43:47.990528+00
-92	badges	0010_populate_denormalized_fields	2024-12-22 07:43:48.097735+00
-93	badges	0011_make_denormalized_fields_mandatory	2024-12-22 07:43:48.119139+00
-94	badges	0012_delete_spurious_badges	2024-12-22 07:43:48.132871+00
-95	badges	0013_make_personnel_class_mandatory	2024-12-22 07:43:48.149674+00
-96	badges	0014_auto_20160129_2230	2024-12-22 07:43:48.163544+00
-97	badges	0015_auto_20160129_2245	2024-12-22 07:43:48.208494+00
-98	badges	0016_auto_20160129_2339	2024-12-22 07:43:48.216773+00
-99	badges	0017_badgemanagementproxy	2024-12-22 07:43:48.217362+00
-100	badges	0018_badge_arrived_at	2024-12-22 07:43:48.225987+00
-101	badges	0019_auto_20160627_2018	2024-12-22 07:43:48.247685+00
-102	badges	0020_auto_20160706_2207	2024-12-22 07:43:48.2546+00
-103	badges	0021_auto_20170830_2237	2024-12-22 07:43:48.305688+00
-104	badges	0022_badge_notes	2024-12-22 07:43:48.314297+00
-105	badges	0023_remove_badgeseventmeta_is_using_fuzzy_reissuance_hack	2024-12-22 07:43:48.322754+00
-106	badges	0024_badgeseventmeta_onboarding_access_group_and_more	2024-12-22 07:43:48.351923+00
-107	badges	0025_badgeseventmeta_onboarding_instructions_markdown	2024-12-22 07:43:48.360909+00
-108	badges	0026_remove_badgeseventmeta_badge_layout	2024-12-22 07:43:48.36904+00
-109	badges	0027_badge_perks_badgeseventmeta_emperkelator_name	2024-12-22 07:43:48.385736+00
-110	core	0036_remove_event_panel_css_class_and_more	2024-12-22 07:43:48.409449+00
-111	core	0037_alter_organization_panel_css_class	2024-12-22 07:43:48.411598+00
-112	core	0038_alter_person_discord_handle	2024-12-22 07:43:48.418115+00
-113	core	0039_alter_person_birth_date_alter_person_email_and_more	2024-12-22 07:43:48.442709+00
-114	core	0040_rename_emailverificationtoken_person_state_core_emailv_person__722147_idx_and_more	2024-12-22 07:43:48.465822+00
-115	core	0041_event_timezone_name	2024-12-22 07:43:48.473111+00
-116	core	0042_alter_event_slug_alter_organization_slug	2024-12-22 07:43:48.481479+00
-117	core	0043_emailverificationtoken_language_and_more	2024-12-22 07:43:48.492173+00
-118	enrollment	0001_initial	2024-12-22 07:43:48.553643+00
-119	enrollment	0002_enrollmenteventmeta_override_enrollment_form_message	2024-12-22 07:43:48.565283+00
-120	enrollment	0003_auto_20170417_2259	2024-12-22 07:43:48.580154+00
-121	enrollment	0004_auto_20170926_1851	2024-12-22 07:43:48.653128+00
-122	enrollment	0005_auto_20170928_1334	2024-12-22 07:43:48.795919+00
-123	enrollment	0006_auto_20190120_1555	2024-12-22 07:43:48.881865+00
-124	enrollment	0007_auto_20190212_1708	2024-12-22 07:43:48.915959+00
-125	enrollment	0008_auto_20190409_2051	2024-12-22 07:43:48.927149+00
-126	enrollment	0009_alter_enrollment_is_public_and_more	2024-12-22 07:43:48.952897+00
-127	cosmocon2025	0001_initial	2024-12-22 07:43:48.972009+00
-128	cosvision2023	0001_initial	2024-12-22 07:43:48.991589+00
-129	desucon2019	0001_initial	2024-12-22 07:43:49.029239+00
-130	desucon2019	0002_auto_20190102_1625	2024-12-22 07:43:49.041976+00
-131	desucon2019	0003_auto_20190909_2157	2024-12-22 07:43:49.068106+00
-132	desucon2019	0004_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:43:49.120771+00
-133	desucon2020	0001_initial	2024-12-22 07:43:49.158275+00
-134	desucon2020	0002_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:43:49.213189+00
-135	desucon2022	0001_initial	2024-12-22 07:43:49.236627+00
-136	desucon2022	0002_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:43:49.293221+00
-137	desucon2023	0001_initial	2024-12-22 07:43:49.315581+00
-138	desucon2024	0001_initial	2024-12-22 07:43:49.447095+00
-139	desucon2024	0002_alter_signupextra_shirt_size	2024-12-22 07:43:49.462334+00
-140	desucon2024	0003_signupextra_accommodation	2024-12-22 07:43:49.478966+00
-141	desucon2024	0004_poison_signupextra_gender_segregation_and_more	2024-12-22 07:43:49.515413+00
-142	desucon2025	0001_initial	2024-12-22 07:43:49.541514+00
-143	desuprofile_integration	0001_initial	2024-12-22 07:43:49.595972+00
-144	desuprofile_integration	0002_confirmationcode_next_url	2024-12-22 07:43:49.607236+00
-145	desuprofile_integration	0003_auto_20151016_2135	2024-12-22 07:43:49.623524+00
-146	desuprofile_integration	0004_auto_20151108_1905	2024-12-22 07:43:49.645915+00
-147	desuprofile_integration	0005_auto_20160124_2328	2024-12-22 07:43:49.657185+00
-148	desuprofile_integration	0006_auto_20190909_2157	2024-12-22 07:43:49.661408+00
-149	desuprofile_integration	0007_rename_confirmationcode_person_state_desuprofile_person__372366_idx	2024-12-22 07:43:49.684929+00
-150	desuprofile_integration	0008_confirmationcode_language	2024-12-22 07:43:49.696312+00
-151	program_v2	0001_initial	2024-12-22 07:43:49.833654+00
-152	program_v2	0002_emconcisen	2024-12-22 07:43:49.932788+00
-153	forms	0001_initial	2024-12-22 07:43:50.096683+00
-154	forms	0002_form_layout	2024-12-22 07:43:50.101976+00
-155	forms	0003_form_login_required	2024-12-22 07:43:50.107788+00
-156	forms	0004_auto_20191126_1758	2024-12-22 07:43:50.116842+00
-157	forms	0005_auto_20191129_1020	2024-12-22 07:43:50.167125+00
-158	forms	0006_formresponse	2024-12-22 07:43:50.191555+00
-159	forms	0007_eventform_eventformresponse_globalform_and_more	2024-12-22 07:43:50.348409+00
-160	program_v2	0003_offerform_offerformlanguage	2024-12-22 07:43:50.399743+00
-161	forms	0008_eventform_language_globalform_language	2024-12-22 07:43:50.423041+00
-162	program_v2	0004_offerform_languages_delete_offerformlanguage	2024-12-22 07:43:50.451416+00
-163	program_v2	0005_program_created_by	2024-12-22 07:43:50.477203+00
-164	program_v2	0006_offerform_active_from_offerform_active_until	2024-12-22 07:43:50.507854+00
-165	program_v2	0007_programv2eventmeta_skip_offer_form_selection	2024-12-22 07:43:50.524874+00
-166	program_v2	0008_alter_dimension_title_alter_dimensionvalue_title	2024-12-22 07:43:50.543639+00
-167	program_v2	0009_alter_dimension_title_alter_dimensionvalue_title_and_more	2024-12-22 07:43:50.577136+00
-168	program_v2	0010_programv2eventmeta_importer_name	2024-12-22 07:43:50.710438+00
-169	program_v2	0011_program_favorited_by_and_more	2024-12-22 07:43:50.763421+00
-170	program_v2	0012_scheduleitem_cached_end_time	2024-12-22 07:43:50.766819+00
-171	program_v2	0013_alter_scheduleitem_cached_end_time	2024-12-22 07:43:50.79547+00
-172	program_v2	0014_program_cached_earliest_start_time_and_more	2024-12-22 07:43:50.858504+00
-173	program_v2	0015_rename_override_color_dimensionvalue_color_and_more	2024-12-22 07:43:51.030075+00
-174	program_v2	0016_alter_dimension_event	2024-12-22 07:43:51.054971+00
-175	program_v2	0017_alter_dimension_options_alter_dimensionvalue_options_and_more	2024-12-22 07:43:51.109508+00
-176	program_v2	0018_rename_other_fields_program_annotations	2024-12-22 07:43:51.128631+00
-177	program_v2	0019_scheduleitem_slug	2024-12-22 07:43:51.156626+00
-178	program_v2	0020_alter_scheduleitem_options_scheduleitem_cached_event_and_more	2024-12-22 07:43:51.372593+00
-179	program_v2	0021_programv2eventmeta_is_accepting_feedback	2024-12-22 07:43:51.39283+00
-180	program_v2	0022_remove_programv2eventmeta_primary_dimension	2024-12-22 07:43:51.422861+00
-181	program_v2	0023_scheduleitem_favorited_by	2024-12-22 07:43:51.47928+00
-182	program_v2	0024_remove_program_favorited_by	2024-12-22 07:43:51.507359+00
-183	program_v2	0025_scheduleitem_created_at_scheduleitem_updated_at	2024-12-22 07:43:51.546087+00
-184	forms	0009_remove_eventform_active_and_more	2024-12-22 07:43:51.691491+00
-185	forms	0010_eventform_thank_you_message_and_more	2024-12-22 07:43:51.717158+00
-186	forms	0011_rename_values_eventformresponse_form_data_and_more	2024-12-22 07:43:51.732472+00
-187	forms	0012_alter_eventform_language_and_more	2024-12-22 07:43:51.837482+00
-188	forms	0013_remove_eventsurvey_active_and_more	2024-12-22 07:43:51.993417+00
-189	forms	0014_rename_eventsurvey_survey_delete_globalsurvey	2024-12-22 07:43:52.039719+00
-190	forms	0015_rename_globalformresponse_response_and_more	2024-12-22 07:43:52.104063+00
-191	forms	0016_rename_eventform_form_delete_globalform	2024-12-22 07:43:52.173948+00
-192	forms	0017_survey_key_fields	2024-12-22 07:43:52.192549+00
-193	forms	0018_survey_anonymity_survey_max_responses_per_user_and_more	2024-12-22 07:43:52.242655+00
-194	forms	0019_response_cached_dimensions_dimension_dimensionvalue_and_more	2024-12-22 07:43:52.331127+00
-195	forms	0020_form_cached_enriched_fields_alter_form_fields	2024-12-22 07:43:52.376626+00
-196	forms	0021_dimension_is_multi_value	2024-12-22 07:43:52.380483+00
-197	forms	0022_dimension_is_shown_to_respondent	2024-12-22 07:43:52.383833+00
-198	forms	0023_response_sequence_number	2024-12-22 07:43:52.415821+00
-199	forms	0024_alter_form_title	2024-12-22 07:43:52.444094+00
-200	forms	0025_alter_form_language	2024-12-22 07:43:52.473058+00
-201	forms	0026_survey_subscribers	2024-12-22 07:43:52.50166+00
-202	forms	0027_alter_form_layout	2024-12-22 07:43:52.70724+00
-203	forms	0028_keypair	2024-12-22 07:43:52.73692+00
-204	forms	0029_formseventmeta	2024-12-22 07:43:52.768147+00
-205	dimensions	0001_initial	2024-12-22 07:43:52.929564+00
-206	dimensions	0002_populate	2024-12-22 07:43:52.985027+00
-207	directory	0001_initial	2024-12-22 07:43:53.075819+00
-208	directory	0002_remove_directoryorganizationmeta_organization_and_more	2024-12-22 07:43:53.108584+00
-209	emprinten	0001_initial	2024-12-22 07:43:53.119438+00
-210	emprinten	0002_alter_projectfile_file_name_and_more	2024-12-22 07:43:53.125115+00
-211	emprinten	0003_project_event_alter_project_slug	2024-12-22 07:43:53.174606+00
-212	emprinten	0004_renderresult	2024-12-22 07:43:53.204848+00
-213	tickets	0001_initial	2024-12-22 07:43:53.561411+00
-214	tickets	0002_ticketseventmeta_front_page_text	2024-12-22 07:43:53.586499+00
-215	tickets	0003_auto_20141201_0013	2024-12-22 07:43:53.589435+00
-216	tickets	0004_auto_20150125_1601	2024-12-22 07:43:53.59191+00
-217	tickets	0005_auto_20150208_1455	2024-12-22 07:43:53.703595+00
-218	tickets	0006_ticketseventmeta_receipt_footer	2024-12-22 07:43:53.726401+00
-219	tickets	0007_accommodation_v3	2024-12-22 07:43:53.784858+00
-220	tickets	0008_auto_20151108_1905	2024-12-22 07:43:53.789729+00
-221	tickets	0009_accom_limit_group_refactor	2024-12-22 07:43:53.897432+00
-222	tickets	0010_product_requires_shirt_size	2024-12-22 07:43:53.918246+00
-223	tickets	0011_auto_20160216_2116	2024-12-22 07:43:53.989049+00
-224	tickets	0012_shirtorder	2024-12-22 07:43:54.143861+00
-225	tickets	0013_auto_20160216_2208	2024-12-22 07:43:54.169505+00
-226	tickets	0014_auto_20160305_1902	2024-12-22 07:43:54.210802+00
-227	tickets	0015_auto_20160608_0023	2024-12-22 07:43:54.232604+00
-228	tickets	0016_remove_ticketseventmeta_plain_contact_email	2024-12-22 07:43:54.253092+00
-229	tickets	0017_auto_20160608_2309	2024-12-22 07:43:54.274432+00
-230	tickets	0018_auto_20160610_0005	2024-12-22 07:43:54.379336+00
-231	tickets	0019_auto_20160704_2222	2024-12-22 07:43:54.381906+00
-232	tickets	0020_auto_20160706_2207	2024-12-22 07:43:54.385355+00
-233	tickets	0021_auto_20161211_1549	2024-12-22 07:43:54.954146+00
-234	tickets	0022_orderproduct_unique_together	2024-12-22 07:43:54.959357+00
-235	tickets	0023_auto_20180212_2301	2024-12-22 07:43:54.999283+00
-236	tickets	0024_ticketseventmeta_pos_access_group	2024-12-22 07:43:55.033464+00
-237	tickets	0025_auto_20181130_0739	2024-12-22 07:43:55.035882+00
-238	tickets	0026_auto_20200723_1925	2024-12-22 07:43:55.054998+00
-239	tickets	0027_auto_20220316_2255	2024-12-22 07:43:55.094157+00
-240	tickets	0028_ticketseventmeta_terms_and_conditions_url	2024-12-22 07:43:55.114638+00
-241	tickets	0029_auto_20220418_1531	2024-12-22 07:43:55.137876+00
-242	tickets	0030_auto_20220418_1553	2024-12-22 07:43:55.158555+00
-243	tickets	0031_alter_ticketseventmeta_event_and_more	2024-12-22 07:43:55.226521+00
-244	tickets	0032_accommodationinformation_is_present_and_more	2024-12-22 07:43:55.234066+00
-245	labour	0009_remove_signup_work_periods	2024-12-22 07:43:55.268591+00
-246	labour	0010_auto_20150929_1545	2024-12-22 07:43:55.424437+00
-247	labour	0011_job_slug	2024-12-22 07:43:55.434215+00
-248	labour	0012_auto_20151017_0012	2024-12-22 07:43:55.468281+00
-249	labour	0013_signup_time_confirmation_requested	2024-12-22 07:43:55.491634+00
-250	labour	0014_auto_20151108_1906	2024-12-22 07:43:55.524857+00
-251	labour	0015_auto_20160124_2328	2024-12-22 07:43:55.705855+00
-252	labour	0016_auto_20160128_1805	2024-12-22 07:43:55.728826+00
-253	labour	0017_auto_20160201_0050	2024-12-22 07:43:55.76169+00
-254	labour	0018_auto_20160202_2235	2024-12-22 07:43:56.035068+00
-255	labour	0019_auto_20160207_2330	2024-12-22 07:43:56.316724+00
-256	labour	0020_signup_job_categories_rejected	2024-12-22 07:43:56.35623+00
-257	labour	0021_auto_20160306_1125	2024-12-22 07:43:56.391231+00
-258	labour	0022_rename_empty_signup_extra	2024-12-22 07:43:56.429185+00
-259	labour	0023_auto_20160406_1828	2024-12-22 07:43:56.480699+00
-260	labour	0024_emptysignupextra	2024-12-22 07:43:56.51701+00
-261	labour	0025_auto_20160406_2144	2024-12-22 07:43:56.546515+00
-262	labour	0015_shift	2024-12-22 07:43:56.587037+00
-263	labour	0016_auto_20151205_1321	2024-12-22 07:43:56.593103+00
-264	labour	0026_merge	2024-12-22 07:43:56.593369+00
-265	labour	0027_auto_20160505_2233	2024-12-22 07:43:56.975988+00
-266	labour	0028_auto_20160608_0018	2024-12-22 07:43:56.997344+00
-267	labour	0029_auto_20160608_2309	2024-12-22 07:43:57.020465+00
-268	labour	0030_auto_20160716_1419	2024-12-22 07:43:57.114506+00
-269	labour	0031_surveyrecord	2024-12-22 07:43:57.148972+00
-270	labour	0032_survey_override_does_not_apply_message	2024-12-22 07:43:57.169849+00
-271	labour	0033_auto_20170802_1500	2024-12-22 07:43:57.228864+00
-272	surveys	0001_initial	2024-12-22 07:43:57.513064+00
-273	surveys	0002_auto_20170321_2103	2024-12-22 07:43:57.534921+00
-274	feedback	0001_initial	2024-12-22 07:43:57.578633+00
-275	event_log	0001_initial	2024-12-22 07:43:57.669572+00
-276	event_log	0002_auto_20170416_2048	2024-12-22 07:43:57.854326+00
-277	event_log	0003_subscription_event_survey_filter	2024-12-22 07:43:57.892938+00
-278	event_log	0004_entry_context	2024-12-22 07:43:57.918373+00
-279	event_log	0005_entry_person	2024-12-22 07:43:57.958194+00
-280	event_log	0006_auto_20170915_1845	2024-12-22 07:43:58.187555+00
-281	event_log	0007_entry_ip_address	2024-12-22 07:43:58.216466+00
-282	event_log	0008_subscription_job_category_filter	2024-12-22 07:43:58.256371+00
-283	event_log	0009_entry_other_fields	2024-12-22 07:43:58.286643+00
-284	event_log	0010_entry_accommodation_information_entry_limit_group_and_more	2024-12-22 07:43:58.401524+00
-285	event_log	0011_remove_entry_event_survey_result_and_more	2024-12-22 07:43:58.519931+00
-286	event_log	0012_rename_subscription_entry_type_active_event_log_s_entry_t_25fbf1_idx	2024-12-22 07:43:58.572302+00
-287	event_log	0013_alter_entry_created_by_delete_subscription	2024-12-22 07:43:58.612789+00
-288	event_log	0014_remove_entry_feedback_message	2024-12-22 07:43:58.652714+00
-289	event_log	0015_remove_entry_accommodation_information	2024-12-22 07:43:58.690828+00
-290	event_log_v2	0001_initial	2024-12-22 07:43:58.895679+00
-291	event_log_v2	0002_subscription	2024-12-22 07:43:58.934681+00
-292	feedback	0002_delete_feedbackmessage	2024-12-22 07:43:58.935909+00
-293	labour	0034_archivedsignup	2024-12-22 07:43:58.977423+00
-294	labour	0035_remove_personnelclass_perks_and_more	2024-12-22 07:43:59.225607+00
-295	labour	0036_alter_survey_event	2024-12-22 07:43:59.263208+00
-296	finncon2018	0001_initial	2024-12-22 07:43:59.339738+00
-297	finncon2018	0002_auto_20180429_2012	2024-12-22 07:43:59.352377+00
-298	finncon2018	0003_auto_20180611_1943	2024-12-22 07:43:59.364579+00
-299	finncon2018	0004_alter_signupextra_signup	2024-12-22 07:43:59.401817+00
-300	finncon2019	0001_initial	2024-12-22 07:43:59.626809+00
-301	finncon2019	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:43:59.704464+00
-302	finncon2020	0001_initial	2024-12-22 07:43:59.785964+00
-303	finncon2020	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:43:59.866107+00
-304	finncon2022	0001_initial	2024-12-22 07:43:59.90962+00
-305	finncon2022	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:43:59.988518+00
-306	finncon2023	0001_initial	2024-12-22 07:44:00.0324+00
-307	forms	0030_responsedimensionvalue_new_value_and_more	2024-12-22 07:44:00.33495+00
-308	forms	0031_remove_dimensionvalue_dimension_and_more	2024-12-22 07:44:00.512645+00
-309	forms	0032_rename_new_value_responsedimensionvalue_value_and_more	2024-12-22 07:44:00.521895+00
-310	frostbite2019	0001_initial	2024-12-22 07:44:00.606462+00
-311	frostbite2019	0002_auto_20190102_1626	2024-12-22 07:44:00.634935+00
-312	frostbite2019	0003_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:44:00.756205+00
-313	frostbite2020	0001_initial	2024-12-22 07:44:00.988711+00
-314	frostbite2020	0002_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:44:01.112652+00
-315	frostbite2023	0001_initial	2024-12-22 07:44:01.157298+00
-316	frostbite2024	0001_initial	2024-12-22 07:44:01.203187+00
-317	frostbite2024	0002_alter_signupextra_shirt_size	2024-12-22 07:44:01.233464+00
-318	frostbite2024	0003_signupextra_accommodation	2024-12-22 07:44:01.264172+00
-319	frostbite2025	0001_initial	2024-12-22 07:44:01.313047+00
-320	hitpoint2017	0001_initial	2024-12-22 07:44:01.403665+00
-321	hitpoint2017	0002_signupextra_is_active	2024-12-22 07:44:01.410495+00
-322	hitpoint2017	0003_timeslot	2024-12-22 07:44:01.411731+00
-323	hitpoint2017	0004_auto_20170122_1920	2024-12-22 07:44:01.418163+00
-324	hitpoint2017	0005_delete_signupextra	2024-12-22 07:44:01.419491+00
-325	hitpoint2019	0001_initial	2024-12-22 07:44:01.655292+00
-326	hitpoint2019	0002_auto_20190909_2157	2024-12-22 07:44:01.662017+00
-327	hitpoint2019	0003_signupextra_shirt_size	2024-12-22 07:44:01.668494+00
-328	hitpoint2019	0004_auto_20200212_2149	2024-12-22 07:44:01.674921+00
-329	hitpoint2019	0005_alter_signupextra_signup	2024-12-22 07:44:01.719769+00
-330	hitpoint2020	0001_initial	2024-12-22 07:44:01.769476+00
-331	hitpoint2020	0002_remove_signupextra_overseer	2024-12-22 07:44:01.777111+00
-332	hitpoint2020	0003_auto_20201227_1620	2024-12-22 07:44:01.784353+00
-333	hitpoint2020	0004_alter_signupextra_signup	2024-12-22 07:44:01.830488+00
-334	hitpoint2023	0001_initial	2024-12-22 07:44:01.879491+00
-335	hitpoint2024	0001_initial	2024-12-22 07:44:01.931248+00
-336	hitpoint2024	0002_alter_signupextra_shirt_size	2024-12-22 07:44:01.939849+00
-337	hitpoint2024	0003_delete_signupextra	2024-12-22 07:44:01.94128+00
-338	hitpoint2024	0004_signupextra	2024-12-22 07:44:01.991442+00
-339	hypecon2019	0001_initial	2024-12-22 07:44:02.091694+00
-340	hypecon2019	0002_signupextra_want_certificate	2024-12-22 07:44:02.125346+00
-341	hypecon2019	0003_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:02.364036+00
-342	hypecon2020	0001_initial	2024-12-22 07:44:02.463546+00
-343	hypecon2020	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:02.559788+00
-344	intra	0001_initial	2024-12-22 07:44:02.760577+00
-345	intra	0002_auto_20161020_2143	2024-12-22 07:44:02.961743+00
-346	intra	0003_team_email	2024-12-22 07:44:02.994586+00
-347	intra	0004_teammember_override_name_display_style	2024-12-22 07:44:03.017046+00
-348	intra	0005_teammember_override_job_title	2024-12-22 07:44:03.040882+00
-349	intra	0006_auto_20171113_2158	2024-12-22 07:44:03.191599+00
-350	intra	0007_team_is_public	2024-12-22 07:44:03.224554+00
-351	intra	0008_alter_intraeventmeta_event	2024-12-22 07:44:03.274132+00
-352	intra	0009_intraeventmeta_is_organizer_list_public	2024-12-22 07:44:03.305346+00
-353	intra	0010_alter_team_slug	2024-12-22 07:44:03.337115+00
-354	kotaeexpo2024	0001_initial	2024-12-22 07:44:03.390966+00
-355	kotaeexpo2024	0002_signupextra_night_shift_alter_signupextra_total_work	2024-12-22 07:44:03.650151+00
-356	kotaeexpo2024	0003_accommodation_knownlanguage_and_more	2024-12-22 07:44:03.802448+00
-357	kotaeexpo2024	0004_alter_signupextra_total_work	2024-12-22 07:44:03.837879+00
-358	kotaeexpo2024	0005_accessibilitywarning_timeslot	2024-12-22 07:44:03.841094+00
-359	kotaeexpo2024	0006_alter_signupextra_email_alias	2024-12-22 07:44:03.876199+00
-360	kotaeexpo2025	0001_initial	2024-12-22 07:44:03.93628+00
-361	kotaeexpo2025	0002_alter_signupextra_email_alias	2024-12-22 07:44:03.972556+00
-362	kuplii2018	0001_initial	2024-12-22 07:44:04.079552+00
-363	kuplii2018	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:04.346877+00
-364	kuplii2019	0001_initial	2024-12-22 07:44:04.456492+00
-365	kuplii2019	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:04.561449+00
-366	kuplii2020	0001_initial	2024-12-22 07:44:04.672243+00
-367	kuplii2020	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:04.779008+00
-368	kuplii2021	0001_initial	2024-12-22 07:44:04.988037+00
-369	kuplii2021	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:05.096994+00
-370	kuplii2022	0001_initial	2024-12-22 07:44:05.162749+00
-371	kuplii2022	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:05.273563+00
-372	kuplii2023	0001_initial	2024-12-22 07:44:05.332633+00
-373	kuplii2024	0001_initial	2024-12-22 07:44:05.395074+00
-374	kuplii2025	0001_initial	2024-12-22 07:44:05.456597+00
-375	labour	0037_rename_personnelclass_event_app_label_labour_pers_event_i_49de47_idx	2024-12-22 07:44:05.682699+00
-376	labour	0038_laboureventmeta_work_certificate_pdf_project	2024-12-22 07:44:05.742167+00
-377	labour	0039_remove_personnelclass_perks_markdown_and_more	2024-12-22 07:44:06.115344+00
-378	labour	0040_alter_alternativesignupform_signup_extra_form_class_path	2024-12-22 07:44:06.322312+00
-379	labour	0041_alter_alternativesignupform_slug_alter_job_slug_and_more	2024-12-22 07:44:06.572465+00
-380	labour_common_qualifications	0001_initial	2024-12-22 07:44:06.633831+00
-381	labour_common_qualifications	0002_auto_20150521_1557	2024-12-22 07:44:06.638132+00
-382	labour_common_qualifications	0003_auto_20151220_1552	2024-12-22 07:44:06.641687+00
-383	lippukala	0001_initial	2024-12-22 07:44:06.64806+00
-384	lippukala	0002_soft_prefixes	2024-12-22 07:44:06.650747+00
-385	listings	0001_initial	2024-12-22 07:44:06.711397+00
-386	listings	0002_listing_external_events	2024-12-22 07:44:06.771805+00
-387	listings	0003_externalevent_public	2024-12-22 07:44:06.775181+00
-388	listings	0004_externalevent_logo_file	2024-12-22 07:44:06.778109+00
-389	listings	0005_externalevent_cancelled	2024-12-22 07:44:06.780818+00
-390	listings	0006_auto_20211019_2248	2024-12-22 07:44:06.993403+00
-391	listings	0007_alter_externalevent_slug	2024-12-22 07:44:06.996154+00
-392	tracon2023	0001_initial	2024-12-22 07:44:07.060987+00
-393	tracon2023	0002_accessibilitywarning_timeslot	2024-12-22 07:44:07.065198+00
-394	ropecon2023	0001_initial	2024-12-22 07:44:07.128962+00
-395	ropecon2023	0002_language_remove_signupextra_can_english_and_more	2024-12-22 07:44:07.273505+00
-396	ropecon2021	0001_initial	2024-12-22 07:44:07.339586+00
-397	ropecon2021	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:07.458274+00
-398	ropecon2019	0001_initial	2024-12-22 07:44:07.460157+00
-399	ropecon2019	0002_auto_20190226_2146	2024-12-22 07:44:07.740138+00
-400	ropecon2019	0003_auto_20190403_2159	2024-12-22 07:44:07.91086+00
-401	ropecon2019	0004_auto_20190909_2157	2024-12-22 07:44:07.954702+00
-402	ropecon2019	0005_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:08.07573+00
-403	ropecon2018	0001_initial	2024-12-22 07:44:08.352054+00
-404	programme	0001_initial	2024-12-22 07:44:09.568922+00
-405	programme	0002_auto_20150115_1949	2024-12-22 07:44:09.654611+00
-406	programme	0003_programme_state	2024-12-22 07:44:09.75717+00
-407	programme	0004_auto_20151024_1644	2024-12-22 07:44:09.792334+00
-408	programme	0005_programme_end_time	2024-12-22 07:44:09.955218+00
-409	programme	0006_room_slug	2024-12-22 07:44:10.028028+00
-410	programme	0007_room_slug_not_null	2024-12-22 07:44:10.251045+00
-411	programme	0008_category_slug	2024-12-22 07:44:10.4377+00
-412	programme	0009_auto_20160123_1336	2024-12-22 07:44:10.97544+00
-413	programme	0010_auto_20160123_1733	2024-12-22 07:44:11.179117+00
-414	programme	0011_auto_20160124_1448	2024-12-22 07:44:11.240653+00
-415	programme	0012_auto_20160124_1457	2024-12-22 07:44:11.561065+00
-416	programme	0013_auto_20160124_2151	2024-12-22 07:44:11.693018+00
-417	programme	0014_invitationadminproxy_programmemanagementproxy	2024-12-22 07:44:11.695787+00
-418	programme	0015_auto_20160125_2328	2024-12-22 07:44:12.369034+00
-419	programme	0016_freeformorganizer	2024-12-22 07:44:12.434538+00
-420	programme	0017_freeformorganizeradminproxy	2024-12-22 07:44:12.436131+00
-421	programme	0018_auto_20160131_2044	2024-12-22 07:44:12.511751+00
-422	programme	0019_auto_20160201_0003	2024-12-22 07:44:12.592999+00
-423	programme	0020_make_role_event_specific	2024-12-22 07:44:12.822803+00
-424	programme	0021_auto_20160201_0050	2024-12-22 07:44:12.89013+00
-425	programme	0022_auto_20160202_1950	2024-12-22 07:44:12.905016+00
-426	programme	0023_auto_20160202_2231	2024-12-22 07:44:12.955086+00
-427	programme	0024_auto_20160202_2236	2024-12-22 07:44:13.099549+00
-428	programme	0025_auto_20160202_2237	2024-12-22 07:44:13.164207+00
-429	programme	0026_auto_20160202_2238	2024-12-22 07:44:13.199838+00
-430	programme	0027_auto_20160204_1842	2024-12-22 07:44:13.643239+00
-431	programme	0028_auto_20160207_2330	2024-12-22 07:44:13.849543+00
-432	programme	0029_room_active	2024-12-22 07:44:13.854752+00
-433	programme	0030_auto_20160305_1902	2024-12-22 07:44:14.155991+00
-434	programme	0031_auto_20160306_1125	2024-12-22 07:44:14.191572+00
-435	programme	0032_auto_20160505_2233	2024-12-22 07:44:14.227033+00
-436	programme	0033_auto_20160608_0023	2024-12-22 07:44:14.270151+00
-437	programme	0034_auto_20160608_2309	2024-12-22 07:44:14.313306+00
-438	programme	0035_auto_20160623_0037	2024-12-22 07:44:14.459447+00
-439	programme	0036_programme_frozen	2024-12-22 07:44:14.494552+00
-440	programme	0037_populate_programme_frozen	2024-12-22 07:44:14.561819+00
-441	programme	0038_auto_20160627_2057	2024-12-22 07:44:14.785102+00
-442	programme	0039_programmefeedback	2024-12-22 07:44:14.855247+00
-443	programme	0040_auto_20160705_2240	2024-12-22 07:44:14.958233+00
-444	programme	0041_programme_rerun	2024-12-22 07:44:14.995265+00
-445	programme	0042_auto_20160706_2208	2024-12-22 07:44:15.030754+00
-446	programme	0043_auto_20160706_2211	2024-12-22 07:44:15.065915+00
-447	programme	0044_auto_20160712_1406	2024-12-22 07:44:15.186684+00
-448	programme	0045_auto_20160715_0127	2024-12-22 07:44:15.477846+00
-449	programme	0046_auto_20160811_2319	2024-12-22 07:44:15.494807+00
-450	programme	0047_programmeeventmeta_schedule_layout	2024-12-22 07:44:15.538344+00
-451	programme	0048_auto_20160813_1948	2024-12-22 07:44:15.582473+00
-452	programme	0049_programmerole_is_active	2024-12-22 07:44:15.683766+00
-453	programme	0050_auto_20161129_2147	2024-12-22 07:44:16.617244+00
-454	programme	0051_auto_20170212_2203	2024-12-22 07:44:16.623809+00
-455	programme	0052_tag_slug	2024-12-22 07:44:16.856675+00
-456	programme	0053_populate_tag_slug	2024-12-22 07:44:16.925393+00
-457	programme	0054_auto_20170212_2334	2024-12-22 07:44:16.969224+00
-458	programme	0055_programme_signup_link	2024-12-22 07:44:17.006338+00
-459	programme	0056_auto_20171104_1806	2024-12-22 07:44:17.164153+00
-460	programme	0057_room_event	2024-12-22 07:44:17.534792+00
-461	programme	0058_populate_room_event	2024-12-22 07:44:17.604304+00
-462	programme	0059_room_remove_venue	2024-12-22 07:44:17.715808+00
-463	programme	0060_auto_20171113_2158	2024-12-22 07:44:17.826324+00
-464	programme	0061_auto_20171125_1229	2024-12-22 07:44:17.968507+00
-465	programme	0062_populate_viewroom	2024-12-22 07:44:18.220333+00
-466	programme	0063_remove_view_rooms	2024-12-22 07:44:18.290377+00
-467	programme	0064_auto_20171125_1326	2024-12-22 07:44:18.375629+00
-468	programme	0065_auto_20171227_0037	2024-12-22 07:44:18.661392+00
-469	programme	0066_programme_ropecon2018_preferred_time_slots	2024-12-22 07:44:18.930961+00
-470	programme	0067_auto_20180219_2222	2024-12-22 07:44:19.006234+00
-471	programme	0068_auto_20180305_2153	2024-12-22 07:44:20.36275+00
-472	programme	0069_ropecon2018_kp_20180306_0934	2024-12-22 07:44:20.473125+00
-473	programme	0070_auto_20180307_2316	2024-12-22 07:44:20.510627+00
-474	programme	0071_auto_20180417_2245	2024-12-22 07:44:20.700747+00
-475	programme	0072_programme_language_skills	2024-12-22 07:44:20.739474+00
-476	programme	0073_remove_programme_language_skills	2024-12-22 07:44:20.979161+00
-477	programme	0074_auto_20180620_1623	2024-12-22 07:44:21.051492+00
-478	programme	0075_auto_20181019_1918	2024-12-22 07:44:21.088006+00
-479	paikkala	0001_initial	2024-12-22 07:44:21.385627+00
-480	paikkala	0002_more_limits	2024-12-22 07:44:21.396499+00
-481	paikkala	0003_row_excluded_numbers	2024-12-22 07:44:21.400146+00
-482	paikkala	0004_texts	2024-12-22 07:44:21.412351+00
-483	paikkala	0005_program_automatic_max_tickets	2024-12-22 07:44:21.416008+00
-484	paikkala	0006_perprogramblock	2024-12-22 07:44:21.686067+00
-485	paikkala	0007_excluded_numbers	2024-12-22 07:44:21.760518+00
-486	paikkala	0008_room	2024-12-22 07:44:21.903662+00
-487	paikkala	0009_default_room	2024-12-22 07:44:21.973522+00
-488	paikkala	0010_nonblank_room	2024-12-22 07:44:22.116746+00
-489	programme	0076_auto_20190207_1753	2024-12-22 07:44:22.527061+00
-490	programme	0077_auto_20190207_1809	2024-12-22 07:44:22.616433+00
-491	programme	0078_auto_20190217_1344	2024-12-22 07:44:22.80831+00
-492	programme	0079_auto_20190217_1358	2024-12-22 07:44:22.894953+00
-493	programme	0080_alternativeprogrammeform_is_active	2024-12-22 07:44:23.137394+00
-494	programme	0081_auto_20190226_2021	2024-12-22 07:44:23.441197+00
-495	programme	0082_auto_20190228_2127	2024-12-22 07:44:23.554472+00
-496	programme	0083_programme_is_inaccessible	2024-12-22 07:44:23.594132+00
-497	programme	0084_auto_20190228_2215	2024-12-22 07:44:23.886926+00
-498	programme	0085_programme_ropecon2019_gaming_desk_subtype	2024-12-22 07:44:23.927822+00
-499	programme	0086_auto_20190301_0927	2024-12-22 07:44:24.006834+00
-500	programme	0087_auto_20190301_2337	2024-12-22 07:44:24.156615+00
-501	programme	0088_auto_20190301_2348	2024-12-22 07:44:24.196613+00
-502	programme	0089_auto_20190305_1945	2024-12-22 07:44:24.585684+00
-503	programme	0090_alternativeprogrammeform_role	2024-12-22 07:44:24.658474+00
-504	programme	0091_role_slug	2024-12-22 07:44:24.738818+00
-505	programme	0092_programmefeedback_author_external_username	2024-12-22 07:44:24.782577+00
-506	programme	0093_programme_paikkala_icon	2024-12-22 07:44:24.822416+00
-507	programme	0094_programme_is_paikkala_public	2024-12-22 07:44:24.863132+00
-508	paikkala	0011_better_range	2024-12-22 07:44:24.871579+00
-509	paikkala	0012_excluded_numbers_validator	2024-12-22 07:44:24.942132+00
-510	paikkala	0013_seat_qualifiers	2024-12-22 07:44:25.220962+00
-511	paikkala	0014_unique_together	2024-12-22 07:44:25.230373+00
-512	paikkala	0015_contact_and_hidden_seats	2024-12-22 07:44:25.29022+00
-513	paikkala	0016_zone_ordering	2024-12-22 07:44:25.299618+00
-514	programme	0095_auto_20190919_2136	2024-12-22 07:44:25.342302+00
-515	programme	0096_auto_20200122_2256	2024-12-22 07:44:25.388139+00
-516	programme	0097_auto_20200202_2051	2024-12-22 07:44:25.623994+00
-517	programme	0098_auto_20200210_2018	2024-12-22 07:44:25.741745+00
-518	programme	0099_auto_20200223_1958	2024-12-22 07:44:26.020091+00
-519	programme	0100_programme_hitpoint2020_preferred_time_slots	2024-12-22 07:44:26.098483+00
-520	programme	0101_programme_ropecon2021_gamedesk_physical_or_virtual	2024-12-22 07:44:26.139429+00
-521	programme	0102_auto_20210222_2104	2024-12-22 07:44:26.987662+00
-522	programme	0103_programme_ropecon2021_blocked_time_slots	2024-12-22 07:44:27.065044+00
-523	programme	0104_auto_20210223_2306	2024-12-22 07:44:27.448569+00
-524	programme	0105_programme_ropecon2021_gamedesk_materials	2024-12-22 07:44:27.48964+00
-525	programme	0106_auto_20210914_1548	2024-12-22 07:44:27.570477+00
-526	programme	0107_auto_20220221_2251	2024-12-22 07:44:27.770172+00
-527	programme	0108_auto_20220313_1906	2024-12-22 07:44:27.890753+00
-528	programme	0109_alter_programme_ropecon2019_blocked_time_slots_and_more	2024-12-22 07:44:28.557377+00
-529	programme	0110_alter_specialreservation_code_and_more	2024-12-22 07:44:28.604604+00
-530	programme	0111_programme_ropecon2023_accessibility_cant_use_mic_and_more	2024-12-22 07:44:29.857842+00
-531	programme	0112_programme_ropecon2023_other_accessibility_information_and_more	2024-12-22 07:44:29.940199+00
-532	programme	0113_programme_ropecon2023_chairs_and_more	2024-12-22 07:44:30.105679+00
-533	programme	0114_programme_ropecon2023_furniture_needs_and_more	2024-12-22 07:44:30.231187+00
-534	programme	0115_programme_ropecon2023_workshop_fee	2024-12-22 07:44:30.273734+00
-535	programme	0115_alter_category_options_category_order	2024-12-22 07:44:30.593082+00
-536	programme	0116_merge_20230314_2218	2024-12-22 07:44:30.593398+00
-537	programme	0117_programme_tracon2023_accessibility_warnings_and_more	2024-12-22 07:44:30.838365+00
-538	programme	0118_alter_programme_photography_and_more	2024-12-22 07:44:31.002593+00
-539	mailings	0001_initial	2024-12-22 07:44:31.545215+00
-540	mailings	0002_message_channel	2024-12-22 07:44:31.550369+00
-541	mailings	0003_message_channel_help	2024-12-22 07:44:31.554942+00
-542	mailings	0004_recipientgroup_job_category	2024-12-22 07:44:31.63225+00
-543	mailings	0005_populate_recipient_group_job_category	2024-12-22 07:44:31.705734+00
-544	mailings	0006_auto_20160505_2233	2024-12-22 07:44:31.711842+00
-545	mailings	0007_recipientgroup_personnel_class	2024-12-22 07:44:31.789763+00
-546	mailings	0008_auto_20161026_2343	2024-12-22 07:44:32.122121+00
-547	mailings	0009_recipientgroup_programme_category_and_more	2024-12-22 07:44:32.251053+00
-548	mailings	0010_recipientgroup_programme_form	2024-12-22 07:44:32.331092+00
-549	mailings	0011_alter_recipientgroup_verbose_name	2024-12-22 07:44:32.382204+00
-550	mailings	0012_recipientgroup_override_reply_to_and_more	2024-12-22 07:44:32.439497+00
-551	matsucon2018	0001_initial	2024-12-22 07:44:32.522092+00
-552	matsucon2018	0002_auto_20180203_2326	2024-12-22 07:44:33.034837+00
-553	matsucon2018	0003_signupextra_shirt_size	2024-12-22 07:44:33.088626+00
-554	matsucon2018	0004_signupextra_shift_type	2024-12-22 07:44:33.141726+00
-555	matsucon2018	0005_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:44:33.370046+00
-556	matsucon2019	0001_initial	2024-12-22 07:44:33.681178+00
-557	matsucon2019	0002_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:44:33.914213+00
-558	matsucon2020	0001_initial	2024-12-22 07:44:33.995295+00
-559	matsucon2020	0002_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:44:34.486563+00
-560	matsucon2022	0001_initial	2024-12-22 07:44:34.5715+00
-561	matsucon2023	0001_initial	2024-12-22 07:44:34.65439+00
-562	matsucon2024	0001_initial	2024-12-22 07:44:34.737565+00
-563	membership	0001_initial	2024-12-22 07:44:34.979821+00
-564	membership	0002_membershiporganizationmeta_receiving_applications	2024-12-22 07:44:34.992224+00
-565	membership	0003_requirements	2024-12-22 07:44:35.015538+00
-566	membership	0004_auto_20151010_1632	2024-12-22 07:44:35.316677+00
-567	membership	0005_membership_message	2024-12-22 07:44:35.360739+00
-568	membership	0006_auto_20151011_2005	2024-12-22 07:44:35.558853+00
-569	membership	0007_auto_20151011_2109	2024-12-22 07:44:35.603372+00
-570	membership	0008_auto_20151011_2229	2024-12-22 07:44:36.149801+00
-571	membership	0009_auto_20151011_2236	2024-12-22 07:44:36.154482+00
-572	membership	0010_remove_membershiporganizationmeta_membership_fee	2024-12-22 07:44:36.167837+00
-573	membership	0011_auto_20151020_0016	2024-12-22 07:44:36.249819+00
-574	membership	0012_members_group	2024-12-22 07:44:36.576823+00
-575	membership	0013_auto_20151219_1510	2024-12-22 07:44:36.620553+00
-576	membership	0014_term_payment_type	2024-12-22 07:44:36.860058+00
-577	membership	0015_auto_20190921_1449	2024-12-22 07:44:36.87913+00
-578	membership	0016_auto_20200723_1912	2024-12-22 07:44:37.13323+00
-579	nekocon2019	0001_initial	2024-12-22 07:44:37.304017+00
-580	nekocon2019	0002_auto_20190421_1919	2024-12-22 07:44:37.84112+00
-581	nekocon2019	0003_auto_20190909_2157	2024-12-22 07:44:37.898944+00
-582	nekocon2019	0004_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:38.063993+00
-583	nekocon2020	0001_initial	2024-12-22 07:44:38.469003+00
-584	nekocon2020	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:38.638717+00
-585	nekocon2022	0001_initial	2024-12-22 07:44:38.730364+00
-586	nekocon2022	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:38.901505+00
-587	nekocon2023	0001_initial	2024-12-22 07:44:39.222262+00
-588	oauth2_provider	0001_initial	2024-12-22 07:44:39.653111+00
-589	oauth2_provider	0002_auto_20190406_1805	2024-12-22 07:44:39.681137+00
-590	oauth2_provider	0003_auto_20201211_1314	2024-12-22 07:44:39.694718+00
-591	oauth2_provider	0004_auto_20200902_2022	2024-12-22 07:44:40.165238+00
-592	oauth2_provider	0005_auto_20211222_2352	2024-12-22 07:44:40.594608+00
-593	oauth2_provider	0006_alter_application_client_secret	2024-12-22 07:44:40.91915+00
-594	oauth2_provider	0007_application_post_logout_redirect_uris	2024-12-22 07:44:40.93307+00
-595	oauth2_provider	0008_alter_accesstoken_token	2024-12-22 07:44:40.946471+00
-596	oauth2_provider	0009_add_hash_client_secret	2024-12-22 07:44:40.96004+00
-597	oauth2_provider	0010_application_allowed_origins	2024-12-22 07:44:40.975812+00
-598	oauth2_provider	0011_refreshtoken_token_family	2024-12-22 07:44:40.989852+00
-599	oauth2_provider	0012_add_token_checksum	2024-12-22 07:44:41.118287+00
-600	payments	0001_initial	2024-12-22 07:44:41.120828+00
-601	payments	0002_paymentseventmeta	2024-12-22 07:44:41.210077+00
-602	payments	0003_payment_event	2024-12-22 07:44:41.298164+00
-603	payments	0004_checkout_v2	2024-12-22 07:44:41.436047+00
-604	payments	0005_payments_organization_meta	2024-12-22 07:44:41.892706+00
-605	payments	0006_populate_payments_organization_meta	2024-12-22 07:44:41.979385+00
-606	payments	0007_finalize_payments_organization_meta	2024-12-22 07:44:42.15815+00
-607	payments	0008_auto_20200723_2058	2024-12-22 07:44:42.210378+00
-608	payments	0009_delete_paymentseventmeta	2024-12-22 07:44:42.212729+00
-609	payments	0010_alter_checkoutpayment_customer_and_more	2024-12-22 07:44:42.544241+00
-610	popcult2019	0001_initial	2024-12-22 07:44:42.636344+00
-611	popcult2019	0002_auto_20181207_1625	2024-12-22 07:44:42.697369+00
-612	popcult2019	0003_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:44:42.963145+00
-613	popcult2020	0001_initial	2024-12-22 07:44:43.290183+00
-614	popcult2020	0002_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:44:43.55736+00
-615	popcultday2018	0001_initial	2024-12-22 07:44:43.651426+00
-616	popcultday2018	0002_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:44:44.156216+00
-617	popcultday2024	0001_initial	2024-12-22 07:44:44.251505+00
-618	program_v2	0026_programdimensionvalue_new_value_alter_dimension_slug_and_more	2024-12-22 07:44:44.892996+00
-619	program_v2	0027_alter_programdimensionvalue_options_and_more	2024-12-22 07:44:45.012875+00
-620	program_v2	0028_remove_dimensionvalue_dimension_and_more	2024-12-22 07:44:45.852243+00
-621	program_v2	0029_alter_programdimensionvalue_options_and_more	2024-12-22 07:44:45.933699+00
-622	program_v2	0030_delete_offerform	2024-12-22 07:44:46.024748+00
-623	tracon2023	0003_signupextraafterpartyproxy_and_more	2024-12-22 07:44:46.088618+00
-624	solmukohta2024	0001_initial	2024-12-22 07:44:46.096456+00
-625	solmukohta2024	0002_technology	2024-12-22 07:44:46.098441+00
-626	ropecon2024	0001_initial	2024-12-22 07:44:46.197458+00
-627	ropecon2018	0002_remove_signupextra_extra_work	2024-12-22 07:44:46.207811+00
-628	ropecon2018	0003_alter_signupextra_signup	2024-12-22 07:44:46.523303+00
-629	programme	0119_programme_hosts_from_host_and_more	2024-12-22 07:44:47.53854+00
-630	programme	0120_remove_programme_solmukohta2024_computer_usage_and_more	2024-12-22 07:44:48.291024+00
-631	programme	0121_programme_solmukohta2024_other_emails_and_more	2024-12-22 07:44:48.402059+00
-632	programme	0122_alter_programme_hosts_from_host	2024-12-22 07:44:48.458244+00
-633	programme	0123_rename_programme_category_state_programme_p_categor_69bbc0_idx	2024-12-22 07:44:48.567441+00
-634	programme	0124_programme_ropecon2024_blocked_time_slots_and_more	2024-12-22 07:44:49.173416+00
-635	programme	0125_remove_programme_ropecon2024_language_prog_and_more	2024-12-22 07:44:49.285124+00
-636	programme	0126_programmeeventmeta_override_schedule_link_and_more	2024-12-22 07:44:49.392823+00
-637	programme	0127_programme_programme_p_categor_5b8eeb_idx	2024-12-22 07:44:49.448647+00
-638	programme	0128_category_v2_dimensions_room_v2_dimensions_and_more	2024-12-22 07:44:49.867101+00
-639	programme	0129_alternativeprogrammeform_v2_dimensions	2024-12-22 07:44:49.927998+00
-640	programme	0130_programme_max_runs_and_more	2024-12-22 07:44:50.039083+00
-641	programme	0131_programmerole_override_perks_role_perks_and_more	2024-12-22 07:44:50.197195+00
-642	programme	0132_tag_public	2024-12-22 07:44:50.255157+00
-643	programme	0133_alter_alternativeprogrammeform_slug_and_more	2024-12-22 07:44:50.892836+00
-644	programme	0134_alter_programme_language	2024-12-22 07:44:50.948613+00
-645	ropecon2020	0001_initial	2024-12-22 07:44:51.169648+00
-646	ropecon2020	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:51.359681+00
-647	ropecon2020vd	0001_initial	2024-12-22 07:44:51.779442+00
-648	ropecon2020vd	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:51.970682+00
-649	ropecon2022	0001_initial	2024-12-22 07:44:52.085463+00
-650	ropecon2022	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:44:52.286085+00
-651	ropecon2025	0001_initial	2024-12-22 07:44:52.390433+00
-652	sessions	0001_initial	2024-12-22 07:44:52.394469+00
-653	shumicon2023	0001_initial	2024-12-22 07:44:52.783287+00
-654	shumicon2023	0002_signupextra_shift_leader_and_more	2024-12-22 07:44:52.923049+00
-655	shumicon2025	0001_initial	2024-12-22 07:44:53.037018+00
-656	sites	0001_initial	2024-12-22 07:44:53.039573+00
-657	sites	0002_alter_domain_unique	2024-12-22 07:44:53.044664+00
-658	surveys	0003_auto_20180330_1812	2024-12-22 07:44:53.24211+00
-659	surveys	0004_auto_20190909_2157	2024-12-22 07:44:53.683018+00
-660	surveys	0005_remove_eventsurveyresult_author_and_more	2024-12-22 07:44:54.096045+00
-661	tickets	0033_remove_accommodationinformation_is_present_and_more	2024-12-22 07:44:54.363962+00
-662	tickets	0034_ticketseventmeta_accommodation_access_group	2024-12-22 07:44:54.461241+00
-663	tickets	0035_ticketseventmeta_max_count_per_product	2024-12-22 07:44:54.525162+00
-664	tickets	0036_alter_ticketseventmeta_max_count_per_product	2024-12-22 07:44:54.596969+00
-665	tickets	0037_alter_product_options_product_code_and_more	2024-12-22 07:44:54.792103+00
-666	tickets	0038_autumn_cleaning	2024-12-22 07:44:56.221049+00
-667	tickets	0039_alter_ticketseventmeta_terms_and_conditions_url	2024-12-22 07:44:56.280422+00
-668	tickets	0040_remove_ticketseventmeta_reservation_seconds	2024-12-22 07:44:56.341979+00
-669	tickets	0041_remove_ticketseventmeta_due_days	2024-12-22 07:44:56.401135+00
-670	tickets	0042_remove_ticketseventmeta_receipt_footer	2024-12-22 07:44:56.46073+00
-671	tickets	0043_remove_product_requires_accommodation_information_and_more	2024-12-22 07:44:56.98723+00
-672	tickets	0044_alter_order_language	2024-12-22 07:44:57.046724+00
-673	tickets_v2	0001_initial	2024-12-22 07:44:58.015957+00
-674	tracon2018	0001_initial	2024-12-22 07:44:58.141688+00
-675	tracon2018	0002_auto_20180913_0813	2024-12-22 07:44:59.07026+00
-676	tracon2018	0003_delete_signupextraafterpartyproxy	2024-12-22 07:44:59.071999+00
-677	tracon2018	0004_alter_signupextra_event_alter_signupextra_person_and_more	2024-12-22 07:44:59.733937+00
-678	tracon2018	0005_alter_signupextra_email_alias	2024-12-22 07:44:59.815376+00
-679	tracon2019	0001_initial	2024-12-22 07:44:59.945492+00
-680	tracon2019	0002_auto_20190909_2157	2024-12-22 07:45:00.114343+00
-681	tracon2019	0003_auto_20190910_1347	2024-12-22 07:45:00.885947+00
-682	tracon2019	0004_auto_20200723_1925	2024-12-22 07:45:00.968029+00
-683	tracon2019	0005_delete_signupextraafterpartyproxy_and_more	2024-12-22 07:45:01.195345+00
-684	tracon2019	0006_alter_signupextra_email_alias	2024-12-22 07:45:01.274853+00
-685	tracon2020	0001_initial	2024-12-22 07:45:01.677829+00
-686	tracon2020	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:45:01.893943+00
-687	tracon2020	0003_alter_signupextra_email_alias	2024-12-22 07:45:01.969624+00
-688	tracon2021	0001_initial	2024-12-22 07:45:02.082496+00
-689	tracon2021	0002_alter_signupextra_event_alter_signupextra_person	2024-12-22 07:45:02.575572+00
-690	tracon2021	0003_alter_signupextra_email_alias	2024-12-22 07:45:02.653691+00
-691	tracon2022	0001_initial	2024-12-22 07:45:02.77623+00
-692	tracon2022	0002_auto_20220530_1429	2024-12-22 07:45:02.86338+00
-693	tracon2022	0003_signupextra_afterparty_policy_and_more	2024-12-22 07:45:03.48882+00
-694	tracon2022	0004_alter_signupextra_email_alias	2024-12-22 07:45:03.570887+00
-695	tracon2023	0004_delete_signupextraafterpartyproxy	2024-12-22 07:45:03.573096+00
-696	tracon2023	0005_alter_signupextra_email_alias	2024-12-22 07:45:03.655162+00
-697	tracon2024	0001_initial	2024-12-22 07:45:03.791309+00
-698	tracon2024	0002_alter_signupextra_total_work	2024-12-22 07:45:03.877396+00
-699	tracon2024	0003_alter_signupextra_shirt_size	2024-12-22 07:45:04.430021+00
-700	tracon2024	0004_signupextraafterpartyproxy	2024-12-22 07:45:04.432593+00
-701	tracon2024	0005_alter_signupextra_afterparty_help_and_more	2024-12-22 07:45:04.594669+00
-702	tracon2024	0006_alter_signupextra_email_alias	2024-12-22 07:45:04.673256+00
-703	tracon2025	0001_initial	2024-12-22 07:45:04.79549+00
-704	tracon2025	0002_alter_signupextra_email_alias	2024-12-22 07:45:04.875139+00
-705	access	0023_alter_privilege_slug	2025-07-23 18:30:38.021374+00
-706	access	0024_alter_emailaliasdomain_options_and_more	2025-07-23 18:30:38.463393+00
-707	access	0025_remove_emailaliastype_account_name_code_and_more	2025-07-23 18:30:38.475726+00
-708	access	0026_alter_privilege_options_remove_privilege_grant_code_and_more	2025-07-23 18:30:38.4937+00
-709	labour	0042_signup_override_formatted_perks	2025-07-23 18:30:38.577876+00
-710	forms	0033_survey_protect_responses	2025-07-23 18:30:38.654333+00
-711	forms	0034_survey_app	2025-07-23 18:30:38.7309+00
-712	forms	0035_form_survey_alter_survey_app_alter_survey_languages	2025-07-23 18:30:39.266477+00
-713	forms	0036_alter_form_unique_together_remove_survey_languages_and_more	2025-07-23 18:30:39.884993+00
-714	forms	0037_alter_survey_anonymity	2025-07-23 18:30:40.063015+00
-715	forms	0038_survey_created_at_survey_created_by_and_more	2025-07-23 18:30:40.551246+00
-716	badges	0028_remove_badgeseventmeta_onboarding_instructions_markdown_and_more	2025-07-23 18:30:40.688557+00
-717	badges	0029_surveytobadgemapping	2025-07-23 18:30:40.80033+00
-718	badges	0030_alter_surveytobadgemapping_options_and_more	2025-07-23 18:30:40.833231+00
-719	badges	0031_alter_badgeseventmeta_emperkelator_name	2025-07-23 18:30:40.904913+00
-720	dimensions	0003_remove_dimension_is_shown_to_subject_and_more	2025-07-23 18:30:40.916365+00
-721	dimensions	0004_alter_universe_unique_together	2025-07-23 18:30:41.21636+00
-722	dimensions	0005_alter_dimension_value_ordering	2025-07-23 18:30:41.361966+00
-723	dimensions	0006_alter_dimension_slug_alter_dimensionvalue_slug_and_more	2025-07-23 18:30:41.454989+00
-724	dimensions	0007_dimension_is_technical_dimensionvalue_is_technical	2025-07-23 18:30:41.468001+00
-725	dimensions	0008_alter_dimension_slug_alter_dimensionvalue_slug	2025-07-23 18:30:41.482167+00
-726	forms	0039_survey_cached_default_dimensions_and_more	2025-07-23 18:30:42.052386+00
-727	dimensions	0009_remove_dimensionvalue_is_initial	2025-07-23 18:30:42.059914+00
-728	dimensions	0010_alter_universe_app	2025-07-23 18:30:42.066345+00
-729	dimensions	0011_dimensionvalue_is_subject_locked	2025-07-23 18:30:42.07259+00
-730	dimensions	0012_universe_app_name	2025-07-23 18:30:42.083923+00
-731	program_v2	0031_programform_attributes	2025-07-23 18:30:42.191859+00
-732	program_v2	0032_remove_programv2eventmeta_skip_offer_form_selection	2025-07-23 18:30:42.262106+00
-733	program_v2	0033_program_program_offer_and_more	2025-07-23 18:30:42.453874+00
-734	program_v2	0034_programv2eventmeta_contact_email	2025-07-23 18:30:42.690173+00
-735	program_v2	0035_remove_programv2eventmeta_importer_name	2025-07-23 18:30:42.761448+00
-736	program_v2	0036_remove_programv2eventmeta_location_dimension	2025-07-23 18:30:42.874522+00
-737	program_v2	0037_programv2eventmeta_guide_v2_embedded_url	2025-07-23 18:30:42.976422+00
-738	program_v2	0038_alter_programv2eventmeta_contact_email	2025-07-23 18:30:43.047658+00
-739	involvement	0001_initial	2025-07-23 18:30:44.028437+00
-740	forms	0040_survey_registry	2025-07-23 18:30:44.234148+00
-741	forms	0041_response_cached_key_fields	2025-07-23 18:30:44.25141+00
-742	forms	0042_survey_purpose_slug_alter_survey_anonymity	2025-07-23 18:30:44.40732+00
-743	forms	0043_projection	2025-07-23 18:30:44.518193+00
-744	forms	0044_response_superseded_by_and_more	2025-07-23 18:30:44.99831+00
-745	forms	0045_rename_created_at_response_revision_created_at_and_more	2025-07-23 18:30:45.564953+00
-746	forms	0046_rename_response_responsedimensionvalue_subject_and_more	2025-07-23 18:30:45.730897+00
-747	forms	0047_survey_universe	2025-07-23 18:30:46.122181+00
-748	forms	0048_alter_survey_universe	2025-07-23 18:30:46.239184+00
-749	forms	0049_survey_cached_default_involvement_dimensions	2025-07-23 18:30:46.317202+00
-750	forms	0050_alter_survey_app_name	2025-07-23 18:30:46.431509+00
-751	forms	0051_rename_surveydefaultdimensionvalue_surveydefaultresponsedimensionvalue	2025-07-23 18:30:46.551188+00
-752	forms	0052_rename_cached_default_dimensions_survey_cached_default_response_dimensions_and_more	2025-07-23 18:30:46.948983+00
-753	forms	0053_surveydefaultinvolvementdimensionvalue	2025-07-23 18:30:47.060632+00
-754	program_v2	0039_programv2eventmeta_default_registry	2025-07-23 18:30:47.173991+00
-755	involvement	0002_invitation_and_more	2025-07-23 18:30:48.72466+00
-756	involvement	0003_involvement_involvement_gin	2025-07-23 18:30:48.793004+00
-757	involvement	0004_invitation_cached_dimensions	2025-07-23 18:30:48.812441+00
-758	involvement	0005_alter_involvement_universe_involvementtobadgemapping_and_more	2025-07-23 18:30:49.149252+00
-759	kotaeexpo2025	0003_alter_signupextra_total_work	2025-07-23 18:30:49.413567+00
-760	program_v2	0040_scheduleitemdimensionvalue_and_more	2025-07-23 18:30:50.827831+00
-761	program_v2	0041_auto_20250625_2128	2025-07-23 18:30:50.943368+00
-762	program_v2	0042_annotation_eventannotation_and_more	2025-07-23 18:30:51.179159+00
-763	program_v2	0043_remove_eventannotation_id_and_more	2025-07-23 18:30:51.820638+00
-764	program_v2	0044_nuke_eventannotation	2025-07-23 18:30:51.937218+00
-765	programme	0135_remove_invitation_created_by_and_more	2025-07-23 18:30:52.873003+00
-766	ropecon2025	0002_remove_signupextra_certificate_delivery_address_and_more	2025-07-23 18:30:53.601387+00
-767	tickets_v2	0002_product_ordering_alter_paymentstamp_type_and_more	2025-07-23 18:30:53.804021+00
-768	tickets_v2	0003_ticketsv2eventmeta_terms_and_conditions_url_en_and_more	2025-07-23 18:30:54.192068+00
-769	tickets_v2	0004_alter_ticketsv2eventmeta_provider_id_and_more	2025-07-23 18:30:54.476265+00
-770	tickets_v2	0005_ticketsv2eventmeta_contact_email	2025-07-23 18:30:54.548581+00
-771	tickets_v2	0006_alter_ticketsv2eventmeta_contact_email	2025-07-23 18:30:54.620462+00
-772	tickets_v2	0007_no_receipt_on_cancel	2025-07-23 18:30:54.6227+00
-773	tracon2024	0007_delete_signupextraafterpartyproxy	2025-07-23 18:30:54.62421+00
-774	tracon2025	0003_remove_signupextra_certificate_delivery_address_and_more	2025-07-23 18:30:55.055877+00
-775	tracon2025	0004_alter_signupextra_shirt_size	2025-07-23 18:30:55.138844+00
+1	contenttypes	0001_initial	2026-09-02 21:57:29.44937+00
+2	auth	0001_initial	2026-09-02 21:57:29.464664+00
+3	core	0001_initial	2026-09-02 21:57:29.488166+00
+4	core	0002_auto_20150126_1611	2026-09-02 21:57:29.492055+00
+5	core	0003_auto_20150813_1907	2026-09-02 21:57:29.496671+00
+6	core	0004_organization	2026-09-02 21:57:29.506098+00
+7	core	0005_auto_20151008_2225	2026-09-02 21:57:29.5144+00
+8	core	0006_organization_description	2026-09-02 21:57:29.517625+00
+9	core	0007_organization_logo_url	2026-09-02 21:57:29.521093+00
+10	core	0008_person_muncipality	2026-09-02 21:57:29.526637+00
+11	core	0009_auto_20151010_1632	2026-09-02 21:57:29.531669+00
+12	core	0010_organization_public	2026-09-02 21:57:29.535187+00
+13	core	0011_organization_muncipality	2026-09-02 21:57:29.538023+00
+14	core	0012_auto_20151011_1926	2026-09-02 21:57:29.552022+00
+15	core	0013_auto_20151011_2005	2026-09-02 21:57:29.562467+00
+16	core	0014_auto_20151011_2016	2026-09-02 21:57:29.567193+00
+17	core	0015_organization_name_genitive	2026-09-02 21:57:29.574003+00
+18	core	0016_person_allow_work_history_sharing	2026-09-02 21:57:29.578695+00
+19	core	0017_remove_event_headline	2026-09-02 21:57:29.581768+00
+20	core	0018_auto_20160124_1447	2026-09-02 21:57:29.587424+00
+21	core	0019_auto_20160129_2140	2026-09-02 21:57:29.600833+00
+22	core	0020_auto_20160131_2044	2026-09-02 21:57:29.605279+00
+23	core	0021_auto_20160202_1950	2026-09-02 21:57:29.609802+00
+24	core	0022_auto_20160202_2235	2026-09-02 21:57:29.615926+00
+25	core	0023_auto_20160704_2155	2026-09-02 21:57:29.625363+00
+26	core	0024_carouselslide	2026-09-02 21:57:29.628042+00
+27	core	0025_auto_20170722_1954	2026-09-02 21:57:29.630497+00
+28	core	0026_auto_20170722_1958	2026-09-02 21:57:29.632228+00
+29	core	0027_event_panel_css_class	2026-09-02 21:57:29.635874+00
+30	core	0028_auto_20170802_1453	2026-09-02 21:57:29.638237+00
+31	core	0029_auto_20170827_1818	2026-09-02 21:57:29.640924+00
+32	core	0030_auto_20180926_1252	2026-09-02 21:57:29.648199+00
+33	core	0031_person_badge_name_display_style	2026-09-02 21:57:29.661649+00
+34	core	0032_event_timestamps	2026-09-02 21:57:29.66631+00
+35	core	0033_auto_20191111_1851	2026-09-02 21:57:29.671618+00
+36	core	0034_event_cancelled	2026-09-02 21:57:29.674701+00
+37	core	0035_person_discord_handle	2026-09-02 21:57:29.679572+00
+38	core	0036_remove_event_panel_css_class_and_more	2026-09-02 21:57:29.689424+00
+39	core	0037_alter_organization_panel_css_class	2026-09-02 21:57:29.692104+00
+40	core	0038_alter_person_discord_handle	2026-09-02 21:57:29.696196+00
+41	core	0039_alter_person_birth_date_alter_person_email_and_more	2026-09-02 21:57:29.710327+00
+42	core	0040_rename_emailverificationtoken_person_state_core_emailv_person__722147_idx_and_more	2026-09-02 21:57:29.723129+00
+43	core	0041_event_timezone_name	2026-09-02 21:57:29.726802+00
+44	core	0042_alter_event_slug_alter_organization_slug	2026-09-02 21:57:29.730135+00
+45	core	0043_emailverificationtoken_language_and_more	2026-09-02 21:57:29.736691+00
+46	contenttypes	0002_remove_content_type_name	2026-09-02 21:57:29.747671+00
+47	auth	0002_alter_permission_name_max_length	2026-09-02 21:57:29.753551+00
+48	auth	0003_alter_user_email_max_length	2026-09-02 21:57:29.757557+00
+49	auth	0004_alter_user_username_opts	2026-09-02 21:57:29.761247+00
+50	auth	0005_alter_user_last_login_null	2026-09-02 21:57:29.765362+00
+51	auth	0006_require_contenttypes_0002	2026-09-02 21:57:29.766647+00
+52	auth	0007_alter_validators_add_error_messages	2026-09-02 21:57:29.770476+00
+53	auth	0008_alter_user_username_max_length	2026-09-02 21:57:29.774798+00
+54	auth	0009_alter_user_last_name_max_length	2026-09-02 21:57:29.779008+00
+55	auth	0010_alter_group_name_max_length	2026-09-02 21:57:29.78379+00
+56	auth	0011_update_proxy_permissions	2026-09-02 21:57:29.789426+00
+57	access	0001_initial	2026-09-02 21:57:29.824325+00
+58	access	0002_grantedprivilege_state	2026-09-02 21:57:29.83027+00
+59	access	0003_slackaccess	2026-09-02 21:57:29.843467+00
+60	access	0004_descriptions	2026-09-02 21:57:29.850009+00
+61	access	0005_email_aliases	2026-09-02 21:57:29.909587+00
+62	access	0006_group_grant_active_until	2026-09-02 21:57:29.925088+00
+63	access	0007_accessorganizationmeta	2026-09-02 21:57:29.937042+00
+64	access	0008_smtp	2026-09-02 21:57:29.969852+00
+65	access	0009_privilege_disclaimers	2026-09-02 21:57:29.974785+00
+66	access	0010_auto_20151106_1500	2026-09-02 21:57:29.981671+00
+67	access	0011_auto_20160202_2235	2026-09-02 21:57:29.98688+00
+68	access	0012_auto_20160607_2224	2026-09-02 21:57:30.266141+00
+69	access	0013_auto_20160608_0018	2026-09-02 21:57:30.295424+00
+70	access	0014_emailaliastype_priority	2026-09-02 21:57:30.301063+00
+71	access	0015_auto_20170416_2044	2026-09-02 21:57:30.304938+00
+72	access	0016_auto_20190119_2213	2026-09-02 21:57:30.326183+00
+73	access	0017_privilege_url	2026-09-02 21:57:30.331258+00
+74	access	0018_cbacentry	2026-09-02 21:57:30.358584+00
+75	access	0019_auto_20211013_1702	2026-09-02 21:57:30.365444+00
+76	access	0020_alter_cbacentry_index_together_remove_cbacentry_mode	2026-09-02 21:57:30.390926+00
+77	access	0021_rename_cbacentry_user_valid_until_access_cbac_user_id_928971_idx	2026-09-02 21:57:30.40196+00
+78	access	0022_alter_privilege_slug	2026-09-02 21:57:30.406131+00
+79	access	0023_alter_privilege_slug	2026-09-02 21:57:30.410588+00
+80	access	0024_alter_emailaliasdomain_options_and_more	2026-09-02 21:57:30.460239+00
+81	access	0025_remove_emailaliastype_account_name_code_and_more	2026-09-02 21:57:30.469218+00
+82	access	0026_alter_privilege_options_remove_privilege_grant_code_and_more	2026-09-02 21:57:30.475369+00
+83	access	0027_alter_internalemailalias_options_and_more	2026-09-02 21:57:30.525764+00
+84	admin	0001_initial	2026-09-02 21:57:30.544549+00
+85	admin	0002_logentry_remove_auto_add	2026-09-02 21:57:30.550461+00
+86	admin	0003_logentry_add_action_flag_choices	2026-09-02 21:57:30.556007+00
+87	auth	0012_alter_user_first_name_max_length	2026-09-02 21:57:30.563494+00
+88	program_v2	0001_initial	2026-09-02 21:57:30.649394+00
+89	program_v2	0002_emconcisen	2026-09-02 21:57:30.70979+00
+90	forms	0001_initial	2026-09-02 21:57:30.758803+00
+91	forms	0002_form_layout	2026-09-02 21:57:30.769426+00
+92	forms	0003_form_login_required	2026-09-02 21:57:30.78269+00
+93	forms	0004_auto_20191126_1758	2026-09-02 21:57:30.794984+00
+94	forms	0005_auto_20191129_1020	2026-09-02 21:57:30.825421+00
+95	forms	0006_formresponse	2026-09-02 21:57:30.847667+00
+96	forms	0007_eventform_eventformresponse_globalform_and_more	2026-09-02 21:57:30.939798+00
+97	program_v2	0003_offerform_offerformlanguage	2026-09-02 21:57:30.970845+00
+98	forms	0008_eventform_language_globalform_language	2026-09-02 21:57:30.984659+00
+99	program_v2	0004_offerform_languages_delete_offerformlanguage	2026-09-02 21:57:31.011533+00
+100	program_v2	0005_program_created_by	2026-09-02 21:57:31.028761+00
+101	program_v2	0006_offerform_active_from_offerform_active_until	2026-09-02 21:57:31.040865+00
+102	program_v2	0007_programv2eventmeta_skip_offer_form_selection	2026-09-02 21:57:31.050562+00
+103	program_v2	0008_alter_dimension_title_alter_dimensionvalue_title	2026-09-02 21:57:31.059364+00
+104	program_v2	0009_alter_dimension_title_alter_dimensionvalue_title_and_more	2026-09-02 21:57:31.073016+00
+105	program_v2	0010_programv2eventmeta_importer_name	2026-09-02 21:57:31.084565+00
+106	program_v2	0011_program_favorited_by_and_more	2026-09-02 21:57:31.115289+00
+107	program_v2	0012_scheduleitem_cached_end_time	2026-09-02 21:57:31.120097+00
+108	program_v2	0013_alter_scheduleitem_cached_end_time	2026-09-02 21:57:31.13691+00
+109	program_v2	0014_program_cached_earliest_start_time_and_more	2026-09-02 21:57:31.170131+00
+110	program_v2	0015_rename_override_color_dimensionvalue_color_and_more	2026-09-02 21:57:31.245964+00
+111	program_v2	0016_alter_dimension_event	2026-09-02 21:57:31.260622+00
+112	program_v2	0017_alter_dimension_options_alter_dimensionvalue_options_and_more	2026-09-02 21:57:31.411728+00
+113	program_v2	0018_rename_other_fields_program_annotations	2026-09-02 21:57:31.422585+00
+114	program_v2	0019_scheduleitem_slug	2026-09-02 21:57:31.439739+00
+115	program_v2	0020_alter_scheduleitem_options_scheduleitem_cached_event_and_more	2026-09-02 21:57:31.489431+00
+116	program_v2	0021_programv2eventmeta_is_accepting_feedback	2026-09-02 21:57:31.499767+00
+117	program_v2	0022_remove_programv2eventmeta_primary_dimension	2026-09-02 21:57:31.518154+00
+118	program_v2	0023_scheduleitem_favorited_by	2026-09-02 21:57:31.56094+00
+119	program_v2	0024_remove_program_favorited_by	2026-09-02 21:57:31.579049+00
+120	program_v2	0025_scheduleitem_created_at_scheduleitem_updated_at	2026-09-02 21:57:31.600462+00
+121	forms	0009_remove_eventform_active_and_more	2026-09-02 21:57:31.703903+00
+122	forms	0010_eventform_thank_you_message_and_more	2026-09-02 21:57:31.722377+00
+123	forms	0011_rename_values_eventformresponse_form_data_and_more	2026-09-02 21:57:31.738378+00
+124	forms	0012_alter_eventform_language_and_more	2026-09-02 21:57:31.80165+00
+125	forms	0013_remove_eventsurvey_active_and_more	2026-09-02 21:57:31.826145+00
+126	forms	0014_rename_eventsurvey_survey_delete_globalsurvey	2026-09-02 21:57:31.854891+00
+127	forms	0015_rename_globalformresponse_response_and_more	2026-09-02 21:57:31.897083+00
+128	forms	0016_rename_eventform_form_delete_globalform	2026-09-02 21:57:31.943507+00
+129	forms	0017_survey_key_fields	2026-09-02 21:57:31.953055+00
+130	forms	0018_survey_anonymity_survey_max_responses_per_user_and_more	2026-09-02 21:57:31.976873+00
+131	forms	0019_response_cached_dimensions_dimension_dimensionvalue_and_more	2026-09-02 21:57:32.062224+00
+132	forms	0020_form_cached_enriched_fields_alter_form_fields	2026-09-02 21:57:32.10201+00
+133	forms	0021_dimension_is_multi_value	2026-09-02 21:57:32.108295+00
+134	forms	0022_dimension_is_shown_to_respondent	2026-09-02 21:57:32.114521+00
+135	forms	0023_response_sequence_number	2026-09-02 21:57:32.140857+00
+136	forms	0024_alter_form_title	2026-09-02 21:57:32.158555+00
+137	forms	0025_alter_form_language	2026-09-02 21:57:32.178019+00
+138	forms	0026_survey_subscribers	2026-09-02 21:57:32.199177+00
+139	forms	0027_alter_form_layout	2026-09-02 21:57:32.216342+00
+140	forms	0028_keypair	2026-09-02 21:57:32.237056+00
+141	forms	0029_formseventmeta	2026-09-02 21:57:32.408641+00
+142	dimensions	0001_initial	2026-09-02 21:57:32.507281+00
+143	dimensions	0002_populate	2026-09-02 21:57:32.543713+00
+144	program_v2	0026_programdimensionvalue_new_value_alter_dimension_slug_and_more	2026-09-02 21:57:32.633434+00
+145	program_v2	0027_alter_programdimensionvalue_options_and_more	2026-09-02 21:57:32.674047+00
+146	program_v2	0028_remove_dimensionvalue_dimension_and_more	2026-09-02 21:57:32.812053+00
+147	program_v2	0029_alter_programdimensionvalue_options_and_more	2026-09-02 21:57:32.841432+00
+148	forms	0030_responsedimensionvalue_new_value_and_more	2026-09-02 21:57:32.918851+00
+149	forms	0031_remove_dimensionvalue_dimension_and_more	2026-09-02 21:57:33.012858+00
+150	forms	0032_rename_new_value_responsedimensionvalue_value_and_more	2026-09-02 21:57:33.02483+00
+151	program_v2	0030_delete_offerform	2026-09-02 21:57:33.043664+00
+152	forms	0033_survey_protect_responses	2026-09-02 21:57:33.05642+00
+153	forms	0034_survey_app	2026-09-02 21:57:33.067973+00
+154	forms	0035_form_survey_alter_survey_app_alter_survey_languages	2026-09-02 21:57:33.136386+00
+155	forms	0036_alter_form_unique_together_remove_survey_languages_and_more	2026-09-02 21:57:33.204474+00
+156	program_v2	0031_programform_attributes	2026-09-02 21:57:33.222243+00
+157	program_v2	0032_remove_programv2eventmeta_skip_offer_form_selection	2026-09-02 21:57:33.237332+00
+158	forms	0037_alter_survey_anonymity	2026-09-02 21:57:33.423113+00
+159	forms	0038_survey_created_at_survey_created_by_and_more	2026-09-02 21:57:33.46119+00
+160	program_v2	0033_program_program_offer_and_more	2026-09-02 21:57:33.493931+00
+161	program_v2	0034_programv2eventmeta_contact_email	2026-09-02 21:57:33.505667+00
+162	program_v2	0035_remove_programv2eventmeta_importer_name	2026-09-02 21:57:33.51584+00
+163	program_v2	0036_remove_programv2eventmeta_location_dimension	2026-09-02 21:57:33.534809+00
+164	program_v2	0037_programv2eventmeta_guide_v2_embedded_url	2026-09-02 21:57:33.548246+00
+165	program_v2	0038_alter_programv2eventmeta_contact_email	2026-09-02 21:57:33.558817+00
+166	dimensions	0003_remove_dimension_is_shown_to_subject_and_more	2026-09-02 21:57:33.567762+00
+167	dimensions	0004_alter_universe_unique_together	2026-09-02 21:57:33.587705+00
+168	dimensions	0005_alter_dimension_value_ordering	2026-09-02 21:57:33.606439+00
+169	dimensions	0006_alter_dimension_slug_alter_dimensionvalue_slug_and_more	2026-09-02 21:57:33.621418+00
+170	dimensions	0007_dimension_is_technical_dimensionvalue_is_technical	2026-09-02 21:57:33.628625+00
+171	dimensions	0008_alter_dimension_slug_alter_dimensionvalue_slug	2026-09-02 21:57:33.637963+00
+172	forms	0039_survey_cached_default_dimensions_and_more	2026-09-02 21:57:33.685828+00
+173	dimensions	0009_remove_dimensionvalue_is_initial	2026-09-02 21:57:33.690695+00
+174	dimensions	0010_alter_universe_app	2026-09-02 21:57:33.695744+00
+175	involvement	0001_initial	2026-09-02 21:57:33.804407+00
+176	program_v2	0039_programv2eventmeta_default_registry	2026-09-02 21:57:33.829011+00
+177	forms	0040_survey_registry	2026-09-02 21:57:33.849701+00
+178	forms	0041_response_cached_key_fields	2026-09-02 21:57:33.858988+00
+179	forms	0042_survey_purpose_slug_alter_survey_anonymity	2026-09-02 21:57:33.882601+00
+180	forms	0043_projection	2026-09-02 21:57:33.907971+00
+181	forms	0044_response_superseded_by_and_more	2026-09-02 21:57:33.957933+00
+182	forms	0045_rename_created_at_response_revision_created_at_and_more	2026-09-02 21:57:34.046676+00
+183	dimensions	0011_dimensionvalue_is_subject_locked	2026-09-02 21:57:34.051375+00
+184	forms	0046_rename_response_responsedimensionvalue_subject_and_more	2026-09-02 21:57:34.107314+00
+185	program_v2	0040_scheduleitemdimensionvalue_and_more	2026-09-02 21:57:34.416638+00
+186	program_v2	0041_auto_20250625_2128	2026-09-02 21:57:34.436471+00
+187	program_v2	0042_annotation_eventannotation_and_more	2026-09-02 21:57:34.479658+00
+188	program_v2	0043_remove_eventannotation_id_and_more	2026-09-02 21:57:34.546396+00
+189	program_v2	0044_nuke_eventannotation	2026-09-02 21:57:34.572179+00
+380	tickets	0012_shirtorder	2026-09-02 21:57:48.198498+00
+190	program_v2	0045_programv2eventmeta_konsti_url_and_more	2026-09-02 21:57:34.593126+00
+191	dimensions	0012_universe_app_name	2026-09-02 21:57:34.602914+00
+192	dimensions	0013_dimension_can_values_be_added	2026-09-02 21:57:34.607589+00
+193	dimensions	0014_alter_dimension_can_values_be_added	2026-09-02 21:57:34.611629+00
+194	dimensions	0015_alter_universe_scope_annotation_universeannotation	2026-09-02 21:57:34.676855+00
+195	program_v2	0046_remove_eventannotation_annotation_and_more	2026-09-02 21:57:34.721465+00
+196	program_v2	0047_scheduleitem_cached_combined_annotations	2026-09-02 21:57:34.734199+00
+197	paikkala	0001_initial	2026-09-02 21:57:34.833826+00
+198	paikkala	0002_more_limits	2026-09-02 21:57:34.842082+00
+199	paikkala	0003_row_excluded_numbers	2026-09-02 21:57:34.84868+00
+200	paikkala	0004_texts	2026-09-02 21:57:34.857357+00
+201	paikkala	0005_program_automatic_max_tickets	2026-09-02 21:57:34.861328+00
+202	paikkala	0006_perprogramblock	2026-09-02 21:57:34.88837+00
+203	paikkala	0007_excluded_numbers	2026-09-02 21:57:34.916892+00
+204	paikkala	0008_room	2026-09-02 21:57:34.974039+00
+205	paikkala	0009_default_room	2026-09-02 21:57:34.998274+00
+206	paikkala	0010_nonblank_room	2026-09-02 21:57:35.047441+00
+207	paikkala	0011_better_range	2026-09-02 21:57:35.052135+00
+208	paikkala	0012_excluded_numbers_validator	2026-09-02 21:57:35.074345+00
+209	paikkala	0013_seat_qualifiers	2026-09-02 21:57:35.111457+00
+210	paikkala	0014_unique_together	2026-09-02 21:57:35.119619+00
+211	paikkala	0015_contact_and_hidden_seats	2026-09-02 21:57:35.154761+00
+212	paikkala	0016_zone_ordering	2026-09-02 21:57:35.300783+00
+213	program_v2	0048_programv2eventmeta_paikkala_default_max_tickets_per_batch_and_more	2026-09-02 21:57:35.355306+00
+214	dimensions	0016_alter_universeannotation_form_fields	2026-09-02 21:57:35.397079+00
+215	dimensions	0017_remove_annotation_dimensions_annotation_type_annotationdatatype_and_more	2026-09-02 21:57:35.409877+00
+216	program_v2	0049_scheduleitem_paikkala_special_reservation_code_and_more	2026-09-02 21:57:35.483564+00
+217	program_v2	0050_rename_room_dimension_value_paikkalaroommapping_paikkala_dimension_value_and_more	2026-09-02 21:57:35.506278+00
+218	program_v2	0051_scheduleitem_paikkala_icon	2026-09-02 21:57:35.521387+00
+219	program_v2	0052_programv2eventmeta_public_from	2026-09-02 21:57:35.55593+00
+220	program_v2	0053_alter_programv2eventmeta_public_from	2026-09-02 21:57:35.568129+00
+221	labour	0001_initial	2026-09-02 21:57:36.049212+00
+222	labour	0002_auto_20141115_1102	2026-09-02 21:57:36.353764+00
+223	badges	0001_initial	2026-09-02 21:57:36.593612+00
+224	labour	0003_populate_pclasses	2026-09-02 21:57:36.628909+00
+225	labour	0004_auto_20141115_1337	2026-09-02 21:57:36.662378+00
+226	labour	0005_jobcategory_app_label	2026-09-02 21:57:36.678506+00
+227	labour	0006_auto_20141115_1348	2026-09-02 21:57:36.747559+00
+228	labour	0007_jobcategory_personnel_classes	2026-09-02 21:57:36.786513+00
+229	labour	0008_auto_20150419_1438	2026-09-02 21:57:36.819728+00
+230	labour	0009_remove_signup_work_periods	2026-09-02 21:57:36.855045+00
+231	labour	0010_auto_20150929_1545	2026-09-02 21:57:36.890889+00
+232	labour	0011_job_slug	2026-09-02 21:57:36.905964+00
+233	labour	0012_auto_20151017_0012	2026-09-02 21:57:36.939329+00
+234	labour	0013_signup_time_confirmation_requested	2026-09-02 21:57:36.958993+00
+235	labour	0014_auto_20151108_1906	2026-09-02 21:57:36.992543+00
+236	labour	0015_auto_20160124_2328	2026-09-02 21:57:37.326865+00
+237	labour	0016_auto_20160128_1805	2026-09-02 21:57:37.346635+00
+238	labour	0017_auto_20160201_0050	2026-09-02 21:57:37.380692+00
+239	labour	0018_auto_20160202_2235	2026-09-02 21:57:37.526912+00
+240	labour	0019_auto_20160207_2330	2026-09-02 21:57:37.760937+00
+241	labour	0020_signup_job_categories_rejected	2026-09-02 21:57:37.796684+00
+242	labour	0021_auto_20160306_1125	2026-09-02 21:57:37.82764+00
+243	labour	0022_rename_empty_signup_extra	2026-09-02 21:57:37.863078+00
+244	labour	0023_auto_20160406_1828	2026-09-02 21:57:37.909858+00
+245	labour	0024_emptysignupextra	2026-09-02 21:57:37.942383+00
+246	labour	0025_auto_20160406_2144	2026-09-02 21:57:38.111362+00
+247	labour	0015_shift	2026-09-02 21:57:38.147176+00
+248	labour	0016_auto_20151205_1321	2026-09-02 21:57:38.154508+00
+249	labour	0026_merge	2026-09-02 21:57:38.155691+00
+250	labour	0027_auto_20160505_2233	2026-09-02 21:57:38.370539+00
+251	labour	0028_auto_20160608_0018	2026-09-02 21:57:38.387735+00
+252	labour	0029_auto_20160608_2309	2026-09-02 21:57:38.404726+00
+253	labour	0030_auto_20160716_1419	2026-09-02 21:57:38.493779+00
+254	labour	0031_surveyrecord	2026-09-02 21:57:38.529127+00
+255	labour	0032_survey_override_does_not_apply_message	2026-09-02 21:57:38.544265+00
+256	labour	0033_auto_20170802_1500	2026-09-02 21:57:38.591989+00
+257	labour	0034_archivedsignup	2026-09-02 21:57:38.633505+00
+258	labour	0035_remove_personnelclass_perks_and_more	2026-09-02 21:57:39.005943+00
+259	labour	0036_alter_survey_event	2026-09-02 21:57:39.041455+00
+260	labour	0037_rename_personnelclass_event_app_label_labour_pers_event_i_49de47_idx	2026-09-02 21:57:39.069959+00
+261	emprinten	0001_initial	2026-09-02 21:57:39.085579+00
+262	labour	0038_laboureventmeta_work_certificate_pdf_project	2026-09-02 21:57:39.122173+00
+263	labour	0039_remove_personnelclass_perks_markdown_and_more	2026-09-02 21:57:39.306613+00
+264	labour	0040_alter_alternativesignupform_signup_extra_form_class_path	2026-09-02 21:57:39.320503+00
+265	labour	0041_alter_alternativesignupform_slug_alter_job_slug_and_more	2026-09-02 21:57:39.456424+00
+266	labour	0042_signup_override_formatted_perks	2026-09-02 21:57:39.477332+00
+267	labour	0043_alter_personnelclass_event	2026-09-02 21:57:39.512153+00
+268	involvement	0002_invitation_and_more	2026-09-02 21:57:39.957537+00
+269	involvement	0003_involvement_involvement_gin	2026-09-02 21:57:39.978872+00
+270	involvement	0004_invitation_cached_dimensions	2026-09-02 21:57:39.993043+00
+271	involvement	0005_alter_involvement_universe_involvementtobadgemapping_and_more	2026-09-02 21:57:40.107354+00
+272	forms	0047_survey_universe	2026-09-02 21:57:40.18159+00
+273	forms	0048_alter_survey_universe	2026-09-02 21:57:40.220287+00
+274	forms	0049_survey_cached_default_involvement_dimensions	2026-09-02 21:57:40.24567+00
+275	forms	0050_alter_survey_app_name	2026-09-02 21:57:40.282799+00
+276	forms	0051_rename_surveydefaultdimensionvalue_surveydefaultresponsedimensionvalue	2026-09-02 21:57:40.331686+00
+277	forms	0052_rename_cached_default_dimensions_survey_cached_default_response_dimensions_and_more	2026-09-02 21:57:40.408025+00
+278	forms	0053_surveydefaultinvolvementdimensionvalue	2026-09-02 21:57:40.453958+00
+279	involvement	0006_involvementeventmeta_involvement_annotations_and_more	2026-09-02 21:57:40.888967+00
+280	involvement	0007_involvement_title	2026-09-02 21:57:40.91525+00
+281	involvement	0008_involvementtobadgemapping_job_title_mode_and_more	2026-09-02 21:57:40.938589+00
+282	involvement	0009_involvementeventmeta_shirts_frozen_at	2026-09-02 21:57:40.95731+00
+283	involvement	0010_involvementeventmeta_admin_group	2026-09-02 21:57:41.079232+00
+284	forms	0054_projection_special_fields	2026-09-02 21:57:41.089221+00
+285	forms	0055_rename_survey_key_fields_cached_key_fields	2026-09-02 21:57:41.20502+00
+286	forms	0056_rename_program_v2_app_value_to_program	2026-09-02 21:57:41.242429+00
+287	dimensions	0018_rename_program_v2_app_value_to_program	2026-09-02 21:57:41.283936+00
+288	dimensions	0019_rename_universe_app_name_to_app	2026-09-02 21:57:41.309359+00
+289	core	0044_organization_business_id	2026-09-02 21:57:41.315136+00
+290	forms	0057_rename_survey_app_name_purpose_slug	2026-09-02 21:57:41.535802+00
+291	involvement	0011_remove_involvement_involvement_involvement_app_involvementapp_and_more	2026-09-02 21:57:41.765172+00
+292	involvement	0012_alter_involvement_response	2026-09-02 21:57:41.806676+00
+293	involvement	0013_registry_default_retention_period	2026-09-02 21:57:41.815856+00
+294	badges	0002_personnel_class	2026-09-02 21:57:41.898662+00
+295	badges	0003_populate_personnel_class	2026-09-02 21:57:41.976883+00
+296	badges	0004_remove_template	2026-09-02 21:57:42.059961+00
+297	badges	0005_badge_layout	2026-09-02 21:57:42.14034+00
+298	badges	0006_badgeseventmeta_real_name_must_be_visible	2026-09-02 21:57:42.15983+00
+299	badges	0007_remove_badgeseventmeta_badge_factory_code	2026-09-02 21:57:42.182162+00
+300	badges	0008_auto_20160129_1838	2026-09-02 21:57:42.411903+00
+301	badges	0009_add_denormalized_fields	2026-09-02 21:57:42.489316+00
+302	badges	0010_populate_denormalized_fields	2026-09-02 21:57:42.740545+00
+303	badges	0011_make_denormalized_fields_mandatory	2026-09-02 21:57:42.779052+00
+304	badges	0012_delete_spurious_badges	2026-09-02 21:57:42.819326+00
+305	badges	0013_make_personnel_class_mandatory	2026-09-02 21:57:42.858482+00
+306	badges	0014_auto_20160129_2230	2026-09-02 21:57:42.885685+00
+307	badges	0015_auto_20160129_2245	2026-09-02 21:57:43.002192+00
+308	badges	0016_auto_20160129_2339	2026-09-02 21:57:43.021401+00
+309	badges	0017_badgemanagementproxy	2026-09-02 21:57:43.024233+00
+310	badges	0018_badge_arrived_at	2026-09-02 21:57:43.047169+00
+311	badges	0019_auto_20160627_2018	2026-09-02 21:57:43.109344+00
+312	badges	0020_auto_20160706_2207	2026-09-02 21:57:43.129379+00
+313	badges	0021_auto_20170830_2237	2026-09-02 21:57:43.25426+00
+314	badges	0022_badge_notes	2026-09-02 21:57:43.27529+00
+315	badges	0023_remove_badgeseventmeta_is_using_fuzzy_reissuance_hack	2026-09-02 21:57:43.292927+00
+316	badges	0024_badgeseventmeta_onboarding_access_group_and_more	2026-09-02 21:57:43.365908+00
+317	badges	0025_badgeseventmeta_onboarding_instructions_markdown	2026-09-02 21:57:43.383445+00
+318	badges	0026_remove_badgeseventmeta_badge_layout	2026-09-02 21:57:43.402738+00
+319	badges	0027_badge_perks_badgeseventmeta_emperkelator_name	2026-09-02 21:57:43.437431+00
+320	badges	0028_remove_badgeseventmeta_onboarding_instructions_markdown_and_more	2026-09-02 21:57:43.640923+00
+321	badges	0029_surveytobadgemapping	2026-09-02 21:57:43.680639+00
+322	badges	0030_alter_surveytobadgemapping_options_and_more	2026-09-02 21:57:43.717127+00
+323	badges	0031_alter_badgeseventmeta_emperkelator_name	2026-09-02 21:57:43.735761+00
+324	badges	0032_remove_badgeseventmeta_emperkelator_name	2026-09-02 21:57:43.753805+00
+325	badges	0033_alter_badge_job_title	2026-09-02 21:57:43.774983+00
+326	badges	0034_badgeseventmeta_registry	2026-09-02 21:57:43.814151+00
+327	core	0045_person_program_role_retention_policy	2026-09-02 21:57:43.833373+00
+328	enrollment	0001_initial	2026-09-02 21:57:43.987892+00
+329	enrollment	0002_enrollmenteventmeta_override_enrollment_form_message	2026-09-02 21:57:44.007085+00
+330	enrollment	0003_auto_20170417_2259	2026-09-02 21:57:44.046413+00
+331	enrollment	0004_auto_20170926_1851	2026-09-02 21:57:44.184179+00
+332	enrollment	0005_auto_20170928_1334	2026-09-02 21:57:44.27136+00
+333	enrollment	0006_auto_20190120_1555	2026-09-02 21:57:44.601573+00
+334	enrollment	0007_auto_20190212_1708	2026-09-02 21:57:44.669941+00
+335	enrollment	0008_auto_20190409_2051	2026-09-02 21:57:44.694183+00
+336	enrollment	0009_alter_enrollment_is_public_and_more	2026-09-02 21:57:44.754724+00
+337	cosmocon2025	0001_initial	2026-09-02 21:57:44.797164+00
+338	cosmocon2026	0001_initial	2026-09-02 21:57:44.840903+00
+339	cosvision2023	0001_initial	2026-09-02 21:57:44.886988+00
+340	desucon2019	0001_initial	2026-09-02 21:57:44.971997+00
+341	desucon2019	0002_auto_20190102_1625	2026-09-02 21:57:44.99516+00
+342	desucon2019	0003_auto_20190909_2157	2026-09-02 21:57:45.041583+00
+343	desucon2019	0004_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:57:45.160427+00
+344	desucon2020	0001_initial	2026-09-02 21:57:45.420354+00
+345	desucon2020	0002_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:57:45.541403+00
+346	desucon2022	0001_initial	2026-09-02 21:57:45.58867+00
+347	desucon2022	0002_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:57:45.723458+00
+348	desucon2023	0001_initial	2026-09-02 21:57:45.773831+00
+349	desucon2024	0001_initial	2026-09-02 21:57:45.823277+00
+350	desucon2024	0002_alter_signupextra_shirt_size	2026-09-02 21:57:45.850084+00
+351	desucon2024	0003_signupextra_accommodation	2026-09-02 21:57:45.877206+00
+352	desucon2024	0004_poison_signupextra_gender_segregation_and_more	2026-09-02 21:57:45.951278+00
+353	desucon2025	0001_initial	2026-09-02 21:57:46.004589+00
+354	desucon2026	0001_initial	2026-09-02 21:57:46.230842+00
+355	desucon2026	0002_alter_signupextra_total_work	2026-09-02 21:57:46.260573+00
+356	desuprofile_integration	0001_initial	2026-09-02 21:57:46.375007+00
+357	desuprofile_integration	0002_confirmationcode_next_url	2026-09-02 21:57:46.394285+00
+358	desuprofile_integration	0003_auto_20151016_2135	2026-09-02 21:57:46.423135+00
+359	desuprofile_integration	0004_auto_20151108_1905	2026-09-02 21:57:46.476345+00
+360	desuprofile_integration	0005_auto_20160124_2328	2026-09-02 21:57:46.49715+00
+361	desuprofile_integration	0006_auto_20190909_2157	2026-09-02 21:57:46.508728+00
+362	desuprofile_integration	0007_rename_confirmationcode_person_state_desuprofile_person__372366_idx	2026-09-02 21:57:46.54478+00
+363	desuprofile_integration	0008_confirmationcode_language	2026-09-02 21:57:46.565981+00
+364	directory	0001_initial	2026-09-02 21:57:46.716622+00
+365	directory	0002_remove_directoryorganizationmeta_organization_and_more	2026-09-02 21:57:46.769563+00
+366	emprinten	0002_alter_projectfile_file_name_and_more	2026-09-02 21:57:46.780504+00
+367	emprinten	0003_project_event_alter_project_slug	2026-09-02 21:57:46.853974+00
+368	emprinten	0004_renderresult	2026-09-02 21:57:47.069257+00
+369	tickets	0001_initial	2026-09-02 21:57:47.425641+00
+370	tickets	0002_ticketseventmeta_front_page_text	2026-09-02 21:57:47.454501+00
+371	tickets	0003_auto_20141201_0013	2026-09-02 21:57:47.463796+00
+372	tickets	0004_auto_20150125_1601	2026-09-02 21:57:47.467325+00
+373	tickets	0005_auto_20150208_1455	2026-09-02 21:57:47.551852+00
+374	tickets	0006_ticketseventmeta_receipt_footer	2026-09-02 21:57:47.580511+00
+375	tickets	0007_accommodation_v3	2026-09-02 21:57:47.84548+00
+376	tickets	0008_auto_20151108_1905	2026-09-02 21:57:47.85393+00
+377	tickets	0009_accom_limit_group_refactor	2026-09-02 21:57:48.00734+00
+378	tickets	0010_product_requires_shirt_size	2026-09-02 21:57:48.036146+00
+379	tickets	0011_auto_20160216_2116	2026-09-02 21:57:48.142899+00
+381	tickets	0013_auto_20160216_2208	2026-09-02 21:57:48.23336+00
+382	tickets	0014_auto_20160305_1902	2026-09-02 21:57:48.298649+00
+383	tickets	0015_auto_20160608_0023	2026-09-02 21:57:48.330116+00
+384	tickets	0016_remove_ticketseventmeta_plain_contact_email	2026-09-02 21:57:48.360074+00
+385	tickets	0017_auto_20160608_2309	2026-09-02 21:57:48.390682+00
+386	tickets	0018_auto_20160610_0005	2026-09-02 21:57:48.723673+00
+387	tickets	0019_auto_20160704_2222	2026-09-02 21:57:48.733772+00
+388	tickets	0020_auto_20160706_2207	2026-09-02 21:57:48.739814+00
+389	tickets	0021_auto_20161211_1549	2026-09-02 21:57:49.576764+00
+390	tickets	0022_orderproduct_unique_together	2026-09-02 21:57:49.586643+00
+391	tickets	0023_auto_20180212_2301	2026-09-02 21:57:49.649811+00
+392	tickets	0024_ticketseventmeta_pos_access_group	2026-09-02 21:57:49.709482+00
+393	tickets	0025_auto_20181130_0739	2026-09-02 21:57:49.7142+00
+394	tickets	0026_auto_20200723_1925	2026-09-02 21:57:49.746255+00
+395	tickets	0027_auto_20220316_2255	2026-09-02 21:57:49.812036+00
+396	tickets	0028_ticketseventmeta_terms_and_conditions_url	2026-09-02 21:57:49.84806+00
+397	tickets	0029_auto_20220418_1531	2026-09-02 21:57:49.886706+00
+398	tickets	0030_auto_20220418_1553	2026-09-02 21:57:49.918842+00
+399	tickets	0031_alter_ticketseventmeta_event_and_more	2026-09-02 21:57:50.034684+00
+400	tickets	0032_accommodationinformation_is_present_and_more	2026-09-02 21:57:50.048896+00
+401	surveys	0001_initial	2026-09-02 21:57:50.484919+00
+402	surveys	0002_auto_20170321_2103	2026-09-02 21:57:50.519902+00
+403	feedback	0001_initial	2026-09-02 21:57:50.580514+00
+404	event_log	0001_initial	2026-09-02 21:57:50.719719+00
+405	event_log	0002_auto_20170416_2048	2026-09-02 21:57:51.024894+00
+406	event_log	0003_subscription_event_survey_filter	2026-09-02 21:57:51.087384+00
+407	event_log	0004_entry_context	2026-09-02 21:57:51.12667+00
+408	event_log	0005_entry_person	2026-09-02 21:57:51.416951+00
+409	event_log	0006_auto_20170915_1845	2026-09-02 21:57:51.525181+00
+410	event_log	0007_entry_ip_address	2026-09-02 21:57:51.568668+00
+411	event_log	0008_subscription_job_category_filter	2026-09-02 21:57:51.630927+00
+412	event_log	0009_entry_other_fields	2026-09-02 21:57:51.673269+00
+413	event_log	0010_entry_accommodation_information_entry_limit_group_and_more	2026-09-02 21:57:51.864243+00
+414	event_log	0011_remove_entry_event_survey_result_and_more	2026-09-02 21:57:52.04851+00
+415	event_log	0012_rename_subscription_entry_type_active_event_log_s_entry_t_25fbf1_idx	2026-09-02 21:57:52.298805+00
+416	event_log	0013_alter_entry_created_by_delete_subscription	2026-09-02 21:57:52.36003+00
+417	event_log	0014_remove_entry_feedback_message	2026-09-02 21:57:52.418841+00
+418	event_log	0015_remove_entry_accommodation_information	2026-09-02 21:57:52.476999+00
+419	event_log_v2	0001_initial	2026-09-02 21:57:52.533046+00
+420	event_log_v2	0002_subscription	2026-09-02 21:57:52.592199+00
+421	feedback	0002_delete_feedbackmessage	2026-09-02 21:57:52.594916+00
+422	finncon2018	0001_initial	2026-09-02 21:57:52.708049+00
+423	finncon2018	0002_auto_20180429_2012	2026-09-02 21:57:52.724088+00
+424	finncon2018	0003_auto_20180611_1943	2026-09-02 21:57:52.738972+00
+425	finncon2018	0004_alter_signupextra_signup	2026-09-02 21:57:52.795081+00
+426	finncon2019	0001_initial	2026-09-02 21:57:52.916518+00
+427	finncon2019	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:57:53.216771+00
+428	finncon2020	0001_initial	2026-09-02 21:57:53.340001+00
+429	finncon2020	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:57:53.453151+00
+430	finncon2022	0001_initial	2026-09-02 21:57:53.51764+00
+431	finncon2022	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:57:53.632225+00
+432	finncon2023	0001_initial	2026-09-02 21:57:53.697607+00
+433	forms	0058_survey_retention_period	2026-09-02 21:57:53.740028+00
+434	frostbite2019	0001_initial	2026-09-02 21:57:54.052223+00
+435	frostbite2019	0002_auto_20190102_1626	2026-09-02 21:57:54.090174+00
+436	frostbite2019	0003_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:57:54.266845+00
+437	frostbite2020	0001_initial	2026-09-02 21:57:54.398325+00
+438	frostbite2020	0002_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:57:54.576256+00
+439	frostbite2023	0001_initial	2026-09-02 21:57:54.827015+00
+440	frostbite2024	0001_initial	2026-09-02 21:57:54.896312+00
+441	frostbite2024	0002_alter_signupextra_shirt_size	2026-09-02 21:57:54.935025+00
+442	frostbite2024	0003_signupextra_accommodation	2026-09-02 21:57:54.975976+00
+443	frostbite2025	0001_initial	2026-09-02 21:57:55.058234+00
+444	frostbite2026	0001_initial	2026-09-02 21:57:55.134748+00
+445	frostbite2027	0001_initial	2026-09-02 21:57:55.212889+00
+446	hitpoint2017	0001_initial	2026-09-02 21:57:55.353928+00
+447	hitpoint2017	0002_signupextra_is_active	2026-09-02 21:57:55.364575+00
+448	hitpoint2017	0003_timeslot	2026-09-02 21:57:55.368888+00
+449	hitpoint2017	0004_auto_20170122_1920	2026-09-02 21:57:55.379986+00
+450	hitpoint2017	0005_delete_signupextra	2026-09-02 21:57:55.383624+00
+451	hitpoint2019	0001_initial	2026-09-02 21:57:55.685212+00
+452	hitpoint2019	0002_auto_20190909_2157	2026-09-02 21:57:55.695355+00
+453	hitpoint2019	0003_signupextra_shirt_size	2026-09-02 21:57:55.70539+00
+454	hitpoint2019	0004_auto_20200212_2149	2026-09-02 21:57:55.714676+00
+455	hitpoint2019	0005_alter_signupextra_signup	2026-09-02 21:57:55.781965+00
+456	hitpoint2020	0001_initial	2026-09-02 21:57:55.879432+00
+457	hitpoint2020	0002_remove_signupextra_overseer	2026-09-02 21:57:55.890532+00
+458	hitpoint2020	0003_auto_20201227_1620	2026-09-02 21:57:55.900945+00
+459	hitpoint2020	0004_alter_signupextra_signup	2026-09-02 21:57:55.970124+00
+460	hitpoint2023	0001_initial	2026-09-02 21:57:56.045239+00
+461	hitpoint2024	0001_initial	2026-09-02 21:57:56.130499+00
+462	hitpoint2024	0002_alter_signupextra_shirt_size	2026-09-02 21:57:56.14247+00
+463	hitpoint2024	0003_delete_signupextra	2026-09-02 21:57:56.145923+00
+464	hitpoint2024	0004_signupextra	2026-09-02 21:57:56.222228+00
+465	hypecon2019	0001_initial	2026-09-02 21:57:56.547533+00
+466	hypecon2019	0002_signupextra_want_certificate	2026-09-02 21:57:56.593255+00
+467	hypecon2019	0003_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:57:56.730786+00
+468	hypecon2020	0001_initial	2026-09-02 21:57:56.877237+00
+469	hypecon2020	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:57:57.020212+00
+470	intra	0001_initial	2026-09-02 21:57:57.520481+00
+471	intra	0002_auto_20161020_2143	2026-09-02 21:57:57.59559+00
+472	intra	0003_team_email	2026-09-02 21:57:57.642578+00
+473	intra	0004_teammember_override_name_display_style	2026-09-02 21:57:57.674878+00
+474	intra	0005_teammember_override_job_title	2026-09-02 21:57:57.708113+00
+475	intra	0006_auto_20171113_2158	2026-09-02 21:57:58.088354+00
+476	intra	0007_team_is_public	2026-09-02 21:57:58.132706+00
+477	intra	0008_alter_intraeventmeta_event	2026-09-02 21:57:58.214509+00
+478	intra	0009_intraeventmeta_is_organizer_list_public	2026-09-02 21:57:58.259488+00
+479	intra	0010_alter_team_slug	2026-09-02 21:57:58.302632+00
+480	kotaeexpo2024	0001_initial	2026-09-02 21:57:58.383037+00
+481	kotaeexpo2024	0002_signupextra_night_shift_alter_signupextra_total_work	2026-09-02 21:57:58.47469+00
+482	kotaeexpo2024	0003_accommodation_knownlanguage_and_more	2026-09-02 21:57:58.888987+00
+483	kotaeexpo2024	0004_alter_signupextra_total_work	2026-09-02 21:57:58.935774+00
+484	kotaeexpo2024	0005_accessibilitywarning_timeslot	2026-09-02 21:57:58.941599+00
+485	kotaeexpo2024	0006_alter_signupextra_email_alias	2026-09-02 21:57:58.987879+00
+486	kotaeexpo2025	0001_initial	2026-09-02 21:57:59.078267+00
+487	kotaeexpo2025	0002_alter_signupextra_email_alias	2026-09-02 21:57:59.12559+00
+488	kotaeexpo2025	0003_alter_signupextra_total_work	2026-09-02 21:57:59.174124+00
+489	kotaeexpo2026	0001_initial	2026-09-02 21:57:59.285525+00
+490	kuplii2018	0001_initial	2026-09-02 21:57:59.475554+00
+491	kuplii2018	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:57:59.816499+00
+492	kuplii2019	0001_initial	2026-09-02 21:57:59.984358+00
+493	kuplii2019	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:58:00.148418+00
+494	kuplii2020	0001_initial	2026-09-02 21:58:00.510891+00
+495	kuplii2020	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:58:00.670985+00
+496	kuplii2021	0001_initial	2026-09-02 21:58:00.758685+00
+497	kuplii2021	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:58:00.917889+00
+498	kuplii2022	0001_initial	2026-09-02 21:58:01.011429+00
+499	kuplii2022	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:58:01.36853+00
+500	kuplii2023	0001_initial	2026-09-02 21:58:01.458481+00
+501	kuplii2024	0001_initial	2026-09-02 21:58:01.546163+00
+502	kuplii2025	0001_initial	2026-09-02 21:58:01.635913+00
+503	kuplii2026	0001_initial	2026-09-02 21:58:01.725422+00
+504	kuplii2027	0001_initial	2026-09-02 21:58:01.816059+00
+505	labour	0044_delete_jobcategorymanagementproxy	2026-09-02 21:58:01.818876+00
+506	labour	0045_alter_signup_event_alter_signup_job_categories_and_more	2026-09-02 21:58:02.261569+00
+507	labour_common_qualifications	0001_initial	2026-09-02 21:58:02.362203+00
+508	labour_common_qualifications	0002_auto_20150521_1557	2026-09-02 21:58:02.369354+00
+509	labour_common_qualifications	0003_auto_20151220_1552	2026-09-02 21:58:02.375949+00
+510	lippukala	0001_initial	2026-09-02 21:58:02.388453+00
+511	lippukala	0002_soft_prefixes	2026-09-02 21:58:02.393418+00
+512	listings	0001_initial	2026-09-02 21:58:02.484488+00
+513	listings	0002_listing_external_events	2026-09-02 21:58:02.571836+00
+514	listings	0003_externalevent_public	2026-09-02 21:58:02.578562+00
+515	listings	0004_externalevent_logo_file	2026-09-02 21:58:02.58453+00
+516	listings	0005_externalevent_cancelled	2026-09-02 21:58:02.590601+00
+517	listings	0006_auto_20211019_2248	2026-09-02 21:58:02.679575+00
+518	listings	0007_alter_externalevent_slug	2026-09-02 21:58:02.68609+00
+519	tracon2023	0001_initial	2026-09-02 21:58:02.970331+00
+520	tracon2023	0002_accessibilitywarning_timeslot	2026-09-02 21:58:02.976586+00
+521	ropecon2023	0001_initial	2026-09-02 21:58:03.072187+00
+522	ropecon2023	0002_language_remove_signupextra_can_english_and_more	2026-09-02 21:58:03.281863+00
+523	ropecon2021	0001_initial	2026-09-02 21:58:03.379882+00
+524	ropecon2021	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:58:03.743969+00
+525	ropecon2019	0001_initial	2026-09-02 21:58:03.749225+00
+526	ropecon2019	0002_auto_20190226_2146	2026-09-02 21:58:03.932723+00
+527	ropecon2019	0003_auto_20190403_2159	2026-09-02 21:58:04.170348+00
+528	ropecon2019	0004_auto_20190909_2157	2026-09-02 21:58:04.231085+00
+529	ropecon2019	0005_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:58:04.609222+00
+530	ropecon2018	0001_initial	2026-09-02 21:58:04.81248+00
+531	programme	0001_initial	2026-09-02 21:58:06.703542+00
+532	programme	0002_auto_20150115_1949	2026-09-02 21:58:07.060981+00
+533	programme	0003_programme_state	2026-09-02 21:58:07.20788+00
+534	programme	0004_auto_20151024_1644	2026-09-02 21:58:07.25831+00
+535	programme	0005_programme_end_time	2026-09-02 21:58:07.488874+00
+536	programme	0006_room_slug	2026-09-02 21:58:07.779953+00
+537	programme	0007_room_slug_not_null	2026-09-02 21:58:07.880683+00
+538	programme	0008_category_slug	2026-09-02 21:58:08.139953+00
+539	programme	0009_auto_20160123_1336	2026-09-02 21:58:08.872218+00
+540	programme	0010_auto_20160123_1733	2026-09-02 21:58:09.359545+00
+541	programme	0011_auto_20160124_1448	2026-09-02 21:58:09.450571+00
+542	programme	0012_auto_20160124_1457	2026-09-02 21:58:09.697274+00
+543	programme	0013_auto_20160124_2151	2026-09-02 21:58:10.092469+00
+544	programme	0014_invitationadminproxy_programmemanagementproxy	2026-09-02 21:58:10.099433+00
+545	programme	0015_auto_20160125_2328	2026-09-02 21:58:11.014608+00
+546	programme	0016_freeformorganizer	2026-09-02 21:58:11.118269+00
+547	programme	0017_freeformorganizeradminproxy	2026-09-02 21:58:11.122644+00
+548	programme	0018_auto_20160131_2044	2026-09-02 21:58:11.232317+00
+549	programme	0019_auto_20160201_0003	2026-09-02 21:58:11.345353+00
+550	programme	0020_make_role_event_specific	2026-09-02 21:58:11.651121+00
+551	programme	0021_auto_20160201_0050	2026-09-02 21:58:11.758555+00
+552	programme	0022_auto_20160202_1950	2026-09-02 21:58:11.7818+00
+553	programme	0023_auto_20160202_2231	2026-09-02 21:58:11.855153+00
+554	programme	0024_auto_20160202_2236	2026-09-02 21:58:12.054571+00
+555	programme	0025_auto_20160202_2237	2026-09-02 21:58:12.146354+00
+556	programme	0026_auto_20160202_2238	2026-09-02 21:58:12.374965+00
+557	programme	0027_auto_20160204_1842	2026-09-02 21:58:12.765846+00
+558	programme	0028_auto_20160207_2330	2026-09-02 21:58:13.274064+00
+559	programme	0029_room_active	2026-09-02 21:58:13.28854+00
+560	programme	0030_auto_20160305_1902	2026-09-02 21:58:13.454589+00
+561	programme	0031_auto_20160306_1125	2026-09-02 21:58:13.505091+00
+562	programme	0032_auto_20160505_2233	2026-09-02 21:58:13.555135+00
+563	programme	0033_auto_20160608_0023	2026-09-02 21:58:13.614708+00
+564	programme	0034_auto_20160608_2309	2026-09-02 21:58:13.887127+00
+565	programme	0035_auto_20160623_0037	2026-09-02 21:58:14.093519+00
+566	programme	0036_programme_frozen	2026-09-02 21:58:14.145187+00
+567	programme	0037_populate_programme_frozen	2026-09-02 21:58:14.238366+00
+568	programme	0038_auto_20160627_2057	2026-09-02 21:58:14.290011+00
+569	programme	0039_programmefeedback	2026-09-02 21:58:14.397366+00
+570	programme	0040_auto_20160705_2240	2026-09-02 21:58:14.790419+00
+571	programme	0041_programme_rerun	2026-09-02 21:58:14.843171+00
+572	programme	0042_auto_20160706_2208	2026-09-02 21:58:14.902268+00
+573	programme	0043_auto_20160706_2211	2026-09-02 21:58:14.953811+00
+574	programme	0044_auto_20160712_1406	2026-09-02 21:58:15.124463+00
+575	programme	0045_auto_20160715_0127	2026-09-02 21:58:15.274519+00
+576	programme	0046_auto_20160811_2319	2026-09-02 21:58:15.300934+00
+577	programme	0047_programmeeventmeta_schedule_layout	2026-09-02 21:58:15.619427+00
+578	programme	0048_auto_20160813_1948	2026-09-02 21:58:15.68717+00
+579	programme	0049_programmerole_is_active	2026-09-02 21:58:15.843094+00
+580	programme	0050_auto_20161129_2147	2026-09-02 21:58:17.380542+00
+581	programme	0051_auto_20170212_2203	2026-09-02 21:58:17.391223+00
+582	programme	0052_tag_slug	2026-09-02 21:58:17.453207+00
+583	programme	0053_populate_tag_slug	2026-09-02 21:58:17.549459+00
+584	programme	0054_auto_20170212_2334	2026-09-02 21:58:17.609092+00
+585	programme	0055_programme_signup_link	2026-09-02 21:58:17.66058+00
+586	programme	0056_auto_20171104_1806	2026-09-02 21:58:17.896227+00
+587	programme	0057_room_event	2026-09-02 21:58:18.438962+00
+588	programme	0058_populate_room_event	2026-09-02 21:58:18.548891+00
+589	programme	0059_room_remove_venue	2026-09-02 21:58:18.715037+00
+590	programme	0060_auto_20171113_2158	2026-09-02 21:58:19.095056+00
+591	programme	0061_auto_20171125_1229	2026-09-02 21:58:19.298692+00
+592	programme	0062_populate_viewroom	2026-09-02 21:58:19.391744+00
+593	programme	0063_remove_view_rooms	2026-09-02 21:58:19.487844+00
+594	programme	0064_auto_20171125_1326	2026-09-02 21:58:19.602405+00
+595	programme	0065_auto_20171227_0037	2026-09-02 21:58:20.232085+00
+596	programme	0066_programme_ropecon2018_preferred_time_slots	2026-09-02 21:58:20.338632+00
+597	programme	0067_auto_20180219_2222	2026-09-02 21:58:20.444314+00
+598	programme	0068_auto_20180305_2153	2026-09-02 21:58:22.475129+00
+599	programme	0069_ropecon2018_kp_20180306_0934	2026-09-02 21:58:22.634978+00
+600	programme	0070_auto_20180307_2316	2026-09-02 21:58:22.68887+00
+601	programme	0071_auto_20180417_2245	2026-09-02 21:58:22.948371+00
+602	programme	0072_programme_language_skills	2026-09-02 21:58:23.002966+00
+603	programme	0073_remove_programme_language_skills	2026-09-02 21:58:23.056309+00
+604	programme	0074_auto_20180620_1623	2026-09-02 21:58:23.398101+00
+605	programme	0075_auto_20181019_1918	2026-09-02 21:58:23.463501+00
+606	programme	0076_auto_20190207_1753	2026-09-02 21:58:23.793447+00
+607	programme	0077_auto_20190207_1809	2026-09-02 21:58:23.92147+00
+608	programme	0078_auto_20190217_1344	2026-09-02 21:58:24.491279+00
+609	programme	0079_auto_20190217_1358	2026-09-02 21:58:24.613675+00
+610	programme	0080_alternativeprogrammeform_is_active	2026-09-02 21:58:24.675941+00
+611	programme	0081_auto_20190226_2021	2026-09-02 21:58:25.391179+00
+612	programme	0082_auto_20190228_2127	2026-09-02 21:58:25.555869+00
+613	programme	0083_programme_is_inaccessible	2026-09-02 21:58:25.616505+00
+614	programme	0084_auto_20190228_2215	2026-09-02 21:58:25.727485+00
+615	programme	0085_programme_ropecon2019_gaming_desk_subtype	2026-09-02 21:58:25.786423+00
+616	programme	0086_auto_20190301_0927	2026-09-02 21:58:26.139533+00
+617	programme	0087_auto_20190301_2337	2026-09-02 21:58:26.355777+00
+618	programme	0088_auto_20190301_2348	2026-09-02 21:58:26.439753+00
+619	programme	0089_auto_20190305_1945	2026-09-02 21:58:26.72805+00
+620	programme	0090_alternativeprogrammeform_role	2026-09-02 21:58:27.104083+00
+621	programme	0091_role_slug	2026-09-02 21:58:27.219461+00
+622	programme	0092_programmefeedback_author_external_username	2026-09-02 21:58:27.282338+00
+623	programme	0093_programme_paikkala_icon	2026-09-02 21:58:27.341244+00
+624	programme	0094_programme_is_paikkala_public	2026-09-02 21:58:27.404278+00
+625	programme	0095_auto_20190919_2136	2026-09-02 21:58:27.472242+00
+626	programme	0096_auto_20200122_2256	2026-09-02 21:58:27.54077+00
+627	programme	0097_auto_20200202_2051	2026-09-02 21:58:28.178758+00
+628	programme	0098_auto_20200210_2018	2026-09-02 21:58:28.373689+00
+629	programme	0099_auto_20200223_1958	2026-09-02 21:58:28.506898+00
+630	programme	0100_programme_hitpoint2020_preferred_time_slots	2026-09-02 21:58:28.629803+00
+631	programme	0101_programme_ropecon2021_gamedesk_physical_or_virtual	2026-09-02 21:58:28.693986+00
+632	programme	0102_auto_20210222_2104	2026-09-02 21:58:30.281695+00
+633	programme	0103_programme_ropecon2021_blocked_time_slots	2026-09-02 21:58:30.401184+00
+634	programme	0104_auto_20210223_2306	2026-09-02 21:58:30.639049+00
+635	programme	0105_programme_ropecon2021_gamedesk_materials	2026-09-02 21:58:30.706246+00
+636	programme	0106_auto_20210914_1548	2026-09-02 21:58:30.827915+00
+637	programme	0107_auto_20220221_2251	2026-09-02 21:58:31.420615+00
+638	programme	0108_auto_20220313_1906	2026-09-02 21:58:31.602587+00
+639	programme	0109_alter_programme_ropecon2019_blocked_time_slots_and_more	2026-09-02 21:58:32.538087+00
+640	programme	0110_alter_specialreservation_code_and_more	2026-09-02 21:58:32.614849+00
+641	programme	0111_programme_ropecon2023_accessibility_cant_use_mic_and_more	2026-09-02 21:58:34.195738+00
+642	programme	0112_programme_ropecon2023_other_accessibility_information_and_more	2026-09-02 21:58:34.694453+00
+643	programme	0113_programme_ropecon2023_chairs_and_more	2026-09-02 21:58:34.962312+00
+644	programme	0114_programme_ropecon2023_furniture_needs_and_more	2026-09-02 21:58:35.157985+00
+645	programme	0115_programme_ropecon2023_workshop_fee	2026-09-02 21:58:35.231955+00
+646	programme	0115_alter_category_options_category_order	2026-09-02 21:58:35.356261+00
+647	programme	0116_merge_20230314_2218	2026-09-02 21:58:35.359245+00
+648	programme	0117_programme_tracon2023_accessibility_warnings_and_more	2026-09-02 21:58:36.02524+00
+649	programme	0118_alter_programme_photography_and_more	2026-09-02 21:58:36.252178+00
+650	mailings	0001_initial	2026-09-02 21:58:36.987981+00
+651	mailings	0002_message_channel	2026-09-02 21:58:36.997424+00
+652	mailings	0003_message_channel_help	2026-09-02 21:58:37.007422+00
+653	mailings	0004_recipientgroup_job_category	2026-09-02 21:58:37.11358+00
+654	mailings	0005_populate_recipient_group_job_category	2026-09-02 21:58:37.21149+00
+655	mailings	0006_auto_20160505_2233	2026-09-02 21:58:37.223205+00
+656	mailings	0007_recipientgroup_personnel_class	2026-09-02 21:58:37.333019+00
+657	mailings	0008_auto_20161026_2343	2026-09-02 21:58:37.741749+00
+658	mailings	0009_recipientgroup_programme_category_and_more	2026-09-02 21:58:37.930233+00
+659	mailings	0010_recipientgroup_programme_form	2026-09-02 21:58:38.040799+00
+660	mailings	0011_alter_recipientgroup_verbose_name	2026-09-02 21:58:38.109637+00
+661	mailings	0012_recipientgroup_override_reply_to_and_more	2026-09-02 21:58:38.185856+00
+662	matsucon2018	0001_initial	2026-09-02 21:58:38.300579+00
+663	matsucon2018	0002_auto_20180203_2326	2026-09-02 21:58:38.952005+00
+664	matsucon2018	0003_signupextra_shirt_size	2026-09-02 21:58:39.028029+00
+665	matsucon2018	0004_signupextra_shift_type	2026-09-02 21:58:39.099733+00
+666	matsucon2018	0005_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:58:39.433184+00
+667	matsucon2019	0001_initial	2026-09-02 21:58:39.912763+00
+668	matsucon2019	0002_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:58:40.263001+00
+669	matsucon2020	0001_initial	2026-09-02 21:58:40.390244+00
+670	matsucon2020	0002_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:58:41.008327+00
+671	matsucon2022	0001_initial	2026-09-02 21:58:41.123938+00
+672	matsucon2023	0001_initial	2026-09-02 21:58:41.235346+00
+673	matsucon2024	0001_initial	2026-09-02 21:58:41.352457+00
+674	membership	0001_initial	2026-09-02 21:58:41.996914+00
+675	membership	0002_membershiporganizationmeta_receiving_applications	2026-09-02 21:58:42.014933+00
+676	membership	0003_requirements	2026-09-02 21:58:42.056959+00
+677	membership	0004_auto_20151010_1632	2026-09-02 21:58:42.156498+00
+678	membership	0005_membership_message	2026-09-02 21:58:42.21968+00
+679	membership	0006_auto_20151011_2005	2026-09-02 21:58:42.494435+00
+680	membership	0007_auto_20151011_2109	2026-09-02 21:58:42.559537+00
+681	membership	0008_auto_20151011_2229	2026-09-02 21:58:43.304921+00
+682	membership	0009_auto_20151011_2236	2026-09-02 21:58:43.313168+00
+683	membership	0010_remove_membershiporganizationmeta_membership_fee	2026-09-02 21:58:43.333082+00
+684	membership	0011_auto_20151020_0016	2026-09-02 21:58:43.442968+00
+685	membership	0012_members_group	2026-09-02 21:58:44.188157+00
+686	membership	0013_auto_20151219_1510	2026-09-02 21:58:44.249595+00
+687	membership	0014_term_payment_type	2026-09-02 21:58:44.262178+00
+688	membership	0015_auto_20190921_1449	2026-09-02 21:58:44.289976+00
+689	membership	0016_auto_20200723_1912	2026-09-02 21:58:44.644503+00
+690	messages_v2	0001_initial	2026-09-02 21:58:45.391337+00
+691	messages_v2	0002_rename_program_v2_app_value_to_program	2026-09-02 21:58:45.530866+00
+692	messages_v2	0003_alter_message_app_alter_messagereplyto_app	2026-09-02 21:58:45.630539+00
+693	nekocon2019	0001_initial	2026-09-02 21:58:45.867044+00
+694	nekocon2019	0002_auto_20190421_1919	2026-09-02 21:58:46.57893+00
+695	nekocon2019	0003_auto_20190909_2157	2026-09-02 21:58:46.659688+00
+696	nekocon2019	0004_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:58:46.89297+00
+697	nekocon2020	0001_initial	2026-09-02 21:58:47.488432+00
+698	nekocon2020	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:58:47.727328+00
+699	nekocon2022	0001_initial	2026-09-02 21:58:47.863149+00
+700	nekocon2022	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:58:48.100262+00
+701	nekocon2023	0001_initial	2026-09-02 21:58:48.5446+00
+702	oauth2_provider	0001_initial	2026-09-02 21:58:49.424278+00
+703	oauth2_provider	0002_auto_20190406_1805	2026-09-02 21:58:49.464811+00
+704	oauth2_provider	0003_auto_20201211_1314	2026-09-02 21:58:49.485243+00
+705	oauth2_provider	0004_auto_20200902_2022	2026-09-02 21:58:49.838741+00
+706	oauth2_provider	0005_auto_20211222_2352	2026-09-02 21:58:51.038705+00
+707	oauth2_provider	0006_alter_application_client_secret	2026-09-02 21:58:51.186832+00
+708	oauth2_provider	0007_application_post_logout_redirect_uris	2026-09-02 21:58:51.211389+00
+709	oauth2_provider	0008_alter_accesstoken_token	2026-09-02 21:58:51.234383+00
+710	oauth2_provider	0009_add_hash_client_secret	2026-09-02 21:58:51.260624+00
+711	oauth2_provider	0010_application_allowed_origins	2026-09-02 21:58:51.282239+00
+712	oauth2_provider	0011_refreshtoken_token_family	2026-09-02 21:58:51.307701+00
+713	oauth2_provider	0012_add_token_checksum	2026-09-02 21:58:51.502113+00
+714	oauth2_provider	0013_alter_application_authorization_grant_type_device	2026-09-02 21:58:51.651878+00
+715	oauth2_provider	0014_alter_help_text	2026-09-02 21:58:51.673389+00
+716	oauth2_provider	0015_refreshtoken_token_checksum	2026-09-02 21:58:52.188301+00
+717	oauth2_provider	0016_alter_devicegrant_scope	2026-09-02 21:58:52.210505+00
+718	oauth2_provider	0017_application_dcr_created	2026-09-02 21:58:52.233873+00
+719	oauth2_provider	0018_resource_indicators	2026-09-02 21:58:52.291503+00
+720	oauth2_provider	0019_application_registration_source	2026-09-02 21:58:52.453468+00
+721	oauth2_provider	0020_cimd_application_fields	2026-09-02 21:58:52.508247+00
+722	oauth2_provider	0021_translatable_field_labels	2026-09-02 21:58:55.883481+00
+723	oauth2_provider	0022_refreshtoken_token_family_index	2026-09-02 21:58:55.914059+00
+724	payments	0001_initial	2026-09-02 21:58:55.920351+00
+725	payments	0002_paymentseventmeta	2026-09-02 21:58:56.046145+00
+726	payments	0003_payment_event	2026-09-02 21:58:56.182602+00
+727	payments	0004_checkout_v2	2026-09-02 21:58:56.674024+00
+728	payments	0005_payments_organization_meta	2026-09-02 21:58:57.020154+00
+729	payments	0006_populate_payments_organization_meta	2026-09-02 21:58:57.135277+00
+730	payments	0007_finalize_payments_organization_meta	2026-09-02 21:58:57.676727+00
+731	payments	0008_auto_20200723_2058	2026-09-02 21:58:57.75136+00
+732	payments	0009_delete_paymentseventmeta	2026-09-02 21:58:57.756244+00
+733	payments	0010_alter_checkoutpayment_customer_and_more	2026-09-02 21:58:57.892142+00
+734	popcult2019	0001_initial	2026-09-02 21:58:58.022301+00
+735	popcult2019	0002_auto_20181207_1625	2026-09-02 21:58:58.103805+00
+736	popcult2019	0003_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:58:58.766856+00
+737	popcult2020	0001_initial	2026-09-02 21:58:58.891608+00
+738	popcult2020	0002_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:58:59.249234+00
+739	popcultday2018	0001_initial	2026-09-02 21:58:59.381013+00
+740	popcultday2018	0002_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:59:00.075891+00
+741	popcultday2024	0001_initial	2026-09-02 21:59:00.213423+00
+742	program_v2	0054_programv2eventmeta_protect_responses	2026-09-02 21:59:00.289294+00
+743	tracon2023	0003_signupextraafterpartyproxy_and_more	2026-09-02 21:59:00.380197+00
+744	solmukohta2024	0001_initial	2026-09-02 21:59:00.393863+00
+745	solmukohta2024	0002_technology	2026-09-02 21:59:00.398793+00
+746	ropecon2024	0001_initial	2026-09-02 21:59:00.827402+00
+747	ropecon2018	0002_remove_signupextra_extra_work	2026-09-02 21:59:00.846151+00
+748	ropecon2018	0003_alter_signupextra_signup	2026-09-02 21:59:00.977148+00
+749	programme	0119_programme_hosts_from_host_and_more	2026-09-02 21:59:02.365106+00
+750	programme	0120_remove_programme_solmukohta2024_computer_usage_and_more	2026-09-02 21:59:03.348227+00
+751	programme	0121_programme_solmukohta2024_other_emails_and_more	2026-09-02 21:59:03.492892+00
+752	programme	0122_alter_programme_hosts_from_host	2026-09-02 21:59:03.566488+00
+753	programme	0123_rename_programme_category_state_programme_p_categor_69bbc0_idx	2026-09-02 21:59:04.048413+00
+754	programme	0124_programme_ropecon2024_blocked_time_slots_and_more	2026-09-02 21:59:04.415509+00
+755	programme	0125_remove_programme_ropecon2024_language_prog_and_more	2026-09-02 21:59:04.561237+00
+756	programme	0126_programmeeventmeta_override_schedule_link_and_more	2026-09-02 21:59:04.702573+00
+757	programme	0127_programme_programme_p_categor_5b8eeb_idx	2026-09-02 21:59:05.110794+00
+758	programme	0128_category_v2_dimensions_room_v2_dimensions_and_more	2026-09-02 21:59:05.358748+00
+759	programme	0129_alternativeprogrammeform_v2_dimensions	2026-09-02 21:59:05.437397+00
+760	programme	0130_programme_max_runs_and_more	2026-09-02 21:59:05.589219+00
+761	programme	0131_programmerole_override_perks_role_perks_and_more	2026-09-02 21:59:05.803768+00
+762	programme	0132_tag_public	2026-09-02 21:59:06.248215+00
+763	programme	0133_alter_alternativeprogrammeform_slug_and_more	2026-09-02 21:59:06.691461+00
+764	programme	0134_alter_programme_language	2026-09-02 21:59:06.768604+00
+765	programme	0135_remove_invitation_created_by_and_more	2026-09-02 21:59:07.714832+00
+766	ropecon2020	0001_initial	2026-09-02 21:59:07.977961+00
+767	ropecon2020	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:59:08.59484+00
+768	ropecon2020vd	0001_initial	2026-09-02 21:59:08.730801+00
+769	ropecon2020vd	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:59:08.979509+00
+770	ropecon2022	0001_initial	2026-09-02 21:59:09.406183+00
+771	ropecon2022	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:59:09.663229+00
+772	ropecon2025	0001_initial	2026-09-02 21:59:09.809709+00
+773	ropecon2025	0002_remove_signupextra_certificate_delivery_address_and_more	2026-09-02 21:59:10.716344+00
+774	ropecon2026	0001_initial	2026-09-02 21:59:10.861811+00
+775	ropecon2027	0001_initial	2026-09-02 21:59:11.004741+00
+776	sessions	0001_initial	2026-09-02 21:59:11.011534+00
+777	shumicon2023	0001_initial	2026-09-02 21:59:11.471041+00
+778	shumicon2023	0002_signupextra_shift_leader_and_more	2026-09-02 21:59:11.655727+00
+779	shumicon2025	0001_initial	2026-09-02 21:59:11.810253+00
+780	sites	0001_initial	2026-09-02 21:59:11.815388+00
+781	sites	0002_alter_domain_unique	2026-09-02 21:59:11.823741+00
+782	surveys	0003_auto_20180330_1812	2026-09-02 21:59:12.092834+00
+783	surveys	0004_auto_20190909_2157	2026-09-02 21:59:12.676533+00
+784	surveys	0005_remove_eventsurveyresult_author_and_more	2026-09-02 21:59:13.532897+00
+785	tickets	0033_remove_accommodationinformation_is_present_and_more	2026-09-02 21:59:13.558481+00
+786	tickets	0034_ticketseventmeta_accommodation_access_group	2026-09-02 21:59:13.695982+00
+787	tickets	0035_ticketseventmeta_max_count_per_product	2026-09-02 21:59:13.776296+00
+788	tickets	0036_alter_ticketseventmeta_max_count_per_product	2026-09-02 21:59:13.857949+00
+789	tickets	0037_alter_product_options_product_code_and_more	2026-09-02 21:59:14.102037+00
+790	tickets	0038_autumn_cleaning	2026-09-02 21:59:16.010095+00
+791	tickets	0039_alter_ticketseventmeta_terms_and_conditions_url	2026-09-02 21:59:16.089009+00
+792	tickets	0040_remove_ticketseventmeta_reservation_seconds	2026-09-02 21:59:16.169981+00
+793	tickets	0041_remove_ticketseventmeta_due_days	2026-09-02 21:59:16.250153+00
+794	tickets	0042_remove_ticketseventmeta_receipt_footer	2026-09-02 21:59:16.330601+00
+795	tickets	0043_remove_product_requires_accommodation_information_and_more	2026-09-02 21:59:16.998784+00
+796	tickets	0044_alter_order_language	2026-09-02 21:59:17.081685+00
+797	tickets_v2	0001_initial	2026-09-02 21:59:18.391979+00
+798	tickets_v2	0002_product_ordering_alter_paymentstamp_type_and_more	2026-09-02 21:59:18.934261+00
+799	tickets_v2	0003_ticketsv2eventmeta_terms_and_conditions_url_en_and_more	2026-09-02 21:59:19.180533+00
+800	tickets_v2	0004_alter_ticketsv2eventmeta_provider_id_and_more	2026-09-02 21:59:19.504454+00
+801	tickets_v2	0005_ticketsv2eventmeta_contact_email	2026-09-02 21:59:19.587795+00
+802	tickets_v2	0006_alter_ticketsv2eventmeta_contact_email	2026-09-02 21:59:19.97689+00
+803	tickets_v2	0007_no_receipt_on_cancel	2026-09-02 21:59:19.980717+00
+804	tickets_v2	0008_product_vat_percentage	2026-09-02 21:59:20.060508+00
+805	tickets_v2	0009_ticketsv2eventmeta_cancellation_period_days_and_more	2026-09-02 21:59:20.282019+00
+806	tickets_v2	0010_cancellation_receipts	2026-09-02 21:59:20.285502+00
+807	tickets_v2	0011_native_enums	2026-09-02 21:59:21.317461+00
+808	tickets_v2	0012_paid_after_cancellation	2026-09-02 21:59:21.340104+00
+809	tickets_v2	0013_paid_after_cancellation_triggers	2026-09-02 21:59:21.586012+00
+810	tickets_v2	0014_unpaid_order_cancellation_delay_minutes	2026-09-02 21:59:21.681305+00
+811	tickets_v2	0015_alter_paymentstamp_data	2026-09-02 21:59:21.771312+00
+812	tickets_v2	0016_ensure_tickets_diagnostics	2026-09-02 21:59:21.775786+00
+813	tickets_v2	0017_default_unpaid_order_cancellation_delay	2026-09-02 21:59:22.190902+00
+814	tracon2018	0001_initial	2026-09-02 21:59:22.352447+00
+815	tracon2018	0002_auto_20180913_0813	2026-09-02 21:59:23.525604+00
+816	tracon2018	0003_delete_signupextraafterpartyproxy	2026-09-02 21:59:23.529403+00
+817	tracon2018	0004_alter_signupextra_event_alter_signupextra_person_and_more	2026-09-02 21:59:23.953952+00
+818	tracon2018	0005_alter_signupextra_email_alias	2026-09-02 21:59:24.048392+00
+819	tracon2019	0001_initial	2026-09-02 21:59:24.507566+00
+820	tracon2019	0002_auto_20190909_2157	2026-09-02 21:59:24.705659+00
+821	tracon2019	0003_auto_20190910_1347	2026-09-02 21:59:25.621614+00
+822	tracon2019	0004_auto_20200723_1925	2026-09-02 21:59:25.720647+00
+823	tracon2019	0005_delete_signupextraafterpartyproxy_and_more	2026-09-02 21:59:26.011744+00
+824	tracon2019	0006_alter_signupextra_email_alias	2026-09-02 21:59:26.108822+00
+825	tracon2020	0001_initial	2026-09-02 21:59:26.64951+00
+826	tracon2020	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:59:26.976753+00
+827	tracon2020	0003_alter_signupextra_email_alias	2026-09-02 21:59:27.091606+00
+828	tracon2021	0001_initial	2026-09-02 21:59:27.266061+00
+829	tracon2021	0002_alter_signupextra_event_alter_signupextra_person	2026-09-02 21:59:27.994148+00
+830	tracon2021	0003_alter_signupextra_email_alias	2026-09-02 21:59:28.109256+00
+831	tracon2022	0001_initial	2026-09-02 21:59:28.275384+00
+832	tracon2022	0002_auto_20220530_1429	2026-09-02 21:59:28.376591+00
+833	tracon2022	0003_signupextra_afterparty_policy_and_more	2026-09-02 21:59:29.092515+00
+834	tracon2022	0004_alter_signupextra_email_alias	2026-09-02 21:59:29.200018+00
+835	tracon2023	0004_delete_signupextraafterpartyproxy	2026-09-02 21:59:29.204667+00
+836	tracon2023	0005_alter_signupextra_email_alias	2026-09-02 21:59:29.30473+00
+837	tracon2024	0001_initial	2026-09-02 21:59:29.466256+00
+838	tracon2024	0002_alter_signupextra_total_work	2026-09-02 21:59:29.951519+00
+839	tracon2024	0003_alter_signupextra_shirt_size	2026-09-02 21:59:30.299209+00
+840	tracon2024	0004_signupextraafterpartyproxy	2026-09-02 21:59:30.308553+00
+841	tracon2024	0005_alter_signupextra_afterparty_help_and_more	2026-09-02 21:59:30.508864+00
+842	tracon2024	0006_alter_signupextra_email_alias	2026-09-02 21:59:30.883981+00
+843	tracon2024	0007_delete_signupextraafterpartyproxy	2026-09-02 21:59:30.889016+00
+844	tracon2025	0001_initial	2026-09-02 21:59:31.087414+00
+845	tracon2025	0002_alter_signupextra_email_alias	2026-09-02 21:59:31.197776+00
+846	tracon2025	0003_remove_signupextra_certificate_delivery_address_and_more	2026-09-02 21:59:31.505763+00
+847	tracon2025	0004_alter_signupextra_shirt_size	2026-09-02 21:59:31.928884+00
+848	tracon2026	0001_initial	2026-09-02 21:59:32.095841+00
+849	tracon2026	0002_alter_signupextra_shirt_size	2026-09-02 21:59:32.209428+00
 \.
 
 
@@ -15955,7 +18082,7 @@ COPY public.forms_keypair (id, public_key, encrypted_private_key, user_id) FROM 
 -- Data for Name: forms_projection; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.forms_projection (id, is_public, default_language_code, slug, splats, required_dimensions, projected_dimensions, filterable_dimensions, order_by, scope_id) FROM stdin;
+COPY public.forms_projection (id, is_public, default_language_code, slug, splats, required_dimensions, projected_dimensions, filterable_dimensions, order_by, scope_id, special_fields) FROM stdin;
 \.
 
 
@@ -15987,7 +18114,7 @@ COPY public.forms_responsedimensionvalue (id, subject_id, value_id) FROM stdin;
 -- Data for Name: forms_survey; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.forms_survey (id, login_required, active_from, active_until, slug, event_id, key_fields, anonymity, max_responses_per_user, protect_responses, app_name, created_at, created_by_id, updated_at, cached_default_response_dimensions, registry_id, purpose_slug, responses_editable_until, universe_id, cached_default_involvement_dimensions) FROM stdin;
+COPY public.forms_survey (id, login_required, active_from, active_until, slug, event_id, cached_key_fields, anonymity, max_responses_per_user, protect_responses, app, created_at, created_by_id, updated_at, cached_default_response_dimensions, registry_id, purpose, responses_editable_until, universe_id, cached_default_involvement_dimensions, retention_period) FROM stdin;
 \.
 
 
@@ -16148,6 +18275,86 @@ COPY public.frostbite2025_signupextra_special_diet (id, signupextra_id, speciald
 --
 
 COPY public.frostbite2025_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2026_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2026_poison (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2026_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2026_signupextra (id, is_active, shift_type, prior_experience, free_text, special_diet_other, shirt_size, shirt_type, night_work, afterparty_participation, accommodation, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2026_signupextra_pick_your_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2026_signupextra_pick_your_poison (id, signupextra_id, poison_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2026_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2026_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2026_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2026_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2027_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2027_poison (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2027_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2027_signupextra (id, is_active, shift_type, total_work, prior_experience, free_text, special_diet_other, shirt_size, shirt_type, night_work, afterparty_participation, accommodation, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2027_signupextra_pick_your_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2027_signupextra_pick_your_poison (id, signupextra_id, poison_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2027_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2027_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frostbite2027_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.frostbite2027_specialdiet (id, name) FROM stdin;
 \.
 
 
@@ -16379,7 +18586,7 @@ COPY public.involvement_invitation (id, used_at, language, email, created_by_id,
 -- Data for Name: involvement_involvement; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.involvement_involvement (id, created_at, updated_at, is_active, cached_dimensions, person_id, program_id, response_id, universe_id, registry_id, invitation_id) FROM stdin;
+COPY public.involvement_involvement (id, created_at, updated_at, is_active, cached_dimensions, person_id, program_id, response_id, universe_id, registry_id, invitation_id, annotations, app, type, title) FROM stdin;
 \.
 
 
@@ -16392,10 +18599,18 @@ COPY public.involvement_involvementdimensionvalue (id, subject_id, value_id) FRO
 
 
 --
+-- Data for Name: involvement_involvementeventmeta; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.involvement_involvementeventmeta (id, default_registry_id, event_id, universe_id, shirts_frozen_at, admin_group_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: involvement_involvementtobadgemapping; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.involvement_involvementtobadgemapping (id, required_dimensions, job_title, priority, annotations, personnel_class_id, universe_id) FROM stdin;
+COPY public.involvement_involvementtobadgemapping (id, required_dimensions, job_title, priority, annotations, personnel_class_id, universe_id, job_title_mode) FROM stdin;
 \.
 
 
@@ -16411,7 +18626,7 @@ COPY public.involvement_involvementtogroupmapping (id, required_dimensions, grou
 -- Data for Name: involvement_registry; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.involvement_registry (id, slug, title_en, title_fi, title_sv, policy_url_en, policy_url_fi, policy_url_sv, created_at, updated_at, scope_id) FROM stdin;
+COPY public.involvement_registry (id, slug, title_en, title_fi, title_sv, policy_url_en, policy_url_fi, policy_url_sv, created_at, updated_at, scope_id, default_retention_period) FROM stdin;
 \.
 
 
@@ -16540,6 +18755,86 @@ COPY public.kotaeexpo2025_signupextra_special_diet (id, signupextra_id, speciald
 --
 
 COPY public.kotaeexpo2025_timeslot (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_accessibilitywarning; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_accessibilitywarning (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_accommodation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_accommodation (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_knownlanguage; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_knownlanguage (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_signupextra (id, is_active, shift_type, total_work, night_shift, overseer, want_certificate, known_language_other, special_diet_other, prior_experience, free_text, shift_wishes, email_alias, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_signupextra_accommodation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_signupextra_accommodation (id, signupextra_id, accommodation_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_signupextra_known_language; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_signupextra_known_language (id, signupextra_id, knownlanguage_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_signupextra_work_days; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_signupextra_work_days (id, signupextra_id, workday_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_timeslot; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_timeslot (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kotaeexpo2026_workday; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kotaeexpo2026_workday (id, name) FROM stdin;
 \.
 
 
@@ -16732,6 +19027,54 @@ COPY public.kuplii2025_signupextra_special_diet (id, signupextra_id, specialdiet
 --
 
 COPY public.kuplii2025_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2026_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2026_signupextra (id, is_active, shift_type, total_work, special_diet_other, prior_experience, free_text, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2026_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2026_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2026_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2026_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2027_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2027_signupextra (id, is_active, shift_type, total_work, special_diet_other, prior_experience, free_text, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2027_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2027_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: kuplii2027_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.kuplii2027_specialdiet (id, name) FROM stdin;
 \.
 
 
@@ -17144,6 +19487,38 @@ COPY public.membership_term (id, title, start_date, end_date, entrance_fee_cents
 
 
 --
+-- Data for Name: messages_v2_message; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.messages_v2_message (id, app, subject, body, dispatch, recipient_filters, updated_at, sent_at, expired_at, created_by_id, universe_id, reply_to_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: messages_v2_messagebody; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.messages_v2_messagebody (id, digest, text) FROM stdin;
+\.
+
+
+--
+-- Data for Name: messages_v2_messagerecipient; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.messages_v2_messagerecipient (id, email, subject, sent_at, cached_dimensions, body_id, involvement_id, message_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: messages_v2_messagereplyto; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.messages_v2_messagereplyto (id, app, name, email, universe_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: nekocon2019_night; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -17307,7 +19682,7 @@ COPY public.nekocon2023_specialdiet (id, name) FROM stdin;
 -- Data for Name: oauth2_provider_accesstoken; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth2_provider_accesstoken (id, token, expires, scope, application_id, user_id, created, updated, source_refresh_token_id, id_token_id, token_checksum) FROM stdin;
+COPY public.oauth2_provider_accesstoken (id, token, expires, scope, application_id, user_id, created, updated, source_refresh_token_id, id_token_id, token_checksum, resource) FROM stdin;
 \.
 
 
@@ -17315,7 +19690,15 @@ COPY public.oauth2_provider_accesstoken (id, token, expires, scope, application_
 -- Data for Name: oauth2_provider_application; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth2_provider_application (id, client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, user_id, skip_authorization, created, updated, algorithm, post_logout_redirect_uris, hash_client_secret, allowed_origins) FROM stdin;
+COPY public.oauth2_provider_application (id, client_id, redirect_uris, client_type, authorization_grant_type, client_secret, name, user_id, skip_authorization, created, updated, algorithm, post_logout_redirect_uris, hash_client_secret, allowed_origins, registration_source, cimd_expires_at) FROM stdin;
+\.
+
+
+--
+-- Data for Name: oauth2_provider_devicegrant; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.oauth2_provider_devicegrant (id, device_code, user_code, scope, "interval", expires, status, client_id, last_checked, user_id) FROM stdin;
 \.
 
 
@@ -17323,7 +19706,7 @@ COPY public.oauth2_provider_application (id, client_id, redirect_uris, client_ty
 -- Data for Name: oauth2_provider_grant; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth2_provider_grant (id, code, expires, redirect_uri, scope, application_id, user_id, created, updated, code_challenge, code_challenge_method, nonce, claims) FROM stdin;
+COPY public.oauth2_provider_grant (id, code, expires, redirect_uri, scope, application_id, user_id, created, updated, code_challenge, code_challenge_method, nonce, claims, resource) FROM stdin;
 \.
 
 
@@ -17339,7 +19722,7 @@ COPY public.oauth2_provider_idtoken (id, jti, expires, scope, created, updated, 
 -- Data for Name: oauth2_provider_refreshtoken; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.oauth2_provider_refreshtoken (id, token, access_token_id, application_id, user_id, created, updated, revoked, token_family) FROM stdin;
+COPY public.oauth2_provider_refreshtoken (id, token, access_token_id, application_id, user_id, created, updated, revoked, token_family, token_checksum, resource) FROM stdin;
 \.
 
 
@@ -17496,18 +19879,10 @@ COPY public.popcultday2024_signupextra_special_diet (id, signupextra_id, special
 
 
 --
--- Data for Name: program_v2_annotation; Type: TABLE DATA; Schema: public; Owner: -
+-- Data for Name: program_v2_paikkalaroommapping; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.program_v2_annotation (id, slug, title, description, type_slug, is_applicable_to_program_items, is_applicable_to_schedule_items, is_public, is_shown_in_detail, is_computed) FROM stdin;
-\.
-
-
---
--- Data for Name: program_v2_eventannotation; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY public.program_v2_eventannotation (is_active, program_form_fields, annotation_id, meta_id) FROM stdin;
+COPY public.program_v2_paikkalaroommapping (paikkala_dimension_value_id, paikkala_room_id) FROM stdin;
 \.
 
 
@@ -17531,7 +19906,7 @@ COPY public.program_v2_programdimensionvalue (id, subject_id, value_id) FROM std
 -- Data for Name: program_v2_programv2eventmeta; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.program_v2_programv2eventmeta (event_id, admin_group_id, is_accepting_feedback, contact_email, guide_v2_embedded_url, default_registry_id) FROM stdin;
+COPY public.program_v2_programv2eventmeta (event_id, admin_group_id, is_accepting_feedback, contact_email, guide_v2_embedded_url, default_registry_id, konsti_url, paikkala_default_max_tickets_per_batch, paikkala_default_max_tickets_per_user, public_from, protect_responses) FROM stdin;
 \.
 
 
@@ -17539,7 +19914,7 @@ COPY public.program_v2_programv2eventmeta (event_id, admin_group_id, is_acceptin
 -- Data for Name: program_v2_scheduleitem; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.program_v2_scheduleitem (id, start_time, duration, program_id, cached_end_time, cached_location, slug, cached_event_id, created_at, updated_at, annotations, cached_combined_dimensions, cached_dimensions) FROM stdin;
+COPY public.program_v2_scheduleitem (id, start_time, duration, program_id, cached_end_time, cached_location, slug, cached_event_id, created_at, updated_at, annotations, cached_combined_dimensions, cached_dimensions, cached_combined_annotations, paikkala_program_id, paikkala_special_reservation_code, is_public, paikkala_icon) FROM stdin;
 \.
 
 
@@ -18128,6 +20503,86 @@ COPY public.ropecon2025_timeslot (id, name) FROM stdin;
 
 
 --
+-- Data for Name: ropecon2026_language; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2026_language (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2026_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2026_signupextra (id, shift_type, total_work, want_certificate, other_languages, special_diet_other, prior_experience, shift_wishes, free_text, roster_publish_consent, is_active, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2026_signupextra_languages; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2026_signupextra_languages (id, signupextra_id, language_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2026_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2026_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2026_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2026_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2027_language; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2027_language (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2027_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2027_signupextra (id, shift_type, total_work, want_certificate, other_languages, special_diet_other, prior_experience, shift_wishes, free_text, roster_publish_consent, is_active, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2027_signupextra_languages; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2027_signupextra_languages (id, signupextra_id, language_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2027_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2027_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ropecon2027_specialdiet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.ropecon2027_specialdiet (id, name) FROM stdin;
+\.
+
+
+--
 -- Data for Name: shumicon2023_eventday; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -18368,10 +20823,18 @@ COPY public.tickets_ticketseventmeta (event_id, ticket_sales_starts, ticket_sale
 
 
 --
+-- Data for Name: tickets_v2_ordercancellationtoken; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tickets_v2_ordercancellationtoken (id, order_id, code, created_at, used_at, state, language, event_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: tickets_v2_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.tickets_v2_product (id, event_id, max_per_order, etickets_per_product, superseded_by_id, available_from, available_until, created_at, price, title, description, ordering) FROM stdin;
+COPY public.tickets_v2_product (id, event_id, max_per_order, etickets_per_product, superseded_by_id, available_from, available_until, created_at, price, title, description, ordering, vat_percentage) FROM stdin;
 \.
 
 
@@ -18395,7 +20858,7 @@ COPY public.tickets_v2_quota (id, name, event_id) FROM stdin;
 -- Data for Name: tickets_v2_ticketsv2eventmeta; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.tickets_v2_ticketsv2eventmeta (event_id, admin_group_id, provider_id, terms_and_conditions_url_en, terms_and_conditions_url_fi, terms_and_conditions_url_sv, contact_email) FROM stdin;
+COPY public.tickets_v2_ticketsv2eventmeta (event_id, admin_group_id, provider, terms_and_conditions_url_en, terms_and_conditions_url_fi, terms_and_conditions_url_sv, contact_email, cancellation_period_days, unpaid_order_cancellation_delay_minutes) FROM stdin;
 \.
 
 
@@ -18832,6 +21295,70 @@ COPY public.tracon2025_timeslot (id, name) FROM stdin;
 
 
 --
+-- Data for Name: tracon2026_accessibilitywarning; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2026_accessibilitywarning (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2026_night; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2026_night (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2026_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2026_poison (id, name) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2026_signupextra; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2026_signupextra (id, is_active, shift_type, total_work, overseer, shirt_size, special_diet_other, prior_experience, free_text, shift_wishes, email_alias, afterparty_participation, afterparty_policy, afterparty_help, event_id, person_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2026_signupextra_lodging_needs; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2026_signupextra_lodging_needs (id, signupextra_id, night_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2026_signupextra_pick_your_poison; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2026_signupextra_pick_your_poison (id, signupextra_id, poison_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2026_signupextra_special_diet; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2026_signupextra_special_diet (id, signupextra_id, specialdiet_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: tracon2026_timeslot; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY public.tracon2026_timeslot (id, name) FROM stdin;
+\.
+
+
+--
 -- Name: access_cbacentry_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -18940,7 +21467,7 @@ SELECT pg_catalog.setval('public.auth_group_permissions_id_seq', 1, false);
 -- Name: auth_permission_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.auth_permission_id_seq', 1344, true);
+SELECT pg_catalog.setval('public.auth_permission_id_seq', 1484, true);
 
 
 --
@@ -19046,6 +21573,20 @@ SELECT pg_catalog.setval('public.cosmocon2025_signupextra_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.cosmocon2025_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: cosmocon2026_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.cosmocon2026_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: cosmocon2026_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.cosmocon2026_signupextra_special_diet_id_seq', 1, false);
 
 
 --
@@ -19224,10 +21765,52 @@ SELECT pg_catalog.setval('public.desucon2025_specialdiet_id_seq', 1, false);
 
 
 --
+-- Name: desucon2026_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.desucon2026_poison_id_seq', 1, false);
+
+
+--
+-- Name: desucon2026_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.desucon2026_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: desucon2026_signupextra_pick_your_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.desucon2026_signupextra_pick_your_poison_id_seq', 1, false);
+
+
+--
+-- Name: desucon2026_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.desucon2026_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: desucon2026_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.desucon2026_specialdiet_id_seq', 1, false);
+
+
+--
 -- Name: desuprofile_integration_confirmationcode_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
 SELECT pg_catalog.setval('public.desuprofile_integration_confirmationcode_id_seq', 1, false);
+
+
+--
+-- Name: dimensions_annotation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.dimensions_annotation_id_seq', 1, false);
 
 
 --
@@ -19259,6 +21842,13 @@ SELECT pg_catalog.setval('public.dimensions_universe_id_seq', 1, false);
 
 
 --
+-- Name: dimensions_universeannotation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.dimensions_universeannotation_id_seq', 1, false);
+
+
+--
 -- Name: django_admin_log_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -19269,14 +21859,14 @@ SELECT pg_catalog.setval('public.django_admin_log_id_seq', 1, false);
 -- Name: django_content_type_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.django_content_type_id_seq', 336, true);
+SELECT pg_catalog.setval('public.django_content_type_id_seq', 371, true);
 
 
 --
 -- Name: django_migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.django_migrations_id_seq', 775, true);
+SELECT pg_catalog.setval('public.django_migrations_id_seq', 849, true);
 
 
 --
@@ -19637,6 +22227,76 @@ SELECT pg_catalog.setval('public.frostbite2025_specialdiet_id_seq', 1, false);
 
 
 --
+-- Name: frostbite2026_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2026_poison_id_seq', 1, false);
+
+
+--
+-- Name: frostbite2026_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2026_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: frostbite2026_signupextra_pick_your_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2026_signupextra_pick_your_poison_id_seq', 1, false);
+
+
+--
+-- Name: frostbite2026_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2026_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: frostbite2026_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2026_specialdiet_id_seq', 1, false);
+
+
+--
+-- Name: frostbite2027_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2027_poison_id_seq', 1, false);
+
+
+--
+-- Name: frostbite2027_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2027_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: frostbite2027_signupextra_pick_your_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2027_signupextra_pick_your_poison_id_seq', 1, false);
+
+
+--
+-- Name: frostbite2027_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2027_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: frostbite2027_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.frostbite2027_specialdiet_id_seq', 1, false);
+
+
+--
 -- Name: hitpoint2017_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -19812,6 +22472,13 @@ SELECT pg_catalog.setval('public.involvement_involvementdimensionvalue_id_seq', 
 
 
 --
+-- Name: involvement_involvementeventmeta_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.involvement_involvementeventmeta_id_seq', 1, false);
+
+
+--
 -- Name: involvement_involvementtobadgemapping_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -19942,6 +22609,76 @@ SELECT pg_catalog.setval('public.kotaeexpo2025_signupextra_special_diet_id_seq',
 --
 
 SELECT pg_catalog.setval('public.kotaeexpo2025_timeslot_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_accessibilitywarning_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_accessibilitywarning_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_accommodation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_accommodation_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_knownlanguage_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_knownlanguage_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_accommodation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_signupextra_accommodation_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_known_language_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_signupextra_known_language_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_work_days_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_signupextra_work_days_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_timeslot_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_timeslot_id_seq', 1, false);
+
+
+--
+-- Name: kotaeexpo2026_workday_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kotaeexpo2026_workday_id_seq', 1, false);
 
 
 --
@@ -20110,6 +22847,48 @@ SELECT pg_catalog.setval('public.kuplii2025_signupextra_special_diet_id_seq', 1,
 --
 
 SELECT pg_catalog.setval('public.kuplii2025_specialdiet_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2026_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2026_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2026_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2026_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2026_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2026_specialdiet_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2027_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2027_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2027_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2027_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: kuplii2027_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.kuplii2027_specialdiet_id_seq', 1, false);
 
 
 --
@@ -20442,6 +23221,27 @@ SELECT pg_catalog.setval('public.membership_term_id_seq', 1, false);
 
 
 --
+-- Name: messages_v2_messagebody_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.messages_v2_messagebody_id_seq', 1, false);
+
+
+--
+-- Name: messages_v2_messagerecipient_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.messages_v2_messagerecipient_id_seq', 1, false);
+
+
+--
+-- Name: messages_v2_messagereplyto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.messages_v2_messagereplyto_id_seq', 1, false);
+
+
+--
 -- Name: nekocon2019_night_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -20596,6 +23396,13 @@ SELECT pg_catalog.setval('public.oauth2_provider_application_id_seq', 1, false);
 
 
 --
+-- Name: oauth2_provider_devicegrant_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.oauth2_provider_devicegrant_id_seq', 1, false);
+
+
+--
 -- Name: oauth2_provider_grant_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -20733,13 +23540,6 @@ SELECT pg_catalog.setval('public.popcultday2024_signupextra_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('public.popcultday2024_signupextra_special_diet_id_seq', 1, false);
-
-
---
--- Name: program_v2_annotation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.program_v2_annotation_id_seq', 1, false);
 
 
 --
@@ -21261,6 +24061,76 @@ SELECT pg_catalog.setval('public.ropecon2025_timeslot_id_seq', 1, false);
 
 
 --
+-- Name: ropecon2026_language_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2026_language_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2026_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2026_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2026_signupextra_languages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2026_signupextra_languages_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2026_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2026_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2026_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2026_specialdiet_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2027_language_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2027_language_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2027_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2027_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2027_signupextra_languages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2027_signupextra_languages_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2027_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2027_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: ropecon2027_specialdiet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.ropecon2027_specialdiet_id_seq', 1, false);
+
+
+--
 -- Name: shumicon2023_eventday_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -21468,6 +24338,13 @@ SELECT pg_catalog.setval('public.tickets_product_limit_groups_id_seq', 1, false)
 --
 
 SELECT pg_catalog.setval('public.tickets_v2_order_order_number_seq', 1, false);
+
+
+--
+-- Name: tickets_v2_ordercancellationtoken_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tickets_v2_ordercancellationtoken_id_seq', 1, false);
 
 
 --
@@ -21870,6 +24747,62 @@ SELECT pg_catalog.setval('public.tracon2025_timeslot_id_seq', 1, false);
 
 
 --
+-- Name: tracon2026_accessibilitywarning_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2026_accessibilitywarning_id_seq', 1, false);
+
+
+--
+-- Name: tracon2026_night_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2026_night_id_seq', 1, false);
+
+
+--
+-- Name: tracon2026_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2026_poison_id_seq', 1, false);
+
+
+--
+-- Name: tracon2026_signupextra_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2026_signupextra_id_seq', 1, false);
+
+
+--
+-- Name: tracon2026_signupextra_lodging_needs_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2026_signupextra_lodging_needs_id_seq', 1, false);
+
+
+--
+-- Name: tracon2026_signupextra_pick_your_poison_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2026_signupextra_pick_your_poison_id_seq', 1, false);
+
+
+--
+-- Name: tracon2026_signupextra_special_diet_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2026_signupextra_special_diet_id_seq', 1, false);
+
+
+--
+-- Name: tracon2026_timeslot_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('public.tracon2026_timeslot_id_seq', 1, false);
+
+
+--
 -- Name: access_accessorganizationmeta access_accessorganizationmeta_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -21963,6 +24896,14 @@ ALTER TABLE ONLY public.access_groupprivilege
 
 ALTER TABLE ONLY public.access_groupprivilege
     ADD CONSTRAINT access_groupprivilege_privilege_id_group_id_a358dca1_uniq UNIQUE (privilege_id, group_id);
+
+
+--
+-- Name: access_internalemailalias access_internalemailalias_domain_id_account_name_567a5526_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.access_internalemailalias
+    ADD CONSTRAINT access_internalemailalias_domain_id_account_name_567a5526_uniq UNIQUE (domain_id, account_name);
 
 
 --
@@ -22294,6 +25235,38 @@ ALTER TABLE ONLY public.cosmocon2025_signupextra_special_diet
 
 
 --
+-- Name: cosmocon2026_signupextra cosmocon2026_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cosmocon2026_signupextra
+    ADD CONSTRAINT cosmocon2026_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: cosmocon2026_signupextra cosmocon2026_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cosmocon2026_signupextra
+    ADD CONSTRAINT cosmocon2026_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: cosmocon2026_signupextra_special_diet cosmocon2026_signupextra_signupextra_id_specialdi_dfe666b7_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cosmocon2026_signupextra_special_diet
+    ADD CONSTRAINT cosmocon2026_signupextra_signupextra_id_specialdi_dfe666b7_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: cosmocon2026_signupextra_special_diet cosmocon2026_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cosmocon2026_signupextra_special_diet
+    ADD CONSTRAINT cosmocon2026_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: cosvision2023_signupextra_special_diet cosvision2023_signupextr_signupextra_id_specialdi_66c58128_uniq; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -22622,6 +25595,70 @@ ALTER TABLE ONLY public.desucon2025_specialdiet
 
 
 --
+-- Name: desucon2026_poison desucon2026_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_poison
+    ADD CONSTRAINT desucon2026_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: desucon2026_signupextra_pick_your_poison desucon2026_signupextra__signupextra_id_poison_id_bf5fc073_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra_pick_your_poison
+    ADD CONSTRAINT desucon2026_signupextra__signupextra_id_poison_id_bf5fc073_uniq UNIQUE (signupextra_id, poison_id);
+
+
+--
+-- Name: desucon2026_signupextra_special_diet desucon2026_signupextra__signupextra_id_specialdi_b777aa09_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra_special_diet
+    ADD CONSTRAINT desucon2026_signupextra__signupextra_id_specialdi_b777aa09_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: desucon2026_signupextra desucon2026_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra
+    ADD CONSTRAINT desucon2026_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: desucon2026_signupextra_pick_your_poison desucon2026_signupextra_pick_your_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra_pick_your_poison
+    ADD CONSTRAINT desucon2026_signupextra_pick_your_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: desucon2026_signupextra desucon2026_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra
+    ADD CONSTRAINT desucon2026_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: desucon2026_signupextra_special_diet desucon2026_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra_special_diet
+    ADD CONSTRAINT desucon2026_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: desucon2026_specialdiet desucon2026_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_specialdiet
+    ADD CONSTRAINT desucon2026_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: desuprofile_integration_confirmationcode desuprofile_integration_confirmationcode_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -22659,6 +25696,22 @@ ALTER TABLE ONLY public.desuprofile_integration_connection
 
 ALTER TABLE ONLY public.dimensions_dimension
     ADD CONSTRAINT dimension_unique_universe_slug UNIQUE (universe_id, slug);
+
+
+--
+-- Name: dimensions_annotation dimensions_annotation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dimensions_annotation
+    ADD CONSTRAINT dimensions_annotation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dimensions_annotation dimensions_annotation_slug_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dimensions_annotation
+    ADD CONSTRAINT dimensions_annotation_slug_key UNIQUE (slug);
 
 
 --
@@ -22715,6 +25768,22 @@ ALTER TABLE ONLY public.dimensions_universe
 
 ALTER TABLE ONLY public.dimensions_universe
     ADD CONSTRAINT dimensions_universe_scope_id_slug_49c5a5fa_uniq UNIQUE (scope_id, slug);
+
+
+--
+-- Name: dimensions_universeannotation dimensions_universeannot_universe_id_annotation_i_e5dee68b_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dimensions_universeannotation
+    ADD CONSTRAINT dimensions_universeannot_universe_id_annotation_i_e5dee68b_uniq UNIQUE (universe_id, annotation_id);
+
+
+--
+-- Name: dimensions_universeannotation dimensions_universeannotation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dimensions_universeannotation
+    ADD CONSTRAINT dimensions_universeannotation_pkey PRIMARY KEY (id);
 
 
 --
@@ -23486,6 +26555,134 @@ ALTER TABLE ONLY public.frostbite2025_specialdiet
 
 
 --
+-- Name: frostbite2026_poison frostbite2026_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_poison
+    ADD CONSTRAINT frostbite2026_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frostbite2026_signupextra_pick_your_poison frostbite2026_signupextr_signupextra_id_poison_id_f40b485b_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra_pick_your_poison
+    ADD CONSTRAINT frostbite2026_signupextr_signupextra_id_poison_id_f40b485b_uniq UNIQUE (signupextra_id, poison_id);
+
+
+--
+-- Name: frostbite2026_signupextra_special_diet frostbite2026_signupextr_signupextra_id_specialdi_0aabb157_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra_special_diet
+    ADD CONSTRAINT frostbite2026_signupextr_signupextra_id_specialdi_0aabb157_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: frostbite2026_signupextra frostbite2026_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra
+    ADD CONSTRAINT frostbite2026_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: frostbite2026_signupextra_pick_your_poison frostbite2026_signupextra_pick_your_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra_pick_your_poison
+    ADD CONSTRAINT frostbite2026_signupextra_pick_your_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frostbite2026_signupextra frostbite2026_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra
+    ADD CONSTRAINT frostbite2026_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frostbite2026_signupextra_special_diet frostbite2026_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra_special_diet
+    ADD CONSTRAINT frostbite2026_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frostbite2026_specialdiet frostbite2026_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_specialdiet
+    ADD CONSTRAINT frostbite2026_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frostbite2027_poison frostbite2027_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_poison
+    ADD CONSTRAINT frostbite2027_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frostbite2027_signupextra_pick_your_poison frostbite2027_signupextr_signupextra_id_poison_id_002be204_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra_pick_your_poison
+    ADD CONSTRAINT frostbite2027_signupextr_signupextra_id_poison_id_002be204_uniq UNIQUE (signupextra_id, poison_id);
+
+
+--
+-- Name: frostbite2027_signupextra_special_diet frostbite2027_signupextr_signupextra_id_specialdi_b4de8830_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra_special_diet
+    ADD CONSTRAINT frostbite2027_signupextr_signupextra_id_specialdi_b4de8830_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: frostbite2027_signupextra frostbite2027_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra
+    ADD CONSTRAINT frostbite2027_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: frostbite2027_signupextra_pick_your_poison frostbite2027_signupextra_pick_your_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra_pick_your_poison
+    ADD CONSTRAINT frostbite2027_signupextra_pick_your_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frostbite2027_signupextra frostbite2027_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra
+    ADD CONSTRAINT frostbite2027_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frostbite2027_signupextra_special_diet frostbite2027_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra_special_diet
+    ADD CONSTRAINT frostbite2027_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frostbite2027_specialdiet frostbite2027_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_specialdiet
+    ADD CONSTRAINT frostbite2027_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: hitpoint2017_specialdiet hitpoint2017_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -23822,6 +27019,30 @@ ALTER TABLE ONLY public.involvement_involvementdimensionvalue
 
 
 --
+-- Name: involvement_involvementeventmeta involvement_involvementeventmeta_event_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.involvement_involvementeventmeta
+    ADD CONSTRAINT involvement_involvementeventmeta_event_id_key UNIQUE (event_id);
+
+
+--
+-- Name: involvement_involvementeventmeta involvement_involvementeventmeta_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.involvement_involvementeventmeta
+    ADD CONSTRAINT involvement_involvementeventmeta_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: involvement_involvementeventmeta involvement_involvementeventmeta_universe_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.involvement_involvementeventmeta
+    ADD CONSTRAINT involvement_involvementeventmeta_universe_id_key UNIQUE (universe_id);
+
+
+--
 -- Name: involvement_involvementtobadgemapping involvement_involvementtobadgemapping_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -24043,6 +27264,126 @@ ALTER TABLE ONLY public.kotaeexpo2025_signupextra_special_diet
 
 ALTER TABLE ONLY public.kotaeexpo2025_timeslot
     ADD CONSTRAINT kotaeexpo2025_timeslot_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_accessibilitywarning kotaeexpo2026_accessibilitywarning_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_accessibilitywarning
+    ADD CONSTRAINT kotaeexpo2026_accessibilitywarning_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_accommodation kotaeexpo2026_accommodation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_accommodation
+    ADD CONSTRAINT kotaeexpo2026_accommodation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_knownlanguage kotaeexpo2026_knownlanguage_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_knownlanguage
+    ADD CONSTRAINT kotaeexpo2026_knownlanguage_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_accommodation kotaeexpo2026_signupextr_signupextra_id_accommoda_788f4d3d_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_accommodation
+    ADD CONSTRAINT kotaeexpo2026_signupextr_signupextra_id_accommoda_788f4d3d_uniq UNIQUE (signupextra_id, accommodation_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_known_language kotaeexpo2026_signupextr_signupextra_id_knownlang_1832be18_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_known_language
+    ADD CONSTRAINT kotaeexpo2026_signupextr_signupextra_id_knownlang_1832be18_uniq UNIQUE (signupextra_id, knownlanguage_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_special_diet kotaeexpo2026_signupextr_signupextra_id_specialdi_7faf9e6c_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_special_diet
+    ADD CONSTRAINT kotaeexpo2026_signupextr_signupextra_id_specialdi_7faf9e6c_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_work_days kotaeexpo2026_signupextr_signupextra_id_workday_i_14ae161a_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_work_days
+    ADD CONSTRAINT kotaeexpo2026_signupextr_signupextra_id_workday_i_14ae161a_uniq UNIQUE (signupextra_id, workday_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_accommodation kotaeexpo2026_signupextra_accommodation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_accommodation
+    ADD CONSTRAINT kotaeexpo2026_signupextra_accommodation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_known_language kotaeexpo2026_signupextra_known_language_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_known_language
+    ADD CONSTRAINT kotaeexpo2026_signupextra_known_language_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra kotaeexpo2026_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra
+    ADD CONSTRAINT kotaeexpo2026_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra kotaeexpo2026_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra
+    ADD CONSTRAINT kotaeexpo2026_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_special_diet kotaeexpo2026_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_special_diet
+    ADD CONSTRAINT kotaeexpo2026_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_work_days kotaeexpo2026_signupextra_work_days_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_work_days
+    ADD CONSTRAINT kotaeexpo2026_signupextra_work_days_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_timeslot kotaeexpo2026_timeslot_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_timeslot
+    ADD CONSTRAINT kotaeexpo2026_timeslot_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kotaeexpo2026_workday kotaeexpo2026_workday_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_workday
+    ADD CONSTRAINT kotaeexpo2026_workday_pkey PRIMARY KEY (id);
 
 
 --
@@ -24363,6 +27704,86 @@ ALTER TABLE ONLY public.kuplii2025_signupextra_special_diet
 
 ALTER TABLE ONLY public.kuplii2025_specialdiet
     ADD CONSTRAINT kuplii2025_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2026_signupextra kuplii2026_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2026_signupextra
+    ADD CONSTRAINT kuplii2026_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: kuplii2026_signupextra kuplii2026_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2026_signupextra
+    ADD CONSTRAINT kuplii2026_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2026_signupextra_special_diet kuplii2026_signupextra_s_signupextra_id_specialdi_9ea948dc_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2026_signupextra_special_diet
+    ADD CONSTRAINT kuplii2026_signupextra_s_signupextra_id_specialdi_9ea948dc_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: kuplii2026_signupextra_special_diet kuplii2026_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2026_signupextra_special_diet
+    ADD CONSTRAINT kuplii2026_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2026_specialdiet kuplii2026_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2026_specialdiet
+    ADD CONSTRAINT kuplii2026_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2027_signupextra kuplii2027_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2027_signupextra
+    ADD CONSTRAINT kuplii2027_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: kuplii2027_signupextra kuplii2027_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2027_signupextra
+    ADD CONSTRAINT kuplii2027_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2027_signupextra_special_diet kuplii2027_signupextra_s_signupextra_id_specialdi_ee7e33d3_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2027_signupextra_special_diet
+    ADD CONSTRAINT kuplii2027_signupextra_s_signupextra_id_specialdi_ee7e33d3_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: kuplii2027_signupextra_special_diet kuplii2027_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2027_signupextra_special_diet
+    ADD CONSTRAINT kuplii2027_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: kuplii2027_specialdiet kuplii2027_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2027_specialdiet
+    ADD CONSTRAINT kuplii2027_specialdiet_pkey PRIMARY KEY (id);
 
 
 --
@@ -25038,6 +28459,46 @@ ALTER TABLE ONLY public.membership_term
 
 
 --
+-- Name: messages_v2_message messages_v2_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_message
+    ADD CONSTRAINT messages_v2_message_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: messages_v2_messagebody messages_v2_messagebody_digest_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_messagebody
+    ADD CONSTRAINT messages_v2_messagebody_digest_key UNIQUE (digest);
+
+
+--
+-- Name: messages_v2_messagebody messages_v2_messagebody_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_messagebody
+    ADD CONSTRAINT messages_v2_messagebody_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: messages_v2_messagerecipient messages_v2_messagerecipient_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_messagerecipient
+    ADD CONSTRAINT messages_v2_messagerecipient_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: messages_v2_messagereplyto messages_v2_messagereplyto_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_messagereplyto
+    ADD CONSTRAINT messages_v2_messagereplyto_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: nekocon2019_night nekocon2019_night_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -25342,6 +28803,22 @@ ALTER TABLE ONLY public.oauth2_provider_application
 
 
 --
+-- Name: oauth2_provider_devicegrant oauth2_provider_devicegrant_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_devicegrant
+    ADD CONSTRAINT oauth2_provider_devicegrant_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth2_provider_devicegrant oauth2_provider_devicegrant_unique_device_code; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_devicegrant
+    ADD CONSTRAINT oauth2_provider_devicegrant_unique_device_code UNIQUE (device_code);
+
+
+--
 -- Name: oauth2_provider_grant oauth2_provider_grant_code_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -25374,6 +28851,14 @@ ALTER TABLE ONLY public.oauth2_provider_idtoken
 
 
 --
+-- Name: oauth2_provider_refreshtoken oauth2_provider_refresht_token_checksum_revoked_46c81d1d_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_refreshtoken
+    ADD CONSTRAINT oauth2_provider_refresht_token_checksum_revoked_46c81d1d_uniq UNIQUE (token_checksum, revoked);
+
+
+--
 -- Name: oauth2_provider_refreshtoken oauth2_provider_refreshtoken_access_token_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -25387,14 +28872,6 @@ ALTER TABLE ONLY public.oauth2_provider_refreshtoken
 
 ALTER TABLE ONLY public.oauth2_provider_refreshtoken
     ADD CONSTRAINT oauth2_provider_refreshtoken_pkey PRIMARY KEY (id);
-
-
---
--- Name: oauth2_provider_refreshtoken oauth2_provider_refreshtoken_token_revoked_af8a5134_uniq; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.oauth2_provider_refreshtoken
-    ADD CONSTRAINT oauth2_provider_refreshtoken_token_revoked_af8a5134_uniq UNIQUE (token, revoked);
 
 
 --
@@ -25654,27 +29131,19 @@ ALTER TABLE ONLY public.popcultday2024_signupextra_special_diet
 
 
 --
--- Name: program_v2_annotation program_v2_annotation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: program_v2_paikkalaroommapping program_v2_paikkalaroommapping_paikkala_room_id_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.program_v2_annotation
-    ADD CONSTRAINT program_v2_annotation_pkey PRIMARY KEY (id);
-
-
---
--- Name: program_v2_annotation program_v2_annotation_slug_key; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.program_v2_annotation
-    ADD CONSTRAINT program_v2_annotation_slug_key UNIQUE (slug);
+ALTER TABLE ONLY public.program_v2_paikkalaroommapping
+    ADD CONSTRAINT program_v2_paikkalaroommapping_paikkala_room_id_key UNIQUE (paikkala_room_id);
 
 
 --
--- Name: program_v2_eventannotation program_v2_eventannotation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: program_v2_paikkalaroommapping program_v2_paikkalaroommapping_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.program_v2_eventannotation
-    ADD CONSTRAINT program_v2_eventannotation_pkey PRIMARY KEY (meta_id, annotation_id);
+ALTER TABLE ONLY public.program_v2_paikkalaroommapping
+    ADD CONSTRAINT program_v2_paikkalaroommapping_pkey PRIMARY KEY (paikkala_dimension_value_id);
 
 
 --
@@ -25739,6 +29208,22 @@ ALTER TABLE ONLY public.program_v2_scheduleitem
 
 ALTER TABLE ONLY public.program_v2_scheduleitem_favorited_by
     ADD CONSTRAINT program_v2_scheduleitem_favorited_by_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: program_v2_scheduleitem program_v2_scheduleitem_paikkala_program_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.program_v2_scheduleitem
+    ADD CONSTRAINT program_v2_scheduleitem_paikkala_program_id_key UNIQUE (paikkala_program_id);
+
+
+--
+-- Name: program_v2_scheduleitem program_v2_scheduleitem_paikkala_special_reservation_code_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.program_v2_scheduleitem
+    ADD CONSTRAINT program_v2_scheduleitem_paikkala_special_reservation_code_key UNIQUE (paikkala_special_reservation_code);
 
 
 --
@@ -26678,6 +30163,134 @@ ALTER TABLE ONLY public.ropecon2025_timeslot
 
 
 --
+-- Name: ropecon2026_language ropecon2026_language_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_language
+    ADD CONSTRAINT ropecon2026_language_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2026_signupextra_languages ropecon2026_signupextra__signupextra_id_language__372f2a53_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra_languages
+    ADD CONSTRAINT ropecon2026_signupextra__signupextra_id_language__372f2a53_uniq UNIQUE (signupextra_id, language_id);
+
+
+--
+-- Name: ropecon2026_signupextra_special_diet ropecon2026_signupextra__signupextra_id_specialdi_3f119fe6_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra_special_diet
+    ADD CONSTRAINT ropecon2026_signupextra__signupextra_id_specialdi_3f119fe6_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: ropecon2026_signupextra_languages ropecon2026_signupextra_languages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra_languages
+    ADD CONSTRAINT ropecon2026_signupextra_languages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2026_signupextra ropecon2026_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra
+    ADD CONSTRAINT ropecon2026_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: ropecon2026_signupextra ropecon2026_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra
+    ADD CONSTRAINT ropecon2026_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2026_signupextra_special_diet ropecon2026_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra_special_diet
+    ADD CONSTRAINT ropecon2026_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2026_specialdiet ropecon2026_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_specialdiet
+    ADD CONSTRAINT ropecon2026_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2027_language ropecon2027_language_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_language
+    ADD CONSTRAINT ropecon2027_language_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2027_signupextra_languages ropecon2027_signupextra__signupextra_id_language__a9ffaa3b_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra_languages
+    ADD CONSTRAINT ropecon2027_signupextra__signupextra_id_language__a9ffaa3b_uniq UNIQUE (signupextra_id, language_id);
+
+
+--
+-- Name: ropecon2027_signupextra_special_diet ropecon2027_signupextra__signupextra_id_specialdi_3c57908b_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra_special_diet
+    ADD CONSTRAINT ropecon2027_signupextra__signupextra_id_specialdi_3c57908b_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: ropecon2027_signupextra_languages ropecon2027_signupextra_languages_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra_languages
+    ADD CONSTRAINT ropecon2027_signupextra_languages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2027_signupextra ropecon2027_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra
+    ADD CONSTRAINT ropecon2027_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: ropecon2027_signupextra ropecon2027_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra
+    ADD CONSTRAINT ropecon2027_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2027_signupextra_special_diet ropecon2027_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra_special_diet
+    ADD CONSTRAINT ropecon2027_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ropecon2027_specialdiet ropecon2027_specialdiet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_specialdiet
+    ADD CONSTRAINT ropecon2027_specialdiet_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: dimensions_scope scope_unique_organization_event; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -27035,6 +30648,22 @@ ALTER TABLE ONLY public.tickets_ticketseventmeta
 
 ALTER TABLE ONLY public.tickets_v2_order
     ADD CONSTRAINT tickets_v2_order_pkey PRIMARY KEY (event_id, id);
+
+
+--
+-- Name: tickets_v2_ordercancellationtoken tickets_v2_ordercancellationtoken_code_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tickets_v2_ordercancellationtoken
+    ADD CONSTRAINT tickets_v2_ordercancellationtoken_code_key UNIQUE (code);
+
+
+--
+-- Name: tickets_v2_ordercancellationtoken tickets_v2_ordercancellationtoken_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tickets_v2_ordercancellationtoken
+    ADD CONSTRAINT tickets_v2_ordercancellationtoken_pkey PRIMARY KEY (id);
 
 
 --
@@ -27790,6 +31419,102 @@ ALTER TABLE ONLY public.tracon2025_timeslot
 
 
 --
+-- Name: tracon2026_accessibilitywarning tracon2026_accessibilitywarning_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_accessibilitywarning
+    ADD CONSTRAINT tracon2026_accessibilitywarning_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2026_night tracon2026_night_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_night
+    ADD CONSTRAINT tracon2026_night_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2026_poison tracon2026_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_poison
+    ADD CONSTRAINT tracon2026_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2026_signupextra_lodging_needs tracon2026_signupextra_l_signupextra_id_night_id_60073840_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_lodging_needs
+    ADD CONSTRAINT tracon2026_signupextra_l_signupextra_id_night_id_60073840_uniq UNIQUE (signupextra_id, night_id);
+
+
+--
+-- Name: tracon2026_signupextra_lodging_needs tracon2026_signupextra_lodging_needs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_lodging_needs
+    ADD CONSTRAINT tracon2026_signupextra_lodging_needs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2026_signupextra_pick_your_poison tracon2026_signupextra_p_signupextra_id_poison_id_b9851edc_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_pick_your_poison
+    ADD CONSTRAINT tracon2026_signupextra_p_signupextra_id_poison_id_b9851edc_uniq UNIQUE (signupextra_id, poison_id);
+
+
+--
+-- Name: tracon2026_signupextra tracon2026_signupextra_person_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra
+    ADD CONSTRAINT tracon2026_signupextra_person_id_key UNIQUE (person_id);
+
+
+--
+-- Name: tracon2026_signupextra_pick_your_poison tracon2026_signupextra_pick_your_poison_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_pick_your_poison
+    ADD CONSTRAINT tracon2026_signupextra_pick_your_poison_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2026_signupextra tracon2026_signupextra_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra
+    ADD CONSTRAINT tracon2026_signupextra_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2026_signupextra_special_diet tracon2026_signupextra_s_signupextra_id_specialdi_e357234c_uniq; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_special_diet
+    ADD CONSTRAINT tracon2026_signupextra_s_signupextra_id_specialdi_e357234c_uniq UNIQUE (signupextra_id, specialdiet_id);
+
+
+--
+-- Name: tracon2026_signupextra_special_diet tracon2026_signupextra_special_diet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_special_diet
+    ADD CONSTRAINT tracon2026_signupextra_special_diet_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: tracon2026_timeslot tracon2026_timeslot_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_timeslot
+    ADD CONSTRAINT tracon2026_timeslot_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: access_accessorganizationmeta_admin_group_id_fba465cc; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -28084,6 +31809,13 @@ CREATE INDEX badges_badgeseventmeta_onboarding_access_group_id_e7a93d42 ON publi
 
 
 --
+-- Name: badges_badgeseventmeta_registry_id_e548246e; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX badges_badgeseventmeta_registry_id_e548246e ON public.badges_badgeseventmeta USING btree (registry_id);
+
+
+--
 -- Name: badges_batch_event_id_4587b0d6; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -28200,6 +31932,27 @@ CREATE INDEX cosmocon2025_signupextra_special_diet_signupextra_id_31afd404 ON pu
 --
 
 CREATE INDEX cosmocon2025_signupextra_special_diet_specialdiet_id_3b88430f ON public.cosmocon2025_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: cosmocon2026_signupextra_event_id_87cb15f2; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX cosmocon2026_signupextra_event_id_87cb15f2 ON public.cosmocon2026_signupextra USING btree (event_id);
+
+
+--
+-- Name: cosmocon2026_signupextra_special_diet_signupextra_id_6f5edfba; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX cosmocon2026_signupextra_special_diet_signupextra_id_6f5edfba ON public.cosmocon2026_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: cosmocon2026_signupextra_special_diet_specialdiet_id_b45202ac; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX cosmocon2026_signupextra_special_diet_specialdiet_id_b45202ac ON public.cosmocon2026_signupextra_special_diet USING btree (specialdiet_id);
 
 
 --
@@ -28378,6 +32131,41 @@ CREATE INDEX desucon2025_signupextra_special_diet_specialdiet_id_0ab3cd90 ON pub
 
 
 --
+-- Name: desucon2026_signupextra_event_id_3ccf2600; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX desucon2026_signupextra_event_id_3ccf2600 ON public.desucon2026_signupextra USING btree (event_id);
+
+
+--
+-- Name: desucon2026_signupextra_pi_signupextra_id_2bd512f1; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX desucon2026_signupextra_pi_signupextra_id_2bd512f1 ON public.desucon2026_signupextra_pick_your_poison USING btree (signupextra_id);
+
+
+--
+-- Name: desucon2026_signupextra_pick_your_poison_poison_id_210f1ca2; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX desucon2026_signupextra_pick_your_poison_poison_id_210f1ca2 ON public.desucon2026_signupextra_pick_your_poison USING btree (poison_id);
+
+
+--
+-- Name: desucon2026_signupextra_special_diet_signupextra_id_6905bdb7; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX desucon2026_signupextra_special_diet_signupextra_id_6905bdb7 ON public.desucon2026_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: desucon2026_signupextra_special_diet_specialdiet_id_c14edd32; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX desucon2026_signupextra_special_diet_specialdiet_id_c14edd32 ON public.desucon2026_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
 -- Name: desuprofile_integration_confirmationcode_code_b91a1441_like; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -28396,6 +32184,13 @@ CREATE INDEX desuprofile_integration_confirmationcode_person_id_30adca39 ON publ
 --
 
 CREATE INDEX desuprofile_person__372366_idx ON public.desuprofile_integration_confirmationcode USING btree (person_id, state);
+
+
+--
+-- Name: dimensions_annotation_slug_c3eb1ed3_like; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX dimensions_annotation_slug_c3eb1ed3_like ON public.dimensions_annotation USING btree (slug varchar_pattern_ops);
 
 
 --
@@ -28438,6 +32233,20 @@ CREATE INDEX dimensions_scope_slug_5754dd46_like ON public.dimensions_scope USIN
 --
 
 CREATE INDEX dimensions_universe_scope_id_cf68c598 ON public.dimensions_universe USING btree (scope_id);
+
+
+--
+-- Name: dimensions_universeannotation_annotation_id_3993a624; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX dimensions_universeannotation_annotation_id_3993a624 ON public.dimensions_universeannotation USING btree (annotation_id);
+
+
+--
+-- Name: dimensions_universeannotation_universe_id_ef459d63; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX dimensions_universeannotation_universe_id_ef459d63 ON public.dimensions_universeannotation USING btree (universe_id);
 
 
 --
@@ -29022,6 +32831,76 @@ CREATE INDEX frostbite2025_signupextra_special_diet_specialdiet_id_2af32515 ON p
 
 
 --
+-- Name: frostbite2026_signupextra__signupextra_id_c1791093; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2026_signupextra__signupextra_id_c1791093 ON public.frostbite2026_signupextra_pick_your_poison USING btree (signupextra_id);
+
+
+--
+-- Name: frostbite2026_signupextra_event_id_e539fcf3; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2026_signupextra_event_id_e539fcf3 ON public.frostbite2026_signupextra USING btree (event_id);
+
+
+--
+-- Name: frostbite2026_signupextra_pick_your_poison_poison_id_6285e721; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2026_signupextra_pick_your_poison_poison_id_6285e721 ON public.frostbite2026_signupextra_pick_your_poison USING btree (poison_id);
+
+
+--
+-- Name: frostbite2026_signupextra_special_diet_signupextra_id_ad5212c6; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2026_signupextra_special_diet_signupextra_id_ad5212c6 ON public.frostbite2026_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: frostbite2026_signupextra_special_diet_specialdiet_id_8bcf0827; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2026_signupextra_special_diet_specialdiet_id_8bcf0827 ON public.frostbite2026_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: frostbite2027_signupextra__signupextra_id_5b650c8b; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2027_signupextra__signupextra_id_5b650c8b ON public.frostbite2027_signupextra_pick_your_poison USING btree (signupextra_id);
+
+
+--
+-- Name: frostbite2027_signupextra_event_id_c6151076; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2027_signupextra_event_id_c6151076 ON public.frostbite2027_signupextra USING btree (event_id);
+
+
+--
+-- Name: frostbite2027_signupextra_pick_your_poison_poison_id_e8b4f99d; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2027_signupextra_pick_your_poison_poison_id_e8b4f99d ON public.frostbite2027_signupextra_pick_your_poison USING btree (poison_id);
+
+
+--
+-- Name: frostbite2027_signupextra_special_diet_signupextra_id_c930f915; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2027_signupextra_special_diet_signupextra_id_c930f915 ON public.frostbite2027_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: frostbite2027_signupextra_special_diet_specialdiet_id_b50638c2; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX frostbite2027_signupextra_special_diet_specialdiet_id_b50638c2 ON public.frostbite2027_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
 -- Name: hitpoint2019_signupextra_special_diet_signupextra_id_18702404; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -29218,6 +33097,20 @@ CREATE INDEX involvement_involvementdimensionvalue_value_id_903e56e1 ON public.i
 
 
 --
+-- Name: involvement_involvementeventmeta_admin_group_id_2f2d7283; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX involvement_involvementeventmeta_admin_group_id_2f2d7283 ON public.involvement_involvementeventmeta USING btree (admin_group_id);
+
+
+--
+-- Name: involvement_involvementeventmeta_default_registry_id_d067215b; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX involvement_involvementeventmeta_default_registry_id_d067215b ON public.involvement_involvementeventmeta USING btree (default_registry_id);
+
+
+--
 -- Name: involvement_involvementtob_personnel_class_id_25d54e49; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -29285,6 +33178,13 @@ CREATE INDEX involvement_registry_slug_a27e9657_like ON public.involvement_regis
 --
 
 CREATE INDEX involvement_response_idx ON public.involvement_involvement USING btree (response_id) WHERE (response_id IS NOT NULL);
+
+
+--
+-- Name: involvement_univers_1342ca_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX involvement_univers_1342ca_idx ON public.involvement_involvement USING btree (universe_id, person_id, app, type);
 
 
 --
@@ -29390,6 +33290,69 @@ CREATE INDEX kotaeexpo2025_signupextra_special_diet_signupextra_id_1b30f5a2 ON p
 --
 
 CREATE INDEX kotaeexpo2025_signupextra_special_diet_specialdiet_id_ecdbe805 ON public.kotaeexpo2025_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra__accommodation_id_c7ff20ca; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kotaeexpo2026_signupextra__accommodation_id_c7ff20ca ON public.kotaeexpo2026_signupextra_accommodation USING btree (accommodation_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra__knownlanguage_id_cf0ff638; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kotaeexpo2026_signupextra__knownlanguage_id_cf0ff638 ON public.kotaeexpo2026_signupextra_known_language USING btree (knownlanguage_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra__signupextra_id_662c3f29; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kotaeexpo2026_signupextra__signupextra_id_662c3f29 ON public.kotaeexpo2026_signupextra_known_language USING btree (signupextra_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_accommodation_signupextra_id_cc70667a; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kotaeexpo2026_signupextra_accommodation_signupextra_id_cc70667a ON public.kotaeexpo2026_signupextra_accommodation USING btree (signupextra_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_event_id_8349c0f9; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kotaeexpo2026_signupextra_event_id_8349c0f9 ON public.kotaeexpo2026_signupextra USING btree (event_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_special_diet_signupextra_id_051160fb; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kotaeexpo2026_signupextra_special_diet_signupextra_id_051160fb ON public.kotaeexpo2026_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_special_diet_specialdiet_id_c75374f1; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kotaeexpo2026_signupextra_special_diet_specialdiet_id_c75374f1 ON public.kotaeexpo2026_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_work_days_signupextra_id_466a82f3; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kotaeexpo2026_signupextra_work_days_signupextra_id_466a82f3 ON public.kotaeexpo2026_signupextra_work_days USING btree (signupextra_id);
+
+
+--
+-- Name: kotaeexpo2026_signupextra_work_days_workday_id_e0d3ac28; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kotaeexpo2026_signupextra_work_days_workday_id_e0d3ac28 ON public.kotaeexpo2026_signupextra_work_days USING btree (workday_id);
 
 
 --
@@ -29558,6 +33521,48 @@ CREATE INDEX kuplii2025_signupextra_special_diet_signupextra_id_77d2e70b ON publ
 --
 
 CREATE INDEX kuplii2025_signupextra_special_diet_specialdiet_id_0fd69684 ON public.kuplii2025_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: kuplii2026_signupextra_event_id_5c2ef418; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2026_signupextra_event_id_5c2ef418 ON public.kuplii2026_signupextra USING btree (event_id);
+
+
+--
+-- Name: kuplii2026_signupextra_special_diet_signupextra_id_ff142b03; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2026_signupextra_special_diet_signupextra_id_ff142b03 ON public.kuplii2026_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: kuplii2026_signupextra_special_diet_specialdiet_id_e8e92201; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2026_signupextra_special_diet_specialdiet_id_e8e92201 ON public.kuplii2026_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: kuplii2027_signupextra_event_id_e89e0325; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2027_signupextra_event_id_e89e0325 ON public.kuplii2027_signupextra USING btree (event_id);
+
+
+--
+-- Name: kuplii2027_signupextra_special_diet_signupextra_id_c0e0acfb; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2027_signupextra_special_diet_signupextra_id_c0e0acfb ON public.kuplii2027_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: kuplii2027_signupextra_special_diet_specialdiet_id_e58dcff0; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX kuplii2027_signupextra_special_diet_specialdiet_id_e58dcff0 ON public.kuplii2027_signupextra_special_diet USING btree (specialdiet_id);
 
 
 --
@@ -30191,6 +34196,83 @@ CREATE INDEX membership_term_organization_id_2856c581 ON public.membership_term 
 
 
 --
+-- Name: messages_v2_message_created_by_id_99628bdf; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX messages_v2_message_created_by_id_99628bdf ON public.messages_v2_message USING btree (created_by_id);
+
+
+--
+-- Name: messages_v2_message_reply_to_id_102eb4a6; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX messages_v2_message_reply_to_id_102eb4a6 ON public.messages_v2_message USING btree (reply_to_id);
+
+
+--
+-- Name: messages_v2_message_universe_id_5ef1744c; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX messages_v2_message_universe_id_5ef1744c ON public.messages_v2_message USING btree (universe_id);
+
+
+--
+-- Name: messages_v2_messagebody_digest_b6572499_like; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX messages_v2_messagebody_digest_b6572499_like ON public.messages_v2_messagebody USING btree (digest varchar_pattern_ops);
+
+
+--
+-- Name: messages_v2_messagerecipient_body_id_bd44191c; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX messages_v2_messagerecipient_body_id_bd44191c ON public.messages_v2_messagerecipient USING btree (body_id);
+
+
+--
+-- Name: messages_v2_messagerecipient_involvement_id_42953bf0; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX messages_v2_messagerecipient_involvement_id_42953bf0 ON public.messages_v2_messagerecipient USING btree (involvement_id);
+
+
+--
+-- Name: messages_v2_messagerecipient_message_id_5434dbc8; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX messages_v2_messagerecipient_message_id_5434dbc8 ON public.messages_v2_messagerecipient USING btree (message_id);
+
+
+--
+-- Name: messages_v2_messagerecipient_person_id_e4830c06; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX messages_v2_messagerecipient_person_id_e4830c06 ON public.messages_v2_messagerecipient USING btree (person_id);
+
+
+--
+-- Name: messages_v2_messagerecipient_unique_involvement; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX messages_v2_messagerecipient_unique_involvement ON public.messages_v2_messagerecipient USING btree (message_id, involvement_id) WHERE (involvement_id IS NOT NULL);
+
+
+--
+-- Name: messages_v2_messagerecipient_unique_person; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX messages_v2_messagerecipient_unique_person ON public.messages_v2_messagerecipient USING btree (message_id, person_id) WHERE (involvement_id IS NULL);
+
+
+--
+-- Name: messages_v2_messagereplyto_universe_id_33accf74; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX messages_v2_messagereplyto_universe_id_33accf74 ON public.messages_v2_messagereplyto USING btree (universe_id);
+
+
+--
 -- Name: nekocon2019_signupextra_event_id_367577ef; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -30331,6 +34413,13 @@ CREATE INDEX nekocon2023_signupextra_special_diet_specialdiet_id_4dc09df7 ON pub
 
 
 --
+-- Name: oauth2_prov_token_f_996e8a_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_prov_token_f_996e8a_idx ON public.oauth2_provider_refreshtoken USING btree (token_family);
+
+
+--
 -- Name: oauth2_provider_accesstoken_application_id_b22886e1; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -30377,6 +34466,27 @@ CREATE INDEX oauth2_provider_application_client_secret_53133678_like ON public.o
 --
 
 CREATE INDEX oauth2_provider_application_user_id_79829054 ON public.oauth2_provider_application USING btree (user_id);
+
+
+--
+-- Name: oauth2_provider_devicegrant_client_id_229dd06d; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_provider_devicegrant_client_id_229dd06d ON public.oauth2_provider_devicegrant USING btree (client_id);
+
+
+--
+-- Name: oauth2_provider_devicegrant_client_id_229dd06d_like; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_provider_devicegrant_client_id_229dd06d_like ON public.oauth2_provider_devicegrant USING btree (client_id varchar_pattern_ops);
+
+
+--
+-- Name: oauth2_provider_devicegrant_user_id_1cec5156; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX oauth2_provider_devicegrant_user_id_1cec5156 ON public.oauth2_provider_devicegrant USING btree (user_id);
 
 
 --
@@ -30622,27 +34732,6 @@ CREATE INDEX popcultday2024_signupextra_special_diet_signupextra_id_05892318 ON 
 --
 
 CREATE INDEX popcultday2024_signupextra_special_diet_specialdiet_id_beffbdd8 ON public.popcultday2024_signupextra_special_diet USING btree (specialdiet_id);
-
-
---
--- Name: program_v2_annotation_slug_32d95527_like; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX program_v2_annotation_slug_32d95527_like ON public.program_v2_annotation USING btree (slug varchar_pattern_ops);
-
-
---
--- Name: program_v2_eventannotation_annotation_id_d72efdb5; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX program_v2_eventannotation_annotation_id_d72efdb5 ON public.program_v2_eventannotation USING btree (annotation_id);
-
-
---
--- Name: program_v2_eventannotation_meta_id_56ea2784; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX program_v2_eventannotation_meta_id_56ea2784 ON public.program_v2_eventannotation USING btree (meta_id);
 
 
 --
@@ -31381,6 +35470,76 @@ CREATE INDEX ropecon2025_signupextra_special_diet_specialdiet_id_5b3e9490 ON pub
 
 
 --
+-- Name: ropecon2026_signupextra_event_id_384cc2e2; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2026_signupextra_event_id_384cc2e2 ON public.ropecon2026_signupextra USING btree (event_id);
+
+
+--
+-- Name: ropecon2026_signupextra_languages_language_id_c71b43a3; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2026_signupextra_languages_language_id_c71b43a3 ON public.ropecon2026_signupextra_languages USING btree (language_id);
+
+
+--
+-- Name: ropecon2026_signupextra_languages_signupextra_id_dde2d853; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2026_signupextra_languages_signupextra_id_dde2d853 ON public.ropecon2026_signupextra_languages USING btree (signupextra_id);
+
+
+--
+-- Name: ropecon2026_signupextra_special_diet_signupextra_id_b7aed068; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2026_signupextra_special_diet_signupextra_id_b7aed068 ON public.ropecon2026_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: ropecon2026_signupextra_special_diet_specialdiet_id_f0064376; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2026_signupextra_special_diet_specialdiet_id_f0064376 ON public.ropecon2026_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
+-- Name: ropecon2027_signupextra_event_id_432b6790; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2027_signupextra_event_id_432b6790 ON public.ropecon2027_signupextra USING btree (event_id);
+
+
+--
+-- Name: ropecon2027_signupextra_languages_language_id_f57daeed; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2027_signupextra_languages_language_id_f57daeed ON public.ropecon2027_signupextra_languages USING btree (language_id);
+
+
+--
+-- Name: ropecon2027_signupextra_languages_signupextra_id_c3db45c3; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2027_signupextra_languages_signupextra_id_c3db45c3 ON public.ropecon2027_signupextra_languages USING btree (signupextra_id);
+
+
+--
+-- Name: ropecon2027_signupextra_special_diet_signupextra_id_28a38749; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2027_signupextra_special_diet_signupextra_id_28a38749 ON public.ropecon2027_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: ropecon2027_signupextra_special_diet_specialdiet_id_aac62c98; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ropecon2027_signupextra_special_diet_specialdiet_id_aac62c98 ON public.ropecon2027_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
 -- Name: shumicon2023_signupextra_event_id_a1a1dc97; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -31584,6 +35743,13 @@ CREATE INDEX tickets_ticketseventmeta_pos_access_group_id_88e253da ON public.tic
 
 
 --
+-- Name: tickets_v2__event_i_7b245d_idx; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tickets_v2__event_i_7b245d_idx ON public.tickets_v2_ordercancellationtoken USING btree (event_id, order_id, state);
+
+
+--
 -- Name: tickets_v2_order_cached_status_idx; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -31609,6 +35775,20 @@ CREATE INDEX tickets_v2_order_id_idx ON ONLY public.tickets_v2_order USING btree
 --
 
 CREATE INDEX tickets_v2_order_owner_id_idx ON ONLY public.tickets_v2_order USING btree (owner_id);
+
+
+--
+-- Name: tickets_v2_ordercancellationtoken_code_ced7e2fd_like; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tickets_v2_ordercancellationtoken_code_ced7e2fd_like ON public.tickets_v2_ordercancellationtoken USING btree (code varchar_pattern_ops);
+
+
+--
+-- Name: tickets_v2_ordercancellationtoken_event_id_ea3a1e37; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tickets_v2_ordercancellationtoken_event_id_ea3a1e37 ON public.tickets_v2_ordercancellationtoken USING btree (event_id);
 
 
 --
@@ -32095,6 +36275,55 @@ CREATE INDEX tracon2025_signupextra_special_diet_specialdiet_id_f7c64598 ON publ
 
 
 --
+-- Name: tracon2026_signupextra_event_id_cf8167fd; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2026_signupextra_event_id_cf8167fd ON public.tracon2026_signupextra USING btree (event_id);
+
+
+--
+-- Name: tracon2026_signupextra_lodging_needs_night_id_7c6db523; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2026_signupextra_lodging_needs_night_id_7c6db523 ON public.tracon2026_signupextra_lodging_needs USING btree (night_id);
+
+
+--
+-- Name: tracon2026_signupextra_lodging_needs_signupextra_id_9d5be14b; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2026_signupextra_lodging_needs_signupextra_id_9d5be14b ON public.tracon2026_signupextra_lodging_needs USING btree (signupextra_id);
+
+
+--
+-- Name: tracon2026_signupextra_pick_your_poison_poison_id_e8644c5d; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2026_signupextra_pick_your_poison_poison_id_e8644c5d ON public.tracon2026_signupextra_pick_your_poison USING btree (poison_id);
+
+
+--
+-- Name: tracon2026_signupextra_pick_your_poison_signupextra_id_f45585df; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2026_signupextra_pick_your_poison_signupextra_id_f45585df ON public.tracon2026_signupextra_pick_your_poison USING btree (signupextra_id);
+
+
+--
+-- Name: tracon2026_signupextra_special_diet_signupextra_id_c8fc8397; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2026_signupextra_special_diet_signupextra_id_c8fc8397 ON public.tracon2026_signupextra_special_diet USING btree (signupextra_id);
+
+
+--
+-- Name: tracon2026_signupextra_special_diet_specialdiet_id_c317acc8; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX tracon2026_signupextra_special_diet_specialdiet_id_c317acc8 ON public.tracon2026_signupextra_special_diet USING btree (specialdiet_id);
+
+
+--
 -- Name: unique_current_file; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -32105,7 +36334,7 @@ CREATE UNIQUE INDEX unique_current_file ON public.emprinten_fileversion USING bt
 -- Name: tickets_v2_receipt notify_requested; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER notify_requested AFTER INSERT OR UPDATE ON public.tickets_v2_receipt FOR EACH ROW WHEN (((new.status)::smallint = 0)) EXECUTE FUNCTION public.tickets_v2_receipt_notify_requested();
+CREATE TRIGGER notify_requested AFTER INSERT OR UPDATE ON public.tickets_v2_receipt FOR EACH ROW WHEN ((new.status = 'REQUESTED'::public.tickets_v2_receiptstatus)) EXECUTE FUNCTION public.tickets_v2_receipt_notify_requested();
 
 
 --
@@ -32119,7 +36348,7 @@ CREATE TRIGGER trigger_00_update_order AFTER INSERT ON public.tickets_v2_payment
 -- Name: tickets_v2_paymentstamp trigger_90_create_receipt; Type: TRIGGER; Schema: public; Owner: -
 --
 
-CREATE TRIGGER trigger_90_create_receipt AFTER INSERT ON public.tickets_v2_paymentstamp FOR EACH ROW WHEN (((new.status)::smallint = ANY (ARRAY[3, 7]))) EXECUTE FUNCTION public.tickets_v2_paymentstamp_create_receipt();
+CREATE TRIGGER trigger_90_create_receipt AFTER INSERT ON public.tickets_v2_paymentstamp FOR EACH ROW WHEN (((new.status = ANY (ARRAY['PAID'::public.tickets_v2_paymentstatus, 'CANCELLED'::public.tickets_v2_paymentstatus, 'REFUNDED'::public.tickets_v2_paymentstatus])) OR (new.type = 'CREATE_REFUND_SUCCESS'::public.tickets_v2_paymentstamptype))) EXECUTE FUNCTION public.tickets_v2_paymentstamp_create_receipt();
 
 
 --
@@ -32427,6 +36656,14 @@ ALTER TABLE ONLY public.badges_badgeseventmeta
 
 
 --
+-- Name: badges_badgeseventmeta badges_badgeseventme_registry_id_e548246e_fk_involveme; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.badges_badgeseventmeta
+    ADD CONSTRAINT badges_badgeseventme_registry_id_e548246e_fk_involveme FOREIGN KEY (registry_id) REFERENCES public.involvement_registry(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: badges_badgeseventmeta badges_badgeseventmeta_admin_group_id_fc8c43c8_fk_auth_group_id; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -32544,6 +36781,38 @@ ALTER TABLE ONLY public.cosmocon2025_signupextra
 
 ALTER TABLE ONLY public.cosmocon2025_signupextra
     ADD CONSTRAINT cosmocon2025_signupextra_person_id_fb2812f7_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: cosmocon2026_signupextra_special_diet cosmocon2026_signupe_signupextra_id_6f5edfba_fk_cosmocon2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cosmocon2026_signupextra_special_diet
+    ADD CONSTRAINT cosmocon2026_signupe_signupextra_id_6f5edfba_fk_cosmocon2 FOREIGN KEY (signupextra_id) REFERENCES public.cosmocon2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: cosmocon2026_signupextra_special_diet cosmocon2026_signupe_specialdiet_id_b45202ac_fk_enrollmen; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cosmocon2026_signupextra_special_diet
+    ADD CONSTRAINT cosmocon2026_signupe_specialdiet_id_b45202ac_fk_enrollmen FOREIGN KEY (specialdiet_id) REFERENCES public.enrollment_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: cosmocon2026_signupextra cosmocon2026_signupextra_event_id_87cb15f2_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cosmocon2026_signupextra
+    ADD CONSTRAINT cosmocon2026_signupextra_event_id_87cb15f2_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: cosmocon2026_signupextra cosmocon2026_signupextra_person_id_8fc5b3b8_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cosmocon2026_signupextra
+    ADD CONSTRAINT cosmocon2026_signupextra_person_id_8fc5b3b8_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -32803,6 +37072,54 @@ ALTER TABLE ONLY public.desucon2025_signupextra
 
 
 --
+-- Name: desucon2026_signupextra_pick_your_poison desucon2026_signupex_poison_id_210f1ca2_fk_desucon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra_pick_your_poison
+    ADD CONSTRAINT desucon2026_signupex_poison_id_210f1ca2_fk_desucon20 FOREIGN KEY (poison_id) REFERENCES public.desucon2026_poison(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: desucon2026_signupextra_pick_your_poison desucon2026_signupex_signupextra_id_2bd512f1_fk_desucon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra_pick_your_poison
+    ADD CONSTRAINT desucon2026_signupex_signupextra_id_2bd512f1_fk_desucon20 FOREIGN KEY (signupextra_id) REFERENCES public.desucon2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: desucon2026_signupextra_special_diet desucon2026_signupex_signupextra_id_6905bdb7_fk_desucon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra_special_diet
+    ADD CONSTRAINT desucon2026_signupex_signupextra_id_6905bdb7_fk_desucon20 FOREIGN KEY (signupextra_id) REFERENCES public.desucon2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: desucon2026_signupextra_special_diet desucon2026_signupex_specialdiet_id_c14edd32_fk_desucon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra_special_diet
+    ADD CONSTRAINT desucon2026_signupex_specialdiet_id_c14edd32_fk_desucon20 FOREIGN KEY (specialdiet_id) REFERENCES public.desucon2026_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: desucon2026_signupextra desucon2026_signupextra_event_id_3ccf2600_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra
+    ADD CONSTRAINT desucon2026_signupextra_event_id_3ccf2600_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: desucon2026_signupextra desucon2026_signupextra_person_id_2cceb861_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.desucon2026_signupextra
+    ADD CONSTRAINT desucon2026_signupextra_person_id_2cceb861_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: desuprofile_integration_confirmationcode desuprofile_integrat_person_id_30adca39_fk_core_pers; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -32856,6 +37173,22 @@ ALTER TABLE ONLY public.dimensions_scope
 
 ALTER TABLE ONLY public.dimensions_universe
     ADD CONSTRAINT dimensions_universe_scope_id_cf68c598_fk_dimensions_scope_id FOREIGN KEY (scope_id) REFERENCES public.dimensions_scope(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dimensions_universeannotation dimensions_universea_annotation_id_3993a624_fk_dimension; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dimensions_universeannotation
+    ADD CONSTRAINT dimensions_universea_annotation_id_3993a624_fk_dimension FOREIGN KEY (annotation_id) REFERENCES public.dimensions_annotation(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: dimensions_universeannotation dimensions_universea_universe_id_ef459d63_fk_dimension; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dimensions_universeannotation
+    ADD CONSTRAINT dimensions_universea_universe_id_ef459d63_fk_dimension FOREIGN KEY (universe_id) REFERENCES public.dimensions_universe(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -33563,6 +37896,102 @@ ALTER TABLE ONLY public.frostbite2025_signupextra
 
 
 --
+-- Name: frostbite2026_signupextra_pick_your_poison frostbite2026_signup_poison_id_6285e721_fk_frostbite; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra_pick_your_poison
+    ADD CONSTRAINT frostbite2026_signup_poison_id_6285e721_fk_frostbite FOREIGN KEY (poison_id) REFERENCES public.frostbite2026_poison(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2026_signupextra_special_diet frostbite2026_signup_signupextra_id_ad5212c6_fk_frostbite; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra_special_diet
+    ADD CONSTRAINT frostbite2026_signup_signupextra_id_ad5212c6_fk_frostbite FOREIGN KEY (signupextra_id) REFERENCES public.frostbite2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2026_signupextra_pick_your_poison frostbite2026_signup_signupextra_id_c1791093_fk_frostbite; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra_pick_your_poison
+    ADD CONSTRAINT frostbite2026_signup_signupextra_id_c1791093_fk_frostbite FOREIGN KEY (signupextra_id) REFERENCES public.frostbite2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2026_signupextra_special_diet frostbite2026_signup_specialdiet_id_8bcf0827_fk_frostbite; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra_special_diet
+    ADD CONSTRAINT frostbite2026_signup_specialdiet_id_8bcf0827_fk_frostbite FOREIGN KEY (specialdiet_id) REFERENCES public.frostbite2026_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2026_signupextra frostbite2026_signupextra_event_id_e539fcf3_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra
+    ADD CONSTRAINT frostbite2026_signupextra_event_id_e539fcf3_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2026_signupextra frostbite2026_signupextra_person_id_ebfeae46_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2026_signupextra
+    ADD CONSTRAINT frostbite2026_signupextra_person_id_ebfeae46_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2027_signupextra_pick_your_poison frostbite2027_signup_poison_id_e8b4f99d_fk_frostbite; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra_pick_your_poison
+    ADD CONSTRAINT frostbite2027_signup_poison_id_e8b4f99d_fk_frostbite FOREIGN KEY (poison_id) REFERENCES public.frostbite2027_poison(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2027_signupextra_pick_your_poison frostbite2027_signup_signupextra_id_5b650c8b_fk_frostbite; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra_pick_your_poison
+    ADD CONSTRAINT frostbite2027_signup_signupextra_id_5b650c8b_fk_frostbite FOREIGN KEY (signupextra_id) REFERENCES public.frostbite2027_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2027_signupextra_special_diet frostbite2027_signup_signupextra_id_c930f915_fk_frostbite; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra_special_diet
+    ADD CONSTRAINT frostbite2027_signup_signupextra_id_c930f915_fk_frostbite FOREIGN KEY (signupextra_id) REFERENCES public.frostbite2027_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2027_signupextra_special_diet frostbite2027_signup_specialdiet_id_b50638c2_fk_frostbite; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra_special_diet
+    ADD CONSTRAINT frostbite2027_signup_specialdiet_id_b50638c2_fk_frostbite FOREIGN KEY (specialdiet_id) REFERENCES public.frostbite2027_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2027_signupextra frostbite2027_signupextra_event_id_c6151076_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra
+    ADD CONSTRAINT frostbite2027_signupextra_event_id_c6151076_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: frostbite2027_signupextra frostbite2027_signupextra_person_id_1d8e5306_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.frostbite2027_signupextra
+    ADD CONSTRAINT frostbite2027_signupextra_person_id_1d8e5306_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: hitpoint2019_signupextra_special_diet hitpoint2019_signupe_signupextra_id_18702404_fk_hitpoint2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -33811,6 +38240,30 @@ ALTER TABLE ONLY public.involvement_invitation
 
 
 --
+-- Name: involvement_involvementeventmeta involvement_involvem_admin_group_id_2f2d7283_fk_auth_grou; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.involvement_involvementeventmeta
+    ADD CONSTRAINT involvement_involvem_admin_group_id_2f2d7283_fk_auth_grou FOREIGN KEY (admin_group_id) REFERENCES public.auth_group(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: involvement_involvementeventmeta involvement_involvem_default_registry_id_d067215b_fk_involveme; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.involvement_involvementeventmeta
+    ADD CONSTRAINT involvement_involvem_default_registry_id_d067215b_fk_involveme FOREIGN KEY (default_registry_id) REFERENCES public.involvement_registry(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: involvement_involvementeventmeta involvement_involvem_event_id_bbd582be_fk_core_even; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.involvement_involvementeventmeta
+    ADD CONSTRAINT involvement_involvem_event_id_bbd582be_fk_core_even FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: involvement_involvementtogroupmapping involvement_involvem_group_id_2834735c_fk_auth_grou; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -33888,6 +38341,14 @@ ALTER TABLE ONLY public.involvement_involvementtobadgemapping
 
 ALTER TABLE ONLY public.involvement_involvement
     ADD CONSTRAINT involvement_involvem_universe_id_5c0c12aa_fk_dimension FOREIGN KEY (universe_id) REFERENCES public.dimensions_universe(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: involvement_involvementeventmeta involvement_involvem_universe_id_d9060443_fk_dimension; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.involvement_involvementeventmeta
+    ADD CONSTRAINT involvement_involvem_universe_id_d9060443_fk_dimension FOREIGN KEY (universe_id) REFERENCES public.dimensions_universe(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -34040,6 +38501,86 @@ ALTER TABLE ONLY public.kotaeexpo2025_signupextra
 
 ALTER TABLE ONLY public.kotaeexpo2025_signupextra
     ADD CONSTRAINT kotaeexpo2025_signupextra_person_id_6cea85f2_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra_accommodation kotaeexpo2026_signup_accommodation_id_c7ff20ca_fk_kotaeexpo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_accommodation
+    ADD CONSTRAINT kotaeexpo2026_signup_accommodation_id_c7ff20ca_fk_kotaeexpo FOREIGN KEY (accommodation_id) REFERENCES public.kotaeexpo2026_accommodation(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra_known_language kotaeexpo2026_signup_knownlanguage_id_cf0ff638_fk_kotaeexpo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_known_language
+    ADD CONSTRAINT kotaeexpo2026_signup_knownlanguage_id_cf0ff638_fk_kotaeexpo FOREIGN KEY (knownlanguage_id) REFERENCES public.kotaeexpo2026_knownlanguage(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra_special_diet kotaeexpo2026_signup_signupextra_id_051160fb_fk_kotaeexpo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_special_diet
+    ADD CONSTRAINT kotaeexpo2026_signup_signupextra_id_051160fb_fk_kotaeexpo FOREIGN KEY (signupextra_id) REFERENCES public.kotaeexpo2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra_work_days kotaeexpo2026_signup_signupextra_id_466a82f3_fk_kotaeexpo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_work_days
+    ADD CONSTRAINT kotaeexpo2026_signup_signupextra_id_466a82f3_fk_kotaeexpo FOREIGN KEY (signupextra_id) REFERENCES public.kotaeexpo2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra_known_language kotaeexpo2026_signup_signupextra_id_662c3f29_fk_kotaeexpo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_known_language
+    ADD CONSTRAINT kotaeexpo2026_signup_signupextra_id_662c3f29_fk_kotaeexpo FOREIGN KEY (signupextra_id) REFERENCES public.kotaeexpo2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra_accommodation kotaeexpo2026_signup_signupextra_id_cc70667a_fk_kotaeexpo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_accommodation
+    ADD CONSTRAINT kotaeexpo2026_signup_signupextra_id_cc70667a_fk_kotaeexpo FOREIGN KEY (signupextra_id) REFERENCES public.kotaeexpo2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra_special_diet kotaeexpo2026_signup_specialdiet_id_c75374f1_fk_enrollmen; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_special_diet
+    ADD CONSTRAINT kotaeexpo2026_signup_specialdiet_id_c75374f1_fk_enrollmen FOREIGN KEY (specialdiet_id) REFERENCES public.enrollment_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra_work_days kotaeexpo2026_signup_workday_id_e0d3ac28_fk_kotaeexpo; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra_work_days
+    ADD CONSTRAINT kotaeexpo2026_signup_workday_id_e0d3ac28_fk_kotaeexpo FOREIGN KEY (workday_id) REFERENCES public.kotaeexpo2026_workday(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra kotaeexpo2026_signupextra_event_id_8349c0f9_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra
+    ADD CONSTRAINT kotaeexpo2026_signupextra_event_id_8349c0f9_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kotaeexpo2026_signupextra kotaeexpo2026_signupextra_person_id_ce21628f_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kotaeexpo2026_signupextra
+    ADD CONSTRAINT kotaeexpo2026_signupextra_person_id_ce21628f_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -34296,6 +38837,70 @@ ALTER TABLE ONLY public.kuplii2025_signupextra
 
 ALTER TABLE ONLY public.kuplii2025_signupextra
     ADD CONSTRAINT kuplii2025_signupextra_person_id_883b9faa_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2026_signupextra_special_diet kuplii2026_signupext_signupextra_id_ff142b03_fk_kuplii202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2026_signupextra_special_diet
+    ADD CONSTRAINT kuplii2026_signupext_signupextra_id_ff142b03_fk_kuplii202 FOREIGN KEY (signupextra_id) REFERENCES public.kuplii2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2026_signupextra_special_diet kuplii2026_signupext_specialdiet_id_e8e92201_fk_kuplii202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2026_signupextra_special_diet
+    ADD CONSTRAINT kuplii2026_signupext_specialdiet_id_e8e92201_fk_kuplii202 FOREIGN KEY (specialdiet_id) REFERENCES public.kuplii2026_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2026_signupextra kuplii2026_signupextra_event_id_5c2ef418_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2026_signupextra
+    ADD CONSTRAINT kuplii2026_signupextra_event_id_5c2ef418_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2026_signupextra kuplii2026_signupextra_person_id_68d68639_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2026_signupextra
+    ADD CONSTRAINT kuplii2026_signupextra_person_id_68d68639_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2027_signupextra_special_diet kuplii2027_signupext_signupextra_id_c0e0acfb_fk_kuplii202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2027_signupextra_special_diet
+    ADD CONSTRAINT kuplii2027_signupext_signupextra_id_c0e0acfb_fk_kuplii202 FOREIGN KEY (signupextra_id) REFERENCES public.kuplii2027_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2027_signupextra_special_diet kuplii2027_signupext_specialdiet_id_e58dcff0_fk_kuplii202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2027_signupextra_special_diet
+    ADD CONSTRAINT kuplii2027_signupext_specialdiet_id_e58dcff0_fk_kuplii202 FOREIGN KEY (specialdiet_id) REFERENCES public.kuplii2027_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2027_signupextra kuplii2027_signupextra_event_id_e89e0325_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2027_signupextra
+    ADD CONSTRAINT kuplii2027_signupextra_event_id_e89e0325_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: kuplii2027_signupextra kuplii2027_signupextra_person_id_627c6bf0_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.kuplii2027_signupextra
+    ADD CONSTRAINT kuplii2027_signupextra_person_id_627c6bf0_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -35011,6 +39616,70 @@ ALTER TABLE ONLY public.membership_term
 
 
 --
+-- Name: messages_v2_message messages_v2_message_created_by_id_99628bdf_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_message
+    ADD CONSTRAINT messages_v2_message_created_by_id_99628bdf_fk_auth_user_id FOREIGN KEY (created_by_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: messages_v2_message messages_v2_message_reply_to_id_102eb4a6_fk_messages_; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_message
+    ADD CONSTRAINT messages_v2_message_reply_to_id_102eb4a6_fk_messages_ FOREIGN KEY (reply_to_id) REFERENCES public.messages_v2_messagereplyto(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: messages_v2_message messages_v2_message_universe_id_5ef1744c_fk_dimension; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_message
+    ADD CONSTRAINT messages_v2_message_universe_id_5ef1744c_fk_dimension FOREIGN KEY (universe_id) REFERENCES public.dimensions_universe(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: messages_v2_messagerecipient messages_v2_messager_body_id_bd44191c_fk_messages_; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_messagerecipient
+    ADD CONSTRAINT messages_v2_messager_body_id_bd44191c_fk_messages_ FOREIGN KEY (body_id) REFERENCES public.messages_v2_messagebody(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: messages_v2_messagerecipient messages_v2_messager_involvement_id_42953bf0_fk_involveme; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_messagerecipient
+    ADD CONSTRAINT messages_v2_messager_involvement_id_42953bf0_fk_involveme FOREIGN KEY (involvement_id) REFERENCES public.involvement_involvement(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: messages_v2_messagerecipient messages_v2_messager_message_id_5434dbc8_fk_messages_; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_messagerecipient
+    ADD CONSTRAINT messages_v2_messager_message_id_5434dbc8_fk_messages_ FOREIGN KEY (message_id) REFERENCES public.messages_v2_message(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: messages_v2_messagerecipient messages_v2_messager_person_id_e4830c06_fk_core_pers; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_messagerecipient
+    ADD CONSTRAINT messages_v2_messager_person_id_e4830c06_fk_core_pers FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: messages_v2_messagereplyto messages_v2_messager_universe_id_33accf74_fk_dimension; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.messages_v2_messagereplyto
+    ADD CONSTRAINT messages_v2_messager_universe_id_33accf74_fk_dimension FOREIGN KEY (universe_id) REFERENCES public.dimensions_universe(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: nekocon2019_signupextra_lodging_needs nekocon2019_signupex_night_id_4295f5b7_fk_nekocon20; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -35240,6 +39909,14 @@ ALTER TABLE ONLY public.oauth2_provider_accesstoken
 
 ALTER TABLE ONLY public.oauth2_provider_application
     ADD CONSTRAINT oauth2_provider_application_user_id_79829054_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: oauth2_provider_devicegrant oauth2_provider_devicegrant_user_id_1cec5156_fk_auth_user_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth2_provider_devicegrant
+    ADD CONSTRAINT oauth2_provider_devicegrant_user_id_1cec5156_fk_auth_user_id FOREIGN KEY (user_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -35555,19 +40232,19 @@ ALTER TABLE ONLY public.popcultday2024_signupextra
 
 
 --
--- Name: program_v2_eventannotation program_v2_eventanno_annotation_id_d72efdb5_fk_program_v; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: program_v2_paikkalaroommapping program_v2_paikkalar_paikkala_dimension_v_3f84e516_fk_dimension; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.program_v2_eventannotation
-    ADD CONSTRAINT program_v2_eventanno_annotation_id_d72efdb5_fk_program_v FOREIGN KEY (annotation_id) REFERENCES public.program_v2_annotation(id) DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE ONLY public.program_v2_paikkalaroommapping
+    ADD CONSTRAINT program_v2_paikkalar_paikkala_dimension_v_3f84e516_fk_dimension FOREIGN KEY (paikkala_dimension_value_id) REFERENCES public.dimensions_dimensionvalue(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
--- Name: program_v2_eventannotation program_v2_eventanno_meta_id_56ea2784_fk_program_v; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: program_v2_paikkalaroommapping program_v2_paikkalar_paikkala_room_id_f8237fc4_fk_paikkala_; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.program_v2_eventannotation
-    ADD CONSTRAINT program_v2_eventanno_meta_id_56ea2784_fk_program_v FOREIGN KEY (meta_id) REFERENCES public.program_v2_programv2eventmeta(event_id) DEFERRABLE INITIALLY DEFERRED;
+ALTER TABLE ONLY public.program_v2_paikkalaroommapping
+    ADD CONSTRAINT program_v2_paikkalar_paikkala_room_id_f8237fc4_fk_paikkala_ FOREIGN KEY (paikkala_room_id) REFERENCES public.paikkala_room(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -35640,6 +40317,14 @@ ALTER TABLE ONLY public.program_v2_programv2eventmeta
 
 ALTER TABLE ONLY public.program_v2_scheduleitem
     ADD CONSTRAINT program_v2_schedulei_cached_event_id_31a4e4fa_fk_core_even FOREIGN KEY (cached_event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: program_v2_scheduleitem program_v2_schedulei_paikkala_program_id_e72b01b8_fk_paikkala_; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.program_v2_scheduleitem
+    ADD CONSTRAINT program_v2_schedulei_paikkala_program_id_e72b01b8_fk_paikkala_ FOREIGN KEY (paikkala_program_id) REFERENCES public.paikkala_program(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -36467,6 +41152,102 @@ ALTER TABLE ONLY public.ropecon2025_signupextra
 
 
 --
+-- Name: ropecon2026_signupextra_languages ropecon2026_signupex_language_id_c71b43a3_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra_languages
+    ADD CONSTRAINT ropecon2026_signupex_language_id_c71b43a3_fk_ropecon20 FOREIGN KEY (language_id) REFERENCES public.ropecon2026_language(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2026_signupextra_special_diet ropecon2026_signupex_signupextra_id_b7aed068_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra_special_diet
+    ADD CONSTRAINT ropecon2026_signupex_signupextra_id_b7aed068_fk_ropecon20 FOREIGN KEY (signupextra_id) REFERENCES public.ropecon2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2026_signupextra_languages ropecon2026_signupex_signupextra_id_dde2d853_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra_languages
+    ADD CONSTRAINT ropecon2026_signupex_signupextra_id_dde2d853_fk_ropecon20 FOREIGN KEY (signupextra_id) REFERENCES public.ropecon2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2026_signupextra_special_diet ropecon2026_signupex_specialdiet_id_f0064376_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra_special_diet
+    ADD CONSTRAINT ropecon2026_signupex_specialdiet_id_f0064376_fk_ropecon20 FOREIGN KEY (specialdiet_id) REFERENCES public.ropecon2026_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2026_signupextra ropecon2026_signupextra_event_id_384cc2e2_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra
+    ADD CONSTRAINT ropecon2026_signupextra_event_id_384cc2e2_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2026_signupextra ropecon2026_signupextra_person_id_3af07cd4_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2026_signupextra
+    ADD CONSTRAINT ropecon2026_signupextra_person_id_3af07cd4_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2027_signupextra_languages ropecon2027_signupex_language_id_f57daeed_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra_languages
+    ADD CONSTRAINT ropecon2027_signupex_language_id_f57daeed_fk_ropecon20 FOREIGN KEY (language_id) REFERENCES public.ropecon2027_language(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2027_signupextra_special_diet ropecon2027_signupex_signupextra_id_28a38749_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra_special_diet
+    ADD CONSTRAINT ropecon2027_signupex_signupextra_id_28a38749_fk_ropecon20 FOREIGN KEY (signupextra_id) REFERENCES public.ropecon2027_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2027_signupextra_languages ropecon2027_signupex_signupextra_id_c3db45c3_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra_languages
+    ADD CONSTRAINT ropecon2027_signupex_signupextra_id_c3db45c3_fk_ropecon20 FOREIGN KEY (signupextra_id) REFERENCES public.ropecon2027_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2027_signupextra_special_diet ropecon2027_signupex_specialdiet_id_aac62c98_fk_ropecon20; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra_special_diet
+    ADD CONSTRAINT ropecon2027_signupex_specialdiet_id_aac62c98_fk_ropecon20 FOREIGN KEY (specialdiet_id) REFERENCES public.ropecon2027_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2027_signupextra ropecon2027_signupextra_event_id_432b6790_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra
+    ADD CONSTRAINT ropecon2027_signupextra_event_id_432b6790_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: ropecon2027_signupextra ropecon2027_signupextra_person_id_f205b8b1_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.ropecon2027_signupextra
+    ADD CONSTRAINT ropecon2027_signupextra_person_id_f205b8b1_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- Name: shumicon2023_signupextra_work_days shumicon2023_signupe_eventday_id_fa35540e_fk_shumicon2; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -36728,6 +41509,14 @@ ALTER TABLE public.tickets_v2_order
 
 ALTER TABLE public.tickets_v2_order
     ADD CONSTRAINT tickets_v2_order_owner_id_fkey FOREIGN KEY (owner_id) REFERENCES public.auth_user(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tickets_v2_ordercancellationtoken tickets_v2_ordercanc_event_id_ea3a1e37_fk_core_even; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tickets_v2_ordercancellationtoken
+    ADD CONSTRAINT tickets_v2_ordercanc_event_id_ea3a1e37_fk_core_even FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
 
 
 --
@@ -37347,5 +42136,71 @@ ALTER TABLE ONLY public.tracon2025_signupextra
 
 
 --
+-- Name: tracon2026_signupextra_lodging_needs tracon2026_signupext_night_id_7c6db523_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_lodging_needs
+    ADD CONSTRAINT tracon2026_signupext_night_id_7c6db523_fk_tracon202 FOREIGN KEY (night_id) REFERENCES public.tracon2026_night(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2026_signupextra_pick_your_poison tracon2026_signupext_poison_id_e8644c5d_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_pick_your_poison
+    ADD CONSTRAINT tracon2026_signupext_poison_id_e8644c5d_fk_tracon202 FOREIGN KEY (poison_id) REFERENCES public.tracon2026_poison(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2026_signupextra_lodging_needs tracon2026_signupext_signupextra_id_9d5be14b_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_lodging_needs
+    ADD CONSTRAINT tracon2026_signupext_signupextra_id_9d5be14b_fk_tracon202 FOREIGN KEY (signupextra_id) REFERENCES public.tracon2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2026_signupextra_special_diet tracon2026_signupext_signupextra_id_c8fc8397_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_special_diet
+    ADD CONSTRAINT tracon2026_signupext_signupextra_id_c8fc8397_fk_tracon202 FOREIGN KEY (signupextra_id) REFERENCES public.tracon2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2026_signupextra_pick_your_poison tracon2026_signupext_signupextra_id_f45585df_fk_tracon202; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_pick_your_poison
+    ADD CONSTRAINT tracon2026_signupext_signupextra_id_f45585df_fk_tracon202 FOREIGN KEY (signupextra_id) REFERENCES public.tracon2026_signupextra(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2026_signupextra_special_diet tracon2026_signupext_specialdiet_id_c317acc8_fk_enrollmen; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra_special_diet
+    ADD CONSTRAINT tracon2026_signupext_specialdiet_id_c317acc8_fk_enrollmen FOREIGN KEY (specialdiet_id) REFERENCES public.enrollment_specialdiet(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2026_signupextra tracon2026_signupextra_event_id_cf8167fd_fk_core_event_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra
+    ADD CONSTRAINT tracon2026_signupextra_event_id_cf8167fd_fk_core_event_id FOREIGN KEY (event_id) REFERENCES public.core_event(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
+-- Name: tracon2026_signupextra tracon2026_signupextra_person_id_13e26ce5_fk_core_person_id; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.tracon2026_signupextra
+    ADD CONSTRAINT tracon2026_signupextra_person_id_13e26ce5_fk_core_person_id FOREIGN KEY (person_id) REFERENCES public.core_person(id) DEFERRABLE INITIALLY DEFERRED;
+
+
+--
 -- PostgreSQL database dump complete
 --
+
+\unrestrict WBePhTVMulG4gLDQbkHlmWbLr9hVKp8wOAJRI0vAwk1Y0JADiZXqB21BjGUqbuB
