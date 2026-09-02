@@ -3,6 +3,8 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from ..excs import InvalidProducts
+
 if TYPE_CHECKING:
     from psycopg import AsyncConnection
 
@@ -50,7 +52,12 @@ async def get_expected_tickets_for_products(
 
     expected_quantities_by_quota_id: dict[int, int] = {}
     for product_id, quantity in products.items():
-        for quota_id in quota_ids_by_product_id[product_id]:
+        try:
+            quota_ids = quota_ids_by_product_id[product_id]
+        except KeyError:
+            raise InvalidProducts(f"Product {product_id} has no quotas in this event.") from None
+
+        for quota_id in quota_ids:
             expected_quantities_by_quota_id.setdefault(quota_id, 0)
             expected_quantities_by_quota_id[quota_id] += quantity
 

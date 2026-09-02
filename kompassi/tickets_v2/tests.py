@@ -25,6 +25,9 @@ from kompassi.tickets_v2.models.payment_stamp import PaymentStamp
 from kompassi.tickets_v2.models.product import Product
 from kompassi.tickets_v2.models.quota import Quota
 from kompassi.tickets_v2.models.receipt import PendingReceipt
+from kompassi.tickets_v2.models.ticket import Ticket
+from kompassi.tickets_v2.optimized_server.excs import InvalidProducts
+from kompassi.tickets_v2.optimized_server.excs import NotEnoughTickets as OptimizedNotEnoughTickets
 from kompassi.tickets_v2.optimized_server.models.api import CreateOrderResponse, GetOrderResponse, GetProductsResponse
 from kompassi.tickets_v2.optimized_server.models.customer import Customer
 from kompassi.tickets_v2.optimized_server.models.enums import (
@@ -35,11 +38,13 @@ from kompassi.tickets_v2.optimized_server.models.enums import (
     ReceiptType,
 )
 from kompassi.tickets_v2.optimized_server.models.order import CreateOrderRequest, OrderProduct, VatBreakdownLine
+from kompassi.tickets_v2.optimized_server.models.product_validation import ProductValidationRow, _check_products
 from kompassi.tickets_v2.optimized_server.providers.paytrail import PaymentCallback, PaytrailStatus
 from kompassi.tickets_v2.optimized_server.utils.formatting import format_vat_rate
 from kompassi.tickets_v2.optimized_server.utils.paytrail_hmac import calculate_hmac
 from kompassi.tickets_v2.optimized_server.utils.uuid7 import uuid7
 from kompassi.tickets_v2.reports.vat_by_month import VatByMonth
+from kompassi.tickets_v2.utils.create_order import create_order
 
 PAYTRAIL_TEST_ACCOUNT = "375917"
 PAYTRAIL_TEST_SECRET = "SAIPPUAKAUPPIAS"
@@ -1865,3 +1870,200 @@ def test_receipt_type_refused_for_flagged_order(quota_product):
 
     with pytest.raises(ValueError, match="paid after cancellation"):
         PendingReceipt.from_order(order)
+
+
+# ---------------------------------------------------------------------------
+# Product data validation on order creation (#841)
+# ---------------------------------------------------------------------------
+
+
+def _dummy_customer() -> Customer:
+    return Customer(first_name="John", last_name="Doe", email="john.doe@example.com")
+
+
+def _make_validation_product(event: Event, quota: Quota | None = None, **kwargs) -> Product:
+    product = Product.objects.create(
+        event=event,
+        title="Test product",
+        description="",
+        price=Decimal("10.00"),
+        vat_percentage=Decimal("25.50"),
+        **kwargs,
+    )
+    if quota is not None:
+        product.quotas.add(quota)
+    return product
+
+
+@pytest.fixture
+def validation_event(cancellation_event: Event):
+    """
+    A quota with one free ticket, so create_order() (admin path) can be exercised
+    end to end: past validation and through to a successful ticket reservation.
+    """
+    event = cancellation_event
+    quota = Quota.objects.create(event=event, name="Validation quota")
+    Ticket.objects.create(event=event, quota=quota)
+    return event, quota
+
+
+@pytest.mark.django_db
+def test_create_order_admin_rejects_foreign_event_product(validation_event):
+    event, _quota = validation_event
+    other_event, _ = Event.get_or_create_dummy(name="Other event #841 foreign")
+    foreign_product = _make_validation_product(other_event)
+
+    with pytest.raises(InvalidProducts):
+        create_order(event, _dummy_customer(), {foreign_product.id: 1})
+
+    assert not Order.objects.filter(event=event).exists()
+
+
+@pytest.mark.django_db
+def test_create_order_admin_rejects_mixed_foreign_and_own_products(validation_event):
+    event, quota = validation_event
+    own_product = _make_validation_product(event, quota)
+    other_event, _ = Event.get_or_create_dummy(name="Other event #841 mixed")
+    foreign_product = _make_validation_product(other_event)
+
+    with pytest.raises(InvalidProducts):
+        create_order(event, _dummy_customer(), {own_product.id: 1, foreign_product.id: 1})
+
+    assert not Order.objects.filter(event=event).exists()
+
+
+@pytest.mark.django_db
+def test_create_order_admin_rejects_superseded_product(validation_event):
+    event, quota = validation_event
+    old_product = _make_validation_product(event, quota)
+    new_product = _make_validation_product(event, quota)
+    old_product.superseded_by = new_product
+    old_product.save(update_fields=["superseded_by"])
+
+    with pytest.raises(InvalidProducts):
+        create_order(event, _dummy_customer(), {old_product.id: 1})
+
+    assert not Order.objects.filter(event=event).exists()
+
+
+@pytest.mark.django_db
+def test_create_order_admin_ignores_availability_window(validation_event):
+    """
+    Per the module docstring of kompassi.tickets_v2.utils.create_order, the admin
+    path intentionally does not enforce the availability window, so a product with
+    no sale window configured must still be orderable here.
+    """
+    event, quota = validation_event
+    product = _make_validation_product(event, quota, available_from=None, available_until=None)
+
+    order = create_order(event, _dummy_customer(), {product.id: 1})
+
+    assert Order.objects.filter(event=event, id=order.id).exists()
+
+
+@pytest.mark.django_db
+def test_create_order_admin_rejects_product_with_no_quota_links(validation_event):
+    """
+    A product that belongs to the event and is not superseded, but has no quotas
+    linked to it, must be rejected rather than crashing with the KeyError that
+    get_expected_tickets_for_products used to propagate. create_order() only
+    documents that it must run inside a transaction (as its real caller,
+    CreateOrder.mutate, does via @transaction.atomic) rather than wrapping itself,
+    so the test must reproduce that same wrapping to see the insert rolled back.
+    """
+    from django.db import transaction
+
+    event, _quota = validation_event
+    product = _make_validation_product(event, quota=None)
+
+    with pytest.raises(InvalidProducts), transaction.atomic():
+        create_order(event, _dummy_customer(), {product.id: 1})
+
+    assert not Order.objects.filter(event=event).exists()
+
+
+@pytest.mark.django_db
+def test_create_order_admin_rejects_all_zero_quantities(validation_event):
+    event, quota = validation_event
+    product = _make_validation_product(event, quota)
+
+    with pytest.raises(InvalidProducts):
+        create_order(event, _dummy_customer(), {product.id: 0})
+
+    assert not Order.objects.filter(event=event).exists()
+
+
+@pytest.mark.django_db
+def test_create_order_admin_happy_path_unaffected(validation_event):
+    event, quota = validation_event
+    product = _make_validation_product(event, quota)
+
+    order = create_order(event, _dummy_customer(), {product.id: 1})
+
+    assert Order.objects.filter(event=event, id=order.id).exists()
+
+
+@pytest.mark.django_db
+def test_create_order_admin_not_enough_tickets_unaffected(validation_event):
+    """
+    A product with quota links but no free tickets must still surface as
+    NotEnoughTickets, not get swallowed by the new InvalidProducts handling.
+    """
+    event, _quota = validation_event
+    exhausted_quota = Quota.objects.create(event=event, name="Exhausted quota")
+    product = _make_validation_product(event, exhausted_quota)
+
+    with pytest.raises(OptimizedNotEnoughTickets):
+        create_order(event, _dummy_customer(), {product.id: 1})
+
+
+def test_check_products_rejects_unknown_product():
+    with pytest.raises(InvalidProducts):
+        _check_products({1: 1}, {}, enforce_availability=True, now=datetime.now(UTC))
+
+
+def test_check_products_rejects_superseded_product():
+    rows = {1: ProductValidationRow(superseded_by_id=2, available_from=None, available_until=None)}
+
+    with pytest.raises(InvalidProducts):
+        _check_products({1: 1}, rows, enforce_availability=True, now=datetime.now(UTC))
+
+
+def test_check_products_rejects_all_zero_quantities():
+    now = datetime.now(UTC)
+    rows = {
+        1: ProductValidationRow(superseded_by_id=None, available_from=now - timedelta(days=1), available_until=None)
+    }
+
+    with pytest.raises(InvalidProducts):
+        _check_products({1: 0}, rows, enforce_availability=True, now=now)
+
+
+def test_check_products_public_policy_enforces_availability_window():
+    now = datetime.now(UTC)
+
+    not_yet_on_sale = {
+        1: ProductValidationRow(superseded_by_id=None, available_from=now + timedelta(days=1), available_until=None)
+    }
+    with pytest.raises(InvalidProducts):
+        _check_products({1: 1}, not_yet_on_sale, enforce_availability=True, now=now)
+
+    no_longer_on_sale = {
+        1: ProductValidationRow(
+            superseded_by_id=None, available_from=now - timedelta(days=2), available_until=now - timedelta(days=1)
+        )
+    }
+    with pytest.raises(InvalidProducts):
+        _check_products({1: 1}, no_longer_on_sale, enforce_availability=True, now=now)
+
+    on_sale_open_ended = {
+        1: ProductValidationRow(superseded_by_id=None, available_from=now - timedelta(days=1), available_until=None)
+    }
+    _check_products({1: 1}, on_sale_open_ended, enforce_availability=True, now=now)  # must not raise
+
+
+def test_check_products_admin_policy_ignores_availability_window():
+    now = datetime.now(UTC)
+    never_on_sale = {1: ProductValidationRow(superseded_by_id=None, available_from=None, available_until=None)}
+
+    _check_products({1: 1}, never_on_sale, enforce_availability=False, now=now)  # must not raise

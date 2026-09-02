@@ -29,6 +29,7 @@ from ..models.order import Order
 from ..optimized_server.excs import InvalidProducts, NotEnoughTickets, UnsaneSituation
 from ..optimized_server.models.customer import Customer
 from ..optimized_server.models.order import ProductsDict, validate_products_dict
+from ..optimized_server.models.product_validation import validate_products_django
 from ..optimized_server.utils.uuid7 import uuid7
 
 OPTIMIZED_SERVER_SQL_DIR = Path(__file__).parent.parent / "optimized_server" / "models" / "sql"
@@ -45,6 +46,8 @@ def create_order(
     Preferred way to create orders from Django code.
     NOTE: Must be called within a transaction (uses SELECT FOR UPDATE SKIP LOCKED).
     """
+    validate_products_django(event.id, products)
+
     with connection.cursor() as cursor:
         try:
             cursor.execute(
@@ -141,7 +144,12 @@ def get_expected_tickets_for_products(
 
     expected_quantities_by_quota_id: dict[int, int] = {}
     for product_id, quantity in products.items():
-        for quota_id in quota_ids_by_product_id[product_id]:
+        try:
+            quota_ids = quota_ids_by_product_id[product_id]
+        except KeyError:
+            raise InvalidProducts(f"Product {product_id} has no quotas in this event.") from None
+
+        for quota_id in quota_ids:
             expected_quantities_by_quota_id.setdefault(quota_id, 0)
             expected_quantities_by_quota_id[quota_id] += quantity
 
