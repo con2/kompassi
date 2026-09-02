@@ -26,6 +26,7 @@ from ..utils.formatting import format_order_number, order_number_to_reference
 from .customer import Customer
 from .enums import PaymentStatus
 from .event import Event
+from .product_validation import validate_products
 from .ticket import reserve_tickets
 
 
@@ -91,6 +92,8 @@ class CreateOrderRequest(pydantic.BaseModel):
         Must be called within a transaction (SELECT FOR UPDATE SKIP LOCKED).
         NOTE: Keep in sync with the Django version of this function.
         """
+        await validate_products(db, event_id, self.products)
+
         async with db.cursor() as cursor:
             try:
                 await cursor.execute(
