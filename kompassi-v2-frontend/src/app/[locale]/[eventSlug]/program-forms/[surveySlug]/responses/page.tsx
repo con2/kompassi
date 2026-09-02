@@ -2,20 +2,15 @@ import {
   Column,
   DataTable,
   DimensionFilters,
-  SignInRequired,
-  UploadedFileLink,
   FormattedDateTime,
   ModalButton,
+  SignInRequired,
+  UploadedFileLink,
 } from "@con2/components";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Fragment, ReactNode } from "react";
 
-import {
-  deleteSurveyResponses,
-  toggleSurveyResponseSubscription,
-} from "../../../surveys/[surveySlug]/responses/actions";
-import { ResponseListActions } from "../../../surveys/[surveySlug]/responses/ResponseListActions";
 import { graphql } from "@/__generated__";
 import {
   CanResponsesBeDeleted,
@@ -34,6 +29,11 @@ import ProgramAdminView from "@/components/program/ProgramAdminView";
 import { kompassiBaseUrl } from "@/config";
 import getPageTitle from "@/helpers/getPageTitle";
 import { getTranslations } from "@/translations";
+import {
+  deleteSurveyResponses,
+  toggleSurveyResponseSubscription,
+} from "../../../surveys/[surveySlug]/responses/actions";
+import { ResponseListActions } from "../../../surveys/[surveySlug]/responses/ResponseListActions";
 
 // this fragment is just to give a name to the type so that we can import it from generated
 graphql(`
@@ -318,13 +318,6 @@ export default async function ProgramFormResponsesPage(props: Props) {
         </ResponseListActions>
       }
     >
-      <Link className="link-subtle" href={`/${eventSlug}/program-forms`}>
-        &lt;{" "}
-        {translations.Program.ProgramForm.actions.returnToProgramFormList(
-          data.event.name,
-        )}
-      </Link>
-
       <h3 className="mt-4">
         {t.responseListTitle}: {survey.title}
       </h3>
