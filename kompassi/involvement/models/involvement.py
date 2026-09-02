@@ -7,11 +7,16 @@ from typing import TYPE_CHECKING, Self
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models, transaction
+from django.db.models import DateTimeField, ExpressionWrapper, F, Q
+from django.db.models.functions import Coalesce
+from django.utils.timezone import now
 from django_enum import EnumField
 
 from kompassi.badges.models import Badge
+from kompassi.core.models.enums import ProgramRoleRetentionPolicy
 from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
+from kompassi.core.utils.cleanup import register_cleanup
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import (
     CachedDimensions,
@@ -823,3 +828,53 @@ class Involvement(models.Model):
             for dimension_slug, value_slugs in self.cached_dimensions.items()
             for value_slug in value_slugs
         }
+
+    @classmethod
+    def get_expired_involvements(cls, queryset: models.QuerySet[Self]):
+        """
+        Involvements whose retention period has expired, counted from the end time of the event
+        or, lacking that, the creation time of the involvement. The retention period always comes
+        from the registry: Survey.retention_period only overrides retention of responses.
+
+        A NULL retention period means the involvements are retained indefinitely.
+        """
+        expired = queryset.annotate(
+            retain_until=ExpressionWrapper(
+                Coalesce("universe__scope__event__end_time", "created_at") + F("registry__default_retention_period"),
+                output_field=DateTimeField(),
+            )
+        ).filter(retain_until__lt=now())
+
+        # Program hosts are often proud of their program history, so they get to choose whether
+        # their program host roles outlive the retention period. Only an explicit REMOVE is acted
+        # upon; NULL (no conscious choice made) and RETAIN both keep the involvement.
+        # TODO Eventually NULL should be treated as REMOVE, after a grace/notification period.
+        return expired.filter(
+            ~Q(type=InvolvementType.PROGRAM_HOST)
+            | Q(person__program_role_retention_policy=ProgramRoleRetentionPolicy.REMOVE)
+        )
+
+    @classmethod
+    def get_expired_involvements_for_cleanup(cls, queryset: models.QuerySet[Self]):
+        """
+        Cleanup filter used by @register_cleanup. As a side effect, deactivates the expired
+        involvements and refreshes their dependents so that badges are revoked, combined perks
+        recomputed and group memberships removed before the rows go away.
+        """
+        expired = cls.get_expired_involvements(queryset)
+
+        for involvement in expired.select_related("universe__scope__event", "person", "program"):
+            involvement.is_active = False
+            involvement.save(update_fields=["is_active"])
+
+            try:
+                involvement.refresh_dependents()
+            except Exception:
+                # Retention wins: the involvement is deleted even if we could not tidy up after it.
+                # refresh_dependents raises eg. for scopes that have no event or no event meta.
+                logger.exception("Failed to refresh dependents of expiring involvement %s", involvement.id)
+
+        return queryset.filter(id__in=expired.values("id"))
+
+
+register_cleanup(Involvement.get_expired_involvements_for_cleanup)(Involvement)

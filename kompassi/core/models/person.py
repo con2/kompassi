@@ -18,6 +18,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
+from kompassi.field_types import PostgresEnumField
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SupportedLanguageCode
 
 from ..utils import calculate_age, format_phone_number, phone_number_validator, pick_attrs
@@ -28,6 +29,7 @@ from .constants import (
     NAME_DISPLAY_STYLE_FORMATS,
     PHONE_NUMBER_LENGTH,
 )
+from .enums import ProgramRoleRetentionPolicy
 
 if TYPE_CHECKING:
     from kompassi.access.models.email_alias import EmailAlias
@@ -109,6 +111,30 @@ class Person(models.Model):
     may_send_info = models.BooleanField(
         default=False,
         verbose_name=_("I may be sent information about future events by email <i>(optional)</i>"),
+    )
+
+    program_role_retention_policy = PostgresEnumField(
+        ProgramRoleRetentionPolicy,
+        "core_programroleretentionpolicy",
+        null=True,
+        blank=True,
+        choices=[
+            (
+                ProgramRoleRetentionPolicy.REMOVE.name,
+                _("Remove me from the hosts of my past program items when the retention period expires"),
+            ),
+            (
+                ProgramRoleRetentionPolicy.RETAIN.name,
+                _("Retain me as the host of my past program items until I choose otherwise"),
+            ),
+        ],
+        verbose_name=_("Retention of program host roles"),
+        help_text=_(
+            "Personal data related to your participation in events is deleted after the retention period "
+            "of the event organizer has passed. Many are, however, proud of their program history and wish "
+            "to remain listed as the host of their past program items. You can choose here whether your "
+            "program host roles are retained beyond the retention period."
+        ),
     )
 
     allow_work_history_sharing = models.BooleanField(

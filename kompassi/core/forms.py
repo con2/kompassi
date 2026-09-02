@@ -129,6 +129,7 @@ class PersonForm(PersonFormMixin, forms.ModelForm):
                 "preferred_name_display_style",
                 "may_send_info",
                 "allow_work_history_sharing",
+                "program_role_retention_policy",
             ),
         )
 
@@ -148,6 +149,7 @@ class PersonForm(PersonFormMixin, forms.ModelForm):
             "preferred_name_display_style",
             "may_send_info",
             "allow_work_history_sharing",
+            "program_role_retention_policy",
         )
 
 

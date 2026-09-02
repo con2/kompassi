@@ -22,6 +22,7 @@ class SurveyForm(django_forms.ModelForm):
             "active_until",
             "responses_editable_until",
             "protect_responses",
+            "retention_period",
         )
 
     @classmethod

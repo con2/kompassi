@@ -214,3 +214,59 @@ def test_password_maxlength_unified_with_zxcvbn_for_astral_characters():
     # so a browser honouring maxlength would refuse this otherwise-valid password.
     utf16_units = len(password.encode("utf-16-le")) // 2
     assert utf16_units <= browser_maxlength
+
+
+@pytest.mark.django_db
+def test_program_role_retention_policy_null_round_trip():
+    """
+    Person.program_role_retention_policy is the first nullable PostgresEnumField, and the
+    first one exposed via a form. NULL, the member itself and the member name must all
+    round-trip, and an empty string (what an empty form select submits) must become NULL.
+    """
+    from kompassi.core.models.enums import ProgramRoleRetentionPolicy
+    from kompassi.core.models.person import Person
+
+    person, _created = Person.get_or_create_dummy()
+
+    assert person.program_role_retention_policy is None
+
+    person.program_role_retention_policy = ProgramRoleRetentionPolicy.REMOVE
+    person.save(update_fields=["program_role_retention_policy"])
+    person.refresh_from_db()
+    assert person.program_role_retention_policy == ProgramRoleRetentionPolicy.REMOVE
+
+    person.program_role_retention_policy = "RETAIN"  # type: ignore[assignment]
+    person.save(update_fields=["program_role_retention_policy"])
+    person.refresh_from_db()
+    assert person.program_role_retention_policy == ProgramRoleRetentionPolicy.RETAIN
+
+    person.program_role_retention_policy = None
+    person.save(update_fields=["program_role_retention_policy"])
+    person.refresh_from_db()
+    assert person.program_role_retention_policy is None
+
+
+@pytest.mark.django_db
+def test_person_form_program_role_retention_policy():
+    """
+    The V1 profile form's empty select option must save as NULL rather than the empty
+    string, which is not a label of the native enum type.
+    """
+    from kompassi.core.forms import PersonForm
+    from kompassi.core.models.enums import ProgramRoleRetentionPolicy
+    from kompassi.core.models.person import Person
+
+    person, _created = Person.get_or_create_dummy()
+
+    def submit(value: str):
+        form_data = {field: getattr(person, field) or "" for field in PersonForm.Meta.fields}
+        form_data["birth_date"] = "1990-01-01"
+        form_data["program_role_retention_policy"] = value
+
+        form = PersonForm(form_data, instance=person)
+        assert form.is_valid(), form.errors
+        return form.save()
+
+    assert submit("REMOVE").program_role_retention_policy == ProgramRoleRetentionPolicy.REMOVE
+    assert submit("RETAIN").program_role_retention_policy == ProgramRoleRetentionPolicy.RETAIN
+    assert submit("").program_role_retention_policy is None

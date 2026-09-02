@@ -6,3 +6,11 @@ msgstr "Sinulla on kyselyiden hallintaoikeudet tähän tapahtumaan"
 
 msgid "Go to admin"
 msgstr "Siirry hallintaan"
+
+#: models/survey.py
+msgid "retention period"
+msgstr "säilytysaika"
+
+#: models/survey.py
+msgid "Overrides the default retention period of the registry for the responses of this survey. Counted from the end time of the event, or, lacking that, the creation time of the response."
+msgstr "Korvaa rekisterin oletussäilytysajan tämän kyselyn vastausten osalta. Lasketaan tapahtuman päättymisajasta tai, jos sitä ei ole, vastauksen luontiajasta."

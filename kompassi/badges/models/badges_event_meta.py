@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from kompassi.core.models import EventMetaBase
@@ -19,6 +20,20 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         ),
     )
 
+    # NOTE: lazy reference is mandatory: involvement.models.involvement imports badges at module level.
+    registry = models.ForeignKey(
+        "involvement.Registry",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name=_("Registry"),
+        help_text=_(
+            "The personal data registry the badges of this event belong to. Badges are deleted after the "
+            "default retention period of the registry has passed since the end time of the event."
+        ),
+        related_name="badges_event_metas",
+    )
+
     onboarding_access_group = models.ForeignKey(
         "auth.Group",
         on_delete=models.SET_NULL,
@@ -28,6 +43,24 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         help_text=_("Members of this group are granted access to the onboarding view without being badges admins."),
         related_name="as_onboarding_access_group_for",
     )
+
+    @property
+    def badge_retention_expired(self) -> bool:
+        """
+        Whether the retention period for the badges of this event has expired.
+
+        NOTE: The anchor is the end time of the event only, with no fallback to the creation time
+        of the badge. Badge.ensure consults this to avoid recreating a swept badge, and it cannot
+        see a per-badge creation time; a fallback here would make an end-time-less event's badge
+        oscillate between swept and resurrected. Must stay in sync with
+        Badge.get_expired_badges_for_cleanup.
+        """
+        if self.registry is None or self.registry.default_retention_period is None:
+            return False
+        if self.event.end_time is None:
+            return False
+
+        return self.event.end_time + self.registry.default_retention_period < now()
 
     @classmethod
     def get_or_create_dummy(cls):

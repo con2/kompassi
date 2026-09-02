@@ -1,6 +1,7 @@
 import graphene
 from django.conf import settings
 from django.http import HttpRequest
+from django.utils.duration import duration_iso_string
 from graphene.types.generic import GenericScalar
 
 from kompassi.access.cbac import graphql_check_instance
@@ -280,6 +281,37 @@ class FullSurveyType(LimitedSurveyType):
     can_remove_responses = graphene.NonNull(
         graphene.Boolean,
         description=normalize_whitespace(resolve_can_remove_responses.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_retention_period(survey: Survey, info) -> str | None:
+        """
+        The retention period of the responses of this survey as an ISO 8601 duration,
+        overriding the default retention period of the registry. Null if not overridden.
+        """
+        if survey.retention_period is None:
+            return None
+        return duration_iso_string(survey.retention_period)
+
+    retention_period = graphene.Field(
+        graphene.String,
+        description=normalize_whitespace(resolve_retention_period.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_effective_retention_period(survey: Survey, info) -> str | None:
+        """
+        The retention period that applies to the responses of this survey as an ISO 8601
+        duration, ie. the survey's own retention period or, lacking that, the default
+        retention period of the registry. Null means the responses are retained indefinitely.
+        """
+        if (retention_period := survey.effective_retention_period) is None:
+            return None
+        return duration_iso_string(retention_period)
+
+    effective_retention_period = graphene.Field(
+        graphene.String,
+        description=normalize_whitespace(resolve_effective_retention_period.__doc__ or ""),
     )
 
     # TODO change to Scope

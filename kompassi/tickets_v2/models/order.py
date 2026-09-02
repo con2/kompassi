@@ -23,6 +23,7 @@ from kompassi.core.models.event import Event
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.event_log_v2.utils.emit import emit
 from kompassi.event_log_v2.utils.monthly_partitions import UUID7Mixin
+from kompassi.field_types import PostgresEnumField
 from kompassi.graphql_api.language import SUPPORTED_LANGUAGES
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStampType, PaymentStatus, RefundType
@@ -36,7 +37,6 @@ from ..optimized_server.utils.formatting import format_order_number
 from ..optimized_server.utils.uuid7 import uuid7
 from ..utils.event_partitions import EventPartitionsMixin
 from .enums import ActorType
-from .fields import PostgresEnumField
 from .meta import TicketsV2EventMeta
 from .product import Product
 

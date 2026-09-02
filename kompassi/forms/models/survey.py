@@ -4,7 +4,7 @@ import dataclasses
 import logging
 from collections.abc import Collection, Mapping
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import cached_property
 from typing import TYPE_CHECKING, Self
 
@@ -153,6 +153,16 @@ class Survey(models.Model):
         related_name="surveys",
     )
 
+    retention_period = models.DurationField(
+        null=True,
+        blank=True,
+        verbose_name=_("retention period"),
+        help_text=_(
+            "Overrides the default retention period of the registry for the responses of this survey. "
+            "Counted from the end time of the event, or, lacking that, the creation time of the response."
+        ),
+    )
+
     universe = models.ForeignKey(
         Universe,
         on_delete=models.CASCADE,
@@ -203,6 +213,18 @@ class Survey(models.Model):
                 return InvolvementType.SURVEY_RESPONSE
             case _:
                 raise NotImplementedError(f"{self.app=} {self.purpose=} is not implemented")
+
+    @property
+    def effective_retention_period(self) -> timedelta | None:
+        """
+        The retention period that applies to the responses of this survey, or None if they are
+        to be retained indefinitely.
+        """
+        if self.retention_period is not None:
+            return self.retention_period
+        if self.registry is not None:
+            return self.registry.default_retention_period
+        return None
 
     @property
     def dimensions(self) -> models.QuerySet[Dimension]:
@@ -428,6 +450,7 @@ class Survey(models.Model):
             login_required=self.login_required,
             max_responses_per_user=self.max_responses_per_user,
             protect_responses=self.protect_responses,
+            retention_period=self.retention_period,
             created_by=created_by,
             registry=self.registry if registry is None else registry,
         ).with_mandatory_fields()

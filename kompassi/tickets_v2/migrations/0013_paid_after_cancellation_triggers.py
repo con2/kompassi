@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.db import migrations
 
-import kompassi.tickets_v2.models.fields
+import kompassi.field_types
 from kompassi.tickets_v2.optimized_server.models import enums
 
 REVERSE_SQL = """
@@ -93,7 +93,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="order",
                     name="cached_status",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.PaymentStatus,
                         db_type_name="tickets_v2_paymentstatus",
                         choices=[(status.name, status.name) for status in enums.PaymentStatus],
@@ -104,7 +104,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="paymentstamp",
                     name="status",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.PaymentStatus,
                         db_type_name="tickets_v2_paymentstatus",
                         choices=[(status.name, status.name) for status in enums.PaymentStatus],
@@ -113,7 +113,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="paymentstamp",
                     name="type",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.PaymentStampType,
                         db_type_name="tickets_v2_paymentstamptype",
                         choices=[(t.name, t.name) for t in enums.PaymentStampType],

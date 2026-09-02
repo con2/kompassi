@@ -4,15 +4,18 @@ import logging
 import uuid
 from collections.abc import Collection, Iterable, Mapping, Sequence
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Self
 
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models, transaction
-from django.db.models import JSONField
+from django.db.models import DateTimeField, ExpressionWrapper, JSONField, Q
+from django.db.models.functions import Coalesce
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from kompassi.core.models.event import Event
+from kompassi.core.utils.cleanup import register_cleanup
 from kompassi.dimensions.models.scope import Scope
 from kompassi.dimensions.utils.build_cached_dimensions import build_cached_dimensions
 from kompassi.dimensions.utils.dimension_cache import DimensionCache
@@ -343,3 +346,40 @@ class Response(models.Model):
                 return f"{settings.KOMPASSI_V2_BASE_URL}/{self.survey.event.slug}/program-offers/{self.id}"
             case _:
                 raise ValueError(f"Unknown app type: {self.survey.app}")
+
+    @classmethod
+    def get_expired_responses_for_cleanup(cls, queryset: models.QuerySet[Self]):
+        """
+        Cleanup filter used by @register_cleanup. Deletes responses whose retention period has
+        expired, counted from the end time of the event or, lacking that, the creation time of
+        the response. A NULL retention period means the responses are retained indefinitely.
+
+        NOTE: Retention deliberately overrides Survey.protect_responses: the obligation to delete
+        personal data when its retention period expires outranks the accident protection.
+        """
+        expired_current_versions = (
+            queryset.filter(superseded_by=None)
+            .annotate(
+                retain_until=ExpressionWrapper(
+                    Coalesce(
+                        "form__survey__event__end_time",
+                        "original_created_at",
+                        "revision_created_at",
+                    )
+                    + Coalesce(
+                        "form__survey__retention_period",
+                        "form__survey__registry__default_retention_period",
+                    ),
+                    output_field=DateTimeField(),
+                )
+            )
+            .filter(retain_until__lt=now())
+        )
+
+        # Whole revision chains are deleted at once: deleting only the current version would
+        # SET_NULL the old revisions' superseded_by, leaving them looking like current versions.
+        expired_ids = expired_current_versions.values("id")
+        return queryset.filter(Q(id__in=expired_ids) | Q(superseded_by__in=expired_ids))
+
+
+register_cleanup(Response.get_expired_responses_for_cleanup)(Response)

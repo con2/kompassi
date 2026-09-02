@@ -335,6 +335,7 @@ class Setup:
                 admin_group=badge_admin_group,
                 onboarding_access_group=onboarding_group,
                 real_name_must_be_visible=True,
+                registry=Registry.objects.filter(scope=self.organization.scope, slug="volunteers").first(),
             ),
         )
 

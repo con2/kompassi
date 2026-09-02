@@ -6,6 +6,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
     dependencies = [  # noqa: RUF012
         ("program_v2", "0045_programv2eventmeta_konsti_url_and_more"),
+        # Removing Annotation here must not happen before dimensions.0015 has copied it over.
+        ("dimensions", "0015_alter_universe_scope_annotation_universeannotation"),
     ]
 
     operations = [  # noqa: RUF012

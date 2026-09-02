@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -137,7 +137,7 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
         )
 
     def setup_involvement(self):
-        _volunteers, _ = Registry.objects.get_or_create(
+        volunteers, _ = Registry.objects.get_or_create(
             scope=self.organization.scope,
             slug="volunteers",
             defaults=dict(
@@ -145,6 +145,10 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
                 title_fi="Tracon ry:n vapaaehtoisrekisteri",
             ),
         )
+
+        if settings.DEBUG and volunteers.default_retention_period is None:
+            volunteers.default_retention_period = timedelta(days=2 * 365)
+            volunteers.save(update_fields=["default_retention_period"])
 
 
 class Command(BaseCommand):

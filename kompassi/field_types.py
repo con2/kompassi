@@ -26,6 +26,10 @@ class PostgresEnumField(models.Field):
     kompassi/tickets_v2/graphql/meta.py.
     """
 
+    # A nullable enum column has no representation for the empty string, so an
+    # empty form select must arrive here as None and not as "".
+    empty_strings_allowed = False
+
     def __init__(self, enum: type[Enum], db_type_name: str, *args: Any, **kwargs: Any):
         self.enum = enum
         self.db_type_name = db_type_name
@@ -52,12 +56,21 @@ class PostgresEnumField(models.Field):
 
     @override
     def get_prep_value(self, value):
-        if value is None:
+        if value is None or value == "":
             return None
         if isinstance(value, self.enum):
             return value.name
         # A name, eg. from a GraphQL enum input or a dimension filter slug.
         return self.enum[str(value)].name
+
+    @override
+    def validate(self, value, model_instance):
+        # By the time a form or the admin gets here, the value has been through to_python()
+        # and is an enum member, while choices are keyed by the member name. Normalise so the
+        # choice check compares like with like.
+        if isinstance(value, self.enum):
+            value = value.name
+        super().validate(value, model_instance)
 
     @override
     def value_to_string(self, obj):
@@ -73,6 +86,8 @@ class PostgresEnumField(models.Field):
         return self.enum[value]
 
     def to_python(self, value):
+        if value == "":
+            return None
         if value is None or isinstance(value, self.enum):
             return value
         return self.enum[str(value)]

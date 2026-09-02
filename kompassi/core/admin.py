@@ -44,6 +44,7 @@ class PersonAdmin(admin.ModelAdmin):
         ("Contact information", {"fields": ["email", "phone", "may_send_info"]}),
         ("Official information", {"fields": ["official_first_names", "muncipality"]}),
         ("Display", {"fields": ["preferred_name_display_style", "preferred_badge_name_display_style"]}),
+        ("Privacy", {"fields": ["allow_work_history_sharing", "program_role_retention_policy"]}),
         ("Notes", {"fields": ["notes"]}),
     ]
 
