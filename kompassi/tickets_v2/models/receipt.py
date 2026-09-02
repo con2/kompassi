@@ -22,13 +22,13 @@ from lippukala.printing import OrderPrinter
 
 from kompassi.core.models.event import Event
 from kompassi.event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7, uuid7_to_datetime
+from kompassi.field_types import PostgresEnumField
 from kompassi.tickets_v2.lippukala_integration import Queue as LippukalaQueue
 
 from ..optimized_server.models.enums import PaymentStatus, ReceiptStatus, ReceiptType
 from ..optimized_server.utils.cancellation import get_cancellation_deadline, is_cancellable_by_customer
 from ..utils.event_partitions import EventPartitionsMixin
 from ..utils.mail import email_template_language, tickets_from_email
-from .fields import PostgresEnumField
 from .meta import TicketsV2EventMeta
 from .order import Order, OrderMixin
 from .product import Product

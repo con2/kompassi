@@ -12,6 +12,7 @@ import pytest
 import requests
 from django.core import mail
 
+from kompassi.core.models.enums import ProgramRoleRetentionPolicy
 from kompassi.core.models.event import Event
 from kompassi.tickets_v2.graphql.mutations.confirm_order_cancellation import ConfirmOrderCancellation
 from kompassi.tickets_v2.graphql.mutations.request_order_cancellation import RequestOrderCancellation
@@ -1206,6 +1207,7 @@ def test_order_cancellation_token_cleanup(cancellation_event: Event):
         (PaymentStatus, "tickets_v2_paymentstatus"),
         (ReceiptType, "tickets_v2_receipttype"),
         (ReceiptStatus, "tickets_v2_receiptstatus"),
+        (ProgramRoleRetentionPolicy, "core_programroleretentionpolicy"),
     ],
 )
 def test_enum_declaration_order_matches_database(enum_class, db_type_name):

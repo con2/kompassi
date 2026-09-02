@@ -294,3 +294,11 @@ msgstr "Edut"
 
 msgid "Will be shown in the onboarding view to instruct the onboarding desk what to give this person."
 msgstr "Näytetään sisäänkirjausnäkymässä kertomaan sisäänkirjaajalle mitä tälle henkilölle kuuluu antaa."
+
+#: models/badges_event_meta.py
+msgid "Registry"
+msgstr "Rekisteri"
+
+#: models/badges_event_meta.py
+msgid "The personal data registry the badges of this event belong to. Badges are deleted after the default retention period of the registry has passed since the end time of the event."
+msgstr "Henkilörekisteri, johon tämän tapahtuman badget kuuluvat. Badget poistetaan, kun rekisterin oletussäilytysaika on kulunut tapahtuman päättymisajasta."

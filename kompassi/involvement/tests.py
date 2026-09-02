@@ -1,11 +1,17 @@
-import pytest
+from datetime import datetime, timedelta
 
+import pytest
+from django.utils.timezone import now
+
+from kompassi.core.models.enums import ProgramRoleRetentionPolicy
 from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
+from kompassi.core.utils.cleanup import perform_cleanup
 from kompassi.dimensions.models.annotation_dto import AnnotationDTO
 from kompassi.dimensions.models.dimension_dto import DimensionDTO, DimensionValueDTO
 from kompassi.dimensions.models.enums import AnnotationDataType, DimensionApp
 from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
+from kompassi.event_log_v2.models.entry import Entry
 
 from .emperkelators.desucon2026 import DesuconEmperkelator
 from .emperkelators.ropecon2026 import RopeconEmperkelator
@@ -378,3 +384,215 @@ def test_for_combined_perks_uses_program_host_ticket_type():
     formatted_perks = result.annotations["internal:formattedPerks"]
     assert "Vapaalippu lauantai" in formatted_perks
     assert "Badge" not in formatted_perks
+
+
+def _perform_retention_cleanup():
+    """perform_cleanup emits event log entries, which need the current month's partition."""
+    Entry.ensure_partitions()
+    perform_cleanup()
+
+
+def _make_retention_involvement(
+    *,
+    slug: str,
+    involvement_type: InvolvementType = InvolvementType.SURVEY_RESPONSE,
+    default_retention_period: timedelta | None = timedelta(days=365),
+    end_time: datetime | None = None,
+    program_role_retention_policy: ProgramRoleRetentionPolicy | None = None,
+):
+    """
+    An involvement wired so that retention cleanup has everything it needs. Each call gets
+    its own event, registry and person, so that cases within one test, which differ
+    precisely in these, do not overwrite each other.
+    """
+    from kompassi.core.models.organization import Organization
+    from kompassi.core.models.venue import Venue
+    from kompassi.dimensions.models.universe import Universe
+
+    from .models.registry import Registry
+
+    organization, _created = Organization.get_or_create_dummy()
+    venue, _created = Venue.get_or_create_dummy()
+    event = Event.objects.create(
+        name=f"Retention test event {slug}",
+        slug=f"retention-{slug}",
+        organization=organization,
+        venue=venue,
+        start_time=(end_time or now()) - timedelta(days=1),
+        end_time=end_time,
+    )
+
+    registry = Registry.objects.create(
+        scope=organization.scope,
+        slug=f"retention-{slug}",
+        title_en=f"Retention test registry {slug}",
+        default_retention_period=default_retention_period,
+    )
+
+    universe = Universe.objects.create(
+        scope=event.scope,
+        slug=f"retention-{slug}",
+        app=DimensionApp.INVOLVEMENT,
+    )
+
+    person = Person.objects.create(
+        first_name="Retention",
+        surname=slug,
+        email=f"retention-{slug}@example.com",
+        program_role_retention_policy=program_role_retention_policy,
+    )
+
+    return Involvement.objects.create(
+        universe=universe,
+        person=person,
+        app=DimensionApp.INVOLVEMENT,
+        type=involvement_type,
+        registry=registry,
+        is_active=True,
+    )
+
+
+@pytest.mark.django_db
+def test_involvement_retention_registry_default():
+    """
+    An involvement is deleted once its registry's default retention period has passed since
+    the end time of the event. A registry without a retention period retains indefinitely,
+    and the anchor falls back to the creation time when the event has no end time.
+    """
+    expired = _make_retention_involvement(
+        slug="expired",
+        end_time=now() - timedelta(days=400),
+    )
+    unexpired = _make_retention_involvement(
+        slug="unexpired",
+        end_time=now() - timedelta(days=300),
+    )
+    no_retention = _make_retention_involvement(
+        slug="no-retention",
+        default_retention_period=None,
+        end_time=now() - timedelta(days=4000),
+    )
+    # No end time: the anchor is created_at, which is right now, so this is not expired.
+    no_end_time = _make_retention_involvement(slug="no-end-time", end_time=None)
+
+    _perform_retention_cleanup()
+
+    assert not Involvement.objects.filter(pk=expired.pk).exists()
+    assert Involvement.objects.filter(pk=unexpired.pk).exists()
+    assert Involvement.objects.filter(pk=no_retention.pk).exists()
+    assert Involvement.objects.filter(pk=no_end_time.pk).exists()
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "policy,expect_deleted",
+    [
+        (None, False),
+        (ProgramRoleRetentionPolicy.RETAIN, False),
+        (ProgramRoleRetentionPolicy.REMOVE, True),
+    ],
+)
+def test_involvement_retention_program_host_policy(policy, expect_deleted):
+    """
+    Program hosts are often proud of their program history, so an expired PROGRAM_HOST
+    involvement is only deleted when the person has explicitly chosen REMOVE. NULL (no
+    conscious choice) and RETAIN both keep it.
+    """
+    involvement = _make_retention_involvement(
+        slug=f"program-host-{policy.name.lower() if policy else 'unset'}",
+        involvement_type=InvolvementType.PROGRAM_HOST,
+        end_time=now() - timedelta(days=400),
+        program_role_retention_policy=policy,
+    )
+
+    _perform_retention_cleanup()
+
+    assert Involvement.objects.filter(pk=involvement.pk).exists() is not expect_deleted
+
+
+@pytest.mark.django_db
+def test_involvement_retention_revokes_badge():
+    """
+    An expiring involvement is deactivated and its dependents refreshed before the row goes
+    away, so that the badge it granted is revoked rather than left behind.
+    """
+    from kompassi.badges.models.badge import Badge
+    from kompassi.badges.models.badges_event_meta import BadgesEventMeta
+    from kompassi.labour.models.personnel_class import PersonnelClass
+
+    meta, _created = InvolvementEventMeta.get_or_create_dummy()
+    event = meta.event
+    event.end_time = now() - timedelta(days=400)
+    event.save(update_fields=["end_time"])
+
+    BadgesEventMeta.get_or_create_dummy()
+    personnel_class = PersonnelClass.objects.create(
+        event=event,
+        name="Ohjelma",
+        slug="ohjelma",
+        app_label="program_v2",
+    )
+
+    person, _created = Person.get_or_create_dummy()
+    registry = meta.default_registry
+    assert registry is not None
+    registry.default_retention_period = timedelta(days=365)
+    registry.save(update_fields=["default_retention_period"])
+
+    involvement = Involvement.objects.create(
+        universe=meta.universe,
+        person=person,
+        app=DimensionApp.INVOLVEMENT,
+        type=InvolvementType.SURVEY_RESPONSE,
+        registry=registry,
+        is_active=True,
+    )
+    badge = Badge.objects.create(person=person, personnel_class=personnel_class)
+
+    _perform_retention_cleanup()
+
+    assert not Involvement.objects.filter(pk=involvement.pk).exists()
+    assert not Badge.objects.filter(pk=badge.pk, revoked_at__isnull=True).exists()
+
+
+@pytest.mark.django_db
+def test_involvement_survives_expired_response():
+    """
+    Involvement retention comes from the registry while a survey may override retention of
+    its responses, so the response of an unexpired involvement can expire first. The
+    involvement then survives with response=None (SET_NULL).
+    """
+    from kompassi.forms.models.form import Form
+    from kompassi.forms.models.response import Response
+    from kompassi.forms.models.survey import Survey
+
+    involvement = _make_retention_involvement(
+        slug="unexpired-with-expired-response",
+        involvement_type=InvolvementType.PROGRAM_HOST,
+        end_time=now() - timedelta(days=100),
+    )
+    event = involvement.universe.scope.event
+    assert event is not None
+
+    survey = Survey.objects.create(
+        event=event,
+        slug="expiring-fast",
+        registry=involvement.registry,
+        retention_period=timedelta(days=30),
+    )
+    form = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[dict(slug="title", type="SingleLineText")],
+    )
+    response = Response.objects.create(form=form, form_data=dict(title="Personal data"))
+    involvement.response = response
+    involvement.save(update_fields=["response"])
+
+    _perform_retention_cleanup()
+
+    assert not Response.objects.filter(pk=response.pk).exists()
+
+    involvement.refresh_from_db()
+    assert involvement.response is None

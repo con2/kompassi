@@ -1,12 +1,16 @@
 import logging
+from datetime import datetime, timedelta
 
 import pytest
 from django.db import transaction
 from django.test import TestCase
+from django.utils.timezone import now
 
-from kompassi.core.models import Person
+from kompassi.core.models import Event, Person
+from kompassi.core.utils.cleanup import perform_cleanup
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.dimension_value_dto import DimensionValueDTO
+from kompassi.event_log_v2.models.entry import Entry
 from kompassi.forms.models.form import Form
 from kompassi.forms.models.meta import FormsEventMeta
 from kompassi.forms.models.response import Response
@@ -272,3 +276,108 @@ def test_survey_to_badge():
     badge = Badge.objects.filter(person=person, personnel_class__event=event).get()
     assert badge.personnel_class == personnel_class
     assert badge.job_title == "Ohjelmanjärjestäjä"
+
+
+def _perform_retention_cleanup():
+    """perform_cleanup emits event log entries, which need the current month's partition."""
+    Entry.ensure_partitions()
+    perform_cleanup()
+
+
+def _make_retention_badge(
+    *,
+    slug: str,
+    default_retention_period: timedelta | None = timedelta(days=365),
+    end_time: datetime | None = None,
+    with_registry: bool = True,
+):
+    """
+    A badge wired so that retention cleanup has everything it needs. Each call gets its own
+    event and registry, so that cases within one test, which differ precisely in these, do
+    not overwrite each other.
+    """
+    from kompassi.core.models.organization import Organization
+    from kompassi.core.models.venue import Venue
+    from kompassi.involvement.models.registry import Registry
+
+    organization, _created = Organization.get_or_create_dummy()
+    venue, _created = Venue.get_or_create_dummy()
+    event = Event.objects.create(
+        name=f"Retention test event {slug}",
+        slug=f"retention-{slug}",
+        organization=organization,
+        venue=venue,
+        start_time=(end_time or now()) - timedelta(days=1),
+        end_time=end_time,
+    )
+
+    registry = (
+        Registry.objects.create(
+            scope=organization.scope,
+            slug=f"retention-{slug}",
+            title_en=f"Retention test registry {slug}",
+            default_retention_period=default_retention_period,
+        )
+        if with_registry
+        else None
+    )
+
+    (admin_group,) = BadgesEventMeta.get_or_create_groups(event, ["admins"])
+    BadgesEventMeta.objects.create(event=event, admin_group=admin_group, registry=registry)
+
+    personnel_class = PersonnelClass.objects.create(
+        event=event,
+        name="Ohjelma",
+        slug="ohjelma",
+        app_label="program_v2",
+    )
+    person, _created = Person.get_or_create_dummy()
+
+    return Badge.objects.create(person=person, personnel_class=personnel_class)
+
+
+@pytest.mark.django_db
+def test_badge_retention():
+    """
+    A badge is deleted once the retention period of its event's badge registry has passed
+    since the end time of the event. A missing end time, registry or retention period all
+    retain the badge indefinitely.
+    """
+    expired = _make_retention_badge(slug="expired", end_time=now() - timedelta(days=400))
+    unexpired = _make_retention_badge(slug="unexpired", end_time=now() - timedelta(days=300))
+    no_end_time = _make_retention_badge(slug="no-end-time", end_time=None)
+    no_registry = _make_retention_badge(
+        slug="no-registry",
+        with_registry=False,
+        end_time=now() - timedelta(days=4000),
+    )
+    no_retention_period = _make_retention_badge(
+        slug="no-retention-period",
+        default_retention_period=None,
+        end_time=now() - timedelta(days=4000),
+    )
+
+    _perform_retention_cleanup()
+
+    assert not Badge.objects.filter(pk=expired.pk).exists()
+    assert Badge.objects.filter(pk=unexpired.pk).exists()
+    assert Badge.objects.filter(pk=no_end_time.pk).exists()
+    assert Badge.objects.filter(pk=no_registry.pk).exists()
+    assert Badge.objects.filter(pk=no_retention_period.pk).exists()
+
+
+@pytest.mark.django_db
+def test_badge_ensure_does_not_resurrect_expired_badge():
+    """
+    Anything that touches a long-past event would otherwise recreate the badge the sweep
+    just deleted, with fresh personal data.
+    """
+    badge = _make_retention_badge(slug="ensure-guard", end_time=now() - timedelta(days=400))
+    event = badge.personnel_class.event
+    person = badge.person
+
+    _perform_retention_cleanup()
+    assert not Badge.objects.filter(pk=badge.pk).exists()
+
+    assert Badge.ensure(event=event, person=person) == (None, False)
+    assert not Badge.objects.filter(person=person, personnel_class__event=event).exists()

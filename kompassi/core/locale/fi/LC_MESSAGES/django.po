@@ -418,3 +418,19 @@ msgstr "Lipputilaukset<sup>v2</sup>…"
 
 msgid "Survey responses<sup>v2</sup>…"
 msgstr "Kyselyvastaukset<sup>v2</sup>…"
+
+#: models/person.py
+msgid "Retention of program host roles"
+msgstr "Ohjelmanjärjestäjäroolien säilytys"
+
+#: models/person.py
+msgid "Personal data related to your participation in events is deleted after the retention period of the event organizer has passed. Many are, however, proud of their program history and wish to remain listed as the host of their past program items. You can choose here whether your program host roles are retained beyond the retention period."
+msgstr "Tapahtumiin osallistumiseesi liittyvät henkilötiedot poistetaan, kun tapahtumanjärjestäjän säilytysaika on kulunut umpeen. Moni on kuitenkin ylpeä ohjelmahistoriastaan ja haluaa pysyä merkittynä aiempien ohjelmanumeroidensa järjestäjäksi. Voit valita tässä, säilytetäänkö ohjelmanjärjestäjäroolisi säilytysajan päätyttyä."
+
+#: models/person.py
+msgid "Remove me from the hosts of my past program items when the retention period expires"
+msgstr "Poista minut aiempien ohjelmanumeroideni järjestäjistä, kun säilytysaika päättyy"
+
+#: models/person.py
+msgid "Retain me as the host of my past program items until I choose otherwise"
+msgstr "Säilytä minut aiempien ohjelmanumeroideni järjestäjänä, kunnes toisin päätän"

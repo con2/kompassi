@@ -8,7 +8,7 @@ from .models.survey_to_badge import SurveyToBadgeMapping
 
 class InlineBadgesEventMetaAdmin(admin.StackedInline):
     model = BadgesEventMeta
-    raw_id_fields = ("admin_group", "onboarding_access_group")
+    raw_id_fields = ("admin_group", "onboarding_access_group", "registry")
 
 
 @admin.register(Badge)

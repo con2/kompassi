@@ -2,7 +2,7 @@ from pathlib import Path
 
 from django.db import migrations
 
-import kompassi.tickets_v2.models.fields
+import kompassi.field_types
 from kompassi.tickets_v2.optimized_server.models import enums
 
 REVERSE_SQL = """
@@ -225,7 +225,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="order",
                     name="cached_status",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.PaymentStatus,
                         db_type_name="tickets_v2_paymentstatus",
                         choices=[(status.name, status.name) for status in enums.PaymentStatus],
@@ -236,7 +236,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="paymentstamp",
                     name="provider_id",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.PaymentProvider,
                         db_type_name="tickets_v2_paymentprovider",
                         choices=[(p.name, p.name) for p in enums.PaymentProvider],
@@ -250,7 +250,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="paymentstamp",
                     name="type",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.PaymentStampType,
                         db_type_name="tickets_v2_paymentstamptype",
                         choices=[(t.name, t.name) for t in enums.PaymentStampType],
@@ -259,7 +259,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="paymentstamp",
                     name="status",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.PaymentStatus,
                         db_type_name="tickets_v2_paymentstatus",
                         choices=[(status.name, status.name) for status in enums.PaymentStatus],
@@ -268,7 +268,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="receipt",
                     name="type",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.ReceiptType,
                         db_type_name="tickets_v2_receipttype",
                         choices=[(t.name, t.name) for t in enums.ReceiptType],
@@ -277,7 +277,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="receipt",
                     name="status",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.ReceiptStatus,
                         db_type_name="tickets_v2_receiptstatus",
                         choices=[(s.name, s.name) for s in enums.ReceiptStatus],
@@ -286,7 +286,7 @@ class Migration(migrations.Migration):
                 migrations.AlterField(
                     model_name="ticketsv2eventmeta",
                     name="provider_id",
-                    field=kompassi.tickets_v2.models.fields.PostgresEnumField(
+                    field=kompassi.field_types.PostgresEnumField(
                         enum=enums.PaymentProvider,
                         db_type_name="tickets_v2_paymentprovider",
                         choices=[(p.name, p.name) for p in enums.PaymentProvider],

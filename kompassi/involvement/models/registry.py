@@ -28,6 +28,16 @@ class Registry(models.Model):
     policy_url_fi = models.URLField(blank=True)
     policy_url_sv = models.URLField(blank=True)
 
+    default_retention_period = models.DurationField(
+        null=True,
+        blank=True,
+        help_text=(
+            "The default retention period for personal data in this registry, counted from the end time of "
+            "the event (or, lacking that, the creation time of the record). If unset, personal data in this "
+            "registry is retained indefinitely. Can be overridden per survey."
+        ),
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

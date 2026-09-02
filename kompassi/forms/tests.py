@@ -1,16 +1,20 @@
+from datetime import datetime, timedelta
 from types import SimpleNamespace
 from unittest import mock
 
 import pytest
 import yaml
 from django.db import transaction
+from django.utils.timezone import now
 
 from kompassi.core.middleware import RequestLocalCache
 from kompassi.core.models import Event
+from kompassi.core.utils.cleanup import perform_cleanup
 from kompassi.dimensions.graphql.mutations.put_dimension import PutDimension
 from kompassi.dimensions.models.dimension import Dimension, ValueOrdering
 from kompassi.dimensions.models.dimension_value import DimensionValue
 from kompassi.dimensions.models.enums import DimensionApp
+from kompassi.event_log_v2.models.entry import Entry
 from kompassi.graphql_api.schema import schema
 
 from .excel_export import get_header_cells, get_response_cells
@@ -1258,3 +1262,206 @@ def test_splat():
         {"name": "Bob", "email": ""},
     ]
     assert actual == expected
+
+
+def _perform_retention_cleanup():
+    """perform_cleanup emits event log entries, which need the current month's partition."""
+    Entry.ensure_partitions()
+    perform_cleanup()
+
+
+def _make_retention_response(
+    *,
+    survey_slug: str,
+    retention_period: timedelta | None = None,
+    default_retention_period: timedelta | None = timedelta(days=365),
+    end_time: datetime | None = None,
+):
+    """
+    A survey with one response, wired so that retention cleanup has everything it needs:
+    a registry with a default retention period and an event whose end time is the anchor.
+
+    Each call gets its own event and registry so that cases within one test, which differ
+    precisely in the end time and the retention period, do not overwrite each other.
+    """
+    from kompassi.core.models.organization import Organization
+    from kompassi.core.models.venue import Venue
+    from kompassi.involvement.models.registry import Registry
+
+    organization, _created = Organization.get_or_create_dummy()
+    venue, _created = Venue.get_or_create_dummy()
+    event = Event.objects.create(
+        name=f"Retention test event {survey_slug}",
+        slug=f"retention-{survey_slug}",
+        organization=organization,
+        venue=venue,
+        start_time=(end_time or now()) - timedelta(days=1),
+        end_time=end_time,
+    )
+
+    registry = Registry.objects.create(
+        scope=organization.scope,
+        slug=f"retention-{survey_slug}",
+        title_en=f"Retention test registry {survey_slug}",
+        default_retention_period=default_retention_period,
+    )
+
+    survey = Survey.objects.create(
+        event=event,
+        slug=survey_slug,
+        registry=registry,
+        retention_period=retention_period,
+    )
+    form = Form.objects.create(
+        event=event,
+        survey=survey,
+        language="en",
+        fields=[dict(slug="title", type="SingleLineText")],
+    )
+    response = Response.objects.create(form=form, form_data=dict(title="Personal data"))
+
+    return survey, response
+
+
+def _backdate_response(response: Response, when: datetime):
+    """auto_now_add prevents setting revision_created_at on create, so backdate it afterwards."""
+    Response.objects.filter(pk=response.pk).update(revision_created_at=when, original_created_at=when)
+
+
+@pytest.mark.django_db
+def test_response_retention_registry_default():
+    """
+    A response is deleted once the registry's default retention period has passed since the
+    end time of the event. A registry without a retention period retains indefinitely.
+    """
+    _survey, expired = _make_retention_response(
+        survey_slug="expired-by-registry-default",
+        default_retention_period=timedelta(days=365),
+        end_time=now() - timedelta(days=400),
+    )
+
+    _perform_retention_cleanup()
+    assert not Response.objects.filter(pk=expired.pk).exists()
+
+    _survey, unexpired = _make_retention_response(
+        survey_slug="not-yet-expired",
+        default_retention_period=timedelta(days=365),
+        end_time=now() - timedelta(days=300),
+    )
+    _survey, no_retention = _make_retention_response(
+        survey_slug="retained-indefinitely",
+        default_retention_period=None,
+        end_time=now() - timedelta(days=4000),
+    )
+
+    _perform_retention_cleanup()
+    assert Response.objects.filter(pk=unexpired.pk).exists()
+    assert Response.objects.filter(pk=no_retention.pk).exists()
+
+
+@pytest.mark.django_db
+def test_response_retention_survey_override():
+    """
+    Survey.retention_period overrides the registry default in both directions: a shorter
+    period expires a response the registry default would keep, and a longer one keeps a
+    response the registry default would expire.
+    """
+    _survey, expired_by_override = _make_retention_response(
+        survey_slug="shortened-by-override",
+        retention_period=timedelta(days=30),
+        default_retention_period=timedelta(days=4000),
+        end_time=now() - timedelta(days=100),
+    )
+    _survey, kept_by_override = _make_retention_response(
+        survey_slug="extended-by-override",
+        retention_period=timedelta(days=4000),
+        default_retention_period=timedelta(days=30),
+        end_time=now() - timedelta(days=100),
+    )
+
+    _perform_retention_cleanup()
+
+    assert not Response.objects.filter(pk=expired_by_override.pk).exists()
+    assert Response.objects.filter(pk=kept_by_override.pk).exists()
+
+
+@pytest.mark.django_db
+def test_response_retention_ignores_protect_responses():
+    """
+    protect_responses guards against accidental deletion from the UI; the obligation to
+    delete personal data once its retention period expires outranks it.
+    """
+    survey, response = _make_retention_response(
+        survey_slug="protected-but-expired",
+        end_time=now() - timedelta(days=400),
+    )
+    survey.protect_responses = True
+    survey.save(update_fields=["protect_responses"])
+
+    _perform_retention_cleanup()
+
+    assert not Response.objects.filter(pk=response.pk).exists()
+
+
+@pytest.mark.django_db
+def test_response_retention_falls_back_to_creation_time():
+    """
+    An event without an end time (or an org-level scope) anchors retention on the creation
+    time of the response instead.
+    """
+    _survey, expired = _make_retention_response(
+        survey_slug="expired-by-creation-time",
+        default_retention_period=timedelta(days=365),
+        end_time=None,
+    )
+    _backdate_response(expired, now() - timedelta(days=400))
+
+    _survey, unexpired = _make_retention_response(
+        survey_slug="recent-without-end-time",
+        default_retention_period=timedelta(days=365),
+        end_time=None,
+    )
+
+    _perform_retention_cleanup()
+
+    assert not Response.objects.filter(pk=expired.pk).exists()
+    assert Response.objects.filter(pk=unexpired.pk).exists()
+
+
+@pytest.mark.django_db
+def test_response_retention_deletes_whole_revision_chain():
+    """
+    Expiry is decided on the current version and takes the whole revision chain with it:
+    deleting only the current version would SET_NULL the old revisions' superseded_by,
+    leaving them looking like current versions. Conversely an old revision whose own
+    timestamps look expired is kept as long as the current version is not expired.
+    """
+    _survey, expired_current = _make_retention_response(
+        survey_slug="expired-chain",
+        default_retention_period=timedelta(days=365),
+        end_time=now() - timedelta(days=400),
+    )
+    expired_old = Response.objects.create(
+        form=expired_current.form,
+        form_data=dict(title="Older personal data"),
+        superseded_by=expired_current,
+    )
+
+    _survey, unexpired_current = _make_retention_response(
+        survey_slug="unexpired-chain",
+        default_retention_period=timedelta(days=365),
+        end_time=now() - timedelta(days=100),
+    )
+    unexpired_old = Response.objects.create(
+        form=unexpired_current.form,
+        form_data=dict(title="Older personal data"),
+        superseded_by=unexpired_current,
+    )
+    _backdate_response(unexpired_old, now() - timedelta(days=4000))
+
+    _perform_retention_cleanup()
+
+    assert not Response.objects.filter(pk=expired_current.pk).exists()
+    assert not Response.objects.filter(pk=expired_old.pk).exists()
+    assert Response.objects.filter(pk=unexpired_current.pk).exists()
+    assert Response.objects.filter(pk=unexpired_old.pk).exists()

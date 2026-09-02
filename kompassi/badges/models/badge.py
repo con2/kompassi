@@ -7,7 +7,9 @@ from functools import cached_property
 
 from django.conf import settings
 from django.db import connection, models, transaction
+from django.db.models import ExpressionWrapper, F
 from django.utils.html import escape
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from kompassi.core.csv_export import CsvExportMixin
@@ -227,10 +229,17 @@ class Badge(models.Model, CsvExportMixin):
         """
         Makes sure the person has a badge of the correct class and up-to-date information for a given event.
         """
-        if not event.badges_event_meta:
+        meta = event.badges_event_meta
+        if not meta:
             raise AssertionError("event has no badges_event_meta")
         if not person:
             raise AssertionError("person is not set")
+
+        if meta.badge_retention_expired:
+            # Anything that touches a long-past event (a signup state change, an involvement
+            # refresh - including retention cleanup of involvements) would otherwise recreate
+            # the badge we just deleted, with fresh personal data.
+            return None, False
 
         with transaction.atomic():
             try:
@@ -265,6 +274,25 @@ class Badge(models.Model, CsvExportMixin):
             badge.save()  # calls reemperkelate
 
             return badge, True
+
+    @classmethod
+    def get_expired_badges_for_cleanup(cls, queryset: models.QuerySet[Badge]):
+        """
+        Cleanup filter used by @register_cleanup. Deletes badges whose retention period, taken
+        from the registry of the event's badges event meta, has expired.
+
+        NOTE: The anchor is the end time of the event only. Must stay in sync with
+        BadgesEventMeta.badge_retention_expired, which keeps Badge.ensure from recreating what
+        this sweeps. A missing end time, badges event meta, registry or retention period all
+        yield NULL and thus retain the badge indefinitely.
+        """
+        return queryset.annotate(
+            retain_until=ExpressionWrapper(
+                F("personnel_class__event__end_time")
+                + F("personnel_class__event__badgeseventmeta__registry__default_retention_period"),
+                output_field=models.DateTimeField(),
+            )
+        ).filter(retain_until__lt=now())
 
     def save(self, *args, **kwargs):
         update_fields = kwargs.get("update_fields")
@@ -492,3 +520,6 @@ class Badge(models.Model, CsvExportMixin):
             return "Ei paitaa"
 
         return self._shirt_type
+
+
+register_cleanup(Badge.get_expired_badges_for_cleanup)(Badge)

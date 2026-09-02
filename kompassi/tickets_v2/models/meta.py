@@ -10,9 +10,9 @@ from django.db import models
 from kompassi.core.models.contact_email_mixin import ContactEmailMixin, contact_email_validator
 from kompassi.core.models.event_meta_base import EventMetaBase
 from kompassi.core.models.person import Person
+from kompassi.field_types import PostgresEnumField
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStatus
-from .fields import PostgresEnumField
 
 logger = logging.getLogger(__name__)
 

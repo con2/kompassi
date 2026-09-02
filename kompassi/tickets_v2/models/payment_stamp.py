@@ -7,10 +7,10 @@ from django.db import models
 
 from kompassi.core.models.event import Event
 from kompassi.event_log_v2.utils.monthly_partitions import UUID7Mixin, uuid7
+from kompassi.field_types import PostgresEnumField
 
 from ..optimized_server.models.enums import PaymentProvider, PaymentStampType, PaymentStatus
 from ..utils.event_partitions import EventPartitionsMixin
-from .fields import PostgresEnumField
 from .order import Order
 
 
