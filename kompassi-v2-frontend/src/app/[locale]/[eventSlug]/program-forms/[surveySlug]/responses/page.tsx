@@ -201,15 +201,12 @@ export default async function ProgramFormResponsesPage(props: Props) {
         </Link>
       ),
     },
-  ];
-
-  if (anonymity === "NAME_AND_EMAIL") {
-    columns.push({
+    {
       slug: "revisionCreatedBy",
       title: t.attributes.originalCreatedBy,
       getCellContents: (row) => row.revisionCreatedBy?.displayName || "",
-    });
-  }
+    },
+  ];
 
   keyFields.forEach((keyField) => {
     columns.push({
