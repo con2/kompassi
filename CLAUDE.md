@@ -167,3 +167,5 @@ The backend uses CBAC (claims-based access control) via `graphql_check_instance`
 - `public_only=True` (default) on resolvers — no auth required, but data may be filtered
 - `public_only=False` — must call `graphql_check_model` or `graphql_check_instance` before returning data
 - Admin frontend pages should query with `publicOnly: false`; public pages omit the argument (defaults to `true`)
+
+Kompassi is multi-tenant: a `CBACEntry.claims` dict only needs to be a *subset* of the computed request claims to match (HStore `contained_by`), so omitting `event`/`organization` grants across every event/organization, not just the current one. When constructing or granting CBAC claims, always include `event` or `organization` (whichever the resource is scoped to) unless there is a specific, deliberate reason for a cross-tenant grant.

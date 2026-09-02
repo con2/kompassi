@@ -6,6 +6,7 @@ from datetime import time as time_type
 
 from dateutil.tz import tzlocal
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
@@ -854,6 +855,28 @@ class Setup:
             outline_group, created = Group.objects.get_or_create(name="outline-tracon-users")
             log_get_or_create(logger, outline_group, created)
             outline_group.user_set.add(person.user)  # type: ignore
+
+        # Vikailmoitus - https://outline.con2.fi/doc/survey-response-to-slack-vikailmo-5IJAbLMjQY
+        User = get_user_model()
+        user_id = 22653
+        user = User.objects.filter(id=user_id).first()
+        projection = Projection.objects.filter(scope=self.event.scope, slug="vikailmoitus").first()
+        if user and projection:
+            entry, created = CBACEntry.objects.get_or_create(
+                user=user,
+                claims=dict(
+                    event=self.event.slug,
+                    app="forms",
+                    model="Projection",
+                    operation="query",
+                    slug=projection.slug,
+                ),
+                defaults=dict(
+                    valid_from=temp_permission_valid_from,
+                    valid_until=temp_permission_valid_until,
+                ),
+            )
+            log_get_or_create(logger, entry, created)
 
     def setup_intra(self):
         (admin_group,) = IntraEventMeta.get_or_create_groups(self.event, ["admins"])
