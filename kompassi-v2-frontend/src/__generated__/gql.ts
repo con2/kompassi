@@ -160,6 +160,12 @@ type Documents = {
     "\n  mutation CreateQuota($input: CreateQuotaInput!) {\n    createQuota(input: $input) {\n      quota {\n        id\n      }\n    }\n  }\n": typeof types.CreateQuotaDocument,
     "\n  fragment QuotaList on FullQuotaType {\n    id\n    title: name\n    countPaid\n    countReserved\n    countAvailable\n    countTotal\n  }\n": typeof types.QuotaListFragmentDoc,
     "\n  query QuotaList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          ...QuotaList\n        }\n      }\n    }\n  }\n": typeof types.QuotaListDocument,
+    "\n  mutation UpdateRegistry($input: UpdateRegistryInput!) {\n    updateRegistry(input: $input) {\n      registry {\n        slug\n      }\n    }\n  }\n": typeof types.UpdateRegistryDocument,
+    "\n  mutation DeleteRegistry($input: DeleteRegistryInput!) {\n    deleteRegistry(input: $input) {\n      slug\n    }\n  }\n": typeof types.DeleteRegistryDocument,
+    "\n  query AdminRegistryDetailPage($eventSlug: String!, $registrySlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        registry(slug: $registrySlug) {\n          slug\n          titleEn\n          titleFi\n          titleSv\n          policyUrlEn\n          policyUrlFi\n          policyUrlSv\n          defaultRetentionPeriodDays\n          canRemove\n        }\n      }\n    }\n  }\n": typeof types.AdminRegistryDetailPageDocument,
+    "\n  mutation CreateRegistry($input: CreateRegistryInput!) {\n    createRegistry(input: $input) {\n      registry {\n        slug\n      }\n    }\n  }\n": typeof types.CreateRegistryDocument,
+    "\n  fragment RegistryList on FullRegistryType {\n    slug\n    title(lang: $locale)\n    defaultRetentionPeriodDays\n  }\n": typeof types.RegistryListFragmentDoc,
+    "\n  query RegistryList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        registries {\n          ...RegistryList\n        }\n      }\n    }\n  }\n": typeof types.RegistryListDocument,
     "\n  mutation UpdateSurveyDefaultDimensions(\n    $input: UpdateSurveyDefaultDimensionsInput!\n  ) {\n    updateSurveyDefaultDimensions(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": typeof types.UpdateSurveyDefaultDimensionsDocument,
     "\n  query SurveyDimensionDefaults(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          purpose\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionEditor\n          }\n          cachedDefaultResponseDimensions\n        }\n      }\n    }\n  }\n": typeof types.SurveyDimensionDefaultsDocument,
     "\n  mutation PutSurveyDimension($input: PutDimensionInput!) {\n    putDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n": typeof types.PutSurveyDimensionDocument,
@@ -390,6 +396,12 @@ const documents: Documents = {
     "\n  mutation CreateQuota($input: CreateQuotaInput!) {\n    createQuota(input: $input) {\n      quota {\n        id\n      }\n    }\n  }\n": types.CreateQuotaDocument,
     "\n  fragment QuotaList on FullQuotaType {\n    id\n    title: name\n    countPaid\n    countReserved\n    countAvailable\n    countTotal\n  }\n": types.QuotaListFragmentDoc,
     "\n  query QuotaList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          ...QuotaList\n        }\n      }\n    }\n  }\n": types.QuotaListDocument,
+    "\n  mutation UpdateRegistry($input: UpdateRegistryInput!) {\n    updateRegistry(input: $input) {\n      registry {\n        slug\n      }\n    }\n  }\n": types.UpdateRegistryDocument,
+    "\n  mutation DeleteRegistry($input: DeleteRegistryInput!) {\n    deleteRegistry(input: $input) {\n      slug\n    }\n  }\n": types.DeleteRegistryDocument,
+    "\n  query AdminRegistryDetailPage($eventSlug: String!, $registrySlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        registry(slug: $registrySlug) {\n          slug\n          titleEn\n          titleFi\n          titleSv\n          policyUrlEn\n          policyUrlFi\n          policyUrlSv\n          defaultRetentionPeriodDays\n          canRemove\n        }\n      }\n    }\n  }\n": types.AdminRegistryDetailPageDocument,
+    "\n  mutation CreateRegistry($input: CreateRegistryInput!) {\n    createRegistry(input: $input) {\n      registry {\n        slug\n      }\n    }\n  }\n": types.CreateRegistryDocument,
+    "\n  fragment RegistryList on FullRegistryType {\n    slug\n    title(lang: $locale)\n    defaultRetentionPeriodDays\n  }\n": types.RegistryListFragmentDoc,
+    "\n  query RegistryList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        registries {\n          ...RegistryList\n        }\n      }\n    }\n  }\n": types.RegistryListDocument,
     "\n  mutation UpdateSurveyDefaultDimensions(\n    $input: UpdateSurveyDefaultDimensionsInput!\n  ) {\n    updateSurveyDefaultDimensions(input: $input) {\n      survey {\n        slug\n      }\n    }\n  }\n": types.UpdateSurveyDefaultDimensionsDocument,
     "\n  query SurveyDimensionDefaults(\n    $eventSlug: String!\n    $surveySlug: String!\n    $locale: String!\n  ) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      forms {\n        survey(slug: $surveySlug) {\n          slug\n          title(lang: $locale)\n          purpose\n          canRemove\n          languages {\n            language\n          }\n          dimensions {\n            ...DimensionEditor\n          }\n          cachedDefaultResponseDimensions\n        }\n      }\n    }\n  }\n": types.SurveyDimensionDefaultsDocument,
     "\n  mutation PutSurveyDimension($input: PutDimensionInput!) {\n    putDimension(input: $input) {\n      dimension {\n        slug\n      }\n    }\n  }\n": types.PutSurveyDimensionDocument,
@@ -1072,6 +1084,30 @@ export function graphql(source: "\n  fragment QuotaList on FullQuotaType {\n    
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query QuotaList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          ...QuotaList\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query QuotaList($eventSlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      tickets {\n        quotas {\n          ...QuotaList\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation UpdateRegistry($input: UpdateRegistryInput!) {\n    updateRegistry(input: $input) {\n      registry {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateRegistry($input: UpdateRegistryInput!) {\n    updateRegistry(input: $input) {\n      registry {\n        slug\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation DeleteRegistry($input: DeleteRegistryInput!) {\n    deleteRegistry(input: $input) {\n      slug\n    }\n  }\n"): (typeof documents)["\n  mutation DeleteRegistry($input: DeleteRegistryInput!) {\n    deleteRegistry(input: $input) {\n      slug\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query AdminRegistryDetailPage($eventSlug: String!, $registrySlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        registry(slug: $registrySlug) {\n          slug\n          titleEn\n          titleFi\n          titleSv\n          policyUrlEn\n          policyUrlFi\n          policyUrlSv\n          defaultRetentionPeriodDays\n          canRemove\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query AdminRegistryDetailPage($eventSlug: String!, $registrySlug: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        registry(slug: $registrySlug) {\n          slug\n          titleEn\n          titleFi\n          titleSv\n          policyUrlEn\n          policyUrlFi\n          policyUrlSv\n          defaultRetentionPeriodDays\n          canRemove\n        }\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateRegistry($input: CreateRegistryInput!) {\n    createRegistry(input: $input) {\n      registry {\n        slug\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateRegistry($input: CreateRegistryInput!) {\n    createRegistry(input: $input) {\n      registry {\n        slug\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  fragment RegistryList on FullRegistryType {\n    slug\n    title(lang: $locale)\n    defaultRetentionPeriodDays\n  }\n"): (typeof documents)["\n  fragment RegistryList on FullRegistryType {\n    slug\n    title(lang: $locale)\n    defaultRetentionPeriodDays\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query RegistryList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        registries {\n          ...RegistryList\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query RegistryList($eventSlug: String!, $locale: String!) {\n    event(slug: $eventSlug) {\n      name\n      slug\n\n      involvement {\n        registries {\n          ...RegistryList\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

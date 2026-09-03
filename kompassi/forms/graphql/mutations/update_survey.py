@@ -6,6 +6,7 @@ from graphene.types.generic import GenericScalar
 
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.utils.form_utils import camel_case_keys_to_snake_case
+from kompassi.core.utils.retention_period import days_to_timedelta
 from kompassi.dimensions.models.enums import DimensionApp
 
 from ...models.survey import Survey
@@ -13,6 +14,8 @@ from ..survey_full import FullSurveyType
 
 
 class SurveyForm(django_forms.ModelForm):
+    retention_period_days = django_forms.IntegerField(required=False, min_value=0)
+
     class Meta:
         model = Survey
         fields = (
@@ -22,13 +25,19 @@ class SurveyForm(django_forms.ModelForm):
             "active_until",
             "responses_editable_until",
             "protect_responses",
-            "retention_period",
         )
 
     @classmethod
     def from_form_data(cls, survey: Survey, form_data: dict[str, str]) -> Self:
         form_data = camel_case_keys_to_snake_case(form_data)
         return cls(form_data, instance=survey)
+
+    def save(self, commit: bool = True) -> Survey:
+        survey = super().save(commit=False)
+        survey.retention_period = days_to_timedelta(self.cleaned_data.get("retention_period_days"))
+        if commit:
+            survey.save()
+        return survey
 
 
 class UpdateSurveyInput(graphene.InputObjectType):

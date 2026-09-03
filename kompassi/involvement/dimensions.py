@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from kompassi.core.models.event import Event
+from kompassi.core.models.organization import Organization
 from kompassi.dimensions.models.dimension_dto import DimensionDTO
 from kompassi.dimensions.models.dimension_value_dto import DimensionValueDTO
 from kompassi.dimensions.models.enums import DimensionApp
@@ -125,3 +126,16 @@ def setup_involvement_dimensions(universe: Universe, event: Event) -> None:
     ]
 
     DimensionDTO.save_many(universe, dimensions, override_order=True)
+
+
+def refresh_registry_dimension(organization: Organization) -> None:
+    """
+    Refreshes the registry dimension's choices for every event of `organization`
+    after a registry is created, renamed, or otherwise changed.
+    """
+    from .models.meta import InvolvementEventMeta
+
+    for meta in InvolvementEventMeta.objects.filter(event__organization=organization).select_related(
+        "event", "universe"
+    ):
+        DimensionDTO.save_many(meta.universe, [get_registry_dimension(meta.event)], override_order=True)

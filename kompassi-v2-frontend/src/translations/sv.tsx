@@ -3151,6 +3151,52 @@ const translations: Translations = {
   Registry: {
     singleTitle: "Register",
     listTitle: "Register",
+    attributes: {
+      slug: "Slugg",
+      title: {
+        en: "Namn (engelska)",
+        fi: "Namn (finska)",
+        sv: "Namn (svenska)",
+      },
+      policyUrl: {
+        en: "Webbadress till integritetspolicyn (engelska)",
+        fi: "Webbadress till integritetspolicyn (finska)",
+        sv: "Webbadress till integritetspolicyn (svenska)",
+      },
+      defaultRetentionPeriodDays: {
+        title: "Standardlagringstid (dagar)",
+        helpText:
+          "Hur många dagar efter att evenemanget avslutats personuppgifterna i detta register bevaras. Lämna tomt för att bevara uppgifterna tills vidare. Kan åsidosättas per enkät.",
+      },
+      actions: "Åtgärder",
+      peopleInThisEvent: "Personer i detta evenemang",
+    },
+    actions: {
+      newRegistry: {
+        title: "Nytt register",
+        modalActions: {
+          submit: "Skapa register",
+          cancel: "Avbryt",
+        },
+      },
+      editRegistry: "Redigera register",
+      saveRegistry: "Spara register",
+      deleteRegistry: {
+        title: "Radera register",
+        confirmation: (registryTitle: string) => (
+          <>
+            Är du säker på att du vill radera registret{" "}
+            <strong>{registryTitle}</strong>? Åtgärden kan inte ångras.
+          </>
+        ),
+        modalActions: {
+          submit: "Radera",
+          cancel: "Avbryt",
+        },
+        cannotDelete:
+          "Detta register kan inte raderas eftersom det fortfarande används. Ta först bort alla engagemang, enkäter och brickor som använder det, och ändra evenemangens standardregister till något annat, för att kunna radera det.",
+      },
+    },
   },
 
   Report: {

@@ -57,6 +57,7 @@ class InvolvementEventMeta(models.Model, GroupManagementMixin):
         null=True,  # TODO make non-nullable
         blank=True,
         on_delete=models.SET_NULL,
+        related_name="involvement_event_metas",
     )
 
     shirts_frozen_at = models.DateTimeField(
@@ -131,7 +132,7 @@ class InvolvementEventMeta(models.Model, GroupManagementMixin):
                     slug="volunteers",
                     defaults=dict(
                         title_en=f"Volunteers of {event.organization.name}",
-                        title_fi="{event.organization.name} - Vapaaehtoiset",
+                        title_fi=f"{event.organization.name} - Vapaaehtoiset",
                     ),
                 )[0],
             ),

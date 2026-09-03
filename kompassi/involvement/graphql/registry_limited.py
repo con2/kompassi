@@ -1,10 +1,10 @@
 import graphene
 import graphene_django
-from django.utils.duration import duration_iso_string
 
 from kompassi.core.graphql.organization_limited import LimitedOrganizationType
 from kompassi.core.models.organization import Organization
 from kompassi.core.utils import normalize_whitespace
+from kompassi.core.utils.retention_period import timedelta_to_days
 from kompassi.graphql_api.utils import resolve_localized_field_getattr
 
 from ..models.registry import Registry
@@ -37,16 +37,14 @@ class LimitedRegistryType(graphene_django.DjangoObjectType):
     policy_url = graphene.NonNull(graphene.String, lang=graphene.String())
 
     @staticmethod
-    def resolve_default_retention_period(registry: Registry, info) -> str | None:
+    def resolve_default_retention_period_days(registry: Registry, info) -> int | None:
         """
-        The default retention period for personal data in this registry as an ISO 8601 duration.
+        The default retention period for personal data in this registry, in days.
         Null means personal data in this registry is retained indefinitely.
         """
-        if registry.default_retention_period is None:
-            return None
-        return duration_iso_string(registry.default_retention_period)
+        return timedelta_to_days(registry.default_retention_period)
 
-    default_retention_period = graphene.Field(
-        graphene.String,
-        description=normalize_whitespace(resolve_default_retention_period.__doc__ or ""),
+    default_retention_period_days = graphene.Field(
+        graphene.Int,
+        description=normalize_whitespace(resolve_default_retention_period_days.__doc__ or ""),
     )

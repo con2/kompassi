@@ -46,7 +46,6 @@ export default function InvolvementAdminTabs({
       slug: "registries",
       title: regisTry.listTitle,
       href: `/${eventSlug}/registries`,
-      disabled: true,
     },
     {
       slug: "reports",

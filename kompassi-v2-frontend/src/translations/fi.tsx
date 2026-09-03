@@ -3151,6 +3151,52 @@ const translations: Translations = {
   Registry: {
     singleTitle: "Henkilörekisteri",
     listTitle: "Henkilörekisterit",
+    attributes: {
+      slug: "Tunniste",
+      title: {
+        en: "Nimi (englanniksi)",
+        fi: "Nimi (suomeksi)",
+        sv: "Nimi (ruotsiksi)",
+      },
+      policyUrl: {
+        en: "Tietosuojaselosteen osoite (englanniksi)",
+        fi: "Tietosuojaselosteen osoite (suomeksi)",
+        sv: "Tietosuojaselosteen osoite (ruotsiksi)",
+      },
+      defaultRetentionPeriodDays: {
+        title: "Oletussäilytysaika (päivää)",
+        helpText:
+          "Kuinka monta päivää tapahtuman päättymisen jälkeen tähän rekisteriin kuuluvia henkilötietoja säilytetään. Jätä tyhjäksi, jos tietoja säilytetään toistaiseksi. Voidaan ylikirjoittaa lomakekohtaisesti.",
+      },
+      actions: "Toiminnot",
+      peopleInThisEvent: "Henkilöt tässä tapahtumassa",
+    },
+    actions: {
+      newRegistry: {
+        title: "Uusi rekisteri",
+        modalActions: {
+          submit: "Luo rekisteri",
+          cancel: "Peruuta",
+        },
+      },
+      editRegistry: "Muokkaa rekisteriä",
+      saveRegistry: "Tallenna rekisteri",
+      deleteRegistry: {
+        title: "Poista rekisteri",
+        confirmation: (registryTitle: string) => (
+          <>
+            Haluatko varmasti poistaa rekisterin{" "}
+            <strong>{registryTitle}</strong>? Tätä toimintoa ei voi perua.
+          </>
+        ),
+        modalActions: {
+          submit: "Poista",
+          cancel: "Peruuta",
+        },
+        cannotDelete:
+          "Tätä rekisteriä ei voi poistaa, koska se on yhä käytössä. Poistaaksesi sen, poista ensin kaikki sitä käyttävät osallistumiset, lomakkeet ja badget, ja vaihda tapahtumien oletusrekisteri joksikin toiseksi.",
+      },
+    },
   },
 
   Invitation: {

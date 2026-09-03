@@ -28,11 +28,14 @@ from kompassi.forms.graphql.mutations.update_response_dimensions import UpdateRe
 from kompassi.forms.graphql.mutations.update_survey import UpdateSurvey
 from kompassi.forms.graphql.mutations.update_survey_default_dimensions import UpdateSurveyDefaultDimensions
 from kompassi.involvement.graphql.mutations.accept_invitation import AcceptInvitation
+from kompassi.involvement.graphql.mutations.create_registry import CreateRegistry
 from kompassi.involvement.graphql.mutations.delete_invitation import DeleteInvitation
+from kompassi.involvement.graphql.mutations.delete_registry import DeleteRegistry
 from kompassi.involvement.graphql.mutations.resend_invitation import ResendInvitation
 from kompassi.involvement.graphql.mutations.update_involvement_dimensions import UpdateInvolvementDimensions
 from kompassi.involvement.graphql.mutations.update_involvement_perks import UpdateInvolvementPerks
 from kompassi.involvement.graphql.mutations.update_involvement_preferences import UpdateInvolvementPreferences
+from kompassi.involvement.graphql.mutations.update_registry import UpdateRegistry
 from kompassi.involvement.graphql.registry_limited import LimitedRegistryType
 from kompassi.involvement.models.registry import Registry
 from kompassi.messages_v2.graphql.mutations.create_message import CreateMessage
@@ -180,6 +183,10 @@ class Mutation(graphene.ObjectType):
     update_involvement_dimensions = UpdateInvolvementDimensions.Field()
     update_involvement_perks = UpdateInvolvementPerks.Field()
     update_involvement_preferences = UpdateInvolvementPreferences.Field()
+
+    create_registry = CreateRegistry.Field()
+    update_registry = UpdateRegistry.Field()
+    delete_registry = DeleteRegistry.Field()
 
     # Program v2
     mark_program_as_favorite = MarkProgramAsFavorite.Field()

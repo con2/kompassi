@@ -20,6 +20,7 @@ from kompassi.graphql_api.schema import schema
 from .excel_export import get_header_cells, get_response_cells
 from .graphql.mutations.update_form_fields import UpdateFormFields
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
+from .graphql.mutations.update_survey import UpdateSurvey
 from .models.enums import SurveyPurpose
 from .models.field import Choice, Field, FieldType
 from .models.form import Form
@@ -1465,3 +1466,52 @@ def test_response_retention_deletes_whole_revision_chain():
     assert not Response.objects.filter(pk=expired_old.pk).exists()
     assert Response.objects.filter(pk=unexpired_current.pk).exists()
     assert Response.objects.filter(pk=unexpired_old.pk).exists()
+
+
+@mock.patch("kompassi.forms.graphql.mutations.update_survey.graphql_check_instance", autospec=True)
+@pytest.mark.django_db
+def test_update_survey_retention_period_days_round_trip(_patched_graphql_check_instance):
+    """
+    UpdateSurvey exchanges retentionPeriodDays (an integer) over GraphQL but stores
+    Survey.retention_period as a timedelta; both directions of that conversion, including
+    clearing the override back to null, must round-trip correctly.
+    """
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(
+        event=event,
+        slug="test-survey",
+        app=DimensionApp.FORMS,
+        max_responses_per_user=1,
+    )
+
+    base_form_data = {
+        "loginRequired": False,
+        "maxResponsesPerUser": 1,
+        "protectResponses": False,
+    }
+
+    UpdateSurvey.mutate(
+        None,
+        MOCK_INFO,
+        SimpleNamespace(
+            event_slug=event.slug,
+            survey_slug=survey.slug,
+            form_data={**base_form_data, "retentionPeriodDays": 30},
+        ),  # type: ignore
+    )
+
+    survey.refresh_from_db()
+    assert survey.retention_period == timedelta(days=30)
+
+    UpdateSurvey.mutate(
+        None,
+        MOCK_INFO,
+        SimpleNamespace(
+            event_slug=event.slug,
+            survey_slug=survey.slug,
+            form_data=base_form_data,
+        ),  # type: ignore
+    )
+
+    survey.refresh_from_db()
+    assert survey.retention_period is None
