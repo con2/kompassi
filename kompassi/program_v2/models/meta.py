@@ -62,6 +62,7 @@ class ProgramV2EventMeta(ContactEmailMixin, EventMetaBase):
         null=True,  # TODO make non-nullable
         blank=True,
         on_delete=models.SET_NULL,
+        related_name="program_v2_event_metas",
     )
 
     paikkala_default_max_tickets_per_batch: int = models.IntegerField(default=5)  # type: ignore

@@ -4,6 +4,7 @@ from graphene.types.generic import GenericScalar
 from graphene_django import DjangoObjectType
 
 from kompassi.involvement.graphql.profile_field_selector import ProfileFieldSelectorType
+from kompassi.involvement.graphql.registry_limited import LimitedRegistryType
 
 from ..models.survey import Survey
 from .enums import AnonymiType, SurveyPurposeType
@@ -27,6 +28,10 @@ class LimitedSurveyType(DjangoObjectType):
     anonymity = graphene.NonNull(AnonymiType)
     purpose = graphene.NonNull(SurveyPurposeType)
     profile_field_selector = graphene.NonNull(ProfileFieldSelectorType)
+
+    # Explicitly pinned: Registry now has two DjangoObjectTypes (Limited, Full), so
+    # letting Meta.fields auto-convert this FK is ambiguous as to which one it picks.
+    registry = graphene.Field(LimitedRegistryType)
 
     class Meta:
         model = Survey

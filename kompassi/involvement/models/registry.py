@@ -4,7 +4,9 @@ from functools import cache
 from typing import Self
 
 from django.db import models
+from django.http import HttpRequest
 
+from kompassi.access.cbac import is_graphql_allowed_for_model
 from kompassi.core.models.organization import Organization
 from kompassi.dimensions.models.scope import Scope
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE, SUPPORTED_LANGUAGE_CODES, getattr_message_in_language
@@ -76,3 +78,18 @@ class Registry(models.Model):
             for language_code in SUPPORTED_LANGUAGE_CODES
             if (title := getattr(self, f"title_{language_code}"))
         }
+
+    def can_be_deleted_by(self, request: HttpRequest) -> bool:
+        return (
+            not self.involvements.exists()
+            and not self.surveys.exists()
+            and not self.involvement_event_metas.exists()
+            and not self.program_v2_event_metas.exists()
+            and not self.badges_event_metas.exists()
+            and is_graphql_allowed_for_model(
+                request.user,
+                instance=self,
+                operation="delete",
+                field="self",
+            )
+        )

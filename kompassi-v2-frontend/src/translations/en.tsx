@@ -3205,6 +3205,52 @@ const translations = {
   Registry: {
     singleTitle: "Registry",
     listTitle: "Registries",
+    attributes: {
+      slug: "Slug",
+      title: {
+        en: "Title (English)",
+        fi: "Title (Finnish)",
+        sv: "Title (Swedish)",
+      },
+      policyUrl: {
+        en: "Privacy policy URL (English)",
+        fi: "Privacy policy URL (Finnish)",
+        sv: "Privacy policy URL (Swedish)",
+      },
+      defaultRetentionPeriodDays: {
+        title: "Default retention period (days)",
+        helpText:
+          "How many days after the event ends personal data in this registry is retained. Leave empty to retain indefinitely. Can be overridden per survey.",
+      },
+      actions: "Actions",
+      peopleInThisEvent: "People in this event",
+    },
+    actions: {
+      newRegistry: {
+        title: "New registry",
+        modalActions: {
+          submit: "Create registry",
+          cancel: "Cancel",
+        },
+      },
+      editRegistry: "Edit registry",
+      saveRegistry: "Save registry",
+      deleteRegistry: {
+        title: "Delete registry",
+        confirmation: (registryTitle: string) => (
+          <>
+            Are you sure you want to delete the registry{" "}
+            <strong>{registryTitle}</strong>? This action cannot be undone.
+          </>
+        ),
+        modalActions: {
+          submit: "Delete",
+          cancel: "Cancel",
+        },
+        cannotDelete:
+          "This registry cannot be deleted because it is still in use. To delete it, first remove all involvements, surveys and badges that use it, and unset it as the default registry of any event.",
+      },
+    },
   },
 
   Report: {

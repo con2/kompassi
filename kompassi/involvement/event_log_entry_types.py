@@ -27,3 +27,18 @@ registry.register(
     name="involvement.perks.overridden",
     message="The perks of {person} in {event} were manually overridden by {actor}: {perks_overridden}",
 )
+
+registry.register(
+    name="involvement.registry.created",
+    message="A registry in {organization} was created by {actor}: {registry}",
+)
+
+registry.register(
+    name="involvement.registry.updated",
+    message="A registry in {organization} was updated by {actor}: {registry}",
+)
+
+registry.register(
+    name="involvement.registry.deleted",
+    message="A registry in {organization} was deleted by {actor}: {registry}",
+)

@@ -18,8 +18,10 @@ from kompassi.reports.graphql.report import ReportType
 
 from ..models.involvement import Involvement
 from ..models.meta import InvolvementEventMeta
+from ..models.registry import Registry
 from .invitation_full import FullInvitationType
 from .profile_with_involvement import ProfileWithInvolvementType
+from .registry_full import FullRegistryType
 
 
 class InvolvementEventMetaType(DjangoObjectType):
@@ -200,4 +202,52 @@ class InvolvementEventMetaType(DjangoObjectType):
         graphene.List(graphene.NonNull(ReportType)),
         lang=graphene.String(default_value=DEFAULT_LANGUAGE),
         description=normalize_whitespace(resolve_reports.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_registries(
+        meta: InvolvementEventMeta,
+        info,
+    ):
+        """
+        The personal data registries of this event's organization.
+        """
+        request: HttpRequest = info.context
+
+        graphql_check_model(
+            Registry,
+            meta.event.organization.scope,
+            request,
+        )
+
+        return meta.event.organization.scope.registries.all()
+
+    registries = graphene.NonNull(
+        graphene.List(graphene.NonNull(FullRegistryType)),
+        description=normalize_whitespace(resolve_registries.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_registry(
+        meta: InvolvementEventMeta,
+        info,
+        slug: str,
+    ):
+        """
+        A single personal data registry of this event's organization.
+        """
+        request: HttpRequest = info.context
+
+        graphql_check_model(
+            Registry,
+            meta.event.organization.scope,
+            request,
+        )
+
+        return meta.event.organization.scope.registries.filter(slug=slug).first()
+
+    registry = graphene.Field(
+        FullRegistryType,
+        slug=graphene.String(required=True),
+        description=normalize_whitespace(resolve_registry.__doc__ or ""),
     )

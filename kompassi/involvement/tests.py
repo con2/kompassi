@@ -1,8 +1,10 @@
 from datetime import datetime, timedelta
 
 import pytest
+from django.test import RequestFactory
 from django.utils.timezone import now
 
+from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.core.models.enums import ProgramRoleRetentionPolicy
 from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
@@ -596,3 +598,372 @@ def test_involvement_survives_expired_response():
 
     involvement.refresh_from_db()
     assert involvement.response is None
+
+
+def _graphql_request(user):
+    request = RequestFactory().post("/graphql")
+    request.user = user
+    return request
+
+
+def _make_org_with_two_events(prefix: str):
+    """
+    Two events of one organization, both with an ensured InvolvementEventMeta, so that
+    org-scoped CBAC and org-wide registry dimension refresh have something to bite on.
+    """
+    from kompassi.core.models.organization import Organization
+    from kompassi.core.models.venue import Venue
+
+    organization, _created = Organization.get_or_create_dummy()
+    venue, _created = Venue.get_or_create_dummy()
+
+    def make_event(slug: str) -> Event:
+        return Event.objects.create(
+            name=f"Registry admin test event {slug}",
+            slug=slug,
+            organization=organization,
+            venue=venue,
+            start_time=now(),
+            end_time=now() + timedelta(days=1),
+        )
+
+    event1 = make_event(f"{prefix}-1")
+    event2 = make_event(f"{prefix}-2")
+
+    meta1 = InvolvementEventMeta.ensure(event1)
+    meta2 = InvolvementEventMeta.ensure(event2)
+
+    return organization, event1, meta1, event2, meta2
+
+
+REGISTRIES_QUERY = """
+  query Registries($eventSlug: String!) {
+    event(slug: $eventSlug) {
+      involvement {
+        registries {
+          slug
+          canRemove
+        }
+      }
+    }
+  }
+"""
+
+CREATE_REGISTRY_MUTATION = """
+  mutation CreateRegistry($input: CreateRegistryInput!) {
+    createRegistry(input: $input) {
+      registry {
+        slug
+        titleEn
+        titleFi
+        titleSv
+      }
+    }
+  }
+"""
+
+UPDATE_REGISTRY_MUTATION = """
+  mutation UpdateRegistry($input: UpdateRegistryInput!) {
+    updateRegistry(input: $input) {
+      registry {
+        slug
+        titleEn
+        defaultRetentionPeriodDays
+      }
+    }
+  }
+"""
+
+DELETE_REGISTRY_MUTATION = """
+  mutation DeleteRegistry($input: DeleteRegistryInput!) {
+    deleteRegistry(input: $input) {
+      slug
+    }
+  }
+"""
+
+
+@pytest.mark.django_db
+def test_registry_admin_cbac_is_org_scoped():
+    """
+    Registries hang off the organization, not the event, so an involvement admin of
+    *any* event of the org can list, create and update registries of the org -- the
+    existing {organization, app} grant (event deliberately omitted, see
+    CBACEntry.ensure_admin_group_privileges_for_event) matches an org-scope claim.
+    """
+    from kompassi.graphql_api.schema import schema
+
+    Entry.ensure_partitions()
+
+    _organization, event1, meta1, event2, _meta2 = _make_org_with_two_events("registry-cbac-org")
+    person, _created = Person.get_or_create_dummy()
+    assert person.user
+
+    meta1.admin_group.user_set.add(person.user)
+    CBACEntry.ensure_admin_group_privileges_for_event(event1)
+
+    request = _graphql_request(person.user)
+
+    # Admin of event1 can see registries via event2 -- a *different* event of the same org.
+    result = schema.execute(REGISTRIES_QUERY, None, request, variable_values=dict(eventSlug=event2.slug))
+    assert not result.errors
+    assert result.data is not None
+    slugs = {r["slug"] for r in result.data["event"]["involvement"]["registries"]}
+    assert "volunteers" in slugs
+
+    # createRegistry and updateRegistry are likewise allowed.
+    create_result = schema.execute(
+        CREATE_REGISTRY_MUTATION,
+        None,
+        request,
+        variable_values=dict(
+            input=dict(
+                eventSlug=event2.slug,
+                formData=dict(
+                    slug="press",
+                    titleEn="Press",
+                    titleFi="Lehdistö",
+                    titleSv="Press",
+                ),
+            )
+        ),
+    )
+    assert not create_result.errors
+    assert create_result.data["createRegistry"]["registry"]["slug"] == "press"
+
+    update_result = schema.execute(
+        UPDATE_REGISTRY_MUTATION,
+        None,
+        request,
+        variable_values=dict(
+            input=dict(
+                eventSlug=event1.slug,
+                registrySlug="press",
+                formData=dict(
+                    titleEn="Press corps",
+                    titleFi="Lehdistö",
+                    titleSv="Press",
+                    defaultRetentionPeriodDays=30,
+                ),
+            )
+        ),
+    )
+    assert not update_result.errors
+    assert update_result.data["updateRegistry"]["registry"]["titleEn"] == "Press corps"
+    assert update_result.data["updateRegistry"]["registry"]["defaultRetentionPeriodDays"] == 30
+
+
+@pytest.mark.django_db
+def test_registry_admin_denies_event_scoped_grant():
+    """
+    A grant that (unlike the standard admin group privilege grant) includes an `event`
+    claim does not match an org-scope request, because CBACEntry.is_allowed requires the
+    granted claims to be a *subset* of the request claims, and the request claims for an
+    org-scope check have no `event` key at all for the grant to be a subset of.
+    """
+    from kompassi.graphql_api.schema import schema
+
+    Entry.ensure_partitions()
+
+    organization, event1, _meta1, _event2, _meta2 = _make_org_with_two_events("registry-cbac-event-scoped")
+    person, _created = Person.get_or_create_dummy()
+    assert person.user
+
+    CBACEntry.objects.create(
+        user=person.user,
+        claims={
+            "organization": organization.slug,
+            "event": event1.slug,
+            "app": "involvement",
+        },
+        valid_from=now(),
+        valid_until=now() + timedelta(days=1),
+    )
+
+    request = _graphql_request(person.user)
+    result = schema.execute(REGISTRIES_QUERY, None, request, variable_values=dict(eventSlug=event1.slug))
+    assert result.errors
+
+
+@pytest.mark.django_db
+def test_update_registry_cannot_change_slug():
+    """
+    UpdateRegistryForm has no `slug` field at all, so even if a client sends one in
+    formData, it is silently ignored rather than applied.
+    """
+    from kompassi.graphql_api.schema import schema
+
+    from .models.registry import Registry
+
+    Entry.ensure_partitions()
+
+    organization, event1, meta1, _event2, _meta2 = _make_org_with_two_events("registry-slug-immutable")
+    person, _created = Person.get_or_create_dummy()
+    assert person.user
+    meta1.admin_group.user_set.add(person.user)
+    CBACEntry.ensure_admin_group_privileges_for_event(event1)
+
+    request = _graphql_request(person.user)
+    result = schema.execute(
+        UPDATE_REGISTRY_MUTATION,
+        None,
+        request,
+        variable_values=dict(
+            input=dict(
+                eventSlug=event1.slug,
+                registrySlug="volunteers",
+                formData=dict(
+                    slug="hijacked",
+                    titleEn="Volunteers",
+                    titleFi="Vapaaehtoiset",
+                    titleSv="Volontärer",
+                ),
+            )
+        ),
+    )
+    assert not result.errors
+    assert result.data["updateRegistry"]["registry"]["slug"] == "volunteers"
+    assert not Registry.objects.filter(scope=organization.scope, slug="hijacked").exists()
+
+
+@pytest.mark.django_db
+def test_registry_dimension_refresh_on_create_and_delete():
+    """
+    The technical `registry` dimension enumerates the org's registries per event, so a
+    new registry must appear as a dimension value in *every* event of the org, and a
+    deleted one must be swept from all of them.
+    """
+    from kompassi.graphql_api.schema import schema
+
+    Entry.ensure_partitions()
+
+    _organization, event1, meta1, _event2, meta2 = _make_org_with_two_events("registry-dimension-refresh")
+    person, _created = Person.get_or_create_dummy()
+    assert person.user
+    meta1.admin_group.user_set.add(person.user)
+    CBACEntry.ensure_admin_group_privileges_for_event(event1)
+
+    request = _graphql_request(person.user)
+
+    def registry_dimension_slugs(meta: InvolvementEventMeta) -> set[str]:
+        dimension = meta.universe.dimensions.get(slug="registry")
+        return set(dimension.values.values_list("slug", flat=True))
+
+    create_result = schema.execute(
+        CREATE_REGISTRY_MUTATION,
+        None,
+        request,
+        variable_values=dict(
+            input=dict(
+                eventSlug=event1.slug,
+                formData=dict(slug="alumni", titleEn="Alumni", titleFi="Alumnit", titleSv="Alumner"),
+            )
+        ),
+    )
+    assert not create_result.errors
+
+    assert "alumni" in registry_dimension_slugs(meta1)
+    assert "alumni" in registry_dimension_slugs(meta2)
+
+    delete_result = schema.execute(
+        DELETE_REGISTRY_MUTATION,
+        None,
+        request,
+        variable_values=dict(input=dict(eventSlug=event1.slug, registrySlug="alumni")),
+    )
+    assert not delete_result.errors
+
+    assert "alumni" not in registry_dimension_slugs(meta1)
+    assert "alumni" not in registry_dimension_slugs(meta2)
+
+
+@pytest.mark.django_db
+def test_registry_can_be_deleted_by_denies_while_referenced():
+    """
+    A registry cannot be deleted while anything -- an involvement, a survey, a badges
+    event meta, or either app's default-registry setting -- still references it.
+    """
+    from kompassi.core.models.organization import Organization
+    from kompassi.core.models.venue import Venue
+    from kompassi.dimensions.models.universe import Universe
+    from kompassi.forms.models.survey import Survey
+    from kompassi.program_v2.models.meta import ProgramV2EventMeta
+
+    from .models.registry import Registry
+
+    Entry.ensure_partitions()
+
+    organization, _created = Organization.get_or_create_dummy()
+    venue, _created = Venue.get_or_create_dummy()
+    event = Event.objects.create(
+        name="Registry deletion guard test event",
+        slug="registry-deletion-guard",
+        organization=organization,
+        venue=venue,
+        start_time=now(),
+        end_time=now() + timedelta(days=1),
+    )
+
+    meta = InvolvementEventMeta.ensure(event)
+    person, _created = Person.get_or_create_dummy()
+    assert person.user
+    meta.admin_group.user_set.add(person.user)
+    CBACEntry.ensure_admin_group_privileges_for_event(event)
+    request = _graphql_request(person.user)
+
+    registry = Registry.objects.create(
+        scope=organization.scope,
+        slug="deletion-guard-registry",
+        title_en="Deletion guard registry",
+    )
+    assert registry.can_be_deleted_by(request)
+
+    universe = Universe.objects.create(scope=event.scope, slug="deletion-guard", app=DimensionApp.INVOLVEMENT)
+    involvement = Involvement.objects.create(
+        universe=universe,
+        person=person,
+        app=DimensionApp.INVOLVEMENT,
+        type=InvolvementType.SURVEY_RESPONSE,
+        registry=registry,
+        is_active=True,
+    )
+    assert not registry.can_be_deleted_by(request)
+    involvement.delete()
+    assert registry.can_be_deleted_by(request)
+
+    survey = Survey.objects.create(event=event, slug="deletion-guard-survey", registry=registry)
+    assert not registry.can_be_deleted_by(request)
+    survey.delete()
+    assert registry.can_be_deleted_by(request)
+
+    meta = InvolvementEventMeta.ensure(event)
+    meta.default_registry = registry
+    meta.save(update_fields=["default_registry"])
+    assert not registry.can_be_deleted_by(request)
+    meta.default_registry = None
+    meta.save(update_fields=["default_registry"])
+    assert registry.can_be_deleted_by(request)
+
+    program_meta, _created = ProgramV2EventMeta.objects.get_or_create(
+        event=event,
+        defaults=dict(admin_group=ProgramV2EventMeta.get_or_create_groups(event, ("admins",))[0]),
+    )
+    program_meta.default_registry = registry
+    program_meta.save(update_fields=["default_registry"])
+    assert not registry.can_be_deleted_by(request)
+    program_meta.default_registry = None
+    program_meta.save(update_fields=["default_registry"])
+    assert registry.can_be_deleted_by(request)
+
+    from kompassi.badges.models.badges_event_meta import BadgesEventMeta
+
+    badges_meta, _created = BadgesEventMeta.objects.get_or_create(
+        event=event,
+        defaults=dict(admin_group=BadgesEventMeta.get_or_create_groups(event, ("admins",))[0]),
+    )
+    badges_meta.registry = registry
+    badges_meta.save(update_fields=["registry"])
+    assert not registry.can_be_deleted_by(request)
+    badges_meta.registry = None
+    badges_meta.save(update_fields=["registry"])
+    assert registry.can_be_deleted_by(request)

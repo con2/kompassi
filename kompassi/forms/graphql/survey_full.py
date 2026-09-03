@@ -1,12 +1,12 @@
 import graphene
 from django.conf import settings
 from django.http import HttpRequest
-from django.utils.duration import duration_iso_string
 from graphene.types.generic import GenericScalar
 
 from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.graphql.event_limited import LimitedEventType
 from kompassi.core.utils import normalize_whitespace
+from kompassi.core.utils.retention_period import timedelta_to_days
 from kompassi.dimensions.filters import DimensionFilters
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
@@ -284,34 +284,30 @@ class FullSurveyType(LimitedSurveyType):
     )
 
     @staticmethod
-    def resolve_retention_period(survey: Survey, info) -> str | None:
+    def resolve_retention_period_days(survey: Survey, info) -> int | None:
         """
-        The retention period of the responses of this survey as an ISO 8601 duration,
+        The retention period of the responses of this survey in days,
         overriding the default retention period of the registry. Null if not overridden.
         """
-        if survey.retention_period is None:
-            return None
-        return duration_iso_string(survey.retention_period)
+        return timedelta_to_days(survey.retention_period)
 
-    retention_period = graphene.Field(
-        graphene.String,
-        description=normalize_whitespace(resolve_retention_period.__doc__ or ""),
+    retention_period_days = graphene.Field(
+        graphene.Int,
+        description=normalize_whitespace(resolve_retention_period_days.__doc__ or ""),
     )
 
     @staticmethod
-    def resolve_effective_retention_period(survey: Survey, info) -> str | None:
+    def resolve_effective_retention_period_days(survey: Survey, info) -> int | None:
         """
-        The retention period that applies to the responses of this survey as an ISO 8601
-        duration, ie. the survey's own retention period or, lacking that, the default
-        retention period of the registry. Null means the responses are retained indefinitely.
+        The retention period that applies to the responses of this survey in days, ie.
+        the survey's own retention period or, lacking that, the default retention period
+        of the registry. Null means the responses are retained indefinitely.
         """
-        if (retention_period := survey.effective_retention_period) is None:
-            return None
-        return duration_iso_string(retention_period)
+        return timedelta_to_days(survey.effective_retention_period)
 
-    effective_retention_period = graphene.Field(
-        graphene.String,
-        description=normalize_whitespace(resolve_effective_retention_period.__doc__ or ""),
+    effective_retention_period_days = graphene.Field(
+        graphene.Int,
+        description=normalize_whitespace(resolve_effective_retention_period_days.__doc__ or ""),
     )
 
     # TODO change to Scope
