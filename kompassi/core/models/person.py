@@ -481,9 +481,6 @@ class Person(models.Model):
         # or archived signups
         q |= Q(archived_signups__person=self)
 
-        # or enrollments
-        q |= Q(enrollment__person=self)
-
         q &= Q(**kwargs)
 
         return Event.objects.filter(q).distinct()

@@ -26,9 +26,6 @@ block content
       //- XXX FMH how do I blocktrans with links
       p.text-danger {% trans "For more information, see the" %} <a href="{{ event.homepage_url }}" target="_blank" rel="noreferrer noopener">{% trans "event home page" %}</a>.
 
-    if event.enrollment_event_meta
-      include enrollment_event_box
-
     if event.labour_event_meta
       include labour_event_box
 

@@ -298,7 +298,6 @@ class Event(models.Model):
     tickets_event_meta = event_meta_property("tickets")
     forms_event_meta = event_meta_property("forms")
     badges_event_meta = event_meta_property("badges")
-    enrollment_event_meta = event_meta_property("enrollment")
     intra_event_meta = event_meta_property("intra")
 
     @property

@@ -14,7 +14,6 @@ from kompassi.core.models.organization import Organization
 from kompassi.core.models.person import Person
 from kompassi.labour.models import ArchivedSignup, Signup
 from kompassi.membership.models import Membership
-from kompassi.zombies.enrollment.models import Enrollment
 from kompassi.zombies.programme.models import ProgrammeRole
 
 
@@ -22,11 +21,9 @@ from kompassi.zombies.programme.models import ProgrammeRole
 class Involvement:
     event: Event
     signup: Signup | ArchivedSignup | None
-    enrollment: Enrollment | None
     programme_roles: QuerySet[ProgrammeRole]
     current_user_is_labour_admin: bool
     current_user_is_programme_admin: bool
-    current_user_is_enrollment_admin: bool
 
     @classmethod
     def get(cls, request: HttpRequest, event: Event, person: Person):
@@ -37,16 +34,12 @@ class Involvement:
         return Involvement(
             event=event,
             signup=signup,
-            enrollment=Enrollment.objects.filter(person=person, event=event).first(),
             programme_roles=ProgrammeRole.objects.filter(person=person, programme__category__event=event),
             current_user_is_labour_admin=(
                 event.labour_event_meta and event.labour_event_meta.is_user_admin(request.user)
             ),
             current_user_is_programme_admin=(
                 event.programme_event_meta and event.programme_event_meta.is_user_admin(request.user)
-            ),
-            current_user_is_enrollment_admin=(
-                event.enrollment_event_meta and event.enrollment_event_meta.is_user_admin(request.user)
             ),
         )
 
