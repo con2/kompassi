@@ -56,10 +56,18 @@ docker compose exec --user=root backend python manage.py makemigrations
 
 # Apply migrations
 python manage.py migrate
-
-# Compile i18n (extract, update .po, compile .mo)
-python manage.py kompassi_i18n -aeuc
 ```
+
+## i18n
+
+Do not run `kompassi_i18n` with `-e` (extract) or `-u` (update) for a V1 string change: both
+always iterate every `INSTALLED_APPS` entry (there is no per-app flag), so they re-extract and
+re-fuzzy-match every app's `.po` file in one pass. Years of accumulated drift across the ~150
+event apps turn a one-string change into a diff touching dozens of unrelated files. Instead, add
+or edit the needed `msgid`/`msgstr` pairs by hand in the affected app's
+`locale/<lang>/LC_MESSAGES/django.po`, then compile all `.mo` files with
+`python manage.py kompassi_i18n -ac` — `-c` (compile) alone is safe to run project-wide since it
+only rebuilds `.mo` binaries from whatever `.po` sources already exist and never rewrites them.
 
 ## Frontend commands
 

@@ -9,7 +9,6 @@ from kompassi.intra.views import intra_event_box_context
 from kompassi.labour.views import labour_event_box_context
 from kompassi.program_v2.views.program_v2_event_box_context import program_v2_event_box_context
 from kompassi.tickets_v2.views.tickets_v2_event_box_context import tickets_v2_event_box_context
-from kompassi.zombies.enrollment.views import enrollment_event_box_context
 from kompassi.zombies.programme.views.event_box_context import programme_event_box_context
 from kompassi.zombies.tickets.views import tickets_event_box_context
 
@@ -23,9 +22,6 @@ def core_event_view(request, event_slug):
         event=event,
         settings=settings,
     )
-
-    if event.enrollment_event_meta:
-        vars.update(enrollment_event_box_context(request, event))
 
     if event.labour_event_meta:
         vars.update(labour_event_box_context(request, event))

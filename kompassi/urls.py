@@ -33,7 +33,6 @@ kompassi_apps = [
 zombie_apps = [
     "programme",
     "tickets",
-    "enrollment",
 ]
 
 urlpatterns = [

@@ -16,7 +16,6 @@ def events(*args, **kwargs):
         Event.objects.filter(*args, **kwargs)
         .order_by("-start_time")
         .select_related("venue")
-        .select_related("enrollmenteventmeta")
         .select_related("ticketseventmeta")
         .select_related("laboureventmeta")
         .select_related("programmeeventmeta")
