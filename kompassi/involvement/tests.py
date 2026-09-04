@@ -9,6 +9,8 @@ from kompassi.dimensions.models.universe_annotation import UniverseAnnotation
 
 from .emperkelators.desucon2026 import DesuconEmperkelator
 from .emperkelators.ropecon2026 import RopeconEmperkelator
+from .emperkelators.tracon2026 import Perks as TraconPerks
+from .emperkelators.tracon2026 import TicketType as TraconTicketType
 from .emperkelators.tracon2026 import TraconEmperkelator
 from .models.enums import InvolvementType
 from .models.involvement import Involvement
@@ -309,3 +311,67 @@ def test_for_combined_perks_respects_manual_perk_override():
     formatted_perks = result.annotations["internal:formattedPerks"]
     assert "Badge (super internal)" in formatted_perks
     assert "Badge (internal)," not in formatted_perks
+
+
+def test_tracon_program_host_ticket_type_set_on_involvement():
+    """
+    A program manager may set the ticket-type dimension on a single program host
+    involvement to grant less than the default INTERNAL_BADGE.
+    """
+    involvement = Involvement(type=InvolvementType.PROGRAM_HOST, cached_dimensions={"ticket-type": ["day-ticket"]})
+
+    perks = TraconPerks.for_program_host(involvement)
+
+    assert perks.ticket_type == TraconTicketType.DAY_TICKET
+    assert perks.meals == 1
+    assert perks.swag
+
+
+def test_tracon_program_host_unknown_ticket_type_falls_back_to_default():
+    involvement = Involvement(type=InvolvementType.PROGRAM_HOST, cached_dimensions={"ticket-type": ["no-such-type"]})
+
+    perks = TraconPerks.for_program_host(involvement)
+
+    assert perks.ticket_type == TraconTicketType.INTERNAL_BADGE
+
+
+@pytest.mark.django_db
+def test_for_combined_perks_uses_program_host_ticket_type():
+    """
+    Regression test: the ticket type a program manager sets on a program host
+    involvement must carry over to the combined perks, both as the ticket-type
+    dimension and in internal:formattedPerks.
+    """
+    from kompassi.labour.models.labour_event_meta import LabourEventMeta
+    from kompassi.labour.models.personnel_class import PersonnelClass
+
+    person, _ = Person.get_or_create_dummy()
+    event, _ = Event.get_or_create_dummy(name="Program Host Ticket Type Test 2099")
+    event.slug = "tracon2099"
+    event.save(update_fields=["slug"])
+
+    LabourEventMeta.get_or_create_dummy(event=event)
+    PersonnelClass.objects.create(event=event, name="Ohjelma", slug="ohjelma", app_label="program_v2")
+
+    InvolvementEventMeta.ensure(event)
+    meta = InvolvementEventMeta.ensure(event)
+    universe = meta.universe
+
+    Involvement.objects.create(
+        universe=universe,
+        person=person,
+        app=DimensionApp.PROGRAM,
+        type=InvolvementType.PROGRAM_HOST,
+        registry=meta.default_registry,
+        is_active=True,
+        cached_dimensions={"ticket-type": ["day-ticket"]},
+    )
+
+    result = Involvement.for_combined_perks(event, person)
+
+    assert result is not None
+    assert result.cached_dimensions["ticket-type"] == ["day-ticket"]
+
+    formatted_perks = result.annotations["internal:formattedPerks"]
+    assert "Päivälippu" in formatted_perks
+    assert "Badge" not in formatted_perks

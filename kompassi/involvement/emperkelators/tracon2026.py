@@ -38,7 +38,7 @@ MAX_MEALS = 4
 class TicketType(Enum):
     NONE = "none", "Ei lippuetua", "No ticket"
     # MAY_BUY = "may-buy", "Voi ostaa lipun", "May buy a ticket"
-    # DAY_TICKET = "day-ticket", "Päivälippu", "Day ticket"
+    DAY_TICKET = "day-ticket", "Päivälippu", "Day ticket"
     # WEEKEND_TICKET = "weekend-ticket", "Viikonloppulippu", "Weekend ticket"
     # EXTERNAL_BADGE = "external-badge", "Badge (external)", "Badge (external)"
     INTERNAL_BADGE = "internal-badge", "Badge (internal)", "Badge (internal)"
@@ -82,6 +82,29 @@ class TicketType(Enum):
 
     def __lt__(self, other: TicketType) -> bool:
         return self.index < other.index
+
+    @classmethod
+    def from_involvement(cls, involvement: Involvement) -> TicketType | None:
+        """
+        The ticket type set on a single involvement, eg. by a program manager
+        overriding it for one program host. None if not set or not recognized.
+        """
+        values = involvement.cached_dimensions.get("ticket-type", [])
+        if not values:
+            return None
+
+        slug = values[0]
+        try:
+            return cls(slug)
+        except ValueError:
+            logger.warning(
+                "Unknown ticket type on involvement, ignoring: %s",
+                dict(
+                    involvement=involvement.id,
+                    ticket_type=slug,
+                ),
+            )
+            return None
 
 
 class ShirtSize(Enum):
@@ -250,8 +273,9 @@ class Perks(pydantic.BaseModel):
 
     @classmethod
     def for_program_host(cls, involvement: Involvement) -> Perks:
+        ticket_type = TicketType.from_involvement(involvement)
         return Perks(
-            ticket_type=TicketType.INTERNAL_BADGE,
+            ticket_type=TicketType.INTERNAL_BADGE if ticket_type is None else ticket_type,
             meals=1,
             swag=True,
         )
