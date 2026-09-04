@@ -20,7 +20,10 @@ For staging and production, deployment is done in two steps using Skaffold:
     skaffold build --file-output build.json
     skaffold deploy -n kompassi-staging -a build.json
 
-See `skaffold.yaml` in the repository root.
+See `skaffold.yaml` in the repository root. `skaffold build` remains valid for
+manual/local use; CI builds the image with `docker buildx` instead (see
+`.github/workflows/backend.yaml`) and hand-writes `build.json` in the format
+`skaffold deploy -a` expects, since it no longer invokes `skaffold build`.
 
 You should, for the most part, not deploy manually. GitHub Actions CI/CD is
 set up to deploy all commits to `main` into staging (https://dev.kompassi.eu)
@@ -31,6 +34,7 @@ See `kompassi-v2-frontend/kubernetes/manifest.ts` for a smaller sibling
 example of the same approach (see https://github.com/japsu/depleten for the
 underlying philosophy) — this one has more moving parts because the Django
 backend has more workloads (gunicorn, celery, the newer background worker,
-uvicorn for tickets_v2, the nightly cron job, nginx for static files) and
-supports both a self-managed (local dev) and externally-managed (staging,
-production) Postgres/Redis/Secret.
+uvicorn for tickets_v2, the nightly cron job) and supports both a
+self-managed (local dev) and externally-managed (staging, production)
+Postgres/Redis/Secret. Static files are served by WhiteNoise from within the
+Django process, so there is no separate static-file workload.

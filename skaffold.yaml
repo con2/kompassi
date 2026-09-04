@@ -9,13 +9,6 @@ build:
   artifacts:
     - image: kompassi
       context: .
-    - image: kompassi-static
-      context: .
-      docker:
-        dockerfile: Dockerfile.static
-      requires:
-        - image: kompassi
-          alias: KOMPASSI_IMAGE
 
 deploy:
   statusCheckDeadlineSeconds: 600

@@ -1,6 +1,9 @@
 services:
   test:
-    build: .
+    image: kompassi-test
+    build:
+      context: .
+      target: test
     # NOTE: do not use entrypoint as it sets BROKER_URL making Kompassi expect there is a background worker, hanging tests
     entrypoint: []
     command: scripts/wait-for-it.sh -s -t 60 postgres:5432 -- pytest --reuse-db

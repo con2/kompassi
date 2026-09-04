@@ -7,7 +7,9 @@ on:
       - kubernetes/**
       - .github/workflows/backend.yaml
       - Dockerfile
-      - Dockerfile.static
+      - .dockerignore
+      - docker-compose.test.yml
+      - sql/**
       - manage.py
       - pyproject.toml
       - uv.lock
@@ -20,7 +22,9 @@ on:
       - kubernetes/**
       - .github/workflows/backend.yaml
       - Dockerfile
-      - Dockerfile.static
+      - .dockerignore
+      - docker-compose.test.yml
+      - sql/**
       - manage.py
       - pyproject.toml
       - uv.lock
@@ -41,29 +45,30 @@ jobs:
       UV_PYTHON_DOWNLOADS: "0"
     steps:
       - uses: actions/checkout@v7
+      - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/setup-buildx-action@v4
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: test
+          load: true
+          tags: kompassi-test
+          cache-from: |
+            type=registry,ref=ghcr.io/con2/kompassi:buildcache
+            type=registry,ref=ghcr.io/con2/kompassi:buildcache-test
+          cache-to: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'type=registry,ref=ghcr.io/con2/kompassi:buildcache-test,mode=max' || '' }}
       - run: docker compose -f docker-compose.test.yml up --exit-code-from test
 
   build:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
-    env:
-      SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
       - uses: actions/checkout@v7
-
-      - id: cache-bin
-        uses: actions/cache@v6
-        with:
-          path: bin
-          key: ${{ runner.os }}-bin-3
-      - if: steps.cache-bin.outputs.cache-hit != 'true'
-        run: |
-          mkdir bin
-          curl -Lo bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          curl -Lo bin/kubectl https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl
-          chmod +x bin/skaffold bin/kubectl
-      - run: echo "$PWD/bin" >> $GITHUB_PATH
 
       - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
         uses: docker/login-action@v4
@@ -73,12 +78,19 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/setup-buildx-action@v4
       - id: build
-        run: |
-          # only push to ghcr.io on push to main
-          if ! [[ "$GITHUB_EVENT_NAME" == 'push' && "$GITHUB_REF" == 'refs/heads/main' ]]; then
-            export SKAFFOLD_PUSH=false
-          fi
-          skaffold build --file-output build.json
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: runtime
+          tags: ghcr.io/con2/kompassi:${{ github.sha }}
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          provenance: false
+          cache-from: type=registry,ref=ghcr.io/con2/kompassi:buildcache
+          cache-to: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'type=registry,ref=ghcr.io/con2/kompassi:buildcache,mode=max' || '' }}
+      - run: |
+          cat > build.json <<EOF
+          {"builds":[{"imageName":"kompassi","tag":"ghcr.io/con2/kompassi:${{ github.sha }}@${{ steps.build.outputs.digest }}"}]}
+          EOF
       - uses: actions/upload-artifact@v7
         with:
           name: build-json

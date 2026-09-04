@@ -7,6 +7,7 @@
     'security:minimumReleaseAgeNpm', // https://docs.renovatebot.com/presets-security/#securityminimumreleaseagenpm
     'security:minimumReleaseAgePypi', // https://docs.renovatebot.com/presets-security/#securityminimumreleaseagepypi
     ':maintainLockFilesWeekly', // https://docs.renovatebot.com/presets-default/#maintainlockfilesweekly
+    'helpers:pinGitHubActionDigests', // https://docs.renovatebot.com/presets-helpers/#helperspingithubactiondigests
   ],
   // `prCreation` and `internalChecksFilter` together with ´minimumReleaseAge`settings
   // are use to avoid creating branches before the minimum release age has passed. See https://docs.renovatebot.com/configuration-options/(#suppress-branchpr-creation-for-x-days
@@ -16,6 +17,16 @@
     {
       matchUpdateTypes: ['patch'],
       automerge: true,
+    },
+    {
+      matchUpdateTypes: ['digest'],
+      automerge: true,
+    },
+    {
+      // Scoped to the dockerfile manager so the unpinned dev-only `image:`
+      // entries in docker-compose.yml (redis, minio) are left alone.
+      matchManagers: ['dockerfile'],
+      extends: ['docker:pinDigests'], // https://docs.renovatebot.com/presets-docker/#dockerpindigests
     },
   ],
 }

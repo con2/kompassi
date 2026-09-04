@@ -71,7 +71,7 @@ const {
 const ingressProtocol = tlsEnabled ? "https" : "http";
 const publicUrl = `${ingressProtocol}://${hostname}`;
 
-// Startup and liveness probe
+// Liveness probe
 const probe = {
   httpGet: {
     path: "/healthz",
@@ -83,6 +83,12 @@ const probe = {
       },
     ],
   },
+};
+
+const startupProbe = {
+  ...probe,
+  periodSeconds: 2,
+  failureThreshold: 60,
 };
 
 export function labels(component?: string) {
@@ -172,7 +178,7 @@ const deployment = {
               readOnlyRootFilesystem: false,
               allowPrivilegeEscalation: false,
             },
-            startupProbe: probe,
+            startupProbe,
             livenessProbe: livenessProbeEnabled ? probe : undefined,
             volumeMounts,
           },

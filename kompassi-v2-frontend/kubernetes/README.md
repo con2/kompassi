@@ -14,10 +14,13 @@ Assuming you have an [ingress controller set up](https://outline.con2.fi/doc/ing
 
 For staging and production, deployment is done in two steps using Skaffold:
 
-    cd kubernetes && ENV=staging npx tsx manifest.ts && cd -
+    cd kubernetes && ENV=staging node --experimental-strip-types manifest.ts && cd -
     skaffold build --file-output build.json
     skaffold deploy -n kompassi2-staging -a build.json
 
-See `skaffold.yaml` in the repository root.
+See `skaffold.yaml` in the repository root. `skaffold build` remains valid for
+manual/local use; CI builds the image with `docker buildx` instead (see
+`.github/workflows/frontend.yaml`) and hand-writes `build.json` in the format
+`skaffold deploy -a` expects, since it no longer invokes `skaffold build`.
 
-You should, for the most part, not deploy manually. GitHub Actions CI/CD is set up to deploy all commits to `main` into the staging environment at https://v2.dev.kompassi.eu, and after a manual gate into production at https://v2.kompassi.eu. See `.github/workflows/cicd.yaml`.
+You should, for the most part, not deploy manually. GitHub Actions CI/CD is set up to deploy all commits to `main` into the staging environment at https://v2.dev.kompassi.eu, and after a manual gate into production at https://v2.kompassi.eu. See `.github/workflows/frontend.yaml`.

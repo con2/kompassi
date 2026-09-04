@@ -22,17 +22,14 @@ dependencies = [
     "django-oauth-toolkit",
     "django-redis",
     "django-storages",
-    "django-stubs",
     "django[argon2]",
     "fastapi[standard-no-fastapi-cloud-cli]",
-    "flake8",
     "graphene-django",
     "graphene-pydantic",
     "gunicorn",
     "ics",
     "ipdb",
     "ipython",
-    "isort",
     "jinja2",
     "jsonschema",
     "jwskate",
@@ -45,15 +42,12 @@ dependencies = [
     "psycopg[c,pool]",
     "pydantic[email]",
     "pypugjs",
-    "pyright",
-    "pytest-django",
     "python-dateutil",
     "PyYAML",
     "regex",
     "reportlab",
     "requests",
     "requests-oauthlib",
-    "ruff",
     "tabulate",
     "unicodecsv",
     "uvicorn[standard]",
@@ -64,6 +58,17 @@ dependencies = [
     "django-enum>=2.2.3",
     "async-lru>=2.3.0",
     "structlog>=26.1.0",
+    "whitenoise>=6.12.0",
+]
+
+[dependency-groups]
+dev = [
+    "django-stubs",
+    "flake8",
+    "isort",
+    "pyright",
+    "pytest-django",
+    "ruff",
 ]
 
 [tool.uv]

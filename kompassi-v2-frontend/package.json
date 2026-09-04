@@ -7,7 +7,7 @@
     "dev": "concurrently -kn nextdev,codegen \"next dev\" \"graphql-codegen -w\"",
     "format": "prettier --write .",
     "k8s:dev": "npm run k8s:generate && skaffold dev",
-    "k8s:generate": "cd kubernetes && tsx manifest.ts",
+    "k8s:generate": "cd kubernetes && node --experimental-strip-types manifest.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "start": "node .next/standalone/server.js",
@@ -31,7 +31,6 @@
     "react-bootstrap": "^2.10.10",
     "react-day-picker": "^10.0.1",
     "react-dom": "^19.2.8",
-    "tsx": "^4.23.1",
     "uuid": "^14.0.1"
   },
   "license": "MIT",
