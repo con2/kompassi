@@ -35,14 +35,6 @@ class ArrivalsRow:
     QUERY = resource_string(__name__, "queries/arrivals_by_hour.sql").decode()
 
 
-@register_cleanup(
-    # Revoked unprinted badges should have been deleted outright.
-    lambda qs: qs.filter(
-        revoked_at__isnull=False,
-        batch__isnull=True,
-        printed_separately_at__isnull=True,
-    )
-)
 class Badge(models.Model, CsvExportMixin):
     person_id: int | None
     person = models.ForeignKey(
@@ -274,6 +266,18 @@ class Badge(models.Model, CsvExportMixin):
             badge.save()  # calls reemperkelate
 
             return badge, True
+
+    @classmethod
+    def get_revoked_unprinted_badges_for_cleanup(cls, queryset: models.QuerySet[Badge]):
+        """
+        Cleanup filter used by @register_cleanup. Revoked unprinted badges should have been
+        deleted outright.
+        """
+        return queryset.filter(
+            revoked_at__isnull=False,
+            batch__isnull=True,
+            printed_separately_at__isnull=True,
+        )
 
     @classmethod
     def get_expired_badges_for_cleanup(cls, queryset: models.QuerySet[Badge]):
@@ -522,4 +526,5 @@ class Badge(models.Model, CsvExportMixin):
         return self._shirt_type
 
 
+register_cleanup(Badge.get_revoked_unprinted_badges_for_cleanup)(Badge)
 register_cleanup(Badge.get_expired_badges_for_cleanup)(Badge)

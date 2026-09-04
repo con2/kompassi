@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 
 from kompassi.access.models import AccessOrganizationMeta, EmailAliasDomain, EmailAliasType
 from kompassi.access.models.email_alias_type import EmailAliasVariant
+from kompassi.badges.models.badges_event_meta import BadgesEventMeta
 from kompassi.core.models import Organization
 from kompassi.involvement.models import Registry
 from kompassi.payments.models.payments_organization_meta import META_DEFAULTS, PaymentsOrganizationMeta
@@ -64,7 +65,7 @@ class Setup:
             )
 
     def setup_involvement(self):
-        Registry.objects.get_or_create(
+        volunteers, _ = Registry.objects.get_or_create(
             scope=self.organization.scope,
             slug="volunteers",
             defaults=dict(
@@ -72,6 +73,11 @@ class Setup:
                 title_fi="Ropecon ry:n vapaaehtoisrekisteri",
             ),
         )
+
+        BadgesEventMeta.objects.filter(
+            event__organization=self.organization,
+            registry__isnull=True,
+        ).update(registry=volunteers)
 
 
 class Command(BaseCommand):

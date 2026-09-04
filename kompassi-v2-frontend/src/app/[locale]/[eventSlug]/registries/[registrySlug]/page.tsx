@@ -14,7 +14,11 @@ import getPageTitle from "@/helpers/getPageTitle";
 import { supportedLanguages, getTranslations } from "@/translations";
 
 const query = graphql(`
-  query AdminRegistryDetailPage($eventSlug: String!, $registrySlug: String!) {
+  query AdminRegistryDetailPage(
+    $eventSlug: String!
+    $registrySlug: String!
+    $locale: String!
+  ) {
     event(slug: $eventSlug) {
       name
       slug
@@ -22,6 +26,7 @@ const query = graphql(`
       involvement {
         registry(slug: $registrySlug) {
           slug
+          title(lang: $locale)
           titleEn
           titleFi
           titleSv
@@ -58,7 +63,7 @@ export async function generateMetadata(props: Props) {
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, registrySlug },
+    variables: { eventSlug, registrySlug, locale },
   });
 
   if (!data.event?.involvement?.registry) {
@@ -67,7 +72,7 @@ export async function generateMetadata(props: Props) {
 
   const title = getPageTitle({
     event: data.event,
-    subject: data.event.involvement.registry.titleEn,
+    subject: data.event.involvement.registry.title,
     viewTitle: t.singleTitle,
     translations,
   });
@@ -99,7 +104,7 @@ export default async function AdminRegistryDetailPage(props: Props) {
 
   const { data } = await getClient().query({
     query,
-    variables: { eventSlug, registrySlug },
+    variables: { eventSlug, registrySlug, locale },
   });
 
   if (!data.event?.involvement?.registry) {
@@ -171,7 +176,7 @@ export default async function AdminRegistryDetailPage(props: Props) {
           className="btn btn-outline-danger"
         >
           {registry.canRemove
-            ? t.actions.deleteRegistry.confirmation(registry.titleEn)
+            ? t.actions.deleteRegistry.confirmation(registry.title)
             : t.actions.deleteRegistry.cannotDelete}
         </ModalButton>
       }
