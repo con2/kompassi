@@ -1280,7 +1280,7 @@ def _make_retention_response(
 ):
     """
     A survey with one response, wired so that retention cleanup has everything it needs:
-    a registry with a default retention period and an event whose end time is the anchor.
+    a registry with a default retention period and an event whose end time anchors retention.
 
     Each call gets its own event and registry so that cases within one test, which differ
     precisely in the end time and the retention period, do not overwrite each other.
@@ -1333,12 +1333,13 @@ def _backdate_response(response: Response, when: datetime):
 def test_response_retention_registry_default():
     """
     A response is deleted once the registry's default retention period has passed since the
-    end time of the event. A registry without a retention period retains indefinitely.
+    end of the year in which the event ends. A registry without a retention period retains
+    indefinitely.
     """
     _survey, expired = _make_retention_response(
         survey_slug="expired-by-registry-default",
         default_retention_period=timedelta(days=365),
-        end_time=now() - timedelta(days=400),
+        end_time=now() - timedelta(days=800),
     )
 
     _perform_retention_cleanup()
@@ -1371,13 +1372,13 @@ def test_response_retention_survey_override():
         survey_slug="shortened-by-override",
         retention_period=timedelta(days=30),
         default_retention_period=timedelta(days=4000),
-        end_time=now() - timedelta(days=100),
+        end_time=now() - timedelta(days=800),
     )
     _survey, kept_by_override = _make_retention_response(
         survey_slug="extended-by-override",
         retention_period=timedelta(days=4000),
         default_retention_period=timedelta(days=30),
-        end_time=now() - timedelta(days=100),
+        end_time=now() - timedelta(days=800),
     )
 
     _perform_retention_cleanup()
@@ -1394,7 +1395,7 @@ def test_response_retention_ignores_protect_responses():
     """
     survey, response = _make_retention_response(
         survey_slug="protected-but-expired",
-        end_time=now() - timedelta(days=400),
+        end_time=now() - timedelta(days=800),
     )
     survey.protect_responses = True
     survey.save(update_fields=["protect_responses"])
@@ -1415,7 +1416,7 @@ def test_response_retention_falls_back_to_creation_time():
         default_retention_period=timedelta(days=365),
         end_time=None,
     )
-    _backdate_response(expired, now() - timedelta(days=400))
+    _backdate_response(expired, now() - timedelta(days=800))
 
     _survey, unexpired = _make_retention_response(
         survey_slug="recent-without-end-time",
@@ -1440,7 +1441,7 @@ def test_response_retention_deletes_whole_revision_chain():
     _survey, expired_current = _make_retention_response(
         survey_slug="expired-chain",
         default_retention_period=timedelta(days=365),
-        end_time=now() - timedelta(days=400),
+        end_time=now() - timedelta(days=800),
     )
     expired_old = Response.objects.create(
         form=expired_current.form,

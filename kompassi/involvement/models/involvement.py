@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Self
 from django.conf import settings
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models, transaction
-from django.db.models import DateTimeField, ExpressionWrapper, F, Q
+from django.db.models import F, Q
 from django.db.models.functions import Coalesce
 from django.utils.timezone import now
 from django_enum import EnumField
@@ -17,6 +17,7 @@ from kompassi.core.models.enums import ProgramRoleRetentionPolicy
 from kompassi.core.models.event import Event
 from kompassi.core.models.person import Person
 from kompassi.core.utils.cleanup import register_cleanup
+from kompassi.core.utils.retention_period import retain_until
 from kompassi.dimensions.models.cached_annotations import CachedAnnotations
 from kompassi.dimensions.models.cached_dimensions import (
     CachedDimensions,
@@ -832,16 +833,16 @@ class Involvement(models.Model):
     @classmethod
     def get_expired_involvements(cls, queryset: models.QuerySet[Self]):
         """
-        Involvements whose retention period has expired, counted from the end time of the event
-        or, lacking that, the creation time of the involvement. The retention period always comes
-        from the registry: Survey.retention_period only overrides retention of responses.
+        Involvements whose retention period has expired, counted from the end of the year in which
+        the event ends or, lacking that, in which the involvement was created. The retention period
+        always comes from the registry: Survey.retention_period only overrides retention of responses.
 
         A NULL retention period means the involvements are retained indefinitely.
         """
         expired = queryset.annotate(
-            retain_until=ExpressionWrapper(
-                Coalesce("universe__scope__event__end_time", "created_at") + F("registry__default_retention_period"),
-                output_field=DateTimeField(),
+            retain_until=retain_until(
+                Coalesce("universe__scope__event__end_time", "created_at"),
+                F("registry__default_retention_period"),
             )
         ).filter(retain_until__lt=now())
 

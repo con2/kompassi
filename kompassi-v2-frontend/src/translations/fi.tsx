@@ -3166,7 +3166,7 @@ const translations: Translations = {
       defaultRetentionPeriodDays: {
         title: "Oletussäilytysaika (päivää)",
         helpText:
-          "Kuinka monta päivää tapahtuman päättymisen jälkeen tähän rekisteriin kuuluvia henkilötietoja säilytetään. Jätä tyhjäksi, jos tietoja säilytetään toistaiseksi. Voidaan ylikirjoittaa lomakekohtaisesti.",
+          "Kuinka monta päivää tapahtuman päättymisvuoden lopun jälkeen tähän rekisteriin kuuluvia henkilötietoja säilytetään. Jätä tyhjäksi, jos tietoja säilytetään toistaiseksi. Voidaan ylikirjoittaa lomakekohtaisesti.",
       },
       actions: "Toiminnot",
       peopleInThisEvent: "Henkilöt tässä tapahtumassa",

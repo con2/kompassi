@@ -3,6 +3,7 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from kompassi.core.models import EventMetaBase
+from kompassi.core.utils.retention_period import retention_reference_time
 
 from .count_badges_mixin import CountBadgesMixin
 
@@ -29,7 +30,7 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         verbose_name=_("Registry"),
         help_text=_(
             "The personal data registry the badges of this event belong to. Badges are deleted after the "
-            "default retention period of the registry has passed since the end time of the event."
+            "default retention period of the registry has passed since the end of the year in which the event ends."
         ),
         related_name="badges_event_metas",
     )
@@ -60,7 +61,7 @@ class BadgesEventMeta(EventMetaBase, CountBadgesMixin):
         if self.event.end_time is None:
             return False
 
-        return self.event.end_time + self.registry.default_retention_period < now()
+        return retention_reference_time(self.event.end_time) + self.registry.default_retention_period < now()
 
     @classmethod
     def get_or_create_dummy(cls):

@@ -3166,7 +3166,7 @@ const translations: Translations = {
       defaultRetentionPeriodDays: {
         title: "Standardlagringstid (dagar)",
         helpText:
-          "Hur många dagar efter att evenemanget avslutats personuppgifterna i detta register bevaras. Lämna tomt för att bevara uppgifterna tills vidare. Kan åsidosättas per enkät.",
+          "Hur många dagar efter slutet av det år då evenemanget avslutas personuppgifterna i detta register bevaras. Lämna tomt för att bevara uppgifterna tills vidare. Kan åsidosättas per enkät.",
       },
       actions: "Åtgärder",
       peopleInThisEvent: "Personer i detta evenemang",

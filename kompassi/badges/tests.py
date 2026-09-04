@@ -340,10 +340,10 @@ def _make_retention_badge(
 def test_badge_retention():
     """
     A badge is deleted once the retention period of its event's badge registry has passed
-    since the end time of the event. A missing end time, registry or retention period all
-    retain the badge indefinitely.
+    since the end of the year in which the event ends. A missing end time, registry or
+    retention period all retain the badge indefinitely.
     """
-    expired = _make_retention_badge(slug="expired", end_time=now() - timedelta(days=400))
+    expired = _make_retention_badge(slug="expired", end_time=now() - timedelta(days=800))
     unexpired = _make_retention_badge(slug="unexpired", end_time=now() - timedelta(days=300))
     no_end_time = _make_retention_badge(slug="no-end-time", end_time=None)
     no_registry = _make_retention_badge(
@@ -372,7 +372,7 @@ def test_badge_ensure_does_not_resurrect_expired_badge():
     Anything that touches a long-past event would otherwise recreate the badge the sweep
     just deleted, with fresh personal data.
     """
-    badge = _make_retention_badge(slug="ensure-guard", end_time=now() - timedelta(days=400))
+    badge = _make_retention_badge(slug="ensure-guard", end_time=now() - timedelta(days=800))
     event = badge.personnel_class.event
     person = badge.person
 

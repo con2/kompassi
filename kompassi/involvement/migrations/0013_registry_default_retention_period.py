@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             name="default_retention_period",
             field=models.DurationField(
                 blank=True,
-                help_text="The default retention period for personal data in this registry, counted from the end time of the event (or, lacking that, the creation time of the record). If unset, personal data in this registry is retained indefinitely. Can be overridden per survey.",
+                help_text="The default retention period for personal data in this registry, counted from the end of the year in which the event ends (or, lacking that, in which the record was created). If unset, personal data in this registry is retained indefinitely. Can be overridden per survey.",
                 null=True,
             ),
         ),

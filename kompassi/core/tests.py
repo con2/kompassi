@@ -1,7 +1,8 @@
 import json
 import logging
 import re
-from datetime import date, datetime
+from datetime import UTC, date, datetime
+from zoneinfo import ZoneInfo
 
 import pytest
 from babel import Locale
@@ -10,6 +11,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.utils.timezone import get_current_timezone
 
+from kompassi.core.utils.retention_period import retention_reference_time
 from kompassi.core.utils.time_utils import format_date_range
 
 from .utils import MAX_PASSWORD_LENGTH, format_interval, full_hours_between, slugify
@@ -270,3 +272,16 @@ def test_person_form_program_role_retention_policy():
     assert submit("REMOVE").program_role_retention_policy == ProgramRoleRetentionPolicy.REMOVE
     assert submit("RETAIN").program_role_retention_policy == ProgramRoleRetentionPolicy.RETAIN
     assert submit("").program_role_retention_policy is None
+
+
+def test_retention_reference_time():
+    """
+    Retention is counted from the turn of the year after the anchor, in the default time zone:
+    an anchor late on New Year's Eve in UTC already belongs to the next year in Helsinki.
+    """
+    helsinki = ZoneInfo("Europe/Helsinki")
+
+    assert retention_reference_time(datetime(2026, 9, 6, 18, 0, tzinfo=helsinki)) == datetime(
+        2027, 1, 1, tzinfo=helsinki
+    )
+    assert retention_reference_time(datetime(2026, 12, 31, 22, 30, tzinfo=UTC)) == datetime(2028, 1, 1, tzinfo=helsinki)
