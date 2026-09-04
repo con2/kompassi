@@ -318,11 +318,14 @@ def test_tracon_program_host_ticket_type_set_on_involvement():
     A program manager may set the ticket-type dimension on a single program host
     involvement to grant less than the default INTERNAL_BADGE.
     """
-    involvement = Involvement(type=InvolvementType.PROGRAM_HOST, cached_dimensions={"ticket-type": ["day-ticket"]})
+    involvement = Involvement(
+        type=InvolvementType.PROGRAM_HOST,
+        cached_dimensions={"ticket-type": ["free-ticket-saturday"]},
+    )
 
     perks = TraconPerks.for_program_host(involvement)
 
-    assert perks.ticket_type == TraconTicketType.DAY_TICKET
+    assert perks.ticket_type == TraconTicketType.FREE_TICKET_SATURDAY
     assert perks.meals == 1
     assert perks.swag
 
@@ -364,14 +367,14 @@ def test_for_combined_perks_uses_program_host_ticket_type():
         type=InvolvementType.PROGRAM_HOST,
         registry=meta.default_registry,
         is_active=True,
-        cached_dimensions={"ticket-type": ["day-ticket"]},
+        cached_dimensions={"ticket-type": ["free-ticket-saturday"]},
     )
 
     result = Involvement.for_combined_perks(event, person)
 
     assert result is not None
-    assert result.cached_dimensions["ticket-type"] == ["day-ticket"]
+    assert result.cached_dimensions["ticket-type"] == ["free-ticket-saturday"]
 
     formatted_perks = result.annotations["internal:formattedPerks"]
-    assert "Päivälippu" in formatted_perks
+    assert "Vapaalippu lauantai" in formatted_perks
     assert "Badge" not in formatted_perks

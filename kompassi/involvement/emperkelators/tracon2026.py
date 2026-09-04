@@ -38,7 +38,9 @@ MAX_MEALS = 4
 class TicketType(Enum):
     NONE = "none", "Ei lippuetua", "No ticket"
     # MAY_BUY = "may-buy", "Voi ostaa lipun", "May buy a ticket"
-    DAY_TICKET = "day-ticket", "Päivälippu", "Day ticket"
+    FREE_TICKET_FRIDAY = "free-ticket-friday", "Vapaalippu perjantai", "Free ticket for Friday"
+    FREE_TICKET_SATURDAY = "free-ticket-saturday", "Vapaalippu lauantai", "Free ticket for Saturday"
+    FREE_TICKET_SUNDAY = "free-ticket-sunday", "Vapaalippu sunnuntai", "Free ticket for Sunday"
     # WEEKEND_TICKET = "weekend-ticket", "Viikonloppulippu", "Weekend ticket"
     # EXTERNAL_BADGE = "external-badge", "Badge (external)", "Badge (external)"
     INTERNAL_BADGE = "internal-badge", "Badge (internal)", "Badge (internal)"
