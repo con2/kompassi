@@ -8,7 +8,6 @@ import { writeFileSync } from "fs";
 
 export const stack = "kompassi";
 const kompassiImage = "kompassi"; // image name/tag managed by skaffold
-const kompassiStaticImage = "kompassi-static";
 const ingressClassName = "traefik";
 const clusterIssuer = "letsencrypt-prod";
 
@@ -289,7 +288,11 @@ const kompassiDeployment = {
               `--timeout=${env.timeoutSeconds}`,
               "kompassi.wsgi",
             ],
-            startupProbe: probe("/api/v1/status", 8000),
+            startupProbe: {
+              ...probe("/api/v1/status", 8000),
+              periodSeconds: 2,
+              failureThreshold: 60,
+            },
             readinessProbe: env.readinessProbeEnabled
               ? { ...probe("/api/v1/status", 8000), periodSeconds: 30 }
               : undefined,
@@ -346,7 +349,11 @@ const uvicornDeployment = {
               `--workers=${env.workers}`,
               "kompassi.tickets_v2.optimized_server.app:app",
             ],
-            startupProbe: probe("/api/tickets-v2/status", 7998),
+            startupProbe: {
+              ...probe("/api/tickets-v2/status", 7998),
+              periodSeconds: 2,
+              failureThreshold: 60,
+            },
             readinessProbe: {
               ...probe("/api/tickets-v2/status", 7998),
               periodSeconds: 30,
@@ -502,39 +509,6 @@ const workerDeployment = {
   },
 };
 
-const nginxService = {
-  apiVersion: "v1",
-  kind: "Service",
-  metadata: { name: "nginx", labels: labels("nginx") },
-  spec: {
-    ports: [{ port: 80, targetPort: 80 }],
-    selector: labels("nginx"),
-  },
-};
-
-const nginxDeployment = {
-  apiVersion: "apps/v1",
-  kind: "Deployment",
-  metadata: { name: "nginx" },
-  spec: {
-    selector: { matchLabels: labels("nginx") },
-    template: {
-      metadata: { labels: labels("nginx") },
-      spec: {
-        affinity: podAffinity("nginx"),
-        enableServiceLinks: false,
-        containers: [
-          {
-            name: "master",
-            image: kompassiStaticImage,
-            ports: [{ containerPort: 80 }],
-          },
-        ],
-      },
-    },
-  },
-};
-
 const ingress = {
   apiVersion: "networking.k8s.io/v1",
   kind: "Ingress",
@@ -562,16 +536,6 @@ const ingress = {
             pathType: "Prefix",
             path: "/api/tickets-v2",
             backend: { service: { name: "uvicorn", port: { number: 7998 } } },
-          },
-          {
-            pathType: "Prefix",
-            path: "/static",
-            backend: { service: { name: "nginx", port: { number: 80 } } },
-          },
-          {
-            pathType: "Prefix",
-            path: "/media",
-            backend: { service: { name: "nginx", port: { number: 80 } } },
           },
           {
             pathType: "Prefix",
@@ -603,9 +567,6 @@ function main() {
   writeManifest("celery.deployment.json", celeryDeployment);
 
   writeManifest("worker.deployment.json", workerDeployment);
-
-  writeManifest("nginx.service.json", nginxService);
-  writeManifest("nginx.deployment.json", nginxDeployment);
 
   writeManifest("ingress.json", ingress);
 }

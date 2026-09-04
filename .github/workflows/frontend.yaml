@@ -21,8 +21,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      SKAFFOLD_DEFAULT_REPO: ghcr.io/con2
     steps:
       - uses: actions/checkout@v7
       - if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
@@ -31,34 +29,25 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - id: cache-bin
-        uses: actions/cache@v6
-        with:
-          path: bin
-          key: ${{ runner.os }}-bin-3
-      - if: steps.cache-bin.outputs.cache-hit != 'true'
-        run: |
-          mkdir bin
-          curl -Lo bin/skaffold https://storage.googleapis.com/skaffold/releases/latest/skaffold-linux-amd64
-          curl -Lo bin/kubectl https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl
-          chmod +x bin/skaffold bin/kubectl
-      - run: echo "$PWD/bin" >> $GITHUB_PATH
       - uses: docker/setup-buildx-action@v4
       - id: build
-        name: skaffold build
-        run: |
-          # only push to ghcr.io on push to main
-          if ! [[ "$GITHUB_EVENT_NAME" == 'push' && "$GITHUB_REF" == 'refs/heads/main' ]]; then
-            export SKAFFOLD_PUSH=false
-          fi
-          skaffold build --file-output build.json
-        working-directory: kompassi-v2-frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: kompassi-v2-frontend
+          tags: ghcr.io/con2/kompassi2:${{ github.sha }}
+          push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+          provenance: false
+          cache-from: type=registry,ref=ghcr.io/con2/kompassi2:buildcache
+          cache-to: ${{ (github.event_name == 'push' && github.ref == 'refs/heads/main') && 'type=registry,ref=ghcr.io/con2/kompassi2:buildcache,mode=max' || '' }}
+      - run: |
+          cat > build.json <<EOF
+          {"builds":[{"imageName":"kompassi2","tag":"ghcr.io/con2/kompassi2:${{ github.sha }}@${{ steps.build.outputs.digest }}"}]}
+          EOF
       - name: Store build.json artifact
         uses: actions/upload-artifact@v7
         with:
           name: build-json
-          path: kompassi-v2-frontend/build.json
+          path: build.json
 
   # TODO Placeholder for actual tests, so that we can require step "test" to succeed for automerge (backend actually has one)
   test:
@@ -80,8 +69,6 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-          cache: npm
-          cache-dependency-path: kompassi-v2-frontend/package-lock.json
 
       - id: cache-bin
         uses: actions/cache@v6
@@ -95,9 +82,7 @@ jobs:
           curl -Lo bin/kubectl https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
-      - run: npm ci
-        working-directory: kompassi-v2-frontend
-      - run: npx tsx manifest.ts
+      - run: node --experimental-strip-types manifest.ts
         working-directory: kompassi-v2-frontend/kubernetes
         env:
           ENV: staging
@@ -118,8 +103,6 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 24
-          cache: npm
-          cache-dependency-path: kompassi-v2-frontend/package-lock.json
 
       - id: cache-bin
         uses: actions/cache@v6
@@ -133,9 +116,7 @@ jobs:
           curl -Lo bin/kubectl https://dl.k8s.io/release/v1.36.2/bin/linux/amd64/kubectl
           chmod +x bin/skaffold bin/kubectl
       - run: echo "$PWD/bin" >> $GITHUB_PATH
-      - run: npm ci
-        working-directory: kompassi-v2-frontend
-      - run: npx tsx manifest.ts
+      - run: node --experimental-strip-types manifest.ts
         working-directory: kompassi-v2-frontend/kubernetes
         env:
           ENV: production

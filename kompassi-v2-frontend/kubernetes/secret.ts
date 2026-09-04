@@ -1,6 +1,6 @@
 // this script can be used to generate a secret.json file for staging or production
 
-import { labels, b64, stack, writeManifest } from "./manifest";
+import { labels, b64, stack, writeManifest } from "./manifest.ts";
 
 const secret = {
   apiVersion: "v1",
@@ -23,6 +23,6 @@ function main() {
   writeManifest("secret.json", secret);
 }
 
-if (require.main === module) {
+if (import.meta.url === "file://" + process.argv[1]) {
   main();
 }

@@ -87,7 +87,11 @@ STORAGES = {
         "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": (
+            "whitenoise.storage.CompressedManifestStaticFilesStorage"
+            if not DEBUG
+            else "django.contrib.staticfiles.storage.StaticFilesStorage"
+        ),
     },
 }
 STATICFILES_FINDERS = (
@@ -96,11 +100,19 @@ STATICFILES_FINDERS = (
     # 'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+# A V1 template referencing a static file that collectstatic did not process
+# (e.g. missing from an app that was never fully migrated) should fall back to
+# the plain name instead of raising.
+WHITENOISE_MANIFEST_STRICT = False
+WHITENOISE_USE_FINDERS = DEBUG
+WHITENOISE_AUTOREFRESH = DEBUG
+
 
 SECRET_KEY = env.str("SECRET_KEY", default=("" if not DEBUG else "xxx"))
 
 MIDDLEWARE = (
     "corsheaders.middleware.CorsMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "csp.middleware.CSPMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.middleware.common.CommonMiddleware",

@@ -11,12 +11,14 @@ COPY package.json package-lock.json next.config.ts tsconfig.json eslint.config.m
 # COPY public public
 COPY src src
 RUN npm run build
+RUN mv .next/standalone/node_modules /standalone-node_modules
 
-FROM node:24 AS runner
+FROM node:24-slim AS runner
 WORKDIR /usr/src/app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
+COPY --from=builder /standalone-node_modules ./node_modules
 COPY --from=builder /usr/src/app/.next/standalone ./
 # COPY --from=builder /usr/src/app/public public
 COPY --from=builder /usr/src/app/.next/static .next/static
