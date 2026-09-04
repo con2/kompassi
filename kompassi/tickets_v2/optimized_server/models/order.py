@@ -196,6 +196,7 @@ class Order(pydantic.BaseModel, populate_by_name=True):
     )
 
     paid_by_provider: bool = pydantic.Field(default=False, exclude=True)
+    has_used_etickets: bool = pydantic.Field(default=False, exclude=True)
 
     query: ClassVar[bytes] = (Path(__file__).parent / "sql" / "get_order.sql").read_bytes()
 
@@ -229,6 +230,7 @@ class Order(pydantic.BaseModel, populate_by_name=True):
             order_number = 0
             language = ""
             paid_by_provider = False
+            has_used_etickets = False
 
             async for (
                 total_,
@@ -240,12 +242,14 @@ class Order(pydantic.BaseModel, populate_by_name=True):
                 vat_percentage,
                 status_,
                 paid_by_provider_,
+                has_used_etickets_,
             ) in cursor:
                 order_products.append(
                     OrderProduct(title=title, price=price, quantity=quantity, vat_percentage=vat_percentage)
                 )
                 total_price, order_number, language, status = total_, order_number_, language_, status_
                 paid_by_provider = paid_by_provider_
+                has_used_etickets = has_used_etickets_
 
             if not order_products:
                 return None
@@ -258,6 +262,7 @@ class Order(pydantic.BaseModel, populate_by_name=True):
                 order_number=order_number,
                 products=order_products,
                 paid_by_provider=paid_by_provider,
+                has_used_etickets=has_used_etickets,
             )
 
     @property
@@ -283,6 +288,7 @@ class Order(pydantic.BaseModel, populate_by_name=True):
             now=datetime.now(UTC),
             total_price=self.total_price,
             is_paid_by_provider=lambda: self.paid_by_provider,
+            has_used_etickets=lambda: self.has_used_etickets,
         )
 
 

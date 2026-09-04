@@ -15,7 +15,15 @@ select
       and ps.order_id = o.id
       and ps.status = 'PAID'
       and ps.provider <> 'NONE'
-  ) as paid_by_provider
+  ) as paid_by_provider,
+  exists (
+    select 1
+    from lippukala_code c
+    join lippukala_order lo on (c.order_id = lo.id)
+    where
+      lo.reference_number = cast(o.id as text)
+      and c.status = 1 -- lippukala.consts.USED
+  ) as has_used_etickets
 from
   tickets_v2_order o
   join lateral (

@@ -762,6 +762,105 @@ def test_can_be_cancelled_by_customer_manually_paid(cancellation_event: Event):
     assert not _get_order(event, order_id).can_be_cancelled_by_customer()
 
 
+def _make_paid_eticket_order(event: Event) -> tuple[Order, Product]:
+    """
+    A zero-price paid order of one product with one e-ticket, with the
+    Lippukala order and code created as the receipt worker would.
+    """
+    product = Product.objects.create(
+        event=event,
+        title="Test e-ticket",
+        description="",
+        price=Decimal(0),
+        vat_percentage=Decimal(0),
+        etickets_per_product=1,
+    )
+    order_id = _make_order(event, datetime.now(UTC), {product.id: 1}, status=PaymentStatus.PAID)
+    order = _get_order(event, order_id)
+
+    PendingReceipt.event_cache_refreshed_at = None
+    lippukala_order = PendingReceipt.from_order(order).get_or_create_lippukala_order()
+    assert lippukala_order is not None
+    assert lippukala_order.code_set.count() == 1
+
+    return order, product
+
+
+@pytest.mark.django_db
+def test_can_be_cancelled_by_customer_used_eticket(cancellation_event: Event):
+    """
+    Once any e-ticket of the order has been checked in at the door, the order
+    can no longer be self-service cancelled. Ticket sales decide about refunds.
+    """
+    event = cancellation_event
+    order, _ = _make_paid_eticket_order(event)
+
+    assert not order.has_used_etickets
+    assert order.can_be_cancelled_by_customer()
+
+    PendingReceipt.event_cache_refreshed_at = None
+    assert PendingReceipt.from_order(order).is_customer_cancellable
+
+    order.lippukala_codes.get().set_used(used_at="test station")
+
+    order = _get_order(event, order.id)
+    assert order.has_used_etickets
+    assert not order.can_be_cancelled_by_customer()
+
+    PendingReceipt.event_cache_refreshed_at = None
+    assert not PendingReceipt.from_order(order).is_customer_cancellable
+
+    with pytest.raises(ValueError):
+        RequestOrderCancellation.mutate(None, None, _request_input(event, order.id))
+    assert not OrderCancellationToken.objects.filter(event=event, order_id=order.id).exists()
+
+
+@pytest.mark.django_db
+def test_confirm_order_cancellation_eticket_used_after_request(cancellation_event: Event):
+    """
+    Eligibility is re-checked at confirmation time: a ticket that is checked in
+    between requesting and confirming the cancellation blocks the cancellation.
+    """
+    event = cancellation_event
+    order, _ = _make_paid_eticket_order(event)
+
+    RequestOrderCancellation.mutate(None, None, _request_input(event, order.id))
+    token = OrderCancellationToken.objects.get(event=event, order_id=order.id, state="valid")
+
+    order.lippukala_codes.get().set_used(used_at="test station")
+
+    with pytest.raises(ValueError):
+        ConfirmOrderCancellation.mutate(None, None, _confirm_input(event, order.id, token.code))
+
+    assert _get_order(event, order.id).status == PaymentStatus.PAID
+
+
+@pytest.mark.django_db
+def test_optimized_server_get_order_reports_used_etickets(cancellation_event: Event):
+    """
+    The anonymous order API computes has_used_etickets in SQL. Exercise the query
+    against the same schema the Django models use.
+    """
+    from django.db import connection
+
+    from kompassi.tickets_v2.optimized_server.models.order import Order as OptimizedOrder
+
+    event = cancellation_event
+    order, _ = _make_paid_eticket_order(event)
+
+    def has_used_etickets_via_sql() -> bool:
+        with connection.cursor() as cursor:
+            cursor.execute(OptimizedOrder.query.decode(), dict(event_id=event.id, order_id=order.id))
+            rows = cursor.fetchall()
+        assert len(rows) == 1
+        return rows[0][-1]
+
+    assert has_used_etickets_via_sql() is False
+
+    order.lippukala_codes.get().set_used(used_at="test station")
+    assert has_used_etickets_via_sql() is True
+
+
 @pytest.mark.django_db
 def test_can_be_cancelled_by_customer_period_expired(cancellation_event: Event):
     event = cancellation_event

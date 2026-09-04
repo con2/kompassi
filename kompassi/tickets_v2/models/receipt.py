@@ -156,6 +156,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
     order_number: int
     total_price: Decimal
     paid_by_provider: bool = False
+    has_used_etickets: bool = False
 
     # NOTE: fields and their order must match fields returned by the query
     query: ClassVar[str] = (Path(__file__).parent / "sql" / "claim_pending_receipts.sql").read_text()
@@ -243,6 +244,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             now=django_now(),
             total_price=self.total_price,
             is_paid_by_provider=lambda: self.paid_by_provider,
+            has_used_etickets=lambda: self.has_used_etickets,
         )
 
     @classmethod
@@ -429,6 +431,7 @@ class PendingReceipt(OrderMixin, pydantic.BaseModel, arbitrary_types_allowed=Tru
             order_number=order.order_number,
             total_price=order.cached_price,
             paid_by_provider=order.provider_paid_stamps.exists(),
+            has_used_etickets=order.has_used_etickets,
         )
 
 

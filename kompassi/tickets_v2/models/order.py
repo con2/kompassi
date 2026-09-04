@@ -359,6 +359,18 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
         )
 
     @property
+    def has_used_etickets(self) -> bool:
+        """
+        True if any electronic ticket of this order has been checked in at the door.
+        """
+        from lippukala.consts import USED
+
+        return LippukalaCode.objects.filter(
+            order__reference_number=str(self.id),  # type: ignore
+            status=USED,
+        ).exists()
+
+    @property
     def admin_url(self):
         return f"{settings.KOMPASSI_V2_BASE_URL}/{self.event.slug}/orders-admin/{self.id}"
 
@@ -414,6 +426,7 @@ class Order(OrderMixin, EventPartitionsMixin, UUID7Mixin, models.Model):
             now=django_now(),
             total_price=self.cached_price,
             is_paid_by_provider=self.provider_paid_stamps.exists,
+            has_used_etickets=lambda: self.has_used_etickets,
         )
 
     def can_be_provider_refunded_by(self, request: HttpRequest):

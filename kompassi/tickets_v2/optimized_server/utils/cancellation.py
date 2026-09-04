@@ -64,15 +64,18 @@ def is_cancellable_by_customer(
     now: datetime,
     total_price: Decimal,
     is_paid_by_provider: Callable[[], bool],
+    has_used_etickets: Callable[[], bool],
 ) -> bool:
     """
     Customer self-service cancellation (confirmed via email) is allowed for paid
     orders within the cancellation period, provided that any money paid can be
-    automatically refunded via the payment provider. Customers holding orders
-    that fail these criteria are directed to contact ticket sales instead.
+    automatically refunded via the payment provider and none of the electronic
+    tickets of the order have been used yet. Customers holding orders that fail
+    these criteria are directed to contact ticket sales instead.
 
-    is_paid_by_provider is a callable so that callers backed by a database
-    query only pay for it when the cheaper criteria have already passed.
+    is_paid_by_provider and has_used_etickets are callables so that callers
+    backed by a database query only pay for them when the cheaper criteria have
+    already passed.
     """
     if status != PaymentStatus.PAID:
         return False
@@ -80,4 +83,9 @@ def is_cancellable_by_customer(
     if cancellation_deadline is None or now >= cancellation_deadline:
         return False
 
-    return total_price == 0 or is_paid_by_provider()
+    if total_price != 0 and not is_paid_by_provider():
+        return False
+
+    # A used e-ticket means the customer has already received (some of) what they
+    # paid for. Whether a partial refund is warranted is for ticket sales to decide.
+    return not has_used_etickets()
