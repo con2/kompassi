@@ -5,6 +5,7 @@ from django.core.management.base import BaseCommand
 
 from kompassi.access.models import AccessOrganizationMeta, EmailAliasDomain, EmailAliasType, SMTPServer
 from kompassi.access.models.email_alias_type import EmailAliasVariant
+from kompassi.badges.models.badges_event_meta import BadgesEventMeta
 from kompassi.core.models import Organization
 from kompassi.involvement.models.registry import Registry
 from kompassi.membership.models import MembershipOrganizationMeta, Term
@@ -149,6 +150,11 @@ Jäsenhakemukset hyväksyy yhdistyksen hallitus, jolla on oikeus olla hyväksym�
         if settings.DEBUG and volunteers.default_retention_period is None:
             volunteers.default_retention_period = timedelta(days=2 * 365)
             volunteers.save(update_fields=["default_retention_period"])
+
+        BadgesEventMeta.objects.filter(
+            event__organization=self.organization,
+            registry__isnull=True,
+        ).update(registry=volunteers)
 
 
 class Command(BaseCommand):
