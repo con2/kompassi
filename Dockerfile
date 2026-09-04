@@ -27,7 +27,7 @@ COPY kompassi /usr/src/app/kompassi
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 ENV PATH="/usr/src/app/.venv/bin:$PATH"
-RUN env DEBUG=1 python manage.py collectstatic --noinput && \
+RUN env DEBUG=0 python manage.py collectstatic --noinput && \
     env DEBUG=1 python manage.py kompassi_i18n -ac && \
     chmod 755 manage.py scripts/*.sh
 
