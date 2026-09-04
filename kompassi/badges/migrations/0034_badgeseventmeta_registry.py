@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name="registry",
             field=models.ForeignKey(
                 blank=True,
-                help_text="The personal data registry the badges of this event belong to. Badges are deleted after the default retention period of the registry has passed since the end time of the event.",
+                help_text="The personal data registry the badges of this event belong to. Badges are deleted after the default retention period of the registry has passed since the end of the year in which the event ends.",
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
                 related_name="badges_event_metas",

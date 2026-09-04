@@ -300,5 +300,5 @@ msgid "Registry"
 msgstr "Rekisteri"
 
 #: models/badges_event_meta.py
-msgid "The personal data registry the badges of this event belong to. Badges are deleted after the default retention period of the registry has passed since the end time of the event."
-msgstr "Henkilörekisteri, johon tämän tapahtuman badget kuuluvat. Badget poistetaan, kun rekisterin oletussäilytysaika on kulunut tapahtuman päättymisajasta."
+msgid "The personal data registry the badges of this event belong to. Badges are deleted after the default retention period of the registry has passed since the end of the year in which the event ends."
+msgstr "Henkilörekisteri, johon tämän tapahtuman badget kuuluvat. Badget poistetaan, kun rekisterin oletussäilytysaika on kulunut tapahtuman päättymisvuoden lopusta."

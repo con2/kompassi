@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             name="retention_period",
             field=models.DurationField(
                 blank=True,
-                help_text="Overrides the default retention period of the registry for the responses of this survey. Counted from the end time of the event, or, lacking that, the creation time of the response.",
+                help_text="Overrides the default retention period of the registry for the responses of this survey. Counted from the end of the year in which the event ends or, lacking that, in which the response was created.",
                 null=True,
                 verbose_name="retention period",
             ),

@@ -3220,7 +3220,7 @@ const translations = {
       defaultRetentionPeriodDays: {
         title: "Default retention period (days)",
         helpText:
-          "How many days after the event ends personal data in this registry is retained. Leave empty to retain indefinitely. Can be overridden per survey.",
+          "How many days after the end of the year in which the event ends personal data in this registry is retained. Leave empty to retain indefinitely. Can be overridden per survey.",
       },
       actions: "Actions",
       peopleInThisEvent: "People in this event",

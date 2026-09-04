@@ -7,7 +7,7 @@ from functools import cached_property
 
 from django.conf import settings
 from django.db import connection, models, transaction
-from django.db.models import ExpressionWrapper, F
+from django.db.models import F
 from django.utils.html import escape
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -18,6 +18,7 @@ from kompassi.core.models.event import Event
 from kompassi.core.utils import time_bool_property
 from kompassi.core.utils.cleanup import register_cleanup
 from kompassi.core.utils.pkg_resources_compat import resource_string
+from kompassi.core.utils.retention_period import retain_until
 
 from ..proxies.badge.privacy import BadgePrivacyAdapter
 from ..utils.default_badge_factory import default_badge_factory
@@ -291,10 +292,9 @@ class Badge(models.Model, CsvExportMixin):
         yield NULL and thus retain the badge indefinitely.
         """
         return queryset.annotate(
-            retain_until=ExpressionWrapper(
-                F("personnel_class__event__end_time")
-                + F("personnel_class__event__badgeseventmeta__registry__default_retention_period"),
-                output_field=models.DateTimeField(),
+            retain_until=retain_until(
+                F("personnel_class__event__end_time"),
+                F("personnel_class__event__badgeseventmeta__registry__default_retention_period"),
             )
         ).filter(retain_until__lt=now())
 

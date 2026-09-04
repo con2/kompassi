@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytest
 from django.test import RequestFactory
-from django.utils.timezone import now
+from django.utils.timezone import get_default_timezone, now
 
 from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.core.models.enums import ProgramRoleRetentionPolicy
@@ -458,12 +458,12 @@ def _make_retention_involvement(
 def test_involvement_retention_registry_default():
     """
     An involvement is deleted once its registry's default retention period has passed since
-    the end time of the event. A registry without a retention period retains indefinitely,
-    and the anchor falls back to the creation time when the event has no end time.
+    the end of the year in which the event ends. A registry without a retention period retains
+    indefinitely, and the anchor falls back to the creation time when the event has no end time.
     """
     expired = _make_retention_involvement(
         slug="expired",
-        end_time=now() - timedelta(days=400),
+        end_time=now() - timedelta(days=800),
     )
     unexpired = _make_retention_involvement(
         slug="unexpired",
@@ -474,7 +474,7 @@ def test_involvement_retention_registry_default():
         default_retention_period=None,
         end_time=now() - timedelta(days=4000),
     )
-    # No end time: the anchor is created_at, which is right now, so this is not expired.
+    # No end time: the anchor is created_at, which is right now, so retention has not even started.
     no_end_time = _make_retention_involvement(slug="no-end-time", end_time=None)
 
     _perform_retention_cleanup()
@@ -483,6 +483,34 @@ def test_involvement_retention_registry_default():
     assert Involvement.objects.filter(pk=unexpired.pk).exists()
     assert Involvement.objects.filter(pk=no_retention.pk).exists()
     assert Involvement.objects.filter(pk=no_end_time.pk).exists()
+
+
+@pytest.mark.django_db
+def test_involvement_retention_counts_from_end_of_year():
+    """
+    Retention is counted from the end of the year in which the event ends, so that different
+    years of the same event, which tend to fall on roughly the same dates, purge consistently.
+    Hence even with a zero retention period an event that ended this January is retained until
+    the year turns, while one that ended last December is not.
+    """
+    tz = get_default_timezone()
+    this_year = now().astimezone(tz).year
+
+    ended_this_january = _make_retention_involvement(
+        slug="ended-this-january",
+        default_retention_period=timedelta(0),
+        end_time=datetime(this_year, 1, 15, tzinfo=tz),
+    )
+    ended_last_december = _make_retention_involvement(
+        slug="ended-last-december",
+        default_retention_period=timedelta(0),
+        end_time=datetime(this_year - 1, 12, 15, tzinfo=tz),
+    )
+
+    _perform_retention_cleanup()
+
+    assert Involvement.objects.filter(pk=ended_this_january.pk).exists()
+    assert not Involvement.objects.filter(pk=ended_last_december.pk).exists()
 
 
 @pytest.mark.django_db
@@ -503,7 +531,7 @@ def test_involvement_retention_program_host_policy(policy, expect_deleted):
     involvement = _make_retention_involvement(
         slug=f"program-host-{policy.name.lower() if policy else 'unset'}",
         involvement_type=InvolvementType.PROGRAM_HOST,
-        end_time=now() - timedelta(days=400),
+        end_time=now() - timedelta(days=800),
         program_role_retention_policy=policy,
     )
 
@@ -524,7 +552,7 @@ def test_involvement_retention_revokes_badge():
 
     meta, _created = InvolvementEventMeta.get_or_create_dummy()
     event = meta.event
-    event.end_time = now() - timedelta(days=400)
+    event.end_time = now() - timedelta(days=800)
     event.save(update_fields=["end_time"])
 
     BadgesEventMeta.get_or_create_dummy()
@@ -571,7 +599,8 @@ def test_involvement_survives_expired_response():
     involvement = _make_retention_involvement(
         slug="unexpired-with-expired-response",
         involvement_type=InvolvementType.PROGRAM_HOST,
-        end_time=now() - timedelta(days=100),
+        default_retention_period=timedelta(days=3650),
+        end_time=now() - timedelta(days=800),
     )
     event = involvement.universe.scope.event
     assert event is not None
