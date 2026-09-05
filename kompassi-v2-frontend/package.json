@@ -23,7 +23,7 @@
     "@uiw/react-markdown-preview": "^5.2.1",
     "@uiw/react-md-editor": "^4.1.1",
     "bootstrap": "^5.3.5",
-    "motion": "^12.43.0",
+    "motion": "^13.0.0",
     "next": "^16.2.12",
     "next-auth": "^4.24.15",
     "next-intl": "^4.13.4",
