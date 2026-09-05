@@ -39,8 +39,8 @@
     "@graphql-codegen/client-preset": "^6.1.0",
     "@parcel/watcher": "^2.6.0",
     "@types/node": "^26.1.2",
-    "@types/react": "19.2.17",
-    "@types/react-dom": "19.2.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
     "concurrently": "^10.0.4",
     "eslint": "^9.39.5",
     "eslint-config-next": "16.2.12",
@@ -52,8 +52,8 @@
   },
   "prettier": {},
   "overrides": {
-    "@types/react": "19.2.17",
-    "@types/react-dom": "19.2.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.5",
     "postcss": "^8.5.25",
     "sharp": "^0.35.3"
   }
