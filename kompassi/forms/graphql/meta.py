@@ -75,6 +75,9 @@ class FormsEventMetaType(graphene.ObjectType):
                 field="self",
             )
             if not CBACEntry.is_allowed(request.user, claims):
+                if not request.user.is_authenticated:
+                    raise_cbac_permission_denied(request, claims)
+
                 surveys = [survey for survey in qs if survey.workflow.is_allowed(request, operation="query")]
                 if not surveys:
                     raise_cbac_permission_denied(request, claims)

@@ -4,7 +4,6 @@ from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
 from kompassi.core.graphql.event_limited import LimitedEventType
-from kompassi.core.graphql.profile_limited import LimitedProfileType
 from kompassi.core.utils import normalize_whitespace
 from kompassi.core.utils.retention_period import timedelta_to_days
 from kompassi.dimensions.filters import DimensionFilters
@@ -18,7 +17,7 @@ from .enums import CanResponsesBeDeletedType
 from .form import FormType
 from .response_full import FullResponseType
 from .response_limited import LimitedResponseType
-from .survey_access_grant import SurveyAccessGrantType
+from .survey_access_grant import GrantablePersonType, SurveyAccessGrantType
 from .survey_limited import LimitedSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
@@ -348,7 +347,7 @@ class FullSurveyType(LimitedSurveyType):
         return survey.workflow.grantable_people(search)
 
     grantable_people = graphene.NonNull(
-        graphene.List(graphene.NonNull(LimitedProfileType)),
+        graphene.List(graphene.NonNull(GrantablePersonType)),
         search=graphene.String(),
         description=normalize_whitespace(resolve_grantable_people.__doc__ or ""),
     )

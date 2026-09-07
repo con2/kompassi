@@ -71,7 +71,6 @@ const searchGrantablePeopleQuery = graphql(`
           grantablePeople(search: $search) {
             id
             fullName
-            email
             nick
           }
         }

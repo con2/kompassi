@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
+from functools import cached_property
 from typing import TYPE_CHECKING
 
 import pydantic
@@ -68,7 +69,7 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
     def can_access_be_granted(self) -> bool:
         return bool(self.access_root_claims)
 
-    @property
+    @cached_property
     def grant_claimses(self) -> list[Claims]:
         """
         Claims of the CBAC entries a per-survey grant consists of: one rooted at the survey,
@@ -230,6 +231,30 @@ class Workflow(pydantic.BaseModel, arbitrary_types_allowed=True):
             query |= Q(claims=claims)
 
         entries = CBACEntry.objects.filter(query, user=person.user)
+
+        count = 0
+        for entry in entries:
+            emit("access.cbacentry.deleted", request=request, other_fields=entry.as_dict())
+            count += 1
+
+        entries.delete()
+        return count
+
+    def revoke_all_access(self, request: HttpRequest | None) -> int:
+        """
+        Deletes every CBACEntry granted via grant_access for this survey, regardless of
+        grantee. Call this when the survey itself is deleted: the survey's Universe is not
+        deleted along with it (see Survey._get_universe), so a future survey created with
+        the same slug would otherwise reuse the same Universe and inherit these grants.
+        """
+        if not self.can_access_be_granted:
+            return 0
+
+        query = Q()
+        for claims in self.grant_claimses:
+            query |= Q(claims=claims)
+
+        entries = CBACEntry.objects.filter(query)
 
         count = 0
         for entry in entries:

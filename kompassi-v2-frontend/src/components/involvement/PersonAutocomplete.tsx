@@ -8,8 +8,11 @@ import ListGroup from "react-bootstrap/ListGroup";
 export interface PersonOption {
   id: string;
   fullName: string;
-  email: string;
   nick: string;
+}
+
+function formatPerson(person: PersonOption): string {
+  return person.nick ? `${person.fullName} (${person.nick})` : person.fullName;
 }
 
 interface Messages {
@@ -65,7 +68,7 @@ export default function PersonAutocomplete({
 
   function selectPerson(person: PersonOption) {
     setSelected(person);
-    setQuery(`${person.fullName} <${person.email}>`);
+    setQuery(formatPerson(person));
   }
 
   function clearSelection() {
@@ -103,7 +106,7 @@ export default function PersonAutocomplete({
                   action
                   onMouseDown={() => selectPerson(person)}
                 >
-                  {person.fullName} &lt;{person.email}&gt;
+                  {formatPerson(person)}
                 </ListGroup.Item>
               ))}
           </ListGroup>
