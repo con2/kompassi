@@ -157,6 +157,11 @@ class LimitedResponseType(DjangoObjectType):
     resolve_revision_created_at = resolve_local_datetime_field("revision_created_at")
 
     @staticmethod
+    def resolve_sequence_number(response: Response, info):
+        # A response keeps the sequence number of its original version across edits.
+        return response.original.sequence_number
+
+    @staticmethod
     def resolve_can_edit(
         response: Response,
         info,

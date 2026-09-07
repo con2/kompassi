@@ -21,6 +21,7 @@ from .excel_export import get_header_cells, get_response_cells
 from .graphql.mutations.update_form_fields import UpdateFormFields
 from .graphql.mutations.update_response_dimensions import UpdateResponseDimensions
 from .graphql.mutations.update_survey import UpdateSurvey
+from .graphql.response_limited import LimitedResponseType
 from .models.enums import SurveyPurpose
 from .models.field import Choice, Field, FieldType
 from .models.form import Form
@@ -1467,6 +1468,29 @@ def test_response_retention_deletes_whole_revision_chain():
     assert not Response.objects.filter(pk=expired_old.pk).exists()
     assert Response.objects.filter(pk=unexpired_current.pk).exists()
     assert Response.objects.filter(pk=unexpired_old.pk).exists()
+
+
+@pytest.mark.django_db
+def test_response_sequence_number_survives_edits():
+    """
+    Editing a response assigns the new revision the next free sequence number
+    (so it doesn't collide with other responses' numbers), but the GraphQL API must
+    keep showing the original's number so a response's displayed ordinal never changes.
+    """
+    _survey, original = _make_retention_response(survey_slug="sequence-number-survives-edits")
+    original.sequence_number = 1
+    original.save(update_fields=["sequence_number"])
+
+    edited = Response.objects.create(
+        form=original.form,
+        form_data=dict(title="Edited"),
+        sequence_number=2,
+    )
+    original.superseded_by = edited
+    original.save(update_fields=["superseded_by"])
+
+    assert LimitedResponseType.resolve_sequence_number(edited, None) == 1
+    assert LimitedResponseType.resolve_sequence_number(original, None) == 1
 
 
 @mock.patch("kompassi.forms.graphql.mutations.update_survey.graphql_check_instance", autospec=True)

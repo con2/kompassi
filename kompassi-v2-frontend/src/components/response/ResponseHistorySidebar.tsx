@@ -9,6 +9,7 @@ import Link from "next/link";
 graphql(`
   fragment ResponseHistorySidebar on FullResponseType {
     id
+    sequenceNumber
     originalCreatedAt
     originalCreatedBy {
       fullName
@@ -64,6 +65,13 @@ export default function ResponseHistorySidebar({
     <div className="card mb-3 h-100">
       <div className="card-body">
         <h5 className="card-title mb-3">{t.attributes.technicalDetails}</h5>
+
+        <div className="mb-4">
+          <label className="form-label fw-bold">
+            {t.attributes.sequenceNumber}
+          </label>
+          <div>{response.sequenceNumber}</div>
+        </div>
 
         <div className="mb-4">
           <label className="form-label fw-bold">
