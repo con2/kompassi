@@ -433,20 +433,24 @@ def _make_order(
 
 @pytest.fixture
 def vat_report_event(db):
+    from kompassi.tickets_v2.models.receipt import Receipt
+
     event, _ = Event.get_or_create_dummy(name="VAT report test event")
     # Sanity-check the timezone the report relies on for month bucketing.
     assert event.timezone_name == "Europe/Helsinki"
     Order.ensure_partition(event)
+    PaymentStamp.ensure_partition(event)
+    Receipt.ensure_partition(event)
     return event
 
 
 @pytest.mark.django_db
 def test_vat_by_month_report_empty(vat_report_event: Event):
-    """No orders → no rows, but the report still renders with a month column."""
+    """No orders → no rows, but the report still renders with the fixed columns."""
     report = VatByMonth.report(vat_report_event, "en")
     assert report.slug == "vat_by_month"
     assert report.rows == []
-    assert [c.slug for c in report.columns] == ["month", "total"]
+    assert [c.slug for c in report.columns] == ["month", "vat_rate", "sold", "returned", "net", "vat"]
     assert report.total_row is None  # has_total_row is False when there are no rows
 
 
@@ -481,46 +485,50 @@ def test_vat_by_month_report_basic(vat_report_event: Event):
         vat_percentage=Decimal(0),
     )
 
-    # Jan 2026 (Helsinki): 1× standard → 25.5% column = 25.50
-    _make_order(vat_report_event, datetime(2026, 1, 15, 12, 0, tzinfo=UTC), {standard.id: 1})
-    # Feb 2026 (Helsinki): 1× standard + 2× reduced → 25.5% = 25.50, 14% = 28.00
-    _make_order(vat_report_event, datetime(2026, 2, 10, 12, 0, tzinfo=UTC), {standard.id: 1, reduced.id: 2})
-    # Unpaid Feb order (must be excluded)
+    # Jan 2026 (Helsinki): 1× standard, paid at order time → 25.5% row = 125.50
+    jan_when = datetime(2026, 1, 15, 12, 0, tzinfo=UTC)
+    jan_order = _make_order(vat_report_event, jan_when, {standard.id: 1})
+    _add_stamp(vat_report_event, jan_order, status=PaymentStatus.PAID, when=jan_when)
+
+    # Feb 2026 (Helsinki): 1× standard + 2× reduced, paid at order time
+    feb_when = datetime(2026, 2, 10, 12, 0, tzinfo=UTC)
+    feb_order = _make_order(vat_report_event, feb_when, {standard.id: 1, reduced.id: 2})
+    _add_stamp(vat_report_event, feb_order, status=PaymentStatus.PAID, when=feb_when)
+
+    # Unpaid Feb order (no PAID stamp, must be excluded)
     _make_order(
         vat_report_event,
         datetime(2026, 2, 20, 12, 0, tzinfo=UTC),
         {standard.id: 1},
         status=PaymentStatus.PENDING,
     )
-    # Paid zero-VAT Feb order (must be excluded)
-    _make_order(vat_report_event, datetime(2026, 2, 25, 12, 0, tzinfo=UTC), {zero_rated.id: 1})
+    # Paid zero-VAT Feb order (must be excluded, its only line has vat_percentage=0)
+    zero_when = datetime(2026, 2, 25, 12, 0, tzinfo=UTC)
+    zero_order = _make_order(vat_report_event, zero_when, {zero_rated.id: 1})
+    _add_stamp(vat_report_event, zero_order, status=PaymentStatus.PAID, when=zero_when)
 
     report = VatByMonth.report(vat_report_event, "en")
 
     column_slugs = [c.slug for c in report.columns]
-    assert column_slugs == ["month", "vat_14.00", "vat_25.50", "total"]
+    assert column_slugs == ["month", "vat_rate", "sold", "returned", "net", "vat"]
 
-    assert len(report.rows) == 2
-    jan, feb = report.rows
-    assert jan == ["2026-01", 0.00, 25.50, 25.50]
-    assert feb == ["2026-02", 28.00, 25.50, 53.50]
+    assert report.rows == [
+        ["2026-01", "25.5%", 125.50, 0.00, 125.50, 25.50],
+        ["2026-02", "14%", 228.00, 0.00, 228.00, 28.00],
+        ["2026-02", "25.5%", 125.50, 0.00, 125.50, 25.50],
+    ]
 
-    # Total row sums each column (skipping the month column, which is total_by=NONE).
-    assert report.total_row is not None
-    month_label, total_14, total_25_5, grand_total = report.total_row
-    assert month_label == "Total"
-    assert total_14 == pytest.approx(28.00)
-    assert total_25_5 == pytest.approx(51.00)
-    assert grand_total == pytest.approx(79.00)
+    assert report.total_row == ["Total", "", 479.00, 0.00, 479.00, 79.00]
 
 
 @pytest.mark.django_db
-def test_vat_by_month_report_refund_does_not_change_history(vat_report_event: Event):
+def test_vat_by_month_report_refund_lands_in_refund_month(vat_report_event: Event):
     """
-    Once an order has been paid, its VAT belongs to the month of the sale even if
-    the order is later refunded — the VAT for that month may already have been
-    filed, so the report must not change retroactively. (The footer tells the
-    reader that refunds are not subtracted.)
+    A sale belongs to the month of its first PAID stamp, a return to the month
+    of its first REFUNDED stamp — they can land in different months and the
+    sale's month is not touched by the later refund. A REFUND_REQUESTED stamp
+    (CREATE_REFUND_SUCCESS type) alone does not make an order a return yet:
+    the money has not been confirmed returned.
     """
     product = Product.objects.create(
         event=vat_report_event,
@@ -530,23 +538,46 @@ def test_vat_by_month_report_refund_does_not_change_history(vat_report_event: Ev
         vat_percentage=Decimal("25.50"),
     )
 
-    _make_order(vat_report_event, datetime(2026, 1, 15, 12, 0, tzinfo=UTC), {product.id: 1})
-    for status in (
-        PaymentStatus.REFUND_REQUESTED,
-        PaymentStatus.REFUND_FAILED,
-        PaymentStatus.REFUNDED,
-    ):
-        _make_order(vat_report_event, datetime(2026, 1, 20, 12, 0, tzinfo=UTC), {product.id: 1}, status=status)
+    refunded_order = _make_order(vat_report_event, datetime(2026, 1, 15, 12, 0, tzinfo=UTC), {product.id: 1})
+    _add_stamp(
+        vat_report_event, refunded_order, status=PaymentStatus.PAID, when=datetime(2026, 1, 15, 12, 0, tzinfo=UTC)
+    )
+    _add_stamp(
+        vat_report_event,
+        refunded_order,
+        status=PaymentStatus.REFUNDED,
+        type=PaymentStampType.MANUAL_REFUND,
+        when=datetime(2026, 2, 10, 12, 0, tzinfo=UTC),
+    )
+
+    pending_refund_order = _make_order(vat_report_event, datetime(2026, 1, 20, 12, 0, tzinfo=UTC), {product.id: 1})
+    _add_stamp(
+        vat_report_event,
+        pending_refund_order,
+        status=PaymentStatus.PAID,
+        when=datetime(2026, 1, 20, 12, 0, tzinfo=UTC),
+    )
+    _add_stamp(
+        vat_report_event,
+        pending_refund_order,
+        status=PaymentStatus.REFUND_REQUESTED,
+        type=PaymentStampType.CREATE_REFUND_SUCCESS,
+        when=datetime(2026, 2, 15, 12, 0, tzinfo=UTC),
+    )
 
     report = VatByMonth.report(vat_report_event, "en")
-    assert report.rows == [["2026-01", 4 * 25.50, 4 * 25.50]]
+    assert report.rows == [
+        ["2026-01", "25.5%", 251.00, 0.00, 251.00, 51.00],
+        ["2026-02", "25.5%", 0.00, -125.50, -125.50, -25.50],
+    ]
 
 
 @pytest.mark.django_db
-def test_vat_by_month_report_timezone_boundary(vat_report_event: Event):
+def test_vat_by_month_report_sale_month_is_payment_month(vat_report_event: Event):
     """
-    An order at 23:30 UTC on Jan 31 falls on Feb 1 in Helsinki (UTC+2),
-    so the report should bucket it in February.
+    An order created just before midnight UTC but paid a bit later, once the
+    payment moment has already rolled over into February in Helsinki (UTC+2),
+    is bucketed by the payment month, not the order's creation month.
     """
     product = Product.objects.create(
         event=vat_report_event,
@@ -555,37 +586,108 @@ def test_vat_by_month_report_timezone_boundary(vat_report_event: Event):
         price=Decimal("125.50"),
         vat_percentage=Decimal("25.50"),
     )
+    order_id = _make_order(vat_report_event, datetime(2026, 1, 31, 22, 0, tzinfo=UTC), {product.id: 1})
     # UTC moment that is already in February when projected into Europe/Helsinki.
-    _make_order(vat_report_event, datetime(2026, 1, 31, 23, 30, tzinfo=UTC), {product.id: 1})
+    _add_stamp(vat_report_event, order_id, status=PaymentStatus.PAID, when=datetime(2026, 1, 31, 23, 30, tzinfo=UTC))
 
     report = VatByMonth.report(vat_report_event, "en")
     assert [row[0] for row in report.rows] == ["2026-02"]
 
 
 @pytest.mark.django_db
-def test_vat_by_month_report_localized_titles(vat_report_event: Event):
-    """Column titles for VAT rates follow the requested locale's separator."""
-    Product.objects.create(
+def test_vat_by_month_report_paid_then_cancelled_without_refund_stays_a_sale(vat_report_event: Event):
+    """
+    A paid order later cancelled without a refund keeps its money: the sale
+    stays counted and nothing is subtracted as a return.
+    """
+    product = Product.objects.create(
         event=vat_report_event,
         title="Standard",
         description="",
         price=Decimal("125.50"),
         vat_percentage=Decimal("25.50"),
     )
-    _make_order(
+    when = datetime(2026, 1, 15, 12, 0, tzinfo=UTC)
+    order_id = _make_order(vat_report_event, when, {product.id: 1})
+    _add_stamp(vat_report_event, order_id, status=PaymentStatus.PAID, when=when)
+    _add_stamp(
         vat_report_event,
-        datetime(2026, 3, 15, 12, 0, tzinfo=UTC),
-        {vat_report_event.products.get().id: 1},
+        order_id,
+        status=PaymentStatus.CANCELLED,
+        type=PaymentStampType.CANCEL_WITHOUT_REFUND,
+        when=datetime(2026, 1, 20, 12, 0, tzinfo=UTC),
     )
+
+    report = VatByMonth.report(vat_report_event, "en")
+    assert report.rows == [["2026-01", "25.5%", 125.50, 0.00, 125.50, 25.50]]
+
+
+@pytest.mark.django_db
+def test_vat_by_month_report_duplicate_paid_stamps_count_once(vat_report_event: Event):
+    """
+    A Paytrail payment produces both a redirect and a callback PAID stamp for
+    the same payment. The order's gross must not be double-counted, and the
+    month is decided by the earlier of the two stamps.
+    """
+    product = Product.objects.create(
+        event=vat_report_event,
+        title="Standard",
+        description="",
+        price=Decimal("125.50"),
+        vat_percentage=Decimal("25.50"),
+    )
+    order_id = _make_order(vat_report_event, datetime(2026, 1, 15, 12, 0, tzinfo=UTC), {product.id: 1})
+    _add_stamp(
+        vat_report_event,
+        order_id,
+        status=PaymentStatus.PAID,
+        type=PaymentStampType.PAYMENT_REDIRECT,
+        when=datetime(2026, 1, 15, 12, 0, tzinfo=UTC),
+    )
+    _add_stamp(
+        vat_report_event,
+        order_id,
+        status=PaymentStatus.PAID,
+        type=PaymentStampType.PAYMENT_CALLBACK,
+        when=datetime(2026, 2, 1, 12, 0, tzinfo=UTC),
+    )
+
+    report = VatByMonth.report(vat_report_event, "en")
+    assert report.rows == [["2026-01", "25.5%", 125.50, 0.00, 125.50, 25.50]]
+
+
+@pytest.mark.django_db
+def test_vat_by_month_report_localized_titles(vat_report_event: Event):
+    """The VAT rate cell and the new column titles follow the requested locale."""
+    product = Product.objects.create(
+        event=vat_report_event,
+        title="Standard",
+        description="",
+        price=Decimal("125.50"),
+        vat_percentage=Decimal("25.50"),
+    )
+    when = datetime(2026, 3, 15, 12, 0, tzinfo=UTC)
+    order_id = _make_order(vat_report_event, when, {product.id: 1})
+    _add_stamp(vat_report_event, order_id, status=PaymentStatus.PAID, when=when)
 
     en_report = VatByMonth.report(vat_report_event, "en")
     fi_report = VatByMonth.report(vat_report_event, "fi")
-    # The Column.title is a dict that resolve_localized_field picks from at GraphQL
-    # serialization time; we just verify both locales are populated correctly.
-    vat_col_en = next(c for c in en_report.columns if c.slug == "vat_25.50")
-    vat_col_fi = next(c for c in fi_report.columns if c.slug == "vat_25.50")
-    assert vat_col_en.title["en"] == "25.5%"
-    assert vat_col_fi.title["fi"] == "25,5%"
+
+    assert en_report.rows[0][1] == "25.5%"
+    assert fi_report.rows[0][1] == "25,5%"
+
+    en_titles = {c.slug: c.title for c in en_report.columns}
+    fi_titles = {c.slug: c.title for c in fi_report.columns}
+    assert en_titles["vat_rate"]["en"] == "VAT rate"
+    assert fi_titles["vat_rate"]["fi"] == "ALV-kanta"
+    assert en_titles["sold"]["en"] == "Sold"
+    assert fi_titles["sold"]["fi"] == "Myynti"
+    assert en_titles["returned"]["en"] == "Returned"
+    assert fi_titles["returned"]["fi"] == "Palautukset"
+    assert en_titles["net"]["en"] == "Net"
+    assert fi_titles["net"]["fi"] == "Netto"
+    assert en_titles["vat"]["en"] == "Tax payable"
+    assert fi_titles["vat"]["fi"] == "Maksettava vero"
 
 
 # ---------------------------------------------------------------------------
@@ -658,9 +760,11 @@ def _add_stamp(
     provider: PaymentProvider = PaymentProvider.PAYTRAIL,
     type: PaymentStampType = PaymentStampType.PAYMENT_CALLBACK,
     correlation_id: UUID | None = None,
+    when: datetime | None = None,
 ) -> PaymentStamp:
     stamp = PaymentStamp(
         event=event,
+        id=uuid7(when) if when is not None else uuid7(),
         order_id=order_id,
         correlation_id=correlation_id or uuid7(),
         provider=provider,

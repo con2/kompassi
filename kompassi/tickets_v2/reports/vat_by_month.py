@@ -8,10 +8,9 @@ from django.db import connection
 from kompassi.core.models.event import Event
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.reports.models.column import Column
-from kompassi.reports.models.enums import TypeOfColumn
+from kompassi.reports.models.enums import TotalBy, TypeOfColumn
 from kompassi.reports.models.report import Report
 
-from ..optimized_server.models.enums import PaymentStatus
 from ..optimized_server.utils.formatting import format_vat_rate
 
 SQL_DIR = Path(__file__).parent / "sql"
@@ -22,36 +21,33 @@ TITLE = dict(
     sv="Moms per månad",
 )
 MONTH_COLUMN_TITLE = dict(fi="Kuukausi", en="Month", sv="Månad")
-TOTAL_COLUMN_TITLE = dict(fi="Yhteensä", en="Total", sv="Totalt")
+VAT_RATE_COLUMN_TITLE = dict(fi="ALV-kanta", en="VAT rate", sv="Momssats")
+SOLD_COLUMN_TITLE = dict(fi="Myynti", en="Sold", sv="Försäljning")
+RETURNED_COLUMN_TITLE = dict(fi="Palautukset", en="Returned", sv="Återbetalningar")
+NET_COLUMN_TITLE = dict(fi="Netto", en="Net", sv="Netto")
+VAT_COLUMN_TITLE = dict(fi="Maksettava vero", en="Tax payable", sv="Moms att betala")
 FOOTER = dict(
     fi=(
-        "Vain maksetut tilaukset on laskettu mukaan. Hyvitetyt tilaukset näkyvät "
-        "alkuperäisen myyntikuukauden kohdalla; hyvityksiä ei vähennetä."
+        "Myynti kirjataan sille kuukaudelle, jona maksu on kirjattu, ja palautus sille "
+        "kuukaudelle, jona hyvitys on kirjattu. Summat sisältävät arvonlisäveron. "
+        "Maksettava vero on laskettu nettomyynnistä ja voi olla negatiivinen. Palautukset, "
+        "jotka ovat vielä kesken maksupalveluntarjoajalla, eivät näy ennen kuin ne on vahvistettu."
     ),
     en=(
-        "Only paid orders are included. Refunded orders are shown in the month of "
-        "the original sale; refunds are not subtracted."
+        "A sale is counted in the month the payment was recorded, and a return in the month "
+        "the refund was recorded. Amounts include VAT. Tax payable is computed on net sales "
+        "and can be negative. Refunds still pending at the payment provider are not counted "
+        "until confirmed."
     ),
     sv=(
-        "Endast betalda beställningar ingår. Återbetalda beställningar visas under "
-        "den ursprungliga försäljningsmånaden; återbetalningar dras inte av."
+        "En försäljning räknas till den månad då betalningen registrerades, och en "
+        "återbetalning till den månad då återbetalningen registrerades. Beloppen inkluderar "
+        "moms. Moms att betala beräknas på nettoförsäljningen och kan vara negativ. "
+        "Återbetalningar som fortfarande väntar hos betalningsleverantören räknas inte "
+        "förrän de bekräftats."
     ),
 )
 CENT = Decimal("0.01")
-
-# Orders in these statuses have been paid at some point. A later refund must not
-# retroactively remove the sale from the month it was made in, as the VAT for
-# that month may already have been filed.
-EVER_PAID_STATUSES = [
-    PaymentStatus.PAID,
-    PaymentStatus.REFUND_REQUESTED,
-    PaymentStatus.REFUND_FAILED,
-    PaymentStatus.REFUNDED,
-]
-
-
-def _vat_column_title(rate: Decimal) -> dict[str, str]:
-    return {lang: f"{format_vat_rate(rate, lang)}%" for lang in ("fi", "en", "sv")}
 
 
 class VatByMonth:
@@ -65,14 +61,9 @@ class VatByMonth:
                 dict(
                     event_id=event.id,
                     event_timezone=event.timezone_name,
-                    paid_statuses=[status.value for status in EVER_PAID_STATUSES],
                 ),
             )
             raw_rows = cursor.fetchall()
-
-        vat_rates: list[Decimal] = sorted({row[1] for row in raw_rows})
-        months: list[str] = sorted({row[0] for row in raw_rows})
-        data: dict[tuple[str, Decimal], Decimal] = {(row[0], row[1]): row[2] for row in raw_rows}
 
         columns: list[Column] = [
             Column(
@@ -82,31 +73,45 @@ class VatByMonth:
                 # NOTE: total_by defaults to SUM, which is what makes the total
                 # row label show "Total" in column 0 (see Report.get_total_row).
             ),
-            *(
-                Column(
-                    slug=f"vat_{rate}",
-                    title=_vat_column_title(rate),
-                    type=TypeOfColumn.CURRENCY,
-                )
-                for rate in vat_rates
+            Column(
+                slug="vat_rate",
+                title=VAT_RATE_COLUMN_TITLE,
+                type=TypeOfColumn.STRING,
+                total_by=TotalBy.NONE,
             ),
             Column(
-                slug="total",
-                title=TOTAL_COLUMN_TITLE,
+                slug="sold",
+                title=SOLD_COLUMN_TITLE,
+                type=TypeOfColumn.CURRENCY,
+            ),
+            Column(
+                slug="returned",
+                title=RETURNED_COLUMN_TITLE,
+                type=TypeOfColumn.CURRENCY,
+            ),
+            Column(
+                slug="net",
+                title=NET_COLUMN_TITLE,
+                type=TypeOfColumn.CURRENCY,
+            ),
+            Column(
+                slug="vat",
+                title=VAT_COLUMN_TITLE,
                 type=TypeOfColumn.CURRENCY,
             ),
         ]
 
-        rows: list[list] = []
-        for month in months:
-            row: list = [month]
-            row_total = Decimal(0)
-            for rate in vat_rates:
-                vat = data.get((month, rate), Decimal(0)).quantize(CENT)
-                row.append(float(vat))
-                row_total += vat
-            row.append(float(row_total))
-            rows.append(row)
+        rows: list[list] = [
+            [
+                month,
+                f"{format_vat_rate(vat_rate, lang)}%",
+                float(sold.quantize(CENT)),
+                float(returned.quantize(CENT)),
+                float(net.quantize(CENT)),
+                float(vat.quantize(CENT)),
+            ]
+            for month, vat_rate, sold, returned, net, vat in raw_rows
+        ]
 
         return Report(
             slug="vat_by_month",
