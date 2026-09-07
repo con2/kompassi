@@ -2859,6 +2859,52 @@ const translations = {
       addLanguage: "Add language",
       texts: (languageName: string) => `Texts (${languageName})`,
       fields: (languageName: string) => `Fields (${languageName})`,
+      access: "Access",
+    },
+    accessPage: {
+      title: "Access",
+      description: (
+        <>
+          Users listed below have been granted access to manage this survey and
+          its dimensions specifically, in addition to any users who have been
+          granted access to all surveys of this event or organization.
+        </>
+      ),
+      noGrants: "Nobody has been granted access to this survey specifically.",
+      tableFooter: (count: number) => (
+        <>
+          {count} grant{count === 1 ? "" : "s"}.
+        </>
+      ),
+      attributes: {
+        person: "Person",
+        email: "Email",
+        validUntil: "Valid until",
+        grantedAt: "Granted at",
+      },
+      grantForm: {
+        title: "Grant access",
+        personPlaceholder: "Search for a person…",
+        searching: "Searching…",
+        noResults: "No matching persons involved in this event were found.",
+        clear: "Clear",
+        submit: "Grant access",
+      },
+      actions: {
+        revoke: {
+          title: "Revoke access",
+          confirmation: (name: string) => (
+            <>
+              Are you sure you want to revoke <strong>{name}</strong>&rsquo;s
+              access to this survey?
+            </>
+          ),
+          modalActions: {
+            submit: "Revoke",
+            cancel: "Cancel",
+          },
+        },
+      },
     },
     thankYou: {
       title: "Thank you for your answers!",

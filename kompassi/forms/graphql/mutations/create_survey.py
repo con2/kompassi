@@ -1,7 +1,7 @@
 import graphene
 from django.http import HttpRequest
 
-from kompassi.access.cbac import graphql_check_instance, graphql_check_model
+from kompassi.access.cbac import graphql_check_model
 from kompassi.core.models import Event
 from kompassi.core.utils.model_utils import slugify
 from kompassi.dimensions.models.enums import DimensionApp
@@ -56,11 +56,9 @@ class CreateSurvey(graphene.Mutation):
                 slug=source_survey_slug,
             )
 
-            graphql_check_instance(
-                source_survey,
-                info,
-                app=source_survey.app,  # NOTE same check as in FormsProfileMeta.surveys
-            )
+            source_survey.workflow.check_access(
+                info, operation="query"
+            )  # NOTE same check as in FormsProfileMeta.surveys
 
             survey = source_survey.clone(
                 event=event,

@@ -81,6 +81,7 @@ class DimensionValue(models.Model):
                 operation="delete",
                 field="values",
                 app=self.universe.app,
+                **self.universe.access_root_claims,
             )
         )
 
@@ -91,6 +92,7 @@ class DimensionValue(models.Model):
             operation="update",
             field="values",
             app=self.universe.app,
+            **self.universe.access_root_claims,
         )
 
     class Meta:

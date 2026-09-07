@@ -16,6 +16,7 @@ graphql(`
     slug
     title(lang: $locale)
     canRemove
+    canGrantAccess
     purpose
 
     dimensions {

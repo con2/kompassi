@@ -17,7 +17,6 @@ from django.http import HttpRequest
 from django.utils.translation import gettext_lazy as _
 from django_enum import EnumField
 
-from kompassi.access.cbac import is_graphql_allowed_for_model
 from kompassi.core.models import Event
 from kompassi.core.utils import NONUNIQUE_SLUG_FIELD_PARAMS, is_within_period, log_get_or_create
 from kompassi.core.utils.pkg_resources_compat import resource_stream
@@ -370,16 +369,7 @@ class Survey(models.Model):
         return {form.language: form.title for form in self.languages.all()}
 
     def can_be_deleted_by(self, request: HttpRequest):
-        return (
-            is_graphql_allowed_for_model(
-                request.user,
-                instance=self,
-                operation="delete",
-                field="self",
-                app=self.app,
-            )
-            and not self.languages.exists()
-        )
+        return self.workflow.is_allowed(request, operation="delete") and not self.languages.exists()
 
     def can_responses_be_deleted_by(self, request: HttpRequest) -> CanResponsesBeDeleted:
         return self.workflow.responses_can_be_deleted_by(request)

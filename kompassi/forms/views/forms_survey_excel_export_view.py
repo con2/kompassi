@@ -2,7 +2,6 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.models import Event
 from kompassi.dimensions.filters import DimensionFilters
 from kompassi.event_log_v2.utils.emit import emit
@@ -23,13 +22,7 @@ def forms_survey_excel_export_view(
     filename = f"{event.slug}_{survey.slug}_responses_{timestamp}.xlsx"
 
     # TODO(#324): Failed check causes 500 now, turn it to 403 (middleware?)
-    graphql_check_instance(
-        survey,
-        request,
-        app=survey.app,
-        field="responses",
-        operation="query",
-    )
+    survey.workflow.check_access(request, operation="query", field="responses")
 
     response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'

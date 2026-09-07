@@ -3,8 +3,8 @@ from django.conf import settings
 from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.graphql.event_limited import LimitedEventType
+from kompassi.core.graphql.profile_limited import LimitedProfileType
 from kompassi.core.utils import normalize_whitespace
 from kompassi.core.utils.retention_period import timedelta_to_days
 from kompassi.dimensions.filters import DimensionFilters
@@ -18,6 +18,7 @@ from .enums import CanResponsesBeDeletedType
 from .form import FormType
 from .response_full import FullResponseType
 from .response_limited import LimitedResponseType
+from .survey_access_grant import SurveyAccessGrantType
 from .survey_limited import LimitedSurveyType
 
 DEFAULT_LANGUAGE: str = settings.LANGUAGE_CODE
@@ -98,7 +99,7 @@ class FullSurveyType(LimitedSurveyType):
         Returns the responses to this survey regardless of language version used.
         Authorization required.
         """
-        graphql_check_instance(survey, info, app=survey.app, field="responses")
+        survey.workflow.check_access(info, operation="query", field="responses")
         return (
             DimensionFilters.from_graphql(filters)
             .filter(survey.current_responses.all())
@@ -117,7 +118,7 @@ class FullSurveyType(LimitedSurveyType):
         Returns a single response to this survey regardless of language version used.
         Authorization required.
         """
-        graphql_check_instance(survey, info, app=survey.app, field="responses")
+        survey.workflow.check_access(info, operation="query", field="responses")
         return survey.current_responses.filter(id=id).first()
 
     response = graphene.Field(
@@ -150,7 +151,7 @@ class FullSurveyType(LimitedSurveyType):
         Returns the number of responses to this survey regardless of language version used.
         Authorization required.
         """
-        graphql_check_instance(survey, info, app=survey.app, field="responses")
+        survey.workflow.check_access(info, operation="query", field="responses")
         return DimensionFilters.from_graphql(filters).filter(survey.current_responses.all()).count()
 
     count_responses = graphene.Field(
@@ -171,7 +172,7 @@ class FullSurveyType(LimitedSurveyType):
         that language is used as the base for the combined fields. Order of fields
         not present in the base language is not guaranteed. Authorization required.
         """
-        graphql_check_instance(survey, info, app=survey.app, field="responses")
+        survey.workflow.check_access(info, operation="query", field="responses")
         responses = (
             DimensionFilters.from_graphql(filters)
             .filter(survey.current_responses.all())
@@ -208,12 +209,7 @@ class FullSurveyType(LimitedSurveyType):
         if public_only:
             dimensions = survey.universe.dimensions.filter(is_public=True)
         else:
-            graphql_check_instance(
-                survey,  # type: ignore
-                info,
-                field="dimensions",
-                app=survey.app,
-            )
+            survey.workflow.check_access(info, operation="query", field="dimensions")
             dimensions = survey.universe.dimensions.all()
 
         if is_list_filter:
@@ -308,6 +304,53 @@ class FullSurveyType(LimitedSurveyType):
     effective_retention_period_days = graphene.Field(
         graphene.Int,
         description=normalize_whitespace(resolve_effective_retention_period_days.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_can_grant_access(survey: Survey, info):
+        """
+        Whether the current user can grant other users access to this survey.
+        """
+        request: HttpRequest = info.context
+        return survey.workflow.can_access_be_granted and survey.workflow.is_allowed(
+            request, operation="create", field="access"
+        )
+
+    can_grant_access = graphene.NonNull(
+        graphene.Boolean,
+        description=normalize_whitespace(resolve_can_grant_access.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_access_grants(survey: Survey, info):
+        """
+        Users who have been granted per-survey access to this survey. Empty for surveys
+        whose workflow does not support per-survey access grants.
+        """
+        if not survey.workflow.can_access_be_granted:
+            return []
+
+        survey.workflow.check_access(info, operation="query", field="access")
+        return survey.workflow.access_grants
+
+    access_grants = graphene.NonNull(
+        graphene.List(graphene.NonNull(SurveyAccessGrantType)),
+        description=normalize_whitespace(resolve_access_grants.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_grantable_people(survey: Survey, info, search: str = ""):
+        """
+        Persons who can be granted access to this survey, ie. persons with an active
+        involvement in the event who have a user account and do not already have access.
+        """
+        survey.workflow.check_access(info, operation="create", field="access")
+        return survey.workflow.grantable_people(search)
+
+    grantable_people = graphene.NonNull(
+        graphene.List(graphene.NonNull(LimitedProfileType)),
+        search=graphene.String(),
+        description=normalize_whitespace(resolve_grantable_people.__doc__ or ""),
     )
 
     # TODO change to Scope

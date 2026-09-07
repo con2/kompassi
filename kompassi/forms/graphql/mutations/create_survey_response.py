@@ -3,7 +3,6 @@ from django.db import transaction
 from django.http import HttpRequest
 from graphene.types.generic import GenericScalar
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.utils import get_ip
 from kompassi.program_v2.models.program import Program
 
@@ -61,13 +60,7 @@ class CreateSurveyResponse(graphene.Mutation):
             original_created_at = None
 
             if not survey.is_active:
-                graphql_check_instance(
-                    survey,
-                    request,
-                    app=survey.app,
-                    field="responses",
-                    operation="create",
-                )
+                survey.workflow.check_access(request, operation="create", field="responses")
 
             if survey.login_required and not revision_created_by:
                 raise Exception("Login required")

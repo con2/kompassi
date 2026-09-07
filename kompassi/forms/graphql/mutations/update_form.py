@@ -4,7 +4,6 @@ import graphene
 from django import forms as django_forms
 from graphene.types.generic import GenericScalar
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.core.utils.form_utils import camel_case_keys_to_snake_case
 
 from ...models.form import Form
@@ -52,13 +51,7 @@ class UpdateForm(graphene.Mutation):
         form = survey.languages.get(language=input.language)
         form_data: dict[str, str] = input.form_data  # type: ignore
 
-        graphql_check_instance(
-            survey,
-            info,
-            app=survey.app,
-            field="languages",
-            operation="update",
-        )
+        survey.workflow.check_access(info, operation="update", field="languages")
 
         form_form = FormForm.from_form_data(form, form_data)
         if not form_form.is_valid():

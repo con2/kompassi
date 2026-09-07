@@ -1,7 +1,6 @@
 import graphene
 from django.db import transaction
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.graphql_api.language import SUPPORTED_LANGUAGE_CODES
 from kompassi.program_v2.utils.default_fields import get_program_offer_form_default_fields
@@ -33,13 +32,7 @@ class CreateSurveyLanguage(graphene.Mutation):
     ):
         with transaction.atomic():
             survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-            graphql_check_instance(
-                survey,
-                info,
-                app=survey.app,
-                field="languages",
-                operation="create",
-            )
+            survey.workflow.check_access(info, operation="create", field="languages")
 
             language: str = input.language  # type: ignore
             if language not in SUPPORTED_LANGUAGE_CODES:

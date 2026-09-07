@@ -132,6 +132,7 @@ class RequestLocalCache:
         app: Enum | str,
         operation: Operation = "query",
         field: str = "self",
+        **extra: str,
     ) -> bool:
         claims = make_graphql_claims(
             scope=instance.scope,  # type: ignore
@@ -139,6 +140,7 @@ class RequestLocalCache:
             operation=operation,
             app=app,
             field=field,
+            **extra,
         )
 
         return self.has_cbac_permission(claims)
@@ -150,6 +152,7 @@ class RequestLocalCache:
         app: Enum | str,
         operation: Operation = "query",
         field: str = "self",
+        **extra: str,
     ):
         claims = make_graphql_claims(
             scope=instance.scope,  # type: ignore
@@ -157,6 +160,7 @@ class RequestLocalCache:
             operation=operation,
             app=app,
             field=field,
+            **extra,
         )
 
         if not self.has_cbac_permission(claims):

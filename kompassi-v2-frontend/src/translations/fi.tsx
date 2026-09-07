@@ -2863,6 +2863,54 @@ const translations: Translations = {
       addLanguage: "Lisää kieliversio",
       texts: (languageName: string) => `Tekstit (${languageName})`,
       fields: (languageName: string) => `Kentät (${languageName})`,
+      access: "Käyttöoikeudet",
+    },
+    accessPage: {
+      title: "Käyttöoikeudet",
+      description: (
+        <>
+          Alla luetelluille käyttäjille on myönnetty oikeus hallinnoida
+          nimenomaan tätä kyselyä ja sen ulottuvuuksia, sen lisäksi että
+          käyttäjille on voitu myöntää oikeus kaikkiin tapahtuman tai
+          organisaation kyselyihin.
+        </>
+      ),
+      noGrants: "Kenellekään ei ole myönnetty oikeutta juuri tähän kyselyyn.",
+      tableFooter: (count: number) => (
+        <>
+          {count} käyttöoikeu{count === 1 ? "s" : "tta"}.
+        </>
+      ),
+      attributes: {
+        person: "Henkilö",
+        email: "Sähköposti",
+        validUntil: "Voimassa asti",
+        grantedAt: "Myönnetty",
+      },
+      grantForm: {
+        title: "Myönnä käyttöoikeus",
+        personPlaceholder: "Hae henkilöä…",
+        searching: "Haetaan…",
+        noResults:
+          "Tapahtumaan osallistuvia hakua vastaavia henkilöitä ei löytynyt.",
+        clear: "Tyhjennä",
+        submit: "Myönnä käyttöoikeus",
+      },
+      actions: {
+        revoke: {
+          title: "Poista käyttöoikeus",
+          confirmation: (name: string) => (
+            <>
+              Haluatko varmasti poistaa käyttäjän <strong>{name}</strong>{" "}
+              käyttöoikeuden tähän kyselyyn?
+            </>
+          ),
+          modalActions: {
+            submit: "Poista",
+            cancel: "Peruuta",
+          },
+        },
+      },
     },
     thankYou: {
       title: "Kiitos vastauksistasi!",

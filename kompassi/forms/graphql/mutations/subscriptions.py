@@ -1,7 +1,5 @@
 import graphene
 
-from kompassi.access.cbac import graphql_check_instance
-
 from ...models.survey import Survey
 
 
@@ -18,7 +16,7 @@ class SubscribeToSurveyResponses(graphene.Mutation):
 
     def mutate(self, info, input):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
-        graphql_check_instance(survey, info, field="subscribers", operation="create")
+        survey.workflow.check_access(info, operation="create", field="subscribers")
 
         survey.subscribers.add(info.context.user)
 
@@ -34,13 +32,7 @@ class UnsubscribeFromSurveyResponses(graphene.Mutation):
     def mutate(self, info, input):
         survey = Survey.objects.get(event__slug=input.event_slug, slug=input.survey_slug)
 
-        graphql_check_instance(
-            survey,
-            info,
-            app=survey.app,
-            field="subscribers",
-            operation="delete",
-        )
+        survey.workflow.check_access(info, operation="delete", field="subscribers")
 
         survey.subscribers.remove(info.context.user)
 

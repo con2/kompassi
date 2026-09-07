@@ -1,14 +1,16 @@
 from datetime import datetime, timedelta
 from types import SimpleNamespace
-from unittest import mock
 
 import pytest
 import yaml
+from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.test import RequestFactory
 from django.utils.timezone import now
 
+from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.core.middleware import RequestLocalCache
-from kompassi.core.models import Event
+from kompassi.core.models import Event, Person
 from kompassi.core.utils.cleanup import perform_cleanup
 from kompassi.dimensions.graphql.mutations.put_dimension import PutDimension
 from kompassi.dimensions.models.dimension import Dimension, ValueOrdering
@@ -16,6 +18,10 @@ from kompassi.dimensions.models.dimension_value import DimensionValue
 from kompassi.dimensions.models.enums import DimensionApp
 from kompassi.event_log_v2.models.entry import Entry
 from kompassi.graphql_api.schema import schema
+from kompassi.involvement.models.enums import InvolvementType
+from kompassi.involvement.models.involvement import Involvement
+from kompassi.involvement.models.registry import Registry
+from kompassi.program_v2.workflows.program_offer import ProgramOfferWorkflow
 
 from .excel_export import get_header_cells, get_response_cells
 from .graphql.mutations.update_form_fields import UpdateFormFields
@@ -34,9 +40,20 @@ from .utils.promote_field_to_dimension import promote_field_to_dimension
 from .utils.s3_presign import BUCKET_NAME, S3_ENDPOINT_URL
 from .utils.summarize_responses import MatrixFieldSummary, SelectFieldSummary, TextFieldSummary, summarize_responses
 
-# pass this as the info param to mutations to appease the graphql_check_access decorator
-# (remember to also mock.patch graphql_check_access)
+# pass this as the info param to mutations that do not perform CBAC checks
 MOCK_INFO = SimpleNamespace(context=SimpleNamespace(user=None))
+
+
+def _mock_info(*claimses: dict[str, str]):
+    """
+    Like MOCK_INFO, but for mutations that perform CBAC checks via Workflow.check_access:
+    grants exactly the given claims (see RequestLocalCache.mock_permissions). Workflow.check_access
+    only unwraps its first argument's `.context` when it is an actual graphene ResolveInfo, so
+    (unlike MOCK_INFO) this is the request itself, not an info object wrapping one.
+    """
+    cache = RequestLocalCache(None)  # type: ignore
+    cache.mock_permissions(*claimses)
+    return SimpleNamespace(user=None, kompassi_cache=cache)
 
 
 def test_process_form_data():
@@ -643,8 +660,7 @@ def test_summarize_responses():
 
 
 @pytest.mark.django_db
-@mock.patch("kompassi.forms.graphql.mutations.update_response_dimensions.graphql_check_instance", autospec=True)
-def test_lift_and_set_dimensions(_patched_graphql_check_instance):
+def test_lift_and_set_dimensions():
     event, _created = Event.get_or_create_dummy()
 
     survey = Survey.objects.create(
@@ -721,7 +737,7 @@ def test_lift_and_set_dimensions(_patched_graphql_check_instance):
     # as a value type to fail, so we have to use SimpleNamespace instead
     UpdateResponseDimensions.mutate(
         None,
-        MOCK_INFO,
+        _mock_info(dict(app="forms")),
         SimpleNamespace(
             event_slug=event.slug,
             survey_slug=survey.slug,
@@ -900,9 +916,8 @@ def test_refresh_cached_key_fields():
     assert response.cached_key_fields == {"description": "Existing description"}
 
 
-@mock.patch("kompassi.forms.graphql.mutations.update_form_fields.graphql_check_instance", autospec=True)
 @pytest.mark.django_db
-def test_update_form_fields_strips_dimension_choices(_patched_graphql_check_instance):
+def test_update_form_fields_strips_dimension_choices():
     """
     Choices for dimension fields must only ever come from live enrichment (Form._enrich_field).
     If the editor's client-supplied choices (see injectChoices in FormEditor.tsx) were persisted
@@ -919,7 +934,7 @@ def test_update_form_fields_strips_dimension_choices(_patched_graphql_check_inst
 
     UpdateFormFields.mutate(
         None,
-        MOCK_INFO,
+        _mock_info(dict(app="forms")),
         SimpleNamespace(
             event_slug=event.slug,
             survey_slug=survey.slug,
@@ -1493,9 +1508,8 @@ def test_response_sequence_number_survives_edits():
     assert LimitedResponseType.resolve_sequence_number(original, None) == 1
 
 
-@mock.patch("kompassi.forms.graphql.mutations.update_survey.graphql_check_instance", autospec=True)
 @pytest.mark.django_db
-def test_update_survey_retention_period_days_round_trip(_patched_graphql_check_instance):
+def test_update_survey_retention_period_days_round_trip():
     """
     UpdateSurvey exchanges retentionPeriodDays (an integer) over GraphQL but stores
     Survey.retention_period as a timedelta; both directions of that conversion, including
@@ -1517,7 +1531,7 @@ def test_update_survey_retention_period_days_round_trip(_patched_graphql_check_i
 
     UpdateSurvey.mutate(
         None,
-        MOCK_INFO,
+        _mock_info(dict(app="forms")),
         SimpleNamespace(
             event_slug=event.slug,
             survey_slug=survey.slug,
@@ -1530,7 +1544,7 @@ def test_update_survey_retention_period_days_round_trip(_patched_graphql_check_i
 
     UpdateSurvey.mutate(
         None,
-        MOCK_INFO,
+        _mock_info(dict(app="forms")),
         SimpleNamespace(
             event_slug=event.slug,
             survey_slug=survey.slug,
@@ -1610,3 +1624,439 @@ def test_survey_clone_uses_target_event_program_universe():
     assert clone.universe_id == target_event.program_universe.id
     assert clone.universe.dimensions.count() == dimension_count_before
     assert not clone.universe.dimensions.filter(slug="color").exists()
+
+
+def _graphql_request(user):
+    request = RequestFactory().post("/graphql")
+    request.user = user
+    return request
+
+
+def _cached_request(user):
+    request = _graphql_request(user)
+    request.kompassi_cache = RequestLocalCache(request)  # type: ignore
+    return request
+
+
+def _grant_org_wide(user, organization):
+    return CBACEntry.objects.create(
+        user=user,
+        claims={"organization": organization.slug, "app": "forms"},
+        valid_from=now(),
+        valid_until=now() + timedelta(days=180),
+    )
+
+
+def _involve(person, event, registry):
+    return Involvement.objects.create(
+        universe=event.involvement_universe,
+        person=person,
+        app=DimensionApp.FORMS,
+        type=InvolvementType.SURVEY_RESPONSE,
+        registry=registry,
+        is_active=True,
+    )
+
+
+SURVEY_ACCESS_CHECK_QUERY = """
+  query SurveyAccessCheck($eventSlug: String!, $surveySlug: String!) {
+    event(slug: $eventSlug) {
+      forms {
+        survey(slug: $surveySlug) {
+          responses {
+            id
+          }
+        }
+      }
+    }
+  }
+"""
+
+INCLUDE_INACTIVE_SURVEYS_QUERY = """
+  query IncludeInactiveSurveys($eventSlug: String!) {
+    event(slug: $eventSlug) {
+      forms {
+        surveys(app: FORMS, includeInactive: true) {
+          slug
+        }
+      }
+    }
+  }
+"""
+
+GRANT_SURVEY_ACCESS_MUTATION = """
+  mutation GrantSurveyAccess($input: SurveyAccessInput!) {
+    grantSurveyAccess(input: $input) {
+      survey {
+        slug
+      }
+    }
+  }
+"""
+
+REVOKE_SURVEY_ACCESS_MUTATION = """
+  mutation RevokeSurveyAccess($input: SurveyAccessInput!) {
+    revokeSurveyAccess(input: $input) {
+      survey {
+        slug
+      }
+    }
+  }
+"""
+
+GRANTABLE_PEOPLE_QUERY = """
+  query GrantablePeople($eventSlug: String!, $surveySlug: String!, $search: String) {
+    event(slug: $eventSlug) {
+      forms {
+        survey(slug: $surveySlug, app: FORMS) {
+          canGrantAccess
+          grantablePeople(search: $search) {
+            id
+          }
+          accessGrants {
+            person {
+              id
+            }
+          }
+        }
+      }
+    }
+  }
+"""
+
+
+@pytest.mark.django_db
+def test_per_survey_access_grant_allows_only_the_granted_survey():
+    """
+    Granting access to a survey grants management access to that survey only, not to
+    other surveys of the same event nor to surveys of other events of the same
+    organization - unlike an org-wide {organization, app} CBAC entry.
+    """
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    other_event, _created = Event.get_or_create_dummy(name="Another dummy event")
+    organization = event.organization
+
+    survey_a = Survey.objects.create(event=event, slug="survey-a")
+    survey_b = Survey.objects.create(event=event, slug="survey-b")
+    survey_c = Survey.objects.create(event=other_event, slug="survey-c")
+
+    registry, _created = Registry.get_or_create_dummy()
+
+    manager, _created = Person.get_or_create_dummy(superuser=False)
+    _grant_org_wide(manager.user, organization)
+    manager_request = _graphql_request(manager.user)
+
+    grantee, _created = Person.get_or_create_dummy(superuser=False, another=True)
+    _involve(grantee, event, registry)
+    grantee_request = _graphql_request(grantee.user)
+
+    result = schema.execute(
+        GRANT_SURVEY_ACCESS_MUTATION,
+        None,
+        manager_request,
+        variable_values=dict(input=dict(eventSlug=event.slug, surveySlug=survey_a.slug, personId=grantee.id)),
+    )
+    assert not result.errors
+
+    allowed = schema.execute(
+        SURVEY_ACCESS_CHECK_QUERY,
+        None,
+        grantee_request,
+        variable_values=dict(eventSlug=event.slug, surveySlug=survey_a.slug),
+    )
+    assert not allowed.errors
+
+    denied_other_survey_same_event = schema.execute(
+        SURVEY_ACCESS_CHECK_QUERY,
+        None,
+        grantee_request,
+        variable_values=dict(eventSlug=event.slug, surveySlug=survey_b.slug),
+    )
+    assert denied_other_survey_same_event.errors
+
+    denied_other_event_same_org = schema.execute(
+        SURVEY_ACCESS_CHECK_QUERY,
+        None,
+        grantee_request,
+        variable_values=dict(eventSlug=other_event.slug, surveySlug=survey_c.slug),
+    )
+    assert denied_other_event_same_org.errors
+
+
+@pytest.mark.django_db
+def test_org_wide_access_still_works_for_all_surveys():
+    """
+    Introducing survey= and universe= claims must not narrow what an org-wide
+    {organization, app} CBAC entry (eg. from an admin group) already grants.
+    """
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    survey_a = Survey.objects.create(event=event, slug="org-wide-survey-a")
+    survey_b = Survey.objects.create(event=event, slug="org-wide-survey-b")
+
+    admin, _created = Person.get_or_create_dummy(superuser=False)
+    _grant_org_wide(admin.user, event.organization)
+    admin_request = _graphql_request(admin.user)
+
+    for survey in (survey_a, survey_b):
+        result = schema.execute(
+            SURVEY_ACCESS_CHECK_QUERY,
+            None,
+            admin_request,
+            variable_values=dict(eventSlug=event.slug, surveySlug=survey.slug),
+        )
+        assert not result.errors
+
+    result = schema.execute(
+        INCLUDE_INACTIVE_SURVEYS_QUERY,
+        None,
+        admin_request,
+        variable_values=dict(eventSlug=event.slug),
+    )
+    assert not result.errors
+    assert result.data is not None
+    slugs = {survey["slug"] for survey in result.data["event"]["forms"]["surveys"]}
+    assert slugs == {survey_a.slug, survey_b.slug}
+
+
+@pytest.mark.django_db
+def test_program_survey_access_cannot_be_granted_per_survey():
+    """
+    Program forms (offers and invitations) are governed by event-wide program_v2 admin
+    rights and cannot be granted access to on a per-survey basis.
+    """
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey(event=event, slug="program-offer-not-persisted", app=DimensionApp.PROGRAM)
+    workflow = ProgramOfferWorkflow(survey=survey)
+
+    assert workflow.access_root_claims == {}
+    assert not workflow.can_access_be_granted
+    assert workflow.grant_claimses == []
+
+    manager, _created = Person.get_or_create_dummy(superuser=False)
+    grantee, _created = Person.get_or_create_dummy(superuser=False, another=True)
+
+    with pytest.raises(ValueError):
+        workflow.grant_access(grantee, _graphql_request(manager.user))
+
+
+@pytest.mark.django_db
+def test_grant_access_refused_without_involvement_or_user():
+    """
+    grant_access must refuse a grant to a person who is not currently involved in the
+    event, and to a person who has no user account to attach the CBACEntry to.
+    """
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="refusal-test-survey")
+    registry, _created = Registry.get_or_create_dummy()
+
+    manager, _created = Person.get_or_create_dummy(superuser=False)
+    request = _graphql_request(manager.user)
+
+    not_involved, _created = Person.get_or_create_dummy(superuser=False, another=True)
+    with pytest.raises(ValueError):
+        survey.workflow.grant_access(not_involved, request)
+
+    userless = Person.objects.create(first_name="No", surname="User", email="no-user@example.com")
+    _involve(userless, event, registry)
+    with pytest.raises(ValueError):
+        survey.workflow.grant_access(userless, request)
+
+
+@pytest.mark.django_db
+def test_grant_survey_access_denied_for_non_manager():
+    """
+    A user without any management access to the survey cannot grant others access to it.
+    """
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="non-manager-test-survey")
+    registry, _created = Registry.get_or_create_dummy()
+
+    non_manager, _created = Person.get_or_create_dummy(superuser=False)
+    grantee, _created = Person.get_or_create_dummy(superuser=False, another=True)
+    _involve(grantee, event, registry)
+
+    result = schema.execute(
+        GRANT_SURVEY_ACCESS_MUTATION,
+        None,
+        _graphql_request(non_manager.user),
+        variable_values=dict(input=dict(eventSlug=event.slug, surveySlug=survey.slug, personId=grantee.id)),
+    )
+    assert result.errors
+    assert result.errors[0].extensions == {"code": "CBAC_PERMISSION_DENIED"}
+
+
+@pytest.mark.django_db
+def test_grantee_can_delegate_access_and_grant_can_be_revoked():
+    """
+    A grantee has management access and can therefore grant access onwards to another
+    involved person; that second grantee sees only the survey they were granted. Revoking
+    a grant removes both the survey- and universe-rooted CBACEntry and is audit logged.
+    """
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    survey_a = Survey.objects.create(event=event, slug="delegation-survey-a")
+    survey_b = Survey.objects.create(event=event, slug="delegation-survey-b")
+    registry, _created = Registry.get_or_create_dummy()
+
+    manager, _created = Person.get_or_create_dummy(superuser=False)
+    _grant_org_wide(manager.user, event.organization)
+
+    first_grantee, _created = Person.get_or_create_dummy(superuser=False, another=True)
+    _involve(first_grantee, event, registry)
+
+    second_grantee_user, _created = get_user_model().objects.get_or_create(username="second-grantee")
+    second_grantee = Person.objects.create(
+        user=second_grantee_user,
+        first_name="Second",
+        surname="Grantee",
+        email="second@example.com",
+    )
+    _involve(second_grantee, event, registry)
+
+    result = schema.execute(
+        GRANT_SURVEY_ACCESS_MUTATION,
+        None,
+        _graphql_request(manager.user),
+        variable_values=dict(input=dict(eventSlug=event.slug, surveySlug=survey_a.slug, personId=first_grantee.id)),
+    )
+    assert not result.errors
+
+    # the first grantee can delegate access onwards
+    result = schema.execute(
+        GRANT_SURVEY_ACCESS_MUTATION,
+        None,
+        _graphql_request(first_grantee.user),
+        variable_values=dict(input=dict(eventSlug=event.slug, surveySlug=survey_a.slug, personId=second_grantee.id)),
+    )
+    assert not result.errors
+
+    second_grantee_request = _graphql_request(second_grantee.user)
+
+    allowed = schema.execute(
+        SURVEY_ACCESS_CHECK_QUERY,
+        None,
+        second_grantee_request,
+        variable_values=dict(eventSlug=event.slug, surveySlug=survey_a.slug),
+    )
+    assert not allowed.errors
+
+    denied = schema.execute(
+        SURVEY_ACCESS_CHECK_QUERY,
+        None,
+        second_grantee_request,
+        variable_values=dict(eventSlug=event.slug, surveySlug=survey_b.slug),
+    )
+    assert denied.errors
+
+    assert survey_a.workflow.access_grants.count() == 2
+
+    # revoke the first grantee's access
+    result = schema.execute(
+        REVOKE_SURVEY_ACCESS_MUTATION,
+        None,
+        _graphql_request(manager.user),
+        variable_values=dict(input=dict(eventSlug=event.slug, surveySlug=survey_a.slug, personId=first_grantee.id)),
+    )
+    assert not result.errors
+
+    denied_after_revoke = schema.execute(
+        SURVEY_ACCESS_CHECK_QUERY,
+        None,
+        _graphql_request(first_grantee.user),
+        variable_values=dict(eventSlug=event.slug, surveySlug=survey_a.slug),
+    )
+    assert denied_after_revoke.errors
+
+    assert not CBACEntry.objects.filter(user=first_grantee.user, claims__contains={"survey": survey_a.slug}).exists()
+    assert not CBACEntry.objects.filter(
+        user=first_grantee.user,
+        claims__contains={"universe": survey_a.universe.slug},
+    ).exists()
+
+    assert Entry.objects.filter(entry_type="access.cbacentry.created").exists()
+    assert Entry.objects.filter(entry_type="access.cbacentry.deleted").exists()
+
+
+@pytest.mark.django_db
+def test_grantable_people_excludes_existing_grantees_and_userless_people():
+    """
+    grantablePeople only lists involved persons with a user account who do not already
+    have per-survey access, and can be searched by name/nick/email.
+    """
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    survey = Survey.objects.create(event=event, slug="grantable-people-survey")
+    registry, _created = Registry.get_or_create_dummy()
+
+    manager, _created = Person.get_or_create_dummy(superuser=False)
+    _grant_org_wide(manager.user, event.organization)
+    _involve(manager, event, registry)
+
+    already_granted, _created = Person.get_or_create_dummy(superuser=False, another=True)
+    _involve(already_granted, event, registry)
+    survey.workflow.grant_access(already_granted, _graphql_request(manager.user))
+
+    userless = Person.objects.create(first_name="No", surname="User", email="no-user@example.com")
+    _involve(userless, event, registry)
+
+    result = schema.execute(
+        GRANTABLE_PEOPLE_QUERY,
+        None,
+        _graphql_request(manager.user),
+        variable_values=dict(eventSlug=event.slug, surveySlug=survey.slug, search=""),
+    )
+    assert not result.errors
+    assert result.data is not None
+    survey_data = result.data["event"]["forms"]["survey"]
+    assert survey_data["canGrantAccess"]
+
+    grantable_ids = {int(person["id"]) for person in survey_data["grantablePeople"]}
+    assert manager.id in grantable_ids
+    assert already_granted.id not in grantable_ids
+    assert userless.id not in grantable_ids
+
+    grant_ids = {int(grant["person"]["id"]) for grant in survey_data["accessGrants"]}
+    assert grant_ids == {already_granted.id}
+
+    result = schema.execute(
+        GRANTABLE_PEOPLE_QUERY,
+        None,
+        _graphql_request(manager.user),
+        variable_values=dict(eventSlug=event.slug, surveySlug=survey.slug, search="nonexistent-search-term"),
+    )
+    assert not result.errors
+    assert result.data is not None
+    assert result.data["event"]["forms"]["survey"]["grantablePeople"] == []
+
+
+@pytest.mark.django_db
+def test_grantee_can_manage_dimensions_only_in_the_granted_surveys_universe():
+    """
+    A per-survey grant creates a second CBACEntry rooted at the survey's dimension
+    Universe, so the grantee can manage that survey's dimensions but not another
+    survey's dimensions, even within the same event.
+    """
+    Entry.ensure_partitions()
+
+    event, _created = Event.get_or_create_dummy()
+    survey_a = Survey.objects.create(event=event, slug="universe-test-survey-a")
+    survey_b = Survey.objects.create(event=event, slug="universe-test-survey-b")
+    registry, _created = Registry.get_or_create_dummy()
+
+    manager, _created = Person.get_or_create_dummy(superuser=False)
+    _grant_org_wide(manager.user, event.organization)
+
+    grantee, _created = Person.get_or_create_dummy(superuser=False, another=True)
+    _involve(grantee, event, registry)
+    survey_a.workflow.grant_access(grantee, _graphql_request(manager.user))
+
+    assert survey_a.universe.can_dimensions_be_created_by(_cached_request(grantee.user))
+    assert not survey_b.universe.can_dimensions_be_created_by(_cached_request(grantee.user))

@@ -2,7 +2,6 @@ import graphene
 from django.db import transaction
 from graphene.types.generic import GenericScalar
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.dimensions.utils.process_dimension_value_selection_form import process_dimension_value_selection_form
 
 from ...models.survey import Survey
@@ -42,13 +41,7 @@ class UpdateResponseDimensions(graphene.Mutation):
 
         dimensions = list(survey.dimensions.filter(is_technical=False))
 
-        graphql_check_instance(
-            response,
-            info,
-            app=survey.app,
-            field="dimensions",
-            operation="update",
-        )
+        survey.workflow.check_access(info, operation="update", field="dimensions", instance=response)
 
         values = process_dimension_value_selection_form(dimensions, form_data)
         cache = survey.universe.preload_dimensions(dimension_slugs=values.keys())

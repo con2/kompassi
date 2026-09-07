@@ -2807,6 +2807,52 @@ const translations: Translations = {
       addLanguage: "Lägg till språkversion",
       texts: (languageName: string) => `Texter (${languageName})`,
       fields: (languageName: string) => `Fält (${languageName})`,
+      access: "Åtkomst",
+    },
+    accessPage: {
+      title: "Åtkomst",
+      description: (
+        <>
+          Nedan listade användare har beviljats rätt att administrera just denna
+          enkät och dess dimensioner, utöver de användare som har beviljats rätt
+          till alla enkäter för detta evenemang eller denna organisation.
+        </>
+      ),
+      noGrants: "Ingen har beviljats åtkomst till just denna enkät.",
+      tableFooter: (count: number) => (
+        <>
+          {count} beviljande{count === 1 ? "" : "n"}.
+        </>
+      ),
+      attributes: {
+        person: "Person",
+        email: "E-post",
+        validUntil: "Giltig till",
+        grantedAt: "Beviljad",
+      },
+      grantForm: {
+        title: "Bevilja åtkomst",
+        personPlaceholder: "Sök efter en person…",
+        searching: "Söker…",
+        noResults: "Inga matchande personer som deltar i evenemanget hittades.",
+        clear: "Rensa",
+        submit: "Bevilja åtkomst",
+      },
+      actions: {
+        revoke: {
+          title: "Återkalla åtkomst",
+          confirmation: (name: string) => (
+            <>
+              Är du säker på att du vill återkalla <strong>{name}</strong>s
+              åtkomst till denna enkät?
+            </>
+          ),
+          modalActions: {
+            submit: "Återkalla",
+            cancel: "Avbryt",
+          },
+        },
+      },
     },
     thankYou: {
       title: "Tack för dina svar!",

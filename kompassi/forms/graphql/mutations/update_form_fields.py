@@ -3,8 +3,6 @@ import pydantic
 from django.db import transaction
 from graphene.types.generic import GenericScalar
 
-from kompassi.access.cbac import graphql_check_instance
-
 from ...models.field import Field
 from ...models.survey import Survey
 from ..survey_full import FullSurveyType
@@ -38,13 +36,7 @@ class UpdateFormFields(graphene.Mutation):
             form = survey.languages.get(language=input.language)
             fields = Fields.model_validate(dict(fields=input.fields))
 
-            graphql_check_instance(
-                survey,
-                info,
-                app=survey.app,
-                field="languages",
-                operation="update",
-            )
+            survey.workflow.check_access(info, operation="update", field="languages")
 
             # Dimension fields' choices are only ever derived from the dimension at read time
             # (see Form._enrich_field). Persisting client-supplied choices for them would freeze

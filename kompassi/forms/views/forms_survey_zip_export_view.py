@@ -6,7 +6,6 @@ from django.http import FileResponse, HttpRequest
 from django.shortcuts import get_object_or_404
 from django.utils.timezone import now
 
-from kompassi.access.cbac import graphql_check_instance
 from kompassi.dimensions.filters import DimensionFilters
 from kompassi.dimensions.models.scope import Scope
 from kompassi.event_log_v2.utils.emit import emit
@@ -32,13 +31,7 @@ def forms_survey_zip_export_view(
     excel_filename = truncate_filename(f"{basename}.xlsx")
 
     # TODO(#324): Failed check causes 500 now, turn it to 403 (middleware?)
-    graphql_check_instance(
-        survey,
-        request,
-        app=survey.app,
-        field="responses",
-        operation="query",
-    )
+    survey.workflow.check_access(request, operation="query", field="responses")
 
     if survey.profile_field_selector:
         emit("core.person.exported", request=request)
