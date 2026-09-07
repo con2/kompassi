@@ -1,18 +1,19 @@
-import { Markdown, FormattedDateTimeRange } from "@con2/components";
+import { FormattedDateTimeRange, Markdown } from "@con2/components";
 import Link from "next/link";
 
-import { markScheduleItemAsFavorite, unmarkAsFavorite } from "./actions";
-import FavoriteButton from "./FavoriteButton";
-import { FavoriteContextProvider } from "./FavoriteContext";
-import { Scope } from "./models";
-import ProgramLinkAnchor from "./ProgramLinkAnchor";
 import { graphql } from "@/__generated__";
 import {
   AnnotationDataType,
   ProgramDetailAnnotationFragment,
   ProgramDetailFragment,
+  ProgramLinkType,
 } from "@/__generated__/graphql";
 import type { Translations } from "@/translations/en";
+import { markScheduleItemAsFavorite, unmarkAsFavorite } from "./actions";
+import FavoriteButton from "./FavoriteButton";
+import { FavoriteContextProvider } from "./FavoriteContext";
+import { Scope } from "./models";
+import ProgramLinkAnchor from "./ProgramLinkAnchor";
 
 graphql(`
   fragment ProgramDetailAnnotation on ProgramAnnotationType {
@@ -145,11 +146,14 @@ export default function ProgramDetail({
                 <FavoriteButton scheduleItem={scheduleItem} />
               </FavoriteContextProvider>
             )}
-            {scheduleItem.links.map((link, linkIndex) => (
-              <span key={linkIndex} className="ms-2 fst-normal">
-                <ProgramLinkAnchor link={link} />
-              </span>
-            ))}
+            {scheduleItem.links
+              // we are Guide V2 Light, so it'd be silly to link to ourselves :)
+              .filter((link) => link.type != ProgramLinkType.GuideV2Light)
+              .map((link, linkIndex) => (
+                <span key={linkIndex} className="ms-2 fst-normal">
+                  <ProgramLinkAnchor link={link} />
+                </span>
+              ))}
           </div>
         ))}
       </div>
