@@ -17,9 +17,9 @@ from kompassi.event_log_v2.models.entry import Entry
 
 from .emperkelators.desucon2026 import DesuconEmperkelator
 from .emperkelators.ropecon2026 import RopeconEmperkelator
-from .emperkelators.tracon2026 import Perks as TraconPerks
-from .emperkelators.tracon2026 import TicketType as TraconTicketType
-from .emperkelators.tracon2026 import TraconEmperkelator
+from .emperkelators.tracon2027 import Perks as TraconPerks
+from .emperkelators.tracon2027 import TicketType as TraconTicketType
+from .emperkelators.tracon2027 import TraconEmperkelator
 from .models.enums import InvolvementType
 from .models.involvement import Involvement
 from .models.meta import InvolvementEventMeta
@@ -153,7 +153,7 @@ def test_tracon_get_formatted_perks_computed():
 
     assert (
         TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
-        == "Badge (internal), 2 ruokalippua, L Unisex"
+        == "Badge (internal), viikonloppuranneke, 2 ruokalippua, L Unisex"
     )
 
 
@@ -173,7 +173,7 @@ def test_tracon_get_formatted_perks_extra_swag():
 
     assert (
         TraconEmperkelator.get_formatted_perks(dimension_values, annotation_values)
-        == "Badge (super internal), 4 ruokalippua, XS Ladyfit, ekstramuki"
+        == "Badge (super internal), viikonloppuranneke, 4 ruokalippua, XS Ladyfit, ekstramuki"
     )
 
 

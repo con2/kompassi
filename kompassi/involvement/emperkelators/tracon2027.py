@@ -474,6 +474,10 @@ class TraconEmperkelator(BaseEmperkelator):
         ticket_type = TicketType(next(iter(ticket_type_values))) if ticket_type_values else TicketType.NONE
         if "coniitti" in v1_personnel_classes:
             parts.append("Coniitin kirjekuori")
+        elif "badge" in ticket_type.value:
+            # All bearers of badge are entitled to weekend tickets and required to have them on their wrists
+            parts.append(ticket_type.title_fi)
+            parts.append("viikonloppuranneke")
         else:
             parts.append(ticket_type.title_fi)
 
