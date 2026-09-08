@@ -10,6 +10,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand
+from django.db import transaction
 from django.utils.timezone import now
 from paikkala.models.blocks import PerProgramBlock
 
@@ -768,8 +769,11 @@ class Setup:
         privilege = Privilege.objects.get(slug="tracon-slack")
         for group in [
             self.event.labour_event_meta.get_group("accepted"),
-            Group.objects.get(name=f"{self.event.slug}-program-hosts"),
+            Group.objects.filter(name=f"{self.event.slug}-program-hosts").first(),
         ]:
+            if group is None:
+                continue
+
             GroupPrivilege.objects.get_or_create(group=group, privilege=privilege, defaults=dict(event=self.event))
 
         cc_group = self.event.labour_event_meta.get_group("conitea")
@@ -1274,4 +1278,9 @@ class Command(BaseCommand):
         parser.add_argument("--dev-tickets", action="store_true", default=False)
 
     def handle(self, *args, **opts):
-        Setup().setup(test=settings.DEBUG, dev_tickets=opts["dev_tickets"])
+        # Some setup steps (eg. Response.refresh_cached_fields_qs) require a transaction.
+        # When this command runs standalone rather than as part of a larger
+        # transaction-wrapped setup chain, this is the only one it gets; nested atomic
+        # blocks are fine either way.
+        with transaction.atomic():
+            Setup().setup(test=settings.DEBUG, dev_tickets=opts["dev_tickets"])
