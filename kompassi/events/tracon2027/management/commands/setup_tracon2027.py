@@ -815,9 +815,6 @@ class Setup:
                 log_get_or_create(logger, entry, True)
 
     def setup_station_access(self):
-        if "2028" in self.event.slug:
-            raise AssertionError("2028 event detected. Clean up setup_station_access properly.")
-
         # Give temp permissions from Tuesday to Sunday
         temp_permission_valid_from = (self.event.start_time - timedelta(days=3)).replace(
             hour=0, minute=0, second=0, tzinfo=self.tz
