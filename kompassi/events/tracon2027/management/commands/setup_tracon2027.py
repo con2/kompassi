@@ -36,7 +36,7 @@ from kompassi.forms.models.form import Form
 from kompassi.forms.models.meta import FormsEventMeta
 from kompassi.forms.models.projection import Projection
 from kompassi.forms.models.splat import Splat
-from kompassi.forms.models.survey import Survey, SurveyDTO
+from kompassi.forms.models.survey import Survey
 from kompassi.intra.models import IntraEventMeta, Team
 from kompassi.involvement.models.involvement_to_badge import InvolvementToBadgeMapping
 from kompassi.involvement.models.involvement_to_group import InvolvementToGroupMapping
@@ -966,20 +966,6 @@ class Setup:
                 admin_group=admin_group,
             ),
         )
-
-        for survey in [
-            SurveyDTO(
-                slug="expense-claim",
-                login_required=True,
-                anonymity="NAME_AND_EMAIL",
-            ),
-            SurveyDTO(
-                slug="car-usage",
-                login_required=True,
-                anonymity="NAME_AND_EMAIL",
-            ),
-        ]:
-            survey.save(self.event)
 
         survey = Survey.objects.filter(event=self.event, slug="taidekuja-ja-taidepolkuhaku").first()
         if survey:
