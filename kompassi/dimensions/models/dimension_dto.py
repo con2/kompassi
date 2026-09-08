@@ -35,6 +35,24 @@ class DimensionDTO(pydantic.BaseModel):
 
     choices: list[DimensionValueDTO] | None = pydantic.Field(default=None)
 
+    @classmethod
+    def from_dimension(cls, dimension: Dimension) -> Self:
+        return cls(
+            slug=dimension.slug,
+            title=dimension.title_dict,
+            order=dimension.order,
+            is_public=dimension.is_public,
+            is_key_dimension=dimension.is_key_dimension,
+            is_multi_value=dimension.is_multi_value,
+            is_list_filter=dimension.is_list_filter,
+            is_shown_in_detail=dimension.is_shown_in_detail,
+            is_negative_selection=dimension.is_negative_selection,
+            is_technical=dimension.is_technical,
+            can_values_be_added=dimension.can_values_be_added,
+            value_ordering=dimension.value_ordering,
+            choices=[DimensionValueDTO.from_dimension_value(value) for value in dimension.values.all()],
+        )
+
     def save(
         self,
         universe: Universe,
