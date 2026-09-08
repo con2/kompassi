@@ -1,0 +1,52 @@
+- slug: event
+  title:
+    fi: Tapahtuma
+    en: Event
+  isKeyDimension: true
+  isPublic: true
+  choices:
+    - slug: tracon
+      title:
+        fi: Tracon
+        en: Tracon
+    - slug: hitpoint
+      title:
+        fi: Tracon Hitpoint
+        en: Tracon Hitpoint
+    - slug: no-event
+      title:
+        fi: Maksu ei liity tapahtumaan
+        en: The payment is not related to an event
+
+- slug: status
+  title:
+    fi: Maksun tila
+    en: Payment status
+  isKeyDimension: true
+  isPublic: true
+  choices:
+    - slug: new
+      color: blue
+      title:
+        fi: Uusi
+        en: New
+    - slug: accepted
+      color: green
+      title:
+        fi: Hyväksytty
+        en: Accepted
+    - slug: paid
+      color: teal
+      title:
+        fi: Maksettu
+        en: Paid
+    - slug: info-requested
+      color: yellow
+      title:
+        fi: Lisätietoja pyydetty
+        en: Further details requested
+    - slug: rejected
+      color: red
+      title:
+        fi: Hylätty
+        en: Rejected
