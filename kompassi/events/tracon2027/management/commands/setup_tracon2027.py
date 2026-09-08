@@ -13,6 +13,7 @@ from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 from paikkala.models.blocks import PerProgramBlock
 
+from kompassi.access.constants import CBAC_VALID_AFTER_EVENT_DAYS
 from kompassi.access.models import GroupEmailAliasGrant, GroupPrivilege, Privilege
 from kompassi.access.models.cbac_entry import CBACEntry
 from kompassi.access.models.email_alias_domain import EmailAliasDomain
@@ -781,6 +782,33 @@ class Setup:
                 EmailAliasVariant.CUSTOM,
             ],
         )
+
+        # Read-only real time ticket sales status (quota counts) for conitea, without
+        # granting the rest of tickets_v2 admin rights (orders, payments, refunds etc).
+        # field="quotas" narrows this to TicketsV2EventMetaType.resolve_quotas/resolve_quota
+        # specifically; every other tickets_v2 check uses a different field (eg. "orders",
+        # "order") or the default field="self" used by all tickets_v2 mutations, and CBAC
+        # claims matching requires exact key+value equality, so this claim will not satisfy them.
+        assert self.event.end_time
+        quotas_claims = dict(
+            organization=self.organization.slug,
+            event=self.event.slug,
+            app="tickets_v2",
+            model="TicketsV2EventMeta",
+            field="quotas",
+            operation="query",
+        )
+        quotas_valid_until = self.event.end_time + timedelta(days=CBAC_VALID_AFTER_EVENT_DAYS)
+        for user in cc_group.user_set.all():
+            entry = CBACEntry.objects.filter(user=user, claims=quotas_claims, valid_until__gte=now()).first()
+            if entry is None:
+                entry = CBACEntry.objects.create(
+                    user=user,
+                    claims=quotas_claims,
+                    valid_from=now(),
+                    valid_until=quotas_valid_until,
+                )
+                log_get_or_create(logger, entry, True)
 
     def setup_station_access(self):
         if "2028" in self.event.slug:
