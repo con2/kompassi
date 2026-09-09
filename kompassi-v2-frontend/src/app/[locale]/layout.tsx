@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
-import Navigation from "../../components/navigation/Navigation";
 import { toSupportedLanguage } from "@/translations";
+import Navigation from "../../components/navigation/Navigation";
 
 import "./globals.scss";
 
@@ -28,7 +28,7 @@ export default async function RootLayout(props: Props) {
 
   // TODO implement bootstrap dark mode toggle (<html data-bs-theme="dark">)
   return (
-    <html lang={supportedLanguage}>
+    <html lang={supportedLanguage} data-scroll-behavior="smooth">
       <body>
         <Navigation locale={supportedLanguage} />
         {children}
