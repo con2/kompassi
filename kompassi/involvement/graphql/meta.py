@@ -11,6 +11,9 @@ from kompassi.dimensions.graphql.annotation import AnnotationType
 from kompassi.dimensions.graphql.dimension_filter_input import DimensionFilterInput
 from kompassi.dimensions.graphql.dimension_full import FullDimensionType
 from kompassi.dimensions.models.enums import AnnotationFlags
+from kompassi.event_log_v2.filters import EventLogFilters
+from kompassi.event_log_v2.graphql.event_log import EventLog, EventLogType
+from kompassi.event_log_v2.models.entry import Entry
 from kompassi.graphql_api.language import DEFAULT_LANGUAGE
 from kompassi.involvement.emperkelators.base import BaseEmperkelator
 from kompassi.involvement.filters import InvolvementFilters
@@ -251,4 +254,33 @@ class InvolvementEventMetaType(DjangoObjectType):
         FullRegistryType,
         slug=graphene.String(required=True),
         description=normalize_whitespace(resolve_registry.__doc__ or ""),
+    )
+
+    @staticmethod
+    def resolve_event_log(
+        meta: InvolvementEventMeta,
+        info,
+        filters: list[DimensionFilterInput] | None = None,
+    ):
+        """
+        Event log entries of this event and its organization.
+        """
+        request: HttpRequest = info.context
+
+        graphql_check_model(
+            Entry,
+            meta.event.organization.scope,
+            request,
+        )
+
+        return EventLog(
+            event=meta.event,
+            organization=meta.event.organization,
+            filters=EventLogFilters.from_graphql(filters),
+        )
+
+    event_log = graphene.NonNull(
+        EventLogType,
+        filters=graphene.List(DimensionFilterInput, required=False),
+        description=normalize_whitespace(resolve_event_log.__doc__ or ""),
     )

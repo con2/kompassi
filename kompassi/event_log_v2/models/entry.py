@@ -107,6 +107,20 @@ class Entry(MonthlyPartitionsMixin, models.Model):
         return queryset.filter(id__gte=start, id__lt=end)
 
     @classmethod
+    def for_event_and_organization(cls, event: Event, organization: Organization) -> models.QuerySet[Self]:
+        """
+        Entries belonging to `event`, to any event of `organization`, or CBAC entries whose
+        claims name either — CBAC claims are stored nested under other_fields.claims rather
+        than at the top level, so they need their own branches here.
+        """
+        return cls.objects.filter(
+            models.Q(other_fields__event=event.slug)
+            | models.Q(other_fields__organization=organization.slug)
+            | models.Q(entry_type__startswith="access.cbac", other_fields__claims__event=event.slug)
+            | models.Q(entry_type__startswith="access.cbac", other_fields__claims__organization=organization.slug)
+        )
+
+    @classmethod
     def conform(cls, value: Any) -> Any:
         """
         Conform the value to a type that can be stored in the database.

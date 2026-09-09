@@ -3245,6 +3245,36 @@ const translations: Translations = {
     },
   },
 
+  EventLog: {
+    listTitle: "Händelselogg",
+    attributes: {
+      createdAt: "Tid",
+      actor: {
+        title: "Utförare",
+        missing: "System",
+      },
+      entryType: "Typ",
+      message: "Meddelande",
+      otherFields: "Detaljer",
+      count: (numEntries: number) =>
+        numEntries === 1 ? <>En händelse.</> : <>{numEntries} händelser.</>,
+    },
+    filters: {
+      month: "Månad",
+      currentMonth: "Denna månad",
+      type: "Typ",
+      actor: "Utförare",
+    },
+    actions: {
+      viewDetails: {
+        modalActions: {
+          submit: "Det finns ingen skicka-knapp :)",
+          cancel: "Stäng",
+        },
+      },
+    },
+  },
+
   Report: {
     singleTitle: "Rapport",
     listTitle: "Rapporter",

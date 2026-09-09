@@ -3299,6 +3299,36 @@ const translations = {
     },
   },
 
+  EventLog: {
+    listTitle: "Event log",
+    attributes: {
+      createdAt: "Time",
+      actor: {
+        title: "Actor",
+        missing: "System",
+      },
+      entryType: "Type",
+      message: "Message",
+      otherFields: "Details",
+      count: (numEntries: number) =>
+        numEntries === 1 ? <>One entry.</> : <>{numEntries} entries.</>,
+    },
+    filters: {
+      month: "Month",
+      currentMonth: "This month",
+      type: "Type",
+      actor: "Actor",
+    },
+    actions: {
+      viewDetails: {
+        modalActions: {
+          submit: "There is no submit button :)",
+          cancel: "Close",
+        },
+      },
+    },
+  },
+
   Report: {
     singleTitle: "Report",
     listTitle: "Reports",

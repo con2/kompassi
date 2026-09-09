@@ -3246,6 +3246,36 @@ const translations: Translations = {
     },
   },
 
+  EventLog: {
+    listTitle: "Tapahtumaloki",
+    attributes: {
+      createdAt: "Aika",
+      actor: {
+        title: "Tekijä",
+        missing: "Järjestelmä",
+      },
+      entryType: "Tyyppi",
+      message: "Viesti",
+      otherFields: "Lisätiedot",
+      count: (numEntries: number) =>
+        numEntries === 1 ? <>Yksi tapahtuma.</> : <>{numEntries} tapahtumaa.</>,
+    },
+    filters: {
+      month: "Kuukausi",
+      currentMonth: "Tämä kuukausi",
+      type: "Tyyppi",
+      actor: "Tekijä",
+    },
+    actions: {
+      viewDetails: {
+        modalActions: {
+          submit: "Tässä ei ole lähetyspainiketta :)",
+          cancel: "Sulje",
+        },
+      },
+    },
+  },
+
   Invitation: {
     tabHeader: "Kutsut",
     listTitle: "Avoimet kutsut",
